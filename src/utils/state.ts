@@ -1,7 +1,7 @@
-// KM Imports
 // Node modules
 import merge from 'lodash.merge';
 
+// KM Imports
 import { supportedFiles } from '../lib/utils/constants';
 import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
@@ -52,13 +52,13 @@ export function getPlayerState(): PublicPlayerState {
 		currentlyPlaying: state.currentlyPlayingKara,
 		currentSessionID: state.currentSessionID,
 		stopping: state.stopping,
-		duration: state.player.duration,
+		duration: state.player?.currentSong?.duration || 0,
 		fullscreen: state.player.fullscreen,
 		mute: state.player.mute,
 		onTop: state.ontop,
 		playerStatus: state.player.playerStatus,
 		playing: state.player.playing,
-		showSubs: state.player.showsubs,
+		showSubs: state.player.showSubs,
 		subText: state.player['sub-text'],
 		timePosition: state.player.timeposition,
 		volume: state.player.volume,

@@ -6,12 +6,11 @@ export interface PlayerState {
 	playerStatus?: 'stop' | 'pause' | 'play',
 	_playing?: boolean, // internal delay flag
 	timeposition?: number,
-	duration?: number,
 	mute?: boolean,
 	'sub-text'?: string,
 	currentSong?: MediaData,
 	mediaType?: 'song' | 'background' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
-	showsubs?: boolean,
+	showSubs?: boolean,
 	stayontop?: boolean,
 	fullscreen?: boolean,
 	url?: string,

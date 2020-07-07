@@ -17,6 +17,7 @@
 		left: 0;
 		top: 0;
 		width: 100%;
+		transition: width 200ms linear;
 		
 		&:hover  {
 			background-color: #286faa;

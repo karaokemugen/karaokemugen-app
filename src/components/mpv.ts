@@ -1,7 +1,8 @@
 import execa from 'execa';
 import i18n from 'i18next';
 import sample from 'lodash.sample';
-import Mpv from 'node-mpv';
+import debounce from 'lodash.debounce';
+import MpvIPC from '../utils/MpvIPC';
 import retry from 'p-retry';
 import {extname, resolve} from 'path';
 import randomstring from 'randomstring';
@@ -19,7 +20,8 @@ import {playerEnding} from '../services/player';
 import {notificationNextSong} from '../services/playlist';
 import {endPoll} from '../services/poll';
 import {MediaType} from '../types/medias';
-import {MediaData, MpvOptions, mpvStatus, PlayerState} from '../types/player';
+import {MediaData, MpvOptions, PlayerState} from '../types/player';
+import {MpvCommand} from '../types/MpvIPC';
 import {initializationCatchphrases} from '../utils/constants';
 import {setDiscordActivity} from '../utils/discordRPC';
 import {getID3} from '../utils/id3tag';
@@ -37,12 +39,11 @@ const playerState: PlayerState = {
 	playerStatus: 'stop',
 	_playing: false, // internal delay flag
 	timeposition: 0,
-	duration: 0,
 	mute: false,
 	'sub-text': null,
 	currentSong: null,
 	mediaType: 'background',
-	showsubs: true,
+	showSubs: true,
 	stayontop: false,
 	fullscreen: false,
 	url: null,
@@ -109,13 +110,11 @@ async function checkMpv(): Promise<string> {
 }
 
 class Player {
-	mpv: Mpv
+	mpv: MpvIPC
 	configuration: any
 	options: MpvOptions
 	state: PlayerState
 	control: Players
-	// node-mpv is very slow to refresh isRunning
-	running: boolean
 
 	constructor(options: MpvOptions, players: Players) {
 		// Generate node mpv options
@@ -123,7 +122,7 @@ class Player {
 		this.configuration = this.genConf(options);
 		this.control = players;
 		// Instantiate mpv
-		this.mpv = new Mpv(...this.configuration);
+		this.mpv = new MpvIPC(this.configuration[0], this.configuration[1], this.configuration[2]);
 	}
 
 	private genConf(options: MpvOptions) {
@@ -141,6 +140,7 @@ class Player {
 			'--no-config',
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
+			'--sub-visibility'
 		];
 
 		if (options.monitor) {
@@ -209,121 +209,124 @@ class Player {
 			: socket = '/tmp/km-node-mpvsocket' + random;
 
 		const NodeMPVOptions = {
-			ipc_command: '--input-ipc-server',
-			auto_restart: false,
-			audio_only: false,
 			binary: state.binPath.mpv,
-			socket: socket,
-			time_update: 1,
-			verbose: false,
-			debug: state.opt?.debug,
+			socket: socket
 		};
 
 		logger.debug(`mpv${this.options.monitor ? ' monitor':''} options:`, {obj: [NodeMPVOptions, NodeMPVArgs], service: 'Player'});
-		logger.debug(`mpv${this.options.monitor ? ' monitor':''} binary: ${state.binPath.mpv}`, {service: 'Player'});
 
-		return [NodeMPVOptions, NodeMPVArgs];
+		return [state.binPath.mpv, socket, NodeMPVArgs];
 	}
+
+	private debounceTimePosition(position) {
+		const conf = getConfig();
+		// Returns the position in seconds in the current song
+		playerState.timeposition = position;
+		emitPlayerState();
+		if (playerState?.currentSong?.duration) {
+			if (conf.Player.ProgressBarDock) {
+				playerState.mediaType === 'song'
+					? setProgressBar(position / playerState.currentSong.duration)
+					: setProgressBar(-1);
+			}
+			// Send notification to frontend if timeposition is 15 seconds before end of song
+			if (position >= (playerState.currentSong.duration - 15) && playerState.mediaType === 'song' && !playerState.nextSongNotifSent) {
+				playerState.nextSongNotifSent = true;
+				notificationNextSong();
+			}
+			// Display informations if timeposition is 8 seconds before end of song
+			if (position >= (playerState.currentSong.duration - 8) &&
+				!playerState.displayingInfo &&
+				playerState.mediaType === 'song')
+				this.control.displaySongInfo(playerState.currentSong.infos);
+			// Display informations if timeposition is 8 seconds after start of song
+			if (position <= 8 &&
+				!playerState.displayingInfo &&
+				playerState.mediaType === 'song')
+				this.control.displaySongInfo(playerState.currentSong.infos, 8000, false, playerState.currentSong.spoiler);
+			// Display KM's banner if position reaches halfpoint in the song
+			if (Math.floor(position) === Math.floor(playerState.currentSong.duration / 2) &&
+				!playerState.displayingInfo &&
+				playerState.mediaType === 'song' && !getState().songPoll) {
+				logger.debug('Middle of song DI', {service: 'Player'});
+				this.control.displayInfo(8000);
+			}
+			// Stop poll if position reaches 10 seconds before end of song
+			if (Math.floor(position) >= Math.floor(playerState.currentSong.duration - 10) &&
+				playerState.mediaType === 'song' &&
+				conf.Karaoke.Poll.Enabled &&
+				!playerState.songNearEnd) {
+				playerState.songNearEnd = true;
+				endPoll();
+			}
+		}
+	}
+
+	debouncedTimePosition = debounce(this.debounceTimePosition, 100, {maxWait: 200});
 
 	private bindEvents() {
 		if (!this.options.monitor) {
-			this.mpv.on('status', (status: mpvStatus) => {
-				if (status.property !== 'playtime-remaining' && status.property !== 'sub-text')
+			this.mpv.on('property-change', (status) => {
+				if (status.name !== 'playback-time' && status.name !== 'sub-text')
 					logger.debug('mpv status', {service: 'Player', obj: status});
 				// If we're displaying an image, it means it's the pause inbetween songs
-				playerState[status.property] = status.value;
+				playerState[status.name] = status.data;
 				emitPlayerState();
-				if (playerState._playing && playerState.mediaType !== 'background' &&
-					(status.property === 'playtime-remaining' && status.value === 0) ||
-					(status.property === 'eof-reached' && status.value === true)
+				if (playerState.mediaType !== 'background' &&
+					(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||
+					(status.name === 'eof-reached' && status.data === true)
 				) {
 					// immediate switch to Playing = False to avoid multiple trigger
 					playerState.playing = false;
 					playerState._playing = false;
 					emitPlayerState();
-					this.control.exec('pause', null, true).then(_res => {
+					this.control.exec({command: ['set-property', 'pause', true]}).then(_res => {
 						return playerEnding();
 					});
+				} else if (status.name === 'playback-time') {
+					this.debouncedTimePosition(status.data);
 				}
-			});
-			this.mpv.on('timeposition', (position: number) => {
-				const conf = getConfig();
-				// Returns the position in seconds in the current song
-				playerState.timeposition = position;
-				if (conf.Player.ProgressBarDock) {
-					playerState.mediaType === 'song'
-						? setProgressBar(position / playerState.duration)
-						: setProgressBar(-1);
-				}
-				// Send notification to frontend if timeposition is 15 seconds before end of song
-				if (position >= (playerState.duration - 15) && playerState.mediaType === 'song' && !playerState.nextSongNotifSent) {
-					playerState.nextSongNotifSent = true;
-					notificationNextSong();
-				}
-				// Display informations if timeposition is 8 seconds before end of song
-				if (position >= (playerState.duration - 8) &&
-					!playerState.displayingInfo &&
-					playerState.mediaType === 'song')
-					this.control.displaySongInfo(playerState.currentSong.infos);
-				// Display KM's banner if position reaches halfpoint in the song
-				if (Math.floor(position) === Math.floor(playerState.duration / 2) &&
-					!playerState.displayingInfo &&
-					playerState.mediaType === 'song' && !getState().songPoll) {
-					logger.debug('Middle of song DI', {service: 'Player'});
-					this.control.displayInfo(8000);
-				}
-				// Stop poll if position reaches 10 seconds before end of song
-				if (Math.floor(position) >= Math.floor(playerState.duration - 10) &&
-					playerState.mediaType === 'song' &&
-					conf.Karaoke.Poll.Enabled &&
-					!playerState.songNearEnd) {
-					playerState.songNearEnd = true;
-					endPoll();
-				}
-				emitPlayerState();
 			});
 		}
 		// Handle manually exits/crashes
-		this.mpv.on('quit', () => {
+		this.mpv.once('shutdown', () => {
 			logger.debug('mpv closed', {service: `mpv${this.options.monitor ? ' monitor':''}`});
 			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
-			this.control.exec('pause', [], true, this.options.monitor ? 'main':'monitor');
-			this.running = false;
+			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
 			this.recreate();
 			emitPlayerState();
 		});
-		this.mpv.on('crashed', () => {
+		this.mpv.once('crashed', () => {
 			logger.warn('mpv crashed', {service: `mpv${this.options.monitor ? ' monitor':''}`});
 			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
-			this.control.exec('pause', [], true, this.options.monitor ? 'main':'monitor');
-			this.running = false;
+			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
 			// In case of a crash, restart immediately
 			this.recreate(null, true);
 			emitPlayerState();
 		});
 		// Handle pause/play via external ways such as right-click on player
-		this.mpv.on('paused',() => {
+		this.mpv.on('pause', () => {
 			if (!playerState._playing || playerState.mediaType === 'background') return;
 			logger.debug(`Paused event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
 			playerState._playing = false;
 			playerState.playing = false;
 			playerState.playerStatus = 'pause';
-			this.control.exec('pause', null, true, this.options.monitor ? 'main':'monitor');
+			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
 			emitPlayerState();
 		});
-		this.mpv.on('resumed',() => {
+		this.mpv.on('unpause', () => {
 			if (playerState._playing || playerState.mediaType === 'background') return;
 			logger.debug(`Resumed event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
 			playerState._playing = true;
 			playerState.playing = true;
 			playerState.playerStatus = 'play';
-			this.control.exec('play', null, true, this.options.monitor ? 'main':'monitor');
+			this.control.exec({command: ['set_property', 'pause', false]}, null, this.options.monitor ? 'main':'monitor');
 			emitPlayerState();
 		});
 	}
@@ -332,27 +335,21 @@ class Player {
 		this.bindEvents();
 		await retry(async () => {
 			await this.mpv.start().catch(err => {
-				if (err.errcode === 6) {
+				if (err.message == 'MPV is already running') {
 					// It's already started!
-					this.running = true;
 					logger.warn('A start command was executed, but the player is already running. Not normal.', {service: 'Player'});
+					sentry.error(err, 'Warning');
 					return;
 				}
-				throw new Error(JSON.stringify(err));
+				throw err;
 			});
 			if (!this.options.monitor) {
 				this.mpv.observeProperty('sub-text');
-				this.mpv.observeProperty('playtime-remaining');
 				this.mpv.observeProperty('eof-reached');
+				this.mpv.observeProperty('playback-time');
+				this.mpv.observeProperty('mute');
+				this.mpv.observeProperty('volume');
 			}
-			/*let tries = 0;
-			while (!this.mpv.isRunning()) { // MPV seems to take time before it is ready to take commands on slow platforms.
-				await sleep(1000);
-				tries++;
-				if (tries >= 5) {
-					throw new Error('mpv isRunning() returns false after 5 seconds');
-				}
-			}*/
 			return true;
 		}, {
 			retries: 3,
@@ -361,11 +358,9 @@ class Player {
 			}
 		}).catch(err => {
 			logger.error('Cannot start MPV', {service: 'Player', obj: err});
-			this.running = false;
 			sentry.error(err, 'Fatal');
 			throw err;
 		});
-		this.running = true;
 		return true;
 	}
 
@@ -377,7 +372,7 @@ class Player {
 			// Regen config
 			this.configuration = this.genConf(this.options);
 			// Recreate mpv
-			this.mpv = new Mpv(...this.configuration);
+			this.mpv = new MpvIPC(this.configuration[0], this.configuration[1], this.configuration[2]);
 			if (restart) await this.start();
 		} catch (err) {
 			logger.error('mpvAPI (recreate)', {service: 'Player', obj: err});
@@ -387,8 +382,7 @@ class Player {
 
 	async destroy() {
 		try {
-			await this.mpv.quit();
-			this.running = false;
+			await this.mpv.stop();
 			return true;
 		} catch (err) {
 			const error = new Error(err);
@@ -399,12 +393,7 @@ class Player {
 	}
 
 	get isRunning() {
-		if (this.running) return this.running;
-		else return this.mpv.isRunning();
-	}
-
-	set isRunning(val: boolean) {
-		this.running = val;
+		return this.mpv.isRunning;
 	}
 }
 
@@ -416,7 +405,7 @@ class Players {
 
 	private static fillVisualizationOptions(mediaData: MediaData, withAvatar: boolean): string {
 		const subOptions = [
-			'lavfi-complex=[aid1]asplit[ao][a]',
+			'[aid1]asplit[ao][a]',
 			'[a]showcqt=axis=0[vis]',
 			'[vis]scale=600:400[vecPrep]',
 			`nullsrc=size=1920x1080:duration=${mediaData.duration}[nl]`,
@@ -498,21 +487,22 @@ class Players {
 		}
 	}
 
-	async exec(cmd: string, args?: any[], mpv = false, onlyOn?: PlayerType, ignoreLock = false) {
+	async exec(cmd: string|MpvCommand, args?: any[], onlyOn?: PlayerType, ignoreLock = false) {
 		try {
+			const mpv = typeof cmd === 'object';
 			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
 			// ensureRunning isn't needed on non-mpv commands
 			if (mpv && await this.ensureRunning(onlyOn, ignoreLock) === -1) return;
-			logger.debug(`${mpv ? 'mpv ': ''}command: ${cmd}, ${JSON.stringify(args)}`, {service: 'Player'});
+			logger.debug(`${mpv ? 'mpv ': ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {service: 'Player'});
 			logger.debug(`Running it for players ${JSON.stringify(onlyOn ? onlyOn:Object.keys(this.players))}`, {service: 'Player'});
 			const loads = [];
 			if (!args) args = [];
 			if (onlyOn) {
-				if (mpv) loads.push(this.players[onlyOn].mpv[cmd](...args));
-				else loads.push(this.players[onlyOn][cmd](...args));
+				if (mpv) loads.push(this.players[onlyOn].mpv.send(cmd as MpvCommand));
+				else loads.push(this.players[onlyOn][cmd as string](...args));
 			} else {
 				for (const player in this.players) {
-					if (mpv) loads.push(this.players[player].mpv[cmd](...args));
+					if (mpv) loads.push(this.players[player].mpv.send(cmd));
 					else loads.push(this.players[player][cmd](...args));
 				}
 			}
@@ -553,7 +543,7 @@ class Players {
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
-			await this.exec('load', [backgroundImageFile, 'replace'], true);
+			await this.exec({command: ['loadfile', backgroundImageFile]});
 		} catch(err) {
 			logger.error('Unable to load background', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -583,6 +573,7 @@ class Players {
 		try {
 			await this.bootstrapPlayers();
 			await this.loadBackground();
+			this.displayInfo();
 		} catch (err) {
 			errorStep(i18n.t('ERROR_START_PLAYER'));
 			logger.error('Unable to start player', {service: 'Player', obj: err});
@@ -613,7 +604,7 @@ class Players {
 				this.players.monitor = new Player({monitor: true, mpvVersion}, this);
 			} else {
 				// Monitor needs to be destroyed
-				await this.exec('destroy', null, false, 'monitor');
+				await this.exec('destroy', null, 'monitor');
 				delete this.players.monitor;
 			}
 		}
@@ -629,6 +620,7 @@ class Players {
 		const conf = getConfig();
 		logger.debug('Play event triggered', {service: 'Player'});
 		playerState.playing = true;
+		this.clearText();
 		//Search for media file in the different PathMedias
 
 		let mediaFile: string;
@@ -654,20 +646,20 @@ class Players {
 				});
 			subFile = subFiles[0];
 		}
-		logger.debug(`Audio gain adjustment : ${mediaData.gain}`, {service: 'Player'});
+		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with subs ${subFile}`:''}`, {service: 'Player'});
-		const options = [
-			`replaygain-fallback=${mediaData.gain}`
-		];
+		const options: object = {
+			'replaygain-fallback': mediaData.gain.toString()
+		};
 
 		if (mediaFile.endsWith('.mp3')) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)
 			if (conf.Player.VisualizationEffects) {
-				options.push(Players.fillVisualizationOptions(mediaData, (mediaData.avatar && conf.Karaoke.Display.Avatar)));
+				options['lavfi-complex'] = Players.fillVisualizationOptions(mediaData, (mediaData.avatar && conf.Karaoke.Display.Avatar));
 			} else if (mediaData.avatar && conf.Karaoke.Display.Avatar) {
 				const subOptions = [
-					`lavfi-complex=nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
+					`nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
 					'[vid1]scale=-2:1080[vidInp]',
 					'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
 					`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo]`,
@@ -675,25 +667,25 @@ class Players {
 					'[base][emp]overlay[ovrl]',
 					`[ovrl][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
 				];
-				options.push(subOptions.join(';'));
+				options['lavfi-complex'] = subOptions.join(';');
 			}
 
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
 				const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
-				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
-				options.push('force-window=yes');
-				options.push('image-display-duration=inf');
-				options.push('vid=1');
+				options['external-file'] = defaultImageFile.replace(/\\/g,'/');
+				options['force-window'] = 'yes';
+				options['image-display-duration'] = 'inf';
+				options['vid'] = '1';
 			}
 		} else {
 			// If video, display avatar if it's defined.
 			// Again, lavfi-complex expert @nah comes to the rescue!
-			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options.push(`lavfi-complex=movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
+			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options['lavfi-complex'] = `movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`;
 		}
 		// Load all thoses files into mpv and let's go!
 		try {
-			await retry(() => this.exec('load', [mediaFile, 'replace', options], true), {
+			await retry(() => this.exec({command: ['loadfile', mediaFile, 'replace', options]}), {
 				retries: 3,
 				onFailedAttempt: error => {
 					logger.warn(`Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
@@ -705,16 +697,15 @@ class Players {
 			logger.debug(`File ${mediaFile} loaded`, {service: 'Player'});
 			playerState.mediaType = 'song';
 			playerState._playing = true;
-			await this.exec('play', null, true);
+			await this.exec({command: ['set_property', 'pause', false]});
 			playerState.playerStatus = 'play';
 			if (subFile) {
-				await this.exec('addSubtitles', [subFile], true).catch(err => {
+				await this.exec({command: ['sub-add', subFile]}).catch(err => {
 					logger.error('Unable to load subtitles', {service: 'Player', obj: err});
 					throw err;
 				});
 			}
 			// Loaded!
-			this.displaySongInfo(mediaData.infos, 8000, false, mediaData.spoiler);
 			playerState.currentSong = mediaData;
 			playerState.songNearEnd = false;
 			playerState.nextSongNotifSent = false;
@@ -738,25 +729,28 @@ class Players {
 		const media = getSingleMedia(mediaType);
 		if (media) {
 			setState({currentlyPlayingKara: mediaType});
-			logger.debug(`Playing ${mediaType} : ${media.file}`, {service: 'Player'});
-			const options = [`replaygain-fallback=${media.gain}`];
+			logger.debug(`Playing ${mediaType}: ${media.file}`, {service: 'Player'});
+			const options: object = {
+				'replaygain-fallback': media.gain.toString()
+			};
 			try {
-				await retry(() => this.exec('load', [media.file, 'replace', options], true), {
+				await retry(() => this.exec({command: ['loadfile', media.file, 'replace', options]}), {
 					retries: 3,
 					onFailedAttempt: error => {
 						logger.warn(`Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
 					}
 				});
-				await this.exec('play', null, true);
+				await this.exec({command: ['set_property', 'pause', false]});
 				const subFile = replaceExt(media.file, '.ass');
 				if (await asyncExists(subFile)) {
-					await this.exec('addSubtitles', [subFile], true);
+					await this.exec({command: ['sub-add', subFile]});
 				}
 				mediaType === 'Jingles' || mediaType === 'Sponsors'
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
 						? this.message(conf.Playlist.Medias[mediaType].Message, 1000000)
 						: this.clearText();
+				playerState.currentSong = null;
 				playerState.playerStatus = 'play';
 				playerState.mediaType = mediaType;
 				playerState._playing = true;
@@ -801,7 +795,7 @@ class Players {
 		logger.debug('Pause event triggered', {service: 'Player'});
 		try {
 			playerState._playing = false; // This prevents the play/pause event to be triggered
-			await this.exec('pause', null, true);
+			await this.exec({command: ['set_property', 'pause', true]});
 			playerState.playing = false;
 			playerState.playerStatus = 'pause';
 			emitPlayerState();
@@ -825,7 +819,7 @@ class Players {
 				return await this.play(playerState.currentSong);
 			} else {
 				playerState._playing = true; // This prevents the play/pause event to be triggered
-				await this.exec('play', null, true);
+				await this.exec({command: ['set_property', 'pause', false]});
 				playerState.playing = true;
 				playerState.playerStatus = 'play';
 				emitPlayerState();
@@ -840,7 +834,7 @@ class Players {
 
 	async seek(delta: number) {
 		try {
-			await this.exec('seek', [delta], true);
+			await this.exec({command: ['seek', delta]});
 		} catch(err) {
 			logger.error('Unable to seek', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -850,7 +844,7 @@ class Players {
 
 	async goTo(pos: number) {
 		try {
-			await this.exec('goToPosition', [pos], true);
+			await this.exec({command: ['seek', pos, 'absolute']});
 		} catch(err) {
 			logger.error('Unable to go to position', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -860,9 +854,7 @@ class Players {
 
 	async setMute(mute: boolean): Promise<PlayerState> {
 		try {
-			await this.exec('mute', [mute], true, 'main');
-			playerState.mute = true;
-			emitPlayerState();
+			await this.exec({command: ['set_property', 'mute', mute]});
 			return playerState;
 		} catch(err) {
 			logger.error('Unable to toggle mute', {service: 'Player', obj: err});
@@ -873,12 +865,10 @@ class Players {
 
 	async setVolume(volume: number): Promise<PlayerState> {
 		try {
-			await this.exec('volume', [volume], true, 'main');
-			playerState.volume = volume;
-			emitPlayerState();
+			await this.exec({command: ['set_property', 'volume', volume]});
 			return playerState;
 		} catch(err) {
-			logger.error('Unable to toggle mute', {service: 'Player', obj: err});
+			logger.error('Unable to set volume', {service: 'Player', obj: err});
 			sentry.error(err);
 			throw err;
 		}
@@ -886,12 +876,8 @@ class Players {
 
 	async setSubs(showSubs: boolean): Promise<PlayerState> {
 		try {
-			if (showSubs) {
-				await this.exec('showSubtitles', null, true);
-			} else {
-				await this.exec('hideSubtitles', null, true);
-			}
-			playerState.showsubs = showSubs;
+			await this.exec({command: ['set_property', 'sub-visibility', showSubs]});
+			playerState.showSubs = showSubs;
 			emitPlayerState();
 			return playerState;
 		} catch (err) {
@@ -903,11 +889,7 @@ class Players {
 
 	async setFullscreen(fsState: boolean): Promise<PlayerState> {
 		try {
-			if (fsState) {
-				await this.exec('fullscreen', null, true, 'main');
-			} else {
-				await this.exec('leaveFullscreen', null, true, 'main');
-			}
+			await this.exec({command: ['set_property', 'fullscreen', fsState]});
 			playerState.fullscreen = fsState;
 			emitPlayerState();
 			return playerState;
@@ -920,7 +902,7 @@ class Players {
 
 	async toggleOnTop(): Promise<PlayerState> {
 		try {
-			await this.exec('setProperty', ['ontop', !playerState.stayontop], true, 'main');
+			await this.exec({command: ['set_property', 'ontop', !playerState.stayontop]});
 			playerState.stayontop = !playerState.stayontop;
 			emitPlayerState();
 			return playerState;
@@ -932,7 +914,7 @@ class Players {
 	}
 
 	async setPiPSize(pct: number) {
-		await this.exec('setProperty', ['autofit', `${pct}%x${pct}%`], true).catch(err => {
+		await this.exec({command: ['set_property', 'autofit', `${pct}%x${pct}%`]}).catch(err => {
 			logger.error('Unable to set PiP size', {service: 'Player', obj: err});
 			sentry.error(err);
 			throw err;
@@ -941,8 +923,8 @@ class Players {
 	}
 
 	async setHwDec(method: string) {
-		await this.exec('setProperty', ['hwdec', method], true).catch(err => {
-			logger.error('Unable to set PiP size', {service: 'Player', obj: err});
+		await this.exec({command: ['set_property', 'hwdec', method]}).catch(err => {
+			logger.error('Unable to set hwdec method', {service: 'Player', obj: err});
 			sentry.error(err);
 			throw err;
 		});
@@ -957,10 +939,10 @@ class Players {
 					'expand-properties',
 					'show-text',
 					'${osd-ass-cc/0}' + alignCommand + message,
-					duration,
+					duration
 				]
 			};
-			await this.exec('freeCommand', [JSON.stringify(command)], true);
+			await this.exec(command);
 			if (playerState.playing === false && !getState().songPoll) {
 				await sleep(duration);
 				this.displayInfo();
@@ -986,7 +968,7 @@ class Players {
 					duration,
 				]
 			};
-			await this.exec('freeCommand', [JSON.stringify(command)], true);
+			await this.exec(command);
 			await sleep(duration);
 			playerState.displayingInfo = false;
 		} catch(err) {
@@ -1017,7 +999,7 @@ class Players {
 					duration,
 				]
 			};
-			await this.exec('freeCommand', [JSON.stringify(command)], true);
+			await this.exec(command);
 			await sleep(duration);
 			playerState.displayingInfo = false;
 		} catch(err) {
@@ -1040,7 +1022,9 @@ class Players {
 				10,
 			]
 		};
-		return this.exec('freeCommand', [command], true).catch(err => {
+		return this.exec(command).then(() => {
+			playerState.displayingInfo = false;
+		}).catch(err => {
 			logger.error('Unable to clear text', {service: 'Player', obj: err});
 			sentry.error(err);
 			throw err;
