@@ -141,7 +141,8 @@ class Player {
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--sub-visibility',
-			'--loop-file=no'
+			'--loop-file=no',
+			'--reset-on-next-file=pause,loop-file'
 		];
 
 		if (options.monitor) {
@@ -273,9 +274,9 @@ class Player {
 				playerState[status.name] = status.data;
 				emitPlayerState();
 				// If we're displaying an image, it means it's the pause inbetween songs
-				if (playerState._playing && !playerState.isOperating && playerState.mediaType !== 'background' &&
+				if (/*playerState._playing && */!playerState.isOperating && playerState.mediaType !== 'background' &&
 					(
-						(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||
+						/*(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||*/
 						(status.name === 'eof-reached' && status.data === true)
 					)
 				) {
@@ -319,7 +320,7 @@ class Player {
 			emitPlayerState();
 		});
 		this.mpv.on('file-loaded', async () => {
-			if (playerState.mediaType !== 'background' && playerState?.currentSong?.subfile) {
+			if (playerState.mediaType === 'song' && playerState?.currentSong?.subfile) {
 				let subFiles = await resolveFileInDirs(playerState.currentSong.subfile, resolvedPathRepos('Lyrics', playerState.currentSong.repo))
 					.catch(err => {
 						logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
@@ -702,7 +703,6 @@ class Players {
 			playerState.playerStatus = 'play';
 			playerState.mediaType = 'song';
 			this.clearText();
-			await this.exec({command: ['set_property', 'pause', false]});
 			emitPlayerState();
 			setDiscordActivity('song', {
 				title: mediaData.currentSong.title,
@@ -733,7 +733,10 @@ class Players {
 						logger.warn(`Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
 					}
 				});
-				await this.exec({command: ['set_property', 'pause', false]});
+				playerState.currentSong = null;
+				playerState.playerStatus = 'play';
+				playerState.mediaType = mediaType;
+				playerState._playing = true;
 				const subFile = replaceExt(media.filename, '.ass');
 				if (await asyncExists(subFile)) {
 					await this.exec({command: ['sub-add', subFile]});
@@ -743,10 +746,6 @@ class Players {
 					: conf.Playlist.Medias[mediaType].Message
 						? this.message(conf.Playlist.Medias[mediaType].Message, 1000000)
 						: this.clearText();
-				playerState.currentSong = null;
-				playerState.playerStatus = 'play';
-				playerState.mediaType = mediaType;
-				playerState._playing = true;
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
