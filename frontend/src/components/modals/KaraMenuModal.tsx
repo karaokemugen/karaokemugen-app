@@ -110,25 +110,23 @@ class KaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.publicOuCurrent ?
-					<li>
-						<a href="#" onClick={this.changeVisibilityKara}
-							title={this.state.kara.flag_visible ? i18next.t('KARA_MENU.VISIBLE_OFF') : i18next.t('KARA_MENU.VISIBLE_ON')}>
-							{this.state.kara.flag_visible ?
-								<React.Fragment>
-									<i className="fas fa-eye-slash" />
-									&nbsp;
-									{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
-								</React.Fragment> :
-								<React.Fragment>
-									<i className="fas fa-eye" />
-									&nbsp;
-									{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
-								</React.Fragment>
-							}
-						</a>
-					</li> : null
-				}
+				<li>
+					<a href="#" onClick={this.changeVisibilityKara}
+						title={this.state.kara.flag_visible ? i18next.t('KARA_MENU.VISIBLE_OFF') : i18next.t('KARA_MENU.VISIBLE_ON')}>
+						{this.state.kara.flag_visible ?
+							<React.Fragment>
+								<i className="fas fa-eye-slash" />
+								&nbsp;
+								{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
+							</React.Fragment> :
+							<React.Fragment>
+								<i className="fas fa-eye" />
+								&nbsp;
+								{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
+							</React.Fragment>
+						}
+					</a>
+				</li>
 				{this.props.idPlaylist !== -2 && this.props.idPlaylist !== -4 ?
 					<li>
 						<a href="#" onClick={this.addToBlacklist}>
