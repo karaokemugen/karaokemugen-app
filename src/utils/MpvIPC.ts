@@ -76,6 +76,10 @@ class Mpv extends EventEmitter {
 	}
 
 	private setupEvents() {
+		// Connected hook
+		this.socket.once('connect', () => {
+			this.ishukan({command: ['disable_event', 'all']});
+		});
 		// Observe hook
 		this.socket.on('data', (data: string) => {
 			data.split('\n').forEach(line => {
@@ -106,9 +110,9 @@ class Mpv extends EventEmitter {
 
 	private ishukan(command: MpvCommand) {
 		return new Promise((resolve, reject) => {
-			// Let's ishukan COMMUNICATION :D (boh si c'est marrant arrête)
+			// LET'S ishukan COMMUNICATION :) (boh si c'est marrant arrête)
 			const req_id = Math.round(Math.random() * 1000);
-			const command_with_id = {...command, request_id: req_id};
+			const command_with_id = {...command, request_id: req_id, async: true};
 			const dataHandler = (data: string) => {
 				data.split('\n').forEach((payload: string) => {
 					if (payload.length > 0) {
@@ -144,7 +148,10 @@ class Mpv extends EventEmitter {
 
 	async stop() {
 		if (!this.isRunning) throw new Error('MPV is not running');
-		await this.send({command: ['quit']});
+		await this.send({command: ['quit']}).catch(_err => {
+			// Ow. mpv is probably already dying, just destroy the connection
+			this.destroyConnection();
+		});
 		this.isRunning = false;
 		this.emit('stop');
 		return true;

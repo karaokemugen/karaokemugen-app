@@ -140,7 +140,8 @@ class Player {
 			'--no-config',
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
-			'--sub-visibility'
+			'--sub-visibility',
+			'--loop-file=no'
 		];
 
 		if (options.monitor) {
@@ -269,22 +270,29 @@ class Player {
 			this.mpv.on('property-change', (status) => {
 				if (status.name !== 'playback-time' && status.name !== 'sub-text')
 					logger.debug('mpv status', {service: 'Player', obj: status});
-				// If we're displaying an image, it means it's the pause inbetween songs
 				playerState[status.name] = status.data;
 				emitPlayerState();
-				if (playerState.mediaType !== 'background' &&
-					(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||
-					(status.name === 'eof-reached' && status.data === true)
+				// If we're displaying an image, it means it's the pause inbetween songs
+				if (playerState._playing && !playerState.isOperating && playerState.mediaType !== 'background' &&
+					(
+						(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||
+						(status.name === 'eof-reached' && status.data === true)
+					)
 				) {
-					// immediate switch to Playing = False to avoid multiple trigger
-					playerState.playing = false;
+					// Do not trigger 'pause' event from mpv
 					playerState._playing = false;
-					emitPlayerState();
-					this.control.exec({command: ['set-property', 'pause', true]}).then(_res => {
-						return playerEnding();
-					});
+					playerEnding();
 				} else if (status.name === 'playback-time') {
 					this.debouncedTimePosition(status.data);
+				} else if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
+					playerState._playing === status.data || playerState.mediaType === 'background'
+				)) {
+					logger.debug(`${status.data ? 'Paused':'Resumed'} event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
+					playerState._playing = !status.data;
+					playerState.playing = !status.data;
+					playerState.playerStatus = status.data ? 'pause':'play';
+					this.control.exec({command: ['set_property', 'pause', status.data]}, null, this.options.monitor ? 'main':'monitor');
+					emitPlayerState();
 				}
 			});
 		}
@@ -310,25 +318,6 @@ class Player {
 			this.recreate(null, true);
 			emitPlayerState();
 		});
-		// Handle pause/play via external ways such as right-click on player
-		this.mpv.on('pause', () => {
-			if (!playerState._playing || playerState.mediaType === 'background') return;
-			logger.debug(`Paused event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
-			playerState._playing = false;
-			playerState.playing = false;
-			playerState.playerStatus = 'pause';
-			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
-			emitPlayerState();
-		});
-		this.mpv.on('unpause', () => {
-			if (playerState._playing || playerState.mediaType === 'background') return;
-			logger.debug(`Resumed event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
-			playerState._playing = true;
-			playerState.playing = true;
-			playerState.playerStatus = 'play';
-			this.control.exec({command: ['set_property', 'pause', false]}, null, this.options.monitor ? 'main':'monitor');
-			emitPlayerState();
-		});
 	}
 
 	async start() {
@@ -349,6 +338,7 @@ class Player {
 				this.mpv.observeProperty('playback-time');
 				this.mpv.observeProperty('mute');
 				this.mpv.observeProperty('volume');
+				this.mpv.observeProperty('pause');
 			}
 			return true;
 		}, {
