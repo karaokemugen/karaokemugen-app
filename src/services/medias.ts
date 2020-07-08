@@ -4,10 +4,13 @@ import {resolve} from 'path';
 import prettyBytes from 'pretty-bytes';
 import {createClient} from 'webdav';
 
+import { deleteMedia,insertMedias, selectMedias } from '../dao/medias';
 import {getConfig, resolvedPathEncores, resolvedPathIntros, resolvedPathJingles, resolvedPathOutros, resolvedPathSponsors} from '../lib/utils/config';
-import {asyncCheckOrMkdir, asyncReadDir, asyncRemove,asyncStat, extractMediaFiles} from '../lib/utils/files';
+import { getMediaInfo } from '../lib/utils/ffmpeg';
+import {asyncCheckOrMkdir, asyncExists,asyncReadDir, asyncRemove,asyncStat, isMediaFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import { DBMedia } from '../types/database/medias';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
 import Downloader from '../utils/downloader';
@@ -27,6 +30,7 @@ interface File {
 
 const currentMedias = {};
 
+// This is public but we need a user/pass for webdav
 const KMSite = {
 	url: 'http://mugen.karaokes.moe/medias/',
 	username: 'km',
@@ -35,12 +39,10 @@ const KMSite = {
 
 export async function buildAllMediasList() {
 	const medias = getConfig().Playlist.Medias;
+	const cachedMedias = await selectMedias();
 	for (const type of Object.keys(medias)){
-		try {
-			await buildMediasList(type as MediaType);
-		} catch(err) {
-			//Non fatal
-		}
+		await buildMediasList(type as MediaType, cachedMedias.filter(m => m.type === type)).catch(() => {});
+		// Failure is non-fatal
 	}
 }
 
@@ -50,14 +52,11 @@ export async function updatePlaylistMedias() {
 		text: 'UPDATING_PLMEDIAS'
 	});
 	for (const type of Object.keys(updates)){
-		try {
-			task.update({
-				subtext: type
-			});
-			if (updates[type]) await updateMediasHTTP(type as MediaType, task);
-		} catch(err) {
-			//Non fatal
-		}
+		task.update({
+			subtext: type
+		});
+		if (updates[type]) await updateMediasHTTP(type as MediaType, task).catch(() => {});
+		// Failure is non-fatal
 	}
 	task.end();
 }
@@ -186,25 +185,44 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 }
 
 
-export async function buildMediasList(type: MediaType) {
+export async function buildMediasList(type: MediaType, cachedMedias: DBMedia[]) {
 	medias[type] = [];
 	for (const resolvedPath of resolveMediaPath(type)) {
-		const newMedias = await extractMediaFiles(resolvedPath);
-		for (const media of newMedias) {
-			medias[type].push({
-				file: media.filename,
-				gain: media.gain,
-				series: media.filename.split(' - ')[0]
-			});
+		const files = [];
+		const dirFiles = await asyncReadDir(resolvedPath);
+		for (const file of dirFiles) {
+			const fullFilePath = resolve(resolvedPath, file);
+			if (isMediaFile(file)) {
+				const stats = await asyncStat(fullFilePath);
+				const media = {
+					type: type,
+					filename: fullFilePath,
+					size: stats.size,
+					audiogain: null
+				};
+				const cachedMedia = cachedMedias.find(m => m.type === type && m.filename === media.filename);
+				if (cachedMedia?.size === stats.size) {
+					media.audiogain = cachedMedia.audiogain;
+				} else {
+					const mediaInfo = await getMediaInfo(fullFilePath);
+					media.audiogain = mediaInfo.gain;
+					insertMedias(media);
+				}
+				files.push(media);
+			}
 		}
+		// Remove cached medias not on disk anymore
+		for (const media of cachedMedias.filter(m => m.type === type)) {
+			if (!isMediaFile(media.filename) || !await asyncExists(media.filename)) await deleteMedia(type, media.filename);
+		}
+		medias[type] = files;
 	}
 	currentMedias[type] = cloneDeep(medias[type]);
-	logger.debug('Computed', {service: type, obj: medias[type]});
 }
 
 export function getSingleMedia(type: MediaType): Media {
 	// If no medias exist, return null.
-	if (!medias[type] || (medias[type] && medias[type].length === 0)) {
+	if (!medias[type] || medias[type]?.length === 0) {
 		return null;
 	} else {
 		// If our current files list is empty after the previous removal
@@ -218,7 +236,7 @@ export function getSingleMedia(type: MediaType): Media {
 	if (type === 'Jingles' || type === 'Sponsors') {
 		media = sample(currentMedias[type].filter((m: Media) => m.series === series));
 	} else {
-		media = currentMedias[type].find((m: Media) => m.file === getConfig().Playlist.Medias[type].File)
+		media = currentMedias[type].find((m: Media) => m.filename === getConfig().Playlist.Medias[type].File)
 		||
 		sample(currentMedias[type].filter((m: Media) => m.series === series));
 	}

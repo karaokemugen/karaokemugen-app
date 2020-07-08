@@ -128,12 +128,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 		} else if (this.props.playlistInfo?.flag_current) {
 			displayMessage('warning', i18next.t('ADVANCED.DELETE_CURRENT'));
 		} else {
-			callModal('confirm', i18next.t('CL_DELETE_PLAYLIST',
-				{
-					playlist: this.props.idPlaylist === -4 ?
-						this.props.bLSet?.name :
-						(this.props.playlistInfo as DBPL).name
-				}), '', (confirm: boolean) => {
+			callModal('confirm',
+				i18next.t('CL_DELETE_PLAYLIST',
+					{
+						playlist: this.props.idPlaylist === -4 ?
+							this.props.bLSet?.name :
+							(this.props.playlistInfo as DBPL).name
+					}),
+				'',
+				(confirm: boolean) => {
 					if (confirm) {
 						const url = this.props.idPlaylist === -4 ?
 							`/blacklist/set/${this.props.bLSet?.blc_set_id}` :
@@ -213,7 +216,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					data.playlist = fr.result;
 					name = JSON.parse(fr.result as string).PlaylistInformation.name;
 				}
-				const response: { data: { code: string, data: { unknownKaras: Array<any>, playlist_id: number } } } = await axios.post(url, data);
+				const response: { data: { code: string, data: { unknownKaras: Array<DBPLC>, playlist_id: number } } } = await axios.post(url, data);
 				if (response.data.data?.unknownKaras && response.data.data.unknownKaras.length > 0) {
 					const mediasize = response.data.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
@@ -371,9 +374,18 @@ class PlaylistHeader extends Component<IProps, IState> {
 	}
 
 	togglePlaylistCommands = () => {
+		this.state.playlistCommands ?
+			document.removeEventListener('mousedown', this.handleClick) :
+			document.addEventListener('mousedown', this.handleClick);
 		this.setState({ playlistCommands: !this.state.playlistCommands });
 		store.getTuto()?.move(1);
 	};
+
+	handleClick = (e: MouseEvent) => {
+		if (!(e.target as Element).closest('.dropdown-menu')) {
+			this.togglePlaylistCommands();
+		}
+	}
 
 	render() {
 		const plCommandsContainer = (

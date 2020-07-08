@@ -1,9 +1,9 @@
 import configure from '@jimp/custom';
-import png from '@jimp/png';
 import jpeg from '@jimp/jpeg';
 import circle from '@jimp/plugin-circle';
-import { convertAvatar } from '../lib/utils/ffmpeg';
+import png from '@jimp/png';
 
+import { convertAvatar } from '../lib/utils/ffmpeg';
 import { replaceExt } from '../lib/utils/files';
 import sentry from '../utils/sentry';
 

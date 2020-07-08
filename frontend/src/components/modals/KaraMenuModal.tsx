@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 
 import store from '../../store';
 import { KaraElement } from '../../types/kara';
+import { is_touch_device } from '../tools';
 
 interface IProps {
 	kara: KaraElement;
@@ -74,14 +75,32 @@ class KaraMenuModal extends Component<IProps, IState> {
 		this.props.closeKaraMenu();
 	}
 
+	handleClick = (e: MouseEvent) => {
+		if (!(e.target as Element).closest('#modal')) {
+			this.props.closeKaraMenu();
+		}
+	}
+
+	componentDidMount() {
+		document.addEventListener('mousedown', this.handleClick);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('mousedown', this.handleClick);
+	}
+
 	render() {
 		return (
-			<ul className="dropdown-menu" style={{
-				position: 'absolute',
-				zIndex: 9998,
-				top: this.props.topKaraMenu,
-				left: window.outerWidth < (this.props.leftKaraMenu + 250) ? window.outerWidth - 250 : this.props.leftKaraMenu
-			}}>
+			<ul
+				id="karaMenuModal"
+				className="dropdown-menu"
+				style={{
+					position: 'absolute',
+					zIndex: 9998,
+					bottom: window.innerHeight < (this.props.topKaraMenu + 250) ? (window.innerHeight - this.props.topKaraMenu) + (is_touch_device() ? 65 : 35) : undefined,
+					top: window.innerHeight < (this.props.topKaraMenu + 250) ? undefined : this.props.topKaraMenu,
+					left: window.innerWidth < (this.props.leftKaraMenu + 250) ? window.innerWidth - 250 : this.props.leftKaraMenu
+				}}>
 				{this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
 					<li>
 						<a href="#" onContextMenu={this.onRightClickTransfer} onClick={(event) => {
@@ -110,25 +129,23 @@ class KaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.publicOuCurrent ?
-					<li>
-						<a href="#" onClick={this.changeVisibilityKara}
-							title={this.state.kara.flag_visible ? i18next.t('KARA_MENU.VISIBLE_OFF') : i18next.t('KARA_MENU.VISIBLE_ON')}>
-							{this.state.kara.flag_visible ?
-								<React.Fragment>
-									<i className="fas fa-eye-slash" />
-									&nbsp;
-									{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
-								</React.Fragment> :
-								<React.Fragment>
-									<i className="fas fa-eye" />
-									&nbsp;
-									{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
-								</React.Fragment>
-							}
-						</a>
-					</li> : null
-				}
+				<li>
+					<a href="#" onClick={this.changeVisibilityKara}
+						title={this.state.kara.flag_visible ? i18next.t('KARA_MENU.VISIBLE_OFF') : i18next.t('KARA_MENU.VISIBLE_ON')}>
+						{this.state.kara.flag_visible ?
+							<React.Fragment>
+								<i className="fas fa-eye-slash" />
+								&nbsp;
+								{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
+							</React.Fragment> :
+							<React.Fragment>
+								<i className="fas fa-eye" />
+								&nbsp;
+								{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
+							</React.Fragment>
+						}
+					</a>
+				</li>
 				{this.props.idPlaylist !== -2 && this.props.idPlaylist !== -4 ?
 					<li>
 						<a href="#" onClick={this.addToBlacklist}>

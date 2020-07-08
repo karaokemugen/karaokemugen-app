@@ -33,12 +33,13 @@ export let win: Electron.BrowserWindow;
 let initDone = false;
 
 export function startElectron() {
-	setState({electron: app });
+	setState({electron: app ? true : false });
 	// This is called when Electron finished initializing
 	app.on('ready', async () => {
 		try {
 			await preInit();
 		} catch(err) {
+			console.log(err);
 			// This is usually very much fatal.
 			emit('initError', err);
 			return;

@@ -5,12 +5,14 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 import blankAvatar from '../../../../assets/blank.png';
-import { Token,User } from '../../../../src/lib/types/user';
+import { Token, User } from '../../../../src/lib/types/user';
 import { Config } from '../../../../src/types/config';
 import store from '../../store';
 import Autocomplete from '../generic/Autocomplete';
-import { callModal,displayMessage } from '../tools';
+import { callModal, displayMessage, buildKaraTitle } from '../tools';
 import OnlineProfileModal from './OnlineProfileModal';
+import { DBPLC } from '../../../../src/types/database/playlist';
+import prettyBytes from 'pretty-bytes';
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/fr.json'));
 require('babel-polyfill');
@@ -136,10 +138,35 @@ class ProfilModal extends Component<IProps, IState> {
 			const file = input.files[0];
 			const fr = new FileReader();
 			fr.onload = () => {
-				callModal('confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', (confirm: boolean) => {
+				callModal('confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', async (confirm: boolean) => {
 					if (confirm) {
 						const data = { favorites: fr['result'] };
-						axios.post('/favorites/import', data);
+						const response: { data: { data: { unknownKaras: Array<DBPLC> } } } = await axios.post('/favorites/import', data);
+						if (response.data.data?.unknownKaras && response.data.data.unknownKaras.length > 0) {
+							const mediasize = response.data.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
+							callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
+								<p>
+									{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
+								</p>
+								<div>
+									{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM')}
+									<label>&nbsp;{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM_SIZE', { mediasize: prettyBytes(mediasize) })}</label>
+								</div>
+								<br />
+								{response.data.data.unknownKaras.map((kara: DBPLC) =>
+									<label key={kara.kid}>{buildKaraTitle(kara, true)}</label>)}
+							</React.Fragment>), () => axios.post('/downloads', {
+								downloads: response.data.data.unknownKaras.map((kara: DBPLC) => {
+									return {
+										kid: kara.kid,
+										mediafile: kara.mediafile,
+										size: kara.mediasize,
+										name: kara.karafile.replace('.kara.json', ''),
+										repository: kara.repository
+									};
+								})
+							}));
+						}
 					}
 				});
 			};

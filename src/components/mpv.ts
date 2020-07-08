@@ -1,8 +1,7 @@
 import execa from 'execa';
 import i18n from 'i18next';
-import sample from 'lodash.sample';
 import debounce from 'lodash.debounce';
-import MpvIPC from '../utils/MpvIPC';
+import sample from 'lodash.sample';
 import retry from 'p-retry';
 import {extname, resolve} from 'path';
 import randomstring from 'randomstring';
@@ -20,11 +19,12 @@ import {playerEnding} from '../services/player';
 import {notificationNextSong} from '../services/playlist';
 import {endPoll} from '../services/poll';
 import {MediaType} from '../types/medias';
-import {MediaData, MpvOptions, PlayerState} from '../types/player';
 import {MpvCommand} from '../types/MpvIPC';
+import {MediaData, MpvOptions, PlayerState} from '../types/player';
 import {initializationCatchphrases} from '../utils/constants';
 import {setDiscordActivity} from '../utils/discordRPC';
 import {getID3} from '../utils/id3tag';
+import MpvIPC from '../utils/MpvIPC';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
@@ -140,7 +140,8 @@ class Player {
 			'--no-config',
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
-			'--sub-visibility'
+			'--sub-visibility',
+			'--loop-file=no'
 		];
 
 		if (options.monitor) {
@@ -269,22 +270,29 @@ class Player {
 			this.mpv.on('property-change', (status) => {
 				if (status.name !== 'playback-time' && status.name !== 'sub-text')
 					logger.debug('mpv status', {service: 'Player', obj: status});
-				// If we're displaying an image, it means it's the pause inbetween songs
 				playerState[status.name] = status.data;
 				emitPlayerState();
-				if (playerState.mediaType !== 'background' &&
-					(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||
-					(status.name === 'eof-reached' && status.data === true)
+				// If we're displaying an image, it means it's the pause inbetween songs
+				if (playerState._playing && !playerState.isOperating && playerState.mediaType !== 'background' &&
+					(
+						(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||
+						(status.name === 'eof-reached' && status.data === true)
+					)
 				) {
-					// immediate switch to Playing = False to avoid multiple trigger
-					playerState.playing = false;
+					// Do not trigger 'pause' event from mpv
 					playerState._playing = false;
-					emitPlayerState();
-					this.control.exec({command: ['set-property', 'pause', true]}).then(_res => {
-						return playerEnding();
-					});
+					playerEnding();
 				} else if (status.name === 'playback-time') {
 					this.debouncedTimePosition(status.data);
+				} else if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
+					playerState._playing === status.data || playerState.mediaType === 'background'
+				)) {
+					logger.debug(`${status.data ? 'Paused':'Resumed'} event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
+					playerState._playing = !status.data;
+					playerState.playing = !status.data;
+					playerState.playerStatus = status.data ? 'pause':'play';
+					this.control.exec({command: ['set_property', 'pause', status.data]}, null, this.options.monitor ? 'main':'monitor');
+					emitPlayerState();
 				}
 			});
 		}
@@ -310,32 +318,13 @@ class Player {
 			this.recreate(null, true);
 			emitPlayerState();
 		});
-		// Handle pause/play via external ways such as right-click on player
-		this.mpv.on('pause', () => {
-			if (!playerState._playing || playerState.mediaType === 'background') return;
-			logger.debug(`Paused event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
-			playerState._playing = false;
-			playerState.playing = false;
-			playerState.playerStatus = 'pause';
-			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
-			emitPlayerState();
-		});
-		this.mpv.on('unpause', () => {
-			if (playerState._playing || playerState.mediaType === 'background') return;
-			logger.debug(`Resumed event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
-			playerState._playing = true;
-			playerState.playing = true;
-			playerState.playerStatus = 'play';
-			this.control.exec({command: ['set_property', 'pause', false]}, null, this.options.monitor ? 'main':'monitor');
-			emitPlayerState();
-		});
 	}
 
 	async start() {
 		this.bindEvents();
 		await retry(async () => {
 			await this.mpv.start().catch(err => {
-				if (err.message == 'MPV is already running') {
+				if (err.message === 'MPV is already running') {
 					// It's already started!
 					logger.warn('A start command was executed, but the player is already running. Not normal.', {service: 'Player'});
 					sentry.error(err, 'Warning');
@@ -349,6 +338,7 @@ class Player {
 				this.mpv.observeProperty('playback-time');
 				this.mpv.observeProperty('mute');
 				this.mpv.observeProperty('volume');
+				this.mpv.observeProperty('pause');
 			}
 			return true;
 		}, {
@@ -647,7 +637,7 @@ class Players {
 		}
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with subs ${subFile}`:''}`, {service: 'Player'});
-		const options: object = {
+		const options: any = {
 			'replaygain-fallback': mediaData.gain.toString()
 		};
 
@@ -729,19 +719,19 @@ class Players {
 		const media = getSingleMedia(mediaType);
 		if (media) {
 			setState({currentlyPlayingKara: mediaType});
-			logger.debug(`Playing ${mediaType}: ${media.file}`, {service: 'Player'});
-			const options: object = {
-				'replaygain-fallback': media.gain.toString()
+			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
+			const options: any = {
+				'replaygain-fallback': media.audiogain.toString()
 			};
 			try {
-				await retry(() => this.exec({command: ['loadfile', media.file, 'replace', options]}), {
+				await retry(() => this.exec({command: ['loadfile', media.filename, 'replace', options]}), {
 					retries: 3,
 					onFailedAttempt: error => {
 						logger.warn(`Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
 					}
 				});
 				await this.exec({command: ['set_property', 'pause', false]});
-				const subFile = replaceExt(media.file, '.ass');
+				const subFile = replaceExt(media.filename, '.ass');
 				if (await asyncExists(subFile)) {
 					await this.exec({command: ['sub-add', subFile]});
 				}
@@ -757,7 +747,7 @@ class Players {
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
-				logger.error(`Error loading media ${mediaType}: ${media.file}`, {service: 'Player', obj: err});
+				logger.error(`Error loading media ${mediaType}: ${media.filename}`, {service: 'Player', obj: err});
 				sentry.error(err);
 				throw err;
 			}

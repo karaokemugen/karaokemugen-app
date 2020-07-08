@@ -421,10 +421,10 @@ export async function findFingerprint(fingerprint: string): Promise<string> {
 	// If fingerprint is present we return the login name of that user
 	// If not we find a new guest account to assign to the user.
 	let guest = await DBFindFingerprint(fingerprint);
-	if (getState().isTest) logger.debug(JSON.stringify(guest));
+	if (getState().isTest) logger.debug('Guest matches fingerprint: ', {service: 'User', obj: guest});
 	if (guest) return guest;
 	guest = await DBGetRandomGuest();
-	if (getState().isTest) logger.debug(JSON.stringify(guest));
+	if (getState().isTest) logger.debug('New guest logging in: ', {service: 'User', obj: guest});
 	if (!guest) return null;
 	await DBUpdateUserPassword(guest, await hashPasswordbcrypt(fingerprint));
 	return guest;
@@ -595,7 +595,6 @@ export async function createUser(user: User, opts: UserOpts = {
 		await DBAddUser(user);
 		if (user.type < 2) logger.info(`Created user ${user.login}`, {service: 'User'});
 		delete user.password;
-		logger.debug('User data', {service: 'User', obj: user});
 		return true;
 	} catch (err) {
 		logger.error(`Unable to create user ${user.login}`, {service: 'User', obj: err});
