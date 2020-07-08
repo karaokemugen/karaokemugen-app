@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
-import { Socket } from 'net';
 import { EventEmitter } from 'events';
+import { Socket } from 'net';
+
 import { MpvCommand, SocketType } from '../types/MpvIPC';
 
 class Mpv extends EventEmitter {
@@ -153,9 +154,9 @@ class Mpv extends EventEmitter {
 		return true;
 	}
 
-	async send(command: MpvCommand) {
+	send(command: MpvCommand) {
 		if (this.isRunning)
-			return await this.ishukan(command);
+			return this.ishukan(command);
 		else
 			throw new Error('MPV is not running');
 	}
