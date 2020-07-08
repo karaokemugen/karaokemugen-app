@@ -870,8 +870,6 @@ a.btn.disabled {
 }
 .dropdown-menu {
   position: absolute;
-  top: 100%;
-  left: 0;
   z-index: 1000;
   float: left;
   min-width: 160px;
@@ -887,7 +885,11 @@ a.btn.disabled {
   border: 1px solid rgba(0, 0, 0, .15);
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-          box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+		  box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+.dropdown-menu:not(#karaMenuModal) {
+	top: 100%;
+	left: 0;
 }
 .dropdown-menu .divider {
   height: 1px;
