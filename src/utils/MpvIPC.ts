@@ -85,7 +85,6 @@ class Mpv extends EventEmitter {
 					if (payload?.event) {
 						if (payload.event === 'shutdown') {
 							this.destroyConnection();
-							console.log('reset isRunning');
 						} else {
 							this.emit(payload.event, payload);
 						}
@@ -100,7 +99,6 @@ class Mpv extends EventEmitter {
 			if (err) {
 				this.emit('crashed');
 			} else {
-				console.log('reset isRunning');
 				this.destroyConnection();
 				this.emit('shutdown');
 			}

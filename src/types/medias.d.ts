@@ -1,6 +1,7 @@
-export interface Media {
-	file: string,
-	gain: number,
+import { DBMedia } from './database/medias';
+
+
+export interface Media extends DBMedia {
 	series?: string
 }
 

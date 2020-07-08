@@ -1,8 +1,7 @@
 import execa from 'execa';
 import i18n from 'i18next';
-import sample from 'lodash.sample';
 import debounce from 'lodash.debounce';
-import MpvIPC from '../utils/MpvIPC';
+import sample from 'lodash.sample';
 import retry from 'p-retry';
 import {extname, resolve} from 'path';
 import randomstring from 'randomstring';
@@ -20,11 +19,12 @@ import {playerEnding} from '../services/player';
 import {notificationNextSong} from '../services/playlist';
 import {endPoll} from '../services/poll';
 import {MediaType} from '../types/medias';
-import {MediaData, MpvOptions, PlayerState} from '../types/player';
 import {MpvCommand} from '../types/MpvIPC';
+import {MediaData, MpvOptions, PlayerState} from '../types/player';
 import {initializationCatchphrases} from '../utils/constants';
 import {setDiscordActivity} from '../utils/discordRPC';
 import {getID3} from '../utils/id3tag';
+import MpvIPC from '../utils/MpvIPC';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
@@ -335,7 +335,7 @@ class Player {
 		this.bindEvents();
 		await retry(async () => {
 			await this.mpv.start().catch(err => {
-				if (err.message == 'MPV is already running') {
+				if (err.message === 'MPV is already running') {
 					// It's already started!
 					logger.warn('A start command was executed, but the player is already running. Not normal.', {service: 'Player'});
 					sentry.error(err, 'Warning');
@@ -647,7 +647,7 @@ class Players {
 		}
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with subs ${subFile}`:''}`, {service: 'Player'});
-		const options: object = {
+		const options: any = {
 			'replaygain-fallback': mediaData.gain.toString()
 		};
 
@@ -729,19 +729,19 @@ class Players {
 		const media = getSingleMedia(mediaType);
 		if (media) {
 			setState({currentlyPlayingKara: mediaType});
-			logger.debug(`Playing ${mediaType}: ${media.file}`, {service: 'Player'});
-			const options: object = {
-				'replaygain-fallback': media.gain.toString()
+			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
+			const options: any = {
+				'replaygain-fallback': media.audiogain.toString()
 			};
 			try {
-				await retry(() => this.exec({command: ['loadfile', media.file, 'replace', options]}), {
+				await retry(() => this.exec({command: ['loadfile', media.filename, 'replace', options]}), {
 					retries: 3,
 					onFailedAttempt: error => {
 						logger.warn(`Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
 					}
 				});
 				await this.exec({command: ['set_property', 'pause', false]});
-				const subFile = replaceExt(media.file, '.ass');
+				const subFile = replaceExt(media.filename, '.ass');
 				if (await asyncExists(subFile)) {
 					await this.exec({command: ['sub-add', subFile]});
 				}
@@ -757,7 +757,7 @@ class Players {
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
-				logger.error(`Error loading media ${mediaType}: ${media.file}`, {service: 'Player', obj: err});
+				logger.error(`Error loading media ${mediaType}: ${media.filename}`, {service: 'Player', obj: err});
 				sentry.error(err);
 				throw err;
 			}
