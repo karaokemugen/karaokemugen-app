@@ -70,9 +70,9 @@ if (process.platform === 'win32' ) {
 	});
 }
 
-on('initError', async (err: Error) => {
+on('initError', (err: Error) => {
 	isInitError = true;
-	await initError(err);
+	initError(err);
 });
 
 function initError(err: any) {
@@ -249,7 +249,6 @@ export async function main() {
 
 		// Checking paths, create them if needed.
 		await checkPaths(getConfig());
-
 		// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 		const tempInput = resolve(resolvedPathTemp(), 'input.conf');
 		logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
@@ -268,7 +267,6 @@ export async function main() {
 		 * Test if network ports are available
 		 */
 		await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
-
 		/**
 		 * Gentlemen, start your engines.
 		 */
@@ -289,26 +287,24 @@ export async function main() {
  */
 async function checkPaths(config: Config) {
 	// Migrate old folder config to new repository one :
-	await migrateOldFoldersToRepo();
-
-	// Emptying temp directory
-	if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
-	// Checking paths
-	const checks = [];
-	const paths = config.System.Path;
-	for (const item of Object.keys(paths)) {
-		Array.isArray(paths[item]) && paths[item]
-			? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
-			: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
-	}
-	for (const repo of config.System.Repositories) {
-		for (const paths of Object.keys(repo.Path)) {
-			repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
-		}
-	}
-	checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
-
 	try {
+		await migrateOldFoldersToRepo();
+		// Emptying temp directory
+		if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
+		// Checking paths
+		const checks = [];
+		const paths = config.System.Path;
+		for (const item of Object.keys(paths)) {
+			Array.isArray(paths[item]) && paths[item]
+				? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
+				: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
+		}
+		for (const repo of config.System.Repositories) {
+			for (const paths of Object.keys(repo.Path)) {
+				repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
+			}
+		}
+		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', {service: 'Launcher'});
 	} catch(err) {
