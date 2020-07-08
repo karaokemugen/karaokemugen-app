@@ -383,6 +383,11 @@ async function getRemoteStats(repo: string): Promise<repoStats> {
 	return res.body as repoStats;
 }
 
+async function getRemoteMedias(repo: string): Promise<DBKara[]> {
+	const res = await HTTP.get(`https://${repo}/api/karas/medias`);
+	return JSON.parse(res.body);
+}
+
 export async function getRemoteKaras(repo: string, params: KaraParams, compare?: CompareParam): Promise<KaraList> {
 	//First get all karas we currently own
 	const localKIDs = {};
@@ -845,11 +850,13 @@ let updateRunning = false;
 
 async function listRemoteMedias(repo: string): Promise<File[]> {
 	logger.info('Fetching current media list', {service: 'Update'});
-	const remote = await getRemoteKaras(repo, {});
-	return remote.content.map(k => {
+	profile('listRemoteMedias');
+	const remote = await getRemoteMedias(repo);
+	profile('listRemoteMedias');
+	return remote.map(m => {
 		return {
-			basename: k.mediafile,
-			size: k.mediasize
+			basename: m.mediafile,
+			size: m.mediasize
 		};
 	});
 }
@@ -924,6 +931,7 @@ async function downloadMedias(files: File[], mediasPath: string, repo: string): 
 }
 
 async function listLocalMedias(repo: string): Promise<File[]> {
+	profile('listLocalMedias');
 	const mediaFiles = await asyncReadDir(resolvedPathRepos('Medias', repo)[0]);
 	const localMedias = [];
 	for (const file of mediaFiles) {
@@ -939,6 +947,7 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 		}
 	}
 	logger.debug('Listed local media files', {service: 'Update'});
+	profile('listLocalMedias');
 	return localMedias;
 }
 
