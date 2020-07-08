@@ -128,12 +128,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 		} else if (this.props.playlistInfo?.flag_current) {
 			displayMessage('warning', i18next.t('ADVANCED.DELETE_CURRENT'));
 		} else {
-			callModal('confirm', i18next.t('CL_DELETE_PLAYLIST',
-				{
-					playlist: this.props.idPlaylist === -4 ?
-						this.props.bLSet?.name :
-						(this.props.playlistInfo as DBPL).name
-				}), '', (confirm: boolean) => {
+			callModal('confirm',
+				i18next.t('CL_DELETE_PLAYLIST',
+					{
+						playlist: this.props.idPlaylist === -4 ?
+							this.props.bLSet?.name :
+							(this.props.playlistInfo as DBPL).name
+					}),
+				'',
+				(confirm: boolean) => {
 					if (confirm) {
 						const url = this.props.idPlaylist === -4 ?
 							`/blacklist/set/${this.props.bLSet?.blc_set_id}` :
@@ -371,6 +374,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 	}
 
 	togglePlaylistCommands = () => {
+		this.state.playlistCommands ?
+			document.removeEventListener('mousedown', this.togglePlaylistCommands) :
+			document.addEventListener('mousedown', this.togglePlaylistCommands);
 		this.setState({ playlistCommands: !this.state.playlistCommands });
 		store.getTuto()?.move(1);
 	};
