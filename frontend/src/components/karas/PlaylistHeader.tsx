@@ -375,11 +375,17 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	togglePlaylistCommands = () => {
 		this.state.playlistCommands ?
-			document.removeEventListener('mousedown', this.togglePlaylistCommands) :
-			document.addEventListener('mousedown', this.togglePlaylistCommands);
+			document.removeEventListener('mousedown', this.handleClick) :
+			document.addEventListener('mousedown', this.handleClick);
 		this.setState({ playlistCommands: !this.state.playlistCommands });
 		store.getTuto()?.move(1);
 	};
+
+	handleClick = (e: MouseEvent) => {
+		if (!(e.target as Element).closest('.dropdown-menu')) {
+			this.togglePlaylistCommands();
+		}
+	}
 
 	render() {
 		const plCommandsContainer = (

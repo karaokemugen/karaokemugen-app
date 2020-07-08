@@ -75,12 +75,18 @@ class KaraMenuModal extends Component<IProps, IState> {
 		this.props.closeKaraMenu();
 	}
 
+	handleClick = (e: MouseEvent) => {
+		if (!(e.target as Element).closest('#modal')) {
+			this.props.closeKaraMenu();
+		}
+	}
+
 	componentDidMount() {
-		document.addEventListener('mousedown', this.props.closeKaraMenu);
+		document.addEventListener('mousedown', this.handleClick);
 	}
 
 	componentWillUnmount() {
-		document.removeEventListener('mousedown', this.props.closeKaraMenu);
+		document.removeEventListener('mousedown', this.handleClick);
 	}
 
 	render() {
