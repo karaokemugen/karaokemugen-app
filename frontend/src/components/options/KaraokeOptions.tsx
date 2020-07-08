@@ -287,7 +287,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							{this.state.config['Playlist.Medias.Intros.Enabled'] ?
 								<React.Fragment>
 									<label className="label-input-options">
-										{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
+										{i18next.t('SETTINGS.KARAOKE.WITH')}
 									</label>
 									<input
 										className="input-options"
@@ -295,6 +295,9 @@ class KaraokeOptions extends Component<IProps, IState> {
 										onChange={this.onChange}
 										value={this.state.config['Playlist.Medias.Intros.Message']}
 									/>
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.MESSAGE')}
+									</label>
 								</React.Fragment> : null
 							}
 						</div>
@@ -312,7 +315,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							{this.state.config['Playlist.Medias.Outros.Enabled'] ?
 								<React.Fragment>
 									<label className="label-input-options">
-										{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
+										{i18next.t('SETTINGS.KARAOKE.WITH')}
 									</label>
 									<input
 										className="input-options"
@@ -320,6 +323,9 @@ class KaraokeOptions extends Component<IProps, IState> {
 										onChange={this.onChange}
 										value={this.state.config['Playlist.Medias.Outros.Message']}
 									/>
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.MESSAGE')}
+									</label>
 								</React.Fragment> : null
 							}
 						</div>
@@ -336,7 +342,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							{this.state.config['Playlist.Medias.Encores.Enabled'] ?
 								<React.Fragment>
 									<label className="label-input-options">
-										{i18next.t('SETTINGS.KARAOKE.WITH_MESSAGE')}
+										{i18next.t('SETTINGS.KARAOKE.WITH')}
 									</label>
 									<input
 										className="input-options"
@@ -344,6 +350,9 @@ class KaraokeOptions extends Component<IProps, IState> {
 										onChange={this.onChange}
 										value={this.state.config['Playlist.Medias.Encores.Message']}
 									/>
+									<label className="label-input-options">
+										{i18next.t('SETTINGS.KARAOKE.MESSAGE')}
+									</label>
 								</React.Fragment> : null
 							}
 						</div>
