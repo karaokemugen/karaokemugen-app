@@ -318,6 +318,25 @@ class Player {
 			this.recreate(null, true);
 			emitPlayerState();
 		});
+		this.mpv.on('file-loaded', async () => {
+			if (playerState.mediaType !== 'background' && playerState?.currentSong?.subfile) {
+				let subFiles = await resolveFileInDirs(playerState.currentSong.subfile, resolvedPathRepos('Lyrics', playerState.currentSong.repo))
+					.catch(err => {
+						logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
+						logger.warn(`Subs NOT FOUND : ${playerState.currentSong.subfile}`, {service: 'Player'});
+					});
+				if (subFiles[0]) {
+					await this.mpv.send({command: ['sub-add', subFiles[0], 'select']}).catch(err => {
+						logger.error('Unable to load subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`, obj: err});
+						sentry.error(err, 'Warning');
+					}).then(() => {
+						logger.debug('Loaded subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+					});
+				}
+			} else {
+				logger.debug('No subtitles to load (or it was auto-guessed for medias/by mpv)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+			}
+		});
 	}
 
 	async start() {
@@ -613,8 +632,6 @@ class Players {
 		//Search for media file in the different PathMedias
 
 		let mediaFile: string;
-		let subFiles: string[]|void;
-		let subFile: string;
 		const mediaFiles: string[]|void = await resolveFileInDirs(mediaData.media, resolvedPathRepos('Medias', mediaData.repo))
 			.catch(err => {
 				logger.debug('Error while resolving media path', {service: 'Player', obj: err});
@@ -627,16 +644,8 @@ class Players {
 				}
 			});
 		mediaFile = mediaFiles[0];
-		if (mediaData.subfile) {
-			subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
-				.catch(err => {
-					logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
-					logger.warn(`Subs NOT FOUND : ${mediaData.subfile}`, {service: 'Player'});
-				});
-			subFile = subFiles[0];
-		}
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
-		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with subs ${subFile}`:''}`, {service: 'Player'});
+		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
 		const options: any = {
 			'replaygain-fallback': mediaData.gain.toString()
 		};
@@ -684,22 +693,16 @@ class Players {
 				throw err;
 			});
 			logger.debug(`File ${mediaFile} loaded`, {service: 'Player'});
-			if (subFile) {
-				await this.exec({command: ['sub-add', subFile]}).catch(err => {
-					logger.error('Unable to load subtitles', {service: 'Player', obj: err});
-					throw err;
-				});
-			}
 			// Loaded!
 			playerState.currentSong = mediaData;
 			playerState.songNearEnd = false;
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
 			playerState._playing = true;
-			this.clearText();
-			playerState.mediaType = 'song';
-			await this.exec({command: ['set_property', 'pause', false]});
 			playerState.playerStatus = 'play';
+			playerState.mediaType = 'song';
+			this.clearText();
+			await this.exec({command: ['set_property', 'pause', false]});
 			emitPlayerState();
 			setDiscordActivity('song', {
 				title: mediaData.currentSong.title,
