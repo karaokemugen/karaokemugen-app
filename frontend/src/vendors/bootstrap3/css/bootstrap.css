@@ -887,10 +887,6 @@ a.btn.disabled {
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
 		  box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
 }
-.dropdown-menu:not(#karaMenuModal) {
-	top: 100%;
-	left: 0;
-}
 .dropdown-menu .divider {
   height: 1px;
   margin: 9px 0;

@@ -92,7 +92,6 @@ class KaraMenuModal extends Component<IProps, IState> {
 	render() {
 		return (
 			<ul
-				id="karaMenuModal"
 				className="dropdown-menu"
 				style={{
 					position: 'absolute',
