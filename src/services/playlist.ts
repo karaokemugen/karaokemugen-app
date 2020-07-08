@@ -824,7 +824,7 @@ export async function exportPlaylist(playlist_id: number) {
 				created_at: plc.created_at,
 				pos: plc.pos,
 				username: plc.username,
-				flag_playing: plc.flag_playing || undefined
+				flag_playing: plc.flag_playing
 			};
 		});
 		playlist.Header = {
@@ -899,13 +899,13 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 			let user: User = users.get(kara.username);
 			if (!user) {
 				user = await findUserByName(kara.username);
+				if (!user) {
+					// If user isn't found locally, replacing it with admin user
+					playlist.PlaylistContents[index].username = kara.username = 'admin';
+					user = await findUserByName('admin');
+					playlist.PlaylistContents[index].nickname = user.nickname;
+				}
 				users.set(user.login, user);
-			}
-			if (!user) {
-				// If user isn't found locally, replacing it with admin user
-				playlist.PlaylistContents[index].username = kara.username = 'admin';
-				const admin = await findUserByName('admin');
-				playlist.PlaylistContents[index].nickname = admin.nickname;
 			}
 			if (kara.flag_playing === true) {
 				if (flag_playingDetected) throw {code: 400, msg: 'Playlist contains more than one currently playing marker'};
