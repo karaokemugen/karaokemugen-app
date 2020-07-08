@@ -936,6 +936,10 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 			const karas = await getAllRemoteKaras(null, {});
 			unknownKaras = karas.content.filter(k => unknownKIDs.includes(k.kid));
 		}
+		await Promise.all([
+			updatePlaylistKaraCount(playlist_id),
+			updatePlaylistDuration(playlist_id)
+		]);
 		emitWS('playlistsUpdated');
 		return {
 			playlist_id: playlist_id,

@@ -87,7 +87,7 @@ UPDATE playlist SET time_left = (
 		AND playlist_content.pos >= (
 			SELECT COALESCE(pos,0)
 			FROM playlist_content, playlist
-			WHERE playlist_content.pk_id_plcontent = playlist.fk_id_plcontent_playing AND playlist_content.fk_id_playlist = 1
+			WHERE playlist_content.pk_id_plcontent = playlist.fk_id_plcontent_playing AND playlist_content.fk_id_playlist = $1
 			)
 	),
 	duration = (
