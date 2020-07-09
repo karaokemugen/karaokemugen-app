@@ -70,6 +70,7 @@ export function initMenu() {
 
 					}
 				},
+				{ type: 'separator'},
 				!isMac && !getState().forceDisableAppUpdate ? {
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
@@ -95,7 +96,7 @@ export function initMenu() {
 				},
 				{ type: 'separator'},
 				{
-					label: i18next.t('MENU_FILE_QUIT'),
+					label: isMac ? i18next.t('MENU_FILE_QUIT_OSX') : i18next.t('MENU_FILE_QUIT'),
 					accelerator: 'CmdOrCtrl+Q',
 					click() {
 						exit(0);
