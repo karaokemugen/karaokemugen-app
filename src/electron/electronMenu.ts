@@ -49,6 +49,27 @@ export function initMenu() {
 		{
 			label: isMac ? 'Karaoke Mugen' : i18next.t('MENU_FILE'),
 			submenu: [
+				{
+					label: i18next.t('MENU_FILE_ABOUT'),
+					click() {
+						const version = getState().version;
+						const versionSHA = version.sha
+							? `version ${version.sha}`
+							: '';
+						openAboutWindow({
+							icon_path: resolve(getState().resourcePath, 'build/icon.png'),
+							product_name: `Karaoke Mugen "${version.name}"`,
+							bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
+							bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
+							homepage: 'https://mugen.karaokes.moe',
+							description: versionSHA,
+							copyright: 'by Karaoke Mugen Dev Team, under MIT license',
+							use_version_info: true,
+							css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
+						});
+
+					}
+				},
 				!isMac && !getState().forceDisableAppUpdate ? {
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
@@ -70,28 +91,6 @@ export function initMenu() {
 								await handleFile(file);
 							}
 						}
-					}
-				},
-				{ type: 'separator'},
-				{
-					label: i18next.t('MENU_FILE_ABOUT'),
-					click() {
-						const version = getState().version;
-						const versionSHA = version.sha
-							? `version ${version.sha}`
-							: '';
-						openAboutWindow({
-							icon_path: resolve(getState().resourcePath, 'build/icon.png'),
-							product_name: `Karaoke Mugen "${version.name}"`,
-							bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
-							bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
-							homepage: 'https://mugen.karaokes.moe',
-							description: versionSHA,
-							copyright: 'by Karaoke Mugen Dev Team, under MIT license',
-							use_version_info: true,
-							css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
-						});
-
 					}
 				},
 				{ type: 'separator'},
