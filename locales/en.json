@@ -31,6 +31,7 @@
 	"MENU_FILE": "File",
 	"MENU_FILE_IMPORT": "Import file",
 	"MENU_FILE_QUIT": "Quit",
+	"MENU_FILE_QUIT_OSX": "Quit Karaoke Mugen",
 	"MENU_FILE_ABOUT": "About Karaoke Mugen",
 	"MENU_FILE_UPDATE": "Search for update...",
 	"MENU_SECURITYCODE": "Security Code",

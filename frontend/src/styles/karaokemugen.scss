@@ -428,24 +428,6 @@ button.closeParent.bottom  {
 	z-index: 250;
 }
 
-.highlight-active.playlistContainer {
-	outline: 3px solid #235a42;
-}
-.highlight-hover.playlistContainer {
-	outline: 5px solid #235a42;
-}
-
-.hLight {
-	position :absolute;
-	width: 100%;
-	z-index:-1;
-	left:0;
-	top:0;
-	height:100%;
-	background-color:rgba(120, 148, 86, 0.6);
-	opacity: 0;
-}
-
 .dropdown-menu {
 	background-color: #3b3e44;
 	border: solid 1px hsla(0, 0%, 35%, 1);

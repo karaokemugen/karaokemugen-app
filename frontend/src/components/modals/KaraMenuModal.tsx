@@ -82,17 +82,16 @@ class KaraMenuModal extends Component<IProps, IState> {
 	}
 
 	componentDidMount() {
-		document.addEventListener('mousedown', this.handleClick);
+		document.addEventListener('click', this.handleClick);
 	}
 
 	componentWillUnmount() {
-		document.removeEventListener('mousedown', this.handleClick);
+		document.removeEventListener('click', this.handleClick);
 	}
 
 	render() {
 		return (
 			<ul
-				id="karaMenuModal"
 				className="dropdown-menu"
 				style={{
 					position: 'absolute',
