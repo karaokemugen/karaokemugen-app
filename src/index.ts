@@ -168,7 +168,7 @@ if (app) {
 		} else {
 			focusWindow();
 			const file = args[args.length-1];
-			if (file) {
+			if (file && file !== '.') {
 				file.startsWith('km://')
 					? handleProtocol(file.substr(5).split('/'))
 					: handleFile(file);

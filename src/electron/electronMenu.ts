@@ -30,7 +30,7 @@ export function initMenu() {
 	const base = 'http://localhost';
 	const urls = {
 		operatorOptions: `${base}:${port}/admin?config`,
-		systemOptions: `${base}:${port}/system/km/config`,
+		systemOptions: `${base}:${port}/system/km/options`,
 		home: `${base}:${port}/welcome`,
 		operator: `${base}:${port}/admin`,
 		public: `${base}:${port}/`,

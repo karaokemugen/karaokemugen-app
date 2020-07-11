@@ -1,17 +1,18 @@
-import React, {Component} from 'react';
 import {Button, Layout, Table} from 'antd';
 import {ColumnProps} from 'antd/lib/table';
-import {getTagInLocaleList, getSerieLanguage} from "../../utils/kara";
-import i18next from 'i18next';
 import Axios from 'axios';
+import i18next from 'i18next';
+import React, {Component} from 'react';
+
 import {DBKara} from '../../../../src/lib/types/database/kara';
 import GlobalContext from '../../store/context';
+import {getSerieLanguage,getTagInLocaleList} from '../../utils/kara';
 
 interface ViewcountsState {
 	karas: DBKara[]
 }
 
-class Viewcounts extends Component<{}, ViewcountsState> {
+class Viewcounts extends Component<unknown, ViewcountsState> {
 	static contextType = GlobalContext
 	context: React.ContextType<typeof GlobalContext>
 	
@@ -27,19 +28,19 @@ class Viewcounts extends Component<{}, ViewcountsState> {
 	}
 
 	refresh = async () => {
-		let res = await Axios.get('/karas/viewcounts');
+		const res = await Axios.get('/karas/viewcounts');
 		this.setState({karas: res.data});
 	}
 
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
+				<Button style={{margin: '1em'}} type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
 				<Table
 					dataSource={this.state.karas}
 					columns={this.columns}
 					rowKey='kid'
 				/>
-				<Button type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
 			</Layout.Content>
 		);
 	}

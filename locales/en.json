@@ -77,7 +77,7 @@
 	"MENU_OPTIONS_OPENINELECTRON": "Always open in this window",
 	"MENU_OPTIONS_CHECKFORUPDATES": "Check for updates on startup",
 	"MENU_OPTIONS_OPERATORCONFIG": "Settings",
-	"MENU_OPTIONS_SYSTEMCONFIG": "Advanced settings",
+	"MENU_OPTIONS_SYSTEMCONFIG": "System settings",
 	"SECURITY_CODE_TITLE": "Security code",
 	"SECURITY_CODE_MESSAGE": "This is the current security code:",
 	"ERROR": "Error",
