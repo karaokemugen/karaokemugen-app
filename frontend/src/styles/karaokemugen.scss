@@ -390,16 +390,7 @@ button.closeParent.bottom  {
 	z-index: 50;
 }
 
-.plSearch {
-	input {
-		font-weight: bold;
-		font-family: "Font Awesome 5 Free", Arial;
-	}
 
-	i {
-		pointer-events: none;
-	}
-}
 
 .playlistContainer > ul {
 	position: relative;
@@ -651,14 +642,6 @@ input[type=range]:focus::-ms-fill-upper {
 	border-color:#fafafa70;
 }
 
-.plDashboard .plSearch {
-	min-width: 100px;
-	z-index:10;
-    flex: 2;
-	float: right;
-	order: 1;
-}
-
 .modal {
 	z-index: 9998;
 }
@@ -843,28 +826,6 @@ input[type=range]:focus::-ms-fill-upper {
 	border: hsla(0, 87%, 50%, .5) solid 1px;
     border-width: 0px 0px 0px 5px;
 }
-/* placeholders */
-
-.panel-heading ::-webkit-input-placeholder {
-    font-size: 1.8rem;
-	line-height:  30px;
-	height: 30px;
-    text-align:right;
-}
-
-.panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
-	font-size: 2rem;
-	line-height:  21px;
-	height: 20px;
-    text-align:right;
-}
-.panel-heading  :-ms-input-placeholder {
-	font-size: 2rem;
-	line-height:  21px;
-	height: 20px;
-    text-align:right;
-}
-
 .loader {
 	border: 16px solid #9e9e9e;
 	border-radius: 50%;
@@ -907,11 +868,8 @@ input[type="text"]:focus, input[type="password"]:focus {
 	color: hsla(210, 9%, 24%, 1);
 }
 
-.panel-heading input[type="text"], .panel-heading input[type="password"],
-.playlistContainer input[type="text"], .playlistContainer input[type="password"] {
-    border: 1px #9e9e9e solid;
-    border-width: 0px 0px 1px 0px;
-    height: 34px;
+.panel-heading input[type="text"], .playlistContainer input[type="text"]{
+    height: 100%;
     font-size: 1.8rem;
     line-height: 1.8rem;
     padding-left: 1rem;

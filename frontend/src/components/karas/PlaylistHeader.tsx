@@ -457,13 +457,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 					</div>
 				</div>
 			</div> : null);
-
-
-		const plSearch = (<div className="plSearch">
-			<input type="text" placeholder="&#xF002;" defaultValue={store.getFilterValue(this.props.side)}
-				onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)} />
-		</div>);
-
 		return (
 			<React.Fragment>
 				{this.props.scope !== 'public' || this.props.side !== 1 ?
@@ -674,7 +667,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 								</button>
 							</div> : null
 						}
-						{plSearch}{plCommandsContainer}
+						<div className="plSearch">
+							<input
+								type="text"
+								placeholder={`\uF002 ${i18next.t('SEARCH')}`}
+								defaultValue={store.getFilterValue(this.props.side)}
+								onChange={e => store.setFilterValue(e.target.value, this.props.side, this.props.idPlaylist)}
+							/>
+						</div>
+						{plCommandsContainer}
 					</div> : null
 				}
 				{this.props.searchMenuOpen ?

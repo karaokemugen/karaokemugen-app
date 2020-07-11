@@ -31,7 +31,6 @@
 .selectWithIcon-menu {
     cursor: pointer;
     background-color: #202427;
-    padding: 6px;
     color: white;
     border: 1px solid #fafafa70;
     border-radius: 4px;
@@ -40,12 +39,12 @@
     position: absolute;
     left: 0;
     z-index: 99;
-	margin: 2px 0 0 0;
+	margin: 5px 0 0 0;
 	white-space: nowrap;
 }
 
 .selectWithIcon-menuItem {
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
 }
 
 .selectWithIcon-menuItem:hover,

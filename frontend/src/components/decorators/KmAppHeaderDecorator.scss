@@ -140,23 +140,16 @@
 	        color: firebrick;
 	    }
 	    
-	    .plSearch {
-	    	flex:1;
-	    	position: relative;
-	    	.fas {
-	    		position: absolute;
-	    		top: 50%;
-	    		right: 1em;
-	    		transform:translateY(-50%);
-	    		font-size: 1.5em;
-	    	}
-	    	input {
+		.plSearch {
+			flex:1;
+			input {
+				font-weight: bold;
 				height: 100%;
 				border-radius: 0px;
 				padding-right: 2em;
-	    	}
-	    }
-
+			}
+		}
+		
 	    .switchParent .radiobutton-ui {
 	    	height: 100%;
 	    	display: flex;
