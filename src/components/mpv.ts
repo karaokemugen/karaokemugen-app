@@ -182,12 +182,12 @@ class Player {
 			if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
 			if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
 			if (options.monitor) {
-				if (positionX === 1) positionX += 10;
+				if (positionX <= 10) positionX += 10;
 				else positionX -= 10;
-				if (positionY === 1) positionY += 10;
+				if (positionY <= 10) positionY += 10;
 				else positionY -= 10;
 			}
-			NodeMPVArgs.push(`--geometry=${positionX}%:${positionY}%`);
+			NodeMPVArgs.push(`--geometry=${+positionX}%:${+positionY}%`);
 		}
 
 		if (conf.Player.NoHud) NodeMPVArgs.push('--no-osc');
@@ -291,18 +291,22 @@ class Player {
 					playerEnding();
 				} else if (status.name === 'playback-time') {
 					this.debouncedTimePosition(status.data);
-				} else if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
-					playerState._playing === status.data || playerState.mediaType === 'background'
-				)) {
-					logger.debug(`${status.data ? 'Paused':'Resumed'} event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
-					playerState._playing = !status.data;
-					playerState.playing = !status.data;
-					playerState.playerStatus = status.data ? 'pause':'play';
-					this.control.exec({command: ['set_property', 'pause', status.data]}, null, this.options.monitor ? 'main':'monitor');
-					emitPlayerState();
 				}
 			});
 		}
+		// Handle pause/play via external ways
+		this.mpv.on('property-change', (status) => {
+			if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
+				playerState._playing === status.data || playerState.mediaType === 'background'
+			)) {
+				logger.debug(`${status.data ? 'Paused':'Resumed'} event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
+				playerState._playing = !status.data;
+				playerState.playing = !status.data;
+				playerState.playerStatus = status.data ? 'pause':'play';
+				this.control.exec({command: ['set_property', 'pause', status.data]}, null, this.options.monitor ? 'main':'monitor');
+				emitPlayerState();
+			}
+		});
 		// Handle manually exits/crashes
 		this.mpv.once('shutdown', () => {
 			logger.debug('mpv closed', {service: `mpv${this.options.monitor ? ' monitor':''}`});
