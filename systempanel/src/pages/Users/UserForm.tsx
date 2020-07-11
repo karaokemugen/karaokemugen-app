@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import { Button, Input, Select, Form, Alert } from 'antd';
-import i18next from 'i18next';
+import { LockOutlined,UserOutlined } from '@ant-design/icons';
+import { Alert,Button, Form, Input, Select } from 'antd';
 import { FormInstance } from 'antd/lib/form';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+
 import { User as UserType } from '../../../../src/lib/types/user';
 
 interface UserFormProps {
@@ -26,11 +27,19 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 		};
 	}
 
-	passwordValidator = (rule, value, callback) => {
+	passwordValidator = (_, value) => {
 		if (+this.formRef.current.getFieldValue('type') < 2 && !this.state.initialLogin && !value) {
-			callback(i18next.t('USERS.PASSWORD_VALIDATOR_MESSAGE'));
+			return Promise.reject(i18next.t('USERS.PASSWORD_VALIDATOR_MESSAGE'));
 		} else {
-			callback();
+			return Promise.resolve();
+		}
+	};
+
+	loginValidator = (_, value: string) => {
+		if (!this.state.initialLogin && value.includes('@')) {
+			return Promise.reject(i18next.t('USERS.CHAR_NOT_ALLOWED', { char: '@' }));
+		} else {
+			return Promise.resolve();
 		}
 	};
 
@@ -42,18 +51,18 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 					nickname: this.props.user.nickname, bio: this.props.user.bio, email: this.props.user.email,
 					url: this.props.user.url
 				}}>
-					{this.props.user.login && this.props.user.login.includes('@') ?
-						<Alert type="info" showIcon style={{marginBottom: '10px'}}
+				{this.props.user.login && this.props.user.login.includes('@') ?
+					<Alert type="info" showIcon style={{ marginBottom: '10px' }}
 						message={i18next.t('USERS.EDIT_ONLINE_ACCOUNT')}></Alert> : null
-					}
-				<Form.Item hasFeedback name="type" required={true}>
+				}
+				<Form.Item name="type" required={true}>
 					<Select onChange={(value) => this.setState({ type: parseInt(value.toString()) })}>
 						<Select.Option value='0'>{i18next.t('USERS.ADMIN')}</Select.Option>
 						<Select.Option value='1'>{i18next.t('USERS.USER')}</Select.Option>
 						<Select.Option value='2'>{i18next.t('USERS.GUEST')}</Select.Option>
 					</Select>
 				</Form.Item>
-				<Form.Item hasFeedback name="login" required={true}>
+				<Form.Item name="login" required={true} rules={[{ validator: this.loginValidator }]}>
 					<Input
 						disabled={this.props.user.login && this.props.user.login.includes('@')}
 						prefix={<UserOutlined />}
@@ -61,7 +70,7 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 					/>
 				</Form.Item>
 				{this.state.type === 2 ? null :
-					<Form.Item hasFeedback name="password" rules={[{ validator: this.passwordValidator }]}>
+					<Form.Item name="password" rules={[{ validator: this.passwordValidator }]}>
 						<Input
 							disabled={this.props.user.login && this.props.user.login.includes('@')}
 							prefix={<LockOutlined />}
@@ -70,24 +79,24 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 						/>
 					</Form.Item>
 				}
-				<Form.Item hasFeedback name="nickname" required={true}>
+				<Form.Item name="nickname" required={true}>
 					<Input
 						disabled={this.props.user.login && this.props.user.login.includes('@')}
 						placeholder={i18next.t('USERS.NICKNAME')} />
 				</Form.Item>
-				<Form.Item hasFeedback required={true} name="bio">
+				<Form.Item required={true} name="bio">
 					<Input.TextArea
 						disabled={this.props.user.login && this.props.user.login.includes('@')}
 						rows={3}
 						placeholder={i18next.t('USERS.BIO')}
 					/>
 				</Form.Item>
-				<Form.Item hasFeedback rules={[{ type: 'email' }]} name="email">
+				<Form.Item rules={[{ type: 'email' }]} name="email">
 					<Input
 						disabled={this.props.user.login && this.props.user.login.includes('@')}
 						placeholder={i18next.t('USERS.EMAIL')} />
 				</Form.Item>
-				<Form.Item hasFeedback rules={[{ type: 'url' }]} name="url">
+				<Form.Item rules={[{ type: 'url' }]} name="url">
 					<Input disabled={this.props.user.login && this.props.user.login.includes('@')}
 						placeholder={i18next.t('USERS.URL')} />
 				</Form.Item>

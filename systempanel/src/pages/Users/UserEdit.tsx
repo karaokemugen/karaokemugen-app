@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
 import {Layout} from 'antd';
-import UserForm from './UserForm';
-import { withRouter, RouteComponentProps } from 'react-router';
 import Axios from 'axios';
+import React, {Component} from 'react';
+import { RouteComponentProps,withRouter } from 'react-router';
+
 import { User } from '../../../../src/lib/types/user';
 import { getAxiosInstance } from '../../axiosInterceptor';
+import UserForm from './UserForm';
 
 interface UserEditState {
 	user: User,
@@ -35,13 +36,13 @@ class UserEdit extends Component<RouteComponentProps<{userLogin:string}>, UserEd
 	};
 
 	saveUpdate = async (user) => {
-		await getAxiosInstance().put(`/users/${user.login}`, user)
+		await getAxiosInstance().put(`/users/${user.login}`, user);
 		this.props.history.push('/system/km/users');
 	};
 
 	loadUser = async () => {
 		if (this.props.match.params.userLogin) {
-			let res = await Axios.get(`/users/${this.props.match.params.userLogin}`)
+			const res = await Axios.get(`/users/${this.props.match.params.userLogin}`);
 			this.setState({user: res.data, save: this.saveUpdate});
 		} else {
 			this.setState({user: {...newUser}, save: this.saveNew});
