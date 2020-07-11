@@ -141,18 +141,18 @@ class Player {
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--sub-visibility',
-			'--loop-file=no',
-			'--reset-on-next-file=pause,loop-file'
+			'--loop-file=no'
 		];
 
 		if (options.monitor) {
 			NodeMPVArgs.push(
 				'--mute=yes',
-				'--reset-on-next-file=mute',
-				'--ao=null',
-				'--geometry=1%:99%');
+				'--reset-on-next-file=pause,loop-file,mute',
+				'--ao=null');
 		} else {
-			NodeMPVArgs.push('--no-border');
+			NodeMPVArgs.push(
+				'--no-border',
+				'--reset-on-next-file=pause,loop-file');
 
 			if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
 				NodeMPVArgs.push('--fullscreen');
@@ -181,6 +181,12 @@ class Player {
 			if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
 			if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
 			if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
+			if (options.monitor) {
+				if (positionX === 1) positionX += 10;
+				else positionX -= 10;
+				if (positionY === 1) positionY += 10;
+				else positionY -= 10;
+			}
 			NodeMPVArgs.push(`--geometry=${positionX}%:${positionY}%`);
 		}
 
