@@ -292,12 +292,9 @@ export function initMenu() {
 			submenu: [
 				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
 				...(isMac ? [
-					{ type: 'separator' },
 					{ label: i18next.t('MENU_WINDOW_TOFRONT'), role: 'front' },
-					{ type: 'separator' }
-				] : [
 					{ label: i18next.t('MENU_WINDOW_CLOSE'), role: 'close' }
-				])
+				] : [])
 			]
 		},
 		/**
