@@ -382,8 +382,8 @@ class Player {
 				this.mpv.observeProperty('playback-time');
 				this.mpv.observeProperty('mute');
 				this.mpv.observeProperty('volume');
-				this.mpv.observeProperty('pause');
 			}
+			this.mpv.observeProperty('pause');
 			return true;
 		}, {
 			retries: 3,
