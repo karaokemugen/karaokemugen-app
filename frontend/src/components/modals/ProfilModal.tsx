@@ -1,18 +1,18 @@
 import languages from '@cospired/i18n-iso-languages';
 import axios from 'axios';
 import i18next from 'i18next';
+import prettyBytes from 'pretty-bytes';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 import blankAvatar from '../../../../assets/blank.png';
 import { Token, User } from '../../../../src/lib/types/user';
 import { Config } from '../../../../src/types/config';
+import { DBPLC } from '../../../../src/types/database/playlist';
 import store from '../../store';
 import Autocomplete from '../generic/Autocomplete';
-import { callModal, displayMessage, buildKaraTitle } from '../tools';
+import { buildKaraTitle,callModal, displayMessage } from '../tools';
 import OnlineProfileModal from './OnlineProfileModal';
-import { DBPLC } from '../../../../src/types/database/playlist';
-import prettyBytes from 'pretty-bytes';
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/fr.json'));
 require('babel-polyfill');
@@ -71,6 +71,7 @@ class ProfilModal extends Component<IProps, IState> {
 	componentDidMount() {
 		this.getUser();
 		this.getUserList();
+		document.addEventListener('keyup', this.keyObserverHandler);
 	}
 
 	onKeyPress = (event: any) => {
@@ -209,6 +210,17 @@ class ProfilModal extends Component<IProps, IState> {
 		});
 	}
 
+	keyObserverHandler = (e: KeyboardEvent) => {
+		if (e.code === 'Escape') {
+			const element = document.getElementById('modal');
+			if (element) ReactDOM.unmountComponentAtNode(element);
+		}
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('keyup', this.keyObserverHandler);
+	}
+
 	render() {
 		const logInfos = store.getLogInfos();
 		const listLangs = [];
@@ -224,18 +236,20 @@ class ProfilModal extends Component<IProps, IState> {
 			<div className="modal modalPage" id="profilModal">
 				<div className="modal-dialog modal-md">
 					<div className="modal-content">
-						<ul className="nav nav-tabs nav-justified modal-header">
-							<li className={'modal-title ' + (this.state.activeView === 1 ? 'active' : '')}>
-								<a onClick={() => this.setState({ activeView: 1 })}> {i18next.t('PROFILE')}</a>
-							</li>
-							{logInfos && logInfos.role !== 'guest' ?
-								<li className={'modal-title ' + (this.state.activeView === 2 ? 'active' : '')}>
-									<a onClick={() => this.setState({ activeView: 2 })}> {i18next.t('LANGUAGE')}</a>
-								</li> : null
-							}
-							<li className={'modal-title ' + (this.state.activeView === 3 ? 'active' : '')}>
-								<a onClick={() => this.setState({ activeView: 3 })}> {i18next.t('USERLIST')}</a>
-							</li>
+						<div className="modal-header">
+							<ul className="nav nav-tabs nav-justified ">
+								<li className={(this.state.activeView === 1 ? 'active' : '')}>
+									<a onClick={() => this.setState({ activeView: 1 })}> {i18next.t('PROFILE')}</a>
+								</li>
+								{logInfos && logInfos.role !== 'guest' ?
+									<li className={(this.state.activeView === 2 ? 'active' : '')}>
+										<a onClick={() => this.setState({ activeView: 2 })}> {i18next.t('LANGUAGE')}</a>
+									</li> : null
+								}
+								<li className={(this.state.activeView === 3 ? 'active' : '')}>
+									<a onClick={() => this.setState({ activeView: 3 })}> {i18next.t('USERLIST')}</a>
+								</li>
+							</ul>
 							<button className="closeModal btn btn-action"
 								onClick={() => {
 									const element = document.getElementById('modal');
@@ -243,7 +257,7 @@ class ProfilModal extends Component<IProps, IState> {
 								}}>
 								<i className="fas fa-times"></i>
 							</button>
-						</ul>
+						</div>
 						<div className="tab-content" id="nav-tabContent">
 							{this.state.activeView === 1 ?
 								<div id="nav-profil" className="modal-body" >

@@ -163,10 +163,10 @@ class LoginModal extends Component<IProps, IState> {
 				<div className="modal-dialog modal-sm">
 					<div className="modal-content">
 						<ul className="nav nav-tabs nav-justified modal-header">
-							<li className={'modal-title ' + (this.state.activeView === 1 ? 'active' : '')}>
+							<li className={(this.state.activeView === 1 ? 'active' : '')}>
 								<a onClick={() => this.setState({ activeView: 1 })}>{i18next.t('LOGIN')}</a>
 							</li>
-							<li className={'modal-title ' + (this.state.activeView === 2 ? 'active' : '')}>
+							<li className={(this.state.activeView === 2 ? 'active' : '')}>
 								<a onClick={() => this.setState({ activeView: 2 })}>{i18next.t('NEW_ACCOUNT')}</a>
 							</li>
 							<button className="closeModal btn btn-action"

@@ -27,12 +27,12 @@ class HelpModal extends Component<unknown, unknown> {
 			<div className="modal modalPage" id="helpModal">
 				<div className="modal-dialog modal-sm">
 					<div className="modal-content">
-						<ul className="nav nav-tabs nav-justified modal-header">
-							<li className="modal-title active"><a>{i18next.t('CL_HELP')}</a></li>
+						<div className="modal-header">
+							<h4 className="modal-title">{i18next.t('CL_HELP')}</h4>
 							<button className="closeModal btn btn-action" onClick={this.mugenTouchscreenHelp}>
 								<i className="fas fa-times"></i>
 							</button>
-						</ul>
+						</div>
 						<div className="tab-content" id="nav-tabContent-help">
 							<div id="nav-help" className="modal-body">
 								<div className="text mobileHelp"
