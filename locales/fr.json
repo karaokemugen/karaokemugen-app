@@ -77,7 +77,7 @@
 	"MENU_OPTIONS_OPENINELECTRON": "Toujours ouvrir dans cette fenêtre",
 	"MENU_OPTIONS_CHECKFORUPDATES": "Vérifier les mises à jour au démarrage",
 	"MENU_OPTIONS_OPERATORCONFIG": "Préférences",
-	"MENU_OPTIONS_SYSTEMCONFIG": "Préférences avancées",
+	"MENU_OPTIONS_SYSTEMCONFIG": "Préférences système",
 	"SECURITY_CODE_TITLE": "Code de sécurité",
 	"SECURITY_CODE_MESSAGE": "Voici le code de sécurité actuel :",
 	"ERROR": "Erreur",
