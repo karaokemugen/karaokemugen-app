@@ -315,7 +315,6 @@ class Player {
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
 			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
-			this.recreate();
 			emitPlayerState();
 		});
 		this.mpv.once('crashed', () => {
@@ -376,14 +375,19 @@ class Player {
 				}
 				throw err;
 			});
+			let promises = [
+				this.mpv.observeProperty('pause')
+			];
 			if (!this.options.monitor) {
-				this.mpv.observeProperty('sub-text');
-				this.mpv.observeProperty('eof-reached');
-				this.mpv.observeProperty('playback-time');
-				this.mpv.observeProperty('mute');
-				this.mpv.observeProperty('volume');
+				promises.push(
+					this.mpv.observeProperty('sub-text'),
+					this.mpv.observeProperty('eof-reached'),
+					this.mpv.observeProperty('playback-time'),
+					this.mpv.observeProperty('mute'),
+					this.mpv.observeProperty('volume')
+				);
 			}
-			this.mpv.observeProperty('pause');
+			await Promise.all(promises);
 			return true;
 		}, {
 			retries: 3,
