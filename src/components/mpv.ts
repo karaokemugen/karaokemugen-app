@@ -141,18 +141,18 @@ class Player {
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--sub-visibility',
-			'--loop-file=no',
-			'--reset-on-next-file=pause,loop-file'
+			'--loop-file=no'
 		];
 
 		if (options.monitor) {
 			NodeMPVArgs.push(
 				'--mute=yes',
-				'--reset-on-next-file=mute',
-				'--ao=null',
-				'--geometry=1%:99%');
+				'--reset-on-next-file=pause,loop-file,mute',
+				'--ao=null');
 		} else {
-			NodeMPVArgs.push('--no-border');
+			NodeMPVArgs.push(
+				'--no-border',
+				'--reset-on-next-file=pause,loop-file');
 
 			if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
 				NodeMPVArgs.push('--fullscreen');
@@ -181,7 +181,13 @@ class Player {
 			if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
 			if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
 			if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
-			NodeMPVArgs.push(`--geometry=${positionX}%:${positionY}%`);
+			if (options.monitor) {
+				if (positionX <= 10) positionX += 10;
+				else positionX -= 10;
+				if (positionY <= 10) positionY += 10;
+				else positionY -= 10;
+			}
+			NodeMPVArgs.push(`--geometry=${+positionX}%:${+positionY}%`);
 		}
 
 		if (conf.Player.NoHud) NodeMPVArgs.push('--no-osc');
@@ -285,18 +291,22 @@ class Player {
 					playerEnding();
 				} else if (status.name === 'playback-time') {
 					this.debouncedTimePosition(status.data);
-				} else if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
-					playerState._playing === status.data || playerState.mediaType === 'background'
-				)) {
-					logger.debug(`${status.data ? 'Paused':'Resumed'} event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
-					playerState._playing = !status.data;
-					playerState.playing = !status.data;
-					playerState.playerStatus = status.data ? 'pause':'play';
-					this.control.exec({command: ['set_property', 'pause', status.data]}, null, this.options.monitor ? 'main':'monitor');
-					emitPlayerState();
 				}
 			});
 		}
+		// Handle pause/play via external ways
+		this.mpv.on('property-change', (status) => {
+			if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
+				playerState._playing === status.data || playerState.mediaType === 'background'
+			)) {
+				logger.debug(`${status.data ? 'Paused':'Resumed'} event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
+				playerState._playing = !status.data;
+				playerState.playing = !status.data;
+				playerState.playerStatus = status.data ? 'pause':'play';
+				this.control.exec({command: ['set_property', 'pause', status.data]}, null, this.options.monitor ? 'main':'monitor');
+				emitPlayerState();
+			}
+		});
 		// Handle manually exits/crashes
 		this.mpv.once('shutdown', () => {
 			logger.debug('mpv closed', {service: `mpv${this.options.monitor ? ' monitor':''}`});
@@ -305,7 +315,6 @@ class Player {
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
 			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
-			this.recreate();
 			emitPlayerState();
 		});
 		this.mpv.once('crashed', () => {
@@ -334,8 +343,22 @@ class Player {
 						logger.debug('Loaded subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`});
 					});
 				}
+			} else if (['Intros', 'Sponsors', 'Jingles', 'Encores', 'Outros']
+				.includes(playerState.mediaType) && playerState?.currentMedia) {
+				const subFile = replaceExt(playerState.currentMedia.filename, '.ass');
+				logger.debug(`Searching for ${subFile}`, {service: `mpv${this.options.monitor ? ' monitor':''}`});
+				if (await asyncExists(subFile)) {
+					await this.mpv.send({command: ['sub-add', subFile]}).catch(err => {
+						logger.error('Unable to load subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`, obj: err});
+						sentry.error(err, 'Warning');
+					}).then(() => {
+						logger.debug('Loaded subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+					});
+				} else {
+					logger.debug('No subtitles to load (not found for media)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+				}
 			} else {
-				logger.debug('No subtitles to load (or it was auto-guessed for medias/by mpv)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+				logger.debug('No subtitles to load (background)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
 			}
 		});
 	}
@@ -352,14 +375,19 @@ class Player {
 				}
 				throw err;
 			});
+			let promises = [
+				this.mpv.observeProperty('pause')
+			];
 			if (!this.options.monitor) {
-				this.mpv.observeProperty('sub-text');
-				this.mpv.observeProperty('eof-reached');
-				this.mpv.observeProperty('playback-time');
-				this.mpv.observeProperty('mute');
-				this.mpv.observeProperty('volume');
-				this.mpv.observeProperty('pause');
+				promises.push(
+					this.mpv.observeProperty('sub-text'),
+					this.mpv.observeProperty('eof-reached'),
+					this.mpv.observeProperty('playback-time'),
+					this.mpv.observeProperty('mute'),
+					this.mpv.observeProperty('volume')
+				);
 			}
+			await Promise.all(promises);
 			return true;
 		}, {
 			retries: 3,
@@ -684,6 +712,9 @@ class Players {
 		}
 		// Load all thoses files into mpv and let's go!
 		try {
+			playerState.currentSong = mediaData;
+			playerState.mediaType = 'song';
+			playerState.currentMedia = null;
 			await retry(() => this.exec({command: ['loadfile', mediaFile, 'replace', options]}), {
 				retries: 3,
 				onFailedAttempt: error => {
@@ -695,13 +726,12 @@ class Players {
 			});
 			logger.debug(`File ${mediaFile} loaded`, {service: 'Player'});
 			// Loaded!
-			playerState.currentSong = mediaData;
+			// Subtitles load is handled by `file-loaded` event on the Player class
 			playerState.songNearEnd = false;
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
 			playerState._playing = true;
 			playerState.playerStatus = 'play';
-			playerState.mediaType = 'song';
 			this.clearText();
 			emitPlayerState();
 			setDiscordActivity('song', {
@@ -727,21 +757,19 @@ class Players {
 				'replaygain-fallback': media.audiogain.toString()
 			};
 			try {
+				playerState.currentSong = null;
+				playerState.mediaType = mediaType;
+				playerState.currentMedia = media;
 				await retry(() => this.exec({command: ['loadfile', media.filename, 'replace', options]}), {
 					retries: 3,
 					onFailedAttempt: error => {
 						logger.warn(`Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
 					}
 				});
-				playerState.currentSong = null;
 				playerState.playerStatus = 'play';
-				playerState.mediaType = mediaType;
 				playerState._playing = true;
-				const subFile = replaceExt(media.filename, '.ass');
-				if (await asyncExists(subFile)) {
-					await this.exec({command: ['sub-add', subFile]});
-				}
-				mediaType === 'Jingles' || mediaType === 'Sponsors'
+				// Subtitles load is handled by `file-loaded` event on the Player class
+				(mediaType === 'Jingles' || mediaType === 'Sponsors')
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
 						? this.message(conf.Playlist.Medias[mediaType].Message, 1000000)

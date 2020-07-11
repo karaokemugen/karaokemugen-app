@@ -290,11 +290,7 @@ export function initMenu() {
 		{
 			label: i18next.t('MENU_WINDOW'),
 			submenu: [
-				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
-				...(isMac ? [
-					{ label: i18next.t('MENU_WINDOW_TOFRONT'), role: 'front' },
-					{ label: i18next.t('MENU_WINDOW_CLOSE'), role: 'close' }
-				] : [])
+				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' }
 			]
 		},
 		/**

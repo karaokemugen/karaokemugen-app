@@ -1047,7 +1047,6 @@ a.btn.disabled {
 }
 .nav-tabs > li {
   float: left;
-  margin-bottom: -1px;
 }
 .nav-tabs > li > a {
   margin-right: 2px;

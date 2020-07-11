@@ -134,6 +134,7 @@ class Mpv extends EventEmitter {
 
 	private destroyConnection() {
 		this.isRunning = false;
+		this.observedProperties = [];
 		this.socket.removeAllListeners();
 		this.socket.destroy();
 	}
@@ -149,11 +150,11 @@ class Mpv extends EventEmitter {
 
 	async stop() {
 		if (!this.isRunning) throw new Error('MPV is not running');
-		await this.send({command: ['quit']}).catch(_err => {
+		await this.ishukan({command: ['quit']}).catch(_err => {
 			// Ow. mpv is probably already dying, just destroy the connection
-			this.destroyConnection();
+			// this.destroyConnection();
 		});
-		this.isRunning = false;
+		this.destroyConnection();
 		this.emit('stop');
 		return true;
 	}

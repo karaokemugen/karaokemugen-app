@@ -233,7 +233,6 @@ class PublicPage extends Component<IProps, IState> {
 
 
 	render() {
-		const logInfos = store.getLogInfos();
 		return (
 			<div id="publicPage">
 				{this.props.config.Frontend.Mode === 0 ? (
@@ -274,14 +273,10 @@ class PublicPage extends Component<IProps, IState> {
 
 										<div
 											className="plSearch"
-											style={{
-												width: logInfos && logInfos.role != 'guest' ? '' : '100%'
-											}}
 										>
-											<i className="fas fa-search" />
 											<input
+												placeholder={`\uF002 ${i18next.t('SEARCH')}`}
 												type="text"
-												className="form-control"
 												defaultValue={store.getFilterValue(1)}
 												onChange={e =>
 													store.setFilterValue(

@@ -1,4 +1,5 @@
 import { Tree } from 'antd';
+import { DataNode, EventDataNode } from 'antd/lib/tree';
 import { AntTreeNodeProps, TreeNodeNormal } from 'antd/lib/tree/Tree';
 import Axios from 'axios';
 import React, { Component, ReactText } from 'react';
@@ -30,6 +31,23 @@ class FileSystem extends Component<IProps, IState> {
 
 	getSeparator() {
 		return this.props.os === 'win32' ? '\\' : '/';
+	}
+
+	updateTreeData(list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] {
+		return list.map(node => {
+			if (node.key === key) {
+				return {
+					...node,
+					children,
+				};
+			} else if (node.children) {
+				return {
+					...node,
+					children: this.updateTreeData(node.children, key, children),
+				};
+			}
+			return node;
+		});
 	}
 
 	async getFileSystem(path: string) {
@@ -77,11 +95,11 @@ class FileSystem extends Component<IProps, IState> {
 		return childrens;
 	}
 
-	onLoadData = async (treeNode) => {
-		if (treeNode.children) {
+	onLoadData = async ({ key, children }:EventDataNode) => {
+		if (children) {
 			return;
 		}
-		const response = await Axios.post('/fs', { path: treeNode.key });
+		const response = await Axios.post('/fs', { path: key });
 		const childrens = [];
 		for (const element of response.data.contents) {
 			if (element.isDirectory || this.props.seeFiles || this.props.fileRequired) {
@@ -93,9 +111,8 @@ class FileSystem extends Component<IProps, IState> {
 				});
 			}
 		}
-		treeNode.children = childrens;
 		this.setState({
-			treeData: [...this.state.treeData],
+			treeData: this.updateTreeData(this.state.treeData, key, childrens)
 		});
 	}
 

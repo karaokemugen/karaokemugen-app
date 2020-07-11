@@ -23,7 +23,7 @@ import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {Kara, KaraFileV4, KaraList, KaraParams, KaraTag,YearList} from '../lib/types/kara';
 import { Token } from '../lib/types/user';
 import {ASSToLyrics} from '../lib/utils/ass';
-import { resolvedPathRepos } from '../lib/utils/config';
+import { getConfig,resolvedPathRepos } from '../lib/utils/config';
 import {getTagTypeName,tagTypes} from '../lib/utils/constants';
 import {asyncCopy, asyncReadFile, asyncUnlink, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import { convert1LangTo2B } from '../lib/utils/langs';
@@ -369,10 +369,28 @@ export async function removeSerieInKaras(sid: string, karas: KaraList) {
 }
 
 export function getSeriesSingers(kara: DBKara) {
-	const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
-	return kara.series?.length > 0
-		? kara.series[0].i18n[lang] || kara.series[0].i18n?.eng || kara.series[0].name
-		: kara.singers.map(s => s.name).join(', ');
+	if (kara.series?.length > 0) {
+		const mode = getConfig().Frontend.SeriesLanguageMode;
+		let series = '';
+		switch(mode) {
+		case 0:
+			series = kara.series[0].name;
+			break;
+		case 1:
+			series = kara.series[0].i18n[kara.langs[0].name] || kara.series[0].i18n?.eng || kara.series[0].name;
+			break;
+		default:
+		case 3:
+		case 2:
+			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
+			series = kara.series[0].i18n[lang] || kara.series[0].i18n?.eng || kara.series[0].name;
+			break;
+
+		}
+		return series;
+	} else {
+		return kara.singers.map(s => s.name).join(', ');
+	}
 }
 
 export async function batchEditKaras(playlist_id: number, action: 'add' | 'remove', tid: string, type: number) {

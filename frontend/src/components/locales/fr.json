@@ -2,6 +2,7 @@
 	"404": "Perdu sur le réseau local ?",
 	"YES": "Oui",
 	"NO": "Non",
+	"SEARCH": "Rechercher",
 	"404_2": "Pas de panique, on va vous aider",
     "404_3": "vous êtes ici",
 	"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",

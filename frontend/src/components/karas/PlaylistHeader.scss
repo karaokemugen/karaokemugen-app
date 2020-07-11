@@ -119,3 +119,18 @@
 	background-color: #793230 !important;
 	color: white !important;
 }
+
+.plSearch {
+	flex: 1;
+	margin-left: 1px;
+	margin-right: 1px;
+	border: 1px solid transparent;
+    border-radius: 4px;
+	background-color: rgba(69, 69, 69, 0.7);
+	input {
+		font-weight: bold;
+		font-family: "Font Awesome 5 Free", Arial;
+		border: 1px solid transparent;
+    	border-radius: 4px;
+	}
+}

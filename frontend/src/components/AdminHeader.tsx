@@ -319,7 +319,10 @@ class AdminHeader extends Component<IProps, IState> {
 							<li>
 								<a
 									href="#"
-									onClick={this.props.toggleProfileModal}
+									onClick={() => {
+										this.props.toggleProfileModal();
+										this.setState({ dropDownMenu: !this.state.dropDownMenu });
+									}}
 								>
 									<i className="fas fa-user" />&nbsp;{i18next.t('ACCOUNT')}
 								</a>

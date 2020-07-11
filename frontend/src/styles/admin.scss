@@ -125,29 +125,6 @@
 		padding-left: 4px;
 	}
 
-	.panel-heading ::-webkit-input-placeholder {
-		font-size: 17px;
-		line-height: 34px;
-		padding-top: 0px;
-		height: 34px;
-		text-align:right; 
-	}
-
-	.panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
-		font-size: 17px;
-		line-height: 20px;
-		padding-top: 0px;
-		height: 34px;
-		text-align:right; 
-	}
-	.panel-heading  :-ms-input-placeholder {
-		font-size: 17px;
-		line-height: 34px;
-		padding-top: 0px;
-		height: 34px;
-		text-align:right; 
-	}
-	
 	.plSearch {
 		order: 2;
 	}
