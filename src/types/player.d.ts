@@ -1,4 +1,5 @@
 import { DBKara } from '../lib/types/database/kara';
+import { Media } from './medias';
 
 export interface PlayerState {
 	volume?: number,
@@ -9,6 +10,7 @@ export interface PlayerState {
 	mute?: boolean,
 	'sub-text'?: string,
 	currentSong?: MediaData,
+	currentMedia?: Media,
 	mediaType?: 'song' | 'background' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
 	showSubs?: boolean,
 	stayontop?: boolean,

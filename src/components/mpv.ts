@@ -334,8 +334,22 @@ class Player {
 						logger.debug('Loaded subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`});
 					});
 				}
+			} else if (['Intros', 'Sponsors', 'Jingles', 'Encores', 'Outros']
+				.includes(playerState.mediaType) && playerState?.currentMedia) {
+				const subFile = replaceExt(playerState.currentMedia.filename, '.ass');
+				logger.debug(`Searching for ${subFile}`, {service: `mpv${this.options.monitor ? ' monitor':''}`});
+				if (await asyncExists(subFile)) {
+					await this.mpv.send({command: ['sub-add', subFile]}).catch(err => {
+						logger.error('Unable to load subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`, obj: err});
+						sentry.error(err, 'Warning');
+					}).then(() => {
+						logger.debug('Loaded subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+					});
+				} else {
+					logger.debug('No subtitles to load (not found for media)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+				}
 			} else {
-				logger.debug('No subtitles to load (or it was auto-guessed for medias/by mpv)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+				logger.debug('No subtitles to load (background)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
 			}
 		});
 	}
@@ -684,6 +698,9 @@ class Players {
 		}
 		// Load all thoses files into mpv and let's go!
 		try {
+			playerState.currentSong = mediaData;
+			playerState.mediaType = 'song';
+			playerState.currentMedia = null;
 			await retry(() => this.exec({command: ['loadfile', mediaFile, 'replace', options]}), {
 				retries: 3,
 				onFailedAttempt: error => {
@@ -695,13 +712,12 @@ class Players {
 			});
 			logger.debug(`File ${mediaFile} loaded`, {service: 'Player'});
 			// Loaded!
-			playerState.currentSong = mediaData;
+			// Subtitles load is handled by `file-loaded` event on the Player class
 			playerState.songNearEnd = false;
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
 			playerState._playing = true;
 			playerState.playerStatus = 'play';
-			playerState.mediaType = 'song';
 			this.clearText();
 			emitPlayerState();
 			setDiscordActivity('song', {
@@ -727,21 +743,19 @@ class Players {
 				'replaygain-fallback': media.audiogain.toString()
 			};
 			try {
+				playerState.currentSong = null;
+				playerState.mediaType = mediaType;
+				playerState.currentMedia = media;
 				await retry(() => this.exec({command: ['loadfile', media.filename, 'replace', options]}), {
 					retries: 3,
 					onFailedAttempt: error => {
 						logger.warn(`Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player'});
 					}
 				});
-				playerState.currentSong = null;
 				playerState.playerStatus = 'play';
-				playerState.mediaType = mediaType;
 				playerState._playing = true;
-				const subFile = replaceExt(media.filename, '.ass');
-				if (await asyncExists(subFile)) {
-					await this.exec({command: ['sub-add', subFile]});
-				}
-				mediaType === 'Jingles' || mediaType === 'Sponsors'
+				// Subtitles load is handled by `file-loaded` event on the Player class
+				(mediaType === 'Jingles' || mediaType === 'Sponsors')
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
 						? this.message(conf.Playlist.Medias[mediaType].Message, 1000000)
