@@ -74,7 +74,7 @@ class KaraList extends Component<{}, KaraListState> {
 		title: i18next.t('KARA.PLAYED_AT'),
 		dataIndex: 'played_at',
 		key: 'played_at',
-		render: played_at => (new Date(played_at)).toLocaleString('en'),
+		render: played_at => (new Date(played_at)).toLocaleString(),
 		defaultSortOrder: 'descend',
 		sorter: (a,b) => a.played_at - b.played_at
 	}];
