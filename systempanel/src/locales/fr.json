@@ -95,7 +95,7 @@
 	"MENU": {
 		"HOME": "Home",
 		"SYSTEM": "Système",
-		"LOGS": "Logs",
+		"LOGS": "Journal d'événements",
 		"CONFIGURATION": "Configuration avancée",
 		"ADVANCED_OPTIONS": "Préférences système",
 		"SESSIONS": "Sessions",
