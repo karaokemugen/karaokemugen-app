@@ -479,7 +479,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			key: 'songtypes',
 			render: (songtypes, record) => {
 				const songorder = record.songorder || '';
-				return getTagInLocaleList(songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
+				return getTagInLocaleList(songtypes, this.state.i18nTag).sort().join(', ') + ' ' + songorder || '';
 			}
 		}, {
 			title: i18next.t('KARA.FAMILIES'),
