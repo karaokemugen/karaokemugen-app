@@ -563,9 +563,15 @@ class Playlist extends Component<IProps, IState> {
 		return plInfos;
 	};
 
-	scrollToPlaying = () => {
-		if (this.state.playing)
+	scrollToPlaying = async () => {
+		if (this.state.playing) {
 			this.setState({ scrollToIndex: this.state.playing, goToPlaying: true, _goToPlaying: true });
+		} else {
+			const result = await axios.get(`/playlists/${this.state.idPlaylist}/findPlaying`);
+			if (result.data?.index !== -1) {
+				this.setState({ scrollToIndex: result.data.index, goToPlaying: true, _goToPlaying: true });
+			}
+		}
 	};
 
 	updateCounters = (event: PublicPlayerState) => {
