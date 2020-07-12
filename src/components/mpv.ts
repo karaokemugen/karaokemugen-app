@@ -264,7 +264,7 @@ class Player {
 		}
 	}
 
-	debouncedTimePosition = debounce(this.debounceTimePosition, 100, {maxWait: 200});
+	debouncedTimePosition = debounce(this.debounceTimePosition, 150, {maxWait: 300});
 
 	private bindEvents() {
 		if (!this.options.monitor) {
