@@ -514,7 +514,7 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			data = karas;
 		}
-		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying });
+		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying ? indexPlaying : this.state.playing });
 		this.playlistForceRefresh(true);
 	};
 
