@@ -1,4 +1,4 @@
-import { CheckCircleTwoTone, ClockCircleTwoTone, DownloadOutlined, InfoCircleTwoTone, SyncOutlined } from '@ant-design/icons';
+import { CheckCircleTwoTone, ClockCircleTwoTone, DownloadOutlined, InfoCircleTwoTone, SyncOutlined, WarningTwoTone } from '@ant-design/icons';
 import { Button, Cascader, Col, Input, Layout, Radio, Row, Select, Table } from 'antd';
 import Axios from 'axios';
 import i18next from 'i18next';
@@ -516,24 +516,28 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			render: (text, record) => {
 				let button = null;
 				const blacklisted = !this.blacklist_check(record);
-				if (this.is_local_kara(record))
+				if (this.is_local_kara(record)) {
 					button = <Button disabled type="default"><CheckCircleTwoTone twoToneColor="#52c41a" /></Button>;
-				else {
+				} else {
 					const queue = this.is_queued_kara(record);
 					if (queue) {
-						if (queue.status === 'DL_RUNNING')
+						if (queue.status === 'DL_RUNNING'){
 							button = <span><Button disabled type="default"><SyncOutlined spin /></Button></span>;
-						else if (queue.status === 'DL_PLANNED')
+						} else if (queue.status === 'DL_PLANNED') {
 							button = <Button onClick={() => Axios.delete(`/downloads/${queue.pk_uuid}`)} type="default">
 								<ClockCircleTwoTone twoToneColor="#dc4e41" />
 							</Button>;
-						else if (queue.status === 'DL_DONE') // done but not in local -> try again dude
+						} else if (queue.status === 'DL_DONE') {// done but not in local -> try again dude
 							button = <span><Button type="default" onClick={() => this.downloadKara(record)}><CheckCircleTwoTone twoToneColor="#4989f3" /></Button></span>;
+						} else if (queue.status === 'DL_FAILED') {
+							button = <span><Button type="default" onClick={() => this.downloadKara(record)}><WarningTwoTone twoToneColor="#f24848" /></Button></span>;
+						}
 					} else {
-						if (blacklisted)
+						if (blacklisted) {
 							button = <Button type="primary" danger onClick={() => this.downloadKara(record)}><DownloadOutlined /></Button>;
-						else
+						} else {
 							button = <Button type="default" onClick={() => this.downloadKara(record)}><DownloadOutlined /></Button>;
+						}
 					}
 				}
 				return <span>{button} {Math.round(record.mediasize / (1024 * 1024))}Mb {blacklisted ? <small style={{ color: '#f5232e' }}>{i18next.t('KARA.IN_BLACKLIST')}</small> : null}</span>;
