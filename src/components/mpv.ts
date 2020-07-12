@@ -131,9 +131,7 @@ class Player {
 
 		const NodeMPVArgs = [
 			'--keep-open=yes',
-			'--fps=60',
 			'--osd-level=0',
-			'--sub-codepage=UTF-8-BROKEN',
 			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
 			`--volume=${+conf.Player.Volume}`,
