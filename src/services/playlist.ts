@@ -955,6 +955,12 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	}
 }
 
+/** Find flag_playing index in a playlist */
+export async function findPlaying(playlist_id: number): Promise<number> {
+	const pl = await getPlaylistKaraIDs(playlist_id);
+	return pl.findIndex(plc => plc.flag_playing);
+}
+
 /** Shuffle (smartly or not) a playlist */
 export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: boolean) {
 	const pl = await getPlaylistInfo(playlist_id);
