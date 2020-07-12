@@ -117,6 +117,13 @@ class InterfaceOptions extends Component<IProps, IState> {
 							isChecked={this.state.config['Frontend.Permissions.AllowViewWhitelist']} />
 					</div>
 				</div>
+
+				<div className="systempanel-tooltip">
+					{i18next.t('SYSTEMPANEL_TIP.QUESTION')}
+					<strong>
+						{i18next.t('SYSTEMPANEL_TIP.RESPONSE')}<a href="/system/km/options">{i18next.t('SYSTEMPANEL_TIP.LINK')}</a>{i18next.t('SYSTEMPANEL_TIP.AFTER_LINK')}
+					</strong>
+				</div>
 			</React.Fragment>
 		);
 	}

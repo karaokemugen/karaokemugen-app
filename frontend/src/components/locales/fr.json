@@ -102,6 +102,12 @@
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum de votes requis pour libérer une chanson",
 	"ENGINEFREEUPVOTESREQUIREDPERCENT": "Pourcentage de votes requis pour libérer une chanson",
 	"ENGINEFREEUPVOTESREQUIREDPERCENT_TOOLTIP": "Pourcentage par rapport au nombre d'utilisateurs connectés",
+	"SYSTEMPANEL_TIP": {
+		"QUESTION": "Vous ne trouvez pas ce que vous cherchez ? ",
+		"RESPONSE": "Certaines options se trouvent dans le ",
+		"LINK": "panneau système",
+		"AFTER_LINK": "."
+	},
 	"FAVORITES_IMPORT": "Importer vos favoris",
 	"FAVORITES_EXPORT": "Exporter vos favoris",
 	"FILTERS": "Filtres",

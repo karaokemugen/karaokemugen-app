@@ -95,6 +95,12 @@
 	"ENGINEFREEUPVOTES": "Allow users to upvote songs to free them",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum votes required to free a song",
 	"ENGINEFREEUPVOTESREQUIREDPERCENT": "Percentage of upvotes / online users required to to free a song",
+	"SYSTEMPANEL_TIP": {
+		"QUESTION": "You can't find the options you searched? ",
+		"RESPONSE": "Some options are now in the ",
+		"LINK": "system panel",
+		"AFTER_LINK": "."
+	},
 	"ENGINEENABLESMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
 	"ENGINEAUTOPLAY": "Autoplay on next song added",
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Force hostname or IP",
