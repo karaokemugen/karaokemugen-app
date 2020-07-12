@@ -202,10 +202,6 @@ class Player {
 			conf.Player.ExtraCommandLine.split(' ').forEach(e => NodeMPVArgs.push(e));
 		}
 
-		// If we're on macOS, add --no-native-fs to get a real
-		// fullscreen experience on recent macOS versions.
-		if (state.os === 'darwin' && semver.gte(options.mpvVersion, '0.27.0')) NodeMPVArgs.push('--no-native-fs');
-
 		let socket: string;
 		// Name socket file accordingly depending on OS.
 		const random = randomstring.generate({
@@ -315,6 +311,7 @@ class Player {
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
 			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
+			this.recreate();
 			emitPlayerState();
 		});
 		this.mpv.once('crashed', () => {
@@ -330,7 +327,7 @@ class Player {
 		});
 		this.mpv.on('file-loaded', async () => {
 			if (playerState.mediaType === 'song' && playerState?.currentSong?.subfile) {
-				let subFiles = await resolveFileInDirs(playerState.currentSong.subfile, resolvedPathRepos('Lyrics', playerState.currentSong.repo))
+				const subFiles = await resolveFileInDirs(playerState.currentSong.subfile, resolvedPathRepos('Lyrics', playerState.currentSong.repo))
 					.catch(err => {
 						logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
 						logger.warn(`Subs NOT FOUND : ${playerState.currentSong.subfile}`, {service: 'Player'});
@@ -375,19 +372,14 @@ class Player {
 				}
 				throw err;
 			});
-			let promises = [
-				this.mpv.observeProperty('pause')
-			];
 			if (!this.options.monitor) {
-				promises.push(
-					this.mpv.observeProperty('sub-text'),
-					this.mpv.observeProperty('eof-reached'),
-					this.mpv.observeProperty('playback-time'),
-					this.mpv.observeProperty('mute'),
-					this.mpv.observeProperty('volume')
-				);
+				this.mpv.observeProperty('sub-text');
+				this.mpv.observeProperty('eof-reached');
+				this.mpv.observeProperty('playback-time');
+				this.mpv.observeProperty('mute');
+				this.mpv.observeProperty('volume');
 			}
-			await Promise.all(promises);
+			this.mpv.observeProperty('pause');
 			return true;
 		}, {
 			retries: 3,
