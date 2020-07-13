@@ -897,7 +897,7 @@ class Playlist extends Component<IProps, IState> {
 							>
 								<i className="fas fa-chevron-up"></i>
 							</button>
-							{this.state.playlistInfo && this.state.playlistInfo.flag_current ?
+							{this.state.idPlaylist > 0 ?
 								<button
 									type="button"
 									title={i18next.t('GOTO_PLAYING')}
