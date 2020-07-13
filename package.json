@@ -60,7 +60,8 @@
     "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)",
     "Bibah <thebibah14@gmail.com> (@TheBibah14)",
     "Rinchama (@Rinchama)",
-    "zeograd <zeograd@gmail.com>"
+    "zeograd <zeograd@gmail.com>",
+    "leonekmi <git+km@leonekmi.fr>"
   ],
   "engines": {
     "node": ">=12.0.0"
