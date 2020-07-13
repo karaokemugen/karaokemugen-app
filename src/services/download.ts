@@ -446,13 +446,15 @@ export async function getAllRemoteTags(repository: string, params: TagParams): P
 				to: 0
 			}
 		};
-		allTags.forEach(l => merge(everything, l));
+		allTags.forEach(l => {
+			everything.content = everything.content.concat(l.content);
+		});
 		// To get total count we're going to remove all duplicated by repo to keep only one tag from each repo.
 		// Each tag has a count property which gives us the number of tags for that query, so by adding them we get our total maximum count.
 		everything.infos.count = 0;
-		const everythingUnique = everything.content.filter((t: DBTag, i, self) => self.findIndex((t2:DBTag) => t2.repository === t.repository) === i);
-		everythingUnique.forEach(t => everything.infos.count = +everything.infos.count + +t.count);
-		everything.infos.to = +params.from + +params.size;
+		const everythingUnique = everything.content.filter((t: DBTag, i, self) => self.findIndex((t2:DBTag) => t2.name === t.name) === i);
+		everything.content = everythingUnique;
+		everything.infos.count = everything.infos.to = everything.content.length;
 		return everything;
 	}
 }
