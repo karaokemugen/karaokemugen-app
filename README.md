@@ -17,7 +17,7 @@ It works like a japanese karaoke where anyone can add songs one after another to
 
 Karaoke Mugen works offline and does not require an Internet connection, but a few of its features may need online access.
 
-This is a mature product, battle-tested during anime conventions like [Jonetsu](http://www.jonetsu.fr), Japan Expo or Japanantes and similar events, weddings, anime nights between friends, etc. There still are some bugs remaining we'd like to exterminate, obviously :)
+This is a mature product, battle-tested during anime conventions like [Jonetsu](http://www.jonetsu.fr), Japan Expo or Japanantes and similar events, weddings, anime nights between friends, etc. There still are some bugs remaining we'd like to exterminate, obviously :).
 
 ## Features
 
@@ -42,13 +42,13 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 ## How it works
 
 * See the install section below
-* Place karaoke songs inside the `app/data` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/). If you don't want to add a full karaoke base for now, Karaoke Mugen will copy its samples in your `app/data` if it's left empty so you can try out the app. You can also individually download songs.
-* Launch the app (see the launch section below). It will open a browser on the welcome screen. Follow the guided tour for admins.
+* Launch the app (see the launch section below). You will be prompted with some questions and you will create an account.
+* Use the in-app downloader or place karaoke songs inside the `app/repos` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/). If you don't want to add a full karaoke base for now, Karaoke Mugen will download samples from karaoke repositories in your `app/repos` folder if it's left empty so you can try out the app.
 * Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and have fun!
 
 In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's over a few hundreds gigabytes big once the videos have been downloaded.
 
-For more information, check out the [documentation site!](http://docs.karaokes.moe)
+For more information, check out the [documentation site](http://docs.karaokes.moe)!
 
 ## System requirements
 
@@ -60,11 +60,11 @@ It also requires mpv and ffmpeg binaries (see below).
 
 ## Install
 
-If you don't want to install manually, binaries are available [on the website](http://mugen.karaokes.moe/en/download.html) for Windows and macOS. For Linux, follow the following steps.
+If you don't want to install manually, binaries are available [on the website](http://mugen.karaokes.moe/en/download.html) for Windows, Linux and macOS. The instructions below are for early-adopters, power users or devs who want to tinker with the app.
 
 ### Download
 
-To install, git clone this repository with the `--recursive` flag since it uses git submodules or download one of the available binaries for macOS or Windows on [Karaoke Mugen's website](http://mugen.karaokes.moe)
+To install, git clone this repository with the `--recursive` flag since it uses git submodules or download one of the available binaries for macOS or Windows on [Karaoke Mugen's website](http://mugen.karaokes.moe).
 
 ### Config files and portability
 
@@ -88,7 +88,7 @@ You can also specify paths where to find those binaries in your `config.yml` fil
 
 ##### Linux
 
-Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.yml`
+Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.yml`.
 
 Make sure postgres is launched and ready for use.
 
@@ -119,9 +119,7 @@ If you don't have `yarn`, install it first from [Yarn's website](http://yarnpkg.
 
 ### Git submodules
 
-Initialize some git config values either via `yarn gitconfig` or by hand :
-
-Warning : these are global. If you wish to make them local, put `local` after `config` in each command.
+Initialize some git config values either via `yarn gitconfig` or by hand:
 
 ```sh
 git config diff.submodule log
@@ -205,7 +203,7 @@ yarn startNoElectron
 
 ## Translations
 
-Currently french and english are supported. Translators are welcome!
+Currently French and English are supported. Translators are welcome!
 
 ## Contact
 
@@ -215,6 +213,8 @@ You can contact us by either
 * Going to the [contact page](http://mugen.karaokes.moe/en/contact.html) and picking the communication channel of your choice.
 
 ## How to contribute
+
+Karaoke Mugen is created by people who like anime, karaoke, etc. You can help us ~~fill the world with karaoke~~!
 
 For general contributions, read the [dedicated section on the documentation website](http://docs.karaokes.moe/en/dev-guide/code/)
 

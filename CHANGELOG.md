@@ -78,7 +78,7 @@ You can find more info in issue #675
 - Singers and series auto-complete is now a bit faster in system panel's karaoke creation tool (#662)
 - SQL code is better organized in the app's source code (#688)
 - When changing a repository's priority (moving it in the list) a timer will only validate your changes and regenerate your database after a bit (#687)
-- node-mpv (module to talk to the video player) has been updated and should be more stable and report errors better. The module piloting it has also been rewritten. (#684 #711)
+- The MPV component has been rewritten using our own IPC implementation, because of many issues with node-mpv. We've seen with the node-mpv author to fix some issues with some patches. (#684 #711 #719)
 - Init phase has been a bit reworked when you display logs (#683)
 - Unit tests are now started at the end of the app's launch, speeding up continuous integration cycle (#633)
 - API error codes have been normalized. Karaoke Mugen can be a teapot now. (#716)
