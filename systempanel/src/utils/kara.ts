@@ -3,33 +3,33 @@ import { DBPLC } from '../../../src/types/database/playlist';
 import { getNavigatorLanguageIn2B } from '../isoLanguages';
 import { SettingsStoreData } from '../store/types/settings';
 
-const navigatorLanguage:string = getNavigatorLanguageIn2B();
+const navigatorLanguage: string = getNavigatorLanguageIn2B();
 
-export function getTagInLocale(tag:DBKaraTag) {
-	return getTagInLanguage(tag, navigatorLanguage, 'eng');
-}
-
-export function getTagInLocaleList(list:Array<DBKaraTag>, i18n?:any) {
-	if (list) {
-		return list.map((tag:DBKaraTag) => getTagInLanguage(tag, navigatorLanguage, 'eng', i18n));
-	} else {
-		return [];
-	}
-}
-
-export function getTagInLanguage (tag:DBKaraTag, mainLanguage:string, fallbackLanguage:string, i18nParam?:any) {
+export function getTagInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string, i18nParam?: any): string {
 	const i18n = (i18nParam && i18nParam[tag.tid]) ? i18nParam[tag.tid] : tag.i18n;
 	if (i18n) {
-	  return i18n[mainLanguage] ? i18n[mainLanguage] : 
-		  (i18n[fallbackLanguage] ? i18n[fallbackLanguage] : tag.name);
+		return i18n[mainLanguage] ? i18n[mainLanguage] :
+			(i18n[fallbackLanguage] ? i18n[fallbackLanguage] : tag.name);
 	} else {
 		return tag.name;
 	}
 }
 
-export function getSerieLanguage(settings:SettingsStoreData, tag:DBKaraTag, karaLanguage:string, i18nParam?:any) {
+export function getTagInLocale(tag: DBKaraTag): string {
+	return getTagInLanguage(tag, navigatorLanguage, 'eng');
+}
+
+export function getTagInLocaleList(list: Array<DBKaraTag>, i18n?: any): string[] {
+	if (list) {
+		return list.map((tag: DBKaraTag) => getTagInLanguage(tag, navigatorLanguage, 'eng', i18n));
+	} else {
+		return [];
+	}
+}
+
+export function getSerieLanguage(settings: SettingsStoreData, tag: DBKaraTag, karaLanguage: string, i18nParam?: any): string {
 	const user = settings.user;
-	let mode:number | undefined = user && user.series_lang_mode;
+	let mode: number | undefined = user && user.series_lang_mode;
 	if (!user || user.series_lang_mode === -1) {
 		mode = settings.config.Frontend.SeriesLanguageMode;
 	}
@@ -58,12 +58,12 @@ export function getSerieLanguage(settings:SettingsStoreData, tag:DBKaraTag, kara
 * @param {Object} data - data from the kara
 * @return {String} the title
 */
-export function buildKaraTitle(settings:SettingsStoreData, data:DBPLC, i18nParam?:any) {
+export function buildKaraTitle(settings: SettingsStoreData, data: DBPLC, i18nParam?: any): string {
 	const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	const serieText = (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(settings, e, data.langs[0].name, i18nParam)).join(', ') 
+	const serieText = (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(settings, e, data.langs[0].name, i18nParam)).join(', ')
 		: data.singers.map(e => e.name).join(', ');
 	const langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
 	const songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).sort().join(' ');

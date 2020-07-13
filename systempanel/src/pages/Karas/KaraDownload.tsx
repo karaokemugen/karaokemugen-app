@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import React, { Component } from 'react';
 
+import { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../src/lib/types/database/tag';
 import { DBPLC } from '../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../src/types/download';
@@ -12,18 +13,17 @@ import { getTagInLocaleList } from '../../utils/kara';
 import { tagTypes } from '../../utils/tagTypes';
 import { getCriterasByValue } from './_blc_criterias_types';
 
-let blacklist_cache = {};
-let api_get_local_karas_interval = null;
-let api_read_kara_queue_interval = null;
+let blacklistCache = {};
+let apiGetLocalKarasInterval = null;
+let apiReadKaraQueueInterval = null;
 
 interface KaraDownloadState {
 	karas_local: any[];
 	karas_online: any[];
 	i18nTag: any;
-	blacklist_criterias: any[];
-	karas_online_count: number;
+	blacklistCriterias: any[];
+	karasOnlineCount: number;
 	karas_queue: any[];
-	active_download: any;
 	kara: any;
 	currentPage: number;
 	currentPageSize: number;
@@ -42,10 +42,9 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			karas_local: [],
 			karas_online: [],
 			i18nTag: {},
-			karas_online_count: 0,
-			blacklist_criterias: [],
+			karasOnlineCount: 0,
+			blacklistCriterias: [],
 			karas_queue: [],
-			active_download: null,
 			kara: {},
 			currentPage: parseInt(localStorage.getItem('karaDownloadPage')) || 1,
 			currentPageSize: parseInt(localStorage.getItem('karaDownloadPageSize')) || 100,
@@ -59,8 +58,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	componentDidMount() {
 		this.api_get_online_karas();
-		this.api_get_blacklist_criterias();
-		this.blacklist_check_emptyCache();
+		this.api_get_blacklistCriterias();
+		this.blacklistCheckEmptyCache();
 		this.startObserver();
 		this.getTags();
 	}
@@ -77,12 +76,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	startObserver() {
 		this.api_get_local_karas();
 		this.api_read_kara_queue();
-		api_get_local_karas_interval = setInterval(this.api_get_local_karas, 5000);
-		api_read_kara_queue_interval = setInterval(this.api_read_kara_queue, 5000);
+		apiGetLocalKarasInterval = setInterval(this.api_get_local_karas, 5000);
+		apiReadKaraQueueInterval = setInterval(this.api_read_kara_queue, 5000);
 	}
 	stopObserver() {
-		clearInterval(api_get_local_karas_interval);
-		clearInterval(api_read_kara_queue_interval);
+		clearInterval(apiGetLocalKarasInterval);
+		clearInterval(apiReadKaraQueueInterval);
 	}
 
 	changeFilter = (event) => {
@@ -112,7 +111,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		const karas = response.data.content;
 		const karasToDownload: KaraDownloadRequest[] = [];
 		for (const kara of karas) {
-			if (this.blacklist_check(kara)) {
+			if (this.blacklistCheck(kara)) {
 				karasToDownload.push({
 					kid: kara.kid,
 					size: kara.mediasize,
@@ -130,7 +129,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		this.setState({ karas_local: res.data.content });
 	}
 
-	async api_get_blacklist_criterias() {
+	async api_get_blacklistCriterias() {
 		const res = await Axios.get('/downloads/blacklist/criterias');
 		if (res.data.length) {
 			const criterias = res.data.map(function (criteria) {
@@ -142,37 +141,37 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				}
 				return null;
 			});
-			this.setState({ blacklist_criterias: criterias });
+			this.setState({ blacklistCriterias: criterias });
 		}
 	}
 
-	blacklist_check_emptyCache() {
-		blacklist_cache = {};
+	blacklistCheckEmptyCache() {
+		blacklistCache = {};
 	}
-	blacklist_check(kara) {
+	blacklistCheck(kara) {
 		// avoid lots of kara check operation on re-render
-		if (blacklist_cache[kara.kid] !== undefined)
-			return blacklist_cache[kara.kid];
+		if (blacklistCache[kara.kid] !== undefined)
+			return blacklistCache[kara.kid];
 
-		blacklist_cache[kara.kid] = true;
-		if (this.state.blacklist_criterias.length) {
-			this.state.blacklist_criterias.map(criteria => {
+		blacklistCache[kara.kid] = true;
+		if (this.state.blacklistCriterias.length) {
+			this.state.blacklistCriterias.map(criteria => {
 				if (criteria.filter.test === 'contain') {
 					criteria.filter.fields.map(field => {
 						if (typeof (kara[field]) === 'string') {
 							if (kara[field].toLowerCase().match(criteria.value)) {
-								blacklist_cache[kara.kid] = false;
+								blacklistCache[kara.kid] = false;
 							}
 						} else if (kara[field] && kara[field].length > 0) {
 							kara[field].map(t => {
 								if (t) {
 									if (typeof t === 'string') {
 										if (t.toLowerCase().match(criteria.value)) {
-											blacklist_cache[kara.kid] = false;
+											blacklistCache[kara.kid] = false;
 										}
 									} else if (t.name) {
 										if (t.name.toLowerCase().match(criteria.value)) {
-											blacklist_cache[kara.kid] = false;
+											blacklistCache[kara.kid] = false;
 										}
 									}
 								}
@@ -186,7 +185,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			});
 		}
 
-		return blacklist_cache[kara.kid];
+		return blacklistCache[kara.kid];
 	}
 
 	api_get_online_karas = async () => {
@@ -201,7 +200,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		});
 		this.setState({
 			karas_online: karas,
-			karas_online_count: res.data.infos.count || 0,
+			karasOnlineCount: res.data.infos.count || 0,
 			i18nTag: res.data.i18n,
 			totalMediaSize: prettyBytes(res.data.infos.totalMediaSize)
 		});
@@ -441,7 +440,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 									const from = range[0];
 									return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
 								},
-								total: this.state.karas_online_count,
+								total: this.state.karasOnlineCount,
 								showQuickJumper: true,
 							}}
 						/>
@@ -451,10 +450,10 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		);
 	}
 
-	is_local_kara(kara) {
+	isLocalKara(kara) {
 		return this.state.karas_local && this.state.karas_local.find(item => item.kid === kara.kid);
 	}
-	is_queued_kara(kara) {
+	isQueuedKara(kara) {
 		return this.state.karas_queue.find(item => item.name === kara.name);
 	}
 
@@ -493,7 +492,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			dataIndex: 'title',
 			key: 'title',
 			render: (title, record) => {
-				if (this.is_local_kara(record.kid))
+				if (this.isLocalKara(record.kid))
 					return <strong>{title}</strong>;
 				return <span>{title}</span>;
 
@@ -515,11 +514,11 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			key: 'download',
 			render: (text, record) => {
 				let button = null;
-				const blacklisted = !this.blacklist_check(record);
-				if (this.is_local_kara(record)) {
+				const blacklisted = !this.blacklistCheck(record);
+				if (this.isLocalKara(record)) {
 					button = <Button disabled type="default"><CheckCircleTwoTone twoToneColor="#52c41a" /></Button>;
 				} else {
-					const queue = this.is_queued_kara(record);
+					const queue = this.isQueuedKara(record);
 					if (queue) {
 						if (queue.status === 'DL_RUNNING'){
 							button = <span><Button disabled type="default"><SyncOutlined spin /></Button></span>;
