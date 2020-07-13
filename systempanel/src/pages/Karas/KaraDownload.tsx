@@ -9,7 +9,7 @@ import { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../src/lib/types/database/tag';
 import { DBPLC } from '../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../src/types/download';
-import { getTagInLocaleList } from '../../utils/kara';
+import { getTagInLocale,getTagInLocaleList } from '../../utils/kara';
 import { tagTypes } from '../../utils/tagTypes';
 import { getCriterasByValue } from './_blc_criterias_types';
 
@@ -32,6 +32,7 @@ interface KaraDownloadState {
 	tags: DBTag[];
 	compare: string;
 	totalMediaSize: string;
+	tagOptions: any[];
 }
 
 class KaraDownload extends Component<unknown, KaraDownloadState> {
@@ -52,7 +53,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			tagFilter: '',
 			tags: [],
 			compare: '',
-			totalMediaSize: ''
+			totalMediaSize: '',
+			tagOptions: []
 		};
 	}
 
@@ -66,7 +68,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	async getTags() {
 		const res = await Axios.get('/tags/remote');
-		this.setState({ tags: res.data.content });
+		await this.setState({ tags: res.data.content });
+		this.FilterTagCascaderOption();
 	}
 
 	componentWillUnmount() {
@@ -242,16 +245,15 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				label: i18next.t(`TAG_TYPES.${type}`),
 				children: []
 			};
-			for (const tag of this.state.tags) {
-				if (tag.types.length && tag.types.indexOf(typeID) >= 0)
-					option.children.push({
-						value: tag.tid,
-						label: tag.name,
-					});
+			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
+				option.children.push({
+					value: tag.tid,
+					label: getTagInLocale(tag as unknown as DBKaraTag),
+				});
 			}
 			return option;
 		});
-		return options;
+		this.setState({tagOptions: options});
 	}
 
 	getGroupsTags = () => {
@@ -340,7 +342,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 									placeholder={i18next.t('KARA.TAG_GROUP_FILTER')} key={'tid'} options={this.getGroupsTags()} />
 							</Col>
 							<Col flex={2}>
-								<Cascader style={{ width: '90%' }} options={this.FilterTagCascaderOption()}
+								<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
 									showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
 									onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
 							</Col>
