@@ -4,8 +4,8 @@
 
 ![presentation](img/presentation.png)
 
-Master branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) -
-Next branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next)
+Master branch: [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) -
+Next branch: [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next)
 
 ![Last commit](https://img.shields.io/github/last-commit/AxelTerizaki/karaokemugen-app.svg) ![Latest version](https://img.shields.io/github/tag/karaoke-mugen/karaokemugen-app.svg) ![License](https://img.shields.io/github/license/karaoke-mugen/karaokemugen-app.svg) ![Size](https://img.shields.io/github/repo-size/karaoke-mugen/karaokemugen-app.svg) ![Discord](https://img.shields.io/discord/84245347336982528.svg)
 
@@ -13,7 +13,7 @@ Next branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemu
 
 Karaoke Mugen is a playlist manager and player for video and audio karaoke. It's made of a webapp and an engine. The webapp allows users to search for and add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
 
-It works like a japanese karaoke where anyone can add songs one after another to a playlist with their smartphone, tablet or computer. Another mode allows users to add songs to a suggestion list the admin can then pick songs from.
+It works like a japanese karaoke where anyone can add songs one after another to a playlist with their smartphone, tablet or computer. The playlist can be reviewed by an admin or played "as is". This behaviour is configurable.
 
 Karaoke Mugen works offline and does not require an Internet connection, but a few of its features may need online access.
 
@@ -21,30 +21,38 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 
 ## Features
 
-* Accepted formats :
-  * Video: AVI, MP4, MKV (anything supported by [mpv](http://mpv.io) really)
-  * Subtitles: ASS, Karafun, KAR, Epitanime Toyunda, Ultrastar .txt files (if not ASS, they will be converted to ASS upon importation, and cannot be used directly)
-  * Music: MP3, M4A, OGG
-* Complete player controls : Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control
-* Playlist management : Reorder, shuffle, copy and move songs around between playlists
-* Blacklist and whitelist system : Create criterias to ban songs on.
-* Complete metadata structure for songs : Singers, songwriters, creators, authors, languages, categorization tags...
-* Complete filter system and search engine based on the aforementionned metadata.
-* User profiles with access rights, favorites list, and other info
-* Web interface for smartphone/tablet/PC ~~IE6 compatible~~
-* Highly customized experience to tailor the app to your specific needs (in front of a crowd, between friends, for karaoke contests, etc.)
-* Displays karaoke information or admin announcements during song playback
-* Playlists can be current (used by the video player) and/or public (where users can send songs to)
-* Export/import playlists and favorites
-* [REST API](http://mugen.karaokes.moe/apidoc) so you can create custom clients or web interfaces.
-* And many other things! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
+* **Accepted formats**:
+  * **Video**: AVI, MP4, MKV (anything supported by [mpv](http://mpv.io) really)
+  * **Subtitles**: ASS, Karafun, KAR, Epitanime Toyunda, Ultrastar .txt files (if not ASS, they will be converted to ASS upon importation, and cannot be used directly)
+  * **Music**: MP3, M4A, OGG
+* **Complete player controls**: Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control
+* **Playlist management**: Reorder, shuffle, copy and move songs around between playlists
+  * Playlists can be _current_ (used by the video player) and/or _public_ (where users can send songs to)
+  * Playlists can be _hidden_ from public interface.
+  * Some songs in the playlist can be "mystery added", these songs will be displayed as "???" to keep the surprise.
+* **Blacklist and whitelist system**: Create criterias to ban songs on.
+* **Complete metadata structure for songs**: Singers, songwriters, creators, authors, languages, categorization tags...
+  * Complete **filter system** and **search engine** based on the aforementionned metadata.
+* **System Panel** to configure Karaoke Mugen:
+  * **Multi-karaoke repositories support**: You can add as many repositories you want. Karaoke Mugen has 2 "official repositories": the [otaku base](https://lab.shelter.moe/karaokemugen/bases/karaokebase) and the [world base](https://lab.shelter.moe/karaokemugen/bases/karaokebase-world)
+  * **Configure** application behaviour
+  * **User profiles** with access rights, favorites list, and other info
+* **Web interface** for smartphone/tablet/PC ~~IE6 compatible~~
+  * This interface is for public and can be set to _restricted mode_ to prevent adding songs or in _closed mode_ to prevent access.
+  * Users can **add the songs** they want from the library.
+  * Admins can **organize playlists** and control the player.
+* **Highly customized experience** to tailor the app to your specific needs (in front of a crowd, between friends, for karaoke contests, etc.)
+* **Displays karaoke information** or admin announcements during song playback
+* **Export/import** playlists and favorites
+* **[REST API](http://mugen.karaokes.moe/apidoc)** so you can create custom clients or web interfaces.
+* And **many other things**! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
 
 ## How it works
 
-* See the install section below
-* Launch the app (see the launch section below). You will be prompted with some questions and you will create an account.
-* Use the in-app downloader or place karaoke songs inside the `app/repos` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/). If you don't want to add a full karaoke base for now, Karaoke Mugen will download samples from karaoke repositories in your `app/repos` folder if it's left empty so you can try out the app.
-* Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and have fun!
+* See the **[install](#install)** section below
+* **Launch the app** (see the launch section below). You will be prompted with some questions and you will create an account.
+* Use the **in-app downloader** or place karaoke songs inside the `app/repos` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/). If you don't want to add a full karaoke base for now, Karaoke Mugen will download samples from karaoke repositories in your `app/repos` folder if it's left empty so you can try out the app.
+* Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and **have fun**!
 
 In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's over a few hundreds gigabytes big once the videos have been downloaded.
 
@@ -54,7 +62,7 @@ For more information, check out the [documentation site](http://docs.karaokes.mo
 
 The app is multi-platform and works on Linux/Windows/macOS.
 
-It requires nodeJS 10.9 or above.
+It requires nodeJS 12 or above.
 
 It also requires mpv and ffmpeg binaries (see below).
 
@@ -76,7 +84,7 @@ Portable mode is useful if you're storing Karaoke Mugen on a removeable media or
 
 ### Required binaries
 
-mpv (video player), ffmpeg (video processing) and postgreSQL (database) are required by Karaoke Mugen
+mpv (video player), ffmpeg (video processing) and postgreSQL (database) are required by Karaoke Mugen.
 
 #### Depending on your system
 
@@ -233,4 +241,4 @@ Thanks to [Sentry error tracking](https://sentry.io/welcome?utm_source=KaraokeMu
 
 ## License
 
-MIT
+Karaoke Mugen is licensed under MIT License. Other projects related to Karaoke Mugen may have other license terms. Please check every project for more informations.
