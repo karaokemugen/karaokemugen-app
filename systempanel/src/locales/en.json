@@ -185,7 +185,7 @@
 		"MERGE_WITH": "Merge with",
 		"MERGE_WITH_TOOLTIP": "Merge the current tag with another one",
 		"MERGE_WITH_SELECT": "Select a tag",
-		"MERGE_WITH_BUTTON": "Merge !",
+		"MERGE_WITH_BUTTON": "Merge!",
 		"MERGE_ABOUT": "About Merging process",
 		"MERGE_ABOUT_MESSAGE": "Resulting tags will have the current Name and Shortname. Types, Aliases and translation will be merged and the resulting tags will contain all the information from Current and targeted tags",
 		"TAG_DELETED_CONFIRM": "Confirm tag deletion",
@@ -256,12 +256,12 @@
 		"MERGE_WITH": "Merge with",
 		"MERGE_WITH_TOOLTIP": "Merge the current session with another one",
 		"MERGE_WITH_SELECT": "Select a session",
-		"MERGE_WITH_BUTTON": "Merge !",
+		"MERGE_WITH_BUTTON": "Merge!",
 		"KARA_PLAYED": "Karas played",
 		"KARA_REQUESTED": "Karas requested",
 		"NEW_SESSION": "New session :",
-		"ACTIVE": "Active ?",
-		"PRIVATE": "Private ?"
+		"ACTIVE": "Active?",
+		"PRIVATE": "Private?"
 	},
 	"REPOSITORIES": {
 		"NAME": "Repository name",
@@ -281,7 +281,7 @@
 		"CONSOLIDATE": "Repository operations",
 		"CONSOLIDATE_BUTTON": "Consolidate repository...",
 		"CONSOLIDATE_PANEL": "Move repository",
-		"WARNING": "Warning !",
+		"WARNING": "Warning!",
 		"CONSOLIDATE_ABOUT_MESSAGE": "All repository fiels (karaokes, medias, series, tags...) will be moved to the new folder as their root. If your repository has several folders for the same type of data (several media folders for example), all filles of all folders will be moved into the same target folder. If there are duplicate files, they'll be savagely overwritten.",
 		"COMPARE_LYRICS": "Update lyrics between two repositories",
 		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Choose a repository",
