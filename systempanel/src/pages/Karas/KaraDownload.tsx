@@ -11,7 +11,7 @@ import { DBDownload } from '../../../../src/types/database/download';
 import { DBPLC } from '../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../src/types/download';
 import { socket } from '../../App';
-import { getTagInLocale,getTagInLocaleList } from '../../utils/kara';
+import { getTagInLocale, getTagInLocaleList } from '../../utils/kara';
 import { tagTypes } from '../../utils/tagTypes';
 import { getCriterasByValue } from './_blc_criterias_types';
 
@@ -66,7 +66,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		this.apiGetLocalKaras();
 		this.getTags();
 		socket.on('downloadQueueStatus', (data?: any) => {
-			this.setState({karasQueue: data});
+			this.setState({ karasQueue: data });
 			this.apiGetLocalKaras();
 		});
 	}
@@ -239,7 +239,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			}
 			return option;
 		});
-		this.setState({tagOptions: options});
+		this.setState({ tagOptions: options });
 	}
 
 	getGroupsTags = () => {
@@ -350,8 +350,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 							</Col>
 							<Col span={4}>
 								<Row><label>{i18next.t('KARA.QUEUE_LABEL')}</label></Row>
-								<Row><label>{i18next.t('KARA.QUEUE_LABEL_SONGS', 
-									{numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE').length})}</label></Row>
+								<Row><label>{i18next.t('KARA.QUEUE_LABEL_SONGS',
+									{ numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE').length })}</label></Row>
 							</Col>
 						</Row>
 						<Row style={{ paddingTop: '5px' }} justify="space-between">
@@ -510,7 +510,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				} else {
 					const queue = this.isQueuedKara(record);
 					if (queue) {
-						if (queue.status === 'DL_RUNNING'){
+						if (queue.status === 'DL_RUNNING') {
 							button = <span><Button disabled type="default"><SyncOutlined spin /></Button></span>;
 						} else if (queue.status === 'DL_PLANNED') {
 							button = <Button onClick={() => Axios.delete(`/downloads/${queue.uuid}`)} type="default">
