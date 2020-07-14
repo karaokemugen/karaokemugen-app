@@ -1,10 +1,11 @@
 {
-	"404": "Perdu sur le réseau local ?",
 	"YES": "Oui",
 	"NO": "Non",
 	"SEARCH": "Rechercher",
+	"404": "Perdu sur le réseau local ?",
 	"404_2": "Pas de panique, on va vous aider",
-    "404_3": "vous êtes ici",
+	"404_3": "vous êtes ici",
+	"404_4": "Revenir au début",
 	"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",
 	"SECURITY_CODE_MANDATORY": "Le code de sécurité est obligatoire pour créer un compte opérateur",
 	"PASSWORD_DIFFERENT": "Les mots de passes ne sont pas identiques",
