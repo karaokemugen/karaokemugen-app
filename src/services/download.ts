@@ -50,9 +50,12 @@ function initTask() {
 	});
 }
 
-function emitQueueStatus(status: QueueStatus) {
+function emitQueueStatus(status: QueueStatus, data?: any) {
 	emit('downloadQueueStatus', status);
-	emitWS('downloadQueueStatus', status);
+	emitWS('downloadQueueStatus', {
+		status: status,
+		data: data
+	});
 }
 
 function queueDownload(input: KaraDownload, done: any) {
@@ -88,13 +91,13 @@ function initQueue() {
 			refreshAll().then(() => refreshing = false);
 			taskCounter = 0;
 		}
-		emitQueueStatus('updated');
+		emitQueueStatus('updated', q.length);
 	});
 	q.on('task_failed', (taskId: string, err: any) => {
 		logger.error(`Task ${taskId} failed`, {service: 'Download', obj: err});
-		emitQueueStatus('updated');
+		emitQueueStatus('updated', q.length);
 	});
-	q.on('empty', () => emitQueueStatus('updated'));
+	q.on('empty', () => emitQueueStatus('updated', q.length));
 	q.on('drain', async () => {
 		logger.info('No tasks left, stopping queue', {service: 'Download'});
 		if (!refreshing) {
@@ -102,7 +105,7 @@ function initQueue() {
 			await compareKarasChecksum();
 		}
 		taskCounter = 0;
-		emitQueueStatus('updated');
+		emitQueueStatus('updated', q.length);
 		emitQueueStatus('stopped');
 		emit('downloadQueueDrained');
 		downloadTask.end();
