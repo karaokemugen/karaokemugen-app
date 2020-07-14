@@ -465,15 +465,19 @@ export async function getRemoteTags(repo: string, params: TagParams = {}): Promi
 }
 
 export async function updateAllBases() {
+	const reposTagsUpdated = {};
 	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
+
 			logger.info(`Updating base from repository ${repo.Name}`, {service: 'Update'});
-			await updateBase(repo.Name);
+			reposTagsUpdated[repo.Name] = await updateBase(repo.Name);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to update properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('BASES_SYNC_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
+	// If one repo updated tags, we need to refresh everything.
+	if (Object.values(reposTagsUpdated).find(e => e)) await refreshAll();
 }
 
 export async function updateBase(repo: string) {
@@ -496,8 +500,7 @@ export async function updateBase(repo: string) {
 		logger.info('Getting local and remote tags inventory', {service: 'Update'});
 		const tags = await getTagsInventory(repo);
 		const updatedTags = await updateTags(repo, tags.local, tags.remote);
-		if (updatedTags > 0) await refreshAll();
-		return true;
+		return updatedTags > 0;
 	} catch(err) {
 		logger.error('Base update failed', {service: 'Update', obj: err});
 		throw err;
@@ -761,9 +764,8 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 		}
 		return tagsToUpdate.length;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		profile('tagUpdate');
 		task.end();
