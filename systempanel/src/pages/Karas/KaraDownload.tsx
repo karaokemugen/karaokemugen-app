@@ -7,15 +7,15 @@ import React, { Component } from 'react';
 
 import { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../src/lib/types/database/tag';
+import { DBDownload } from '../../../../src/types/database/download';
 import { DBPLC } from '../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../src/types/download';
+import { socket } from '../../App';
 import { getTagInLocale,getTagInLocaleList } from '../../utils/kara';
 import { tagTypes } from '../../utils/tagTypes';
 import { getCriterasByValue } from './_blc_criterias_types';
 
 let blacklistCache = {};
-let apiGetLocalKarasInterval = null;
-let apiReadKaraQueueInterval = null;
 
 interface KaraDownloadState {
 	karas_local: any[];
@@ -23,7 +23,7 @@ interface KaraDownloadState {
 	i18nTag: any;
 	blacklistCriterias: any[];
 	karasOnlineCount: number;
-	karas_queue: any[];
+	karasQueue: DBDownload[];
 	kara: any;
 	currentPage: number;
 	currentPageSize: number;
@@ -45,7 +45,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			i18nTag: {},
 			karasOnlineCount: 0,
 			blacklistCriterias: [],
-			karas_queue: [],
+			karasQueue: [],
 			kara: {},
 			currentPage: parseInt(localStorage.getItem('karaDownloadPage')) || 1,
 			currentPageSize: parseInt(localStorage.getItem('karaDownloadPageSize')) || 100,
@@ -60,31 +60,21 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	componentDidMount() {
 		this.api_get_online_karas();
-		this.api_get_blacklistCriterias();
+		this.apiGetBlacklistCriterias();
 		this.blacklistCheckEmptyCache();
-		this.startObserver();
+		this.apiReadKaraQueue();
+		this.apiGetLocalKaras();
 		this.getTags();
+		socket.on('downloadQueueStatus', (data?: any) => {
+			this.setState({karasQueue: data});
+			this.apiGetLocalKaras();
+		});
 	}
 
 	async getTags() {
 		const res = await Axios.get('/tags/remote');
 		await this.setState({ tags: res.data.content });
 		this.FilterTagCascaderOption();
-	}
-
-	componentWillUnmount() {
-		this.stopObserver();
-	}
-
-	startObserver() {
-		this.api_get_local_karas();
-		this.api_read_kara_queue();
-		apiGetLocalKarasInterval = setInterval(this.api_get_local_karas, 5000);
-		apiReadKaraQueueInterval = setInterval(this.api_read_kara_queue, 5000);
-	}
-	stopObserver() {
-		clearInterval(apiGetLocalKarasInterval);
-		clearInterval(apiReadKaraQueueInterval);
 	}
 
 	changeFilter = (event) => {
@@ -101,12 +91,9 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			repository: kara.repository
 		};
 		this.postToDownloadQueue([downloadObject]);
-		this.api_read_kara_queue();
 	}
 
 	downloadAll = async () => {
-		this.stopObserver();
-
 		const p = Math.max(0, this.state.currentPage - 1);
 		const psz = this.state.currentPageSize;
 		const pfrom = p * psz;
@@ -124,15 +111,14 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			}
 		}
 		this.postToDownloadQueue(karasToDownload);
-		this.startObserver();
 	}
 
-	api_get_local_karas = async () => {
+	apiGetLocalKaras = async () => {
 		const res = await Axios.get('/karas');
 		this.setState({ karas_local: res.data.content });
 	}
 
-	async api_get_blacklistCriterias() {
+	async apiGetBlacklistCriterias() {
 		const res = await Axios.get('/downloads/blacklist/criterias');
 		if (res.data.length) {
 			const criterias = res.data.map(function (criteria) {
@@ -209,9 +195,9 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		});
 	}
 
-	api_read_kara_queue = async () => {
+	apiReadKaraQueue = async () => {
 		const res = await Axios.get('/downloads');
-		this.setState({ karas_queue: res.data });
+		this.setState({ karasQueue: res.data });
 	}
 
 	handleTableChange = (pagination, filters, sorter) => {
@@ -363,7 +349,9 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								<label>{i18next.t('KARA.FILTER_SONGS')}</label>
 							</Col>
 							<Col span={4}>
-								<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
+								<Row><label>{i18next.t('KARA.QUEUE_LABEL')}</label></Row>
+								<Row><label>{i18next.t('KARA.QUEUE_LABEL_SONGS', 
+									{numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE').length})}</label></Row>
 							</Col>
 						</Row>
 						<Row style={{ paddingTop: '5px' }} justify="space-between">
@@ -456,7 +444,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		return this.state.karas_local && this.state.karas_local.find(item => item.kid === kara.kid);
 	}
 	isQueuedKara(kara) {
-		return this.state.karas_queue.find(item => item.name === kara.name);
+		return this.state.karasQueue.find(item => item.name === kara.name);
 	}
 
 	columns = [
@@ -525,7 +513,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						if (queue.status === 'DL_RUNNING'){
 							button = <span><Button disabled type="default"><SyncOutlined spin /></Button></span>;
 						} else if (queue.status === 'DL_PLANNED') {
-							button = <Button onClick={() => Axios.delete(`/downloads/${queue.pk_uuid}`)} type="default">
+							button = <Button onClick={() => Axios.delete(`/downloads/${queue.uuid}`)} type="default">
 								<ClockCircleTwoTone twoToneColor="#dc4e41" />
 							</Button>;
 						} else if (queue.status === 'DL_DONE') {// done but not in local -> try again dude
