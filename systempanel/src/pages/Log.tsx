@@ -41,7 +41,7 @@ class Log extends Component<unknown, LogState> {
 
 	refresh = async () => {
 		const res = await Axios.get(`/log/${this.state.level}`);
-		this.setState({ log: res.data });
+		if (res.data) this.setState({ log: res.data });
 	}
 
 	setLevel = async (level) => {
