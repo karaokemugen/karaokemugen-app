@@ -1,6 +1,6 @@
 # Versions
 
-## v4.0.7 "Ôgi Obscure" - xx/07/2020
+## v4.0.10 "Ôgi Obscure" - xx/07/2020
 
 Version numbering has changed :
 
@@ -83,6 +83,7 @@ You can find more info in issue #675
 - Unit tests are now started at the end of the app's launch, speeding up continuous integration cycle (#633)
 - API error codes have been normalized. Karaoke Mugen can be a teapot now. (#716)
 - Logs are handled in a better way and are now more colorfun (#715)
+- The 404 Not Found page has been reworked.
 
 ### Fixes
 
@@ -97,6 +98,7 @@ You can find more info in issue #675
 - Fixed failure to import MKV files (#651)
 - Fixed changing primary folder of a repository (#650)
 - Fixed song info popup with a # in its name, and search with singer if series is not present (#649)
+- Fixes locales by using non-breaking spaces
 
 ## v3.2.2 "Nadia Navigatrice" - 23/05/2020
 
