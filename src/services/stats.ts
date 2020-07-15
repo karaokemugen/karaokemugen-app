@@ -45,8 +45,8 @@ export async function sendPayload() {
 		savePayload(payload);
 		logger.info('Payload sent successfully', {service: 'Stats'});
 	} catch(err) {
-		logger.error('Uploading stats payload failed', {service: 'Stats', obj: err});
-		sentry.error(err);
+		logger.warn('Uploading stats payload failed', {service: 'Stats', obj: err});
+		if (err !== 'This instance is not connected to the internets') sentry.error(err);
 	}
 
 }
