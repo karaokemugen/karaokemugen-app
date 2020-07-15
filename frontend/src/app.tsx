@@ -141,7 +141,6 @@ class App extends Component<unknown, IState> {
 			if (store.getVersion().sha) Sentry.configureScope((scope) => {
 				scope.setTag('commit', store.getVersion().sha as string);
 			});
-			Sentry.captureException(new Error('test!'));
 		}
 	}
 
