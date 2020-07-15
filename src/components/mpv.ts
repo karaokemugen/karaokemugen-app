@@ -330,7 +330,7 @@ class Player {
 						logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
 						logger.warn(`Subs NOT FOUND : ${playerState.currentSong.subfile}`, {service: 'Player'});
 					});
-				if (subFiles[0]) {
+				if (subFiles && subFiles[0]) {
 					await this.mpv.send({command: ['sub-add', subFiles[0], 'select']}).catch(err => {
 						logger.error('Unable to load subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`, obj: err});
 						sentry.error(err, 'Warning');
