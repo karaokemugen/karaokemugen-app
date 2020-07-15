@@ -52,7 +52,7 @@ export default function downloadController(router: Router) {
  * @apiSuccess {number} downloads/size Size in bytes for download
  * @apiSuccess {uuid} downloads/uuid Download UUID
  * @apiSuccess {date} downloads/started_at When the download was started
- * @apiSuccess {string} downloads/status Status codes : `DL_PLANNED`, `DL_DONE`, `PL_FAILED`, `PL_RUNNING`
+ * @apiSuccess {string} downloads/status Status codes : `DL_PLANNED`, `DL_DONE`, `DL_FAILED`, `DL_RUNNING`
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * [

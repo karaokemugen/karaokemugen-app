@@ -19,8 +19,7 @@ export async function createCircleAvatar(file: string) {
 		const image = await j.read(convertedFile);
 		await image.circle().writeAsync(replaceExt(file, '.circle.png'));
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	}
 }

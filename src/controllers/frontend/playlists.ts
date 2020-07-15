@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
-import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyPlaylist, exportPlaylist,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, setCurrentPlaylist, setPublicPlaylist, shufflePlaylist } from '../../services/playlist';
+import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyPlaylist, exportPlaylist,findPlaying,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, setCurrentPlaylist, setPublicPlaylist, shufflePlaylist } from '../../services/playlist';
 import { vote } from '../../services/upvote';
 import { APIMessage,errMessage } from '../common';
 import { requireAdmin, requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
@@ -264,6 +264,34 @@ export default function playlistsController(router: Router) {
 				const code = 'PL_EMPTY_ERROR';
 				errMessage(code, err);
 				res.status(err?.code || 500).json(APIMessage(code));
+			}
+		});
+	router.route('/playlists/:pl_id([0-9]+)/findPlaying')
+		/**
+	 * @api {get} /playlists/:pl_id/findPlaying Find current playing song's index
+	 * @apiName GetFindPlaying
+	 * @apiVersion 4.0.10
+	 * @apiGroup Playlists
+	 * @apiDescription Returns the song's flag playing's index. Useful when you don't load the whole playlist so you can jump to the correct page to get the currently playing song
+	 * @apiPermission admin
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {Number} pl_id Target playlist ID.
+	 * @apiSuccess {Number} index -1 if no flag_playing found.
+
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *  "index": 2190
+	 * }
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+			try {
+				const index = await findPlaying(+req.params.pl_id);
+				res.status(200).json({index: index});
+			} catch(err) {
+				res.status(500).json(err);
 			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/setCurrent')

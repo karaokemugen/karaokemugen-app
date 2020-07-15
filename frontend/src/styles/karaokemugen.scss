@@ -1185,6 +1185,42 @@ input[type="text"]:focus, input[type="password"]:focus {
 }
 
 .profileButtonLine {
-	justify-content: space-between;
+	justify-content: flex-end;
 	margin-top: 10px;
+	button {
+		background-color: #57bb00;
+	}
+}
+
+.page404-lost {
+	padding: 1em;
+	padding-bottom: unset;
+	text-align: center;
+	img {
+		margin-top: 1.5em;
+	}
+}
+
+.you-are-here {
+	// all: unset; // Fuck Bootstrap.
+	background-color: #404346;
+	padding: .5em;
+	width: max-content;
+	margin: 1em;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: monospace;
+	font-weight: bold;
+	text-align: inherit;
+}
+
+.page404-btn:visited {
+	color: white;
+}
+
+.page404-btn {
+	background-color: #e2754a;
+	padding: 1em;
+	color: white;
+	text-decoration: none;
 }

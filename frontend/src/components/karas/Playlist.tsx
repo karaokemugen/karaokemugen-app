@@ -133,7 +133,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
 		store.addChangeListener('playlistContentsUpdated', (idPlaylist: number) => {
 			const data = this.state.data as KaraList;
-			if (this.state.idPlaylist > 0) data.infos.from = 0;
+			if (this.state.idPlaylist > 0 && data) data.infos.from = 0;
 			this.setState({ data: data });
 			this.playlistContentsUpdated(idPlaylist);
 		});
@@ -514,7 +514,7 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			data = karas;
 		}
-		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying });
+		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying ? indexPlaying : this.state.playing });
 		this.playlistForceRefresh(true);
 	};
 
@@ -563,9 +563,15 @@ class Playlist extends Component<IProps, IState> {
 		return plInfos;
 	};
 
-	scrollToPlaying = () => {
-		if (this.state.playing)
+	scrollToPlaying = async () => {
+		if (this.state.playing) {
 			this.setState({ scrollToIndex: this.state.playing, goToPlaying: true, _goToPlaying: true });
+		} else {
+			const result = await axios.get(`/playlists/${this.state.idPlaylist}/findPlaying`);
+			if (result.data?.index !== -1) {
+				this.setState({ scrollToIndex: result.data.index, goToPlaying: true, _goToPlaying: true });
+			}
+		}
 	};
 
 	updateCounters = (event: PublicPlayerState) => {
@@ -891,7 +897,7 @@ class Playlist extends Component<IProps, IState> {
 							>
 								<i className="fas fa-chevron-up"></i>
 							</button>
-							{this.state.playlistInfo && this.state.playlistInfo.flag_current ?
+							{this.state.idPlaylist > 0 ?
 								<button
 									type="button"
 									title={i18next.t('GOTO_PLAYING')}

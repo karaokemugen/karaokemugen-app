@@ -177,8 +177,9 @@ export async function mergeTags(tid1: string, tid2: string) {
 	}
 }
 
-export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }) {
-	const task = new Task({
+export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, refresh: true }) {
+	let task: Task;
+	if (!opts.silent) task = new Task({
 		text: 'EDITING_TAG_IN_PROGRESS',
 		subtext: tagObj.name
 	});
@@ -218,7 +219,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { refresh: true }
 		sentry.error(new Error(err));
 		throw err;
 	} finally {
-		task.end();
+		if (!opts.silent) task.end();
 	}
 }
 
@@ -260,7 +261,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository) {
 				// Only edit if repositories are the same.
-				await editTag(tagFileData.tid, tagFileData, { refresh: false });
+				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false });
 			}
 			return tagFileData.name;
 		} else {

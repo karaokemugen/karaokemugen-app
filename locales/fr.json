@@ -4,8 +4,8 @@
 	"CURRENT_PLAYLIST": "Courante",
 	"PUBLIC_PLAYLIST": "Publique",
 	"GO_TO": "Allez sur",
-	"VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
-	"VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
+	"VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
+	"VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
 	"NEXT_SONG": "Prochaine chanson",
 	"INIT_INIT": "Démarrage...",
 	"INIT_DUMPDB": "Sauvegarde de la base de données...",
@@ -18,8 +18,8 @@
 	"INIT_USER": "Initialisation des utilisateurs...",
 	"INIT_ONLINEURL": "Connexion à Karaoke Mugen Server...",
 	"INIT_LAST": "C'est presque fini...",
-	"INIT_DONE": "Démarrage réussi !",
-	"INIT_ERROR": "L'initialisation a échoué !",
+	"INIT_DONE": "Démarrage réussi !",
+	"INIT_ERROR": "L'initialisation a échoué !",
 	"ERROR_UNKNOWN": "Une erreur de type inconnue est survenue inopinément. Consultez le log pour plus de détails.",
 	"ERROR_MISSING_BINARIES": "Des exécutables nécessaires (mpv/postgresql/ffmpeg) sont introuvables.",
 	"ERROR_INIT_PG_DATA": "Erreur d'initialisation de la base de données",
@@ -82,54 +82,54 @@
 	"YES": "Oui",
 	"NO": "Non",
 	"UPDATE_FOUND": "Mise à jour disponible",
-	"UPDATE_PROMPT": "Voulez-vous mettre à jour Karaoke Mugen ?",
+	"UPDATE_PROMPT": "Voulez-vous mettre à jour Karaoke Mugen ?",
 	"UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de Karaoke Mugen : ",
 	"UPDATE_NOT_AVAILABLE": "Aucune mise à jour disponible",
-	"CURRENT_VERSION_OK": "Vous avez déjà la dernière version de Karaoke Mugen !",
+	"CURRENT_VERSION_OK": "Vous avez déjà la dernière version de Karaoke Mugen !",
 	"UPDATE_DOWNLOADED": "Mise à jour téléchargée",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "L'installation de la mise à jour va démarrer...",
 	"ABOUT": {
 		"BUG_REPORT": "Rapporter un bug"
 	},
 	"BASE_UPDATE_NEEDED": "Mise à jour de votre base de karaokés nécessaire",
-	"BASE_UPDATE_BULLDOZERSERIES": "Nouveauté 4.0 :\n\nNous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké.",
+	"BASE_UPDATE_BULLDOZERSERIES": "Nouveauté 4.0 :\n\nNous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké.",
 	"NO_KARAOKE_MODE_ANYMORE": {
-		"TITLE": "Plus de mode de karaoké !",
-		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu, et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists ne jurent maintenant que par le système d'état. Elle peuvent dorénavant avoir à la fois l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités.\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour activer l'ancien mode public, créez deux playlists, l'une avec l'état public qui recevra les demandes et l'autre avec l'état courant.\nPour activer l'ancien mode privé, créez une playlist et attribuez-lui les deux états simultanément."
+		"TITLE": "Plus de mode de karaoké !",
+		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu, et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists ne jurent maintenant que par le système d'état. Elle peuvent dorénavant avoir à la fois l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités.\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour activer l'ancien mode public, créez deux playlists, l'une avec l'état public qui recevra les demandes et l'autre avec l'état courant.\nPour activer l'ancien mode privé, créez une playlist et attribuez-lui les deux états simultanément."
 	},
 	"COPY_TO_CLIPBOARD": "Copier dans le presse-papiers",
-	"IT_IS_IN_MY_HEAD": "Pas besoin, je l'ai retenu !",
+	"IT_IS_IN_MY_HEAD": "Pas besoin, je l'ai retenu !",
 	"TIPS": {
 		"TITLES": {
 			"NORMAL": "Trucs et astuces avec Nanamin",
-			"ERRORS": "Oh non, ça marche pas !"
+			"ERRORS": "Oh non, ça marche pas !"
 		},
 		"NORMAL": [
-			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
-			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe, elle s'y trouve peut-être !",
-			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
+			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
+			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe, elle s'y trouve peut-être !",
+			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
 			"Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement (playlists, karaokés, listes de critères de blacklist, etc.)",
-			"Ajoutez le dépôt world.karaokes.moe à votre liste de dépôts pour encore plus de karaokés du monde !",
-			"Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! (@Sedeto sur Twitter)",
-			"Les sessions sont des moments de karaoké individuels. Pensez à les nommer correctement !",
+			"Ajoutez le dépôt world.karaokes.moe à votre liste de dépôts pour encore plus de karaokés du monde !",
+			"Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! (@Sedeto sur Twitter)",
+			"Les sessions sont des moments de karaoké individuels. Pensez à les nommer correctement !",
 			"Une session contient la liste des karaokés demandés et lus lors d'un évènement précis.",
-			"Il y a plein de façon de configurer un karaoké ! Prenez le temps de regarder les options avant de vous lancer.",
+			"Il y a plein de façon de configurer un karaoké ! Prenez le temps de regarder les options avant de vous lancer.",
 			"La liste noire et les critères de liste noire (blacklist) permettent de cacher des karaokés à vos utilisateurs selon les situations.",
-			"Les AutoMix sont des playlists crées uniquement avec les favoris de vos invités. Idéal pour se faire une soirée karaoké rapidement !",
-			"Vous ne savez pas quoi ajouter dans votre playlist ? Le bouton aléatoire vous réservera quelques surprises !",
-			"Les chansons ajoutées avec l'option \"Ajout Mystère\" apparaitront cachées dans la playlist visible par vos invités !",
-			"Hydratez-vous régulièrement !",
-			"Ne dérangez pas les voisins !",
-			"Encore une astuce qui finit en point d'exclamation !",
+			"Les AutoMix sont des playlists crées uniquement avec les favoris de vos invités. Idéal pour se faire une soirée karaoké rapidement !",
+			"Vous ne savez pas quoi ajouter dans votre playlist ? Le bouton aléatoire vous réservera quelques surprises !",
+			"Les chansons ajoutées avec l'option \"Ajout Mystère\" apparaitront cachées dans la playlist visible par vos invités !",
+			"Hydratez-vous régulièrement !",
+			"Ne dérangez pas les voisins !",
+			"Encore une astuce qui finit en point d'exclamation !",
 			"Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
-			"Votre karaoké se termine bientôt ? Passez l'interface en mode retreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
-			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !"
+			"Votre karaoké se termine bientôt ? Passez l'interface en mode retreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
+			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !"
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
 			"Vérifiez que vous n'avez pas une autre instance de Karaoke Mugen en tâche de fond.",
-			"Consultez les logs, la raison de l'erreur peut s'y trouver !",
+			"Consultez les logs, la raison de l'erreur peut s'y trouver !",
 			"Surtout, ne paniquez pas. Tout va très bien se passer."
 		]
 	},
@@ -148,7 +148,7 @@
 	"UNKNOWN_ARTIST": "Artiste inconnu",
 	"UNKNOWN_REPOSITORY_DOWNLOAD": {
 		"TITLE": "Dépôt inconnu",
-		"MESSAGE": "Le dépôt de ce karaoké n'est pas connu de votre liste de dépôts. Voulez-vous l'ajouter ? Il sera pris en compte dnas les futures mises à jour de votre base de karaokés.\n\nSi vous répondez non, le karaoké sera importé dnas le dépôt \"Local\""
+		"MESSAGE": "Le dépôt de ce karaoké n'est pas connu de votre liste de dépôts. Voulez-vous l'ajouter ? Il sera pris en compte dnas les futures mises à jour de votre base de karaokés.\n\nSi vous répondez non, le karaoké sera importé dnas le dépôt \"Local\""
 	},
 	"MISSING_BINARIES": {
 		"TITLE": "Binaires manquants",
@@ -156,7 +156,7 @@
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Dépôt inconnu",
-		"MESSAGE": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
+		"MESSAGE": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
 	},
 	"UNKNOWN_REPOSITORY_NO_LOCAL": {
 		"TITLE": "Dépôt local introuvable",
@@ -173,5 +173,5 @@
 		}
 	},
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR...",
-	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON A LA PLAYLIST !"
+	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA PLAYLIST !"
 }

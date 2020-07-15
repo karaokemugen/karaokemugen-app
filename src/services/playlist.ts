@@ -584,6 +584,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			plc: null
 		};
 		ret.plc = await getPLCInfo(PLCsInserted[0].plc_id, true, requester);
+		if (playlist_id !== state.currentPlaylistID) delete ret.plc.time_before_play;
 		if (+playlist_id === state.publicPlaylistID) {
 			emitWS('KIDUpdated', PLCsInserted.map(plc => {
 				return {
@@ -953,6 +954,12 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 	} finally {
 		task.end();
 	}
+}
+
+/** Find flag_playing index in a playlist */
+export async function findPlaying(playlist_id: number): Promise<number> {
+	const pl = await getPlaylistKaraIDs(playlist_id);
+	return pl.findIndex(plc => plc.flag_playing);
 }
 
 /** Shuffle (smartly or not) a playlist */

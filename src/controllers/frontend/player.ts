@@ -70,7 +70,7 @@ export default function playerController(router: Router) {
 				if (req.body.destination === 'users' || req.body.destination === 'all') emitWS('adminMessage', req.body );
 				if (req.body.destination === 'screen' || req.body.destination === 'all') {
 					try {
-						await playerMessage(req.body.message, +req.body.duration);
+						await playerMessage(req.body.message, +req.body.duration, 5);
 					} catch(err) {
 						const code = 'MESSAGE_SEND_ERROR';
 						errMessage(code, err);

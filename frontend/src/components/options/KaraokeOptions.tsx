@@ -629,6 +629,13 @@ class KaraokeOptions extends Component<IProps, IState> {
 							})}
 						</div>
 					</div>
+
+					<div className="systempanel-tooltip">
+						{i18next.t('SYSTEMPANEL_TIP.QUESTION')}
+						<strong>
+							{i18next.t('SYSTEMPANEL_TIP.RESPONSE')}<a href="/system/km/options">{i18next.t('SYSTEMPANEL_TIP.LINK')}</a>{i18next.t('SYSTEMPANEL_TIP.AFTER_LINK')}
+						</strong>
+					</div>
 				</div>
 			</React.Fragment>
 		);

@@ -40,16 +40,17 @@ class ActionsButtons extends Component<IProps, unknown> {
 					<button title={i18next.t('TOOLTIP_DELETEKARA')}
 						className={`${classValue} karaLineButton`} onClick={this.props.deleteKara}><i className="fas fa-minus"></i></button> : null}
 				{((this.props.scope === 'admin' && this.props.idPlaylistTo !== -1) ||
-					(this.props.scope === 'public' && this.props.idPlaylist !== store.getState().publicPlaylistID))
+					(this.props.scope === 'public' && this.props.idPlaylist !== store.getState().publicPlaylistID
+					&& this.props.idPlaylist !== store.getState().currentPlaylistID))
 					&& this.props.idPlaylistTo !== -5 ?
 					<button
 						title={`${this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ? i18next.t('TOOLTIP_UPVOTE') :
 							i18next.t('TOOLTIP_ADDKARA')}${(this.props.scope === 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : '')}`}
 						className={`${classValue} karaLineButton`} onContextMenu={this.onRightClickAdd}
-						onClick={(this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]) ?
+						onClick={(this.props.scope !== 'admin' && this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]) ?
 							this.props.deleteKara : this.props.addKara}
 						disabled={this.props.scope !== 'admin' && this.props.kara?.flag_upvoted}>
-						{(this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]) ?
+						{(this.props.scope !== 'admin' && this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]) ?
 							<i className="fas fa-minus" /> :
 							(this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ?
 								<i className={`fas fa-thumbs-up ${this.props.kara?.flag_upvoted ? 'currentUpvote' : ''}`} /> :

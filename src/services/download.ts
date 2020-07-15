@@ -23,7 +23,7 @@ import {getTagTypeName,uuidRegexp} from '../lib/utils/constants';
 import {asyncMove, asyncReadDir, asyncStat, asyncUnlink, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
-import { emit } from '../lib/utils/pubsub';
+import { emit, once } from '../lib/utils/pubsub';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { deleteKara } from '../services/kara';
@@ -50,9 +50,9 @@ function initTask() {
 	});
 }
 
-function emitQueueStatus(status: QueueStatus) {
+async function emitQueueStatus(status: QueueStatus) {
 	emit('downloadQueueStatus', status);
-	emitWS('downloadQueueStatus', status);
+	emitWS('downloadQueueStatus', await getDownloads());
 }
 
 function queueDownload(input: KaraDownload, done: any) {
@@ -73,7 +73,7 @@ export async function initDownloader() {
 }
 
 
-function initQueue(drainEvent = true) {
+function initQueue() {
 	// We'll compare data dir checksum and execute refresh every 5 downloads and everytime the queue is drained
 	let taskCounter = 0;
 	let refreshing = false;
@@ -95,15 +95,16 @@ function initQueue(drainEvent = true) {
 		emitQueueStatus('updated');
 	});
 	q.on('empty', () => emitQueueStatus('updated'));
-	if (drainEvent) q.on('drain', () => {
+	q.on('drain', async () => {
 		logger.info('No tasks left, stopping queue', {service: 'Download'});
 		if (!refreshing) {
 			refreshAll().then(() => vacuum());
-			compareKarasChecksum();
+			await compareKarasChecksum();
 		}
 		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
+		emit('downloadQueueDrained');
 		downloadTask.end();
 		downloadTask = null;
 	});
@@ -446,13 +447,15 @@ export async function getAllRemoteTags(repository: string, params: TagParams): P
 				to: 0
 			}
 		};
-		allTags.forEach(l => merge(everything, l));
+		allTags.forEach(l => {
+			everything.content = everything.content.concat(l.content);
+		});
 		// To get total count we're going to remove all duplicated by repo to keep only one tag from each repo.
 		// Each tag has a count property which gives us the number of tags for that query, so by adding them we get our total maximum count.
 		everything.infos.count = 0;
-		const everythingUnique = everything.content.filter((t: DBTag, i, self) => self.findIndex((t2:DBTag) => t2.repository === t.repository) === i);
-		everythingUnique.forEach(t => everything.infos.count = +everything.infos.count + +t.count);
-		everything.infos.to = +params.from + +params.size;
+		const everythingUnique = everything.content.filter((t: DBTag, i, self) => self.findIndex((t2:DBTag) => t2.name === t.name) === i);
+		everything.content = everythingUnique;
+		everything.infos.count = everything.infos.to = everything.content.length;
 		return everything;
 	}
 }
@@ -463,20 +466,23 @@ export async function getRemoteTags(repo: string, params: TagParams = {}): Promi
 }
 
 export async function updateAllBases() {
+	const reposTagsUpdated = {};
 	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
 			logger.info(`Updating base from repository ${repo.Name}`, {service: 'Update'});
-			await updateBase(repo.Name);
+			reposTagsUpdated[repo.Name] = await updateBase(repo.Name);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to update properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('BASES_SYNC_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
+	// If one repo updated tags, we need to refresh everything.
+	if (Object.values(reposTagsUpdated).find(e => e)) await refreshAll();
 }
 
 export async function updateBase(repo: string) {
 	// First, make sure we wipe the download queue before updating.
-	if (!q) initQueue(false);
+	if (!q) initQueue();
 	await emptyDownload();
 	logger.info('Computing songs to add/remove/update...', {service: 'Update'});
 	try {
@@ -489,13 +495,16 @@ export async function updateBase(repo: string) {
 			updateKaras(repo, karas.local, karas.remote),
 			downloadKaras(repo, karas.local, karas.remote)
 		]);
-		if (updatedSongs > 0 || newSongs > 0) await waitForUpdateQueueToFinish();
+		if (updatedSongs.length > 0) await addDownloads(updatedSongs);
+		if (newSongs.length > 0) await addDownloads(newSongs);
+		if (updatedSongs.length > 0 || newSongs.length > 0) {
+			await waitForUpdateQueueToFinish();
+		}
 		// Now checking tags and series if we're missing any
 		logger.info('Getting local and remote tags inventory', {service: 'Update'});
 		const tags = await getTagsInventory(repo);
 		const updatedTags = await updateTags(repo, tags.local, tags.remote);
-		if (updatedTags > 0) await refreshAll();
-		return true;
+		return updatedTags > 0;
 	} catch(err) {
 		logger.error('Base update failed', {service: 'Update', obj: err});
 		throw err;
@@ -503,18 +512,9 @@ export async function updateBase(repo: string) {
 }
 
 function waitForUpdateQueueToFinish() {
-	return new Promise((resolve, reject) => {
-		// We'll redefine the drain event of the queue to resolve once the queue is drained.
-		q.on('drain', async () => {
-			compareKarasChecksum();
-			try {
-				await refreshAll();
-				await vacuum();
-				resolve();
-			} catch(err) {
-				logger.error('Error while draining queue', {service: 'Download', obj: err});
-				reject(err);
-			}
+	return new Promise(resolve => {
+		once('downloadQueueDrained', () => {
+			resolve();
 		});
 	});
 }
@@ -547,7 +547,8 @@ export async function downloadAllKaras() {
 	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
 			logger.info(`Downloading all songs from repository ${repo.Name}`, {service: 'Update'});
-			await downloadKaras(repo.Name);
+			const downloads = await downloadKaras(repo.Name);
+			if (downloads.length > 0) await addDownloads(downloads);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to download all songs properly`, {service: 'Update', obj: err});
 			emitWS('error', APIMessage('DOWNLOAD_SONGS_ERROR', {repo: repo.Name, err: err}));
@@ -555,7 +556,7 @@ export async function downloadAllKaras() {
 	}
 }
 
-export async function downloadKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
+export async function downloadKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<KaraDownloadRequest[]> {
 	const task = new Task({
 		text: 'DOWNLOADING_REPO',
 		subtext: repo
@@ -599,8 +600,7 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 		});
 		logger.info(`Adding ${karasToAdd.length} new songs.`, {service: 'Update'});
 		if (initialKarasToAddCount !== karasToAdd.length) logger.info(`${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`, {service: 'Update'});
-		if (karasToAdd.length > 0) await addDownloads(downloads);
-		return karasToAdd.length;
+		return downloads;
 	} catch(err) {
 		const error = new Error(err);
 		sentry.error(error);
@@ -706,8 +706,11 @@ export async function updateAllKaras() {
 	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
 			logger.info(`Updating all songs from repository ${repo.Name}`, {service: 'Update'});
-			await updateKaras(repo.Name);
-			await waitForUpdateQueueToFinish();
+			const downloads = await updateKaras(repo.Name);
+			if (downloads.length > 0) {
+				await addDownloads(downloads);
+				await waitForUpdateQueueToFinish();
+			}
 			// Now checking tags and series if we're missing any
 			const tags = await getTagsInventory(repo.Name);
 			const updatedTags = await updateTags(repo.Name, tags.local, tags.remote);
@@ -759,16 +762,15 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 		}
 		return tagsToUpdate.length;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		profile('tagUpdate');
 		task.end();
 	}
 }
 
-export async function updateKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<number> {
+export async function updateKaras(repo: string, local?: KaraList, remote?: KaraList): Promise<KaraDownloadRequest[]> {
 	logger.info('Starting kara update process...', {service: 'Update'});
 	const task = new Task({
 		text: 'UPDATING_REPO',
@@ -835,8 +837,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 			};
 		});
 		logger.info(`Updating ${karasToUpdate.length} songs`, {service: 'Update'});
-		if (karasToUpdate.length > 0) await addDownloads(downloads);
-		return karasToUpdate.length;
+		return downloads;
 	} catch(err) {
 		const error = new Error(err);
 		sentry.error(error);
@@ -987,7 +988,6 @@ export async function updateMedias(repo: string): Promise<boolean> {
 		updateRunning = false;
 		return !!updateVideos;
 	} catch (err) {
-		console.log(err);
 		updateRunning = false;
 		throw err;
 	} finally {

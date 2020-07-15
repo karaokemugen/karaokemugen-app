@@ -289,8 +289,8 @@ SELECT
   (SELECT
 	SUM(k.duration)
    FROM kara k
-   LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing
-   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (pc.pos - 1)
+   LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing AND plc_current_playing.fk_id_playlist = pc.fk_id_playlist
+   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (pc.pos - 1) AND plc_before.fk_id_playlist = pc.fk_id_playlist
    WHERE k.pk_kid = plc_before.fk_kid
   ) AS time_before_play,
   pc.flag_visible AS flag_visible,

@@ -126,7 +126,7 @@ export const defaultGuestNames = [
 	'Mikasa Ackerman',
 	'Mikasa es tu casa',
 	'Armin Arlelt',
-	'Livaï Ackerman',
+	'Livaï',
 	'Kaori Miyazono',
 	'Kôsei Arima',
 	'Masa-san <3',

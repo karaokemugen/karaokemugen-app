@@ -30,8 +30,13 @@ export class IPCTransport extends Transport {
 	}
 
 	log(info: any, callback: any) {
-		emitIPC('log', info);
-		callback();
+		try {
+			emitIPC('log', info);
+		} catch(err) {
+			// Non fatal. We can safely ignore
+		} finally {
+			callback();
+		}
 	}
 }
 

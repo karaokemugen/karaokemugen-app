@@ -74,7 +74,7 @@ class AdminHeader extends Component<IProps, IState> {
 	};
 
 	play = (event: any) => {
-		if ((!this.state.statusPlayer || this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'pause')
+		if ((!this.state.statusPlayer || this.state.statusPlayer?.playerStatus === 'stop')
 			&& this.props.idsPlaylist.left !== this.props.currentPlaylist.playlist_id
 			&& this.props.idsPlaylist.right !== this.props.currentPlaylist.playlist_id
 			&& (this.props.idsPlaylist.left > 0 || this.props.idsPlaylist.right > 0)) {

@@ -11,7 +11,7 @@ import { Config } from '../../../../src/types/config';
 import { DBPLC } from '../../../../src/types/database/playlist';
 import store from '../../store';
 import Autocomplete from '../generic/Autocomplete';
-import { buildKaraTitle,callModal, displayMessage } from '../tools';
+import { buildKaraTitle, callModal, displayMessage } from '../tools';
 import OnlineProfileModal from './OnlineProfileModal';
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/fr.json'));
@@ -296,7 +296,7 @@ class ProfilModal extends Component<IProps, IState> {
 														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
 												</div>
 												<div className="profileLine">
-													<i className="fas fa-leaf"></i>
+													<i className="fas fa-file-alt"></i>
 													<input className="form-control" name="bio" type="text"
 														placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
 														onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
@@ -323,24 +323,27 @@ class ProfilModal extends Component<IProps, IState> {
 												</div>
 												{this.props.config.Online.Users && logInfos.username !== 'admin' ?
 													<div className="profileLine">
-														{logInfos && logInfos.onlineToken ?
-															<button type="button" title={i18next.t('PROFILE_ONLINE_DELETE')} className="btn btn-primary btn-action btn-default profileDelete" onClick={this.profileDelete}>
+														{logInfos?.onlineToken ?
+															<button type="button" title={i18next.t('PROFILE_ONLINE_DELETE')}
+																className="btn btn-danger profileDelete" onClick={this.profileDelete}>
 																<i className="fas fa-retweet"></i> {i18next.t('PROFILE_ONLINE_DELETE')}
 															</button>
 															:
-															<button type="button" title={i18next.t('PROFILE_CONVERT')} className="btn btn-primary btn-action btn-default profileConvert" onClick={this.profileConvert}>
+															<button type="button" title={i18next.t('PROFILE_CONVERT')}
+																className="btn btn-primary profileConvert" onClick={this.profileConvert}>
 																<i className="fas fa-retweet"></i> {i18next.t('PROFILE_CONVERT')}
 															</button>
 														}
 													</div> : null
 												}
-												<div className="profileLine profileButtonLine" >
-													<button type="button" className="btn btn-action"
-														onClick={() => {
-															this.deleteAccount();
-														}}>
-														{i18next.t('DELETE')}
+												<div className="profileLine" >
+													<button type="button" title={i18next.t('PROFILE_CONVERT')}
+														className={`btn profileDelete ${logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'}`}
+														onClick={this.deleteAccount}>
+														<i className="fas fa-trash-alt"></i> {i18next.t('PROFILE_DELETE')}
 													</button>
+												</div>
+												<div className="profileLine profileButtonLine" >
 													<button type="button" className="btn btn-action"
 														onClick={() => {
 															this.updateUser();
