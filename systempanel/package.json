@@ -5,7 +5,8 @@
   "homepage": "/system",
   "dependencies": {
     "@cospired/i18n-iso-languages": "^2.1.2",
-    "@sentry/browser": "^5.19.1",
+    "@sentry/integrations": "^5.19.2",
+    "@sentry/react": "^5.19.2",
     "antd": "4.4.2",
     "axios": "0.19.2",
     "i18next": "^19.6.0",
