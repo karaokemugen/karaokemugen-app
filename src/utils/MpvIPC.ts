@@ -80,6 +80,7 @@ class Mpv extends EventEmitter {
 		this.socket.once('connect', async () => {
 			await this.ishukan({command: ['disable_event', 'all']});
 			await this.ishukan({command: ['enable_event', 'file-loaded']});
+			await this.ishukan({command: ['enable_event', 'client-message']});
 		});
 		// Observe hook
 		this.socket.on('data', (data: string) => {
