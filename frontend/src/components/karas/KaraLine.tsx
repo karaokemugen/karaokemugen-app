@@ -285,8 +285,7 @@ class KaraLine extends Component<IProps, IState> {
 										className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
 										<i className={`fas ${idPlaylist < 0 ? 'fa-play' : 'fa-play-circle'}`}></i>
 									</button> : null}
-								{scope === 'admin' && this.props.playlistInfo && idPlaylist > 0 && !kara.flag_visible
-									&& (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public) ?
+								{scope === 'admin' && idPlaylist > 0 && !kara.flag_visible ?
 									<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>
 										<i className="fas fa-eye-slash"></i>
 									</button> : null
