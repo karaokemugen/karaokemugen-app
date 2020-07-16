@@ -382,7 +382,8 @@ class Playlist extends Component<IProps, IState> {
 			this.props.toggleSearchMenu && this.props.toggleSearchMenu();
 		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
-		this.setState({ idPlaylist: Number(idPlaylist), data: undefined }, this.getPlaylist);
+		await this.setState({ idPlaylist: Number(idPlaylist), data: undefined });
+		this.getPlaylist();
 		this.props.majIdsPlaylist(this.props.side, idPlaylist);
 	};
 
