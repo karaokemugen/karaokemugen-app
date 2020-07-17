@@ -45,8 +45,9 @@ export async function getDuplicateTags() {
 	return formatTagList(tags, 0, tags.length);
 }
 
-export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> {
-	const task = new Task({
+export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true}): Promise<Tag> {
+	let task: Task;
+	if (!opts.silent) task = new Task({
 		text: 'CREATING_TAG_IN_PROGRESS',
 		subtext: tagObj.name
 	});
@@ -82,7 +83,7 @@ export async function addTag(tagObj: Tag, opts = {refresh: true}): Promise<Tag> 
 		sentry.error(error);
 		throw error;
 	} finally {
-		task.end();
+		if (!opts.silent) task.end();
 	}
 }
 
@@ -107,7 +108,7 @@ export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
 	if (tag) return {id: tag.tid, new: false};
 	// This modifies tagObj.
 	// I hate mutating objects.
-	await addTag(tagObj, {refresh: false});
+	await addTag(tagObj, {silent: false, refresh: false});
 	return {id: tagObj.tid, new: true};
 }
 
@@ -265,7 +266,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 			}
 			return tagFileData.name;
 		} else {
-			await addTag(tagFileData, { refresh: false });
+			await addTag(tagFileData, { silent: true, refresh: false });
 			return tagFileData.name;
 		}
 	} catch(err) {
