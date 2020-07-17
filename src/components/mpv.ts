@@ -15,7 +15,7 @@ import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp}
 import {imageFileTypes} from '../lib/utils/constants';
 import {asyncExists, asyncReadDir, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
 import {getSingleMedia} from '../services/medias';
-import {playerEnding} from '../services/player';
+import {playerEnding, next, prev} from '../services/player';
 import {notificationNextSong} from '../services/playlist';
 import {endPoll} from '../services/poll';
 import {MediaType} from '../types/medias';
@@ -299,6 +299,16 @@ class Player {
 				playerState.playerStatus = status.data ? 'pause':'play';
 				this.control.exec({command: ['set_property', 'pause', status.data]}, null, this.options.monitor ? 'main':'monitor');
 				emitPlayerState();
+			}
+		});
+		// Handle client messages (skip/go-back)
+		this.mpv.on('client-message', (message) => {
+			if (typeof message.args === 'object') {
+				if (message.args[0] === 'skip') {
+					next();
+				} else if (message.args[0] === 'go-back') {
+					prev();
+				}
 			}
 		});
 		// Handle manually exits/crashes

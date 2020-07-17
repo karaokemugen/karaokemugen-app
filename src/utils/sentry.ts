@@ -22,12 +22,22 @@ class ElectronSentryLogger extends SentryLogger {
     		console.log('Have a nice day, sentries won\'t fire at you~');
     		return;
     	}
-    	this.Sentry.init({
+		if (!process.env.SENTRY_DSN && !sentryDSN) {
+			//No DSN provided, return.
+			return;
+		}
+		let options: any = {
     		dsn: process.env.SENTRY_DSN || sentryDSN,
     		environment: process.env.SENTRY_ENVIRONMENT || 'release',
-    		enableJavaScript: false,
-    		release: version.number
-    	});
+    		release: version.number,
+			beforeSend: async(event, _hint) => {
+				// Testing for precise falseness. If errortracking is undefined or if getconfig doesn't return anything, errors are not sent.
+				if (getConfig()?.Online?.ErrorTracking !== true || !this.SentryInitialized) return null;
+				else return event;
+			}
+		};
+		if (electron) options.enableJavaScript = false;
+    	this.Sentry.init(options);
     	this.SentryInitialized = true;
     }
 }

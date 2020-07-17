@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 import Axios from 'axios';
 import { Dispatch } from 'react';
 

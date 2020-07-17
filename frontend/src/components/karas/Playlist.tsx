@@ -382,7 +382,8 @@ class Playlist extends Component<IProps, IState> {
 			this.props.toggleSearchMenu && this.props.toggleSearchMenu();
 		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
-		this.setState({ idPlaylist: Number(idPlaylist), data: undefined }, this.getPlaylist);
+		await this.setState({ idPlaylist: Number(idPlaylist), data: undefined });
+		this.getPlaylist();
 		this.props.majIdsPlaylist(this.props.side, idPlaylist);
 	};
 
@@ -453,8 +454,7 @@ class Playlist extends Component<IProps, IState> {
 		if (searchType) {
 			data.searchType = searchType;
 			data.data = this.state.data;
-			data.data.infos.from = 0;
-			// data.scrollToIndex = 0;
+			if (data.data) data.data.infos.from = 0;
 			this.setState({ searchType: searchType });
 		} else if (stateData && stateData.infos && stateData.infos.from == 0) {
 			data.searchType = undefined;
@@ -469,7 +469,7 @@ class Playlist extends Component<IProps, IState> {
 			'?filter=' +
 			store.getFilterValue(this.props.side) +
 			'&from=' +
-			(stateData && stateData.infos && stateData.infos.from > 0 ? stateData.infos.from : 0) +
+			(stateData?.infos?.from > 0 ? stateData.infos.from : 0) +
 			'&size=' + chunksize;
 		if (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
 			const searchCriteria = this.state.searchCriteria ?
@@ -514,7 +514,7 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			data = karas;
 		}
-		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying ? indexPlaying : this.state.playing });
+		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying });
 		this.playlistForceRefresh(true);
 	};
 

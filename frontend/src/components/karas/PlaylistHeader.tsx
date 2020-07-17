@@ -567,7 +567,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 													<React.Fragment>
 														<li>
 															<a href="#" onClick={this.deletePlaylist} className="danger-hover">
-																<i className="fas fa-fw fa-times" />
+																<i className="fas fa-fw fa-trash" />
 																&nbsp;
 																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.DELETE' : 'ADVANCED.DELETE')}
 															</a>

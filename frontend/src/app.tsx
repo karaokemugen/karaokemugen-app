@@ -1,6 +1,6 @@
 import 'react-toastify/dist/ReactToastify.css';
 
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 import axios from 'axios';
 import React, { Component } from 'react';
 import { Route,Switch } from 'react-router';
