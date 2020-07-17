@@ -1,6 +1,6 @@
 # Versions
 
-## v4.0.10 "Ôgi Obscure" - xx/07/2020
+## v4.0.13 "Ôgi Obscure" - 17/07/2020
 
 Version numbering has changed :
 
