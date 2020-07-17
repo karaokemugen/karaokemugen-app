@@ -72,12 +72,24 @@ export async function initDB() {
 
 async function migrateFromDBMigrate() {
 	// Return early if migrations table does not exist
-	const tables = await db().query('SELECT tablename FROM pg_tables WHERE schemaname = \'public\' AND tablename = \'migrations\'');
-	if (tables.rows.length === 0) return;
-	const lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
-	logger.info('Old migration system found, converting...', {service: 'DB'});
-	const id = lastMigration.rows[0].name.replace('/', '').split('-')[0];
-	const migrationsDone = migrations.filter(m => m.version <= id);
+	let migrationsDone = [];
+	try {
+		const tables = await db().query('SELECT tablename FROM pg_tables WHERE schemaname = \'public\' AND tablename = \'migrations\'');
+		if (tables.rows.length === 0) return;
+		const lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
+		logger.info('Old migration system found, converting...', {service: 'DB'});
+		if (lastMigration.rows.length === 0) {
+			// Migration table empty for whatever reason.
+			await db().query('DROP TABLE migrations;');
+			return;
+		}
+		const id = lastMigration.rows[0].name.replace('/', '').split('-')[0];
+		migrationsDone = migrations.filter(m => m.version <= id);
+	} catch(err) {
+		logger.error('Error preparing migrations', {service: 'DB', obj: err});
+		sentry.error(err);
+		throw err;
+	}
 	try {
 		await db().query(`CREATE TABLE schemaversion (
 			version BIGINT PRIMARY KEY,
