@@ -235,15 +235,15 @@ System:
       Online: true
       Path:
         Karas:
-          - repos/online/kara.moe/karaokes
+          - repos/kara.moe/karaokes
         Lyrics:
-          - repos/online/kara.moe/lyrics
+          - repos/kara.moe/lyrics
         Medias:
-          - repos/online/kara.moe/medias
+          - repos/kara.moe/medias
         Series:
-          - repos/online/kara.moe/series
+          - repos/kara.moe/series
         Tags:
-          - repos/online/kara.moe/tags
+          - repos/kara.moe/tags
     - Name: world.karaokes.moe
       Online: true
       Enabled: false
@@ -262,15 +262,15 @@ System:
       Online: false
       Path:
         Karas:
-          - repos/offline/Local/karaokes
+          - repos/Local/karaokes
         Lyrics:
-          - repos/offline/Local/lyrics
+          - repos/Local/lyrics
         Medias:
-          - repos/offline/Local/medias
+          - repos/Local/medias
         Series:
-          - repos/offline/Local/series
+          - repos/Local/series
         Tags:
-          - repos/offline/Local/tags
+          - repos/Local/tags
   Path:
     # Some paths like Background, karas lyrics medias, etc. can have multiple entries.
     Avatars: avatars
