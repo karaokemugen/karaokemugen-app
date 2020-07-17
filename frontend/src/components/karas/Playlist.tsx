@@ -454,8 +454,7 @@ class Playlist extends Component<IProps, IState> {
 		if (searchType) {
 			data.searchType = searchType;
 			data.data = this.state.data;
-			data.data.infos.from = 0;
-			// data.scrollToIndex = 0;
+			if (data.data) data.data.infos.from = 0;
 			this.setState({ searchType: searchType });
 		} else if (stateData && stateData.infos && stateData.infos.from == 0) {
 			data.searchType = undefined;
@@ -470,7 +469,7 @@ class Playlist extends Component<IProps, IState> {
 			'?filter=' +
 			store.getFilterValue(this.props.side) +
 			'&from=' +
-			(stateData && stateData.infos && stateData.infos.from > 0 ? stateData.infos.from : 0) +
+			(stateData?.infos?.from > 0 ? stateData.infos.from : 0) +
 			'&size=' + chunksize;
 		if (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
 			const searchCriteria = this.state.searchCriteria ?
