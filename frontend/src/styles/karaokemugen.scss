@@ -843,11 +843,9 @@ input[type=range]:focus::-ms-fill-upper {
   100% { transform: rotate(360deg); }
 }
 
-/* dark theme */
-
 input[type="text"]:not([data-exclude="true"]), input[type="password"]:not([data-exclude="true"]) {
     height: inherit;
-    width: calc(100% - 0rem);
+    width: 100%;
     border: 0;
     box-shadow: none;
     font-size: 2.3rem;
@@ -868,7 +866,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 	color: hsla(210, 9%, 24%, 1);
 }
 
-.panel-heading input[type="text"], .playlistContainer input[type="text"]{
+.panel-heading input[type="text"] {
     height: 100%;
     font-size: 1.8rem;
     line-height: 1.8rem;

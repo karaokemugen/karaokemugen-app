@@ -67,7 +67,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 		return (
 			<React.Fragment>
 				{this.props.scope === 'admin' ?
-					<span id="blacklistCriteriasInputs" className="blacklist-criterias-input">
+					<span className="blacklist-criterias-input">
 						<select onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
 							{listTypeBlc.map((value) => {
 								return <option key={value} value={value.replace('BLCTYPE_', '')}>{i18next.t(value)}</option>;
@@ -78,11 +78,11 @@ class BlacklistCriterias extends Component<IProps, IState> {
 							{tagsFiltered.length > 0 ?
 								<Autocomplete value={this.state.bcVal}
 									options={tagsFiltered} onChange={value => this.setState({ bcVal: value })} /> :
-								<input type="text" id="bcVal" value={this.state.bcVal}
-									className="input-sm" onChange={e => this.setState({ bcVal: e.target.value })} />
+								<input type="text" value={this.state.bcVal}
+									className="input-blc" onChange={e => this.setState({ bcVal: e.target.value })} />
 							}
 						</span>
-						<button id="bcAdd" className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}
+						<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}
 							onKeyPress={e => {
 								if (e.which == 13) this.addBlacklistCriteria();
 							}}><i className="fas fa-plus"></i></button>

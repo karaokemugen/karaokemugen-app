@@ -15,7 +15,13 @@
 		line-height: 1.5;
 	}
 
-	.input-sm {
+	.input-blc {
+		width: 100%;
 		margin: 5px !important;
-	}
+		height: 30px;
+		padding: 5px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	  }
 }
