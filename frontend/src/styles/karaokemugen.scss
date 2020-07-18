@@ -320,6 +320,9 @@ button.closeParent.bottom  {
 	overflow: auto;
 	display: flex;
 	flex-wrap: wrap;
+}
+
+.list-group-item:not(.liTag) > .contentDiv {
 	cursor: zoom-in;
 }
 
