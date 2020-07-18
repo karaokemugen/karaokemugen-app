@@ -138,7 +138,8 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 			mode: 'kid',
 			modeValue: kid,
 			lang: lang,
-			admin: token.role === 'admin'
+			admin: token.role === 'admin',
+			ignoreBlacklist: true
 		});
 		return res[0];
 	} catch(err) {

@@ -75,7 +75,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
 	let typeClauses = params.mode ? buildTypeClauses(params.mode, params.modeValue) : '';
 	// Hide blacklisted songs if not admin
-	if (!params.admin || params.blacklist) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
+	if (!params.ignoreBlacklist && (!params.admin || params.blacklist)) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
