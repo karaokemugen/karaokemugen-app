@@ -95,12 +95,14 @@ class BlacklistCriterias extends Component<IProps, IState> {
 						{this.props.data.map(criteria => {
 							return (criteria.type === type ?
 								<li key={criteria.blcriteria_id} className="list-group-item liTag">
-									<div className="actionDiv">
-										<button title={i18next.t('BLC.DELETE_BLC')} name="deleteCriteria"
-											className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id as number)}>
-											<i className="fas fa-minus"></i>
-										</button>
-									</div>
+									{this.props.scope === 'admin' ?
+										<div className="actionDiv">
+											<button title={i18next.t('BLC.DELETE_BLC')} name="deleteCriteria"
+												className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id as number)}>
+												<i className="fas fa-minus"></i>
+											</button>
+										</div> : null
+									}
 									<div className="typeDiv">{i18next.t('BLCTYPE_' + criteria.type)}</div>
 									<div className="contentDiv">
 										{criteria.type == 1001 ?
