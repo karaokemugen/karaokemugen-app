@@ -340,7 +340,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 	};
 
-	getIdPlaylist = () => {
+	getIdPlaylist = async () => {
 		let value: number;
 		if (this.props.scope === 'public') {
 			value =
@@ -363,7 +363,7 @@ class Playlist extends Component<IProps, IState> {
 				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie)) ? Number(plVal2Cookie) : store.getState().publicPlaylistID;
 			}
 		}
-		this.setState({ idPlaylist: value });
+		await this.setState({ idPlaylist: value });
 		this.props.majIdsPlaylist(this.props.side, value);
 	};
 
