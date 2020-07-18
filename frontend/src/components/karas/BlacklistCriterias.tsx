@@ -1,3 +1,5 @@
+import './BlacklistCriterias.scss';
+
 import axios from 'axios';
 import i18next from 'i18next';
 import React, { Component } from 'react';
@@ -6,7 +8,6 @@ import { BLC, BLCSet } from '../../../../src/types/blacklist';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 import { buildKaraTitle } from '../tools';
-require('./BlacklistCriterias.scss');
 
 const listTypeBlc = [
 	'BLCTYPE_1002',
@@ -78,7 +79,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 							{tagsFiltered.length > 0 ?
 								<Autocomplete value={this.state.bcVal}
 									options={tagsFiltered} onChange={value => this.setState({ bcVal: value })} /> :
-								<input type="text" value={this.state.bcVal}
+								<input type="text" value={this.state.bcVal} placeholder={i18next.t('BLC.ADD_BLC')}
 									className="input-blc" onChange={e => this.setState({ bcVal: e.target.value })} />
 							}
 						</span>
@@ -95,7 +96,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 							return (criteria.type === type ?
 								<li key={criteria.blcriteria_id} className="list-group-item liTag">
 									<div className="actionDiv">
-										<button title={i18next.t('TOOLTIP_DELETECRITERIA')} name="deleteCriteria"
+										<button title={i18next.t('BLC.DELETE_BLC')} name="deleteCriteria"
 											className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id as number)}>
 											<i className="fas fa-minus"></i>
 										</button>

@@ -173,7 +173,9 @@
 		"EXPORT": "Export criterias list",
 		"CURRENT": "Switch criterias list to current",
 		"COPY": "Copy this criteria list",
-		"COPY_TO": "Copy criterias to the following list : "
+		"COPY_TO": "Copy criterias to the following list : ",
+		"ADD_BLC": "Add a value to criteria",
+		"DELETE_BLC": "Delete this blacklist criteria"
 	},
 	"ADD_KARA": "Add song",
 	"DELETE_KARA": "Remove song",
@@ -237,7 +239,6 @@
 	"TOOLTIP_ADDKARA": "Add this song to the playlist",
 	"TOOLTIP_ADDKARA_ADMIN": "Right click to append it after the currently playing song",
 	"TOOLTIP_DELETEKARA": "Delete this song",
-	"TOOLTIP_DELETECRITERIA": "Delete this blacklist criteria",
 	"TOOLTIP_TRANSFERKARA": "Transfer this song - right click to transfer it after the currently playing song",
 	"TOOLTIP_CLOSEPARENT": "Close",
 	"TOOLTIP_FAV": "Add to favorites",

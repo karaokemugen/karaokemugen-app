@@ -163,7 +163,9 @@
 		"EXPORT": "Exporter la liste de critères",
 		"CURRENT": "Rendre la liste de critères courante",
 		"COPY": "Copier cette liste de critères",
-		"COPY_TO": "Copier les critères dans la liste suivante : "
+		"COPY_TO": "Copier les critères dans la liste suivante : ",
+		"ADD_BLC": "Ajouter une valeur au critère",
+		"DELETE_BLC": "Supprimer ce critère de liste noire"
 	},
 	"IMPORT": "Importer",
 	"EXPORT": "Exporter",
@@ -245,7 +247,6 @@
 	"TOOLTIP_ADDKARA": "Ajouter cette chanson à la liste",
 	"TOOLTIP_ADDKARA_ADMIN": "Clic droit l'ajoute après le morceau en cours",
 	"TOOLTIP_DELETEKARA": "Supprimer cette chanson",
-	"TOOLTIP_DELETECRITERIA": "Supprimer ce critère de liste noire",
 	"TOOLTIP_TRANSFERKARA": "Transférer cette chanson - clic droit le transfére après le morceau en cours",
 	"TOOLTIP_CLOSEPARENT": "Fermer",
 	"TOOLTIP_FAV": "Ajouter aux favoris",
