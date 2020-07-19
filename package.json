@@ -248,7 +248,8 @@
       "warningsAsErrors": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "license": "LICENSE.md"
+	  "license": "LICENSE.md",
+	  "differentialPackage": false
     },
     "deb": {
       "depends": [
@@ -273,7 +274,8 @@
         "zip"
       ],
       "compression": "normal",
-      "publisherName": "Karaoke Mugen Team",
+	  "publisherName": "Karaoke Mugen Team",
+	  "verifyUpdateCodeSignature": false,
       "publish": {
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
