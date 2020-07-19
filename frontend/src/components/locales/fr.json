@@ -8,7 +8,7 @@
 	"404_4": "Revenir au début",
 	"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",
 	"SECURITY_CODE_MANDATORY": "Le code de sécurité est obligatoire pour créer un compte opérateur",
-	"PASSWORD_DIFFERENT": "Les mots de passes ne sont pas identiques",
+	"PASSWORD_DIFFERENT": "Les mots de passe ne sont pas identiques",
 	"DETAILS_ADDED": "Ajouté ",
 	"DETAILS_ADDED_2": "le ",
 	"DETAILS_ADDED_3": "par ",
