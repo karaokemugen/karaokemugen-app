@@ -349,9 +349,15 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								<label>{i18next.t('KARA.FILTER_SONGS')}</label>
 							</Col>
 							<Col span={4}>
-								<Row><label>{i18next.t('KARA.QUEUE_LABEL')}</label></Row>
-								<Row><label>{i18next.t('KARA.QUEUE_LABEL_SONGS',
-									{ numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE').length })}</label></Row>
+								<Row>
+									<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
+								</Row>
+								<Row>
+									<label>{i18next.t('KARA.QUEUE_LABEL_SONGS', {
+										numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE'
+											&& kara.status !== 'DL_FAILED').length
+									})}</label>
+								</Row>
 							</Col>
 						</Row>
 						<Row style={{ paddingTop: '5px' }} justify="space-between">
