@@ -1,21 +1,22 @@
-import React, {Component} from 'react';
-import {Layout} from 'antd';
-import KaraForm from './KaraForm';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { Layout } from 'antd';
+import React, { Component } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+
 import { DBKara } from '../../../../src/lib/types/database/kara';
 import { getAxiosInstance } from '../../axiosInterceptor';
-import { removeListener, addListener } from '../../utils/electron';
+import { addListener, removeListener } from '../../utils/electron';
+import KaraForm from './KaraForm';
 
 interface KaraEditState {
 	kara: DBKara,
 	save: any,
 	loadKara: boolean
 }
-class KaraEdit extends Component<RouteComponentProps<{kid:string}>, KaraEditState> {
+class KaraEdit extends Component<RouteComponentProps<{ kid: string }>, KaraEditState> {
 
 	state = {
 		kara: undefined,
-		save: () => {},
+		save: () => { },
 		loadKara: false
 	};
 
@@ -30,30 +31,30 @@ class KaraEdit extends Component<RouteComponentProps<{kid:string}>, KaraEditStat
 	};
 
 	saveUpdate = async (kara) => {
-			await getAxiosInstance().put(`/karas/${kara.kid}`, kara);
-			addListener();
-			this.props.history.push('/system/km/karas');
+		await getAxiosInstance().put(`/karas/${kara.kid}`, kara);
+		addListener();
+		this.props.history.push('/system/km/karas');
 	};
 
 	loadKara = async () => {
 		removeListener();
 		if (this.props.match.params.kid) {
-			let res = await getAxiosInstance().get(`/karas/${this.props.match.params.kid}`)
-			this.setState({kara: res.data, save: this.saveUpdate, loadKara: true});
+			const res = await getAxiosInstance().get(`/karas/${this.props.match.params.kid}`);
+			this.setState({ kara: res.data, save: this.saveUpdate, loadKara: true });
 		} else {
-			this.setState({save: this.saveNew, loadKara: true});
+			this.setState({ save: this.saveNew, loadKara: true });
 		}
 	};
 
-	handleCopy = async (kid,repo) => {
-		await getAxiosInstance().post(`/karas/${kid}/copyToRepo`, {repo:repo})
+	handleCopy = async (kid, repo) => {
+		await getAxiosInstance().post(`/karas/${kid}/copyToRepo`, { repo: repo });
 		this.props.history.push('/system/km/karas');
 	}
 
 	render() {
 		return (
-			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.loadKara && <KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy}/>}
+			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
+				{this.state.loadKara && <KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy} />}
 			</Layout.Content>
 		);
 	}
