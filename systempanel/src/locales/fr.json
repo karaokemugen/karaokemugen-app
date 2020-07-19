@@ -73,7 +73,7 @@
 		"SHOWING": "Affichage des {{from}}-{{to}} de {{total}} karaokés",
 		"IN_BLACKLIST": "Dans la liste noire",
 		"FILTER_SONGS": "Filtrer les chansons du serveur : ",
-		"FILTER_ALL": "Tous",
+		"FILTER_ALL": "Toutes",
 		"FILTER_UPDATED": "Mises à jour",
 		"FILTER_NOT_DOWNLOADED": "Non téléchargées",
 		"REPOSITORY": "Dépôt",
