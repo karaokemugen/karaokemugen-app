@@ -409,7 +409,7 @@ class Tutorial extends Component<IProps, IState> {
 
 	getStepLabel = () => {
 		const { stepIndex, steps } = this.state;
-		return steps[stepIndex].label || stepIndex;
+		return steps[stepIndex]?.label || stepIndex;
 	}
 
 	move = (i: number) => {
