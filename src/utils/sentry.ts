@@ -26,7 +26,7 @@ class ElectronSentryLogger extends SentryLogger {
 			//No DSN provided, return.
 			return;
 		}
-		let options: any = {
+		const options: any = {
     		dsn: process.env.SENTRY_DSN || sentryDSN,
     		environment: process.env.SENTRY_ENVIRONMENT || 'release',
     		release: version.number,
@@ -36,7 +36,9 @@ class ElectronSentryLogger extends SentryLogger {
 				else return event;
 			}
 		};
-		if (electron) options.enableJavaScript = false;
+		if (electron) {
+			options.enableJavaScript = false;
+		}
     	this.Sentry.init(options);
     	this.SentryInitialized = true;
     }

@@ -368,8 +368,7 @@ async function toggleFullScreenPlayer() {
 }
 
 async function toggleOnTopPlayer() {
-	let state = getState();
-	state = setState({ontop: await mpv.toggleOnTop()});
+	let state = setState({ontop: await mpv.toggleOnTop()});
 	state.ontop
 		? logger.info('Player staying on top', {service: 'Player'})
 		: logger.info('Player NOT staying on top', {service: 'Player'});
@@ -451,7 +450,7 @@ async function goToPlayer(seconds: number) {
 async function setVolumePlayer(volume: number) {
 	await mpv.setVolume(volume);
 	// Save the volume in configuration
-	await setConfig({Player: {Volume: volume}});
+	setConfig({Player: {Volume: volume}});
 }
 
 async function showSubsPlayer() {
