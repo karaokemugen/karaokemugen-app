@@ -26,7 +26,8 @@ export async function playSingleSong(kid?: string) {
 	try {
 		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
 		if (!kara) throw {code: 404, msg: 'KID not found'};
-		setState({singlePlay: true, currentSong: kara});
+		setState({singlePlay: true, currentSong: kara, randomPlaying: false});
+		stopAddASongMessage();
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
 		// If series is empty, pick singer information instead
@@ -68,10 +69,10 @@ export async function playRandomSongAfterPlaylist() {
 		if (kara) {
 			setState({ randomPlaying: true });
 			await playSingleSong(kara.kid);
-			mpv.initAddASongMessage();
+			initAddASongMessage();
 		} else {
 			stopPlayer(true);
-			mpv.stopAddASongMessage();
+			stopAddASongMessage();
 		}
 	} catch(err) {
 		sentry.error(err);
@@ -388,7 +389,7 @@ export async function playPlayer(now?: boolean) {
 	if (state.player.playerStatus === 'stop' || now) {
 		setState({status: 'play', singlePlay: false, randomPlaying: false});
 		await playCurrentSong(now);
-		mpv.stopAddASongMessage();
+		stopAddASongMessage();
 	} else {
 		await mpv.resume();
 	}
@@ -400,7 +401,7 @@ export async function stopPlayer(now = true) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		await mpv.stop();
 		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false, stopping: false});
-		mpv.stopAddASongMessage();
+		stopAddASongMessage();
 	} else {
 		if (getState().player.playerStatus !== 'stop' && !getState().stopping) {
 			logger.info('Karaoke stopping after current song', {service: 'Player'});
