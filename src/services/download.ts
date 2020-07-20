@@ -105,8 +105,10 @@ function initQueue() {
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
 		emit('downloadQueueDrained');
-		downloadTask.end();
-		downloadTask = null;
+		if (downloadTask) {
+			downloadTask.end();
+			downloadTask = null;
+		}
 	});
 }
 
