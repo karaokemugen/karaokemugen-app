@@ -122,7 +122,7 @@ export async function getPollResults(): Promise<PollResults> {
 
 	emitWS('playlistInfoUpdated', playlist_id);
 	emitWS('playlistContentsUpdated', playlist_id);
-	const kara = `${winner.series[0]?.name || winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
+	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
 	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, {service: 'Poll'});
 	return {
 		votes: maxVotes,
