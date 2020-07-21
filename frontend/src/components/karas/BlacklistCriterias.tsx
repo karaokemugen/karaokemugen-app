@@ -1,3 +1,5 @@
+import './BlacklistCriterias.scss';
+
 import axios from 'axios';
 import i18next from 'i18next';
 import React, { Component } from 'react';
@@ -6,7 +8,6 @@ import { BLC, BLCSet } from '../../../../src/types/blacklist';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 import { buildKaraTitle } from '../tools';
-require('./BlacklistCriterias.scss');
 
 const listTypeBlc = [
 	'BLCTYPE_1002',
@@ -67,7 +68,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 		return (
 			<React.Fragment>
 				{this.props.scope === 'admin' ?
-					<span id="blacklistCriteriasInputs" className="blacklist-criterias-input">
+					<span className="blacklist-criterias-input">
 						<select onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
 							{listTypeBlc.map((value) => {
 								return <option key={value} value={value.replace('BLCTYPE_', '')}>{i18next.t(value)}</option>;
@@ -78,11 +79,11 @@ class BlacklistCriterias extends Component<IProps, IState> {
 							{tagsFiltered.length > 0 ?
 								<Autocomplete value={this.state.bcVal}
 									options={tagsFiltered} onChange={value => this.setState({ bcVal: value })} /> :
-								<input type="text" id="bcVal" value={this.state.bcVal}
-									className="input-sm" onChange={e => this.setState({ bcVal: e.target.value })} />
+								<input type="text" value={this.state.bcVal} placeholder={i18next.t('BLC.ADD_BLC')}
+									className="input-blc" onChange={e => this.setState({ bcVal: e.target.value })} />
 							}
 						</span>
-						<button id="bcAdd" className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}
+						<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}
 							onKeyPress={e => {
 								if (e.which == 13) this.addBlacklistCriteria();
 							}}><i className="fas fa-plus"></i></button>
@@ -94,12 +95,14 @@ class BlacklistCriterias extends Component<IProps, IState> {
 						{this.props.data.map(criteria => {
 							return (criteria.type === type ?
 								<li key={criteria.blcriteria_id} className="list-group-item liTag">
-									<div className="actionDiv">
-										<button title={i18next.t('TOOLTIP_DELETECRITERIA')} name="deleteCriteria"
-											className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id as number)}>
-											<i className="fas fa-minus"></i>
-										</button>
-									</div>
+									{this.props.scope === 'admin' ?
+										<div className="actionDiv">
+											<button title={i18next.t('BLC.DELETE_BLC')} name="deleteCriteria"
+												className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id as number)}>
+												<i className="fas fa-minus"></i>
+											</button>
+										</div> : null
+									}
 									<div className="typeDiv">{i18next.t('BLCTYPE_' + criteria.type)}</div>
 									<div className="contentDiv">
 										{criteria.type == 1001 ?

@@ -70,16 +70,16 @@ function resolveMediaPath(type: MediaType): string[] {
 }
 
 async function listRemoteMedias(type: MediaType): Promise<File[]> {
-	let webdavClient = createClient(
+	const webdavClient = createClient(
 		KMSite.url,
 		{
 			username: KMSite.username,
 			password: KMSite.password
 		}
 	);
-	const contents = await webdavClient.getDirectoryContents('/' + type);
-	webdavClient = null;
-	return contents;
+	// (baka?)
+	// eslint-disable-next-line no-return-await
+	return await webdavClient.getDirectoryContents('/' + type);
 }
 
 async function listLocalFiles(dir: string): Promise<File[]> {

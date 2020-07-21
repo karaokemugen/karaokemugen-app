@@ -105,8 +105,10 @@ function initQueue() {
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
 		emit('downloadQueueDrained');
-		downloadTask.end();
-		downloadTask = null;
+		if (downloadTask) {
+			downloadTask.end();
+			downloadTask = null;
+		}
 	});
 }
 
@@ -177,15 +179,17 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, download_i
 	let tempLyrics: string;
 	if (lyrics.file !== null) {
 		tempLyrics = resolve(tempDir, lyrics.file);
-		writes.push(await asyncWriteFile(tempLyrics, lyrics.data, 'utf-8'));
+		writes.push(asyncWriteFile(tempLyrics, lyrics.data, 'utf-8'));
 	}
 	const tempKara = resolve(tempDir, kara.file);
-	writes.push(await asyncWriteFile(tempKara, JSON.stringify(kara.data, null, 2), 'utf-8'));
+	writes.push(asyncWriteFile(tempKara, JSON.stringify(kara.data, null, 2), 'utf-8'));
 
 	for (const tag of tags) {
 		const tempTag = resolve(tempDir, tag.file);
-		writes.push(await asyncWriteFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
+		writes.push(asyncWriteFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
 	}
+
+	await Promise.all(writes);
 
 	// Delete files if they're already present
 	try {
@@ -290,7 +294,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 		) return false;
 		return true;
 	});
-	if (downloads.length === 0) throw {code: 409, msg: 'No downloads added, all are already in queue or running'};
+	if (downloads.length === 0) throw {code: 409, msg: 'DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR'};
 	const dls: KaraDownload[] = downloads.map(dl => {
 		logger.debug(`Adding download ${dl.name}`, {service: 'Download'});
 		return {
@@ -319,8 +323,12 @@ export function setDownloadStatus(uuid: string, status: string) {
 	return updateDownload(uuid, status);
 }
 
-export function wipeDownloads() {
+export function wipeDownloadQueue() {
 	q.destroy();
+}
+
+export function wipeDownloads() {
+	wipeDownloadQueue();
 	initQueue();
 	emitQueueStatus('stopped');
 	return emptyDownload();
@@ -448,7 +456,7 @@ export async function getAllRemoteTags(repository: string, params: TagParams): P
 			}
 		};
 		allTags.forEach(l => {
-			everything.content = everything.content.concat(l.content);
+			everything.content = everything.content.concat(l.content.filter(tag => tag.karacount && Object.keys(tag.karacount).length > 0));
 		});
 		// To get total count we're going to remove all duplicated by repo to keep only one tag from each repo.
 		// Each tag has a count property which gives us the number of tags for that query, so by adding them we get our total maximum count.

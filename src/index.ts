@@ -14,7 +14,7 @@ import {exit, initEngine} from './components/engine';
 import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {help} from './help';
-import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
+import {configureLocale, getConfig, resolvedPathImport, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
@@ -291,6 +291,8 @@ async function checkPaths(config: Config) {
 		await migrateOldFoldersToRepo();
 		// Emptying temp directory
 		if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
+		// Emptying import directory
+		if (await asyncExists(resolvedPathImport())) await asyncRemove(resolvedPathImport());
 		// Checking paths
 		const checks = [];
 		const paths = config.System.Path;

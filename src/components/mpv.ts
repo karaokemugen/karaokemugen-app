@@ -423,9 +423,7 @@ class Player {
 			await this.mpv.stop();
 			return true;
 		} catch (err) {
-			const error = new Error(err);
 			logger.error('mpvAPI(quit)', {service: 'Player', obj: err});
-			sentry.error(error, 'Fatal');
 			throw err;
 		}
 	}
@@ -460,6 +458,19 @@ class Players {
 		} else {
 			subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
 		}
+		return subOptions.join(';');
+	}
+
+	private static avatarFilter(mediaData: MediaData) {
+		const subOptions = [
+			`nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
+			'[vid1]scale=-2:1080[vidInp]',
+			'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
+			`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo]`,
+			'[logo][vpoc]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
+			'[base][emp]overlay[ovrl]',
+			`[ovrl][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
+		];
 		return subOptions.join(';');
 	}
 
@@ -685,16 +696,7 @@ class Players {
 			if (conf.Player.VisualizationEffects) {
 				options['lavfi-complex'] = Players.fillVisualizationOptions(mediaData, (mediaData.avatar && conf.Karaoke.Display.Avatar));
 			} else if (mediaData.avatar && conf.Karaoke.Display.Avatar) {
-				const subOptions = [
-					`nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
-					'[vid1]scale=-2:1080[vidInp]',
-					'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
-					`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo]`,
-					'[logo][vpoc]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
-					'[base][emp]overlay[ovrl]',
-					`[ovrl][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
-				];
-				options['lavfi-complex'] = subOptions.join(';');
+				options['lavfi-complex'] = Players.avatarFilter(mediaData);
 			}
 
 			const id3tags = await getID3(mediaFile);
@@ -854,6 +856,10 @@ class Players {
 
 	async seek(delta: number) {
 		try {
+			// Workaround for audio-only files: disable the lavfi-complex filter
+			if (playerState.currentSong.media.endsWith('.mp3') && playerState.currentSong.avatar && getConfig().Karaoke.Display.Avatar) {
+				await this.exec({command: ['set_property', 'lavfi-complex', '[vid1]null[vo]']});
+			}
 			await this.exec({command: ['seek', delta]});
 		} catch(err) {
 			logger.error('Unable to seek', {service: 'Player', obj: err});
@@ -864,6 +870,10 @@ class Players {
 
 	async goTo(pos: number) {
 		try {
+			// Workaround for audio-only files: disable the lavfi-complex filter
+			if (playerState.currentSong.media.endsWith('.mp3') && playerState.currentSong.avatar && getConfig().Karaoke.Display.Avatar) {
+				await this.exec({command: ['set_property', 'lavfi-complex', '[vid1]null[vo]']});
+			}
 			await this.exec({command: ['seek', pos, 'absolute']});
 		} catch(err) {
 			logger.error('Unable to go to position', {service: 'Player', obj: err});

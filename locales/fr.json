@@ -105,6 +105,7 @@
 			"ERRORS": "Oh non, ça marche pas !"
 		},
 		"NORMAL": [
+			"N'oubliez pas de mettre votre ceinture de sécurité avant de faire du karaoké. Chantez prudemment et attention aux chutes d'enceintes !",
 			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
 			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe, elle s'y trouve peut-être !",
 			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
@@ -123,7 +124,7 @@
 			"Encore une astuce qui finit en point d'exclamation !",
 			"Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
-			"Votre karaoké se termine bientôt ? Passez l'interface en mode retreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
+			"Votre karaoké se termine bientôt ? Passez l'interface en mode restreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
 			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !"
 		],
 		"ERRORS": [

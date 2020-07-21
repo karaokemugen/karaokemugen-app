@@ -79,7 +79,7 @@ INSERT INTO blacklist (fk_kid, created_at, reason, fk_id_blcriteria)
 	SELECT kt.fk_kid, now() ,'Blacklisted Tag : ' || t.name || ' (type ' || blc.type || ')', blc.pk_id_blcriteria
 	FROM blacklist_criteria AS blc
 	INNER JOIN tag t ON t.types @> ARRAY[blc.type] AND blc.value = t.pk_tid::varchar
-	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
+	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid AND kt.type = blc.type
 	WHERE blc.type BETWEEN 1 and 999
 		AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
 		AND   fk_id_blc_set = $1
