@@ -21,7 +21,7 @@ import { asyncExists } from '../lib/utils/files';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import {emit, on} from '../lib/utils/pubsub';
 import {initBlacklistSystem} from '../services/blacklist';
-import {downloadTestSongs,initDownloader, updateAllBases, updateAllMedias} from '../services/download';
+import {downloadTestSongs,initDownloader, updateAllBases, updateAllMedias, wipeDownloadQueue} from '../services/download';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
@@ -202,6 +202,7 @@ export async function exit(rc: string | number) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
+	wipeDownloadQueue();
 	try {
 		if (getState().player?.playerStatus) {
 			await quitmpv();
