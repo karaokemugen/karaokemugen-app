@@ -14,6 +14,7 @@
 	"KARA": {
 		"MEDIA_FILE": "Fichier média",
 		"MEDIA_FILE_TOOLTIP": "Formats de fichier acceptés : {{formats}}",
+		"MEDIA_REQUIRED": "Le fichier média est obligatoire",
 		"LYRICS_FILE": "Fichier de sous-titres",
 		"LYRICS_FILE_TOOLTIP": "Format de fichier accepté : {{formats}}",
 		"ADD_FILE_SUCCESS": "Le fichier {{name}} a été ajouté avec succès",

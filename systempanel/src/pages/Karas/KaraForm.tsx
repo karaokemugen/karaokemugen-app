@@ -14,7 +14,7 @@ import EditableTagGroup from '../Components/EditableTagGroup';
 interface KaraFormProps {
 	kara: Kara;
 	save: any;
-	handleCopy: (kid, repo) => void
+	handleCopy: (kid, repo) => void;
 }
 
 interface KaraFormState {
@@ -157,13 +157,13 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.props.save(kara);
 	};
 
-	isMediaFile = filename => {
+	isMediaFile = (filename: string): boolean => {
 		return new RegExp(`^.+\\.(${this.context.globalState.settings.data.state?.supportedMedias.join('|')})$`).test(
 			filename
 		);
 	};
 
-	isSubFile = filename => {
+	isSubFile = (filename: string): boolean => {
 		return new RegExp(`^.+\\.(${this.context.globalState.settings.data.state?.supportedLyrics.join('|')})$`).test(
 			filename
 		);
@@ -187,10 +187,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				info.file.status = 'error';
 				this.setState({ mediafile: [], mediafile_orig: null });
 			}
-		} else if (info.file.status === 'error') {
+		} else if (info.file.status === 'error' || info.file.status === 'removed') {
 			this.formRef.current.setFieldsValue({ mediafile: null });
 			this.setState({ mediafile: [], mediafile_orig: null });
 		}
+		this.formRef.current.validateFields();
 	};
 
 	onSubUploadChange = info => {
@@ -253,6 +254,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 6 }}
 					name="mediafile"
+					rules={[{
+						required: true,
+						message: i18next.t('KARA.MEDIA_REQUIRED')
+					}]}
 				>
 					<Upload
 						headers={{
