@@ -340,7 +340,10 @@ export async function next() {
 			const kara = await getCurrentSong();
 			await stopPlayer(true);
 			if (conf.Karaoke.Poll.Enabled) {
-				await startPoll();
+				if (!await startPoll()) {
+					// False returned means startPoll couldn't start a
+					mpv.displaySongInfo(kara.infos, 10000000, true);
+				};
 			} else {
 				mpv.displaySongInfo(kara.infos, 10000000, true);
 			}
