@@ -1,6 +1,6 @@
 export const version = {
-	number: '4.0.14-next',
-	name: 'Ôgi Obscure',
-	image: 'OgiObscure.jpg',
+	number: '4.1.0-next',
+	name: 'Ôgi Observatrice',
+	image: 'OgiObservatrice.jpg',
 	sha: null
 };
