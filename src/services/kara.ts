@@ -192,10 +192,10 @@ export async function editKaraInDB(kara: Kara, opts = {
 	if (opts.refresh) await refreshKarasAfterDBChange(kara.newTags);
 }
 
-export function getKaraHistory(): Promise<DBKaraHistory[]> {
+export async function getKaraHistory(): Promise<DBKaraHistory[]> {
 	// Called by system route
 	try {
-		return getKaraHistoryDB();
+		return await getKaraHistoryDB();
 	} catch(err) {
 		sentry.error(err);
 		logger.error('Unable to get kara history', {service: 'Kara', obj: err});
@@ -203,10 +203,10 @@ export function getKaraHistory(): Promise<DBKaraHistory[]> {
 	}
 }
 
-export function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
+export async function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
 	// Called by system route
 	try {
-		return selectAllKaras({
+		return await selectAllKaras({
 			username: token.username,
 			lang: lang,
 			filter: null,
@@ -219,10 +219,10 @@ export function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
 	}
 }
 
-export function getKaraPlayed(token: Token, lang: string, from: number, size: number): Promise<DBKara[]> {
+export async function getKaraPlayed(token: Token, lang: string, from: number, size: number): Promise<DBKara[]> {
 	// Called by system route
 	try {
-		return selectAllKaras({
+		return await selectAllKaras({
 			username: token.username,
 			filter: null,
 			mode: 'played',
@@ -289,8 +289,8 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 }
 
 export function formatKaraList(karaList: any, from: number, count: number): KaraList {
-	const {i18n, avatars, data} = consolidateData(karaList);
 	karaList = removeUnusedTagData(karaList);
+	const {i18n, avatars, data} = consolidateData(karaList);
 	return {
 		infos: {
 			count: count,
@@ -380,9 +380,9 @@ export function getSeriesSingers(kara: DBKara) {
 		case 1:
 			series = kara.series[0].i18n[kara.langs[0].name] || kara.series[0].i18n?.eng || kara.series[0].name;
 			break;
-		default:
-		case 3:
 		case 2:
+		case 3:
+		default:
 			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
 			series = kara.series[0].i18n[lang] || kara.series[0].i18n?.eng || kara.series[0].name;
 			break;

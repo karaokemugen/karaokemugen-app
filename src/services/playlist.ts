@@ -116,21 +116,21 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 		if (+conf.Karaoke.Quota.Type === 0) return true;
 		let limit: number;
 		switch(+conf.Karaoke.Quota.Type) {
-		default:
-		case 1:
-			limit = conf.Karaoke.Quota.Songs;
-			const count = await getSongCountForUser(playlist_id,user.login);
-			if (count >= limit) {
-				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit})`, {service: 'PLC'});
-				return false;
-			}
-			return true;
 		case 2:
 			limit = conf.Karaoke.Quota.Time;
 			let time = await getSongTimeSpentForUser(playlist_id,user.login);
 			if (!time) time = 0;
 			if ((limit - time - duration) < 0) {
 				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`, {service: 'PLC'});
+				return false;
+			}
+			return true;
+		case 1:
+		default:
+			limit = conf.Karaoke.Quota.Songs;
+			const count = await getSongCountForUser(playlist_id,user.login);
+			if (count >= limit) {
+				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit})`, {service: 'PLC'});
 				return false;
 			}
 			return true;

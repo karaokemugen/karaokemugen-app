@@ -291,7 +291,7 @@ async function checkPaths(config: Config) {
 		await migrateOldFoldersToRepo();
 		// Emptying temp directory
 		if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
-		// Emptying temp directory
+		// Emptying import directory
 		if (await asyncExists(resolvedPathImport())) await asyncRemove(resolvedPathImport());
 		// Checking paths
 		const checks = [];

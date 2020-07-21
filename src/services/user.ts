@@ -831,14 +831,14 @@ export async function updateSongsLeft(username: string, playlist_id?: number) {
 	if (!playlist_id) playlist_id = getState().publicPlaylistID;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
+		case 2:
+			const time = await getSongTimeSpentForUser(playlist_id,username);
+			quotaLeft = +conf.Karaoke.Quota.Time - time;
 		default:
 		case 1:
 			const count = await getSongCountForUser(playlist_id, username);
 			quotaLeft = +conf.Karaoke.Quota.Songs - count;
 			break;
-		case 2:
-			const time = await getSongTimeSpentForUser(playlist_id,username);
-			quotaLeft = +conf.Karaoke.Quota.Time - time;
 		}
 	} else {
 		quotaLeft = -1;
@@ -867,14 +867,12 @@ export async function updateUserQuotas(kara: PLC) {
 	const freeTasks = [];
 	const usersNeedingUpdate = [];
 	for (const currentSong of currentPlaylist) {
-		publicPlaylist.some((publicSong: PLC) => {
+		for (const publicSong of publicPlaylist) {
 			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
 				freeTasks.push(freePLC(publicSong.playlistcontent_id));
 				if (!usersNeedingUpdate.includes(publicSong.username)) usersNeedingUpdate.push(publicSong.username);
-				return true;
 			}
-			return false;
-		});
+		}
 	}
 	await Promise.all(freeTasks);
 	usersNeedingUpdate.forEach(username => {

@@ -423,9 +423,7 @@ class Player {
 			await this.mpv.stop();
 			return true;
 		} catch (err) {
-			const error = new Error(err);
 			logger.error('mpvAPI(quit)', {service: 'Player', obj: err});
-			sentry.error(error, 'Fatal');
 			throw err;
 		}
 	}

@@ -133,7 +133,7 @@ export async function getPollResults(): Promise<PollResults> {
 
 export async function addPollVoteIndex(index: number, nickname: string) {
 	try {
-		await addPollVote(index, {
+		addPollVote(index, {
 			username: nickname,
 			role: 'guest',
 		});
