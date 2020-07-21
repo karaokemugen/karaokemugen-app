@@ -341,7 +341,7 @@ export async function next() {
 			await stopPlayer(true);
 			if (conf.Karaoke.Poll.Enabled) {
 				if (!await startPoll()) {
-					// False returned means startPoll couldn't start a
+					// False returned means startPoll couldn't start a poll
 					mpv.displaySongInfo(kara.infos, 10000000, true);
 				};
 			} else {
