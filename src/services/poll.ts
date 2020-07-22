@@ -178,7 +178,7 @@ export function addPollVote(index: number, token: Token) {
 }
 
 /** Start poll system */
-export async function startPoll() {
+export async function startPoll(): Promise<boolean> {
 	const conf = getConfig();
 	setState({songPoll: true});
 	if (poll.length > 0) {
@@ -231,6 +231,7 @@ export async function startPoll() {
 	}
 	timerPoll();
 	if (conf.Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
+	return true;
 }
 
 async function displayPollTwitch() {

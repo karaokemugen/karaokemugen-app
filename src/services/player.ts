@@ -328,7 +328,6 @@ export async function next() {
 		await nextSong();
 		const conf = getConfig();
 		if (conf.Karaoke.ClassicMode) {
-			await prepareClassicPauseScreen();
 			stopPlayer(true);
 			if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
@@ -340,10 +339,11 @@ export async function next() {
 			const kara = await getCurrentSong();
 			await stopPlayer(true);
 			if (conf.Karaoke.Poll.Enabled) {
-				if (!await startPoll()) {
+				const poll = await startPoll();
+				if (!poll) {
 					// False returned means startPoll couldn't start a poll
 					mpv.displaySongInfo(kara.infos, 10000000, true);
-				};
+				}
 			} else {
 				mpv.displaySongInfo(kara.infos, 10000000, true);
 			}
@@ -371,7 +371,7 @@ async function toggleFullScreenPlayer() {
 }
 
 async function toggleOnTopPlayer() {
-	let state = setState({ontop: await mpv.toggleOnTop()});
+	const state = setState({ontop: await mpv.toggleOnTop()});
 	state.ontop
 		? logger.info('Player staying on top', {service: 'Player'})
 		: logger.info('Player NOT staying on top', {service: 'Player'});
@@ -404,13 +404,15 @@ export async function stopPlayer(now = true) {
 		await mpv.stop();
 		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false, stopping: false});
 		stopAddASongMessage();
+		if (getConfig().Karaoke.ClassicMode) {
+			await prepareClassicPauseScreen();
+		}
 	} else {
 		if (getState().player.playerStatus !== 'stop' && !getState().stopping) {
 			logger.info('Karaoke stopping after current song', {service: 'Player'});
 			setState({ stopping: true });
 		}
 	}
-	if (getConfig().Karaoke.ClassicMode) await prepareClassicPauseScreen();
 }
 
 export async function prepareClassicPauseScreen() {
