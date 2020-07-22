@@ -324,7 +324,7 @@ export function setDownloadStatus(uuid: string, status: string) {
 }
 
 export function wipeDownloadQueue() {
-	q.destroy();
+	if (q) q.destroy();
 }
 
 export function wipeDownloads() {
