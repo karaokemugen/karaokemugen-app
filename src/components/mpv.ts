@@ -15,7 +15,7 @@ import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp}
 import {imageFileTypes} from '../lib/utils/constants';
 import {asyncExists, asyncReadDir, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
 import {getSingleMedia} from '../services/medias';
-import {playerEnding, next, prev} from '../services/player';
+import {next, playerEnding, prev} from '../services/player';
 import {notificationNextSong} from '../services/playlist';
 import {endPoll} from '../services/poll';
 import {MediaType} from '../types/medias';

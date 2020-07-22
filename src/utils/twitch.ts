@@ -1,11 +1,11 @@
 // Node modules
+import i18next from 'i18next';
 import tmi, { ChatUserstate,Client } from 'tmi.js';
 
 import { getConfig } from '../lib/utils/config';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { addPollVoteIndex } from '../services/poll';
-import i18next from 'i18next';
 
 // We declare our client here se we can interact with it from different functions.
 let client: Client = null;
