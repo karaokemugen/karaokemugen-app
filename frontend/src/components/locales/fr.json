@@ -648,6 +648,7 @@
 		"USER_CREATE_ERROR": "Erreur lors de la création de l'utilisateur",
 		"USER_ALREADY_EXISTS": "L'utilisateur existe déjà",
 		"USER_ALREADY_EXISTS_ONLINE": "L'utilisateur existe déjà en ligne",
+		"USER_GET_ERROR_ONLINE": "Erreur lors de la récupération des utilisateurs en ligne",
 		"USER_CREATE_ERROR_ONLINE": "Erreur lors de la création de l'utilisateur en ligne",
 		"USER_VIEW_ERROR": "Erreur lors de la récupération des informations sur l'utilisateur",
 		"USER_DELETE_ERROR": "Erreur lors de la suppression de l'utilisateur",
