@@ -2,7 +2,6 @@
 import { app } from 'electron';
 import execa from 'execa';
 import i18n from 'i18next';
-import readlineSync from 'readline-sync';
 import logger from 'winston';
 
 import { generateBlacklist } from '../dao/blacklist';
@@ -212,7 +211,7 @@ export async function exit(rc: string | number) {
 	}
 	await closeDB();
 	const c = getConfig();
-	if (getTwitchClient() || (c?.Karaoke?.StreamerMode.Twitch.Enabled)) await stopTwitch();
+	if (getTwitchClient() || (c?.Karaoke?.StreamerMode?.Twitch?.Enabled)) await stopTwitch();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
 	try {
 		// Let's try to kill PGSQL anyway, not a problem if it fails.
@@ -238,11 +237,6 @@ export async function exit(rc: string | number) {
 
 function mataNe(rc: string | number) {
 	console.log('\nMata ne !\n');
-	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
-	//On other systems or if terminal is not a TTY we exit immediately.
-	// non-TTY terminals have no stdin support.
-	if ((process.platform !== 'win32' || !process.stdout.isTTY) && !app) process.exit(+rc);
-	if (rc !== 0 && !app) readlineSync.question('Press enter to exit', {hideEchoBack: true});
 	if (!app) {
 		process.exit(+rc);
 	} else {
