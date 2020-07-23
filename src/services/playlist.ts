@@ -1219,6 +1219,7 @@ export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.playlist_id));
+	await testPlaylists();
 	logger.debug('Playlists initialized', {service: 'Playlist'});
 }
 

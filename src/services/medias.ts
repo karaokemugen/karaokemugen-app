@@ -159,7 +159,7 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			logger.info('Update done', {service: '${type}'});
 		}
 	} catch(err) {
-		console.log(err);
+		logger.error('Failed to update medias from HTTP source', {obj: err, service: type});
 	}
 }
 
