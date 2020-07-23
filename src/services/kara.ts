@@ -447,6 +447,4 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 	} finally {
 		task.end();
 	}
-
-
 }

@@ -71,9 +71,7 @@ export function initFrontend(): number {
 				upgradeInsecureRequests: false,
 				workerSrc: false  // This is not set.
 			},
-
 			reportOnly: true,
-
 			disableAndroid: true
 		});
 		app.use(cors());
