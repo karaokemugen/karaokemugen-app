@@ -605,13 +605,13 @@ export async function createUser(user: User, opts: UserOpts = {
 
 /** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
-	if (user.type < 2 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
-	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
+	if (user.type < 2 && !user.password) throw { code: 400, msg: 'USER_EMPTY_PASSWORD'};
+	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
 	if (await DBGetUser(user.login) || await DBCheckNicknameExists(user.login)) {
 		logger.error(`User/nickname ${user.login} already exists, cannot create it`, {service: 'User'});
-		throw { code: 'USER_ALREADY_EXISTS', data: {username: user.login}};
+		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
 }
 
