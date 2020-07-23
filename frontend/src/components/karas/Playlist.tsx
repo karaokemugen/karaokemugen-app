@@ -328,12 +328,12 @@ class Playlist extends Component<IProps, IState> {
 	updateQuotaAvailable = (data: { username: string, quotaType: number, quotaLeft: number }) => {
 		if ((store.getLogInfos() as Token)?.username === data.username) {
 			let quotaString: any = '';
-			if (data.quotaType == 1) {
-				quotaString = data.quotaLeft;
-			} else if (data.quotaType == 2) {
+			if (data.quotaType === 1) {
+				quotaString = data.quotaLeft.toString();
+			} else if (data.quotaType === 2) {
 				quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
 			}
-			if (data.quotaLeft == -1) {
+			if (data.quotaLeft === -1) {
 				quotaString = <i className="fas fa-infinity"></i>;
 			}
 			this.setState({ quotaString: quotaString });
@@ -921,7 +921,7 @@ class Playlist extends Component<IProps, IState> {
 						<div className="plInfos">{this.getPlInfosElement()}</div>
 						{this.props.side === 1 && this.state.quotaString ?
 							<div className="plQuota right">
-								{i18next.t('QUOTA')}{this.state.quotaString}
+								{i18next.t('QUOTA')} {this.state.quotaString}
 							</div> : null
 						}
 						{this.state.checkedkaras > 0 ?
