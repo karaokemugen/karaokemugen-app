@@ -72,16 +72,20 @@ class LoginModal extends Component<IProps, IState> {
 					response = result.data;
 					const element = document.getElementById('modal');
 					if (element) ReactDOM.unmountComponentAtNode(element);
-					store.setLogInfos(response);
-					displayMessage('info', i18next.t('LOG_SUCCESS', { name: response.username }));
-					store.getTuto() && store.getTuto().move(1);
+					if (response) {
+						store.setLogInfos(response);
+						displayMessage('info', i18next.t('LOG_SUCCESS', { name: response.username }));
+						store.getTuto() && store.getTuto().move(1);
+					}
 				}, undefined, true);
 			}
 		} else {
 			const element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);
-			store.setLogInfos(response);
-			displayMessage('info', i18next.t('LOG_SUCCESS', { name: response.username }));
+			if (response) {
+				store.setLogInfos(response);
+				displayMessage('info', i18next.t('LOG_SUCCESS', { name: response.username }));
+			}
 
 			if (is_touch_device() && !localStorage.getItem('mugenTouchscreenHelp') && this.props.scope === 'public') {
 				ReactDOM.render(<HelpModal />, document.getElementById('modal'));
