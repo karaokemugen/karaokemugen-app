@@ -141,7 +141,7 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	displayClassicModeModal = (data: any) => {
-		if (data.playerStatus === 'stop' && data.currentRequester === (store.getLogInfos() as Token).username && !this.state.classicModeModal) {
+		if (data.playerStatus === 'stop' && data.currentRequester === (store.getLogInfos() as Token)?.username && !this.state.classicModeModal) {
 			ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
 			this.setState({ classicModeModal: true });
 		} else if (data.playerStatus === 'play' && this.state.classicModeModal) {
