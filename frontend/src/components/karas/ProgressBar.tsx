@@ -59,8 +59,10 @@ class ProgressBar extends Component<IProps, IState> {
 	};
 
 	async componentDidMount() {
-		const result = await axios.get('/player');
-		this.refreshPlayerInfos(result.data);
+		if (axios.defaults.headers.common['authorization']) {
+			const result = await axios.get('/player');
+			this.refreshPlayerInfos(result.data);
+		}
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
 	}
 
