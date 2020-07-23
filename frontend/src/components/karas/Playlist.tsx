@@ -326,7 +326,7 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	updateQuotaAvailable = (data: { username: string, quotaType: number, quotaLeft: number }) => {
-		if (store.getLogInfos() && (store.getLogInfos() as Token).username === data.username) {
+		if ((store.getLogInfos() as Token)?.username === data.username) {
 			let quotaString: any = '';
 			if (data.quotaType == 1) {
 				quotaString = data.quotaLeft;

@@ -512,7 +512,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			}
 		}
 		if (karaList.length === 0) {
-			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';throw {
+			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
+			throw {
 				code: 409,
 				msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
 			};
