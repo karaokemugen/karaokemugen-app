@@ -834,6 +834,7 @@ export async function updateSongsLeft(username: string, playlist_id?: number) {
 		case 2:
 			const time = await getSongTimeSpentForUser(playlist_id,username);
 			quotaLeft = +conf.Karaoke.Quota.Time - time;
+			break;
 		default:
 		case 1:
 			const count = await getSongCountForUser(playlist_id, username);
