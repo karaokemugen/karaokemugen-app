@@ -254,7 +254,7 @@ div.detailsKara, .list-group-item.karaCard div.details, .lyricsKara {
  }
 
  .lyricsKaraLoad {
-	 height: 95vh;
+	max-height: 95vh;
 	overflow: auto;
  }
 
