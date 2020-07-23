@@ -830,6 +830,7 @@ class Playlist extends Component<IProps, IState> {
 						searchMenuOpen={this.props.searchMenuOpen}
 						playlistWillUpdate={this.playlistWillUpdate}
 						playlistDidUpdate={this.playlistDidUpdate}
+						checkedkaras={this.state.checkedkaras}
 					/>
 					<div
 						id={'playlistContainer' + this.props.side}
