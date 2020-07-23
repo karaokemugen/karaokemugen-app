@@ -22,7 +22,7 @@ interface IState {
 	kara?: DBPLCInfo;
 	showLyrics: boolean;
 	isFavorite: boolean;
-	lyrics?: Array<string>;
+	lyrics: Array<string>;
 }
 
 class KaraDetail extends Component<IProps, IState> {
@@ -32,7 +32,8 @@ class KaraDetail extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			showLyrics: false,
-			isFavorite: false
+			isFavorite: false,
+			lyrics: []
 		};
 		this.fullLyricsRef = React.createRef();
 		if (this.props.kid || this.props.idPlaylist) {
@@ -326,7 +327,7 @@ class KaraDetail extends Component<IProps, IState> {
 							</table>
 						</div>
 						<div className="lyricsKara alert alert-info">
-							{data.subfile && this.state.lyrics && this.state.lyrics.map(ligne => {
+							{data.subfile && this.state.lyrics?.map(ligne => {
 								return (
 									<React.Fragment key={Math.random()}>
 										{ligne}
