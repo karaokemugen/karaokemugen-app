@@ -243,7 +243,6 @@ export function getPublicConfig(removeSystem = true) {
 	delete publicSettings.Karaoke.StreamerMode.Twitch.OAuth;
 	delete publicSettings.Gitlab.Token;
 	delete publicSettings.Gitlab.Host;
-	delete publicSettings.Online.Host;
 	delete publicSettings.Frontend.Port;
 	delete publicSettings.Frontend.AuthExpireTime;
 	return publicSettings;
