@@ -47,6 +47,7 @@ interface IProps {
 	playlistList: Array<PlaylistElem>;
 	searchMenuOpen?: boolean;
 	bLSetList: BLCSet[];
+	checkedkaras: number;
 	getPlaylistUrl: (idPlaylistParam?: number) => string;
 	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void;
 	playlistWillUpdate: () => void;
@@ -409,7 +410,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 							</button>
 							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
 								scope={this.props.scope} isHeader={true} addKara={this.props.addCheckedKaras}
-								deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras} />
+								deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras}
+								checkedkaras={this.props.checkedkaras} />
 						</React.Fragment> : null
 					}
 				</div> : null);
