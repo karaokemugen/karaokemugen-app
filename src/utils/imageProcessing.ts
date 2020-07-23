@@ -4,7 +4,7 @@ import circle from '@jimp/plugin-circle';
 import png from '@jimp/png';
 
 import { convertAvatar } from '../lib/utils/ffmpeg';
-import { replaceExt, asyncUnlink } from '../lib/utils/files';
+import { asyncUnlink,replaceExt } from '../lib/utils/files';
 import sentry from '../utils/sentry';
 
 const j = configure({

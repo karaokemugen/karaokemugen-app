@@ -96,10 +96,7 @@ export function startElectron() {
 export async function handleProtocol(args: string[]) {
 	try {
 		logger.info(`Received protocol uri km://${args.join('/')}`, {service: 'ProtocolHandler'});
-		if (!getState().ready) {
-			logger.debug('Ignoring file, Karaoke Mugen isn\'t ready.', {service: 'ProtocolHandler'});
-			return;
-		}
+		if (!getState().ready) return;
 		switch(args[0]) {
 		case 'download':
 			const domain = args[1];
@@ -151,10 +148,7 @@ export async function handleProtocol(args: string[]) {
 export async function handleFile(file: string, username?: string) {
 	try {
 		logger.info(`Received file path ${file}`, {service: 'FileHandler'});
-		if (!getState().ready) {
-			logger.debug('Ignoring file, Karaoke Mugen isn\'t ready.', {service: 'FileHandler'});
-			return;
-		}
+		if (!getState().ready) return;
 		if (!username) {
 			const users = await listUsers();
 			const adminUsersOnline = users.filter(u => u.type === 0 && u.login !== 'admin');

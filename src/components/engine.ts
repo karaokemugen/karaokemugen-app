@@ -17,7 +17,6 @@ import { generateDatabase as generateKaraBase } from '../lib/services/generation
 //Utils
 import {getConfig, setConfig} from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
-import { asyncExists } from '../lib/utils/files';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import {emit, on} from '../lib/utils/pubsub';
 import {initBlacklistSystem} from '../services/blacklist';
@@ -25,7 +24,7 @@ import {downloadTestSongs,initDownloader, updateAllBases, updateAllMedias, wipeD
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
-import {initPlaylistSystem, testPlaylists} from '../services/playlist';
+import {initPlaylistSystem} from '../services/playlist';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
@@ -145,7 +144,6 @@ export async function initEngine() {
 		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPlayer().then(() => {
 			if (app) registerShortcuts();
 		});
-		testPlaylists();
 		initDownloader();
 		await initSession();
 		if (conf.Online.Stats === true) initStats(false);
@@ -159,35 +157,35 @@ export async function initEngine() {
 			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
 			if (!state.isTest && !state.electron) welcomeToYoukousoKaraokeMugen();
 			setState({ ready: true });
-			// This is done later because it's not important.
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
+			// This is done later because it's not important.
 			if (state.args.length > 0) {
 				// Let's try the last argument
 				const file = state.args[state.args.length-1];
 				if (file && !file.startsWith('--')) {
-					try {
-						await asyncExists(file);
-						await handleFile(file);
-					} catch(err) {
-						logger.warn(`Last argument from args (${file}) does not exist`, {service: 'Engine'});
-					}
+					// Non fatal
+					await handleFile(file).catch(() => {});
 				}
 			}
 			if (state.isTest) {
 				downloadTestSongs();
 				on('downloadQueueStatus', (status: string) => {
-					if (status.includes('stopped')) runTests();
+					if (status === 'stopped') runTests();
 				});
-			}
-			if (!state.isTest && !state.isDemo) {
-				await updatePlaylistMedias();
-				await buildAllMediasList();
 			}
 			await postMigrationTasks(migrations);
 			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
-			if (!state.isTest && !state.isDemo) initDiscordRPC();
+			if (!state.isTest && !state.isDemo && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			if (state.args[0]?.startsWith('km://')) handleProtocol(state.args[0].substr(5).split('/'));
+			if (!state.isTest && !state.isDemo) {
+				try {
+					await updatePlaylistMedias();
+					await buildAllMediasList();
+				} catch(err) {
+					//Non fatal
+				}
+			}
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
 			sentry.error(err);
@@ -290,9 +288,9 @@ async function preFlightCheck() {
 		throw err;
 	}
 	const stats = await getStats();
-	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`);
-	logger.info(`Playlists    : ${stats.playlists}`);
-	logger.info(`Songs played : ${stats.played}`);
+	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`, {service: 'DB'});
+	logger.info(`Playlists    : ${stats.playlists}`, {service: 'DB'});
+	logger.info(`Songs played : ${stats.played}`, {service: 'DB'});
 	// Run this in the background
 	vacuum();
 	generateBlacklist();
