@@ -14,13 +14,12 @@ import {exit, initEngine} from './components/engine';
 import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {help} from './help';
-import {configureLocale, getConfig, resolvedPathImport, resolvedPathAvatars, resolvedPathTemp, setConfig} from './lib/utils/config';
+import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
-// Types
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
@@ -108,7 +107,6 @@ const appPath = process.platform === 'darwin'
 		? originalAppPath
 		: process.cwd();
 
-// Ugly Windows fix
 
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
@@ -231,13 +229,17 @@ export async function main() {
 	console.log(chalk.white(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
-	if (sha) console.log(`git commit : ${sha}`);
+	if (sha) console.log(`git commit : ${sha.substr(0, 8)}`);
 	console.log('================================================================================');
 	if (argv.version) {
-		app.exit(0);
+		app
+			? app.exit(0)
+			: process.exit(0);
 	} else if (argv.help) {
 		console.log(help);
-		app.exit(0);
+		app
+			? app.exit(0)
+			: process.exit(0);
 	} else {
 		const config = getConfig();
 		const publicConfig = cloneDeep(config);
