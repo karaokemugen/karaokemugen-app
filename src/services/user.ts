@@ -495,7 +495,8 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	} catch(err) {
 		logger.debug('Got error when get all remote users', {service: 'RemoteUser', obj: err});
 		throw {
-			code: 'USER_CREATE_ERROR_ONLINE',
+			code: 500,
+			msg: 'USER_GET_ERROR_ONLINE',
 			message: err
 		};
 	}
@@ -519,7 +520,8 @@ async function createRemoteUser(user: User) {
 	} catch(err) {
 		logger.debug(`Got error when create remote user ${login}`, {service: 'RemoteUser', obj: err});
 		throw {
-			code: 'USER_CREATE_ERROR_ONLINE',
+			code: 500,
+			msg: 'USER_CREATE_ERROR_ONLINE',
 			message: err
 		};
 	}

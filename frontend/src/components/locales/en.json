@@ -632,6 +632,7 @@
 		"USER_CREATE_ERROR": "Error creating user",
 		"USER_ALREADY_EXISTS": "User already exists",
 		"USER_ALREADY_EXISTS_ONLINE": "User already exists online",
+		"USER_GET_ERROR_ONLINE": "Error getting online users",
 		"USER_CREATE_ERROR_ONLINE": "Error creating online user",
 		"USER_VIEW_ERROR": "Error fetching user details",
 		"USER_DELETE_ERROR": "Error deleting user",
