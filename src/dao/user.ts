@@ -4,7 +4,7 @@ import {db, newDBTask} from '../lib/dao/database';
 import { DBUser } from '../lib/types/database/user';
 import { User } from '../lib/types/user';
 import { DBGuest, RemoteToken } from '../types/database/user';
-import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword,sqlfindFingerprint, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlresetGuestsPassword, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateExpiredUsers, sqlupdateLastLogin, sqlupdateUserFingerprint } from './sql/user';
+import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword,sqlfindFingerprint, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlresetGuestsPassword, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateExpiredUsers, sqlupdateLastLogin, sqlupdateUserFingerprint } from './sql/user';
 
 export async function getUser(username: string): Promise<DBUser> {
 	const res = await db().query(yesql(sqlselectUserByName)({username: username}));
@@ -73,6 +73,10 @@ export function reassignToUser(oldUsername: string, username: string) {
 			old_username: oldUsername
 		})),
 		db().query(yesql(sqlreassignPlaylistContentToUser)({
+			username: username,
+			old_username: oldUsername
+		})),
+		db().query(yesql(sqlreassignRequestedToUser)({
 			username: username,
 			old_username: oldUsername
 		}))
