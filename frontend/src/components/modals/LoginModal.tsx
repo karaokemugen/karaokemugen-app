@@ -106,6 +106,13 @@ class LoginModal extends Component<IProps, IState> {
 	};
 
 	loginUser = () => {
+		if (this.state.login.includes('@')) {
+			this.setState({ errorBackground: 'errorBackground' });
+			displayMessage('warning', i18next.t('CHAR_NOT_ALLOWED', { char: '@' }));
+			return;
+		} else {
+			this.setState({ errorBackground: '' });
+		}
 		const username = this.state.login + (this.state.onlineSwitch ? '@' + this.state.serv : '');
 		this.login(username, this.state.password);
 	};
