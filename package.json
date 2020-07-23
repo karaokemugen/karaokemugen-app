@@ -134,7 +134,6 @@
     "pretty-bytes": "^5.3.0",
     "public-ip": "^4.0.2",
     "randomstring": "^1.1.5",
-    "readline-sync": "^1.4.10",
     "sanitize-filename": "^1.6.3",
     "semver": "^7.3.2",
     "slugify": "^1.4.4",
@@ -248,8 +247,8 @@
       "warningsAsErrors": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-	  "license": "LICENSE.md",
-	  "differentialPackage": false
+      "license": "LICENSE.md",
+      "differentialPackage": false
     },
     "deb": {
       "depends": [
@@ -274,8 +273,8 @@
         "zip"
       ],
       "compression": "normal",
-	  "publisherName": "Karaoke Mugen Team",
-	  "verifyUpdateCodeSignature": false,
+      "publisherName": "Karaoke Mugen Team",
+      "verifyUpdateCodeSignature": false,
       "publish": {
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
