@@ -51,7 +51,7 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	keyObserverHandler = (e: KeyboardEvent) => {
-		if (e.key == 'Escape' && !document.getElementById('video')) {
+		if (e.key === 'Escape' && !document.getElementById('video')) {
 			this.closeModal();
 		}
 	}
@@ -84,10 +84,11 @@ class KaraDetail extends Component<IProps, IState> {
 			'/karas/' + (kid ? kid : this.props.kid);
 		const response = await axios.get(urlInfoKara);
 		const kara = response.data;
-		this.setState({
+		await this.setState({
 			kara: kara,
 			isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
 		});
+		if (this.props.mode === 'karaCard' && kara.subfile) this.showFullLyrics();
 	};
 
 	getLastPlayed = (lastPlayed_at: Date, lastPlayed: lastplayed_ago) => {
@@ -262,7 +263,7 @@ class KaraDetail extends Component<IProps, IState> {
 				) : null;
 
 			let infoKaraTemp;
-			if (this.props.mode == 'list') {
+			if (this.props.mode === 'list') {
 				infoKaraTemp = (
 					<div className="modal modalPage" onClick={this.onClickOutsideModal}>
 						<div className="modal-dialog modal-md">
@@ -314,8 +315,7 @@ class KaraDetail extends Component<IProps, IState> {
 						</div>
 					</div>
 				);
-			} else if (this.props.mode == 'karaCard') {
-				if (data.subfile) this.showFullLyrics();
+			} else if (this.props.mode === 'karaCard') {
 				infoKaraTemp = (
 					<React.Fragment>
 						<div className="details karaCard">
