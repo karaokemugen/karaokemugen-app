@@ -102,7 +102,7 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().on('adminMessage', (data: any) => displayMessage('info',
 			<div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br />{data.message}</div>, data.duration));
 		getSocket().on('userSongPlaysIn', (data: DBPLCInfo) => {
-			if (data && data.username === (store.getLogInfos() as Token).username) {
+			if (data && data.username === (store.getLogInfos() as Token)?.username) {
 				const playTime = new Date(Date.now() + data.time_before_play * 1000);
 				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 				const beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
