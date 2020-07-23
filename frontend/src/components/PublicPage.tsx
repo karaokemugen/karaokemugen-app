@@ -211,6 +211,7 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	getPlaylistList = async () => {
+		axios.get('/stats');
 		const response = await axios.get('/playlists/');
 		const playlistList = response.data.filter((playlist: PlaylistElem) => playlist.flag_visible);
 		if (this.props.config.Frontend.Permissions?.AllowViewBlacklist)
