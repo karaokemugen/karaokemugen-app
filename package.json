@@ -160,6 +160,7 @@
     "@types/chai": "^4.2.11",
     "@types/cli-progress": "^3.7.0",
     "@types/compression": "^1.7.0",
+    "@types/cors": "^2.8.6",
     "@types/discord-rpc": "^3.0.4",
     "@types/fs-extra": "^9.0.1",
     "@types/ip": "^1.1.0",
