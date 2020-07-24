@@ -173,7 +173,8 @@ export async function initEngine() {
 				} else {
 					downloadTestSongs();
 					on('downloadQueueStatus', (status: string) => {
-						if (status === 'stopped') runTests();
+						console.log(status);
+						if (status.includes('stopped')) runTests();
 					});
 				}
 			}
