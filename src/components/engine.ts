@@ -168,10 +168,14 @@ export async function initEngine() {
 				}
 			}
 			if (state.isTest) {
-				downloadTestSongs();
-				on('downloadQueueStatus', (status: string) => {
-					if (status === 'stopped') runTests();
-				});
+				if (state.opt.noTestDownloads) {
+					runTests();
+				} else {
+					downloadTestSongs();
+					on('downloadQueueStatus', (status: string) => {
+						if (status === 'stopped') runTests();
+					});
+				}
 			}
 			await postMigrationTasks(migrations);
 			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
