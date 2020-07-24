@@ -172,8 +172,7 @@ export async function initEngine() {
 					runTests();
 				} else {
 					downloadTestSongs();
-					on('downloadQueueStatus', (status: string) => {
-						console.log(status);
+					on('downloadQueueStatus', (status: string[]) => {
 						if (status.includes('stopped')) runTests();
 					});
 				}
