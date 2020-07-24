@@ -25,20 +25,6 @@ describe('Auth', function() {
 				notStrictEqual(response.body.role, 'user');
 			});
 	});
-	it('Login / Sign in (as guest) Error 500', function() {
-		const data = {
-			fingerprint: '999'
-		};
-		return request
-			.post('/api/auth/login/guest')
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(500)
-			.then(response => {
-				strictEqual(response.body.code, 'NO_MORE_GUESTS_AVAILABLE');
-			});
-	});
-
 	it('Login / Sign in', function() {
 		const data = {
 			username: usernameAdmin,
