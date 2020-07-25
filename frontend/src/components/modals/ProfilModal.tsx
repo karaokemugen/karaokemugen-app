@@ -408,7 +408,6 @@ class ProfilModal extends Component<IProps, IState> {
 												</div>
 												{this.state.userDetails ?
 													<div className="userDetails">
-														<div><i className="fas fa-envelope"></i>{this.state.userDetails.email ? this.state.userDetails.email : ''}</div>
 														<div><i className="fas fa-link"></i>{this.state.userDetails.url ? this.state.userDetails.url : ''}</div>
 														<div><i className="fas fa-leaf"></i>{this.state.userDetails.bio ? this.state.userDetails.bio : ''}</div>
 													</div> : null
