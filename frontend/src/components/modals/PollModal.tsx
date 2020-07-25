@@ -6,13 +6,17 @@ import ReactDOM from 'react-dom';
 import { PollItem } from '../../../../src/types/poll';
 import { buildKaraTitle } from '../tools';
 
+interface IProps {
+	hasVoted: () => void;
+}
+
 interface IState {
 	width: string;
 	timeLeft?: string;
 	poll: Array<PollItem>
 }
-class PollModal extends Component<unknown, IState> {
-	constructor(props: unknown) {
+class PollModal extends Component<IProps, IState> {
+	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			poll: [],
@@ -28,6 +32,7 @@ class PollModal extends Component<unknown, IState> {
 
 	postSong = (event: any) => {
 		axios.post('/songpoll', { index: event.target.value });
+		this.props.hasVoted();
 		const element = document.getElementById('modal');
 		if (element) ReactDOM.unmountComponentAtNode(element);
 	};
