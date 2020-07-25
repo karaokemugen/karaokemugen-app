@@ -191,8 +191,7 @@ class ProfilModal extends Component<IProps, IState> {
 			this.setState({ userDetails: undefined });
 		} else {
 			const response = await axios.get(`/users/${user.login}`);
-			const responseUserDetails = response.data;
-			this.setState({ userDetails: { email: responseUserDetails.email, url: responseUserDetails.url, bio: responseUserDetails.bio, } });
+			this.setState({ userDetails: response.data });
 		}
 	};
 
@@ -413,8 +412,8 @@ class ProfilModal extends Component<IProps, IState> {
 												</div>
 												{this.state.userDetails?.login === user.login ?
 													<div className="userDetails">
-														<div><i className="fas fa-link"></i>{this.state.userDetails.url ? this.state.userDetails.url : ''}</div>
-														<div><i className="fas fa-leaf"></i>{this.state.userDetails.bio ? this.state.userDetails.bio : ''}</div>
+														<div><i className="fas fa-link"></i>{this.state.userDetails?.url ? this.state.userDetails.url : ''}</div>
+														<div><i className="fas fa-leaf"></i>{this.state.userDetails?.bio ? this.state.userDetails.bio : ''}</div>
 													</div> : null
 												}
 											</li>;
