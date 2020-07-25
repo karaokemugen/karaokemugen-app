@@ -337,7 +337,7 @@ class Tutorial extends Component<IProps, IState> {
 			&& (!store.getLogInfos()
 				|| !(store.getLogInfos() as Token).token
 				|| (store.getLogInfos() as Token).role !== 'admin')
-			|| (store.getLogInfos() as Token).username === 'admin') {
+			|| (store.getLogInfos() as Token)?.username === 'admin') {
 			ReactDOM.render(<LoginModal
 				scope='admin'
 				role='admin'

@@ -43,9 +43,9 @@ async function displayPoll(winner?: number) {
 			boldWinnerClose = '{\\b0}';
 		}
 		if (isNaN(percentage)) percentage = 0;
-		const percentageStr = percentage !== Math.floor(percentage)
-			? percentage.toFixed(2)
-			: +percentage;
+		const percentageStr = percentage < 1
+			? `0${percentage.toFixed(1)}`
+			: percentage.toFixed(1);
 		// If series is empty, pick singer information instead
 		const series = getSeriesSingers(kara);
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)

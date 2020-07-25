@@ -478,10 +478,23 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			}
 		} else {
 			// Not an admin adding this. Adding an upvote to all songs already in playlist, adding the rest
+			// Note from Axel from the future: You blind idiot, a non-admin can only add one song at a time, so this means you can't add multiple upvotes at once.
+			// Note from Axel from the future +1: But the API could change someday to allow non-admins to add multiple songs. Then this code will be broken somehow.
+			// Note from present Axel: No it won't, you two shut up.
 			const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
 			karaList = songs.notPresent;
 			// Upvoting each song already present
-			if (songs.alreadyPresent.length > 0) addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
+			if (songs.alreadyPresent.length > 0) {
+				addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
+				return {
+					action: 'UPVOTED',
+					kara: kara.title,
+					playlist: pl.name,
+					kid: songs.alreadyPresent[0].kid,
+					playlist_id: playlist_id,
+					plc: songs.alreadyPresent[0]
+				};
+			}
 		}
 		// Check user quota first
 		if (user.type > 0 && !await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
@@ -504,7 +517,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 				return !seriesSingersInPlaylist.includes(k.uniqueSerieSinger);
 			});
 			if (karaList.length === 0) {
-				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
+				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
 				throw {
 					code: 406,
 					msg: 'Adding karaokes from the same series / singer is not allowed'
@@ -512,7 +525,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			}
 		}
 		if (karaList.length === 0) {
-			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
+			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 			throw {
 				code: 409,
 				msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
@@ -578,6 +591,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			updateSongsLeft(user.login, playlist_id)
 		]);
 		const ret = {
+			action: 'ADDED',
 			kara: kara.title,
 			playlist: pl.name,
 			kid: karaList.map(k => k.kid),

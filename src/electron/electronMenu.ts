@@ -71,6 +71,25 @@ export function initMenu() {
 					}
 				},
 				{ type: 'separator'},
+				isMac ? {
+					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
+					accelerator: 'CmdOrCtrl+F',
+					click() {
+						isOpenElectron()
+							? win.loadURL(urls.operatorOptions)
+							: open(urls.operatorOptions);
+					}
+				} : null,
+				isMac ? {
+					label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG_OSX'),
+					accelerator: 'CmdOrCtrl+G',
+					click() {
+						isOpenElectron()
+							? win.loadURL(urls.systemOptions)
+							: open(urls.systemOptions);
+					}
+				} : null,
+				isMac ? { type: 'separator' } : null,
 				!isMac && !getState().forceDisableAppUpdate ? {
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
@@ -80,7 +99,8 @@ export function initMenu() {
 						await autoUpdater.checkForUpdates();
 						setManualUpdate(false);
 					}
-				} : { role: 'services' },
+				} : null,
+				isMac ? { role: 'services' } : null,
 				{
 					label: i18next.t('MENU_FILE_IMPORT'),
 					async click() {
@@ -152,7 +172,7 @@ export function initMenu() {
 		*
 		*/
 		{
-			label: i18next.t('MENU_GOTO'),
+			label: isMac ? i18next.t('MENU_GOTO_OSX') : i18next.t('MENU_GOTO'),
 			submenu: [
 				{
 					label: i18next.t('MENU_GOTO_HOME'),
@@ -243,7 +263,7 @@ export function initMenu() {
 		* OPTIONS
 		*
 		*/
-		{
+		!isMac ? {
 			label: i18next.t('MENU_OPTIONS'),
 			submenu: [
 				{
@@ -254,7 +274,7 @@ export function initMenu() {
 						setConfig({ GUI: {OpenInElectron: !isOpenElectron()}});
 					}
 				},
-				!isMac && !getState().forceDisableAppUpdate ? {
+				!getState().forceDisableAppUpdate ? {
 					label: i18next.t('MENU_OPTIONS_CHECKFORUPDATES'),
 					type: 'checkbox',
 					checked: getConfig().Online.Updates.App,
@@ -262,6 +282,7 @@ export function initMenu() {
 						setConfig({ Online: {Updates: { App: !getConfig().Online.Updates.App}}});
 					}
 				} : null,
+				{ type: 'separator' },
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
 					accelerator: 'CmdOrCtrl+F',
@@ -281,7 +302,7 @@ export function initMenu() {
 					}
 				},
 			]
-		},
+		} : null,
 		/**
 		*
 		* WINDOW MENU
@@ -290,7 +311,16 @@ export function initMenu() {
 		{
 			label: i18next.t('MENU_WINDOW'),
 			submenu: [
-				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' }
+				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
+				{ type: 'separator'},
+				isMac ? {
+					label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
+					type: 'checkbox',
+					checked: isOpenElectron(),
+					click() {
+						setConfig({ GUI: {OpenInElectron: !isOpenElectron()}});
+					}
+				} : null,
 			]
 		},
 		/**
@@ -303,9 +333,60 @@ export function initMenu() {
 			role: 'help',
 			submenu: [
 				{
+					label: i18next.t('MENU_HELP_GUIDE'),
+					click: () => {
+						open(`https://docs.karaokes.moe/${getState().defaultLocale}/user-guide/getting-started/`);
+					}
+				},
+				{
 					label: i18next.t('MENU_HELP_WEBSITE'),
 					click: () => {
 						open('https://karaokes.moe');
+					}
+				},
+				{
+					label: i18next.t('MENU_HELP_TWITTER'),
+					click: () => {
+						open('https://twitter.com/KaraokeMugen');
+					}
+				},
+				{
+					label: i18next.t('MENU_HELP_DISCORD'),
+					click: () => {
+						open('https://karaokes.moe/discord');
+					}
+				},
+				{
+					label: i18next.t('MENU_HELP_GITLAB'),
+					click: () => {
+						open('https://lab.shelter.moe/karaokemugen/karaokemugen-app');
+					}
+				},
+				{ type: 'separator'},
+				{
+					label: i18next.t('MENU_HELP_CHANGELOG'),
+					click: () => {
+						open('https://lab.shelter.moe/karaokemugen/karaokemugen-app/-/releases');
+					}
+				},
+				{ type: 'separator'},
+				{
+					label: i18next.t('MENU_HELP_CONTRIB_DOC'),
+					click: () => {
+						open(`https://docs.karaokes.moe/${getState().defaultLocale}/contrib-guide/base/`);
+					}
+				},
+				{
+					label: i18next.t('MENU_HELP_SEND_KARAOKE'),
+					click: () => {
+						open('https://kara.moe/import/');
+					}
+				},
+				{ type: 'separator'},
+				{
+					label: i18next.t('MENU_HELP_REPORT_BUG'),
+					click: () => {
+						open('https://lab.shelter.moe/karaokemugen/karaokemugen-app/-/issues');
 					}
 				}
 			]
@@ -327,7 +408,6 @@ export function initMenu() {
 					{ label: i18next.t('MENU_EDIT_CUT'), role: 'cut' },
 					{ label: i18next.t('MENU_EDIT_COPY'), role: 'copy' },
 					{ label: i18next.t('MENU_EDIT_PASTE'), role: 'paste' },
-					{ label: i18next.t('MENU_EDIT_PASTEWITHSTYLE'), role: 'pasteAndMatchStyle' },
 					{ label: i18next.t('MENU_EDIT_DELETE'), role: 'delete' },
 					{ label: i18next.t('MENU_EDIT_SELECT_ALL'), role: 'selectAll' },
 					{ type: 'separator' },
@@ -341,5 +421,5 @@ export function initMenu() {
 				]
 			});
 	}
-	removeNulls(menuItems);
+	menuItems = removeNulls(menuItems);
 }

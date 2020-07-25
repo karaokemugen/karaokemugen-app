@@ -55,7 +55,7 @@ class AdminMessageModal extends Component<unknown, IState> {
 	render() {
 		return (
 			<div className="modal modalPage">
-				<div className="modal-dialog modal-md">
+				<div className="modal-dialog">
 					<div className="modal-content">
 						<ul className="modal-header">
 							<h4 className="modal-title">{i18next.t('ESSENTIAL_MESSAGE')}</h4>

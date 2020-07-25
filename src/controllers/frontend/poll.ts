@@ -44,7 +44,7 @@ export default function pollController(router: Router) {
  * }
  * @apiError POLL_LIST_ERROR Unable to list current poll
  * @apiError POLL_NOT_ACTIVE No poll is in progress
- * @apiError POLL_ALREADY_VOTED This user has already voted
+ * @apiError POLL_USER_ALREADY_VOTED This user has already voted
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 425 Too Early
@@ -98,7 +98,7 @@ export default function pollController(router: Router) {
  * }
  * @apiError POLL_LIST_ERROR Unable to list current poll
  * @apiError POLL_NOT_ACTIVE No poll is in progress
- * @apiError POLL_ALREADY_VOTED This user has already voted
+ * @apiError POLL_USER_ALREADY_VOTED This user has already voted
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 425
