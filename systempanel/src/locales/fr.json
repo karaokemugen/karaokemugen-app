@@ -472,7 +472,7 @@
 		"USER_CONVERT_ERROR": "Erreur lors de la conversion en compte en ligne",
 		"ADMIN_CONVERT_ERROR": "Le compte 'admin' ne peut être converti vers un compte en ligne",
 		"UNKNOW_CONVERT_ERROR": "Utilisateur inconnu",
-		"PASSWORD_TOO_SHORT": "Mot de passe trop court",
+		"PASSWORD_TOO_SHORT": "Mot de passe trop court (8 caractères minimum)",
 		"PASSWORD_CONVERT_ERROR": "Mot de passe erroné",
 		"USER_DELETE_ERROR_ONLINE": "Erreur lors de la suppression du compte en ligne",
 		"WL_EMPTY_ERROR": "Erreur lors de la suppression des éléments de la liste blanche",

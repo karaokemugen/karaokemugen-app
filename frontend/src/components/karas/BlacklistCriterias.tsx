@@ -85,7 +85,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 						</span>
 						<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}
 							onKeyPress={e => {
-								if (e.which == 13) this.addBlacklistCriteria();
+								if (e.keyCode === 13) this.addBlacklistCriteria();
 							}}><i className="fas fa-plus"></i></button>
 					</span> : null
 				}

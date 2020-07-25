@@ -40,7 +40,7 @@ class PollModal extends Component<IProps, IState> {
 	render() {
 		return (
 			<div className="modal modalPage" id="pollModal">
-				<div className="modal-dialog modal-md">
+				<div className="modal-dialog">
 					<div className="modal-content">
 						<ul className="nav nav-tabs nav-justified modal-header">
 							<li className="modal-title active">
@@ -56,21 +56,19 @@ class PollModal extends Component<IProps, IState> {
 							<span className="timer" style={{ transition: `width ${this.state.timeLeft}`, width: this.state.width }}></span>
 
 						</ul>
-						<div className="tab-content" id="nav-tabContent">
-							<div id="nav-poll" className="modal-body" style={{ height: 3 * this.state.poll.length + 'em' }}>
-								<div className="modal-message">
-									{this.state.poll.map(kara => {
-										return <button className="btn btn-default tour poll" key={kara.playlistcontent_id} value={kara.index}
-											onClick={this.postSong}
-											style={{
-												backgroundColor: 'hsl('
-													+ Math.floor(Math.random() * 256)
-													+ ',20%, 26%)'
-											}}>
-											{buildKaraTitle(kara, true)}
-										</button>;
-									})}
-								</div>
+						<div id="nav-poll" className="modal-body" style={{ height: 3 * this.state.poll.length + 'em' }}>
+							<div className="modal-message">
+								{this.state.poll.map(kara => {
+									return <button className="btn btn-default tour poll" key={kara.playlistcontent_id} value={kara.index}
+										onClick={this.postSong}
+										style={{
+											backgroundColor: 'hsl('
+												+ Math.floor(Math.random() * 256)
+												+ ',20%, 26%)'
+										}}>
+										{buildKaraTitle(kara, true)}
+									</button>;
+								})}
 							</div>
 						</div>
 					</div>

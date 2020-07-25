@@ -39,7 +39,7 @@ class OnlineProfileModal extends Component<IProps, IState> {
 	render() {
 		return (
 			<div className="modal modalPage">
-				<div className="modal-dialog modal-md">
+				<div className="modal-dialog">
 					<div className="modal-content">
 						<ul className="modal-header">
 							<label className="modal-title">
@@ -57,7 +57,7 @@ class OnlineProfileModal extends Component<IProps, IState> {
 							{this.props.type === 'convert' ?
 								<React.Fragment>
 									<label>{i18next.t('INSTANCE_NAME')}</label>
-									<input type="text" name="modalLoginServ" value={this.state.modalLoginServ}
+									<input type="text" value={this.state.modalLoginServ}
 										onChange={e => this.setState({ modalLoginServ: e.target.value })} />
 								</React.Fragment> : null
 							}

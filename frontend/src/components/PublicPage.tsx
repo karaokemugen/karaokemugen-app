@@ -296,7 +296,7 @@ class PublicPage extends Component<IProps, IState> {
 
 										<button
 											title={i18next.t('GET_LUCKY')}
-											className="btn btn-lg btn-action btn-default"
+											className="btn btn-action btn-default"
 											onClick={this.getLucky}
 										>
 											<i className="fas fa-dice" />

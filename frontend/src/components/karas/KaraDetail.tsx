@@ -266,7 +266,7 @@ class KaraDetail extends Component<IProps, IState> {
 			if (this.props.mode === 'list') {
 				infoKaraTemp = (
 					<div className="modal modalPage" onClick={this.onClickOutsideModal}>
-						<div className="modal-dialog modal-md">
+						<div className="modal-dialog">
 							<div className="modal-content">
 								<div className="modal-header">
 									<h4 className="modal-title">{i18next.t('MODAL.KARA_DETAILS')}</h4>

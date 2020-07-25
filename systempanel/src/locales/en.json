@@ -472,7 +472,7 @@
 		"USER_CONVERT_ERROR": "Error converting to online account",
 		"ADMIN_CONVERT_ERROR": "The account 'admin' cannot be converted to an online account",
 		"UNKNOW_CONVERT_ERROR": "User unknown",
-		"PASSWORD_TOO_SHORT": "Password too short",
+		"PASSWORD_TOO_SHORT": "Password too short (minimum 8 characters)",
 		"PASSWORD_CONVERT_ERROR": "Wrong password",
 		"USER_DELETE_ERROR_ONLINE": "Error deleting your online account",
 		"WL_EMPTY_ERROR": "Error emptying whitelist",
