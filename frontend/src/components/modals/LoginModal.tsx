@@ -191,18 +191,6 @@ class LoginModal extends Component<IProps, IState> {
 						<div className="tab-content" id="nav-tabContent">
 							{this.state.activeView === 1 ?
 								<div id="nav-login" className="modal-body">
-									{this.props.scope !== 'admin' && store.getConfig().Frontend.Mode === 2 ?
-										<React.Fragment>
-											<div style={{ height: '60px' }}>
-												<button className="btn btn-default tour" onClick={() => startIntro('public')}>
-													{i18next.t('FOLLOW_TOUR')}
-												</button>
-											</div>
-											<div>
-												{i18next.t('OR')}
-											</div>
-										</React.Fragment> : null
-									}
 									{this.props.scope !== 'admin' ?
 										<React.Fragment>
 											<div style={{ height: '60px' }}>
