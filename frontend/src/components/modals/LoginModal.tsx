@@ -87,7 +87,7 @@ class LoginModal extends Component<IProps, IState> {
 				displayMessage('info', i18next.t('LOG_SUCCESS', { name: response.username }));
 			}
 
-			if (is_touch_device() && !localStorage.getItem('mugenTouchscreenHelp') && this.props.scope === 'public') {
+			if (!localStorage.getItem('mugenTouchscreenHelp') && this.props.scope === 'public') {
 				ReactDOM.render(<HelpModal />, document.getElementById('modal'));
 			}
 			store.getTuto() && store.getTuto().move(1);
