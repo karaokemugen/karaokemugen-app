@@ -211,7 +211,7 @@ export async function exit(rc: string | number) {
 		}
 	} catch(err) {
 		logger.warn('mpv error', {service: 'Engine', obj: err});
-		sentry.error(err);
+		// Non fatal.
 	}
 	await closeDB();
 	const c = getConfig();
