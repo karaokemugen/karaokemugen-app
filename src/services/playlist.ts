@@ -478,10 +478,22 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			}
 		} else {
 			// Not an admin adding this. Adding an upvote to all songs already in playlist, adding the rest
+			// Note from Axel from the future: You blind idiot, a non-admin can only add one song at a time, so this means you can't add multiple upvotes at once.
+			// Note from Axel from the future +1: But the API could change someday to allow non-admins to add multiple songs. Then this code will be broken somehow.
+			// Note from present Axel: No it won't, you two shut up.
 			const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
 			karaList = songs.notPresent;
 			// Upvoting each song already present
-			if (songs.alreadyPresent.length > 0) addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
+			if (songs.alreadyPresent.length > 0) {
+				addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
+				return {
+					kara: kara.title,
+					playlist: pl.name,
+					kid: songs.alreadyPresent[0].kid,
+					playlist_id: playlist_id,
+					plc: songs.alreadyPresent[0]
+				};
+			}
 		}
 		// Check user quota first
 		if (user.type > 0 && !await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
