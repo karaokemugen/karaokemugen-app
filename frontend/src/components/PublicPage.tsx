@@ -346,6 +346,14 @@ class PublicPage extends Component<IProps, IState> {
 										</div>
 
 										<div className="switchParent">
+											{this.state.isPollActive ? (
+												<button
+													className="btn btn-default showPoll"
+													onClick={() => ReactDOM.render(<PollModal />, document.getElementById('modal'))}
+												>
+													<i className="fas fa-chart-line" />
+												</button>
+											) : null}
 											<RadioButton
 												title={i18next.t('SWITCH_BAR_INFOS')}
 												buttons={[
@@ -406,6 +414,23 @@ class PublicPage extends Component<IProps, IState> {
 									}
 								</KmAppBodyDecorator>
 							</KmAppWrapperDecorator>
+
+							{this.props.config.Frontend.Mode === 2 &&
+								this.state.isPollActive ? (
+									<div
+										className="fixed-action-btn right right2 mobileActions"
+									>
+										<a
+											className="btn-floating btn-large waves-effect z-depth-3 showPoll"
+											onClick={() => {
+												this.closeMobileMenu();
+												ReactDOM.render(<PollModal />, document.getElementById('modal'));
+											}}
+										>
+											<i className="fas fa-bar-chart" />
+										</a>
+									</div>
+								) : null}
 
 							<div className="fixed-action-btn right mobileActions">
 								<a
