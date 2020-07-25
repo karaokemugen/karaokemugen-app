@@ -487,6 +487,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			if (songs.alreadyPresent.length > 0) {
 				addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
 				return {
+					action: 'UPVOTED',
 					kara: kara.title,
 					playlist: pl.name,
 					kid: songs.alreadyPresent[0].kid,
@@ -516,7 +517,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 				return !seriesSingersInPlaylist.includes(k.uniqueSerieSinger);
 			});
 			if (karaList.length === 0) {
-				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
+				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
 				throw {
 					code: 406,
 					msg: 'Adding karaokes from the same series / singer is not allowed'
@@ -524,7 +525,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			}
 		}
 		if (karaList.length === 0) {
-			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
+			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 			throw {
 				code: 409,
 				msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
@@ -590,6 +591,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			updateSongsLeft(user.login, playlist_id)
 		]);
 		const ret = {
+			action: 'ADDED',
 			kara: kara.title,
 			playlist: pl.name,
 			kid: karaList.map(k => k.kid),
