@@ -454,7 +454,7 @@ class Playlist extends Component<IProps, IState> {
 		if (searchType) {
 			data.searchType = searchType;
 			data.data = this.state.data;
-			if (data.data) data.data.infos.from = 0;
+			if (data?.data?.infos) data.data.infos.from = 0;
 			this.setState({ searchType: searchType });
 		} else if (stateData && stateData.infos && stateData.infos.from == 0) {
 			data.searchType = undefined;
