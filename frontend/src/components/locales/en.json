@@ -606,7 +606,7 @@
 		"PL_SHUFFLE_ERROR": "Error shuffling a playlist",
 		"POLL_LIST_ERROR": "Error listing current poll",
 		"POLL_NOT_ACTIVE": "No poll is currently running",
-		"POLL_ALREADY_VOTED": "You have already voted",
+		"POLL_USER_ALREADY_VOTED": "You have already voted",
 		"REPO_LIST_ERROR": "Eror fetching repositories list",
 		"REPO_CREATE_ERROR": "Error creating repository",
 		"REPO_GET_ERROR": "Error fetching repository",
