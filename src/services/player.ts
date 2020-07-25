@@ -357,6 +357,8 @@ export async function next() {
 		}
 	} catch(err) {
 		logger.warn('Next song is not available', {service: 'Player', obj: err});
+		// Display KM info banner just to be sure
+		mpv.displayInfo();
 		throw err;
 	}
 }
