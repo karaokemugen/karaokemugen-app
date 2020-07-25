@@ -88,8 +88,10 @@ class PublicPage extends Component<IProps, IState> {
 	async componentDidMount() {
 		getSocket().on('playerStatus', this.displayClassicModeModal);
 		getSocket().on('newSongPoll', () => {
-			this.setState({ isPollActive: true });
-			ReactDOM.render(<PollModal />, document.getElementById('modal'));
+			if (axios.defaults.headers.common['authorization']) {
+				this.setState({ isPollActive: true });
+				ReactDOM.render(<PollModal />, document.getElementById('modal'));
+			}
 		});
 		getSocket().on('songPollEnded', () => {
 			this.setState({ isPollActive: false });
