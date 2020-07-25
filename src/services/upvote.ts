@@ -28,7 +28,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		if (!getConfig().Karaoke.Quota.FreeUpVotes) return;
 		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().publicPlaylistID);
 		if (plc.playlist_id === getState().publicPlaylistID) {
-			emitWS('KIDUpdated', {kid: plc.kid, flag_upvoted: true, username: username});
+			emitWS('KIDUpdated', [{kid: plc.kid, flag_upvoted: true, username: username}]);
 		}
 		emitWS('playlistContentsUpdated', plc.playlist_id);
 	} catch(err) {
@@ -51,7 +51,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		// Karaokes are not 'un-freed' when downvoted.^
 		plc.upvotes--;
 		if (plc.playlist_id === getState().publicPlaylistID) {
-			emitWS('KIDUpdated', {kid: plc.kid, flag_upvoted: false, username: username});
+			emitWS('KIDUpdated', [{kid: plc.kid, flag_upvoted: false, username: username}]);
 		}
 		emitWS('playlistContentsUpdated', plc.playlist_id);
 	} catch(err) {
