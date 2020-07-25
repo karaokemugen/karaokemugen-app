@@ -186,10 +186,14 @@ class ProfilModal extends Component<IProps, IState> {
 		}
 	}
 
-	getUserDetails = async (event: any) => {
-		const response = await axios.get('/users/' + event.currentTarget.id);
-		const responseUserDetails = response.data;
-		this.setState({ userDetails: { email: responseUserDetails.email, url: responseUserDetails.url, bio: responseUserDetails.bio, } });
+	getUserDetails = async (user: User) => {
+		if (this.state.userDetails?.login === user.login) {
+			this.setState({ userDetails: undefined });
+		} else {
+			const response = await axios.get(`/users/${user.login}`);
+			const responseUserDetails = response.data;
+			this.setState({ userDetails: { email: responseUserDetails.email, url: responseUserDetails.url, bio: responseUserDetails.bio, } });
+		}
 	};
 
 	importAvatar = async (event: any) => {
@@ -401,12 +405,13 @@ class ProfilModal extends Component<IProps, IState> {
 								<div id="nav-userlist" className="modal-body">
 									<div className="userlist list-group">
 										{this.state.users.map(user => {
-											return <li key={user.login} className={user.flag_online ? 'list-group-item online' : 'list-group-item'} id={user.login} onClick={this.getUserDetails}>
+											return <li key={user.login} className={user.flag_online ? 'list-group-item online' : 'list-group-item'} 
+												id={user.login} onClick={() => this.getUserDetails(user)}>
 												<div className="userLine">
 													<span className="nickname">{user.nickname}</span>
 													<img className="avatar" src={pathAvatar + user.avatar_file} />
 												</div>
-												{this.state.userDetails ?
+												{this.state.userDetails?.login === user.login ?
 													<div className="userDetails">
 														<div><i className="fas fa-link"></i>{this.state.userDetails.url ? this.state.userDetails.url : ''}</div>
 														<div><i className="fas fa-leaf"></i>{this.state.userDetails.bio ? this.state.userDetails.bio : ''}</div>
