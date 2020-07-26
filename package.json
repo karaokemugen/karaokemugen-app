@@ -64,7 +64,7 @@
     "leonekmi <git+km@leonekmi.fr>"
   ],
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=12.14.1"
   },
   "license": "MIT",
   "private": true,
