@@ -243,7 +243,6 @@
 	"PROFILE_BIO": "Biographie",
 	"PROFILE_PASSWORD": "Mot de passe",
 	"PROFILE_PASSWORD_AGAIN": "Retapez votre mot de passe",
-	"DELETE_ACCOUNT": "Êtes-vous sûr de vouloir supprimer votre compte ?",
 	"TOOLTIP_ADDKARA": "Ajouter cette chanson à la liste",
 	"TOOLTIP_ADDKARA_ADMIN": "clic droit l'ajoute après le morceau en cours",
 	"TOOLTIP_ADD_SELECT_KARA": "Ajouter les chansons sélectionnées à la liste - clic droit les ajoute après le morceau en cours",
@@ -406,9 +405,6 @@
 		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de disfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?",
 		"ERROR_TRACKING": "Suivi des erreurs"
 	},
-	"PROFILE_CONVERT": "Passer mon profil en ligne",
-	"PROFILE_ONLINE_DELETE": "Supprimer mon profil en ligne",
-	"PROFILE_DELETE": "Supprimer localement le compte",
     "INSTANCE_NAME": "Nom du serveur",
     "INSTANCE_NAME_SHORT": "Serveur",
 	"LANGUAGE": "Langues",
@@ -479,7 +475,14 @@
 			"DOWNLOAD_THEM_SIZE": "(Taille du téléchargement : {{mediasize}})"
 		},
 		"PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?",
-		"KARA_DETAILS": "Détails de la chanson"
+		"KARA_DETAILS": "Détails de la chanson",
+		"PROFILE_MODAL": {
+			"ONLINE_CONVERT": "Passer mon compte en ligne",
+			"ONLINE_DELETE": "Désactiver mon compte en ligne",
+			"ONLINE_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte sur le serveur en ligne @{{instance}}. Êtes-vous sûr de vouloir cela ?",
+			"LOCAL_DELETE": "Supprimer mon compte (local)",
+			"LOCAL_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte localement. Si vous possédez un compte en ligne, ce dernier restera actif. Êtes-vous sûr de vouloir cela ?"
+		}
 	},
 	"SETUP_PAGE": {
 		"TITLE": "Assistant de démarrage",

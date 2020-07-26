@@ -690,9 +690,6 @@ input[type=range]:focus::-ms-fill-upper {
 	order: 0;
 	margin-left: 5px;
 }
-.modal .modal-header {
-	padding: 12px 15px;
-}
 .modalPage .modal-header {
 	padding: 0;
 	display: flex;
@@ -1167,4 +1164,8 @@ input[type="text"]:focus, input[type="password"]:focus {
 	padding: 1em;
 	color: white;
 	text-decoration: none;
+}
+
+.warnDeleteOnlineAccount {
+	font-size: larger;
 }

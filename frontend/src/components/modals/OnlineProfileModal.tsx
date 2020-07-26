@@ -7,7 +7,7 @@ import store from '../../store';
 
 interface IProps {
 	loginServ?: string;
-	type: string;
+	type: 'delete' | 'convert';
 }
 
 interface IState {
@@ -27,9 +27,11 @@ class OnlineProfileModal extends Component<IProps, IState> {
 	onClick = async () => {
 		let response: { token: string; onlineToken: string; };
 		if (this.props.type === 'convert') {
-			response = await axios.post('/myaccount/online', { instance: this.state.modalLoginServ, password: this.state.password });
+			response = await axios.post('/myaccount/online',
+				{ instance: this.state.modalLoginServ, password: this.state.password });
 		} else {
-			response = await axios.delete('/myaccount/online', { data: { password: this.state.password } });
+			response = await axios.delete('/myaccount/online',
+				{ data: { password: this.state.password } });
 		}
 		store.setLogInfos(response);
 		const element = document.getElementById('modal');
@@ -41,10 +43,13 @@ class OnlineProfileModal extends Component<IProps, IState> {
 			<div className="modal modalPage">
 				<div className="modal-dialog">
 					<div className="modal-content">
-						<ul className="modal-header">
-							<label className="modal-title">
-								{this.props.type === 'convert' ? i18next.t('PROFILE_CONVERT') : i18next.t('PROFILE_ONLINE_DELETE')}
-							</label>
+						<div className="modal-header">
+							<h4 className="modal-title">
+								{this.props.type === 'convert' ?
+									i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')
+									: i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')
+								}
+							</h4>
 							<button className="closeModal btn btn-action"
 								onClick={() => {
 									const element = document.getElementById('modal');
@@ -52,8 +57,14 @@ class OnlineProfileModal extends Component<IProps, IState> {
 								}}>
 								<i className="fas fa-times"></i>
 							</button>
-						</ul>
+						</div>
 						<div className="modal-body">
+							{this.props.type === 'delete' ?
+								<label className="warnDeleteOnlineAccount">
+									{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE_WARN',
+										{ instance: this.state.modalLoginServ })}
+								</label> : null
+							}
 							{this.props.type === 'convert' ?
 								<React.Fragment>
 									<label>{i18next.t('INSTANCE_NAME')}</label>
@@ -62,7 +73,7 @@ class OnlineProfileModal extends Component<IProps, IState> {
 								</React.Fragment> : null
 							}
 							<label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
-							<input type="password" placeholder={i18next.t('PASSWORD')} className="form-control" name="password"
+							<input type="password" placeholder={i18next.t('PASSWORD')} className="form-control"
 								onChange={e => this.setState({ password: e.target.value })} />
 							<button className="btn btn-default confirm" onClick={this.onClick}>
 								<i className="fas fa-check"></i>
