@@ -313,7 +313,7 @@ async function binMissing(binariesPath: any, err: string) {
 	logger.error(`mpv: ${binariesPath.mpv}`, {service: 'BinCheck'});
 	logger.error(`postgres: ${binariesPath.postgres}`, {service: 'BinCheck'});
 	logger.error('Exiting...', {service: 'BinCheck'});
-	const error = i18next.t('MISSING_BINARIES.MESSAGE', {err: err});
+	const error = `${i18next.t('MISSING_BINARIES.MESSAGE')}\n\n${err}`;
 	console.log(error);
 	if (dialog) {
 		await dialog.showMessageBox({
