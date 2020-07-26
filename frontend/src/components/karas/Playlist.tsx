@@ -358,9 +358,13 @@ class Playlist extends Component<IProps, IState> {
 			}
 
 			if (this.props.side === 1) {
-				value = plVal1Cookie !== null && !isNaN(Number(plVal1Cookie)) ? Number(plVal1Cookie) : -1;
+				value = plVal1Cookie !== null && !isNaN(Number(plVal1Cookie))
+					&& this.props.playlistList.filter(playlist => playlist.playlist_id === Number(plVal1Cookie)).length > 0 ?
+					Number(plVal1Cookie) : -1;
 			} else {
-				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie)) ? Number(plVal2Cookie) : store.getState().publicPlaylistID;
+				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie))
+					&& this.props.playlistList.filter(playlist => playlist.playlist_id === Number(plVal1Cookie)).length > 0 ?
+					Number(plVal2Cookie) : store.getState().publicPlaylistID;
 			}
 		}
 		await this.setState({ idPlaylist: value });
