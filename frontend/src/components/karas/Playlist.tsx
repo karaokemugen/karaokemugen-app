@@ -484,12 +484,10 @@ class Playlist extends Component<IProps, IState> {
 		}
 		const response = await axios.get(url);
 		const karas: KaraList = response.data;
-		let indexPlaying = undefined;
 		if (this.state.idPlaylist > 0) {
 			let i = 0;
 			for (const kara of karas.content) {
 				if (kara?.flag_playing) {
-					indexPlaying = i;
 					store.setPosPlaying(kara.pos);
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
@@ -518,7 +516,7 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			data = karas;
 		}
-		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying });
+		this.setState({ data: data, getPlaylistInProgress: false });
 		this.playlistForceRefresh(true);
 	};
 
