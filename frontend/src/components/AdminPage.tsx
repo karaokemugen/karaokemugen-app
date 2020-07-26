@@ -79,6 +79,8 @@ class AdminPage extends Component<IProps, IState> {
 		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
 		store.addChangeListener('loginOut', this.openLoginOrProfileModal);
 		store.addChangeListener('loginUpdated', this.getPlaylistList);
+		getSocket().on('operatorNotificationInfo ', (data:{code: string, data: string}) => displayMessage('info', i18next.t(data.code)));
+		getSocket().on('operatorNotificationError', (data:{code: string, data: string}) => displayMessage('error', i18next.t(data.code)));
 	}
 
 	componentWillUnmount() {
