@@ -464,7 +464,7 @@
 			"ONLINE_CONVERT": "Convert to online account",
 			"ONLINE_DELETE": "Disable online account",
 			"ONLINE_DELETE_WARN": "This will remove your account from the online server @{{instance}}. Are you sure you want to do this?",
-			"LOCAL_DELETE": "Delete local account",
+			"LOCAL_DELETE": "Delete this account locally",
 			"LOCAL_DELETE_WARN": "This will remove your account from this local app only. If you have an online account, it won't be disabled. Are you sure you want to do this?"
 		}
 	},
