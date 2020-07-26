@@ -1,5 +1,30 @@
 # Versions
 
+## v4.0.15 "Ôgi Obscure" - 26/07/2020
+
+We've made improvements and fixed bugs to make your Karaoke Mugen experience even better.
+
+### New features
+- We are more compliant to Human Interface Guidelines for menu in Mac OS X #723
+- Add frontend notifications for non-API triggered events #744
+- Better explanation for delete account modal popup #735
+- Rework login modal display
+
+### Fixes
+
+- Various fixes about Blacklist criterias display
+- Various fixes about poll and stream mode
+- Fix gif import for avatar file
+- Stats and ErrorTracking are now not fill by default in modal
+- Fix change page size in system's kara list
+- Reset lavfi-complex on audio-only files to remove seek lag #628
+- Fix memory leak on computing playlist media
+- Fix delete user with requested songs
+- Fix server display in login modal
+- Forbid @ character in login modal
+- Playlist: Upvote songs by adding them now doesn't display an error anymore
+- Electron: fix missing binaries message box #737
+
 ## v4.0.13 "Ôgi Obscure" - 17/07/2020
 
 Version numbering has changed :
