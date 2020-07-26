@@ -138,7 +138,6 @@ pkg_win:
     - mkdir release_win
     - mv packages/*.exe release_win/
     - mv packages/*.yml release_win/
-    - mv packages/*.blockmap release_win/
     - touch portable
     - touch disableAppUpdate
     - zip -rv packages/*.zip portable disableAppUpdate
@@ -182,7 +181,6 @@ pkg_mac:
     - ls -la packages/
     - mkdir release_mac
     - mv packages/*.dmg release_mac/
-    - mv packages/*.blockmap release_mac/
     - ls -la release_mac/*
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
