@@ -14,6 +14,7 @@ interface KaraListState {
 	karas: DBKara[];
 	karasRemoving: string[];
 	currentPage: number;
+	currentPageSize: number;
 	filter: string;
 	i18nTag: any[];
 	totalCount: number;
@@ -28,7 +29,8 @@ class KaraList extends Component<unknown, KaraListState> {
 		this.state = {
 			karas: [],
 			karasRemoving: [],
-			currentPage: +localStorage.getItem('karaPage') || 1,
+			currentPage: parseInt(localStorage.getItem('karaPage')) || 1,
+			currentPageSize: parseInt(localStorage.getItem('karaPageSize')) || 100,
 			filter: localStorage.getItem('karaFilter') || '',
 			i18nTag: [],
 			totalCount: 0
@@ -40,14 +42,14 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	refresh = async () => {
-		const res = await Axios.get('/karas', { params: { filter: this.state.filter, from: (this.state.currentPage - 1) * 100, size: 100 } });
+		const res = await Axios.get('/karas', {
+			params: {
+				filter: this.state.filter,
+				from: (this.state.currentPage - 1) * this.state.currentPageSize,
+				size: this.state.currentPageSize
+			}
+		});
 		this.setState({ karas: res.data.content, i18nTag: res.data.i18n, totalCount: res.data.infos.count });
-	}
-
-	async changePage(page) {
-		await this.setState({ currentPage: page });
-		localStorage.setItem('karaPage', page);
-		this.refresh();
 	}
 
 	changeFilter(event) {
@@ -69,6 +71,16 @@ class KaraList extends Component<unknown, KaraListState> {
 		});
 	}
 
+	handleTableChange = (pagination) => {
+		this.setState({
+			currentPage: pagination.current,
+			currentPageSize: pagination.pageSize,
+		});
+		localStorage.setItem('karaPage', pagination.current);
+		localStorage.setItem('karaPageSize', pagination.pageSize);
+		setTimeout(this.refresh, 10);
+	};
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
@@ -84,14 +96,15 @@ class KaraList extends Component<unknown, KaraListState> {
 					</Layout.Header>
 					<Layout.Content>
 						<Table
+							onChange={this.handleTableChange}
 							dataSource={this.state.karas}
 							columns={this.columns}
 							rowKey='kid'
 							pagination={{
 								position: ['topRight', 'bottomRight'],
-								current: this.state.currentPage,
-								defaultPageSize: 100,
-								pageSize: 100,
+								current: this.state.currentPage || 1,
+								defaultPageSize: this.state.currentPageSize,
+								pageSize: this.state.currentPageSize,
 								pageSizeOptions: ['10', '25', '50', '100', '500'],
 								showTotal: (total, range) => {
 									const to = range[1];
@@ -99,8 +112,7 @@ class KaraList extends Component<unknown, KaraListState> {
 									return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
 								},
 								total: this.state.totalCount,
-								showQuickJumper: true,
-								onChange: page => this.changePage(page)
+								showQuickJumper: true
 							}}
 						/>
 					</Layout.Content>

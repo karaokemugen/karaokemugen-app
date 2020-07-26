@@ -76,7 +76,8 @@ export interface State {
 		debug?: boolean,
 		forceAdminPassword?: string,
 		dumpDB?: boolean,
-		restoreDB?: boolean
+		restoreDB?: boolean,
+		noTestDownloads?: boolean,
 	},
 	args: string[],
 	environment: string,

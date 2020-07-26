@@ -3,6 +3,7 @@ import i18n from 'i18next';
 import shuffle from 'lodash.shuffle';
 import {resolve} from 'path';
 
+import { APIMessage } from '../controllers/common';
 import {	addKaraToPlaylist as addKaraToPL,
 	addKaraToRequests,
 	getKaraMini,
@@ -116,21 +117,21 @@ export async function isUserAllowedToAddKara(playlist_id: number, user: User, du
 		if (+conf.Karaoke.Quota.Type === 0) return true;
 		let limit: number;
 		switch(+conf.Karaoke.Quota.Type) {
-		default:
-		case 1:
-			limit = conf.Karaoke.Quota.Songs;
-			const count = await getSongCountForUser(playlist_id,user.login);
-			if (count >= limit) {
-				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit})`, {service: 'PLC'});
-				return false;
-			}
-			return true;
 		case 2:
 			limit = conf.Karaoke.Quota.Time;
 			let time = await getSongTimeSpentForUser(playlist_id,user.login);
 			if (!time) time = 0;
 			if ((limit - time - duration) < 0) {
 				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`, {service: 'PLC'});
+				return false;
+			}
+			return true;
+		case 1:
+		default:
+			limit = conf.Karaoke.Quota.Songs;
+			const count = await getSongCountForUser(playlist_id,user.login);
+			if (count >= limit) {
+				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit})`, {service: 'PLC'});
 				return false;
 			}
 			return true;
@@ -478,10 +479,23 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			}
 		} else {
 			// Not an admin adding this. Adding an upvote to all songs already in playlist, adding the rest
+			// Note from Axel from the future: You blind idiot, a non-admin can only add one song at a time, so this means you can't add multiple upvotes at once.
+			// Note from Axel from the future +1: But the API could change someday to allow non-admins to add multiple songs. Then this code will be broken somehow.
+			// Note from present Axel: No it won't, you two shut up.
 			const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
 			karaList = songs.notPresent;
 			// Upvoting each song already present
-			if (songs.alreadyPresent.length > 0) addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
+			if (songs.alreadyPresent.length > 0) {
+				addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
+				return {
+					action: 'UPVOTED',
+					kara: kara.title,
+					playlist: pl.name,
+					kid: songs.alreadyPresent[0].kid,
+					playlist_id: playlist_id,
+					plc: songs.alreadyPresent[0]
+				};
+			}
 		}
 		// Check user quota first
 		if (user.type > 0 && !await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
@@ -504,7 +518,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 				return !seriesSingersInPlaylist.includes(k.uniqueSerieSinger);
 			});
 			if (karaList.length === 0) {
-				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
+				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
 				throw {
 					code: 406,
 					msg: 'Adding karaokes from the same series / singer is not allowed'
@@ -512,7 +526,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			}
 		}
 		if (karaList.length === 0) {
-			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';throw {
+			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
+			throw {
 				code: 409,
 				msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
 			};
@@ -577,6 +592,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			updateSongsLeft(user.login, playlist_id)
 		]);
 		const ret = {
+			action: 'ADDED',
 			kara: kara.title,
 			playlist: pl.name,
 			kid: karaList.map(k => k.kid),
@@ -1211,6 +1227,7 @@ async function updateFreeOrphanedSongs() {
 		await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
 	} catch(err) {
 		logger.error('Failed to free orphaned songs (will try again)', {service: 'Playlist', obj: err});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYLIST_FREE_ORPHANED_SONGS', err));
 	}
 }
 
@@ -1219,6 +1236,7 @@ export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.playlist_id));
+	await testPlaylists();
 	logger.debug('Playlists initialized', {service: 'Playlist'});
 }
 

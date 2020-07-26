@@ -337,7 +337,7 @@ class Tutorial extends Component<IProps, IState> {
 			&& (!store.getLogInfos()
 				|| !(store.getLogInfos() as Token).token
 				|| (store.getLogInfos() as Token).role !== 'admin')
-			|| (store.getLogInfos() as Token).username === 'admin') {
+			|| (store.getLogInfos() as Token)?.username === 'admin') {
 			ReactDOM.render(<LoginModal
 				scope='admin'
 				role='admin'
@@ -409,7 +409,7 @@ class Tutorial extends Component<IProps, IState> {
 
 	getStepLabel = () => {
 		const { stepIndex, steps } = this.state;
-		return steps[stepIndex].label || stepIndex;
+		return steps[stepIndex]?.label || stepIndex;
 	}
 
 	move = (i: number) => {

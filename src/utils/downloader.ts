@@ -81,8 +81,8 @@ export default class Downloader {
 			this.fileErrors.push(basename(dl.filename));
 			return;
 		}
-		let prettySize = 'size unknown';
-		prettySize = prettyBytes(+size);
+		let prettySize = prettyBytes(+size);
+		if (!prettySize) prettySize = 'size unknown';
 		logger.info(`(${this.pos}/${this.list.length}) Downloading ${basename(dl.filename)} (${prettySize})`, {service: 'Donwload'});
 		this.task.update({
 			subtext: `${basename(dl.filename)} (${prettySize})`,

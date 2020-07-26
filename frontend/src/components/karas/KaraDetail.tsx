@@ -22,7 +22,7 @@ interface IState {
 	kara?: DBPLCInfo;
 	showLyrics: boolean;
 	isFavorite: boolean;
-	lyrics?: Array<string>;
+	lyrics: Array<string>;
 }
 
 class KaraDetail extends Component<IProps, IState> {
@@ -32,7 +32,8 @@ class KaraDetail extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			showLyrics: false,
-			isFavorite: false
+			isFavorite: false,
+			lyrics: []
 		};
 		this.fullLyricsRef = React.createRef();
 		if (this.props.kid || this.props.idPlaylist) {
@@ -50,7 +51,7 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	keyObserverHandler = (e: KeyboardEvent) => {
-		if (e.key == 'Escape' && !document.getElementById('video')) {
+		if (e.key === 'Escape' && !document.getElementById('video')) {
 			this.closeModal();
 		}
 	}
@@ -83,10 +84,11 @@ class KaraDetail extends Component<IProps, IState> {
 			'/karas/' + (kid ? kid : this.props.kid);
 		const response = await axios.get(urlInfoKara);
 		const kara = response.data;
-		this.setState({
+		await this.setState({
 			kara: kara,
 			isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
 		});
+		if (this.props.mode === 'karaCard' && kara.subfile) this.showFullLyrics();
 	};
 
 	getLastPlayed = (lastPlayed_at: Date, lastPlayed: lastplayed_ago) => {
@@ -261,10 +263,10 @@ class KaraDetail extends Component<IProps, IState> {
 				) : null;
 
 			let infoKaraTemp;
-			if (this.props.mode == 'list') {
+			if (this.props.mode === 'list') {
 				infoKaraTemp = (
 					<div className="modal modalPage" onClick={this.onClickOutsideModal}>
-						<div className="modal-dialog modal-md">
+						<div className="modal-dialog">
 							<div className="modal-content">
 								<div className="modal-header">
 									<h4 className="modal-title">{i18next.t('MODAL.KARA_DETAILS')}</h4>
@@ -313,8 +315,7 @@ class KaraDetail extends Component<IProps, IState> {
 						</div>
 					</div>
 				);
-			} else if (this.props.mode == 'karaCard') {
-				if (data.subfile) this.showFullLyrics();
+			} else if (this.props.mode === 'karaCard') {
 				infoKaraTemp = (
 					<React.Fragment>
 						<div className="details karaCard">
@@ -326,7 +327,7 @@ class KaraDetail extends Component<IProps, IState> {
 							</table>
 						</div>
 						<div className="lyricsKara alert alert-info">
-							{data.subfile && this.state.lyrics && this.state.lyrics.map(ligne => {
+							{data.subfile && this.state.lyrics?.map(ligne => {
 								return (
 									<React.Fragment key={Math.random()}>
 										{ligne}

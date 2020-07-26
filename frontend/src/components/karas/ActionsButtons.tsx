@@ -12,6 +12,7 @@ interface IProps {
 	idPlaylist: number;
 	idPlaylistTo: number;
 	kara?: KaraElement;
+	checkedkaras?: number;
 	addKara: (event?: any, pos?: number) => void;
 	deleteKara: () => void;
 	transferKara: (event: any, pos?: number) => void;
@@ -37,19 +38,23 @@ class ActionsButtons extends Component<IProps, unknown> {
 		return (
 			<React.Fragment>
 				{this.props.scope === 'admin' && this.props.idPlaylist !== -1 ?
-					<button title={i18next.t('TOOLTIP_DELETEKARA')}
-						className={`${classValue} karaLineButton`} onClick={this.props.deleteKara}><i className="fas fa-minus"></i></button> : null}
+					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_KARA' : 'TOOLTIP_DELETEKARA')}
+						disabled={this.props?.checkedkaras === 0}
+						className={`${classValue} karaLineButton`} onClick={this.props.deleteKara}>
+						<i className="fas fa-minus" />
+					</button> : null}
 				{((this.props.scope === 'admin' && this.props.idPlaylistTo !== -1) ||
 					(this.props.scope === 'public' && this.props.idPlaylist !== store.getState().publicPlaylistID
-					&& this.props.idPlaylist !== store.getState().currentPlaylistID))
+						&& this.props.idPlaylist !== store.getState().currentPlaylistID && this.props.idPlaylist !== -2))
 					&& this.props.idPlaylistTo !== -5 ?
 					<button
-						title={`${this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ? i18next.t('TOOLTIP_UPVOTE') :
-							i18next.t('TOOLTIP_ADDKARA')}${(this.props.scope === 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : '')}`}
+						title={this.props.isHeader ? i18next.t('TOOLTIP_ADD_SELECT_KARA') : 
+							`${this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ? i18next.t('TOOLTIP_UPVOTE') :
+								i18next.t('TOOLTIP_ADDKARA')}${(this.props.scope === 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : '')}`}
 						className={`${classValue} karaLineButton`} onContextMenu={this.onRightClickAdd}
 						onClick={(this.props.scope !== 'admin' && this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]) ?
 							this.props.deleteKara : this.props.addKara}
-						disabled={this.props.scope !== 'admin' && this.props.kara?.flag_upvoted}>
+						disabled={(this.props.scope !== 'admin' && this.props.kara?.flag_upvoted) || this.props?.checkedkaras === 0}>
 						{(this.props.scope !== 'admin' && this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]) ?
 							<i className="fas fa-minus" /> :
 							(this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ?
@@ -58,7 +63,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 						}
 					</button> : null}
 				{this.props.scope === 'admin' && this.props.isHeader && this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
-					<button title={i18next.t('TOOLTIP_TRANSFERKARA')} className={classValue}
+					<button title={i18next.t('TOOLTIP_TRANSFER_SELECT_KARA')} className={classValue} disabled={this.props?.checkedkaras === 0}
 						onContextMenu={this.onRightClickTransfer} onClick={this.props.transferKara}><i className="fas fa-exchange-alt"></i></button> : null
 				}
 			</React.Fragment>

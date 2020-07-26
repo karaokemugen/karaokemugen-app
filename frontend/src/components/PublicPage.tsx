@@ -88,8 +88,11 @@ class PublicPage extends Component<IProps, IState> {
 	async componentDidMount() {
 		getSocket().on('playerStatus', this.displayClassicModeModal);
 		getSocket().on('newSongPoll', () => {
-			this.setState({ isPollActive: true });
-			ReactDOM.render(<PollModal />, document.getElementById('modal'));
+			if (axios.defaults.headers.common['authorization']) {
+				this.setState({ isPollActive: true });
+				ReactDOM.render(<PollModal hasVoted={() => this.setState({ isPollActive: false })} />,
+					document.getElementById('modal'));
+			}
 		});
 		getSocket().on('songPollEnded', () => {
 			this.setState({ isPollActive: false });
@@ -102,7 +105,7 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().on('adminMessage', (data: any) => displayMessage('info',
 			<div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br />{data.message}</div>, data.duration));
 		getSocket().on('userSongPlaysIn', (data: DBPLCInfo) => {
-			if (data && data.username === (store.getLogInfos() as Token).username) {
+			if (data && data.username === (store.getLogInfos() as Token)?.username) {
 				const playTime = new Date(Date.now() + data.time_before_play * 1000);
 				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 				const beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
@@ -141,7 +144,7 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	displayClassicModeModal = (data: any) => {
-		if (data.playerStatus === 'stop' && data.currentRequester === (store.getLogInfos() as Token).username && !this.state.classicModeModal) {
+		if (data.playerStatus === 'stop' && data.currentRequester === (store.getLogInfos() as Token)?.username && !this.state.classicModeModal) {
 			ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
 			this.setState({ classicModeModal: true });
 		} else if (data.playerStatus === 'play' && this.state.classicModeModal) {
@@ -172,13 +175,15 @@ class PublicPage extends Component<IProps, IState> {
 	// pick a random kara & add it after (not) asking user's confirmation
 	getLucky = async () => {
 		this.closeMobileMenu();
-		const response = await axios.get('/karas?filter=' + store.getFilterValue(1) + '&random=1');
-		if (response.data && response.data.content && response.data.content[0]) {
-			const chosenOne = response.data.content[0].kid;
-			const response2 = await axios.get('/karas/' + chosenOne);
-			callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD', { title: buildKaraTitle(response2.data, true) }), () => {
-				axios.post('/karas/' + chosenOne, { requestedby: (store.getLogInfos() as Token).username });
-			}, 'lucky');
+		if (axios.defaults.headers.common['authorization']) {
+			const response = await axios.get('/karas?filter=' + store.getFilterValue(1) + '&random=1');
+			if (response.data && response.data.content && response.data.content[0]) {
+				const chosenOne = response.data.content[0].kid;
+				const response2 = await axios.get('/karas/' + chosenOne);
+				callModal('confirm', i18next.t('CL_CONGRATS'), i18next.t('CL_ABOUT_TO_ADD', { title: buildKaraTitle(response2.data, true) }), () => {
+					axios.post('/karas/' + chosenOne, { requestedby: (store.getLogInfos() as Token).username });
+				}, 'lucky');
+			}
 		}
 	};
 
@@ -191,12 +196,12 @@ class PublicPage extends Component<IProps, IState> {
 	};
 
 	changeCurrentSide = () => {
-		if (this.state.currentSide == 1) {
+		if (this.state.currentSide === 1) {
 			this.setState({ currentSide: 2 });
 			if (store.getTuto() && store.getTuto().getStepLabel() === 'change_screen') {
 				store.getTuto().move(1);
 			}
-		} else if (this.state.currentSide == 2) {
+		} else if (this.state.currentSide === 2) {
 			this.setState({ currentSide: 1 });
 			if (store.getTuto() && store.getTuto().getStepLabel() === 'change_screen2') {
 				store.getTuto().move(1);
@@ -211,6 +216,7 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	getPlaylistList = async () => {
+		axios.get('/stats');
 		const response = await axios.get('/playlists/');
 		const playlistList = response.data.filter((playlist: PlaylistElem) => playlist.flag_visible);
 		if (this.props.config.Frontend.Permissions?.AllowViewBlacklist)
@@ -290,7 +296,7 @@ class PublicPage extends Component<IProps, IState> {
 
 										<button
 											title={i18next.t('GET_LUCKY')}
-											className="btn btn-lg btn-action btn-default"
+											className="btn btn-action btn-default"
 											onClick={this.getLucky}
 										>
 											<i className="fas fa-dice" />
@@ -305,7 +311,9 @@ class PublicPage extends Component<IProps, IState> {
 												className="btn btn-dark dropdown-toggle klogo"
 												id="menuPC"
 												type="button"
-												onClick={() => this.setState({ dropDownMenu: !this.state.dropDownMenu })}
+												onClick={() => axios.defaults.headers.common['authorization'] ? 
+													this.setState({ dropDownMenu: !this.state.dropDownMenu })
+													: this.openLoginOrProfileModal()}
 											/>
 											{this.state.dropDownMenu ? (
 												<ul className="dropdown-menu">
@@ -346,7 +354,7 @@ class PublicPage extends Component<IProps, IState> {
 											{this.state.isPollActive ? (
 												<button
 													className="btn btn-default showPoll"
-													onClick={() => ReactDOM.render(<PollModal />, document.getElementById('modal'))}
+													onClick={() => ReactDOM.render(<PollModal hasVoted={() => this.setState({ isPollActive: false })} />, document.getElementById('modal'))}
 												>
 													<i className="fas fa-chart-line" />
 												</button>
@@ -421,7 +429,8 @@ class PublicPage extends Component<IProps, IState> {
 											className="btn-floating btn-large waves-effect z-depth-3 showPoll"
 											onClick={() => {
 												this.closeMobileMenu();
-												ReactDOM.render(<PollModal />, document.getElementById('modal'));
+												ReactDOM.render(<PollModal hasVoted={() => this.setState({ isPollActive: false })} />,
+													document.getElementById('modal'));
 											}}
 										>
 											<i className="fas fa-bar-chart" />
@@ -434,7 +443,9 @@ class PublicPage extends Component<IProps, IState> {
 									className="btn-floating btn-large waves-effect z-depth-3 klogo"
 									id="menuMobile"
 									onClick={() =>
-										this.setState({ mobileMenu: !this.state.mobileMenu })
+										axios.defaults.headers.common['authorization'] ?
+											this.setState({ mobileMenu: !this.state.mobileMenu })
+											: this.openLoginOrProfileModal()
 									}
 									style={{
 										backgroundColor: '#1b4875',

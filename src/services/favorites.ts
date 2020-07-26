@@ -203,7 +203,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 	profile('AutoMix');
 	try {
 		const favs = await getAllFavorites(params.users);
-		if (favs.length === 0) throw {code: 404, msg: 'No favorites found for those users'};
+		if (favs.length === 0) throw {code: 404, msg: 'AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS'};
 		const autoMixPLName = `AutoMix ${date()}`;
 		const playlist_id = await createPlaylist(autoMixPLName, {
 			visible: true

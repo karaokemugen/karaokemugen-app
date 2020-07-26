@@ -26,7 +26,7 @@ import PlaylistHeader from './PlaylistHeader';
 require('./Playlist.scss');
 
 const chunksize = 400;
-const _cache = new CellMeasurerCache({ defaultHeight: 40, fixedWidth: true });
+const _cache = new CellMeasurerCache({ defaultHeight: 44, fixedWidth: true });
 let timer: any;
 
 interface IProps {
@@ -326,21 +326,21 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	updateQuotaAvailable = (data: { username: string, quotaType: number, quotaLeft: number }) => {
-		if (store.getLogInfos() && (store.getLogInfos() as Token).username === data.username) {
+		if ((store.getLogInfos() as Token)?.username === data.username) {
 			let quotaString: any = '';
-			if (data.quotaType == 1) {
-				quotaString = data.quotaLeft;
-			} else if (data.quotaType == 2) {
+			if (data.quotaType === 1) {
+				quotaString = data.quotaLeft.toString();
+			} else if (data.quotaType === 2) {
 				quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
 			}
-			if (data.quotaLeft == -1) {
+			if (data.quotaLeft === -1) {
 				quotaString = <i className="fas fa-infinity"></i>;
 			}
 			this.setState({ quotaString: quotaString });
 		}
 	};
 
-	getIdPlaylist = () => {
+	getIdPlaylist = async () => {
 		let value: number;
 		if (this.props.scope === 'public') {
 			value =
@@ -358,12 +358,16 @@ class Playlist extends Component<IProps, IState> {
 			}
 
 			if (this.props.side === 1) {
-				value = plVal1Cookie !== null && !isNaN(Number(plVal1Cookie)) ? Number(plVal1Cookie) : -1;
+				value = plVal1Cookie !== null && !isNaN(Number(plVal1Cookie))
+					&& this.props.playlistList.filter(playlist => playlist.playlist_id === Number(plVal1Cookie)).length > 0 ?
+					Number(plVal1Cookie) : -1;
 			} else {
-				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie)) ? Number(plVal2Cookie) : store.getState().publicPlaylistID;
+				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie))
+					&& this.props.playlistList.filter(playlist => playlist.playlist_id === Number(plVal1Cookie)).length > 0 ?
+					Number(plVal2Cookie) : store.getState().publicPlaylistID;
 			}
 		}
-		this.setState({ idPlaylist: value });
+		await this.setState({ idPlaylist: value });
 		this.props.majIdsPlaylist(this.props.side, value);
 	};
 
@@ -454,7 +458,7 @@ class Playlist extends Component<IProps, IState> {
 		if (searchType) {
 			data.searchType = searchType;
 			data.data = this.state.data;
-			if (data.data) data.data.infos.from = 0;
+			if (data?.data?.infos) data.data.infos.from = 0;
 			this.setState({ searchType: searchType });
 		} else if (stateData && stateData.infos && stateData.infos.from == 0) {
 			data.searchType = undefined;
@@ -480,12 +484,10 @@ class Playlist extends Component<IProps, IState> {
 		}
 		const response = await axios.get(url);
 		const karas: KaraList = response.data;
-		let indexPlaying = undefined;
 		if (this.state.idPlaylist > 0) {
 			let i = 0;
 			for (const kara of karas.content) {
 				if (kara?.flag_playing) {
-					indexPlaying = i;
 					store.setPosPlaying(kara.pos);
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
@@ -514,7 +516,7 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			data = karas;
 		}
-		this.setState({ data: data, getPlaylistInProgress: false, playing: indexPlaying });
+		this.setState({ data: data, getPlaylistInProgress: false });
 		this.playlistForceRefresh(true);
 	};
 
@@ -830,6 +832,7 @@ class Playlist extends Component<IProps, IState> {
 						searchMenuOpen={this.props.searchMenuOpen}
 						playlistWillUpdate={this.playlistWillUpdate}
 						playlistDidUpdate={this.playlistDidUpdate}
+						checkedkaras={this.state.checkedkaras}
 					/>
 					<div
 						id={'playlistContainer' + this.props.side}
@@ -920,7 +923,7 @@ class Playlist extends Component<IProps, IState> {
 						<div className="plInfos">{this.getPlInfosElement()}</div>
 						{this.props.side === 1 && this.state.quotaString ?
 							<div className="plQuota right">
-								{i18next.t('QUOTA')}{this.state.quotaString}
+								{i18next.t('QUOTA')} {this.state.quotaString}
 							</div> : null
 						}
 						{this.state.checkedkaras > 0 ?

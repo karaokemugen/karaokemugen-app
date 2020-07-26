@@ -71,18 +71,16 @@ class Options extends Component<IProps, IState> {
 							</li>
 						</ul>
 
-						<div className="tab-content">
-							<div className="modal-body">
-								{this.state.activeView === 1 ?
-									<PlayerOptions onChange={this.saveSettings} config={this.props.config} /> : null
-								}
-								{this.state.activeView === 2 ?
-									<KaraokeOptions onChange={this.saveSettings} config={this.props.config} /> : null
-								}
-								{this.state.activeView === 3 ?
-									<InterfaceOptions onChange={this.saveSettings} config={this.props.config} /> : null
-								}
-							</div>
+						<div className="modal-body">
+							{this.state.activeView === 1 ?
+								<PlayerOptions onChange={this.saveSettings} config={this.props.config} /> : null
+							}
+							{this.state.activeView === 2 ?
+								<KaraokeOptions onChange={this.saveSettings} config={this.props.config} /> : null
+							}
+							{this.state.activeView === 3 ?
+								<InterfaceOptions onChange={this.saveSettings} config={this.props.config} /> : null
+							}
 						</div>
 					</form>
 				</div>

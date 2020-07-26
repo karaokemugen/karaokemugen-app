@@ -69,17 +69,15 @@ function resolveMediaPath(type: MediaType): string[] {
 	if (type === 'Sponsors') return resolvedPathSponsors();
 }
 
-async function listRemoteMedias(type: MediaType): Promise<File[]> {
-	let webdavClient = createClient(
+function listRemoteMedias(type: MediaType): Promise<File[]> {
+	const webdavClient = createClient(
 		KMSite.url,
 		{
 			username: KMSite.username,
 			password: KMSite.password
 		}
 	);
-	const contents = await webdavClient.getDirectoryContents('/' + type);
-	webdavClient = null;
-	return contents;
+	return webdavClient.getDirectoryContents('/' + type);
 }
 
 async function listLocalFiles(dir: string): Promise<File[]> {
@@ -154,12 +152,12 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			for (const file of filesToDownload) {
 				bytesToDownload = bytesToDownload + file.size;
 			}
-			logger.info(`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`, {service: '${type}'});
+			logger.info(`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`, {service: type});
 			await downloadMedias(filesToDownload, localDir, type, task);
-			logger.info('Update done', {service: '${type}'});
+			logger.info('Update done', {service: type});
 		}
 	} catch(err) {
-		console.log(err);
+		logger.warn('Failed to update medias', {service: type, obj: err});
 	}
 }
 

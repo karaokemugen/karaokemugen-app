@@ -7,37 +7,37 @@ import RadioButton from '../generic/RadioButton';
 
 interface IState {
 	openDetails: boolean;
-	stats: boolean;
-	errorTracking: boolean
+	stats?: boolean;
+	errorTracking?: boolean
 }
 
 class OnlineStatsModal extends Component<unknown, IState> {
 	constructor(props: unknown) {
 		super(props);
 		this.state = {
-			openDetails: false,
-			stats: true,
-			errorTracking: true
+			openDetails: false
 		};
 	}
 
 	onClick = () => {
-		axios.put('/settings', {
-			setting: {
-				Online: {
-					Stats: this.state.stats,
-					ErrorTracking: this.state.errorTracking
+		if (this.state.errorTracking !== undefined && this.state.stats !== undefined) {
+			axios.put('/settings', {
+				setting: {
+					Online: {
+						Stats: this.state.stats,
+						ErrorTracking: this.state.errorTracking
+					}
 				}
-			}
-		});
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+			});
+			const element = document.getElementById('modal');
+			if (element) ReactDOM.unmountComponentAtNode(element);
+		}
 	};
 
 	render() {
 		return (
 			<div className="modal modalPage">
-				<div className="modal-dialog modal-md">
+				<div className="modal-dialog">
 					<div className="modal-content">
 						<div className="modal-header">
 							<h4 className="modal-title">{i18next.t('ONLINE_STATS.TITLE')}</h4>
@@ -72,12 +72,12 @@ class OnlineStatsModal extends Component<unknown, IState> {
 										{
 											label: i18next.t('YES'),
 											active: this.state.stats,
-											onClick: () => this.setState({ stats: !this.state.stats }),
+											onClick: () => this.setState({ stats: true }),
 										},
 										{
 											label: i18next.t('NO'),
-											active: !this.state.stats,
-											onClick: () => this.setState({ stats: !this.state.stats }),
+											active: this.state.stats === false,
+											onClick: () => this.setState({ stats: false }),
 										}
 									]}
 								></RadioButton>
@@ -91,12 +91,12 @@ class OnlineStatsModal extends Component<unknown, IState> {
 										{
 											label: i18next.t('YES'),
 											active: this.state.errorTracking,
-											onClick: () => this.setState({ errorTracking: !this.state.errorTracking }),
+											onClick: () => this.setState({ errorTracking: true }),
 										},
 										{
 											label: i18next.t('NO'),
-											active: !this.state.errorTracking,
-											onClick: () => this.setState({ errorTracking: !this.state.errorTracking }),
+											active: !this.state.errorTracking === false,
+											onClick: () => this.setState({ errorTracking: false }),
 										}
 									]}
 								></RadioButton>

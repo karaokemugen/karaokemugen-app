@@ -1,0 +1,70 @@
+#loginModal {
+
+    input[type="text"]:not(:focus),
+    input[type="password"]:not(:focus) {
+        background-color: hsla(229, 9%, 30%, 1);
+    }
+
+    .modal-dialog {
+        width: 95vw;
+        max-width: 400px;
+    }
+
+    button {
+        border: none;
+    }
+
+    .redBorders {
+        border: hsla(0, 87%, 50%, .5) solid 1px;
+        border-width: 0px 0px 0px 5px;
+    }
+
+    .accountLabel {
+        margin: 5px 10px 5px 10px;
+    }
+
+    .forgotPasswordButton {
+        width: 40px;
+        background-color: #1E2124
+    }
+
+    .loginLine {
+        display: flex;
+
+        .loginName {
+            width: 50% !important;
+        }
+
+        .instanceName {
+            width: 40% !important;
+        }
+
+        .arobase {
+            font-size: x-large;
+            margin-left: 0.25em;
+            margin-right: 0.25em;
+        }
+    }
+
+    .submitButton {
+        margin-top: 0.5em;
+        width: 100%;
+        background-color: hsla(224, 46%, 39%, 1);
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .loginLabel {
+        margin: 10px;
+        font-size: large;
+        width: 97%;
+        text-align: left;
+    }
+
+    .guestButton {
+        height: 60px;
+        width: 100%;
+        background-color: hsla(182, 45%, 28%, 1);
+        color: #eee;
+        border-color: #777;
+    }
+}

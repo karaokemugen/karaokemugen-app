@@ -105,11 +105,6 @@
         .plInfos, .plBrowse {
             float: left;
         }
-
-        #nav-signup input[type="text"],  #nav-signup input[type="password"]:not([data-exclude="true"]) {
-            max-height: 7vh;
-            min-height: 32px;
-        }
 	}
 	
 	@media (max-width: 767px) {

@@ -1,6 +1,6 @@
 import {db} from '../lib/dao/database';
 import { DBMedia } from '../types/database/medias';
-import { sqlinsertMedia,sqlselectMedias } from './sql/medias';
+import { sqldeleteMedia,sqlinsertMedia,sqlselectMedias } from './sql/medias';
 
 export async function selectMedias(): Promise<DBMedia[]> {
 	const res = await db().query(sqlselectMedias);
@@ -17,7 +17,7 @@ export async function insertMedias(media: DBMedia) {
 }
 
 export async function deleteMedia(type: string, filename: string) {
-	await db().query(deleteMedia, [
+	await db().query(sqldeleteMedia, [
 		type,
 		filename
 	]);

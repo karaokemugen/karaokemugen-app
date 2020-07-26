@@ -4,7 +4,7 @@ import circle from '@jimp/plugin-circle';
 import png from '@jimp/png';
 
 import { convertAvatar } from '../lib/utils/ffmpeg';
-import { replaceExt, asyncUnlink } from '../lib/utils/files';
+import { asyncUnlink,replaceExt } from '../lib/utils/files';
 import sentry from '../utils/sentry';
 
 const j = configure({
@@ -15,7 +15,7 @@ const j = configure({
 export async function createCircleAvatar(file: string) {
 	try {
 		const convertedFile = await convertAvatar(file);
-		// Load the png converted file
+		// Load the jpg converted file
 		const image = await j.read(convertedFile);
 		await image.circle().writeAsync(replaceExt(file, '.circle.png'));
 		// Delete the converted file

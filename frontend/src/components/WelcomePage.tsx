@@ -111,8 +111,10 @@ class WelcomePage extends Component<IProps, IState> {
 
 	majPrivate = async () => {
 		const session = this.state.activeSession as Session;
-		session.private = !(this.state.activeSession as Session).private;
-		await axios.put(`/sessions/${session.seid}`, session);
+		if (session) {
+			session.private = !session.private;
+			await axios.put(`/sessions/${session.seid}`, session);
+		}
 		this.getSessions();
 	};
 

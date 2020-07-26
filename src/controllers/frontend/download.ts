@@ -22,6 +22,10 @@ export default function downloadController(router: Router) {
  * @apiParam {string} downloads/name Song name (purely cosmetic)
  * @apiParam {number} downloads/size Size in bytes of downloads (usually mediasize)
  * @apiParam {string} downloads/repository Name (domain) of the repository to download from
+ * 
+ * @apiError DOWNLOADS_QUEUED_ERROR Error adding downloads to the queue
+ * @apiError DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR No downloads added, all are already in queue or running
+ * 
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * @apiErrorExample Error-Response:
@@ -36,7 +40,7 @@ export default function downloadController(router: Router) {
 			} catch(err) {
 				const code = 'DOWNLOADS_QUEUED_ERROR';
 				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(err?.message || code));
 			}
 		})
 	/**

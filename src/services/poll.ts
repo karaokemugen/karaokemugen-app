@@ -4,6 +4,7 @@ import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {promisify} from 'util';
 
+import { APIMessage } from '../controllers/common';
 import { Token } from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import {timer} from '../lib/utils/date';
@@ -43,9 +44,9 @@ async function displayPoll(winner?: number) {
 			boldWinnerClose = '{\\b0}';
 		}
 		if (isNaN(percentage)) percentage = 0;
-		const percentageStr = percentage !== Math.floor(percentage)
-			? percentage.toFixed(2)
-			: +percentage;
+		const percentageStr = percentage < 1
+			? `0${percentage.toFixed(1)}`
+			: percentage.toFixed(1);
 		// If series is empty, pick singer information instead
 		const series = getSeriesSingers(kara);
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
@@ -90,6 +91,7 @@ export async function endPoll() {
 		pollEnding = true;
 		logger.debug('Ending poll', {service: 'Poll', obj: winner});
 		emitWS('songPollResult', winner);
+		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_WINNER', winner));
 		stopPoll();
 	}
 }
@@ -122,7 +124,7 @@ export async function getPollResults(): Promise<PollResults> {
 
 	emitWS('playlistInfoUpdated', playlist_id);
 	emitWS('playlistContentsUpdated', playlist_id);
-	const kara = `${winner.series[0]?.name || winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
+	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
 	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, {service: 'Poll'});
 	return {
 		votes: maxVotes,
@@ -133,7 +135,7 @@ export async function getPollResults(): Promise<PollResults> {
 
 export async function addPollVoteIndex(index: number, nickname: string) {
 	try {
-		await addPollVote(index, {
+		addPollVote(index, {
 			username: nickname,
 			role: 'guest',
 		});
@@ -178,11 +180,13 @@ export function addPollVote(index: number, token: Token) {
 }
 
 /** Start poll system */
-export async function startPoll() {
+export async function startPoll(): Promise<boolean> {
 	const conf = getConfig();
 	setState({songPoll: true});
 	if (poll.length > 0) {
 		logger.info('Unable to start poll, another one is already in progress', {service: 'Poll'});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_ALREADY_STARTED'));
+
 		return false;
 	}
 	logger.info('Starting a new poll', {service: 'Poll'});
@@ -201,6 +205,7 @@ export async function startPoll() {
 		]);
 		if (pubpl.length === 0) {
 			logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
+			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_PUBLIC_PL_EMPTY'));
 			return false;
 		}
 		availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
@@ -213,6 +218,7 @@ export async function startPoll() {
 	let pollChoices = conf.Karaoke.Poll.Choices;
 	if (availableKaras.length === 0) {
 		logger.error('Unable to start poll : public playlist has no available songs (have they all been added to current playlist already?)', {service: 'Poll'});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_NOT_ENOUGH_SONGS'));
 		return false;
 	}
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
@@ -223,6 +229,7 @@ export async function startPoll() {
 		poll[index].index = +index + 1;
 	}
 	logger.debug('New poll', {service: 'Poll', obj: poll});
+	emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_STARTING'));
 	// Do not display modal for clients if twitch is enabled
 	if (conf.Karaoke.StreamerMode.Twitch.Enabled) {
 		displayPollTwitch();
@@ -231,6 +238,7 @@ export async function startPoll() {
 	}
 	timerPoll();
 	if (conf.Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
+	return true;
 }
 
 async function displayPollTwitch() {

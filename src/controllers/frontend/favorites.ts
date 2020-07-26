@@ -26,6 +26,7 @@ export default function favoritesController(router: Router) {
  * HTTP/1.1 201 OK
  * "AUTOMIX_CREATED"
  * @apiError AUTOMIX_ERROR Unable to create the automix playlist
+ * @apiError AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS No favorites found for those users
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -49,7 +50,7 @@ export default function favoritesController(router: Router) {
 				} catch(err) {
 					const code = 'AUTOMIX_ERROR';
 					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
+					res.status(err?.code || 500).json(APIMessage(err.msg || code));
 				}
 			} else {
 				// Errors detected

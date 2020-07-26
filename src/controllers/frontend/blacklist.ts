@@ -363,14 +363,18 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
-			try {
-				const sets = await getAllSets();
-				res.status(200).json(sets);
-			} catch(err) {
-				const code = 'BLC_SET_GET_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
+			if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias || req.authToken.role === 'admin') {
+				try {
+					const sets = await getAllSets();
+					res.status(200).json(sets);
+				} catch(err) {
+					const code = 'BLC_SET_GET_ERROR';
+					errMessage(code, err);
+					res.status(500).json(APIMessage(code));
+				}
+			} else {
+				res.status(403).json(APIMessage('BLC_VIEW_FORBIDDEN'));
 			}
 		})
 		/**

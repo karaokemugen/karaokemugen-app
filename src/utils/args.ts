@@ -27,6 +27,7 @@ Options :
 --noBrowser                     Do not open a browser window upon launch
 --noMedia                       (generation only) Do not try to fetch data from media files
 --noPlayer                      Do not open player on startup
+--noTestDownloads               Do not attempt to download songs during tests
 --forceAdminPassword <password> Set admin account's password
 --kill                          Kill already-running KM app
 `;
@@ -95,6 +96,7 @@ export function parseCommandLineArgs(argv: any, cmdline: CommandLine) {
 		setState({isDemo: true});
 	}
 	if (cmdline?.hasSwitch('noBrowser') || argv.noBrowser) setState({opt: {noBrowser: true}});
+	if (cmdline?.hasSwitch('noTestDownloads') || argv.noTestDownloads) setState({opt: {noTestDownloads: true}});
 	if ((cmdline?.getSwitchValue('forceAdminpassword')) || argv.forceAdminPassword) setState({opt: {forceAdminPassword: argv.forceAdminPassword || cmdline.getSwitchValue('forceAdminPassword')}});
 	if (cmdline?.hasSwitch('dumpDB') || argv.dumpDB) setState({opt: {dumpDB: true}});
 	if (cmdline?.hasSwitch('restoreDB') || argv.restoreDB) setState({opt: {restoreDB: true}});

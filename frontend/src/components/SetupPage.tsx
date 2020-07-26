@@ -75,7 +75,7 @@ class SetupPage extends Component<IProps, IState> {
 			this.setState({ error: undefined });
 			this.login(username, this.state.password as string);
 		} catch (err) {
-			const error = i18next.t(`ERROR_CODES.${err.response.data.code}`);
+			const error = err?.response?.data ? i18next.t(`ERROR_CODES.${err.response.data.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
 		}
 	};
@@ -99,7 +99,7 @@ class SetupPage extends Component<IProps, IState> {
 			store.setLogInfos(response);
 			this.setState({ activeView: 'repo', error: undefined });
 		} catch (err) {
-			const error = i18next.t(`ERROR_CODES.${err.response.data.code}`);
+			const error = err?.response?.data ? i18next.t(`ERROR_CODES.${err.response.data.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
 		}
 	};
@@ -141,7 +141,7 @@ class SetupPage extends Component<IProps, IState> {
 					await axios.post(`/repos/${this.props.repository.Name}/consolidate`, { path: this.state.repositoryFolder });
 					this.setState({ activeView: 'random', error: undefined });
 				} catch (err) {
-					const error = i18next.t(`ERROR_CODES.${err.response.data.code}`);
+					const error = err?.response?.data ? i18next.t(`ERROR_CODES.${err.response.data.code}`) : JSON.stringify(err);
 					this.setState({ error: error });
 				}
 			} else {
@@ -156,7 +156,7 @@ class SetupPage extends Component<IProps, IState> {
 				axios.post('/downloads/random');
 				this.props.endSetup();
 			} catch (err) {
-				const error = i18next.t(`ERROR_CODES.${err.response.data.code}`);
+				const error = err?.response?.data ? i18next.t(`ERROR_CODES.${err.response.data.code}`) : JSON.stringify(err);
 				this.setState({ error: error });
 			}
 		} else {

@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import {promisify} from 'util';
 
 import Players from '../components/mpv';
+import { APIMessage } from '../controllers/common';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
@@ -26,7 +27,8 @@ export async function playSingleSong(kid?: string) {
 	try {
 		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
 		if (!kara) throw {code: 404, msg: 'KID not found'};
-		setState({singlePlay: true, currentSong: kara});
+		setState({singlePlay: true, currentSong: kara, randomPlaying: false});
+		stopAddASongMessage();
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
 		// If series is empty, pick singer information instead
@@ -51,6 +53,7 @@ export async function playSingleSong(kid?: string) {
 		setState({currentlyPlayingKara: kara.kid});
 	} catch(err) {
 		logger.error('Error during song playback', {service: 'Player', obj: err});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
 		sentry.error(err, 'Warning');
 		stopPlayer(true);
 		throw err;
@@ -68,14 +71,15 @@ export async function playRandomSongAfterPlaylist() {
 		if (kara) {
 			setState({ randomPlaying: true });
 			await playSingleSong(kara.kid);
-			mpv.initAddASongMessage();
+			initAddASongMessage();
 		} else {
 			stopPlayer(true);
-			mpv.stopAddASongMessage();
+			stopAddASongMessage();
 		}
 	} catch(err) {
 		sentry.error(err);
 		logger.error('Unable to select random song to play at the end of playlist', {service: 'Player', obj: err});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_RANDOM_SONG_AFTER_PLAYLIST', err));
 	}
 }
 
@@ -119,6 +123,7 @@ async function playCurrentSong(now: boolean) {
 		} catch(err) {
 			logger.error('Error during song playback', {service: 'Player', obj: err});
 			sentry.error(err, 'Warning');
+			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
 			if (getState().player.playerStatus !== 'stop') {
 				logger.warn('Skipping playback for this song', {service: 'Player'});
 				try {
@@ -172,6 +177,7 @@ export async function playerEnding() {
 					setState({currentlyPlayingKara: 'Sponsors'});
 				} catch(err) {
 					logger.warn('Skipping sponsors due to error, playing current song', {service: 'Player', obj: err});
+					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 					await playCurrentSong(true);
 				}
 			} else {
@@ -192,9 +198,9 @@ export async function playerEnding() {
 		// If Sponsor, just play currently selected song.
 		if (state.player.mediaType === 'Sponsors' && introSequence) {
 			try {
-				// If it's played just after an intro, play next sonc. If not, proceed as usual
-				await playCurrentSong(true);
+				// If it's played just after an intro, play next song. If not, proceed as usual
 				introSequence = false;
+				await playCurrentSong(true);
 			} catch(err) {
 				logger.error('Unable to play current song, skipping', {service: 'Player', obj: err});
 				try {
@@ -208,10 +214,10 @@ export async function playerEnding() {
 		if (state.player.mediaType === 'Encores') {
 			try {
 				await next();
-				return;
 			} catch(err) {
 				logger.error('Failed going to next song', {service: 'Player', obj: err});
 			}
+			return;
 		}
 		// Testing for position before last to play an encore
 		logger.debug(`CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`, {service: 'Player'});
@@ -221,6 +227,7 @@ export async function playerEnding() {
 				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
 			} catch(err) {
 				logger.error('Unable to play encore file, going to next song', {service: 'Player', obj: err});
+				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
 				} catch(err) {
@@ -241,6 +248,7 @@ export async function playerEnding() {
 					setState({currentlyPlayingKara: 'Outros'});
 				} catch(err) {
 					logger.error('Unable to play outro file', {service: 'Player', obj: err});
+					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 					if (conf.Playlist.EndOfPlaylistAction === 'random') {
 						await playRandomSongAfterPlaylist();
 					} else {
@@ -263,6 +271,7 @@ export async function playerEnding() {
 				setState({currentlyPlayingKara: 'Jingles'});
 			} catch(err) {
 				logger.error('Unable to play jingle file, going to next song', {service: 'Player', obj: err});
+				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
 				} catch(err) {
@@ -277,6 +286,7 @@ export async function playerEnding() {
 				setState({currentlyPlayingKara: 'Sponsors'});
 			} catch(err) {
 				logger.error('Unable to play sponsor file, going to next song', {service: 'Player', obj: err});
+				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
 				} catch(err) {
@@ -327,7 +337,6 @@ export async function next() {
 		await nextSong();
 		const conf = getConfig();
 		if (conf.Karaoke.ClassicMode) {
-			await prepareClassicPauseScreen();
 			stopPlayer(true);
 			if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
@@ -339,13 +348,17 @@ export async function next() {
 			const kara = await getCurrentSong();
 			await stopPlayer(true);
 			if (conf.Karaoke.Poll.Enabled) {
-				await startPoll();
+				const poll = await startPoll();
+				if (!poll) {
+					// False returned means startPoll couldn't start a poll
+					mpv.displaySongInfo(kara.infos, 10000000, true);
+				}
 			} else {
 				mpv.displaySongInfo(kara.infos, 10000000, true);
 			}
 			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-				if (conf.Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
+				if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
 			}
 		} else {
 			setState({currentRequester: null});
@@ -353,6 +366,8 @@ export async function next() {
 		}
 	} catch(err) {
 		logger.warn('Next song is not available', {service: 'Player', obj: err});
+		// Display KM info banner just to be sure
+		mpv.displayInfo();
 		throw err;
 	}
 }
@@ -367,8 +382,7 @@ async function toggleFullScreenPlayer() {
 }
 
 async function toggleOnTopPlayer() {
-	let state = getState();
-	state = setState({ontop: await mpv.toggleOnTop()});
+	const state = setState({ontop: await mpv.toggleOnTop()});
 	state.ontop
 		? logger.info('Player staying on top', {service: 'Player'})
 		: logger.info('Player NOT staying on top', {service: 'Player'});
@@ -388,7 +402,7 @@ export async function playPlayer(now?: boolean) {
 	if (state.player.playerStatus === 'stop' || now) {
 		setState({status: 'play', singlePlay: false, randomPlaying: false});
 		await playCurrentSong(now);
-		mpv.stopAddASongMessage();
+		stopAddASongMessage();
 	} else {
 		await mpv.resume();
 	}
@@ -400,14 +414,16 @@ export async function stopPlayer(now = true) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		await mpv.stop();
 		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false, stopping: false});
-		mpv.stopAddASongMessage();
+		stopAddASongMessage();
+		if (getConfig().Karaoke.ClassicMode) {
+			await prepareClassicPauseScreen();
+		}
 	} else {
 		if (getState().player.playerStatus !== 'stop' && !getState().stopping) {
 			logger.info('Karaoke stopping after current song', {service: 'Player'});
 			setState({ stopping: true });
 		}
 	}
-	if (getConfig().Karaoke.ClassicMode) await prepareClassicPauseScreen();
 }
 
 export async function prepareClassicPauseScreen() {
@@ -420,6 +436,7 @@ export async function prepareClassicPauseScreen() {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
 		mpv.displayInfo();
 		logger.warn('Could not prepare classic pause screen', {service: 'Player', obj: err});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_CLASSIC_PAUSE_SCREEN', err));
 	}
 }
 
@@ -450,7 +467,7 @@ async function goToPlayer(seconds: number) {
 async function setVolumePlayer(volume: number) {
 	await mpv.setVolume(volume);
 	// Save the volume in configuration
-	await setConfig({Player: {Volume: volume}});
+	setConfig({Player: {Volume: volume}});
 }
 
 async function showSubsPlayer() {
@@ -469,6 +486,7 @@ export async function playerNeedsRestart() {
 	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
 		setState({ playerNeedsRestart: true });
 		logger.info('Player will restart in 5 seconds', {service: 'Player'});
+		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
 		mpv.message(i18next.t('RESTARTING_PLAYER'), 5000);
 		await sleep(5000);
 		await restartPlayer();

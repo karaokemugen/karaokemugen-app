@@ -495,7 +495,8 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 	} catch(err) {
 		logger.debug('Got error when get all remote users', {service: 'RemoteUser', obj: err});
 		throw {
-			code: 'USER_CREATE_ERROR_ONLINE',
+			code: 500,
+			msg: 'USER_GET_ERROR_ONLINE',
 			message: err
 		};
 	}
@@ -506,7 +507,8 @@ async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
 	const users = await getAllRemoteUsers(instance);
 	if (users.filter(u => u.login === login).length === 1) throw {
-		code: 'USER_ALREADY_EXISTS_ONLINE',
+		code: 409,
+		msg: 'USER_ALREADY_EXISTS_ONLINE',
 		message: `User already exists on ${instance} or incorrect password`
 	};
 	try {
@@ -519,7 +521,8 @@ async function createRemoteUser(user: User) {
 	} catch(err) {
 		logger.debug(`Got error when create remote user ${login}`, {service: 'RemoteUser', obj: err});
 		throw {
-			code: 'USER_CREATE_ERROR_ONLINE',
+			code: 500,
+			msg: 'USER_CREATE_ERROR_ONLINE',
 			message: err
 		};
 	}
@@ -605,13 +608,13 @@ export async function createUser(user: User, opts: UserOpts = {
 
 /** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
-	if (user.type < 2 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
-	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
+	if (user.type < 2 && !user.password) throw { code: 400, msg: 'USER_EMPTY_PASSWORD'};
+	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
 	if (await DBGetUser(user.login) || await DBCheckNicknameExists(user.login)) {
 		logger.error(`User/nickname ${user.login} already exists, cannot create it`, {service: 'User'});
-		throw { code: 'USER_ALREADY_EXISTS', data: {username: user.login}};
+		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
 }
 
@@ -831,14 +834,15 @@ export async function updateSongsLeft(username: string, playlist_id?: number) {
 	if (!playlist_id) playlist_id = getState().publicPlaylistID;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
+		case 2:
+			const time = await getSongTimeSpentForUser(playlist_id,username);
+			quotaLeft = +conf.Karaoke.Quota.Time - time;
+			break;
 		default:
 		case 1:
 			const count = await getSongCountForUser(playlist_id, username);
 			quotaLeft = +conf.Karaoke.Quota.Songs - count;
 			break;
-		case 2:
-			const time = await getSongTimeSpentForUser(playlist_id,username);
-			quotaLeft = +conf.Karaoke.Quota.Time - time;
 		}
 	} else {
 		quotaLeft = -1;
@@ -867,14 +871,12 @@ export async function updateUserQuotas(kara: PLC) {
 	const freeTasks = [];
 	const usersNeedingUpdate = [];
 	for (const currentSong of currentPlaylist) {
-		publicPlaylist.some((publicSong: PLC) => {
+		for (const publicSong of publicPlaylist) {
 			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
 				freeTasks.push(freePLC(publicSong.playlistcontent_id));
 				if (!usersNeedingUpdate.includes(publicSong.username)) usersNeedingUpdate.push(publicSong.username);
-				return true;
 			}
-			return false;
-		});
+		}
 	}
 	await Promise.all(freeTasks);
 	usersNeedingUpdate.forEach(username => {

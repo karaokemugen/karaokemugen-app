@@ -291,10 +291,10 @@ class KaraLine extends Component<IProps, IState> {
 									</button> : null
 								}
 								{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username === logInfos?.username
-									&& (idPlaylist == store.getState().publicPlaylistID) ?
+									&& idPlaylist === store.getState().publicPlaylistID ?
 									<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
 										onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
-								{scope !== 'admin' && this.props.playlistInfo && this.props.playlistInfo.flag_public ?
+								{scope !== 'admin' && this.props.idPlaylist > 0 && this.props.playlistInfo?.flag_public ?
 									<button className='upvoteKara btn btn-sm btn-action'
 										title={i18next.t('TOOLTIP_UPVOTE')}
 										disabled={this.props.kara.username === store.getLogInfos()?.username}

@@ -29,7 +29,7 @@ class Log extends Component<unknown, LogState> {
 	componentDidMount() {
 		this.refresh();
 		const url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
-		if (this.context.globalState.settings.data.state) {
+		if (this.context.globalState.settings?.data.state) {
 			const socket = openSocket(`${url}/${this.context.globalState.settings.data.state.wsLogNamespace}`);
 			socket.on('log', (log) => {
 				const logs = this.state.log;
@@ -41,7 +41,7 @@ class Log extends Component<unknown, LogState> {
 
 	refresh = async () => {
 		const res = await Axios.get(`/log/${this.state.level}`);
-		if (res.data) this.setState({ log: res.data });
+		if (res?.data) this.setState({ log: res.data });
 	}
 
 	setLevel = async (level) => {
