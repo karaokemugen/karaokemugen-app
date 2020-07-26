@@ -302,13 +302,13 @@ class Player {
 			}
 		});
 		// Handle client messages (skip/go-back)
-		this.mpv.on('client-message', (message) => {
+		this.mpv.on('client-message', async (message) => {
 			if (typeof message.args === 'object') {
 				try {
 					if (message.args[0] === 'skip') {
-						next();
+						await next();
 					} else if (message.args[0] === 'go-back') {
-						prev();
+						await prev();
 					}
 				} catch(err) {
 					logger.warn('Cannot handle mpv script command', {service: 'mpv'});
