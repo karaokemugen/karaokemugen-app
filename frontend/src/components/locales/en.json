@@ -522,6 +522,27 @@
 		"DELETING_TAG_IN_PROGRESS": "Deleting tag...",
 		"MERGING_TAGS_IN_PROGRESS": "Merging tags..."
 	},
+	"NOTIFICATION": {
+		"OPERATOR": {
+			"ERROR": {
+				"DOWNLOAD": "Song download error",
+				"SHORTENER": "Error when enabling URL shortener",
+				"PLAYER_PLAY": "Unable to play song",
+				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Unable to select a random song to play after playlist ends",
+				"PLAYER_PLMEDIA": "Unable to play playlist media",
+				"PLAYER_CLASSIC_PAUSE_SCREEN": "Unable to prepare pause screen",
+				"PLAYLIST_FREE_ORPHANED_SONGS": "Unable to free orphaned songs",
+				"POLL_ALREADY_STARTED": "A poll is already in progress",
+				"POLL_PUBLIC_PL_EMPTY": "Unable to start poll: public playlist is empty",
+				"POLL_NOT_ENOUGH_SONGS": "Unable to start poll: not enough songs available"
+			},
+			"INFO": {
+				"PLAYER_RESTARTING": "Restarting media player...",
+				"POLL_WINNER": "People voted for a new song!",
+				"POLL_STARTING": "Starting poll"
+			}
+		}
+	},
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
 		"BLC_EMPTY_ERROR": "Error emptying list of blacklist criterias",

@@ -4,6 +4,7 @@ import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {promisify} from 'util';
 
+import { APIMessage } from '../controllers/common';
 import { Token } from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import {timer} from '../lib/utils/date';
@@ -90,6 +91,7 @@ export async function endPoll() {
 		pollEnding = true;
 		logger.debug('Ending poll', {service: 'Poll', obj: winner});
 		emitWS('songPollResult', winner);
+		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_WINNER', winner));
 		stopPoll();
 	}
 }
@@ -183,6 +185,8 @@ export async function startPoll(): Promise<boolean> {
 	setState({songPoll: true});
 	if (poll.length > 0) {
 		logger.info('Unable to start poll, another one is already in progress', {service: 'Poll'});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_ALREADY_STARTED'));
+
 		return false;
 	}
 	logger.info('Starting a new poll', {service: 'Poll'});
@@ -201,6 +205,7 @@ export async function startPoll(): Promise<boolean> {
 		]);
 		if (pubpl.length === 0) {
 			logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
+			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_PUBLIC_PL_EMPTY'));
 			return false;
 		}
 		availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
@@ -213,6 +218,7 @@ export async function startPoll(): Promise<boolean> {
 	let pollChoices = conf.Karaoke.Poll.Choices;
 	if (availableKaras.length === 0) {
 		logger.error('Unable to start poll : public playlist has no available songs (have they all been added to current playlist already?)', {service: 'Poll'});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_NOT_ENOUGH_SONGS'));
 		return false;
 	}
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
@@ -223,6 +229,7 @@ export async function startPoll(): Promise<boolean> {
 		poll[index].index = +index + 1;
 	}
 	logger.debug('New poll', {service: 'Poll', obj: poll});
+	emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_STARTING'));
 	// Do not display modal for clients if twitch is enabled
 	if (conf.Karaoke.StreamerMode.Twitch.Enabled) {
 		displayPollTwitch();

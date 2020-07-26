@@ -69,7 +69,7 @@ function resolveMediaPath(type: MediaType): string[] {
 	if (type === 'Sponsors') return resolvedPathSponsors();
 }
 
-async function listRemoteMedias(type: MediaType): Promise<File[]> {
+function listRemoteMedias(type: MediaType): Promise<File[]> {
 	const webdavClient = createClient(
 		KMSite.url,
 		{
@@ -77,9 +77,7 @@ async function listRemoteMedias(type: MediaType): Promise<File[]> {
 			password: KMSite.password
 		}
 	);
-	// (baka?)
-	// eslint-disable-next-line no-return-await
-	return await webdavClient.getDirectoryContents('/' + type);
+	return webdavClient.getDirectoryContents('/' + type);
 }
 
 async function listLocalFiles(dir: string): Promise<File[]> {
@@ -154,12 +152,12 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			for (const file of filesToDownload) {
 				bytesToDownload = bytesToDownload + file.size;
 			}
-			logger.info(`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`, {service: '${type}'});
+			logger.info(`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`, {service: type});
 			await downloadMedias(filesToDownload, localDir, type, task);
-			logger.info('Update done', {service: '${type}'});
+			logger.info('Update done', {service: type});
 		}
 	} catch(err) {
-		logger.error('Failed to update medias from HTTP source', {obj: err, service: type});
+		logger.warn('Failed to update medias', {service: type, obj: err});
 	}
 }
 

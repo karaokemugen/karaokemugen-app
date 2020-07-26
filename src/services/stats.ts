@@ -13,6 +13,8 @@ import logger from '../lib/utils/logger';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getSessions } from './session';
+import { emitWS } from '../lib/utils/ws';
+import { APIMessage } from '../controllers/common';
 
 let intervalID: any;
 
@@ -46,7 +48,10 @@ export async function sendPayload() {
 		logger.info('Payload sent successfully', {service: 'Stats'});
 	} catch(err) {
 		logger.warn('Uploading stats payload failed', {service: 'Stats', obj: err});
-		if (err !== 'This instance is not connected to the internets') sentry.error(err);
+		if (err !== 'This instance is not connected to the internets') {
+			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.STATS_PAYLOAD'));
+			sentry.error(err);
+		}
 	}
 
 }
