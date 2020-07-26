@@ -234,7 +234,6 @@
 	"PROFILE_PASSWORD": "Password",
 	"PROFILE_PASSWORD_AGAIN": "Type your password",
 	"PROFILE_PASSWORDCONF": "Confirm",
-	"DELETE_ACCOUNT": "Are you sure you want to delete your account?",
 	"UPVOTE_NUMBER": "Upvotes",
 	"TOOLTIP_ADDKARA": "Add this song to the playlist",
 	"TOOLTIP_ADDKARA_ADMIN": "right click to append it after the currently playing song",
@@ -390,9 +389,6 @@
 		"ERROR": "Karaoke Mugen may send information about your instance to Sentry.io during errors. This helps us solve them as they come up much faster. Do you agree to send these error reports?",
 		"ERROR_TRACKING": "Error tracking"
 	},
-	"PROFILE_CONVERT": "Convert to online profile",
-	"PROFILE_ONLINE_DELETE": "Delete my online profile",
-	"PROFILE_DELETE": "Delete account locally",
 	"INSTANCE_NAME": "Server name",
 	"INSTANCE_NAME_SHORT": "Server",
 	"LANGUAGE": "Languages",
@@ -463,7 +459,14 @@
 			"DOWNLOAD_THEM_SIZE": "(Download size : {{mediasize}})"
 		},
 		"PLAY_CURRENT_MODAL": "Warning : the current playlist '{{playlist}}' isn't displayed on screen. That's the playlist going to be played. Are you sure you want to start playing?",
-		"KARA_DETAILS": "Song details"
+		"KARA_DETAILS": "Song details",
+		"PROFILE_MODAL": {
+			"ONLINE_CONVERT": "Convert to online account",
+			"ONLINE_DELETE": "Disable online account",
+			"ONLINE_DELETE_WARN": "This will remove your account from the online server @{{instance}}. Are you sure you want to do this?",
+			"LOCAL_DELETE": "Delete this account locally",
+			"LOCAL_DELETE_WARN": "This will remove your account from this local app only. If you have an online account, it won't be disabled. Are you sure you want to do this?"
+		}
 	},
 	"SETUP_PAGE": {
 		"TITLE": "Setup Wizard",
@@ -518,6 +521,27 @@
 		"EDITING_TAG_IN_PROGRESS": "Editing tag...",
 		"DELETING_TAG_IN_PROGRESS": "Deleting tag...",
 		"MERGING_TAGS_IN_PROGRESS": "Merging tags..."
+	},
+	"NOTIFICATION": {
+		"OPERATOR": {
+			"ERROR": {
+				"DOWNLOAD": "Song download error",
+				"SHORTENER": "Error when enabling URL shortener",
+				"PLAYER_PLAY": "Unable to play song",
+				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Unable to select a random song to play after playlist ends",
+				"PLAYER_PLMEDIA": "Unable to play playlist media",
+				"PLAYER_CLASSIC_PAUSE_SCREEN": "Unable to prepare pause screen",
+				"PLAYLIST_FREE_ORPHANED_SONGS": "Unable to free orphaned songs",
+				"POLL_ALREADY_STARTED": "A poll is already in progress",
+				"POLL_PUBLIC_PL_EMPTY": "Unable to start poll: public playlist is empty",
+				"POLL_NOT_ENOUGH_SONGS": "Unable to start poll: not enough songs available"
+			},
+			"INFO": {
+				"PLAYER_RESTARTING": "Restarting media player...",
+				"POLL_WINNER": "People voted for a new song!",
+				"POLL_STARTING": "Starting poll"
+			}
+		}
 	},
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",

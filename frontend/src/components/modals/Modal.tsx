@@ -23,7 +23,7 @@ class Modal extends Component<IProps, IState> {
 	}
 
 	confirmModal = () => {
-		if (typeof this.props.callback != 'undefined') {
+		if (this.props.callback) {
 			if (this.props.type === 'confirm') {
 				this.props.callback(true);
 			} else if (this.props.type === 'prompt') {
@@ -70,7 +70,7 @@ class Modal extends Component<IProps, IState> {
 						</div>
 						{this.props.type === 'prompt' || (this.props.message && this.props.message !== '') ?
 							<div className="modal-body">
-								<div className="modal-message">{this.props.message}</div>
+								<label className="modal-message">{this.props.message}</label>
 								{this.props.type === 'prompt' ?
 									<div className="form">
 										<input type="text" autoFocus className="modal-input form-control" defaultValue={this.state.promptText}

@@ -7,6 +7,8 @@ import logger from '../lib/utils/logger';
 import {OnlineForm} from '../types/online';
 import {configureHost, determineV6Prefix} from '../utils/config';
 import { getState } from '../utils/state';
+import { emitWS } from '../lib/utils/ws';
+import { APIMessage } from '../controllers/common';
 
 /** Send IP to KM Server's URL shortener */
 export async function publishURL() {
@@ -34,6 +36,7 @@ export async function publishURL() {
 		configureHost();
 	} catch(err) {
 		logger.error(`Failed publishing our IP to ${conf.Online.Host}`, {service: 'ShortURL', obj: err});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.SHORTENER', err));
 	}
 }
 

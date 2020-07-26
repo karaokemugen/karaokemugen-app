@@ -172,7 +172,7 @@ class LoginModal extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<div className="modal modalPage">
+			<div className="modal modalPage" id="loginModal">
 				<div className="modal-dialog">
 					<div className="modal-content">
 						<ul className="nav nav-tabs nav-justified modal-header">

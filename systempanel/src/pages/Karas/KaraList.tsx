@@ -42,7 +42,13 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	refresh = async () => {
-		const res = await Axios.get('/karas', { params: { filter: this.state.filter, from: (this.state.currentPage - 1) * 100, size: 100 } });
+		const res = await Axios.get('/karas', {
+			params: {
+				filter: this.state.filter,
+				from: (this.state.currentPage - 1) * this.state.currentPageSize,
+				size: this.state.currentPageSize
+			}
+		});
 		this.setState({ karas: res.data.content, i18nTag: res.data.i18n, totalCount: res.data.infos.count });
 	}
 
@@ -65,7 +71,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		});
 	}
 
-	handleTableChange = (pagination, filters, sorter) => {
+	handleTableChange = (pagination) => {
 		this.setState({
 			currentPage: pagination.current,
 			currentPageSize: pagination.pageSize,

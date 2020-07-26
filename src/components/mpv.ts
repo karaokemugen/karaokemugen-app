@@ -302,12 +302,17 @@ class Player {
 			}
 		});
 		// Handle client messages (skip/go-back)
-		this.mpv.on('client-message', (message) => {
+		this.mpv.on('client-message', async (message) => {
 			if (typeof message.args === 'object') {
-				if (message.args[0] === 'skip') {
-					next();
-				} else if (message.args[0] === 'go-back') {
-					prev();
+				try {
+					if (message.args[0] === 'skip') {
+						await next();
+					} else if (message.args[0] === 'go-back') {
+						await prev();
+					}
+				} catch(err) {
+					logger.warn('Cannot handle mpv script command', {service: 'mpv'});
+					// Non fatal, do not report to Sentry.
 				}
 			}
 		});

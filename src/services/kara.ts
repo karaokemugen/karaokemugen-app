@@ -386,7 +386,6 @@ export function getSeriesSingers(kara: DBKara) {
 			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
 			series = kara.series[0].i18n[lang] || kara.series[0].i18n?.eng || kara.series[0].name;
 			break;
-
 		}
 		return series;
 	} else {

@@ -3,6 +3,7 @@ import i18n from 'i18next';
 import shuffle from 'lodash.shuffle';
 import {resolve} from 'path';
 
+import { APIMessage } from '../controllers/common';
 import {	addKaraToPlaylist as addKaraToPL,
 	addKaraToRequests,
 	getKaraMini,
@@ -1226,6 +1227,7 @@ async function updateFreeOrphanedSongs() {
 		await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
 	} catch(err) {
 		logger.error('Failed to free orphaned songs (will try again)', {service: 'Playlist', obj: err});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYLIST_FREE_ORPHANED_SONGS', err));
 	}
 }
 

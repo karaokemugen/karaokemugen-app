@@ -507,7 +507,8 @@ async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
 	const users = await getAllRemoteUsers(instance);
 	if (users.filter(u => u.login === login).length === 1) throw {
-		code: 'USER_ALREADY_EXISTS_ONLINE',
+		code: 409,
+		msg: 'USER_ALREADY_EXISTS_ONLINE',
 		message: `User already exists on ${instance} or incorrect password`
 	};
 	try {

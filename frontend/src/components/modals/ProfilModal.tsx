@@ -130,7 +130,7 @@ class ProfilModal extends Component<IProps, IState> {
 	};
 
 	profileDelete = () => {
-		ReactDOM.render(<OnlineProfileModal type="delete" />, document.getElementById('modal'));
+		ReactDOM.render(<OnlineProfileModal type="delete" loginServ={this.state.user.login?.split('@')[1]}/>, document.getElementById('modal'));
 	};
 
 	favImport = (event: any) => {
@@ -208,7 +208,7 @@ class ProfilModal extends Component<IProps, IState> {
 	};
 
 	deleteAccount = () => {
-		callModal('confirm', i18next.t('DELETE_ACCOUNT'), '', async () => {
+		callModal('confirm', i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE'), i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE_WARN'), async () => {
 			await axios.delete('/myaccount');
 			store.logOut();
 		});
@@ -327,23 +327,20 @@ class ProfilModal extends Component<IProps, IState> {
 											{this.props.config.Online.Users && logInfos.username !== 'admin' ?
 												<div className="profileLine">
 													{logInfos?.onlineToken ?
-														<button type="button" title={i18next.t('PROFILE_ONLINE_DELETE')}
-															className="btn btn-danger profileDelete" onClick={this.profileDelete}>
-															<i className="fas fa-retweet"></i> {i18next.t('PROFILE_ONLINE_DELETE')}
+														<button type="button" className="btn btn-danger profileDelete" onClick={this.profileDelete}>
+															<i className="fas fa-retweet"></i> {i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
 														</button>
 														:
-														<button type="button" title={i18next.t('PROFILE_CONVERT')}
-															className="btn btn-primary profileConvert" onClick={this.profileConvert}>
-															<i className="fas fa-retweet"></i> {i18next.t('PROFILE_CONVERT')}
+														<button type="button" className="btn btn-primary profileConvert" onClick={this.profileConvert}>
+															<i className="fas fa-retweet"></i> {i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
 														</button>
 													}
 												</div> : null
 											}
 											<div className="profileLine" >
-												<button type="button" title={i18next.t('PROFILE_CONVERT')}
-													className={`btn profileDelete ${logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'}`}
+												<button type="button" className={`btn profileDelete ${logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'}`}
 													onClick={this.deleteAccount}>
-													<i className="fas fa-trash-alt"></i> {i18next.t('PROFILE_DELETE')}
+													<i className="fas fa-trash-alt"></i> {i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE')}
 												</button>
 											</div>
 											<div className="profileLine profileButtonLine" >
