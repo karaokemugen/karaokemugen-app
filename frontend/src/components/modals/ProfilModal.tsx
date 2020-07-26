@@ -327,21 +327,18 @@ class ProfilModal extends Component<IProps, IState> {
 											{this.props.config.Online.Users && logInfos.username !== 'admin' ?
 												<div className="profileLine">
 													{logInfos?.onlineToken ?
-														<button type="button" title={i18next.t('PROFILE_ONLINE_DELETE')}
-															className="btn btn-danger profileDelete" onClick={this.profileDelete}>
+														<button type="button" className="btn btn-danger profileDelete" onClick={this.profileDelete}>
 															<i className="fas fa-retweet"></i> {i18next.t('PROFILE_ONLINE_DELETE')}
 														</button>
 														:
-														<button type="button" title={i18next.t('PROFILE_CONVERT')}
-															className="btn btn-primary profileConvert" onClick={this.profileConvert}>
+														<button type="button" className="btn btn-primary profileConvert" onClick={this.profileConvert}>
 															<i className="fas fa-retweet"></i> {i18next.t('PROFILE_CONVERT')}
 														</button>
 													}
 												</div> : null
 											}
 											<div className="profileLine" >
-												<button type="button" title={i18next.t('PROFILE_CONVERT')}
-													className={`btn profileDelete ${logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'}`}
+												<button type="button" className={`btn profileDelete ${logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'}`}
 													onClick={this.deleteAccount}>
 													<i className="fas fa-trash-alt"></i> {i18next.t('PROFILE_DELETE')}
 												</button>
