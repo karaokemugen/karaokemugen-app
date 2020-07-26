@@ -64,7 +64,7 @@ The app is multi-platform and works on Linux/Windows/macOS.
 
 It requires nodeJS 12 or above.
 
-It also requires mpv and ffmpeg binaries (see below).
+It also requires postgresql, mpv and ffmpeg binaries (see below).
 
 ## Install
 
