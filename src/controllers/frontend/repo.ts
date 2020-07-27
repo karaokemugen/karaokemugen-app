@@ -261,7 +261,7 @@ export default function repoController(router: Router) {
 		});
 	router.route('/repos/:name/compareLyrics')
 	/**
-		 * @api {get} /repos/:name/compareLyrics Compare lyrics between two repositories
+		 * @api {get} /repos/:name/compareLyrics Compare lyrics between two repositories (get report)
 		 * @apiName GetCompareLyrics
 		 * @apiVersion 3.3.0
 		 * @apiGroup Repositories
@@ -288,12 +288,12 @@ export default function repoController(router: Router) {
 			}
 		})
 	/**
-		 * @api {post} /repos/:name/compareLyrics Compare lyrics between two repositories
+		 * @api {post} /repos/:name/compareLyrics Compare lyrics between two repositories (confirm)
 		 * @apiName PostCompareLyrics
 		 * @apiVersion 3.3.0
 		 * @apiGroup Repositories
 		 * @apiPermission admin
-		 * @apiDescription Updates lyrics from one repo to the other
+		 * @apiDescription Updates lyrics from one repo to the other. Send back the report you got from GET.
 		 * @apiHeader authorization Auth token received from logging in
 		 * @apiParam {string} name Master Repository to check from
 		 * @apiParam {object} report Report object you get frop GET /api/repos/:name/compareLyrics
