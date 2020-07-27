@@ -7,7 +7,7 @@ import { DBKaraTag, lastplayed_ago } from '../../../../src/lib/types/database/ka
 import { Token } from '../../../../src/lib/types/user';
 import { DBPLCInfo } from '../../../../src/types/database/playlist';
 import store from '../../store';
-import { callModal, is_touch_device, secondsTimeSpanToHMS } from '../tools';
+import { callModal, is_touch_device, secondsTimeSpanToHMS, getTagInLanguage, getSerieLanguage } from '../tools';
 
 interface IProps {
 	kid: string | undefined;
@@ -135,7 +135,7 @@ class KaraDetail extends Component<IProps, IState> {
 	};
 
 	getTagInLocale = (e: DBKaraTag) => {
-		return e.i18n[store.getNavigatorLanguage() as string] ? e.i18n[store.getNavigatorLanguage() as string] : e.i18n['eng'];
+		return getTagInLanguage(e, store.getNavigatorLanguage(), 'eng');
 	};
 
 	getTagNames = (data: DBPLCInfo) => {
@@ -202,7 +202,7 @@ class KaraDetail extends Component<IProps, IState> {
 					(data.duration % 60),
 				DETAILS_LANGUAGE: data.langs.map(e => this.getTagInLocale(e)).join(', '),
 				BLCTYPE_7: this.getTagNames(data),
-				BLCTYPE_1: data.series.map(e => this.getTagInLocale(e)).join(', '),
+				BLCTYPE_1: data.series.map(e => getSerieLanguage(e, data.langs[0].name)).join(', '),
 				BLCTYPE_2: data.singers.map(e => this.getTagInLocale(e)).join(', '),
 				DETAILS_TYPE: data.songtypes.map(e => this.getTagInLocale(e)).join(', ')
 					+ (data.songorder > 0 ? ' ' + data.songorder : ''),
