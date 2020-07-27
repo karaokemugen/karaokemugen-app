@@ -1,14 +1,14 @@
 import publicIP from 'public-ip';
 
+import { APIMessage } from '../controllers/common';
 import { getInstanceID } from '../lib/dao/database';
 import {getConfig} from '../lib/utils/config';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
+import { emitWS } from '../lib/utils/ws';
 import {OnlineForm} from '../types/online';
 import {configureHost, determineV6Prefix} from '../utils/config';
 import { getState } from '../utils/state';
-import { emitWS } from '../lib/utils/ws';
-import { APIMessage } from '../controllers/common';
 
 /** Send IP to KM Server's URL shortener */
 export async function publishURL() {

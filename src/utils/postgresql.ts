@@ -92,6 +92,11 @@ function setConfig(config: string, setting: string, value: any): string {
 export async function dumpPG() {
 	const conf = getConfig();
 	const state = getState();
+	if (!conf.Database.prod.bundledPostgresBinary) {
+		const err = 'Dump not available with hosted PostgreSQL servers'
+		logger.warn(err, {service: 'DB'});
+		throw err;
+	}
 	try {
 		const options = ['-c','-E','UTF8','--if-exists','-U',conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.dataPath, 'karaokemugen.sql'), conf.Database.prod.database ];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
@@ -101,6 +106,7 @@ export async function dumpPG() {
 		});
 		logger.info('Database dumped to file', {service: 'DB'});
 	} catch(err) {
+		logger.error('Database restoration failed', {service: 'DB', obj: err});
 		sentry.error(err);
 		throw `Dump failed : ${err}`;
 	}
@@ -110,6 +116,11 @@ export async function dumpPG() {
 export async function restorePG() {
 	const conf = getConfig();
 	const state = getState();
+	if (!conf.Database.prod.bundledPostgresBinary) {
+		const err = 'Restore not available with hosted PostgreSQL servers'
+		logger.warn(err, {service: 'DB'});
+		throw err;
+	}
 	try {
 		const options = ['-U', conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.dataPath, 'karaokemugen.sql'), conf.Database.prod.database];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_client);
