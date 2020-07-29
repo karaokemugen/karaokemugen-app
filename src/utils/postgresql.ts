@@ -13,6 +13,7 @@ import {getConfig} from '../lib/utils/config';
 // KM Imports
 import {asyncExists, asyncReadFile,asyncUnlink,asyncWriteFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
+import {expectedPGVersion} from './constants';
 import sentry from './sentry';
 import {getState} from './state';
 
@@ -70,6 +71,19 @@ export async function stopPG() {
 	await execa(binPath, options, {
 		cwd: state.binPath.postgres
 	});
+}
+
+/** Get database PG version */
+async function getPGVersion(): Promise<number> {
+	const conf = getConfig();
+	const pgDataDir = resolve(getState().dataPath, conf.System.Path.DB, 'postgres');
+	try {
+		const pgVersion = await asyncReadFile(resolve(pgDataDir, 'PG_VERSION'), 'utf-8');
+		return +pgVersion.split('\n')[0];
+	} catch(err) {
+		logger.error('Unable to determine PG version', {obj: err, service: 'DB'});
+		throw err;
+	}
 }
 
 /** Set a particular config value in bundled postgreSQL server config */
@@ -217,6 +231,13 @@ export async function initPG(relaunch = true) {
 	if (state.os === 'win32') binPath = `"${binPath}"`;
 	// We set all stdios on ignore or inherit since pg_ctl requires a TTY terminal and will hang if we don't do that
 	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
+	try {
+		const pgVersion = await getPGVersion();
+		if (pgVersion !== expectedPGVersion) throw `Incorrect PostgreSQL version detected. Expected ${expectedPGVersion}, got ${pgVersion}`;
+	} catch(err) {
+		errorStep(i18next.t('ERROR_START_PG'));
+		throw err;
+	}
 	try {
 		await execa(binPath, options, {
 			cwd: pgBinDir,
