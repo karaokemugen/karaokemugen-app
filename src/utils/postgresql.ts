@@ -93,7 +93,7 @@ export async function dumpPG() {
 	const conf = getConfig();
 	const state = getState();
 	if (!conf.Database.prod.bundledPostgresBinary) {
-		const err = 'Dump not available with hosted PostgreSQL servers'
+		const err = 'Dump not available with hosted PostgreSQL servers';
 		logger.warn(err, {service: 'DB'});
 		throw err;
 	}
@@ -117,7 +117,7 @@ export async function restorePG() {
 	const conf = getConfig();
 	const state = getState();
 	if (!conf.Database.prod.bundledPostgresBinary) {
-		const err = 'Restore not available with hosted PostgreSQL servers'
+		const err = 'Restore not available with hosted PostgreSQL servers';
 		logger.warn(err, {service: 'DB'});
 		throw err;
 	}
