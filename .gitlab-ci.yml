@@ -36,6 +36,7 @@ test:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
   script:
+    # - yarn install --cache-folder .yarn
     - yarn install --check-files --force --cache-folder .yarn
     - touch mpv
     - mkdir app
@@ -48,6 +49,7 @@ test:
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
       when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH == "next"'
@@ -71,10 +73,7 @@ build-react:
     - yarn buildFrontend
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
-      when: never
-    - if: $CI_COMMIT_TAG
-    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: '$CI_COMMIT_BRANCH == "next"'
     - if: $CI_COMMIT_TAG
     - when: never
@@ -107,8 +106,6 @@ pkg_linux:
         - mv packages/*.tar.gz release_linux/
         - ls -la release_linux/*
     rules:
-        - if: '$SCHEDULED_RELEASES == "true"'
-          when: never
         - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
         - if: $CI_COMMIT_TAG
 
@@ -147,10 +144,9 @@ pkg_win:
     - mv packages/*.zip release_win/
     - ls -la release_win/*
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
-      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
+    - when: never
 
 pkg_mac:
   stage: package
@@ -187,10 +183,9 @@ pkg_mac:
     - mv packages/*.dmg release_mac/
     - ls -la release_mac/*
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
-      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
+    - when: never
 
 deploy_mac:
   stage: deploy
@@ -207,30 +202,27 @@ deploy_mac:
     - ls -la release_mac/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_mac/*"
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
-      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
+    - when: never
 
 deploy_linux:
-  stage: deploy
-  image: minidocks/lftp
-  interruptible: true
-  cache: {}
-  variables:
-    GIT_STRATEGY: none
-  dependencies:
-    - pkg_linux
-  needs:
-    - pkg_linux
-  script:
-    - ls -la release_linux/*
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
-  rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
-      when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
-    - if: $CI_COMMIT_TAG
+    stage: deploy
+    image: minidocks/lftp
+    interruptible: true
+    cache: {}
+    variables:
+        GIT_STRATEGY: none
+    dependencies:
+        - pkg_linux
+    needs:
+        - pkg_linux
+    script:
+        - ls -la release_linux/*
+        - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
+        - if: $CI_COMMIT_TAG
 
 deploy_win:
   stage: deploy
@@ -247,10 +239,9 @@ deploy_win:
     - ls -la release_win/*
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_win/*"
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
-      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
+    - when: never
 
 apidoc:
   stage: release
@@ -267,6 +258,7 @@ apidoc:
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; mkdir -p site/apidoc/$CI_COMMIT_REF_NAME; cd site/apidoc/$CI_COMMIT_REF_NAME; mirror -Rnev --parallel=10"
   rules:
     - if: $CI_COMMIT_TAG
+    - when: never
 
 release_site:
   stage: release
@@ -277,10 +269,9 @@ release_site:
   script:
     - sh util/triggerWebsite.sh
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
-      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
+    - when: never
 
 weekly_releases:
   stage: schedule
@@ -294,3 +285,4 @@ weekly_releases:
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
       when: never
     - if: '$SCHEDULED_RELEASES == "true"'
+    - when: never
