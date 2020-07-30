@@ -37,7 +37,7 @@ Please respect coding conventions already in place as much as possible.
 
 If an issue needs to be fixed, a milestone will be added to it by a maintainer. At this point anyone can take the issue and work on it.
 
-If a issue is closed but has not been fixed and could be reopened, please add a comment to it and wait for a maintainer to reopen it.
+If an issue is closed but has not been fixed and could be reopened, please add a comment to it and wait for a maintainer to reopen it.
 
 ### Working on an issue
 
