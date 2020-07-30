@@ -14,8 +14,8 @@ export function tip() {
 	// Calculate the estimated time for reading
 	// Based from https://marketingland.com/estimated-reading-times-increase-engagement-79830:
 	// The average human reads 200 words in a minute <=> 3 words per seconds
-	// Add 1.5 second to let the user start read
-	const duration = (Math.round(words/3) * 1000) + 1500;
+	// Add 2 second to let the user start reading
+	const duration = (Math.round(words/3) * 1000) + 2000;
 	const ret = {tip: tips[activeTipType][index], duration, title: i18n.t(`TIPS.TITLES.${activeTipType.toUpperCase()}`)};
 	index++;
 	// Restart from the beginning if it reaches the end

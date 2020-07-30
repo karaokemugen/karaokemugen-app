@@ -27,7 +27,6 @@ export interface State {
 	playlist?: null,
 	timeposition?: 0,
 	songPoll?: boolean,
-	frontendPort?: number,
 	ready?: boolean,
 	sessionStart?: Date,
 	isDemo?: boolean,
@@ -53,6 +52,7 @@ export interface State {
 	noAutoTest?: boolean,
 	singlePlay?: boolean,
 	version?: Version,
+	frontendPort?: number,
 	binPath?: {
 		mpv?: string,
 		ffmpeg?: string,

@@ -1,13 +1,13 @@
 // Node modules
 import merge from 'lodash.merge';
 
+import {getConfig} from '../lib/utils/config';
 // KM Imports
 import { supportedFiles } from '../lib/utils/constants';
 import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 // Types
-import {PublicPlayerState,State, PublicState} from '../types/state';
-import {getConfig} from "../lib/utils/config";
+import {PublicPlayerState,PublicState,State} from '../types/state';
 
 // Internal settings
 let state: State = {

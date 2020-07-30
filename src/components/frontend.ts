@@ -22,7 +22,7 @@ import sessionController from '../controllers/frontend/session';
 import tagsController from '../controllers/frontend/tags';
 import userController from '../controllers/frontend/user';
 import whitelistController from '../controllers/frontend/whitelist';
-import {getConfig, resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
+import {resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import {configurePassport} from '../lib/utils/passport_manager';
 import { initWS } from '../lib/utils/ws';
@@ -56,7 +56,6 @@ function apiRouter() {
 /** Initialize frontend express server */
 export function initFrontend(): number {
 	try {
-		const conf = getConfig();
 		const state = getState();
 		const app = express();
 		const cspMiddleware = csp({
@@ -120,7 +119,7 @@ export function initFrontend(): number {
 		const server = createServer(app);
 		// Init websockets
 		initWS(server);
-		let port = conf.Frontend.Port;
+		let port = state.frontendPort;
 		try {
 			server.listen(port, () => {
 				logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
