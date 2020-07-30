@@ -36,7 +36,6 @@ test:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
   script:
-    # - yarn install --cache-folder .yarn
     - yarn install --check-files --force --cache-folder .yarn
     - touch mpv
     - mkdir app
@@ -73,7 +72,10 @@ build-react:
     - yarn buildFrontend
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
+    - if: '$SCHEDULED_RELEASES == "true"'
+      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
+    - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH == "next"'
     - if: $CI_COMMIT_TAG
     - when: never
