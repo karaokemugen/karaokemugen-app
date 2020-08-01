@@ -14,7 +14,7 @@ function StartAxios() {
 	const globalDispatch = useContext(GlobalContext).globalDispatch;
 
 	socket.on('error', (err) => {
-		globalDispatch(errorMessage(i18next.t(`ERROR_CODES.${err.code}`, {repo: err.data?.repo.Name, err: err.data.err})));
+		globalDispatch(errorMessage(i18next.t(`ERROR_CODES.${err.code}`, {repo: err.data?.repo.Name, err: err.data?.err})));
 	});
 
 	Axios.interceptors.response.use((response: AxiosResponse<{ code: string, data: any }>) => {
