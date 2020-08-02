@@ -584,7 +584,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			+playlist_id === state.currentPlaylistID &&
 			(state.player.playerStatus === 'stop' || state.randomPlaying) ) {
 			setState({ randomPlaying: false });
-			await nextSong();
+			const kara = await nextSong();
+			await setPlaying(kara.playlistcontent_id, getState().currentPlaylistID);
 			await playPlayer(true);
 		}
 		await Promise.all([
@@ -1120,7 +1121,7 @@ export async function previousSong() {
 }
 
 /** Move to next song */
-export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
+export async function nextSong(): Promise<DBPLC> {
 	const conf = getConfig();
 	let playlist: DBPLC[];
 	try {
@@ -1135,8 +1136,8 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 	let currentPos = playlist.findIndex(plc => plc.flag_playing);
 	if (currentPos + 1 >= playlist.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
 		logger.debug('End of playlist', {service: 'PLC'});
-		if (setPlayingSong) await setPlaying(0, getState().currentPlaylistID);
-		throw 'Current position is last song!';
+		// Current position is last song, not quite an error.
+		return null;
 	} else {
 		// If we're here, it means either we're beyond the length of the playlist
 		// OR that RepeatPlaylist is set to 1.
@@ -1144,7 +1145,6 @@ export async function nextSong(setPlayingSong = true): Promise<DBPLC> {
 		if (conf.Playlist.EndOfPlaylistAction === 'repeat' && currentPos + 1 >= playlist.length) currentPos = -1;
 		const kara = playlist[currentPos + 1];
 		if (!kara) throw 'Karaoke received is empty!';
-		if (setPlayingSong) await setPlaying(kara.playlistcontent_id, getState().currentPlaylistID);
 		return kara;
 	}
 }
@@ -1159,8 +1159,8 @@ async function getCurrentPlaylistContents(): Promise<DBPLC[]> {
 
 export async function notificationNextSong(): Promise<void> {
 	try {
-		const kara = await nextSong(false);
-		emitWS('nextSong', kara);
+		const kara = await nextSong();
+		if (kara) emitWS('nextSong', kara);
 	} catch(err) {
 		//Non-fatal, it usually means we're at the last song
 	}

@@ -7,11 +7,12 @@ import { APIMessage } from '../controllers/common';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
+import { on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {addPlayedKara, getKara, getKaras,getSeriesSingers} from './kara';
-import {getCurrentSong, getPlaylistInfo,nextSong, previousSong,setPlaying} from './playlist';
+import {getCurrentSong, getPlaylistInfo,nextSong, previousSong, setPlaying} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
 import {CurrentSong} from "../types/playlist";
@@ -244,7 +245,6 @@ export async function playerEnding() {
 		// Outros code, we're at the end of a playlist.
 		// Outros are played after the very last song.
 		if (state.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
-			setPlaying(0, pl.playlist_id);
 			if (conf.Playlist.Medias.Outros.Enabled) {
 				try {
 					await mpv.playMedia('Outros');
@@ -261,7 +261,7 @@ export async function playerEnding() {
 			} else if (conf.Playlist.EndOfPlaylistAction === 'random') {
 				await playRandomSongAfterPlaylist();
 			} else {
-				stopPlayer(true);
+				await next();
 			}
 			return;
 		}
@@ -336,36 +336,58 @@ export async function prev() {
 
 export async function next() {
 	logger.debug('Going to next song', {service: 'Player'});
+	const conf = getConfig();
 	try {
-		await nextSong();
-		const conf = getConfig();
-		if (conf.Karaoke.ClassicMode) {
-			stopPlayer(true);
-			if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
-				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-				// Recheck if classic mode is still enabled after the sleep timer. If it's disabled now, do not play song.
-				if (getState().player.playerStatus === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
-			}
-		} else if (conf.Karaoke.StreamerMode.Enabled) {
-			setState({currentRequester: null});
-			const kara = await getCurrentSong();
-			await stopPlayer(true);
-			if (conf.Karaoke.Poll.Enabled) {
-				const poll = await startPoll();
-				if (!poll) {
-					// False returned means startPoll couldn't start a poll
+		const song = await nextSong();
+		if (song) {
+			await setPlaying(song.playlistcontent_id, getState().currentPlaylistID);
+			if (conf.Karaoke.ClassicMode) {
+				stopPlayer(true);
+				if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
+					// Recheck if classic mode is still enabled after the sleep timer. If it's disabled now, do not play song.
+					if (getState().player.playerStatus === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
+				}
+			} else if (conf.Karaoke.StreamerMode.Enabled) {
+				setState({currentRequester: null});
+				const kara = await getCurrentSong();
+				await stopPlayer(true);
+				if (conf.Karaoke.Poll.Enabled) {
+					const poll = await startPoll();
+					if (!poll) {
+						// False returned means startPoll couldn't start a poll
+						mpv.displaySongInfo(kara.infos, 10000000, true);
+					}
+				} else {
 					mpv.displaySongInfo(kara.infos, 10000000, true);
 				}
+				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
+					if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
+				}
 			} else {
-				mpv.displaySongInfo(kara.infos, 10000000, true);
-			}
-			if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
-				await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-				if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
+				setState({currentRequester: null});
+				playPlayer(true);
 			}
 		} else {
-			setState({currentRequester: null});
-			playPlayer(true);
+			// End of playlist, let's see what to do with our different modes.
+			if (conf.Karaoke.StreamerMode.Enabled) {
+				await stopPlayer(true, true);
+				if (conf.Karaoke.Poll.Enabled) {
+					await startPoll();
+					on('songPollResult', () => {
+						// We're not at the end of playlsit anymore!
+						nextSong().then(kara => setPlaying(kara.playlistcontent_id, getState().currentPlaylistID));
+					});
+					if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+						await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
+						if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
+					}
+				}
+			} else {
+				setState({currentRequester: null});
+				stopPlayer(true, true);
+			}
 		}
 	} catch(err) {
 		logger.warn('Next song is not available', {service: 'Player', obj: err});
@@ -412,13 +434,13 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 }
 
-export async function stopPlayer(now = true) {
+export async function stopPlayer(now = true, endOfPlaylist = false) {
 	if (now || getState().stopping) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		await mpv.stop();
 		setState({currentlyPlayingKara: null, randomPlaying: false, stopping: false});
 		stopAddASongMessage();
-		if (getConfig().Karaoke.ClassicMode) {
+		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode) {
 			await prepareClassicPauseScreen();
 		}
 	} else {
@@ -533,11 +555,6 @@ export async function sendCommand(command: string, options: any): Promise<string
 		} else if (command === 'stopAfter') {
 			setState({singlePlay: false, randomPlaying: false});
 			await stopPlayer(false);
-			try {
-				await nextSong();
-			} catch(err) {
-				// Non-fatal, stopAfter can be triggered on the last song already.
-			}
 			return 'STOP_AFTER';
 		} else if (command === 'skip') {
 			setState({singlePlay: false, randomPlaying: false});
