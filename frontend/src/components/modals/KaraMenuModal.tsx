@@ -8,6 +8,7 @@ import { is_touch_device } from '../tools';
 
 interface IProps {
 	kara: KaraElement;
+	side: number;
 	idPlaylist: number;
 	idPlaylistTo: number;
 	publicOuCurrent?: boolean | undefined;
@@ -39,7 +40,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 	onRightClickTransfer = (e: any) => {
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.transferKara(e, store.getPosPlaying());
+		this.props.transferKara(e, store.getPosPlayingOpposite(this.props.side));
 		this.props.closeKaraMenu();
 	};
 
@@ -107,7 +108,20 @@ class KaraMenuModal extends Component<IProps, IState> {
 							}}>
 								<i className="fas fa-exchange-alt" />
 								&nbsp;
-								{i18next.t('TOOLTIP_TRANSFERKARA')}
+								{i18next.t('KARA_MENU.TRANSFER_KARA')}
+							</a>
+						</li> : null
+					}
+					{this.props.idPlaylist >= 0 && !this.props.kara?.flag_playing ?
+						<li>
+							<a href="#" onClick={() => {
+								Axios.put(`/playlists/${this.props.idPlaylist}/karas/${this.props.kara.playlistcontent_id}`, 
+									{ pos: store.getPosPlaying(this.props.side) + 1 });
+								this.props.closeKaraMenu();
+							}}>
+								<i className="fas fa-level-up-alt" />
+								&nbsp;
+								{i18next.t('KARA_MENU.MOVE_KARA')}
 							</a>
 						</li> : null
 					}

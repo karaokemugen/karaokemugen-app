@@ -1,6 +1,6 @@
 import axios from 'axios';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import React, { Component, MouseEvent } from 'react';
 import ReactDOM from 'react-dom';
 import { SortableHandle } from 'react-sortable-hoc';
 
@@ -224,6 +224,7 @@ class KaraLine extends Component<IProps, IState> {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			ReactDOM.render(<KaraMenuModal
 				kara={this.props.kara}
+				side={this.props.side}
 				idPlaylist={this.props.idPlaylist}
 				idPlaylistTo={this.props.idPlaylistTo}
 				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
@@ -273,9 +274,15 @@ class KaraLine extends Component<IProps, IState> {
 										src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
 								<div className="actionButtonsDiv">
 									{this.props.idPlaylistTo !== idPlaylist ?
-										<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={idPlaylist}
-											scope={this.props.scope} kara={kara}
-											addKara={this.addKara} deleteKara={this.deleteKara} transferKara={this.transferKara} />
+										<ActionsButtons
+											idPlaylistTo={this.props.idPlaylistTo}
+											idPlaylist={idPlaylist}
+											scope={this.props.scope}
+											side={this.props.side}
+											kara={kara}
+											addKara={this.addKara}
+											deleteKara={this.deleteKara}
+											transferKara={this.transferKara} />
 										: null}
 								</div>
 								{scope === 'admin' ?
@@ -320,7 +327,7 @@ class KaraLine extends Component<IProps, IState> {
 							</div>
 							{is_touch_device() ?
 								<div className="contentDiv contentDivMobile" onClick={this.toggleKaraDetail} tabIndex={1}>
-									<div className={`disable-select contentDivMobileTop ${this.state.problematic ? 'problematic': ''}`}>
+									<div className={`disable-select contentDivMobileTop ${this.state.problematic ? 'problematic' : ''}`}>
 										<div className="contentDivMobileFirstColumn">
 											<div>{this.karaLangs}</div>
 											<div>{this.karaSongTypes}</div>
@@ -348,7 +355,7 @@ class KaraLine extends Component<IProps, IState> {
 									</div>
 								</div> :
 								<div className="contentDiv" onClick={this.toggleKaraDetail} tabIndex={1}>
-									<div className={`disable-select karaTitle ${this.state.problematic ? 'problematic': ''}`}>
+									<div className={`disable-select karaTitle ${this.state.problematic ? 'problematic' : ''}`}>
 										{this.karaTitle}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"

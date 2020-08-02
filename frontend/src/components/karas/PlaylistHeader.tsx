@@ -408,9 +408,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 										: <i className="far fa-square"></i>
 								}
 							</button>
-							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-								scope={this.props.scope} isHeader={true} addKara={this.props.addCheckedKaras}
-								deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras}
+							<ActionsButtons
+								idPlaylistTo={this.props.idPlaylistTo}
+								idPlaylist={this.props.idPlaylist}
+								scope={this.props.scope}
+								side={this.props.side}
+								isHeader={true}
+								addKara={this.props.addCheckedKaras}
+								deleteKara={this.props.deleteCheckedKaras}
+								transferKara={this.props.transferCheckedKaras}
 								checkedkaras={this.props.checkedkaras} />
 						</React.Fragment> : null
 					}

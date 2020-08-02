@@ -487,7 +487,7 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.idPlaylist > 0) {
 			for (const kara of karas.content) {
 				if (kara?.flag_playing) {
-					store.setPosPlaying(kara.pos);
+					store.setPosPlaying(kara.pos, this.props.side);
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
 					}
@@ -529,7 +529,7 @@ class Playlist extends Component<IProps, IState> {
 				} else if (kara?.playlistcontent_id === data.plc_id) {
 					kara.flag_playing = true;
 					indexPlaying = index;
-					store.setPosPlaying(kara.pos);
+					store.setPosPlaying(kara.pos, this.props.side);
 					if (this.state.goToPlaying) this.setState({ scrollToIndex: index, _goToPlaying: true });
 					this.setState({ playing: indexPlaying });
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
@@ -756,7 +756,7 @@ class Playlist extends Component<IProps, IState> {
 			if (newIndex > oldIndex)
 				apiIndex = apiIndex + 1;
 
-			axios.put('/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
+			axios.put(`/playlists/${this.state.idPlaylist}/karas/${playlistcontent_id}`, { pos: apiIndex });
 
 			let karas: Array<KaraElement> = [];
 			if (oldIndex < newIndex) {

@@ -157,7 +157,9 @@
 		"VISIBLE_OFF": "Hide in playlist",
 		"VISIBLE_OFF_SHORT": "Hide",
 		"ADD_BLACKLIST": "Add to blacklist",
-		"ADD_WHITELIST": "Add to whitelist"
+		"ADD_WHITELIST": "Add to whitelist",
+		"TRANSFER_KARA": "Transfer this song - right click to transfer it after the currently playing song",
+		"MOVE_KARA": "Move after current song"
 	},
 	"FLAGS": {
 		"PUBLIC": "Public",
@@ -240,7 +242,6 @@
 	"TOOLTIP_ADD_SELECT_KARA": "Add selected songs to the playlist - right click to append it after the currently playing song",
 	"TOOLTIP_DELETEKARA": "Delete this song",
 	"TOOLTIP_DELETE_SELECT_KARA": "Delete selected songs",
-	"TOOLTIP_TRANSFERKARA": "Transfer this song - right click to transfer it after the currently playing song",
 	"TOOLTIP_TRANSFER_SELECT_KARA": "Transfer selected songs - right click to transfer it after the currently playing song",
 	"TOOLTIP_CLOSEPARENT": "Close",
 	"TOOLTIP_FAV": "Add to favorites",
