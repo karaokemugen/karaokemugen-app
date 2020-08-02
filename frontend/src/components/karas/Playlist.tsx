@@ -460,7 +460,7 @@ class Playlist extends Component<IProps, IState> {
 			data.data = this.state.data;
 			if (data?.data?.infos) data.data.infos.from = 0;
 			this.setState({ searchType: searchType });
-		} else if (stateData && stateData.infos && stateData.infos.from == 0) {
+		} else if (stateData?.infos?.from === 0) {
 			data.searchType = undefined;
 		}
 		let url: string = this.getPlaylistUrl();
@@ -485,7 +485,6 @@ class Playlist extends Component<IProps, IState> {
 		const response = await axios.get(url);
 		const karas: KaraList = response.data;
 		if (this.state.idPlaylist > 0) {
-			let i = 0;
 			for (const kara of karas.content) {
 				if (kara?.flag_playing) {
 					store.setPosPlaying(kara.pos);
@@ -493,7 +492,6 @@ class Playlist extends Component<IProps, IState> {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
 					}
 				}
-				i++;
 			}
 		}
 		if (karas.infos && karas.infos.from > 0) {
@@ -549,9 +547,9 @@ class Playlist extends Component<IProps, IState> {
 		const stateData = this.state.data as KaraList;
 		if (this.state.idPlaylist && stateData && stateData.infos && stateData.infos.count) {
 			plInfos =
-				this.state.idPlaylist != -4 ? stateData.infos.from + '-' + stateData.infos.to : '';
+				this.state.idPlaylist !== -4 ? stateData.infos.from + '-' + stateData.infos.to : '';
 			plInfos +=
-				(this.state.idPlaylist != -4
+				(this.state.idPlaylist !== -4
 					? ' / ' +
 					stateData.infos.count +
 					(!is_touch_device() ? ' karas' : '')
@@ -628,7 +626,7 @@ class Playlist extends Component<IProps, IState> {
 		axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: (store.getLogInfos() as Token).username });
 	};
 
-	addCheckedKaras = async (event?: any, pos?: number) => {
+	addCheckedKaras = async (_event?: any, pos?: number) => {
 		const stateData = this.state.data as KaraList;
 		const listKara = stateData.content.filter(a => a.checked);
 		if (listKara.length === 0) {
@@ -653,13 +651,13 @@ class Playlist extends Component<IProps, IState> {
 					data = { requestedby: (store.getLogInfos() as Token).username, kid: idKara };
 				}
 			}
-		} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
+		} else if (this.props.idPlaylistTo === -2 || this.props.idPlaylistTo === -4) {
 			url = `/blacklist/set/${store.getCurrentBlSet()}/criterias`;
 			data = { blcriteria_type: 1001, blcriteria_value: idKara };
-		} else if (this.props.idPlaylistTo == -3) {
+		} else if (this.props.idPlaylistTo === -3) {
 			url = '/whitelist';
 			data = { kid: idKara };
-		} else if (this.props.idPlaylistTo == -5) {
+		} else if (this.props.idPlaylistTo === -5) {
 			url = '/favorites';
 			data = { kid: stateData.content.filter(a => a.checked).map(a => a.kid) };
 		}
@@ -696,10 +694,10 @@ class Playlist extends Component<IProps, IState> {
 			const idKaraPlaylist = listKara.map(a => a.playlistcontent_id);
 			url = '/playlists/' + this.state.idPlaylist + '/karas/';
 			data = { plc_id: idKaraPlaylist };
-		} else if (this.state.idPlaylist == -3) {
+		} else if (this.state.idPlaylist === -3) {
 			url = '/whitelist';
 			data = { kid: listKara.map(a => a.kid) };
-		} else if (this.state.idPlaylist == -5) {
+		} else if (this.state.idPlaylist === -5) {
 			url = '/favorites';
 			data = { kid: listKara.map(a => a.kid) };
 		}
@@ -764,16 +762,16 @@ class Playlist extends Component<IProps, IState> {
 		}
 	}
 
-	debounceClear = (e: any) => {
+	debounceClear = () => {
 		this.setState(() => {
 			return { _goToPlaying: false };
 		});
 	}
 	debouncedClear = debounce(this.debounceClear, 500, { maxWait: 1000 });
 
-	clearScrollToIndex = (e: any) => {
+	clearScrollToIndex = () => {
 		if (this.state._goToPlaying) {
-			this.debouncedClear(e);
+			this.debouncedClear();
 		} else {
 			this.setState({ scrollToIndex: -1, goToPlaying: false, _goToPlaying: false });
 		}
