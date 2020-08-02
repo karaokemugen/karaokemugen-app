@@ -3,7 +3,7 @@
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.yml to bypass the default values.
-import { bools } from '../lib/utils/constants';
+import {bools, hostnameRegexp, uuidRegexp} from '../lib/utils/constants';
 import {Config} from '../types/config';
 
 const dbConfig = process.platform === 'linux'
@@ -276,22 +276,29 @@ export const defaults: Config = {
 			Jingles: process.platform === 'win32' ? ['jingles', 'jingles\\KaraokeMugen'] : ['jingles', 'jingles/KaraokeMugen'],
 			Outros: process.platform === 'win32' ? ['outros', 'outros\\KaraokeMugen'] : ['outros', 'outros/KaraokeMugen'],
 			Sponsors: process.platform === 'win32' ? ['sponsors', 'sponsors\\KaraokeMugen'] : ['sponsors', 'sponsors/KaraokeMugen'],
-			Temp: 'temp'
+			Temp: 'temp',
+			Previews: 'previews'
 		}
 	}
 };
 
 const horizontalPosArray = ['Left', 'Right', 'Center'];
 const verticalPosArray = ['Top', 'Bottom', 'Center'];
+const hwdecModes = ['auto-safe', 'no', 'yes'];
+const endOfPlaylistActions = ['random', 'repeat', 'none'];
 
 /** Config constraints. */
 export const configConstraints = {
 	'App.FirstRun': {inclusion : bools},
 	'App.QuickStart': {inclusion : bools},
+	// 'App.InstanceID': {presence: true, format: new RegExp(uuidRegexp)}, // Broken on regular installations since InstanceID is stored in database
 	'Online.Stats': {boolUndefinedValidator: true},
-	'Online.Host': {presence: true},
+	'Online.ErrorTracking': {boolUndefinedValidator: true},
+	'Online.Host': {presence: true, format: hostnameRegexp},
+	'Online.MediasHost': {format: hostnameRegexp},
 	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
+	'Online.Discord.DisplayActivity': {inclusion: bools},
 	'Online.Updates.Medias.Jingles': {inclusion : bools},
 	'Online.Updates.Medias.Outros': {inclusion : bools},
 	'Online.Updates.Medias.Encores': {inclusion : bools},
@@ -319,7 +326,6 @@ export const configConstraints = {
 	'Karaoke.StreamerMode.Enabled': {inclusion: bools},
 	'Karaoke.StreamerMode.PauseDuration': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Karaoke.StreamerMode.Twitch.Enabled': {inclusion: bools},
-	'Karaoke.Private': {inclusion : bools},
 	'Karaoke.SmartInsert': {inclusion : bools},
 	'Karaoke.Poll.Choices': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Karaoke.Poll.Timeout': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
@@ -342,11 +348,13 @@ export const configConstraints = {
 	'Player.StayOnTop': {inclusion : bools},
 	'Player.Screen': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Player.VisualizationEffects': {inclusion : bools},
-	'Player.ProgressBarDock': {inclusion : bools},
 	'Player.PIP.Enabled': {inclusion : bools},
 	'Player.PIP.PositionX': {inclusion : horizontalPosArray},
 	'Player.PIP.PositionY': {inclusion : verticalPosArray},
 	'Player.PIP.Size': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100}},
+	'Player.ProgressBarDock': {inclusion : bools},
+	'Player.Volume': {numericality: {greaterThanOrEqualTo: 0, lessThanOrEqualTo: 100}},
+	'Player.HardwareDecoding': {inclusion: hwdecModes},
 	'Playlist.AllowDuplicates': {inclusion : bools},
 	'Playlist.AllowDuplicateSeries': {inclusion : bools},
 	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
@@ -361,6 +369,8 @@ export const configConstraints = {
 	'Playlist.MysterySongs.AddedSongVisibilityAdmin': {inclusion: bools},
 	'Playlist.MysterySongs.AddedSongVisibilityPublic': {inclusion: bools},
 	'Playlist.MysterySongs.Labels': {arrayOneItemValidator: true},
+	'Playlist.EndOfPlaylistAction': {inclusion: endOfPlaylistActions},
+	'Playlist.RandomSongsAfterEndMessage': {inclusion: bools},
 	'System.Binaries.Player.Linux': {presence: true},
 	'System.Binaries.Player.Windows': {presence: true},
 	'System.Binaries.Player.OSX': {presence: true},
@@ -379,7 +389,8 @@ export const configConstraints = {
 	'System.Path.Intros': {arrayOneItemValidator: true},
 	'System.Path.Sponsors': {arrayOneItemValidator: true},
 	'System.Path.Outros': {arrayOneItemValidator: true},
-	'System.Path.Import': {presence: true},
 	'System.Path.Temp': {presence: true},
+	'System.Path.Previews': {presence: true},
+	'System.Path.Import': {presence: true},
 	'System.Repositories': {repositoriesValidator: true}
 };
