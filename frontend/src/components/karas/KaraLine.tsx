@@ -5,12 +5,14 @@ import ReactDOM from 'react-dom';
 import { SortableHandle } from 'react-sortable-hoc';
 
 import { DBKaraTag } from '../../../../src/lib/types/database/kara';
+import { Tag } from '../../../../src/lib/types/tag';
 import { Token } from '../../../../src/lib/types/user';
 import { Config } from '../../../../src/types/config';
 import { DBBlacklist } from '../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../src/types/database/playlist';
 import store from '../../store';
 import { KaraElement } from '../../types/kara';
+import { tagTypes } from '../../utils/tagTypes';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import { buildKaraTitle, displayMessage, getSerieLanguage, getTagInLanguage, is_touch_device, secondsTimeSpanToHMS } from '../tools';
 import ActionsButtons from './ActionsButtons';
@@ -39,7 +41,8 @@ interface IProps {
 }
 
 interface IState {
-	karaMenu: boolean
+	karaMenu: boolean;
+	problematic: boolean
 }
 
 const pathAvatar = '/avatars/';
@@ -48,7 +51,8 @@ class KaraLine extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			karaMenu: false
+			karaMenu: false,
+			problematic: this.isProblematic()
 		};
 	}
 
@@ -185,7 +189,18 @@ class KaraLine extends Component<IProps, IState> {
 		return <div key={tag.name} className="tag" title={this.getTagInLocale(tag)}>{tag.short ? tag.short : '?'}</div>;
 	}) : [];
 
-	karaTitle = buildKaraTitle(this.props.kara, undefined, this.props.i18nTag);
+	karaTitle = buildKaraTitle(this.props.kara, false, this.props.i18nTag);
+
+	isProblematic = () => {
+		let problematic = false;
+		for (const tagType of Object.keys(tagTypes)) {
+			if ((this.props.kara[tagType.toLowerCase()] as unknown as Tag[])?.length > 0
+				&& this.props.kara[tagType.toLowerCase()].some((t: Tag) => t.problematic)) {
+				problematic = true;
+			}
+		}
+		return problematic;
+	}
 
 	getLangs(data: KaraElement) {
 		const isMulti = data.langs ? data.langs.find(e => e.name.indexOf('mul') > -1) : false;
@@ -274,7 +289,7 @@ class KaraLine extends Component<IProps, IState> {
 								}
 								{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
 							</div>
-							{scope === 'admin' && idPlaylist !== -2 && idPlaylist != -4 ?
+							{scope === 'admin' && idPlaylist !== -2 && idPlaylist !== -4 ?
 								<span className="checkboxKara" onClick={this.checkKara}>
 									{kara.checked ? <i className="far fa-check-square"></i>
 										: <i className="far fa-square"></i>}
@@ -305,7 +320,7 @@ class KaraLine extends Component<IProps, IState> {
 							</div>
 							{is_touch_device() ?
 								<div className="contentDiv contentDivMobile" onClick={this.toggleKaraDetail} tabIndex={1}>
-									<div className="disable-select contentDivMobileTop">
+									<div className={`disable-select contentDivMobileTop ${this.state.problematic ? 'problematic': ''}`}>
 										<div className="contentDivMobileFirstColumn">
 											<div>{this.karaLangs}</div>
 											<div>{this.karaSongTypes}</div>
@@ -333,7 +348,7 @@ class KaraLine extends Component<IProps, IState> {
 									</div>
 								</div> :
 								<div className="contentDiv" onClick={this.toggleKaraDetail} tabIndex={1}>
-									<div className="disable-select karaTitle">
+									<div className={`disable-select karaTitle ${this.state.problematic ? 'problematic': ''}`}>
 										{this.karaTitle}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"

@@ -55,7 +55,8 @@ export async function insertTag(tag: Tag) {
 		JSON.stringify(tag.aliases) || null,
 		tag.tagfile,
 		tag.repository,
-		tag.modified_at
+		tag.modified_at,
+		tag.problematic
 	]);
 }
 
@@ -100,7 +101,8 @@ export function updateTag(tag: Tag) {
 		tag.i18n || {},
 		tag.tid,
 		tag.repository,
-		tag.modified_at
+		tag.modified_at,
+		tag.problematic
 	]);
 }
 

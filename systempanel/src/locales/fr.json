@@ -195,7 +195,9 @@
 		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue.",
 		"REPOSITORY": "Dépôt",
 		"REPOSITORY_CHANGED": "Vous devez savoir ce que vous faites en le modifiant, car cela ne déplacera pas les fichiers de tags hors du dépôt pour vous, et cela n'affectera aucun karaoké qui y est lié.",
-		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire"
+		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
+		"PROBLEMATIC": "Problématique",
+		"PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique? Est-ce un tag qu'on voudra probablement bannir? Cela permet de marquer plus facilement les karas à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Epilepsie"
 	},
 	"TAG_TYPES": {
 		"SINGERS": "Chanteur",
