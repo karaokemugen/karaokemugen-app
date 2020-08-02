@@ -15,6 +15,7 @@ import { ip as whoisIP } from 'whoiser';
 import { listUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
+import {RecursivePartial} from '../lib/types';
 import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
 import {asyncCopy, asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
@@ -35,7 +36,6 @@ import {configConstraints, defaults} from './default_settings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import {getState, setState} from './state';
 import { initTwitch, stopTwitch } from './twitch';
-import {RecursivePartial} from '../lib/types';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: RecursivePartial<Config>) {

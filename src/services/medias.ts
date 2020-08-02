@@ -10,11 +10,11 @@ import { getMediaInfo } from '../lib/utils/ffmpeg';
 import {asyncCheckOrMkdir, asyncExists,asyncReadDir, asyncRemove,asyncStat, isMediaFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import {Config} from '../types/config';
 import { DBMedia } from '../types/database/medias';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
 import Downloader from '../utils/downloader';
-import {Config} from "../types/config";
 
 const medias = {
 	Intros: [] as Media[],

@@ -9,13 +9,13 @@ import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
+import {CurrentSong} from '../types/playlist';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {addPlayedKara, getKara, getKaras,getSeriesSingers} from './kara';
 import {getCurrentSong, getPlaylistInfo,nextSong, previousSong, setPlaying} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
-import {CurrentSong} from "../types/playlist";
 
 const sleep = promisify(setTimeout);
 

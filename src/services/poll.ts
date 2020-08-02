@@ -134,7 +134,7 @@ export async function getPollResults(): Promise<PollResults> {
 	};
 }
 
-export async function addPollVoteIndex(index: number, nickname: string) {
+export function addPollVoteIndex(index: number, nickname: string) {
 	try {
 		addPollVote(index, {
 			username: nickname,
