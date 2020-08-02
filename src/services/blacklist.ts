@@ -153,7 +153,7 @@ export async function initBlacklistSystem() {
 async function testCurrentBLCSet() {
 	const current_id = await getCurrentBLCSet();
 	if (current_id) {
-		setState({currentBLCSetID: current_id});
+		setState({currentBLCSetID: current_id.blc_set_id});
 	} else {
 		setState({currentBLCSetID: await createBLCSet({
 			name: 'Blacklist 1',

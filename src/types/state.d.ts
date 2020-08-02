@@ -81,7 +81,8 @@ export interface State {
 	},
 	args: string[],
 	environment: string,
-	sentrytest: boolean
+	sentrytest: boolean,
+	currentBLCSetID: number
 }
 
 export interface PublicState {

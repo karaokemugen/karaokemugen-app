@@ -935,12 +935,12 @@ class Players {
 		}
 	}
 
-	async toggleOnTop(): Promise<PlayerState> {
+	async toggleOnTop(): Promise<boolean> {
 		try {
 			await this.exec({command: ['set_property', 'ontop', !playerState.stayontop]});
 			playerState.stayontop = !playerState.stayontop;
 			emitPlayerState();
-			return playerState;
+			return playerState.stayontop;
 		} catch (err) {
 			logger.error('Unable to toggle ontop', {service: 'Player', obj: err});
 			sentry.error(err);

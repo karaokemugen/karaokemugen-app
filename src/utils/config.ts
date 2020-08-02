@@ -35,9 +35,10 @@ import {configConstraints, defaults} from './default_settings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import {getState, setState} from './state';
 import { initTwitch, stopTwitch } from './twitch';
+import {RecursivePartial} from '../lib/types';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
-export async function editSetting(part: any) {
+export async function editSetting(part: RecursivePartial<Config>) {
 	try {
 		const config = getConfig();
 		const oldConfig = cloneDeep(config);

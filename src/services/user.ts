@@ -949,10 +949,10 @@ export function resetSecurityCode() {
 	logger.warn(`SECURITY CODE RESET : ${getState().securityCode}`, {service: 'Users'});
 }
 
-function generateSecurityCode(): string {
-	return randomstring.generate({
+function generateSecurityCode(): number {
+	return parseInt(randomstring.generate({
 		length: 6,
 		charset: 'numeric'
-	});
+	}));
 }
 

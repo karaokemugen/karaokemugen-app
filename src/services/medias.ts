@@ -14,6 +14,7 @@ import { DBMedia } from '../types/database/medias';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
 import Downloader from '../utils/downloader';
+import {Config} from "../types/config";
 
 const medias = {
 	Intros: [] as Media[],
@@ -112,11 +113,9 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			: '/';
 		if (!conf.System.Path[type].includes(conf.System.Path[type][0] + slash + 'KaraokeMugen')) {
 			conf.System.Path[type].push(conf.System.Path[type][0] + slash + 'KaraokeMugen');
-			editSetting({ System:
-				{ Path:
-					conf.System.Path[type]
-				}
-			});
+			const ConfigPart: Partial<Config> = {};
+			ConfigPart.System.Path[type] = conf.System.Path[type];
+			editSetting(ConfigPart);
 		}
 		const localFiles = await listLocalFiles(localDir);
 		const removedFiles: File[] = [];

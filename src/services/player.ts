@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import merge from 'lodash.merge';
 import {promisify} from 'util';
 
 import Players from '../components/mpv';
@@ -13,6 +14,7 @@ import {addPlayedKara, getKara, getKaras,getSeriesSingers} from './kara';
 import {getCurrentSong, getPlaylistInfo,nextSong, previousSong,setPlaying} from './playlist';
 import {startPoll} from './poll';
 import {updateUserQuotas} from './user';
+import {CurrentSong} from "../types/playlist";
 
 const sleep = promisify(setTimeout);
 
@@ -27,7 +29,8 @@ export async function playSingleSong(kid?: string) {
 	try {
 		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
 		if (!kara) throw {code: 404, msg: 'KID not found'};
-		setState({singlePlay: true, currentSong: kara, randomPlaying: false});
+		const current: CurrentSong = merge(kara, {nickname: 'Admin', flag_playing: true, pos: 1, flag_free: false, flag_visible: false, username: 'admin', repo: kara.repository, playlistcontent_id: -1, playlist_id: -1});
+		setState({singlePlay: true, currentSong: current, randomPlaying: false});
 		stopAddASongMessage();
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
@@ -400,7 +403,7 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 	const state = getState();
 	if (state.player.playerStatus === 'stop' || now) {
-		setState({status: 'play', singlePlay: false, randomPlaying: false});
+		setState({singlePlay: false, randomPlaying: false});
 		await playCurrentSong(now);
 		stopAddASongMessage();
 	} else {
@@ -413,7 +416,7 @@ export async function stopPlayer(now = true) {
 	if (now || getState().stopping) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		await mpv.stop();
-		setState({status: 'stop', currentlyPlayingKara: null, randomPlaying: false, stopping: false});
+		setState({currentlyPlayingKara: null, randomPlaying: false, stopping: false});
 		stopAddASongMessage();
 		if (getConfig().Karaoke.ClassicMode) {
 			await prepareClassicPauseScreen();
@@ -443,7 +446,6 @@ export async function prepareClassicPauseScreen() {
 export async function pausePlayer() {
 	await mpv.pause();
 	logger.info('Karaoke paused', {service: 'Player'});
-	setState({status: 'pause'});
 }
 
 async function mutePlayer() {
