@@ -56,7 +56,7 @@ export async function insertTag(tag: Tag) {
 		tag.tagfile,
 		tag.repository,
 		tag.modified_at,
-		tag.problematic
+		tag.problematic || false
 	]);
 }
 
@@ -102,7 +102,7 @@ export function updateTag(tag: Tag) {
 		tag.tid,
 		tag.repository,
 		tag.modified_at,
-		tag.problematic
+		tag.problematic || false
 	]);
 }
 
