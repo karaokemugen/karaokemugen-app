@@ -182,7 +182,7 @@ class WelcomePage extends Component<IProps, IState> {
 					dateStr: new Date(
 						mast.body.rss.channel.item[i].pubDate._text
 					).toLocaleDateString(),
-					title: mast.body.rss.channel.item[i].title._text,
+					title: i18next.t('MASTODON_UPDATE'),
 					link: mast.body.rss.channel.item[i].link._text,
 					type: 'mast'
 				});
