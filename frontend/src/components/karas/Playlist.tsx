@@ -364,7 +364,7 @@ class Playlist extends Component<IProps, IState> {
 			} else {
 				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie))
 					&& this.props.playlistList.filter(playlist => playlist.playlist_id === Number(plVal1Cookie)).length > 0 ?
-					Number(plVal2Cookie) : store.getState().publicPlaylistID;
+					Number(plVal2Cookie) : store.getState().currentPlaylistID;
 			}
 		}
 		await this.setState({ idPlaylist: value });
