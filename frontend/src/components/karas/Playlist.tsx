@@ -619,8 +619,23 @@ class Playlist extends Component<IProps, IState> {
 		this.playlistForceRefresh(true);
 	};
 
+	getSearchTagForAddAll = () => {
+		const criterias: any = {
+			'year': 'y',
+			'tag': 't'
+		};
+		return (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) ?
+			`&searchType=${this.state.searchType}${
+				(this.state.searchCriteria && criterias[this.state.searchCriteria] 
+				&& this.state.searchValue) ?
+					`&searchValue=${criterias[this.state.searchCriteria]}:${this.state.searchValue}` 
+					: ''
+			}`
+			: '';
+	}
+
 	addAllKaras = async () => {
-		const response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
+		const response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}${this.getSearchTagForAddAll()}`);
 		const karaList = response.data.content.map((a: KaraElement) => a.kid);
 		displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', { count: response.data.content.length }));
 		axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: (store.getLogInfos() as Token).username });
