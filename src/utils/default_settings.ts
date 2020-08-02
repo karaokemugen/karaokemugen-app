@@ -3,7 +3,7 @@
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.yml to bypass the default values.
-import {bools, hostnameRegexp, uuidRegexp} from '../lib/utils/constants';
+import {bools, hostnameRegexp} from '../lib/utils/constants';
 import {Config} from '../types/config';
 
 const dbConfig = process.platform === 'linux'
