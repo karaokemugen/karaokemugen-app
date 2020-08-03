@@ -67,11 +67,10 @@ export function initFrontend(): number {
 				connectSrc: ['\'self\'', 'https:'],
 				sandbox: ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-modals'],
 				reportUri: process.env.SENTRY_CSP || sentryCSP,
-				upgradeInsecureRequests: false,
-				workerSrc: false  // This is not set.
+				upgradeInsecureRequests: ['false'],
+				workerSrc: ['false']  // This is not set.
 			},
-			reportOnly: true,
-			disableAndroid: true
+			reportOnly: true
 		});
 		app.use(cors());
 		app.use(passport.initialize());
