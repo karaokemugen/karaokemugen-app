@@ -155,10 +155,11 @@ class LoginModal extends Component<IProps, IState> {
 
 	callForgetPasswordApi = async () => {
 		if (this.state.login) {
-			await axios.post(`/users/${this.state.login}/resetpassword`, this.state.onlineSwitch ? {} : {
-				securityCode: this.state.securityCode,
-				password: this.state.password
-			});
+			await axios.post(`/users/${this.state.login}${this.state.onlineSwitch ? `@${this.state.serv}` : ''}/resetpassword`,
+				this.state.onlineSwitch ? {} : {
+					securityCode: this.state.securityCode,
+					password: this.state.password
+				});
 		}
 	}
 
@@ -250,13 +251,13 @@ class LoginModal extends Component<IProps, IState> {
 										`@${i18next.t('INSTANCE_NAME_SHORT')}` : ''}</label>
 									<div className="loginLine">
 										<input className={`${this.state.errorBackground}${this.state.onlineSwitch ? 'loginName' : ''}`}
-											type="text" defaultValue={this.state.login}	required autoFocus 
+											type="text" defaultValue={this.state.login} required autoFocus
 											onChange={(event) => this.setState({ login: event.target.value })} />
 										{this.state.onlineSwitch ? <React.Fragment>
 											<div className="arobase">@</div>
 											<input type="text" className="instanceName" defaultValue={this.state.serv}
-												onChange={(event) => this.setState({ serv: event.target.value })} /> 
-										</React.Fragment>: null}
+												onChange={(event) => this.setState({ serv: event.target.value })} />
+										</React.Fragment> : null}
 									</div>
 									<div>
 										<label className="loginLabel">{i18next.t('PASSWORD')}</label>
