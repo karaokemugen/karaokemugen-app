@@ -81,6 +81,7 @@ class AdminPage extends Component<IProps, IState> {
 		store.addChangeListener('loginUpdated', this.getPlaylistList);
 		getSocket().on('operatorNotificationInfo ', (data:{code: string, data: string}) => displayMessage('info', i18next.t(data.code)));
 		getSocket().on('operatorNotificationError', (data:{code: string, data: string}) => displayMessage('error', i18next.t(data.code)));
+		getSocket().on('notificationEndOfSessionNear', (data:string) => displayMessage('warning', i18next.t('NOTIFICATION.OPERATOR.INFO.END_OF_SESSION_NEAR', {data: data})));
 	}
 
 	componentWillUnmount() {

@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import { Avatar, Button, Checkbox, Divider, Layout, Modal, Table } from 'antd';
-
-import {Link} from 'react-router-dom';
-import i18next from 'i18next';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Avatar, Button, Checkbox, Divider, Layout, Modal, Table } from 'antd';
 import Axios from 'axios';
+import i18next from 'i18next';
+import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
+
 import { User } from '../../../../src/lib/types/user';
 import { getAxiosInstance } from '../../axiosInterceptor';
 
@@ -14,7 +14,7 @@ interface UserListState {
 	user: User,
 }
 
-class UserList extends Component<{}, UserListState> {
+class UserList extends Component<unknown, UserListState> {
 
 	constructor(props) {
 		super(props);
@@ -30,7 +30,7 @@ class UserList extends Component<{}, UserListState> {
 	}
 
 	refresh = async () => {
-		let res = await Axios.get('/users');
+		const res = await Axios.get('/users');
 		this.setState({users: res.data});
 	}
 
@@ -101,7 +101,7 @@ class UserList extends Component<{}, UserListState> {
 		title: i18next.t('USERS.LAST_LOGIN_AT'),
 		dataIndex: 'last_login_at',
 		key: 'last_login_at',
-		render: (date) => (new Date(date)).toLocaleString('en'),
+		render: (date) => (new Date(date)).toLocaleString(),
 		sorter: (a,b) => a.last_login - b.last_login
 	}, {
 		title: i18next.t('USERS.FLAG_ONLINE'),
