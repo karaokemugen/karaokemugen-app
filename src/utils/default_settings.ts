@@ -113,6 +113,7 @@ export const defaults: Config = {
 		Autoplay: false,
 		ClassicMode: false,
 		SmartInsert: false,
+		MinutesBeforeEndOfSessionWarning: 15,
 		Display: {
 			Avatar: true,
 			Nickname: true,
@@ -323,6 +324,7 @@ export const configConstraints = {
 	'GUI.OpenInElectron': {inclusion: bools},
 	'Karaoke.Autoplay': {inclusion : bools},
 	'Karaoke.ClassicMode': {inclusion : bools},
+	'Karaoke.MinutesBeforeEndOfSessionWarning': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Karaoke.StreamerMode.Enabled': {inclusion: bools},
 	'Karaoke.StreamerMode.PauseDuration': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Karaoke.StreamerMode.Twitch.Enabled': {inclusion: bools},

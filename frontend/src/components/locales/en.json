@@ -300,7 +300,8 @@
 			"LABELS_MYSTERY_SONGS_ADD": "Add",
 			"LABELS_MYSTERY_SONGS_DELETE": "Remove",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
-			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song"
+			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning on end of session X minutes before end"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -397,7 +398,7 @@
 	"MAIN_SERIES_LANG": "Series name language",
 	"FALLBACK_SERIES_LANG": "Fallback series name language",
 	"ACTIVE_SESSION": "Active Session : ",
-	"PRIVATE_SESSION" : "Private? ",
+	"EDIT_SESSION" : "Edit session",
 	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
 	"ESSENTIAL_MESSAGE": "Essential message",
@@ -541,7 +542,8 @@
 			"INFO": {
 				"PLAYER_RESTARTING": "Restarting media player...",
 				"POLL_WINNER": "People voted for a new song!",
-				"POLL_STARTING": "Starting poll"
+				"POLL_STARTING": "Starting poll",
+				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes."
 			}
 		}
 	},
