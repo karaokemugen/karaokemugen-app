@@ -147,7 +147,9 @@
 		"VISIBLE_OFF": "Cacher dans la liste de lecture",
 		"VISIBLE_OFF_SHORT": "Cacher",
 		"ADD_BLACKLIST": "Ajouter à la liste noire",
-		"ADD_WHITELIST": "Ajouter à la liste blanche"
+		"ADD_WHITELIST": "Ajouter à la liste blanche",
+		"TRANSFER_KARA": "Transférer cette chanson en face - clic droit la transfére après la chanson en cours",
+		"MOVE_KARA": "Déplacer après la chanson en cours"
 	},
 	"FLAGS": {
 		"PUBLIC": "Publique",
@@ -244,12 +246,11 @@
 	"PROFILE_PASSWORD": "Mot de passe",
 	"PROFILE_PASSWORD_AGAIN": "Retapez votre mot de passe",
 	"TOOLTIP_ADDKARA": "Ajouter cette chanson à la liste",
-	"TOOLTIP_ADDKARA_ADMIN": "clic droit l'ajoute après le morceau en cours",
-	"TOOLTIP_ADD_SELECT_KARA": "Ajouter les chansons sélectionnées à la liste - clic droit les ajoute après le morceau en cours",
+	"TOOLTIP_ADDKARA_ADMIN": "clic droit l'ajoute après la chanson en cours",
+	"TOOLTIP_ADD_SELECT_KARA": "Ajouter les chansons sélectionnées à la liste - clic droit les ajoute après la chanson en cours",
 	"TOOLTIP_DELETEKARA": "Supprimer cette chanson",
 	"TOOLTIP_DELETE_SELECT_KARA": "Supprimer les chansons sélectionnées",
-	"TOOLTIP_TRANSFERKARA": "Transférer cette chanson - clic droit le transfére après le morceau en cours",
-	"TOOLTIP_TRANSFER_SELECT_KARA": "Transférer les chansons sélectionnées - clic droit les transfére après le morceau en cours",
+	"TOOLTIP_TRANSFER_SELECT_KARA": "Transférer les chansons sélectionnées - clic droit les transfére après la chanson en cours",
 	"TOOLTIP_CLOSEPARENT": "Fermer",
 	"TOOLTIP_FAV": "Ajouter aux favoris",
 	"TOOLTIP_FAV_DEL": "Retirer des favoris",
@@ -309,7 +310,8 @@
 			"LABELS_MYSTERY_SONGS_ADD": "Ajouter",
 			"LABELS_MYSTERY_SONGS_DELETE": "Supprimer",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
-			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Chanson mystère"
+			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Chanson mystère",
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Afficher la notification de fin de session X minutes avant la fin"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -387,6 +389,7 @@
 	"KARA_SUGGESTION_LINK_LIST": "liste des issues",
 	"BASE_UPDATE": "Nouvelles de la base",
 	"APP_UPDATE": "Nouvelle version de l'application",
+	"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
 	"ONLINE_STATS": {
 		"TITLE": "Statistiques",
 		"INTRO": "Karaoke Mugen peut envoyer des informations anonymisées sur votre instance à Karaoke Mugen Server afin d'établir des statistiques d'utilisation.",
@@ -411,7 +414,7 @@
 	"MAIN_SERIES_LANG": "Langue des noms de séries",
 	"FALLBACK_SERIES_LANG": "Langue de secours des noms de séries",
 	"ACTIVE_SESSION": "Session Active : ",
-	"PRIVATE_SESSION" : "Privée ? ",
+	"EDIT_SESSION" : "Editer la session",
 	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
 	"ESSENTIAL_MESSAGE": "Message indispensable",
@@ -555,7 +558,8 @@
 			"INFO": {
 				"PLAYER_RESTARTING": "Redémarrage du lecteur vidéo...",
 				"POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
-				"POLL_STARTING": "Démarrage du sondage"
+				"POLL_STARTING": "Démarrage du sondage",
+				"END_OF_SESSION_NEAR": "La session de karaoké doit se terminer dans {{data}} minutes."
 			}
 		}
 	},
@@ -569,7 +573,7 @@
 		"BLC_ADD_ERROR": "Le critère de liste noire ne peut pas être ajouté",
 		"BLC_DELETE_ERROR": "Erreur lors de la suppression du critère de liste noire",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Mauvais code de sécurité",
-		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer ce morceau",
+		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer cette chanson",
 		"PL_VIEW_SONGS_ERROR": "Erreur au chargement de la liste de lecture",
 		"SONG_LIST_ERROR": "Erreur au chargement de la bibliothèque",
 		"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture",

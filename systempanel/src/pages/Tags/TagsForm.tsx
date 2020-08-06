@@ -1,5 +1,5 @@
 import { MinusCircleOutlined,PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Cascader, Col, Divider,Form, Input, message, Row, Select, Tag, Tooltip } from 'antd';
+import { Alert, Button, Cascader, Checkbox,Col, Divider,Form, Input, message, Row, Select, Tag, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import Axios from 'axios';
 import i18next from 'i18next';
@@ -130,7 +130,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			types: this.props.tag?.types ? this.props.tag.types : [],
 			repository: this.props.tag?.repository ? this.props.tag.repository :
 				(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
-			aliases: this.props.tag?.aliases
+			aliases: this.props.tag?.aliases,
+			problematic: this.props.tag?.problematic
 		};
 		for (const lang of this.state.i18n) {
 			initialValues['lang_' + lang] = this.props.tag?.i18n[lang];
@@ -244,7 +245,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						onChange={(tags) => this.formRef.current.setFieldsValue({ aliases: tags })}
 					/>
 				</Form.Item>
-
 				<Form.Item
 					labelCol={{ flex: '150px' }}
 					label={(<span>{i18next.t('TAGS.I18N')}&nbsp;
@@ -304,6 +304,20 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							<PlusOutlined />{i18next.t('ADD')}
 						</Tag>
 					}
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>{i18next.t('TAGS.PROBLEMATIC')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.PROBLEMATIC_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ flex: '0 1 200px' }}
+					valuePropName="checked"
+					name="problematic"
+				>
+					<Checkbox />
 				</Form.Item>
 				<Form.Item wrapperCol={{ flex: '45%' }} style={{ textAlign: 'right' }}>
 					<Button type='primary' htmlType='submit'

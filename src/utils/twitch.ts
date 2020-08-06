@@ -54,12 +54,13 @@ function listenVoteEvents(chat: Client) {
 		if (msg.startsWith('!vote ')) {
 			const choice = msg.split(' ')[1];
 			if (!isNaN(+choice)) {
-				addPollVoteIndex(+choice, context.username)
-					.catch(err => {
-						if (err === 'POLL_VOTE_ERROR') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.INVALID_CHOICE')}`);
-						if (err === 'POLL_NOT_ACTIVE') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.NO_ACTIVE_POLL')}`);
-						if (err === 'POLL_USER_ALREADY_VOTED') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.YOU_ALREADY_VOTED')}`);
-					});
+				try {
+					addPollVoteIndex(+choice, context.username);
+				} catch (err) {
+					if (err === 'POLL_VOTE_ERROR') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.INVALID_CHOICE')}`);
+					if (err === 'POLL_NOT_ACTIVE') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.NO_ACTIVE_POLL')}`);
+					if (err === 'POLL_USER_ALREADY_VOTED') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.YOU_ALREADY_VOTED')}`);
+				}
 			}
 		}
 	});

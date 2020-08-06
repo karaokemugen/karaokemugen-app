@@ -1,4 +1,4 @@
-import { DBUserBase } from "../../lib/types/database/user";
+import { DBUserBase } from '../../lib/types/database/user';
 
 export interface DBGuest extends DBUserBase {
 	available: boolean

@@ -157,7 +157,9 @@
 		"VISIBLE_OFF": "Hide in playlist",
 		"VISIBLE_OFF_SHORT": "Hide",
 		"ADD_BLACKLIST": "Add to blacklist",
-		"ADD_WHITELIST": "Add to whitelist"
+		"ADD_WHITELIST": "Add to whitelist",
+		"TRANSFER_KARA": "Transfer this song - right click to transfer it after the currently playing song",
+		"MOVE_KARA": "Move after current song"
 	},
 	"FLAGS": {
 		"PUBLIC": "Public",
@@ -240,7 +242,6 @@
 	"TOOLTIP_ADD_SELECT_KARA": "Add selected songs to the playlist - right click to append it after the currently playing song",
 	"TOOLTIP_DELETEKARA": "Delete this song",
 	"TOOLTIP_DELETE_SELECT_KARA": "Delete selected songs",
-	"TOOLTIP_TRANSFERKARA": "Transfer this song - right click to transfer it after the currently playing song",
 	"TOOLTIP_TRANSFER_SELECT_KARA": "Transfer selected songs - right click to transfer it after the currently playing song",
 	"TOOLTIP_CLOSEPARENT": "Close",
 	"TOOLTIP_FAV": "Add to favorites",
@@ -299,7 +300,8 @@
 			"LABELS_MYSTERY_SONGS_ADD": "Add",
 			"LABELS_MYSTERY_SONGS_DELETE": "Remove",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
-			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song"
+			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning on end of session X minutes before end"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -370,6 +372,7 @@
 	"KARA_SUGGESTION_LINK": "You will soon be able to see it at this address :",
 	"KARA_SUGGESTION_LINK_LIST": "issues list",
 	"BASE_UPDATE": "Database update",
+	"MASTODON_UPDATE": "Karaoke Mugen News",
 	"APP_UPDATE": "New version",
 	"ONLINE_STATS": {
 		"TITLE": "Stats",
@@ -395,7 +398,7 @@
 	"MAIN_SERIES_LANG": "Series name language",
 	"FALLBACK_SERIES_LANG": "Fallback series name language",
 	"ACTIVE_SESSION": "Active Session : ",
-	"PRIVATE_SESSION" : "Private? ",
+	"EDIT_SESSION" : "Edit session",
 	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
 	"ESSENTIAL_MESSAGE": "Essential message",
@@ -539,7 +542,8 @@
 			"INFO": {
 				"PLAYER_RESTARTING": "Restarting media player...",
 				"POLL_WINNER": "People voted for a new song!",
-				"POLL_STARTING": "Starting poll"
+				"POLL_STARTING": "Starting poll",
+				"END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes."
 			}
 		}
 	},

@@ -8,6 +8,7 @@ require('./ActionsButtons.scss');
 
 interface IProps {
 	scope: string;
+	side: number;
 	isHeader?: boolean;
 	idPlaylist: number;
 	idPlaylistTo: number;
@@ -23,14 +24,14 @@ class ActionsButtons extends Component<IProps, unknown> {
 		if (this.props.scope === 'admin') {
 			e.preventDefault();
 			e.stopPropagation();
-			this.props.addKara(e, store.getPosPlaying());
+			this.props.addKara(e, store.getPosPlayingOpposite(this.props.side));
 		}
 	};
 
 	onRightClickTransfer = (e: any) => {
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.transferKara(e, store.getPosPlaying());
+		this.props.transferKara(e, store.getPosPlayingOpposite(this.props.side));
 	};
 
 	render() {

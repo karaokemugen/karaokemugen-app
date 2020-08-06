@@ -323,9 +323,13 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 			port: portConfig,
 			stopPort: 7331
 		});
-		if (firstRun && port !== portConfig) {
-			logger.warn(`Port ${portConfig} is already in use. Switching to ${port} and saving configuration`, {service: 'Launcher'});
-			setConfig({Frontend: {Port: port}});
+		setState({frontendPort: port});
+		if (port !== portConfig) {
+			logger.warn(`Port ${portConfig} is already in use. Switching to ${port}`, {service: 'Launcher'});
+			if (firstRun) {
+				setConfig({Frontend: {Port: port}});
+				logger.warn('This is first run, saving port configuration', {service: 'Launcher'});
+			}
 		}
 	} catch(err) {
 		throw new Error('Failed to find a free port to use');

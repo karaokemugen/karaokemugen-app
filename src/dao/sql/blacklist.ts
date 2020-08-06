@@ -12,11 +12,11 @@ SELECT
 	modified_at
 FROM blacklist_criteria_set
 WHERE flag_current = TRUE;
-`
+`;
 export const sqlcopyBLCSet = `
 INSERT INTO blacklist_criteria(value, type, fk_id_blc_set)
 SELECT value, type, $2 FROM blacklist_criteria WHERE fk_id_blc_set = $1
-`
+`;
 
 export const sqldeleteSet = `
 DELETE FROM blacklist_criteria_set

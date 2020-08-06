@@ -1,4 +1,4 @@
-import Task from "../lib/utils/taskManager";
+import Task from '../lib/utils/taskManager';
 
 export interface DownloadItem {
 	url: string,

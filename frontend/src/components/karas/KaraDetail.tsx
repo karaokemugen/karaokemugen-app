@@ -1,13 +1,15 @@
+import './KaraDetail.scss';
+
 import axios from 'axios';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import React, { Component, MouseEvent } from 'react';
 import ReactDOM from 'react-dom';
 
 import { DBKaraTag, lastplayed_ago } from '../../../../src/lib/types/database/kara';
 import { Token } from '../../../../src/lib/types/user';
 import { DBPLCInfo } from '../../../../src/types/database/playlist';
 import store from '../../store';
-import { callModal, is_touch_device, secondsTimeSpanToHMS } from '../tools';
+import { callModal, getSerieLanguage, getTagInLanguage, is_touch_device, secondsTimeSpanToHMS } from '../tools';
 
 interface IProps {
 	kid: string | undefined;
@@ -135,17 +137,19 @@ class KaraDetail extends Component<IProps, IState> {
 	};
 
 	getTagInLocale = (e: DBKaraTag) => {
-		return e.i18n[store.getNavigatorLanguage() as string] ? e.i18n[store.getNavigatorLanguage() as string] : e.i18n['eng'];
+		return <span key={e.name} className={e.problematic ? 'problematicTag' : ''}>
+			{getTagInLanguage(e, store.getNavigatorLanguage(), 'eng')}
+		</span>;
 	};
 
 	getTagNames = (data: DBPLCInfo) => {
-		let tagNames: Array<string> = [];
+		let tagNames: any[] = [];
 		if (data.families) tagNames = tagNames.concat(data.families.map(e => this.getTagInLocale(e)));
 		if (data.platforms) tagNames = tagNames.concat(data.platforms.map(e => this.getTagInLocale(e)));
 		if (data.genres) tagNames = tagNames.concat(data.genres.map(e => this.getTagInLocale(e)));
 		if (data.origins) tagNames = tagNames.concat(data.origins.map(e => this.getTagInLocale(e)));
 		if (data.misc) tagNames = tagNames.concat(data.misc.map(e => this.getTagInLocale(e)));
-		return tagNames.join(', ');
+		return tagNames.reduce((acc, x) => acc === null ? [x] : [acc, ', ', x], null);
 	};
 
 	onClick = () => {
@@ -192,30 +196,38 @@ class KaraDetail extends Component<IProps, IState> {
 				DETAILS_LAST_PLAYED: data.lastplayed_ago
 					? this.getLastPlayed(data.lastplayed_at, data.lastplayed_ago)
 					: '',
-				BLCTYPE_6: data.authors.map(e => this.getTagInLocale(e)).join(', '),
+				BLCTYPE_6: data.authors.map(e => this.getTagInLocale(e))
+					.reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null),
 				DETAILS_VIEWS: data.played,
-				BLCTYPE_4: data.creators.map(e => this.getTagInLocale(e)).join(', '),
+				BLCTYPE_4: data.creators.map(e => this.getTagInLocale(e))
+					.reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null),
 				DETAILS_DURATION:
 					~~(data.duration / 60) +
 					':' +
 					(data.duration % 60 < 10 ? '0' : '') +
 					(data.duration % 60),
-				DETAILS_LANGUAGE: data.langs.map(e => this.getTagInLocale(e)).join(', '),
+				DETAILS_LANGUAGE: data.langs.map(e => this.getTagInLocale(e))
+					.reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null),
 				BLCTYPE_7: this.getTagNames(data),
-				BLCTYPE_1: data.series.map(e => this.getTagInLocale(e)).join(', '),
-				BLCTYPE_2: data.singers.map(e => this.getTagInLocale(e)).join(', '),
-				DETAILS_TYPE: data.songtypes.map(e => this.getTagInLocale(e)).join(', ')
-					+ (data.songorder > 0 ? ' ' + data.songorder : ''),
+				BLCTYPE_1: data.series.map(e => getSerieLanguage(e, data.langs[0].name))
+					.reduce((acc, x) => acc === null ? [x] : [acc, ', ', x], null),
+				BLCTYPE_2: data.singers.map(e => this.getTagInLocale(e))
+					.reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null),
+				DETAILS_TYPE: <React.Fragment>
+					{data.songtypes.map(e => this.getTagInLocale(e))
+						.reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null)}
+					<span>{data.songorder > 0 ? ' ' + data.songorder : ''}</span>
+				</React.Fragment>,
 				DETAILS_YEAR: data.year,
-				BLCTYPE_8: data.songwriters.map(e => this.getTagInLocale(e)).join(', ')
+				BLCTYPE_8: data.songwriters.map(e => this.getTagInLocale(e))
+					.reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null)
 			};
 			const htmlDetails = Object.keys(details).map(function (k: string) {
 				if (details[k]) {
-					const detailsLine = details[k].toString().replace(/,/g, ', ');
 					return (
 						<tr key={k}>
 							<td> {i18next.t(k)}</td>
-							<td> {detailsLine}</td>
+							<td> {details[k]}</td>
 						</tr>
 					);
 				} else {
@@ -327,9 +339,9 @@ class KaraDetail extends Component<IProps, IState> {
 							</table>
 						</div>
 						<div className="lyricsKara alert alert-info">
-							{data.subfile && this.state.lyrics?.map(ligne => {
+							{data.subfile && this.state.lyrics?.map((ligne, index) => {
 								return (
-									<React.Fragment key={Math.random()}>
+									<React.Fragment key={index}>
 										{ligne}
 										<br />
 									</React.Fragment>

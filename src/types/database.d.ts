@@ -15,5 +15,5 @@ export interface LangClause {
 
 export interface WhereClause {
 	sql: string[],
-	params: {}
+	params: Record<string,unknown>
 }

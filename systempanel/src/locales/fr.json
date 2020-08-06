@@ -195,7 +195,9 @@
 		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue.",
 		"REPOSITORY": "Dépôt",
 		"REPOSITORY_CHANGED": "Vous devez savoir ce que vous faites en le modifiant, car cela ne déplacera pas les fichiers de tags hors du dépôt pour vous, et cela n'affectera aucun karaoké qui y est lié.",
-		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire"
+		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
+		"PROBLEMATIC": "Problématique",
+		"PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique? Est-ce un tag qu'on voudra probablement bannir? Cela permet de marquer plus facilement les karas à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Epilepsie"
 	},
 	"TAG_TYPES": {
 		"SINGERS": "Chanteur",
@@ -248,12 +250,17 @@
 		}
 	},
 	"SESSIONS": {
+		"EXPORT": "Exporter",
 		"SESSION_EXPORTED_BUTTON": "Exporter les données en CSV",
 		"NAME": "Nom",
-		"STARTED_AT": "Commencée à",
+		"STARTED_AT": "Début à",
+		"ENDED_AT": "Finie à",
+		"START_AND_END_DATES": "Début et fin",
+		"START_DATE_REQUIRED": "La date de début est obligatoire",
 		"LAST_PLAYED_AT": "Dernier joué à",
 		"LAST_REQUESTED_AT": "Dernier demandé à",
 		"TITLE": "Titre",
+		"MERGE_SESSIONS": "Fusion de sessions",
 		"MERGE_WITH": "Fusion avec",
 		"MERGE_WITH_TOOLTIP": "Fusionner la session courante avec une autre",
 		"MERGE_WITH_SELECT": "Sélectionner une session",
@@ -451,6 +458,7 @@
 		"SESSION_EDIT_ERROR": "Erreur lors de l'édition de la session",
 		"SESSION_DELETE_ERROR": "Erreur lors de la suppression de la session",
 		"SESSION_EXPORT_ERROR": "Erreur lors de l'export de la session",
+		"SESSION_END_BEFORE_START_ERROR": "La fin de session est avant son début!",
 		"TAGS_LIST_ERROR": "Erreur lors de la récupération de la liste des tags",
 		"TAG_CREATE_ERROR": "Erreur lors de la création du tag",
 		"YEARS_LIST_ERROR": "Erreur lors de la récupération de la liste des années",

@@ -99,6 +99,8 @@ Karaoke:
   Repeat: false
   # In private mode try to insert songs in a smart way.
   SmartInsert: false
+  # Number of minutes before you should be warned your session is going to end
+  MinutesBeforeEndOfSessionWarning: 15
   Display:
     # Show nickname of the person who requested a song
     Nickname: true

@@ -9,7 +9,7 @@ import { Token } from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import {timer} from '../lib/utils/date';
 import logger from '../lib/utils/logger';
-import { on } from '../lib/utils/pubsub';
+import { emit,on } from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 import { DBPLC } from '../types/database/playlist';
 import { PollItem,PollResults } from '../types/poll';
@@ -90,6 +90,7 @@ export async function endPoll() {
 		}
 		pollEnding = true;
 		logger.debug('Ending poll', {service: 'Poll', obj: winner});
+		emit('songPollResult', winner);
 		emitWS('songPollResult', winner);
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_WINNER', winner));
 		stopPoll();
@@ -133,7 +134,7 @@ export async function getPollResults(): Promise<PollResults> {
 	};
 }
 
-export async function addPollVoteIndex(index: number, nickname: string) {
+export function addPollVoteIndex(index: number, nickname: string) {
 	try {
 		addPollVote(index, {
 			username: nickname,
