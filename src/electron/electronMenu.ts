@@ -8,7 +8,6 @@ import { resolve } from 'path';
 import {exit} from '../components/engine';
 import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { removeNulls } from '../lib/utils/object_helpers';
 import { getState } from '../utils/state';
 import {handleFile,win} from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
@@ -19,10 +18,6 @@ let menuItems: any;
 
 export function getMenu() {
 	return menuItems;
-}
-
-function isOpenElectron(): boolean {
-	return getConfig().GUI.OpenInElectron;
 }
 
 export function initMenu() {
@@ -51,76 +46,60 @@ export function initMenu() {
 			submenu: [
 				{
 					label: i18next.t('MENU_FILE_ABOUT'),
-					click() {
-						const version = getState().version;
-						const versionSHA = version.sha
-							? `version ${version.sha}`
-							: '';
-						openAboutWindow({
-							icon_path: resolve(getState().resourcePath, 'build/icon.png'),
-							product_name: `Karaoke Mugen "${version.name}"`,
-							bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
-							bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
-							homepage: 'https://mugen.karaokes.moe',
-							description: versionSHA,
-							copyright: 'by Karaoke Mugen Dev Team, under MIT license',
-							use_version_info: true,
-							css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
-						});
-
-					}
+					click: displayAbout
 				},
-				{ type: 'separator'},
-				isMac ? {
+				{ type: 'separator', visible: isMac },
+				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
 					accelerator: 'CmdOrCtrl+F',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.operatorOptions)
-							: open(urls.operatorOptions);
+					visible: isMac,
+					click: () => {
+						openURL(urls.operatorOptions);
 					}
-				} : null,
-				isMac ? {
+				},
+				{
 					label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG_OSX'),
 					accelerator: 'CmdOrCtrl+G',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.systemOptions)
-							: open(urls.systemOptions);
+					visible: isMac,
+					click: () => {
+						openURL(urls.systemOptions);
 					}
-				} : null,
-				isMac ? { type: 'separator' } : null,
-				!isMac && !getState().forceDisableAppUpdate ? {
+				},
+				{ type: 'separator', visible: isMac },
+				{
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
-					click: async () => {
-						setManualUpdate(true);
-						logger.info('Checking for updates manually', {service: 'AppUpdate'});
-						await autoUpdater.checkForUpdates();
-						setManualUpdate(false);
-					}
-				} : null,
-				isMac ? { role: 'services' } : null,
+					visible: !isMac && !getState().forceDisableAppUpdate,
+					click: checkForUpdates
+				},
+				{ role: 'services', visible: isMac },
 				{
 					label: i18next.t('MENU_FILE_IMPORT'),
-					async click() {
-						const files = await dialog.showOpenDialog({
-							properties: ['openFile', 'multiSelections']
-						});
-						if (!files.canceled) {
-							for (const file of files.filePaths) {
-								await handleFile(file);
-							}
-						}
-					}
+					type: 'submenu',
+					submenu: [
+						{
+							label: i18next.t('MENU_FILE_IMPORT_PLAYLIST'),
+							click: importFile
+						},
+						{
+							label: i18next.t('MENU_FILE_IMPORT_FAVORITES'),
+							click: importFile
+						},
+						{
+							label: i18next.t('MENU_FILE_IMPORT_KARABUNDLE'),
+							click: importFile
+						},
+						{
+							label: i18next.t('MENU_FILE_IMPORT_BLCSET'),
+							click: importFile
+						},
+					]
 				},
 				{ type: 'separator'},
 				{
 					label: isMac ? i18next.t('MENU_FILE_QUIT_OSX') : i18next.t('MENU_FILE_QUIT'),
 					accelerator: 'CmdOrCtrl+Q',
-					click() {
-						exit(0);
-					}
+					click: exit
 				}
 			]
 		},
@@ -132,18 +111,9 @@ export function initMenu() {
 		{
 			label: i18next.t('MENU_SECURITYCODE'),
 			submenu: [
-				{ label: i18next.t('MENU_SECURITYCODE_SHOW'), async click() {
-					const state = getState();
-					const buttons = await dialog.showMessageBox({
-						type: 'none',
-						title: i18next.t('SECURITY_CODE_TITLE'),
-						message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${state.securityCode}`,
-						buttons: [i18next.t('COPY_TO_CLIPBOARD'), i18next.t('IT_IS_IN_MY_HEAD')],
-					});
-					if (buttons.response === 0) {
-						clipboard.writeText(state.securityCode.toString());
-					}
-				}
+				{
+					label: i18next.t('MENU_SECURITYCODE_SHOW'),
+					click: getSecurityCode
 				}
 			]
 		},
@@ -177,37 +147,29 @@ export function initMenu() {
 				{
 					label: i18next.t('MENU_GOTO_HOME'),
 					accelerator: 'CmdOrCtrl+H',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.home)
-							: open(urls.home);
+					click: () => {
+						openURL(urls.home);
 					}
 				},
 				{
 					label: i18next.t('MENU_GOTO_OPERATOR'),
 					accelerator: 'CmdOrCtrl+O',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.operator)
-							: open(urls.operator);
+					click: () => {
+						openURL(urls.operator);
 					}
 				},
 				{
 					label: i18next.t('MENU_GOTO_SYSTEM'),
 					accelerator: 'CmdOrCtrl+S',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.system)
-							: open(urls.system);
+					click: () => {
+						openURL(urls.system);
 					}
 				},
 				{
 					label: i18next.t('MENU_GOTO_PUBLIC'),
 					accelerator: 'CmdOrCtrl+P',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.public)
-							: open(urls.public);
+					click: () => {
+						openURL(urls.public);
 					}
 				},
 			]
@@ -223,37 +185,29 @@ export function initMenu() {
 				{
 					label: i18next.t('MENU_TOOLS_LOGS'),
 					accelerator: 'CmdOrCtrl+L',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.logs)
-							: open(urls.logs);
+					click: () => {
+						openURL(urls.logs);
 					}
 				},
 				{
 					label: i18next.t('MENU_TOOLS_DOWNLOADS'),
 					accelerator: 'CmdOrCtrl+D',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.download)
-							: open(urls.download);
+					click: () => {
+						openURL(urls.download);
 					}
 				},
 				{
 					label: i18next.t('MENU_TOOLS_KARAOKES'),
 					accelerator: 'CmdOrCtrl+K',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.karas)
-							: open(urls.karas);
+					click: () => {
+						openURL(urls.karas);
 					}
 				},
 				{
 					label: i18next.t('MENU_TOOLS_DATABASE'),
 					accelerator: 'CmdOrCtrl+B',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.database)
-							: open(urls.database);
+					click: () => {
+						openURL(urls.database);
 					}
 				},
 			]
@@ -263,46 +217,44 @@ export function initMenu() {
 		* OPTIONS
 		*
 		*/
-		!isMac ? {
+		{
 			label: i18next.t('MENU_OPTIONS'),
+			visible: !isMac,
 			submenu: [
 				{
 					label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
 					type: 'checkbox',
-					checked: isOpenElectron(),
-					click() {
-						setConfig({ GUI: {OpenInElectron: !isOpenElectron()}});
+					checked: getConfig().GUI.OpenInElectron,
+					click: () => {
+						setConfig({ GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
 					}
 				},
-				!getState().forceDisableAppUpdate ? {
+				{
 					label: i18next.t('MENU_OPTIONS_CHECKFORUPDATES'),
 					type: 'checkbox',
 					checked: getConfig().Online.Updates.App,
-					click() {
-						setConfig({ Online: {Updates: { App: !getConfig().Online.Updates.App}}});
+					visible: !getState().forceDisableAppUpdate,
+					click: () => {
+						setConfig({Online: {Updates: { App: !getConfig().Online.Updates.App}}});
 					}
-				} : null,
+				},
 				{ type: 'separator' },
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
 					accelerator: 'CmdOrCtrl+F',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.operatorOptions)
-							: open(urls.operatorOptions);
+					click: () => {
+						openURL(urls.operatorOptions);
 					}
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG'),
 					accelerator: 'CmdOrCtrl+G',
-					click() {
-						isOpenElectron()
-							? win.loadURL(urls.systemOptions)
-							: open(urls.systemOptions);
+					click: () => {
+						openURL(urls.systemOptions);
 					}
 				},
 			]
-		} : null,
+		},
 		/**
 		*
 		* WINDOW MENU
@@ -312,15 +264,16 @@ export function initMenu() {
 			label: i18next.t('MENU_WINDOW'),
 			submenu: [
 				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
-				{ type: 'separator'},
-				isMac ? {
+				{ type: 'separator', visible: isMac },
+				{
 					label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
 					type: 'checkbox',
-					checked: isOpenElectron(),
-					click() {
-						setConfig({ GUI: {OpenInElectron: !isOpenElectron()}});
+					visible: isMac,
+					checked: getConfig().GUI.OpenInElectron,
+					click: () => {
+						setConfig({GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
 					}
-				} : null,
+				}
 			]
 		},
 		/**
@@ -421,5 +374,61 @@ export function initMenu() {
 				]
 			});
 	}
-	menuItems = removeNulls(menuItems);
+}
+
+function openURL(url: string) {
+	getConfig().GUI.OpenInElectron
+		? win.loadURL(url)
+		: open(url);
+}
+
+async function checkForUpdates() {
+	setManualUpdate(true);
+	logger.info('Checking for updates manually', {service: 'AppUpdate'});
+	await autoUpdater.checkForUpdates();
+	setManualUpdate(false);
+}
+
+async function importFile() {
+	const files = await dialog.showOpenDialog({
+		properties: ['openFile', 'multiSelections']
+	});
+	if (!files.canceled) {
+		for (const file of files.filePaths) {
+			await handleFile(file);
+		}
+	}
+}
+
+function displayAbout() {
+	{
+		const version = getState().version;
+		const versionSHA = version.sha
+			? `version ${version.sha}`
+			: '';
+		openAboutWindow({
+			icon_path: resolve(getState().resourcePath, 'build/icon.png'),
+			product_name: `Karaoke Mugen "${version.name}"`,
+			bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
+			bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
+			homepage: 'https://mugen.karaokes.moe',
+			description: versionSHA,
+			copyright: 'by Karaoke Mugen Dev Team, under MIT license',
+			use_version_info: true,
+			css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
+		});
+	}
+}
+
+async function getSecurityCode() {
+	const state = getState();
+	const buttons = await dialog.showMessageBox({
+		type: 'none',
+		title: i18next.t('SECURITY_CODE_TITLE'),
+		message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${state.securityCode}`,
+		buttons: [i18next.t('COPY_TO_CLIPBOARD'), i18next.t('IT_IS_IN_MY_HEAD')],
+	});
+	if (buttons.response === 0) {
+		clipboard.writeText(state.securityCode.toString());
+	}
 }

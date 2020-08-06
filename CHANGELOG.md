@@ -1,10 +1,37 @@
 # Versions
 
+## v4.1.4 "Ôgi Observatrice" - 16/08/2020
+
+### New features
+
+- Sessions can now have a end time. A warning is displayed on the operator screen when a session is near its end (warning time is configurable) (#765)
+- Songs can now be moved in a playlist and placed right after the currently playing song with one click (okay, two) (#763)
+- Karafun files can now be imported when they only contain metadata information, not video/song blobs (#733)
+- Added a filter field in system panel's configuration page (#730)
+- Some tags now have a "problematic" flag (Spoiler, Adults only and Epilepsy) which should allow you to recognize karaokes using them more easily in the list (#695)
+
+### Improvements
+
+- Polls now work if you're at the last song of a playlist (#753)
+- Configuration validation is now more complete and will prevent some errors (#750)
+- When KM's network port is busy, it uses a new one but won't save it to config file if it's not your first time running the app (#745)
+- Added check for PostgreSQL version when running the bundled one (#743)
+- Cleaned some database code (#742)
+
+
+### Fixes
+
+- Language order in filenames are now fixed when editing / creating songs (#767)
+- When using a filter on the library, using the "Add all songs" button now takes the filter into account (#762)
+- Fixed some series' name display bug (#757)
+- Mastodon toots are now displayed correctly (#754)
+
 ## v4.0.15 "Ôgi Obscure" - 26/07/2020
 
 We've made improvements and fixed bugs to make your Karaoke Mugen experience even better.
 
 ### New features
+
 - We are more compliant to Human Interface Guidelines for menu in Mac OS X #723
 - Add frontend notifications for non-API triggered events #744
 - Better explanation for delete account modal popup #735
