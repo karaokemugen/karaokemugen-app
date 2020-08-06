@@ -492,7 +492,23 @@ class KaraokeOptions extends Component<IProps, IState> {
 								</div>
 							</div>
 						</div> : null}
-
+					<div className="form-group">
+						<label className="col-xs-4 control-label">
+							{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')}
+			&nbsp;
+							<i className="far fa-question-circle"></i>
+						</label>
+						<div className="col-xs-6">
+							<input
+								type="number"
+								className="form-control"
+								id="Karaoke.MinutesBeforeSessionEndsWarning"
+								placeholder="15"
+								onChange={this.onChange}
+								value={this.state.config['Karaoke.MinutesBeforeSessionEndsWarning']}
+							/>
+						</div>
+					</div>
 					<div className="form-group">
 						<label className="col-xs-4 control-label">
 							{i18next.t('ENGINESONGPOLL')}

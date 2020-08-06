@@ -11,6 +11,7 @@ export interface Version {
 export interface State {
 	currentPlaylistID?: number,
 	currentSessionID?: string,
+	currentSessionEndsAt?: Date,
 	publicPlaylistID?: number,
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,

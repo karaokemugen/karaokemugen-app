@@ -1,28 +1,35 @@
-import React, {Component} from 'react';
-import { Button, Input, Table, Tooltip, Cascader, Checkbox,Form } from 'antd';
-import { buildKaraTitle } from '../../utils/kara';
-import i18next from 'i18next';
-import { Session } from '../../../../src/types/session';
-import { FormProps } from 'antd/lib/form';
-import { QuestionCircleOutlined, FileExcelOutlined } from '@ant-design/icons';
+import { FileExcelOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Cascader, Checkbox, DatePicker, Divider, Form, Input, Table, Tooltip } from 'antd';
+import { FormInstance,FormProps } from 'antd/lib/form';
 import Axios from 'axios';
+import i18next from 'i18next';
+import moment from 'moment';
+import React, { Component } from 'react';
+
 import { DBKara } from '../../../../src/lib/types/database/kara';
+import { Session } from '../../../../src/types/session';
 import GlobalContext from '../../store/context';
+import { buildKaraTitle } from '../../utils/kara';
 
 interface SessionsFormProps extends FormProps {
 	sessions: Array<Session>;
 	session: Session;
 	save: any;
-	mergeAction: (seid1:string, seid2:string) => void;
+	mergeAction: (seid1: string, seid2: string) => void;
 }
 
 interface SessionsFormState {
 	mergeSelection: string;
 	sessionPlayed: Array<DBKara>;
-	sessionRequested : Array<DBKara>;
+	sessionRequested: Array<DBKara>;
+	started_at: Date;
+	ended_at:Date;
 }
 
+const { RangePicker } = DatePicker;
+
 class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
+	formRef = React.createRef<FormInstance>();
 	static contextType = GlobalContext
 	context: React.ContextType<typeof GlobalContext>
 
@@ -31,57 +38,75 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 		this.state = {
 			mergeSelection: '',
 			sessionPlayed: [],
-			sessionRequested: []
+			sessionRequested: [],
+			started_at: this.props.session?.started_at,
+			ended_at: this.props.session?.ended_at
 		};
 	}
 
 	async componentDidMount() {
 		if (this.props.session.seid) {
-			let played = await Axios.get(`/karas/?searchType=sessionPlayed&searchValue=${this.props.session.seid}`)
-			let requested = await Axios.get(`/karas/?searchType=sessionRequested&searchValue=${this.props.session.seid}`)
-			this.setState({sessionPlayed: played.data.content, sessionRequested: requested.data.content});
+			const played = await Axios.get(`/karas/?searchType=sessionPlayed&searchValue=${this.props.session.seid}`);
+			const requested = await Axios.get(`/karas/?searchType=sessionRequested&searchValue=${this.props.session.seid}`);
+			this.setState({ sessionPlayed: played.data.content, sessionRequested: requested.data.content });
 		}
 	}
 
 	handleSessionMergeSelection = (value) => {
-		this.setState({mergeSelection:value[0]})
+		this.setState({ mergeSelection: value[0] });
 	}
-	handleSessionMerge = (e) => {
-		this.props.mergeAction(this.props.session.seid,this.state.mergeSelection)
+
+	handleSessionMerge = () => {
+		this.props.mergeAction(this.props.session.seid, this.state.mergeSelection);
 	}
+
 	mergeCascaderOption = () => {
 		return this.props.sessions.map(session => {
 			return {
-				value:session.seid,
-				label:session.name,
+				value: session.seid,
+				label: session.name,
 			};
-		})
+		});
 	}
 
-	mergeCascaderFilter = function(inputValue, path) {
-	  return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+	mergeCascaderFilter = function (inputValue, path) {
+		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	}
 
 	exportSession = async () => {
-		await Axios.get(`/sessions/${this.props.session.seid}/export`)
+		await Axios.get(`/sessions/${this.props.session.seid}/export`);
 	}
+
+	onSessionDateChange = async dates => {
+		await this.setState({ started_at: dates && dates[0] ? dates[0].format() : null, ended_at: dates && dates[1] ? dates[1].format() : null });
+		this.formRef.current.validateFields();
+	}
+
+	dateValidator = () => {
+		if (!this.state.started_at) {
+			return Promise.reject(i18next.t('SESSIONS.START_DATE_REQUIRED'));
+		} else {
+			return Promise.resolve();
+		}
+	};
+
+	handleSubmit = (values) => {
+		delete values.dates;
+		const session: Session = values;
+		session.seid = this.props.session?.seid;
+		session.started_at = this.state.started_at;
+		session.ended_at = this.state.ended_at;
+		this.props.save(session);
+	};
 
 	render() {
 		return (
-            <Form
-				onFinish={this.props.save}
+			<Form
+				ref={this.formRef}
+				onFinish={this.handleSubmit}
 				className='session-form'
 				initialValues={this.props.session}
 			>
-				{this.props.session.seid ?
-					<Form.Item
-						wrapperCol={{ span: 4, offset: 3 }}
-					>
-						<Button type='default' icon={<FileExcelOutlined />} onClick={this.exportSession}>
-							{i18next.t('SESSIONS.SESSION_EXPORTED_BUTTON')}
-						</Button>
-					</Form.Item> : null
-				}
 				<Form.Item hasFeedback
 					label={i18next.t('SESSIONS.NAME')}
 					labelCol={{ flex: '0 1 200px' }}
@@ -92,15 +117,22 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 					}]}
 					name="name"
 				>
-					<Input placeholder={i18next.t('SESSIONS.NAME')}/>
+					<Input placeholder={i18next.t('SESSIONS.NAME')} />
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('SESSIONS.STARTED_AT')}
+					label={i18next.t('SESSIONS.START_AND_END_DATES')}
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 10 }}
-					name="started_at"
+					rules={[{ validator: this.dateValidator }]}
+					name="dates"
 				>
-					<Input/>
+					<RangePicker
+						defaultValue={[moment(this.props.session.started_at), this.props.session.ended_at ? moment(this.props.session.ended_at) : null]}
+						showTime={{ format: 'HH:mm' }}
+						onChange={this.onSessionDateChange}
+						format="YYYY-MM-DD HH:mm"
+						allowEmpty={[false, true]}
+					/>
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('SESSIONS.ACTIVE')}
@@ -127,46 +159,55 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 				</Form.Item>
 				{this.props.session.seid ?
 					<React.Fragment>
-						<Form.Item hasFeedback
-						label={(
-							<span>{i18next.t('SESSIONS.MERGE_WITH')}&nbsp;
-								<Tooltip title={i18next.t('SESSIONS.MERGE_WITH_TOOLTIP')}>
-									<QuestionCircleOutlined />
-								</Tooltip>
-							</span>
-						)}
-						labelCol={{ flex: '0 1 200px' }}
-						wrapperCol={{ span: 8 }}
+						<Divider>{i18next.t('SESSIONS.EXPORT')}</Divider>
+						<Form.Item
+							wrapperCol={{ span: 4, offset: 3 }}
 						>
-							<Cascader options={this.mergeCascaderOption()} showSearch={{filter:this.mergeCascaderFilter}} 
+							<Button type='default' icon={<FileExcelOutlined />} onClick={this.exportSession}>
+								{i18next.t('SESSIONS.SESSION_EXPORTED_BUTTON')}
+							</Button>
+						</Form.Item>
+						<Divider>{i18next.t('SESSIONS.MERGE_SESSIONS')}</Divider>
+						<Form.Item hasFeedback
+							label={(
+								<span>{i18next.t('SESSIONS.MERGE_WITH')}&nbsp;
+									<Tooltip title={i18next.t('SESSIONS.MERGE_WITH_TOOLTIP')}>
+										<QuestionCircleOutlined />
+									</Tooltip>
+								</span>
+							)}
+							labelCol={{ flex: '0 1 200px' }}
+							wrapperCol={{ span: 8 }}
+						>
+							<Cascader options={this.mergeCascaderOption()} showSearch={{ filter: this.mergeCascaderFilter }}
 								onChange={this.handleSessionMergeSelection} placeholder={i18next.t('SESSIONS.MERGE_WITH_SELECT')} />
 						</Form.Item>
-					
+
 						<Form.Item
 							wrapperCol={{ span: 8, offset: 3 }}
-							style={{textAlign:"right"}}
-							>
+							style={{ textAlign: 'right' }}
+						>
 							<Button type="primary" danger onClick={this.handleSessionMerge}>
 								{i18next.t('SESSIONS.MERGE_WITH_BUTTON')}
 							</Button>
 						</Form.Item>
-				
+
 						<h1>{i18next.t('SESSIONS.KARA_PLAYED')}</h1>
 						<Table
-									dataSource={this.state.sessionPlayed}
-									columns={this.columns}
-									rowKey='kid'
+							dataSource={this.state.sessionPlayed}
+							columns={this.columns}
+							rowKey='kid'
 						/>
 						<h1>{i18next.t('SESSIONS.KARA_REQUESTED')}</h1>
 						<Table
-									dataSource={this.state.sessionRequested}
-									columns={this.columns}
-									rowKey='kid'
+							dataSource={this.state.sessionRequested}
+							columns={this.columns}
+							rowKey='kid'
 						/>
 					</React.Fragment> : null
 				}
 			</Form>
-        );
+		);
 	}
 
 	columns = [{

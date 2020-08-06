@@ -69,6 +69,7 @@ export interface Config {
 				Channel?: string
 			}
 		}
+		MinutesBeforeEndOfSessionWarning?: number,
 		Autoplay?: boolean,
 		SmartInsert?: boolean,
 		JinglesInterval?: number, // Obsolete since 3.1.1, replaced by Playlist.Medias.Jingles.Interval
