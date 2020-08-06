@@ -25,6 +25,17 @@ function isOpenElectron(): boolean {
 	return getConfig().GUI.OpenInElectron;
 }
 
+async function importFile() {
+	const files = await dialog.showOpenDialog({
+		properties: ['openFile', 'multiSelections']
+	});
+	if (!files.canceled) {
+		for (const file of files.filePaths) {
+			await handleFile(file);
+		}
+	}
+}
+
 export function initMenu() {
 	const port = getConfig().Frontend.Port;
 	const base = 'http://localhost';
@@ -103,16 +114,33 @@ export function initMenu() {
 				isMac ? { role: 'services' } : null,
 				{
 					label: i18next.t('MENU_FILE_IMPORT'),
-					async click() {
-						const files = await dialog.showOpenDialog({
-							properties: ['openFile', 'multiSelections']
-						});
-						if (!files.canceled) {
-							for (const file of files.filePaths) {
-								await handleFile(file);
+					type: 'submenu',
+					submenu: [
+						{
+							label: i18next.t('MENU_FILE_IMPORT_PLAYLIST'),
+							async click() {
+								await importFile();
 							}
-						}
-					}
+						},
+						{
+							label: i18next.t('MENU_FILE_IMPORT_FAVORITES'),
+							async click() {
+								await importFile();
+							}
+						},
+						{
+							label: i18next.t('MENU_FILE_IMPORT_KARABUNDLE'),
+							async click() {
+								await importFile();
+							}
+						},
+						{
+							label: i18next.t('MENU_FILE_IMPORT_BLCSET'),
+							async click() {
+								await importFile();
+							}
+						},
+					]
 				},
 				{ type: 'separator'},
 				{
