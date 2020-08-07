@@ -1,16 +1,29 @@
 import {notStrictEqual, strictEqual} from 'assert';
-const supertest = require('supertest');
-const port = 1337;
-let SETTINGS;
-const request = supertest(`http://localhost:${port}`);
+import supertest from 'supertest';
+
+import {Config} from '../src/types/config';
+import { getToken } from './util/util';
+
+let config: Config;
+
+export function getConfig(): Config {
+	return config;
+}
+
+export function setConfig(newConfig: Config) {
+	config = newConfig;
+}
+
+
+const request = supertest('http://localhost:1337');
 const usernameAdmin = 'adminTest';
 const passwordAdmin = 'ceciestuntest';
-let token;
-let current_playlist_id;
-let current_plc_id;
 
-describe('Auth', function() {
-	it('Login / Sign in (as guest)', function() {
+let currentPlaylistID: number;
+let currentPLCID: number;
+
+describe('Auth', () => {
+	it('Login / Sign in (as guest)', () => {
 		const data = {
 			fingerprint: '666'
 		};
@@ -25,7 +38,7 @@ describe('Auth', function() {
 				notStrictEqual(response.body.role, 'user');
 			});
 	});
-	it('Login / Sign in', function() {
+	it('Login / Sign in', () => {
 		const data = {
 			username: usernameAdmin,
 			password: passwordAdmin
@@ -36,13 +49,12 @@ describe('Auth', function() {
 			.send(data)
 			.expect(200)
 			.then(response => {
-				token = response.body.token;
 				strictEqual(response.body.username,data.username);
 				strictEqual(response.body.role, 'admin');
 			});
 	});
 
-	it('Login / Sign in Error 401', function() {
+	it('Login / Sign in Error 401', () => {
 		const data = {
 			username: '',
 			password: ''
@@ -57,8 +69,13 @@ describe('Auth', function() {
 	});
 });
 
-describe('Blacklist', function() {
-	it('Add a blacklist criteria', function() {
+
+describe('Blacklist', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Add a blacklist criteria', () => {
 		const data = {
 			'blcriteria_type': '1001',
 			'blcriteria_value': '5737c5b2-7ea4-414f-8c92-143838a402f6'
@@ -72,7 +89,7 @@ describe('Blacklist', function() {
 	});
 
 	let blc_id;
-	it('Get list of blacklist criterias', function() {
+	it('Get list of blacklist criterias', () => {
 		return request
 			.get('/api/blacklist/set/1/criterias')
 			.set('Accept', 'application/json')
@@ -85,7 +102,7 @@ describe('Blacklist', function() {
 			});
 	});
 
-	it('Get blacklist', function() {
+	it('Get blacklist', () => {
 		return request
 			.get('/api/blacklist')
 			.set('Accept', 'application/json')
@@ -97,7 +114,7 @@ describe('Blacklist', function() {
 			});
 	});
 
-	it('Delete a blacklist criteria', function() {
+	it('Delete a blacklist criteria', () => {
 		return request
 			.delete('/api/blacklist/set/1/criterias/'+blc_id)
 			.set('Accept', 'application/json')
@@ -105,7 +122,7 @@ describe('Blacklist', function() {
 			.expect(200);
 	});
 
-	it('Empty list of blacklist criterias', function() {
+	it('Empty list of blacklist criterias', () => {
 		return request
 			.put('/api/blacklist/set/1/criterias/empty')
 			.set('Accept', 'application/json')
@@ -114,8 +131,12 @@ describe('Blacklist', function() {
 	});
 });
 
-describe('Favorites', function() {
-	it('Add karaoke to your favorites', function() {
+describe('Favorites', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Add karaoke to your favorites', () => {
 		const data = {
 			kid: ['a6108863-0ae9-48ad-adb5-cb703651f6bf']
 		};
@@ -128,7 +149,7 @@ describe('Favorites', function() {
 	});
 
 	let favoritesExport;
-	it('Export favorites', function() {
+	it('Export favorites', () => {
 		return request
 			.get('/api/favorites/export')
 			.set('Authorization', token)
@@ -141,7 +162,7 @@ describe('Favorites', function() {
 			});
 	});
 
-	it('View own favorites', function() {
+	it('View own favorites', () => {
 		return request
 			.get('/api/favorites')
 			.set('Authorization', token)
@@ -153,7 +174,7 @@ describe('Favorites', function() {
 			});
 	});
 
-	it('Generate a automix playlist', function() {
+	it('Generate a automix playlist', () => {
 		const data = {
 			users: ['adminTest'],
 			duration: 5
@@ -166,7 +187,7 @@ describe('Favorites', function() {
 			.expect(201);
 	});
 
-	it('Delete karaoke from your favorites', function() {
+	it('Delete karaoke from your favorites', () => {
 		const data = {
 			kid: ['a6108863-0ae9-48ad-adb5-cb703651f6bf']
 		};
@@ -179,7 +200,7 @@ describe('Favorites', function() {
 	});
 
 
-	it('Import favorites', function() {
+	it('Import favorites', () => {
 		const data = {
 			favorites: JSON.stringify(favoritesExport)
 		};
@@ -195,8 +216,12 @@ describe('Favorites', function() {
 	});
 });
 
-describe('Karas information', function() {
-	it('Get a random karaoke ID', function() {
+describe('Karas information', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Get a random karaoke ID', () => {
 		return request
 			.get('/api/karas?random=1')
 			.set('Accept', 'application/json')
@@ -208,7 +233,7 @@ describe('Karas information', function() {
 			});
 	});
 
-	it('Get complete list of karaokes with Dragon Ball in their name', function() {
+	it('Get complete list of karaokes with Dragon Ball in their name', () => {
 		return request
 			.get('/api/karas?filter=Dragon%20Ball')
 			.set('Accept', 'application/json')
@@ -220,7 +245,7 @@ describe('Karas information', function() {
 			});
 	});
 
-	it('Get song info from database', function() {
+	it('Get song info from database', () => {
 		return request
 			.get('/api/karas/a6108863-0ae9-48ad-adb5-cb703651f6bf')
 			.set('Accept', 'application/json')
@@ -232,7 +257,7 @@ describe('Karas information', function() {
 			});
 	});
 
-	it('Get song lyrics', function() {
+	it('Get song lyrics', () => {
 		return request
 			.get('/api/karas/a6108863-0ae9-48ad-adb5-cb703651f6bf/lyrics')
 			.set('Accept', 'application/json')
@@ -246,9 +271,12 @@ describe('Karas information', function() {
 
 });
 
-describe('year', function() {
-
-	it('Get year list', function() {
+describe('year', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Get year list', () => {
 		return request
 			.get('/api/years')
 			.set('Accept', 'application/json')
@@ -262,8 +290,12 @@ describe('year', function() {
 	});
 });
 
-describe('Player', function() {
-	it('Get player status', function() {
+describe('Player', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Get player status', () => {
 		return request
 			.get('/api/player')
 			.set('Accept', 'application/json')
@@ -273,14 +305,18 @@ describe('Player', function() {
 	});
 });
 
-describe('Playlists', function() {
+describe('Playlists', () => {
 	let playlistExport;
 	let new_playlist_id;
 	let new_playlist_current_id;
 	let new_playlist_public_id;
 	let plc_id;
 	const playlist = 1;
-	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf to playlist '+playlist, function() {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf to playlist '+playlist, () => {
 		const data = {
 			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
@@ -293,7 +329,7 @@ describe('Playlists', function() {
 			.expect(201);
 	});
 
-	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf again to playlist '+playlist+' to see if it fails', function() {
+	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf again to playlist '+playlist+' to see if it fails', () => {
 		const data = {
 			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
@@ -309,7 +345,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add an unknown karaoke to playlist 1 to see if it fails', function() {
+	it('Add an unknown karaoke to playlist 1 to see if it fails', () => {
 		const data = {
 			'kid': 'c28c8739-da02-49b4-889e-b15d1e9b2132',
 			'requestedby': 'Test'
@@ -325,7 +361,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf to an unknown playlist to see if it fails', function() {
+	it('Add karaoke a6108863-0ae9-48ad-adb5-cb703651f6bf to an unknown playlist to see if it fails', () => {
 		const data = {
 			'kid': ['a6108863-0ae9-48ad-adb5-cb703651f6bf'],
 			'requestedby': 'Test'
@@ -341,7 +377,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Get list of karaokes in a playlist', function() {
+	it('Get list of karaokes in a playlist', () => {
 		return request
 			.get('/api/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
@@ -354,7 +390,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Create a playlist', function() {
+	it('Create a playlist', () => {
 		const playlist = {
 			name:'new_playlist',
 			flag_visible: true,
@@ -373,7 +409,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Create a CURRENT playlist', function() {
+	it('Create a CURRENT playlist', () => {
 		const playlist_current = {
 			name:'new_playlist',
 			flag_visible: true,
@@ -392,7 +428,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Create a PUBLIC playlist', function() {
+	it('Create a PUBLIC playlist', () => {
 		const playlist_public = {
 			name:'new_playlist',
 			flag_visible: true,
@@ -411,7 +447,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Copy karaokes to another playlist', function() {
+	it('Copy karaokes to another playlist', () => {
 		const data = {
 			plc_id: [plc_id]
 		};
@@ -423,7 +459,7 @@ describe('Playlists', function() {
 			.expect(201);
 	});
 
-	it('Add karaoke to public playlist', function() {
+	it('Add karaoke to public playlist', () => {
 		return request
 			.post('/api/karas/495e2635-38a9-42db-bdd0-df4d27329c87')
 			.set('Accept', 'application/json')
@@ -436,7 +472,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Delete a CURRENT playlist (should fail)', function() {
+	it('Delete a CURRENT playlist (should fail)', () => {
 		return request
 			.delete('/api/playlists/'+new_playlist_current_id)
 			.set('Accept', 'application/json')
@@ -447,7 +483,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Delete a PUBLIC playlist (should fail)', function() {
+	it('Delete a PUBLIC playlist (should fail)', () => {
 		return request
 			.delete('/api/playlists/'+new_playlist_public_id)
 			.set('Accept', 'application/json')
@@ -458,7 +494,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Delete karaokes from playlist', function() {
+	it('Delete karaokes from playlist', () => {
 		const data = {
 			'plc_id': [plc_id]
 		};
@@ -470,7 +506,7 @@ describe('Playlists', function() {
 			.expect(200);
 	});
 
-	it('Shuffle playlist 1', function() {
+	it('Shuffle playlist 1', () => {
 		return request
 			.put('/api/playlists/1/shuffle')
 			.set('Accept', 'application/json')
@@ -478,7 +514,7 @@ describe('Playlists', function() {
 			.expect(200);
 	});
 
-	it('Export a playlist', function() {
+	it('Export a playlist', () => {
 		return request
 			.get('/api/playlists/1/export')
 			.set('Accept', 'application/json')
@@ -492,7 +528,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Import a playlist', function() {
+	it('Import a playlist', () => {
 		const data = {
 			playlist: JSON.stringify(playlistExport)
 		};
@@ -508,7 +544,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Import a playlist Error 500', function() {
+	it('Import a playlist Error 500', () => {
 		const data = {
 			playlist: playlistExport.PlaylistContents
 		};
@@ -523,7 +559,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Update a playlist\'s information', function() {
+	it('Update a playlist\'s information', () => {
 		const data = {
 			name: 'new_playlist',
 			flag_visible: true,
@@ -537,7 +573,7 @@ describe('Playlists', function() {
 			.expect(200);
 	});
 
-	it('Get list of playlists', function() {
+	it('Get list of playlists', () => {
 		return request
 			.get('/api/playlists')
 			.set('Accept', 'application/json')
@@ -547,14 +583,14 @@ describe('Playlists', function() {
 			.then(response => {
 				strictEqual(response.body.length >= 2, true);
 				response.body.forEach(playlist => {
-					if (playlist.flag_current) current_playlist_id = playlist.playlist_id;
+					if (playlist.flag_current) currentPlaylistID = playlist.playlist_id;
 				});
 			});
 	});
 
-	it('Get current playlist information', function() {
+	it('Get current playlist information', () => {
 		return request
-			.get('/api/playlists/' + current_playlist_id)
+			.get('/api/playlists/' + currentPlaylistID)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -562,7 +598,7 @@ describe('Playlists', function() {
 	});
 
 
-	it('List contents 	from public playlist', function() {
+	it('List contents 	from public playlist', () => {
 		return request
 			.get('/api/playlists/' + new_playlist_public_id + '/karas')
 			.set('Accept', 'application/json')
@@ -572,37 +608,37 @@ describe('Playlists', function() {
 			.then(response => {
 				// We get the PLC_ID of our last karaoke, the one we just added
 				plc_id = response.body.content[response.body.content.length-1].playlistcontent_id;
-				current_plc_id = plc_id.toString();
+				currentPLCID = plc_id.toString();
 				strictEqual(response.body.content.length >= 1, true);
 			});
 	});
 
 
-	it('Edit karaoke from playlist : flag_playing', function() {
+	it('Edit karaoke from playlist : flag_playing', () => {
 		const data = {
 			flag_playing: true
 		};
 		return request
-			.put('/api/playlists/'+new_playlist_public_id+'/karas/'+current_plc_id)
+			.put('/api/playlists/'+new_playlist_public_id+'/karas/'+currentPLCID)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
 			.expect(200);
 	});
 
-	it('Edit karaoke from playlist : position', function() {
+	it('Edit karaoke from playlist : position', () => {
 		const data = {
 			pos: 1
 		};
 		return request
-			.put('/api/playlists/'+new_playlist_public_id+'/karas/'+current_plc_id)
+			.put('/api/playlists/'+new_playlist_public_id+'/karas/'+currentPLCID)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
 			.expect(200);
 	});
 
-	it('Get playlist information', function() {
+	it('Get playlist information', () => {
 		return request
 			.get('/api/playlists/1')
 			.set('Accept', 'application/json')
@@ -614,7 +650,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('List public playlist contents', function() {
+	it('List public playlist contents', () => {
 		return request
 			.get('/api/playlists/' + new_playlist_public_id + '/karas')
 			.set('Accept', 'application/json')
@@ -622,7 +658,7 @@ describe('Playlists', function() {
 			.expect(200);
 	});
 
-	it('Set playlist to current', function() {
+	it('Set playlist to current', () => {
 		return request
 			.put('/api/playlists/'+playlist+'/setCurrent')
 			.set('Accept', 'application/json')
@@ -630,7 +666,7 @@ describe('Playlists', function() {
 			.expect(200);
 	});
 
-	it('Set playlist to public', function() {
+	it('Set playlist to public', () => {
 		return request
 			.put('/api/playlists/'+new_playlist_public_id+'/setPublic')
 			.set('Accept', 'application/json')
@@ -638,9 +674,9 @@ describe('Playlists', function() {
 			.expect(200);
 	});
 
-	it('Up/downvote a song in public playlist Error 403', function() {
+	it('Up/downvote a song in public playlist Error 403', () => {
 		return request
-			.post('/api/playlists/'+new_playlist_public_id+'/karas/'+current_plc_id+'/vote')
+			.post('/api/playlists/'+new_playlist_public_id+'/karas/'+currentPLCID+'/vote')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(403)
@@ -649,7 +685,7 @@ describe('Playlists', function() {
 			});
 	});
 
-	it('Empty playlist', function() {
+	it('Empty playlist', () => {
 		return request
 			.put('/api/playlists/'+new_playlist_public_id+'/empty')
 			.set('Accept', 'application/json')
@@ -657,7 +693,7 @@ describe('Playlists', function() {
 			.expect(200);
 	});
 
-	it('Delete a playlist', function() {
+	it('Delete a playlist', () => {
 		return request
 			.delete('/api/playlists/'+new_playlist_id)
 			.set('Accept', 'application/json')
@@ -667,8 +703,12 @@ describe('Playlists', function() {
 
 });
 
-describe('Song Poll', function() {
-	it('Get current poll status', function() {
+describe('Song Poll', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Get current poll status', () => {
 		return request
 			.get('/api/songpoll')
 			.set('Accept', 'application/json')
@@ -679,7 +719,7 @@ describe('Song Poll', function() {
 			});
 	});
 
-	it('set poll', function() {
+	it('set poll', () => {
 		const data = {
 			index: 1
 		};
@@ -696,8 +736,12 @@ describe('Song Poll', function() {
 
 });
 
-describe('Tags', function() {
-	it('Get tag list', function() {
+describe('Tags', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Get tag list', () => {
 		return request
 			.get('/api/tags')
 			.set('Accept', 'application/json')
@@ -711,8 +755,12 @@ describe('Tags', function() {
 	});
 });
 
-describe('Users', function() {
-	it('Create a new user', function() {
+describe('Users', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Create a new user', () => {
 		const data = {
 			login: 'BakaToTest',
 			password: 'ilyenapas'
@@ -727,7 +775,7 @@ describe('Users', function() {
 			});
 	});
 
-	it('Create new user (as admin)', function() {
+	it('Create new user (as admin)', () => {
 		const data = {
 			login: 'BakaToTest2',
 			password: 'ilyenapas2',
@@ -744,7 +792,7 @@ describe('Users', function() {
 			});
 	});
 
-	it('Edit your own account', function() {
+	it('Edit your own account', () => {
 		const data = {
 			nickname: 'toto'
 		};
@@ -759,7 +807,7 @@ describe('Users', function() {
 			});
 	});
 
-	it('List users', function() {
+	it('List users', () => {
 		return request
 			.get('/api/users/')
 			.set('Authorization', token)
@@ -774,7 +822,7 @@ describe('Users', function() {
 			});
 	});
 
-	it('View own user details', function() {
+	it('View own user details', () => {
 		return request
 			.get('/api/myaccount')
 			.set('Authorization', token)
@@ -785,7 +833,7 @@ describe('Users', function() {
 			});
 	});
 
-	it('View user details', function() {
+	it('View user details', () => {
 		return request
 			.get('/api/users/BakaToTest')
 			.set('Authorization', token)
@@ -796,7 +844,7 @@ describe('Users', function() {
 			});
 	});
 
-	it('Delete an user', function() {
+	it('Delete an user', () => {
 		return request
 			.delete('/api/users/BakaToTest')
 			.set('Accept', 'application/json')
@@ -808,8 +856,12 @@ describe('Users', function() {
 	});
 });
 
-describe('Whitelist', function() {
-	it('Add song to whitelist', function() {
+describe('Whitelist', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Add song to whitelist', () => {
 		const data = {
 			'kid': ['495e2635-38a9-42db-bdd0-df4d27329c87'],
 			'reason': 'Because reasons'
@@ -822,7 +874,7 @@ describe('Whitelist', function() {
 			.expect(201);
 	});
 
-	it('Get whitelist', function() {
+	it('Get whitelist', () => {
 		return request
 			.get('/api/whitelist')
 			.set('Accept', 'application/json')
@@ -834,7 +886,7 @@ describe('Whitelist', function() {
 			});
 	});
 
-	it('Delete whitelist item', function() {
+	it('Delete whitelist item', () => {
 		const data = {
 			kid: ['495e2635-38a9-42db-bdd0-df4d27329c87']
 		};
@@ -846,7 +898,7 @@ describe('Whitelist', function() {
 			.expect(200);
 	});
 
-	it('Empty whitelist', function() {
+	it('Empty whitelist', () => {
 		return request
 			.put('/api/whitelist/empty')
 			.set('Accept', 'application/json')
@@ -855,8 +907,12 @@ describe('Whitelist', function() {
 	});
 });
 
-describe('Main', function() {
-	it('Get settings', function() {
+describe('Main', () => {
+	let token: string;
+	before(async () => {
+		token = await getToken();
+	});
+	it('Get settings', () => {
 		return request
 			.get('/api/settings')
 			.set('Accept', 'application/json')
@@ -864,12 +920,12 @@ describe('Main', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(response =>{
-				strictEqual(response.body.config.Frontend.Port, port);
-				SETTINGS = response.body;
+				strictEqual(response.body.config.Frontend.Port, 1337);
+				setConfig(response.body);
 			});
 	});
 
-	it('Get statistics', function() {
+	it('Get statistics', () => {
 		return request
 			.get('/api/stats')
 			.set('Accept', 'application/json')
@@ -878,9 +934,9 @@ describe('Main', function() {
 			.expect(200);
 	});
 
-	it('Update settings', function() {
-		const data = SETTINGS;
-		data.Frontend = { Permissions: {AllowViewWhitelist: false }};
+	it('Update settings', () => {
+		const data = getConfig();
+		data.Frontend.Permissions.AllowViewWhitelist = true;
 		return request
 			.put('/api/settings')
 			.set('Accept', 'application/json')
@@ -890,3 +946,4 @@ describe('Main', function() {
 			.expect(200);
 	});
 });
+
