@@ -5,7 +5,6 @@ export const usernameAdmin = 'adminTest';
 export const passwordAdmin = 'ceciestuntest';
 
 export async function getToken(): Promise<string> {
-
 	const res = await request
 		.post('/api/auth/login')
 		.set('Accept', 'application/json')
