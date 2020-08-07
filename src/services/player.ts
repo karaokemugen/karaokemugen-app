@@ -58,7 +58,8 @@ export async function playSingleSong(kid?: string) {
 	} catch(err) {
 		logger.error('Error during song playback', {service: 'Player', obj: err});
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
-		sentry.error(err, 'Warning');
+		// Not sending to sentry when media source couldn't be found
+		if (!err.message.includes('No media source')) sentry.error(err, 'Warning');
 		stopPlayer(true);
 		throw err;
 	}
