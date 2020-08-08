@@ -198,7 +198,9 @@
 		"REPOSITORY_CHANGED": "You must know what you're doing by editing this, as it won't move tag files out of the repository for you, and it won't affect any karaoke linked to it.",
 		"REPOSITORY_REQUIRED": "Repository is mandatory",
 		"PROBLEMATIC": "Problematic",
-		"PROBLEMATIC_TOOLTIP": "Is this tag problematic? Should it be a tag you'd want to ban? This helps mark some songs more easily in the operator/public interface. For example R18, Spoiler, or Epilepsy"
+		"PROBLEMATIC_TOOLTIP": "Is this tag problematic? Should it be a tag you'd want to ban? This helps mark some songs more easily in the operator/public interface. For example R18, Spoiler, or Epilepsy",
+		"NOLIVEDOWNLOAD": "Disallow on Live/Web Downloads",
+		"NOLIVEDOWNLOAD_TOOLTIP": "Karaokes with this tag won't be able to be downloaded on KMServer from the web interface, or visible on Live"
 	},
 	"TAG_TYPES": {
 		"SINGERS": "Singer",

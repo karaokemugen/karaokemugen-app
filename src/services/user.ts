@@ -241,6 +241,7 @@ async function editRemoteUser(user: User) {
 	if (user.email) form.append('email', user.email);
 	if (user.url) form.append('url', user.url);
 	if (user.password) form.append('password', user.password);
+	if (user.series_lang_mode) form.append('series_lang_mode', user.series_lang_mode);
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
 	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
 	try {
