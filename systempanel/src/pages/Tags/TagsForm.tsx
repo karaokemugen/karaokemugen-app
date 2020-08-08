@@ -131,7 +131,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			repository: this.props.tag?.repository ? this.props.tag.repository :
 				(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
 			aliases: this.props.tag?.aliases,
-			problematic: this.props.tag?.problematic
+			problematic: this.props.tag?.problematic,
+			noLiveDownload: this.props.tag?.noLiveDownload
 		};
 		for (const lang of this.state.i18n) {
 			initialValues['lang_' + lang] = this.props.tag?.i18n[lang];
@@ -316,6 +317,20 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					labelCol={{ flex: '0 1 200px' }}
 					valuePropName="checked"
 					name="problematic"
+				>
+					<Checkbox />
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>{i18next.t('TAGS.NOLIVEDOWNLOAD')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.NOLIVEDOWNLOAD_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ flex: '0 1 200px' }}
+					valuePropName="checked"
+					name="noLiveDownload"
 				>
 					<Checkbox />
 				</Form.Item>
