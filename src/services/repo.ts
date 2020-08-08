@@ -333,5 +333,7 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 	} catch(err) {
 		logger.error(`Failed to move repo ${name}`, {service: 'Repo', obj: err});
 		throw err;
+	} finally {
+		task.end();
 	}
 }
