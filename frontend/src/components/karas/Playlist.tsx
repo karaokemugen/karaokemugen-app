@@ -278,23 +278,23 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	rowRenderer = ({ index, isScrolling, key, parent, style }: ListRowProps) => {
-		let content;
+		let content:KaraElement;
 		if (this.state.data && (this.state.data as KaraList).content && (this.state.data as KaraList).content[index]) {
-			content = (this.state.data as KaraList).content[index];
+			content = (this.state.data as KaraList).content[index];		
+			return (
+				<CellMeasurer
+					cache={_cache}
+					columnIndex={0}
+					key={key}
+					parent={parent}
+					rowIndex={index}
+				>
+					<this.SortableItem key={key} index={index} style={style} value={{ content, key, index }} />
+				</CellMeasurer>
+			);
 		} else {
-			content = null;
+			return null;
 		}
-		return (
-			<CellMeasurer
-				cache={_cache}
-				columnIndex={0}
-				key={key}
-				parent={parent}
-				rowIndex={index}
-			>
-				<this.SortableItem key={key} index={index} style={style} value={{ content, key, index }} />
-			</CellMeasurer>
-		);
 	}
 
 	noRowsRenderer = () => {
@@ -871,7 +871,6 @@ class Playlist extends Component<IProps, IState> {
 																pressDelay={0}
 																helperClass="playlist-dragged-item"
 																useDragHandle={true}
-																deferredMeasurementCache={_cache}
 																ref={registerChild}
 																onRowsRendered={onRowsRendered}
 																rowCount={((this.state.data as KaraList).infos.count) || 0}
