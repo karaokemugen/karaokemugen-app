@@ -58,7 +58,6 @@ export default class Downloader {
 		});
 		return new Promise(resolve => {
 			this.q.on('drain', () => {
-				if (this.task) this.task.end();
 				resolve(this.fileErrors);
 			});
 		});
