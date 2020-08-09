@@ -1,5 +1,5 @@
 export const version = {
-	number: '4.1.4-master',
+	number: '4.1.5-master',
 	name: 'Ôgi Observatrice',
 	image: 'OgiObservatrice.jpg',
 	sha: null
