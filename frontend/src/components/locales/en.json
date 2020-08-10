@@ -516,6 +516,7 @@
 		"GENERATING_DATABASE": "Creating database...",
 		"DOWNLOADING": "Downloading...",
 		"DOWNLOADING_MEDIAS": "Downloading media files...",
+		"CONSOLIDATING_REPO": "Consolidating repository...",
 		"CLEANING_REPO": "Cleaning up songs removed from repository",
 		"UPDATING_REPO": "Updating songs from repository",
 		"DOWNLOADING_REPO": "Adding songs from repository",

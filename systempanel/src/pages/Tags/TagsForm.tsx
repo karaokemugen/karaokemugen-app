@@ -131,7 +131,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			repository: this.props.tag?.repository ? this.props.tag.repository :
 				(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
 			aliases: this.props.tag?.aliases,
-			problematic: this.props.tag?.problematic
+			problematic: this.props.tag?.problematic,
+			noLiveDownload: this.props.tag?.noLiveDownload
 		};
 		for (const lang of this.state.i18n) {
 			initialValues['lang_' + lang] = this.props.tag?.i18n[lang];
@@ -151,7 +152,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 300px' }}
 					name="name"
 					rules={[{
 						required: true,
@@ -170,7 +171,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 300px' }}
 					name="short"
 				>
 					<Input style={{ maxWidth: '40%', minWidth: '150px' }}
@@ -185,7 +186,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 300px' }}
 					name="types"
 					required={true}
 				>
@@ -202,7 +203,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				{this.state.repositoriesValue ?
 					<Form.Item
 						label={i18next.t('TAGS.REPOSITORY')}
-						labelCol={{ flex: '0 1 200px' }}
+						labelCol={{ flex: '0 1 300px' }}
 						rules={[{
 							required: true,
 							message: i18next.t('TAGS.REPOSITORY_REQUIRED')
@@ -237,7 +238,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 300px' }}
 					name="aliases"
 				>
 					<EditableTagGroup
@@ -260,7 +261,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						<Col style={{ width: '80%' }}>
 							<Form.Item
 								label={getLanguagesInLocaleFromCode(langKey)}
-								labelCol={{ flex: '0 1 200px' }}
+								labelCol={{ flex: '0 1 300px' }}
 								name={`lang_${langKey}`}
 								rules={[{
 									required: true,
@@ -284,7 +285,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				))}
 				<Form.Item
 					label={i18next.t('TAGS.I18N_SELECT')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 300px' }}
 				>
 					{this.state.selectVisible ?
 						<Select style={{ maxWidth: '40%', minWidth: '150px' }}
@@ -313,9 +314,23 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 300px' }}
 					valuePropName="checked"
 					name="problematic"
+				>
+					<Checkbox />
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>{i18next.t('TAGS.NOLIVEDOWNLOAD')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.NOLIVEDOWNLOAD_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ flex: '0 1 300px' }}
+					valuePropName="checked"
+					name="noLiveDownload"
 				>
 					<Checkbox />
 				</Form.Item>
@@ -332,7 +347,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 300px' }}
 				>
 					<Cascader style={{ maxWidth: '40%', minWidth: '150px' }}
 						options={this.mergeCascaderOption()}

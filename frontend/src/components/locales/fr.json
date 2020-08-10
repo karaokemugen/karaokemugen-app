@@ -532,6 +532,7 @@
 		"GENERATING_DATABASE": "Création de la base de données...",
 		"DOWNLOADING": "Téléchargement...",
 		"DOWNLOADING_MEDIAS": "Téléchargement de médias...",
+		"CONSOLIDATING_REPO": "Consolidation du dépôt...",
 		"CLEANING_REPO": "Nettoyage des chansons supprimées du dépôt",
 		"UPDATING_REPO": "Mise à jour des chansons du dépôt",
 		"DOWNLOADING_REPO": "Ajout de chansons du dépôt",

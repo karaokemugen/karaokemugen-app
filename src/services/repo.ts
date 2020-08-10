@@ -288,7 +288,8 @@ export async function migrateOldFoldersToRepo() {
 
 export async function consolidateRepo(repoName: string, newPath: string) {
 	const task = new Task({
-		text: `CONSOLIDATING_REPO ${repoName}`
+		text: 'CONSOLIDATING_REPO',
+		subtext:  repoName
 	});
 	try {
 		const repo = getRepo(repoName);
@@ -332,5 +333,7 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 	} catch(err) {
 		logger.error(`Failed to move repo ${name}`, {service: 'Repo', obj: err});
 		throw err;
+	} finally {
+		task.end();
 	}
 }

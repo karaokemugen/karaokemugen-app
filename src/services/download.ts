@@ -936,15 +936,17 @@ async function downloadMedias(files: File[], mediasPath: string, repo: string): 
 			size: file.size
 		});
 	}
+	const downloadTask = new Task({
+		text: 'DOWNLOADING_MEDIAS',
+		value: 0,
+		total: files.length
+	});
 	const mediaDownloads = new Downloader({
 		bar: true,
-		task: new Task({
-			text: 'DOWNLOADING_MEDIAS',
-			value: 0,
-			total: files.length
-		})
+		task: downloadTask
 	});
 	const fileErrors = await mediaDownloads.download(list);
+	downloadTask.end();
 	if (fileErrors.length > 0) {
 		throw (`Error downloading these medias : ${fileErrors.toString()}`);
 	}

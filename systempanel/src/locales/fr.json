@@ -197,7 +197,9 @@
 		"REPOSITORY_CHANGED": "Vous devez savoir ce que vous faites en le modifiant, car cela ne déplacera pas les fichiers de tags hors du dépôt pour vous, et cela n'affectera aucun karaoké qui y est lié.",
 		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
 		"PROBLEMATIC": "Problématique",
-		"PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique? Est-ce un tag qu'on voudra probablement bannir? Cela permet de marquer plus facilement les karas à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Epilepsie"
+		"PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique? Est-ce un tag qu'on voudra probablement bannir? Cela permet de marquer plus facilement les karas à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Epilepsie",
+		"NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
+		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server"
 	},
 	"TAG_TYPES": {
 		"SINGERS": "Chanteur",
@@ -348,6 +350,7 @@
 		"GENERATION_DONE": "Génération terminée",
 		"DOWNLOADING": "Téléchargement...",
 		"DOWNLOADING_MEDIAS": "Téléchargement de médias...",
+		"CONSOLIDATING_REPO": "Consolidation du dépôt...",
 		"CLEANING_REPO": "Nettoyage des chansons supprimées du dépôt",
 		"UPDATING_REPO": "Mise à jour des chansons du dépôt",
 		"DOWNLOADING_REPO": "Ajout de chansons du dépôt",
