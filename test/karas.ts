@@ -1,8 +1,7 @@
 import {expect} from 'chai';
 
 import {testDownloads} from '../src/utils/constants';
-import { getToken, request } from './util/util';
-
+import { getToken, request, testKara } from './util/util';
 
 describe('Karas information', () => {
 	const allKIDs = testDownloads.map(d => d.kid);
@@ -49,6 +48,7 @@ describe('Karas information', () => {
 			.expect(200)
 			.then(res => {
 				expect(res.body.kid).to.be.equal(allKIDs[0]);
+				testKara(res.body, 'kara');
 			});
 	});
 
@@ -80,3 +80,4 @@ describe('Karas information', () => {
 			});
 	});
 });
+

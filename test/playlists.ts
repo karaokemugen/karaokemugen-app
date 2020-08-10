@@ -5,7 +5,7 @@ import { uuidRegexp } from '../src/lib/utils/constants';
 import { DBPL } from '../src/types/database/playlist';
 import {PlaylistExport} from '../src/types/playlist';
 import {testDownloads} from '../src/utils/constants';
-import { getToken, request } from './util/util';
+import { getToken, request, testKara } from './util/util';
 
 describe('Playlists', () => {
 	let playlistExport: PlaylistExport;
@@ -97,7 +97,19 @@ describe('Playlists', () => {
 			});
 	});
 
-	it('Create a playlist', () => {
+	it('Get specific karaoke in a playlist', async () => {
+		return request
+			.get(`/api/playlists/${playlistID}/karas/1`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				testKara(res.body, 'plc');
+			});
+	});
+
+	it('Create a playlist', async () => {
 		const playlist = {
 			name:'new_playlist',
 			flag_visible: true,
