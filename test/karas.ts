@@ -1,10 +1,8 @@
 import {expect} from 'chai';
 
-import {testDownloads} from '../src/utils/constants';
-import { getToken, request, testKara } from './util/util';
+import { allKIDs,getToken, request, testKara } from './util/util';
 
 describe('Karas information', () => {
-	const allKIDs = testDownloads.map(d => d.kid);
 	let token: string;
 	before(async () => {
 		token = await getToken();

@@ -4,22 +4,40 @@ import supertest from 'supertest';
 
 import { DBTag } from '../../src/lib/types/database/tag';
 import { md5Regexp,tagTypes, uuidRegexp } from '../../src/lib/utils/constants';
+import {Config} from '../../src/types/config';
+import { testDownloads } from '../../src/utils/constants';
 
 export const request = supertest('http://localhost:1337');
 export const usernameAdmin = 'adminTest';
 export const passwordAdmin = 'ceciestuntest';
 export const allLangs = langs.codes('2B');
+export const allKIDs = testDownloads.map(d => d.kid);
+export let token: any;
 
 export async function getToken(): Promise<string> {
-	const res = await request
-		.post('/api/auth/login')
-		.set('Accept', 'application/json')
-		.send({
-			username: usernameAdmin,
-			password: passwordAdmin
-		})
-		.expect(200);
-	return res.body.token;
+	if (!token) {
+		const res = await request
+			.post('/api/auth/login')
+			.set('Accept', 'application/json')
+			.send({
+				username: usernameAdmin,
+				password: passwordAdmin
+			})
+			.expect(200);
+		token = res.body.token;
+	}
+	return token;
+}
+
+
+let config: Config;
+
+export function getConfig(): Config {
+	return config;
+}
+
+export function setConfig(newConfig: Config) {
+	config = newConfig;
 }
 
 export function testKara(kara: any, type: 'kara'|'plc') {

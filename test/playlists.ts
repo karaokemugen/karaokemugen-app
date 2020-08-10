@@ -4,8 +4,7 @@ import sample from 'lodash.sample';
 import { uuidRegexp } from '../src/lib/utils/constants';
 import { DBPL } from '../src/types/database/playlist';
 import {PlaylistExport} from '../src/types/playlist';
-import {testDownloads} from '../src/utils/constants';
-import { getToken, request, testKara } from './util/util';
+import { allKIDs,getToken, request, testKara } from './util/util';
 
 describe('Playlists', () => {
 	let playlistExport: PlaylistExport;
@@ -14,17 +13,16 @@ describe('Playlists', () => {
 	let newPublicPlaylistID: number;
 	let currentPlaylistID: number;
 	let PLCID: number;
-	const KIDs = testDownloads.map(d => d.kid);
-	const KIDToAdd = sample(KIDs);
-	const KIDToAdd2 = sample(KIDs.filter((kid: string) => kid !== KIDToAdd));
+	const KIDToAdd = sample(allKIDs);
+	const KIDToAdd2 = sample(allKIDs.filter((kid: string) => kid !== KIDToAdd));
 	const playlistID = 1;
 	let token: string;
 	before(async () => {
 		token = await getToken();
 	});
-	it(`Add karaoke ${KIDToAdd} to playlist ${playlistID}`, () => {
+	it(`Add all songs to playlist ${playlistID}`, () => {
 		const data = {
-			kid: [KIDToAdd],
+			kid: allKIDs,
 			requestedby: 'Test'
 		};
 		return request
@@ -67,7 +65,7 @@ describe('Playlists', () => {
 			});
 	});
 
-	it(`Add karaoke ${KIDToAdd} to an unknown playlist to see if it fails`, () => {
+	it(`Add karaoke ${KIDToAdd} to an unknown playlist to see if it fails`, async () => {
 		const data = {
 			kid: [KIDToAdd],
 			requestedby: 'Test'
@@ -92,8 +90,10 @@ describe('Playlists', () => {
 			.expect(200)
 			.then(res => {
 				expect(res.body.content.length).to.be.at.least(1);
-				expect(res.body.content[0].kid).to.be.equal(KIDToAdd);
-				PLCID = res.body.content[res.body.content.length-1].playlistcontent_id;
+				for (const plc of res.body.content) {
+					testKara(plc, 'plc');
+				}
+				PLCID = res.body.content[0].playlistcontent_id;
 			});
 	});
 
