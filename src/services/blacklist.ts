@@ -69,7 +69,7 @@ export async function exportSet(id: number): Promise<BLCSetFile> {
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
 	delete blcSet.flag_current;
 	delete blcSet.blc_set_id;
-	const blcs = await getBlacklistCriterias(id);
+	const blcs = await getBlacklistCriterias(id, null, true);
 	const header = {
 		description: 'Karaoke Mugen BLC Set File',
 		version: 1
@@ -127,10 +127,11 @@ export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	return ret;
 }
 
-export async function getBlacklistCriterias(id: number, lang?: string): Promise<BLC[]> {
+export async function getBlacklistCriterias(id: number, lang?: string, noDressingUp?: boolean): Promise<BLC[]> {
 	try {
 		profile('getBLC');
 		const blcs = await getBLC(id);
+		if (noDressingUp) return blcs;
 		return await translateBlacklistCriterias(blcs, lang);
 	} catch(err) {
 		const error = new Error(err);
