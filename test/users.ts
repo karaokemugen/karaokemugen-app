@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+import { resolve } from 'path';
 
 import { User } from '../src/lib/types/user';
 import { allLangs,getToken, request } from './util/util';
@@ -41,14 +42,12 @@ describe('Users', () => {
 	});
 
 	it('Edit your own account', async () => {
-		const data = {
-			nickname: 'toto'
-		};
 		return request
 			.put('/api/myaccount')
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
-			.send(data)
+			.field('nickname', 'toto')
+			.attach('avatarfile', resolve(__dirname, '../assets/guestAvatars/vegeta.jpg'))
 			.expect(200)
 			.then(res => {
 				expect(res.body.code).to.be.equal('USER_EDITED');
@@ -98,6 +97,17 @@ describe('Users', () => {
 	it('Delete an user', async () => {
 		return request
 			.delete('/api/users/BakaToTest')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect(200)
+			.then(res => {
+				expect(res.body.code).to.be.equal('USER_DELETED');
+			});
+	});
+
+	it('Delete another user', async () => {
+		return request
+			.delete('/api/users/BakaToTest2')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(200)
