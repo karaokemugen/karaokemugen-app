@@ -256,7 +256,7 @@ export default function userController(router: Router) {
 	  */
 		.post(async (req: any, res: any) => {
 			if (!req.params.username.includes('@')) {
-				if (req.body.securityCode === getState().securityCode) {
+				if (+req.body.securityCode === getState().securityCode) {
 					try {
 						await editUser(req.params.username, {
 							password: req.body.password
