@@ -4,16 +4,19 @@ import { resolve } from 'path';
 import { User } from '../src/lib/types/user';
 import { allLangs,getToken, request } from './util/util';
 
+const testUserData = {
+	login: 'BakaToTest',
+	password: 'ilyenapas'
+};
+
+
 describe('Users', () => {
 	let token: string;
 	before(async () => {
 		token = await getToken();
 	});
 	it('Create a new user', async () => {
-		const data = {
-			login: 'BakaToTest',
-			password: 'ilyenapas'
-		};
+		const data = testUserData;
 		return request
 			.post('/api/users')
 			.set('Accept', 'application/json')
@@ -52,6 +55,49 @@ describe('Users', () => {
 			.then(res => {
 				expect(res.body.code).to.be.equal('USER_EDITED');
 			});
+	});
+
+	it('Reset password with wrong security code', async () => {
+		return request
+			.post('/api/users/BakaToTest/resetpassword')
+			.set('Authorization', token)
+			.set('Accept', 'application/json')
+			.send({ password: 'trololo' })
+			.expect(403)
+			.then(res => {
+				expect(res.body.code).to.be.equal('USER_RESETPASSWORD_WRONGSECURITYCODE');
+			});
+	});
+
+	it('Test short password error when resetting it', async () => {
+		const res = await request
+			.get('/api/state')
+			.set('Accept', 'application/json')
+			.expect(200);
+		const securityCode = res.body.securityCode;
+		return request
+			.post('/api/users/BakaToTest/resetpassword')
+			.set('Authorization', token)
+			.set('Accept', 'application/json')
+			.send({ password: 'trololo', securityCode: securityCode })
+			.expect(400)
+			.then(res => {
+				expect(res.body.code).to.be.equal('USER_RESETPASSWORD_ERROR');
+			});
+	});
+
+	it('Reset password with right security code', async () => {
+		const res = await request
+			.get('/api/state')
+			.set('Accept', 'application/json')
+			.expect(200);
+		const securityCode = res.body.securityCode;
+		return request
+			.post('/api/users/BakaToTest/resetpassword')
+			.set('Authorization', token)
+			.set('Accept', 'application/json')
+			.send({ password: 'trololo2020', securityCode: securityCode })
+			.expect(200);
 	});
 
 	it('List users AFTER create user', async () => {
