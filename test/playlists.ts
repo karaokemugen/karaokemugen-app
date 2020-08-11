@@ -91,7 +91,7 @@ describe('Playlists', () => {
 			.then(res => {
 				expect(res.body.content.length).to.be.at.least(1);
 				for (const plc of res.body.content) {
-					testKara(plc, 'plc');
+					testKara(plc, {tagDetails: 'short', plc: true});
 				}
 				PLCID = res.body.content[0].playlistcontent_id;
 			});
@@ -105,7 +105,7 @@ describe('Playlists', () => {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(res => {
-				testKara(res.body, 'plc');
+				testKara(res.body, {tagDetails: 'full', plcDetail: true, plc: true});
 			});
 	});
 
@@ -187,7 +187,7 @@ describe('Playlists', () => {
 			.expect(201)
 			.then(res => {
 				expect(res.body.code).to.be.equal('PL_SONG_ADDED');
-				expect(res.body.code.kid[0]).to.be.equal(KIDToAdd2);
+				expect(res.body.data.kid[0]).to.be.equal(KIDToAdd2);
 			});
 	});
 
@@ -198,7 +198,7 @@ describe('Playlists', () => {
 			.set('Authorization', token)
 			.expect(409)
 			.then(res => {
-				expect(res.body.code).to.be.equal('PL_DELETEèERROR');
+				expect(res.body.code).to.be.equal('PL_DELETE_ERROR');
 			});
 	});
 
@@ -242,7 +242,7 @@ describe('Playlists', () => {
 			.expect(200)
 			.then(res => {
 				expect(res.body.Header.description).to.be.equal('Karaoke Mugen Playlist File');
-				expect(res.body.PlaylistContents).to.have.lengthOf(1);
+				expect(res.body.PlaylistContents.length).to.be.at.least(1);
 				for (const plc of res.body.PlaylistContents) {
 					expect(plc.created_at).to.be.a('string');
 					expect(plc.kid).to.be.a('string').and.match(new RegExp(uuidRegexp));

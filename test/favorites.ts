@@ -71,7 +71,7 @@ describe('Favorites', () => {
 
 	it('Verify automix exists and has one song', async () => {
 		return request
-			.post(`/api/playlists/${automixID}/karas`)
+			.get(`/api/playlists/${automixID}/karas`)
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.expect(200)

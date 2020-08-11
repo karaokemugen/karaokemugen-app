@@ -11,7 +11,7 @@ describe('Whitelist', () => {
 	});
 	it('Add song to whitelist', () => {
 		const data = {
-			kid: kid,
+			kid: [kid],
 			reason: 'Because reasons'
 		};
 		return request
@@ -75,7 +75,7 @@ describe('Whitelist', () => {
 
 	it('Add song to whitelist again', () => {
 		const data = {
-			kid: kid,
+			kid: [kid],
 			reason: 'Because reasons'
 		};
 		return request

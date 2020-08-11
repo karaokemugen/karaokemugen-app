@@ -16,11 +16,11 @@ describe('Player', () => {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(res => {
-				expect(res.body.currentRequester).to.exist;
+				expect(res.body.currentRequester).to.satisfy((e:any) => typeof e === 'string' || e === null);
 				expect(res.body.currentSessionID).to.be.a('string').and.match(new RegExp(uuidRegexp));
-				expect(res.body.curerntSong).to.exist;
+				expect(res.body.currentSong).to.satisfy((e:any) => typeof e === 'object' || e === null);
 				expect(res.body.defaultLocale).to.be.a('string').and.have.lengthOf(2);
-				expect(res.body.curerntlyPlaying).to.exist;
+				expect(res.body.currentlyPlaying).to.satisfy((e:any) => typeof e === 'string' || e === null);
 				expect(res.body.duration).to.be.a('number');
 				expect(res.body.onTop).to.be.a('boolean');
 				expect(res.body.stopping).to.be.a('boolean');

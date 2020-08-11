@@ -17,7 +17,6 @@ describe('Karas information', () => {
 			.expect(200)
 			.then(res => {
 				expect(res.body.content).to.have.lengthOf(1);
-				expect(res.body.infos.count).to.be.equal(1);
 				expect(res.body.content[0].kid).to.be.oneOf(allKIDs);
 			});
 	});
@@ -32,7 +31,8 @@ describe('Karas information', () => {
 			.then(res => {
 				// This is made so if we ever run tests on a full database, it'll work.
 				for (const kara of res.body.content) {
-					expect(kara.series[0].name).to.include('Dragon').and.include('.Ball');
+					expect(kara.series[0].name).to.include('Dragon').and.include('Ball');
+					testKara(kara, {tagDetails: 'short', kara: true});
 				}
 			});
 	});
@@ -46,7 +46,7 @@ describe('Karas information', () => {
 			.expect(200)
 			.then(res => {
 				expect(res.body.kid).to.be.equal(allKIDs[0]);
-				testKara(res.body, 'kara');
+				testKara(res.body, {tagDetails: 'full', kara: true});
 			});
 	});
 

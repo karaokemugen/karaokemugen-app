@@ -20,7 +20,7 @@ describe('Tags', () => {
 				expect(res.body.infos.count).to.be.at.least(1);
 				const tags: DBTag[] = res.body.content;
 				for (const tag of tags) {
-					testTag(tag, true);
+					testTag(tag, 'tag');
 				}
 			});
 	});

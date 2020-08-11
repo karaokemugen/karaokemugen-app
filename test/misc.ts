@@ -1,5 +1,6 @@
 import {expect} from 'chai';
 
+import {DBStats} from '../src/types/database/database';
 import { getConfig,getToken, request, setConfig } from './util/util';
 
 describe('Main', () => {
@@ -15,12 +16,25 @@ describe('Main', () => {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(res => {
+				expect(res.body).to.have.property('config');
+				expect(res.body).to.have.property('state');
+				expect(res.body).to.have.property('version');
+				expect(res.body.state.appPath).to.be.a('string');
+				expect(res.body.state.currentPlaylistID).to.be.a('number');
+				expect(res.body.state.dataPath).to.be.a('string');
+				expect(res.body.state.environment).to.be.a('string');
+				expect(res.body.state.os).to.be.a('string');
+				expect(res.body.state.publicPlaylistID).to.be.a('number');
+				expect(res.body.state.sentryTest).to.satisfy((e:any) => e === undefined || typeof e === 'boolean');
+				expect(res.body.state.supportedLyrics).to.be.a('array');
+				expect(res.body.state.supportedMedias).to.be.a('array');
+				expect(res.body.state.wsLogNamespace).to.be.a('string');
 				expect(res.body.config.Frontend.Port).to.be.equal(1337);
-				setConfig(res.body);
+				setConfig(res.body.config);
 			});
 	});
 
-	it('Get statistics', () => {
+	it('Get statistics', async () => {
 		return request
 			.get('/api/stats')
 			.set('Accept', 'application/json')
@@ -28,20 +42,21 @@ describe('Main', () => {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(res => {
-				expect(res.body.authors).to.be.a('number').and.at.least(0);
-				expect(res.body.blacklist).to.be.a('number').and.at.least(0);
-				expect(res.body.creators).to.be.a('number').and.at.least(0);
-				expect(res.body.duration).to.be.a('number').and.at.least(0);
-				expect(res.body.kara).to.be.a('number').and.at.least(0);
-				expect(res.body.authors).to.be.a('number').and.at.least(0);
-				expect(res.body.languages).to.be.a('number').and.at.least(0);
-				expect(res.body.played).to.be.a('number').and.at.least(0);
-				expect(res.body.playlists).to.be.a('number').and.at.least(0);
-				expect(res.body.series).to.be.a('number').and.at.least(0);
-				expect(res.body.singers).to.be.a('number').and.at.least(0);
-				expect(res.body.songwriters).to.be.a('number').and.at.least(0);
-				expect(res.body.tags).to.be.a('number').and.at.least(0);
-				expect(res.body.whitelist).to.be.a('number').and.at.least(0);
+				const stats: DBStats = res.body;
+				expect(stats.authors).to.be.a('number').and.at.least(0);
+				expect(stats.blacklist).to.be.a('number').and.at.least(0);
+				expect(stats.creators).to.be.a('number').and.at.least(0);
+				expect(stats.duration).to.be.a('number').and.at.least(0);
+				expect(stats.karas).to.be.a('number').and.at.least(0);
+				expect(stats.authors).to.be.a('number').and.at.least(0);
+				expect(stats.languages).to.be.a('number').and.at.least(0);
+				expect(stats.played).to.be.a('number').and.at.least(0);
+				expect(stats.playlists).to.be.a('number').and.at.least(0);
+				expect(stats.series).to.be.a('number').and.at.least(0);
+				expect(stats.singers).to.be.a('number').and.at.least(0);
+				expect(stats.songwriters).to.be.a('number').and.at.least(0);
+				expect(stats.tags).to.be.a('number').and.at.least(0);
+				expect(stats.whitelist).to.be.a('number').and.at.least(0);
 			});
 	});
 
