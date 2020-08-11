@@ -83,7 +83,7 @@ function initQueue() {
 		taskCounter++;
 		if (taskCounter >= 100 ) {
 			logger.debug('Triggering database refresh', {service: 'Download'});
-			compareKarasChecksum(true);
+			compareKarasChecksum();
 			refreshing = true;
 			refreshAll().then(() => refreshing = false);
 			taskCounter = 0;
@@ -273,7 +273,7 @@ async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, 
 }
 
 async function downloadFiles(download_id?: string, list?: DownloadItem[], task?: Task) {
-	const downloader = new Downloader({ bar: true, task: task });
+	const downloader = new Downloader({task: task });
 	// Launch downloads
 	const fileErrors = await downloader.download(list);
 	if (fileErrors.length > 0) {
@@ -708,7 +708,7 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 		karasToRemove.forEach(kid => promises.push(deleteKara(kid, false)));
 		await Promise.all(promises);
 		if (karasToRemove.length > 0) {
-			compareKarasChecksum(true);
+			compareKarasChecksum();
 			refreshKaras();
 		}
 	} catch(err) {
@@ -941,7 +941,6 @@ async function downloadMedias(files: File[], mediasPath: string, repo: string): 
 		total: files.length
 	});
 	const mediaDownloads = new Downloader({
-		bar: true,
 		task: downloadTask
 	});
 	const fileErrors = await mediaDownloads.download(list);

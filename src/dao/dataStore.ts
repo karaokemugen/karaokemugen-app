@@ -1,6 +1,5 @@
 import parallel from 'async-await-parallel';
 
-import Bar from '../lib/utils/bar';
 import { asyncStat,checksum, extractAllFiles } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
@@ -55,17 +54,15 @@ export function removeTagInStore(tid: string) {
 	dataStore.tags.delete(tid);
 }
 
-async function processDataFile(file: string, silent?: boolean, bar?: Bar, task?: Task) {
+async function processDataFile(file: string, task?: Task) {
 	if (file.endsWith('kara.json')) await addKaraToStore(file);
 	if (file.endsWith('tag.json')) await addTagToStore(file);
-	if (!silent) bar.incr();
 	task.incr();
 }
 
-export async function baseChecksum(silent?: boolean): Promise<string> {
+export async function baseChecksum(): Promise<string> {
 	profile('baseChecksum');
 	try {
-		let bar: Bar;
 		const [karaFiles, tagFiles] = await Promise.all([
 			extractAllFiles('Karas'),
 			extractAllFiles('Tags')
@@ -73,9 +70,6 @@ export async function baseChecksum(silent?: boolean): Promise<string> {
 		const fileCount = karaFiles.length + tagFiles.length;
 		if (karaFiles.length === 0) return null;
 		logger.info(`Found ${karaFiles.length} karas and ${tagFiles.length} tags`, {service: 'Store'});
-		if (!silent) bar = new Bar({
-			message: 'Checking files...    '
-		}, fileCount);
 		const task = new Task({
 			text: 'DATASTORE_UPDATE',
 			value: 0,
@@ -83,11 +77,10 @@ export async function baseChecksum(silent?: boolean): Promise<string> {
 		});
 		const files = [].concat(karaFiles, tagFiles);
 		const promises = [];
-		files.forEach(f => promises.push(() => processDataFile(f, silent, bar, task)));
+		files.forEach(f => promises.push(() => processDataFile(f, task)));
 		await parallel(promises, 32);
 		sortKaraStore();
 		sortTagsStore();
-		if (!silent) bar.stop();
 		task.end();
 		const checksum = getStoreChecksum();
 		logger.debug(`Store checksum : ${checksum}`, {service: 'Store'});

@@ -8,7 +8,6 @@ export interface DownloadItem {
 }
 
 export interface DownloadOpts {
-	bar: boolean,
 	task: Task
 	auth?: {
 		user: string,

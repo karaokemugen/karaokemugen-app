@@ -18,11 +18,11 @@ import { baseChecksum } from './dataStore';
 import { getPlaylists, reorderPlaylist } from './playlist';
 import { sqlGetStats,sqlResetUserData } from './sql/database';
 
-export async function compareKarasChecksum(silent?: boolean): Promise<boolean> {
+export async function compareKarasChecksum(): Promise<boolean> {
 	logger.info('Comparing files and database data', {service: 'Store'});
 	const [settings, currentChecksum] = await Promise.all([
 		getSettings(),
-		baseChecksum(silent)
+		baseChecksum()
 	]);
 	if (settings.baseChecksum !== currentChecksum) {
 		await saveSetting('baseChecksum', currentChecksum);
