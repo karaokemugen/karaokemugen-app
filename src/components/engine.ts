@@ -49,8 +49,7 @@ export async function initEngine() {
 		try {
 			initStep(i18n.t('INIT_VALIDATION'));
 			await generateKaraBase({
-				validateOnly: true,
-				progressBar: true
+				validateOnly: true
 			});
 			await exit(0);
 		} catch(err) {
@@ -108,7 +107,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_GEN'));
-			const checksum = await baseChecksum(false);
+			const checksum = await baseChecksum();
 			await generateDB();
 			await saveSetting('baseChecksum', checksum);
 			await exit(0);

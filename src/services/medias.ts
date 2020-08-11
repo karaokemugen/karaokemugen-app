@@ -170,7 +170,6 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 		});
 	}
 	const mediaDownloads = new Downloader({
-		bar: false,
 		task: task,
 		auth: {
 			user: KMSite.username,

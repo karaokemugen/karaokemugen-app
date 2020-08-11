@@ -332,8 +332,7 @@ export default function miscController(router: Router) {
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await generateDatabase({
-					validateOnly: true,
-					progressBar: true
+					validateOnly: true
 				});
 				res.status(200).json(APIMessage('FILES_VALIDATED'));
 			} catch(err) {
