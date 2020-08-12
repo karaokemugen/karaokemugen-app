@@ -105,6 +105,7 @@ export async function copySet(from: number, to: number) {
 	if (!blcSet1) throw {code: 404, msg: 'Origin BLC set unknown'};
 	if (!blcSet2) throw {code: 404, msg: 'Destination BLC set unknown'};
 	await copyBLCSet(from, to);
+	if (blcSet2.flag_current) await generateBlacklist();
 	emitWS('BLCSetInfoUpdated', to);
 }
 
