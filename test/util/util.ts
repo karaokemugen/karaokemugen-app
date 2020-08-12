@@ -12,21 +12,21 @@ export const usernameAdmin = 'adminTest';
 export const passwordAdmin = 'ceciestuntest';
 export const allLangs = langs.codes('2B');
 export const allKIDs = testDownloads.map(d => d.kid);
-export let token: any;
+const tokens = new Map();
 
-export async function getToken(): Promise<string> {
-	if (!token) {
+export async function getToken(username = usernameAdmin): Promise<string> {
+	if (!tokens.has(username)) {
 		const res = await request
 			.post('/api/auth/login')
 			.set('Accept', 'application/json')
 			.send({
-				username: usernameAdmin,
+				username: username,
 				password: passwordAdmin
 			})
 			.expect(200);
-		token = res.body.token;
+		tokens.set(username, res.body.token);
 	}
-	return token;
+	return tokens.get(username);
 }
 
 

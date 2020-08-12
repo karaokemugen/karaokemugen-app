@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sample from 'lodash.sample';
 
 import { uuidRegexp } from '../src/lib/utils/constants';
-import { DBPL } from '../src/types/database/playlist';
+import { DBPL, DBPLC } from '../src/types/database/playlist';
 import {PlaylistExport} from '../src/types/playlist';
 import { allKIDs,getToken, request, testKara } from './util/util';
 
@@ -128,7 +128,19 @@ describe('Playlists', () => {
 			});
 	});
 
-	it('Create a CURRENT playlist', () => {
+	it('Test findPlaying without any playing song set', async () => {
+		return request
+			.get(`/api/playlists/${newPlaylistID}/findPlaying`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				expect(res.body.index).to.be.equal(-1);
+			});
+	});
+
+	it('Create a CURRENT playlist', async () => {
 		const playlist_current = {
 			name:'new_current_playlist',
 			flag_visible: true,
@@ -147,7 +159,7 @@ describe('Playlists', () => {
 			});
 	});
 
-	it('Create a PUBLIC playlist', () => {
+	it('Create a PUBLIC playlist', async () => {
 		const playlist_public = {
 			name:'new_public_playlist',
 			flag_visible: true,
@@ -162,6 +174,26 @@ describe('Playlists', () => {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(res => {
+				newPublicPlaylistID = +res.text;
+			});
+	});
+
+	it('Create a CURRENT+PUBLIC playlist', async () => {
+		const playlist_current = {
+			name:'new_current_public_playlist',
+			flag_visible: true,
+			flag_public: true,
+			flag_current: true
+		};
+		return request
+			.post('/api/playlists')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.send(playlist_current)
+			.expect('Content-Type', /json/)
+			.expect(201)
+			.then(res => {
+				newCurrentPlaylistID = +res.text;
 				newPublicPlaylistID = +res.text;
 			});
 	});
@@ -218,19 +250,39 @@ describe('Playlists', () => {
 			plc_id: [PLCID]
 		};
 		return request
-			.delete('/api/playlists/2/karas/')
+			.delete(`/api/playlists/${newPlaylistID}/karas/`)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
 			.expect(200);
 	});
 
-	it('Shuffle playlist 1', () => {
-		return request
+	it('Shuffle playlist 1', async () => {
+		// First get playlist as is
+		let playlist: DBPLC[];
+		await request
+			.get('/api/playlists/1/karas')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect(200)
+			.then(res => {
+				playlist = res.body.content;
+			});
+		await request
 			.put('/api/playlists/1/shuffle')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(200);
+		// Re-getting playlist to see if order changed
+		return request
+			.get('/api/playlists/1/karas')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect(200)
+			.then(res => {
+				const shuffledPlaylist = res.body.content;
+				expect(JSON.stringify(shuffledPlaylist)).to.not.be.equal(JSON.stringify(playlist));
+			});
 	});
 
 	it('Export a playlist', async () => {
@@ -374,6 +426,18 @@ describe('Playlists', () => {
 			.expect(200);
 	});
 
+	it('Test findPlaying after a playing flag is set', async () => {
+		return request
+			.get(`/api/playlists/${newPublicPlaylistID}/findPlaying`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				expect(res.body.index).to.be.at.least(0);
+			});
+	});
+
 	it('Edit karaoke from playlist : position', () => {
 		const data = {
 			pos: 1
@@ -455,6 +519,57 @@ describe('Playlists', () => {
 			.expect(403)
 			.then(res => {
 				expect(res.body.code).to.be.equal('UPVOTE_NO_SELF');
+			});
+	});
+
+	it('Upvote a song in public playlist', async () => {
+		const token = await getToken('adminTest2');
+		return request
+			.post(`/api/playlists/${newPublicPlaylistID}/karas/${currentPLCID}/vote`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect(200);
+	});
+
+	it('List contents from public playlist AFTER upvote', async () => {
+		const token = await getToken('adminTest2');
+		return request
+			.get(`/api/playlists/${newPublicPlaylistID}/karas`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				// Our PLCID should be in first position now
+				const plc: DBPLC = res.body.content.find(plc => plc.playlistcontent_id === currentPLCID);
+				expect(plc.upvotes).to.be.at.least(1);
+				expect(plc.flag_upvoted).to.be.true;
+			});
+	});
+
+	it('Downvote a song in public playlist', async () => {
+		const token = await getToken('adminTest2');
+		return request
+			.post(`/api/playlists/${newPublicPlaylistID}/karas/${currentPLCID}/vote`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.send({downvote: true})
+			.expect(200);
+	});
+
+	it('List contents from public playlist AFTER downvote', async () => {
+		const token = await getToken('adminTest2');
+		return request
+			.get(`/api/playlists/${newPublicPlaylistID}/karas`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				// Our PLCID should be in first position now
+				const plc: DBPLC = res.body.content.find(plc => plc.playlistcontent_id === currentPLCID);
+				expect(plc.upvotes).to.be.at.below(1);
+				expect(plc.flag_upvoted).to.be.false;
 			});
 	});
 
