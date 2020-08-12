@@ -253,7 +253,7 @@ export default function miscController(router: Router) {
 	router.route('/log/:level')
 	/**
 	 * @api {get} /log/:level Get KM logs
-	 * @apiParam {string} level
+	 * @apiParam {string} level debug, info, warn, error...
 	 * @apiName GetLogs
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
