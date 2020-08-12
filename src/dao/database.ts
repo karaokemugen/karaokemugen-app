@@ -8,6 +8,7 @@ import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
+import { testCurrentBLCSet } from '../services/blacklist';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG} from '../utils/postgresql';
@@ -174,6 +175,8 @@ export async function initDBSystem(): Promise<Migration[]> {
 
 export async function resetUserData() {
 	await db().query(sqlResetUserData);
+	// Recreate initial blacklist criteria set since we'll need it for database generation right after
+	await testCurrentBLCSet();
 	logger.warn('User data has been reset!', {service: 'DB'});
 }
 
