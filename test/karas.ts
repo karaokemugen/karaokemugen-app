@@ -1,6 +1,9 @@
 import {expect} from 'chai';
 
+import {DBKara} from '../src/lib/types/database/kara';
 import { allKIDs,getToken, request, testKara } from './util/util';
+
+const jpnTag = '4dcf9614-7914-42aa-99f4-dbce2e059133~5';
 
 describe('Karas information', () => {
 	let token: string;
@@ -18,6 +21,64 @@ describe('Karas information', () => {
 			.then(res => {
 				expect(res.body.content).to.have.lengthOf(1);
 				expect(res.body.content[0].kid).to.be.oneOf(allKIDs);
+			});
+	});
+
+	it('Get all japanese songs', async () => {
+		return request
+			.get(`/api/karas?searchValue=t:${jpnTag}&searchType=search`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				for (const kara of res.body.content) {
+					expect(kara.tid).to.include(jpnTag);
+				}
+			});
+	});
+
+	it('Get songs from 2004', async () => {
+		return request
+			.get('/api/karas?searchType=search&searchValue=y:2004')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				for (const kara of res.body.content) {
+					expect(kara.year).to.be.equal(2004);
+				}
+			});
+	});
+
+	it('Get songs from 2004 AND japanese', async () => {
+		return request
+			.get(`/api/karas?searchType=search&searchValue=y:2004!t:${jpnTag}`)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				for (const kara of res.body.content) {
+					expect(kara.year).to.be.equal(2004);
+					expect(kara.tid).to.include(jpnTag);
+				}
+			});
+	});
+
+	it('Get songs in most recent order', async () => {
+		return request
+			.get('/api/karas?searchType=recent')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				const dateList = res.body.content.map((k: DBKara) => k.created_at);
+				const dateList2 = [].concat(dateList);
+				dateList2.sort();
+				expect(JSON.stringify(dateList)).to.be.equal(JSON.stringify(dateList2.reverse()));
 			});
 	});
 
