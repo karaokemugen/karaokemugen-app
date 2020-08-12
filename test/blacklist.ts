@@ -9,7 +9,7 @@ describe('Blacklist', () => {
 	before(async () => {
 		token = await getToken();
 	});
-	it('Add a blacklist criteria', () => {
+	it(`Add a blacklist criteria (song ${bannedKID}`, () => {
 		const data = {
 			blcriteria_type: 1001,
 			blcriteria_value: bannedKID
@@ -34,7 +34,7 @@ describe('Blacklist', () => {
 
 	it('Delete a blacklist criteria', () => {
 		return request
-			.delete('/api/blacklist/set/1/criterias/'+blc_id)
+			.delete(`/api/blacklist/set/1/criterias/${blc_id}`)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(200);
@@ -105,6 +105,7 @@ describe('Blacklist', () => {
 			.expect(201)
 			.then(res => {
 				expect(res.body.id).to.be.a('number').and.at.least(0);
+				console.log(res.body);
 				BLCSetID = res.body.id;
 			});
 	});
@@ -152,7 +153,8 @@ describe('Blacklist', () => {
 			});
 	});
 
-	it(`List blacklist set ${BLCSetID}`, async () => {
+	it('List specific blacklist set', async () => {
+		console.log(BLCSetID);
 		return request
 			.get(`/api/blacklist/set/${BLCSetID}`)
 			.set('Accept', 'application/json')
@@ -166,9 +168,9 @@ describe('Blacklist', () => {
 			});
 	});
 
-	it(`Copy BLCs from set 1 to ${BLCSetID}`, async () => {
+	it('Copy BLCs from set 1 to specific set', async () => {
 		return request
-			.get('/api/blacklist/set/criterias/copy')
+			.post('/api/blacklist/set/criterias/copy')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send({fromSet_id: 1, toSet_id: BLCSetID})
@@ -177,7 +179,7 @@ describe('Blacklist', () => {
 
 	it('Copy BLCs from set 1 to unknown set (should fail)', async () => {
 		return request
-			.get('/api/blacklist/set/criterias/copy')
+			.post('/api/blacklist/set/criterias/copy')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send({fromSet_id: 1, toSet_id: 666})
@@ -191,13 +193,13 @@ describe('Blacklist', () => {
 		return requestBlacklistCriterias(2);
 	});
 
-	it('Get blacklist AFTER new set is curernt and has criterias', async () => {
+	it('Get blacklist AFTER new set is current and has criterias', async () => {
 		return requestBlacklist();
 	});
 
 	let BLCSetExport: BLCSetFile;
 
-	it(`Export blacklist set ${BLCSetID}`, async () => {
+	it('Export blacklist set', async () => {
 		return request
 			.get('/api/blacklist/set/2/export')
 			.set('Accept', 'application/json')
@@ -251,7 +253,7 @@ describe('Blacklist', () => {
 			});
 	});
 
-	it(`Delete Blacklist Set ${BLCSetIDToDelete}`, async () => {
+	it('Delete Blacklist Set', async () => {
 		return request
 			.delete(`/api/blacklist/set/${BLCSetIDToDelete}`)
 			.set('Authorization', token)
