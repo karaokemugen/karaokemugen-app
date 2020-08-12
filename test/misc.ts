@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 
 import {DBStats} from '../src/types/database/database';
-import { getConfig,getToken, request, setConfig } from './util/util';
+import { allKIDs, getToken, request, setConfig } from './util/util';
 
 describe('Main', () => {
 	let token: string;
@@ -60,9 +60,87 @@ describe('Main', () => {
 			});
 	});
 
-	it('Update settings', () => {
-		const data = getConfig();
-		data.Frontend.Permissions.AllowViewWhitelist = true;
+	it('Test catchphrases', async () => {
+		return request
+			.get('/api/catchphrase')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				expect(res.body).to.be.a('string');
+			});
+	});
+
+	it('Test logs', async () => {
+		return request
+			.get('/api/log/debug')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				const levels = ['info', 'debug', 'error', 'warn'];
+				for (const log of res.body) {
+					expect(log.timestamp).to.be.a('string');
+					if (log.service) expect(log.service).to.be.a('string');
+					expect(log.message).to.be.a('string');
+					expect(levels).to.include(log.level);
+				}
+			});
+	});
+	it('Use FS API to query /', async () => {
+		return request
+			.post('/api/fs')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.send({path: '/'})
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(res => {
+				for (const path of res.body.contents) {
+					expect(path.isDirectory).to.be.a('boolean');
+					expect(path.name).to.be.a('string');
+				}
+				expect(res.body.fullPath).to.be.a('string');
+			});
+	});
+	it('Put interface in restricted mode and test an API', async () => {
+		const data = { setting: { Frontend: { Mode: 1 }}};
+		await request
+			.put('/api/settings')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200);
+		const publicToken = await getToken('publicTest');
+		return request
+			.get('/api/karas')
+			.set('Accept', 'application/json')
+			.set('Authorization', publicToken)
+			.expect('Content-Type', /json/)
+			.expect(503);
+	});
+	it('Put interface in closed mode and test an API', async () => {
+		const data = { setting: { Frontend: { Mode: 0 }}};
+		await request
+			.put('/api/settings')
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200);
+		const publicToken = await getToken('publicTest');
+		return request
+			.get(`/api/karas/${allKIDs[0]}`)
+			.set('Accept', 'application/json')
+			.set('Authorization', publicToken)
+			.expect('Content-Type', /json/)
+			.expect(503);
+	});
+	it('Return interface to open mode', async () => {
+		const data = { setting: { Frontend: { Mode: 2 }}};
 		return request
 			.put('/api/settings')
 			.set('Accept', 'application/json')
