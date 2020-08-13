@@ -225,3 +225,5 @@ CREATE INDEX idx_ak_series_singers ON all_karas(serie_singer_sortable);
 CREATE INDEX idx_ak_language ON all_karas(languages_sortable);
 CREATE INDEX idx_ak_year ON all_karas(year);
 CREATE INDEX idx_ak_kid ON all_karas(kid);
+
+ALTER TABLE tag DROP COLUMN problematic;
