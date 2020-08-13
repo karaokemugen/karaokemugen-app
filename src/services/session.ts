@@ -49,7 +49,10 @@ export async function editSession(session: Session) {
 	const oldSession = await findSession(session.seid);
 	if (!oldSession) throw {code: 404, msg: 'Session does not exist'};
 	if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime()) throw {code: 409, msg: 'ERROR_CODES.SESSION_END_BEFORE_START_ERROR'};
-	session.started_at = new Date(session.started_at);
+	session.started_at
+		? session.started_at = new Date(session.started_at)
+		: session.started_at = oldSession.started_at;
+	// Ended_at is optional
 	if (session.ended_at) session.ended_at = new Date(session.ended_at);
 	await updateSession(session);
 	if (session.active) setActiveSession(session);

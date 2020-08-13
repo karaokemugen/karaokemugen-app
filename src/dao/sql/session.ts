@@ -4,8 +4,8 @@ SELECT pk_seid AS seid,
 	started_at,
 	ended_at,
 	private,
-	COUNT(p.fk_kid) AS played,
-	COUNT(r.fk_kid) AS requested
+	COUNT(p.fk_kid)::integer AS played,
+	COUNT(r.fk_kid)::integer AS requested
 FROM session
 LEFT JOIN played p ON p.fk_seid = pk_seid
 LEFT JOIN requested r on r.fk_seid = pk_seid
