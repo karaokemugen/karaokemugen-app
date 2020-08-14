@@ -10,10 +10,10 @@ import { getAxiosInstance } from '../../axiosInterceptor';
 import RepositoryForm from './RepositoriesForm';
 
 interface RepositoriesEditState {
-	repository: Repository,
-	save: (repository: Repository) => void,
-	report: string,
-	selectedRepo: string
+	repository: Repository;
+	save: (repository: Repository) => void;
+	report: string;
+	selectedRepo: string;
 }
 
 const newrepository: Repository = {
