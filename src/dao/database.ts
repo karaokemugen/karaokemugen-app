@@ -168,7 +168,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 	}
 	if (state.opt.reset) await resetUserData();
 
-	logger.debug( '[DB] Database Interface is READY');
+	logger.debug('Database Interface is READY', {service: 'DB'});
 	return migrations;
 }
 
