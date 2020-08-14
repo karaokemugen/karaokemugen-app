@@ -764,14 +764,19 @@ async function updateTags(repo: string, local: TagList, remote: TagList) {
 			const list = [];
 			const newTagFiles = [];
 			for (const t of tagsToUpdate) {
-				const oldFiles = await resolveFileInDirs(t.oldFile, resolvedPathRepos('Tags', repo));
-				const oldPath = dirname(oldFiles[0]);
-				const newTagFile = resolve(oldPath, t.tag.tagfile);
-				newTagFiles.push(newTagFile);
-				list.push({
-					filename: newTagFile,
-					url: `https://${repo}/downloads/tags/${encodeURIComponent(t.tag.tagfile)}`
-				});
+				try {
+					const oldFiles = await resolveFileInDirs(t.oldFile, resolvedPathRepos('Tags', repo));
+					const oldPath = dirname(oldFiles[0]);
+					const newTagFile = resolve(oldPath, t.tag.tagfile);
+					newTagFiles.push(newTagFile);
+					list.push({
+						filename: newTagFile,
+						url: `https://${repo}/downloads/tags/${encodeURIComponent(t.tag.tagfile)}`
+					});
+				} catch(err) {
+					logger.error(`Could not find old tag file ${t.oldFile} in ${repo} repository. Discarding update for now.`);
+					continue;
+				}
 			}
 			await downloadFiles(null, list, task);
 			for (const f of newTagFiles) {
