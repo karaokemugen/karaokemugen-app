@@ -108,6 +108,7 @@ export function testKara(kara: any, details: TestDetails) {
 export function testTag(tag: DBTag, type: 'short'|'full'|'tag') {
 	expect(tag.name).to.be.a('string');
 	expect(tag.problematic).to.be.a('boolean');
+	if (tag.noLiveDownload) expect(tag.noLiveDownload).to.be.a('boolean');
 	expect(tag.short).to.satisfy((val: any) => typeof val === 'string' || val === null);
 	expect(tag.tid).to.be.a('string').and.match(new RegExp(uuidRegexp));
 	if (type === 'full' || type === 'tag') {
@@ -123,14 +124,14 @@ export function testTag(tag: DBTag, type: 'short'|'full'|'tag') {
 		}
 		expect(tag.types).to.be.an('array');
 		for (const type of tag.types) {
-			expect(type).to.be.a('number');
+			expect(type).to.be.a('number').and.at.least(1);
 		}
 	}
 	if (type === 'tag') {
 		expect(tag.modified_at).to.be.a('string');
 		expect(tag.repository).to.be.a('string');
 		expect(tag.tagfile).to.be.a('string');
-		expect(tag.karacount).to.satisfy((karacounts: any) => {
+		if (tag.karacount) expect(tag.karacount).to.satisfy((karacounts: any) => {
 			if (karacounts === null) return true;
 			if (Array.isArray(karacounts)) {
 				return karacounts.every(kc => typeof kc.count === 'number' && typeof kc.type === 'number');
