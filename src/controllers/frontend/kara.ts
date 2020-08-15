@@ -65,7 +65,7 @@ export default function karaController(router: Router) {
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  * @apiParam {String} [searchType] Can be `search`, `kid`, `requested`, `recent` or `played`
- * @apiParam {String} [searchValue] Value to search for. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `y:` for year et `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
+ * @apiParam {String} [searchValue] Value to search for. For `kid` it's a UUID, for `search` it's a string comprised of criterias separated by `!`. Criterias are `y:` for year, `r:` for repository and `t:` for tag + type. Example, all songs with tags UUIDs a (singer) and b (songwriter) and year 1990 is `t:a~2,b~8!y:1990`. Refer to tag types to find out which number is which type.
  * @apiParam {Number} [random] If specified, will return a `number` random list of songs
  * @apiSuccess {Object[]} content/karas Array of `kara` objects
  * @apiSuccess {Number} infos/count Number of karaokes in playlist

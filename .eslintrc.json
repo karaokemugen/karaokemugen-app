@@ -44,7 +44,7 @@
 		"no-control-regex": 0,
 		"no-return-await": 1,
 		"prefer-promise-reject-errors": 1,
-		"require-await": 1,
+		"require-await": 0,
 		"no-duplicate-imports": 1,
 		"no-var": 2,
 		"prefer-const": 1,

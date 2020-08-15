@@ -736,8 +736,27 @@ export async function initUserSystem() {
 				admin: true
 			});
 		}
+		if (!await findUserByName('adminTest2')) {
+			await createUser({
+				login: 'adminTest2',
+				password: 'ceciestuntest'
+			}, {
+				admin: true
+			});
+		}
+		if (!await findUserByName('publicTest')) {
+			await createUser({
+				login: 'publicTest',
+				password: 'ceciestuntest',
+				type: 1
+			}, {
+				admin: false
+			});
+		}
 	} else {
-		if (await findUserByName('adminTest')) await deleteUser('adminTest');
+		if (await findUserByName('adminTest')) deleteUser('adminTest');
+		if (await findUserByName('publicTest')) deleteUser('publicTest');
+		if (await findUserByName('adminTest2')) deleteUser('adminTest2');
 	}
 
 	userChecks();

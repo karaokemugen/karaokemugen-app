@@ -1,4 +1,3 @@
-DROP MATERIALIZED VIEW all_tags;
 DROP MATERIALIZED VIEW all_karas;
 DROP MATERIALIZED VIEW authors;
 DROP MATERIALIZED VIEW creators;
@@ -16,7 +15,7 @@ DROP MATERIALIZED VIEW songwriters;
 
 DROP VIEW tag_tid;
 CREATE VIEW tag_tid AS
-SELECT pk_tid AS tid, name, short, aliases, i18n, types FROM tag;
+SELECT pk_tid AS tid, name, short, aliases, i18n, types, problematic, noLiveDownload FROM tag;
 
 CREATE MATERIALIZED VIEW series AS
 SELECT kt.fk_kid, jsonb_agg(to_jsonb(t_series)) AS series, string_agg(t_series.name, ', ' ORDER BY name) AS series_sortable
@@ -122,40 +121,6 @@ CREATE INDEX idx_genres_kid ON genres(fk_kid);
 CREATE INDEX idx_origins_kid ON origins(fk_kid);
 CREATE INDEX idx_platforms_kid ON platforms(fk_kid);
 
-CREATE MATERIALIZED VIEW all_tags AS
-WITH t_count as (
-    select a.fk_tid, json_agg(json_build_object('type', a.type, 'count', a.c))::text AS count_per_type
-    FROM (
-        SELECT fk_tid, count(fk_kid) as c, type
-        FROM kara_tag
-        GROUP BY fk_tid, type) as a
-    GROUP BY a.fk_tid
-)
-SELECT
-    t.name AS name,
-    t.types AS types,
-    t.aliases AS aliases,
-    t.i18n AS i18n,
-    t.pk_tid AS tid,
-	tag_aliases.list AS search_aliases,
-    t.tagfile AS tagfile,
-    t.short as short,
-	t.repository AS repository,
-	t.modified_at AS modified_at,
-    count_per_type::jsonb AS karacount
-    FROM tag t
-    CROSS JOIN LATERAL (
-        SELECT string_agg(tag_aliases.elem::text, ' ') AS list
-        FROM jsonb_array_elements_text(t.aliases) AS tag_aliases(elem)
-    ) tag_aliases
-    LEFT JOIN t_count on t.pk_tid = t_count.fk_tid
-	GROUP BY t.pk_tid, tag_aliases.list, count_per_type
-    ORDER BY name;
-
-CREATE INDEX idx_at_name ON all_tags(name);
-CREATE INDEX idx_at_tid ON all_tags(tid);
-CREATE INDEX idx_at_search_aliases ON all_tags(search_aliases);
-
 CREATE MATERIALIZED VIEW all_karas AS
 SELECT
   k.pk_kid AS kid,
@@ -225,5 +190,3 @@ CREATE INDEX idx_ak_series_singers ON all_karas(serie_singer_sortable);
 CREATE INDEX idx_ak_language ON all_karas(languages_sortable);
 CREATE INDEX idx_ak_year ON all_karas(year);
 CREATE INDEX idx_ak_kid ON all_karas(kid);
-
-ALTER TABLE tag DROP COLUMN problematic;

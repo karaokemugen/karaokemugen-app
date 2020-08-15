@@ -58,6 +58,19 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 		this.props.save(repository);
 	};
 
+	setDefaultFolders = (): void => {
+		if (!this.props.repository.Name) {
+			const folders: {PathKaras?: string[]; PathLyrics?: string[]; PathMedias?: string[]; PathSeries?: string[]; PathTags?: string[]} = {};
+			if (this.formRef.current?.getFieldValue('PathKaras').length === 0) folders.PathKaras = [`repo/${this.formRef.current?.getFieldValue('Name')}/karaokes`];
+			if (this.formRef.current?.getFieldValue('PathLyrics').length === 0) folders.PathLyrics = [`repo/${this.formRef.current?.getFieldValue('Name')}/lyrics`];
+			if (this.formRef.current?.getFieldValue('PathMedias').length === 0) folders.PathMedias = [`repo/${this.formRef.current?.getFieldValue('Name')}/medias`];
+			if (this.formRef.current?.getFieldValue('PathSeries').length === 0) folders.PathSeries = [`repo/${this.formRef.current?.getFieldValue('Name')}/series`];
+			if (this.formRef.current?.getFieldValue('PathTags').length === 0) folders.PathTags = [`repo/${this.formRef.current?.getFieldValue('Name')}/tags`];
+			this.formRef.current?.setFieldsValue(folders);
+			console.log(this.formRef.current?.getFieldsValue())
+		}
+	}
+
 	render() {
 		return (
 			<Form
@@ -94,6 +107,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				>
 					<Input
 						placeholder={i18next.t('REPOSITORIES.NAME')}
+						onBlur={this.setDefaultFolders}
 					/>
 				</Form.Item>
 				<Form.Item

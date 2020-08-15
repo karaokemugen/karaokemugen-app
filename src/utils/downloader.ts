@@ -1,6 +1,5 @@
 // Node modules
 import Queue from 'better-queue';
-import _cliProgress from 'cli-progress';
 import {createWriteStream} from 'fs';
 import {basename} from 'path';
 import prettyBytes from 'pretty-bytes';
@@ -24,7 +23,6 @@ export default class Downloader {
 	pos = 0;
 	opts: DownloadOpts;
 	fileErrors: string[] = [];
-	bar: _cliProgress.Bar;
 	task: Task;
 	onEnd: (this: void, errors: string[]) => void;
 	queueOptions = {
@@ -38,10 +36,6 @@ export default class Downloader {
 		this.onEnd = null;
 		this.task = this.opts.task;
 		this.q = new Queue(this._queueDownload, this.queueOptions);
-		if (opts.bar) this.bar = new _cliProgress.Bar({
-			format:  'Downloading {bar} {percentage}% {value}/{total} Mb',
-			stopOnComplete: true
-		}, _cliProgress.Presets.shades_classic);
 	}
 
 	_queueDownload = (input: DownloadItem, done: any) => {
@@ -89,7 +83,6 @@ export default class Downloader {
 			value: 0,
 			total: +size
 		});
-		if (this.opts.bar && size) this.bar.start(Math.floor(+size / 1000) / 1000, 0);
 		// Insert auth in the url string
 		if (this.opts.auth) {
 			const arr = dl.url.split('://');
@@ -110,30 +103,16 @@ export default class Downloader {
 			HTTP.stream.get(dl.url, options)
 				.on('response', (res: Response) => {
 					size = +res.headers['content-length'];
-					if (this.opts.bar) {
-						this.bar.start(Math.floor(size / 1000) / 1000, 0);
-					}
 				})
 				.on('downloadProgress', state => {
-					const value = Math.floor(state.transferred / 1000) / 1000;
-					if (this.opts.bar) {
-						this.bar.update(value);
-					}
 					this.task.update({
 						value: state.transferred
 					});
 				})
 				.on('error', (err: any) => {
-					if (this.opts.bar) {
-						this.bar.stop();
-					}
 					reject(err);
 				})
 				.on('end', () => {
-					if (this.opts.bar) {
-						this.bar.update((Math.floor(size / 1000)) / 1000);
-						this.bar.stop();
-					}
 					this.task.update({
 						value: size
 					});

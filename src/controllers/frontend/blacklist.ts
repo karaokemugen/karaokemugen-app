@@ -456,7 +456,7 @@ export default function blacklistController(router: Router) {
 	router.route('/blacklist/set/criterias/copy')
 		/**
 	 * @api {post} /blacklist/set/criterias/copy Copy BLCs from one set to the other
-	 * @apiName PutCopyBLCs
+	 * @apiName PostCopyBLCs
 	 * @apiVersion 3.3.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
@@ -475,7 +475,7 @@ export default function blacklistController(router: Router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 			try {
 				await copySet(req.body.fromSet_id, req.body.toSet_id);
-				res.status(200).json('BLC_COPIED');
+				res.status(200).json(APIMessage('BLC_COPIED'));
 			} catch(err) {
 				const code = 'BLC_COPY_ERROR';
 				errMessage(code, err);

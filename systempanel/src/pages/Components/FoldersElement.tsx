@@ -8,15 +8,15 @@ import { isElectron } from '../../utils/electron';
 import FileSystem from './FileSystem';
 
 interface FoldersElementProps {
-	onChange: any,
-	value?: any[],
-	keyModal?: string,
-	openFile?: boolean,
-	openDirectory?: boolean
+	onChange: any;
+	value?: any[];
+	keyModal?: string;
+	openFile?: boolean;
+	openDirectory?: boolean;
 }
 
 interface FoldersElementState {
-	value: any[] | string,
+	value: any[] | string;
 	visibleModal: boolean;
 	indexModal?: number;
 	keyModal?: string;
@@ -109,20 +109,20 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	render() {
 		return (
 			<div>
-				{Array.isArray(this.state.value) ?
+				{Array.isArray(this.props.value) ?
 					<React.Fragment>
-						{this.state.value.map((element, index) =>
+						{this.props.value.map((element, index) =>
 							<div key={element} style={{ display: 'flex', marginBottom: '10px' }}>
-								{this.state.value.length > 1 ?
+								{this.props.value.length > 1 ?
 									<React.Fragment>
-										<Radio style={{ width: '150px' }} checked={this.state.value[0] === element}
+										<Radio style={{ width: '150px' }} checked={this.props.value[0] === element}
 											onChange={() => {
 												const value = (this.state.value as Array<string>).filter(val => val === element)
 													.concat((this.state.value as Array<string>).filter(val => val !== element));
 												this.setState({ value: value });
 												this.props.onChange && this.props.onChange(value);
 											}}>
-											{this.state.value[0] === element ? i18next.t('CONFIG.PRIMARY_DIRECTORY') : null}
+											{this.props.value[0] === element ? i18next.t('CONFIG.PRIMARY_DIRECTORY') : null}
 										</Radio>
 										<div style={{ width: '50px' }}>
 											<Button type="primary" danger icon={<DeleteOutlined />}
@@ -142,7 +142,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 							<PlusOutlined />{this.getButtonLabel()}
 						</Button>
 					</React.Fragment> :
-					<Input onClick={() => this.openFileSystemModal(this.state.value, undefined, this.props.keyModal)} defaultValue={this.state.value} />
+					<Input onClick={() => this.openFileSystemModal(this.props.value, undefined, this.props.keyModal)} value={this.props.value} />
 				}
 
 				<Modal
