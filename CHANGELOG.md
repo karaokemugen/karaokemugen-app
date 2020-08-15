@@ -1,6 +1,6 @@
 # Versions
 
-## v4.1.4 "Ôgi Observatrice" - 16/08/2020
+## v4.1.6 "Ôgi Observatrice" - 16/08/2020
 
 ### New features
 
@@ -9,15 +9,19 @@
 - Karafun files can now be imported when they only contain metadata information, not video/song blobs (#733)
 - Added a filter field in system panel's configuration page (#730)
 - Some tags now have a "problematic" flag (Spoiler, Adults only and Epilepsy) which should allow you to recognize karaokes using them more easily in the list (#695)
+- Playlists can be inverted between left and right if you select the same playlist in the opposite pane
 
 ### Improvements
 
+- Search is now much faster thanks to the us of text search vectors in PostgreSQL (#774)
+- When adding a new repository, folders are all pre-filled to make it much easier (#771)
 - Polls now work if you're at the last song of a playlist (#753)
 - Configuration validation is now more complete and will prevent some errors (#750)
 - When KM's network port is busy, it uses a new one but won't save it to config file if it's not your first time running the app (#745)
 - Added check for PostgreSQL version when running the bundled one (#743)
 - Cleaned some database code (#742)
-
+- A lot of unit tests have been added (about 80) to better test for regressions when developping (#706)
+- Updated menu code to make it slicker and rearranged some items
 
 ### Fixes
 
@@ -25,6 +29,14 @@
 - When using a filter on the library, using the "Add all songs" button now takes the filter into account (#762)
 - Fixed some series' name display bug (#757)
 - Mastodon toots are now displayed correctly (#754)
+- Fixed password reset (local and online) mechanisms (#768)
+- Do not error out anymore during tag updates if the old tag can't be found anymore
+- Fixed searching songs by year
+- Fixed BLC set copy not regenerating blacklist
+- Fixed BLC set exports
+- Fixed generation for tags without any types
+- Fixed some tasks not being ended correctly (file download, media download and repository consolidation tasks)
+- Fixed locales for consolidation task
 
 ## v4.0.15 "Ôgi Obscure" - 26/07/2020
 
