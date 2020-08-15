@@ -1,6 +1,5 @@
 import { Repository } from '../lib/types/repo';
 import { getConfig, setConfig } from '../lib/utils/config';
-import { removeNulls } from '../lib/utils/object_helpers';
 
 export function selectRepos() {
 	return getConfig().System.Repositories;
@@ -32,7 +31,6 @@ export function deleteRepo(name: string) {
 	const conf = getConfig();
 	const repos = conf.System.Repositories;
 	const repoIndex = repos.findIndex(r => r.Name === name);
-	repos[repoIndex] = null;
-	removeNulls(repos);
+	delete repos[repoIndex];
 	setConfig({ System: { Repositories: repos}});
 }
