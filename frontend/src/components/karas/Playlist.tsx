@@ -196,6 +196,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('playerStatus', this.updateCounters);
 
 		window.addEventListener('resize', this.refreshUiOnResize, true);
+		store.addChangeListener('changeIdPlaylist', this.changeIdPlaylistFromOtherSide);
 	}
 
 	initCall = async () => {
@@ -213,10 +214,15 @@ class Playlist extends Component<IProps, IState> {
 		window.removeEventListener('resize', this.refreshUiOnResize, true);
 		store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
 		store.removeChangeListener('loginUpdated', this.initCall);
+		store.removeChangeListener('changeIdPlaylist', this.changeIdPlaylistFromOtherSide);
 	}
 
 	refreshUiOnResize = () => {
 		this.playlistForceRefresh(true);
+	}
+
+	changeIdPlaylistFromOtherSide = (side:number, idPlaylist:number) => {
+		if (this.props.side === side) this.changeIdPlaylist(idPlaylist);
 	}
 
 	SortableList = SortableContainer((List as any), { withRef: true })
@@ -386,9 +392,13 @@ class Playlist extends Component<IProps, IState> {
 			this.props.toggleSearchMenu && this.props.toggleSearchMenu();
 		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
+		const oldIdPlaylist = this.state.idPlaylist;
 		await this.setState({ idPlaylist: Number(idPlaylist), data: undefined });
 		this.getPlaylist();
 		this.props.majIdsPlaylist(this.props.side, idPlaylist);
+		if (idPlaylist === this.props.idPlaylistTo) {
+			store.emit('changeIdPlaylist', this.props.side === 1 ? 2 : 1, oldIdPlaylist);
+		}
 	};
 
 	editNamePlaylist = () => {
@@ -823,8 +833,7 @@ class Playlist extends Component<IProps, IState> {
 						side={this.props.side}
 						scope={this.props.scope}
 						config={this.props.config}
-						playlistList={this.props.playlistList.filter(
-							(playlist: PlaylistElem) => playlist.playlist_id !== this.props.idPlaylistTo)}
+						playlistList={this.props.playlistList}
 						idPlaylist={this.state.idPlaylist}
 						bLSet={this.state.bLSet}
 						bLSetList={this.state.bLSetList}
