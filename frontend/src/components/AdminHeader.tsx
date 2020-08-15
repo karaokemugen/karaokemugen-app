@@ -196,14 +196,9 @@ class AdminHeader extends Component<IProps, IState> {
 						data-namecommand={this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? 'pause' : 'play'}
 						className="btn btn-primary"
 						onClick={this.play}
-						disabled={this.props.currentPlaylist?.karacount === 0}
+						disabled={this.state.statusPlayer?.playerStatus === 'pause' && this.props.currentPlaylist?.karacount === 0}
 					>
-						{this.state.statusPlayer && this.state.statusPlayer.playerStatus === 'play' ? (
-							<i className="fas fa-pause"></i>
-						) :
-							(
-								<i className="fas fa-play"></i>
-							)}
+						{this.state.statusPlayer?.playerStatus === 'play' ? <i className="fas fa-pause" /> : <i className="fas fa-play" />}
 					</button>
 					<button
 						title={i18next.t('NEXT_SONG')}
@@ -246,7 +241,7 @@ class AdminHeader extends Component<IProps, IState> {
 					title={i18next.t(this.state.statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 					id="showSubs"
 					data-namecommand={this.state.statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
-					className={`btn btn-dark subtitleButton buttonsNotMobile ${this.state.statusPlayer?.showSubs ? 'showSubs':'hideSubs'}`}
+					className={`btn btn-dark subtitleButton buttonsNotMobile ${this.state.statusPlayer?.showSubs ? 'showSubs' : 'hideSubs'}`}
 					onClick={this.props.putPlayerCommando}
 				>
 					<span className="fa-stack">
