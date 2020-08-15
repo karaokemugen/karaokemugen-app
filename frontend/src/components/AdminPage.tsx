@@ -150,9 +150,9 @@ class AdminPage extends Component<IProps, IState> {
 	}
 
 	changeCurrentSide = () => {
-		if (this.state.currentSide == 1) {
+		if (this.state.currentSide === 1) {
 			this.setState({ currentSide: 2 });
-		} else if (this.state.currentSide == 2) {
+		} else if (this.state.currentSide === 2) {
 			this.setState({ currentSide: 1 });
 		}
 	};
