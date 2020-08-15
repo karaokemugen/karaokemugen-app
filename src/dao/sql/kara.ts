@@ -227,7 +227,7 @@ VALUES(
 );
 `;
 
-export const sqlgetYears = 'SELECT year, karacount FROM all_years ORDER BY year';
+export const sqlgetYears = 'SELECT year, karacount::integer FROM all_years ORDER BY year';
 
 export const sqlselectAllKIDs = `
 SELECT ak.kid

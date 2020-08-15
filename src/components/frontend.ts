@@ -20,6 +20,7 @@ import pollController from '../controllers/frontend/poll';
 import repoController from '../controllers/frontend/repo';
 import sessionController from '../controllers/frontend/session';
 import tagsController from '../controllers/frontend/tags';
+import testController from '../controllers/frontend/test';
 import userController from '../controllers/frontend/user';
 import whitelistController from '../controllers/frontend/whitelist';
 import {resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
@@ -49,7 +50,7 @@ function apiRouter() {
 	tagsController(apiRouter);
 	pollController(apiRouter);
 	repoController(apiRouter);
-
+	if (getState().isTest) testController(apiRouter);
 	return apiRouter;
 }
 

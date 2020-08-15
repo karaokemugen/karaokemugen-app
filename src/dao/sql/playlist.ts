@@ -142,8 +142,8 @@ SELECT
   ak.duration AS duration,
   pc.created_at AS created_at,
   ak.mediasize AS mediasize,
-  COUNT(p.played_at) AS played,
-  COUNT(rq.requested_at) AS requested,
+  COUNT(p.played_at)::integer AS played,
+  COUNT(rq.requested_at)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
 		THEN TRUE
 		ELSE FALSE
@@ -173,6 +173,7 @@ SELECT
   (SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   pc.flag_visible AS flag_visible,
+  pc.flag_free AS flag_free,
   COUNT(pc.pk_id_plcontent) OVER()::integer AS count,
   ak.repository AS repository
 FROM all_karas AS ak
@@ -281,7 +282,7 @@ SELECT
 	ELSE FALSE
   END) AS flag_playing,
   (SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
-  pc.flag_free AS flag_free,
+  COALESCE(pc.flag_free, false) AS flag_free,
   (CASE WHEN wl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_whitelisted,
   (CASE WHEN bl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
@@ -375,8 +376,8 @@ SELECT p.pk_id_playlist AS playlist_id,
 	p.created_at AS created_at,
 	p.modified_at AS modified_at,
 	p.flag_visible AS flag_visible,
-	p.flag_current AS flag_current,
-	p.flag_public AS flag_public,
+	COALESCE(p.flag_current, false) AS flag_current,
+	COALESCE(p.flag_public, false) AS flag_public,
 	p.fk_id_plcontent_playing AS plcontent_id_playing,
 	p.fk_login AS username
 FROM playlist AS p

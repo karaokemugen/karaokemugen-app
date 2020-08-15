@@ -10,7 +10,8 @@ export interface DBStats {
 	playlists: number,
 	duration: number,
 	blacklist: number,
-	whitelist: number
+	whitelist: number,
+	tags: number
 }
 
 export interface DBSetting {
