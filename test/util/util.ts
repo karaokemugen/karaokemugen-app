@@ -112,7 +112,7 @@ export function testTag(tag: DBTag, type: 'short'|'full'|'tag') {
 	expect(tag.short).to.satisfy((val: any) => typeof val === 'string' || val === null);
 	expect(tag.tid).to.be.a('string').and.match(new RegExp(uuidRegexp));
 	if (type === 'full' || type === 'tag') {
-		expect(tag.aliases).to.satisfy((e:any) => e === undefined || Array.isArray(e));
+		if (tag.aliases) expect(tag.aliases).to.satisfy((e:any) => e === undefined || Array.isArray(e));
 		expect(tag.i18n).to.be.an('object');
 		for (const val of Object.values(tag.i18n)) {
 			expect(val).to.be.a('string');

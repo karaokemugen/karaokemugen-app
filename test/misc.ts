@@ -22,7 +22,7 @@ describe('Main', () => {
 				expect(res.body.state.appPath).to.be.a('string');
 				expect(res.body.state.currentPlaylistID).to.be.a('number');
 				expect(res.body.state.dataPath).to.be.a('string');
-				expect(res.body.state.environment).to.be.a('string');
+				expect(res.body.state.environment).to.satisfy((e:any) => e === undefined || typeof e === 'string');
 				expect(res.body.state.os).to.be.a('string');
 				expect(res.body.state.publicPlaylistID).to.be.a('number');
 				expect(res.body.state.sentryTest).to.satisfy((e:any) => e === undefined || typeof e === 'boolean');
