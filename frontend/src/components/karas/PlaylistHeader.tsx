@@ -646,7 +646,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 													<option value={-5}>{i18next.t('PLAYLIST_FAVORITES')}</option>
 												</React.Fragment>) :
 												(<React.Fragment>
-													{this.props.playlistList && this.props.playlistList.map(playlist => {
+													{this.props.playlistList?.map(playlist => {
 														return <option className="selectPlaylist" key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}{this.getFlagLabel(playlist)}</option>;
 													})}
 												</React.Fragment>)
