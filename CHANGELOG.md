@@ -9,7 +9,7 @@
 - Karafun files can now be imported when they only contain metadata information, not video/song blobs (#733)
 - Added a filter field in system panel's configuration page (#730)
 - Some tags now have a "problematic" flag (Spoiler, Adults only and Epilepsy) which should allow you to recognize karaokes using them more easily in the list (#695)
-- Playlists can be inverted between left and right if you select the same playlist in the opposite pane
+- Playlists can be inverted between left and right if you select the same playlist in the opposite panel
 
 ### Improvements
 
@@ -37,6 +37,8 @@
 - Fixed generation for tags without any types
 - Fixed some tasks not being ended correctly (file download, media download and repository consolidation tasks)
 - Fixed locales for consolidation task
+- Fixed player stop button with single play
+- Fixed series languages mode synchronization between instances for online account
 
 ## v4.0.15 "Ôgi Obscure" - 26/07/2020
 
