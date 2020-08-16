@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
 import { Layout } from 'antd';
-import RepositoryForm from './RepositoriesForm';
-import { Repository } from '../../../../src/lib/types/repo';
-
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-import Axios from 'axios';
-import { getAxiosInstance } from '../../axiosInterceptor';
 import Modal from 'antd/lib/modal/Modal';
+import Axios from 'axios';
 import i18next from 'i18next';
+import React, { Component } from 'react';
+import { RouteComponentProps,withRouter } from 'react-router-dom';
+
+import { Repository } from '../../../../src/lib/types/repo';
+import { getAxiosInstance } from '../../axiosInterceptor';
+import RepositoryForm from './RepositoriesForm';
 
 interface RepositoriesEditState {
-	repository: Repository,
-	save: (repository: Repository) => void,
-	report: string,
-	selectedRepo: string
+	repository: Repository;
+	save: (repository: Repository) => void;
+	report: string;
+	selectedRepo: string;
 }
 
 const newrepository: Repository = {
@@ -48,13 +48,13 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 	};
 
 	saveUpdate = async (repository) => {
-		await getAxiosInstance().put(`/repos/${this.state.repository.Name}`, repository)
+		await getAxiosInstance().put(`/repos/${this.state.repository.Name}`, repository);
 		this.props.history.push('/system/km/repositories');
 	};
 
 	loadrepository = async () => {
 		if (this.props.match.params.name) {
-			let res = await Axios.get(`/repos/${this.props.match.params.name}`);
+			const res = await Axios.get(`/repos/${this.props.match.params.name}`);
 			this.setState({ repository: res.data, save: this.saveUpdate });
 		} else {
 			this.setState({ repository: { ...newrepository }, save: this.saveNew });
@@ -64,14 +64,14 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 	consolidate = async (consolidatePath: string) => {
 		if (consolidatePath) {
-			await getAxiosInstance().post(`/repos/${this.props.match.params.name}/consolidate`, { path: consolidatePath })
+			await getAxiosInstance().post(`/repos/${this.props.match.params.name}/consolidate`, { path: consolidatePath });
 			this.props.history.push('/system/km/repositories');
 		}
 	}
 
 	compareLyrics = async (repo: string) => {
 		if (repo) {
-			let response = await Axios.get(`/repos/${this.props.match.params.name}/compareLyrics`, { data: { repo: repo } });
+			const response = await Axios.get(`/repos/${this.props.match.params.name}/compareLyrics`, { data: { repo: repo } });
 			this.setState({ report: response.data, selectedRepo: repo });
 		}
 	}

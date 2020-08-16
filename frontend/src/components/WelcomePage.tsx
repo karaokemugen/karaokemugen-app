@@ -109,15 +109,6 @@ class WelcomePage extends Component<IProps, IState> {
 		}
 	};
 
-	majPrivate = async () => {
-		const session = this.state.activeSession as Session;
-		if (session) {
-			session.private = !session.private;
-			await axios.put(`/sessions/${session.seid}`, session);
-		}
-		this.getSessions();
-	};
-
 	getCatchphrase = async () => {
 		const res = await axios.get('/catchphrase');
 		this.setState({ catchphrase: res.data });
@@ -182,7 +173,7 @@ class WelcomePage extends Component<IProps, IState> {
 					dateStr: new Date(
 						mast.body.rss.channel.item[i].pubDate._text
 					).toLocaleDateString(),
-					title: mast.body.rss.channel.item[i].title._text,
+					title: i18next.t('MASTODON_UPDATE'),
 					link: mast.body.rss.channel.item[i].link._text,
 					type: 'mast'
 				});
@@ -250,8 +241,8 @@ class WelcomePage extends Component<IProps, IState> {
 						<div className="session-setting">
 							{logInfos && logInfos.role === 'admin' && sessions.length > 0 ? (
 								<React.Fragment>
-									<article className="active-session">
-										<label className="menu-top-sessions-label">{i18next.t('ACTIVE_SESSION')}</label>
+									<article>
+										<label>{i18next.t('ACTIVE_SESSION')}</label>
 										<Autocomplete
 											value={this.state.activeSession?.name}
 											options={sessions}
@@ -259,9 +250,10 @@ class WelcomePage extends Component<IProps, IState> {
 											acceptNewValues={true}
 										/>
 									</article>
-									<article className="private-session">
-										<label className="menu-top-sessions-label">{i18next.t('PRIVATE_SESSION')}</label>
-										<Switch handleChange={this.majPrivate} isChecked={this.state.activeSession?.private} />
+									<article>
+										<a href={`/system/km/sessions/${this.state.activeSession?.seid}`} title={i18next.t('EDIT_SESSION')} >
+											<i className="fas fa-edit" />
+										</a>
 									</article>
 								</React.Fragment>
 							) : null}

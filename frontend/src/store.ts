@@ -9,7 +9,8 @@ import { parseJwt} from './components/tools';
 
 let filterValue1 = '';
 let filterValue2 = '';
-let posPlaying:number;
+let posPlaying1:number;
+let posPlaying2:number;
 let timer:NodeJS.Timeout;
 let tuto:any;
 let config:Config;
@@ -76,12 +77,28 @@ class Store extends EventEmitter {
 		currentBlSet = blset;
 	}
 
-	getPosPlaying() {
-		return posPlaying;
+	getPosPlaying(side:number) {
+		if (side === 1) {
+			return posPlaying1;
+		} else {
+			return posPlaying2;
+		}
 	}
 
-	setPosPlaying(pos:number) {
-		posPlaying = pos;
+	getPosPlayingOpposite(side:number) {
+		if (side === 1) {
+			return posPlaying2;
+		} else {
+			return posPlaying1;
+		}
+	}
+
+	setPosPlaying(pos:number, side:number) {
+		if (side === 1) {
+			posPlaying1 = pos;
+		} else {
+			posPlaying2 = pos;
+		}
 	}
     
 	getTuto() {

@@ -81,6 +81,7 @@ class AdminPage extends Component<IProps, IState> {
 		store.addChangeListener('loginUpdated', this.getPlaylistList);
 		getSocket().on('operatorNotificationInfo ', (data:{code: string, data: string}) => displayMessage('info', i18next.t(data.code)));
 		getSocket().on('operatorNotificationError', (data:{code: string, data: string}) => displayMessage('error', i18next.t(data.code)));
+		getSocket().on('notificationEndOfSessionNear', (data:string) => displayMessage('warning', i18next.t('NOTIFICATION.OPERATOR.INFO.END_OF_SESSION_NEAR', {data: data})));
 	}
 
 	componentWillUnmount() {
@@ -149,9 +150,9 @@ class AdminPage extends Component<IProps, IState> {
 	}
 
 	changeCurrentSide = () => {
-		if (this.state.currentSide == 1) {
+		if (this.state.currentSide === 1) {
 			this.setState({ currentSide: 2 });
-		} else if (this.state.currentSide == 2) {
+		} else if (this.state.currentSide === 2) {
 			this.setState({ currentSide: 1 });
 		}
 	};

@@ -1,13 +1,13 @@
 // Node modules
 import merge from 'lodash.merge';
 
+import {getConfig} from '../lib/utils/config';
 // KM Imports
 import { supportedFiles } from '../lib/utils/constants';
 import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 // Types
-import {PublicPlayerState,State, PublicState} from '../types/state';
-import {getConfig} from "../lib/utils/config";
+import {PublicPlayerState,PublicState,State} from '../types/state';
 
 // Internal settings
 let state: State = {
@@ -41,7 +41,8 @@ let state: State = {
 	opt: {},
 	args: [],
 	environment: process.env.SENTRY_ENVIRONMENT,
-	sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean
+	sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
+	currentBLCSetID: 1
 };
 
 /** Get public state (to send to webapp users) */
@@ -98,7 +99,7 @@ export function getPublicState(admin: boolean): PublicState {
 }
 
 /** Set one or more settings in app state */
-export function setState(part: any) {
+export function setState(part: Partial<State>) {
 	state = merge(state, part);
 	emit('stateUpdated', state);
 	emitPlayerState();

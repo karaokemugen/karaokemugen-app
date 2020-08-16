@@ -241,6 +241,7 @@ async function editRemoteUser(user: User) {
 	if (user.email) form.append('email', user.email);
 	if (user.url) form.append('url', user.url);
 	if (user.password) form.append('password', user.password);
+	if (user.series_lang_mode) form.append('series_lang_mode', user.series_lang_mode);
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
 	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
 	try {
@@ -735,8 +736,27 @@ export async function initUserSystem() {
 				admin: true
 			});
 		}
+		if (!await findUserByName('adminTest2')) {
+			await createUser({
+				login: 'adminTest2',
+				password: 'ceciestuntest'
+			}, {
+				admin: true
+			});
+		}
+		if (!await findUserByName('publicTest')) {
+			await createUser({
+				login: 'publicTest',
+				password: 'ceciestuntest',
+				type: 1
+			}, {
+				admin: false
+			});
+		}
 	} else {
-		if (await findUserByName('adminTest')) await deleteUser('adminTest');
+		if (await findUserByName('adminTest')) deleteUser('adminTest');
+		if (await findUserByName('publicTest')) deleteUser('publicTest');
+		if (await findUserByName('adminTest2')) deleteUser('adminTest2');
 	}
 
 	userChecks();
@@ -949,10 +969,10 @@ export function resetSecurityCode() {
 	logger.warn(`SECURITY CODE RESET : ${getState().securityCode}`, {service: 'Users'});
 }
 
-function generateSecurityCode(): string {
-	return randomstring.generate({
+function generateSecurityCode(): number {
+	return parseInt(randomstring.generate({
 		length: 6,
 		charset: 'numeric'
-	});
+	}));
 }
 

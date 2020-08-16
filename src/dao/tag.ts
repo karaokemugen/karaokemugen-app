@@ -32,16 +32,11 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 
 function buildTagClauses(words: string): WhereClause {
 	const params = paramWords(words);
-	const sql = [];
-	for (const word of Object.keys(params)) {
-		sql.push(`lower(unaccent(name)) LIKE :${word} OR
-		lower(unaccent(i18n::varchar)) LIKE :${word} OR
-		lower(unaccent(search_aliases)) LIKE :${word}
-		`);
-	}
+	const tsquery = params.join(' & ');
+	const sql = ['search_vector @@ to_tsquery(:tsquery)'];
 	return {
 		sql: sql,
-		params: params
+		params: {tsquery}
 	};
 }
 
@@ -55,7 +50,9 @@ export async function insertTag(tag: Tag) {
 		JSON.stringify(tag.aliases) || null,
 		tag.tagfile,
 		tag.repository,
-		tag.modified_at
+		tag.modified_at,
+		tag.problematic || false,
+		tag.noLiveDownload || false
 	]);
 }
 
@@ -100,7 +97,9 @@ export function updateTag(tag: Tag) {
 		tag.i18n || {},
 		tag.tid,
 		tag.repository,
-		tag.modified_at
+		tag.modified_at,
+		tag.problematic || false,
+		tag.noLiveDownload || false
 	]);
 }
 

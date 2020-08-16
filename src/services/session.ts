@@ -1,10 +1,13 @@
 import { createObjectCsvWriter as csvWriter } from 'csv-writer';
+import i18next from 'i18next';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
-import {cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
+import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
+import { getConfig } from '../lib/utils/config';
 import { sanitizeFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
+import { emitWS } from '../lib/utils/ws';
 import { Session } from '../types/session';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
@@ -18,34 +21,41 @@ export async function getSessions() {
 	return sessions;
 }
 
-export async function addSession(name: string, started_at?: string, activate?: boolean, flag_private?: boolean): Promise<string> {
+export async function addSession(name: string, started_at?: string, ended_at?: string, activate?: boolean, flag_private?: boolean): Promise<Session> {
 	const date = started_at
 		? new Date(started_at)
 		: new Date();
 	const seid = uuidV4();
-	await insertSession({
+	const session = {
 		seid: seid,
 		name: name,
 		started_at: date,
+		ended_at: ended_at ? new Date(ended_at) : null,
 		private: flag_private || false
-	});
-	if (activate) setActiveSession(seid);
-	return seid;
+	};
+	await insertSession(session);
+	if (activate) setActiveSession(session);
+	return session;
 }
 
-export function setActiveSession(seid: string) {
-	setState({currentSessionID: seid});
+export function setActiveSession(session: Session) {
+	setState({
+		currentSessionID: session.seid,
+		currentSessionEndsAt: session.ended_at
+	});
 }
 
-export async function editSession(seid: string, name: string, started_at: string, flag_private: boolean) {
-	const session = await findSession(seid);
-	if (!session) throw {code: 404, msg: 'Session does not exist'};
-	return updateSession({
-		seid: seid,
-		name: name,
-		started_at: new Date(started_at),
-		private: flag_private || false
-	});
+export async function editSession(session: Session) {
+	const oldSession = await findSession(session.seid);
+	if (!oldSession) throw {code: 404, msg: 'Session does not exist'};
+	if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime()) throw {code: 409, msg: 'ERROR_CODES.SESSION_END_BEFORE_START_ERROR'};
+	session.started_at
+		? session.started_at = new Date(session.started_at)
+		: session.started_at = oldSession.started_at;
+	// Ended_at is optional
+	if (session.ended_at) session.ended_at = new Date(session.ended_at);
+	await updateSession(session);
+	if (session.active) setActiveSession(session);
 }
 
 export async function removeSession(seid: string) {
@@ -55,7 +65,7 @@ export async function removeSession(seid: string) {
 	return deleteSession(seid);
 }
 
-async function findSession(seid: string): Promise<Session> {
+export async function findSession(seid: string): Promise<Session> {
 	const sessions = await selectSessions();
 	return sessions.find(s => s.seid === seid);
 }
@@ -70,6 +80,9 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 	const started_at = session1.started_at < session2.started_at
 		? session1.started_at
 		: session2.started_at;
+	const ended_at = session1.ended_at > session2.ended_at
+		? session1.ended_at
+		: session2.ended_at;
 	const name = session1.started_at < session2.started_at
 		? session1.name
 		: session2.name;
@@ -77,10 +90,12 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 	const session = {
 		name: name,
 		seid: seid,
-		started_at: started_at
+		started_at: new Date(started_at),
+		ended_at: new Date(ended_at),
+		private: session1.private || session2.private
 	};
 	await insertSession(session);
-	if (session1.active || session2.active) setActiveSession(seid);
+	if (session1.active || session2.active) setActiveSession(session);
 	await Promise.all([
 		replaceSession(seid1, seid),
 		replaceSession(seid2, seid)
@@ -98,13 +113,31 @@ export async function initSession() {
 
 	const sessions = await selectSessions();
 	// If last session is still on the same date as today, just set current session to this one
-	if (sessions[0] && sessions[0].started_at.toDateString() === new Date().toDateString()) {
-		setActiveSession(sessions[0].seid);
+	if (sessions[0]?.started_at.toDateString() === new Date().toDateString()) {
+		setActiveSession(sessions[0]);
 	} else {
 		// If no session is found or session is on another day, create a new one
-		setActiveSession(await addSession(new Date().toISOString(), new Date().toString()));
+		const date = new Date();
+		setActiveSession(await addSession(i18next.t('NEW_SESSION_NAME', {date: date.toLocaleString(), interpolation: {escapeValue: false}}), date.toISOString()));
 	}
+	await autoFillSessionEndedAt(getState().currentSessionID);
+	// Check every minute if we should be notifying the end of session to the operator
+	setInterval(checkSessionEnd, 1000 * 60);
 	logger.debug('Sessions initialized', {service: 'Sessions'});
+}
+
+function checkSessionEnd() {
+	if (!getState().currentSessionEndsAt) return;
+	const currentDateInt = new Date().getTime();
+	const sessionDateInt = getState().currentSessionEndsAt.getTime();
+	const sessionWarnDateInt = sessionDateInt - (getConfig().Karaoke.MinutesBeforeEndOfSessionWarning * 60 * 1000);
+	// We substr at 0, 16 to compare only dates up to a minute.
+	const sessionWarnDate = new Date(sessionWarnDateInt).toISOString().substring(0, 16);
+	const currentDate = new Date(currentDateInt).toISOString().substring(0, 16);
+	if (currentDate === sessionWarnDate) {
+		logger.info('Notifying operator of end of session being near', {service: 'Sessions'});
+		emitWS('notificationEndOfSessionNear', getConfig().Karaoke.MinutesBeforeEndOfSessionWarning);
+	}
 }
 
 export async function exportSession(seid: string) {

@@ -408,9 +408,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 										: <i className="far fa-square"></i>
 								}
 							</button>
-							<ActionsButtons idPlaylistTo={this.props.idPlaylistTo} idPlaylist={this.props.idPlaylist}
-								scope={this.props.scope} isHeader={true} addKara={this.props.addCheckedKaras}
-								deleteKara={this.props.deleteCheckedKaras} transferKara={this.props.transferCheckedKaras}
+							<ActionsButtons
+								idPlaylistTo={this.props.idPlaylistTo}
+								idPlaylist={this.props.idPlaylist}
+								scope={this.props.scope}
+								side={this.props.side}
+								isHeader={true}
+								addKara={this.props.addCheckedKaras}
+								deleteKara={this.props.deleteCheckedKaras}
+								transferKara={this.props.transferCheckedKaras}
 								checkedkaras={this.props.checkedkaras} />
 						</React.Fragment> : null
 					}
@@ -640,7 +646,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 													<option value={-5}>{i18next.t('PLAYLIST_FAVORITES')}</option>
 												</React.Fragment>) :
 												(<React.Fragment>
-													{this.props.playlistList && this.props.playlistList.map(playlist => {
+													{this.props.playlistList?.map(playlist => {
 														return <option className="selectPlaylist" key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}{this.getFlagLabel(playlist)}</option>;
 													})}
 												</React.Fragment>)

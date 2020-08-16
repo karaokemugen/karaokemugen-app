@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import { Button, Input, Checkbox, Alert, Form, Select, Divider, Tooltip } from 'antd';
-import i18next from 'i18next';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Repository } from '../../../../src/lib/types/repo';
-import FoldersElement from '../Components/FoldersElement';
+import { Alert, Button, Checkbox, Divider, Form, Input, Select, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import Axios from 'axios';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+
+import { Repository } from '../../../../src/lib/types/repo';
+import FoldersElement from '../Components/FoldersElement';
 
 interface RepositoriesFormProps {
 	repository: Repository;
@@ -37,12 +38,12 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 	}
 
 	getRepositories = async () => {
-		const res = await Axios.get("/repos");
+		const res = await Axios.get('/repos');
 		this.setState({ repositoriesValue: res.data.filter(repo => repo.Name !== this.props.repository.Name).map(repo => repo.Name) });
 	};
 
 	handleSubmit = (values) => {
-		let repository: Repository = {
+		const repository: Repository = {
 			Name: values.Name,
 			Online: values.Online,
 			Enabled: values.Enabled,
@@ -56,6 +57,19 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 		};
 		this.props.save(repository);
 	};
+
+	setDefaultFolders = (): void => {
+		if (!this.props.repository.Name) {
+			const folders: {PathKaras?: string[]; PathLyrics?: string[]; PathMedias?: string[]; PathSeries?: string[]; PathTags?: string[]} = {};
+			if (this.formRef.current?.getFieldValue('PathKaras').length === 0) folders.PathKaras = [`repo/${this.formRef.current?.getFieldValue('Name')}/karaokes`];
+			if (this.formRef.current?.getFieldValue('PathLyrics').length === 0) folders.PathLyrics = [`repo/${this.formRef.current?.getFieldValue('Name')}/lyrics`];
+			if (this.formRef.current?.getFieldValue('PathMedias').length === 0) folders.PathMedias = [`repo/${this.formRef.current?.getFieldValue('Name')}/medias`];
+			if (this.formRef.current?.getFieldValue('PathSeries').length === 0) folders.PathSeries = [`repo/${this.formRef.current?.getFieldValue('Name')}/series`];
+			if (this.formRef.current?.getFieldValue('PathTags').length === 0) folders.PathTags = [`repo/${this.formRef.current?.getFieldValue('Name')}/tags`];
+			this.formRef.current?.setFieldsValue(folders);
+			console.log(this.formRef.current?.getFieldsValue())
+		}
+	}
 
 	render() {
 		return (
@@ -77,11 +91,11 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			>
 				<Form.Item hasFeedback
 					label={
-						<span>{i18next.t(this.formRef.current?.getFieldValue("Online") ?
+						<span>{i18next.t(this.formRef.current?.getFieldValue('Online') ?
 						 'REPOSITORIES.ONLINE_NAME' : 'REPOSITORIES.NAME')}&nbsp;
-							<Tooltip title={i18next.t('REPOSITORIES.TOOLTIP_NAME')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
+						<Tooltip title={i18next.t('REPOSITORIES.TOOLTIP_NAME')}>
+							<QuestionCircleOutlined />
+						</Tooltip>
 						</span>
 					}
 					labelCol={{ flex: '0 1 200px' }}
@@ -93,6 +107,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				>
 					<Input
 						placeholder={i18next.t('REPOSITORIES.NAME')}
+						onBlur={this.setDefaultFolders}
 					/>
 				</Form.Item>
 				<Form.Item
@@ -166,11 +181,11 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				>
 					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathTags': value })} />
 				</Form.Item>
-				<Form.Item style={{ textAlign: "right" }}>
+				<Form.Item style={{ textAlign: 'right' }}>
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 				<Divider orientation="left">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
-				<Alert style={{ textAlign: "left", marginBottom: '10px' }}
+				<Alert style={{ textAlign: 'left', marginBottom: '10px' }}
 					message={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
 					type="info"
 				/>
@@ -186,14 +201,14 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 									<Select style={{ maxWidth: '50%', minWidth: '150px' }} placeholder={i18next.t('TAGS.REPOSITORY')}
 										onChange={value => this.setState({ compareRepo: value.toString() })}>
 										{this.state.repositoriesValue.map(repo => {
-											return <Select.Option key={repo} value={repo}>{repo}</Select.Option>
+											return <Select.Option key={repo} value={repo}>{repo}</Select.Option>;
 										})
 										}
 									</Select>
 								</Form.Item>
 								<Form.Item
 									labelCol={{ flex: '0 1 200px' }}
-									style={{ textAlign: "right" }}>
+									style={{ textAlign: 'right' }}>
 									<div>
 										<Button type='primary' onClick={() => this.props.compareLyrics(this.state.compareRepo)}>
 											{i18next.t('REPOSITORIES.COMPARE_BUTTON')}
@@ -212,12 +227,12 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							<FoldersElement openDirectory={true} onChange={(value) => this.setState({ consolidatePath: value[0] })} />
 						</Form.Item>
 						<Form.Item
-							style={{ textAlign: "right" }}
+							style={{ textAlign: 'right' }}
 						>
 							<Button type="primary" danger onClick={() => this.props.consolidate(this.state.consolidatePath)}>
 								{i18next.t('REPOSITORIES.CONSOLIDATE_BUTTON')}
 							</Button>
-							<Alert style={{ textAlign: "left", marginTop: '10px' }}
+							<Alert style={{ textAlign: 'left', marginTop: '10px' }}
 								message={i18next.t('REPOSITORIES.WARNING')}
 								description={i18next.t('REPOSITORIES.CONSOLIDATE_ABOUT_MESSAGE')}
 								type="warning"

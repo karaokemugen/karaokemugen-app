@@ -183,6 +183,7 @@
 		"I18N_NAME": "Name in that language",
 		"I18N_DELETE": "Remove name",
 		"I18N_SELECT": "Select a language",
+		"MERGE_SESSIONS": "Merge sessions",
 		"MERGE_WITH": "Merge with",
 		"MERGE_WITH_TOOLTIP": "Merge the current tag with another one",
 		"MERGE_WITH_SELECT": "Select a tag",
@@ -195,7 +196,11 @@
 		"LANG_ERROR": "A tag must have at least one name by language",
 		"REPOSITORY": "Repository",
 		"REPOSITORY_CHANGED": "You must know what you're doing by editing this, as it won't move tag files out of the repository for you, and it won't affect any karaoke linked to it.",
-		"REPOSITORY_REQUIRED": "Repository is mandatory"
+		"REPOSITORY_REQUIRED": "Repository is mandatory",
+		"PROBLEMATIC": "Problematic",
+		"PROBLEMATIC_TOOLTIP": "Is this tag problematic? Should it be a tag you'd want to ban? This helps mark some songs more easily in the operator/public interface. For example R18, Spoiler, or Epilepsy",
+		"NOLIVEDOWNLOAD": "Disallow on Live/Web Downloads",
+		"NOLIVEDOWNLOAD_TOOLTIP": "Karaokes with this tag won't be able to be downloaded on KMServer from the web interface, or visible on Live"
 	},
 	"TAG_TYPES": {
 		"SINGERS": "Singer",
@@ -248,9 +253,13 @@
 		}
 	},
 	"SESSIONS": {
+		"EXPORT": "Exporter",
 		"SESSION_EXPORTED_BUTTON": "Export data as CSV",
 		"NAME": "Name",
 		"STARTED_AT": "Started at",
+		"ENDED_AT": "Finished at",
+		"START_AND_END_DATES": "Start and end dates",
+		"START_DATE_REQUIRED": "Start date is mandatory",
 		"LAST_PLAYED_AT": "Last played at",
 		"LAST_REQUESTED_AT": "Last requested at",
 		"TITLE": "Title",
@@ -341,6 +350,7 @@
 		"GENERATION_DONE": "Generation successful",
 		"DOWNLOADING": "Downloading...",
 		"DOWNLOADING_MEDIAS": "Downloading media files...",
+		"CONSOLIDATING_REPO": "Consolidating repository...",
 		"CLEANING_REPO": "Cleaning up songs removed from repository",
 		"UPDATING_REPO": "Updating songs from repository",
 		"DOWNLOADING_REPO": "Adding songs from repository",
@@ -451,6 +461,7 @@
 		"SESSION_EDIT_ERROR": "Error editing session",
 		"SESSION_DELETE_ERROR": "Error deleting session",
 		"SESSION_EXPORT_ERROR": "Error exporting session",
+		"SESSION_END_BEFORE_START_ERROR": "Session end is before its beginning!",
 		"TAGS_LIST_ERROR": "Error fetching tags list",
 		"TAG_CREATE_ERROR": "Error creating tag",
 		"YEARS_LIST_ERROR": "Error fetching list of years",

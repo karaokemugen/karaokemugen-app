@@ -11,6 +11,7 @@ export interface Version {
 export interface State {
 	currentPlaylistID?: number,
 	currentSessionID?: string,
+	currentSessionEndsAt?: Date,
 	publicPlaylistID?: number,
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
@@ -27,7 +28,6 @@ export interface State {
 	playlist?: null,
 	timeposition?: 0,
 	songPoll?: boolean,
-	frontendPort?: number,
 	ready?: boolean,
 	sessionStart?: Date,
 	isDemo?: boolean,
@@ -53,6 +53,7 @@ export interface State {
 	noAutoTest?: boolean,
 	singlePlay?: boolean,
 	version?: Version,
+	frontendPort?: number,
 	binPath?: {
 		mpv?: string,
 		ffmpeg?: string,
@@ -81,7 +82,8 @@ export interface State {
 	},
 	args: string[],
 	environment: string,
-	sentrytest: boolean
+	sentrytest: boolean,
+	currentBLCSetID: number
 }
 
 export interface PublicState {

@@ -1,5 +1,71 @@
 # Versions
 
+## v4.1.6 "Ôgi Observatrice" - 16/08/2020
+
+### New features
+
+- Sessions can now have a end time. A warning is displayed on the operator screen when a session is near its end (warning time is configurable) (#765)
+- Songs can now be moved in a playlist and placed right after the currently playing song with one click (okay, two) (#763)
+- Karafun files can now be imported when they only contain metadata information, not video/song blobs (#733)
+- Added a filter field in system panel's configuration page (#730)
+- Some tags now have a "problematic" flag (Spoiler, Adults only and Epilepsy) which should allow you to recognize karaokes using them more easily in the list (#695)
+- Playlists can be inverted between left and right if you select the same playlist in the opposite panel
+
+### Improvements
+
+- Search is now much faster thanks to the us of text search vectors in PostgreSQL (#774)
+- When adding a new repository, folders are all pre-filled to make it much easier (#771)
+- Polls now work if you're at the last song of a playlist (#753)
+- Configuration validation is now more complete and will prevent some errors (#750)
+- When KM's network port is busy, it uses a new one but won't save it to config file if it's not your first time running the app (#745)
+- Added check for PostgreSQL version when running the bundled one (#743)
+- Cleaned some database code (#742)
+- A lot of unit tests have been added (about 80) to better test for regressions when developping (#706)
+- Updated menu code to make it slicker and rearranged some items
+
+### Fixes
+
+- Language order in filenames are now fixed when editing / creating songs (#767)
+- When using a filter on the library, using the "Add all songs" button now takes the filter into account (#762)
+- Fixed some series' name display bug (#757)
+- Mastodon toots are now displayed correctly (#754)
+- Fixed password reset (local and online) mechanisms (#768)
+- Do not error out anymore during tag updates if the old tag can't be found anymore
+- Fixed searching songs by year
+- Fixed BLC set copy not regenerating blacklist
+- Fixed BLC set exports
+- Fixed generation for tags without any types
+- Fixed some tasks not being ended correctly (file download, media download and repository consolidation tasks)
+- Fixed locales for consolidation task
+- Fixed player stop button with single play
+- Fixed series languages mode synchronization between instances for online account
+
+## v4.0.15 "Ôgi Obscure" - 26/07/2020
+
+We've made improvements and fixed bugs to make your Karaoke Mugen experience even better.
+
+### New features
+
+- We are more compliant to Human Interface Guidelines for menu in Mac OS X #723
+- Add frontend notifications for non-API triggered events #744
+- Better explanation for delete account modal popup #735
+- Rework login modal display
+
+### Fixes
+
+- Various fixes about Blacklist criterias display
+- Various fixes about poll and stream mode
+- Fix gif import for avatar file
+- Stats and ErrorTracking are now not fill by default in modal
+- Fix change page size in system's kara list
+- Reset lavfi-complex on audio-only files to remove seek lag #628
+- Fix memory leak on computing playlist media
+- Fix delete user with requested songs
+- Fix server display in login modal
+- Forbid @ character in login modal
+- Playlist: Upvote songs by adding them now doesn't display an error anymore
+- Electron: fix missing binaries message box #737
+
 ## v4.0.13 "Ôgi Obscure" - 17/07/2020
 
 Version numbering has changed :

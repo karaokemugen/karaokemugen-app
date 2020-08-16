@@ -253,7 +253,7 @@ export default function miscController(router: Router) {
 	router.route('/log/:level')
 	/**
 	 * @api {get} /log/:level Get KM logs
-	 * @apiParam {string} level
+	 * @apiParam {string} level debug, info, warn, error...
 	 * @apiName GetLogs
 	 * @apiVersion 3.1.0
 	 * @apiGroup Misc
@@ -332,8 +332,7 @@ export default function miscController(router: Router) {
 		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
 			try {
 				await generateDatabase({
-					validateOnly: true,
-					progressBar: true
+					validateOnly: true
 				});
 				res.status(200).json(APIMessage('FILES_VALIDATED'));
 			} catch(err) {

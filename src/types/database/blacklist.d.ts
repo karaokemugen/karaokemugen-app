@@ -1,4 +1,4 @@
-import { DBKara } from "../../lib/types/database/kara";
+import { DBKara } from '../../lib/types/database/kara';
 
 export interface DBBLC {
 	blcriteria_id: number,

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+
 import Config from './Config';
 
-let propertiesToDisplay = [
+const propertiesToDisplay = [
 	'App.QuickStart',
 	'Online.Users',
 	'Online.Discord.DisplayActivity',
@@ -16,7 +17,7 @@ let propertiesToDisplay = [
 	'Online.Updates.Medias.Encores'
 ];
 
-class Options extends Component<{}, {}> {
+class Options extends Component<unknown, unknown> {
 
 	render() {
 		return (

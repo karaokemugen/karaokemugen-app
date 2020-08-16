@@ -69,7 +69,7 @@ export async function exportSet(id: number): Promise<BLCSetFile> {
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
 	delete blcSet.flag_current;
 	delete blcSet.blc_set_id;
-	const blcs = await getBlacklistCriterias(id);
+	const blcs = await getBlacklistCriterias(id, null, true);
 	const header = {
 		description: 'Karaoke Mugen BLC Set File',
 		version: 1
@@ -105,6 +105,7 @@ export async function copySet(from: number, to: number) {
 	if (!blcSet1) throw {code: 404, msg: 'Origin BLC set unknown'};
 	if (!blcSet2) throw {code: 404, msg: 'Destination BLC set unknown'};
 	await copyBLCSet(from, to);
+	if (blcSet2.flag_current) await generateBlacklist();
 	emitWS('BLCSetInfoUpdated', to);
 }
 
@@ -127,10 +128,11 @@ export async function getBlacklist(params: KaraParams): Promise<KaraList> {
 	return ret;
 }
 
-export async function getBlacklistCriterias(id: number, lang?: string): Promise<BLC[]> {
+export async function getBlacklistCriterias(id: number, lang?: string, noDressingUp?: boolean): Promise<BLC[]> {
 	try {
 		profile('getBLC');
 		const blcs = await getBLC(id);
+		if (noDressingUp) return blcs;
 		return await translateBlacklistCriterias(blcs, lang);
 	} catch(err) {
 		const error = new Error(err);
@@ -150,10 +152,10 @@ export async function initBlacklistSystem() {
 }
 
 /** Create current blacklist set if it doesn't exist */
-async function testCurrentBLCSet() {
+export async function testCurrentBLCSet() {
 	const current_id = await getCurrentBLCSet();
 	if (current_id) {
-		setState({currentBLCSetID: current_id});
+		setState({currentBLCSetID: current_id.blc_set_id});
 	} else {
 		setState({currentBLCSetID: await createBLCSet({
 			name: 'Blacklist 1',

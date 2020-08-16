@@ -10,6 +10,7 @@ import { getMediaInfo } from '../lib/utils/ffmpeg';
 import {asyncCheckOrMkdir, asyncExists,asyncReadDir, asyncRemove,asyncStat, isMediaFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import {Config} from '../types/config';
 import { DBMedia } from '../types/database/medias';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
@@ -112,11 +113,9 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			: '/';
 		if (!conf.System.Path[type].includes(conf.System.Path[type][0] + slash + 'KaraokeMugen')) {
 			conf.System.Path[type].push(conf.System.Path[type][0] + slash + 'KaraokeMugen');
-			editSetting({ System:
-				{ Path:
-					conf.System.Path[type]
-				}
-			});
+			const ConfigPart: Partial<Config> = {};
+			ConfigPart.System.Path[type] = conf.System.Path[type];
+			editSetting(ConfigPart);
 		}
 		const localFiles = await listLocalFiles(localDir);
 		const removedFiles: File[] = [];
@@ -171,7 +170,6 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 		});
 	}
 	const mediaDownloads = new Downloader({
-		bar: false,
 		task: task,
 		auth: {
 			user: KMSite.username,

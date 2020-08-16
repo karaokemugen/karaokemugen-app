@@ -4,17 +4,17 @@ import {resolve} from 'path';
 import prettyBytes from 'pretty-bytes';
 import si from 'systeminformation';
 
+import { APIMessage } from '../controllers/common';
 import { exportFavorites,exportPlayed, exportRequests } from '../dao/stats';
 import { getInstanceID } from '../lib/dao/database';
 import { getConfig } from '../lib/utils/config';
 import { asyncWriteFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
+import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getSessions } from './session';
-import { emitWS } from '../lib/utils/ws';
-import { APIMessage } from '../controllers/common';
 
 let intervalID: any;
 

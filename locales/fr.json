@@ -30,6 +30,10 @@
 	"ERROR_INIT_PATHS": "Error de création des dossiers par défaut",
 	"MENU_FILE": "&Fichier",
 	"MENU_FILE_IMPORT": "&Importer un fichier",
+	"MENU_FILE_IMPORT_PLAYLIST": "&Liste de lecture...",
+	"MENU_FILE_IMPORT_BLCSET": "&Paramètres de listre noire...",
+	"MENU_FILE_IMPORT_FAVORITES": "&Liste de favoris...",
+	"MENU_FILE_IMPORT_KARABUNDLE": "&Karaoké...",
 	"MENU_FILE_QUIT": "&Quitter",
 	"MENU_FILE_QUIT_OSX": "Quitter Karaoke Mugen",
 	"MENU_FILE_ABOUT": "&À propos de Karaoke Mugen",
@@ -131,6 +135,10 @@
 			"Les chansons ajoutées avec l'option \"Ajout Mystère\" apparaitront cachées dans la playlist visible par vos invités !",
 			"Hydratez-vous régulièrement !",
 			"Ne dérangez pas les voisins !",
+			"Faites une pause pour aérer la salle de temps en temps !",
+			"N'acceptez pas d'argent si quelqu'un veut faire passer sa chanson avant tout le monde. Préférez des boissons fraîches et de la nourriture.",
+			"Pensez à ajouter vos chansons préférées à vos favoris si vous avez un compte en ligne : vous les retrouverez plus facilement dans la liste des favoris ici ou sur un autre Karaoke Mugen !",
+			"Karaoke Mugen a besoin de vous ! Plus d'informations sur http://mugen.karaokes.moe/participate.html !",
 			"Encore une astuce qui finit en point d'exclamation !",
 			"Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
@@ -184,5 +192,6 @@
 		}
 	},
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR...",
-	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA PLAYLIST !"
+	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA PLAYLIST !",
+	"NEW_SESSION_NAME": "Karaoké du {{date}}"
 }

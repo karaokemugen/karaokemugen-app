@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { check } from '../../lib/utils/validators';
-import { addSession, editSession, exportSession,getSessions, mergeSessions, removeSession, setActiveSession } from '../../services/session';
+import { addSession, editSession, exportSession,findSession, getSessions, mergeSessions, removeSession, setActiveSession } from '../../services/session';
 import { APIMessage,errMessage } from '../common';
 import { requireAdmin, requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
 
@@ -25,9 +25,12 @@ export default function sessionController(router: Router) {
  * {
  *   "sessions": [
  * 		{
+ *          "active": true,
  * 			"name": "Jonetsu IV Day 1",
  * 			"seid": "..."
- * 			"started_at": "Sat 13 Oct 2019 09:30:00"
+ * 			"started_at": "Sat 13 Oct 2019 09:30:00",
+ * 			"private": true,
+ * 			"ended_at": "Sat 13 Oct 2019 18:00:00"
  * 		},
  * 		...
  * 	]
@@ -58,7 +61,7 @@ export default function sessionController(router: Router) {
  * @apiParam {String} [date] Optional. Date in ISO format for session. If not provided, session starts now.
  * @apiParam {Boolean} [private] Optional. Is the session private or public ? Default to false.
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
+ * HTTP/1.1 201 OK
  * {code: "SESSION_CREATED"}
  * @apiError SESSION_CREATION_ERROR Error creating session
  * @apiErrorExample Error-Response:
@@ -75,8 +78,8 @@ export default function sessionController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					await addSession(req.body.name, req.body.date, req.body.activate, req.body.private);
-					res.status(200).json(APIMessage('SESSION_CREATED'));
+					await addSession(req.body.name, req.body.started_at, req.body.ended_at, req.body.activate, req.body.private);
+					res.status(201).json(APIMessage('SESSION_CREATED'));
 				} catch(err) {
 					const code = 'SESSION_CREATION_ERROR';
 					errMessage(code, err);
@@ -88,6 +91,26 @@ export default function sessionController(router: Router) {
 				res.status(400).json(validationErrors);
 			}
 		});
+	/**
+ * @api {post} /sessions/merge Merge karaoke sessions
+ * @apiName MergeSessions
+ * @apiVersion 3.1.0
+ * @apiGroup Sessions
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ *
+ * @apiParam {String} seid1 First Session to merge
+ * @apiParam {String} seid2 Second Session to merge
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 OK
+ * {code: "SESSION_MERGED"}
+ * @apiError SESSION_MER GED_ERROR Error creating session
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {code: "SESSION_MERGE_ERROR"}
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 400 Validation error
+ */
 	router.route('/sessions/merge')
 		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			const validationErrors = check(req.body, {
@@ -96,8 +119,8 @@ export default function sessionController(router: Router) {
 			});
 			if (!validationErrors) {
 				try {
-					await mergeSessions(req.body.seid1, req.body.seid2);
-					res.status(200).json(APIMessage('SESSION_MERGED'));
+					const session = await mergeSessions(req.body.seid1, req.body.seid2);
+					res.status(200).json(APIMessage('SESSION_MERGED', {session: session}));
 				} catch(err) {
 					const code = 'SESSION_MERGE_ERROR';
 					errMessage(code, err);
@@ -114,14 +137,16 @@ export default function sessionController(router: Router) {
 	/**
  * @api {put} /sessions/:seid Edit session
  * @apiName EditSession
- * @apiVersion 3.1.0
+ * @apiVersion 4.1.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  *
  * @apiParam {String} seid Session ID
  * @apiParam {String} name Name of session
+ * @apiParam {Date} [ended_at] Session end time
  * @apiParam {boolean} [private] Is session private or public? Private sessions are not uploaded to KM Server
+ * @apiParam {boolean} [active] Is session now active?
  * @apiParam {Date} started_at Session start time
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -140,7 +165,14 @@ export default function sessionController(router: Router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					await editSession(req.params.seid, req.body.name, req.body.started_at, req.body.private);
+					await editSession({
+						seid: req.params.seid,
+						name: req.body.name,
+						started_at: req.body.started_at,
+						ended_at: req.body.ended_at,
+						private: req.body.private,
+						active: req.body.active
+					});
 					res.status(200).json(APIMessage('SESSION_EDITED'));
 				} catch(err) {
 					const code = 'SESSION_EDIT_ERROR';
@@ -166,8 +198,8 @@ export default function sessionController(router: Router) {
  * HTTP/1.1 200 OK
  * {code: "SESSION_ACTIVATED"}
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			setActiveSession(req.params.seid);
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			setActiveSession(await findSession(req.params.seid));
 			res.status(200).json(APIMessage('SESSION_ACTIVATED'));
 		})
 	/**

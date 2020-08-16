@@ -196,6 +196,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('playerStatus', this.updateCounters);
 
 		window.addEventListener('resize', this.refreshUiOnResize, true);
+		store.addChangeListener('changeIdPlaylist', this.changeIdPlaylistFromOtherSide);
 	}
 
 	initCall = async () => {
@@ -213,10 +214,15 @@ class Playlist extends Component<IProps, IState> {
 		window.removeEventListener('resize', this.refreshUiOnResize, true);
 		store.removeChangeListener('playlistContentsUpdated', this.playlistContentsUpdated);
 		store.removeChangeListener('loginUpdated', this.initCall);
+		store.removeChangeListener('changeIdPlaylist', this.changeIdPlaylistFromOtherSide);
 	}
 
 	refreshUiOnResize = () => {
 		this.playlistForceRefresh(true);
+	}
+
+	changeIdPlaylistFromOtherSide = (side:number, idPlaylist:number) => {
+		if (this.props.side === side) this.changeIdPlaylist(idPlaylist);
 	}
 
 	SortableList = SortableContainer((List as any), { withRef: true })
@@ -278,23 +284,23 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	rowRenderer = ({ index, isScrolling, key, parent, style }: ListRowProps) => {
-		let content;
+		let content:KaraElement;
 		if (this.state.data && (this.state.data as KaraList).content && (this.state.data as KaraList).content[index]) {
-			content = (this.state.data as KaraList).content[index];
+			content = (this.state.data as KaraList).content[index];		
+			return (
+				<CellMeasurer
+					cache={_cache}
+					columnIndex={0}
+					key={key}
+					parent={parent}
+					rowIndex={index}
+				>
+					<this.SortableItem key={key} index={index} style={style} value={{ content, key, index }} />
+				</CellMeasurer>
+			);
 		} else {
-			content = null;
+			return null;
 		}
-		return (
-			<CellMeasurer
-				cache={_cache}
-				columnIndex={0}
-				key={key}
-				parent={parent}
-				rowIndex={index}
-			>
-				<this.SortableItem key={key} index={index} style={style} value={{ content, key, index }} />
-			</CellMeasurer>
-		);
 	}
 
 	noRowsRenderer = () => {
@@ -364,7 +370,7 @@ class Playlist extends Component<IProps, IState> {
 			} else {
 				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie))
 					&& this.props.playlistList.filter(playlist => playlist.playlist_id === Number(plVal1Cookie)).length > 0 ?
-					Number(plVal2Cookie) : store.getState().publicPlaylistID;
+					Number(plVal2Cookie) : store.getState().currentPlaylistID;
 			}
 		}
 		await this.setState({ idPlaylist: value });
@@ -386,9 +392,13 @@ class Playlist extends Component<IProps, IState> {
 			this.props.toggleSearchMenu && this.props.toggleSearchMenu();
 		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
+		const oldIdPlaylist = this.state.idPlaylist;
 		await this.setState({ idPlaylist: Number(idPlaylist), data: undefined });
 		this.getPlaylist();
 		this.props.majIdsPlaylist(this.props.side, idPlaylist);
+		if (idPlaylist === this.props.idPlaylistTo) {
+			store.emit('changeIdPlaylist', this.props.side === 1 ? 2 : 1, oldIdPlaylist);
+		}
 	};
 
 	editNamePlaylist = () => {
@@ -460,7 +470,7 @@ class Playlist extends Component<IProps, IState> {
 			data.data = this.state.data;
 			if (data?.data?.infos) data.data.infos.from = 0;
 			this.setState({ searchType: searchType });
-		} else if (stateData && stateData.infos && stateData.infos.from == 0) {
+		} else if (stateData?.infos?.from === 0) {
 			data.searchType = undefined;
 		}
 		let url: string = this.getPlaylistUrl();
@@ -485,15 +495,13 @@ class Playlist extends Component<IProps, IState> {
 		const response = await axios.get(url);
 		const karas: KaraList = response.data;
 		if (this.state.idPlaylist > 0) {
-			let i = 0;
 			for (const kara of karas.content) {
 				if (kara?.flag_playing) {
-					store.setPosPlaying(kara.pos);
+					store.setPosPlaying(kara.pos, this.props.side);
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
 						this.props.updateKidPlaying && this.props.updateKidPlaying(kara.kid);
 					}
 				}
-				i++;
 			}
 		}
 		if (karas.infos && karas.infos.from > 0) {
@@ -531,7 +539,7 @@ class Playlist extends Component<IProps, IState> {
 				} else if (kara?.playlistcontent_id === data.plc_id) {
 					kara.flag_playing = true;
 					indexPlaying = index;
-					store.setPosPlaying(kara.pos);
+					store.setPosPlaying(kara.pos, this.props.side);
 					if (this.state.goToPlaying) this.setState({ scrollToIndex: index, _goToPlaying: true });
 					this.setState({ playing: indexPlaying });
 					if (this.props.config.Frontend.Mode === 1 && this.props.scope === 'public') {
@@ -549,9 +557,9 @@ class Playlist extends Component<IProps, IState> {
 		const stateData = this.state.data as KaraList;
 		if (this.state.idPlaylist && stateData && stateData.infos && stateData.infos.count) {
 			plInfos =
-				this.state.idPlaylist != -4 ? stateData.infos.from + '-' + stateData.infos.to : '';
+				this.state.idPlaylist !== -4 ? stateData.infos.from + '-' + stateData.infos.to : '';
 			plInfos +=
-				(this.state.idPlaylist != -4
+				(this.state.idPlaylist !== -4
 					? ' / ' +
 					stateData.infos.count +
 					(!is_touch_device() ? ' karas' : '')
@@ -585,7 +593,7 @@ class Playlist extends Component<IProps, IState> {
 	selectAllKaras = () => {
 		const data = this.state.data;
 		let checkedkaras = 0;
-		for (const kara of (this.state.data as KaraList).content) {
+		for (const kara of (this.state.data as KaraList)?.content) {
 			if (kara) {
 				kara.checked = !kara.checked;
 				if (kara.checked) checkedkaras++;
@@ -621,14 +629,29 @@ class Playlist extends Component<IProps, IState> {
 		this.playlistForceRefresh(true);
 	};
 
+	getSearchTagForAddAll = () => {
+		const criterias: any = {
+			'year': 'y',
+			'tag': 't'
+		};
+		return (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) ?
+			`&searchType=${this.state.searchType}${
+				(this.state.searchCriteria && criterias[this.state.searchCriteria] 
+				&& this.state.searchValue) ?
+					`&searchValue=${criterias[this.state.searchCriteria]}:${this.state.searchValue}` 
+					: ''
+			}`
+			: '';
+	}
+
 	addAllKaras = async () => {
-		const response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}`);
+		const response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}${this.getSearchTagForAddAll()}`);
 		const karaList = response.data.content.map((a: KaraElement) => a.kid);
 		displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', { count: response.data.content.length }));
 		axios.post(this.getPlaylistUrl(this.props.idPlaylistTo), { kid: karaList, requestedby: (store.getLogInfos() as Token).username });
 	};
 
-	addCheckedKaras = async (event?: any, pos?: number) => {
+	addCheckedKaras = async (_event?: any, pos?: number) => {
 		const stateData = this.state.data as KaraList;
 		const listKara = stateData.content.filter(a => a.checked);
 		if (listKara.length === 0) {
@@ -653,13 +676,13 @@ class Playlist extends Component<IProps, IState> {
 					data = { requestedby: (store.getLogInfos() as Token).username, kid: idKara };
 				}
 			}
-		} else if (this.props.idPlaylistTo == -2 || this.props.idPlaylistTo == -4) {
+		} else if (this.props.idPlaylistTo === -2 || this.props.idPlaylistTo === -4) {
 			url = `/blacklist/set/${store.getCurrentBlSet()}/criterias`;
 			data = { blcriteria_type: 1001, blcriteria_value: idKara };
-		} else if (this.props.idPlaylistTo == -3) {
+		} else if (this.props.idPlaylistTo === -3) {
 			url = '/whitelist';
 			data = { kid: idKara };
-		} else if (this.props.idPlaylistTo == -5) {
+		} else if (this.props.idPlaylistTo === -5) {
 			url = '/favorites';
 			data = { kid: stateData.content.filter(a => a.checked).map(a => a.kid) };
 		}
@@ -696,10 +719,10 @@ class Playlist extends Component<IProps, IState> {
 			const idKaraPlaylist = listKara.map(a => a.playlistcontent_id);
 			url = '/playlists/' + this.state.idPlaylist + '/karas/';
 			data = { plc_id: idKaraPlaylist };
-		} else if (this.state.idPlaylist == -3) {
+		} else if (this.state.idPlaylist === -3) {
 			url = '/whitelist';
 			data = { kid: listKara.map(a => a.kid) };
-		} else if (this.state.idPlaylist == -5) {
+		} else if (this.state.idPlaylist === -5) {
 			url = '/favorites';
 			data = { kid: listKara.map(a => a.kid) };
 		}
@@ -743,7 +766,7 @@ class Playlist extends Component<IProps, IState> {
 			if (newIndex > oldIndex)
 				apiIndex = apiIndex + 1;
 
-			axios.put('/playlists/' + this.state.idPlaylist + '/karas/' + playlistcontent_id, { pos: apiIndex });
+			axios.put(`/playlists/${this.state.idPlaylist}/karas/${playlistcontent_id}`, { pos: apiIndex });
 
 			let karas: Array<KaraElement> = [];
 			if (oldIndex < newIndex) {
@@ -764,16 +787,16 @@ class Playlist extends Component<IProps, IState> {
 		}
 	}
 
-	debounceClear = (e: any) => {
+	debounceClear = () => {
 		this.setState(() => {
 			return { _goToPlaying: false };
 		});
 	}
 	debouncedClear = debounce(this.debounceClear, 500, { maxWait: 1000 });
 
-	clearScrollToIndex = (e: any) => {
+	clearScrollToIndex = () => {
 		if (this.state._goToPlaying) {
-			this.debouncedClear(e);
+			this.debouncedClear();
 		} else {
 			this.setState({ scrollToIndex: -1, goToPlaying: false, _goToPlaying: false });
 		}
@@ -810,8 +833,7 @@ class Playlist extends Component<IProps, IState> {
 						side={this.props.side}
 						scope={this.props.scope}
 						config={this.props.config}
-						playlistList={this.props.playlistList.filter(
-							(playlist: PlaylistElem) => playlist.playlist_id !== this.props.idPlaylistTo)}
+						playlistList={this.props.playlistList}
 						idPlaylist={this.state.idPlaylist}
 						bLSet={this.state.bLSet}
 						bLSetList={this.state.bLSetList}
@@ -858,7 +880,6 @@ class Playlist extends Component<IProps, IState> {
 																pressDelay={0}
 																helperClass="playlist-dragged-item"
 																useDragHandle={true}
-																deferredMeasurementCache={_cache}
 																ref={registerChild}
 																onRowsRendered={onRowsRendered}
 																rowCount={((this.state.data as KaraList).infos.count) || 0}

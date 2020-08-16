@@ -16,12 +16,13 @@ interface ConfigState {
 	error: string,
 	appPath: string,
 	dataPath: string,
-	os: string;
-	recordModal?: Record;
-	indexModal?: number;
-	newValueModal?: string | Array<string>;
-	visibleModal: boolean;
-	files: Array<string>
+	os: string,
+	recordModal?: Record,
+	indexModal?: number,
+	newValueModal?: string | Array<string>,
+	visibleModal: boolean,
+	files: Array<string>,
+	filter: string,
 }
 
 interface Record {
@@ -51,7 +52,8 @@ class Config extends Component<ConfigProps, ConfigState> {
 			appPath: '',
 			os: '',
 			visibleModal: false,
-			files: []
+			files: [],
+			filter: ''
 		};
 	}
 
@@ -197,14 +199,13 @@ class Config extends Component<ConfigProps, ConfigState> {
 							/> :
 							((record.key.includes('System.Binaries') || record.key.includes('System.Path')) ?
 								(Array.isArray(record.value) ?
-									<FoldersElement keyModal={record.key} value={record.value} openDirectory={true} onChange={(value) => this.saveSetting(record.key, value)} /> :
-									<FoldersElement keyModal={record.key} value={record.value} openFile={true} onChange={(value) => this.saveSetting(record.key, value)} />)
-								:
+									<FoldersElement keyModal={record.key} value={record.value} openDirectory={true} 
+										onChange={(value) => this.saveSetting(record.key, value)} /> :
+									<FoldersElement keyModal={record.key} value={record.value} openFile={true} 
+										onChange={(value) => this.saveSetting(record.key, value)} />) :
 								(configWithSelectFileInFolder.includes(record.key) ?
-									<Select style={{ width: '100%' }} onChange={(value) => {
-										this.saveSetting(record.key, value ? value : null);
-									}}
-									value={record.value} allowClear={true}>
+									<Select style={{ width: '100%' }} value={record.value} allowClear={true}
+										onChange={(value) => this.saveSetting(record.key, value ? value : null)}>
 										{this.state.files[record.key] && this.state.files[record.key].map((value) => {
 											return <Select.Option key={Math.random()} value={value}>{value}</Select.Option>;
 										})}
@@ -248,18 +249,33 @@ class Config extends Component<ConfigProps, ConfigState> {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Button style={{ margin: '10px' }} type='primary'
-					onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
-				<Button style={{ margin: '10px' }} type='primary'
-					onClick={this.configBackup}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
-				{this.props.properties ? null :
-					<p>{i18next.t('CONFIG.MESSAGE')}</p>
-				}
-				<Table
-					columns={this.columns}
-					dataSource={this.state.config}
-					pagination={false}
-				/>
+				<Layout>
+					<Layout.Header>
+						<Button style={{ margin: '10px' }} type='primary'
+							onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
+						<Button style={{ margin: '10px' }} type='primary'
+							onClick={this.configBackup}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
+						{this.props.properties ? null :
+							<p>{i18next.t('CONFIG.MESSAGE')}</p>
+						}
+						{this.props.properties ? null :
+							<Input.Search
+								placeholder={i18next.t('SEARCH_FILTER')}
+								value={this.state.filter}
+								onChange={event => this.setState({ filter: event.target.value })}
+								enterButton={i18next.t('SEARCH')}
+							/>
+						}
+					</Layout.Header>
+					<Layout.Content>
+						<Table
+							columns={this.columns}
+							dataSource={this.state.config.filter(property => (property.key as string)
+								.toLowerCase().includes(this.state.filter.toLowerCase()))}
+							pagination={false}
+						/>
+					</Layout.Content>
+				</Layout>
 			</Layout.Content>
 		);
 	}

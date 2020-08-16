@@ -1,4 +1,4 @@
-import Task from "../lib/utils/taskManager";
+import Task from '../lib/utils/taskManager';
 
 export interface DownloadItem {
 	url: string,
@@ -8,7 +8,6 @@ export interface DownloadItem {
 }
 
 export interface DownloadOpts {
-	bar: boolean,
 	task: Task
 	auth?: {
 		user: string,

@@ -69,10 +69,11 @@ export interface Config {
 				Channel?: string
 			}
 		}
+		MinutesBeforeEndOfSessionWarning?: number,
 		Autoplay?: boolean,
 		SmartInsert?: boolean,
-		JinglesInterval?: number, // Obsolete since 3.1.1
-		SponsorsInterval?: number, // Obsolete since 3.1.1
+		JinglesInterval?: number, // Obsolete since 3.1.1, replaced by Playlist.Medias.Jingles.Interval
+		SponsorsInterval?: number, // Obsolete since 3.1.1, replaced by Playlist.Medias.Sponsors.Interval
 		Display: {
 			Avatar?: boolean,
 			Nickname?: boolean,
@@ -177,11 +178,11 @@ export interface Config {
 		Repositories: Repository[]
 		Path: {
 			Bin?: string,
-			Karas?: string[],
-			Medias?: string[],
-			Lyrics?: string[],
+			Karas?: string[], // Deprecated in favour of repositories
+			Medias?: string[], // Deprecated in favour of repositories
+			Lyrics?: string[], // Deprecated in favour of repositories
 			DB?: string,
-			Series?: string[],
+			Series?: string[], // Deprecated: no unique repo, no series, totally useless
 			Backgrounds?: string[],
 			Jingles?: string[],
 			Intros?: string[],
@@ -192,7 +193,7 @@ export interface Config {
 			Previews?: string,
 			Import?: string,
 			Avatars?: string,
-			Tags?: string[]
+			Tags?: string[] // Deprecated in favour of repositories
 		}
 	},
 	Database: {

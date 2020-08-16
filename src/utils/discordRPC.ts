@@ -65,7 +65,7 @@ function startCheckingDiscordRPC() {
 	if (!intervalIDDiscordRPCSetup) intervalIDDiscordRPCSetup = setInterval(setupDiscordRPC, 15000);
 }
 
-/** Stop displaying the Add a sogn to the list */
+/** Stop displaying the Add a song to the list */
 function stopCheckingDiscordRPC() {
 	if (intervalIDDiscordRPCSetup) clearInterval(intervalIDDiscordRPCSetup);
 	intervalIDDiscordRPCSetup = undefined;

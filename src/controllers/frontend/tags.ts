@@ -80,10 +80,13 @@ export default function tagsController(router: Router) {
 	* @apiHeader authorization Auth token received from logging in
 	* @apiParam {number[]} types Types of tag
 	* @apiParam {string} name Tag name
-	* @apiParam {string} short Short name of tag (max 3 letters)
+	* @apiParam {string} [short] Short name of tag
+	* @apiParam {string} [repository] Repository this tag belongs too
+	* @apiParam {boolean} [problematic] Is the tag problematic (R18/Spoiler/Epilepsy) ?
+	* @apiParam {boolean} [noLiveDownload] noLiveDownload If `true` the song won't be displayed on KM Live or offer media download links on KM Explorer
 	* @apiParam {Object} i18n i18n object, where properties are ISO639-2B codes and values the name of tag in that language
 	* @apiSuccessExample Success-Response:
-	* HTTP/1.1 200 OK
+	* HTTP/1.1 201 OK
 	* {code: "TAG_CREATED"}
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
@@ -91,8 +94,8 @@ export default function tagsController(router: Router) {
 	*/
 		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
 			try {
-				await addTag(req.body);
-				res.status(200).json(APIMessage('TAG_CREATED'));
+				const tag = await addTag(req.body);
+				res.status(201).json(APIMessage('TAG_CREATED', tag));
 			} catch(err) {
 				const code = 'TAG_CREATE_ERROR';
 				errMessage(code, err);
