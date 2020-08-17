@@ -252,9 +252,11 @@ class Config extends Component<ConfigProps, ConfigState> {
 				<Layout>
 					<Layout.Header>
 						<Button style={{ margin: '10px' }} type='primary'
-							onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
-						<Button style={{ margin: '10px' }} type='primary'
-							onClick={this.configBackup}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
+							onClick={this.refresh}>{i18next.t('CONFIG.SAVE')}</Button>
+						{this.props.properties ? null :
+							<Button style={{ margin: '10px' }} type='primary'
+								onClick={this.configBackup}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
+						}
 						{this.props.properties ? null :
 							<p>{i18next.t('CONFIG.MESSAGE')}</p>
 						}

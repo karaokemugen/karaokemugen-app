@@ -219,7 +219,7 @@
 	"CONFIG": {
 		"PROPERTY": "Propriété",
 		"VALUE": "Valeur",
-		"BACKUP_CONFIG_FILE": "Sauvegarder le fichier de configuration",
+		"BACKUP_CONFIG_FILE": "Créé une copie du fichier de configuration",
 		"MESSAGE": "Pour modifier un paramètre, éditez-le et pressez sur entrée. Tout les paramètres ne sont pas modifiables et retournerons une erreur si vous essayez de les modifier.",
 		"SAVE": "Sauvegarder",
 		"CHOOSE_FILE": "Choisissez un fichier",
