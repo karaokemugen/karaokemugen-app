@@ -33,7 +33,7 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 function buildTagClauses(words: string): WhereClause {
 	const params = paramWords(words);
 	const tsquery = params.join(' & ');
-	const sql = ['search_vector @@ to_tsquery(:tsquery)'];
+	const sql = ['search_vector @@ to_tsquery(\'public.unaccent_conf\', :tsquery)'];
 	return {
 		sql: sql,
 		params: {tsquery}
