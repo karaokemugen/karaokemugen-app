@@ -1,5 +1,11 @@
 # Versions
 
+## v4.1.7 "Ôgi Observatrice" - 17/08/2020
+
+### Fixes
+
+- Fixed search for " ' and accents
+
 ## v4.1.6 "Ôgi Observatrice" - 16/08/2020
 
 ### New features
