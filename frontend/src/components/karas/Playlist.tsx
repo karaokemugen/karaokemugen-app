@@ -485,7 +485,7 @@ class Playlist extends Component<IProps, IState> {
 			'&from=' +
 			(stateData?.infos?.from > 0 ? stateData.infos.from : 0) +
 			'&size=' + chunksize;
-		if (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
+		if (this.state.searchType && this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
 			const searchCriteria = this.state.searchCriteria ?
 				criterias[this.state.searchCriteria]
 				: '';
