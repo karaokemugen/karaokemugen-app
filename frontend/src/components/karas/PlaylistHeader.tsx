@@ -9,7 +9,6 @@ import { BLCSet } from '../../../../src/types/blacklist';
 import { Config } from '../../../../src/types/config';
 import { DBPL, DBPLC } from '../../../../src/types/database/playlist';
 import store from '../../store';
-import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 import SelectWithIcon from '../generic/SelectWithIcon';
@@ -61,6 +60,7 @@ interface IProps {
 	deleteCheckedKaras: () => void;
 	addCheckedKaras: () => void;
 	toggleSearchMenu?: () => void;
+	addRandomKaras: () => void;
 }
 
 interface IState {
@@ -82,24 +82,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 			activeFilterUUID: ''
 		};
 	}
-
-	addRandomKaras = () => {
-		this.togglePlaylistCommands();
-		callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', (nbOfRandoms: number) => {
-			axios.get(`${this.props.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}&random=${nbOfRandoms}`).then(randomKaras => {
-				if (randomKaras.data.content.length > 0) {
-					const textContent = randomKaras.data.content.map((e: KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(e, true)} <br /><br /></React.Fragment>);
-					callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
-						const karaList = randomKaras.data.content.map((a: KaraElement) => {
-							return a.kid;
-						});
-						const urlPost = '/playlists/' + this.props.idPlaylistTo + '/karas';
-						axios.post(urlPost, { kid: karaList });
-					}, '');
-				}
-			});
-		}, '1');
-	};
 
 	addPlaylist = () => {
 		this.togglePlaylistCommands();
@@ -521,7 +503,10 @@ class PlaylistHeader extends Component<IProps, IState> {
 															</a>
 														</li>
 														<li>
-															<a href="#" onClick={this.addRandomKaras}>
+															<a href="#" onClick={() => {
+																this.togglePlaylistCommands();
+																this.props.addRandomKaras();
+															}}>
 																<i className="fas fa-fw fa-dice" />
 																&nbsp;
 																{i18next.t('ADVANCED.ADD_RANDOM')}
