@@ -654,7 +654,7 @@ export default function karaController(router: Router) {
 		});
 	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/copyToRepo')
 	/**
- * @api {post} /karas/:kid/moveToRepo Move song to another repository
+ * @api {post} /karas/:kid/copyToRepo Move song to another repository
  * @apiName PostKaraToRepo
  * @apiVersion 3.2.0
  * @apiGroup Repositories
