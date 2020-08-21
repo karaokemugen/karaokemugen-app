@@ -20,6 +20,7 @@ import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getAllKaras } from './kara';
+import { getRepo } from './repo';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -178,7 +179,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 	}
 }
 
-export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, refresh: true }) {
+export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, refresh: true, repoCheck: true }) {
 	let task: Task;
 	if (!opts.silent) task = new Task({
 		text: 'EDITING_TAG_IN_PROGRESS',
@@ -187,6 +188,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 	try {
 		const oldTag = await getTagMini(tid);
 		if (!oldTag) throw {code: 404, msg: 'Tag ID unknown'};
+		if (opts.repoCheck && oldTag.repository !== tagObj.repository) throw {code: 409, msg: 'Tag repository cannot be modified. Use copy function instead'};
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 		tagObj.modified_at = new Date().toISOString();
 		// Try to find old tag
@@ -197,15 +199,20 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 			writeTagFile(tagObj, oldTagPath)
 		]);
 		const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
+		// Here we only compare the filename, not the full path.
+		// If it has been modified (name field modified) we need to remove the old one.
 		if (oldTag.tagfile !== tagObj.tagfile) {
 			try {
-				await asyncUnlink(resolve(oldTagPath, oldTag.tagfile));
-				await addTagToStore(newTagFiles[0]);
-				removeTagInStore(oldTagFiles[0]);
-				sortTagsStore();
+				await asyncUnlink(oldTagFiles[0]);
 			} catch(err) {
 				//Non fatal. Can be triggered if the tag file has already been removed.
 			}
+		}
+		// If the old and new paths are different, it means we copied it to a new repository
+		if (oldTagFiles[0] !== newTagFiles[0]) {
+			await addTagToStore(newTagFiles[0]);
+			removeTagInStore(oldTagFiles[0]);
+			sortTagsStore();
 		} else {
 			await editTagInStore(newTagFiles[0]);
 		}
@@ -262,7 +269,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository) {
 				// Only edit if repositories are the same.
-				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false });
+				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true });
 			}
 			return tagFileData.name;
 		} else {
@@ -299,4 +306,20 @@ export async function consolidateTagsInRepo(kara: Kara) {
 		}
 	}
 	await Promise.all(copies);
+}
+
+export async function copyTagToRepo(tid: string, repoName: string) {
+	try {
+		const tag = await getTag(tid);
+		if (!tag) throw {code: 404};
+		const repo = getRepo(repoName);
+		if (!repo) throw {code: 404};
+		tag.repository = repoName;
+		const destDir = resolvedPathRepos('Tags', repoName)[0];
+		await writeTagFile(tag, destDir);
+	} catch(err) {
+		if (err?.code === 404) throw err;
+		sentry.error(new Error(err));
+		throw err;
+	}
 }

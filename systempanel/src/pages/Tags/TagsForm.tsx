@@ -1,12 +1,12 @@
-import { MinusCircleOutlined,PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Cascader, Checkbox,Col, Divider,Form, Input, message, Row, Select, Tag, Tooltip } from 'antd';
+import { MinusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Alert, Button, Cascader, Checkbox, Col, Divider, Form, Input, message, Row, Select, Tag, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import Axios from 'axios';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { DBTag } from '../../../../src/lib/types/database/tag';
-import { getLanguagesInLocaleFromCode,getListLanguagesInLocale } from '../../isoLanguages';
+import { getLanguagesInLocaleFromCode, getListLanguagesInLocale } from '../../isoLanguages';
 import { tagTypes } from '../../utils/tagTypes';
 import EditableTagGroup from '../Components/EditableTagGroup';
 
@@ -14,15 +14,17 @@ interface TagsFormProps {
 	tags: Array<DBTag>,
 	tag: DBTag,
 	save: (tag: DBTag) => void,
+	handleCopy: (tid, repo) => void;
 	mergeAction: (tid1: string, tid2: string) => void,
 }
 
 interface TagsFormState {
-	i18n: any[],
-	languages: any[],
-	selectVisible: boolean,
-	mergeSelection: string,
-	repositoriesValue: string[]
+	i18n: any[];
+	languages: any[];
+	selectVisible: boolean;
+	mergeSelection: string;
+	repositoriesValue: string[];
+	repoToCopySong: string;
 }
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {
@@ -38,7 +40,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			languages: getListLanguagesInLocale(),
 			selectVisible: false,
 			mergeSelection: '',
-			repositoriesValue: null
+			repositoriesValue: null,
+			repoToCopySong: null
 		};
 	}
 
@@ -210,24 +213,13 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						}]}
 						name="repository"
 					>
-						<Select style={{ maxWidth: '20%', minWidth: '150px' }} placeholder={i18next.t('TAGS.REPOSITORY')}>
+						<Select disabled={this.props.tag?.repository !== undefined} 
+							style={{ maxWidth: '20%', minWidth: '150px' }} placeholder={i18next.t('TAGS.REPOSITORY')}>
 							{this.state.repositoriesValue.map(repo => {
 								return <Select.Option key={repo} value={repo}>{repo}</Select.Option>;
 							})
 							}
 						</Select>
-					</Form.Item> : null
-				}
-
-				{this.props.tag?.repository !== this.formRef.current?.getFieldValue('repository') ?
-					<Form.Item
-						wrapperCol={{ span: 8, offset: 3 }}
-						style={{ textAlign: 'right' }}
-					>
-						<Alert style={{ textAlign: 'left' }}
-							message={i18next.t('TAGS.REPOSITORY_CHANGED')}
-							type="error"
-						/>
 					</Form.Item> : null
 				}
 				<Form.Item
@@ -370,6 +362,33 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					/>
 
 				</Form.Item>
+				<Divider />
+				{this.state.repositoriesValue && this.props.tag?.repository ?
+					<React.Fragment>
+						<Form.Item hasFeedback
+							label={i18next.t('TAGS.REPOSITORY')}
+							labelCol={{ flex: '0 1 200px' }}
+							wrapperCol={{ span: 8 }}
+						>
+							<Select placeholder={i18next.t('TAGS.REPOSITORY')} onChange={(value: string) => this.setState({ repoToCopySong: value })}>
+								{this.state.repositoriesValue.filter(value => value !== this.props.tag.repository).map(repo => {
+									return <Select.Option key={repo} value={repo}>{repo}</Select.Option>;
+								})
+								}
+							</Select>
+						</Form.Item>
+
+						<Form.Item
+							wrapperCol={{ span: 8, offset: 3 }}
+							style={{ textAlign: 'right' }}
+						>
+							<Button disabled={!this.state.repoToCopySong} type="primary" danger
+								onClick={() => this.props.handleCopy(this.props.tag.tid, this.state.repoToCopySong)}>
+								{i18next.t('TAGS.COPY_TAG')}
+							</Button>
+						</Form.Item>
+					</React.Fragment> : null
+				}
 			</Form>
 		);
 	}

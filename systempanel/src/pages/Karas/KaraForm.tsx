@@ -643,7 +643,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						>
 							<Button disabled={!this.state.repoToCopySong} type="primary" danger
 								onClick={() => this.props.handleCopy(this.props.kara.kid, this.state.repoToCopySong)}>
-								{i18next.t('KARA.MOVE_SONG')}
+								{i18next.t('KARA.COPY_SONG')}
 							</Button>
 						</Form.Item>
 					</React.Fragment> : null
