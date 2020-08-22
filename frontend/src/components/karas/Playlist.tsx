@@ -485,7 +485,7 @@ class Playlist extends Component<IProps, IState> {
 			'&from=' +
 			(stateData?.infos?.from > 0 ? stateData.infos.from : 0) +
 			'&size=' + chunksize;
-		if (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
+		if (this.state.searchType && this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) {
 			const searchCriteria = this.state.searchCriteria ?
 				criterias[this.state.searchCriteria]
 				: '';
@@ -643,6 +643,23 @@ class Playlist extends Component<IProps, IState> {
 			}`
 			: '';
 	}
+
+	addRandomKaras = () => {
+		callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', (nbOfRandoms: number) => {
+			axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}${this.getSearchTagForAddAll()}&random=${nbOfRandoms}`).then(randomKaras => {
+				if (randomKaras.data.content.length > 0) {
+					const textContent = randomKaras.data.content.map((e: KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(e, true)} <br /><br /></React.Fragment>);
+					callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
+						const karaList = randomKaras.data.content.map((a: KaraElement) => {
+							return a.kid;
+						});
+						const urlPost = '/playlists/' + this.props.idPlaylistTo + '/karas';
+						axios.post(urlPost, { kid: karaList });
+					}, '');
+				}
+			});
+		}, '1');
+	};
 
 	addAllKaras = async () => {
 		const response = await axios.get(`${this.getPlaylistUrl()}?filter=${store.getFilterValue(this.props.side)}${this.getSearchTagForAddAll()}`);
@@ -855,6 +872,7 @@ class Playlist extends Component<IProps, IState> {
 						playlistWillUpdate={this.playlistWillUpdate}
 						playlistDidUpdate={this.playlistDidUpdate}
 						checkedkaras={this.state.checkedkaras}
+						addRandomKaras={this.addRandomKaras}
 					/>
 					<div
 						id={'playlistContainer' + this.props.side}

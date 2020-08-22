@@ -692,7 +692,7 @@ class Players {
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
 		const options: any = {
-			'replaygain-fallback': mediaData.gain.toString()
+			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0'
 		};
 
 		if (mediaFile.endsWith('.mp3')) {

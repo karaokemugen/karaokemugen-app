@@ -135,6 +135,12 @@ export async function handleProtocol(args: string[]) {
 						}
 					});
 				}
+			} else {
+				await dialog.showMessageBox({
+					type: 'none',
+					title: i18next.t('REPOSITORY_ALREADY_EXISTS.TITLE'),
+					message: `${i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE', {repoName: repoName})}`
+				});
 			}
 			break;
 		default:
@@ -213,7 +219,7 @@ export async function handleFile(file: string, username?: string) {
 			throw 'Filetype not recognized';
 		}
 	} catch(err) {
-		logger.error('Could not handle ${file}', {service: 'Electron', obj: err});
+		logger.error(`Could not handle ${file}`, {service: 'Electron', obj: err});
 	}
 }
 

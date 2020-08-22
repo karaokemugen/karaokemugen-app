@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { getYears } from '../../services/kara';
-import { addTag,deleteTag, editTag, getDuplicateTags, getTag, getTags, mergeTags } from '../../services/tag';
+import { addTag, copyTagToRepo, deleteTag, editTag, getDuplicateTags, getTag, getTags, mergeTags } from '../../services/tag';
 import { APIMessage,errMessage } from '../common';
 import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
 import { getLang } from '../middlewares/lang';
@@ -285,6 +285,33 @@ export default function tagsController(router: Router) {
 				res.json(APIMessage('TAG_EDITED'));
 			} catch(err) {
 				const code = 'TAG_EDIT_ERROR';
+				errMessage(code, err);
+				res.status(err?.code || 500).json(APIMessage(code));
+			}
+		});
+	router.route('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/copyToRepo')
+		/**
+	 * @api {post} /tags/:tid/copyToRepo Move song to another repository
+	 * @apiName PostKaraToRepo
+	 * @apiVersion 3.2.0
+	 * @apiGroup Repositories
+	 * @apiPermission public
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {uuid} tid Tag ID to copy
+	 * @apiParam {string} repo Repo to copy song to
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {code: "TAG_COPIED"}
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * {code: "TAG_COPIED_ERROR"}
+	 */
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireAdmin, updateUserLoginTime, async (req: any, res: any) => {
+			try {
+				await copyTagToRepo(req.params.tid, req.body.repo);
+				res.json(APIMessage('TAG_COPIED'));
+			} catch(err) {
+				const code = 'TAG_COPIED_ERROR';
 				errMessage(code, err);
 				res.status(err?.code || 500).json(APIMessage(code));
 			}
