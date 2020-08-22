@@ -24,7 +24,7 @@ interface IState {
 	password?: string;
 	passwordConfirmation?: string;
 	instance: string;
-	securityCode?: string;
+	securityCode?: number;
 	repositoryFolder: string;
 	activeView: 'user' | 'repo' | 'random';
 	activeHelp: 'security-code' | null;
@@ -449,7 +449,7 @@ class SetupPage extends Component<IProps, IState> {
 														type="text"
 														required
 														onChange={(event) =>
-															this.setState({ securityCode: event.target.value })
+															this.setState({ securityCode: parseInt(event.target.value) })
 														}
 													/>
 												</div>
