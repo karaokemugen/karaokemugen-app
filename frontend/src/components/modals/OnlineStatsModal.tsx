@@ -95,7 +95,7 @@ class OnlineStatsModal extends Component<unknown, IState> {
 										},
 										{
 											label: i18next.t('NO'),
-											active: !this.state.errorTracking === false,
+											active: this.state.errorTracking === false,
 											onClick: () => this.setState({ errorTracking: false }),
 										}
 									]}
