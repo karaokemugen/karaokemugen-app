@@ -158,12 +158,15 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
 			// This is done later because it's not important.
+			await postMigrationTasks(migrations);
 			if (state.args.length > 0) {
 				// Let's try the last argument
 				const file = state.args[state.args.length-1];
-				if (file && !file.startsWith('--')) {
+				if (file && !file.startsWith('--') && !file.startsWith('km://')) {
 					// Non fatal
-					await handleFile(file).catch(() => {});
+					handleFile(file).catch(() => {});
+				} else if (file && file.startsWith('km://')) {
+					handleProtocol(state.args[0].substr(5).split('/')).catch(() => {});
 				}
 			}
 			if (state.isTest) {
@@ -176,10 +179,8 @@ export async function initEngine() {
 					});
 				}
 			}
-			await postMigrationTasks(migrations);
 			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
 			if (!state.isTest && !state.isDemo && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
-			if (state.args[0]?.startsWith('km://')) handleProtocol(state.args[0].substr(5).split('/'));
 			if (!state.isTest && !state.isDemo) {
 				try {
 					await updatePlaylistMedias();
