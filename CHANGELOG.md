@@ -1,5 +1,29 @@
 # Versions
 
+## v4.1.8 "Ôgi Observatrice" - 23/08/2020
+
+### New features
+
+- Added a way to copy tags from one repository to another
+- Added a message if trying to add a repository through km:// protocol if it already exists
+
+### Improvements
+
+- When adding random songs, the tag/filter is now taken into account
+- Adjustments were made to the system panel's config page
+
+### Fixes
+
+- Fixed double quotes (') searches
+- Fixed song search when words is null
+- Fixed search with accents
+- Fixed frontend sending undefined in searchType to API
+- Fixed switching account to administrator during the setup onboarding
+- Fixed Sentry.io answer display on the modal asking you about it after setup
+- Better file/protocol handling on startup
+- Fixed file handler to not pick files starting with --
+- Fixed noLiveDownload in lowercase in tag files
+
 ## v4.1.7 "Ôgi Observatrice" - 17/08/2020
 
 ### Fixes
