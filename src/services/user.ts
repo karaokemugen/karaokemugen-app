@@ -761,8 +761,6 @@ export async function initUserSystem() {
 
 	userChecks();
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
-	setState({securityCode: generateSecurityCode()});
-	logger.info(`SECURITY CODE FOR THIS SESSION : ${getState().securityCode}`, {service: 'Users'});
 	// Find admin users.
 	const users = await listUsers();
 	const adminUsers = users.filter(u => u.type === 0 && u.login !== 'admin');
@@ -966,7 +964,7 @@ export async function generateAdminPassword(): Promise<string> {
 
 export function resetSecurityCode() {
 	setState({ securityCode: generateSecurityCode()});
-	logger.warn(`SECURITY CODE RESET : ${getState().securityCode}`, {service: 'Users'});
+	logger.warn(`SECURITY CODE : ${getState().securityCode}`, {service: 'Users'});
 }
 
 function generateSecurityCode(): number {

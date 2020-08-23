@@ -20,6 +20,7 @@ import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
+import { resetSecurityCode } from './services/user';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
@@ -153,6 +154,8 @@ const args = app?.isPackaged
 	: process.argv.slice(2);
 
 setState({ args: args });
+
+resetSecurityCode();
 
 const argv = minimist(args);
 
