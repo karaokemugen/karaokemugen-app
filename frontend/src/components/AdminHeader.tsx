@@ -42,8 +42,10 @@ class AdminHeader extends Component<IProps, IState> {
 
 
 	async componentDidMount() {
-		const result = await axios.get('/player');
-		await this.setState({ statusPlayer: result.data });
+		if (axios.defaults.headers.common['authorization']) {
+			const result = await axios.get('/player');
+			await this.setState({ statusPlayer: result.data });
+		}
 		getSocket().on('playerStatus', (data: PublicPlayerState) => {
 			let val = data.volume;
 			const base = 100;
