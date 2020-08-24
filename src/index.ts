@@ -155,8 +155,6 @@ const args = app?.isPackaged
 
 setState({ args: args });
 
-resetSecurityCode();
-
 const argv = minimist(args);
 
 if (app) {
@@ -194,6 +192,7 @@ if (app && !argv.cli && !argv.help) {
 export async function preInit() {
 	await configureLocale();
 	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
+	resetSecurityCode();
 	setState({ os: process.platform, version: version});
 	const state = getState();
 	parseCommandLineArgs(argv, app ? app.commandLine : null);
