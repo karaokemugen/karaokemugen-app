@@ -30,7 +30,7 @@ interface IState {
 	login: string;
 	password: string;
 	passwordConfirmation?: string;
-	securityCode?: string;
+	securityCode?: number;
 }
 
 class LoginModal extends Component<IProps, IState> {
@@ -69,7 +69,7 @@ class LoginModal extends Component<IProps, IState> {
 				store.logOut();
 			} else {
 				callModal('prompt', i18next.t('MAKE_ACCOUNT_ADMIN'), i18next.t('MAKE_ACCOUNT_ADMIN_MESSAGE'), async (securityCode: string) => {
-					(data as { username: string | undefined, password: string, securityCode?: string }).securityCode = securityCode;
+					(data as { username: string | undefined, password: string, securityCode?: number }).securityCode = parseInt(securityCode);
 					result = await axios.post(url, data);
 					response = result.data;
 					const element = document.getElementById('modal');
@@ -132,7 +132,7 @@ class LoginModal extends Component<IProps, IState> {
 		if (password !== this.state.passwordConfirmation) {
 			this.setState({ redBorders: 'redBorders' });
 		} else {
-			const data: { login: string, password: string, securityCode?: string, role: string }
+			const data: { login: string, password: string, securityCode?: number, role: string }
 				= { login: username, password: password, role: this.props.scope === 'admin' ? 'admin' : 'user' };
 			if (this.props.scope === 'admin') {
 				if (!this.state.securityCode) {
@@ -234,7 +234,7 @@ class LoginModal extends Component<IProps, IState> {
 									}
 									{this.state.forgotPassword && this.props.scope === 'admin' && !this.state.onlineSwitch ?
 										<input type="text" placeholder={i18next.t('SECURITY_CODE')}
-											defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} /> : null
+											defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: parseInt(event.target.value) })} /> : null
 									}
 
 									<button type="button" className="btn submitButton" onClick={this.loginUser}>
@@ -271,7 +271,7 @@ class LoginModal extends Component<IProps, IState> {
 										<div>
 											<br />
 											<input type="text" placeholder={i18next.t('SECURITY_CODE')}
-												defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: event.target.value })} />
+												defaultValue={this.state.securityCode} required autoFocus onChange={(event) => this.setState({ securityCode: parseInt(event.target.value) })} />
 										</div> : null
 									}
 									<div>
