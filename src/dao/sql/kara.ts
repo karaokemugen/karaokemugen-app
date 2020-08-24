@@ -32,7 +32,7 @@ VALUES(
 	:kid,
 	:played_at,
 	:seid
-)
+) ON CONFLICT DO NOTHING;
 `;
 
 export const sqladdRequested = `
@@ -47,7 +47,7 @@ VALUES(
 	$2,
 	$3,
 	$4
-)
+) ON CONFLICT DO NOTHING;
 `;
 
 export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string) => `SELECT
