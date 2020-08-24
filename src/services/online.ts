@@ -20,6 +20,7 @@ export async function publishURL() {
 		localPort: conf.Frontend.Port,
 		IID: await getInstanceID()
 	};
+	if (!form.IID) logger.error('Could not get Instance ID', {service: 'ShortURL'});
 	try {
 		form.IP4 = await publicIP.v4({timeout: 1000, onlyHttps: true});
 		form.IP6 = await publicIP.v6({timeout: 1000, onlyHttps: true});
