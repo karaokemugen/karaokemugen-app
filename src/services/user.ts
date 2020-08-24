@@ -210,7 +210,7 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 			token: createJwtToken(user.login, token.role)
 		};
 	} catch(err) {
-		sentry.error(new Error(err));
+		if (err.msg !== 'USER_ALREADY_EXISTS_ONLINE') sentry.error(err);
 		throw {msg: err.msg || 'USER_CONVERT_ERROR', details: err};
 	}
 }
@@ -573,29 +573,30 @@ export async function createUser(user: User, opts: UserOpts = {
 	user.url = user.url || null;
 	user.email = user.email || null;
 	if (user.type === 2) user.flag_online = false;
-	await newUserIntegrityChecks(user);
-	if (user.login.includes('@')) {
-		user.nickname = user.login.split('@')[0];
-		// Retry integrity checks
-		try {
-			await newUserIntegrityChecks(user);
-		} catch(err) {
-			// If nickname isn't allowed, append something random to it
-			user.nickname = `${user.nickname} ${randomstring.generate({
-				length: 3,
-				charset: 'numeric'
-			})}`;
-			logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'});
-		}
-		if (user.login.split('@')[0] === 'admin') throw { code: 403, msg: 'USER_CREATE_ERROR', details: 'Admin accounts are not allowed to be created online' };
-		if (!+getConfig().Online.Users) throw { code: 403, msg : 'USER_CREATE_ERROR', details: 'Creating online accounts is not allowed on this instance'};
-		if (opts.createRemote) await createRemoteUser(user);
-	}
-	if (user.password) {
-		if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length};
-		user.password = await hashPasswordbcrypt(user.password);
-	}
+
 	try {
+		await newUserIntegrityChecks(user);
+		if (user.login.includes('@')) {
+			user.nickname = user.login.split('@')[0];
+			// Retry integrity checks
+			try {
+				await newUserIntegrityChecks(user);
+			} catch(err) {
+				// If nickname isn't allowed, append something random to it
+				user.nickname = `${user.nickname} ${randomstring.generate({
+					length: 3,
+					charset: 'numeric'
+				})}`;
+				logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'});
+			}
+			if (user.login.split('@')[0] === 'admin') throw { code: 403, msg: 'USER_CREATE_ERROR', details: 'Admin accounts are not allowed to be created online' };
+			if (!+getConfig().Online.Users) throw { code: 403, msg : 'USER_CREATE_ERROR', details: 'Creating online accounts is not allowed on this instance'};
+			if (opts.createRemote) await createRemoteUser(user);
+		}
+		if (user.password) {
+			if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length};
+			user.password = await hashPasswordbcrypt(user.password);
+		}
 		await DBAddUser(user);
 		if (user.type < 2) logger.info(`Created user ${user.login}`, {service: 'User'});
 		delete user.password;
