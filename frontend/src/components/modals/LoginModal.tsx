@@ -50,9 +50,10 @@ class LoginModal extends Component<IProps, IState> {
 		};
 	}
 
-	login = async (username: string | undefined, password: string) => {
+	login = async (username: string | undefined, password: string, securityCode?: number) => {
 		let url = '/auth/login';
-		let data: { username: string | undefined, password: string } | { fingerprint?: string } = { username: username, password: password };
+		let data: { username: string | undefined, password: string, securityCode?: number } | { fingerprint?: string } = { username: username, password: password };
+		if (securityCode) data.securityCode = securityCode;
 
 		if (!username) {
 			url = '/auth/login/guest';
@@ -139,11 +140,10 @@ class LoginModal extends Component<IProps, IState> {
 					displayMessage('error', i18next.t('SECURITY_CODE_MANDATORY'));
 					return;
 				}
-				data.securityCode = this.state.securityCode;
 			}
 			await axios.post('/users', data);
 			this.setState({ redBorders: '' });
-			this.login(username, password);
+			this.login(username, password, this.state.securityCode);
 		}
 	};
 
