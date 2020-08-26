@@ -348,7 +348,7 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 			}
 			const oldAvatarCirclePath = replaceExt(oldAvatarPath, '.circle.png');
 			try {
-				if (await asyncExists(oldAvatarCirclePath)) await asyncUnlink(oldAvatarCirclePath);
+				await asyncUnlink(oldAvatarCirclePath);
 			} catch(err) {
 				logger.warn(`Unable to unlink old avatar circle path ${oldAvatarCirclePath}`, {service: 'User', obj: err});
 			}
@@ -835,9 +835,9 @@ async function cleanupAvatars() {
 			try {
 				logger.debug(`Deleting old file ${fullFile} and ${fullCircleFile}`, {service: 'Users'});
 				await asyncUnlink(fullFile);
-				if (await asyncExists(fullCircleFile)) await asyncUnlink(fullCircleFile);
+				await asyncUnlink(fullCircleFile);
 			} catch(err) {
-				console.log(err);
+				logger.warn(`Failed deleting old file ${fullFile} and/or ${fullCircleFile}`, {service: 'Users', obj: err});
 				//Non-fatal
 			}
 		}
