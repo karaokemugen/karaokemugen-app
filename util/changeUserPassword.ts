@@ -2,7 +2,12 @@
 
 const dbConfigFile = require('../database.json');
 const {Pool} = require('pg');
-const {createHash} = require ('crypto');
+const {hash, genSalt} = require('bcrypt');
+
+async function hashPassword(password: string): Promise<string> {
+	return hash(password, await genSalt(10));
+}
+
 
 const dbConfig = {
 	host: dbConfigFile.prod.host,
@@ -12,16 +17,10 @@ const dbConfig = {
 	database: dbConfigFile.prod.database
 };
 
-function hashPassword(password) {
-	const hash = createHash('sha256');
-	hash.update(password);
-	return hash.digest('hex');
-}
-
 async function main() {
 	const client = new Pool(dbConfig);
 	const user = process.argv[2];
-	const password = hashPassword(process.argv[3]);
+	const password = await hashPassword(process.argv[3]);
 	try {
 		await client.connect();
 		await client.query(`
