@@ -20,6 +20,7 @@ import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
+import { resetSecurityCode } from './services/user';
 import {Config} from './types/config';
 import {parseCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
@@ -191,6 +192,7 @@ if (app && !argv.cli && !argv.help) {
 export async function preInit() {
 	await configureLocale();
 	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
+	resetSecurityCode();
 	setState({ os: process.platform, version: version});
 	const state = getState();
 	parseCommandLineArgs(argv, app ? app.commandLine : null);
