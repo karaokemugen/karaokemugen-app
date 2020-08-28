@@ -11,9 +11,7 @@ import { APIMessage } from '../common';
 
 const usersFavoritesChecked = new Set();
 
-export function requireAuth() {
-	return passport.authenticate('jwt', { session: false });
-}
+export const requireAuth = passport.authenticate('jwt', { session: false });
 
 export function updateUserLoginTime(req: any, _res: any, next: any) {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
