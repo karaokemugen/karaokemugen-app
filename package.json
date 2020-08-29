@@ -254,6 +254,7 @@
     "deb": {
       "depends": [
         "postgresql",
+        "postgresql-contrib",
         "mpv",
         "ffmpeg",
         "gconf2",
