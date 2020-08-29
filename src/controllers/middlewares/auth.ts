@@ -13,11 +13,11 @@ const usersFavoritesChecked = new Set();
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
 
-export const updateUserLoginTime = (req: any, _res: any, next: any) => {
+export function updateUserLoginTime(req: any, _res: any, next: any) {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	updateLastLoginName(token.username);
 	next();
-};
+}
 
 export async function checkValidUser(token: { username: string, role: string }, onlineToken: Token): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
@@ -62,11 +62,11 @@ export async function checkValidUser(token: { username: string, role: string }, 
 	}
 }
 
-export const requireRegularUser = (req: any, res: any, next: any) => {
+export function requireRegularUser(req: any, res: any, next: any) {
 	req.user.type === 2
 		? res.status(401).json(APIMessage('NOT_GUEST'))
 		: next();
-};
+}
 
 export function optionalAuth(req: any, res: any, next: any) {
 	try {
@@ -92,7 +92,7 @@ export function optionalAuth(req: any, res: any, next: any) {
 	}
 }
 
-export const requireValidUser = (req: any, res: any, next: any) => {
+export function requireValidUser(req: any, res: any, next: any) {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	const onlineToken = req.get('onlineAuthorization');
 	req.authToken = token;
@@ -109,13 +109,13 @@ export const requireValidUser = (req: any, res: any, next: any) => {
 			logger.error(`Error checking user : ${JSON.stringify(token)}`, {service: 'API', obj: err});
 			res.status(403).json(APIMessage('USER_UNKNOWN'));
 		});
-};
+}
 
-export const requireAdmin = (req: any, res: any, next: any) => {
+export function requireAdmin(req: any, res: any, next: any) {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);
 	token.role === 'admin'
 		? next()
 		: res.status(403).json(APIMessage('ADMIN_PLEASE'));
-};
+}
 
 

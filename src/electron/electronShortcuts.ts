@@ -5,11 +5,9 @@ import { getState,setState } from '../utils/state';
 
 export function registerShortcuts() {
 	globalShortcut.register('MediaPlayPause', () => {
-		if (getState().player.playerStatus === 'play') {
-			pausePlayer();
-		} else {
-			playPlayer().catch(() => {});
-		}
+		getState().player.playerStatus === 'play'
+			? pausePlayer()
+			: playPlayer().catch(() => {});
 	});
 	globalShortcut.register('MediaNextTrack', () => {
 		setState({singlePlay: false, randomPlaying: false});

@@ -9,10 +9,6 @@ import {win} from './electron';
 
 let manualUpdate = false;
 
-export function setManualUpdate(state: boolean) {
-	manualUpdate = state;
-}
-
 export function initAutoUpdate() {
 	autoUpdater.logger = logger;
 	autoUpdater.autoDownload = false;
@@ -75,4 +71,8 @@ export function initAutoUpdate() {
 			logger.warn('Unable to check for app updates', {service: 'AppUpdate', obj: err});
 		}
 	}
+}
+
+export function setManualUpdate(state: boolean) {
+	manualUpdate = state;
 }

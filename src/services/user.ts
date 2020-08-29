@@ -29,7 +29,7 @@ import { addUser as DBAddUser,
 import {Role, Token, User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
-import {asyncCopy, asyncCopyAlt, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType, replaceExt,writeStreamToFile} from '../lib/utils/files';
+import {asyncCopy, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType, replaceExt,writeStreamToFile} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import {profile} from '../lib/utils/logger';
 import {emitWS} from '../lib/utils/ws';
@@ -663,7 +663,7 @@ async function updateGuestAvatar(user: User) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
 		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
 		const tempFile = resolve(resolvedPathTemp(), bundledAvatarFile);
-		await asyncCopyAlt(bundledAvatarPath, tempFile);
+		await asyncCopy(bundledAvatarPath, tempFile);
 		editUser(user.login, user, {
 			fieldname: null,
 			path: tempFile,

@@ -2,7 +2,7 @@
 import {json,urlencoded} from 'body-parser';
 import compression from 'compression';
 import cors from 'cors';
-import express from 'express';
+import express, { Router } from 'express';
 import csp from 'helmet-csp';
 import {createServer} from 'http';
 import passport from 'passport';
@@ -32,7 +32,7 @@ import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 
 /** Declare all routers for API types */
-function apiRouter() {
+function apiRouter(): Router {
 	const apiRouter = express.Router();
 
 	// Add auth routes
