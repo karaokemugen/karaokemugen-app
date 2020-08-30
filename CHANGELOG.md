@@ -1,5 +1,33 @@
 # Versions
 
+## v4.1.9 "Ôgi Observatrice" - 30/08/2020
+
+### New features
+
+- Added "Author" field to song suggestion modal (77754686)
+
+### Imrpovements
+
+- Updated frontend dependencies (62e06f69)
+- Updated backend dependencies (46e7c24d 7cfdcdfc)
+- Made some code cleanups (c9776ed5 86466b89 f41f311f aaf48dd1)
+
+### Fixes
+
+- Added postgres-contrib to .deb package dependencies since tsvector isn't in all PostgreSQL distributions on Linux (would you believe that, Linux has too many distributions and cases to think of when packaging your app!) (b735714a)
+- Made some adjustments to Axios interceptors to avoid weird UI errors with API (e137d444)
+- The changeAdminPassword utility now uses bcrypt (cb184a6a)
+- Do not report to Sentry if media file can't be found (0eab2a9c)
+- Do not report to Sentry if there's a query error during database shutdown when the app is quitting (d6d5e64f)
+- Do not report to Sentry if avatar unlink doesn't work for some reason (1e8d3a78)
+- Avoid crash if no tip to display is found (4faf2b36)
+- Fix switching account to admin in login modal (a9e454d7)
+- Moved security code generation to pre-init stage so clicking on the menu will display it correctly (fabdf484 4c4ead00)
+- Only fetch player status when logged in (b735714a)
+- Better interception of "user already exists online" errors (986fde85)
+- Avoid DB query error in case a played / requested song is added twice to the database at the exact same time (how it happened in the first place is beyond me, but your code is like your child, they can do surprising stuff sometimes, like you didn't think your cat would be stupid enough to fall in a chimney but yes, he did.) (215a11f3)
+- Avoid sending stats payload if instance ID isn't set (Did I tell you about my cat and the neighbor's chimney?) (1a446b83)
+
 ## v4.1.8 "Ôgi Observatrice" - 23/08/2020
 
 ### New features
