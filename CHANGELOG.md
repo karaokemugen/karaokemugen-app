@@ -6,7 +6,7 @@
 
 - Added "Author" field to song suggestion modal (77754686)
 
-### Imrpovements
+### Improvements
 
 - Updated frontend dependencies (62e06f69)
 - Updated backend dependencies (46e7c24d 7cfdcdfc)
