@@ -11,6 +11,7 @@
 - Updated frontend dependencies (62e06f69)
 - Updated backend dependencies (46e7c24d 7cfdcdfc)
 - Made some code cleanups (c9776ed5 86466b89 f41f311f aaf48dd1)
+- Init screen's logs now automatically scroll (4852489a)
 
 ### Fixes
 
