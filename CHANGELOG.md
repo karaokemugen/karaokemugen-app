@@ -2,10 +2,6 @@
 
 ## v4.1.9 "Ôgi Observatrice" - 30/08/2020
 
-### New features
-
-- Added "Author" field to song suggestion modal (77754686)
-
 ### Improvements
 
 - Updated frontend dependencies (62e06f69)
@@ -23,6 +19,7 @@
 - Do not report to Sentry if avatar unlink doesn't work for some reason (1e8d3a78)
 - Avoid crash if no tip to display is found (4faf2b36)
 - Fix switching account to admin in login modal (a9e454d7)
+- Fix "Author" field filling in song suggestion issue (77754686)
 - Moved security code generation to pre-init stage so clicking on the menu will display it correctly (fabdf484 4c4ead00)
 - Only fetch player status when logged in (b735714a)
 - Better interception of "user already exists online" errors (986fde85)
