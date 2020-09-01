@@ -10,6 +10,7 @@ let activeTipType: TipType = 'normal';
 export function tip() {
 	if (!tips) initTable();
 	const tip = tips[activeTipType][index];
+	if (!tip) return {tip: '', duration: 2000, title: i18n.t(`TIPS.TITLES.${activeTipType.toUpperCase()}`)};
 	const words = tip.split(' ').length;
 	// Calculate the estimated time for reading
 	// Based from https://marketingland.com/estimated-reading-times-increase-engagement-79830:

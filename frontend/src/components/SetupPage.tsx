@@ -69,8 +69,7 @@ class SetupPage extends Component<IProps, IState> {
 				.post('/users', {
 					login: username,
 					password: this.state.password as string,
-					role: 'admin',
-					securityCode: this.state.securityCode,
+					role: 'admin'
 				});
 			this.setState({ error: undefined });
 			this.login(username, this.state.password as string);

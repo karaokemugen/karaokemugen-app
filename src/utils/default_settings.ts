@@ -91,6 +91,9 @@ export const defaults: Config = {
 # Suggestion de karaoké
 
 
+**Auteur de l'issue** : $username
+
+
 **Titre** : $title
 
 

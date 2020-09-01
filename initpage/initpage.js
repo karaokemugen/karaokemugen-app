@@ -59,6 +59,7 @@ ipcRenderer.on('initStep', (event, data) => {
 ipcRenderer.on('log', (event, data) => {
 	const div = document.querySelector('.ip--logs');
 	div.innerHTML += '<li>' + (data.service ? '<b>[' + data.service + ']</b> ' : '') + data.message + (data.obj && Object.keys(data.obj).length > 0 ? ' (' + JSON.stringify(data.obj, null, 2) + ')' : '' ) + '</li>';
+	div.scroll(0, div.scrollHeight);
 });
 ipcRenderer.on('error', (event, data) => {
 	if (!buttonLogsStatus) clickButton();
@@ -96,6 +97,8 @@ function clickButton() {
 	const wrapper = document.querySelector('.initpage--wrapper');
 	buttonLogsStatus = wrapper.dataset.displayLog === 'true';
 	wrapper.dataset.displayLog = buttonLogsStatus ? 'false':'true';
+	const div = document.querySelector('.ip--logs');
+	div.scroll(0, div.scrollHeight);
 }
 
 function setProgressBar(pct, text) {

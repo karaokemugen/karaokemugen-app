@@ -19,7 +19,8 @@ export async function createCircleAvatar(file: string) {
 		const image = await j.read(convertedFile);
 		await image.circle().writeAsync(replaceExt(file, '.circle.png'));
 		// Delete the converted file
-		await asyncUnlink(convertedFile);
+		// Failure is non fatal.
+		asyncUnlink(convertedFile).catch(() => {});
 	} catch(err) {
 		sentry.error(err);
 		throw err;

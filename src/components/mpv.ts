@@ -685,7 +685,7 @@ class Players {
 					mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(mediaData.media)}`;
 					logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
 				} else {
-					throw `No media source for ${mediaData.media} (tried in ${resolvedPathRepos('Medias', mediaData.repo).toString()} and HTTP source)`;
+					throw Error(`No media source for ${mediaData.media} (tried in ${resolvedPathRepos('Medias', mediaData.repo).toString()} and HTTP source)`);
 				}
 			});
 		mediaFile = mediaFiles[0];
