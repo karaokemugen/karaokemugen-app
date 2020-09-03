@@ -1,5 +1,12 @@
 # Versions
 
+## v4.1.10 "Ôgi Observatrice" - 03/09/2020
+
+### Fixes
+
+- Downgraded Axios on frontend dependencies as it made it impossible to remove songs. A better fix will come later. (e32830247)
+- Songs with invalid data are now properly skipped during generation (bd1229f5f)
+
 ## v4.1.9 "Ôgi Observatrice" - 30/08/2020
 
 ### Improvements

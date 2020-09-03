@@ -11,7 +11,7 @@
     "@sentry/integrations": "^5.22.3",
     "@sentry/react": "^5.22.3",
     "autoprefixer": "^9.8.6",
-    "axios": "^0.20.0",
+    "axios": "^0.19.2",
     "fingerprintjs2": "^2.1.2",
     "fonts": "^0.0.2",
     "i18next": "^19.7.0",
