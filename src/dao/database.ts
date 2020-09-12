@@ -158,9 +158,8 @@ export async function initDBSystem(): Promise<Migration[]> {
 		migrations = await migrateDB();
 	} catch(err) {
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
-		const error = new Error(`Database system initialization failed : ${err}`);
-		sentry.error(error, 'Fatal');
-		throw error;
+		sentry.error(err, 'Fatal');
+		throw Error(`Database system initialization failed : ${err}`);
 	}
 	if (!await getInstanceID()) {
 		conf.App.InstanceID
