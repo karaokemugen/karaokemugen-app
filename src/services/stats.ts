@@ -49,8 +49,8 @@ export async function sendPayload() {
 		logger.info('Payload sent successfully', {service: 'Stats'});
 	} catch(err) {
 		logger.warn('Uploading stats payload failed', {service: 'Stats', obj: err});
-		if (err !== 'This instance is not connected to the internets' ||
-			err !== 'Could not fetch instance ID'
+		if (err.message !== 'This instance is not connected to the internets' ||
+			err.message !== 'Could not fetch instance ID'
 		) {
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.STATS_PAYLOAD'));
 			sentry.error(err);
