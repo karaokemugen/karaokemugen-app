@@ -3,11 +3,11 @@ import publicIP from 'public-ip';
 import { APIMessage } from '../controllers/common';
 import { getInstanceID } from '../lib/dao/database';
 import {getConfig} from '../lib/utils/config';
-import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import {OnlineForm} from '../types/online';
 import {configureHost, determineV6Prefix} from '../utils/config';
+import {commandKMServer} from '../utils/kmserver';
 import { getState } from '../utils/state';
 
 /** Send IP to KM Server's URL shortener */
@@ -29,15 +29,17 @@ export async function publishURL() {
 		logger.debug('Cannot find IPv6 network information, IPv4-only fallback.', {service: 'ShortURL', obj: err});
 	}
 	try {
-		await HTTP.post(`https://${conf.Online.Host}/api/shortener`, {
-			form,
-			timeout: 5000
-		});
-		logger.debug('Server accepted our publish', {service: 'ShortURL'});
-		configureHost();
-	} catch(err) {
-		logger.error(`Failed publishing our IP to ${conf.Online.Host}`, {service: 'ShortURL', obj: err});
-		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.SHORTENER', err));
+		const res: boolean = await commandKMServer('shortener publish', form);
+		if (res) {
+			logger.debug(`Server (${conf.Online.Host}) accepted our publish`, {service: 'ShortURL'});
+			configureHost();
+		} else {
+			logger.warn(`Server (${conf.Online.Host}) refused our publish`, {service: 'ShortURL'});
+			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.SHORTENER'));
+		}
+	} catch (err) {
+		logger.error(`Failed publishing our IP to ${conf.Online.Host}`, {service: 'ShortURL'});
+		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.SHORTENER'));
 	}
 }
 
