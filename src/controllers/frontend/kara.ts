@@ -163,7 +163,7 @@ export default function karaController(router: Router) {
 			} catch(err) {
 				const code = 'KARA_CREATED_ERROR';
 				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(err?.msg || code));
 			}
 		});
 	router.route('/karas/history')
@@ -593,7 +593,7 @@ export default function karaController(router: Router) {
 			} catch(err) {
 				const code = 'KARA_EDITED_ERROR';
 				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
+				res.status(err?.code || 500).json(APIMessage(err?.msg || code));
 			}
 		});
 	router.route('/karas/importfile')
