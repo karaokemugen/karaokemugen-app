@@ -116,7 +116,7 @@ async function migrateDB(): Promise<Migration[]> {
 	await migrateFromDBMigrate();
 	const conf = getConfig();
 	const migrator = new Postgrator({
-		migrationDirectory: resolve(getState().resourcePath, 'migrations/'),
+		migrationPattern: resolve(getState().resourcePath, 'migrations/*.sql'),
 		host: conf.Database.prod.host,
 		driver: conf.Database.prod.driver,
 		username: conf.Database.prod.user,

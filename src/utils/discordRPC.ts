@@ -4,12 +4,11 @@ import sample from 'lodash.sample';
 
 import { getConfig } from '../lib/utils/config';
 import { version } from '../version';
-
-const clientId = '718211141033263145';
+import { discordClientID } from './constants';
 
 let rpc: any;
 
-discordRPC.register(clientId);
+discordRPC.register(discordClientID);
 
 export async function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
 	try {
@@ -85,7 +84,7 @@ export function setupDiscordRPC() {
 		stopDiscordRPC();
 		startCheckingDiscordRPC();
 	});
-	rpc.login({ clientId }).catch(() => {
+	rpc.login({ discordClientID }).catch(() => {
 		stopDiscordRPC();
 		if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
 	});

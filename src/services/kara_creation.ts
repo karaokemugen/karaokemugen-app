@@ -98,9 +98,11 @@ export async function editKara(kara: Kara, refresh = true) {
 		}
 	} catch(err) {
 		logger.error('Error while editing kara', {service: 'KaraGen', obj: err});
-		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
-		if (newKara) sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
-		sentry.error(err);
+		if (!err.msg) {
+			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+			if (newKara) sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
+			sentry.error(err);
+		}
 		task.end();
 		throw err;
 	}
@@ -144,9 +146,11 @@ export async function createKara(kara: Kara) {
 		saveSetting('baseChecksum', getStoreChecksum());
 	} catch(err) {
 		logger.error('Error while creating kara', {service: 'KaraGen', obj: err});
-		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
-		if (newKara) sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
-		sentry.error(err);
+		if (!err.msg) {
+			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+			if (newKara) sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
+			sentry.error(err);
+		}
 		task.end();
 		throw err;
 	}

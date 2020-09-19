@@ -32,13 +32,14 @@ export function stopStats() {
 
 /** Send stats payload to KM Server */
 export async function sendPayload() {
+	let payload: any;
 	try {
 		try {
 			await internet();
 		} catch(err) {
 			throw 'This instance is not connected to the internets';
 		}
-		const payload = await buildPayload();
+		payload = await buildPayload();
 		if (!payload.instance.instance_id) throw 'Could not fetch instance ID';
 		logger.info(`Sending payload (${prettyBytes(JSON.stringify(payload).length)})`, {service: 'Stats'});
 		const conf = getConfig();
@@ -49,10 +50,11 @@ export async function sendPayload() {
 		logger.info('Payload sent successfully', {service: 'Stats'});
 	} catch(err) {
 		logger.warn('Uploading stats payload failed', {service: 'Stats', obj: err});
-		if (err.message !== 'This instance is not connected to the internets' ||
-			err.message !== 'Could not fetch instance ID'
+		if (err !== 'This instance is not connected to the internets' &&
+			err !== 'Could not fetch instance ID'
 		) {
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.STATS_PAYLOAD'));
+			if (payload) sentry.addErrorInfo('Payload', JSON.stringify(payload, null, 2), payload);
 			sentry.error(err);
 		}
 	}

@@ -301,7 +301,12 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		await DBEditUser(user);
 		logger.debug(`${username} (${user.nickname}) profile updated`, {service: 'User'});
 		let KMServerResponse: any;
-		if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user);
+		try {
+			if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user);
+		} catch(err) {
+			logger.warn(err, {service: 'RemoteUser'});
+			throw {code: 500};
+		}
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !opts.noPasswordCheck && !getState().isDemo) {
 			if (user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
