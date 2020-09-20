@@ -442,6 +442,11 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED';
 				throw {code: 451, msg: 'Song is blacklisted'};
 			}
+			// Check user quota first
+			if (!await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
+				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
+				throw {code: 429, msg: 'User quota reached'};
+			}
 		}
 		// Everything's daijokay, user is allowed to add a song.
 		const date_add = new Date();
@@ -465,15 +470,17 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		// Unique ID here is to determine if a song is already present or not
 		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it won't count
 		const playingObject = getPlayingPos(plContents);
-		const playingPos = playingObject
-			? playingObject.plc_id_pos
-			: 0;
+		const playingPos = playingObject?.plc_id_pos || 0;
 		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist. These are all songs not played yet.
 		const plContentsAfterPlay = plContents.filter((plc: PLC) => plc.pos >= playingPos);
 		if (user.type === 0) {
 			// Admin can add a song multiple times in the current or any other playlist, even by the same user
 			if (!conf.Playlist.AllowDuplicates) {
 				// Option to allow is not set : removing duplicates from songs to add
+				const songs = isAllKarasInPlaylist(karaList, plContents);
+				karaList = songs.notPresent;
+			} else {
+				// If it's set we allow it only for songs after play cursor.
 				const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
 				karaList = songs.notPresent;
 			}
@@ -496,11 +503,6 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 					plc: songs.alreadyPresent[0]
 				};
 			}
-		}
-		// Check user quota first
-		if (user.type > 0 && !await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
-			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
-			throw {code: 429, msg: 'User quota reached'};
 		}
 		// If AllowDuplicateSeries is set to false, remove all songs with the same SIDs
 		if (!conf.Playlist.AllowDuplicateSeries && user.type > 0) {
