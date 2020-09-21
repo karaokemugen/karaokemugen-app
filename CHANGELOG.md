@@ -1,5 +1,23 @@
 # Versions
 
+## v4.1.12 "Ôgi Observatrice" - 21/09/2020
+
+### Improvements
+
+- mpv's subs loading has been improved (94f7a0e3)
+- URL shortener (kara.moe) now communicates through websockets with KM App (#759)
+- Karaoke files now have sorted TIDs for each tag category (#786)
+- Updated core dependencies
+
+### Fixes
+
+- Fixing tag downloads during karaoke downloads (8f8503c2)
+- Songs now are properly removed from generation when they have errors/missing tags, making it so redownloading them from the server works (#797)
+- Fixed upgrading from Karaoke Mugen 3.x apps (990687da)
+- Added stats payload to Sentry when an error is detected during upload (7fcdc52b 858dfcff)
+- Fixed some error reporting issues (2cc6619c 4000b7b9 227b384b d7ea15db)
+- Added a specific error message when sub format is unknown in kara edit/add form (4e3f1cc6)
+
 ## v4.1.10 "Ôgi Observatrice" - 03/09/2020
 
 ### Fixes
