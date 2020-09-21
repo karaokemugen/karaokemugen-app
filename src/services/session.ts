@@ -252,8 +252,7 @@ export async function exportSession(seid: string) {
 			csvRequestedCount.writeRecords(recordsRequestedCount)
 		]);
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	}
 }

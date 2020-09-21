@@ -338,39 +338,6 @@ class Player {
 			this.recreate(null, true);
 			emitPlayerState();
 		});
-		this.mpv.on('file-loaded', async () => {
-			if (playerState.mediaType === 'song' && playerState?.currentSong?.subfile) {
-				const subFiles = await resolveFileInDirs(playerState.currentSong.subfile, resolvedPathRepos('Lyrics', playerState.currentSong.repo))
-					.catch(err => {
-						logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
-						logger.warn(`Subs NOT FOUND : ${playerState.currentSong.subfile}`, {service: 'Player'});
-					});
-				if (subFiles && subFiles[0]) {
-					await this.mpv.send({command: ['sub-add', subFiles[0], 'select']}).catch(err => {
-						logger.error('Unable to load subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`, obj: err});
-						sentry.error(err, 'Warning');
-					}).then(() => {
-						logger.debug('Loaded subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`});
-					});
-				}
-			} else if (['Intros', 'Sponsors', 'Jingles', 'Encores', 'Outros']
-				.includes(playerState.mediaType) && playerState?.currentMedia) {
-				const subFile = replaceExt(playerState.currentMedia.filename, '.ass');
-				logger.debug(`Searching for ${subFile}`, {service: `mpv${this.options.monitor ? ' monitor':''}`});
-				if (await asyncExists(subFile)) {
-					await this.mpv.send({command: ['sub-add', subFile]}).catch(err => {
-						logger.error('Unable to load subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`, obj: err});
-						sentry.error(err, 'Warning');
-					}).then(() => {
-						logger.debug('Loaded subtitles', {service: `mpv${this.options.monitor ? ' monitor':''}`});
-					});
-				} else {
-					logger.debug('No subtitles to load (not found for media)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
-				}
-			} else {
-				logger.debug('No subtitles to load (background)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
-			}
-		});
 	}
 
 	async start() {
@@ -689,11 +656,20 @@ class Players {
 				}
 			});
 		mediaFile = mediaFiles[0];
+		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
+			.catch(err => {
+				logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
+				logger.warn(`Subs NOT FOUND : ${playerState.currentSong.subfile}`, {service: 'Player'});
+			});
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
 		const options: any = {
 			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0'
 		};
+		if (subFiles && subFiles[0]) {
+			options['sub-file'] = subFiles[0];
+			options['sid'] = '1';
+		}
 
 		if (mediaFile.endsWith('.mp3')) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
@@ -763,6 +739,15 @@ class Players {
 			const options: any = {
 				'replaygain-fallback': media.audiogain.toString()
 			};
+			const subFile = replaceExt(media.filename, '.ass');
+			logger.debug(`Searching for ${subFile}`, {service: 'Player'});
+			if (await asyncExists(subFile)) {
+				options['sub-file'] = subFile;
+				options['sid'] = '1';
+				logger.debug(`Loading ${subFile}`, {service: 'Player'});
+			} else {
+				logger.debug('No subtitles to load (not found for media)', {service: 'Player'});
+			}
 			try {
 				playerState.currentSong = null;
 				playerState.mediaType = mediaType;

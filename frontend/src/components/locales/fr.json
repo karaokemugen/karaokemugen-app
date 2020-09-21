@@ -713,7 +713,8 @@
 		"BLC_COPY_ERROR": "Erreur lors de la copie de critères de liste noir vers une autre liste",
 		"BLC_SET_EXPORT_ERROR": "Erreur lors de l'export d'une liste de critères de liste noire",
 		"BLC_SET_IMPORT_ERROR": "Erreur lors de l'import d'une liste de critères de liste noire",
-		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements"
+		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements",
+		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",

@@ -192,8 +192,15 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
 		tagObj.modified_at = new Date().toISOString();
 		// Try to find old tag
-		const oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
-		const oldTagPath = dirname(oldTagFiles[0]);
+		let oldTagFiles = [];
+		let oldTagPath: string;
+		try {
+			oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
+			oldTagPath = dirname(oldTagFiles[0]);
+		} catch(err) {
+			// Non fatal, couldn't find old tag file. We're just goign to update it and write the new one.
+			oldTagPath = resolvedPathRepos('Tags', oldTag.repository)[0];
+		}
 		await Promise.all([
 			updateTag(tagObj),
 			writeTagFile(tagObj, oldTagPath)
@@ -209,7 +216,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 			}
 		}
 		// If the old and new paths are different, it means we copied it to a new repository
-		if (oldTagFiles[0] !== newTagFiles[0]) {
+		if (oldTagFiles[0] && oldTagFiles[0] !== newTagFiles[0]) {
 			await addTagToStore(newTagFiles[0]);
 			removeTagInStore(oldTagFiles[0]);
 			sortTagsStore();
@@ -220,11 +227,9 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		if (tagObj.types.includes(1)) {
 			await writeSeriesFile(tagObj, resolvedPathRepos('Series', tagObj.repository)[0]);
 		}
-		if (opts.refresh) {
-			await refreshTagsAfterDBChange();
-		}
+		if (opts.refresh) await refreshTagsAfterDBChange();
 	} catch(err) {
-		sentry.error(new Error(err));
+		sentry.error(err);
 		throw err;
 	} finally {
 		if (!opts.silent) task.end();

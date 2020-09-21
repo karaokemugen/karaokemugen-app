@@ -29,6 +29,7 @@ import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { initDiscordRPC } from '../utils/discordRPC';
+import { initKMServerCommunication } from '../utils/kmserver';
 import { checkPG, dumpPG, restorePG,stopPG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
@@ -130,6 +131,7 @@ export async function initEngine() {
 		}
 		if (conf.Online.URL && !state.isDemo) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
+			await initKMServerCommunication();
 			await initOnlineURLSystem();
 		} catch(err) {
 			//Non-blocking

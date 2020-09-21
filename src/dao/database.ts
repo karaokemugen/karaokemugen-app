@@ -116,7 +116,7 @@ async function migrateDB(): Promise<Migration[]> {
 	await migrateFromDBMigrate();
 	const conf = getConfig();
 	const migrator = new Postgrator({
-		migrationDirectory: resolve(getState().resourcePath, 'migrations/'),
+		migrationPattern: resolve(getState().resourcePath, 'migrations/*.sql'),
 		host: conf.Database.prod.host,
 		driver: conf.Database.prod.driver,
 		username: conf.Database.prod.user,
@@ -158,9 +158,8 @@ export async function initDBSystem(): Promise<Migration[]> {
 		migrations = await migrateDB();
 	} catch(err) {
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
-		const error = new Error(`Database system initialization failed : ${err}`);
-		sentry.error(error, 'Fatal');
-		throw error;
+		sentry.error(err, 'Fatal');
+		throw Error(`Database system initialization failed : ${err}`);
 	}
 	if (!await getInstanceID()) {
 		conf.App.InstanceID
