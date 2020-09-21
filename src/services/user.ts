@@ -88,11 +88,13 @@ async function updateExpiredUsers() {
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
 	// If this stops working, use got() and a stream: true property again
 	const res = HTTP.stream(`https://${instance}/avatars/${avatarFile}`);
-	const avatarPath = resolve(resolvedPathTemp(), avatarFile);
+	let avatarPath: string;
 	try {
+		avatarPath = resolve(resolvedPathTemp(), avatarFile);
 		await writeStreamToFile(res, avatarPath);
 	} catch(err) {
 		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, {service: 'User', obj: err});
+		throw err;
 	}
 	return avatarPath;
 }
@@ -109,9 +111,8 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		try {
 			remoteUser = await getRemoteUser(username, onlineToken.token);
 		} catch(err) {
-			const error = new Error(err);
-			sentry.error(error);
-			throw error;
+			sentry.error(err);
+			throw err;
 		}
 		// Check if user exists. If it does not, create it.
 		let user = await findUserByName(username);
@@ -126,16 +127,14 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		}
 		// Update user with new data
 		let avatar_file = null;
-		if (remoteUser.avatar_file !== 'blank.png') {
-			let avatarPath = '';
+		if (remoteUser.avatar_file && remoteUser.avatar_file !== 'blank.png') {
+			let avatarPath: string;
 			try {
 				avatarPath = await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file);
 			} catch(err) {
-				const error = new Error(err);
-				sentry.error(error);
-				throw error;
+				sentry.error(err);
 			}
-			avatar_file = {
+			if (avatarPath) avatar_file = {
 				path: avatarPath
 			};
 		}
