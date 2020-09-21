@@ -318,7 +318,8 @@
       "build/electronAboutWindow.css"
     ],
     "extraFiles": [
-      "app/bin/**"
+	  "app/bin/**",
+	  "CHANGELOG.md"
     ],
     "directories": {
       "output": "packages",
