@@ -34,7 +34,7 @@ import { DBKaraHistory } from '../types/database/kara';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { editKara } from './kara_creation';
-import { getRepo } from './repo';
+import { getRepo, getRepos } from './repo';
 import { getTag } from './tag';
 
 
@@ -54,13 +54,17 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		kara.repository = repoName;
 		const tasks = [];
 		const karaFiles = await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', oldRepoName));
-		tasks.push(editKaraInDB(kara));
+		// Determine repository indexes so we know if we should edit our current database to change the kara's repository inside
+		// Repositories are ordered by priority so if destination repo is lower, we don't edit the song in database.
+		const repos = getRepos();
+		const oldRepoIndex = repos.findIndex(r => r.Name === oldRepoName);
+		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
+		if (newRepoIndex < oldRepoIndex) tasks.push(editKaraInDB(kara));
 		tasks.push(asyncCopy(
 			karaFiles[0],
 			resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile),
 			{ overwrite: true }
 		));
-		// End of naughtiness.
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
 		tasks.push(asyncCopy(
 			mediaFiles[0],
@@ -87,6 +91,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const karaFileData: KaraFileV4 = JSON.parse(karaFileRaw);
 		karaFileData.data.repository = repoName;
 		await asyncWriteFile(karaFile, JSON.stringify(karaFileData, null, 2), 'utf-8');
+		// End of naughtiness.
 	} catch(err) {
 		if (err?.code === 404) throw err;
 		sentry.error(new Error(err));
