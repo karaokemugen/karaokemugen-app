@@ -33,8 +33,8 @@ export async function updateKara(kara: Kara) {
 		title: kara.title,
 		year: kara.year,
 		songorder: kara.songorder || null,
-		duration: kara.mediaduration,
-		gain: kara.mediagain,
+		duration: kara.mediaduration || kara.duration,
+		gain: kara.mediagain || kara.gain,
 		modified_at: kara.modified_at,
 		kid: kara.kid
 	}));
