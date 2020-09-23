@@ -1,5 +1,4 @@
 import {decode} from 'jwt-simple';
-import passport from 'passport';
 
 import { getRemoteToken, upsertRemoteToken } from '../../dao/user';
 import {Token,User} from '../../lib/types/user';
@@ -11,7 +10,16 @@ import { APIMessage } from '../common';
 
 const usersFavoritesChecked = new Set();
 
-export const requireAuth = passport.authenticate('jwt', { session: false });
+export const requireAuth = (req: any, res: any, next: any) => {
+	if (req.get('authorization')) {
+		next();
+	} else {
+		res.status(401).json();
+	}
+};
+
+
+//passport.authenticate('jwt', { session: false });
 
 export function updateUserLoginTime(req: any, _res: any, next: any) {
 	const token = decode(req.get('authorization'), getConfig().App.JwtSecret);

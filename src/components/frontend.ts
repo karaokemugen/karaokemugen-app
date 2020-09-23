@@ -5,7 +5,6 @@ import cors from 'cors';
 import express, { Router } from 'express';
 import csp from 'helmet-csp';
 import {createServer} from 'http';
-import passport from 'passport';
 import {resolve} from 'path';
 
 import authController from '../controllers/auth';
@@ -25,7 +24,6 @@ import userController from '../controllers/frontend/user';
 import whitelistController from '../controllers/frontend/whitelist';
 import {resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import {configurePassport} from '../lib/utils/passport_manager';
 import { initWS } from '../lib/utils/ws';
 import { sentryCSP } from '../utils/constants';
 import sentry from '../utils/sentry';
@@ -74,8 +72,6 @@ export function initFrontend(): number {
 			reportOnly: true
 		});
 		app.use(cors());
-		app.use(passport.initialize());
-		configurePassport();
 		app.use(compression());
 		app.use(urlencoded({ extended: true, limit: '50mb' }));
 		app.use(json({limit: '50mb'}));
