@@ -9,6 +9,7 @@ export interface Version {
 }
 
 export interface State {
+	appHasBeenUpdated?: boolean,
 	currentPlaylistID?: number,
 	currentSessionID?: string,
 	currentSessionEndsAt?: Date,
