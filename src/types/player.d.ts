@@ -55,6 +55,5 @@ export interface MediaData {
 }
 
 export interface MpvOptions {
-	monitor: boolean,
-	mpvVersion: string
+	monitor: boolean
 }
