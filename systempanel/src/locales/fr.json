@@ -44,7 +44,7 @@
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
 		"FAMILIES": "Famille(s)",
 		"PLATFORMS": "Plateforme(s)",
-		"GENRES": "Genre(s)",
+		"GENRES": "Thème(s)",
 		"ORIGINS": "Origine(s)",
 		"MISC": "Divers",
 		"GROUPS": "Groupe(s)",
@@ -212,7 +212,7 @@
 		"GROUPS": "Groupe",
 		"FAMILIES": "Famille",
 		"ORIGINS": "Origine",
-		"GENRES": "Genre",
+		"GENRES": "Thème",
 		"PLATFORMS": "Plateforme",
 		"SERIES": "Série"
 	},
@@ -320,7 +320,7 @@
 		"BLCTYPE_9": "Groupe",
 		"BLCTYPE_10": "Famille",
 		"BLCTYPE_11": "Plateforme",
-		"BLCTYPE_12": "Genre",
+		"BLCTYPE_12": "Thème",
 		"BLCTYPE_13": "Origine"
 	},
 	"HOME": {
