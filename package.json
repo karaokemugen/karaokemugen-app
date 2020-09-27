@@ -192,6 +192,7 @@
     "apidoc": "^0.25.0",
     "chai": "^4.2.0",
     "electron": "^10.1.2",
+    "electron-builder": "^22.8.1",
     "eslint": "^7.9.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",
@@ -273,7 +274,8 @@
       ],
       "compression": "normal",
       "publisherName": "Karaoke Mugen Team",
-      "verifyUpdateCodeSignature": false,
+	  "verifyUpdateCodeSignature": false,
+	  "signAndEditExecutable": false,
       "publish": {
         "provider": "generic",
         "url": "https://mugen.karaokes.moe/downloads/"
