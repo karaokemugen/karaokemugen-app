@@ -28,6 +28,7 @@ import {getTagTypeName,tagTypes} from '../lib/utils/constants';
 import {asyncCopy, asyncReadFile, asyncUnlink, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import {profile} from '../lib/utils/logger';
+import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { DBKaraHistory } from '../types/database/kara';
@@ -354,6 +355,8 @@ export async function integrateKaraFile(file: string) {
 	} else {
 		await createKaraInDB(karaData, { refresh: false });
 	}
+	// Do not create image previews if running this from the command line.
+	if (!getState().opt.generateDB) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid}), true, 'single');
 	saveSetting('baseChecksum', getStoreChecksum());
 }
 
