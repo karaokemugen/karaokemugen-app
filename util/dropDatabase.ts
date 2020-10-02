@@ -23,6 +23,7 @@ async function main() {
 	const client = new Pool(databaseConfig);
 	await client.connect();
 	const res = await client.query(`
+	drop text search configuration unaccent_conf;
 	select 'drop table if exists "' || tablename || '" cascade;' as command
   from pg_tables
  where schemaname = 'public';
