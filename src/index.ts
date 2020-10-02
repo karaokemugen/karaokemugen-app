@@ -5,7 +5,6 @@ import {existsSync} from 'fs';
 import {mkdirpSync} from 'fs-extra';
 import i18n from 'i18next';
 import cloneDeep from 'lodash.clonedeep';
-import minimist from 'minimist';
 import {dirname, join, resolve} from 'path';
 import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
@@ -13,7 +12,6 @@ import {createInterface} from 'readline';
 import {exit, initEngine} from './components/engine';
 import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
-import {help} from './help';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
@@ -22,7 +20,7 @@ import {logo} from './logo';
 import { migrateOldFoldersToRepo } from './services/repo';
 import { resetSecurityCode } from './services/user';
 import {Config} from './types/config';
-import {parseCommandLineArgs} from './utils/args';
+import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
 import {createCircleAvatar} from './utils/imageProcessing';
 import sentry from './utils/sentry';
@@ -155,7 +153,8 @@ const args = app?.isPackaged
 
 setState({ args: args });
 
-const argv = minimist(args);
+// Commander call to get everything setup in argv
+const argv = parseArgs();
 
 if (app) {
 	// Acquiring lock to prevent two KMs to run at the same time.
@@ -195,7 +194,7 @@ export async function preInit() {
 	resetSecurityCode();
 	setState({ os: process.platform, version: version});
 	const state = getState();
-	parseCommandLineArgs(argv, app ? app.commandLine : null);
+	setupFromCommandLineArgs(argv, app ? app.commandLine : null);
 	logger.debug(`AppPath : ${appPath}`, {service: 'Launcher'});
 	logger.debug(`DataPath : ${dataPath}`, {service: 'Launcher'});
 	logger.debug(`ResourcePath : ${resourcePath}`, {service: 'Launcher'});
@@ -233,56 +232,45 @@ export async function main() {
 	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
 	if (sha) console.log(`git commit : ${sha.substr(0, 8)}`);
 	console.log('================================================================================');
-	if (argv.version) {
-		app
-			? app.exit(0)
-			: process.exit(0);
-	} else if (argv.help) {
-		console.log(help);
-		app
-			? app.exit(0)
-			: process.exit(0);
-	} else {
-		const config = getConfig();
-		const publicConfig = cloneDeep(config);
-		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
-		publicConfig.App.JwtSecret = 'xxxxx';
-		publicConfig.App.InstanceID = 'xxxxx';
-		logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
-		logger.debug('Initial state', {service: 'Launcher', obj: state});
+	const config = getConfig();
+	const publicConfig = cloneDeep(config);
+	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
+	publicConfig.App.JwtSecret = 'xxxxx';
+	publicConfig.App.InstanceID = 'xxxxx';
+	logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
+	logger.debug('Initial state', {service: 'Launcher', obj: state});
 
-		// Checking paths, create them if needed.
-		await checkPaths(getConfig());
-		// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-		const tempInput = resolve(resolvedPathTemp(), 'input.conf');
-		logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
-		await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
+	// Checking paths, create them if needed.
+	await checkPaths(getConfig());
+	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
+	const tempInput = resolve(resolvedPathTemp(), 'input.conf');
+	logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
+	await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
 
-		const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
-		logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
-		await asyncCopy(resolve(resourcePath, `assets/${state.version.image}`), tempBackground);
+	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
+	logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
+	await asyncCopy(resolve(resourcePath, `assets/${state.version.image}`), tempBackground);
 
-		// Copy avatar blank.png if it doesn't exist to the avatar path
-		logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
-		await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
-		createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
+	// Copy avatar blank.png if it doesn't exist to the avatar path
+	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
+	await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
+	createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
 
-		/**
-		 * Test if network ports are available
-		 */
-		await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
-		/**
-		 * Gentlemen, start your engines.
-		 */
-		try {
-			await initEngine();
-		} catch(err) {
-			logger.error('Karaoke Mugen initialization failed', {service: 'Launcher', obj: err});
-			sentry.error(err);
-			console.log(err);
-			errorStep(i18n.t('ERROR_UNKNOWN'));
-			if (!app || argv.cli) exit(1);
-		}
+	/**
+	 * Test if network ports are available
+	 */
+	await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
+	/**
+	 * Gentlemen, start your engines.
+	 */
+	try {
+		await initEngine();
+	} catch(err) {
+		logger.error('Karaoke Mugen initialization failed', {service: 'Launcher', obj: err});
+		sentry.error(err);
+		console.log(err);
+		errorStep(i18n.t('ERROR_UNKNOWN'));
+		if (!app || argv.cli) exit(1);
 	}
 }
 
