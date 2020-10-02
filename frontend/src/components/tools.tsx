@@ -87,6 +87,10 @@ export function startIntro(scope: string) {
 	return store.getTuto();
 }
 
+function sortTagByPriority(a: any, b: any) {
+	return a.priority < b.priority ? 1 : -1;
+}
+
 /**
 * Build kara title for users depending on the data
 * @param {Object} data - data from the kara
@@ -98,11 +102,11 @@ export function buildKaraTitle(data: DBPLC, onlyText?: boolean, i18nParam?: any)
 	if (data.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	const serieText = (data.series && data.series.length > 0) ? data.series.slice(0, 3).map(e => getSerieLanguage(e, data.langs[0].name, i18nParam)).join(', ')
+	const serieText = (data.series?.length > 0) ? data.series.slice(0, 3).map(e => getSerieLanguage(e, data.langs[0].name, i18nParam)).join(', ')
 		+ (data.series.length > 3 ? '...' : '')
 		: (data.singers ? data.singers.slice(0, 3).map(e => e.name).join(', ') + (data.singers.length > 3 ? '...' : '') : '');
 	const langsText = data.langs.map(e => e.name).join(', ').toUpperCase();
-	const songtypeText = data.songtypes.map(e => e.short ? + e.short : e.name).sort().join(' ');
+	const songtypeText = data.songtypes.sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).sort().join(' ');
 	const songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
 
 	if (onlyText) {

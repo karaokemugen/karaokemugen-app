@@ -11,13 +11,14 @@ SELECT pk_tid AS tid,
 	aliases,
 	modified_at,
 	problematic,
-	noLiveDownload
+	noLiveDownload,
+	priority
 FROM tag
 WHERE pk_tid = $1
 `;
 
 export const sqlgetTag = `
-SELECT tid, name, types, short, aliases, i18n, modified_at, karacount, tagfile, repository, problematic, noLiveDownload
+SELECT tid, name, types, short, aliases, i18n, modified_at, karacount, tagfile, repository, problematic, noLiveDownload, priority
 FROM all_tags
 WHERE tid = $1
 `;
@@ -39,7 +40,8 @@ SELECT tid,
 	modified_at,
 	repository,
 	problematic,
-	noLiveDownload
+	noLiveDownload,
+	priority
 FROM all_tags
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
@@ -61,7 +63,8 @@ INSERT INTO tag(
 	repository,
 	modified_at,
 	problematic,
-	noLiveDownload
+	noLiveDownload,
+	priority
 )
 VALUES(
 	$1,
@@ -74,7 +77,8 @@ VALUES(
 	$8,
 	$9,
 	$10,
-	$11
+	$11,
+	$12
 )
 ON CONFLICT (pk_tid) DO UPDATE SET
 	types = $3,
@@ -86,7 +90,8 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 	repository = $8,
 	modified_at = $9,
 	problematic = $10,
-	noLiveDownload = $11
+	noLiveDownload = $11,
+	priority = $12
 `;
 
 export const sqlupdateKaraTagsTID = `
@@ -130,7 +135,8 @@ SET
 	repository = $8,
 	modified_at = $9,
 	problematic = $10,
-	noLiveDownload = $11
+	noLiveDownload = $11,
+	priority = $12
 WHERE pk_tid = $7;
 `;
 

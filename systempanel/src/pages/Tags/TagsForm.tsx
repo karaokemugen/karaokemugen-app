@@ -1,5 +1,5 @@
 import { MinusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Cascader, Checkbox, Col, Divider, Form, Input, message, Row, Select, Tag, Tooltip } from 'antd';
+import { Alert, Button, Cascader, Checkbox, Col, Divider, Form, Input, InputNumber,message, Row, Select, Tag, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import Axios from 'axios';
 import i18next from 'i18next';
@@ -213,7 +213,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						}]}
 						name="repository"
 					>
-						<Select disabled={this.props.tag?.repository !== undefined} 
+						<Select disabled={this.props.tag?.repository !== undefined}
 							style={{ maxWidth: '20%', minWidth: '150px' }} placeholder={i18next.t('TAGS.REPOSITORY')}>
 							{this.state.repositoriesValue.map(repo => {
 								return <Select.Option key={repo} value={repo}>{repo}</Select.Option>;
@@ -297,6 +297,24 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							<PlusOutlined />{i18next.t('ADD')}
 						</Tag>
 					}
+				</Form.Item>
+				<Form.Item hasFeedback
+					label={(
+						<span>{i18next.t('TAG.PRIORITY')}&nbsp;
+							<Tooltip title={i18next.t('TAG.PRIORITY_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 2 }}
+					name="priority"
+				>
+					<InputNumber required={true}
+						min={0}
+						placeholder='Priority'
+						style={{ width: '100%' }}
+					/>
 				</Form.Item>
 				<Form.Item
 					label={(
