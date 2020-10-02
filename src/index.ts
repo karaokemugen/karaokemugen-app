@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 import {app} from 'electron';
-import {existsSync} from 'fs';
+import {existsSync, readFileSync} from 'fs';
 import {mkdirpSync} from 'fs-extra';
 import i18n from 'i18next';
 import cloneDeep from 'lodash.clonedeep';
@@ -13,7 +13,7 @@ import {exit, initEngine} from './components/engine';
 import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathTemp, setConfig} from './lib/utils/config';
-import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
+import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import {logo} from './logo';
@@ -25,7 +25,6 @@ import {initConfig} from './utils/config';
 import {createCircleAvatar} from './utils/imageProcessing';
 import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
-import {version} from './version';
 
 dotenv.config();
 sentry.init(app);
@@ -72,13 +71,6 @@ on('initError', (err: Error) => {
 	isInitError = true;
 	initError(err);
 });
-
-function initError(err: any) {
-	logger.error('Error during launch', {service: 'Launcher', obj: err});
-	console.log(err);
-	sentry.error(err);
-	exit(1);
-}
 
 // Main app begins here.
 // Testing if we're in a packaged version of KM or not.
@@ -153,6 +145,22 @@ const args = app?.isPackaged
 
 setState({ args: args });
 
+// Set SHA
+let sha: string;
+const SHAFile = resolve(resourcePath, 'assets/sha.txt');
+if (existsSync(SHAFile)) {
+	sha = readFileSync(SHAFile, 'utf-8');
+	setState({version: {sha: sha.substr(0, 8)}});
+} else {
+	const branch = getState().version.number.split('-')[1];
+	try {
+		sha = readFileSync(resolve(originalAppPath, '.git/refs/heads/', branch), 'utf-8');
+		setState({version: {sha: sha.substr(0, 8)}});
+	} catch(err) {
+		// Ignore
+	}
+}
+
 // Commander call to get everything setup in argv
 const argv = parseArgs();
 
@@ -192,7 +200,7 @@ export async function preInit() {
 	await configureLocale();
 	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
 	resetSecurityCode();
-	setState({ os: process.platform, version: version});
+	setState({ os: process.platform });
 	const state = getState();
 	setupFromCommandLineArgs(argv, app ? app.commandLine : null);
 	logger.debug(`AppPath : ${appPath}`, {service: 'Launcher'});
@@ -212,25 +220,10 @@ export async function preInit() {
 export async function main() {
 	initStep(i18n.t('INIT_INIT'));
 	// Set version number
-	let sha: string;
-	const SHAFile = resolve(resourcePath, 'assets/sha.txt');
-	if (await asyncExists(SHAFile)) {
-		sha = await asyncReadFile(SHAFile, 'utf-8');
-		setState({version: {sha: sha.substr(0, 8)}});
-	} else {
-		const branch = getState().version.number.split('-')[1];
-		try {
-			sha = await asyncReadFile(resolve(originalAppPath, '.git/refs/heads/', branch), 'utf-8');
-			setState({version: {sha: sha.substr(0, 8)}});
-		} catch(err) {
-			// Ignore
-		}
-	}
 	const state = getState();
 	console.log(chalk.white(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
-	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
-	if (sha) console.log(`git commit : ${sha.substr(0, 8)}`);
+	console.log(`Version ${chalk.bold.green(state.version.number)} "${chalk.bold.green(state.version.name)}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
 	console.log('================================================================================');
 	const config = getConfig();
 	const publicConfig = cloneDeep(config);
@@ -249,7 +242,7 @@ export async function main() {
 
 	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
 	logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
-	await asyncCopy(resolve(resourcePath, `assets/${state.version.image}`), tempBackground);
+	await asyncCopy(resolve(resourcePath, 'assets/backgrounds/default.jpg'), tempBackground);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
@@ -326,3 +319,9 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 	}
 }
 
+function initError(err: any) {
+	logger.error('Error during launch', {service: 'Launcher', obj: err});
+	console.log(err);
+	sentry.error(err);
+	exit(1);
+}

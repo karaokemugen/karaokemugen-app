@@ -4,8 +4,8 @@ import Transport from 'winston-transport';
 
 import {getConfig} from '../lib/utils/config';
 import SentryLogger from '../lib/utils/sentry';
-import {version} from '../version';
 import {sentryDSN} from './constants';
+import {getState} from './state';
 
 class ElectronSentryLogger extends SentryLogger {
     // @ts-ignore: Excuse me god. We don't use any of the properties
@@ -29,7 +29,7 @@ class ElectronSentryLogger extends SentryLogger {
     	const options: any = {
     		dsn: process.env.SENTRY_DSN || sentryDSN,
     		environment: process.env.SENTRY_ENVIRONMENT || 'release',
-    		release: version.number,
+    		release: getState().version.number,
     		beforeSend: (event, _hint) => {
     			// Testing for precise falseness. If errortracking is undefined or if getconfig doesn't return anything, errors are not sent.
     			if (getConfig()?.Online?.ErrorTracking !== true || !this.SentryInitialized) return null;
