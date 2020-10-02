@@ -4,20 +4,23 @@
 
 import {readFileSync} from 'fs';
 import {safeLoad} from 'js-yaml';
+import merge from 'lodash.merge';
 import {Pool} from 'pg';
 
+import {dbConfig} from '../src/utils/default_settings';
 
 async function main() {
-	const configFile = readFileSync('../app/config.yml', 'utf-8');
-	const config: any = safeLoad(configFile);
-	const dbConfig = {
-		host: config.System.Database.host,
-		user: config.System.Database.username,
-		port: config.System.Database.port,
-		password: config.System.Database.password,
-		database: config.System.Database.database
+	const configFile = readFileSync('app/config.yml', 'utf-8');
+	const configData: any = safeLoad(configFile);
+	const config = merge(dbConfig, configData.System.Database);
+	const databaseConfig = {
+		host: config.host,
+		user: config.username,
+		port: config.port,
+		password: config.password,
+		database: config.database
 	};
-	const client = new Pool(dbConfig);
+	const client = new Pool(databaseConfig);
 	await client.connect();
 	const res = await client.query(`
 	select 'drop table if exists "' || tablename || '" cascade;' as command
