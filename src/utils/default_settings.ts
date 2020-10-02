@@ -6,7 +6,7 @@
 import {bools, hostnameRegexp} from '../lib/utils/constants';
 import {Config} from '../types/config';
 
-const dbConfig = process.platform === 'linux'
+export const dbConfig = process.platform === 'linux'
 	? {
 		bundledPostgresBinary: false,
 		database: 'karaokemugen_app',
