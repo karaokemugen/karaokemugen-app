@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import sample from 'lodash.sample';
 
 import { getConfig } from '../lib/utils/config';
-import { version } from '../version';
+import { getState } from './state';
 import { discordClientID } from './constants';
 
 let rpc: any;
@@ -33,7 +33,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			largeImageKey: 'nanami-smile',
 			largeImageText: 'Karaoke Mugen',
 			smallImageKey: activityType === 'song' ? 'play' : 'pause',
-			smallImageText: `Version ${version.number} - ${version.name}`,
+			smallImageText: `Version ${getState().version.number} - ${getState().version.name}`,
 			instance: false,
 		});
 	} catch(err) {

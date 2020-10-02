@@ -1,6 +1,7 @@
 // Node modules
 import merge from 'lodash.merge';
 
+import packageJSON from '../../package.json';
 import {getConfig} from '../lib/utils/config';
 // KM Imports
 import { supportedFiles } from '../lib/utils/constants';
@@ -42,7 +43,11 @@ let state: State = {
 	args: [],
 	environment: process.env.SENTRY_ENVIRONMENT,
 	sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
-	currentBLCSetID: 1
+	currentBLCSetID: 1,
+	version: {
+		number: packageJSON.version,
+		name: packageJSON.versionName
+	}
 };
 
 /** Get public state (to send to webapp users) */

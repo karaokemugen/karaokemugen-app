@@ -2,15 +2,15 @@ import cli from 'commander';
 import { CommandLine } from 'electron';
 
 import logger, { enableProfiling } from '../lib/utils/logger';
-import {version} from '../version';
-import {setState} from './state';
+import {getState, setState} from './state';
 
 export function parseArgs() {
 	const argv = process.argv.filter(e => e !== '--');
+	const version = getState().version;
 	return cli
 		.command('KaraokeMugen')
 		.description('Starts Karaoke Mugen Desktop App')
-		.version(`${version.number} ${version.name} ${version.sha}`)
+		.version(`${version.number} "${version.name}" (commit ${version.sha})`)
 		.option('-b, --updateBase', 'Update karaoke base files')
 		.option('-c, --config [file]','Specify a config file to use (default is config.yml)')
 		.option('-d, --debug', 'Displays additional debug messages')

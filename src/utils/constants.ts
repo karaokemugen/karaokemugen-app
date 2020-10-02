@@ -1,4 +1,4 @@
-import { version } from '../version';
+import { getState } from './state';
 
 export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806';
 
@@ -249,7 +249,7 @@ export const initializationCatchphrases = [
 
 // Default headers for HTTP client
 export const headers = {
-	'user-agent': `KaraokeMugenApp/${version.number}`
+	'user-agent': `KaraokeMugenApp/${getState().version.number}`
 };
 
 // Prefixes for known ASNs
