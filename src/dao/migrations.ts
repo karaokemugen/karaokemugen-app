@@ -3,11 +3,12 @@ import i18next from 'i18next';
 import { Migration } from 'postgrator';
 
 import {win} from '../electron/electron';
+import logger from '../lib/utils/logger';
 import { initDownloader, redownloadSongs } from '../services/download';
 import { generateDB } from './database';
 
 export async function postMigrationTasks(migrations: Migration[]) {
-	const doGenerate = false;
+	let doGenerate = false;
 	// Add code here to do stuff when migrations occur
 	for (const migration of migrations) {
 		let breakFromLoop = false;
@@ -40,6 +41,10 @@ export async function postMigrationTasks(migrations: Migration[]) {
 					message: i18next.t('NO_KARAOKE_MODE_ANYMORE.MESSAGE')
 				});
 			}
+			break;
+		case 'addPriorityToTags':
+			doGenerate = true;
+			logger.info('Migration adding priority to tags detected, forcing generation', {service: 'DB'});
 			break;
 		default:
 		}

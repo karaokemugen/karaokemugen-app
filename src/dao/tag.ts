@@ -52,7 +52,8 @@ export async function insertTag(tag: Tag) {
 		tag.repository,
 		tag.modified_at,
 		tag.problematic || false,
-		tag.noLiveDownload || false
+		tag.noLiveDownload || false,
+		tag.priority || 0
 	]);
 }
 
@@ -99,7 +100,8 @@ export function updateTag(tag: Tag) {
 		tag.repository,
 		tag.modified_at,
 		tag.problematic || false,
-		tag.noLiveDownload || false
+		tag.noLiveDownload || false,
+		tag.priority || 0
 	]);
 }
 
