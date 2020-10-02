@@ -44,26 +44,26 @@ export async function initDB() {
 	await connectDB(errorFunction, {superuser: true, db: 'postgres', log: getState().opt.sql});
 	try {
 		// Testing if database exists. If it does, no need to do the other stuff
-		const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.Database.prod.database}'`);
+		const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.System.Database.database}'`);
 		if (rows.length > 0) return;
 	} catch(err) {
 		throw new Error(err);
 	}
 	try {
-		await db().query(`CREATE DATABASE ${conf.Database.prod.database} ENCODING 'UTF8'`);
+		await db().query(`CREATE DATABASE ${conf.System.Database.database} ENCODING 'UTF8'`);
 		logger.debug('Database created', {service: 'DB'});
 	} catch(err) {
 		logger.debug('Database already exists', {service: 'DB'});
 	}
 	try {
-		await db().query(`CREATE USER ${conf.Database.prod.user} WITH ENCRYPTED PASSWORD '${conf.Database.prod.password}';`);
+		await db().query(`CREATE USER ${conf.System.Database.username} WITH ENCRYPTED PASSWORD '${conf.System.Database.password}';`);
 		logger.debug('User created', {service: 'DB'});
 	} catch(err) {
 		logger.debug('User already exists', {service: 'DB'});
 	}
-	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.Database.prod.database} TO ${conf.Database.prod.user};`);
+	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.System.Database.database} TO ${conf.System.Database.username};`);
 	// We need to reconnect to create the extension on our newly created database
-	await connectDB(errorFunction, {superuser: true, db: conf.Database.prod.database, log: getState().opt.sql});
+	await connectDB(errorFunction, {superuser: true, db: conf.System.Database.database, log: getState().opt.sql});
 	try {
 		await db().query('CREATE EXTENSION unaccent;');
 	} catch(err) {
@@ -116,13 +116,13 @@ async function migrateDB(): Promise<Migration[]> {
 	await migrateFromDBMigrate();
 	const conf = getConfig();
 	const migrator = new Postgrator({
-		migrationPattern: resolve(getState().resourcePath, 'migrations/*.sql'),
-		host: conf.Database.prod.host,
-		driver: conf.Database.prod.driver,
-		username: conf.Database.prod.user,
-		password: conf.Database.prod.password,
-		port: conf.Database.prod.port,
-		database: conf.Database.prod.database,
+		migrationDirectory: resolve(getState().resourcePath, 'migrations/*.sql'),
+		host: conf.System.Database.host,
+		driver: 'pg',
+		username: conf.System.Database.username,
+		password: conf.System.Database.password,
+		port: conf.System.Database.port,
+		database: conf.System.Database.database,
 		validateChecksums: false,
 	});
 	try {
@@ -145,14 +145,14 @@ export async function initDBSystem(): Promise<Migration[]> {
 	// First login as super user to make sure user, database and extensions are created
 	let migrations: Migration[];
 	try {
-		if (conf.Database.prod.bundledPostgresBinary) {
+		if (conf.System.Database.bundledPostgresBinary) {
 			await initPG();
 			await initDB();
 		}
 		logger.info('Initializing database connection', {service: 'DB'});
 		await connectDB(errorFunction, {
 			superuser: false,
-			db: conf.Database.prod.database,
+			db: conf.System.Database.database,
 			log: state.opt.sql
 		});
 		migrations = await migrateDB();

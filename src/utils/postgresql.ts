@@ -28,7 +28,7 @@ export function isShutdownPG(): boolean {
 async function killPG() {
 	const state = getState();
 	const conf = getConfig();
-	if (state.os !== 'win32' || !conf.Database.prod.bundledPostgresBinary) return;
+	if (state.os !== 'win32' || !conf.System.Database.bundledPostgresBinary) return;
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		binPath = `"${binPath}"`;
@@ -106,13 +106,13 @@ function setConfig(config: string, setting: string, value: any): string {
 export async function dumpPG() {
 	const conf = getConfig();
 	const state = getState();
-	if (!conf.Database.prod.bundledPostgresBinary) {
+	if (!conf.System.Database.bundledPostgresBinary) {
 		const err = 'Dump not available with hosted PostgreSQL servers';
 		logger.warn(err, {service: 'DB'});
 		throw err;
 	}
 	try {
-		const options = ['-c','-E','UTF8','--if-exists','-U',conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.dataPath, 'karaokemugen.sql'), conf.Database.prod.database ];
+		const options = ['-c','-E','UTF8','--if-exists','-U',conf.System.Database.username, '-p', `${conf.System.Database.port}`, '-f', resolve(state.dataPath, 'karaokemugen.sql'), conf.System.Database.database ];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
@@ -130,13 +130,13 @@ export async function dumpPG() {
 export async function restorePG() {
 	const conf = getConfig();
 	const state = getState();
-	if (!conf.Database.prod.bundledPostgresBinary) {
+	if (!conf.System.Database.bundledPostgresBinary) {
 		const err = 'Restore not available with hosted PostgreSQL servers';
 		logger.warn(err, {service: 'DB'});
 		throw err;
 	}
 	try {
-		const options = ['-U', conf.Database.prod.user, '-p', `${conf.Database.prod.port}`, '-f', resolve(state.dataPath, 'karaokemugen.sql'), conf.Database.prod.database];
+		const options = ['-U', conf.System.Database.username, '-p', `${conf.System.Database.port}`, '-f', resolve(state.dataPath, 'karaokemugen.sql'), conf.System.Database.database];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_client);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
@@ -160,7 +160,7 @@ export async function initPGData() {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		//if (deburr(binPath) !== binPath || deburr(conf.System.Path.DB) !== conf.System.Path.DB) throw 'DB path or Postgres path contain non-ASCII characters. Please put Karaoke Mugen in a path with no accent characters or the like and try again.';
 
-		const options = [ 'init','-o', `-U ${conf.Database.prod.superuser} -E UTF8`, '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
+		const options = [ 'init','-o', `-U ${conf.System.Database.superuser} -E UTF8`, '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
@@ -185,7 +185,7 @@ export async function updatePGConf() {
 	const pgConfFile = resolve(state.dataPath, conf.System.Path.DB, 'postgres/postgresql.conf');
 	let pgConf = await asyncReadFile(pgConfFile, 'utf-8');
 	//Parsing the ini file by hand since it can't be parsed well with ini package
-	pgConf = setConfig(pgConf, 'port', conf.Database.prod.port);
+	pgConf = setConfig(pgConf, 'port', conf.System.Database.port);
 	pgConf = setConfig(pgConf, 'logging_collector', 'on');
 	pgConf = setConfig(pgConf, 'log_directory', `'${resolve(state.dataPath, 'logs/').replace(/\\/g,'/')}'`);
 	pgConf = setConfig(pgConf, 'log_filename', '\'postgresql-%Y-%m-%d.log\'');
@@ -200,7 +200,7 @@ export async function updatePGConf() {
 export async function checkPG(): Promise<boolean> {
 	const conf = getConfig();
 	const state = getState();
-	if (!conf.Database.prod.bundledPostgresBinary) return false;
+	if (!conf.System.Database.bundledPostgresBinary) return false;
 	try {
 		const options = ['status', '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);

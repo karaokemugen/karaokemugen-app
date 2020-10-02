@@ -238,7 +238,7 @@ export function backupConfig() {
 export function getPublicConfig(removeSystem = true) {
 	const publicSettings = cloneDeep(getConfig());
 	delete publicSettings.App.JwtSecret;
-	delete publicSettings.Database;
+	delete publicSettings.System.Database;
 	if (removeSystem) delete publicSettings.System;
 	else delete publicSettings.System.Binaries;
 	delete publicSettings.Karaoke.StreamerMode.Twitch.OAuth;
@@ -254,7 +254,7 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	const binariesPath = configuredBinariesForSystem(config);
 	const requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
-	if (config.Database.prod.bundledPostgresBinary) {
+	if (config.System.Database.bundledPostgresBinary) {
 		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
 		if (process.platform === 'win32') {
 			requiredBinariesChecks.push(asyncRequired('C:/Windows/System32/msvcr120.dll'));

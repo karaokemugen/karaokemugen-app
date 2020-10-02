@@ -2,18 +2,21 @@
 // This is used for CI/CD to drop the database contents and start anew.
 // DO NOT DO THIS AT HOME.
 
-import dbConfigFile from '../app/database.json';
+import {readFileSync} from 'fs';
+import {safeLoad} from 'js-yaml';
 import {Pool} from 'pg';
 
-const dbConfig = {
-	host: dbConfigFile.prod.host,
-	user: dbConfigFile.prod.user,
-	port: dbConfigFile.prod.port,
-	password: dbConfigFile.prod.password,
-	database: dbConfigFile.prod.database
-};
 
 async function main() {
+	const configFile = readFileSync('../app/config.yml', 'utf-8');
+	const config: any = safeLoad(configFile);
+	const dbConfig = {
+		host: config.System.Database.host,
+		user: config.System.Database.username,
+		port: config.System.Database.port,
+		password: config.System.Database.password,
+		database: config.System.Database.database
+	};
 	const client = new Pool(dbConfig);
 	await client.connect();
 	const res = await client.query(`

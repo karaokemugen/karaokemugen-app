@@ -182,7 +182,7 @@ export async function initEngine() {
 					});
 				}
 			}
-			if (conf.Database.prod.bundledPostgresBinary) await dumpPG();
+			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
 			if (!state.isTest && !state.isDemo && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			if (!state.isTest && !state.isDemo) {
 				try {
@@ -223,7 +223,7 @@ export async function exit(rc: string | number) {
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
 	try {
 		// Let's try to kill PGSQL anyway, not a problem if it fails.
-		if (c?.Database?.prod.bundledPostgresBinary && await checkPG()) {
+		if (c?.System.Database?.bundledPostgresBinary && await checkPG()) {
 			try {
 				await stopPG();
 				logger.info('PostgreSQL has shutdown', {service: 'Engine'});
