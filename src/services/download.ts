@@ -254,7 +254,7 @@ async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, 
 				const tagName = await integrateTagFile(resolve(localTagsPath, tag.file));
 				if (tagName) logger.debug(`Tag "${tagName}" in database`, {service: 'Download'});
 			} catch(err) {
-				logger.error(`Tag "${tag.file}" not properly added to database`, {service: 'Download'});
+				logger.error(`Tag "${tag.file}" not properly added to database`, {service: 'Download', obj: err});
 				throw err;
 			}
 		}
@@ -263,7 +263,7 @@ async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, 
 			logger.info(`Song "${bundle.kara.file}" added to database`, {service: 'Download'});
 			await setDownloadStatus(download_id, 'DL_DONE');
 		} catch(err) {
-			logger.error(`Song "${bundle.kara.file}" not properly added to database`, {service: 'Download'});
+			logger.error(`Song "${bundle.kara.file}" not properly added to database`, {service: 'Download', obj: err});
 			throw err;
 		}
 	} catch(err) {
