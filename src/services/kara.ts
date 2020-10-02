@@ -270,13 +270,13 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	profile('getKaras');
 	try {
 		const pl = await selectAllKaras({
-			username: params.token.username,
+			username: params.token?.username || 'admin',
 			filter: params.filter || '',
 			mode: params.mode,
 			modeValue: params.modeValue,
 			from: params.from || 0,
 			size: params.size || 9999999999,
-			admin: params.token.role === 'admin',
+			admin: params.token?.role === 'admin' || true,
 			random: params.random,
 			blacklist: params.blacklist
 		});
@@ -356,7 +356,7 @@ export async function integrateKaraFile(file: string) {
 		await createKaraInDB(karaData, { refresh: false });
 	}
 	// Do not create image previews if running this from the command line.
-	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid}), true, 'single');
+	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid, token: {username: 'admin', role: 'admin'}}), true, 'single');
 	saveSetting('baseChecksum', getStoreChecksum());
 }
 
