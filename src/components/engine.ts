@@ -194,7 +194,7 @@ export async function initEngine() {
 					//Non fatal
 				}
 			}
-			createImagePreviews(await getAllKaras(), true, 'single');
+			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), true, 'single');
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
 			sentry.error(err);

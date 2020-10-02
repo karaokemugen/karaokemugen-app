@@ -59,6 +59,7 @@ export const defaults: Config = {
 		}
 	},
 	Frontend: {
+		GeneratePreviews: true,
 		AuthExpireTime: 15,
 		Mode: 2,
 		Port: 1337,

@@ -30,6 +30,7 @@ export interface Config {
 		MediasHost: string
 	},
 	Frontend: {
+		GeneratePreviews?: boolean,
 		Port?: number,
 		Mode?: number,
 		SeriesLanguageMode: number,

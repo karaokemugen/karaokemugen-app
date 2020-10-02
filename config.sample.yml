@@ -31,6 +31,8 @@ Online:
   Discord:
     DisplayActivity: true
 Frontend:
+  # Enable previews (thumbnail) generation. Should be disabled for tests without all medias present
+  GeneratePreviews: true
   # Minutes before users are considered signed out
   AuthExpireTime: 15
   # Webapp mode :

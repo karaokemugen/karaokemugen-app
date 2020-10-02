@@ -356,7 +356,7 @@ export async function integrateKaraFile(file: string) {
 		await createKaraInDB(karaData, { refresh: false });
 	}
 	// Do not create image previews if running this from the command line.
-	if (!getState().opt.generateDB) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid}), true, 'single');
+	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid}), true, 'single');
 	saveSetting('baseChecksum', getStoreChecksum());
 }
 
