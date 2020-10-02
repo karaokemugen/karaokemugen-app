@@ -17,9 +17,11 @@ import { generateDatabase as generateKaraBase } from '../lib/services/generation
 import {getConfig, setConfig} from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
 import {enableWSLogging,profile} from '../lib/utils/logger';
+import { createImagePreviews } from '../lib/utils/previews';
 import {emit, on} from '../lib/utils/pubsub';
 import {initBlacklistSystem} from '../services/blacklist';
 import {downloadTestSongs,initDownloader, updateAllBases, updateAllMedias, wipeDownloadQueue} from '../services/download';
+import { getAllKaras } from '../services/kara';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
@@ -192,6 +194,7 @@ export async function initEngine() {
 					//Non fatal
 				}
 			}
+			createImagePreviews(await getAllKaras(), true, 'single');
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
 			sentry.error(err);

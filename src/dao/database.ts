@@ -8,7 +8,9 @@ import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
+import { createImagePreviews } from '../lib/utils/previews';
 import { testCurrentBLCSet } from '../services/blacklist';
+import { getAllKaras } from '../services/kara';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG} from '../utils/postgresql';
@@ -193,6 +195,7 @@ export async function generateDB(): Promise<boolean> {
 			await reorderPlaylist(pl.playlist_id);
 		}
 		await generateBlacklist();
+		createImagePreviews(await getAllKaras(), true, 'single');
 	} catch(err) {
 		const error = new Error(err);
 		sentry.error(error);

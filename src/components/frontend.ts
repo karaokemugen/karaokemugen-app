@@ -22,7 +22,7 @@ import tagsController from '../controllers/frontend/tags';
 import testController from '../controllers/frontend/test';
 import userController from '../controllers/frontend/user';
 import whitelistController from '../controllers/frontend/whitelist';
-import {resolvedPathAvatars, resolvedPathRepos} from '../lib/utils/config';
+import {resolvedPathAvatars, resolvedPathPreviews, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { initWS } from '../lib/utils/ws';
 import { sentryCSP } from '../utils/constants';
@@ -98,6 +98,7 @@ export function initFrontend(): number {
 		}
 
 		//Path to video previews
+		app.use('/previews', express.static(resolvedPathPreviews()));
 		//There's a single /medias path which will list all files in all folders. Pretty handy.
 		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir)));
 		//Path to user avatars

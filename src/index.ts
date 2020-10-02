@@ -292,6 +292,7 @@ async function checkPaths(config: Config) {
 			}
 		}
 		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
+		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'previews/')));
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', {service: 'Launcher'});
 	} catch(err) {
