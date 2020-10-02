@@ -1,4 +1,6 @@
-import { getState } from './state';
+// Karaoke Mugen App Constants
+// DO NOT IMPORT ANYTHING FROM THE APP IN THIS FILE
+// or else tests will fail since they import this file and this will result in importint everything from Karaoke Mugen App.
 
 export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806';
 
@@ -248,9 +250,7 @@ export const initializationCatchphrases = [
 ];
 
 // Default headers for HTTP client
-export const headers = {
-	'user-agent': `KaraokeMugenApp/${getState().version.number}`
-};
+export const userAgent = 'KaraokeMugenApp';
 
 // Prefixes for known ASNs
 // See
