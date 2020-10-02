@@ -158,6 +158,16 @@ export interface Config {
 		RandomSongsAfterEndMessage: boolean
 	},
 	System: {
+		Database: {
+			host?: string,
+			port?: number,
+			username?: string,
+			password?: string,
+			superuser?: string,
+			superuserPassword?: string,
+			database?: string,
+			bundledPostgresBinary?: boolean
+		},
 		Binaries: {
 			Player: {
 				Windows?: string,
@@ -194,23 +204,6 @@ export interface Config {
 			Import?: string,
 			Avatars?: string,
 			Tags?: string[] // Deprecated in favour of repositories
-		}
-	},
-	Database: {
-		'sql-file'?: boolean,
-		defaultEnv?: string,
-		prod: {
-			driver?: any,
-			host?: string,
-			port?: number,
-			user?: string,
-			password?: string,
-			superuser?: string,
-			superuserPassword?: string,
-			schema?: string,
-			database?: string,
-			bundledPostgresBinary?: boolean
-			username?: string
 		}
 	}
 }

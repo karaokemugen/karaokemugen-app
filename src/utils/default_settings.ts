@@ -10,14 +10,11 @@ const dbConfig = process.platform === 'linux'
 	? {
 		bundledPostgresBinary: false,
 		database: 'karaokemugen_app',
-		driver: 'pg',
 		host: 'localhost',
 		password: 'musubi',
 		port: 5432,
-		schema: 'public',
 		superuser: null,
 		superuserPassword: null,
-		user: 'karaokemugen_app',
 		username: 'karaokemugen_app'
 	}
 	: {
@@ -27,10 +24,8 @@ const dbConfig = process.platform === 'linux'
 		host: 'localhost',
 		password: 'musubi',
 		port: 6559,
-		schema: 'public',
 		superuser: 'postgres',
 		superuserPassword: null,
-		user: 'karaokemugen_app',
 		username: 'karaokemugen_app'
 	};
 
@@ -40,9 +35,6 @@ export const defaults: Config = {
 		FirstRun: true,
 		JwtSecret: 'Change me',
 		QuickStart: false
-	},
-	Database: {
-		prod: dbConfig
 	},
 	Online: {
 		Host: 'kara.moe',
@@ -210,6 +202,7 @@ export const defaults: Config = {
 		RandomSongsAfterEndMessage: true,
 	},
 	System: {
+		Database: dbConfig,
 		Binaries: {
 			Player: {
 				Linux: '/usr/bin/mpv',

@@ -90,7 +90,7 @@ async function buildInstanceStats() {
 	const state = getState();
 	// Delete sensitive info
 	delete conf.App.JwtSecret;
-	delete conf.Database.prod;
+	delete conf.System.Database;
 	delete conf.Gitlab.Token;
 	if (conf.Karaoke.StreamerMode.Twitch.OAuth) delete conf.Karaoke.StreamerMode.Twitch.OAuth;
 	const [cpu, mem, gfx, os, disks] = await Promise.all([
