@@ -56,11 +56,11 @@ export async function checkValidUser(token: { username: string, role: string }, 
 					} else {
 						// Cancelling remote token.
 						upsertRemoteToken(token.username, null);
+						throw 'Invalid online token';
 					}
 				} catch(err) {
 					upsertRemoteToken(token.username, null);
 					logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err});
-					throw err;
 				}
 			}
 		}
