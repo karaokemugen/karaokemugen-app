@@ -195,7 +195,7 @@ export async function generateDB(): Promise<boolean> {
 			await reorderPlaylist(pl.playlist_id);
 		}
 		await generateBlacklist();
-		if (getConfig().Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), true, 'single');
+		if (getConfig().Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
 	} catch(err) {
 		const error = new Error(err);
 		sentry.error(error);
