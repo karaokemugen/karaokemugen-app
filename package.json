@@ -14,7 +14,7 @@
     "buildFrontend": "cd frontend && yarn build",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "qstart": "electron .",
-    "qstartNoElectron": "node dist/index.js",
+    "qstartNoElectron": "node dist/src/index.js",
     "test": "ts-node src/index.ts --test",
     "manualTest": "mocha --require ts-node/register --timeout 20000",
     "build": "npx rimraf \"dist\" && tsc --build",
