@@ -163,6 +163,7 @@ if (existsSync(SHAFile)) {
 
 // Commander call to get everything setup in argv
 const argv = parseArgs();
+console.log(argv);
 
 if (app) {
 	// Acquiring lock to prevent two KMs to run at the same time.
@@ -187,7 +188,7 @@ if (app) {
 	});
 }
 
-if (app && !argv.cli && !argv.help) {
+if (app && !argv.cli) {
 	startElectron();
 } else {
 	// This is in case we're running with yarn startNoElectron or with --cli or --help
