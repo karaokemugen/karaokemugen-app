@@ -46,6 +46,7 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 			Favorites: res.body as FavExportContent[]
 		};
 		await importFavorites(favorites, username);
+		convertToRemoteFavorites(username);
 	} catch(err) {
 		logger.error(`Error getting remote favorites for ${username}`, {service: 'Favorites', obj: err});
 	}
@@ -83,12 +84,10 @@ export async function convertToRemoteFavorites(username: string) {
 		lang: null,
 		username: username
 	});
-	const addFavorites = [];
 	if (favorites.content.length > 0) {
 		for (const favorite of favorites.content) {
-			addFavorites.push(manageFavoriteInInstance('POST', username, favorite.kid));
+			await manageFavoriteInInstance('POST', username, favorite.kid);
 		}
-		await Promise.all(addFavorites);
 	}
 }
 
