@@ -246,7 +246,7 @@ export async function playerEnding() {
 		// Outros code, we're at the end of a playlist.
 		// Outros are played after the very last song.
 		if (state.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
-			if (conf.Playlist.Medias.Outros.Enabled) {
+			if (conf.Playlist.Medias.Outros.Enabled && !state.randomPlaying) {
 				try {
 					await mpv.playMedia('Outros');
 					setState({currentlyPlayingKara: 'Outros'});
