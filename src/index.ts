@@ -163,7 +163,6 @@ if (existsSync(SHAFile)) {
 
 // Commander call to get everything setup in argv
 const argv = parseArgs();
-console.log(argv);
 
 if (app) {
 	// Acquiring lock to prevent two KMs to run at the same time.
