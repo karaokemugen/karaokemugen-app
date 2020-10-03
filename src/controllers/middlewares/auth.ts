@@ -34,7 +34,9 @@ export async function checkValidUser(token: { username: string, role: string }, 
 				try {
 					// Firing this first to avoid multiple triggers, will get canceled if auth is not OK.
 					upsertRemoteToken(token.username, onlineToken.token);
+					logger.debug('Checking remote token', {service: 'RemoteUser'});
 					if (await remoteCheckAuth(token.username.split('@')[1], onlineToken.token)){
+						logger.debug('Fetched remote token', {service: 'RemoteUser'});
 						try {
 							await fetchAndUpdateRemoteUser(token.username, null, onlineToken);
 							if (!usersFavoritesChecked.has(token.username)) {
@@ -46,6 +48,7 @@ export async function checkValidUser(token: { username: string, role: string }, 
 						}
 						return user;
 					} else {
+						logger.debug('Remote token invalid', {service: 'RemoteUser'});
 						// Cancelling remote token.
 						upsertRemoteToken(token.username, null);
 						throw 'Invalid online token';
