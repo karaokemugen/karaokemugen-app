@@ -26,13 +26,15 @@ export function playerMessage(msg: string, duration: number, align = 4) {
 	return mpv.message(msg, duration, align);
 }
 
-export async function playSingleSong(kid?: string) {
+export async function playSingleSong(kid?: string, randomPlaying = false) {
 	try {
 		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
 		if (!kara) throw {code: 404, msg: 'KID not found'};
 		const current: CurrentSong = merge(kara, {nickname: 'Admin', flag_playing: true, pos: 1, flag_free: false, flag_visible: false, username: 'admin', repo: kara.repository, playlistcontent_id: -1, playlist_id: -1});
-		setState({singlePlay: true, currentSong: current, randomPlaying: false});
-		stopAddASongMessage();
+		setState({singlePlay: !randomPlaying, currentSong: current, randomPlaying: randomPlaying});
+		if (!randomPlaying) {
+			stopAddASongMessage();
+		}
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
 		// If series is empty, pick singer information instead
@@ -74,9 +76,7 @@ export async function playRandomSongAfterPlaylist() {
 		});
 		const kara = karas.content[0];
 		if (kara) {
-			setState({ randomPlaying: true });
-			await playSingleSong(kara.kid);
-			initAddASongMessage();
+			await playSingleSong(kara.kid, true);
 		} else {
 			stopPlayer(true);
 			stopAddASongMessage();
