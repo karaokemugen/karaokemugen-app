@@ -10,7 +10,7 @@ else
 	export RELEASE="release"
 fi
 
-export BUILDVERSION=`cat package.json | grep versionName\": | awk -F\" {'print $4'}`
+export VERSION_NAME=`cat package.json | grep versionName\": | awk -F\" {'print $4'}`
 echo "Channel       : $RELEASE"
 echo "Version number: $BUILDVERSION"
 echo "Version name  : $VERSION_NAME"
