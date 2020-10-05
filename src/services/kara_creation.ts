@@ -9,7 +9,8 @@ import { asyncCopy, asyncExists, asyncMove,asyncUnlink, resolveFileInDirs } from
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
-import {createKaraInDB, editKaraInDB, getKara} from './kara';
+import {getKara} from './kara';
+import { createKaraInDB, editKaraInDB } from './karaManagement';
 import { consolidateTagsInRepo } from './tag';
 
 export async function editKara(kara: Kara, refresh = true) {

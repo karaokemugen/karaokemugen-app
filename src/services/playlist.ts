@@ -62,7 +62,7 @@ import { CurrentSong,Playlist, PlaylistExport, PlaylistOpts, PLC, PLCEditParams,
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {getBlacklist} from './blacklist';
-import { getAllRemoteKaras } from './download';
+import { getAllRemoteKaras } from './downloadUpdater';
 import { formatKaraList, getKara, getSeriesSingers,isAllKaras} from './kara';
 import {playingUpdated, playPlayer} from './player';
 import { addUpvotes } from './upvote';
@@ -197,7 +197,7 @@ export async function setCurrentPlaylist(playlist_id: number) {
 		updatePlaylistLastEditTime(playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
-		setState({currentPlaylistID: playlist_id, introPlayed: false});
+		setState({currentPlaylistID: playlist_id, introPlayed: false, introSponsorPlayed: false});
 		// Event to signal the public interface the current playlist has been updated
 		emitWS('currentPlaylistUpdated', playlist_id);
 		logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
@@ -1271,6 +1271,37 @@ export async function testPublicPlaylist() {
 		});
 		logger.debug('Initial public playlist created', {service: 'Playlist'});
 	}
+}
+
+/** Update all user quotas affected by a PLC getting freed/played */
+export async function updateUserQuotas(kara: PLC) {
+	// If karaokes are present in the public playlist, we're marking them free.
+	// First find which KIDs are to be freed. All those before the currently playing kara
+	// are to be set free.
+	// Then we're updating song quotas for all users involved.
+	const state = getState();
+	profile('updateUserQuotas');
+	await freePLCBeforePos(kara.pos, state.currentPlaylistID);
+	// For every KID we check if it exists and add the PLC to a list
+	const [publicPlaylist, currentPlaylist] = await Promise.all([
+		getPlaylistContentsMini(state.publicPlaylistID),
+		getPlaylistContentsMini(state.currentPlaylistID)
+	]);
+	const freeTasks = [];
+	const usersNeedingUpdate = [];
+	for (const currentSong of currentPlaylist) {
+		for (const publicSong of publicPlaylist) {
+			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
+				freeTasks.push(freePLC(publicSong.playlistcontent_id));
+				if (!usersNeedingUpdate.includes(publicSong.username)) usersNeedingUpdate.push(publicSong.username);
+			}
+		}
+	}
+	await Promise.all(freeTasks);
+	usersNeedingUpdate.forEach(username => {
+		updateSongsLeft(username, state.publicPlaylistID);
+	});
+	profile('updateUserQuotas');
 }
 
 export function playlistImported(res: any) {

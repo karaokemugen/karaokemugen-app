@@ -1,12 +1,14 @@
 import { Router } from 'express';
 
 import { check } from '../../lib/utils/validators';
-import { convertToRemoteUser, createAdminUser, createUser, deleteUser, editUser, findUserByName, listUsers, removeRemoteUser, resetRemotePassword, resetSecurityCode,updateSongsLeft } from '../../services/user';
+import { createAdminUser, createUser, deleteUser, editUser, findUserByName, listUsers, updateSongsLeft } from '../../services/user';
 import { APIMessage,errMessage } from '../common';
 import { optionalAuth,requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
 import { getLang } from '../middlewares/lang';
 import multer = require('multer');
 import { resolvedPathTemp } from '../../lib/utils/config';
+import { resetSecurityCode } from '../../services/auth';
+import { convertToRemoteUser, removeRemoteUser, resetRemotePassword } from '../../services/userOnline';
 import { getState } from '../../utils/state';
 import { requireWebappLimited, requireWebappLimitedNoAuth } from '../middlewares/webapp_mode';
 

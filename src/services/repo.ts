@@ -18,8 +18,8 @@ import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
 import sentry from '../utils/sentry';
-import { getRemoteKaras } from './download';
-import { editKaraInDB } from './kara';
+import { getRemoteKaras } from './downloadUpdater';
+import { editKaraInDB } from './karaManagement';
 import { getTag } from './tag';
 
 type UUIDSet = Set<string>

@@ -321,8 +321,8 @@
       "buildResources": "build"
     },
     "files": [
-	  "dist/**/*",
-	  "package.json"
+      "dist/**/*",
+      "package.json"
     ],
     "protocols": [
       {
