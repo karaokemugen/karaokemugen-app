@@ -17,7 +17,7 @@ import { importSet } from '../services/blacklist';
 import { addDownloads,integrateDownloadBundle } from '../services/download';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
-import { playSingleSong } from '../services/player';
+import { playSingleSong } from '../services/karaokeEngine';
 import { importPlaylist, playlistImported} from '../services/playlist';
 import { addRepo,getRepo, getRepos } from '../services/repo';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';

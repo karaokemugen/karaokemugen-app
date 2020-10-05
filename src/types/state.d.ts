@@ -23,6 +23,7 @@ export interface State {
 	counterToJingle?: number,
 	counterToSponsor?: number,
 	introPlayed?: boolean,
+	introSponsorPlayed?: boolean,
 	encorePlayed?: boolean,
 	fullscreen?: boolean,
 	ontop?: boolean,

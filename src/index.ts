@@ -16,8 +16,8 @@ import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, res
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
+import { resetSecurityCode } from './services/auth';
 import { migrateOldFoldersToRepo } from './services/repo';
-import { resetSecurityCode } from './services/user';
 import {Config} from './types/config';
 import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';

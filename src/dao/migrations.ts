@@ -4,7 +4,8 @@ import { Migration } from 'postgrator';
 
 import {win} from '../electron/electron';
 import logger from '../lib/utils/logger';
-import { initDownloader, redownloadSongs } from '../services/download';
+import { initDownloader } from '../services/download';
+import { redownloadSongs } from '../services/downloadUpdater';
 import { generateDB } from './database';
 
 export async function postMigrationTasks(migrations: Migration[]) {

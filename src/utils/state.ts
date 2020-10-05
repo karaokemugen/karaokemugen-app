@@ -20,6 +20,7 @@ let state: State = {
 	counterToJingle: 0,
 	counterToSponsor: 0,
 	introPlayed: false,
+	introSponsorPlayed: false,
 	encorePlayed: false,
 	fullscreen: false,
 	ontop: true,

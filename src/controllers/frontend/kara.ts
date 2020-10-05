@@ -2,15 +2,17 @@ import { Router } from 'express';
 
 import { postSuggestionToKaraBase } from '../../lib/services/gitlab';
 import { getConfig, resolvedPathTemp } from '../../lib/utils/config';
-import { batchEditKaras, copyKaraToRepo,deleteKara, getKara, getKaraHistory, getKaraLyrics, getKaraPlayed, getKaras, getTop50 } from '../../services/kara';
+import { getKara, getKaraHistory, getKaraLyrics, getKaraPlayed, getKaras, getTop50 } from '../../services/kara';
 import { addKaraToPlaylist } from '../../services/playlist';
 import { APIMessage,errMessage } from '../common';
 import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
 import { getLang } from '../middlewares/lang';
 import { requireWebappLimited, requireWebappOpen } from '../middlewares/webapp_mode';
 import multer = require('multer');
+import { deleteKara } from '../../dao/kara';
 import { createKara, editKara } from '../../services/kara_creation';
-import { playSingleSong } from '../../services/player';
+import { batchEditKaras, copyKaraToRepo } from '../../services/karaManagement';
+import { playSingleSong } from '../../services/karaokeEngine';
 
 export default function karaController(router: Router) {
 	const upload = multer({ dest: resolvedPathTemp()});

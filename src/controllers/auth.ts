@@ -1,4 +1,5 @@
-import { checkLogin, decodeJwtToken, editUser, findFingerprint, resetSecurityCode,updateLastLoginName, updateUserFingerprint } from '../services/user';
+import { checkLogin, resetSecurityCode } from '../services/auth';
+import { decodeJwtToken, editUser, findFingerprint,updateLastLoginName, updateUserFingerprint } from '../services/user';
 import { getState } from '../utils/state';
 import { APIMessage } from './common';
 import {requireAuth, requireValidUser} from './middlewares/auth';

@@ -1,7 +1,9 @@
 
 import { Router } from 'express';
 
-import {addDownloadBLC, addDownloads, cleanAllKaras, downloadAllKaras, downloadRandomSongs,getAllRemoteKaras, getAllRemoteTags, getDownloadBLC, getDownloads, pauseQueue, removeDownloadBLC, startDownloads, updateAllBases, updateAllKaras, updateAllMedias, wipeDownloads} from '../../services/download';
+import { addDownloads, getDownloads, pauseQueue, startDownloads, wipeDownloads } from '../../services/download';
+import { addDownloadBLC, getDownloadBLC, removeDownloadBLC } from '../../services/downloadBLC';
+import { cleanAllKaras, downloadAllKaras, downloadRandomSongs, getAllRemoteKaras, getAllRemoteTags, updateAllBases, updateAllKaras, updateAllMedias } from '../../services/downloadUpdater';
 import { APIMessage,errMessage } from '../common';
 import {requireAdmin, requireAuth, requireValidUser, updateUserLoginTime} from '../middlewares/auth';
 import {requireNotDemo} from '../middlewares/demo';
@@ -22,10 +24,10 @@ export default function downloadController(router: Router) {
  * @apiParam {string} downloads/name Song name (purely cosmetic)
  * @apiParam {number} downloads/size Size in bytes of downloads (usually mediasize)
  * @apiParam {string} downloads/repository Name (domain) of the repository to download from
- * 
+ *
  * @apiError DOWNLOADS_QUEUED_ERROR Error adding downloads to the queue
  * @apiError DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR No downloads added, all are already in queue or running
- * 
+ *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * @apiErrorExample Error-Response:

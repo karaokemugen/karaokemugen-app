@@ -5,7 +5,8 @@ import {Token,User} from '../../lib/types/user';
 import {getConfig} from '../../lib/utils/config';
 import logger from '../../lib/utils/logger';
 import { fetchAndAddFavorites } from '../../services/favorites';
-import {fetchAndUpdateRemoteUser,findUserByName, remoteCheckAuth, updateLastLoginName} from '../../services/user';
+import {findUserByName, updateLastLoginName} from '../../services/user';
+import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../../services/userOnline';
 import { APIMessage } from '../common';
 
 const usersFavoritesChecked = new Set();
