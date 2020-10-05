@@ -1,5 +1,28 @@
 # Versions
 
+## v4.1.15 "Ôgi Observatrice" - 05/10/2020
+
+### New featuers
+
+- Users are now notified when their quota becomes greater than 0 (when they can add songs again) (3ad268ec)
+- Users can't remove a song they added anymore if it's been upvoted (d1759dd1)
+
+### Improvements
+
+- Favorites are now reuploaded to KM Server on login (595b3419)
+- "Genre" tag type is now "Theme" in french (83610d3c)
+- Preparations under the hood for file/data manipulation functions (#497)
+- Added app version to database to prepare for a better handling of app updates (#801)
+- Changelog is now included in binary builds (9e9157f0)
+
+### Fixes
+
+- Fixed online auth not rejecting your online token if it's incorrect. This will force you to login again if your online token were invalid. It fixes favorites and profiles not being updated (and failing silently) (f6abbc20 ce2df5a8 9393181e)
+- Fixed outros being played after every random song if enabled (37732b5d)
+- Added error logging to when kara/tags can't be integrated (951f661c)
+- Fixed mpv version check when unknown (assume it's the latest version) (e4f98674)
+- Fixed copying kara to another repository not updating database properly (0bb60424)
+
 ## v4.1.12 "Ôgi Observatrice" - 21/09/2020
 
 ### Improvements
