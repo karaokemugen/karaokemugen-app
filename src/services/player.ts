@@ -13,7 +13,7 @@ import {getCurrentSong, nextSong, previousSong, setPlaying} from './playlist';
 import {startPoll} from './poll';
 
 const sleep = promisify(setTimeout);
-const mpv = new Players();
+export const mpv = new Players();
 
 export function playerMessage(msg: string, duration: number, align = 4) {
 	return mpv.message(msg, duration, align);

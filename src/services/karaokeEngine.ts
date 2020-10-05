@@ -1,7 +1,6 @@
 import { profile } from 'console';
 import merge from 'lodash.merge';
 
-import Players from '../components/mpv';
 import { APIMessage } from '../controllers/common';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import { getConfig } from '../lib/utils/config';
@@ -11,11 +10,9 @@ import { CurrentSong } from '../types/playlist';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { addPlayedKara, getKara, getKaras, getSeriesSingers } from './kara';
-import { next, restartPlayer, stopAddASongMessage, stopPlayer } from './player';
+import { mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player';
 import { getCurrentSong, getPlaylistInfo, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';
-
-const mpv = new Players();
 
 export async function playSingleSong(kid?: string, randomPlaying = false) {
 	try {
