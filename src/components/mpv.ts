@@ -89,24 +89,28 @@ function emitPlayerState() {
 	setState({player: playerState});
 }
 
-async function checkMpv(): Promise<string> {
+async function checkMpv() {
 	const state = getState();
 
 	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
-	const output = await execa(state.binPath.mpv,['--version']);
-	const mpv = semver.valid(output.stdout.split(' ')[1]);
-	const mpvVersion = mpv.split('-')[0];
-	logger.debug(`mpv version: ${mpvVersion}`, {service: 'Player'});
-
+	let mpvVersion: string;
+	try {
+		const output = await execa(state.binPath.mpv,['--version']);
+		logger.debug(`mpv stdout: ${output.stdout}`, {service: 'Player'});
+		const mpv = semver.valid(output.stdout.split(' ')[1]);
+		mpvVersion = mpv.split('-')[0];
+		logger.debug(`mpv version: ${mpvVersion}`, {service: 'Player'});
+	} catch(err) {
+		logger.warn('Unable to determine mpv version. Will assume this is a recent one', {service: 'Player', obj: err});
+		return;
+	}
 	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
 		logger.error(`mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`, {service: 'Player'});
 		logger.error(`mpv binary: ${state.binPath.mpv}`, {service: 'Player'});
 		logger.error('Exiting due to obsolete mpv version', {service: 'Player'});
 		await exit(1);
 	}
-
-	return mpvVersion;
 }
 
 class Player {
@@ -574,11 +578,11 @@ class Players {
 
 	@needsLock()
 	private async bootstrapPlayers() {
-		const mpvVersion = await checkMpv();
+		await checkMpv();
 		this.players = {
-			main: new Player({monitor: false, mpvVersion}, this)
+			main: new Player({monitor: false}, this)
 		};
-		if (playerState.monitorEnabled) this.players.monitor = new Player({monitor: true, mpvVersion}, this);
+		if (playerState.monitorEnabled) this.players.monitor = new Player({monitor: true}, this);
 		logger.debug(`Players: ${JSON.stringify(Object.keys(this.players))}`, {service: 'Player'});
 		return this.exec('start');
 	}
@@ -621,8 +625,8 @@ class Players {
 			playerState.monitorEnabled = getConfig().Player.Monitor;
 			if (playerState.monitorEnabled) {
 				// Monitor needs to be created
-				const mpvVersion = await checkMpv();
-				this.players.monitor = new Player({monitor: true, mpvVersion}, this);
+				await checkMpv();
+				this.players.monitor = new Player({monitor: true}, this);
 			} else {
 				// Monitor needs to be destroyed
 				await this.exec('destroy', null, 'monitor');

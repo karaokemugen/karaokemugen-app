@@ -3,7 +3,7 @@ import 'react-virtualized/styles.css';
 import axios from 'axios';
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
-import React, { Component } from 'react';
+import React, { Component, ReactElement } from 'react';
 import ReactDOM from 'react-dom';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
@@ -56,7 +56,8 @@ interface IState {
 	idPlaylist: number;
 	bLSet?: BLCSet
 	data: KaraList | Array<DBBLC> | undefined;
-	quotaString?: any;
+	quotaString?: string | ReactElement;
+	quotaLeft?: number;
 	scrollToIndex?: number;
 	playlistInfo?: DBPL;
 	bLSetList: BLCSet[];
@@ -333,16 +334,18 @@ class Playlist extends Component<IProps, IState> {
 
 	updateQuotaAvailable = (data: { username: string, quotaType: number, quotaLeft: number }) => {
 		if ((store.getLogInfos() as Token)?.username === data.username) {
-			let quotaString: any = '';
-			if (data.quotaType === 1) {
+			let quotaString: string | ReactElement = '';
+			if (data.quotaLeft === -1) {
+				quotaString = <i className="fas fa-infinity"></i>;
+			} else if (data.quotaType === 1) {
 				quotaString = data.quotaLeft.toString();
 			} else if (data.quotaType === 2) {
 				quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
 			}
-			if (data.quotaLeft === -1) {
-				quotaString = <i className="fas fa-infinity"></i>;
+			if (data.quotaLeft > 0 && this.state.quotaLeft === 0) {
+				displayMessage('info', i18next.t('QUOTA_AVAILABLE'));
 			}
-			this.setState({ quotaString: quotaString });
+			this.setState({ quotaString: quotaString, quotaLeft: data.quotaLeft });
 		}
 	};
 
@@ -960,7 +963,8 @@ class Playlist extends Component<IProps, IState> {
 							</button>
 						</div>
 						<div className="plInfos">{this.getPlInfosElement()}</div>
-						{this.props.side === 1 && this.state.quotaString ?
+						{this.props.side === 1 && this.state.quotaString 
+							|| (typeof this.state.quotaString === 'string' && this.state.quotaString.length > 0) ?
 							<div className="plQuota right">
 								{i18next.t('QUOTA')} {this.state.quotaString}
 							</div> : null

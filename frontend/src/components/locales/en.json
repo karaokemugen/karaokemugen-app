@@ -343,6 +343,7 @@
 	"QUOTA_TYPE_0": "No quota",
 	"QUOTA_TYPE_1": "Per song",
 	"QUOTA_TYPE_2": "Duration",
+	"QUOTA_AVAILABLE": "You can add songs again now!",
 	"SONGS_BY_USER": "Number of songs per user",
 	"FREE_AUTO_TIME": "Songs are freed from quota after (min)",
 	"SERIE_NAME_MODE": "Series language mode",

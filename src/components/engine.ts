@@ -121,6 +121,7 @@ export async function initEngine() {
 		initStep(i18n.t('INIT_DB'));
 		const migrations = await initDBSystem();
 		await preFlightCheck();
+		checkIfAppHasBeenUpdated();
 		initStep(i18n.t('INIT_USER'));
 		await initUserSystem();
 		const port = initFrontend();
@@ -311,4 +312,13 @@ async function runTests() {
 		process.exit(1000);
 	}
 
+}
+
+async function checkIfAppHasBeenUpdated() {
+	const settings = await getSettings();
+	if (settings.appVersion !== getState().version.number) {
+		// We check if appVersion exists so we don't trigger the appHasBeenUpdated new state if it didn't exist before (new installs, or migration from when this function didn't exist)
+		await saveSetting('appVersion', getState().version.number );
+		if (settings.appVersion) setState({appHasBeenUpdated: true});
+	}
 }
