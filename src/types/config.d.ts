@@ -55,6 +55,10 @@ export interface Config {
 	},
 	GUI: {
 		OpenInElectron?: boolean,
+		ChibiPlayer?: {
+			Enabled?: boolean,
+			AlwaysOnTop?: boolean,
+		}
 	}
 	Karaoke: {
 		ClassicMode?: boolean,

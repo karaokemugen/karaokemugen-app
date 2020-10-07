@@ -29,6 +29,7 @@ import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
+export let chibiPlayerWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
@@ -69,6 +70,15 @@ export function startElectron() {
 		});
 		ipcMain.on('tip', (_event, _eventData) => {
 			emitIPC('techTip', tip());
+		});
+		ipcMain.on('setChibiPlayerAlwaysOnTop', (_event, eventData) => {
+			setChibiPlayerAlwaysOnTop(eventData);
+		});
+		ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
+			updateChibiPlayerWindow(false);
+		});
+		ipcMain.on('focusMainWindow', (_event, _eventData) => {
+			focusWindow();
 		});
 	});
 
@@ -283,6 +293,7 @@ async function createWindow() {
 		width: 1280,
 		height: 720,
 		backgroundColor: '#36393f',
+		show: false,
 		icon: resolve(state.resourcePath, 'build/icon.png'),
 		webPreferences: {
 			nodeIntegration: true
@@ -295,7 +306,9 @@ async function createWindow() {
 		win.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
 	}
 
-	win.show();
+	win.once('ready-to-show', () => {
+		win.show();
+	});
 	win.webContents.on('new-window', (event, url) => {
 		event.preventDefault();
 		openLink(url);
@@ -326,4 +339,35 @@ export function focusWindow() {
 		if (win.isMinimized()) win.restore();
 		win.focus();
 	}
+}
+
+export function updateChibiPlayerWindow(show: boolean) {
+	const state = getState();
+	if (show) {
+		chibiPlayerWindow = new BrowserWindow({
+			width: 640,
+			height: 480,
+			frame: false,
+			resizable: false,
+			show: false,
+			alwaysOnTop: getConfig().GUI.ChibiPlayer.AlwaysOnTop,
+			backgroundColor: '#36393f',
+			webPreferences: {
+				nodeIntegration: true
+			},
+			parent: win,
+			icon: resolve(state.resourcePath, 'build/icon.png'),
+		});
+		const port = state.frontendPort;
+		chibiPlayerWindow.loadURL(`http://localhost:${port}/chibiPlayer`);
+		chibiPlayerWindow.once('ready-to-show', () => {
+			chibiPlayerWindow.show();
+		});
+	} else {
+		chibiPlayerWindow.destroy();
+	}
+}
+
+export function setChibiPlayerAlwaysOnTop(enabled: boolean) {
+	if (chibiPlayerWindow) chibiPlayerWindow.setAlwaysOnTop(enabled);
 }

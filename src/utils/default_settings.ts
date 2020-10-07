@@ -102,7 +102,11 @@ export const defaults: Config = {
 		}
 	},
 	GUI: {
-		OpenInElectron: true
+		OpenInElectron: true,
+		ChibiPlayer: {
+			Enabled: false,
+			AlwaysOnTop: true
+		}
 	},
 	Karaoke: {
 		Autoplay: false,

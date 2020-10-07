@@ -21,7 +21,7 @@ export function getMenu() {
 }
 
 export function initMenu() {
-	const port = getConfig().Frontend.Port;
+	const port = getState().frontendPort;
 	const base = 'http://localhost';
 	const urls = {
 		operatorOptions: `${base}:${port}/admin?config`,
@@ -268,10 +268,19 @@ export function initMenu() {
 				{
 					label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
 					type: 'checkbox',
-					visible: isMac,
 					checked: getConfig().GUI.OpenInElectron,
 					click: () => {
 						setConfig({GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
+					}
+				},
+				{
+					label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
+					type: 'checkbox',
+					accelerator: 'CmdOrCtrl+I',
+					checked: getConfig().GUI.ChibiPlayer.Enabled,
+					click: () => {
+						updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
+						setConfig({GUI: {ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled }}});
 					}
 				}
 			]
