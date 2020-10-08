@@ -140,7 +140,7 @@ export async function initEngine() {
 		} catch(err) {
 			//Non-blocking
 			logger.error('Failed to init online system', {service: 'Engine', obj: err});
-			sentry.error(err);
+			sentry.error(err, 'Warning');
 		}
 		if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) initTwitch();
 		initBlacklistSystem();

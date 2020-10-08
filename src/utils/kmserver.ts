@@ -26,6 +26,7 @@ export async function initKMServerCommunication() {
 		// Hooks?
 	} catch (e) {
 		logger.error('Cannot establish socket connection to KMServer', {service: 'KMOnline', obj: e});
+		throw e;
 	}
 }
 
