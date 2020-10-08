@@ -135,7 +135,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
 			aliases: this.props.tag?.aliases,
 			problematic: this.props.tag?.problematic,
-			noLiveDownload: this.props.tag?.noLiveDownload
+			noLiveDownload: this.props.tag?.noLiveDownload,
+			priority: this.props.tag?.priority
 		};
 		for (const lang of this.state.i18n) {
 			initialValues['lang_' + lang] = this.props.tag?.i18n[lang];
@@ -300,8 +301,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
-						<span>{i18next.t('TAG.PRIORITY')}&nbsp;
-							<Tooltip title={i18next.t('TAG.PRIORITY_TOOLTIP')}>
+						<span>{i18next.t('TAGS.PRIORITY')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.PRIORITY_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
