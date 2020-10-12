@@ -1,5 +1,13 @@
 # Versions
 
+## v4.1.16 "Ôgi Observatrice" - 11/10/2020
+
+### Fixes
+
+- Allow login again if online account password has changed (51362a0f)
+- Fix typos in tutorial (thanks @minirop) (b022e2ef)
+- Fix shortener communication when KM Server is offline (b1523fbe)
+
 ## v4.1.12 "Ôgi Observatrice" - 21/09/2020
 
 ### Improvements
