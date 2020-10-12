@@ -308,8 +308,8 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			throw {code: 500};
 		}
 		// Modifying passwords is not allowed in demo mode
-		if (user.password && !opts.noPasswordCheck && !getState().isDemo) {
-			if (user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
+		if (user.password && !getState().isDemo) {
+			if (!opts.noPasswordCheck && user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
 		}
