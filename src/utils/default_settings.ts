@@ -5,6 +5,7 @@
 // you can change the default settings by using config.yml to bypass the default values.
 import {bools, hostnameRegexp} from '../lib/utils/constants';
 import {Config} from '../types/config';
+import { app } from 'electron';
 
 export const dbConfig = process.platform === 'linux'
 	? {
@@ -207,17 +208,23 @@ export const defaults: Config = {
 		Binaries: {
 			Player: {
 				Linux: '/usr/bin/mpv',
-				OSX: 'app/bin/mpv.app/Contents/MacOS/mpv',
+				OSX: app?.isPackaged 
+					? 'Karaoke Mugen.app/Contents/app/bin/mpv.app/Contents/MacOS/mpv'
+					: 'app/bin/mpv.app/Contents/MacOS/mpv',
 				Windows: 'app\\bin\\mpv.exe'
 			},
 			ffmpeg: {
 				Linux: '/usr/bin/ffmpeg',
-				OSX: 'app/bin/ffmpeg',
+				OSX: app?.isPackaged
+					? 'Karaoke Mugen.app/Contents/app/bin/ffmpeg'
+					: 'app/bin/ffmpeg',
 				Windows: 'app\\bin\\ffmpeg.exe'
 			},
 			Postgres: {
 				Linux: 'app/bin/postgres/bin/',
-				OSX: 'app/bin/postgres/bin/',
+				OSX: app?.isPackaged
+					? 'Karaoke Mugen.app/Contents/app/bin/postgres/bin/'
+					: 'app/bin/postgres/bin/',
 				Windows: 'app\\bin\\postgres\\bin\\'
 			}
 		},

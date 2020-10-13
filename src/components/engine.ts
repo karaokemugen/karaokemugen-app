@@ -306,7 +306,7 @@ async function runTests() {
 	const options = ['--require', 'ts-node/register', '--timeout',  '20000', 'test/*.ts' ];
 	try {
 		const ret = await execa('mocha', options, {
-			cwd: getState().originalAppPath
+			cwd: getState().appPath
 		});
 		console.log(ret.stdout);
 		process.exit(ret.exitCode);

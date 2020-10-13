@@ -79,15 +79,15 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
 	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
 	// Browse through paths and define if it's relative or absolute
-	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.Windows));
-	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.Linux));
-	if (oldConfig.System.Binaries.Player.OSX !== newConfig.System.Binaries.Player.OSX) newConfig.System.Binaries.Player.OSX = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.OSX));
-	if (oldConfig.System.Binaries.ffmpeg.Windows !== newConfig.System.Binaries.ffmpeg.Windows) newConfig.System.Binaries.ffmpeg.Windows = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.ffmpeg.Windows));
-	if (oldConfig.System.Binaries.ffmpeg.Linux !== newConfig.System.Binaries.ffmpeg.Linux) newConfig.System.Binaries.ffmpeg.Linux = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.ffmpeg.Linux));
-	if (oldConfig.System.Binaries.ffmpeg.OSX !== newConfig.System.Binaries.ffmpeg.OSX) newConfig.System.Binaries.ffmpeg.OSX = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.ffmpeg.OSX));
-	if (oldConfig.System.Binaries.Postgres.Windows !== newConfig.System.Binaries.Postgres.Windows)  newConfig.System.Binaries.Postgres.Windows = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Postgres.Windows));
-	if (oldConfig.System.Binaries.Postgres.Linux !== newConfig.System.Binaries.Postgres.Linux) newConfig.System.Binaries.Postgres.Linux = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Postgres.Linux));
-	if (oldConfig.System.Binaries.Postgres.OSX !== newConfig.System.Binaries.Postgres.OSX) newConfig.System.Binaries.Postgres.OSX = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Postgres.OSX));
+	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Windows));
+	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Linux));
+	if (oldConfig.System.Binaries.Player.OSX !== newConfig.System.Binaries.Player.OSX) newConfig.System.Binaries.Player.OSX = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.OSX));
+	if (oldConfig.System.Binaries.ffmpeg.Windows !== newConfig.System.Binaries.ffmpeg.Windows) newConfig.System.Binaries.ffmpeg.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.ffmpeg.Windows));
+	if (oldConfig.System.Binaries.ffmpeg.Linux !== newConfig.System.Binaries.ffmpeg.Linux) newConfig.System.Binaries.ffmpeg.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.ffmpeg.Linux));
+	if (oldConfig.System.Binaries.ffmpeg.OSX !== newConfig.System.Binaries.ffmpeg.OSX) newConfig.System.Binaries.ffmpeg.OSX = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.ffmpeg.OSX));
+	if (oldConfig.System.Binaries.Postgres.Windows !== newConfig.System.Binaries.Postgres.Windows)  newConfig.System.Binaries.Postgres.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Postgres.Windows));
+	if (oldConfig.System.Binaries.Postgres.Linux !== newConfig.System.Binaries.Postgres.Linux) newConfig.System.Binaries.Postgres.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Postgres.Linux));
+	if (oldConfig.System.Binaries.Postgres.OSX !== newConfig.System.Binaries.Postgres.OSX) newConfig.System.Binaries.Postgres.OSX = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Postgres.OSX));
 	for (const i in Object.keys(newConfig.System.Repositories)) {
 		for (const path of Object.keys(newConfig.System.Repositories[i].Path)) {
 			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i].Path[path])) {
@@ -143,7 +143,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 export async function initConfig(argv: any) {
 	try {
 		setConfigConstraints(configConstraints);
-		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().originalAppPath);
+		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
 		const binaries = await checkBinaries(getConfig());
 		setState({binPath: binaries});
 		emit('configReady');
