@@ -5,7 +5,7 @@ import {existsSync, readFileSync} from 'fs';
 import {mkdirpSync} from 'fs-extra';
 import i18n from 'i18next';
 import cloneDeep from 'lodash.clonedeep';
-import {dirname, join, resolve} from 'path';
+import {resolve} from 'path';
 import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
@@ -75,54 +75,31 @@ on('initError', (err: Error) => {
 // Main app begins here.
 // Testing if we're in a packaged version of KM or not.
 // First, this is a test for unpacked electron mode.
-// If we're not using electron, then use __dirname's parent)
-let originalAppPath: string;
-if (process.versions.electron) {
-	//INIT_CWD exists only when electron is launched from yarn (dev)
-	//PORTABLE_EXECUTABLE_DIR exists only when launched from a packaged eletron app (yarn dist) (production)
-	// The last one is when running an unpackaged electron for testing purposes (yarn packer) (dev)
-	originalAppPath = process.env.INIT_CWD || process.env.PORTABLE_EXECUTABLE_DIR || join(__dirname, '../../../');
-	// Because OSX packages are structured differently, we'll modify our path
-	if (process.platform === 'darwin' && app.isPackaged) originalAppPath = resolve(originalAppPath, '../../');
-} else {
-	originalAppPath = process.cwd();
-}
-// On OSX, process.cwd() returns /, which is utter stupidity but let's go along with it.
-// What's funny is that originalAppPath is correct on OSX no matter if you're using Electron or not.
-const appPath = process.platform === 'darwin'
-	? app?.isPackaged
-		? resolve(dirname(process.execPath), '../')
-		: originalAppPath
-// In case it's launched from the explorer, cwd will give us system32
-	: process.cwd() === 'C:\\Windows\\system32'
-		? originalAppPath
-		: process.cwd();
-
-
+let appPath: string;
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
 
-if (process.versions.electron && (existsSync(resolve(appPath, 'resources/')) || existsSync(resolve(originalAppPath, 'resources/')))) {
-	// If launched from electron we check if cwd/resources exists and set it to resourcePath. If not we'll use appPath
-	// CWD = current working directory, so if launched from a dist exe, this is $HOME/AppData/Local/ etc. on Windows, and equivalent path on Unix systems.
-	// It also works from unpackaged electron, if all things are well.
-	// If it doesn't exist, we'll assume the resourcePath is originalAppPath.
-	if (process.platform === 'darwin') {
+if (process.versions.electron) {
+	if (app.isPackaged) {
+		// Starting Electron from the app's executable
+		appPath = process.platform === 'darwin'
+			? resolve(app.getAppPath(), '../../../../')
+			: resolve(app.getAppPath(), '../../');
 		resourcePath = process.resourcesPath;
-	} else if (existsSync(resolve(appPath, 'resources/'))) {
-		resourcePath = resolve(appPath, 'resources/');
-	} else if (existsSync(resolve(originalAppPath, 'resources/'))) {
-		resourcePath = resolve(originalAppPath, 'resources/');
 	} else {
-		resourcePath = originalAppPath;
+		// Starting Electron from source folder
+		appPath = app.getAppPath();
+		resourcePath = appPath;
 	}
 } else {
-	resourcePath = originalAppPath;
+	// No Electron start, so in git mode
+	appPath = process.cwd();
+	resourcePath = appPath;
 }
 
 // DataPath is by default appPath + app. This is default when running from source
-const dataPath = existsSync(resolve(originalAppPath, 'portable'))
-	? resolve(originalAppPath, 'app/')
+const dataPath = existsSync(resolve(appPath, 'portable'))
+	? resolve(appPath, 'app/')
 	// Rewriting dataPath to point to user home directory
 	: app
 		// With Electron we get the handy app.getPath()
@@ -132,9 +109,9 @@ const dataPath = existsSync(resolve(originalAppPath, 'portable'))
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
-if (existsSync(resolve(originalAppPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
+if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
 
-setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
+setState({appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
 
 process.env['NODE_ENV'] = 'production'; // Default
 
@@ -154,7 +131,7 @@ if (existsSync(SHAFile)) {
 } else {
 	const branch = getState().version.number.split('-')[1];
 	try {
-		sha = readFileSync(resolve(originalAppPath, '.git/refs/heads/', branch), 'utf-8');
+		sha = readFileSync(resolve(appPath, '.git/refs/heads/', branch), 'utf-8');
 		setState({version: {sha: sha.substr(0, 8)}});
 	} catch(err) {
 		// Ignore
@@ -207,7 +184,6 @@ export async function preInit() {
 	logger.debug(`DataPath : ${dataPath}`, {service: 'Launcher'});
 	logger.debug(`ResourcePath : ${resourcePath}`, {service: 'Launcher'});
 	logger.debug(`Electron ResourcePath : ${process.resourcesPath}`, {service: 'Launcher'});
-	logger.debug(`OriginalAppPath : ${originalAppPath}`, {service: 'Launcher'});
 	logger.debug(`INIT_CWD : ${process.env.INIT_CWD}`, {service: 'Launcher'});
 	logger.debug(`PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`, {service: 'Launcher'});
 	logger.debug(`app.getAppPath : ${app ? app.getAppPath() : undefined}`, {service: 'Launcher'});
