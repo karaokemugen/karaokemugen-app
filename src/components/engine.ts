@@ -123,7 +123,7 @@ export async function initEngine() {
 	} else {
 		initStep(i18n.t('INIT_DB'));
 		const migrations = await initDBSystem();
-		await preFlightCheck();
+		const didGeneration = await preFlightCheck();
 		checkIfAppHasBeenUpdated();
 		initStep(i18n.t('INIT_USER'));
 		await initUserSystem();
@@ -164,7 +164,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
 			// This is done later because it's not important.
-			await postMigrationTasks(migrations);
+			await postMigrationTasks(migrations, didGeneration);
 			if (state.args.length > 0) {
 				// Let's try the last argument
 				const file = state.args[state.args.length-1];
@@ -266,7 +266,7 @@ export function getKMStats() {
 	return getStats();
 }
 
-async function preFlightCheck() {
+async function preFlightCheck(): Promise<boolean> {
 	const state = getState();
 	const conf = getConfig();
 	let doGenerate = false;
@@ -300,6 +300,7 @@ async function preFlightCheck() {
 	// Run this in the background
 	vacuum();
 	generateBlacklist();
+	return doGenerate;
 }
 
 async function runTests() {

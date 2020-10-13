@@ -8,7 +8,7 @@ import { initDownloader } from '../services/download';
 import { redownloadSongs } from '../services/downloadUpdater';
 import { generateDB } from './database';
 
-export async function postMigrationTasks(migrations: Migration[]) {
+export async function postMigrationTasks(migrations: Migration[], didGeneration: boolean) {
 	let doGenerate = false;
 	// Add code here to do stuff when migrations occur
 	for (const migration of migrations) {
@@ -44,7 +44,7 @@ export async function postMigrationTasks(migrations: Migration[]) {
 			}
 			break;
 		case 'addPriorityToTags':
-			doGenerate = true;
+			if (!didGeneration) doGenerate = true;
 			logger.info('Migration adding priority to tags detected, forcing generation', {service: 'DB'});
 			break;
 		default:
