@@ -6,14 +6,12 @@ import { getConfig } from '../lib/utils/config';
 import { getState } from './state';
 import { discordClientID } from './constants';
 
-let rpc: any;
-
-discordRPC.register(discordClientID);
+let rpc: discordRPC.Client;
 
 export async function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
 	try {
-		if (!getConfig().Online.Discord.DisplayActivity || !rpc || !rpc?.clientId) {
-			if (!rpc || !rpc?.clientId) startCheckingDiscordRPC();
+		if (!getConfig().Online.Discord.DisplayActivity || !rpc) {
+			if (!rpc) startCheckingDiscordRPC();
 			return;
 		}
 		const startTimestamp = new Date();
@@ -80,11 +78,7 @@ export function setupDiscordRPC() {
 		stopCheckingDiscordRPC();
 		// activity can only be set every 15 seconds
 	});
-	rpc.on('disconnected', () => {
-		stopDiscordRPC();
-		startCheckingDiscordRPC();
-	});
-	rpc.login({ discordClientID }).catch(() => {
+	rpc.login({ clientId: discordClientID }).catch(() => {
 		stopDiscordRPC();
 		if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
 	});
