@@ -98,13 +98,6 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			return <div className="pathFolders" key={item}>{item}</div>;
 		}))
 	}, {
-		title: i18next.t('REPOSITORIES.PATH_SERIES'),
-		dataIndex: 'Path.Series',
-		key: 'path_series',
-		render: (text, record: Repository) => (record.Path.Series.map(item => {
-			return <div className="pathFolders" key={item}>{item}</div>;
-		}))
-	}, {
 		title: i18next.t('REPOSITORIES.PATH_TAGS'),
 		dataIndex: 'Path.Tags',
 		key: 'path_tags',

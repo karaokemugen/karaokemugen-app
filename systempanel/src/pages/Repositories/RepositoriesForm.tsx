@@ -51,7 +51,6 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				Karas: values.PathKaras,
 				Lyrics: values.PathLyrics,
 				Medias: values.PathMedias,
-				Series: values.PathSeries,
 				Tags: values.PathTags
 			}
 		};
@@ -60,11 +59,10 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 
 	setDefaultFolders = (): void => {
 		if (!this.props.repository.Name) {
-			const folders: {PathKaras?: string[]; PathLyrics?: string[]; PathMedias?: string[]; PathSeries?: string[]; PathTags?: string[]} = {};
+			const folders: {PathKaras?: string[]; PathLyrics?: string[]; PathMedias?: string[]; PathTags?: string[]} = {};
 			if (this.formRef.current?.getFieldValue('PathKaras').length === 0) folders.PathKaras = [`repo/${this.formRef.current?.getFieldValue('Name')}/karaokes`];
 			if (this.formRef.current?.getFieldValue('PathLyrics').length === 0) folders.PathLyrics = [`repo/${this.formRef.current?.getFieldValue('Name')}/lyrics`];
 			if (this.formRef.current?.getFieldValue('PathMedias').length === 0) folders.PathMedias = [`repo/${this.formRef.current?.getFieldValue('Name')}/medias`];
-			if (this.formRef.current?.getFieldValue('PathSeries').length === 0) folders.PathSeries = [`repo/${this.formRef.current?.getFieldValue('Name')}/series`];
 			if (this.formRef.current?.getFieldValue('PathTags').length === 0) folders.PathTags = [`repo/${this.formRef.current?.getFieldValue('Name')}/tags`];
 			this.formRef.current?.setFieldsValue(folders);
 			console.log(this.formRef.current?.getFieldsValue())
@@ -84,7 +82,6 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					PathKaras: this.props.repository?.Path.Karas,
 					PathLyrics: this.props.repository?.Path.Lyrics,
 					PathMedias: this.props.repository?.Path.Medias,
-					PathSeries: this.props.repository?.Path.Series,
 					PathTags: this.props.repository?.Path.Tags
 				}}
 				style={{maxWidth: '900px'}}
@@ -158,17 +155,6 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					name="PathMedias"
 				>
 					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathMedias': value })} />
-				</Form.Item>
-				<Form.Item
-					label={i18next.t('REPOSITORIES.PATH_SERIES')}
-					labelCol={{ flex: '0 1 200px' }}
-					rules={[{
-						required: true,
-						message: i18next.t('REPOSITORIES.FOLDERS_REQUIRED', { name: i18next.t('REPOSITORIES.PATH_SERIES') })
-					}]}
-					name="PathSeries"
-				>
-					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathSeries': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_TAGS')}

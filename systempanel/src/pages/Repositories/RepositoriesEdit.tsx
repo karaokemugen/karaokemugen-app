@@ -24,8 +24,7 @@ const newrepository: Repository = {
 		Karas: [],
 		Lyrics: [],
 		Medias: [],
-		Tags: [],
-		Series: []
+		Tags: []
 	}
 };
 
