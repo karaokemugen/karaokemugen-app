@@ -17,7 +17,6 @@ import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncRemove} from './lib/util
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
-import { migrateOldFoldersToRepo } from './services/repo';
 import {Config} from './types/config';
 import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
@@ -247,9 +246,7 @@ export async function main() {
  * Checking if application paths exist.
  */
 async function checkPaths(config: Config) {
-	// Migrate old folder config to new repository one :
 	try {
-		await migrateOldFoldersToRepo();
 		// Emptying temp directory
 		if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
 		// Emptying import directory

@@ -189,11 +189,7 @@ export interface Config {
 		Repositories: Repository[]
 		Path: {
 			Bin?: string,
-			Karas?: string[], // Deprecated in favour of repositories
-			Medias?: string[], // Deprecated in favour of repositories
-			Lyrics?: string[], // Deprecated in favour of repositories
 			DB?: string,
-			Series?: string[], // Deprecated: no unique repo, no series, totally useless
 			Backgrounds?: string[],
 			Jingles?: string[],
 			Intros?: string[],
@@ -204,7 +200,6 @@ export interface Config {
 			Previews?: string,
 			Import?: string,
 			Avatars?: string,
-			Tags?: string[] // Deprecated in favour of repositories
 		}
 	}
 }

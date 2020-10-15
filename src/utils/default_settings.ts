@@ -238,14 +238,12 @@ export const defaults: Config = {
 						Karas: ['repos\\kara.moe\\karaokes'],
 						Lyrics: ['repos\\kara.moe\\lyrics'],
 						Medias: ['repos\\kara.moe\\medias'],
-						Series: ['repos\\kara.moe\\series'],
 						Tags: ['repos\\kara.moe\\tags']
 					}
 					: {
 						Karas: ['repos/kara.moe/karaokes'],
 						Lyrics: ['repos/kara.moe/lyrics'],
 						Medias: ['repos/kara.moe/medias'],
-						Series: ['repos/kara.moe/series'],
 						Tags: ['repos/kara.moe/tags']
 					}
 			},
@@ -258,14 +256,12 @@ export const defaults: Config = {
 						Karas: ['repos\\Local\\karaokes'],
 						Lyrics: ['repos\\Local\\lyrics'],
 						Medias: ['repos\\Local\\medias'],
-						Series: ['repos\\Local\\series'],
 						Tags: ['repos\\Local\\tags']
 					}
 					: {
 						Karas: ['repos/Local/karaokes'],
 						Lyrics: ['repos/Local/lyrics'],
 						Medias: ['repos/Local/medias'],
-						Series: ['repos/Local/series'],
 						Tags: ['repos/Local/tags']
 					}
 			}

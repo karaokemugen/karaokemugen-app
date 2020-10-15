@@ -129,7 +129,6 @@ export async function handleProtocol(args: string[]) {
 						Path: {
 							Karas: [`repos/${repoName}/karaokes`],
 							Lyrics: [`repos/${repoName}/lyrics`],
-							Series: [`repos/${repoName}/series`],
 							Medias: [`repos/${repoName}/medias`],
 							Tags: [`repos/${repoName}/tags`],
 						}
@@ -241,7 +240,6 @@ async function checkRepositoryExists(repoName: string, useLocal = true): Promise
 					Karas: [`repos/${repoName}/karaokes`],
 					Lyrics: [`repos/${repoName}/lyrics`],
 					Medias: [`repos/${repoName}/medias`],
-					Series: [`repos/${repoName}/series`],
 					Tags: [`repos/${repoName}/tags`],
 				}
 			});

@@ -6,7 +6,6 @@ import {getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, select
 import { saveSetting } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
 import { replaceTagInKaras } from '../lib/dao/karafile';
-import { writeSeriesFile } from '../lib/dao/seriesfile';
 import { refreshKaraTags,refreshTags } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile,removeTagFile, removeTagInKaras, writeTagFile } from '../lib/dao/tagfile';
 import { DBTag } from '../lib/types/database/tag';
@@ -73,10 +72,6 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 
 		if (opts.refresh) {
 			await refreshTags();
-		}
-		if (tagObj.types.includes(1)) {
-			// Spreading object to keep writeSeriesFile from modifying it
-			await writeSeriesFile({...tagObj}, resolvedPathRepos('Series', tagObj.repository)[0]);
 		}
 		return tagObj;
 	} catch(err) {
@@ -224,9 +219,6 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 			await editTagInStore(newTagFiles[0]);
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
-		if (tagObj.types.includes(1)) {
-			await writeSeriesFile(tagObj, resolvedPathRepos('Series', tagObj.repository)[0]);
-		}
 		if (opts.refresh) await refreshTagsAfterDBChange();
 	} catch(err) {
 		sentry.error(err);
