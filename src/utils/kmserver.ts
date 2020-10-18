@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 
 import {getConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
+import { APIData } from '../lib/types/api';
 
 let socket: SocketIOClient.Socket;
 
@@ -34,7 +35,7 @@ export function getKMServerSocket() {
 	return socket;
 }
 
-export function commandKMServer(name: string, data: any): Promise<any> {
+export function commandKMServer(name: string, data: APIData): Promise<any> {
 	return new Promise((resolve) => {
 		socket.emit(name, data, ack => {
 			resolve(ack);
