@@ -1,5 +1,13 @@
 # Versions
 
+## v4.1.17 "Ôgi Observatrice" - 24/10/2020
+
+### Fixes
+
+- Fix Discord Rich Presence (0b9239ce)
+- Use the new shortener protocol (10fe233b)
+- The karaokes without subtitles works again (sorry Boogie Body, 79b88e5e)
+
 ## v4.1.16 "Ôgi Observatrice" - 11/10/2020
 
 ### Fixes
