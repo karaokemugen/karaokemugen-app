@@ -7,6 +7,7 @@
 - Fix Discord Rich Presence (0b9239ce)
 - Use the new shortener protocol (10fe233b)
 - The karaokes without subtitles works again (sorry Boogie Body, 79b88e5e)
+- Fix removing repositories (40b1368c)
 
 ## v4.1.16 "Ôgi Observatrice" - 11/10/2020
 
