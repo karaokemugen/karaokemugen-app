@@ -646,7 +646,6 @@ class Players {
 		logger.debug('Play event triggered', {service: 'Player'});
 		playerState.playing = true;
 		//Search for media file in the different PathMedias
-
 		let mediaFile: string;
 		const mediaFiles: string[]|void = await resolveFileInDirs(mediaData.media, resolvedPathRepos('Medias', mediaData.repo))
 			.catch(err => {
@@ -660,21 +659,23 @@ class Players {
 				}
 			});
 		mediaFile = mediaFiles[0];
-		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
-			.catch(err => {
-				logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
-				logger.warn(`Subs NOT FOUND : ${playerState.currentSong.subfile}`, {service: 'Player'});
-			});
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
 		const options: any = {
 			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0'
 		};
-		if (subFiles && subFiles[0]) {
+		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
+			.catch(err => {
+				logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
+				logger.warn(`Subs NOT FOUND : ${mediaData.subfile}`, {service: 'Player'});
+			}) || []; // Empty array
+		if (subFiles[0]) {
 			options['sub-file'] = subFiles[0];
 			options['sid'] = '1';
+		} else {
+			options['sub-file'] = '';
+			options['sid'] = 'none';
 		}
-
 		if (mediaFile.endsWith('.mp3')) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)

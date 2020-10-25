@@ -29,8 +29,8 @@ export async function publishURL() {
 		logger.debug('Cannot find IPv6 network information, IPv4-only fallback.', {service: 'ShortURL', obj: err});
 	}
 	try {
-		const res: boolean = await commandKMServer('shortener publish', form);
-		if (res) {
+		const res: {data: boolean, err: boolean} = await commandKMServer('shortener publish', {body: form});
+		if (res.data) {
 			logger.debug(`Server (${conf.Online.Host}) accepted our publish`, {service: 'ShortURL'});
 			configureHost();
 		} else {
