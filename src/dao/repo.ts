@@ -29,8 +29,6 @@ export function updateRepo(repo: Repository, name: string) {
 
 export function deleteRepo(name: string) {
 	const conf = getConfig();
-	const repos = conf.System.Repositories;
-	const repoIndex = repos.findIndex(r => r.Name === name);
-	delete repos[repoIndex];
+	const repos = conf.System.Repositories.filter(r => r.Name !== name);
 	setConfig({ System: { Repositories: repos}});
 }
