@@ -2,6 +2,7 @@ import execa from 'execa';
 import i18n from 'i18next';
 import debounce from 'lodash.debounce';
 import sample from 'lodash.sample';
+import {Promise as id3} from 'node-id3';
 import retry from 'p-retry';
 import {extname, resolve} from 'path';
 import randomstring from 'randomstring';
@@ -24,7 +25,6 @@ import {MpvCommand} from '../types/MpvIPC';
 import {MediaData, MpvOptions, PlayerState} from '../types/player';
 import {initializationCatchphrases} from '../utils/constants';
 import {setDiscordActivity} from '../utils/discordRPC';
-import {getID3} from '../utils/id3tag';
 import MpvIPC from '../utils/MpvIPC';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
@@ -686,7 +686,7 @@ class Players {
 				options['lavfi-complex'] = Players.avatarFilter(mediaData);
 			}
 
-			const id3tags = await getID3(mediaFile);
+			const id3tags = await id3.read(mediaFile);
 			if (!id3tags.image) {
 				const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
 				options['external-file'] = defaultImageFile.replace(/\\/g,'/');

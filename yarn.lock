@@ -2797,14 +2797,7 @@ iconv-lite@0.4.24:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-iconv-lite@0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.5.1.tgz#b2425d3c7b18f7219f2ca663d103bddb91718d64"
-  integrity sha512-ONHr16SQvKZNSqjQT9gy5z24Jw+uqfO02/ngBSBoqChZ+W8qXX7GPRa1RoUnzGADw8K63R1BXUMzarCVQBpY8Q==
-  dependencies:
-    safer-buffer ">= 2.1.2 < 3"
-
-iconv-lite@^0.6.2:
+iconv-lite@0.6.2, iconv-lite@^0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.6.2.tgz#ce13d1875b0c3a674bd6a04b7f76b01b1b6ded01"
   integrity sha512-2y91h5OpQlolefMPmUlivelittSWy0rP+oYVpn6A7GwVHNE8AWzoYOBNmlwks3LobaJxgHCYZAnyNo2GgpNRNQ==
@@ -3626,12 +3619,12 @@ node-fetch@^2.6.0, node-fetch@^2.6.1:
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
   integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
-node-id3@^0.1.21:
-  version "0.1.21"
-  resolved "https://registry.yarnpkg.com/node-id3/-/node-id3-0.1.21.tgz#6e9fbcc7af09f65114909a11f74a2d70b545bbf3"
-  integrity sha512-oHLRfbsp1sVDSsUBmWjkT1xFj/bE1WN5UItzknxk5gpDs2S9lbL4IAO+WaZHO27CQ5EEkY2FWkTU5s4UJBoQaQ==
+node-id3@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/node-id3/-/node-id3-0.2.1.tgz#41835238d7687b875b08cce0bb160c5cea0bbabc"
+  integrity sha512-VWYgLP3x+J+8HAcxISn69N7tjF7dJcom79uU51/6npb4U3vncUxMxJe1FKD8NbtKe74K22tk+oOkibHePg9VMg==
   dependencies:
-    iconv-lite "0.5.1"
+    iconv-lite "0.6.2"
 
 nodejs-traceroute@^1.2.0:
   version "1.2.0"
