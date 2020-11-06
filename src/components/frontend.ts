@@ -63,7 +63,7 @@ export function initFrontend(): number {
 				defaultSrc: ['\'self\'', 'data:'],
 				scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
 				styleSrc: ['\'self\'', '\'unsafe-inline\''],
-				connectSrc: ['\'self\'', 'https:'],
+				connectSrc: ['\'self\'', 'https:', 'wss:'],
 				sandbox: ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-modals'],
 				reportUri: process.env.SENTRY_CSP || sentryCSP,
 				upgradeInsecureRequests: ['false'],
