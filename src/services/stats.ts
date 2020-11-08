@@ -5,7 +5,7 @@ import prettyBytes from 'pretty-bytes';
 import si from 'systeminformation';
 
 import { APIMessage } from '../controllers/common';
-import { exportFavorites,exportPlayed, exportRequests } from '../dao/stats';
+import { exportPlayed, exportRequests } from '../dao/stats';
 import { getInstanceID } from '../lib/dao/database';
 import { getConfig } from '../lib/utils/config';
 import { asyncWriteFile } from '../lib/utils/files';
@@ -79,7 +79,6 @@ async function buildPayload() {
 		instance: await buildInstanceStats(),
 		viewcounts: await exportPlayed(),
 		requests: await exportRequests(),
-		favorites: await exportFavorites(),
 		sessions: await getSessions()
 	};
 }
