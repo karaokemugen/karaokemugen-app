@@ -110,9 +110,9 @@ export async function createRemoteUser(user: User) {
 
 /** Get user data from KM Server */
 export async function getRemoteUser(username: string, token: string): Promise<User> {
-	const [login, instance] = username.split('@');
+	const instance = username.split('@')[1];
 	try {
-		const res = await HTTP(`https://${instance}/api/users/${login}`, {
+		const res = await HTTP(`https://${instance}/api/myaccount`, {
 			headers: {
 				authorization: token
 			},
