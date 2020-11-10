@@ -160,7 +160,10 @@
 						font-size: 2em;
 					}
 					span {
-						font-size: 1.75em;
+						font-size: 1.25em;
+						@media screen and (min-width: 1250px) {
+							font-size: 1.5em;
+						}
 					}
 				}
 				> blockquote {
