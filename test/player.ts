@@ -14,8 +14,7 @@ describe('Player', () => {
 		expect(data.currentSessionID).to.be.a('string').and.match(new RegExp(uuidRegexp));
 		expect(data.currentSong).to.satisfy((e:any) => typeof e === 'object' || e === null);
 		expect(data.defaultLocale).to.be.a('string').and.have.lengthOf(2);
-		expect(data.currentlyPlaying).to.satisfy((e:any) => typeof e === 'string' || e === null);
-		expect(data.duration).to.be.a('number');
+		expect(data.mediaType).to.be.equal('background');
 		expect(data.onTop).to.be.a('boolean');
 		expect(data.stopping).to.be.a('boolean');
 	});
