@@ -111,12 +111,16 @@
 		border-radius: 15px;
 		text-align: center;
 		> div {
-			transition: font-weight, font-size, color, margin ease 100ms,100ms,100ms,100ms;
+			transition: font-size, color, margin ease 200ms,200ms,200ms;
 			&.current {
 				font-size: 1.25em;
 				font-weight: bold;
 				color: gold;
 				margin: 0.25em 0;
+			}
+			&.incoming {
+				color: lighten(gold, 10);
+				margin: 0.1em 0;
 			}
 		}
 	}

@@ -192,7 +192,10 @@ class PlayerBox extends Component<IProps, IState> {
 							<div className="lyrics">
 								{
 									this.state.lyrics.map(val => {
-										return <div className={(val.start+0.5 < this.state.timePosition) && (this.state.timePosition < val.end-0.5) ? 'current':null}>{val.text}</div>;
+										return <div
+											className={`${(val.start+0.4 < this.state.timePosition) && (this.state.timePosition < val.end-0.5) ? 'current':''}
+											${((val.start-0.15) < this.state.timePosition) && (this.state.timePosition < val.start+0.4) ? 'incoming':''}`}
+										>{val.text}</div>;
 									})
 								}
 							</div> : null}
