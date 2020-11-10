@@ -1,17 +1,14 @@
 // These routes are only available in --test mode
 
-import { Router } from 'express';
-
 import { getConfig } from '../../lib/utils/config';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { getState } from '../../utils/state';
 
-export default function miscController(router: Router) {
-	router.route('/state')
-		.get((_req: any, res: any) => {
-			res.json(getState());
-		});
-	router.route('/fullConfig')
-		.get((_req: any, res: any) => {
-			res.json(getConfig());
-		});
+export default function miscController(router: SocketIOApp) {
+	router.route('getState', async (_socket: any, _req: any) => {
+		return getState();
+	});
+	router.route('getFullConfig', async (_socket: any, _req: any) => {
+		return getConfig();
+	});
 }

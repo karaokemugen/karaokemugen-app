@@ -2,13 +2,13 @@
 import merge from 'lodash.merge';
 
 import packageJSON from '../../package.json';
-import {getConfig} from '../lib/utils/config';
 // KM Imports
+import {getConfig} from '../lib/utils/config';
 import { supportedFiles } from '../lib/utils/constants';
 import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 // Types
-import {PublicPlayerState,PublicState,State} from '../types/state';
+import { PublicPlayerState, PublicState, State} from '../types/state';
 
 // Internal settings
 let state: State = {
@@ -55,20 +55,10 @@ let state: State = {
 export function getPlayerState(): PublicPlayerState {
 	const conf = getConfig();
 	return {
-		currentSong: state.currentSong,
-		currentlyPlaying: state.currentlyPlayingKara,
+		...state.player,
 		currentSessionID: state.currentSessionID,
 		stopping: state.stopping,
-		duration: state.player?.currentSong?.duration || 0,
-		fullscreen: state.player.fullscreen,
-		mute: state.player.mute,
 		onTop: state.ontop,
-		playerStatus: state.player.playerStatus,
-		playing: state.player.playing,
-		showSubs: state.player.showSubs,
-		subText: state.player['sub-text'],
-		timePosition: state.player.timeposition,
-		volume: state.player.volume,
 		currentRequester: state.currentRequester,
 		defaultLocale: state.defaultLocale,
 		songsBeforeJingle: conf.Playlist?.Medias.Jingles.Enabled ? conf.Playlist?.Medias.Jingles.Interval - state.counterToJingle:undefined,
@@ -77,8 +67,35 @@ export function getPlayerState(): PublicPlayerState {
 }
 
 /** Emit via websockets the public state */
-function emitPlayerState() {
-	emitWS('playerStatus', getPlayerState());
+function emitPlayerState(part: Partial<State>) {
+	// Compute diff in other elements
+	const map = new Map([
+		['counterToJingle', {conf: 'Jingles', state: 'songsBeforeJingle'}],
+		['counterToSponsor', {conf: 'Sponsors', state: 'songsBeforeSponsor'}]
+	]);
+	const toEmit: Partial<PublicPlayerState> = {...part.player};
+	for (const key of ['currentSessionID', 'stopping', 'ontop', 'defaultLocale', 'counterToJingle', 'counterToSponsor']) {
+		switch (key) {
+		case 'counterToJingle':
+		case 'counterToSponsor':
+			const conf = getConfig();
+			const options = map.get(key);
+			if (typeof part[key] !== 'undefined') {
+				if (conf.Playlist?.Medias[options.conf].Enabled) {
+					toEmit[options.state] = conf.Playlist?.Medias[options.conf].Interval - part[key];
+				}
+			}
+			break;
+		default:
+			if (typeof part[key] !== 'undefined') {
+				toEmit[key] = part[key];
+			}
+			break;
+		}
+	}
+	if (Object.keys(toEmit).length !== 0) {
+		emitWS('playerStatus', toEmit);
+	}
 }
 
 /** Get current app state object */
@@ -106,8 +123,15 @@ export function getPublicState(admin: boolean): PublicState {
 
 /** Set one or more settings in app state */
 export function setState(part: Partial<State>) {
+	// lodash merges must not merge karas info.
+	if (part?.player?.currentSong && part?.player?.currentSong?.currentSong.kid !== state?.player?.currentSong?.currentSong.kid) {
+		state.player.currentSong = null;
+	}
+	if (part?.currentSong && part?.currentSong?.kid !== state?.currentSong?.kid) {
+		state.currentSong = null;
+	}
 	state = merge(state, part);
 	emit('stateUpdated', state);
-	emitPlayerState();
+	emitPlayerState(part);
 	return getState();
 }

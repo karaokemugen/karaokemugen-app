@@ -3,6 +3,7 @@ import {promisify} from 'util';
 
 import Players from '../components/mpv';
 import { APIMessage } from '../controllers/common';
+import { APIMessageType } from '../lib/types/frontend';
 import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
@@ -242,7 +243,7 @@ export function displayInfo() {
 	return mpv.displayInfo();
 }
 
-export async function sendCommand(command: string, options: any): Promise<string|undefined> {
+export async function sendCommand(command: string, options: any): Promise<APIMessageType> {
 	// Resetting singlePlay to false everytime we use a command.
 	const state = getState();
 	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';
@@ -257,7 +258,7 @@ export async function sendCommand(command: string, options: any): Promise<string
 		} else if (command === 'stopAfter') {
 			setState({singlePlay: false, randomPlaying: false});
 			await stopPlayer(false);
-			return 'STOP_AFTER';
+			return APIMessage('STOP_AFTER');
 		} else if (command === 'skip') {
 			setState({singlePlay: false, randomPlaying: false});
 			await next();
@@ -290,7 +291,8 @@ export async function sendCommand(command: string, options: any): Promise<string
 		} else if (command === 'setVolume') {
 			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 			await setVolumePlayer(options);
-		} else {// Unknown commands are not possible, they're filtered by API's validation.
+		} else {
+			throw `Unknown command ${command}`;
 		}
 	} catch(err) {
 		logger.error(`Command ${command} failed`, {service: 'Player', obj: err});

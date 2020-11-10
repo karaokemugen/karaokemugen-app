@@ -1,0 +1,183 @@
+@import '../../styles/variables';
+
+@media (max-width: $mugen-breakpoint-large) {
+	.upvoteKara {
+		width: 4em;
+		height: 4em;
+		font-size: 1.25em;
+	}
+}
+
+.list-group-item {
+	background-color: $mugen-playlist-odd;
+	&.dejavu {
+		background-color: $mugen-playlist-dejavu-odd;
+		&.list-group-item-even {
+			background-color: $mugen-playlist-dejavu-even;
+		}
+	}
+	&.currentlyplaying {
+		background-color: $mugen-playlist-currently-playing;
+	}
+	&.list-group-item-even.currentlyplaying {
+		background-color: $mugen-playlist-currently-playing;
+	}
+	&.list-group-item-even {
+		background-color: $mugen-playlist-even;
+	}
+	z-index: 20;
+	overflow: auto;
+	padding: .5em;
+	line-height: 1.5rem;
+	transition: background-color 250ms ease;
+
+	&.marker {
+		border-bottom: 0.25em black solid;
+		border-bottom-right-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+
+	.list-group-item.marker.green {
+		border-bottom-color: forestgreen;
+	}
+
+	.img-circle {
+		width: 100%;
+		height: 100%;
+		max-width: 2em;
+		border-radius: 10%;
+		float: right;
+		display: block;
+		margin: 0 .25em;
+		user-select: none;
+		&.mobile {
+			max-width: 4em;
+			margin: 0.25em;
+		}
+	}
+	// .actionDiv: profile picture of the requester and remove/add/actions buttons
+	.actionDiv {
+		display: flex;
+		flex-direction: row;
+		float: right;
+		button {
+			z-index: 52;
+			position: relative;
+		}
+		// .dragHandle: in playlists, the three-dot handle to drag (provided by react-sortable-hoc)
+		.dragHandle {
+			padding-left: .5em;
+			padding-right: .5em;
+			align-self: center;
+			cursor: move;
+		}
+	}
+	// .contentDiv: karaTitle and tags
+	> .contentDiv {
+		padding: .25em .5em;
+		overflow: auto;
+		display: flex;
+		flex-wrap: wrap;
+	}
+	&:not(.liTag) > .contentDiv {
+		cursor: zoom-in;
+	}
+	> .contentDivMobile {
+		.problematic {
+			color: orange;
+		}
+		flex-direction: column;
+		> div {
+			display: flex;
+		}
+		.contentDivMobileTop {
+			margin-bottom: 0.25em;
+			.contentDivMobileSerie {
+				font-weight: bold;
+			}
+			.contentDivMobileTitle {
+				font-style: italic;
+			}
+		}
+	}
+	.tagConteneur {
+		margin-left: auto;
+		display: flex;
+		justify-content: flex-end;
+		&.mobile {
+			margin: 0;
+			flex-wrap: wrap;
+			.tag {
+				margin-bottom: .4em;
+			}
+		}
+		.tag {
+			background-color: $mugen-tag-default;
+			@each $name, $color in $mugen-colors {
+				&.#{$name} {
+					background-color: darken($color, 10);
+					color: white;
+				}
+			}
+			padding: 0 .25em;
+			margin-right: .4em;
+			text-align: center;
+			font-weight: bold;
+			color: #aaa;
+			box-shadow: 0 6px 8px 2px #00000005, 0 1px 5px 2px #00000004, 0 2px 3px -1px #00000005;
+			float: right;
+			z-index: 250;
+		}
+	}
+	// .checkboxKara: checkbox for bulk selection in admin interface
+	.checkboxKara {
+		padding: .25em;
+		font-size: 1.25em;
+		float: right;
+	}
+
+	&.dragged {
+		border: none;
+		z-index: 200;
+		position: absolute;
+		width: auto;
+		> div {
+			border: solid 1px #595959;
+			width: auto;
+			background-color: #222;
+		}
+	}
+}
+
+.marker-label {
+	background: black;
+	&.green {
+		background: forestgreen;
+	}
+	color: white;
+	padding: 0.2em;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, -60%);
+	z-index: 999999999;
+	font-size: small;
+	font-weight: 600;
+}
+
+.upvoteCount {
+	color: #aaa;
+	margin-left: .25em;
+	background-color: #212831;
+	padding: 0 .5em;
+	text-align: center;
+	font-weight: bold;
+	border-radius: 10%;
+}
+.upvoteCount > i {
+	font-size: 88%;
+	margin-right: .5em;
+}
+
+.disable-select {
+	user-select: none;
+}

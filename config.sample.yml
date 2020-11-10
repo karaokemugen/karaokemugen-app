@@ -45,9 +45,6 @@ Frontend:
   Permissions:
     # Permissions for users
     AllowNicknameChange: true
-    AllowViewBlacklist: true
-    AllowViewBlacklistCriterias: true
-    AllowViewWhitelist: true
   # How to display series names
   # 0 : Original name (generally romanji)
   # 1 : Use song language (fallbacks to english then original)

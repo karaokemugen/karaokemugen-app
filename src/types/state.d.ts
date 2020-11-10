@@ -102,22 +102,11 @@ export interface PublicState {
 	sentrytest: boolean
 }
 
-export interface PublicPlayerState {
-	playing: boolean,
+export interface PublicPlayerState extends PlayerState {
 	onTop: boolean,
-	fullscreen: boolean,
-	timePosition: number,
 	stopping: boolean,
-	duration: number,
-	mute: boolean,
-	playerStatus: string,
-	currentlyPlaying: string,
 	currentRequester: string,
 	currentSessionID: string,
-	currentSong: CurrentSong,
-	subText: string,
-	showSubs: boolean,
-	volume: number,
 	defaultLocale: string,
 	songsBeforeJingle: number,
 	songsBeforeSponsor: number

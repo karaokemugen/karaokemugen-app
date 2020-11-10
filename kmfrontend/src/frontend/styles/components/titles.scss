@@ -1,0 +1,15 @@
+.karaTitle {
+	display: flex;
+	flex-grow: 1;
+	align-items: baseline;
+	flex-wrap: wrap;
+	&.problematic {
+		color: orange;
+	}
+	.karaTitleSerie {
+		font-weight: bold;
+	}
+	.karaTitleTitle {
+		font-style: italic;
+	}
+}

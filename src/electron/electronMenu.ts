@@ -332,7 +332,7 @@ export function initMenu() {
 				{
 					label: i18next.t('MENU_HELP_SEND_KARAOKE'),
 					click: () => {
-						open('https://kara.moe/import/');
+						open('https://kara.moe/base/import');
 					}
 				},
 				{ type: 'separator'},

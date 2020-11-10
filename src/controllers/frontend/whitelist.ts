@@ -1,19 +1,19 @@
-import { Router } from 'express';
 
-import { getConfig } from '../../lib/utils/config';
+import { Socket } from 'socket.io';
+
+import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { addKaraToWhitelist, deleteKaraFromWhitelist,emptyWhitelist, getWhitelistContents } from '../../services/whitelist';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { runChecklist } from '../middlewares';
 
-export default function whitelistController(router: Router) {
-	router.route('/whitelist/empty')
+export default function whitelistController(router: SocketIOApp) {
+	router.route('emptyWhitelist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /whitelist/empty Empty whitelist
- * @apiName PutEmptyWhitelist
- * @apiVersion 3.1.0
+ * @api {put} Empty whitelist
+ * @apiName emptyWhitelist
+ * @apiVersion 5.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -27,23 +27,22 @@ export default function whitelistController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "WL_EMPTY_ERROR"}
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
+		await runChecklist(socket, req);
 		// Empty whitelist
-			try {
-				await emptyWhitelist();
-				res.status(200).json();
-			} catch(err) {
-				const code = 'WL_EMPTY_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
+		try {
+			return await emptyWhitelist();
+		} catch(err) {
+			const code = 'WL_EMPTY_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 
-	router.route('/whitelist')
+	router.route('getWhitelist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /whitelist Get whitelist
- * @apiName GetWhitelist
- * @apiVersion 3.1.0
+ * @api {get} Get whitelist
+ * @apiName getWhitelist
+ * @apiVersion 5.0.0
  * @apiGroup Whitelist
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -86,27 +85,28 @@ export default function whitelistController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "WL_VIEW_ERROR"}
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
-			if (getConfig().Frontend.Permissions.AllowViewWhitelist || req.authToken.role === 'admin') {
-				try {
-					const karas = await getWhitelistContents({
-						filter: req.query.filter,
-						lang: req.lang,
-						from: +req.query.from,
-						size: +req.query.size
-					});
-					res.json(karas);
-				} catch(err) {
-					const code = 'WL_VIEW_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
+		await runChecklist(socket, req, 'guest', 'limited');
+		if (req.token.role === 'admin') {
+			try {
+				return await getWhitelistContents({
+					filter: req.body?.filter,
+					lang: req.langs,
+					from: +req.body?.from,
+					size: +req.body?.size
+				});
+			} catch(err) {
+				const code = 'WL_VIEW_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
 			}
-		})
+		}
+	});
+
+	router.route('addKaraToWhitelist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /whitelist Add song to whitelist
- * @apiName PostWhitelist
- * @apiVersion 3.1.0
+ * @api {post} Add song to whitelist
+ * @apiName addKaraToWhitelist
+ * @apiVersion 5.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -123,30 +123,31 @@ export default function whitelistController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "WL_ADD_SONG_ERROR"}
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			const validationErrors = check(req.body, {
-				kid: {uuidArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await addKaraToWhitelist(req.body.kid, req.body.reason);
-					res.status(201).json();
-				} catch(err) {
-					const code = 'WL_ADD_SONG_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			kid: {uuidArrayValidator: true}
+		});
+		if (!validationErrors) {
+			try {
+				return await addKaraToWhitelist(req.body.kid, req.body.reason);
+			} catch(err) {
+				const code = 'WL_ADD_SONG_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
 			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
 
-		})
+	});
+
+	router.route('deleteKaraFromWhitelist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {delete} /whitelist Delete whitelist item
- * @apiName DeleteWhitelist
- * @apiVersion 2.5.0
+ * @api {delete} Delete whitelist item
+ * @apiName deleteKaraFromWhitelist
+ * @apiVersion 5.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -157,28 +158,24 @@ export default function whitelistController(router: Router) {
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			//Delete kara from whitelist
-			// Deletion is through whitelist ID.
-			const validationErrors = check(req.body, {
-				kid: {uuidArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await deleteKaraFromWhitelist(req.body.kid);
-					res.status(200).json();
-				} catch(err) {
-					const code = 'WL_DELETE_SONG_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
-
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			kid: {uuidArrayValidator: true}
 		});
+		if (!validationErrors) {
+			try {
+				return await deleteKaraFromWhitelist(req.body.kid);
+			} catch(err) {
+				const code = 'WL_DELETE_SONG_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
 
+	});
 
 }

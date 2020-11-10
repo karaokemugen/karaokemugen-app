@@ -1,8 +1,0 @@
-{
-  "modules": false, // avoid additionnal module isolation by postcss
-  "plugins": {
-    "autoprefixer": {
-      "grid": true
-    }
-  }
-}

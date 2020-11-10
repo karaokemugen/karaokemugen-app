@@ -9,6 +9,7 @@ import {	addPlayed,
 } from '../dao/kara';
 import {getASS} from '../lib/dao/karafile';
 import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
+import { ASSLine } from '../lib/types/ass';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import {KaraList, KaraParams, YearList} from '../lib/types/kara';
 import { Token } from '../lib/types/user';
@@ -29,6 +30,7 @@ export async function isAllKaras(karas: string[]): Promise<string[]> {
 
 export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara> {
 	profile('getKaraInfo');
+	if (!kid) throw {code: 400};
 	try {
 		const res = await selectAllKaras({
 			username: token.username,
@@ -54,7 +56,7 @@ export function getKaraMini(kid: string): Promise<DBKaraBase> {
 	return getKaraMiniDB(kid);
 }
 
-export async function getKaraLyrics(kid: string): Promise<string[]> {
+export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
 	const kara = await getKaraMini(kid);
 	if (!kara) throw {code: 404, msg: `Kara ${kid} unknown`};
 	if (!kara.subfile) return;

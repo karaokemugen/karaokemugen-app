@@ -249,10 +249,18 @@ export async function deletePlaylist(playlist_id: number) {
 	try {
 		profile('deletePlaylist');
 		logger.info(`Deleting playlist ${pl.name}`, {service: 'Playlist'});
-		if (pl.flag_public) throw {code: 409, msg: `Playlist ${playlist_id} is public. Unable to delete it. Make another playlist public first.`};
 		if (pl.flag_current) throw {code: 409, msg: `Playlist ${playlist_id} is current. Unable to delete it. Make another playlist current first.`};
-		emitWS('playlistsUpdated');
-		return await deletePL(playlist_id);
+		logger.info(`Deleting playlist ${pl.name}`, {service: 'Playlist'});
+		try {
+			await deletePL(playlist_id);
+			emitWS('playlistsUpdated');
+		} catch(err) {
+			console.log(playlist_id);
+			console.log('Delete error');
+			console.log(err);
+			throw err;
+		}
+
 	} catch(err) {
 		throw {
 			code: err.code,
@@ -1217,7 +1225,6 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		// Construct mpv message to display.
 		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
-		currentSong.playlistLength = playlist.length;
 		return currentSong;
 	} catch(err) {
 		logger.error('Error selecting current song to play', {service: 'Playlist', obj: err});

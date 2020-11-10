@@ -36,10 +36,7 @@ export interface Config {
 		SeriesLanguageMode: number,
 		AuthExpireTime?: number,
 		Permissions?: {
-			AllowNicknameChange?: boolean,
-			AllowViewWhitelist?: boolean,
-			AllowViewBlacklist?: boolean,
-			AllowViewBlacklistCriterias?: boolean
+			AllowNicknameChange?: boolean
 		},
 		ShowAvatarsOnPlaylist?: boolean
 	},

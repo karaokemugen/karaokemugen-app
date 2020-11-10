@@ -41,7 +41,8 @@ SELECT tid,
 	repository,
 	problematic,
 	noLiveDownload,
-	priority
+	priority,
+	count(tid) OVER()::integer AS count
 FROM all_tags
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}

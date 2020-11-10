@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import { resolve } from 'path';
 
 import { User } from '../src/lib/types/user';
-import { allLangs,getToken, request } from './util/util';
+import { allLangs,commandBackend,getToken } from './util/util';
 
 const testUserData = {
 	login: 'BakaToTest',
@@ -16,150 +16,73 @@ describe('Users', () => {
 		token = await getToken();
 	});
 	it('Create a new user', async () => {
-		const data = testUserData;
-		return request
-			.post('/api/users')
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(200)
-			.then(res => {
-				expect(res.body.code).to.be.equal('USER_CREATED');
-			});
+		const data = await commandBackend(undefined, 'createUser', testUserData);
+		expect(data.code).to.be.equal('USER_CREATED');
 	});
 
 	it('Create new user (as admin)', async () => {
-		const data = {
+		const data = await commandBackend(token, 'createUser', {
 			login: 'BakaToTest2',
 			password: 'ilyenapas2',
 			role: 'admin'
-		};
-		return request
-			.post('/api/users')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(200)
-			.then(res => {
-				expect(res.body.code).to.be.equal('USER_CREATED');
-			});
+		});
+		expect(data.code).to.be.equal('USER_CREATED');
 	});
 
 	it('Edit your own account', async () => {
-		return request
-			.put('/api/myaccount')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.field('nickname', 'toto')
-			.attach('avatarfile', resolve(__dirname, '../assets/guestAvatars/vegeta.jpg'))
-			.expect(200)
-			.then(res => {
-				expect(res.body.code).to.be.equal('USER_EDITED');
-			});
+		const data = await commandBackend(token, 'editMyUser', {nickname: 'toto', avatar: resolve(__dirname, '../assets/guestAvatars/vegeta.jpg')});
+		expect(data.code).to.be.equal('USER_EDITED');
 	});
 
 	it('Reset password with wrong security code', async () => {
-		return request
-			.post('/api/users/BakaToTest/resetpassword')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send({ password: 'trololo' })
-			.expect(403)
-			.then(res => {
-				expect(res.body.code).to.be.equal('USER_RESETPASSWORD_WRONGSECURITYCODE');
-			});
+		const data = await commandBackend(token, 'resetUserPassword', {username: 'BakaToTest', password: 'trololo'}, true);
+		expect(data.message.code).to.be.equal('USER_RESETPASSWORD_WRONGSECURITYCODE');
 	});
 
 	it('Test short password error when resetting it', async () => {
-		const res = await request
-			.get('/api/state')
-			.set('Accept', 'application/json')
-			.expect(200);
-		const securityCode = res.body.securityCode;
-		return request
-			.post('/api/users/BakaToTest/resetpassword')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send({ password: 'trololo', securityCode: securityCode })
-			.expect(400)
-			.then(res => {
-				expect(res.body.code).to.be.equal('USER_RESETPASSWORD_ERROR');
-			});
+		const res = await commandBackend(undefined, 'getState');
+		const securityCode = res.securityCode;
+
+		const data = await commandBackend(token, 'resetUserPassword', {username: 'BakaToTest', password: 'trololo', securityCode: securityCode}, true);
+		expect(data.message.code).to.be.equal('USER_RESETPASSWORD_ERROR');
 	});
 
 	it('Reset password with right security code', async () => {
-		const res = await request
-			.get('/api/state')
-			.set('Accept', 'application/json')
-			.expect(200);
-		const securityCode = res.body.securityCode;
-		return request
-			.post('/api/users/BakaToTest/resetpassword')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send({ password: 'trololo2020', securityCode: securityCode })
-			.expect(200);
+		const data = await commandBackend(undefined, 'getState');
+		const securityCode = data.securityCode;
+		await commandBackend(token, 'resetUserPassword', {username: 'BakaToTest', password: 'trololo2020', securityCode: securityCode});
 	});
 
 	it('List users AFTER create user', async () => {
-		return request
-			.get('/api/users/')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.expect(200)
-			.then(res => {
-				expect(res.body).to.be.an('array');
-				expect(res.body.length).to.be.at.least(1);
-				expect(res.body.some((u: User) => u.login === 'BakaToTest' && u.type === 1)).to.be.true;
-				// Test all users info
-				for (const user of res.body) {
-					testUser(user);
-				}
-			});
+		const data = await commandBackend(token, 'getUsers');
+		expect(data).to.be.an('array');
+		expect(data.length).to.be.at.least(1);
+		expect(data.some((u: User) => u.login === 'BakaToTest' && u.type === 1)).to.be.true;
+		// Test all users info
+		for (const user of data) {
+			testUser(user);
+		}
 	});
 
 	it('View own user details', async () => {
-		return request
-			.get('/api/myaccount')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.expect(200)
-			.then(res => {
-				testUser(res.body, true);
-			});
+		const data = await commandBackend(token, 'getMyAccount');
+		testUser(data, true);
 	});
 
 	it('View user details', async () => {
-		return request
-			.get('/api/users/BakaToTest')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.expect(200)
-			.then(res => {
-				expect(res.body.type).to.be.equal(1);
-				testUser(res.body);
-			});
+		const data = await commandBackend(token, 'getUser', {username: 'BakaToTest'});
+		expect(data.type).to.be.equal(1);
+		testUser(data);
 	});
 
 	it('Delete an user', async () => {
-		return request
-			.delete('/api/users/BakaToTest')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(res => {
-				expect(res.body.code).to.be.equal('USER_DELETED');
-			});
+		const data = await commandBackend(token, 'deleteUser', {username: 'BakaToTest'});
+		expect(data.code).to.be.equal('USER_DELETED');
 	});
 
 	it('Delete another user', async () => {
-		return request
-			.delete('/api/users/BakaToTest2')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(res => {
-				expect(res.body.code).to.be.equal('USER_DELETED');
-			});
+		const data = await commandBackend(token, 'deleteUser', {username: 'BakaToTest2'});
+		expect(data.code).to.be.equal('USER_DELETED');
 	});
 });
 

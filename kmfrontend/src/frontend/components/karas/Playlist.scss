@@ -1,0 +1,159 @@
+@import '../../styles/variables';
+
+.playlist-main {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+	.panel {
+		flex: 1;
+		border: .5em solid darken($mugen-background, 20);
+		.playlistContainer {
+			height: calc(100% - 3em);
+		}
+	}
+	@media screen and (max-width: $mugen-breakpoint-large) {
+		width: 200%;
+		transition:transform ease .5s;
+		&[data-side="2"] {
+			transform:translate(-50%);
+		}
+		.panel {
+			height: 100%;
+		}
+		.plDashboard .plSearch {
+			flex-basis : 30%;
+		}
+		#panel2 .plSearch {
+			order: 1;
+		}
+		#panel2 .plDashboard .actionDiv {
+			order: 2;
+		}
+	}
+}
+
+// Overrides to have an axial symmetry
+#panel2 .actionDiv {
+	float: left;
+	flex-direction: row-reverse;
+}
+#panel2 .checkboxKara {
+	float: left;
+}
+
+#playlist2 .list-group-item > .infoDiv > button, .playlistContainer > #playlist1 .list-group-item > .actionDiv > button,
+#playlist1 .list-group-item > .actionDiv > .actionButtonsDiv
+{
+	float: right;
+	display: block;
+}
+
+#playlist1 .list-group-item > .infoDiv > button, .playlistContainer > #playlist2 .list-group-item > .actionDiv > button,
+#playlist2 .list-group-item > .actionDiv > .actionButtonsDiv {
+	float: left;
+	display: block;
+}
+
+.list-group-item > .contentDiv > * {
+	flex-grow: 1;
+}
+
+.playlistContainer {
+	z-index: 1;
+	height: 100%;
+	-webkit-overflow-scrolling: touch;
+	position: relative;
+	padding: 0;
+	overflow: hidden;
+	li {
+		display: block;
+	}
+}
+
+#playlist1 li.list-group-item  > .actionDiv, #playlist1 > li.list-group-item  > .actionDiv > span,
+#playlist2 li.list-group-item  > .infoDiv {
+	float: right;
+}
+
+#playlist2 li.list-group-item  > .actionDiv, #playlist2 li.list-group-item  > .actionDiv > span,
+#playlist1 li.list-group-item  > .infoDiv {
+	float: left;
+}
+
+// Hover events only for PCs
+body:not(.touch) {
+	.playlist-main .list-group-item:hover {
+		background-color: lighten($mugen-playlist-odd, 5);
+		&.dejavu {
+			background-color: lighten($mugen-playlist-dejavu-odd, 5);
+			&.list-group-item-even {
+				background-color: lighten($mugen-playlist-dejavu-even, 5);
+			}
+		}
+		&.currentlyplaying {
+			background-color: lighten($mugen-playlist-currently-playing, 5);
+		}
+		&.list-group-item-even.currentlyplaying {
+			background-color: lighten($mugen-playlist-currently-playing, 5);
+		}
+		&.list-group-item-even {
+			background-color: lighten($mugen-playlist-even, 5);
+		}
+	}
+}
+
+.playlist-main li.list-group-item.karaSuggestion {
+	background-color: #5d83778c;
+	font-size: 120%;
+	padding: 1em;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: center;
+
+	div {
+		margin-left: .25em;
+	}
+
+	a {
+		cursor: pointer;
+	}
+}
+
+.playlist-main .list-group-item.liType {
+	background-color: #607e97;
+	padding-left: 1em;
+	font-weight: bold;
+	line-height: 1.5em;
+}
+
+.playlist-main li.list-group-item.filler {
+	width: 100% !important;
+	overflow: hidden;
+	background-color: #33333391;
+}
+
+.ReactVirtualized__Grid__innerScrollContainer {
+	margin-bottom: 31px;
+}
+
+@media (max-width: $mugen-breakpoint-small) {
+	.ReactVirtualized__Grid__innerScrollContainer {
+		margin-bottom: 63px;
+	}
+}
+
+.playlist--wrapper {
+	height: 100%;
+}
+
+.playlist-dragged-item {
+	list-style: none;
+	.list-group-item {
+		background: #333;
+	}
+	.actionDiv, .infoDiv {
+		display: none;
+	}
+}

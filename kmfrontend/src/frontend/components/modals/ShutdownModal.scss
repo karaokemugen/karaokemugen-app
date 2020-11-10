@@ -1,0 +1,100 @@
+.shutdown-popup {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: .25em;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	color: #dededeed;
+	background-color: #000000c2;
+	z-index: 999999;
+	text-align: center;
+	font-size: 2.5rem;
+	text-shadow: 2px 2px 19px #e6e6e66b;
+}
+
+.shutdown-popup > .closeParent {
+	position: absolute;
+	right: .25em;
+	top: .25em;
+	z-index: 42;
+}
+
+/* shutdown popup css */
+
+.shutdown-popup-text {
+	position: relative;
+	text-align: center;
+	margin: 0;
+	padding: 0;
+	z-index: 1;
+}
+
+.noise-wrapper {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	overflow: hidden;
+	z-index: 10;
+
+	&:after {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background: radial-gradient(ellipse at center, black 0%,#000000bf 100%);
+	}
+}
+
+.noise {
+	position: absolute;
+	top: -500px;
+	right: -500px;
+	bottom: -500px;
+	left: -500px;
+	background-size: 250px 250px;
+	opacity: .17;
+	animation: noise .45s steps(5,end) infinite both;
+	background-image: url('../../../assets/noise.png');
+}
+
+@keyframes noise {
+	0% {
+		transform: translate(0px,0px); }
+	10% {
+		transform: translate(-100px, 100px);
+	}
+	20% {
+		transform: translate(150px, -100px);
+	}
+	30% {
+		transform: translate(-100px,100px);
+	}
+	40% {
+		transform: translate(100px, -150px);
+	}
+	50% {
+		transform: translate(-100px, 200px);
+	}
+	60% {
+		transform: translate(-200px, -100px);
+	}
+	70% {
+		transform: translate(50px, 100px);
+	}
+	80% {
+		transform: translate(100px, -150px);
+	}
+	90% {
+		transform: translate(0px, 200px);
+	}
+	100% {
+		transform: translate(-100px, 100px);
+	}
+}

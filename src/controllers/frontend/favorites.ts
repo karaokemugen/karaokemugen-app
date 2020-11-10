@@ -1,20 +1,20 @@
-import { Router } from 'express';
+import { Socket } from 'socket.io';
 
+import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { addToFavorites, createAutoMix, deleteFavorites, exportFavorites, getFavorites, importFavorites } from '../../services/favorites';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin, requireAuth, requireRegularUser,requireValidUser, updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { runChecklist } from '../middlewares';
 
-export default function favoritesController(router: Router) {
+export default function favoritesController(router: SocketIOApp) {
 
-	router.route('/automix')
+	router.route('createAutomix', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /automix Generate a automix playlist
- * @apiName PostMix
+ * @api {post} Generate a automix playlist
+ * @apiName createAutomix
  * @apiGroup Favorites
- * @apiVersion 3.1.0
+ * @apiVersion 5.0.0
  * @apiPermission admin
  *
  * @apiHeader authorization Auth token received from logging in
@@ -33,36 +33,34 @@ export default function favoritesController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 404 Not found
  */
-
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			const validationErrors = check(req.body, {
-				users: {presence: {allowEmpty: false}},
-				duration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
-			});
-			if (!validationErrors) {
-				// No errors detected
-				try {
-					const data = await createAutoMix({
-						duration: +req.body.duration,
-						users: req.body.users
-					}, req.authToken.username);
-					res.status(201).json(data);
-				} catch(err) {
-					const code = 'AUTOMIX_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(err.msg || code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			users: {presence: {allowEmpty: false}},
+			duration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
 		});
-	router.route('/favorites')
+		if (!validationErrors) {
+			// No errors detected
+			try {
+				return await createAutoMix({
+					duration: +req.body?.duration,
+					users: req.body?.users
+				}, req.token.username);
+			} catch(err) {
+				const code = 'AUTOMIX_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('getFavorites', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /favorites View own favorites
- * @apiName GetFavorites
- * @apiVersion 3.1.0
+ * @api {get} View own favorites
+ * @apiName getFavorites
+ * @apiVersion 5.0.0
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -104,26 +102,26 @@ export default function favoritesController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappLimited,  requireValidUser, requireRegularUser, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				const karas = await getFavorites({
-					username: req.authToken.username,
-					filter: req.query.filter,
-					lang: req.lang,
-					from: +req.query.from || 0,
-					size: +req.query.size || 9999999
-				});
-				res.json(karas);
-			} catch(err) {
-				const code = 'FAVORITES_VIEW_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'user', 'limited');
+		try {
+			return await getFavorites({
+				username: req.token.username,
+				filter: req.body?.filter,
+				lang: req.langs,
+				from: +req.body?.from || 0,
+				size: +req.body?.size || 9999999
+			});
+		} catch(err) {
+			const code = 'FAVORITES_VIEW_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('addFavorites', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /favorites Add karaoke to your favorites
- * @apiName PostFavorites
- * @apiVersion 3.1.0
+ * @api {post} Add karaoke to your favorites
+ * @apiName addFavorites
+ * @apiVersion 5.0.0
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -140,29 +138,29 @@ export default function favoritesController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireRegularUser, updateUserLoginTime, async (req: any, res: any) => {
-			const validationErrors = check(req.body, {
-				kid: {uuidArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await addToFavorites(req.authToken.username, req.body.kid);
-					res.status(200).json();
-				} catch(err) {
-					const code = 'FAVORITES_ADDED_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
+		await runChecklist(socket, req, 'user', 'limited');
+		const validationErrors = check(req.body, {
+			kid: {uuidArrayValidator: true}
+		});
+		if (!validationErrors) {
+			try {
+				return await addToFavorites(req.token.username, req.body?.kid);
+			} catch(err) {
+				const code = 'FAVORITES_ADDED_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
 			}
-		})
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('deleteFavorites', async (socket: Socket, req: APIData) => {
 	/**
- * @api {delete} /favorites Delete karaoke from your favorites
- * @apiName DeleteFavorites
- * @apiVersion 3.1.0
+ * @api {delete} Delete karaoke from your favorites
+ * @apiName deleteFavorites
+ * @apiVersion 5.0.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -179,40 +177,34 @@ export default function favoritesController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.delete(getLang, requireAuth, requireWebappLimited, requireValidUser, requireRegularUser, updateUserLoginTime, async (req: any, res: any) => {
-			// Delete kara from favorites
-			// Deletion is through kara ID.
-			const validationErrors = check(req.body, {
-				kid: {uuidArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await deleteFavorites(req.authToken.username, req.body.kid );
-					res.status(200).json();
-				} catch(err) {
-					const code = 'FAVORITES_DELETED_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			}
+		await runChecklist(socket, req, 'user', 'limited');
+		// Delete kara from favorites
+		// Deletion is through kara ID.
+		const validationErrors = check(req.body, {
+			kid: {uuidArrayValidator: true}
 		});
-	router.route('/favorites/export')
+		if (!validationErrors) {
+			try {
+				return await deleteFavorites(req.token.username, req.body?.kid );
+			} catch(err) {
+				const code = 'FAVORITES_DELETED_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		}
+	});
+	router.route('exportFavorites', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /favorites/export Export favorites
+ * @api {get} Export favorites
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
- * @apiName getFavoritesExport
- * @apiVersion 3.1.0
+ * @apiName exportFavorites
+ * @apiVersion 5.0.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
  * @apiHeader authorization Auth token received from logging in
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {
- *   "favorites": {
- * 		<See admin/playlists/[id]/export object>
- *   }
- * }
  * @apiError FAVORITES_EXPORTED_ERROR Unable to export favorites
  *
  * @apiErrorExample Error-Response:
@@ -223,22 +215,21 @@ export default function favoritesController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 404 Not found
  */
-		.get(getLang, requireAuth, requireValidUser, requireRegularUser, updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
-			// Returns the playlist and its contents in an exportable format (to save on disk)
-			try {
-				const favorites = await exportFavorites(req.authToken.username);
-				res.json(favorites);
-			} catch(err) {
-				const code = 'FAVORITES_EXPORTED_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/favorites/import')
+		await runChecklist(socket, req, 'user', 'limited');
+		// Returns the playlist and its contents in an exportable format (to save on disk)
+		try {
+			return await exportFavorites(req.token.username);
+		} catch(err) {
+			const code = 'FAVORITES_EXPORTED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('importFavorites', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /favorites/import Import favorites
- * @apiName postFavoritesImport
- * @apiVersion 3.1.0
+ * @api {post} Import favorites
+ * @apiName importFavorites
+ * @apiVersion 5.0.0
  * @apiGroup Favorites
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -254,23 +245,23 @@ export default function favoritesController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 400 Bad Request
  */
-		.post(getLang, requireAuth, requireValidUser, requireRegularUser,updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
-			const validationErrors = check(req.body, {
-				favorites: {isJSON: true}
-			});
-			if (!validationErrors) {
-				try {
-					await importFavorites(JSON.parse(req.body.favorites), req.authToken.username);
-					res.status(200).json(APIMessage('FAVORITES_IMPORTED'));
-				} catch(err) {
-					const code = 'FAVORITES_IMPORTED_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req, 'user', 'limited');
+		const validationErrors = check(req.body, {
+			favorites: {isJSON: true}
 		});
+		if (!validationErrors) {
+			try {
+				await importFavorites(JSON.parse(req.body?.favorites), req.token.username);
+				return APIMessage('FAVORITES_IMPORTED');
+			} catch(err) {
+				const code = 'FAVORITES_IMPORTED_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
 }

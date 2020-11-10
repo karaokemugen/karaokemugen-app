@@ -1,20 +1,19 @@
-import { Router } from 'express';
+import { Socket } from 'socket.io';
 
-import { getConfig } from '../../lib/utils/config';
+import { APIData } from '../../lib/types/api';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { addBlacklistCriteria, addSet, copySet, deleteBlacklistCriteria, editSet, emptyBlacklistCriterias, exportSet, getAllSets, getBlacklist, getBlacklistCriterias, getSet, importSet,removeSet, setSetCurrent } from '../../services/blacklist';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { runChecklist } from '../middlewares';
 
-export default function blacklistController(router: Router) {
-	router.route('/blacklist/set/:set_id([0-9]+)/criterias/empty')
+export default function blacklistController(router: SocketIOApp) {
+	router.route('emptyBLCSet', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /blacklist/set/:set_id/criterias/empty Empty list of blacklist criterias
- * @apiName PutEmptyBlacklist
- * @apiVersion 3.1.0
+ * @api {put} Empty list of blacklist criterias
+ * @apiName emptyBLCSet
+ * @apiVersion 5.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -29,22 +28,22 @@ export default function blacklistController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 		// Empty blacklist criterias
-			try {
-				await emptyBlacklistCriterias(req.params.set_id);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'BLC_EMPTY_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
-	router.route('/blacklist')
+		try {
+			await runChecklist(socket, req, 'admin');
+			await emptyBlacklistCriterias(req.body.set_id);
+			return;
+		} catch(err) {
+			const code = 'BLC_EMPTY_ERROR';
+			errMessage(code, err);
+			throw {code: 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getBlacklist', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {get} /blacklist Get blacklist
-	 * @apiName GetBlacklist
-	 * @apiVersion 3.1.0
+	 * @api {get} Get blacklist
+	 * @apiName getBlacklist
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -92,31 +91,30 @@ export default function blacklistController(router: Router) {
  	 * @apiErrorExample Error-Response:
  	 * HTTP/1.1 403 Forbidden
  	 */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			//Get list of blacklisted karas IF the settings allow public to see it
-			if (getConfig().Frontend.Permissions.AllowViewBlacklist || req.authToken.role === 'admin') {
-				try {
-					const karas = await getBlacklist({
-						filter: req.query.filter,
-						lang: req.lang,
-						from: +req.query.from || 0,
-						size: +req.query.size || 999999
-					});
-					res.json(karas);
-				} catch(err) {
-					const code = 'BL_VIEW_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				res.status(403).json(APIMessage('BL_VIEW_FORBIDDEN'));
+		//Get list of blacklisted karas IF the settings allow public to see it
+		await runChecklist(socket, req, 'guest', 'limited');
+		if (req.token.role === 'admin') {
+			try {
+				return await getBlacklist({
+					filter: req.body?.filter,
+					lang: req.langs,
+					from: +req.body?.from || 0,
+					size: +req.body?.size || 999999
+				});
+			} catch(err) {
+				const code = 'BL_VIEW_ERROR';
+				errMessage(code, err);
+				throw {code: 500, message: APIMessage(code)};
 			}
-		});
-	router.route('/blacklist/set/:set_id([0-9]+)/criterias')
+		} else {
+			throw {code: 403, message: APIMessage('BL_VIEW_FORBIDDEN')};
+		}
+	});
+	router.route('getBLCSet', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {get} /blacklist/set/:set_id/criterias Get list of blacklist criterias
-	 * @apiName GetBlacklistCriterias
-	 * @apiVersion 3.1.0
+	 * @api {get} Get list of blacklist criterias
+	 * @apiName getBLCSet
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -147,24 +145,24 @@ export default function blacklistController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * "BLC_VIEW_ERROR"
 	 */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias || req.authToken.role === 'admin') {
-				try {
-					const blc = await getBlacklistCriterias(req.params.set_id);
-					res.json(blc);
-				} catch(err) {
-					const code = 'BLC_VIEW_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				res.status(403).json(APIMessage('BLC_VIEW_FORBIDDEN'));
+		await runChecklist(socket, req, 'guest', 'limited');
+		if (req.token.role === 'admin') {
+			try {
+				return await getBlacklistCriterias(req.body.set_id);
+			} catch(err) {
+				const code = 'BLC_VIEW_ERROR';
+				errMessage(code, err);
+				throw {code: 500, message: APIMessage(code)};
 			}
-		})
+		} else {
+			throw {code: 403, message: APIMessage('BLC_VIEW_FORBIDDEN')};
+		}
+	});
+	router.route('createBLC', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {post} /blacklist/set/:set_id/criterias Add a blacklist criteria
-	 * @apiName PostBlacklistCriterias
-	 * @apiVersion 3.1.0
+	 * @api {post} Add a blacklist criteria
+	 * @apiName createBLC
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -185,34 +183,34 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 404 Not found
 	 */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			//Add blacklist criteria
-			const validationErrors = check(req.body, {
-				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
-				blcriteria_value: {presence: {allowEmpty: false}}
-			});
-			if (!validationErrors) {
-				try {
-					await addBlacklistCriteria(req.body.blcriteria_type, req.body.blcriteria_value, req.params.set_id);
-					res.status(201).json();
-				} catch(err) {
-					const code = 'BLC_ADD_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
-
+		//Add blacklist criteria
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
+			blcriteria_value: {presence: {allowEmpty: false}}
 		});
+		if (!validationErrors) {
+			try {
+				await addBlacklistCriteria(req.body.blcriteria_type, req.body.blcriteria_value, req.body.set_id);
+				return;
+			} catch(err) {
+				const code = 'BLC_ADD_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
 
-	router.route('/blacklist/set/:set_id([0-9]+)/criterias/:blc_id([0-9]+)')
+	});
+
+	router.route('deleteBLC', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {delete} /blacklist/set/:set_id/criterias/:blc_id Delete a blacklist criteria
-	 * @apiName DeleteBlacklistCriterias
-	 * @apiVersion 3.1.0
+	 * @api {delete} deleteBLC Delete a blacklist criteria
+	 * @apiName deleteBLC
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -232,21 +230,21 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 404 Not found
 	 */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			try {
-				await deleteBlacklistCriteria(req.params.blc_id, req.params.set_id);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'BLC_DELETE_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/blacklist/set/:set_id([0-9]+)')
+		await runChecklist(socket, req);
+		try {
+			await deleteBlacklistCriteria(req.body.blc_id, req.body.set_id);
+			return;
+		} catch(err) {
+			const code = 'BLC_DELETE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getBLCSetInfo', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {get} /blacklist/set/:set_id Get BLC Set info
-	 * @apiName GetBLCSetInfo
-	 * @apiVersion 3.3.0
+	 * @api {get} Get BLC Set info
+	 * @apiName getBLCSetInfo
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -265,20 +263,20 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 404 Internal Server Error
 	 */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			try {
-				const set = await getSet(req.params.set_id);
-				res.status(200).json(set);
-			} catch(err) {
-				const code = 'BLC_SET_GET_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req);
+		try {
+			return await getSet(req.body.set_id);
+		} catch(err) {
+			const code = 'BLC_SET_GET_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('deleteBLCSet', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {delete} /blacklist/set/:set_id Delete BLC Set info
-	 * @apiName DeleteBLCSet
-	 * @apiVersion 3.3.0
+	 * @api {delete} deleteBLCSet Delete BLC Set info
+	 * @apiName deleteBLCSet
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -291,20 +289,21 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 404 Not found
 	 */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			try {
-				await removeSet(req.params.set_id);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'BLC_SET_DELETE_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
-		/**
-	 * @api {put} /blacklist/set/:set_id Update a BLC Set's information
-	 * @apiName PutBLCSet
-	 * @apiVersion 3.3.0
+		await runChecklist(socket, req);
+		try {
+			await removeSet(req.body.set_id);
+			return;
+		} catch(err) {
+			const code = 'BLC_SET_DELETE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('editBLCSet', async (socket: Socket, req: APIData) => {
+	/**
+	 * @api {put} Update a BLC Set's information
+	 * @apiName editBLCSet
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -320,38 +319,38 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 404 Not Found
 	 */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
 		// Update playlist info
-			const validationErrors = check(req.body, {
-				name: {presence: {allowEmpty: false}}
-			});
-			if (!validationErrors) {
-			// No errors detected
-				req.body.name = unescape(req.body.name.trim());
-
-				//Now we add playlist
-				try {
-					await editSet({
-						blc_set_id: req.params.set_id,
-						...req.body
-					});
-					res.status(200).json();
-				} catch(err) {
-					const code = 'BLC_SET_UPDATE_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			name: {presence: {allowEmpty: false}}
 		});
-	router.route('/blacklist/set')
+		if (!validationErrors) {
+		// No errors detected
+			req.body.name = unescape(req.body.name.trim());
+
+			//Now we add playlist
+			try {
+				await editSet({
+					blc_set_id: req.body.set_id,
+					...req.body
+				});
+				return;
+			} catch(err) {
+				const code = 'BLC_SET_UPDATE_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+		// Errors detected
+		// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('getBLCSets', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {get} /blacklist/set Get all BLC Sets
-	 * @apiName GetBLCSetsInfo
-	 * @apiVersion 3.3.0
+	 * @api {get} Get all BLC Sets
+	 * @apiName getBLCSets
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -363,24 +362,24 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			if (getConfig().Frontend.Permissions.AllowViewBlacklistCriterias || req.authToken.role === 'admin') {
-				try {
-					const sets = await getAllSets();
-					res.status(200).json(sets);
-				} catch(err) {
-					const code = 'BLC_SET_GET_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				res.status(403).json(APIMessage('BLC_VIEW_FORBIDDEN'));
+		await runChecklist(socket, req, 'guest');
+		if (req.token.role === 'admin') {
+			try {
+				return await getAllSets();
+			} catch(err) {
+				const code = 'BLC_SET_GET_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
 			}
-		})
-		/**
-	 * @api {post} /blacklist/set Create a BLC Set
-	 * @apiName PostBLCSet
-	 * @apiVersion 3.3.0
+		} else {
+			throw {code: 403, message: APIMessage('BLC_VIEW_FORBIDDEN')};
+		}
+	});
+	router.route('createBLCSet', async (socket: Socket, req: APIData) => {
+	/**
+	 * @api {post} Create a BLC Set
+	 * @apiName createBLCSet
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -395,41 +394,41 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			// Add playlist
-			const validationErrors = check(req.body, {
-				name: {presence: {allowEmpty: false}},
-				flag_current: {inclusion: bools}
-			});
-			if (!validationErrors) {
-				// No errors detected
-				req.body.name = unescape(req.body.name.trim());
-
-				//Now we add playlist
-				try {
-					const id = await addSet({
-						flag_current: req.body.flag_current,
-						name: req.body.name,
-						created_at: null,
-						modified_at: null,
-					});
-					res.status(201).json({id: id});
-				} catch(err) {
-					const code = 'BLC_SET_CREATE_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		// Add playlist
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			name: {presence: {allowEmpty: false}},
+			flag_current: {inclusion: bools}
 		});
-	router.route('/blacklist/set/:set_id([0-9]+)/setCurrent')
+		if (!validationErrors) {
+			// No errors detected
+			req.body.name = unescape(req.body.name.trim());
+
+			//Now we add playlist
+			try {
+				const id = await addSet({
+					flag_current: req.body.flag_current,
+					name: req.body.name,
+					created_at: null,
+					modified_at: null,
+				});
+				return {id: id};
+			} catch(err) {
+				const code = 'BLC_SET_CREATE_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('setCurrentBLCSet', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /blacklist/set/:set_id/setCurrent Set BLC Set to current
- * @apiName PutSetCurrentSet
- * @apiVersion 3.3.0
+ * @api {put} Set BLC Set to current
+ * @apiName setCurrentBLCSet
+ * @apiVersion 5.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -443,21 +442,21 @@ export default function blacklistController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 404 Not found
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			try {
-				await setSetCurrent(req.params.set_id);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'BLC_SET_CURRENT_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/blacklist/set/criterias/copy')
+		await runChecklist(socket, req);
+		try {
+			await setSetCurrent(req.body.set_id);
+			return;
+		} catch(err) {
+			const code = 'BLC_SET_CURRENT_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('copyBLCs', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {post} /blacklist/set/criterias/copy Copy BLCs from one set to the other
-	 * @apiName PostCopyBLCs
-	 * @apiVersion 3.3.0
+	 * @api {post} Copy BLCs from one set to the other
+	 * @apiName copyBLCs
+	 * @apiVersion 5.0.0
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -472,22 +471,22 @@ export default function blacklistController(router: Router) {
 	 * @apiErrorExample Error-Response:
  	 * HTTP/1.1 404 Not Found
 	 */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			try {
-				await copySet(req.body.fromSet_id, req.body.toSet_id);
-				res.status(200).json(APIMessage('BLC_COPIED'));
-			} catch(err) {
-				const code = 'BLC_COPY_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/blacklist/set/:set_id([0-9]+)/export')
+		await runChecklist(socket, req);
+		try {
+			await copySet(req.body.fromSet_id, req.body.toSet_id);
+			return APIMessage('BLC_COPIED');
+		} catch(err) {
+			const code = 'BLC_COPY_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('exportBLCSet', async (socket: Socket, req: APIData) => {
 	/**
-		 * @api {get} /blacklist/set/:set_id/export Export a BLC Set ID
+		 * @api {get} Export a BLC Set ID
 		 * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
-		 * @apiName getBLCSetExport
-		 * @apiVersion 3.3.0
+		 * @apiName exportBLCSet
+		 * @apiVersion 5.0.0
 		 * @apiGroup Blacklist
 		 * @apiPermission admin
 		 * @apiHeader authorization Auth token received from logging in
@@ -521,22 +520,21 @@ export default function blacklistController(router: Router) {
 		 * @apiErrorExample Error-Response:
  		 * HTTP/1.1 404 Not Found
 		 */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			// Returns the BLC Set and its contents in an exportable format (to save on disk)
-			try {
-				const blcset = await exportSet(req.params.set_id);
-				res.status(200).json(blcset);
-			} catch(err) {
-				const code = 'BLC_SET_EXPORT_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/blacklist/set/import')
+		// Returns the BLC Set and its contents in an exportable format (to save on disk)
+		await runChecklist(socket, req);
+		try {
+			return await exportSet(req.body.set_id);
+		} catch(err) {
+			const code = 'BLC_SET_EXPORT_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('importBLCSet', async (socket: Socket, req: APIData) => {
 	/**
-		 * @api {post} /blacklist/set/import Import a BLC Set
-		 * @apiName postBLCSetImport
-		 * @apiVersion 3.3.0
+		 * @api {post} Import a BLC Set
+		 * @apiName importBLCSet
+		 * @apiVersion 5.0.0
 		 * @apiGroup Blacklist
 		 * @apiPermission admin
 		 * @apiHeader authorization Auth token received from logging in
@@ -562,31 +560,31 @@ export default function blacklistController(router: Router) {
 		 *   "message": "No header section"
 		 * }
 		 */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			const validationErrors = check(req.body, {
-				blcSet: {isJSON: true}
-			});
-			if (!validationErrors) {
-				try {
-					const id = await importSet(JSON.parse(req.body.blcSet));
-					const response = {
-						message: 'BLC Set Imported',
-						blc_set_id: id
-					};
-					res.json({
-						data: response,
-						code: 'BLC_SET_IMPORTED',
-						args: id
-					});
-				} catch(err) {
-					const code = 'BLC_SET_IMPORT_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			blcSet: {isJSON: true}
 		});
+		if (!validationErrors) {
+			try {
+				const id = await importSet(JSON.parse(req.body.blcSet));
+				const response = {
+					message: 'BLC Set Imported',
+					blc_set_id: id
+				};
+				return {
+					data: response,
+					code: 'BLC_SET_IMPORTED',
+					args: id
+				};
+			} catch(err) {
+				const code = 'BLC_SET_IMPORT_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
 }

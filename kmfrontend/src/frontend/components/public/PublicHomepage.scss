@@ -1,0 +1,65 @@
+@import '../../styles/variables';
+
+.home-actions {
+	display: flex;
+	flex-flow: row wrap;
+	align-items: flex-start;
+	> .subtitle {
+		width: 100%;
+		font-size: 2em;
+		text-align: center;
+		margin: .5em 0;
+		@media screen and (max-width: $mugen-breakpoint-large) {
+			text-align: unset;
+		}
+	}
+	> .action {
+		width: 50%;
+		text-align: center;
+		@media screen and (max-width: $mugen-breakpoint-large) {
+			width: 100%;
+			text-align: unset;
+		}
+		> i {
+			margin-right: .25em;
+		}
+		flex-shrink: 0;
+		background: none;
+		border: none;
+		cursor: pointer;
+		color: unset;
+		text-decoration: unset;
+		font-size: 1.25em;
+		margin: .5em 0;
+		transition: color ease-out 200ms;
+		font-family: inherit;
+		@each $name, $color in $mugen-colors {
+			&.#{$name} {
+				&:hover, &:focus {
+					color: saturate(lighten($color, 25), 10);
+				}
+				&.big {
+					color: saturate(lighten($color, 10), 20);
+				}
+				> i {
+					color: saturate(lighten($color, 10), 20);
+				}
+			}
+		}
+		&.big {
+			width: 100%;
+			font-size: 1.75em;
+		}
+		&:last-child {
+			margin-bottom: 3em;
+		}
+	}
+}
+
+.hello-bar {
+	> span:first-child {
+		font-size: 2em;
+		font-weight: bold;
+	}
+	margin-bottom: 1em;
+}
