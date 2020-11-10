@@ -304,6 +304,12 @@ export const testDownloads = [
 	},
 ];
 
+export const webappModes = Object.freeze({
+	closed: 0,
+	limited: 1,
+	open: 2
+});
+
 export const logo = `
  _  __                  _         __  __
 | |/ /__ _ _ _ __ _ ___| |_____  |  \\/  |_  _ __ _ ___ _ _

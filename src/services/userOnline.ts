@@ -30,8 +30,9 @@ export async function remoteCheckAuth(instance: string, token: string) {
 	}
 }
 
+
 /** Function called when you enter a login/password and login contains an @. We're checking login/password pair against KM Server  */
-export async function remoteLogin(username: string, password: string): Promise<Token> {
+export async function remoteLogin(username: string, password: string): Promise<string> {
 	const [login, instance] = username.split('@');
 	try {
 		const res = await HTTP.post(`https://${instance}/api/auth/login`, {
@@ -40,17 +41,14 @@ export async function remoteLogin(username: string, password: string): Promise<T
 				password: password
 			}
 		});
-		return JSON.parse(res.body);
+		const body = JSON.parse(res.body);
+		return body.token;
 	} catch(err) {
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
 		if (err.statusCode === 401) throw 'Unauthorized';
 		logger.debug(`Got error when connectiong user ${username}`, {service: 'RemoteUser', obj: err});
-		return {
-			token: null,
-			role: null,
-			username: null
-		};
+		return null;
 	}
 }
 
@@ -173,16 +171,16 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 }
 
 /** Login as online user on KM Server and fetch profile data, avatar, favorites and such and upserts them in local database */
-export async function fetchAndUpdateRemoteUser(username: string, password: string, onlineToken?: Token): Promise<User> {
+export async function fetchAndUpdateRemoteUser(username: string, password: string, onlineToken?: string): Promise<User> {
 	// We try to login to KM Server using the provided login password.
 	// If login is successful, we get user profile data and create user if it doesn't exist already in our local database.
 	// If it exists, we edit the user instead.
 	if (!onlineToken) onlineToken = await remoteLogin(username, password);
 	// if OnlineToken is empty, it means we couldn't fetch user data, let's not continue but don't throw an error
-	if (onlineToken.token) {
+	if (onlineToken) {
 		let remoteUser: User;
 		try {
-			remoteUser = await getRemoteUser(username, onlineToken.token);
+			remoteUser = await getRemoteUser(username, onlineToken);
 		} catch(err) {
 			sentry.error(err);
 			throw err;
@@ -232,7 +230,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			);
 			user = response.user;
 		}
-		user.onlineToken = onlineToken.token;
+		user.onlineToken = onlineToken;
 		return user;
 	} else {
 		//Onlinetoken was not provided : KM Server might be offline
@@ -242,6 +240,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		return user;
 	}
 }
+
 
 export const usersFetched = new Set();
 
@@ -260,7 +259,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	await HTTP(`https://${instance}/api/users`, {
 		method: 'DELETE',
 		headers: {
-			authorization: onlineToken.token
+			authorization: onlineToken
 		}
 	});
 	// Renaming user locally
@@ -286,8 +285,8 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 	user.password = password;
 	try {
 		await createRemoteUser(user);
-		const remoteUser = await remoteLogin(user.login, password);
-		upsertRemoteToken(user.login, remoteUser.token);
+		const remoteUserToken = await remoteLogin(user.login, password);
+		upsertRemoteToken(user.login, remoteUserToken);
 		await editUser(token.username, user, null, token.role, {
 			editRemote: false,
 			renameUser: true
@@ -295,7 +294,7 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 		await convertToRemoteFavorites(user.login);
 		emitWS('userUpdated', user.login);
 		return {
-			onlineToken: remoteUser.token,
+			onlineToken: remoteUserToken,
 			token: createJwtToken(user.login, token.role)
 		};
 	} catch(err) {

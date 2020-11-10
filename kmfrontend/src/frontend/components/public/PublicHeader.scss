@@ -1,0 +1,101 @@
+@import '../../styles/variables';
+@import '../../styles/components/blurred-bg';
+
+header.menu-container {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	padding: 1em 0;
+	background-color: $mugen-topbar-background;
+	filter: drop-shadow(0px 0px 4px $mugen-topbar-background);
+	z-index: 999;
+	--img: none;
+	@include blurred-bg;
+	> .menu {
+		display: flex;
+		justify-content: space-between;
+		height: 3em;
+		margin: 0 .5em;
+		img {
+			width: auto;
+			height: auto;
+			max-height: 3em;
+			border-radius: 10%;
+			filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.75));
+		}
+
+		.profile-btn {
+			display: flex;
+		}
+
+		.dropdown-container {
+			position: relative;
+			> .closeHandler {
+				display: none;
+				&.active {
+					display: initial;
+				}
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 100vh;
+				width: 100vw;
+			}
+		}
+
+		.dropdown {
+			position: absolute;
+			display: none;
+			&.active {
+				display: flex;
+			}
+			flex-direction: column;
+			background-color: black;
+			left: auto;
+			right: 0;
+			top: 100%;
+			width: max-content;
+			padding: 1em;
+			margin-top: 1em;
+			border-radius: 10%;
+			z-index: 20;
+
+			> div.header {
+				font-size: 1.5em;
+				font-weight: bold;
+			}
+
+			a {
+				color: white;
+				text-decoration: none;
+			}
+
+			.info {
+				display: flex;
+				font-weight: bold;
+				> .data {
+					color: gold;
+				}
+			}
+
+			> .link {
+				padding: .5em;
+				> a {
+					font-weight: bold;
+					font-size: 1.25em;
+				}
+			}
+		}
+	}
+}
+
+@media screen and (min-width: $mugen-breakpoint-large) {
+	header.menu-container > .menu {
+		width: 75%;
+		margin: .5em auto;
+		height: 4em;
+		img {
+			max-height: 4em;
+		}
+	}
+}

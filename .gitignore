@@ -30,13 +30,12 @@ mpv.log
 karaokemugen.pgdump
 karaokemugen.sql
 
-# System panel
-systempanel/node_modules
-systempanel/coverage
-react_client
-react_systempanel/
-
-# Frontend
+# kmfrontend
+kmfrontend/node_modules
+kmfrontend/coverage
+# Legacy frontends
+/frontend/
+/systempanel/
 .cache/
 build/
 

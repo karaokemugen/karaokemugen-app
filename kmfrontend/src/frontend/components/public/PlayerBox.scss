@@ -1,0 +1,135 @@
+@import '../../styles/variables';
+@import '../../styles/components/blurred-bg';
+
+.player-box {
+	margin: 1em 0;
+	padding: 1em;
+	display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+	position: relative;
+	align-items: stretch;
+	cursor: pointer;
+	&.fixed {
+		cursor: pointer;
+		margin: 0;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background-color: $mugen-background;
+		z-index: 99;
+		&::before {
+			border-radius: 0;
+			filter: blur(5px) contrast(75%) brightness(75%) saturate(80%);
+		}
+		.title .song {
+			font-size: 1.25em;
+		}
+	}
+	> * {
+		z-index: 10;
+	}
+	@include blurred-bg;
+	&::before {
+		z-index: 0;
+		border-radius: 15px;
+	}
+	&:hover > .first > p.next, > .first > p.next:focus {
+		color: aliceblue;
+		transform: scale(1.25);
+	}
+	> .first {
+		font-size: 1.25em;
+		font-weight: lighter;
+		@include shadow;
+		display: flex;
+		p:first-child {
+			flex-grow: 1;
+		}
+		p.next {
+			transition: color,transform ease 100ms,200ms;
+		}
+	}
+	> .title {
+		.song {
+			font-size: 2em;
+			font-weight: bold;
+			@include shadow;
+		}
+		.series {
+			font-size: 1.25em;
+			@include shadow;
+		}
+		margin-bottom: 1em;
+	}
+	> .timers {
+		display: flex;
+		justify-content: space-between;
+		flex-direction: row;
+		margin-bottom: .5em;
+		> div {
+			width: min-content;
+			@include shadow;
+		}
+	}
+	.progress-bar-container {
+		background-color: black;
+		opacity: .5;
+		height: 1em;
+		border-radius: 15px;
+		> .progress-bar {
+			height: 100%;
+			transition: width linear .5s;
+			background-color: white;
+			border-radius: inherit;
+		}
+	}
+	&.fixed {
+		.progress-bar-container {
+			position: absolute;
+			width: 100%;
+			bottom: 0;
+			left: 0;
+			border-radius: 0;
+		}
+	}
+}
+
+.lyrics-box {
+	> div:first-child {
+		text-align: center;
+		width: 100%;
+		cursor: pointer;
+		user-select: none;
+	}
+	> .lyrics {
+		width: 100%;
+		background-color: lighten($mugen-background, 10);
+		padding: 1em;
+		margin: 1em auto 2em;
+		border-radius: 15px;
+		text-align: center;
+		> div {
+			transition: font-weight, font-size, color, margin ease 100ms,100ms,100ms,100ms;
+			&.current {
+				font-size: 1.25em;
+				font-weight: bold;
+				color: gold;
+				margin: 0.25em 0;
+			}
+		}
+	}
+}
+
+@media screen and (min-width: $mugen-breakpoint-large) {
+	.lyrics-box > .lyrics {
+		width: 75%;
+	}
+	.player-box.fixed {
+		.title .song {
+			font-size: 2em;
+		}
+	}
+}
+

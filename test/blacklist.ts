@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 
 import {BLCSet, BLCSetFile} from '../src/types/blacklist';
-import { allKIDs,getToken, request } from './util/util';
+import { allKIDs,commandBackend,getToken } from './util/util';
 
 describe('Blacklist', () => {
 	let token: string;
@@ -9,17 +9,13 @@ describe('Blacklist', () => {
 	before(async () => {
 		token = await getToken();
 	});
-	it(`Add a blacklist criteria (song ${bannedKID}`, () => {
+	it(`Add a blacklist criteria (song ${bannedKID}`, async () => {
 		const data = {
 			blcriteria_type: 1001,
-			blcriteria_value: bannedKID
+			blcriteria_value: bannedKID,
+			set_id: 1
 		};
-		return request
-			.post('/api/blacklist/set/1/criterias')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(201);
+		await commandBackend(token, 'createBLC', data);
 	});
 
 	let blc_id: number;
@@ -29,44 +25,32 @@ describe('Blacklist', () => {
 	});
 
 	it('Get blacklist', async () => {
-		return requestBlacklist();
+		await requestBlacklist();
 	});
 
-	it('Delete a blacklist criteria', () => {
-		return request
-			.delete(`/api/blacklist/set/1/criterias/${blc_id}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+	it('Delete a blacklist criteria', async () => {
+		await commandBackend(token, 'deleteBLC', {blc_id, set_id:1});
 	});
 
 	it('Get list of blacklist criterias AFTER delete', async () => {
-		return requestEmptyBLC();
+		return requestEmptyBLC(1);
 	});
 
 	it('Get blacklist AFTER delete', async () => {
 		return requestEmptyBL();
 	});
 
-	it('Re-add a blacklist criteria', () => {
+	it('Re-add a blacklist criteria', async () => {
 		const data = {
-			'blcriteria_type': '1001',
-			'blcriteria_value': bannedKID
+			blcriteria_type: 1001,
+			blcriteria_value: bannedKID,
+			set_id: 1
 		};
-		return request
-			.post('/api/blacklist/set/1/criterias')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(201);
+		await commandBackend(token, 'createBLC', data);
 	});
 
-	it('Empty list of blacklist criterias', () => {
-		return request
-			.put('/api/blacklist/set/1/criterias/empty')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+	it('Empty list of blacklist criterias', async () => {
+		await commandBackend(token, 'emptyBLCSet', {set_id: 1});
 	});
 
 	it('Get blacklist AFTER empty', async () => {
@@ -74,57 +58,38 @@ describe('Blacklist', () => {
 	});
 
 	it('Get blacklist criterias AFTER empty', async () => {
-		return requestEmptyBL();
+		return requestEmptyBLC(1);
 	});
 
-	it('Re-add a blacklist criteria before testing sets', () => {
+	it('Re-add a blacklist criteria before testing sets', async () => {
 		const data = {
 			blcriteria_type: 1001,
-			blcriteria_value: bannedKID
+			blcriteria_value: bannedKID,
+			set_id: 1
 		};
-		return request
-			.post('/api/blacklist/set/1/criterias')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(201);
+		await commandBackend(token, 'createBLC', data);
 	});
 
 	let BLCSetID: number;
 	const newBLCSetName = 'Super Second set';
 
 	it('Add a blacklist set', async () => {
-		const data = {
+		const data = await commandBackend(token, 'createBLCSet', {
 			name: 'Second set'
-		};
-		return request
-			.post('/api/blacklist/set')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(201)
-			.then(res => {
-				expect(res.body.id).to.be.a('number').and.at.least(0);
-				console.log(res.body);
-				BLCSetID = res.body.id;
-			});
+		});
+		expect(data.id).to.be.a('number').and.at.least(0);
+		BLCSetID = data.id;
 	});
 
 	it('Turn blacklist set current', async () => {
-		return request
-			.put(`/api/blacklist/set/${BLCSetID}/setCurrent`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+		await commandBackend(token, 'setCurrentBLCSet', {set_id: BLCSetID});
 	});
 
 	it('Edit blacklist set', async () => {
-		return request
-			.put(`/api/blacklist/set/${BLCSetID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send({name: newBLCSetName})
-			.expect(200);
+		await commandBackend(token, 'editBLCSet', {
+			set_id: BLCSetID,
+			name: newBLCSetName
+		});
 	});
 
 	it('Get blacklist AFTER switching to an empty set', async () => {
@@ -132,61 +97,38 @@ describe('Blacklist', () => {
 	});
 
 	it('Get blacklist criterias AFTER switching to an empty set', async () => {
-		return requestEmptyBL();
+		return requestEmptyBLC(BLCSetID);
 	});
 
 	it('List all blacklist sets', async () => {
-		return request
-			.get('/api/blacklist/set')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(res => {
-				expect(res.body.length).to.be.at.least(2);
-				for (const set of res.body) {
-					testSet(set);
-				}
-				// Testing if the BLC Set we added is correct and our modifications worked
-				const set = res.body.find((s: BLCSet) => s.blc_set_id === BLCSetID);
-				expect(set.name).to.be.equal(newBLCSetName);
-				expect(set.flag_current).to.be.true;
-			});
+		const data = await commandBackend(token, 'getBLCSets');
+		expect(data.length).to.be.at.least(2);
+		for (const set of data) {
+			testSet(set);
+		}
+		// Testing if the BLC Set we added is correct and our modifications worked
+		const set = data.find((s: BLCSet) => s.blc_set_id === BLCSetID);
+		expect(set.name).to.be.equal(newBLCSetName);
+		expect(set.flag_current).to.be.true;
 	});
 
 	it('List specific blacklist set', async () => {
-		console.log(BLCSetID);
-		return request
-			.get(`/api/blacklist/set/${BLCSetID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(res => {
-				testSet(res.body);
-				// Testing if the BLC Set we added is correct and our modifications worked
-				expect(res.body.name).to.be.equal(newBLCSetName);
-				expect(res.body.flag_current).to.be.true;
-			});
+		const data = await commandBackend(token, 'getBLCSetInfo', {
+			set_id: BLCSetID
+		});
+		testSet(data);
+		// Testing if the BLC Set we added is correct and our modifications worked
+		expect(data.name).to.be.equal(newBLCSetName);
+		expect(data.flag_current).to.be.true;
 	});
 
 	it('Copy BLCs from set 1 to specific set', async () => {
-		return request
-			.post('/api/blacklist/set/criterias/copy')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send({fromSet_id: 1, toSet_id: BLCSetID})
-			.expect(200);
+		await commandBackend(token, 'copyBLCs', {fromSet_id: 1, toSet_id: BLCSetID});
 	});
 
 	it('Copy BLCs from set 1 to unknown set (should fail)', async () => {
-		return request
-			.post('/api/blacklist/set/criterias/copy')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send({fromSet_id: 1, toSet_id: 666})
-			.expect(404)
-			.then(res => {
-				expect(res.body.code).to.be.a('string').and.equal('BLC_COPY_ERROR');
-			});
+		const data = await commandBackend(token, 'copyBLCs', {fromSet_id: 1, toSet_id: 666}, true);
+		expect(data.code).to.be.equal(404);
 	});
 
 	it('Get list of blacklist criterias AFTER new set is current (should be equal to first set)', async () => {
@@ -194,137 +136,85 @@ describe('Blacklist', () => {
 	});
 
 	it('Get blacklist AFTER new set is current and has criterias', async () => {
-		return requestBlacklist();
+		await requestBlacklist();
 	});
 
 	let BLCSetExport: BLCSetFile;
 
 	it('Export blacklist set', async () => {
-		return request
-			.get('/api/blacklist/set/2/export')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(res => {
-				const setFile = res.body;
-				expect(setFile.blcSet).to.be.an('array');
-				expect(setFile.blcSet.length).to.be.at.least(1);
-				for (const blcset of setFile.blcSet) {
-					expect(blcset.blcriteria_id).to.be.a('number').and.at.least(1);
-					expect(blcset.type).to.be.a('number').and.at.least(1);
-					expect(blcset.value).to.exist;
-				}
-				expect(setFile.blcSetInfo.created_at).to.be.a('string');
-				expect(setFile.blcSetInfo.modified_at).to.be.a('string');
-				expect(setFile.blcSetInfo.name).to.be.a('string').and.equal(newBLCSetName);
-				expect(setFile.header.description).to.be.equal('Karaoke Mugen BLC Set File');
-				expect(setFile.header.version).to.be.a('number');
-				BLCSetExport = res.body;
-			});
+		const data  = await commandBackend(token, 'exportBLCSet', {set_id: 2});
+		BLCSetExport = data;
+		const setFile = data;
+		expect(setFile.blcSet).to.be.an('array');
+		expect(setFile.blcSet.length).to.be.at.least(1);
+		for (const blcset of setFile.blcSet) {
+			expect(blcset.blcriteria_id).to.be.a('number').and.at.least(1);
+			expect(blcset.type).to.be.a('number').and.at.least(1);
+			expect(blcset.value).to.exist;
+		}
+		expect(setFile.blcSetInfo.created_at).to.be.a('string');
+		expect(setFile.blcSetInfo.modified_at).to.be.a('string');
+		expect(setFile.blcSetInfo.name).to.be.a('string').and.equal(newBLCSetName);
+		expect(setFile.header.description).to.be.equal('Karaoke Mugen BLC Set File');
+		expect(setFile.header.version).to.be.a('number');
+
 	});
 
 	it('Import Blacklist Set', async () => {
 		const data = {
 			blcSet: JSON.stringify(BLCSetExport)
 		};
-		return request
-			.post('/api/blacklist/set/import')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(200);
+		await commandBackend(token, 'importBLCSet', data);
 	});
 
 	let BLCSetIDToDelete: number;
 
 	it('Add another blacklist set to delete later', async () => {
-		const data = {
+		const data = await commandBackend(token, 'createBLCSet', {
 			name: 'Delete set'
-		};
-		return request
-			.post('/api/blacklist/set')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(201)
-			.then(res => {
-				expect(res.body.id).to.be.a('number').and.at.least(0);
-				BLCSetIDToDelete = res.body.id;
-			});
+		});
+		expect(data.id).to.be.a('number').and.at.least(0);
+		BLCSetIDToDelete = data.id;
 	});
 
 	it('Delete Blacklist Set', async () => {
-		return request
-			.delete(`/api/blacklist/set/${BLCSetIDToDelete}`)
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.expect(200);
+		await commandBackend(token, 'deleteBLCSet', {set_id: BLCSetIDToDelete});
 	});
 
 	it('List all blacklist sets AFTER deleting one', async () => {
-		return request
-			.get('/api/blacklist/set')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(res => {
-				const set = res.body.find((s: BLCSet) => s.blc_set_id === BLCSetIDToDelete);
-				expect(set).to.be.undefined;
-			});
+		const data = await commandBackend(token, 'getBLCSets');
+		const set = data.find((s: BLCSet) => s.blc_set_id === BLCSetIDToDelete);
+		expect(set).to.be.undefined;
 	});
 
 	async function requestEmptyBL() {
-		return request
-			.get('/api/blacklist')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.content).to.have.lengthOf(0);
-				expect(res.body.infos.count).to.be.equal(0);
-			});
+		const data = await commandBackend(token, 'getBlacklist');
+		expect(data.content).to.have.lengthOf(0);
+		expect(data.infos.count).to.be.equal(0);
 	}
 
-	async function requestEmptyBLC() {
-		return request
-			.get('/api/blacklist/set/1/criterias')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body).to.have.lengthOf(0);
-			});
+	async function requestEmptyBLC(id: number) {
+		const data = await commandBackend(token, 'getBLCSet', {
+			set_id: id
+		});
+		expect(data).to.have.lengthOf(0);
 	}
 
 	async function requestBlacklist() {
-		return request
-			.get('/api/blacklist')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.content).to.have.lengthOf(1);
-				expect(res.body.infos.count).to.be.equal(1);
-				expect(res.body.content[0].kid).to.be.equal(bannedKID);
-			});
+		const data = await commandBackend(token, 'getBlacklist', {set_id: 1});
+		expect(data.content).to.have.lengthOf(1);
+		expect(data.infos.count).to.be.equal(1);
+		expect(data.content[0].kid).to.be.equal(bannedKID);
 	}
 
 	async function requestBlacklistCriterias(id: number) {
-		return request
-			.get(`/api/blacklist/set/${id}/criterias`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				blc_id = res.body[0].blcriteria_id.toString();
-				expect(res.body.length).to.be.at.least(1);
-				expect(res.body[0].type).to.be.equal(1001);
-				expect(res.body[0].value.kid).to.be.equal(bannedKID);
-			});
+		const data = await commandBackend(token, 'getBLCSet', {
+			set_id: id
+		});
+		blc_id = data[0].blcriteria_id.toString();
+		expect(data.length).to.be.at.least(1);
+		expect(data[0].type).to.be.equal(1001);
+		expect(data[0].value.kid).to.be.equal(bannedKID);
 	}
 
 	function testSet(set: BLCSet) {

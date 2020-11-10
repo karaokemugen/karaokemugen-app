@@ -1,27 +1,24 @@
-import { Router } from 'express';
+import { Socket } from 'socket.io';
 
 import { postSuggestionToKaraBase } from '../../lib/services/gitlab';
-import { getConfig, resolvedPathTemp } from '../../lib/utils/config';
+import { APIData } from '../../lib/types/api';
+import { getConfig } from '../../lib/utils/config';
+import { isUUID } from '../../lib/utils/validators';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { getKara, getKaraHistory, getKaraLyrics, getKaraPlayed, getKaras, getTop50 } from '../../services/kara';
+import { createKara, editKara } from '../../services/kara_creation';
+import { batchEditKaras, copyKaraToRepo, deleteKara } from '../../services/karaManagement';
+import { playSingleSong } from '../../services/karaokeEngine';
 import { addKaraToPlaylist } from '../../services/playlist';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { requireWebappLimited, requireWebappOpen } from '../middlewares/webapp_mode';
-import multer = require('multer');
-import { deleteKara } from '../../dao/kara';
-import { createKara, editKara } from '../../services/kara_creation';
-import { batchEditKaras, copyKaraToRepo } from '../../services/karaManagement';
-import { playSingleSong } from '../../services/karaokeEngine';
+import { runChecklist } from '../middlewares';
 
-export default function karaController(router: Router) {
-	const upload = multer({ dest: resolvedPathTemp()});
-
-	router.route('/karas/suggest')
+export default function karaController(router: SocketIOApp) {
+	router.route('suggestKara', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {post} /karas/suggest Suggest a new song to your karaokebase project
-	 * @apiName SuggestKara
-	 * @apiVersion 3.1.1
+	 * @api {post} Suggest a new song to your karaokebase project
+	 * @apiName suggestKara
+	 * @apiVersion 5.0.0
 	 * @apiGroup Karaokes
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -40,26 +37,26 @@ export default function karaController(router: Router) {
  	 * HTTP/1.1 403 Forbidden
 	 * {code: "GITLAB_DISABLED" }
 	 */
-		.post(requireAuth, requireValidUser, requireWebappOpen, updateUserLoginTime, async(req: any, res: any) => {
-			try {
-				if (getConfig().Gitlab.Enabled) {
-					const url = await postSuggestionToKaraBase(req.body.title, req.body.serie, req.body.type, req.body.link, req.authToken.username);
-					res.status(200).json({url: url});
-				} else {
-					res.status(405).json(APIMessage('GITLAB_DISABLED'));
-				}
-			} catch(err) {
-				const code = 'KARA_SUGGESTION_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
+		await runChecklist(socket, req, 'guest');
+		try {
+			if (getConfig().Gitlab.Enabled) {
+				const url = await postSuggestionToKaraBase(req.body.title, req.body.serie, req.body.type, req.body.link, req.token.username);
+				return {url: url};
+			} else {
+				throw APIMessage('GITLAB_DISABLED');
 			}
-		});
+		} catch(err) {
+			const code = 'KARA_SUGGESTION_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 
-	router.route('/karas')
+	router.route('getKaras', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /karas Get complete list of karaokes
- * @apiName GetKaras
- * @apiVersion 3.1.0
+ * @api {get} Get complete list of karaokes
+ * @apiName getKaras
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -103,29 +100,29 @@ export default function karaController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				const karas = await getKaras({
-					filter: req.query.filter,
-					lang: req.lang,
-					from: +req.query.from || 0,
-					size: +req.query.size || 9999999,
-					mode: req.query.searchType,
-					modeValue: req.query.searchValue,
-					token: req.authToken,
-					random: req.query.random
-				});
-				res.json(karas);
-			} catch(err) {
-				const code = 'SONG_LIST_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'open');
+		try {
+			return await getKaras({
+				filter: req.body?.filter,
+				lang: req.langs,
+				from: +req.body?.from || 0,
+				size: +req.body?.size || 9999999,
+				mode: req.body?.searchType,
+				modeValue: req.body?.searchValue,
+				token: req.token,
+				random: req.body?.random
+			});
+		} catch(err) {
+			const code = 'SONG_LIST_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('createKara', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /karas/:kid Create karaoke data
- * @apiName PostKaras
- * @apiVersion 3.1.0
+ * @api {post} Create karaoke data
+ * @apiName createKara
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -158,21 +155,21 @@ export default function karaController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: 'KARA_CREATED_ERROR'}
  */
-		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await createKara(req.body);
-				res.status(200).json(APIMessage('KARA_CREATED'));
-			} catch(err) {
-				const code = 'KARA_CREATED_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(err?.msg || code));
-			}
-		});
-	router.route('/karas/history')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await createKara(req.body);
+			return APIMessage('KARA_CREATED');
+		} catch(err) {
+			const code = 'KARA_CREATED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getKarasHistory', async (socket: Socket, req: APIData) => {
 		/**
- * @api {get} /karas/history Get all karas sorted by date played
- * @apiName GetKaraHistory
- * @apiVersion 3.1.0
+ * @api {get} Get all karas sorted by date played
+ * @apiName getKarasHistory
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -188,22 +185,21 @@ export default function karaController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "KARA_HISTORY_ERROR"}
  */
-		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) =>{
-			try {
-				const karas = await getKaraHistory();
-				res.json(karas);
-			} catch(err) {
-				const code = 'KARA_HISTORY_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
+		await runChecklist(socket, req);
+		try {
+			return await getKaraHistory();
+		} catch(err) {
+			const code = 'KARA_HISTORY_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 
-	router.route('/karas/ranking')
+	router.route('getKarasRequested', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /karas/ranking Get all karas sorted by most requested
- * @apiName GetKaraRanking
- * @apiVersion 3.1.0
+ * @api {get} Get all karas sorted by most requested
+ * @apiName getKarasRequested
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -219,22 +215,21 @@ export default function karaController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "KARA_RANKING_ERROR"}
  */
-		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) =>{
-			try {
-				const karas = await getTop50(req.authToken, req.lang);
-				res.json(karas);
-			} catch(err) {
-				const code = 'KARA_RANKING_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
+		await runChecklist(socket, req);
+		try {
+			return await getTop50(req.token, req.langs);
+		} catch(err) {
+			const code = 'KARA_RANKING_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 
-	router.route('/karas/viewcounts')
+	router.route('getKarasPlayed', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /karas/viewcounts Get all karas sorted by most played
- * @apiName GetKaraPlayed
- * @apiVersion 3.1.0
+ * @api {get} Get all karas sorted by most played
+ * @apiName getKarasPlayed
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -252,21 +247,20 @@ export default function karaController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "KARA_PLAYED_ERROR"}
  */
-		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				const karas = await getKaraPlayed(req.authToken, req.lang, +req.query.from || 0, +req.query.size || 9999999);
-				res.json(karas);
-			} catch(err) {
-				const code = 'KARA_PLAYED_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
-	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
+		await runChecklist(socket, req);
+		try {
+			return await getKaraPlayed(req.token, req.langs, +req.body.from || 0, +req.body.size || 9999999);
+		} catch(err) {
+			const code = 'KARA_PLAYED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getKara', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /karas/:kid Get song info from database
- * @apiName GetKaraInfo
- * @apiVersion 3.1.0
+ * @api {get} Get song info from database
+ * @apiName getKara
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -449,20 +443,21 @@ export default function karaController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 404 Not found
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				const kara = await getKara(req.params.kid, req.authToken);
-				res.json(kara);
-			} catch(err) {
-				const code = 'SONG_VIEW_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+			return await getKara(req.body?.kid, req.token);
+		} catch(err) {
+			const code = 'SONG_VIEW_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('deleteKara', async (socket: Socket, req: APIData) => {
 	/**
- * @api {delete} /karas/:kid Delete kara
- * @apiName DeleteKara
- * @apiVersion 3.1.0
+ * @api {delete} Delete kara
+ * @apiName deleteKara
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -476,20 +471,22 @@ export default function karaController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 404 Not found
  */
-		.delete(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await deleteKara(req.params.kid);
-				res.status(200).json(APIMessage('KARA_DELETED'));
-			} catch(err) {
-				const code = 'KARA_DELETED_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+		try {
+			await deleteKara(req.body.kid);
+			return APIMessage('KARA_DELETED');
+		} catch(err) {
+			const code = 'KARA_DELETED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('addKaraToPublicPlaylist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /karas/:kid Add karaoke to public playlist
- * @apiName PostKarasToPublicPlaylist
- * @apiVersion 4.0.0
+ * @api {post} Add karaoke to public playlist
+ * @apiName addKaraToPublicPlaylist
+ * @apiVersion 5.0.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -539,23 +536,24 @@ export default function karaController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 406 Not Acceptable
  */
-		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			// Add Kara to the playlist currently used depending on mode
-			try {
-				const data = await addKaraToPlaylist(req.params.kid, req.authToken.username);
-				res.status(201).json({
-					data: data,
-					code: 'PL_SONG_ADDED'
-				});
-			} catch(err) {
-				errMessage(err?.code, err?.message);
-				res.status(err?.code || 500).json(APIMessage(err.message, err.data?.detail));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'limited');
+		// Add Kara to the playlist currently used depending on mode
+		if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+		try {
+			return {
+				data: await addKaraToPlaylist(req.body.kid, req.token.username),
+				code: 'PL_SONG_ADDED'
+			};
+		} catch(err) {
+			errMessage(err?.code, err?.message);
+			return {code: err?.code || 500, message: APIMessage(err.message, err.data?.detail)};
+		}
+	});
+	router.route('editKara', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /karas/:kid Edit karaoke data
- * @apiName PutKaras
- * @apiVersion 3.1.0
+ * @api {put} Edit karaoke data
+ * @apiName editKara
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -588,39 +586,21 @@ export default function karaController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: 'KARA_EDITED_ERROR'}
  */
-		.put(getLang, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await editKara(req.body);
-				res.status(200).json(APIMessage('KARA_EDITED'));
-			} catch(err) {
-				const code = 'KARA_EDITED_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(err?.msg || code));
-			}
-		});
-	router.route('/karas/importfile')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await editKara(req.body);
+			return APIMessage('KARA_EDITED');
+		} catch(err) {
+			const code = 'KARA_EDITED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(err?.msg || code)};
+		}
+	});
+	router.route('getKaraLyrics', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /karas/importfile Upload media/lyrics file to server
- * @apiName importFile
- * @apiVersion 3.1.0
- * @apiGroup Karaokes
- * @apiPermission admin
- * @apiDescription API used to upload files for kara edit/creation form
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {file} file File to upload to server
- * @apiSuccess {string} originalname Original name on the user's computer
- * @apiSuccess {string} filename Name as stored on the server
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- */
-		.post(requireAuth, requireValidUser, requireAdmin, upload.single('file'), (req, res: any) => {
-			res.status(200).send(JSON.stringify(req.file));
-		});
-	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/lyrics')
-	/**
- * @api {post} /karas/:kid/lyrics Get song lyrics
- * @apiName GetKarasLyrics
- * @apiVersion 3.1.0
+ * @api {post} Get song lyrics
+ * @apiName getKaraLyrics
+ * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -641,24 +621,21 @@ export default function karaController(router: Router) {
  * HTTP/1.1 403 Forbidden
  * {code:"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"}
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				const kara = await getKaraLyrics(req.params.kid);
-				kara
-					? res.status(200)
-					: res.status(204);
-				res.json(kara);
-			} catch(err) {
-				const code = 'LYRICS_VIEW_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/copyToRepo')
+		await runChecklist(socket, req, 'guest', 'limited');
+		if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+		try {
+			return await getKaraLyrics(req.body.kid);
+		} catch(err) {
+			const code = 'LYRICS_VIEW_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('copyKaraToRepo', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /karas/:kid/copyToRepo Move song to another repository
- * @apiName PostKaraToRepo
- * @apiVersion 3.2.0
+ * @api {post} Move song to another repository
+ * @apiName copyKaraToRepo
+ * @apiVersion 5.0.0
  * @apiGroup Repositories
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -671,21 +648,22 @@ export default function karaController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "SONG_COPIED_ERROR"}
  */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireAdmin, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				await copyKaraToRepo(req.params.kid, req.body.repo);
-				res.json(APIMessage('SONG_COPIED'));
-			} catch(err) {
-				const code = 'SONG_COPIED_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/karas/:kid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/play')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+		try {
+			await copyKaraToRepo(req.body.kid, req.body.repo);
+			return APIMessage('SONG_COPIED');
+		} catch(err) {
+			const code = 'SONG_COPIED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('playKara', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {post} /karas/:kid/play Play a single song
-	 * @apiName PostKaraPlay
-	 * @apiVersion 4.0.0
+	 * @api {post} Play a single song
+	 * @apiName playKara
+	 * @apiVersion 5.0.0
 	 * @apiGroup Player
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -696,21 +674,20 @@ export default function karaController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * {code: "SONG_PLAY_ERROR"}
 	 */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireAdmin, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				await playSingleSong(req.params.kid);
-				res.json();
-			} catch(err) {
-				const code = 'SONG_PLAY_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/karas/batch')
+		await runChecklist(socket, req);
+		try {
+			return await playSingleSong(req.body.kid);
+		} catch(err) {
+			const code = 'SONG_PLAY_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('editKaras', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {put} /karas/batch Edit a batch of songs
-	 * @apiName putKarasBatch
-	 * @apiVersion 3.3.0
+	 * @api {put} Edit a batch of songs
+	 * @apiName editKaras
+	 * @apiVersion 5.0.0
 	 * @apiGroup Karas
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -724,12 +701,12 @@ export default function karaController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req: any, res: any) => {
-			try {
-				batchEditKaras(req.body.playlist_id, req.body.action, req.body.tid, req.body.type);
-				res.status(200).json();
-			} catch {
-				res.status(500).json();
-			}
-		});
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			batchEditKaras(req.body.playlist_id, req.body.action, req.body.tid, req.body.type);
+			return;
+		} catch {
+			throw {code: 500};
+		}
+	});
 }

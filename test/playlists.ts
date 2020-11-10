@@ -4,7 +4,7 @@ import sample from 'lodash.sample';
 import { uuidRegexp } from '../src/lib/utils/constants';
 import { DBPL, DBPLC } from '../src/types/database/playlist';
 import {PlaylistExport} from '../src/types/playlist';
-import { allKIDs,getToken, request, testKara } from './util/util';
+import { allKIDs,commandBackend,getToken, testKara } from './util/util';
 
 describe('Playlists', () => {
 	let playlistExport: PlaylistExport;
@@ -20,93 +20,67 @@ describe('Playlists', () => {
 	before(async () => {
 		token = await getToken();
 	});
-	it(`Add all songs to playlist ${playlistID}`, () => {
-		const data = {
+	it(`Add all songs to playlist ${playlistID}`, async () => {
+		await commandBackend(token, 'addKaraToPlaylist', {
 			kid: allKIDs,
-			requestedby: 'Test'
-		};
-		return request
-			.post(`/api/playlists/${playlistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(201);
+			requestedby: 'Test',
+			pl_id: playlistID
+		});
 	});
 
 	it(`Add karaoke ${KIDToAdd} again to playlist ${playlistID} to see if it fails`, async () => {
-		const data = {
-			kid: [KIDToAdd],
-			requestedby: 'Test'
-		};
-		return request
-			.post(`/api/playlists/${playlistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(409)
-			.then(response => {
-				expect(response.body.code).to.be.equal('PL_ADD_SONG_ERROR');
+		try {
+			await commandBackend(token, 'addKaraToPlaylist', {
+				kid: [KIDToAdd],
+				requestedby: 'Test',
+				pl_id: playlistID
 			});
+		} catch(err) {
+			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
+		}
 	});
 
 	it(`Add an unknown karaoke to playlist ${playlistID} to see if it fails`, async () => {
-		const data = {
-			kid: ['c28c8739-da02-49b4-889e-b15d1e9b2132'],
-			requestedby: 'Test'
-		};
-		return request
-			.post(`/api/playlists/${playlistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(404)
-			.then(response => {
-				expect(response.body.code).to.be.equal('PL_ADD_SONG_ERROR');
-			});
+		try {
+			await commandBackend(token, 'addKaraToPlaylist', {
+				kid: ['c28c8739-da02-49b4-889e-b15d1e9b2132'],
+				requestedby: 'Test',
+				pl_id: playlistID
+			}, true);
+		} catch(err) {
+			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
+		}
 	});
 
 	it(`Add karaoke ${KIDToAdd} to an unknown playlist to see if it fails`, async () => {
-		const data = {
-			kid: [KIDToAdd],
-			requestedby: 'Test'
-		};
-		return request
-			.post('/api/playlists/10000/karas')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(404)
-			.then(response => {
-				expect(response.body.code).to.be.equal('PL_ADD_SONG_ERROR');
-			});
+		try {
+
+			await commandBackend(token, 'addKaraToPlaylist', {
+				kid: [KIDToAdd],
+				requestedby: 'Test',
+				pl_id: 10000
+			}, true);
+		} catch(err) {
+			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
+		}
+
 	});
 
 	it('Get list of karaokes in a playlist', async () => {
-		return request
-			.get(`/api/playlists/${playlistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.content.length).to.be.at.least(1);
-				for (const plc of res.body.content) {
-					testKara(plc, {tagDetails: 'short', plc: true});
-				}
-				PLCID = res.body.content[0].playlistcontent_id;
-			});
+		const data = await commandBackend(token, 'getPlaylistContents', {pl_id: playlistID});
+		expect(data.content.length).to.be.at.least(1);
+		for (const plc of data.content) {
+			testKara(plc, {tagDetails: 'short', plc: true});
+		}
+		PLCID = data.content[0].playlistcontent_id;
 	});
 
 	it('Get specific karaoke in a playlist', async () => {
-		return request
-			.get(`/api/playlists/${playlistID}/karas/1`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				testKara(res.body, {tagDetails: 'full', plcDetail: true, plc: true});
-			});
+		const data = await commandBackend(token, 'getPLC',{
+			pl_id: playlistID,
+			plc_id: 1
+		});
+		testKara(data, {tagDetails: 'full', plcDetail: true, plc: true});
 	});
 
 	it('Create a playlist', async () => {
@@ -116,28 +90,14 @@ describe('Playlists', () => {
 			flag_public: false,
 			flag_current: false,
 		};
-		return request
-			.post('/api/playlists')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(playlist)
-			.expect('Content-Type', /json/)
-			.expect(201)
-			.then(res => {
-				newPlaylistID = +res.text;
-			});
+		const data = await commandBackend(token, 'createPlaylist', playlist);
+		console.log('newPlaylistID', newPlaylistID);
+		newPlaylistID = +data;
 	});
 
 	it('Test findPlaying without any playing song set', async () => {
-		return request
-			.get(`/api/playlists/${newPlaylistID}/findPlaying`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.index).to.be.equal(-1);
-			});
+		const data = await commandBackend(token, 'findPlayingSongInPlaylist', {pl_id: newPlaylistID});
+		expect(data.index).to.be.equal(-1);
 	});
 
 	it('Create a CURRENT playlist', async () => {
@@ -147,16 +107,8 @@ describe('Playlists', () => {
 			flag_public: false,
 			flag_current: true
 		};
-		return request
-			.post('/api/playlists')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(playlist_current)
-			.expect('Content-Type', /json/)
-			.expect(201)
-			.then(res => {
-				newCurrentPlaylistID = +res.text;
-			});
+		const data = await commandBackend(token, 'createPlaylist', playlist_current);
+		newCurrentPlaylistID = +data;
 	});
 
 	it('Create a PUBLIC playlist', async () => {
@@ -166,16 +118,8 @@ describe('Playlists', () => {
 			flag_public: true,
 			flag_current: false
 		};
-		return request
-			.post('/api/playlists')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(playlist_public)
-			.expect('Content-Type', /json/)
-			.expect(201)
-			.then(res => {
-				newPublicPlaylistID = +res.text;
-			});
+		const data = await commandBackend(token, 'createPlaylist', playlist_public);
+		newPublicPlaylistID = +data;
 	});
 
 	it('Create a CURRENT+PUBLIC playlist', async () => {
@@ -185,432 +129,238 @@ describe('Playlists', () => {
 			flag_public: true,
 			flag_current: true
 		};
-		return request
-			.post('/api/playlists')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(playlist_current)
-			.expect('Content-Type', /json/)
-			.expect(201)
-			.then(res => {
-				newCurrentPlaylistID = +res.text;
-				newPublicPlaylistID = +res.text;
-			});
+		const data = await commandBackend(token, 'createPlaylist', playlist_current);
+		newCurrentPlaylistID = +data;
+		newPublicPlaylistID = +data;
 	});
 
-	it('Copy karaokes to another playlist', () => {
-		const data = {
-			plc_id: [PLCID]
-		};
-		return request
-			.patch(`/api/playlists/${newPlaylistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(201);
+	it('Copy karaokes to another playlist', async () => {
+		await commandBackend(token, 'copyKaraToPlaylist', {
+			plc_id: [PLCID],
+			pl_id: newPlaylistID
+		});
 	});
 
 	it('Add karaoke to public playlist', async () => {
-		return request
-			.post(`/api/karas/${KIDToAdd2}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(201)
-			.then(res => {
-				expect(res.body.code).to.be.equal('PL_SONG_ADDED');
-				expect(res.body.data.kid[0]).to.be.equal(KIDToAdd2);
-			});
+		const data = await commandBackend(token, 'addKaraToPublicPlaylist', {kid: KIDToAdd2});
+		expect(data.code).to.be.equal('PL_SONG_ADDED');
+		expect(data.data.kid[0]).to.be.equal(KIDToAdd2);
 	});
 
 	it('Delete a CURRENT playlist (should fail)', async () => {
-		return request
-			.delete(`/api/playlists/${newCurrentPlaylistID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(409)
-			.then(res => {
-				expect(res.body.code).to.be.equal('PL_DELETE_ERROR');
-			});
+		const data = await commandBackend(token, 'deletePlaylist', {pl_id: newCurrentPlaylistID}, true);
+		expect(data.message.code).to.be.equal('PL_DELETE_ERROR');
 	});
 
 	it('Delete a PUBLIC playlist (should fail)', async () => {
-		return request
-			.delete(`/api/playlists/${newPublicPlaylistID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(409)
-			.then(res => {
-				expect(res.body.code).to.be.equal('PL_DELETE_ERROR');
-			});
+		const data = await commandBackend(token, 'deletePlaylist', {pl_id: newPublicPlaylistID}, true);
+		expect(data.message.code).to.be.equal('PL_DELETE_ERROR');
 	});
 
-	it('Delete karaokes from playlist', () => {
+	it('Delete karaokes from playlist', async () => {
 		const data = {
-			plc_id: [PLCID]
+			plc_id: [PLCID],
+			pl_id: newPlaylistID
 		};
-		return request
-			.delete(`/api/playlists/${newPlaylistID}/karas/`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(200);
+		await commandBackend(token, 'deleteKaraFromPlaylist', data);
 	});
 
 	it('Shuffle playlist 1', async () => {
 		// First get playlist as is
-		let playlist: DBPLC[];
-		await request
-			.get('/api/playlists/1/karas')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(res => {
-				playlist = res.body.content;
-			});
-		await request
-			.put('/api/playlists/1/shuffle')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+		let data = await commandBackend(token, 'getPlaylistContents', {pl_id: 1});
+		const playlist: DBPLC[] = data.content;
+		await commandBackend(token, 'shufflePlaylist', {pl_id: 1});
 		// Re-getting playlist to see if order changed
-		return request
-			.get('/api/playlists/1/karas')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200)
-			.then(res => {
-				const shuffledPlaylist = res.body.content;
-				expect(JSON.stringify(shuffledPlaylist)).to.not.be.equal(JSON.stringify(playlist));
-			});
+		data = await commandBackend(token, 'getPlaylistContents', {pl_id :1});
+		const shuffledPlaylist = data.content;
+		expect(JSON.stringify(shuffledPlaylist)).to.not.be.equal(JSON.stringify(playlist));
 	});
 
 	it('Export a playlist', async () => {
-		return request
-			.get('/api/playlists/1/export')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.Header.description).to.be.equal('Karaoke Mugen Playlist File');
-				expect(res.body.PlaylistContents.length).to.be.at.least(1);
-				for (const plc of res.body.PlaylistContents) {
-					expect(plc.created_at).to.be.a('string');
-					expect(plc.kid).to.be.a('string').and.match(new RegExp(uuidRegexp));
-					expect(plc.username).to.be.a('string');
-					expect(plc.nickname).to.be.a('string');
-					expect(plc.pos).to.be.a('number');
-					if (plc.flag_playing) expect(plc.flag_playing).to.be.a('boolean');
-				}
-				expect(res.body.PlaylistInformation.created_at).to.be.a('string');
-				expect(res.body.PlaylistInformation.flag_visible).to.be.a('boolean');
-				expect(res.body.PlaylistInformation.modified_at).to.be.a('string');
-				expect(res.body.PlaylistInformation.name).to.be.a('string');
-				playlistExport = res.body;
-			});
+		const data = await commandBackend(token, 'exportPlaylist', {pl_id:1});
+		expect(data.Header.description).to.be.equal('Karaoke Mugen Playlist File');
+		expect(data.PlaylistContents.length).to.be.at.least(1);
+		for (const plc of data.PlaylistContents) {
+			expect(plc.created_at).to.be.a('string');
+			expect(plc.kid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+			expect(plc.username).to.be.a('string');
+			expect(plc.nickname).to.be.a('string');
+			expect(plc.pos).to.be.a('number');
+			if (plc.flag_playing) expect(plc.flag_playing).to.be.a('boolean');
+		}
+		expect(data.PlaylistInformation.created_at).to.be.a('string');
+		expect(data.PlaylistInformation.flag_visible).to.be.a('boolean');
+		expect(data.PlaylistInformation.modified_at).to.be.a('string');
+		expect(data.PlaylistInformation.name).to.be.a('string');
+		playlistExport = data;
 	});
 
 	it('Import a playlist', async () => {
 		const data = {
 			playlist: JSON.stringify(playlistExport)
 		};
-		return request
-			.post('/api/playlists/import')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(200)
-			.then(res => {
-				expect(res.body.code).to.be.equal('PL_IMPORTED');
-				expect(res.body.data.unknownKaras).to.have.lengthOf(0);
-			});
+		const body = await commandBackend(token, 'importPlaylist', data);
+		expect(body.code).to.be.equal('PL_IMPORTED');
+		expect(body.data.unknownKaras).to.have.lengthOf(0);
 	});
 
-	it('Import a playlist Error 500', async () => {
+	it('Import a playlist (failure)', async () => {
 		const data = {
 			playlist: playlistExport.PlaylistContents
 		};
-		return request
-			.post('/api/playlists/import')
-			.set('Authorization', token)
-			.set('Accept', 'application/json')
-			.send(data)
-			.expect(500)
-			.then(res => {
-				expect(res.body.code).to.be.equal('PL_IMPORT_ERROR');
-			});
+		const body = await commandBackend(token, 'importPlaylist', data, true);
+		expect(body.message.code).to.be.equal('PL_IMPORT_ERROR');
 	});
 
-	it('Update a playlist\'s information', () => {
+	it('Update a playlist\'s information', async () => {
 		const data = {
 			name: 'new_playlist',
 			flag_visible: true,
 			pl_id: playlistID
 		};
-		return request
-			.put(`/api/playlists/${playlistID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(200);
+		await commandBackend(token, 'editPlaylist', data);
 	});
 
 	it('Get list of playlists', async () => {
-		return request
-			.get('/api/playlists')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.length).to.be.at.least(2);
-				const playlist = res.body.find((pl: DBPL) => pl.flag_current === true);
-				const playlists: DBPL[] = res.body;
-				currentPlaylistID = playlist.playlist_id;
-				for (const pl of playlists) {
-					expect(pl.created_at).to.be.a('string');
-					expect(pl.modified_at).to.be.a('string');
-					expect(pl.duration).to.be.a('number').and.at.least(0);
-					expect(pl.flag_current).to.be.a('boolean');
-					expect(pl.flag_visible).to.be.a('boolean');
-					expect(pl.flag_public).to.be.a('boolean');
-					expect(pl.karacount).to.be.a('number').and.at.least(0);
-					expect(pl.name).to.be.a('string');
-					expect(pl.playlist_id).to.be.a('number').and.at.least(0);
-					expect(pl.plcontent_id_playing).to.be.a('number').and.at.least(0);
-					expect(pl.time_left).to.be.a('number').and.at.least(0);
-					expect(pl.username).to.be.a('string');
-				}
-			});
+		const data = await commandBackend(token, 'getPlaylists');
+		expect(data.length).to.be.at.least(2);
+		const playlist = data.find((pl: DBPL) => pl.flag_current === true);
+		const playlists: DBPL[] = data;
+		currentPlaylistID = playlist.playlist_id;
+		for (const pl of playlists) {
+			expect(pl.created_at).to.be.a('string');
+			expect(pl.modified_at).to.be.a('string');
+			expect(pl.duration).to.be.a('number').and.at.least(0);
+			expect(pl.flag_current).to.be.a('boolean');
+			expect(pl.flag_visible).to.be.a('boolean');
+			expect(pl.flag_public).to.be.a('boolean');
+			expect(pl.karacount).to.be.a('number').and.at.least(0);
+			expect(pl.name).to.be.a('string');
+			expect(pl.playlist_id).to.be.a('number').and.at.least(0);
+			expect(pl.plcontent_id_playing).to.be.a('number').and.at.least(0);
+			expect(pl.time_left).to.be.a('number').and.at.least(0);
+			expect(pl.username).to.be.a('string');
+		}
 	});
 
 	it('Get current playlist information', async () => {
-		return request
-			.get(`/api/playlists/${currentPlaylistID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.flag_current).to.be.true;
-			});
+		const data = await commandBackend(token, 'getPlaylist', {pl_id: currentPlaylistID});
+		expect(data.flag_current).to.be.true;
 	});
 
 	let currentPLCID: number;
 
 	it('List contents from public playlist', async () => {
-		return request
-			.get(`/api/playlists/${newPublicPlaylistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				// We get the PLC_ID of our last karaoke, the one we just added
-				currentPLCID = res.body.content[res.body.content.length-1].playlistcontent_id;
-				expect(res.body.content.length).to.be.at.least(1);
-			});
+		const data = await commandBackend(token, 'getPlaylistContents', {pl_id: newPublicPlaylistID});
+		// We get the PLC_ID of our last karaoke, the one we just added
+		currentPLCID = data.content[data.content.length-1].playlistcontent_id;
+		expect(data.content.length).to.be.at.least(1);
 	});
 
 
-	it('Edit karaoke from playlist : flag_playing', () => {
+	it('Edit karaoke from playlist : flag_playing', async () => {
 		const data = {
-			flag_playing: true
+			flag_playing: true,
+			pl_id: newPublicPlaylistID,
+			plc_id: currentPLCID
 		};
-		return request
-			.put(`/api/playlists/${newPublicPlaylistID}/karas/${currentPLCID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(200);
+		await commandBackend(token, 'editPLC', data);
 	});
 
 	it('Test findPlaying after a playing flag is set', async () => {
-		return request
-			.get(`/api/playlists/${newPublicPlaylistID}/findPlaying`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.index).to.be.at.least(0);
-			});
+		const data = await commandBackend(token, 'findPlayingSongInPlaylist', {pl_id: newPublicPlaylistID});
+		expect(data.index).to.be.at.least(0);
 	});
 
-	it('Edit karaoke from playlist : position', () => {
-		const data = {
+	it('Edit karaoke from playlist : position', async () => {
+		await commandBackend(token, 'editPLC', {
+			pl_id: newPublicPlaylistID,
+			plc_id: currentPLCID,
 			pos: 1
-		};
-		return request
-			.put(`/api/playlists/${newPublicPlaylistID}/karas/${currentPLCID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect(200);
+		});
 	});
 
 	it('List contents from public playlist AFTER position change', async () => {
-		return request
-			.get(`/api/playlists/${newPublicPlaylistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				// Our PLCID should be in first position now
-				expect(res.body.content[0].playlistcontent_id).to.be.equal(currentPLCID);
-				expect(res.body.content[0].flag_playing).to.be.true;
-			});
+		const data = await commandBackend(token, 'getPlaylistContents', {pl_id: newPublicPlaylistID});
+		// Our PLCID should be in first position now
+		expect(data.content[0].playlistcontent_id).to.be.equal(currentPLCID);
+		expect(data.content[0].flag_playing).to.be.true;
 	});
 
 	it('Get playlist information AFTER new flag_playing', async () => {
-		return request
-			.get(`/api/playlists/${newPublicPlaylistID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.plcontent_id_playing).to.be.equal(currentPLCID);
-			});
+		const data = await commandBackend(token, 'getPlaylist', {pl_id: newPublicPlaylistID});
+		expect(data.plcontent_id_playing).to.be.equal(currentPLCID);
 	});
 
-	it('Set playlist to current', () => {
-		return request
-			.put(`/api/playlists/${playlistID}/setCurrent`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+	it('Set playlist to current', async () => {
+		await commandBackend(token, 'setCurrentPlaylist', {pl_id: playlistID});
 	});
 
-	it('Set playlist to public', () => {
-		return request
-			.put(`/api/playlists/${newPublicPlaylistID}/setPublic`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+	it('Set playlist to public', async () => {
+		await commandBackend(token, 'setPublicPlaylist', {pl_id: newPublicPlaylistID});
 	});
 
 	it('Get list of playlists AFTER setting new current/public PLs', async () => {
-		return request
-			.get('/api/playlists')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.length).to.be.at.least(2);
-				const playlist = res.body.find((pl: DBPL) => pl.flag_current === true);
-				const playlists: DBPL[] = res.body;
-				currentPlaylistID = playlist.playlist_id;
-				for (const pl of playlists) {
-					if (pl.playlist_id === playlistID) expect(pl.flag_current).to.be.true;
-					if (pl.playlist_id === newPublicPlaylistID) expect(pl.flag_public).to.be.true;
-				}
-			});
+		const data = await commandBackend(token, 'getPlaylists');
+		expect(data.length).to.be.at.least(2);
+		const playlist = data.find((pl: DBPL) => pl.flag_current === true);
+		const playlists: DBPL[] = data;
+		currentPlaylistID = playlist.playlist_id;
+		for (const pl of playlists) {
+			if (pl.playlist_id === playlistID) expect(pl.flag_current).to.be.true;
+			if (pl.playlist_id === newPublicPlaylistID) expect(pl.flag_public).to.be.true;
+		}
 	});
 
 	it('Up/downvote a song in public playlist Error 403', async () => {
-		return request
-			.post(`/api/playlists/${newPublicPlaylistID}/karas/${currentPLCID}/vote`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(403)
-			.then(res => {
-				expect(res.body.code).to.be.equal('UPVOTE_NO_SELF');
-			});
+		const data = await commandBackend(token, 'votePLC', {plc_id: currentPLCID}, true);
+		expect(data.message.code).to.be.equal('UPVOTE_NO_SELF');
 	});
 
 	it('Upvote a song in public playlist', async () => {
 		const token = await getToken('adminTest2');
-		return request
-			.post(`/api/playlists/${newPublicPlaylistID}/karas/${currentPLCID}/vote`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+		await commandBackend(token, 'votePLC', {plc_id: currentPLCID});
 	});
 
 	it('List contents from public playlist AFTER upvote', async () => {
 		const token = await getToken('adminTest2');
-		return request
-			.get(`/api/playlists/${newPublicPlaylistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				// Our PLCID should be in first position now
-				const plc: DBPLC = res.body.content.find(plc => plc.playlistcontent_id === currentPLCID);
-				expect(plc.upvotes).to.be.at.least(1);
-				expect(plc.flag_upvoted).to.be.true;
-			});
+		const data = await commandBackend(token, 'getPlaylistContents', {pl_id: newPublicPlaylistID});
+		// Our PLCID should be in first position now
+		const plc: DBPLC = data.content.find(plc => plc.playlistcontent_id === currentPLCID);
+		expect(plc.upvotes).to.be.at.least(1);
+		expect(plc.flag_upvoted).to.be.true;
 	});
 
 	it('Downvote a song in public playlist', async () => {
 		const token = await getToken('adminTest2');
-		return request
-			.post(`/api/playlists/${newPublicPlaylistID}/karas/${currentPLCID}/vote`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send({downvote: true})
-			.expect(200);
+		await commandBackend(token, 'votePLC', {plc_id: currentPLCID, downvote: true});
 	});
 
 	it('List contents from public playlist AFTER downvote', async () => {
 		const token = await getToken('adminTest2');
-		return request
-			.get(`/api/playlists/${newPublicPlaylistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				// Our PLCID should be in first position now
-				const plc: DBPLC = res.body.content.find(plc => plc.playlistcontent_id === currentPLCID);
-				expect(plc.upvotes).to.be.at.below(1);
-				expect(plc.flag_upvoted).to.be.false;
-			});
+		const data = await commandBackend(token, 'getPlaylistContents', {pl_id: newPublicPlaylistID});
+		// Our PLCID should be in first position now
+		const plc: DBPLC = data.content.find(plc => plc.playlistcontent_id === currentPLCID);
+		expect(plc.upvotes).to.be.at.below(1);
+		expect(plc.flag_upvoted).to.be.false;
 	});
 
-	it('Empty playlist', () => {
-		return request
-			.put(`/api/playlists/${newPublicPlaylistID}/empty`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+	it('Empty playlist', async () => {
+		await commandBackend(token, 'emptyPlaylist', {pl_id: newPublicPlaylistID});
 	});
 
 	it('List contents from public playlist AFTER empty', async () => {
-		return request
-			.get(`/api/playlists/${newPublicPlaylistID}/karas`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				expect(res.body.content).to.have.lengthOf(0);
-			});
+		const data = await commandBackend(token, 'getPlaylistContents', {pl_id: newPublicPlaylistID});
+		expect(data.content).to.have.lengthOf(0);
 	});
 
-	it('Delete a playlist', () => {
-		return request
-			.delete(`/api/playlists/${newPlaylistID}`)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect(200);
+	it('Delete a playlist', async () => {
+		await commandBackend(token, 'deletePlaylist', {pl_id: newPlaylistID});
 	});
 
 	it(`Get list of playlists AFTER deleting playlist ${newPlaylistID}`, async () => {
-		return request
-			.get('/api/playlists')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(res => {
-				const plIDs = res.body.map(pl => pl.playlist_id);
-				expect(plIDs).to.not.include(newPlaylistID);
-			});
+		const data = await commandBackend(token, 'getPlaylists');
+		const plIDs = data.map(pl => pl.playlist_id);
+		expect(plIDs).to.not.include(newPlaylistID);
 	});
 });

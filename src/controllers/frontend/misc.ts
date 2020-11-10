@@ -1,12 +1,14 @@
-import { Router } from 'express';
 import sample from 'lodash.sample';
+import { Socket } from 'socket.io';
 
 import { getKMStats,shutdown } from '../../components/engine';
 import { generateDB } from '../../dao/database';
 import { generateDatabase } from '../../lib/services/generation';
+import { APIData } from '../../lib/types/api';
 import { getConfig } from '../../lib/utils/config';
 import { browseFs } from '../../lib/utils/files';
 import {enableWSLogging, readLog} from '../../lib/utils/logger';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { getFeeds } from '../../services/proxyFeeds';
 import { updateSongsLeft } from '../../services/user';
 import { backupConfig,editSetting, getPublicConfig } from '../../utils/config';
@@ -15,18 +17,16 @@ import { getDisplays } from '../../utils/displays';
 import { dumpPG, restorePG } from '../../utils/postgresql';
 import { getPlayerState, getPublicState,getState } from '../../utils/state';
 import { APIMessage,errMessage } from '../common';
-import { optionalAuth,requireAdmin, requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { runChecklist } from '../middlewares';
 
-export default function miscController(router: Router) {
+export default function miscController(router: SocketIOApp) {
 	/**
- * @api {post} /shutdown Shutdown the entire application
+ * @api {post} Shutdown the entire application
  * @apiDescription
  * Shutdowns application completely. Kind of a self-destruct button.
- * @apiName PostShutdown
+ * @apiName shutdown
  * @apiGroup Main
- * @apiVersion 3.1.0
+ * @apiVersion 5.0.0
  *
  * @apiHeader authorization Auth token received from logging in
  * @apiPermission admin
@@ -37,22 +37,21 @@ export default function miscController(router: Router) {
  * "Shutdown in progress."
  *
  */
-	router.route('/shutdown')
-		.post(getLang, requireAuth, requireValidUser, requireAdmin, (_req: any, res: any) => {
-		// Sends command to shutdown the app.
-			try {
-				shutdown();
-				res.status(200).json();
-			} catch(err) {
-				res.status(500).json(err);
-			}
-		});
+	router.route('shutdown', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			shutdown();
+			return;
+		} catch(err) {
+			throw {code: 500};
+		}
+	});
 
-	router.route('/settings')
+	router.route('getSettings', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /settings Get settings
- * @apiName GetSettings
- * @apiVersion 3.1.0
+ * @api {get} Get settings
+ * @apiName getSettings
+ * @apiVersion 5.0.0
  * @apiGroup Main
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -72,50 +71,44 @@ export default function miscController(router: Router) {
  *   }
  * }
  */
-		.get(getLang, optionalAuth, (req: any, res: any) => {
-			const response = {
-				version: getState().version,
-				config: null,
-				state: getPublicState(req.user?.type === 0)
-			};
-			response.config = (req.user?.type === 0)
+		await runChecklist(socket, req, 'guest', 'closed', {optionalAuth: true});
+		return {
+			version: getState().version,
+			config: req.user?.type === 0
 				? getConfig()
-				: getPublicConfig();
-			res.json(response);
-		})
+				: getPublicConfig(),
+			state: getPublicState(req.user?.type === 0)
+		};
+	});
+	router.route('updateSettings', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /settings Update settings
- * @apiName PutSettings
- * @apiVersion 3.1.0
+ * @api {put} Update settings
+ * @apiName updateSettings
+ * @apiVersion 5.0.0
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
  * @apiDescription **Note :** Contrary to previous versions of Karaoke Mugen, you only need to send the setting you want to modify.
- * @apiParam {Object} setting Object containing one or more settings to be merged into the new config. For example, if you want to disable the view blacklist permission, send `{Frontend: {Permissions: { AllowViewBlacklist: false}}}`. Check configuration documentation for more information.
+ * @apiParam {Object} setting Object containing one or more settings to be merged into the new config. Check configuration documentation for more information.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			//Update settings
-			try {
-				const setting = typeof req.body.setting === 'string'
-					? JSON.parse(req.body.setting)
-					: req.body.setting;
-				const publicSettings = await editSetting(setting);
-				res.json(publicSettings);
-			} catch(err) {
-				const code = 'SETTINGS_UPDATE_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
-	router.route('/displays')
+		await runChecklist(socket, req);
+		try {
+			return await editSetting(req.body.setting);
+		} catch(err) {
+			const code = 'SETTINGS_UPDATE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getDisplays', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /displays get displays
- * @apiName GetDisplays
- * @apiVersion 3.1.0
+ * @api {get} get displays
+ * @apiName getDisplays
+ * @apiVersion 5.0.0
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
@@ -124,15 +117,15 @@ export default function miscController(router: Router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		.get(getLang, requireAuth, requireValidUser, requireAdmin, async (_req:any, res:any) => {
-			const displays = await getDisplays();
-			res.json(displays);
-		});
-	router.route('/stats')
+		await runChecklist(socket, req);
+		return getDisplays();
+	});
+
+	router.route('getStats', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /stats Get statistics
- * @apiName GetStats
- * @apiVersion 3.1.0
+ * @api {get} Get statistics
+ * @apiName getStats
+ * @apiVersion 5.0.0
  * @apiGroup Main
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -155,23 +148,26 @@ export default function miscController(router: Router) {
  *        "totalseries": 2525
  * }
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				const stats = await getKMStats();
-				updateSongsLeft(req.authToken.username);
-				res.json(stats);
-			} catch(err) {
-				const code = 'STATS_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
+		await runChecklist(socket, req, 'guest', 'closed');
+		try {
+			return await getKMStats();
+		} catch(err) {
+			const code = 'STATS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 
-	router.route('/player')
+	router.route('refreshUserQuotas', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'user', 'limited');
+		updateSongsLeft(req.token.username);
+	});
+
+	router.route('getPlayerStatus', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {get} /player Get player status
-	 * @apiName GetPlayer
-	 * @apiVersion 3.1.0
+	 * @api {get} Get player status
+	 * @apiName getPlayerStatus
+	 * @apiVersion 5.0.0
 	 * @apiGroup Player
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -212,90 +208,86 @@ export default function miscController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (_req: any, res: any) => {
-			// Get player status
-			// What's playing, time in seconds, duration of song
-			res.json(getPlayerState());
-		});
+		await runChecklist(socket, req, 'guest', 'limited');
+		return getPlayerState();
+	});
 
-	router.route('/newsfeed')
+	router.route('getNewsFeed', async () => {
 		/**
-	 * @api {get} /newsfeed Get latest KM news
-	 * @apiName GetNews
-	 * @apiVersion 3.1.0
+	 * @api {get} Get latest KM news
+	 * @apiName getNewsFeed
+	 * @apiVersion 5.0.0
 	 * @apiGroup Misc
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiPermission NoAuth
 	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
 	 */
-		.get(getLang, async (_req: any, res: any) => {
-			try {
-				res.json(await getFeeds());
-			} catch(err) {
-				res.status(500).json();
-			}
-		});
+		try {
+			return await getFeeds();
+		} catch(err) {
+			throw {code: 500};
+		}
+	});
 
-	router.route('/catchphrase')
+	router.route('getCatchphrase', async (_socket: Socket, _req: APIData) => {
 		/**
-	 * @api {get} /catchphrase Get a random Catchphrase
-	 * @apiName GetCatchPhrase
-	 * @apiVersion 3.1.0
+	 * @api {get} Get a random Catchphrase
+	 * @apiName getCatchphrase
+	 * @apiVersion 5.0.0
 	 * @apiGroup Misc
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiPermission NoAuth
 	 * @apiSuccess a random catchphrase
 	 */
-		.get(getLang, (_req: any, res: any) => {
-			res.json(sample(initializationCatchphrases));
-		});
+		return sample(initializationCatchphrases);
+	});
 
-	router.route('/log/:level')
+	router.route('getLogs', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {get} /log/:level Get KM logs
+	 * @api {get} Get KM logs
 	 * @apiParam {string} level debug, info, warn, error...
-	 * @apiName GetLogs
-	 * @apiVersion 3.1.0
+	 * @apiName getLogs
+	 * @apiVersion 5.0.0
 	 * @apiGroup Misc
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiPermission admin
 	 * @apiSuccess {object[]} The current day's log file.
 	 */
-		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				// Align socket
-				enableWSLogging(req.params.level);
-				res.status(200).json(await readLog(req.params.level));
-			} catch(err) {
-				res.status(500).json(APIMessage('ERROR_READING_LOGS'));
-			}
-		});
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			// Align socket
+			enableWSLogging(req.body.level);
+			return await readLog(req.body.level);
+		} catch(err) {
+			throw {code: 500, message: APIMessage('ERROR_READING_LOGS')};
+		}
+	});
 
-	router.route('/settings/backup')
+	router.route('backupSettings', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {post} /settings/backup Create backup of your config file
-	 * @apiName BackupConfig
-	 * @apiVersion 3.1.0
+	 * @api {post} Create backup of your config file
+	 * @apiName backupSettings
+	 * @apiVersion 5.0.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			try {
-				await backupConfig();
-				res.status(200).json(APIMessage('CONFIG_BACKUPED'));
-			} catch(err) {
-				res.status(500).json(APIMessage('CONFIG_BACKUPED_ERROR'));
-			}
-		});
+		await runChecklist(socket, req);
+		try {
+			await backupConfig();
+			return APIMessage('CONFIG_BACKUPED');
+		} catch(err) {
+			throw {code: 500, message: APIMessage('CONFIG_BACKUPED_ERROR')};
+		}
+	});
 
-	router.route('/db/generate')
+	router.route('generateDatabase', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {post} /db/generate Trigger manual DB generation
-	 * @apiName PostGenerate
-	 * @apiVersion 3.1.0
+	 * @api {post} Trigger manual DB generation
+	 * @apiName generateDatabase
+	 * @apiVersion 5.0.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -304,21 +296,21 @@ export default function miscController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			try {
-				await generateDB();
-				res.status(200).json(APIMessage('DATABASE_GENERATED'));
-			} catch(err) {
-				const code = 'DATABASE_GENERATED_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
-	router.route('/db/validate')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await generateDB();
+			return APIMessage('DATABASE_GENERATED');
+		} catch(err) {
+			const code = 'DATABASE_GENERATED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('validateDatabase', async (socket: Socket, req: APIData) => {
 		/**
-		 * @api {post} /db/validate Trigger manual file validation process
-		 * @apiName PostGenerate
-		 * @apiVersion 3.3.0
+		 * @api {post} Trigger manual file validation process
+		 * @apiName validateDatabase
+		 * @apiVersion 5.0.0
 		 * @apiGroup Misc
 		 * @apiPermission admin
 		 * @apiHeader authorization Auth token received from logging in
@@ -329,23 +321,23 @@ export default function miscController(router: Router) {
 		 * HTTP/1.1 500 Internal Server Error
 		 * {code: 'FILES_VALIDATED_ERROR'}
 		 */
-		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			try {
-				await generateDatabase({
-					validateOnly: true
-				});
-				res.status(200).json(APIMessage('FILES_VALIDATED'));
-			} catch(err) {
-				const code = 'FILES_VALIDATED_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
-	router.route('/db')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await generateDatabase({
+				validateOnly: true
+			});
+			return APIMessage('FILES_VALIDATED');
+		} catch(err) {
+			const code = 'FILES_VALIDATED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('dumpDatabase', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {get} /db Dump database to a file
-	 * @apiName GetDB
-	 * @apiVersion 3.1.0
+	 * @api {get} Dump database to a file
+	 * @apiName dumpDatabase
+	 * @apiVersion 5.0.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -354,18 +346,20 @@ export default function miscController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			try {
-				await dumpPG();
-				res.status(200).json(APIMessage('DATABASE_DUMPED'));
-			} catch(err) {
-				res.status(500).json(APIMessage('DATABASE_DUMPED_ERROR'));
-			}
-		})
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await dumpPG();
+			return APIMessage('DATABASE_DUMPED');
+		} catch(err) {
+			throw {code: 500, message: APIMessage('DATABASE_DUMPED_ERROR')};
+		}
+	});
+
+	router.route('restoreDatabase', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {post} /db Restore database from file
-	 * @apiName PostDB
-	 * @apiVersion 3.1.0
+	 * @api {post} Restore database from file
+	 * @apiName restoreDatabase
+	 * @apiVersion 5.0.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -374,19 +368,19 @@ export default function miscController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.post(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			try {
-				await restorePG();
-				res.status(200).json(APIMessage('DATABASE_RESTORED'));
-			} catch(err) {
-				res.status(500).json(APIMessage('DATABASE_RESTORED_ERROR'));
-			}
-		});
-	router.route('/fs')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await restorePG();
+			return APIMessage('DATABASE_RESTORED');
+		} catch(err) {
+			throw {code: 500, message: APIMessage('DATABASE_RESTORED_ERROR')};
+		}
+	});
+	router.route('getFS', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {post} /fs Get filesystem contents
-	 * @apiName PostFS
-	 * @apiVersion 3.1.0
+	 * @api {post} Get filesystem contents
+	 * @apiName getFS
+	 * @apiVersion 5.0.0
 	 * @apiGroup Misc
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -401,13 +395,13 @@ export default function miscController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				res.status(200).json(await browseFs(req.body.path, req.body.onlyMedias));
-			} catch(err) {
-				const code = 'FS_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await browseFs(req.body.path, req.body.onlyMedias);
+		} catch(err) {
+			const code = 'FS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 }

@@ -1,20 +1,19 @@
+import { SocketIOApp } from '../lib/utils/ws';
 import { checkLogin, resetSecurityCode } from '../services/auth';
-import { decodeJwtToken, editUser, findFingerprint,updateLastLoginName, updateUserFingerprint } from '../services/user';
+import { editUser, findFingerprint,updateLastLoginName, updateUserFingerprint } from '../services/user';
 import { getState } from '../utils/state';
 import { APIMessage } from './common';
-import {requireAuth, requireValidUser} from './middlewares/auth';
+import { runChecklist } from './middlewares';
 
-export default function authController(router) {
+export default function authController(router: SocketIOApp) {
 
-	router.post('/auth/login', async (req, res) => {
+	router.route('login', async (_, req) => {
 		/**
- * @api {post} /auth/login Login / Sign in
- * @apiName AuthLogin
- * @apiVersion 3.1.0
+ * @api {post} Login / Sign in
+ * @apiName login
+ * @apiVersion 5.0.0
  * @apiGroup Auth
  * @apiPermission NoAuth
- * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
- * @apiHeader {String} charset Must be `UTF-8`
  * @apiParam {String} username Login name for the user
  * @apiParam {String} password Password for the user. Can be empty if user is a guest.
  * @apiParam {Number} securityCode Security Code to turn a normal user into an admin
@@ -24,7 +23,6 @@ export default function authController(router) {
  * @apiSuccess {String} role Role of this user (`user` or `admin`)
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
  * {
  *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE1MTMxNjAxMTEzMjMsInJvbGUiOiJ1c2VyIn0.UWgsc5XEfFtk34IpUAQid_IEWCj2ffNjQ--FJ9eAYd0",
  *   "username": "Axel",
@@ -33,8 +31,6 @@ export default function authController(router) {
  * }
  * @apiError 401 Unauthorized
  *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 401 Unauthorized
  */
 		if (!req.body.password) req.body.password = '';
 		try {
@@ -53,17 +49,17 @@ export default function authController(router) {
 				// Redefine the token
 				token = await checkLogin(req.body.username, req.body.password);
 			}
-			res.status(200).send(token);
+			return token;
 		} catch(err) {
-			res.status(401).json(APIMessage('LOG_ERROR'));
+			throw {code: 401, message: APIMessage('LOG_ERROR')};
 		}
 	});
 
-	router.post('/auth/login/guest', async (req, res) => {
+	router.route('loginGuest', async (_, req) => {
 		/**
- * @api {post} /auth/login/guest Login / Sign in (as guest)
- * @apiName AuthLoginGuest
- * @apiVersion 3.1.0
+ * @api {post} Login / Sign in (as guest)
+ * @apiName loginGuest
+ * @apiVersion 5.0.0
  * @apiGroup Auth
  * @apiPermission NoAuth
  * @apiDescription
@@ -92,7 +88,7 @@ export default function authController(router) {
  * }
  */
 		if (!req.body.fingerprint || req.body.fingerprint === '') {
-			res.status(401).json(APIMessage('LOG_ERROR'));
+			throw {code: 401, message: APIMessage('LOG_ERROR')};
 		} else {
 			try {
 				const guest = await findFingerprint(req.body.fingerprint);
@@ -100,18 +96,19 @@ export default function authController(router) {
 					const token = await checkLogin(guest, req.body.fingerprint);
 					updateUserFingerprint(guest, req.body.fingerprint);
 					updateLastLoginName(guest);
-					res.status(200).send(token);
+					return token;
 				} else {
-					res.status(500).json(APIMessage('NO_MORE_GUESTS_AVAILABLE'));
+					throw {code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE')};
 				}
 			} catch (err) {
-				res.status(401).json(APIMessage('LOG_ERROR'));
+				throw {code: 401, message: APIMessage('LOG_ERROR')};
 			}
 		}
 	});
 
-	router.get('/auth/checkauth', requireAuth, requireValidUser, (req: any, res: any) => {
-		res.status(200).send(decodeJwtToken(req.get('authorization')));
+	router.route('checkAuth', async (socket, req) => {
+		await runChecklist(socket, req, 'guest', 'closed');
+		return req.token;
 	});
 
 }

@@ -11,6 +11,7 @@ import authController from '../controllers/auth';
 import blacklistController from '../controllers/frontend/blacklist';
 import downloadController from '../controllers/frontend/download';
 import favoritesController from '../controllers/frontend/favorites';
+import filesController from '../controllers/frontend/files';
 import karaController from '../controllers/frontend/kara';
 import miscController from '../controllers/frontend/misc';
 import playerController from '../controllers/frontend/player';
@@ -24,32 +25,35 @@ import userController from '../controllers/frontend/user';
 import whitelistController from '../controllers/frontend/whitelist';
 import {resolvedPathAvatars, resolvedPathPreviews, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { initWS } from '../lib/utils/ws';
+import { initWS, SocketIOApp } from '../lib/utils/ws';
 import { sentryCSP } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 
 /** Declare all routers for API types */
-function apiRouter(): Router {
-	const apiRouter = express.Router();
 
-	// Add auth routes
-	authController(apiRouter);
-	downloadController(apiRouter);
-	blacklistController(apiRouter);
-	favoritesController(apiRouter);
-	miscController(apiRouter);
-	playerController(apiRouter);
-	playlistsController(apiRouter);
-	userController(apiRouter);
-	whitelistController(apiRouter);
-	sessionController(apiRouter);
-	karaController(apiRouter);
-	tagsController(apiRouter);
-	pollController(apiRouter);
-	repoController(apiRouter);
-	if (getState().isTest) testController(apiRouter);
+function apiHTTPRouter(): Router {
+	const apiRouter = express.Router();
+	filesController(apiRouter);
 	return apiRouter;
+}
+
+function apiRouter(ws: SocketIOApp) {
+	authController(ws);
+	downloadController(ws);
+	blacklistController(ws);
+	favoritesController(ws);
+	miscController(ws);
+	playerController(ws);
+	playlistsController(ws);
+	userController(ws);
+	whitelistController(ws);
+	sessionController(ws);
+	karaController(ws);
+	tagsController(ws);
+	pollController(ws);
+	repoController(ws);
+	if (getState().isTest) testController(ws);
 }
 
 /** Initialize frontend express server */
@@ -66,7 +70,6 @@ export function initFrontend(): number {
 				connectSrc: ['\'self\'', 'https:', 'wss:'],
 				sandbox: ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-modals'],
 				reportUri: process.env.SENTRY_CSP || sentryCSP,
-				upgradeInsecureRequests: ['false'],
 				workerSrc: ['false']  // This is not set.
 			},
 			reportOnly: true
@@ -75,7 +78,6 @@ export function initFrontend(): number {
 		app.use(compression());
 		app.use(urlencoded({ extended: true, limit: '50mb' }));
 		app.use(json({limit: '50mb'}));
-		app.use('/api', apiRouter());
 		// Add headers
 		app.use((req, res, next) => {
 			// Website you wish to allow to connect
@@ -88,17 +90,9 @@ export function initFrontend(): number {
 				? res.json()
 				: next();
 		});
-		//path for system control panel
-		// System is not served in demo mode.
-		if (!state.isDemo) {
-			app.use('/system', cspMiddleware, express.static(resolve(state.resourcePath, 'systempanel/build')));
-			app.get('/system/*', cspMiddleware, (_req, res) => {
-				res.sendFile(resolve(state.resourcePath, 'systempanel/build/index.html'));
-			});
-		}
 
 		//Path to video previews
-		app.use('/previews', express.static(resolvedPathPreviews()));
+		app.use('/previews', express.static(resolvedPathPreviews(), {fallthrough: false}));
 		//There's a single /medias path which will list all files in all folders. Pretty handy.
 		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir)));
 		//Path to user avatars
@@ -107,15 +101,16 @@ export function initFrontend(): number {
 		//HTTP standards are important.
 		app.use('/coffee', (_req, res) => res.status(418).json());
 
-		//Frontend
-		app.use(express.static(resolve(state.resourcePath, 'frontend/build')));
+		app.use('/api', apiHTTPRouter());
+		app.use('/', cspMiddleware, express.static(resolve(state.resourcePath, 'kmfrontend/build')));
 		app.get('/*', cspMiddleware, (_req, res) => {
-			res.sendFile(resolve(state.resourcePath, 'frontend/build/index.html'));
+			res.sendFile(resolve(state.resourcePath, 'kmfrontend/build/index.html'));
 		});
 
 		const server = createServer(app);
 		// Init websockets
-		initWS(server);
+		const ws = initWS(server);
+		apiRouter(ws);
 		let port = state.frontendPort;
 		try {
 			server.listen(port, () => {

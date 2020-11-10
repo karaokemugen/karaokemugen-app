@@ -1,0 +1,36 @@
+// Minireset
+@import '~minireset.css/minireset';
+@import 'styles/variables';
+
+body {
+	font-family: Lato, "Helvetica Neue", Cantarell, sans-serif;
+	background: $mugen-background;
+	color: white;
+	&.forceScroll {
+		overflow-y: scroll;
+	}
+}
+
+// Our stylesheet
+@import 'styles/components/buttons';
+@import 'styles/components/dropdowns';
+@import 'styles/components/decorators';
+@import 'styles/components/modal';
+@import 'styles/components/settings';
+@import 'styles/components/input';
+@import 'styles/components/loader';
+@import 'styles/components/titles';
+@import 'styles/components/video-overlay';
+
+// React Toastify
+@import 'styles/toast';
+
+// Fonts
+@import 'styles/fonts/Lato/stylesheet';
+
+// FontAwesome
+$fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+

@@ -14,8 +14,7 @@ cache:
   key: km-app-${CI_COMMIT_REF_SLUG}
   paths:
     - node_modules/
-    - systempanel/node_modules/
-    - frontend/node_modules/
+    - kmfrontend/node_modules/
 
 stages:
   - schedule
@@ -61,15 +60,12 @@ build-react:
     expire_in: 8 hours
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
-    - systempanel/build/
+    - kmfrontend/build/
     - dist/
-    - frontend/build/
   script:
     - yarn build
-    - yarn installSystemPanel
-    - yarn installFrontend
-    - yarn buildSystemPanel
-    - yarn buildFrontend
+    - yarn installkmfrontend
+    - yarn buildkmfrontend
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
@@ -87,8 +83,7 @@ pkg_linux:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
       - node_modules/
-      - systempanel/node_modules/
-      - frontend/node_modules/
+      - kmfrontend/node_modules/
     policy: pull
   interruptible: true
   artifacts:
@@ -121,8 +116,7 @@ pkg_win:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
       - node_modules/
-      - systempanel/node_modules/
-      - frontend/node_modules/
+      - kmfrontend/node_modules/
     policy: pull
   interruptible: true
   artifacts:
@@ -161,8 +155,7 @@ pkg_mac:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
       - node_modules/
-      - systempanel/node_modules/
-      - frontend/node_modules/
+      - kmfrontend/node_modules/
     policy: pull
   retry:
     max: 2

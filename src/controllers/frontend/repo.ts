@@ -1,16 +1,18 @@
-import { Router } from 'express';
 
+import { Socket } from 'socket.io';
+
+import { APIData } from '../../lib/types/api';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepos, removeRepo } from '../../services/repo';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin,requireAuth, requireValidUser } from '../middlewares/auth';
-import { requireNotDemo } from '../middlewares/demo';
+import { runChecklist } from '../middlewares';
 
-export default function repoController(router: Router) {
-	router.route('/repos')
+export default function repoController(router: SocketIOApp) {
+	router.route('getRepos', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /repos Get repository list
- * @apiName GetRepos
- * @apiVersion 3.2.0
+ * @api {get} Get repository list
+ * @apiName getRepos
+ * @apiVersion 5.0.0
  * @apiGroup Repositories
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -32,20 +34,20 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_LIST_ERROR"}
  */
-		.get(requireNotDemo, (_req: any, res: any) => {
-			try {
-				const repos = getRepos();
-				res.json(repos);
-			} catch(err) {
-				const code = 'REPO_LIST_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'closed', {allowInDemo: false, optionalAuth: true});
+		try {
+			return getRepos();
+		} catch(err) {
+			const code = 'REPO_LIST_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('addRepo', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /repos Add a repository
- * @apiName PostRepos
- * @apiVersion 3.2.0
+ * @api {post} Add a repository
+ * @apiName addRepo
+ * @apiVersion 5.0.0
  * @apiGroup Repositories
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -66,21 +68,21 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_CREATE_ERROR"}
  */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await addRepo(req.body);
-				res.status(200).json(APIMessage('REPO_CREATED'));
-			} catch(err) {
-				const code = 'REPO_CREATE_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/repos/:name')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await addRepo(req.body);
+			return APIMessage('REPO_CREATED');
+		} catch(err) {
+			const code = 'REPO_CREATE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getRepo', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /repos/:name Get single repository
- * @apiName GetRepo
- * @apiVersion 3.2.0
+ * @api {get} Get single repository
+ * @apiName getRepo
+ * @apiVersion 5.0.0
  * @apiGroup Repositories
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -98,21 +100,22 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_GET_ERROR"}
  */
-		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
-			try {
-				const repo = getRepo(req.params.name);
-				if (!repo) res.status(404);
-				res.json(repo);
-			} catch(err) {
-				const code = 'REPO_GET_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			const repo = getRepo(req.body.name);
+			if (!repo) throw {code: 404};
+			return repo;
+		} catch(err) {
+			const code = 'REPO_GET_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('deleteRepo', async (socket: Socket, req: APIData) => {
 	/**
- * @api {delete} /repos/:name Remove repository
- * @apiName DeleteRepos
- * @apiVersion 3.2.0
+ * @api {delete} Remove repository
+ * @apiName deleteRepo
+ * @apiVersion 5.0.0
  * @apiGroup Repositories
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -126,20 +129,21 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_DELETE_ERROR"}
  */
-		.delete(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
-			try {
-				removeRepo(req.params.name);
-				res.json(APIMessage('REPO_DELETED'));
-			} catch(err) {
-				const code = 'REPO_DELETE_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			removeRepo(req.body.name);
+			return APIMessage('REPO_DELETED');
+		} catch(err) {
+			const code = 'REPO_DELETE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('editRepo', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /repos/:name Edit a repository
- * @apiName PutRepo
- * @apiVersion 3.2.0
+ * @api {put} Edit a repository
+ * @apiName editRepo
+ * @apiVersion 5.0.0
  * @apiGroup Repositories
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -161,21 +165,21 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "REPO_EDIT_ERROR"}
  */
-		.put(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await editRepo(req.params.name, req.body);
-				res.json(APIMessage('REPO_EDITED'));
-			} catch(err) {
-				const code = 'REPO_EDIT_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/repos/:name/unusedTags')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await editRepo(req.body.name, req.body);
+			return APIMessage('REPO_EDITED');
+		} catch(err) {
+			const code = 'REPO_EDIT_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getUnusedTags', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /repos/:name/unusedTags Get all unused tags from a repo
- * @apiName GetRepoUnusedTags
- * @apiVersion 3.2.0
+ * @api {get} Get all unused tags from a repo
+ * @apiName getUnusedTags
+ * @apiVersion 5.0.0
  * @apiGroup Repositories
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -193,21 +197,20 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: 'REPO_GET_UNUSEDTAGS_ERROR}
  */
-		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				const tags = await findUnusedTags(req.params.name);
-				res.json(tags);
-			} catch(err) {
-				const code = 'REPO_GET_UNUSEDTAGS_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/repos/:name/unusedMedias')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await findUnusedTags(req.body.name);
+		} catch(err) {
+			const code = 'REPO_GET_UNUSEDTAGS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getUnusedMedias', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /repos/:name/unusedMedias Get all unused medias from a repo
- * @apiName GetRepoUnusedMedias
- * @apiVersion 3.2.0
+ * @api {get} Get all unused medias from a repo
+ * @apiName getUnusedMedias
+ * @apiVersion 5.0.0
  * @apiGroup Repositories
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -227,21 +230,21 @@ export default function repoController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: 'REPO_GET_UNUSEDMEDIA_ERROR'}
  */
-		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				const files = await findUnusedMedias(req.params.name);
-				res.json(files);
-			} catch(err) {
-				const code = 'REPO_GET_UNUSEDMEDIA_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/repos/:name/consolidate')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await findUnusedMedias(req.body.name);
+		} catch(err) {
+			const code = 'REPO_GET_UNUSEDMEDIA_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('consolidateRepo', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {post} /repos/:name/consolidate Consolidate (move) all data from a repo
-	 * @apiName PostRepoConsolidate
-	 * @apiVersion 3.2.0
+	 * @api {post} Consolidate (move) all data from a repo
+	 * @apiName consolidateRepo
+	 * @apiVersion 5.0.0
 	 * @apiGroup Repositories
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -251,19 +254,19 @@ export default function repoController(router: Router) {
 	 * HTTP/1.1 200 OK
 	 * {code: "REPO_CONSOLIDATING_IN_PROGRESS"}
 	 */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req: any, res: any) => {
-			try {
-				consolidateRepo(req.params.name, req.body.path);
-				res.status(200).json(APIMessage('REPO_CONSOLIDATING_IN_PROGRESS'));
-			} catch(err) {
-				// This is async, check function to know which WS event you get
-			}
-		});
-	router.route('/repos/:name/compareLyrics')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			consolidateRepo(req.body.name, req.body.path);
+			return APIMessage('REPO_CONSOLIDATING_IN_PROGRESS');
+		} catch(err) {
+			// This is async, check function to know which WS event you get
+		}
+	});
+	router.route('compareLyricsBetweenRepos', async (socket: Socket, req: APIData) => {
 	/**
-		 * @api {get} /repos/:name/compareLyrics Compare lyrics between two repositories (get report)
-		 * @apiName GetCompareLyrics
-		 * @apiVersion 3.3.0
+		 * @api {get} Compare lyrics between two repositories (get report)
+		 * @apiName compareLyricsBetweenRepos
+		 * @apiVersion 5.0.0
 		 * @apiGroup Repositories
 		 * @apiPermission admin
 		 * @apiHeader authorization Auth token received from logging in
@@ -277,40 +280,39 @@ export default function repoController(router: Router) {
 		 * HTTP/1.1 500 Internal Server Error
  		 * {code: 'REPO_COMPARE_LYRICS_ERROR'}
 		 */
-		.get(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				const report = await compareLyricsChecksums(req.params.name, req.query.repo);
-				res.status(200).json(report);
-			} catch(err) {
-				const code = 'REPO_COMPARE_LYRICS_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await compareLyricsChecksums(req.body.name, req.body.repo);
+		} catch(err) {
+			const code = 'REPO_COMPARE_LYRICS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('copyLyricsBetweenRepos', async (socket: Socket, req: APIData) => {
 	/**
-		 * @api {post} /repos/:name/compareLyrics Compare lyrics between two repositories (confirm)
-		 * @apiName PostCompareLyrics
-		 * @apiVersion 3.3.0
+		 * @api {post} Compare lyrics between two repositories (confirm)
+		 * @apiName copyLyricsBetweenRepos
+		 * @apiVersion 5.0.0
 		 * @apiGroup Repositories
 		 * @apiPermission admin
 		 * @apiDescription Updates lyrics from one repo to the other. Send back the report you got from GET.
 		 * @apiHeader authorization Auth token received from logging in
-		 * @apiParam {string} name Master Repository to check from
-		 * @apiParam {object} report Report object you get frop GET /api/repos/:name/compareLyrics
+		 * @apiParam {object} report Report object you get frop compareLyricsBetweenRepos
 		 * @apiSuccessExample Success-Response:
 		 * HTTP/1.1 200 OK
 		 * @apiErrorExample Error-Response:
 		 * HTTP/1.1 500 Internal Server Error
  		 * {code: 'REPO_COMPARE_LYRICS_ERROR'}
 		 */
-		.post(requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await copyLyricsRepo(req.body.report);
-				res.status(200).json(APIMessage('REPO_LYRICS_COPIED'));
-			} catch(err) {
-				const code = 'REPO_COPY_LYRICS_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await copyLyricsRepo(req.body.report);
+			return APIMessage('REPO_LYRICS_COPIED');
+		} catch(err) {
+			const code = 'REPO_COPY_LYRICS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 }

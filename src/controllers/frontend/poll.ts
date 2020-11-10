@@ -1,17 +1,18 @@
-import { Router } from 'express';
+import { Socket } from 'socket.io';
 
+import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { addPollVote, getPoll } from '../../services/poll';
 import { APIMessage,errMessage } from '../common';
-import { requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
+import { runChecklist } from '../middlewares';
 
-export default function pollController(router: Router) {
-	router.route('/songpoll')
+export default function pollController(router: SocketIOApp) {
+	router.route('getPoll', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /songpoll Get current poll status
- * @apiName GetPoll
- * @apiVersion 3.1.0
+ * @api {get} Get current poll status
+ * @apiName getPoll
+ * @apiVersion 5.0.0
  * @apiGroup Song Poll
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -52,19 +53,19 @@ export default function pollController(router: Router) {
  *   "code": "POLL_LIST_ERROR"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req: any, res: any) => {
-			try {
-				const pollResult = getPoll(req.authToken, +req.query.from || 0, +req.query.size || 9999999);
-				res.json(pollResult);
-			} catch(err) {
-				errMessage(err.msg);
-				res.status(425).json(APIMessage(err.msg));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return getPoll(req.token, req.body?.from || 0, req.body?.size || 9999999);
+		} catch(err) {
+			errMessage(err.msg);
+			throw {code: 425, message: APIMessage(err.msg)};
+		}
+	});
+	router.route('votePoll', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /songpoll Vote in a poll
- * @apiName PostPoll
- * @apiVersion 3.1.0
+ * @api {post} Vote in a poll
+ * @apiName votePoll
+ * @apiVersion 5.0.0
  * @apiGroup Song Poll
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -107,25 +108,25 @@ export default function pollController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 429
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, (req: any, res: any) => {
-			//Validate form data
-			const validationErrors = check(req.body, {
-				index: {presence: true, numbersArrayValidator: true}
-			});
-			if (!validationErrors) {
-				// No errors detected
-				try {
-					const ret = addPollVote(+req.body.index,req.authToken);
-					res.json(ret.data);
-				} catch(err) {
-					errMessage(err.msg);
-					res.status(err.code || 500).json(APIMessage(err.msg));
-				}
-
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req, 'guest', 'limited');
+		//Validate form data
+		const validationErrors = check(req.body, {
+			index: {presence: true, numbersArrayValidator: true}
 		});
+		if (!validationErrors) {
+			// No errors detected
+			try {
+				const ret = addPollVote(req.body.index,req.token);
+				return ret.data;
+			} catch(err) {
+				errMessage(err.msg);
+				throw {code: err?.code || 500, message: APIMessage(err.msg)};
+			}
+
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
 }

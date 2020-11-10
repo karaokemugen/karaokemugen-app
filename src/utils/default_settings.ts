@@ -3,9 +3,10 @@
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.yml to bypass the default values.
+import { app } from 'electron';
+
 import {bools, hostnameRegexp} from '../lib/utils/constants';
 import {Config} from '../types/config';
-import { app } from 'electron';
 
 export const dbConfig = process.platform === 'linux'
 	? {
@@ -65,10 +66,7 @@ export const defaults: Config = {
 		Mode: 2,
 		Port: 1337,
 		Permissions: {
-			AllowNicknameChange: true,
-			AllowViewBlacklist: true,
-			AllowViewBlacklistCriterias: true,
-			AllowViewWhitelist: true,
+			AllowNicknameChange: true
 		},
 		SeriesLanguageMode: 3,
 		ShowAvatarsOnPlaylist: true
@@ -306,9 +304,6 @@ export const configConstraints = {
 	'Online.Updates.Medias.Intros': {inclusion : bools},
 	'Online.Updates.App': {inclusion : bools},
 	'Frontend.Permissions.AllowNicknameChange': {inclusion : bools},
-	'Frontend.Permissions.AllowViewBlacklist': {inclusion : bools},
-	'Frontend.Permissions.AllowViewBlacklistCriterias': {inclusion : bools},
-	'Frontend.Permissions.AllowViewWhitelist': {inclusion : bools},
 	'Frontend.AuthExpireTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Frontend.Mode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	'Frontend.Port': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},

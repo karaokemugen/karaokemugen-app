@@ -1,0 +1,439 @@
+@import '../variables';
+
+#setupPage {
+    font-family: Lato,sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: white;
+	background: $mugen-welcome-page-background;
+
+	* {
+		color: white;
+	}
+
+	.help-modal {
+		z-index: 100;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		.help-modal-backdrop {
+			position: relative;
+			height: 100%;
+			width: 100%;
+			background:#000000b3;
+			padding: 2em;
+
+			.help-modal-wrapper {
+				height: 100%;
+				width: 100%;
+				overflow: auto;
+				text-align: center;
+
+				img {
+					max-width: 100%;
+					max-height: calc(100vh - 4em);
+				}
+			}
+			.help-modal-close {
+				padding: 0;
+				margin: 0;
+				position: absolute;
+				top: 0;
+				right: 0;
+				border: none;
+				background: none;
+				font-size: 4em;
+				color:tomato;
+				line-height: 1em;
+				width: 1.5em;
+				text-align: center;
+				font-weight: bold;
+			}
+		}
+	}
+}
+
+
+.setupPage--wrapper {
+	height: 100vh;
+	overflow: auto;
+	padding: 1em;
+
+	display: grid;
+	grid-template-columns: 200px auto;
+	grid-template-rows: 100px  auto;
+	grid-template-areas:
+		"logo title aside"
+		"other main main";
+
+	@media (max-width: $mugen-breakpoint-large) {
+		grid-template-columns: auto 200px ;
+		grid-template-rows: auto auto 100%;
+		grid-template-areas:
+			"aside logo"
+			"title logo"
+			"main main";
+	}
+
+	@media (max-width: $mugen-breakpoint-small) {
+		grid-template-columns: auto;
+		grid-template-rows: auto;
+		grid-template-areas:
+			"logo"
+			"aside "
+			"title"
+			"main";
+	}
+
+	a {
+		color:inherit;
+		text-decoration: underline;
+	}
+
+	.title {
+		grid-area: title;
+	}
+
+
+	.logo {
+		grid-area: logo;
+
+		img {
+			filter: hue-rotate(427deg) saturate(0) brightness(156%);
+			max-width: 100%;
+		}
+
+		@media (max-width: $mugen-breakpoint-small) {
+			text-align: center;
+			img {
+				max-width: 250px;
+				margin-bottom: 1em;
+			}
+		}
+	}
+
+	.aside {
+		grid-area: aside;
+
+		nav {
+			margin-bottom: 2em;
+			ul {
+				padding: 0;
+				margin: 0;
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-end;
+				@media (max-width: $mugen-breakpoint-large) {
+					justify-content: flex-start;
+				}
+				@media (max-width: $mugen-breakpoint-small) {
+					justify-content: center;
+				}
+				list-style: none;
+				li {
+					margin-right: 1em;
+					border-radius: .75em;
+					padding: 5px;
+					border: 1.5px solid #BBBCBC;
+					a {
+						text-decoration: none;
+						i {
+							margin-right: 0.5em;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.main {
+
+		$block-border-width : 4px;
+
+		grid-area: main;
+		display: flex;
+		flex-direction: column;
+		align-items: baseline;
+		margin-bottom: 1em;
+
+		form {
+			width: 100%;
+		}
+
+		.error {
+			color: red;
+		}
+
+
+		button {
+			margin: 5px;
+			background-color: grey;
+		}
+
+		button.fas,
+		button.far,
+		button.fal,
+		button.fab {
+			cursor: pointer;
+			padding: 0;
+			margin: 0 .2em;
+			background: none;
+			border: none;
+		}
+
+
+		.step {
+			h1 { font-size: 1.75em; margin: .5em 0; }
+			h2 { font-size: 1.5em; margin: .5em 0;  }
+			h3 { font-size: 1.25em; margin: .5em 0;  }
+			p { font-size: 1em; margin: .5em 0;  }
+			ul { margin: .5em 0; }
+		}
+
+		.step.step-1 {
+			.actions {
+				padding: 0;
+				margin: .5em 0;
+				list-style: none;
+				display: flex;
+				flex-direction: row;
+				button {
+					border: 2px solid #ffffff80;
+					border-radius: .5em;
+					padding: .5em 1em;
+					text-transform: uppercase;
+					background: none;
+					&.in {
+						background:#ffffff33;
+					}
+				}
+			}
+			blockquote {
+				margin: .5em 0;
+				border-left: $block-border-width solid tomato;
+				padding: .5em 1em 1em;
+				background:#0000004d;
+			}
+		}
+
+		.input-group {
+			padding-bottom: .5em;
+			.input-control {
+				margin: 1em 0;
+				label {
+					font-size: 0.8em;
+					font-weight: normal;
+					margin: 0;
+					padding: 0;
+					color: #ffffffb3;
+				}
+				.input-field{
+					width: 100%;
+					font-size: 1.2em;
+					background:none;
+					border: none;
+					border-bottom: 1px solid white;
+					padding: .2em 0;
+					margin: 0;
+					color:white;
+					&:focus {
+						background: none;
+					}
+				}
+			}
+		}
+
+		.step.step-2.step-local {
+			.input-group {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+				margin: .5em 0;
+				border-left: $block-border-width solid white;
+				padding: .5em 1em 1em;
+				background:#0000004d;
+
+				> p {
+					width: 100%;
+				}
+
+				.input-control {
+					width: 30%;
+					margin-right: 3.33%;
+				}
+			}
+		}
+
+		.step.step-2.step-online {
+			.actions {
+				padding: 0;
+				margin: .5em 0 1em;
+				list-style: none;
+				display: flex;
+				flex-direction: row;
+				button {
+					border: 2px solid #ffffff80;
+					border-radius: .5em;
+					padding: .5em 1em;
+					text-transform: uppercase;
+					background: none;
+					&.in {
+						background:#ffffff33;
+					}
+				}
+			}
+
+			.text-danger {
+				color:tomato;
+			}
+
+			.input-group {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+				margin: .5em 0;
+				border-left: $block-border-width solid white;
+				padding: .5em 1em 1em;
+				background:#0000004d;
+
+				> p {
+					width: 100%;
+				}
+
+				.input-control {
+					width: 47%;
+					margin-right: 3%;
+				}
+			}
+		}
+
+		.step.step-3 {
+			margin: 0;
+			border-left: $block-border-width solid tomato;
+			padding: 1em;
+			background:#0000004d;
+
+			.intro em {
+				color:tomato;
+			}
+
+			.input-group {
+				max-width: 300px;
+			}
+
+			.actions {
+				padding: 0;
+				list-style: none;
+				text-align: right;
+				button {
+					background:tomato;
+					color:white;
+					border: 2px solid white;
+					border-radius: .5em;
+					padding: .5em 1em;
+					text-transform: uppercase;
+					font-weight: bold;
+				}
+			}
+		}
+
+		.step.step-repo {
+			.input-group {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+				margin: .5em 0;
+				border-left: $block-border-width solid white;
+				padding: .5em 1em 1em;
+				background:#0000004d;
+
+				> p {
+					width: 100%;
+				}
+
+				.input-control {
+					width: 100%;
+				}
+
+				button {
+					border: 2px solid #ffffff80;
+					border-radius: .5em;
+					margin: .5em 0;
+					padding: .5em 1em;
+					text-transform: uppercase;
+					background: none;
+					&.in {
+						background:#ffffff33;
+					}
+				}
+			}
+			.actions {
+				padding: 0;
+				margin: .5em 0;
+				text-align: right;
+				button {
+					border: 2px solid #ffffff80;
+					border-radius: .5em;
+					padding: .5em 1em;
+					text-transform: uppercase;
+					background: none;
+					&.in {
+						background:#ffffff33;
+					}
+				}
+			}
+		}
+
+		.step.step-random {
+			.input-group {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+				margin: .5em 0;
+				border-left: $block-border-width solid white;
+				padding: .5em 1em 1em;
+				background:#0000004d;
+
+				button {
+					border: 2px solid #ffffff80;
+					border-radius: .5em;
+					padding: .5em 1em;
+					text-transform: uppercase;
+					background: none;
+					outline:none;
+					&.on {
+						background:#a6e22b;
+						color:black;
+						font-weight: bold;
+					}
+					&.off {
+						background:tomato;
+						font-weight: bold;
+					}
+				}
+
+			}
+			.actions {
+				padding: 0;
+				margin: .5em 0;
+				text-align: right;
+				button {
+					border: 2px solid #ffffff80;
+					border-radius: .5em;
+					padding: .5em 1em;
+					text-transform: uppercase;
+					background: none;
+					&.in {
+						background:#ffffff33;
+					}
+				}
+			}
+		}
+	}
+}

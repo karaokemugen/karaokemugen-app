@@ -1,5 +1,6 @@
 import { DBKara } from '../lib/types/database/kara';
 import { Media } from './medias';
+import { CurrentSong } from './playlist';
 
 export interface PlayerState {
 	volume?: number,
@@ -8,7 +9,6 @@ export interface PlayerState {
 	_playing?: boolean, // internal delay flag
 	timeposition?: number,
 	mute?: boolean,
-	'sub-text'?: string,
 	currentSong?: MediaData,
 	currentMedia?: Media,
 	mediaType?: 'song' | 'background' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
@@ -27,26 +27,12 @@ export interface mpvStatus {
 	property: string,
 	value: any
 }
-export interface playerStatus {
-	'sub-text': string,
-	volume: number,
-	duration: number,
-	'playtime-remaining': number,
-	'eof-reached': boolean,
-	mute: boolean,
-	pause: boolean,
-	filename: string,
-	path: string,
-	'media-title': string,
-	loop: string,
-	fullscreen: boolean
-}
 
 export interface MediaData {
 	media: string,
 	subfile: string,
 	gain: number,
-	currentSong: DBKara,
+	currentSong: CurrentSong | DBKara,
 	infos: string,
 	avatar: string,
 	duration: number,

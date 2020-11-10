@@ -1,0 +1,52 @@
+@import '~antd/dist/antd.dark.css';
+
+.ant-layout-header {
+  padding: 0;
+}
+
+.ant-layout-content .ant-layout-header {
+	height: auto;
+	line-height: normal;
+	padding: 1em;
+}
+
+.UI-notification-loading .ant-spin-nested-loading {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(255,255,255,0.5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-form-item {
+  text-align: left;
+}
+
+.UI-notification-loading .ant-spin-container {
+  display: none;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+.pathFolders {
+	word-break: break-all;
+}
+
+.pageLayout {
+	height: 100%;
+	overflow: auto;
+}
+
+.menuItemInactive {
+	pointer-events: none;
+}

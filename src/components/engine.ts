@@ -177,7 +177,7 @@ export async function initEngine() {
 			}
 			if (state.isTest) {
 				if (state.opt.noTestDownloads) {
-					runTests();
+					//runTests();
 				} else {
 					downloadTestSongs();
 					on('downloadQueueStatus', (status: string[]) => {
@@ -304,7 +304,7 @@ async function preFlightCheck(): Promise<boolean> {
 }
 
 async function runTests() {
-	const options = ['--require', 'ts-node/register', '--timeout',  '20000', 'test/*.ts' ];
+	const options = ['--require', 'ts-node/register', '--require', 'test/util/hooks.ts', '--timeout',  '20000', 'test/*.ts' ];
 	try {
 		const ret = await execa('mocha', options, {
 			cwd: getState().appPath

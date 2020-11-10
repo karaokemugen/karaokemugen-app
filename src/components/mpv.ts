@@ -41,7 +41,6 @@ const playerState: PlayerState = {
 	_playing: false, // internal delay flag
 	timeposition: 0,
 	mute: false,
-	'sub-text': null,
 	currentSong: null,
 	mediaType: 'background',
 	showSubs: true,
@@ -86,8 +85,34 @@ function needsLock() {
 	};
 }
 
+// Compute a quick diff for state
+function quickDiff() {
+	const oldState = getState().player;
+	const diff: Partial<PlayerState> = {};
+	for (const key of Object.keys(playerState)) {
+		switch (key) {
+		case 'currentSong':
+			if (oldState.currentSong?.currentSong.kid !== playerState.currentSong?.currentSong.kid) {
+				diff[key] = playerState[key];
+			}
+			break;
+		case 'currentMedia':
+			if (oldState.currentMedia?.filename !== playerState.currentMedia?.filename) {
+				diff[key] = playerState[key];
+			}
+			break;
+		default:
+			if (oldState[key] !== playerState[key]) {
+				diff[key] = playerState[key];
+			}
+			break;
+		}
+	}
+	return diff;
+}
+
 function emitPlayerState() {
-	setState({player: playerState});
+	setState({player: quickDiff()});
 }
 
 async function checkMpv() {
@@ -226,10 +251,10 @@ class Player {
 	}
 
 	private debounceTimePosition(position) {
-		const conf = getConfig();
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
+		const conf = getConfig();
 		if (playerState?.currentSong?.duration) {
 			if (conf.Player.ProgressBarDock) {
 				playerState.mediaType === 'song'
@@ -269,15 +294,15 @@ class Player {
 		}
 	}
 
-	debouncedTimePosition = debounce(this.debounceTimePosition, 150, {maxWait: 300});
+	debouncedTimePosition = debounce(this.debounceTimePosition, 125, {maxWait: 250, leading: true});
 
 	private bindEvents() {
 		if (!this.options.monitor) {
 			this.mpv.on('property-change', (status) => {
-				if (status.name !== 'playback-time' && status.name !== 'sub-text')
+				if (status.name !== 'playback-time') {
 					logger.debug('mpv status', {service: 'Player', obj: status});
-				playerState[status.name] = status.data;
-				emitPlayerState();
+					playerState[status.name] = status.data;
+				}
 				// If we're displaying an image, it means it's the pause inbetween songs
 				if (/*playerState._playing && */!playerState.isOperating && playerState.mediaType !== 'background' &&
 					(
@@ -288,6 +313,7 @@ class Player {
 					// Do not trigger 'pause' event from mpv
 					playerState._playing = false;
 					playerEnding();
+					emitPlayerState();
 				} else if (status.name === 'playback-time') {
 					this.debouncedTimePosition(status.data);
 				}
@@ -358,7 +384,6 @@ class Player {
 				throw err;
 			});
 			if (!this.options.monitor) {
-				this.mpv.observeProperty('sub-text');
 				this.mpv.observeProperty('eof-reached');
 				this.mpv.observeProperty('playback-time');
 				this.mpv.observeProperty('mute');

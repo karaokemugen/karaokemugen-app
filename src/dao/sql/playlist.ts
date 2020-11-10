@@ -208,6 +208,7 @@ SELECT ak.kid AS kid,
     pc.nickname AS nickname,
 	pc.created_at AS created_at,
 	ak.mediafile AS mediafile,
+    ak.mediasize AS mediasize,
 	ak.subfile AS subfile,
 	pc.pos AS pos,
 	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
