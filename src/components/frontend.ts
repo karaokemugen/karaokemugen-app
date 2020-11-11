@@ -10,6 +10,7 @@ import {resolve} from 'path';
 import authController from '../controllers/auth';
 import blacklistController from '../controllers/frontend/blacklist';
 import downloadController from '../controllers/frontend/download';
+import emulateController from '../controllers/frontend/emulate';
 import favoritesController from '../controllers/frontend/favorites';
 import filesController from '../controllers/frontend/files';
 import karaController from '../controllers/frontend/kara';
@@ -32,9 +33,10 @@ import { getState } from '../utils/state';
 
 /** Declare all routers for API types */
 
-function apiHTTPRouter(): Router {
+function apiHTTPRouter(ws: SocketIOApp): Router {
 	const apiRouter = express.Router();
 	filesController(apiRouter);
+	emulateController(apiRouter, ws);
 	return apiRouter;
 }
 
@@ -101,7 +103,6 @@ export function initFrontend(): number {
 		//HTTP standards are important.
 		app.use('/coffee', (_req, res) => res.status(418).json());
 
-		app.use('/api', apiHTTPRouter());
 		app.use('/', cspMiddleware, express.static(resolve(state.resourcePath, 'kmfrontend/build')));
 		app.get('/*', cspMiddleware, (_req, res) => {
 			res.sendFile(resolve(state.resourcePath, 'kmfrontend/build/index.html'));
@@ -111,6 +112,7 @@ export function initFrontend(): number {
 		// Init websockets
 		const ws = initWS(server);
 		apiRouter(ws);
+		app.use('/api', apiHTTPRouter(ws));
 		let port = state.frontendPort;
 		try {
 			server.listen(port, () => {
