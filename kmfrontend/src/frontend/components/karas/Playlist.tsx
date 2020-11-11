@@ -478,12 +478,10 @@ class Playlist extends Component<IProps, IState> {
 		}
 		const karas: KaraList = await commandBackend(url, param);
 		if (this.state.idPlaylist > 0) {
-			karas.content.forEach((kara, index) => {
-				if (kara?.flag_playing) {
-					setPosPlaying(this.context.globalDispatch, kara.pos, this.props.side);
-					this.setState({ scrollToIndex: index, _goToPlaying: true, playing: index });
-				}
-			});
+			const result = await commandBackend('findPlayingSongInPlaylist', { pl_id: this.state.idPlaylist });
+			if (result?.index !== -1) {
+				this.setState({ scrollToIndex: result.index, _goToPlaying: true });
+			}
 		}
 		if (karas.infos?.from > 0) {
 			data = this.state.data;
@@ -563,9 +561,11 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	updateCounters = (event: PublicPlayerState) => {
-		if (this.state.playlistInfo && this.state.playlistInfo.flag_current)
+		if (this.state.playlistInfo && this.state.playlistInfo.flag_current) {
 			this.setState({ songsBeforeJingle: event.songsBeforeJingle, songsBeforeSponsor: event.songsBeforeSponsor });
-		else this.setState({ songsBeforeJingle: undefined, songsBeforeSponsor: undefined });
+		} else {
+			this.setState({ songsBeforeJingle: undefined, songsBeforeSponsor: undefined });
+		}
 	}
 
 	selectAllKaras = () => {
