@@ -12,8 +12,11 @@
 	--img: none;
 	@include blurred-bg;
 	&.fixed {
-		width: 75%;
+		width: 95%;
 		margin: auto;
+		@media screen and (min-width: $mugen-breakpoint-large) {
+			width: 75%;
+		}
 	}
 	> * {
 		position: relative;
