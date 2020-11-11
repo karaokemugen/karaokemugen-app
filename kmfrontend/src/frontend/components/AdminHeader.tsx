@@ -133,14 +133,14 @@ class AdminHeader extends Component<IProps, IState> {
 								active: this.state.songVisibilityOperator,
 								activeColor: '#57bb00',
 								onClick: () => this.saveOperatorAdd(true),
-
+								description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
 							},
 							{
 								label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
 								active: !this.state.songVisibilityOperator,
 								activeColor: '#880500',
 								onClick: () => this.saveOperatorAdd(false),
-
+								description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON')
 							}
 						]}
 					/>
@@ -152,21 +152,21 @@ class AdminHeader extends Component<IProps, IState> {
 								active: this.state.frontendMode === 0,
 								activeColor: '#880500',
 								onClick: () => this.changePublicInterfaceMode(0),
-
+								description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')
 							},
 							{
 								label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
 								active: this.state.frontendMode === 1,
 								activeColor: '#cf4200',
 								onClick: () => this.changePublicInterfaceMode(1),
-
+								description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
 							},
 							{
 								label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
 								active: this.state.frontendMode === 2,
 								activeColor: '#57bb00',
 								onClick: () => this.changePublicInterfaceMode(2),
-
+								description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
 							}
 						]}
 					/>

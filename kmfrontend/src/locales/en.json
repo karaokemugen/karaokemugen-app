@@ -276,6 +276,8 @@
 			"ADDED_SONG_VISIBILITY_PUBLIC": "Public song requests visibility",
 			"ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP": "Should songs added by the operator be visible to the public or considered mystery songs?",
 			"ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP": "Should songs added by the public be visible to the public or considered mystery songs?",
+			"ADDED_SONG_VISIBILITY_ADMIN_ON": "Songs will be added as mystery songs (you can define these songs label in settings)",
+			"ADDED_SONG_VISIBILITY_ADMIN_OFF": "Songs will be added normally (visible to the public)",
 			"LABELS_MYSTERY_SONGS": "Mystery songs labels",
 			"LABELS_MYSTERY_SONGS_ADD": "Add",
 			"LABELS_MYSTERY_SONGS_DELETE": "Remove",

@@ -286,6 +286,8 @@
 			"ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP": "Les chansons ajoutées par l'opérateur doivent-elles être visibles pour le public ou considérées comme chansons mystère ?",
 			"ADDED_SONG_VISIBILITY_PUBLIC": "Visibilité des ajouts du public",
 			"ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP": "Les chansons ajoutées par le public doivent-elles être visibles pour ce dernier ou considérées comme chansons mystère ?",
+			"ADDED_SONG_VISIBILITY_ADMIN_ON": "Les chansons ajoutées seront affichées au public comme mystère (vous pouvez définir le texte qui apparaît à la place dans les options)",
+			"ADDED_SONG_VISIBILITY_ADMIN_OFF": "Les chansons ajoutées seront affichées au public normalement",
 			"LABELS_MYSTERY_SONGS": "Libellés des chansons mystères",
 			"LABELS_MYSTERY_SONGS_ADD": "Ajouter",
 			"LABELS_MYSTERY_SONGS_DELETE": "Supprimer",
