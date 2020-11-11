@@ -594,7 +594,7 @@ class Players {
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
-			await this.exec({command: ['loadfile', backgroundImageFile]});
+			await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {title: 'Karaoke Mugen Player'}]});
 		} catch(err) {
 			logger.error('Unable to load background', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -688,7 +688,8 @@ class Players {
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
 		const options: any = {
-			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0'
+			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0',
+			title: `${mediaData.currentSong.title} - Karaoke Mugen Player`
 		};
 		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
 			.catch(err => {
@@ -697,10 +698,10 @@ class Players {
 			}) || []; // Empty array
 		if (subFiles[0]) {
 			options['sub-file'] = subFiles[0];
-			options['sid'] = '1';
+			options.sid = '1';
 		} else {
 			options['sub-file'] = '';
-			options['sid'] = 'none';
+			options.sid = 'none';
 		}
 		if (mediaFile.endsWith('.mp3')) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
@@ -717,7 +718,7 @@ class Players {
 				options['external-file'] = defaultImageFile.replace(/\\/g,'/');
 				options['force-window'] = 'yes';
 				options['image-display-duration'] = 'inf';
-				options['vid'] = '1';
+				options.vid = '1';
 			}
 		} else {
 			// If video, display avatar if it's defined.
@@ -768,7 +769,8 @@ class Players {
 			setState({currentlyPlayingKara: mediaType});
 			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
 			const options: any = {
-				'replaygain-fallback': media.audiogain.toString()
+				'replaygain-fallback': media.audiogain.toString(),
+				title: `${mediaType} - Karaoke Mugen Player`
 			};
 			const subFile = replaceExt(media.filename, '.ass');
 			logger.debug(`Searching for ${subFile}`, {service: 'Player'});
