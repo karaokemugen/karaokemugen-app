@@ -23,30 +23,26 @@ class KmAppWrapperDecorator extends Component<IProps, IState> {
 		};
 	}
 
-	componentWillReceiveProps(nextProps: IProps) {
-		if (nextProps.view !== this.props.view) {
-			this.resizeCheck();
-		}
-	}
-
 	resizeCheck = () => {
 		// Calculate empty space for fillSpace cheat.
-		// See KMAppBodyDecorator
+		// Virtual lists doesn't expand automatically, or more than needed, so the height is forced by JS calculations
+		// using getBoundingClientRect
 		this.setState({height: '0px'}, () => {
 			const wrapper = this.state.ref.current.getBoundingClientRect();
 			this.setState({ height: `${window.innerHeight - wrapper.bottom}px` });
 		});
 	}
 
-	interval: NodeJS.Timeout
-
 	componentDidMount() {
 		this.resizeCheck();
 		window.addEventListener('resize', this.resizeCheck);
+		if (this.props.single) {
+			document.getElementsByTagName('body')[0].setAttribute('class', 'forceScroll');
+		}
 	}
 
 	componentDidUpdate(prevProps: Readonly<IProps>) {
-		if (prevProps.bottom !== this.props.bottom || prevProps.top !== this.props.top) {
+		if (prevProps.bottom !== this.props.bottom || prevProps.top !== this.props.top || prevProps.view !== this.props.view) {
 			this.resizeCheck();
 		}
 	}
