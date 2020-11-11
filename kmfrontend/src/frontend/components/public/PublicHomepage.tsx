@@ -91,39 +91,43 @@ class PublicHomepage extends Component<IProps, IState> {
 						<button className="action yellow" onClick={() => this.props.changeView('favorites')}>
 							<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORIS')}
 						</button>
-						<button className="action blue" onClick={() => this.props.changeView('search')}>
-							<i className="fas fa-fw fa-search" /> {i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}
-						</button>
-						<button className="action green" onClick={this.getLucky}>
-							<i className="fas fa-fw fa-dice" /> {i18next.t('PUBLIC_HOMEPAGE.GET_LUCKY')}
-						</button>
-						<h3 className="subtitle">
-							{i18next.t('PUBLIC_HOMEPAGE.EXPLORE')}
-						</h3>
-						{Object.keys(tagTypes).map(type => {
-							if ([1, 2, 4, 5].includes(tagTypes[type].type)) {
-								return <button className={`action ${tagTypes[type].color}`} onClick={() => this.props.changeView('tag', tagTypes[type].type)} key={`tag-${tagTypes[type].type}`}>
-									<i className={`fas fa-fw fa-${tagTypes[type].icon}`} /> {i18next.t(`TAG_TYPES.${type}`, {count: 2})}
-								</button>;
-							}
-						})}
-						<button className="action" onClick={() => this.props.changeView('tag', YEARS.type)}>
-							<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS_YEAR')}
-						</button>
-						<button className="action" onClick={() => this.setState({othersMenu: !this.state.othersMenu})}>
-							<i className={this.state.othersMenu ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'}/>
-							{i18next.t('PUBLIC_HOMEPAGE.OTHERS')}
-						</button>
-						{this.state.othersMenu ?
-							<>
+						{this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
+							<React.Fragment>
+								<button className="action blue" onClick={() => this.props.changeView('search')}>
+									<i className="fas fa-fw fa-search" /> {i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}
+								</button>
+								<button className="action green" onClick={this.getLucky}>
+									<i className="fas fa-fw fa-dice" /> {i18next.t('PUBLIC_HOMEPAGE.GET_LUCKY')}
+								</button>
+								<h3 className="subtitle">
+									{i18next.t('PUBLIC_HOMEPAGE.EXPLORE')}
+								</h3>
 								{Object.keys(tagTypes).map(type => {
-									if (![1, 2, 4, 5].includes(tagTypes[type].type)) {
+									if ([1, 2, 4, 5].includes(tagTypes[type].type)) {
 										return <button className={`action ${tagTypes[type].color}`} onClick={() => this.props.changeView('tag', tagTypes[type].type)} key={`tag-${tagTypes[type].type}`}>
 											<i className={`fas fa-fw fa-${tagTypes[type].icon}`} /> {i18next.t(`TAG_TYPES.${type}`, {count: 2})}
 										</button>;
 									}
 								})}
-							</> : null
+								<button className="action" onClick={() => this.props.changeView('tag', YEARS.type)}>
+									<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS_YEAR')}
+								</button>
+								<button className="action" onClick={() => this.setState({othersMenu: !this.state.othersMenu})}>
+									<i className={this.state.othersMenu ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'}/>
+									{i18next.t('PUBLIC_HOMEPAGE.OTHERS')}
+								</button>
+								{this.state.othersMenu ?
+									<>
+										{Object.keys(tagTypes).map(type => {
+											if (![1, 2, 4, 5].includes(tagTypes[type].type)) {
+												return <button className={`action ${tagTypes[type].color}`} onClick={() => this.props.changeView('tag', tagTypes[type].type)} key={`tag-${tagTypes[type].type}`}>
+													<i className={`fas fa-fw fa-${tagTypes[type].icon}`} /> {i18next.t(`TAG_TYPES.${type}`, {count: 2})}
+												</button>;
+											}
+										})}
+									</> : null
+								}
+							</React.Fragment> : null
 						}
 					</div>
 				</React.Fragment>
