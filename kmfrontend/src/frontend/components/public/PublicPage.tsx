@@ -82,7 +82,7 @@ class PublicPage extends Component<IProps, IState> {
 		} else if (view === 'currentPlaylist') {
 			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaylistID;
 		}
-		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria });
+		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, kara: undefined, profileModal: false });
 	};
 
 	majIdsPlaylist = (side: number, value: number) => {
@@ -218,7 +218,7 @@ class PublicPage extends Component<IProps, IState> {
 											<button
 												className='btn side2Button'
 												type="button"
-												onClick={() => this.setState({ view: 
+												onClick={() => this.setState({ view:
 													(this.state.view === 'search' && this.state.searchCriteria ? 'tag' : 'home') })}>
 												<i className="fas fa-arrow-left" />
 											</button>
