@@ -538,7 +538,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						if (queue.status === 'DL_RUNNING') {
 							button = <span><Button disabled type="default"><SyncOutlined spin /></Button></span>;
 						} else if (queue.status === 'DL_PLANNED') {
-							button = <Button onClick={() => commandBackend(`/downloads/${queue.uuid}`)} type="default">
+							button = <Button disabled type="default">
 								<ClockCircleTwoTone twoToneColor="#dc4e41" />
 							</Button>;
 						} else if (queue.status === 'DL_DONE') {// done but not in local -> try again dude
