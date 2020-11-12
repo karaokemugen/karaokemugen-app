@@ -209,7 +209,7 @@ export default function karaController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		try {
-			return await getKaraPlayed(req.token, req.langs, +req.body.from || 0, +req.body.size || 9999999);
+			return await getKaraPlayed(req.token, req.langs, +req.body?.from || 0, +req.body?.size || 9999999);
 		} catch(err) {
 			const code = 'KARA_PLAYED_ERROR';
 			errMessage(code, err);
