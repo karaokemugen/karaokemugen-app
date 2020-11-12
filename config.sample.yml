@@ -1,6 +1,6 @@
 ---
 App:
-  # FirstRun is set to false after user completed the tutorial. Reset it to true to generate a new admin password
+  # FirstRun is set to false after user completed the tutorial.
   FirstRun: true
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
@@ -64,8 +64,8 @@ Karaoke:
     PauseDuration: 15
     Twitch:
       Enabled: false
-      OAuth: 'abcdefgh'
-      Channel: 'AxelTerizaki'
+      OAuth: ''
+      Channel: ''
   # Repeat playlist once reaching the end
   Repeat: false
   # In private mode try to insert songs in a smart way.
