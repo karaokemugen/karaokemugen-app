@@ -108,9 +108,9 @@ body:not(.touch) {
 	font-size: 120%;
 	padding: 1em;
 	display: flex;
+	flex-direction: column;
 	flex-wrap: wrap;
-	align-items: baseline;
-	justify-content: center;
+	align-items: center;
 
 	div {
 		margin-left: .25em;

@@ -40,7 +40,7 @@ export interface Config {
 		},
 		ShowAvatarsOnPlaylist?: boolean
 	},
-	Gitlab: {
+	Gitlab?: {
 		Enabled?: boolean,
 		Host?: string,
 		Token?: string,

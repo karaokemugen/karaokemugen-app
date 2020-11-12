@@ -1,8 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { postSuggestionToKaraBase } from '../../lib/services/gitlab';
 import { APIData } from '../../lib/types/api';
-import { getConfig } from '../../lib/utils/config';
 import { isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getKara, getKaraHistory, getKaraLyrics, getKaraPlayed, getKaras, getTop50 } from '../../services/kara';
@@ -14,44 +12,6 @@ import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function karaController(router: SocketIOApp) {
-	router.route('suggestKara', async (socket: Socket, req: APIData) => {
-	/**
-	 * @api {post} Suggest a new song to your karaokebase project
-	 * @apiName suggestKara
-	 * @apiVersion 5.0.0
-	 * @apiGroup Karaokes
-	 * @apiPermission public
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {String} karaName Name of song + series / artist
-	 * @apiParam {String} karaSerie Series / artist
-	 * @apiParam {String} karaType songtype
-	 * @apiParam {String} link link to a video
-	 * @apiSuccess {String} issueURL New issue's URL
-	 * @apiSuccessExample Success-Response:
- 	 * HTTP/1.1 200 OK
- 	 * {url: "https://lab.shelter.moe/xxx/issues/1234"}
-	 * @apiErrorExample Error-Response:
- 	 * HTTP/1.1 500 Internal Server Error
-	 * {code: "KARA_SUGGESTION_ERROR" }
-	 * @apiErrorExample Error-Response:
- 	 * HTTP/1.1 403 Forbidden
-	 * {code: "GITLAB_DISABLED" }
-	 */
-		await runChecklist(socket, req, 'guest');
-		try {
-			if (getConfig().Gitlab.Enabled) {
-				const url = await postSuggestionToKaraBase(req.body.title, req.body.serie, req.body.type, req.body.link, req.token.username);
-				return {url: url};
-			} else {
-				throw APIMessage('GITLAB_DISABLED');
-			}
-		} catch(err) {
-			const code = 'KARA_SUGGESTION_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
-		}
-	});
-
 	router.route('getKaras', async (socket: Socket, req: APIData) => {
 	/**
  * @api {get} Get complete list of karaokes

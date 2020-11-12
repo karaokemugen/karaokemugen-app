@@ -53,34 +53,6 @@ Frontend:
   SeriesLanguageMode: 3
   ShowAvatarsOnPlaylist: true
 
-Gitlab:
-  # Enable or not gitlab posting
-  Enable: false
-  # URL to your gitlab instance
-  Host: https://lab.shelter.moe
-  # Access token
-  Token: xxx
-  # Project ID where you want issues posted
-  ProjectID: 1234
-  Template:
-    Suggestion:
-      Description: >
-        # Karaoke suggestion
-
-
-        **Title** : $title
-
-
-        **Serie** : $serie
-
-
-        **Type** : $type
-
-
-        **Link** : $link
-      Title: "[Suggestion] $serie - $title"
-      Labels:
-        - suggestion
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false

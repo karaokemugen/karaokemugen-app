@@ -19,7 +19,6 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { callModal, displayMessage, eventEmitter, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
-import SuggestionModal from '../modals/SuggestionModal';
 import BlacklistCriterias from './BlacklistCriterias';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
@@ -305,20 +304,14 @@ class Playlist extends Component<IProps, IState> {
 
 	noRowsRenderer = () => {
 		return <React.Fragment>
-			{this.context?.globalState.settings.data.config?.Gitlab.Enabled &&
-				this.state.idPlaylist === -1 ? (
-					<li className="list-group-item karaSuggestion">
-						<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-						{this.props.scope === 'admin' ?
-							<React.Fragment>
-								<div><a href="/system/km/karas/download">{i18next.t('KARA_SUGGESTION_DOWNLOAD')}</a></div>
-								<div>{i18next.t('KARA_SUGGESTION_OR')}</div>
-								<div><a onClick={this.karaSuggestion}>{i18next.t('KARA_SUGGESTION_GITLAB_ADMIN')}</a></div>
-							</React.Fragment> :
-							<div><a onClick={this.karaSuggestion}>{i18next.t('KARA_SUGGESTION_GITLAB')}</a></div>
-						}
-					</li>
-				) : null}
+			{this.state.idPlaylist === -1 && this.props.scope === 'admin'? (
+				<li className="list-group-item karaSuggestion">
+					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
+					{this.context?.globalState.settings.data.config.System.Repositories
+						.filter(value => value.Enabled && value.Online).map(value => <a href={`https://${value.Name}/base`} >{value.Name}</a>)}
+					<a href="https://suggest.karaokes.moe" >suggest.karaokes.moe</a>
+				</li>
+			) : null}
 		</React.Fragment>;
 	}
 
@@ -743,10 +736,6 @@ class Playlist extends Component<IProps, IState> {
 			await commandBackend(url, data);
 		}
 	};
-
-	karaSuggestion = () => {
-		ReactDOM.render(<SuggestionModal />, document.getElementById('modal'));
-	}
 
 	onChangeTags = (type: number | string, value: string) => {
 		const searchCriteria = type === 0 ? 'year' : 'tag';
