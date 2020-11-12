@@ -71,36 +71,6 @@ export const defaults: Config = {
 		SeriesLanguageMode: 3,
 		ShowAvatarsOnPlaylist: true
 	},
-	Gitlab: {
-		Enabled: true,
-		Host: 'https://lab.shelter.moe',
-		ProjectID: 2,
-		// This is a reporter-only access token, nothing of value is here.
-		Token: 'i5WnabG3fvda4oxx-FRb',
-		IssueTemplate: {
-			Suggestion: {
-				Description: `
-# Suggestion de karaoké
-
-
-**Auteur de l'issue** : $username
-
-
-**Titre** : $title
-
-
-**Série** : $serie
-
-
-**Type** : $type
-
-
-**Lien** : $link`,
-				Title: '[Suggestion] $serie - $title',
-				Labels: ['suggestion']
-			}
-		}
-	},
 	GUI: {
 		OpenInElectron: true
 	},
@@ -309,13 +279,6 @@ export const configConstraints = {
 	'Frontend.Port': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Frontend.SeriesLanguageMode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	'Frontend.ShowAvatarsOnPlaylist': {inclusion: bools},
-	'Gitlab.Enabled': {inclusion: bools},
-	'Gitlab.ProjectID': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	'Gitlab.Host': {presence: true},
-	'Gitlab.Token': {presence: true},
-	'Gitlab.IssueTemplate.Suggestion.Description': {presence: true},
-	'Gitlab.IssueTemplate.Suggestion.Title': {presence: true},
-	'Gitlab.IssueTemplate.Suggestion.Labels': {arrayValidator: true},
 	'GUI.OpenInElectron': {inclusion: bools},
 	'Karaoke.Autoplay': {inclusion : bools},
 	'Karaoke.ClassicMode': {inclusion : bools},
