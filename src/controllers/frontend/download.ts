@@ -502,8 +502,8 @@ export default function downloadController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			return await getAllRemoteTags(req.body.repository, {
-				type: +req.body.type
+			return await getAllRemoteTags(req.body?.repository, {
+				type: +req.body?.type
 			});
 		} catch(err) {
 			const code = 'REMOTE_TAGS_ERROR';
