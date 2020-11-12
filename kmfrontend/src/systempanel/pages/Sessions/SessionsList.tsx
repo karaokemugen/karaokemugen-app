@@ -1,10 +1,10 @@
 import { DeleteOutlined, EditOutlined,FileExcelOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox,Divider, Layout, Table } from 'antd';
+import { Button, Checkbox,Divider, Layout, Modal, Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Session } from '../../../../../src/types/session';
+import { Session, SessionExports } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
 
 interface SessionListState {
@@ -33,7 +33,27 @@ class SessionList extends Component<unknown, SessionListState> {
 	}
 
 	exportSession = async (session) => {
-		await commandBackend('exportSession', {seid: session.seid});
+		const exportSession:SessionExports = await commandBackend('exportSession', {seid: session.seid});
+		Modal.info({
+			title: i18next.t('SESSIONS.SESSION_EXPORTED_TITLE'),
+			content: <div>
+				<div>{i18next.t('SESSIONS.SESSION_EXPORTED_DESC')}</div>
+				<ul>
+					<li><a href={`/sessionExports/${exportSession.played}`}>
+						{i18next.t('SESSIONS.SESSION_EXPORT_PLAYED')}
+					</a></li>
+					<li><a href={`/sessionExports/${exportSession.playedCount}`}>
+						{i18next.t('SESSIONS.SESSION_EXPORT_PLAYED_COUNT')}
+					</a></li>
+					<li><a href={`/sessionExports/${exportSession.requested}`}>
+						{i18next.t('SESSIONS.SESSION_EXPORT_REQUESTED')}
+					</a></li>
+					<li><a href={`/sessionExports/${exportSession.requestedCount}`}>
+						{i18next.t('SESSIONS.SESSION_EXPORT_REQUESTED_COUNT')}
+					</a></li>
+				</ul>
+			</div>,
+		  });
 	}
 
 	majPrivate = async (sessionParam: Session) => {
