@@ -84,7 +84,7 @@ describe('Sessions', () => {
 
 	it('Export session', async () => {
 		const session = await commandBackend(token, 'exportSession', {seid: createdSession.seid});
-		expect(session).to.be.not.undefined;
+		expect(session).to.not.be.undefined;
 	});
 
 	let mergedSession: Session;
