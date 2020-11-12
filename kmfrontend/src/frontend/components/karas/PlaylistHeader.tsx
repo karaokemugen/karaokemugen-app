@@ -124,12 +124,10 @@ class PlaylistHeader extends Component<IProps, IState> {
 				'',
 				(confirm: boolean) => {
 					if (confirm) {
-						const url = this.props.idPlaylist === -4 ?
-							'deleteBLCSet' :
-							`/playlists/${this.props.idPlaylist}`;
+						const url = this.props.idPlaylist === -4 ? 'deleteBLCSet' : 'deletePlaylist';
 						const data = this.props.idPlaylist === -4 ?
-							{set_id: this.props.bLSet?.blc_set_id} :
-							{toto: this.props.idPlaylist};
+							{ set_id: this.props.bLSet?.blc_set_id } :
+							{ pl_id: this.props.idPlaylist };
 						commandBackend(url, data);
 						if (this.props.idPlaylist === -4) {
 							this.props.changeIdPlaylist(-4);
@@ -154,12 +152,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 		let data;
 		if (this.props.idPlaylist === -4) {
 			url = 'exportBLCSet';
-			data = {set_id: this.props.bLSet?.blc_set_id};
+			data = { set_id: this.props.bLSet?.blc_set_id };
 		} else if (this.props.idPlaylist === -5) {
 			url = 'exportFavorites';
 		} else if (this.props.idPlaylist > 0) {
 			url = 'exportPlaylist';
-			data = {pl_id: this.props.idPlaylist};
+			data = { pl_id: this.props.idPlaylist };
 		}
 		if (url) {
 			const response = await commandBackend(url, data);
@@ -208,7 +206,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					data.playlist = fr.result;
 					name = JSON.parse(fr.result as string).PlaylistInformation.name;
 				}
-				const response = await commandBackend(url, {buffer: data});
+				const response = await commandBackend(url, { buffer: data });
 				if (response.unknownKaras && response.unknownKaras.length > 0) {
 					const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
@@ -247,20 +245,20 @@ class PlaylistHeader extends Component<IProps, IState> {
 	deleteAllKaras = () => {
 		this.togglePlaylistCommands();
 		if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
-			commandBackend('emptyBLCSet', {set_id: this.props.bLSet?.blc_set_id});
+			commandBackend('emptyBLCSet', { set_id: this.props.bLSet?.blc_set_id });
 		} else if (this.props.idPlaylist === -3) {
 			commandBackend('emptyWhitelist');
 		} else {
-			commandBackend('emptyPlaylist', {pl_id: this.props.idPlaylist});
+			commandBackend('emptyPlaylist', { pl_id: this.props.idPlaylist });
 		}
 	};
 
 	setFlagCurrent = async () => {
 		this.togglePlaylistCommands();
 		if (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) {
-			commandBackend('setCurrentBLCSet', {set_id: this.props.bLSet?.blc_set_id});
+			commandBackend('setCurrentBLCSet', { set_id: this.props.bLSet?.blc_set_id });
 		} else if (!(this.props.playlistInfo as DBPL).flag_current) {
-			await commandBackend('setCurrentPlaylist', {pl_id:this.props.idPlaylist});
+			await commandBackend('setCurrentPlaylist', { pl_id: this.props.idPlaylist });
 		}
 		setSettings(this.context.globalDispatch);
 	};
@@ -268,7 +266,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	setFlagPublic = async () => {
 		this.togglePlaylistCommands();
 		if (!(this.props.playlistInfo as DBPL).flag_public) {
-			await commandBackend('setPublicPlaylist', {pl_id: this.props.idPlaylist});
+			await commandBackend('setPublicPlaylist', { pl_id: this.props.idPlaylist });
 			setSettings(this.context.globalDispatch);
 		}
 	};
