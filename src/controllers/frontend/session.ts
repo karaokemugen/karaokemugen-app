@@ -253,7 +253,6 @@ export default function sessionController(router: SocketIOApp) {
  * @apiParam {String} seid Session ID
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {code: "SESSION_EXPORTED"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "SESSION_EXPORT_ERROR"}
@@ -263,8 +262,7 @@ export default function sessionController(router: SocketIOApp) {
 		if (!isUUID(req.body.seid)) throw {code: 400};
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			await exportSession(req.body.seid);
-			return APIMessage('SESSION_EXPORTED');
+			return await exportSession(req.body.seid);
 		} catch(err) {
 			const code = 'SESSION_EXPORT_ERROR';
 			errMessage(code, err);

@@ -100,6 +100,9 @@ export function initFrontend(): number {
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
+		//Serve session export data
+		app.use('/sessionExports', express.static(resolve(state.dataPath, 'sessionExports/')));
+
 		//HTTP standards are important.
 		app.use('/coffee', (_req, res) => res.status(418).json());
 

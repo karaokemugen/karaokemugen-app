@@ -8,3 +8,10 @@ export interface Session {
 	active?: boolean,
 	private?: boolean
 }
+
+export interface SessionExports {
+	played: string,
+	playedCount: string,
+	requested: string,
+	requestedCount: string
+}
