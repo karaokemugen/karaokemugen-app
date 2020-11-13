@@ -25,6 +25,7 @@ export interface State {
 	introPlayed?: boolean,
 	introSponsorPlayed?: boolean,
 	encorePlayed?: boolean,
+	usersBalance: Set<string>,
 	fullscreen?: boolean,
 	ontop?: boolean,
 	playlist?: null,

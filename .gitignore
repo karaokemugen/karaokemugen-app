@@ -2,6 +2,7 @@
 .idea/
 .npmrc
 .vscode
+.vs
 node_modules
 app/
 

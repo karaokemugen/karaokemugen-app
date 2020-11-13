@@ -70,6 +70,7 @@ export interface Config {
 		MinutesBeforeEndOfSessionWarning?: number,
 		Autoplay?: boolean,
 		SmartInsert?: boolean,
+		AutoBalance?: boolean,
 		JinglesInterval?: number, // Obsolete since 3.1.1, replaced by Playlist.Medias.Jingles.Interval
 		SponsorsInterval?: number, // Obsolete since 3.1.1, replaced by Playlist.Medias.Sponsors.Interval
 		Display: {

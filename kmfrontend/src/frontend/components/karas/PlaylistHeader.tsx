@@ -17,6 +17,7 @@ import Autocomplete from '../generic/Autocomplete';
 import SelectWithIcon from '../generic/SelectWithIcon';
 import BlcSetCopyModal from '../modals/BlcSetCopyModal';
 import FavMixModal from '../modals/FavMixModal';
+import ShuffleModal from '../modals/ShuffleModal';
 import ActionsButtons from './ActionsButtons';
 require('./PlaylistHeader.scss');
 
@@ -280,20 +281,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 		});
 	};
 
-	shuffle = async () => {
-		this.togglePlaylistCommands();
-		this.props.playlistWillUpdate();
-		await commandBackend('shufflePlaylist', { pl_id: this.props.idPlaylist });
-		this.props.playlistDidUpdate();
-	};
-
-	smartShuffle = async () => {
-		this.togglePlaylistCommands();
-		this.props.playlistWillUpdate();
-		await commandBackend('shufflePlaylist', { pl_id: this.props.idPlaylist, smartShuffle: 1 });
-		this.props.playlistDidUpdate();
-	};
-
 	getKarasList = (activeFilter: number, searchType?: string) => {
 		this.setState({ activeFilter: activeFilter });
 		if (activeFilter === 2 && this.props.idPlaylist !== -5) {
@@ -374,6 +361,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 		if (!(e.target as Element).closest('.dropdown-menu')) {
 			this.togglePlaylistCommands();
 		}
+	}
+
+	openShuffleModal = () => {
+		this.togglePlaylistCommands();
+		ReactDOM.render(<ShuffleModal
+			idPlaylist={this.props.idPlaylist}
+			playlistWillUpdate={this.props.playlistWillUpdate}
+			playlistDidUpdate={this.props.playlistDidUpdate}
+		/>, document.getElementById('modal'));
 	}
 
 	render() {
@@ -480,20 +476,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 													</li> : null
 												}
 												{this.props.idPlaylist >= 0 ?
-													<React.Fragment>
-														<li>
-															<a href="#" onClick={this.shuffle} title={i18next.t('ADVANCED.SHUFFLE')}>
-																<i className="fas fa-fw fa-random" />
-																{i18next.t('ADVANCED.SHUFFLE_SHORT')}
-															</a>
-														</li>
-														<li>
-															<a href="#" onClick={this.smartShuffle} title={i18next.t('ADVANCED.SMART_SHUFFLE')}>
-																<i className="fas fa-fw fa-random smartShuffle" />
-																{i18next.t('ADVANCED.SMART_SHUFFLE_SHORT')}
-															</a>
-														</li>
-													</React.Fragment> : null
+													<li>
+														<a href="#" onClick={this.openShuffleModal}>
+															<i className="fas fa-fw fa-random" />
+															{i18next.t('ADVANCED.SHUFFLE')}
+														</a>
+													</li> : null
 												}
 												{this.props.idPlaylistTo >= 0 && this.props.idPlaylist !== -4 ?
 													<React.Fragment>

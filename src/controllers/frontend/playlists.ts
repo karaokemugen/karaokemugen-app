@@ -788,7 +788,7 @@ export default function playlistsController(router: SocketIOApp) {
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID to shuffle
- * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
+ * @apiParam {String} method Parameter to determine the shuffle method to use (normal, smart, balanced etc...)
  * @apiSuccess {String} args ID of playlist shuffled
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of playlist shuffled
@@ -802,12 +802,11 @@ export default function playlistsController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		try {
-			return await shufflePlaylist(req.body?.pl_id, req.body?.smartShuffle);
+			return await shufflePlaylist(req.body?.pl_id, req.body?.method);
 		} catch(err) {
 			const code = 'PL_SHUFFLE_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-
 }

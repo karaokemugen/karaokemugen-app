@@ -95,6 +95,25 @@
 	width: 100%;
 	background-color: #5f2768;
 }
+
+.modal-body.shuffle-modal {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	margin-bottom: 0.5em;
+	
+	button {
+		display: flex;
+		align-items: center;
+
+		div {
+			display: flex;
+			flex-direction: column;
+			max-width: 20em;
+		}
+	}
+}
+
 #nav-poll.modal-body {
 	padding: 0;
 }

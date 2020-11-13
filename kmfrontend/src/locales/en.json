@@ -15,7 +15,7 @@
 	"DETAILS_ADDED_2": "on ",
 	"DETAILS_ADDED_3": "by ",
 	"DETAILS_PLAYING_IN": "Playing in {{time}} ({{date}})",
-	"DETAILS_LAST_PLAYED" : "Last played {{date}}",
+	"DETAILS_LAST_PLAYED": "Last played {{date}}",
 	"DETAILS_LAST_PLAYED_2": "Last played {{time}} ago",
 	"DETAILS_DURATION": "Duration",
 	"DURATION_REMAINING": "remaining",
@@ -78,7 +78,6 @@
 		"LINK": "system panel",
 		"AFTER_LINK": "."
 	},
-	"ENGINEENABLESMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
 	"ENGINEAUTOPLAY": "Autoplay on next song added",
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Force hostname or IP",
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message displayed before URL",
@@ -100,10 +99,6 @@
 	"FILTERS": "Filters",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",
-		"SHUFFLE": "Shuffle playlist",
-		"SHUFFLE_SHORT": "Shuffle",
-		"SMART_SHUFFLE": "Smart shuffle playlist (for better group experience)",
-		"SMART_SHUFFLE_SHORT": "Smart shuffle",
 		"ADD_ALL": "Add all visibles songs",
 		"ADD_RANDOM": "Add random songs",
 		"SELECT_ALL": "Select all visible elements",
@@ -120,7 +115,8 @@
 		"EXPORT": "Export playlist",
 		"ADD": "Add new playlist",
 		"AUTOMIX": "Create an automix",
-		"IMPORT": "Import playlist"
+		"IMPORT": "Import playlist",
+		"SHUFFLE": "Shuffle..."
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Song commands",
@@ -283,7 +279,11 @@
 			"LABELS_MYSTERY_SONGS_DELETE": "Remove",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
-			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning on end of session X minutes before end"
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning on end of session X minutes before end",
+			"ENABLE_SMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
+			"ENABLE_SMARTINSERT_TOOLTIP": "When a song is added by the audience, it will be placed so that those who have not requested a lot of songs to be play earlier",
+			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
+			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns."
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -370,7 +370,7 @@
 	"MAIN_SERIES_LANG": "Series name language",
 	"FALLBACK_SERIES_LANG": "Fallback series name language",
 	"ACTIVE_SESSION": "Active Session : ",
-	"EDIT_SESSION" : "Edit session",
+	"EDIT_SESSION": "Edit session",
 	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
 	"ESSENTIAL_MESSAGE": "Essential message",
@@ -414,6 +414,16 @@
 			"ONLINE_DELETE_WARN": "This will remove your account from the online server @{{instance}}. Are you sure you want to do this?",
 			"LOCAL_DELETE": "Delete this account locally",
 			"LOCAL_DELETE_WARN": "This will remove your account from this local app only. If you have an online account, it won't be disabled. Are you sure you want to do this?"
+		},
+		"SHUFFLE_MODAL": {
+			"TITLE": "Shuffle playlist",
+			"LABEL": "Choose a method to shuffle the playlist:",
+			"SHUFFLE": "Random",
+			"SHUFFLE_DESC": "The playlist will be shuffled randomly, without any influence applied to the mix",
+			"SMART_SHUFFLE": "Smart",
+			"SMART_SHUFFLE_DESC": "Prevents long songs or songs by the same person from following each other",
+			"BALANCE": "Balanced",
+			"BALANCE_DESC": "Reorders songs by pools of users (A-B-C, A-B-C, etc.)"
 		}
 	},
 	"SETUP_PAGE": {
@@ -705,7 +715,7 @@
 		"ADD_DIRECTORY": "Add a directory",
 		"ADD_FILE": "Add a file",
 		"REPOSITORIES_PAGES": "Repositories page",
-		"PROPERTIES" : {
+		"PROPERTIES": {
 			"APP_QUICKSTART": "Quick start of the application",
 			"APP_QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel, database tab.",
 			"ONLINE_ERRORTRACKING": "Send error and crash reports (via sentry.io)",
