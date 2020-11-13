@@ -129,9 +129,13 @@ class KaraBlacklist extends Component<unknown, KaraBlacklistState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Layout>
-					<Layout.Header>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.DOWNLOAD_BLACKLIST.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.DOWNLOAD_BLACKLIST.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<div style={{marginBottom: '1em'}}>
 						<Select style={{ width: 200 }} value={this.state.filter_type} onChange={this.handleCriteriasTypeChange}>
 							{criteras_types.map(o => <Option key={o.value} data-mode={o.mode} value={o.value}>
 								{i18next.t(`BLACKLIST.BLCTYPE_${o.value}`)}
@@ -141,18 +145,15 @@ class KaraBlacklist extends Component<unknown, KaraBlacklistState> {
 						{this.filter_input()}
 						{' '}
 						<Button type="primary" onClick={this.handleCriteriaSubmit}>+</Button>
-					</Layout.Header>
-					<Layout.Content>
+					</div>
+					<Table
+						dataSource={this.state.criterias}
+						columns={this.criterias_columns}
+						rowKey='dlblc_id'
+					/>
 
-						<Table
-							dataSource={this.state.criterias}
-							columns={this.criterias_columns}
-							rowKey='dlblc_id'
-						/>
-
-					</Layout.Content>
-				</Layout>
-			</Layout.Content>
+				</Layout.Content>
+			</>
 		);
 	}
 

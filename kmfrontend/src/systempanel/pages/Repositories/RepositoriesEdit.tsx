@@ -84,26 +84,38 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				{this.state.repository && (<RepositoryForm repository={this.state.repository}
-					save={this.state.save} consolidate={this.consolidate}
-					compareLyrics={this.compareLyrics} copyLyrics={this.copyLyrics} />)}
-				<Modal
-					title={i18next.t('REPOSITORIES.WARNING')}
-					visible={this.state.report}
-					onOk={() => {
-						this.copyLyrics(this.state.report);
-						this.setState({ report: undefined });
-					}}
-					onCancel={() => this.setState({ report: undefined })}
-					okText={i18next.t('YES')}
-					cancelText={i18next.t('NO')}
-				>
-					<p>{i18next.t('REPOSITORIES.LYRICS_ARE_DIFFERENT', { first: this.props.match.params.name, second: this.state.selectedRepo })}</p>
-					<p style={{ fontWeight: 'bold' }}>{this.state.report?.map(kara => kara.kara1.subfile.slice(0, -4))}</p>
-					<p>{i18next.t('REPOSITORIES.CONFIRM_SURE', { first: this.props.match.params.name, second: this.state.selectedRepo })}</p>
-				</Modal>
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t(this.props.match.params.name ?
+						'HEADERS.REPOSITORIES_EDIT.TITLE' :
+						'HEADERS.REPOSITORIES_NEW.TITLE'
+					)}</div>
+					<div className='description'>{i18next.t(this.props.match.params.name ?
+						'HEADERS.REPOSITORIES_EDIT.DESCRIPTION' :
+						'HEADERS.REPOSITORIES_NEW.DESCRIPTION'
+					)}</div>
+				</Layout.Header>
+				<Layout.Content>
+					{this.state.repository && (<RepositoryForm repository={this.state.repository}
+						save={this.state.save} consolidate={this.consolidate}
+						compareLyrics={this.compareLyrics} copyLyrics={this.copyLyrics} />)}
+					<Modal
+						title={i18next.t('REPOSITORIES.WARNING')}
+						visible={this.state.report}
+						onOk={() => {
+							this.copyLyrics(this.state.report);
+							this.setState({ report: undefined });
+						}}
+						onCancel={() => this.setState({ report: undefined })}
+						okText={i18next.t('YES')}
+						cancelText={i18next.t('NO')}
+					>
+						<p>{i18next.t('REPOSITORIES.LYRICS_ARE_DIFFERENT', { first: this.props.match.params.name, second: this.state.selectedRepo })}</p>
+						<p style={{ fontWeight: 'bold' }}>{this.state.report?.map(kara => kara.kara1.subfile.slice(0, -4))}</p>
+						<p>{i18next.t('REPOSITORIES.CONFIRM_SURE', { first: this.props.match.params.name, second: this.state.selectedRepo })}</p>
+					</Modal>
+				</Layout.Content>
+			</>
 
 		);
 	}

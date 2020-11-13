@@ -1,8 +1,8 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Layout, Modal, Select,Table, Tag, Tooltip } from 'antd';
+import { Button, Divider, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { commandBackend } from '../../../utils/socket';
@@ -34,46 +34,50 @@ class TagsList extends Component<unknown, TagsListState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getTags',  { filter: this.filter, type: this.state.type });
-		this.setState({tags: res.content});
+		const res = await commandBackend('getTags', { filter: this.filter, type: this.state.type });
+		this.setState({ tags: res.content });
 	}
 
 	delete = async (tid) => {
 		try {
-			this.setState({deleteModal: false, tag: undefined});
-			await commandBackend('deleteTag', {tid}, true);
+			this.setState({ deleteModal: false, tag: undefined });
+			await commandBackend('deleteTag', { tid }, true);
 			this.refresh();
-		} catch(err) {
-			this.setState({deleteModal: false, tag: undefined});
+		} catch (err) {
+			this.setState({ deleteModal: false, tag: undefined });
 		}
 	};
 
 	changeType = async (value) => {
-		await this.setState({type: value});
+		await this.setState({ type: value });
 		this.refresh();
 	}
 
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Layout>
-					<Layout.Header style={{display: 'flex'}}>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.TAG_LIST.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.TAG_LIST.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<div style={{ display: 'flex', marginBottom: '1em' }}>
 						<Input.Search
 							placeholder={i18next.t('SEARCH_FILTER')}
 							onChange={event => this.filter = event.target.value}
 							enterButton={i18next.t('SEARCH')}
 							onSearch={this.refresh}
 						/>
-						<label style={{marginLeft : '40px', paddingRight : '15px'}}>{i18next.t('TAGS.TYPES')} :</label>
+						<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
 						<Select allowClear={true} style={{ width: 300 }} onChange={this.changeType} defaultValue={this.state.type}>
 							{Object.entries(tagTypes).map(([key, value]) => {
 								return <Select.Option key={value.type} value={value.type}>{i18next.t(`TAG_TYPES.${key}`)}</Select.Option>;
 							})
 							}
 						</Select>
-					</Layout.Header>
-					<Layout.Content><Table
+					</div>
+					<Table
 						dataSource={this.state.tags}
 						columns={this.columns}
 						rowKey='tid'
@@ -82,7 +86,7 @@ class TagsList extends Component<unknown, TagsListState> {
 						title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
 						visible={this.state.deleteModal}
 						onOk={() => this.delete(this.state.tag.tid)}
-						onCancel={() => this.setState({deleteModal: false, tag: undefined})}
+						onCancel={() => this.setState({ deleteModal: false, tag: undefined })}
 						okText={i18next.t('YES')}
 						cancelText={i18next.t('NO')}
 					>
@@ -90,9 +94,8 @@ class TagsList extends Component<unknown, TagsListState> {
 						<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
 						<p>{i18next.t('CONFIRM_SURE')}</p>
 					</Modal>
-					</Layout.Content>
-				</Layout>
-			</Layout.Content>
+				</Layout.Content>
+			</>
 		);
 	}
 
@@ -114,7 +117,7 @@ class TagsList extends Component<unknown, TagsListState> {
 				const isLongTag = name.length > 40;
 				const i18n_name = `[${lang.toUpperCase()}] ${name}`;
 				const tagElem = (
-					<Tag key={lang} style={{margin: '2px'}}>
+					<Tag key={lang} style={{ margin: '2px' }}>
 						{isLongTag ? `${i18n_name.slice(0, 20)}...` : i18n_name}
 					</Tag>
 				);
@@ -130,10 +133,10 @@ class TagsList extends Component<unknown, TagsListState> {
 		title: i18next.t('ACTION'),
 		render: (text, record) => (<span>
 			<Link to={`/system/km/tags/${record.tid}`}><EditOutlined /></Link>
-			<Divider type="vertical"/>
+			<Divider type="vertical" />
 			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
-				() => this.setState({deleteModal: true, tag: record})
-			}/>
+				() => this.setState({ deleteModal: true, tag: record })
+			} />
 		</span>)
 	}];
 }

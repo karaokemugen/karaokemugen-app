@@ -48,9 +48,13 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Layout>
-					<Layout.Content><Table
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.TAG_DUPLICATES.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.TAG_DUPLICATES.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Table
 						dataSource={this.state.tags}
 						columns={this.columns}
 						rowKey='tid'
@@ -67,9 +71,8 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 						<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
 						<p>{i18next.t('CONFIRM_SURE')}</p>
 					</Modal>
-					</Layout.Content>
-				</Layout>
-			</Layout.Content>
+				</Layout.Content>
+			</>
 		);
 	}
 

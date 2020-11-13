@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
@@ -39,7 +40,7 @@ class KaraEdit extends Component<RouteComponentProps<{ kid: string }>, KaraEditS
 	loadKara = async () => {
 		removeListener();
 		if (this.props.match.params.kid) {
-			const res = await commandBackend('getKara', {kid: this.props.match.params.kid}, true);
+			const res = await commandBackend('getKara', { kid: this.props.match.params.kid }, true);
 			this.setState({ kara: res, save: this.saveUpdate, loadKara: true });
 		} else {
 			this.setState({ save: this.saveNew, loadKara: true });
@@ -53,9 +54,21 @@ class KaraEdit extends Component<RouteComponentProps<{ kid: string }>, KaraEditS
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				{this.state.loadKara && <KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy} />}
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t(this.props.match.params.kid ?
+						'HEADERS.KARAOKE_EDIT.TITLE' :
+						'HEADERS.KARAOKE_NEW.TITLE'
+					)}</div>
+					<div className='description'>{i18next.t(this.props.match.params.kid ?
+						'HEADERS.KARAOKE_EDIT.DESCRIPTION' :
+						'HEADERS.KARAOKE_NEW.DESCRIPTION'
+					)}</div>
+				</Layout.Header>
+				<Layout.Content>
+					{this.state.loadKara && <KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy} />}
+				</Layout.Content>
+			</>
 		);
 	}
 }

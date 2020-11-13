@@ -65,20 +65,25 @@ class SessionList extends Component<unknown, SessionListState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Layout>
-					<Layout.Header>
-						<span><Link to={'/system/km/sessions/new'}>{i18next.t('SESSIONS.NEW_SESSION')}<PlusOutlined /></Link></span>
-					</Layout.Header>
-					<Layout.Content>
-						<Table
-							dataSource={this.state.sessions}
-							columns={this.columns}
-							rowKey='seid'
-						/>
-					</Layout.Content>
-				</Layout>
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.SESSIONS.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.SESSIONS.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Link to={'/system/km/sessions/new'}>
+						<Button style={{ margin: '0.75em' }} type='primary'>
+							{i18next.t('SESSIONS.NEW_SESSION')}
+							<PlusOutlined />
+						</Button>
+					</Link>
+					<Table
+						dataSource={this.state.sessions}
+						columns={this.columns}
+						rowKey='seid'
+					/>
+				</Layout.Content>
+			</>
 		);
 	}
 

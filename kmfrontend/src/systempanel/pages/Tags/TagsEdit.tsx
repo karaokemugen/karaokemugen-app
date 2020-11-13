@@ -1,4 +1,5 @@
 import { Layout } from 'antd';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
@@ -61,10 +62,22 @@ class TagEdit extends Component<RouteComponentProps<{ tid: string }>, TagEditSta
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				{this.state.loadTag && <TagsForm tag={this.state.tag} tags={this.state.tags} save={this.state.save}
-					mergeAction={this.handleTagMerge} handleCopy={this.handleCopy} />}
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t(this.props.match.params.tid ? 
+						'HEADERS.TAG_EDIT.TITLE' :
+						'HEADERS.TAG_NEW.TITLE'
+					)}</div>
+					<div className='description'>{i18next.t(this.props.match.params.tid ? 
+						'HEADERS.TAG_EDIT.DESCRIPTION' : 
+						'HEADERS.TAG_NEW.DESCRIPTION'
+					)}</div>
+				</Layout.Header>
+				<Layout.Content>
+					{this.state.loadTag && <TagsForm tag={this.state.tag} tags={this.state.tags} save={this.state.save}
+						mergeAction={this.handleTagMerge} handleCopy={this.handleCopy} />}
+				</Layout.Content>
+			</>
 		);
 	}
 }

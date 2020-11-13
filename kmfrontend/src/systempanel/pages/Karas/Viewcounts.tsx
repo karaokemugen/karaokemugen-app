@@ -34,14 +34,20 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Button style={{margin: '1em'}} type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
-				<Table
-					dataSource={this.state.karas}
-					columns={this.columns}
-					rowKey='kid'
-				/>
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.MOST_PLAYED.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.MOST_PLAYED.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Button style={{margin: '1em'}} type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
+					<Table
+						dataSource={this.state.karas}
+						columns={this.columns}
+						rowKey='kid'
+					/>
+				</Layout.Content>
+			</>
 		);
 	}
 

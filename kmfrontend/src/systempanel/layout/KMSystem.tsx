@@ -11,6 +11,7 @@ import { logout } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import TasksEvent from '../../TasksEvent';
 import { displayMessage } from '../../utils/tools';
+import Loading from '../components/Loading';
 import Config from '../pages/Config';
 import Database from '../pages/Database';
 import Home from '../pages/Home';
@@ -34,7 +35,7 @@ import TagsList from '../pages/Tags/TagsList';
 import UnusedList from '../pages/UnusedList';
 import UserEdit from '../pages/Users/UserEdit';
 import UserList from '../pages/Users/UserList';
-import KMHeader from './KMHeader';
+import KMMenu from './KMMenu';
 
 class KMSystem extends Component<unknown, unknown> {
 	static contextType = GlobalContext;
@@ -50,47 +51,52 @@ class KMSystem extends Component<unknown, unknown> {
 	render() {
 		return (
 			<ConfigProvider locale={navigator.languages[0].includes('fr') ? frFR : enUS}>
-				<Layout className="pageLayout">
-					<KMHeader />
-					<TasksEvent limit={5} />
-					<Switch>
-						<Redirect from='/system/km' exact to='/system/km/home'/>
-						<Route path='/system/km/home' component={Home}/>
+				<Layout>
+					<Layout.Sider>
+						<KMMenu />
+					</Layout.Sider>
+					<Layout>
+						<Loading />
+						<TasksEvent limit={5} />
+						<Switch>
+							<Redirect from='/system/km' exact to='/system/km/home' />
+							<Route path='/system/km/home' component={Home} />
 
-						<Route path='/system/km/log' component={Log}/>
-						<Route path='/system/km/options' component={Options}/>
-						<Route path='/system/km/config' component={Config}/>
-						<Route path='/system/km/unused' component={UnusedList}/>
+							<Route path='/system/km/log' component={Log} />
+							<Route path='/system/km/options' component={Options} />
+							<Route path='/system/km/config' component={Config} />
+							<Route path='/system/km/unused' component={UnusedList} />
 
-						<Route path='/system/km/sessions/new' component={SessionsEdit}/>
-						<Route path='/system/km/sessions/:seid' component={SessionsEdit}/>
-						<Route path='/system/km/sessions' component={SessionsList}/>
+							<Route path='/system/km/sessions/new' component={SessionsEdit} />
+							<Route path='/system/km/sessions/:seid' component={SessionsEdit} />
+							<Route path='/system/km/sessions' component={SessionsList} />
 
-						<Route path='/system/km/repositories/new' component={RepositoriesEdit}/>
-						<Route path='/system/km/repositories/:name' component={RepositoriesEdit}/>
-						<Route path='/system/km/repositories' component={RepositoriesList}/>
+							<Route path='/system/km/repositories/new' component={RepositoriesEdit} />
+							<Route path='/system/km/repositories/:name' component={RepositoriesEdit} />
+							<Route path='/system/km/repositories' component={RepositoriesList} />
 
-						<Route path='/system/km/karas/download' component={KaraDownload}/>
-						<Route path='/system/km/karas/blacklist' component={KaraBlacklist}/>
-						<Route path='/system/km/karas/create' component={KaraEdit}/>
-						<Route path='/system/km/karas/history' component={KaraHistory}/>
-						<Route path='/system/km/karas/ranking' component={KaraRanking}/>
-						<Route path='/system/km/karas/viewcounts' component={KaraViewcounts}/>
-						<Route path='/system/km/karas/batch' component={KaraBatchEdit}/>
-						<Route path='/system/km/karas/:kid' component={KaraEdit}/>
-						<Route path='/system/km/karas' component={KaraList}/>
+							<Route path='/system/km/karas/download' component={KaraDownload} />
+							<Route path='/system/km/karas/blacklist' component={KaraBlacklist} />
+							<Route path='/system/km/karas/create' component={KaraEdit} />
+							<Route path='/system/km/karas/history' component={KaraHistory} />
+							<Route path='/system/km/karas/ranking' component={KaraRanking} />
+							<Route path='/system/km/karas/viewcounts' component={KaraViewcounts} />
+							<Route path='/system/km/karas/batch' component={KaraBatchEdit} />
+							<Route path='/system/km/karas/:kid' component={KaraEdit} />
+							<Route path='/system/km/karas' component={KaraList} />
 
-						<Route path='/system/km/tags/duplicate' component={TagsDuplicate}/>
-						<Route path='/system/km/tags/new' component={TagsEdit}/>
-						<Route path='/system/km/tags/:tid' component={TagsEdit}/>
-						<Route path='/system/km/tags' component={TagsList}/>
+							<Route path='/system/km/tags/duplicate' component={TagsDuplicate} />
+							<Route path='/system/km/tags/new' component={TagsEdit} />
+							<Route path='/system/km/tags/:tid' component={TagsEdit} />
+							<Route path='/system/km/tags' component={TagsList} />
 
-						<Route path='/system/km/db' component={Database}/>
+							<Route path='/system/km/db' component={Database} />
 
-						<Route path='/system/km/users/create' component={UserEdit}/>
-						<Route path='/system/km/users/:userLogin' component={UserEdit}/>
-						<Route path='/system/km/users' component={UserList}/>
-					</Switch>
+							<Route path='/system/km/users/create' component={UserEdit} />
+							<Route path='/system/km/users/:userLogin' component={UserEdit} />
+							<Route path='/system/km/users' component={UserList} />
+						</Switch>
+					</Layout>
 				</Layout>
 			</ConfigProvider>
 		);

@@ -638,6 +638,7 @@
 		"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",
 		"DELETE_USER_CONFIRM": "Suppression de l'utilisateur",
 		"LOG_IN": "Connexion",
+		"NEW_USER": "Nouvel utilisateur",
 		"EDIT_ONLINE_ACCOUNT": "Les utilisateurs en ligne ne peuvent pas être édités depuis cette page hormis pour changer leur rôle sur cette instance de Karaoke Mugen. Pour éditer votre propre profil en ligne, faites cela depuis l'interface publique ou opérateur."
 	},
 	"DATABASE": {
@@ -778,7 +779,7 @@
 		"MERGE_WITH_BUTTON": "Fusion !",
 		"KARA_PLAYED": "Karaokés joués",
 		"KARA_REQUESTED": "Karaokés demandés",
-		"NEW_SESSION": "Nouvelle session :",
+		"NEW_SESSION": "Nouvelle session",
 		"ACTIVE": "Active ?",
 		"PRIVATE": "Privée ?"
 	},
@@ -790,7 +791,7 @@
 		"PATH_LYRICS": "Paroles",
 		"PATH_MEDIAS": "Medias",
 		"PATH_TAGS": "Tags",
-		"NEW_REPOSITORY": "Nouveau dépôt :",
+		"NEW_REPOSITORY": "Nouveau dépôt",
 		"ONLINE": "En ligne",
 		"ENABLED": "Actif",
 		"FOLDERS_REQUIRED": "Un dossier de {{name}} est obligatoire.",
@@ -1067,5 +1068,119 @@
 		"BLC_COPIED": "Copie avec succès des critères de liste noire",
 		"STOP_AFTER": "La lecture sera arrêtée à la fin de la chanson. Cliquez une seconde fois sur le bouton pour arrêter immédiatement."
 	},
-	"SHOW_DETAILS": "Afficher détails"
+	"SHOW_DETAILS": "Afficher détails",
+	"HEADERS": {
+		"HOME": {
+			"TITLE": "Accueil",
+			"DESCRIPTION": "C'est ici que tout commence."
+		},
+		"LOGS": {
+			"TITLE": "Journal d'évènements",
+			"DESCRIPTION": "Tout ce que vous avez toujours voulu ne pas savoir sur le fonctionnement de votre karaoké."
+		},
+		"SYSTEM_PREFERENCES": {
+			"TITLE": "Préférences système",
+			"DESCRIPTION": "Paramètres uniquement liés à l'application Karaoke Mugen"
+		},
+		"CONFIGURATION": {
+			"TITLE": "Configuration avancée",
+			"DESCRIPTION": "Reservé aux experts. Tous les paramètres de Karaoke Mugen sont ici, attention là où vous mettez les doigts."
+		},
+		"SESSIONS": {
+			"TITLE": "Gestion des sessions",
+			"DESCRIPTION": "Ajoutez, supprimez, ou afficher les données des différentes sessions de Karaoke que vous avez faites."
+		},
+		"SESSIONS_NEW": {
+			"TITLE": "Créer une session de karaoké",
+			"DESCRIPTION": "Formulaire de création de session de karaoké."
+		},
+		"SESSIONS_EDIT": {
+			"TITLE": "Modifier une session de karaoké",
+			"DESCRIPTION": "Formulaire de modification de session de karaoké."
+		},
+		"REPOSITORIES": {
+			"TITLE": "Gestion des dépôts",
+			"DESCRIPTION": "Les dépôts sont des sources de karaokés. Ajoutez, (des)activez, ou supprimez des dépôts depuis cette page."
+		},
+		"REPOSITORIES_NEW": {
+			"TITLE": "Créer un dépôt",
+			"DESCRIPTION": "Formulaire de création de dépôt."
+		},
+		"REPOSITORIES_EDIT": {
+			"TITLE": "Modifier un dépôt",
+			"DESCRIPTION": "Formulaire de modification de dépôt."
+		},
+		"UNUSED_FILES": {
+			"TITLE": "Fichiers inutilisés",
+			"DESCRIPTION": "Vous pouvez lister les fichiers inutiles (utilisés par aucun karaoké) dans vos dépôts d'ici."
+		},
+		"DATABASE": {
+			"TITLE": "Base de données",
+			"DESCRIPTION": "Outils de gestion de la base de données. Database, database, just living in the database wow wow."
+		},
+		"KARAOKE_LIST": {
+			"TITLE": "Liste des karaokés",
+			"DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés"
+		},
+		"KARAOKE_NEW": {
+			"TITLE": "Ajouter un karaoké",
+			"DESCRIPTION": "Ce formulaire vous permet d'ajouter un karaoké déjà existant à l'un de vos dépôts."
+		},
+		"KARAOKE_EDIT": {
+			"TITLE": "Modifier un karaoké",
+			"DESCRIPTION": "Formulaire de modification de karaoké."
+		},
+		"DOWNLOAD": {
+			"TITLE": "Gestionnaire de téléchargements",
+			"DESCRIPTION": "Recherchez et récupérez des karaokés depuis vos dépôts configurés."
+		},
+		"DOWNLOAD_BLACKLIST": {
+			"TITLE": "Liste noire de téléchargement",
+			"DESCRIPTION": "Paramètrez ce que vous ne voulez jamais télécharger de façon automatique. Vous pourrez toujours télécharger ce que vous voulez manuellement."
+		},
+		"HISTORY": {
+			"TITLE": "Historique de lecture",
+			"DESCRIPTION": "Liste tous les karaokés joués sur votre application, par ordre chronologique décroissant."
+		},
+		"MOST_REQUESTED": {
+			"TITLE": "Chansons les plus demandées",
+			"DESCRIPTION": "Liste les chansons les plus demandées sur votre application. Ne prend en compte que les karaokés ajoutés depuis l'interface publique."
+		},
+		"MOST_PLAYED": {
+			"TITLE": "Chansons les plus jouées",
+			"DESCRIPTION": "Liste les chansons les plus jouées sur votre application"
+		},
+		"KARATAG_BATCH_EDIT": {
+			"TITLE": "Ajout/suppression de tag en masse",
+			"DESCRIPTION": "Réservé aux mainteneurs : cette page vous permet d'ajouter ou supprimer un tag sur plusieurs karaokés simultanément."
+		},
+		"TAG_LIST": {
+			"TITLE": "Liste des tags",
+			"DESCRIPTION": "Liste des tags composant les métadonnées d'un karaoké, réservé aux mainteneurs."
+		},
+		"TAG_NEW": {
+			"TITLE": "Créer un tag",
+			"DESCRIPTION": "Formulaire de création de tag. Pensez à ajouter une traduction anglaise au minimum."
+		},
+		"TAG_EDIT": {
+			"TITLE": "Modifier un tag",
+			"DESCRIPTION": "Formulaire de modification de tag. Seul le changement de nom d'origine entraîne un chagnement de nom de fichier."
+		},
+		"TAG_DUPLICATES": {
+			"TITLE": "Liste des tags en double",
+			"DESCRIPTION": "Cette page vous permet de voir les tags qui possèdent le même nom mais pas la même catégorie afin de les fusionner si nécessaire."
+		},
+		"USER_LIST": {
+			"TITLE": "Gestion des utilisateurs",
+			"DESCRIPTION": "D'ici vous pouvez créer, supprimer, modifier des utilisateurs mais aussi réinitialiser leur mot de passe ou changer leurs droîts"
+		},
+		"USER_NEW": {
+			"TITLE": "Créer un utilisateur",
+			"DESCRIPTION": "Formulaire de création d'utilisateur local"
+		},
+		"USER_EDIT": {
+			"TITLE": "Modifier un utilisateur",
+			"DESCRIPTION": "Formulaire de modification d'utilisateur"
+		}
+	}
 }
