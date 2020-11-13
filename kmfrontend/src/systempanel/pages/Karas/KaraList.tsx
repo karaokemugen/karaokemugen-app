@@ -80,41 +80,41 @@ class KaraList extends Component<unknown, KaraListState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Layout>
-					<Layout.Header>
-						<Input.Search
-							placeholder={i18next.t('SEARCH_FILTER')}
-							value={this.state.filter}
-							onChange={event => this.changeFilter(event)}
-							enterButton={i18next.t('SEARCH')}
-							onSearch={this.refresh}
-						/>
-					</Layout.Header>
-					<Layout.Content>
-						<Table
-							onChange={this.handleTableChange}
-							dataSource={this.state.karas}
-							columns={this.columns}
-							rowKey='kid'
-							pagination={{
-								position: ['topRight', 'bottomRight'],
-								current: this.state.currentPage || 1,
-								defaultPageSize: this.state.currentPageSize,
-								pageSize: this.state.currentPageSize,
-								pageSizeOptions: ['10', '25', '50', '100', '500'],
-								showTotal: (total, range) => {
-									const to = range[1];
-									const from = range[0];
-									return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
-								},
-								total: this.state.totalCount,
-								showQuickJumper: true
-							}}
-						/>
-					</Layout.Content>
-				</Layout>
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.KARAOKE_LIST.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.KARAOKE_LIST.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Input.Search
+						placeholder={i18next.t('SEARCH_FILTER')}
+						value={this.state.filter}
+						onChange={event => this.changeFilter(event)}
+						enterButton={i18next.t('SEARCH')}
+						onSearch={this.refresh}
+					/>
+					<Table
+						onChange={this.handleTableChange}
+						dataSource={this.state.karas}
+						columns={this.columns}
+						rowKey='kid'
+						pagination={{
+							position: ['topRight', 'bottomRight'],
+							current: this.state.currentPage || 1,
+							defaultPageSize: this.state.currentPageSize,
+							pageSize: this.state.currentPageSize,
+							pageSizeOptions: ['10', '25', '50', '100', '500'],
+							showTotal: (total, range) => {
+								const to = range[1];
+								const from = range[0];
+								return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
+							},
+							total: this.state.totalCount,
+							showQuickJumper: true
+						}}
+					/>
+				</Layout.Content>
+			</>
 		);
 	}
 

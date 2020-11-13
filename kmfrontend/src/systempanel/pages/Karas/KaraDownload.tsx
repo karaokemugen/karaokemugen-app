@@ -325,143 +325,142 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px' }}>
-				<Layout>
-					<Layout.Header>
-						<Row justify="space-between">
-							<Col flex={3} style={{ marginRight: '10px' }}>
-								<Input.Search
-									placeholder={i18next.t('SEARCH_FILTER')}
-									value={this.state.filter}
-									onChange={event => this.changeFilter(event)}
-									enterButton={i18next.t('SEARCH')}
-									onSearch={this.api_get_online_karas}
-								/>
-							</Col>
-							<Col flex={1} style={{ textAlign: 'center' }}>
-								<label htmlFor="playlistImport" className="ant-btn ant-btn-primary">{i18next.t('KARA.IMPORT_PLAYLIST')}</label>
-								<Input id="playlistImport" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.importPlaylist} />
-							</Col>
-							<Col flex={2}>
-								<Select allowClear style={{ width: '90%' }} onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])}
-									placeholder={i18next.t('KARA.TAG_GROUP_FILTER')} key={'tid'} options={this.getGroupsTags()} />
-							</Col>
-							<Col flex={2}>
-								<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
-									showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
-									onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
-							</Col>
-						</Row>
-						<Row style={{ margin: '10px' }}>
-							<Col span={11}>
-								<label>{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {this.state.totalMediaSize}</label>
-							</Col>
-						</Row>
-						<Row justify="space-between">
-							<Col span={11}>
-								<Button style={{ width: '230px' }} type="primary" key="synchronize"
-									onClick={() => commandBackend('syncAllBases')}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
-								&nbsp;
-								{i18next.t('KARA.SYNCHRONIZE_DESC')}
-							</Col>
-							<Col span={4}>
-								<label>{i18next.t('KARA.FILTER_SONGS')}</label>
-							</Col>
-							<Col span={4}>
-								<Row>
-									<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
-								</Row>
-								<Row>
-									<label>{i18next.t('KARA.QUEUE_LABEL_SONGS', {
-										numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE'
-											&& kara.status !== 'DL_FAILED').length
-									})}</label>
-								</Row>
-							</Col>
-						</Row>
-						<Row style={{ paddingTop: '5px' }} justify="space-between">
-							<Col span={11}>
-								<Button style={{ width: '230px' }} type="primary" key="queueDownloadAll"
-									onClick={() => commandBackend('downloadAllBases')}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
-								&nbsp;
-								{i18next.t('KARA.DOWNLOAD_ALL_DESC')}
-							</Col>
-							<Col span={4}>
-								<Radio checked={this.state.compare === ''}
-									onChange={async () => {
-										await this.setState({ compare: '', currentPage: 0 });
-										this.api_get_online_karas();
-									}}>{i18next.t('KARA.FILTER_ALL')}</Radio>
-							</Col>
-							<Col span={4}>
-								<Button style={{ width: '100px' }} type="primary" key="queueStart"
-									onClick={this.putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
-							</Col>
-						</Row>
-						<Row style={{ paddingTop: '5px' }} justify="space-between">
-							<Col span={11}>
-								<Button style={{ width: '230px' }} type="primary" key="queueUpdateAll"
-									onClick={() => commandBackend('updateAllBases')}>{i18next.t('KARA.UPDATE_ALL')}</Button>
-								&nbsp;
-								{i18next.t('KARA.UPDATE_ALL_DESC')}
-							</Col>
-							<Col span={4}>
-								<Radio checked={this.state.compare === 'updated'}
-									onChange={async () => {
-										await this.setState({ compare: 'updated', currentPage: 0 });
-										this.api_get_online_karas();
-									}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
-							</Col>
-							<Col span={4}>
-								<Button style={{ width: '100px' }} type="primary" key="queuePause"
-									onClick={this.putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
-							</Col>
-						</Row>
-						<Row style={{ paddingTop: '5px' }} justify="space-between">
-							<Col span={11}>
-								<Button style={{ width: '230px' }} type="primary" key="queueCleanAll"
-									onClick={() => commandBackend('cleanAllBases')}>{i18next.t('KARA.CLEAN_ALL')}</Button>
-								&nbsp;
-								{i18next.t('KARA.CLEAN_ALL_DESC')}
-							</Col>
-							<Col span={4}>
-								<Radio checked={this.state.compare === 'missing'}
-									onChange={async () => {
-										await this.setState({ compare: 'missing', currentPage: 0 });
-										this.api_get_online_karas();
-									}}>{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}</Radio>
-							</Col>
-							<Col span={4}>
-								<Button style={{ width: '100px' }} type="primary" key="queueDelete"
-									onClick={() => commandBackend('deleteDownloads')}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
-							</Col>
-						</Row>
-					</Layout.Header>
-					<Layout.Content>
-
-						<Table
-							onChange={this.handleTableChange}
-							dataSource={this.state.karas_online}
-							columns={this.columns}
-							rowKey='kid'
-							pagination={{
-								position: ['topRight', 'bottomRight'],
-								current: this.state.currentPage || 1,
-								defaultPageSize: this.state.currentPageSize,
-								pageSize: this.state.currentPageSize,
-								pageSizeOptions: ['10', '25', '50', '100', '500'],
-								showTotal: (total, range) => {
-									const to = range[1];
-									const from = range[0];
-									return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
-								},
-								total: this.state.karasOnlineCount,
-								showQuickJumper: true,
-							}}
-						/>
-					</Layout.Content>
-				</Layout>
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.DOWNLOAD.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.DOWNLOAD.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Row justify="space-between">
+						<Col flex={3} style={{ marginRight: '10px' }}>
+							<Input.Search
+								placeholder={i18next.t('SEARCH_FILTER')}
+								value={this.state.filter}
+								onChange={event => this.changeFilter(event)}
+								enterButton={i18next.t('SEARCH')}
+								onSearch={this.api_get_online_karas}
+							/>
+						</Col>
+						<Col flex={1} style={{ textAlign: 'center' }}>
+							<label htmlFor="playlistImport" className="ant-btn ant-btn-primary">{i18next.t('KARA.IMPORT_PLAYLIST')}</label>
+							<Input id="playlistImport" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.importPlaylist} />
+						</Col>
+						<Col flex={2}>
+							<Select allowClear style={{ width: '90%' }} onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])}
+								placeholder={i18next.t('KARA.TAG_GROUP_FILTER')} key={'tid'} options={this.getGroupsTags()} />
+						</Col>
+						<Col flex={2}>
+							<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
+								showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
+								onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
+						</Col>
+					</Row>
+					<Row style={{ margin: '10px' }}>
+						<Col span={11}>
+							<label>{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {this.state.totalMediaSize}</label>
+						</Col>
+					</Row>
+					<Row justify="space-between">
+						<Col span={11}>
+							<Button style={{ width: '230px' }} type="primary" key="synchronize"
+								onClick={() => commandBackend('syncAllBases')}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
+							&nbsp;
+							{i18next.t('KARA.SYNCHRONIZE_DESC')}
+						</Col>
+						<Col span={4}>
+							<label>{i18next.t('KARA.FILTER_SONGS')}</label>
+						</Col>
+						<Col span={4}>
+							<Row>
+								<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
+							</Row>
+							<Row>
+								<label>{i18next.t('KARA.QUEUE_LABEL_SONGS', {
+									numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE'
+										&& kara.status !== 'DL_FAILED').length
+								})}</label>
+							</Row>
+						</Col>
+					</Row>
+					<Row style={{ paddingTop: '5px' }} justify="space-between">
+						<Col span={11}>
+							<Button style={{ width: '230px' }} type="primary" key="queueDownloadAll"
+								onClick={() => commandBackend('downloadAllBases')}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
+							&nbsp;
+							{i18next.t('KARA.DOWNLOAD_ALL_DESC')}
+						</Col>
+						<Col span={4}>
+							<Radio checked={this.state.compare === ''}
+								onChange={async () => {
+									await this.setState({ compare: '', currentPage: 0 });
+									this.api_get_online_karas();
+								}}>{i18next.t('KARA.FILTER_ALL')}</Radio>
+						</Col>
+						<Col span={4}>
+							<Button style={{ width: '100px' }} type="primary" key="queueStart"
+								onClick={this.putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
+						</Col>
+					</Row>
+					<Row style={{ paddingTop: '5px' }} justify="space-between">
+						<Col span={11}>
+							<Button style={{ width: '230px' }} type="primary" key="queueUpdateAll"
+								onClick={() => commandBackend('updateAllBases')}>{i18next.t('KARA.UPDATE_ALL')}</Button>
+							&nbsp;
+							{i18next.t('KARA.UPDATE_ALL_DESC')}
+						</Col>
+						<Col span={4}>
+							<Radio checked={this.state.compare === 'updated'}
+								onChange={async () => {
+									await this.setState({ compare: 'updated', currentPage: 0 });
+									this.api_get_online_karas();
+								}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
+						</Col>
+						<Col span={4}>
+							<Button style={{ width: '100px' }} type="primary" key="queuePause"
+								onClick={this.putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
+						</Col>
+					</Row>
+					<Row style={{ paddingTop: '5px' }} justify="space-between">
+						<Col span={11}>
+							<Button style={{ width: '230px' }} type="primary" key="queueCleanAll"
+								onClick={() => commandBackend('cleanAllBases')}>{i18next.t('KARA.CLEAN_ALL')}</Button>
+							&nbsp;
+							{i18next.t('KARA.CLEAN_ALL_DESC')}
+						</Col>
+						<Col span={4}>
+							<Radio checked={this.state.compare === 'missing'}
+								onChange={async () => {
+									await this.setState({ compare: 'missing', currentPage: 0 });
+									this.api_get_online_karas();
+								}}>{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}</Radio>
+						</Col>
+						<Col span={4}>
+							<Button style={{ width: '100px' }} type="primary" key="queueDelete"
+								onClick={() => commandBackend('deleteDownloads')}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
+						</Col>
+					</Row>
+					<Table
+						onChange={this.handleTableChange}
+						dataSource={this.state.karas_online}
+						columns={this.columns}
+						rowKey='kid'
+						pagination={{
+							position: ['topRight', 'bottomRight'],
+							current: this.state.currentPage || 1,
+							defaultPageSize: this.state.currentPageSize,
+							pageSize: this.state.currentPageSize,
+							pageSizeOptions: ['10', '25', '50', '100', '500'],
+							showTotal: (total, range) => {
+								const to = range[1];
+								const from = range[0];
+								return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
+							},
+							total: this.state.karasOnlineCount,
+							showQuickJumper: true,
+						}}
+					/>
+				</Layout.Content>
+			</>
 		);
 	}
 

@@ -1,13 +1,33 @@
 @import '~antd/dist/antd.dark.css';
 
-.ant-layout-header {
-  padding: 0;
+.ant-layout-content {
+	padding: 1em;
 }
 
-.ant-layout-content .ant-layout-header {
+.ant-layout-header {
 	height: auto;
 	line-height: normal;
 	padding: 1em;
+	background: #141414;
+
+	.title {
+		font-size: 1.75em;
+		font-weight: bold;
+	}
+	.description {
+		font-size: 1em;
+	}
+}
+
+.ant-menu-item {
+	display: flex;
+	align-items: center;
+
+	& > a {
+		display: block;
+		line-height: initial;
+		white-space: pre-wrap;
+	}
 }
 
 .UI-notification-loading .ant-spin-nested-loading {
@@ -40,11 +60,6 @@
 
 .pathFolders {
 	word-break: break-all;
-}
-
-.pageLayout {
-	height: 100%;
-	overflow: auto;
 }
 
 .menuItemInactive {

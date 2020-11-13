@@ -621,6 +621,7 @@
 		"CHAR_NOT_ALLOWED": "The character '{{char}}' is not allowed",
 		"DELETE_USER_CONFIRM": "Delete user",
 		"LOG_IN": "Log in",
+		"NEW_USER": "New user",
 		"EDIT_ONLINE_ACCOUNT": "Online users cannot be edited from this page except to change their role on this instance of Karaoke Mugen. To edit your own profile online, do this from the public or operator interface."
 	},
 	"DATABASE": {
@@ -760,7 +761,7 @@
 		"MERGE_WITH_BUTTON": "Merge!",
 		"KARA_PLAYED": "Karas played",
 		"KARA_REQUESTED": "Karas requested",
-		"NEW_SESSION": "New session :",
+		"NEW_SESSION": "New session",
 		"ACTIVE": "Active?",
 		"PRIVATE": "Private?"
 	},
@@ -772,7 +773,7 @@
 		"PATH_LYRICS": "Lyrics",
 		"PATH_MEDIAS": "Medias",
 		"PATH_TAGS": "Tags",
-		"NEW_REPOSITORY": "New repository :",
+		"NEW_REPOSITORY": "New repository",
 		"ONLINE": "Online",
 		"ENABLED": "Enabled",
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
@@ -1049,5 +1050,119 @@
 		"BLC_COPIED": "Blacklist criterias copied",
 		"STOP_AFTER": "The karaoke will stop at the song end. To stop now, click again on the stop button."
 	},
-	"SHOW_DETAILS": "Show details"
+	"SHOW_DETAILS": "Show details",
+	"HEADERS": {
+		"HOME": {
+			"TITLE": "Home",
+			"DESCRIPTION": "This is where it all begins."
+		},
+		"LOGS": {
+			"TITLE": "Logs",
+			"DESCRIPTION": "Everything you never wanted to know about how your karaoke works."
+		},
+		"SYSTEM_PREFERENCES": {
+			"TITLE": "System preferences",
+			"DESCRIPTION": "Application-related settings only"
+		},
+		"CONFIGURATION": {
+			"TITLE": "Advanced configuration",
+			"DESCRIPTION": "For experts only. All Karaoke Mugen settings are here, be careful where you put your fingers."
+		},
+		"SESSIONS": {
+			"TITLE": "Session management",
+			"DESCRIPTION": "Add, remove, or view data from the different Karaoke sessions you have done."
+		},
+		"SESSIONS_NEW": {
+			"TITLE": "Add a karaoke session",
+			"DESCRIPTION": "Karaoke session creation form."
+		},
+		"SESSIONS_EDIT": {
+			"TITLE": "Edit a karaoke session",
+			"DESCRIPTION": "Karaoke session modification form."
+		},
+		"REPOSITORIES": {
+			"TITLE": "Repositories management",
+			"DESCRIPTION": "Repositories are sources of karaoke. Add, enable, or remove repositories from this page."
+		},
+		"REPOSITORIES_NEW": {
+			"TITLE": "Add a repository",
+			"DESCRIPTION": "Repository creation form."
+		},
+		"REPOSITORIES_EDIT": {
+			"TITLE": "Edit a repository",
+			"DESCRIPTION": "Repository modification form."
+		},
+		"UNUSED_FILES": {
+			"TITLE": "Unused files",
+			"DESCRIPTION": "You can list unnecessary files (used by no karaoke) in your repositories from here."
+		},
+		"DATABASE": {
+			"TITLE": "Database",
+			"DESCRIPTION": "Database management tools. Database, database, just living in the database wow wow."
+		},
+		"KARAOKE_LIST": {
+			"TITLE": "List of karaoke",
+			"DESCRIPTION": "From here you can edit, add or delete karaoke. Usually reserved for karaoke repository maintainers"
+		},
+		"KARAOKE_NEW": {
+			"TITLE": "Add a karaoke",
+			"DESCRIPTION": "This form allows you to add an already existing karaoke to one of your repositories."
+		},
+		"KARAOKE_EDIT": {
+			"TITLE": "Edit a karaoke",
+			"DESCRIPTION": "Karaoke modification form."
+		},
+		"DOWNLOAD": {
+			"TITLE": "Download manager",
+			"DESCRIPTION": "Find and get karaoke from your configured repositories."
+		},
+		"DOWNLOAD_BLACKLIST": {
+			"TITLE": "Download blacklist",
+			"DESCRIPTION": "Set what you never want to download automatically. You can always download whatever you want manually."
+		},
+		"HISTORY": {
+			"TITLE": "Reading history",
+			"DESCRIPTION": "Lists all the karaoke played on your application, in descending chronological order."
+		},
+		"MOST_REQUESTED": {
+			"TITLE": "Most Popular Songs",
+			"DESCRIPTION": "Lists the most requested songs on your application. Only takes into account karaoke songs added from the public interface."
+		},
+		"MOST_PLAYED": {
+			"TITLE": "Most played songs",
+			"DESCRIPTION": "List the most played songs on your application"
+		},
+		"KARATAG_BATCH_EDIT": {
+			"TITLE": "Bulk add / remove tag",
+			"DESCRIPTION": "Reserved for maintainers: this page allows you to add or remove a tag on several karaokes simultaneously."
+		},
+		"TAG_LIST": {
+			"TITLE": "List of tags",
+			"DESCRIPTION": "List of tags composing the metadata of a karaoke, reserved for maintainers."
+		},
+		"TAG_NEW": {
+			"TITLE": "Create a tag",
+			"DESCRIPTION": "Tag creation form. Remember to add an English translation at least."
+		},
+		"TAG_EDIT": {
+			"TITLE": "Modify a tag",
+			"DESCRIPTION": "Tag modification form. Only the original name change results in a file name change."
+		},
+		"TAG_DUPLICATES": {
+			"TITLE": "List of duplicate tags",
+			"DESCRIPTION": "This page allows you to see tags that have the same name but not the same category in order to merge them if necessary."
+		},
+		"USER_LIST": {
+			"TITLE": "User management",
+			"DESCRIPTION": "From here you can create, delete, modify users, but also reset their password or change their rights"
+		},
+		"USER_NEW": {
+			"TITLE": "Create a user",
+			"DESCRIPTION": "Local user creation form"
+		},
+		"USER_EDIT": {
+			"TITLE": "Modify a user",
+			"DESCRIPTION": "User modification form"
+		}
+	}
 }

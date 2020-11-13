@@ -1,4 +1,5 @@
 import {Layout} from 'antd';
+import i18next from 'i18next';
 import React, {Component} from 'react';
 import { RouteComponentProps,withRouter } from 'react-router-dom';
 
@@ -61,10 +62,22 @@ class SessionEdit extends Component<RouteComponentProps<{seid: string}>, Session
 
 	render() {
 		return (
-			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.loadSession && (<SessionForm session={this.state.session} sessions={this.state.sessions}
-					save={this.state.save} mergeAction={this.handleSessionMerge} />)}
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t(this.props.match.params.seid ?
+						'HEADERS.SESSIONS_EDIT.TITLE' :
+						'HEADERS.SESSIONS_NEW.TITLE'
+					)}</div>
+					<div className='description'>{i18next.t(this.props.match.params.seid ?
+						'HEADERS.SESSIONS_EDIT.DESCRIPTION' :
+						'HEADERS.SESSIONS_NEW.DESCRIPTION'
+					)}</div>
+				</Layout.Header>
+				<Layout.Content>
+					{this.state.loadSession && (<SessionForm session={this.state.session} sessions={this.state.sessions}
+						save={this.state.save} mergeAction={this.handleSessionMerge} />)}
+				</Layout.Content>
+			</>
 		);
 	}
 }

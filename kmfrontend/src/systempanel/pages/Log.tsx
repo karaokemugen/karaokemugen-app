@@ -1,5 +1,6 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { Collapse, Layout, Select,Timeline } from 'antd';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { io as openSocket } from 'socket.io-client';
 
@@ -49,16 +50,17 @@ class Log extends Component<unknown, LogState> {
 	render() {
 		return (
 			<>
-				<Layout.Header style={{ padding: '0 1em' }}>
-					<Select defaultValue="info" onChange={this.setLevel}>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.LOGS.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.LOGS.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Select defaultValue="info" onChange={this.setLevel} style={{marginBottom: '1em'}}>
 						<Select.Option value="error">Erreurs</Select.Option>
 						<Select.Option value="warn">Avertissements</Select.Option>
 						<Select.Option value="info">Informations</Select.Option>
 						<Select.Option value="debug">Débogage</Select.Option>
 					</Select>
-				</Layout.Header>
-				<Layout.Content style={{ padding: '25px 50px', textAlign: 'left' }}>
-
 					<Timeline reverse={true}>
 						{
 							this.state.log.map((line, i) => {
