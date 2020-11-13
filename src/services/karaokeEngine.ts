@@ -11,7 +11,7 @@ import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { addPlayedKara, getKara, getKaras, getSeriesSingers } from './kara';
 import { mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player';
-import { getCurrentSong, getPlaylistInfo, getPlaylistContentsMini, shufflePlaylist, updateUserQuotas } from './playlist';
+import { getCurrentSong, getPlaylistContentsMini, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';
 
 export async function playSingleSong(kid?: string, randomPlaying = false) {
@@ -164,14 +164,14 @@ export async function playerEnding() {
 
 		// Handle balance
 		if (state.player.mediaType === 'song') {
-			let playlist = await getPlaylistContentsMini(state.currentPlaylistID);
-			let previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
-			let previousSong = playlist[previousSongIndex];
+			const playlist = await getPlaylistContentsMini(state.currentPlaylistID);
+			const previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
+			const previousSong = playlist[previousSongIndex];
 			state.usersBalance.add(previousSong.username);
 
-			let remainingSongs = playlist.length - previousSongIndex - 1;
+			const remainingSongs = playlist.length - previousSongIndex - 1;
 			if (remainingSongs > 0) {
-				let nextSong = playlist[previousSongIndex + 1];
+				const nextSong = playlist[previousSongIndex + 1];
 				if (state.usersBalance.has(nextSong.username)) {
 					state.usersBalance.clear();
 					if (conf.Karaoke.AutoBalance && remainingSongs > 1) {
