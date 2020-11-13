@@ -73,7 +73,7 @@
 	"ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Invisible",
 	"ENGINEDISPLAYNICKNAME": "Afficher le pseudo du demandeur en début et en fin de chanson",
 	"ENGINEDISPLAYNICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
-    "ENGINEDISPLAYAVATAR": "Afficher l'avatar du demandeur",
+	"ENGINEDISPLAYAVATAR": "Afficher l'avatar du demandeur",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Stop ! Nous sommes fermés pour le moment.",
 	"ENGINEFREEUPVOTES": "Libération des chansons par vote",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum de votes requis pour libérer une chanson",
@@ -90,10 +90,6 @@
 	"FILTERS": "Filtres",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Commandes de liste de lecture",
-		"SHUFFLE": "Mélanger la liste de lecture",
-		"SHUFFLE_SHORT": "Mélanger",
-		"SMART_SHUFFLE": "Mélanger intelligemment la liste de lecture (meilleure expérience de groupe)",
-		"SMART_SHUFFLE_SHORT": "Mélanger intelligemment",
 		"ADD_ALL": "Ajouter toutes les chansons en face",
 		"ADD_RANDOM": "Ajout aléatoire de chanson(s)",
 		"SELECT_ALL": "Sélectionner tous les éléments visibles",
@@ -110,7 +106,8 @@
 		"EXPORT": "Exporter la liste",
 		"ADD": "Créer une nouvelle liste",
 		"AUTOMIX": "Créer un AutoMix",
-		"IMPORT": "Importer une liste"
+		"IMPORT": "Importer une liste",
+		"SHUFFLE": "Mélanger..."
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Commandes sur une chanson",
@@ -151,8 +148,6 @@
 	"DELETE_KARA": "Supprimer chanson",
 	"TRANSFER_KARA": "Déplacer chanson",
 	"MESSAGE": "Passer un message au public",
-	"ENGINEENABLESMARTINSERT": "Activer l'ajout intelligent du public pour éviter les monopoles de liste de lecture",
-	"ENGINEENABLESMARTINSERT_TOOLTIP": "Au moment de l'ajout d'une chanson par le public, celle-ci sera placée de façon à permettre à ceux qui n'ont pas beaucoup demandé de chansons de passer plus tôt",
 	"ENGINEAUTOPLAY": "Lecture automatique sur premier ajout",
 	"ENGINEAUTOPLAY_TOOLTIP": "La lecture commence dés qu'un ajout est fait à la liste de lecture",
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Forcer le nom d'hôte/Adresse IP",
@@ -174,9 +169,9 @@
 	"CLASSIC_MODE_TITLE_MODAL": "C'est à vous de chanter !",
 	"CLASSIC_MODE_TEXT_MODAL": "Appuyez sur le bouton PLAY pour lancer votre chanson.",
 	"LOG_SUCCESS": "Connecté en tant que {{name}}",
-    "LOG_OFFLINE": {
-        "TITLE" : "Instance hors-ligne",
-        "MESSAGE" : "Les modifications de votre profil ne seront pas enregistrées"
+	"LOG_OFFLINE": {
+		"TITLE": "Instance hors-ligne",
+		"MESSAGE": "Les modifications de votre profil ne seront pas enregistrées"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"RESTRICTED_DESCRIPTION": "Le karaoké est en mode restreint, les ajouts de karaokés sont limités.",
@@ -195,8 +190,8 @@
 	"CONFIRM_FAV_IMPORT": "Écraser vos favoris avec cet import ?",
 	"LYRICS": "Paroles",
 	"CL_CONGRATS": "Félicitations",
-    "CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter {{title}}",
-    "CL_ADD_RANDOM_TITLE" : "Combien de chansons aléatoires voulez-vous ajouter ?",
+	"CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter {{title}}",
+	"CL_ADD_RANDOM_TITLE": "Combien de chansons aléatoires voulez-vous ajouter ?",
 	"CL_INFORMATIVE_MESSAGE": "Message à caractère informatif",
 	"CL_RENAME_PLAYLIST": "Renommez {{playlist}}",
 	"CL_CREATE_PLAYLIST": "Créer une nouvelle liste de lecture",
@@ -293,7 +288,11 @@
 			"LABELS_MYSTERY_SONGS_DELETE": "Supprimer",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Chanson mystère",
-			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Afficher la notification de fin de session X minutes avant la fin"
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Afficher la notification de fin de session X minutes avant la fin",
+			"ENABLE_SMARTINSERT": "Activer l'ajout intelligent du public pour éviter les monopoles de liste de lecture",
+			"ENABLE_SMARTINSERT_TOOLTIP": "Au moment de l'ajout d'une chanson par le public, celle-ci sera placée de façon à permettre à ceux qui n'ont pas beaucoup demandé de chansons de passer plus tôt",
+			"ENABLE_AUTOBALANCE": "Activer l'équilibrage automatique de la liste de lecture",
+			"ENABLE_AUTOBALANCE_TOOLTIP": "La playlist sera réorganisée régulièrement pour que les requêtes des utilisateurs passent à tour de rôle."
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -380,13 +379,13 @@
 		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de disfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?",
 		"ERROR_TRACKING": "Suivi des erreurs"
 	},
-    "INSTANCE_NAME": "Nom du serveur",
-    "INSTANCE_NAME_SHORT": "Serveur",
+	"INSTANCE_NAME": "Nom du serveur",
+	"INSTANCE_NAME_SHORT": "Serveur",
 	"LANGUAGE": "Langues",
 	"MAIN_SERIES_LANG": "Langue des noms de séries",
 	"FALLBACK_SERIES_LANG": "Langue de secours des noms de séries",
 	"ACTIVE_SESSION": "Session Active : ",
-	"EDIT_SESSION" : "Editer la session",
+	"EDIT_SESSION": "Editer la session",
 	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
 	"ESSENTIAL_MESSAGE": "Message indispensable",
@@ -395,24 +394,24 @@
 	"FORGOT_PASSWORD": "Mot de passe oublié ?",
 	"MAKE_ACCOUNT_ADMIN": "Transformez le compte en opérateur",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Si vous souhaitez faire de votre compte un compte opérateur, écrivez le code de sécurité à 6 chiffres et validez.",
-    "INTRO_ADMIN_INTRO1": "Bienvenue sur Karaoke Mugen !<br /><br />Karaoke Mugen utilise un système de comptes pour gérer et participer à votre karaoké.<br />Il y a trois types de comptes : opérateur, utilisateur, et invité. Pour gérer votre karaoké, vous avez besoin d'un compte opérateur. (comme celui créé dans l'assistant de démarrage)",
-    "INTRO_ADMIN_INTRO2": "Indiquez un nom d'utilisateur et un mot de passe ou si vous possédez déjà un compte en ligne, connectez-vous avec dans l'onglet Connexion.<br />Si vous ne souhaitez pas un compte en ligne, désactivez l'option.<br />Le code de sécurité est visible dans le menu de Karaoke Mugen. Ce code vous servira à passer votre compte utilisateur en opérateur ou à créer un nouveau compte opérateur depuis cette page, si jamais vous oubliez votre mot de passe, par exemple.<br /><br />Vous pourrez modifier votre pseudo plus tard (mais pas votre nom d'utilisateur !)",
+	"INTRO_ADMIN_INTRO1": "Bienvenue sur Karaoke Mugen !<br /><br />Karaoke Mugen utilise un système de comptes pour gérer et participer à votre karaoké.<br />Il y a trois types de comptes : opérateur, utilisateur, et invité. Pour gérer votre karaoké, vous avez besoin d'un compte opérateur. (comme celui créé dans l'assistant de démarrage)",
+	"INTRO_ADMIN_INTRO2": "Indiquez un nom d'utilisateur et un mot de passe ou si vous possédez déjà un compte en ligne, connectez-vous avec dans l'onglet Connexion.<br />Si vous ne souhaitez pas un compte en ligne, désactivez l'option.<br />Le code de sécurité est visible dans le menu de Karaoke Mugen. Ce code vous servira à passer votre compte utilisateur en opérateur ou à créer un nouveau compte opérateur depuis cette page, si jamais vous oubliez votre mot de passe, par exemple.<br /><br />Vous pourrez modifier votre pseudo plus tard (mais pas votre nom d'utilisateur !)",
 	"INTRO_ADMIN_EMAIL_ONLINE": "Lors de la création d'un compte en ligne, pensez à modifier votre profil pour ajouter une adresse mail afin de pouvoir récupérer votre mot de passe en cas d'oubli !",
 	"INTRO_ADMIN_INTRO3": "Votre Karaoke Mugen est configuré, nous allons maintenant vous montrer comment ça marche.<br /><br />Pour refaire cette visite guidée, allez sur la <a href='/system/km/config'>page de configuration</a>, cliquer sur le paramètre <i>App.FirstRun</i>.",
-    "INTRO_ADMIN_PLAYLISTS": "Voici vos listes de lecture. Vous pourrez les gérer depuis cet écran. Nous y reviendrons tout à l'heure en détail.",
-    "INTRO_ADMIN_LECTEUR": "Ici, le tableau de commandes.<br/>Vous êtes libre de piloter le karaoké à votre guise.<br />Ajoutez des karaokés à la playlist et appuyez sur <i class='fas fa-play'></i> Play pour tester.",
+	"INTRO_ADMIN_PLAYLISTS": "Voici vos listes de lecture. Vous pourrez les gérer depuis cet écran. Nous y reviendrons tout à l'heure en détail.",
+	"INTRO_ADMIN_LECTEUR": "Ici, le tableau de commandes.<br/>Vous êtes libre de piloter le karaoké à votre guise.<br />Ajoutez des karaokés à la playlist et appuyez sur <i class='fas fa-play'></i> Play pour tester.",
 	"INTRO_ADMIN_MYSTERY": "Vous avez le choix d'ajouter des chansons de façon visible ou invisible pour votre public en choisissant l'Ajout Normal ou Mystère. Idéal pour les surprises !<br /><br />Vous pouvez limiter l'utilisation de l'interface publique ici. Le mode restreint empêche vos invités d'ajouter des chansons mais leur permet tout de même de voir la liste de lecture.",
 	"INTRO_ADMIN_PLAYLISTS_2": "Mais revenons aux listes de lecture.<br />Il en existe différents types : <br /><br />- La <b>Bibliothèque</b> correspond à la base de données de vos karaokés. C'est ici que les utilisateurs chercheront les chansons qu'ils souhaitent ajouter.<br /><br />- La liste avec l'attribut <i class='fas fa-play-circle'></i> <b>Courante</b> est celle diffusée à l'écran.<br /><br />- La liste avec l'attribut <i class='fas fa-globe'></i> <b>Publique</b> est celle où votre public mettra ses suggestions.<br /><br />- Les listes <i class='fas fa-eye-slash'></i> <b>cachées</b> seront invisibles par votre public. Décochez l'attribut pour cacher certaines listes !",
-    "INTRO_ADMIN_PLAYLISTS_MANAGE": "Ici, vous pouvez choisir quelle liste de lecture afficher, gérer ses propriétés, ou rechercher son contenu.",
-    "INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "Ce bouton vous permet d'afficher le menu contextuel des playlists, donnant accès à plus de fonctionnalités.<br/> Cliquez dessus pour continuer.",
-    "INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "Les actions possibles changent selon la liste selectionnée.",
-    "INTRO_ADMIN_SETTINGS": "Votre session de karaoké est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accéder en cliquant sur le bouton K puis en selectionnant Options.",
-    "INTRO_ADMIN_SETTINGS_SCREEN": "C'est ici que ça se passe, n'hésitez pas à essayer les différents paramètres.<br /> Certains ne prendront effet qu'au changement de chanson, si la lecture est en cours.",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE": "Ici, vous pouvez choisir quelle liste de lecture afficher, gérer ses propriétés, ou rechercher son contenu.",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "Ce bouton vous permet d'afficher le menu contextuel des playlists, donnant accès à plus de fonctionnalités.<br/> Cliquez dessus pour continuer.",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "Les actions possibles changent selon la liste selectionnée.",
+	"INTRO_ADMIN_SETTINGS": "Votre session de karaoké est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accéder en cliquant sur le bouton K puis en selectionnant Options.",
+	"INTRO_ADMIN_SETTINGS_SCREEN": "C'est ici que ça se passe, n'hésitez pas à essayer les différents paramètres.<br /> Certains ne prendront effet qu'au changement de chanson, si la lecture est en cours.",
 	"INTRO_ADMIN_INTRO_DOWNLOAD": "<b>Note : pour se connecter à l'interface publique, vos utilisateurs doivent être sur le même réseau Wifi que vous.</b><br /><br />Si vous souhaitez récupérer d'autres chansons que celles par défaut, rendez-vous dans <a href='/system'>le panneau système</a> pour consulter la base en ligne et faire votre sélection, ou tout télécharger d'un coup.",
 	"INTRO_ADMIN_INTROFINAL": "Fini ! Vous pouvez chanter !<br /><br />Merci d'avoir lu jusqu'ici. Nous allons désactiver le Dummy Plug System et vous allez pouvoir piloter votre EV... karaoké.<br /><br />Pour plus d'informations :<br /><br />-<a href='http://docs.karaokes.moe/fr'> Consulter la documentation </a><br />- <a href='http://docs.karaokes.moe/fr/user-guide/faq/'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/contact.html'>Contacter l'équipe</a> (twitter / discord)",
-    "INTRO_LABEL_NEXT": "Suivant",
-    "INTRO_LABEL_PREV": "Précédent",
-    "INTRO_LABEL_SKIP": "Quitter",
+	"INTRO_LABEL_NEXT": "Suivant",
+	"INTRO_LABEL_PREV": "Précédent",
+	"INTRO_LABEL_SKIP": "Quitter",
 	"INTRO_LABEL_DONE": "Terminer",
 	"NEXT_SONG_MESSAGE": "La suite avec :",
 	"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})",
@@ -432,6 +431,16 @@
 			"ONLINE_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte sur le serveur en ligne @{{instance}}. Êtes-vous sûr de vouloir faire ça ?",
 			"LOCAL_DELETE": "Supprimer mon compte localement",
 			"LOCAL_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte localement. Si vous possédez un compte en ligne, ce dernier restera actif. Êtes-vous sûr de vouloir faire ça ?"
+		},
+		"SHUFFLE_MODAL": {
+			"TITLE": "Mélanger la liste de lecture",
+			"LABEL": "Choisissez une méthode pour mélanger la liste de lecture :",
+			"SHUFFLE": "Aléatoire",
+			"SHUFFLE_DESC": "La liste de lecture sera mélangée aléatoirement, sans aucune influence appliquée sur le mélange",
+			"SMART_SHUFFLE": "Intelligent",
+			"SMART_SHUFFLE_DESC": "Mélange en évitant que les chansons longues ou les chansons de la même personne ne se succèdent",
+			"BALANCE": "Equitable",
+			"BALANCE_DESC": "Réordonne le passage des chansons du public par groupement d'utilisateurs (A-B-C, A-B-C, etc.)"
 		}
 	},
 	"SETUP_PAGE": {
@@ -723,7 +732,7 @@
 		"ADD_DIRECTORY": "Ajouter un dossier",
 		"ADD_FILE": "Ajouter un fichier",
 		"REPOSITORIES_PAGES": "Page des dépôts",
-		"PROPERTIES" : {
+		"PROPERTIES": {
 			"APP_QUICKSTART": "Démarrage rapide de l'application",
 			"APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
 			"ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",

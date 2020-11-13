@@ -3,7 +3,6 @@ import 'react-virtualized/styles.css';
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { SortableContainer } from 'react-sortable-hoc';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
 

@@ -22,6 +22,7 @@ let state: State = {
 	introPlayed: false,
 	introSponsorPlayed: false,
 	encorePlayed: false,
+	usersBalance: new Set<string>(),
 	fullscreen: false,
 	ontop: true,
 	playlist: null,
