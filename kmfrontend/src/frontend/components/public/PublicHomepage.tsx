@@ -88,9 +88,11 @@ class PublicHomepage extends Component<IProps, IState> {
 						<button className="action green" onClick={() => this.props.changeView('publicPlaylist')}>
 							<i className="fas fa-fw fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
 						</button>
-						<button className="action yellow" onClick={() => this.props.changeView('favorites')}>
-							<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORIS')}
-						</button>
+						{this.context?.globalState.auth.data.role !== 'guest' ?
+							<button className="action yellow" onClick={() => this.props.changeView('favorites')}>
+								<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORIS')}
+							</button> : null
+						}
 						{this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
 							<React.Fragment>
 								<button className="action blue" onClick={() => this.props.changeView('search')}>

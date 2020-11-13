@@ -108,7 +108,11 @@ class PublicHeader extends Component<IProps, IState> {
 										<div className="data">{secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')}</div>
 									</div> : null
 								}
-								<div className="link"><a href="#" onClick={this.goToFavorites}><i className='fas fa-star'/> {i18next.t('VIEW_FAVORITES')}</a></div>
+								{this.context?.globalState.auth.data.role !== 'guest' ?
+									<div className="link"><a href="#" onClick={this.goToFavorites}>
+										<i className='fas fa-star'/> {i18next.t('VIEW_FAVORITES')}
+									</a></div> : null
+								}
 								<div className="link"><a href="#" onClick={this.toggleProfileModal}>
 									<i className="fas fa-user" /> {i18next.t('PROFILE')}
 								</a></div>
