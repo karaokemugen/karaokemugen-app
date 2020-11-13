@@ -434,9 +434,9 @@
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Mélanger la liste de lecture",
-			"LABEL": "Choisissez une méthode pour mélanger la liste de lecture :",
+			"LABEL": "Le mélange n'affecte pas les chansons déjà passées. Choisissez une méthode pour mélanger la liste de lecture :",
 			"SHUFFLE": "Aléatoire",
-			"SHUFFLE_DESC": "La liste de lecture sera mélangée aléatoirement, sans aucune influence appliquée sur le mélange",
+			"SHUFFLE_DESC": "La liste de lecture sera mélangée aléatoirement, sans aucune influence appliquée sur le mélange.",
 			"SMART_SHUFFLE": "Intelligent",
 			"SMART_SHUFFLE_DESC": "Mélange en évitant que les chansons longues ou les chansons de la même personne ne se succèdent",
 			"BALANCE": "Equitable",
