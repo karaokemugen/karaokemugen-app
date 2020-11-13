@@ -1011,7 +1011,7 @@ export async function shufflePlaylist(playlist_id: number, method: string) {
 				const BeforePlaying = playlist.filter(plc => plc.pos <= playingPos.plc_id_pos);
 				let AfterPlaying = playlist.filter(plc => plc.pos > playingPos.plc_id_pos);
 
-				AfterPlaying = shufflePlaylistWithList(AfterPlaying, method)
+				AfterPlaying = shufflePlaylistWithList(AfterPlaying, method);
 				playlist = BeforePlaying.concat(AfterPlaying);
 			} else {
 				// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
@@ -1140,7 +1140,7 @@ function balancePlaylist(playlist: DBPLC[]) {
 	// Re-insertion
 	const newPlaylist: DBPLC[] = [];
 	for (const pool of balance) {
-		let values = [...pool.values()];
+		const values = [...pool.values()];
 		// If last of previous pool and first of current pool have same user
 		if (newPlaylist.length > 0 && newPlaylist[newPlaylist.length - 1].username === values[0].username) {
 			values.push(values.shift());
@@ -1148,7 +1148,7 @@ function balancePlaylist(playlist: DBPLC[]) {
 		newPlaylist.push(...values);
 	}
 
-	let state = getState();
+	const state = getState();
 	state.usersBalance.clear();
 
 	return newPlaylist;
