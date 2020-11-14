@@ -60,7 +60,7 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 		key: 'langs',
 		render: langs => getTagInLocaleList(langs).join(', ')
 	}, {
-		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
+		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record) => (series && series.length > 0) ?

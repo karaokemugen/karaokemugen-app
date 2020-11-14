@@ -202,7 +202,7 @@ class KaraDetail extends Component<IProps, IState> {
 					karaBlockTags.push(<div className="detailsKaraLine" key={tagData.karajson}>
 						<div className={`detailsKaraTitle colored ${tagData.color}`}>
 							<i className={`fas fa-fw fa-${tagData.icon}`} />
-							{i18next.t(`TAG_TYPES.${type}`, {count: data[tagData.karajson].length})}
+							{i18next.t(`KARA.${type}_BY`)}
 						</div>
 						<span>{data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null)}</span>
 					</div>);

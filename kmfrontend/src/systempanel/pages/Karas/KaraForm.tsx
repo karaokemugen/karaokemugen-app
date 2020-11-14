@@ -429,7 +429,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('KARA.SINGERS')}
+					label={i18next.t('KARA.SINGERS_BY')}
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 6 }}
 					rules={[{
@@ -450,7 +450,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={(
-						<span>{i18next.t('KARA.SONGWRITERS')}&nbsp;
+						<span>{i18next.t('KARA.SONGWRITERS_BY')}&nbsp;
 							<Tooltip title={i18next.t('KARA.SONGWRITERS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
@@ -468,7 +468,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={(
-						<span>{i18next.t('KARA.CREATORS')}&nbsp;
+						<span>{i18next.t('KARA.CREATORS_BY')}&nbsp;
 							<Tooltip title={i18next.t('KARA.CREATORS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
@@ -486,7 +486,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={(
-						<span>{i18next.t('KARA.KARA_AUTHORS')}&nbsp;
+						<span>{i18next.t('KARA.AUTHORS_BY')}&nbsp;
 							<Tooltip title={i18next.t('KARA.KARA_AUTHORS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>

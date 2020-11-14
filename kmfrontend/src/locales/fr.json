@@ -513,7 +513,7 @@
 		"ADD_FILE_SUCCESS": "Le fichier {{name}} a été ajouté avec succès",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} n'est pas un média",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} n'est pas un fichier de sous-titres",
-		"TITLE": "Titre du morceau",
+		"TITLE": "Titre",
 		"TITLE_TOOLTIP": "Si vous ne le connaissez pas, mettez le nom de la série. Dans le cas d'une version alternative, nommez votre titre ainsi : 'Mon titre ~ Disco vers.' par exemple",
 		"TITLE_REQUIRED": "Le titre est obligatoire",
 		"SERIES": "Série(s)",
@@ -526,13 +526,9 @@
 		"LANGUAGES_REQUIRED": "Choisissez une langue",
 		"YEAR": "Année de diffusion",
 		"YEAR_TOOLTIP": "Année de la diffusion de la série ou de la vidéo",
-		"SINGERS": "Chanteur(s)",
-		"SERIES_SINGERS_REQUIRED": "Les champs Séries et Chanteurs ne peuvent être vide en même temps.",
-		"SONGWRITERS": "Compositeur(s)",
+		"SERIES_SINGERS_REQUIRED": "Les champs Séries et Chanté par ne peuvent être vide en même temps.",
 		"SONGWRITERS_TOOLTIP": "Compositeurs et paroliers",
-		"CREATORS": "Créateur(s)",
 		"CREATORS_TOOLTIP": "Entité qui a créé la série ou le clip. Peut être un studio d'animation, de cinéma, de jeu vidéo, etc.",
-		"KARA_AUTHORS": "Auteur(s) du karaoké",
 		"KARA_AUTHORS_REQUIRED": "L'auteur du karaoké est obligatoire",
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
 		"FAMILIES": "Famille(s)",
@@ -585,7 +581,11 @@
 			"SELECT_TAG": "Sélectionnez un tag :",
 			"EDIT": "Edition en masse",
 			"SELECT": "Sélectionnez"
-		}
+		},
+		"SINGERS_BY": "Chanté par",
+		"SONGWRITERS_BY": "Composé par",
+		"CREATORS_BY": "Créé par",
+		"AUTHORS_BY": "Karaoké créé par"
 	},
 	"MENU": {
 		"HOME": "Home",

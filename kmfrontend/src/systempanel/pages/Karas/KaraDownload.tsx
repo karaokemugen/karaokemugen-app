@@ -480,7 +480,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				return getTagInLocaleList(langs, this.state.i18nTag).join(', ');
 			}
 		}, {
-			title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
+			title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
 			dataIndex: 'serie',
 			key: 'serie',
 			render: (serie, record) => {
