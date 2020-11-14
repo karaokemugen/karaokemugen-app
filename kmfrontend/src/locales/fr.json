@@ -834,16 +834,33 @@
 		"BLCTYPE_13": "Origine"
 	},
 	"HOME": {
-		"WELCOME": "Bienvenue dans le panneau de configuration de Karaoke Mugen",
-		"DIFFERENTS_MENUS": "Voici les différents menus que vous pouvez utiliser :",
-		"SYSTEM_DESCRIPTION": "Voir les logs, changer les options de configuration, sauvegarder et restore votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
-		"KARAS_DESCRIPTION_1": "Voir, modifier, ",
-		"KARAS_DESCRIPTION_2": "télécharger",
-		"KARAS_DESCRIPTION_3": ", et créer des fichiers de karaokés. Vous pouvez aussi éditer la liste noire de téléchargement, voir les karaokés les plus demandés, joués et l'historique",
-		"TAGS_DESCRIPTION": "Gérer les tags (chanteurs, compositeurs, créateurs, types de chanson, etc.)",
-		"USERS_DESCRIPTION_1": "Créer/",
-		"USERS_DESCRIPTION_2": "éditer/voir les utilisateurs",
-		"USERS_DESCRIPTION_3": ", changer les mots de passe, créer de nouveaux comptes invités"
+		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
+		"KARAS_DESCRIPTION": "Lister, modifier, télécharger, et créer des fichiers de karaokés. Vous pouvez aussi éditer la liste noire de téléchargement, voir les karaokés les plus demandés, joués et l'historique",
+		"TAGS_DESCRIPTION": "Créer, lister, éditer les tags (séries, chanteurs, compositeurs, créateurs, types de chanson, etc.)",
+		"USERS_DESCRIPTION": "Lister, créer et modifier les utilisateurs, changer leur mot de passe, créer de nouveaux comptes invités.",
+		"SYSTEM": {
+			"CONFIG": "Modifier la configuration",
+			"REPOSITORIES": "Dépôts de karaokés",
+			"SESSIONS": "Sessions de karaoké",
+			"LOGS": "Journaux système",
+			"DATABASE": "Base de données"
+		},
+		"KARAS": {
+			"DOWNLOAD": "Télécharger des karaokés",
+			"BROWSE": "Parcourir les karaokés",
+			"CREATE": "Créer un karaoké",
+			"BLACKLIST": "Gérer la liste noire de téléchargement",
+			"HISTORY": "Historique des karaokés joués"
+		},
+		"TAGS": {
+			"CREATE": "Créer un tag",
+			"BROWSE": "Parcourir les tags",
+			"MERGE": "Fusionner des tags dupliqués"
+		},
+		"USERS": {
+			"CREATE": "Créer un utilisateur",
+			"BROWSE": "Parcourir les utilisateurs"
+		}
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics...",
@@ -1072,7 +1089,7 @@
 	"HEADERS": {
 		"HOME": {
 			"TITLE": "Accueil",
-			"DESCRIPTION": "C'est ici que tout commence."
+			"DESCRIPTION": "C'est ici que tout commence. Choisissez votre action."
 		},
 		"LOGS": {
 			"TITLE": "Journal d'évènements",

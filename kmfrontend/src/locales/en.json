@@ -816,16 +816,33 @@
 		"BLCTYPE_13": "Origin"
 	},
 	"HOME": {
-		"WELCOME": "Welcome to Karaoke Mugen's system panel",
-		"DIFFERENTS_MENUS": "Here are the different menus you can use :",
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
-		"KARAS_DESCRIPTION_1": "View, edit, ",
-		"KARAS_DESCRIPTION_2": "download",
-		"KARAS_DESCRIPTION_3": ", and create karaoke data files. You can also edit the download blacklist and view most requested, most played, and karaoke history",
-		"TAGS_DESCRIPTION": "Manage tags (singers, songwriters, creators, song types, etc.)",
-		"USERS_DESCRIPTION_1": "Create/",
-		"USERS_DESCRIPTION_2": "edit/view users",
-		"USERS_DESCRIPTION_3": ", change passwords, make new guests account"
+		"KARAS_DESCRIPTION": "List, edit, download, and create karaoke data files. You can also edit the download blacklist and view most requested, most played, and karaoke history",
+		"TAGS_DESCRIPTION": "List, create, edit tags (singers, songwriters, creators, song types, etc.)",
+		"USERS_DESCRIPTION": "List, edit, create users, change their password, create new guests account",
+		"SYSTEM": {
+			"CONFIG": "Edit configuration",
+			"REPOSITORIES": "Karaokes repositories",
+			"SESSIONS": "Karaoke sessions",
+			"LOGS": "System logs",
+			"DATABASE": "Database"
+		},
+		"KARAS": {
+			"DOWNLOAD": "Download karaokes",
+			"BROWSE": "Browse karaokes",
+			"CREATE": "Create a karaoke",
+			"BLACKLIST": "Manage download blacklist",
+			"HISTORY": "Played karaokes history"
+		},
+		"TAGS": {
+			"CREATE": "Create a tag",
+			"BROWSE": "Browse a tag",
+			"MERGE": "Merge duplicate tags"
+		},
+		"USERS": {
+			"CREATE": "Create an user",
+			"BROWSE": "Browse users"
+		}
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Updating lyrics...",
@@ -1054,7 +1071,7 @@
 	"HEADERS": {
 		"HOME": {
 			"TITLE": "Home",
-			"DESCRIPTION": "This is where it all begins."
+			"DESCRIPTION": "This is where it all begins. Choose your action."
 		},
 		"LOGS": {
 			"TITLE": "Logs",
