@@ -144,7 +144,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			return getTagInLocaleList(langs, this.state.i18nTag).join(', ');
 		}
 	}, {
-		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
+		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record: DBKara) => {
