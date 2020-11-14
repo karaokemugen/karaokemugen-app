@@ -32,6 +32,7 @@
 	align-items: stretch;
 	.modal-title-block {
 		flex-grow: 2;
+		overflow-wrap: anywhere;
 	}
 	.transparent-btn {
 		background: none;
