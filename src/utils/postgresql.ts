@@ -164,10 +164,7 @@ export async function initPGData() {
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
-			stdio: 'inherit',
-			env: {
-				PGCLIENTENCODING: 'utf-8'
-			}
+			stdio: 'inherit'
 		});
 	} catch(err) {
 		sentry.error(err);
@@ -244,10 +241,7 @@ export async function initPG(relaunch = true) {
 	try {
 		await execa(binPath, options, {
 			cwd: pgBinDir,
-			stdio: 'ignore',
-			env: {
-				PGCLIENTENCODING: 'utf-8'
-			}
+			stdio: 'ignore'
 		});
 		return true;
 	} catch(err) {
