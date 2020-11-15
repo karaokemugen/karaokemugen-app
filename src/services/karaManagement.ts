@@ -10,7 +10,7 @@ import { refreshKaras, refreshYears } from '../lib/dao/kara';
 import { getDataFromKaraFile, parseKara } from '../lib/dao/karafile';
 import {refreshAllKaraTags,refreshKaraTags, refreshTags} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
-import { Kara, KaraFileV4, KaraList, KaraTag } from '../lib/types/kara';
+import { Kara, KaraFileV4, KaraTag } from '../lib/types/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { asyncCopy, asyncReadFile, asyncUnlink, asyncWriteFile, resolveFileInDirs } from '../lib/utils/files';
@@ -246,21 +246,4 @@ export async function integrateKaraFile(file: string) {
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid, token: {username: 'admin', role: 'admin'}}), 'single');
 	saveSetting('baseChecksum', getStoreChecksum());
-}
-
-export async function removeSerieInKaras(sid: string, karas: KaraList) {
-	logger.info(`Removing serie ${sid} in .kara.json files`, {service: 'Kara'});
-	const karasWithSerie = karas.content.filter((k: any) => {
-		if (k.sid && k.sid.includes(sid)) return true;
-	});
-	if (karasWithSerie.length > 0) logger.info(`Removing in ${karasWithSerie.length} files`, {service: 'Kara'});
-	for (const karaWithSerie of karasWithSerie) {
-		logger.info(`Removing in ${karaWithSerie.karafile}...`, {service: 'Kara'});
-		const karaPath = (await resolveFileInDirs(karaWithSerie.karafile, resolvedPathRepos('Karas', karaWithSerie.repository)))[0];
-		const kara = await parseKara(karaPath[0]);
-		kara.data.sids = kara.data.sids.filter((s: any) => s !== sid);
-		kara.data.modified_at = new Date().toISOString();
-		await asyncWriteFile(karaPath, JSON.stringify(kara, null, 2));
-		await editKaraInStore(karaPath);
-	}
 }
