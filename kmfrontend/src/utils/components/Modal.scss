@@ -48,10 +48,16 @@
 	justify-content: space-between;
 	.modal-title {
 		font-size: 2rem;
+		@media screen and (max-width: $mugen-breakpoint-small) {
+			font-size: 1.25rem;
+		}
 		font-weight: bold;
 	}
 	.modal-series {
 		font-size: 1.5rem;
+		@media screen and (max-width: $mugen-breakpoint-small) {
+			font-size: 1rem;
+		}
 		font-weight: normal;
 	}
 	a {

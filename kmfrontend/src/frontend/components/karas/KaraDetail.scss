@@ -39,6 +39,9 @@
 		border: none;
 		color: white;
 		font-size: 2rem;
+		@media screen and (max-width: $mugen-breakpoint-small) {
+			font-size: 1.25rem;
+		}
 		cursor: pointer;
 		text-shadow: 2px 2px 2px #000000bf;
 	}
