@@ -591,6 +591,7 @@ class Players {
 		try {
 			playerState.mediaType = 'background';
 			playerState.playerStatus = 'stop';
+			playerState.currentSong = null;
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
