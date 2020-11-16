@@ -10,9 +10,13 @@ let socket: SocketIOClient.Socket;
 function connectToKMServer() {
 	return new Promise<void>((resolve, reject) => {
 		const conf = getConfig();
+		const timeout = setTimeout(() => {
+			reject(new Error('Connection timed out'));
+		}, 5000);
 		socket = io(`https://${conf.Online.Host}`);
 		socket.on('connect', () => {
 			resolve();
+			clearTimeout(timeout);
 		});
 		socket.on('connect_error', () => {
 			reject(new Error('Socket.IO cannot connect'));
@@ -35,10 +39,14 @@ export function getKMServerSocket() {
 	return socket;
 }
 
-export function commandKMServer(name: string, data: APIData): Promise<any> {
-	return new Promise((resolve) => {
+export function commandKMServer(name: string, data: APIData, timeout = 5000): Promise<any> {
+	return new Promise((resolve, reject) => {
+		const nodeTimeout = setTimeout(() => {
+			reject(new Error('Request timed out'));
+		}, timeout);
 		socket.emit(name, data, ack => {
-			resolve(ack);
+			clearTimeout(nodeTimeout);
+			ack.err ? reject(ack.data):resolve(ack.data);
 		});
 	});
 }
