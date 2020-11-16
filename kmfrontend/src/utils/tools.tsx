@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { toast, TypeOptions } from 'react-toastify';
 
-import Modal from '../frontend/components/modals/Modal';
+import Modal from './components/Modal';
 import Tutorial from '../frontend/components/modals/Tutorial';
 
 let is_touch = window.outerWidth <= 1023;

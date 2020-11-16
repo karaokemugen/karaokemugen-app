@@ -1,4 +1,4 @@
-@import '../variables';
+@import '../../frontend/styles/variables';
 
 .modal-body,.modal-message {
 	max-height: calc(100vh - 200px);
@@ -101,7 +101,7 @@
 	align-items: center;
 	flex-direction: column;
 	margin-bottom: 0.5em;
-	
+
 	button {
 		display: flex;
 		align-items: center;

@@ -231,13 +231,13 @@ export default function userController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		try {
 			//If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
-			const user = req.body.username.includes('@')
+			const user = req.body.login.includes('@')
 				? { type: req.body.type	}
 				: req.body;
-			const avatar = req.body.username.includes('@')
+			const avatar = req.body.login.includes('@')
 				? null
 				: req.body.avatar;
-			await editUser(req.body.username, user, avatar, req.token.role, {editRemote: false});
+			await editUser(req.body.login, user, avatar, req.token.role, {editRemote: false});
 			return APIMessage('USER_EDITED');
 		} catch(err) {
 			const code = 'USER_EDIT_ERROR';
