@@ -31,14 +31,14 @@ class SessionList extends Component<unknown, SessionListState> {
 	}
 
 	getTags = async () => {
-		const res = await commandBackend('getUnusedTags', {name: this.state.repository});
+		const res = await commandBackend('getUnusedTags', {name: this.state.repository}, undefined, 60000);
 		this.setState({unused: res.map(value => {
 			return {name: value.name, types: value.types, file: value.tagfile};
 		})});
 	}
 
 	getMedias = async () => {
-		const res = await commandBackend('getUnusedMedias', {name: this.state.repository});
+		const res = await commandBackend('getUnusedMedias', {name: this.state.repository}, undefined, 60000);
 		this.setState({unused: res.map(value => {
 			return {file: value};
 		})});
