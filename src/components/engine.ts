@@ -142,13 +142,12 @@ export async function initEngine() {
 			logger.error('Failed to init online system', {service: 'Engine', obj: err});
 			sentry.error(err, 'Warning');
 		}
-		if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) initTwitch();
-		initBlacklistSystem();
-		initPlaylistSystem();
-		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPlayer().then(() => {
-			if (app) registerShortcuts();
-		});
-		initDownloader();
+		if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) await initTwitch();
+		await initBlacklistSystem();
+		await initPlaylistSystem();
+		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) await initPlayer();
+		if (app) registerShortcuts();
+		await initDownloader();
 		await initSession();
 		if (conf.Online.Stats === true) initStats(false);
 		try {
@@ -159,10 +158,7 @@ export async function initEngine() {
 				? 'LADY'
 				: 'READY';
 			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
-			if (!state.isTest && !state.electron) welcomeToYoukousoKaraokeMugen();
-			setState({ ready: true });
-			initStep(i18n.t('INIT_DONE'), true);
-			emit('KMReady');
+			if (!state.isTest && !state.electron) await welcomeToYoukousoKaraokeMugen();
 			// This is done later because it's not important.
 			await postMigrationTasks(migrations, didGeneration);
 			if (state.args.length > 0) {
@@ -177,7 +173,7 @@ export async function initEngine() {
 			}
 			if (state.isTest) {
 				if (state.opt.noTestDownloads) {
-					//runTests();
+					runTests();
 				} else {
 					downloadTestSongs();
 					on('downloadQueueStatus', (status: string[]) => {
@@ -196,6 +192,9 @@ export async function initEngine() {
 				}
 			}
 			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
+			setState({ ready: true });
+			initStep(i18n.t('INIT_DONE'), true);
+			emit('KMReady');
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
 			sentry.error(err);
