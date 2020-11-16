@@ -123,19 +123,15 @@ export function initFrontend(): number {
 			});
 		} catch(err) {
 			// Likely port is busy for some reason, so we're going to change that number to something else.
-			try {
-				port = port + 1;
-				server.listen(port, () => {
-					logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
-				});
-			} catch(err) {
-				// Utter failure
-				logger.error('Webapp is NOT READY', {service: 'Webapp', obj: err});
-				throw err;
-			}
+			port = port + 1;
+			server.listen(port, () => {
+				logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
+			});
 		}
 		return port;
 	} catch(err) {
+		// Utter failure
+		logger.error('Webapp is NOT READY', {service: 'Webapp', obj: err});
 		sentry.error(err);
 		throw err;
 	}
