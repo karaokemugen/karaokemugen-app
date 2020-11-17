@@ -63,19 +63,18 @@
 			}
 		}
 	}
-	.detailsKaraTitle {
-		font-weight: bold;
-		padding-right: .5em;
-		white-space: nowrap;
+	.detailsKaraLineContent {
+		color: whitesmoke;
+		overflow-wrap: anywhere;
 	}
 	.lyricsKara {
 		display: flex;
 		flex-direction: column;
 	}
 	.detailsKaraLine {
-		display: flex;
-		flex-direction: column;
 		margin: 1em 0;
+		font-weight: bold;
+		padding-right: .5em;
 		i {
 			margin-right: .5em;
 		}

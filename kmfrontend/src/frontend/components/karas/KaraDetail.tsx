@@ -199,12 +199,10 @@ class KaraDetail extends Component<IProps, IState> {
 			for (const type of ['SINGERS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
 				const tagData = tagTypes[type];
 				if (data[tagData.karajson].length > 0) {
-					karaBlockTags.push(<div className="detailsKaraLine" key={tagData.karajson}>
-						<div className={`detailsKaraTitle colored ${tagData.color}`}>
-							<i className={`fas fa-fw fa-${tagData.icon}`} />
-							{i18next.t(`KARA.${type}_BY`)}
-						</div>
-						<span>{data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null)}</span>
+					karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
+						<i className={`fas fa-fw fa-${tagData.icon}`} />
+						{i18next.t(`KARA.${type}_BY`)}
+						<span className="detailsKaraLineContent"> {data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null)}</span>
 					</div>);
 				}
 			}
