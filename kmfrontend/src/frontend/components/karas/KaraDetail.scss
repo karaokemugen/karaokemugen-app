@@ -66,10 +66,7 @@
 	.detailsKaraLineContent {
 		overflow-wrap: anywhere;
 	}
-	.lyricsKara {
-		display: flex;
-		flex-direction: column;
-	}
+
 	.detailsKaraLine {
 		margin: 1em 0;
 		font-weight: bold;
@@ -81,6 +78,14 @@
 		}
 		&.timeData {
 			justify-content: space-between;
+		}
+		&.lyricsKara {
+			flex-direction: column;
+			align-items: start;
+			font-weight: normal;
+		}
+		.detailsKaraTitle {
+			font-weight: bold;
 		}
 		.inlineTag {
 			display: inline-block;
