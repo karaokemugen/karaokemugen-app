@@ -1,10 +1,10 @@
-import io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
+import { APIData } from '../lib/types/api';
 import {getConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { APIData } from '../lib/types/api';
 
-let socket: SocketIOClient.Socket;
+let socket: Socket;
 
 // Create a connection
 function connectToKMServer() {
