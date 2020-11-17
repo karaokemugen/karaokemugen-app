@@ -98,11 +98,13 @@
 
 .tagConteneur {
 	display: flex;
-	&.mobile {
+	@media screen and (max-width: $mugen-breakpoint-large) {
 		margin: 0;
 		flex-wrap: wrap;
 		.tag {
 			margin-top: .4em;
+			font-size: .9em;
+			padding: .125em .25em !important;
 		}
 	}
 	.tag {

@@ -312,7 +312,7 @@ class KaraDetail extends Component<IProps, IState> {
 								<i className="fas fa-fw fa-times" />
 							</button>:null}
 					</div>
-					<div className="tagConteneur mobile">
+					<div className="tagConteneur">
 						{karaTags}
 					</div>
 				</div>
