@@ -11,6 +11,7 @@ import logger from '../lib/utils/logger';
 import { getState } from '../utils/state';
 import {handleFile,win} from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
+import {removeNulls} from "../lib/utils/object_helpers";
 
 const isMac = process.platform === 'darwin';
 
@@ -365,6 +366,7 @@ export function initMenu() {
 				]
 			});
 	}
+	menuItems = removeNulls(menuItems);
 }
 
 function openURL(url: string) {
