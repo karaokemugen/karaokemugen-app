@@ -394,10 +394,8 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	getPlaylistInfo = async () => {
-		if (!this.state.getPlaylistInProgress) {
-			const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
-			this.setState({ playlistInfo: response });
-		}
+		const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
+		this.setState({ playlistInfo: response });
 	};
 
 	getPlaylistUrl = (idPlaylistParam?: number) => {
@@ -457,7 +455,7 @@ class Playlist extends Component<IProps, IState> {
 			param.pl_id = this.state.idPlaylist;
 		}
 		if (url === 'getBLCSet') param.set_id = this.state.bLSet?.blc_set_id;
-		
+
 		param.filter = this.getFilterValue(this.props.side);
 		param.from = (stateData?.infos?.from > 0 ? stateData.infos.from : 0);
 		param.size = chunksize;
