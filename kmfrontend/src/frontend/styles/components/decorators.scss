@@ -27,12 +27,16 @@
 		flex: 0 auto;
 	}
 	&.single {
-		margin: calc(var(--top) + 1em) 1em var(--bottom);
+		margin: calc(var(--top) + 1em) 0 var(--bottom);
+
+		&.hmargin {
+			margin: calc(var(--top) + 1em) 1em var(--bottom);
+		}
 	}
 }
 
 @media screen and (min-width: $mugen-breakpoint-large) {
-	.KmAppWrapperDecorator.single {
+	.KmAppWrapperDecorator.single, .KmAppWrapperDecorator.single.hmargin {
 		width: 75%;
 		margin-left: auto;
 		margin-right: auto;

@@ -191,7 +191,7 @@ class PublicPage extends Component<IProps, IState> {
 					goToCurrentPL={() => this.changeView('currentPlaylist')}
 					onResize={bottom => this.setState({ bottom })}
 				/>
-				<KmAppWrapperDecorator single top={this.state.top} bottom={this.state.bottom} view={this.state.view}>
+				<KmAppWrapperDecorator single top={this.state.top} bottom={this.state.bottom} view={this.state.view} hmagrin={(!['favorites', 'publicPlaylist', 'currentPlaylist', 'tag', 'search'].includes(this.state.view)) && this.state.kara === undefined}>
 					{this.state.profileModal ?
 						<ProfilModal
 							context={this.context}

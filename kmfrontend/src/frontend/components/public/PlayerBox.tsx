@@ -3,6 +3,7 @@ import './PlayerBox.scss';
 import i18next from 'i18next';
 import React, {Component, createRef, RefObject} from 'react';
 import ReactTextLoop from 'react-text-loop';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import {ASSLine} from '../../../../../src/lib/types/ass';
 import {PublicPlayerState} from '../../../../../src/types/state';
@@ -36,6 +37,8 @@ class PlayerBox extends Component<IProps, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
 
+	observer: ResizeObserver
+
 	static resetBox = {
 		title: i18next.t('KARA_PAUSED_WAITING'),
 		subtitle: '',
@@ -67,13 +70,8 @@ class PlayerBox extends Component<IProps, IState> {
 		}
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
 		if (this.props.fixed) {
-			this.resizeCheck();
-			window.addEventListener('resize', this.resizeCheck);
-		}
-	}
-
-	componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
-		if (this.props.fixed && (prevProps.show !== this.props.show || prevState.timePosition !== this.state.timePosition || prevState.subtitle !== this.state.subtitle)) {
+			this.observer = new ResizeObserver(this.resizeCheck);
+			this.observer.observe(this.state.containerRef.current);
 			this.resizeCheck();
 		}
 	}
@@ -81,6 +79,9 @@ class PlayerBox extends Component<IProps, IState> {
 	componentWillUnmount() {
 		getSocket().off('playerStatus', this.refreshPlayerInfos);
 		window.removeEventListener('resize', this.resizeCheck);
+		if (this.observer) {
+			this.observer.disconnect();
+		}
 	}
 
 	/**

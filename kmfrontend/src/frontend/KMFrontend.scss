@@ -9,6 +9,7 @@ body {
 	&.forceScroll {
 		overflow-y: scroll;
 	}
+	overflow-y: hidden;
 }
 
 // Our stylesheet

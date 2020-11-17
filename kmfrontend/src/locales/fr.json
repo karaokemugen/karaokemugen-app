@@ -189,6 +189,8 @@
 	},
 	"CONFIRM_FAV_IMPORT": "Écraser vos favoris avec cet import ?",
 	"LYRICS": "Paroles",
+	"KARAOKE": "{{count}} karaoké",
+	"KARAOKE_plural": "{{count}} karaokés",
 	"CL_CONGRATS": "Félicitations",
 	"CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter {{title}}",
 	"CL_ADD_RANDOM_TITLE": "Combien de chansons aléatoires voulez-vous ajouter ?",

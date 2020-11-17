@@ -169,6 +169,8 @@
 	"DELETE_KARA": "Remove song",
 	"TRANSFER_KARA": "Transfer song",
 	"LYRICS": "Lyrics",
+	"KARAOKE": "{{count}} karaoke",
+	"KARAOKE_plural": "{{count}} karaokes",
 	"CL_HELP_DISCORD": "Come to our {{- discord}} if you have any questions!",
 	"CL_CONGRATS": "Congratulations",
 	"CL_ABOUT_TO_ADD": "You're about to add {{title}}",
