@@ -1,0 +1,42 @@
+@import '../../styles/variables';
+
+.lyrics-box {
+	&.mobile {
+		@media screen and (min-width: $mugen-breakpoint-large) {
+			display: none;
+		}
+	}
+	> div:first-child {
+		text-align: center;
+		width: 100%;
+		cursor: pointer;
+		user-select: none;
+	}
+	> .lyrics {
+		width: 100%;
+		background-color: lighten($mugen-background, 10);
+		padding: 1em;
+		margin: 1em auto 2em;
+		border-radius: 15px;
+		text-align: center;
+		> div {
+			transition: font-size, color, margin ease 200ms,200ms,200ms;
+			&.current {
+				font-size: 1.25em;
+				font-weight: bold;
+				color: gold;
+				margin: 0.25em 0;
+			}
+			&.incoming {
+				color: lighten(gold, 10);
+				margin: 0.1em 0;
+			}
+		}
+	}
+}
+
+@media screen and (min-width: $mugen-breakpoint-large) {
+	.lyrics-box > .lyrics {
+		width: 75%;
+	}
+}
