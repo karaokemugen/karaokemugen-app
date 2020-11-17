@@ -109,7 +109,7 @@ pkg_linux:
     - ls -la release_linux/*
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
-      when: never    
+      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
@@ -150,7 +150,7 @@ pkg_win:
     - ls -la release_win/*
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
-      when: never    
+      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
@@ -191,7 +191,7 @@ pkg_mac:
     - ls -la release_mac/*
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
-      when: never    
+      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
@@ -212,7 +212,7 @@ deploy_mac:
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_mac/*"
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
-      when: never    
+      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
@@ -233,7 +233,7 @@ deploy_linux:
       - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
     rules:
       - if: '$SCHEDULED_RELEASES == "true"'
-        when: never        
+        when: never
       - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
       - if: $CI_COMMIT_TAG
 
@@ -253,7 +253,7 @@ deploy_win:
     - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_win/*"
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
-      when: never        
+      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
@@ -285,7 +285,7 @@ release_site:
     - sh util/triggerWebsite.sh
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
-      when: never        
+      when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^chore: new release/'
     - if: $CI_COMMIT_TAG
     - when: never
