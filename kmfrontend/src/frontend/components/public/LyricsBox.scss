@@ -5,8 +5,11 @@
 		@media screen and (min-width: $mugen-breakpoint-large) {
 			display: none;
 		}
+		> .lyrics {
+			margin: 1em auto 2em;
+		}
 	}
-	> div:first-child {
+	> .toggle {
 		text-align: center;
 		width: 100%;
 		cursor: pointer;
@@ -16,7 +19,7 @@
 		width: 100%;
 		background-color: lighten($mugen-background, 10);
 		padding: 1em;
-		margin: 1em auto 2em;
+		margin: 0 1em;
 		border-radius: 15px;
 		text-align: center;
 		> div {
@@ -32,11 +35,5 @@
 				margin: 0.1em 0;
 			}
 		}
-	}
-}
-
-@media screen and (min-width: $mugen-breakpoint-large) {
-	.lyrics-box > .lyrics {
-		width: 75%;
 	}
 }

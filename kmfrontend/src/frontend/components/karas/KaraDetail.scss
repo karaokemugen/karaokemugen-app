@@ -64,7 +64,6 @@
 		}
 	}
 	.detailsKaraLineContent {
-		color: whitesmoke;
 		overflow-wrap: anywhere;
 	}
 	.lyricsKara {
@@ -77,6 +76,10 @@
 		padding-right: .5em;
 		i {
 			margin-right: .5em;
+		}
+		&.timeData {
+			display: flex;
+			justify-content: space-between;
 		}
 	}
 }
@@ -130,7 +133,10 @@
 .colored {
 	@each $name, $color in $mugen-colors {
 		&.#{$name} {
-			color: saturate(lighten($color, 40), 25);
+			color: saturate(lighten($color, 40), 10);
+			.inlineTag {
+				color: saturate(lighten($color, 55), 10);
+			}
 		}
 	}
 }

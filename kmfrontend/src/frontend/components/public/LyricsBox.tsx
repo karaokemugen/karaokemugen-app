@@ -30,8 +30,12 @@ class LyricsBox extends Component<IProps, IState> {
 	}
 
 	fetchLyrics = async () => {
-		const lyrics = await commandBackend('getKaraLyrics', {kid: this.props.kid});
-		this.setState({ lyrics: lyrics || [] });
+		if (this.props.kid) {
+			const lyrics = await commandBackend('getKaraLyrics', {kid: this.props.kid});
+			this.setState({ lyrics: lyrics || [] });
+		} else {
+			this.setState({ lyrics: [] });
+		}
 	}
 
 	refreshTimePosition = (data: Partial<PublicPlayerState>) => {
@@ -42,7 +46,7 @@ class LyricsBox extends Component<IProps, IState> {
 
 	componentDidMount() {
 		getSocket().on('playerStatus', this.refreshTimePosition);
-		if (this.props.kid) this.fetchLyrics();
+		this.fetchLyrics();
 	}
 
 	componentDidUpdate(prevProps: Readonly<IProps>) {
@@ -53,9 +57,10 @@ class LyricsBox extends Component<IProps, IState> {
 
 	render() {
 		return (<div className={`lyrics-box${this.props.mobile ? ' mobile':''}`}>
-			<div onClick={() => this.setState({showLyrics: !this.state.showLyrics})} tabIndex={0}>
+			{this.props.mobile ? <div className="toggle" onClick={() => this.setState({showLyrics: !this.state.showLyrics})}
+									  tabIndex={0}>
 				{i18next.t('PUBLIC_HOMEPAGE.SHOW_LYRICS')}
-				<i className={this.state.showLyrics ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'}/></div>
+				<i className={this.state.showLyrics ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'}/></div> : null}
 			{this.state.showLyrics ?
 				<div className="lyrics">
 					{

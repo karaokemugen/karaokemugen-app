@@ -88,18 +88,6 @@ class PlayerBox extends Component<IProps, IState> {
 	 * refresh the player infos
 	 */
 	refreshPlayerInfos = async (data: PublicPlayerState) => {
-		if (this.state.ref.current) {
-			const newWidth = this.state.ref.current.offsetWidth *
-				(data.timeposition) / this.state.length + 'px';
-
-			if (data.timeposition && this.state.length !== 0) {
-				this.setState({
-					width: newWidth,
-					timePosition: data.timeposition
-				});
-			}
-		}
-
 		if (data.mediaType || data.currentSong) {
 			this.setState({ width: '0' });
 			if (data.mediaType === 'background') {
@@ -107,31 +95,37 @@ class PlayerBox extends Component<IProps, IState> {
 					...PlayerBox.resetBox,
 					title: i18next.t('KARA_PAUSED_WAITING')
 				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Jingles') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('JINGLE_TIME')
 				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Intros') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('INTRO_TIME')
 				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Outros') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('OUTRO_TIME')
 				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Encores') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('ENCORES_TIME')
 				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Sponsors') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('SPONSOR_TIME')
 				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else {
 				const kara = data.currentSong.currentSong;
 				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getSerieLanguage(this.context.globalState.settings.data, e, kara.langs[0].name)).join(', ')
@@ -146,6 +140,18 @@ class PlayerBox extends Component<IProps, IState> {
 					subtitle: `${serieText} - ${songtypeText}${songorderText}`,
 					length: kara.duration,
 					img: `url(${getPreviewLink(kara)})`
+				});
+			}
+		}
+
+		if (this.state.ref.current) {
+			const newWidth = this.state.ref.current.offsetWidth *
+				(data.timeposition) / this.state.length + 'px';
+
+			if (data.timeposition && this.state.length !== 0) {
+				this.setState({
+					width: newWidth,
+					timePosition: data.timeposition
 				});
 			}
 		}

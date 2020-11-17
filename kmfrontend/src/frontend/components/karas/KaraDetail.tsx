@@ -138,7 +138,7 @@ class KaraDetail extends Component<IProps, IState> {
 	};
 
 	getTagInLocale = (e: DBKaraTag) => {
-		return <span key={e.name} className={e.problematic ? 'problematicTag' : ''}>
+		return <span key={e.tid} className={e.problematic ? 'problematicTag' : 'inlineTag'}>
 			{getTagInLocale(e)}
 		</span>;
 	};
@@ -202,7 +202,7 @@ class KaraDetail extends Component<IProps, IState> {
 					karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
 						<i className={`fas fa-fw fa-${tagData.icon}`} />
 						{i18next.t(`KARA.${type}_BY`)}
-						<span className="detailsKaraLineContent"> {data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x): any => acc === null ? [x] : [acc, ', ', x], null)}</span>
+						<span className="detailsKaraLineContent"> {data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index+1 === arr.length) ? <span className={`colored ${tagData.color}`}> {i18next.t('AND')} </span>:<span className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
 					</div>);
 				}
 			}
@@ -210,7 +210,7 @@ class KaraDetail extends Component<IProps, IState> {
 			const playTime = new Date(Date.now() + data.time_before_play * 1000);
 			const details = (
 				<React.Fragment>
-					<div className="detailsKaraLine">
+					<div className="detailsKaraLine timeData">
 						<span>
 							<i className="fas fa-fw fa-clock" />
 							{secondsTimeSpanToHMS(data.duration, 'mm:ss')}
@@ -275,10 +275,10 @@ class KaraDetail extends Component<IProps, IState> {
 
 			const lyricsKara = (
 				<div className="lyricsKara detailsKaraLine">
-					<div className="detailsKaraTitle">
+					{this.state.lyrics?.length > 0 ? <div className="detailsKaraTitle">
 						<i className="fas fa-fw fa-closed-captioning" />
 						{i18next.t('LYRICS')}
-					</div>
+					</div> : null}
 					{data.subfile && this.state.lyrics?.map((ligne, index) => {
 						return (
 							<React.Fragment key={index}>
