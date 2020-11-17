@@ -61,7 +61,7 @@
     "Rinchama (@Rinchama)",
     "zeograd <zeograd@gmail.com>",
     "leonekmi <git+km@leonekmi.fr>",
-	"Pierre CAMILLI <camillipierre@gmail.com> @Shueisha64"
+    "Pierre CAMILLI <camillipierre@gmail.com> @Shueisha64"
   ],
   "engines": {
     "node": ">=12.0.0"
@@ -179,7 +179,6 @@
     "@types/randomstring": "^1.1.6",
     "@types/readline-sync": "^1.4.3",
     "@types/semver": "^7.3.4",
-    "@types/socket.io-client": "^1.4.34",
     "@types/tmi.js": "^1.4.2",
     "@types/uuid": "^8.3.0",
     "@types/yesql": "^4.1.0",
