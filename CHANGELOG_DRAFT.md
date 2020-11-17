@@ -4,10 +4,6 @@
 
 - Usernames are now **case-insensitive** (#770). Karaoke Mugen will detect name conflicts in your user database and eventually fixes them automatically or asking you to do something about. In any case, the accounts with conflictual names will be automatically renamed with suffixes.
 
-### Fixes
-
-- Socket.IO 3 protocol for KMShortener communication
-
 ## v5.0.x - Poppy Partagée
 
 5.0 introduces a brand new public interface, making it easier to add songs and browse the library.
