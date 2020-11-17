@@ -1,5 +1,20 @@
 # Versions
 
+## v4.1.18 "Ôgi Observatrice" - 17/11/2020
+
+### Breaking changes
+
+- Upgraded sockets.io to 3.x because we're upgrading KM Server as well. This allows continuation of service for the kara.moe shortener URL.
+
+### Improvements
+
+- We're stopping collecting favorite stats fromo instances (if you have stats enabled.) Favorites stats on KM Server are now computed using only online user accounts.
+
+### Fixes
+
+- The GET /karas API route can now be used in restricted mode
+- Fixed profile fetching from KM Server
+
 ## v4.1.17 "Ôgi Observatrice" - 24/10/2020
 
 ### Fixes

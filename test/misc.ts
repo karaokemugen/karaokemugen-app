@@ -105,23 +105,6 @@ describe('Main', () => {
 				expect(res.body.fullPath).to.be.a('string');
 			});
 	});
-	it('Put interface in restricted mode and test an API', async () => {
-		const data = { setting: { Frontend: { Mode: 1 }}};
-		await request
-			.put('/api/settings')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect('Content-Type', /json/)
-			.expect(200);
-		const publicToken = await getToken('publicTest');
-		return request
-			.get('/api/karas')
-			.set('Accept', 'application/json')
-			.set('Authorization', publicToken)
-			.expect('Content-Type', /json/)
-			.expect(503);
-	});
 	it('Put interface in closed mode and test an API', async () => {
 		const data = { setting: { Frontend: { Mode: 0 }}};
 		await request
