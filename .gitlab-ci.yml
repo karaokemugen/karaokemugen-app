@@ -117,6 +117,8 @@ pkg_linux:
 pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
+  tags:
+    - linux
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
