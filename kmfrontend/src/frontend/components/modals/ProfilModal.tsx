@@ -105,7 +105,7 @@ class ProfilModal extends Component<IProps, IState> {
 			&& this.state.user.password === this.state.user.passwordConfirmation)
 			|| !this.state.user.password)) {
 			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
-			const response = await commandBackend('editMyUser', this.state.user);
+			const response = await commandBackend('editMyAccount', this.state.user);
 
 			const data: IAuthentifactionInformation = this.props.context.globalState.auth.data;
 			data.onlineToken = response.onlineToken;

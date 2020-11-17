@@ -404,7 +404,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('editMyUser', async (socket: Socket, req: APIData) => {
+	router.route('editMyAccount', async (socket: Socket, req: APIData) => {
 	/**
  * @api {put} Edit your own account
  * @apiName editMyUser
