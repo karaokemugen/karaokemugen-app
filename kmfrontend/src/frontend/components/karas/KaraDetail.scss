@@ -74,12 +74,17 @@
 		margin: 1em 0;
 		font-weight: bold;
 		padding-right: .5em;
+		display: flex;
+		align-items: center;
 		i {
 			margin-right: .5em;
 		}
 		&.timeData {
-			display: flex;
 			justify-content: space-between;
+		}
+		.inlineTag {
+			display: inline-block;
+			overflow-wrap: normal;
 		}
 	}
 }
