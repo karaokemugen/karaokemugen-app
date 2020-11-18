@@ -10,16 +10,17 @@ let socket: Socket;
 function connectToKMServer() {
 	return new Promise<void>((resolve, reject) => {
 		const conf = getConfig();
-		const timeout = setTimeout(() => {
+		let timeout = setTimeout(() => {
 			reject(new Error('Connection timed out'));
 		}, 5000);
 		socket = io(`https://${conf.Online.Host}`);
 		socket.on('connect', () => {
-			resolve();
 			clearTimeout(timeout);
+			timeout = undefined;
+			resolve();
 		});
-		socket.on('connect_error', () => {
-			reject(new Error('Socket.IO cannot connect'));
+		socket.on('connect_error', (err) => {
+			if (timeout) reject(err);
 		});
 	});
 }
