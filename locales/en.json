@@ -143,7 +143,9 @@
 			"The Monitor allows you to see the currently playing song if you can't see the screen from where you are.",
 			"Classic Karaoke mode emulates what you find in japanese karaoke booths or during karaoke contests at anime events : a pause is madebetween each song and the next song's title and requester are displayed on screen!",
 			"Does your karaoke session end soon? Switch the interface to restricted mode: users won't be able to add songs anymore but will be able to see what's coming next.",
-			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!"
+			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!",
+			"When you search, you can type \"-word\" to exclude karaokes containing that word (whether it's in the tile, the series, the singers, etc.) from your search results.",
+			"When you search, you can put a word group between double quotes to ask precisely for that text. Type in \"love live\" to have karaokes from Love Live series only."
 		],
 		"ERRORS": [
 			"Come see us on Discord if you need help: https://karaokes.moe/discord",
