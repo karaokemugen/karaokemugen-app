@@ -180,7 +180,6 @@
     "@types/yesql": "^4.1.0",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
-    "apidoc": "^0.25.0",
     "chai": "^4.2.0",
     "electron": "^10.1.5",
     "eslint": "^7.12.1",
