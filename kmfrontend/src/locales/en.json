@@ -180,6 +180,7 @@
 	"CL_RENAME_PLAYLIST": "Rename {{playlist}}",
 	"CL_CREATE_PLAYLIST": "Create new playlist",
 	"CL_DELETE_PLAYLIST": "Delete {{playlist}} forever?",
+	"CL_EMPTY_LIST": "Empty list ?",
 	"CL_SCREEN": "Screen",
 	"CL_USERS": "Users' devices",
 	"CL_ALL": "All",

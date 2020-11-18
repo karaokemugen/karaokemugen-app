@@ -245,13 +245,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	deleteAllKaras = () => {
 		this.togglePlaylistCommands();
-		if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
-			commandBackend('emptyBLCSet', { set_id: this.props.bLSet?.blc_set_id });
-		} else if (this.props.idPlaylist === -3) {
-			commandBackend('emptyWhitelist');
-		} else {
-			commandBackend('emptyPlaylist', { pl_id: this.props.idPlaylist });
-		}
+		callModal('confirm', i18next.t('CL_EMPTY_LIST'), '', () => {
+			if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
+				commandBackend('emptyBLCSet', { set_id: this.props.bLSet?.blc_set_id });
+			} else if (this.props.idPlaylist === -3) {
+				commandBackend('emptyWhitelist');
+			} else {
+				commandBackend('emptyPlaylist', { pl_id: this.props.idPlaylist });
+			}
+		});
 	};
 
 	setFlagCurrent = async () => {

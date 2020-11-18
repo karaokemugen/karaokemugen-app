@@ -15,7 +15,6 @@ import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../
 import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import ActionsButtons from './ActionsButtons';
-import KaraDetail from './KaraDetail';
 
 require('./KaraLine.scss');
 
@@ -288,7 +287,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									<img className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
 										src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
 								<div className="btn-group">
-									{this.props.idPlaylistTo !== idPlaylist && 
+									{this.props.idPlaylistTo !== idPlaylist &&
 										(this.props.scope === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend.Mode === 2) ?
 										<ActionsButtons
 											idPlaylistTo={this.props.idPlaylistTo}
