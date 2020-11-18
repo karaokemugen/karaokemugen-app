@@ -27,7 +27,7 @@ import { addUser as DBAddUser,
 import {User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
-import {asyncCopy, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType, replaceExt} from '../lib/utils/files';
+import {asyncCopy, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import {UserOpts} from '../types/user';
@@ -168,12 +168,6 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 				await asyncUnlink(oldAvatarPath);
 			} catch(err) {
 				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, {service: 'User', obj: err});
-			}
-			const oldAvatarCirclePath = replaceExt(oldAvatarPath, '.circle.png');
-			try {
-				await asyncUnlink(oldAvatarCirclePath);
-			} catch(err) {
-				logger.warn(`Unable to unlink old avatar circle path ${oldAvatarCirclePath}`, {service: 'User', obj: err});
 			}
 		}
 		try {
@@ -524,15 +518,13 @@ async function cleanupAvatars() {
 	const avatarFiles = await asyncReadDir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
 		const avatar = avatars.find(a => a === file);
-		if (!avatar && !file.endsWith('.circle.png') && file !== 'blank.png') {
+		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPathAvatars(), file);
-			const fullCircleFile = replaceExt(fullFile, '.circle.png');
 			try {
-				logger.debug(`Deleting old file ${fullFile} and ${fullCircleFile}`, {service: 'Users'});
+				logger.debug(`Deleting old file ${fullFile}`, {service: 'Users'});
 				await asyncUnlink(fullFile);
-				await asyncUnlink(fullCircleFile);
 			} catch(err) {
-				logger.warn(`Failed deleting old file ${fullFile} and/or ${fullCircleFile}`, {service: 'Users', obj: err});
+				logger.warn(`Failed deleting old file ${fullFile}`, {service: 'Users', obj: err});
 				//Non-fatal
 			}
 		}
