@@ -52,7 +52,7 @@ import {Token, User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars} from '../lib/utils/config';
 import { bools } from '../lib/utils/constants';
 import {now} from '../lib/utils/date';
-import { asyncExists,replaceExt } from '../lib/utils/files';
+import { asyncExists } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
@@ -1123,7 +1123,7 @@ function smartShuffle(playlist: DBPLC[]) {
 /** Balance playlist **/
 function balancePlaylist(playlist: DBPLC[]) {
 	const balance: Map<string, DBPLC>[] = [];
-	
+
 	// Organisation of karaokes
 	for (const content of playlist) {
 		let hasBeenInserted = false;
@@ -1250,8 +1250,8 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 				// User does not exist anymore, replacing it with admin
 				user = await findUserByName('admin');
 			}
-			avatarfile = replaceExt(resolve(resolvedPathAvatars(), user.avatar_file), '.circle.png');
-			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPathAvatars(), 'blank.circle.png');
+			avatarfile = resolve(resolvedPathAvatars(), user.avatar_file);
+			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPathAvatars(), 'blank.png');
 		} else {
 			requester = '';
 		}
