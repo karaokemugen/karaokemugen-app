@@ -69,10 +69,6 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@jimp/custom": "^0.16.1",
-    "@jimp/jpeg": "^0.16.1",
-    "@jimp/plugin-circle": "^0.16.1",
-    "@jimp/png": "^0.16.1",
     "@sentry/electron": "^2.0.3",
     "@sentry/node": "^5.27.3",
     "about-window": "^1.13.4",

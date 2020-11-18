@@ -32,7 +32,6 @@ import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
-import { createCircleAvatar } from '../utils/imageProcessing';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
@@ -110,7 +109,6 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			try {
 				user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
-				createCircleAvatar(resolve(resolvedPathAvatars(), user.avatar_file));
 			} catch(err) {
 				//Non-fatal
 				logger.warn('', {service: 'User', obj: err});
@@ -488,7 +486,6 @@ async function userChecks() {
 	await createDefaultGuests();
 	await checkGuestAvatars();
 	await checkUserAvatars();
-	await checkCircledAvatars();
 	await cleanupAvatars();
 }
 
@@ -512,22 +509,6 @@ async function checkUserAvatars() {
 				file,
 				{overwrite: true}
 			);
-		}
-	}
-}
-
-/** Verifies if all avatars have a circled version available */
-async function checkCircledAvatars() {
-	logger.debug('Checking if all avatars have circled versions', {service: 'User'});
-	const users = await listUsers();
-	for (const user of users) {
-		try {
-			const file = resolve(resolvedPathAvatars(), user.avatar_file);
-			if (await asyncExists(file) && !await asyncExists(replaceExt(file, '.circle.png'))) {
-				await createCircleAvatar(file);
-			}
-		} catch(err) {
-			logger.error(`Unable to create circled avatar for ${user.login} with ${user.avatar_file}`, {service: 'Users', obj: err});
 		}
 	}
 }
