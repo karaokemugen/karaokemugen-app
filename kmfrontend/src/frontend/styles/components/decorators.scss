@@ -26,6 +26,16 @@
 	> * {
 		flex: 0 auto;
 	}
+	&.chibi {
+		.header-group {
+			-webkit-app-region: drag;
+			cursor: move;
+			> * {
+				cursor: pointer;
+				-webkit-app-region: no-drag;
+			}
+		}
+	}
 	&.single {
 		margin: calc(var(--top) + 1em) 0 var(--bottom);
 
@@ -110,6 +120,15 @@
 			text-align: center;
 			> .btn {
 				height: 100%;
+			}
+		}
+
+		.header-group.floating-controls {
+			position: fixed;
+			right: 0;
+			.btn {
+				min-width: 1.25em;
+				padding: .1em;
 			}
 		}
 	}

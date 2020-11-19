@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { exit } from '../components/engine';
 import { listUsers } from '../dao/user';
 import { main, preInit } from '../index';
-import { getConfig } from '../lib/utils/config';
+import {getConfig, setConfig} from '../lib/utils/config';
 import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { emit,on } from '../lib/utils/pubsub';
@@ -54,6 +54,9 @@ export function startElectron() {
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
 			if (!getState().forceDisableAppUpdate) initAutoUpdate();
+			if (getConfig().GUI.ChibiPlayer.Enabled) {
+				updateChibiPlayerWindow(true);
+			}
 			initDone = true;
 		});
 		ipcMain.once('initPageReady', async () => {
@@ -71,11 +74,15 @@ export function startElectron() {
 		ipcMain.on('tip', (_event, _eventData) => {
 			emitIPC('techTip', tip());
 		});
-		ipcMain.on('setChibiPlayerAlwaysOnTop', (_event, eventData) => {
-			setChibiPlayerAlwaysOnTop(eventData);
+		ipcMain.on('setChibiPlayerAlwaysOnTop', (_event, _eventData) => {
+			setChibiPlayerAlwaysOnTop(!getConfig().GUI.ChibiPlayer.AlwaysOnTop);
+			setConfig({GUI:{ChibiPlayer:{ AlwaysOnTop: !getConfig().GUI.ChibiPlayer.AlwaysOnTop }}});
 		});
 		ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
 			updateChibiPlayerWindow(false);
+			// TODO: reflect this in config, and uncheck in electron menu
+			// At least uncheck in Electron Menu to let user reopen the window, configuration may be set only on click
+			// in the Electron window
 		});
 		ipcMain.on('focusMainWindow', (_event, _eventData) => {
 			focusWindow();
@@ -345,8 +352,8 @@ export function updateChibiPlayerWindow(show: boolean) {
 	const state = getState();
 	if (show) {
 		chibiPlayerWindow = new BrowserWindow({
-			width: 640,
-			height: 480,
+			width: 800,
+			height: 100,
 			frame: false,
 			resizable: false,
 			show: false,
@@ -359,12 +366,12 @@ export function updateChibiPlayerWindow(show: boolean) {
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
 		const port = state.frontendPort;
-		chibiPlayerWindow.loadURL(`http://localhost:${port}/chibiPlayer`);
+		chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi`);
 		chibiPlayerWindow.once('ready-to-show', () => {
 			chibiPlayerWindow.show();
 		});
 	} else {
-		chibiPlayerWindow.destroy();
+		chibiPlayerWindow?.destroy();
 	}
 }
 

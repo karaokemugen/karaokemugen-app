@@ -9,6 +9,7 @@ import { isElectron } from '../utils/electron';
 import { commandBackend, getSocket } from '../utils/socket';
 import { callModal, is_touch_device,startIntro } from '../utils/tools';
 import AdminPage from './components/AdminPage';
+import ChibiPage from './components/ChibiPage';
 import ShutdownModal from './components/modals/ShutdownModal';
 import NotFoundPage from './components/NotfoundPage';
 import PublicPage from './components/public/PublicPage';
@@ -45,7 +46,7 @@ class KMFrontend extends Component<unknown, IState> {
 				this.setState({ shutdownPopup: true });
 			}
 		});
-		
+
 		if (this.context?.globalState.settings.data.config?.App.FirstRun && window.location.pathname === '/admin') {
 			startIntro();
 		}
@@ -86,6 +87,7 @@ class KMFrontend extends Component<unknown, IState> {
 							<Route path="/admin" render={() => <AdminPage
 								powerOff={isElectron() ? undefined : this.powerOff}
 								 showVideo={this.showVideo} />} />
+							<Route path="/chibi" exact component={ChibiPage} />
 							<Route exact path="/" render={() => <PublicPage showVideo={this.showVideo} />} />
 							<Route component={NotFoundPage} />
 						</Switch>

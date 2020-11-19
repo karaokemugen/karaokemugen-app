@@ -53,6 +53,11 @@ export function drop(event) {
 	});
 }
 
+export function sendIPC(command: string, content?: any) {
+	const { ipcRenderer } = window.require('electron');
+	ipcRenderer.send(command, content);
+}
+
 export function dragOver(e) {
 	e.preventDefault();
 	e.stopPropagation();

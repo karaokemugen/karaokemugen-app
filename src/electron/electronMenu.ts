@@ -5,13 +5,13 @@ import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
 
-import {exit} from '../components/engine';
+import { exit } from '../components/engine';
 import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
+import { removeNulls } from '../lib/utils/object_helpers';
 import { getState } from '../utils/state';
-import {handleFile,win} from './electron';
+import { handleFile, win, updateChibiPlayerWindow } from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
-import {removeNulls} from "../lib/utils/object_helpers";
 
 const isMac = process.platform === 'darwin';
 
