@@ -363,7 +363,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								&& kara.username === this.props.context.globalState.auth.data.username
 								&& this.props.playlistInfo?.flag_public && this.props.idPlaylist > 0 ?
 									<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
-										onClick={this.deleteKara}><i className={`fas fa-minus ${is_touch_device() ? ' fa-2x':''}`} /></button> :
+										onClick={this.deleteKara}><i className={`fas fa-trash-alt ${is_touch_device() ? ' fa-2x':''}`} /></button> :
 									<button className="karaLineButton upvoteKara btn btn-sm btn-action"
 										title={i18next.t('TOOLTIP_UPVOTE')}
 										disabled={this.props.kara.username === this.props.context.globalState.auth.data.username}
