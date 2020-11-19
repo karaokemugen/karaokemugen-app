@@ -89,6 +89,7 @@
 	"MENU_OPTIONS_SYSTEMCONFIG": "Préférences &système",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Préférences...",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Préférences système...",
+	"MENU_OPTIONS_CHIBIPLAYER": "Afficher le Chibi Player",
 	"SECURITY_CODE_TITLE": "Code de sécurité",
 	"SECURITY_CODE_MESSAGE": "Voici le code de sécurité actuel :",
 	"ERROR": "Erreur",
