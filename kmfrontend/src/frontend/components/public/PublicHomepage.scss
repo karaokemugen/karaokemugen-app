@@ -51,17 +51,19 @@
 		transition: color ease-out 200ms;
 		font-family: inherit;
 		@each $name, $color in $mugen-colors {
-			&.#{$name} {
-				&:hover, &:focus {
-					color: saturate(lighten($color, 25), 10);
-				}
-				&.big {
-					color: saturate(lighten($color, 10), 20);
-				}
-				> i {
-					color: saturate(lighten($color, 10), 20);
-				}
-			}
+			 @if $name != 'black' {
+				 &.#{$name} {
+					 &:hover, &:focus {
+						 color: saturate(lighten($color, 25), 10);
+					 }
+					 &.big {
+						 color: saturate(lighten($color, 10), 20);
+					 }
+					 > i {
+						 color: saturate(lighten($color, 10), 20);
+					 }
+				 }
+			 }
 		}
 		&.big {
 			width: 100%;
