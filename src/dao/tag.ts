@@ -37,7 +37,7 @@ function buildTagClauses(words: string): WhereClause {
 	return {
 		sql: sql,
 		params: {tsquery: words},
-		additionalFrom: [', websearch_to_tsquery(\'public.unaccent_conf\', :tsquery) as query, ts_rank_cd(search_vector, query) as relevance']
+		additionalFrom: [', plainto_tsquery(\'public.unaccent_conf\', :tsquery) as query, ts_rank_cd(search_vector, query) as relevance']
 	};
 }
 
