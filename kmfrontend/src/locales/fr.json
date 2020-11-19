@@ -44,7 +44,7 @@
 	"ADMIN_PASSWORD_CHANGE": "Changer le mot de passe opérateur",
 	"PASSWORD": "Mot de passe (8 caractères minimum)",
 	"PASSWORDCONF": "Confirmation du mot de passe",
-	"NEW_PASSWORD": "Nouveau mdp",
+	"NEW_PASSWORD": "Nouveau mot de passe",
 	"MONITOR_NUMBER": "Ecran sur lequel afficher la vidéo (plein écran)",
 	"VIDEO_SIZE": "Taille du lecteur (fenêtré)",
 	"VIDEO_SIZE_TOOLTIP": "Affecte uniquement le mode fenêtré",
