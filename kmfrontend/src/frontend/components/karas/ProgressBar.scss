@@ -1,3 +1,12 @@
+@keyframes slide-ltr {
+	0% {
+		transform: translateX(5px);
+	}
+	100% {
+		transform: translateX(var(--offset, 50%));
+	}
+}
+
 #progressBar {
 	cursor: pointer;
 	width: 100%;
@@ -26,6 +35,18 @@
 
 	#karaInfo > .karaTitle {
 		justify-content: center;
+		height: 2em;
+		line-height: 2em;
+		overflow: hidden;
+		margin: 0 1em;
+		&.animate {
+			justify-content: flex-start;
+			position: relative;
+			> p {
+				animation: slide-ltr var(--duration, 10s) linear infinite alternate;
+				position: absolute;
+			}
+		}
 	}
 
 	#karaInfo {

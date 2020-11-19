@@ -1,5 +1,7 @@
+import './ProgressBar.scss';
+
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import React, {Component, createRef, Ref, RefObject} from 'react';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
@@ -7,10 +9,7 @@ import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
-require('./ProgressBar.scss');
-
 interface IProps {
-	scope: string;
 	lyrics?: boolean;
 }
 
@@ -22,6 +21,8 @@ interface IState {
 	length: number;
 	width: string;
 	timePosition: number;
+	animate: number;
+	duration: number;
 }
 
 class ProgressBar extends Component<IProps, IState> {
@@ -37,9 +38,15 @@ class ProgressBar extends Component<IProps, IState> {
 			karaInfoText: i18next.t('KARA_PAUSED_WAITING'),
 			length: -1,
 			width: '0',
-			timePosition: 0
+			timePosition: 0,
+			animate: 0,
+			duration: 0
 		};
 	}
+
+	refBar = createRef<HTMLDivElement>();
+	refCont = createRef<HTMLDivElement>();
+	refP =  createRef<HTMLParagraphElement>();
 
 	mouseDown = (e: any) => {
 		if (this.state.playerStatus && this.state.playerStatus !== 'stop' && this.state.length !== -1) {
@@ -65,10 +72,12 @@ class ProgressBar extends Component<IProps, IState> {
 			this.refreshPlayerInfos(result);
 		}
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
+		window.addEventListener('resize', this.resizeCheck, { passive: true });
 	}
 
 	componentWillUnmount() {
 		getSocket().off('playerStatus', this.refreshPlayerInfos);
+		window.removeEventListener('resize', this.resizeCheck);
 	}
 
 	goToPosition(e: any) {
@@ -85,21 +94,28 @@ class ProgressBar extends Component<IProps, IState> {
 	}
 
 	karaInfoClick = (e: any) => {
-		if (this.props.scope === 'admin' && this.state.playerStatus && this.state.playerStatus !== 'stop' && this.state.length !== -1) {
-			this.goToPosition(e);
-		}
+		this.goToPosition(e);
 	};
+
+	resizeCheck = () => {
+		const offset = this.refP.current.getBoundingClientRect().width - this.refCont.current.getBoundingClientRect().width;
+		if (offset > 0) {
+			this.setState({ animate: -offset-5, duration: Math.round(offset*0.05) });
+		} else {
+			this.setState({ animate: 0 });
+		}
+	}
 
 	/**
     * refresh the player infos
     */
 	refreshPlayerInfos = async (data: PublicPlayerState) => {
-		const element = document.getElementById('karaInfo');
-		if (element) {
+		const element = this.refBar.current;
+		if (element && data.timeposition) {
 			const newWidth = element.offsetWidth *
 				10000 * (data.timeposition + this.state.refreshTime / 1000) / this.state.length / 10000 + 'px';
 
-			if (data.timeposition && this.state.length !== 0) {
+			if (this.state.length !== 0) {
 				this.setState({ width: newWidth, timePosition: data.timeposition });
 			}
 		}
@@ -113,21 +129,21 @@ class ProgressBar extends Component<IProps, IState> {
 		if (data.mediaType || data.currentSong) {
 			this.setState({ width: '0' });
 			if (data.mediaType === 'background') {
-				this.setState({ karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1 });
+				this.setState({ karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1, animate: 0 });
 			} else if (data.mediaType === 'Jingles') {
-				this.setState({ karaInfoText: i18next.t('JINGLE_TIME'), length: -1 });
+				this.setState({ karaInfoText: i18next.t('JINGLE_TIME'), length: -1, animate: 0 });
 			} else if (data.mediaType === 'Intros') {
-				this.setState({ karaInfoText: i18next.t('INTRO_TIME'), length: -1 });
+				this.setState({ karaInfoText: i18next.t('INTRO_TIME'), length: -1, animate: 0 });
 			} else if (data.mediaType === 'Outros') {
-				this.setState({ karaInfoText: i18next.t('OUTRO_TIME'), length: -1 });
+				this.setState({ karaInfoText: i18next.t('OUTRO_TIME'), length: -1, animate: 0 });
 			} else if (data.mediaType === 'Encores') {
-				this.setState({ karaInfoText: i18next.t('ENCORES_TIME'), length: -1 });
+				this.setState({ karaInfoText: i18next.t('ENCORES_TIME'), length: -1, animate: 0 });
 			} else if (data.mediaType === 'Sponsors') {
-				this.setState({ karaInfoText: i18next.t('SPONSOR_TIME'), length: -1 });
+				this.setState({ karaInfoText: i18next.t('SPONSOR_TIME'), length: -1, animate: 0 });
 			} else {
 				const kara = data.currentSong.currentSong;
 				const karaInfo = buildKaraTitle(this.context.globalState.settings.data, kara);
-				this.setState({ karaInfoText: karaInfo, length: kara.duration });
+				this.setState({ karaInfoText: karaInfo, length: kara.duration }, this.resizeCheck);
 			}
 		}
 	};
@@ -144,9 +160,15 @@ class ProgressBar extends Component<IProps, IState> {
 					onClick={this.karaInfoClick}
 					onMouseDown={this.mouseDown} onMouseUp={() => this.setState({ mouseDown: false })}
 					onMouseMove={this.mouseMove} onMouseOut={this.mouseOut}
+					ref={this.refBar}
 				>
 					<div className="actualTime">{this.state.timePosition > 0 && this.state.length > 0 && secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
-					<div className="karaTitle">{this.state.karaInfoText}</div>
+					<div className={`karaTitle${this.state.animate !== 0 ? ' animate':''}`}
+						 style={{['--offset' as any]: `${this.state.animate}px`,
+							 ['--duration' as any]: `${this.state.duration}s`}}
+						 ref={this.refCont}>
+						<p ref={this.refP}>{this.state.karaInfoText}</p>
+					</div>
 					<div className="remainTime">{this.state.length > 0 && `-${secondsTimeSpanToHMS(Math.round(this.state.length-this.state.timePosition), 'mm:ss')}`}</div>
 				</div>
 				<div id="progressBarColor" style={{width: this.state.width}}/>
