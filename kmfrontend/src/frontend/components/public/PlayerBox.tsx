@@ -164,7 +164,7 @@ class PlayerBox extends Component<IProps, IState> {
 				 ref={this.state.containerRef}>
 				{!this.props.fixed ? <div className="first">
 					<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
-					<p className="next" tabIndex={0}>{i18next.t('PUBLIC_HOMEPAGE.NEXT')}</p>
+					<p className="next" tabIndex={0}>{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" /></p>
 				</div>:null}
 				{!this.props.fixed ?
 					<div className="title">
