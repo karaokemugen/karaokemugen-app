@@ -2,7 +2,6 @@ import './PlayerBox.scss';
 
 import i18next from 'i18next';
 import React, {Component, createRef, RefObject} from 'react';
-import ReactTextLoop from 'react-text-loop';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import {ASSLine} from '../../../../../src/lib/types/ass';
@@ -173,10 +172,10 @@ class PlayerBox extends Component<IProps, IState> {
 						<h4 className="series">{this.state.subtitle}</h4>
 					</div> :
 					(this.state.subtitle ?
-						<ReactTextLoop interval={[4500,6000]} mask className="title">
+						<div className="title inline">
 							<h3 className="song">{this.state.title}</h3>
-							<h3 className="song">{this.state.subtitle}</h3>
-						</ReactTextLoop>:null)}
+							<h4 className="series">{this.state.subtitle}</h4>
+						</div>:null)}
 				{this.state.length !== 0 ?
 					<React.Fragment>
 						{!this.props.fixed ?
