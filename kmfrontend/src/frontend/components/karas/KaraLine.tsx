@@ -359,9 +359,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										<i className="fas fa-eye-slash"></i>
 									</button> : null
 								}
-								{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing
+								{scope !== 'admin' && this.props.idPlaylist > 0 ? (!kara.flag_dejavu && !kara.flag_playing
 								&& kara.username === this.props.context.globalState.auth.data.username
-								&& this.props.playlistInfo?.flag_public && this.props.idPlaylist > 0 ?
+								&& this.props.playlistInfo?.flag_public ?
 									<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
 										onClick={this.deleteKara}><i className={`fas fa-trash-alt ${is_touch_device() ? ' fa-2x':''}`} /></button> :
 									<button className="karaLineButton upvoteKara btn btn-sm btn-action"
@@ -371,7 +371,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										<i className={`fas fa-thumbs-up${kara.flag_upvoted ? ' currentUpvote' : ''}
 										${kara.upvotes > 0 ? ' upvotes' : ''}${is_touch_device() ? ' fa-2x':''}`} />
 										{kara.upvotes > 0 && kara.upvotes}
-									</button>}
+									</button>):null}
 							</div>
 							{is_touch_device() && this.props.scope === 'public' ?
 								<div className="tagConteneur mobile">
