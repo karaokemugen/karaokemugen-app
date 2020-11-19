@@ -572,7 +572,8 @@
 		"SINGERS_BY": "Sung by",
 		"SONGWRITERS_BY": "Composed by",
 		"CREATORS_BY": "Created by",
-		"AUTHORS_BY": "Karaoke created by"
+		"AUTHORS_BY": "Karaoke created by",
+		"DELETE_KARA": "Delete karaoke?"
 	},
 	"MENU": {
 		"HOME": "Home",

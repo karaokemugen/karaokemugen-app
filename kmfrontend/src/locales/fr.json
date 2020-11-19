@@ -589,7 +589,8 @@
 		"SINGERS_BY": "Chanté par",
 		"SONGWRITERS_BY": "Composé par",
 		"CREATORS_BY": "Créé par",
-		"AUTHORS_BY": "Karaoké créé par"
+		"AUTHORS_BY": "Karaoké créé par",
+		"DELETE_KARA": "Supprimer le karaoké ?"
 	},
 	"MENU": {
 		"HOME": "Home",
