@@ -12,8 +12,11 @@
 	--img: none;
 	@include blurred-bg;
 	&.fixed {
-		width: 75%;
+		width: 95%;
 		margin: auto;
+		@media screen and (min-width: $mugen-breakpoint-large) {
+			width: 75%;
+		}
 	}
 	> * {
 		position: relative;
@@ -29,12 +32,16 @@
 	align-items: stretch;
 	.modal-title-block {
 		flex-grow: 2;
+		overflow-wrap: anywhere;
 	}
 	.transparent-btn {
 		background: none;
 		border: none;
 		color: white;
 		font-size: 2rem;
+		@media screen and (max-width: $mugen-breakpoint-small) {
+			font-size: 1.25rem;
+		}
 		cursor: pointer;
 		text-shadow: 2px 2px 2px #000000bf;
 	}
@@ -56,28 +63,34 @@
 			}
 		}
 	}
-	.detailsKaraTitle {
+	.detailsKaraLineContent {
+		overflow-wrap: anywhere;
+	}
+
+	.detailsKaraLine {
+		margin: 1em 0;
 		font-weight: bold;
 		padding-right: .5em;
-		white-space: nowrap;
-	}
-	.lyricsKara {
 		display: flex;
-		flex-direction: column;
-	}
-	.detailsKaraLine {
-		display: flex;
-		flex-direction: column;
-		margin: 1em 0;
+		align-items: center;
 		i {
 			margin-right: .5em;
 		}
-	}
-}
-
-@media screen and (max-width: $mugen-breakpoint-large) {
-	.detailsKara .centerButtons {
-		flex-direction: column;
+		&.timeData {
+			justify-content: space-between;
+		}
+		&.lyricsKara {
+			flex-direction: column;
+			align-items: start;
+			font-weight: normal;
+		}
+		.detailsKaraTitle {
+			font-weight: bold;
+		}
+		.inlineTag {
+			display: inline-block;
+			overflow-wrap: normal;
+		}
 	}
 }
 
@@ -91,11 +104,13 @@
 
 .tagConteneur {
 	display: flex;
-	&.mobile {
+	@media screen and (max-width: $mugen-breakpoint-large) {
 		margin: 0;
 		flex-wrap: wrap;
 		.tag {
 			margin-top: .4em;
+			font-size: .9em;
+			padding: .125em .25em !important;
 		}
 	}
 	.tag {
@@ -122,7 +137,10 @@
 .colored {
 	@each $name, $color in $mugen-colors {
 		&.#{$name} {
-			color: saturate(lighten($color, 40), 25);
+			color: saturate(lighten($color, 40), 10);
+			.inlineTag {
+				color: saturate(lighten($color, 55), 10);
+			}
 		}
 	}
 }

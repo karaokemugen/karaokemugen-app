@@ -31,14 +31,20 @@ class KaraList extends Component<unknown, KaraListState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Button style={{margin: '1em'}} type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
-				<Table
-					dataSource={this.state.karas}
-					columns={this.columns}
-					rowKey='played_at'
-				/>
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.HISTORY.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.HISTORY.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Button style={{margin: '1em'}} type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>
+					<Table
+						dataSource={this.state.karas}
+						columns={this.columns}
+						rowKey='played_at'
+					/>
+				</Layout.Content>
+			</>
 		);
 	}
 
@@ -48,7 +54,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		key: 'langs',
 		render: langs => getTagInLocaleList(langs).join(', ')
 	}, {
-		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS')}`,
+		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record) => (series && series.length > 0) ?

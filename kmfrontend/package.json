@@ -4,10 +4,10 @@
   "private": true,
   "dependencies": {
     "@cospired/i18n-iso-languages": "^2.1.2",
+    "@fingerprintjs/fingerprintjs": "3.0.1",
     "@sentry/integrations": "^5.27.1",
     "@sentry/react": "^5.27.1",
     "antd": "4.7.2",
-    "@fingerprintjs/fingerprintjs": "3.0.1",
     "i18next": "^19.8.3",
     "i18next-browser-languagedetector": "^6.0.1",
     "lodash.debounce": "^4.0.8",
@@ -20,9 +20,9 @@
     "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
     "react-sortable-hoc": "^1.11.0",
-    "react-text-loop": "^2.3.0",
     "react-toastify": "^6.1.0",
     "react-virtualized": "^9.22.2",
+    "resize-observer-polyfill": "^1.5.1",
     "sass": "^1.29.0",
     "socket.io-client": "3.0.0"
   },

@@ -1,6 +1,7 @@
 {
 	"YES": "Oui",
 	"NO": "Non",
+	"AND": "et",
 	"SEARCH": "Rechercher",
 	"ERROR": "Erreur",
 	"SUBMIT": "Sauvegarder",
@@ -73,7 +74,7 @@
 	"ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Invisible",
 	"ENGINEDISPLAYNICKNAME": "Afficher le pseudo du demandeur en début et en fin de chanson",
 	"ENGINEDISPLAYNICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
-    "ENGINEDISPLAYAVATAR": "Afficher l'avatar du demandeur",
+	"ENGINEDISPLAYAVATAR": "Afficher l'avatar du demandeur",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Stop ! Nous sommes fermés pour le moment.",
 	"ENGINEFREEUPVOTES": "Libération des chansons par vote",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum de votes requis pour libérer une chanson",
@@ -90,10 +91,6 @@
 	"FILTERS": "Filtres",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Commandes de liste de lecture",
-		"SHUFFLE": "Mélanger la liste de lecture",
-		"SHUFFLE_SHORT": "Mélanger",
-		"SMART_SHUFFLE": "Mélanger intelligemment la liste de lecture (meilleure expérience de groupe)",
-		"SMART_SHUFFLE_SHORT": "Mélanger intelligemment",
 		"ADD_ALL": "Ajouter toutes les chansons en face",
 		"ADD_RANDOM": "Ajout aléatoire de chanson(s)",
 		"SELECT_ALL": "Sélectionner tous les éléments visibles",
@@ -110,7 +107,8 @@
 		"EXPORT": "Exporter la liste",
 		"ADD": "Créer une nouvelle liste",
 		"AUTOMIX": "Créer un AutoMix",
-		"IMPORT": "Importer une liste"
+		"IMPORT": "Importer une liste",
+		"SHUFFLE": "Mélanger..."
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Commandes sur une chanson",
@@ -151,8 +149,6 @@
 	"DELETE_KARA": "Supprimer chanson",
 	"TRANSFER_KARA": "Déplacer chanson",
 	"MESSAGE": "Passer un message au public",
-	"ENGINEENABLESMARTINSERT": "Activer l'ajout intelligent du public pour éviter les monopoles de liste de lecture",
-	"ENGINEENABLESMARTINSERT_TOOLTIP": "Au moment de l'ajout d'une chanson par le public, celle-ci sera placée de façon à permettre à ceux qui n'ont pas beaucoup demandé de chansons de passer plus tôt",
 	"ENGINEAUTOPLAY": "Lecture automatique sur premier ajout",
 	"ENGINEAUTOPLAY_TOOLTIP": "La lecture commence dés qu'un ajout est fait à la liste de lecture",
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Forcer le nom d'hôte/Adresse IP",
@@ -174,15 +170,15 @@
 	"CLASSIC_MODE_TITLE_MODAL": "C'est à vous de chanter !",
 	"CLASSIC_MODE_TEXT_MODAL": "Appuyez sur le bouton PLAY pour lancer votre chanson.",
 	"LOG_SUCCESS": "Connecté en tant que {{name}}",
-    "LOG_OFFLINE": {
-        "TITLE" : "Instance hors-ligne",
-        "MESSAGE" : "Les modifications de votre profil ne seront pas enregistrées"
+	"LOG_OFFLINE": {
+		"TITLE": "Instance hors-ligne",
+		"MESSAGE": "Les modifications de votre profil ne seront pas enregistrées"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"RESTRICTED_DESCRIPTION": "Le karaoké est en mode restreint, les ajouts de karaokés sont limités.",
 		"HELLO": "Bonjour",
 		"NOW_PLAYING": "En ce moment",
-		"NEXT": "À suivre...",
+		"NEXT": "À suivre",
 		"SHOW_LYRICS": "Afficher les paroles",
 		"OPEN_POLL": "Voter pour la prochaine chanson",
 		"PUBLIC_SUGGESTIONS": "Suggestions du public",
@@ -194,13 +190,16 @@
 	},
 	"CONFIRM_FAV_IMPORT": "Écraser vos favoris avec cet import ?",
 	"LYRICS": "Paroles",
+	"KARAOKE": "{{count}} karaoké",
+	"KARAOKE_plural": "{{count}} karaokés",
 	"CL_CONGRATS": "Félicitations",
-    "CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter {{title}}",
-    "CL_ADD_RANDOM_TITLE" : "Combien de chansons aléatoires voulez-vous ajouter ?",
+	"CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter {{title}}",
+	"CL_ADD_RANDOM_TITLE": "Combien de chansons aléatoires voulez-vous ajouter ?",
 	"CL_INFORMATIVE_MESSAGE": "Message à caractère informatif",
 	"CL_RENAME_PLAYLIST": "Renommez {{playlist}}",
 	"CL_CREATE_PLAYLIST": "Créer une nouvelle liste de lecture",
 	"CL_DELETE_PLAYLIST": "Supprimer {{playlist}} pour toujours ?",
+	"CL_EMPTY_LIST": "Vider la liste ?",
 	"CL_SCREEN": "Écran",
 	"CL_USERS": "Utilisateurs",
 	"CL_ALL": "Tous",
@@ -286,12 +285,18 @@
 			"ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP": "Les chansons ajoutées par l'opérateur doivent-elles être visibles pour le public ou considérées comme chansons mystère ?",
 			"ADDED_SONG_VISIBILITY_PUBLIC": "Visibilité des ajouts du public",
 			"ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP": "Les chansons ajoutées par le public doivent-elles être visibles pour ce dernier ou considérées comme chansons mystère ?",
+			"ADDED_SONG_VISIBILITY_ADMIN_ON": "Les chansons ajoutées seront affichées au public comme mystère (vous pouvez définir le texte qui apparaît à la place dans les options)",
+			"ADDED_SONG_VISIBILITY_ADMIN_OFF": "Les chansons ajoutées seront affichées au public normalement",
 			"LABELS_MYSTERY_SONGS": "Libellés des chansons mystères",
 			"LABELS_MYSTERY_SONGS_ADD": "Ajouter",
 			"LABELS_MYSTERY_SONGS_DELETE": "Supprimer",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Chanson mystère",
-			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Afficher la notification de fin de session X minutes avant la fin"
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Afficher la notification de fin de session X minutes avant la fin",
+			"ENABLE_SMARTINSERT": "Activer l'ajout intelligent du public pour éviter les monopoles de liste de lecture",
+			"ENABLE_SMARTINSERT_TOOLTIP": "Au moment de l'ajout d'une chanson par le public, celle-ci sera placée de façon à permettre à ceux qui n'ont pas beaucoup demandé de chansons de passer plus tôt",
+			"ENABLE_AUTOBALANCE": "Activer l'équilibrage automatique de la liste de lecture",
+			"ENABLE_AUTOBALANCE_TOOLTIP": "La playlist sera réorganisée régulièrement pour que les requêtes des utilisateurs passent à tour de rôle."
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -356,15 +361,7 @@
 	"VIEW_FAVORITES": "Favoris",
 	"VIEW_RECENT": "Nouveau",
 	"VIEW_POPULAR": "Populaire",
-	"KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ?",
-	"KARA_SUGGESTION_DOWNLOAD": "Vérifiez si la chanson n'est pas disponible en téléchargement",
-	"KARA_SUGGESTION_OR": " ou ",
-	"KARA_SUGGESTION_GITLAB_ADMIN": "cliquez ici pour faire une suggestion d'ajout.",
-	"KARA_SUGGESTION_GITLAB": "Cliquez ici.",
-	"KARA_SUGGESTION_NAME": "Titre de la chanson",
-	"KARA_SUGGESTION_INFO": "Merci pour votre suggestion.",
-	"KARA_SUGGESTION_LINK": "Vous pourrez la voir sous peu en suivant ce lien :",
-	"KARA_SUGGESTION_LINK_LIST": "liste des issues",
+	"KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ? Vérifiez sur vos dépôts en ligne configurés ainsi que sur le site de suggestions si votre souhait n'est pas déjà exaucé :",
 	"BASE_UPDATE": "Nouvelles de la base",
 	"APP_UPDATE": "Nouvelle version de l'application",
 	"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
@@ -386,13 +383,13 @@
 		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de disfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?",
 		"ERROR_TRACKING": "Suivi des erreurs"
 	},
-    "INSTANCE_NAME": "Nom du serveur",
-    "INSTANCE_NAME_SHORT": "Serveur",
+	"INSTANCE_NAME": "Nom du serveur",
+	"INSTANCE_NAME_SHORT": "Serveur",
 	"LANGUAGE": "Langues",
 	"MAIN_SERIES_LANG": "Langue des noms de séries",
 	"FALLBACK_SERIES_LANG": "Langue de secours des noms de séries",
 	"ACTIVE_SESSION": "Session Active : ",
-	"EDIT_SESSION" : "Editer la session",
+	"EDIT_SESSION": "Editer la session",
 	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
 	"ESSENTIAL_MESSAGE": "Message indispensable",
@@ -401,36 +398,29 @@
 	"FORGOT_PASSWORD": "Mot de passe oublié ?",
 	"MAKE_ACCOUNT_ADMIN": "Transformez le compte en opérateur",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Si vous souhaitez faire de votre compte un compte opérateur, écrivez le code de sécurité à 6 chiffres et validez.",
-    "INTRO_ADMIN_INTRO1": "Bienvenue sur Karaoke Mugen !<br /><br />Karaoke Mugen utilise un système de comptes pour gérer et participer à votre karaoké.<br />Il y a trois types de comptes : opérateur, utilisateur, et invité. Pour gérer votre karaoké, vous avez besoin d'un compte opérateur. (comme celui créé dans l'assistant de démarrage)",
-    "INTRO_ADMIN_INTRO2": "Indiquez un nom d'utilisateur et un mot de passe ou si vous possédez déjà un compte en ligne, connectez-vous avec dans l'onglet Connexion.<br />Si vous ne souhaitez pas un compte en ligne, désactivez l'option.<br />Le code de sécurité est visible dans le menu de Karaoke Mugen. Ce code vous servira à passer votre compte utilisateur en opérateur ou à créer un nouveau compte opérateur depuis cette page, si jamais vous oubliez votre mot de passe, par exemple.<br /><br />Vous pourrez modifier votre pseudo plus tard (mais pas votre nom d'utilisateur !)",
+	"INTRO_ADMIN_INTRO1": "Bienvenue sur Karaoke Mugen !<br /><br />Karaoke Mugen utilise un système de comptes pour gérer et participer à votre karaoké.<br />Il y a trois types de comptes : opérateur, utilisateur, et invité. Pour gérer votre karaoké, vous avez besoin d'un compte opérateur. (comme celui créé dans l'assistant de démarrage)",
+	"INTRO_ADMIN_INTRO2": "Indiquez un nom d'utilisateur et un mot de passe ou si vous possédez déjà un compte en ligne, connectez-vous avec dans l'onglet Connexion.<br />Si vous ne souhaitez pas un compte en ligne, désactivez l'option.<br />Le code de sécurité est visible dans le menu de Karaoke Mugen. Ce code vous servira à passer votre compte utilisateur en opérateur ou à créer un nouveau compte opérateur depuis cette page, si jamais vous oubliez votre mot de passe, par exemple.<br /><br />Vous pourrez modifier votre pseudo plus tard (mais pas votre nom d'utilisateur !)",
 	"INTRO_ADMIN_EMAIL_ONLINE": "Lors de la création d'un compte en ligne, pensez à modifier votre profil pour ajouter une adresse mail afin de pouvoir récupérer votre mot de passe en cas d'oubli !",
 	"INTRO_ADMIN_INTRO3": "Votre Karaoke Mugen est configuré, nous allons maintenant vous montrer comment ça marche.<br /><br />Pour refaire cette visite guidée, allez sur la <a href='/system/km/config'>page de configuration</a>, cliquer sur le paramètre <i>App.FirstRun</i>.",
-    "INTRO_ADMIN_PLAYLISTS": "Voici vos listes de lecture. Vous pourrez les gérer depuis cet écran. Nous y reviendrons tout à l'heure en détail.",
-    "INTRO_ADMIN_LECTEUR": "Ici, le tableau de commandes.<br/>Vous êtes libre de piloter le karaoké à votre guise.<br />Ajoutez des karaokés à la playlist et appuyez sur <i class='fas fa-play'></i> Play pour tester.",
+	"INTRO_ADMIN_PLAYLISTS": "Voici vos listes de lecture. Vous pourrez les gérer depuis cet écran. Nous y reviendrons tout à l'heure en détail.",
+	"INTRO_ADMIN_LECTEUR": "Ici, le tableau de commandes.<br/>Vous êtes libre de piloter le karaoké à votre guise.<br />Ajoutez des karaokés à la playlist et appuyez sur <i class='fas fa-play'></i> Play pour tester.",
 	"INTRO_ADMIN_MYSTERY": "Vous avez le choix d'ajouter des chansons de façon visible ou invisible pour votre public en choisissant l'Ajout Normal ou Mystère. Idéal pour les surprises !<br /><br />Vous pouvez limiter l'utilisation de l'interface publique ici. Le mode restreint empêche vos invités d'ajouter des chansons mais leur permet tout de même de voir la liste de lecture.",
 	"INTRO_ADMIN_PLAYLISTS_2": "Mais revenons aux listes de lecture.<br />Il en existe différents types : <br /><br />- La <b>Bibliothèque</b> correspond à la base de données de vos karaokés. C'est ici que les utilisateurs chercheront les chansons qu'ils souhaitent ajouter.<br /><br />- La liste avec l'attribut <i class='fas fa-play-circle'></i> <b>Courante</b> est celle diffusée à l'écran.<br /><br />- La liste avec l'attribut <i class='fas fa-globe'></i> <b>Publique</b> est celle où votre public mettra ses suggestions.<br /><br />- Les listes <i class='fas fa-eye-slash'></i> <b>cachées</b> seront invisibles par votre public. Décochez l'attribut pour cacher certaines listes !",
-    "INTRO_ADMIN_PLAYLISTS_MANAGE": "Ici, vous pouvez choisir quelle liste de lecture afficher, gérer ses propriétés, ou rechercher son contenu.",
-    "INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "Ce bouton vous permet d'afficher le menu contextuel des playlists, donnant accès à plus de fonctionnalités.<br/> Cliquez dessus pour continuer.",
-    "INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "Les actions possibles changent selon la liste selectionnée.",
-    "INTRO_ADMIN_SETTINGS": "Votre session de karaoké est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accéder en cliquant sur le bouton K puis en selectionnant Options.",
-    "INTRO_ADMIN_SETTINGS_SCREEN": "C'est ici que ça se passe, n'hésitez pas à essayer les différents paramètres.<br /> Certains ne prendront effet qu'au changement de chanson, si la lecture est en cours.",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE": "Ici, vous pouvez choisir quelle liste de lecture afficher, gérer ses propriétés, ou rechercher son contenu.",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "Ce bouton vous permet d'afficher le menu contextuel des playlists, donnant accès à plus de fonctionnalités.<br/> Cliquez dessus pour continuer.",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "Les actions possibles changent selon la liste selectionnée.",
+	"INTRO_ADMIN_SETTINGS": "Votre session de karaoké est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accéder en cliquant sur le bouton K puis en selectionnant Options.",
+	"INTRO_ADMIN_SETTINGS_SCREEN": "C'est ici que ça se passe, n'hésitez pas à essayer les différents paramètres.<br /> Certains ne prendront effet qu'au changement de chanson, si la lecture est en cours.",
 	"INTRO_ADMIN_INTRO_DOWNLOAD": "<b>Note : pour se connecter à l'interface publique, vos utilisateurs doivent être sur le même réseau Wifi que vous.</b><br /><br />Si vous souhaitez récupérer d'autres chansons que celles par défaut, rendez-vous dans <a href='/system'>le panneau système</a> pour consulter la base en ligne et faire votre sélection, ou tout télécharger d'un coup.",
 	"INTRO_ADMIN_INTROFINAL": "Fini ! Vous pouvez chanter !<br /><br />Merci d'avoir lu jusqu'ici. Nous allons désactiver le Dummy Plug System et vous allez pouvoir piloter votre EV... karaoké.<br /><br />Pour plus d'informations :<br /><br />-<a href='http://docs.karaokes.moe/fr'> Consulter la documentation </a><br />- <a href='http://docs.karaokes.moe/fr/user-guide/faq/'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/contact.html'>Contacter l'équipe</a> (twitter / discord)",
-    "INTRO_LABEL_NEXT": "Suivant",
-    "INTRO_LABEL_PREV": "Précédent",
-    "INTRO_LABEL_SKIP": "Quitter",
+	"INTRO_LABEL_NEXT": "Suivant",
+	"INTRO_LABEL_PREV": "Précédent",
+	"INTRO_LABEL_SKIP": "Quitter",
 	"INTRO_LABEL_DONE": "Terminer",
 	"NEXT_SONG_MESSAGE": "La suite avec :",
 	"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})",
 	"USER_SONG_PLAYS_IN": "Votre chanson {{kara}} a été ajoutée et sera diffusée dans {{time}} ({{date}})",
 	"MODAL": {
-		"SUGGESTION_MODAL": {
-			"TITLE": "Suggestion d'une chanson",
-			"SERIE": "Série / Chanteurs",
-			"SONGTYPE": "Type",
-			"NAME": "Nom de la chanson",
-			"LINK": "Lien vers une vidéo"
-		},
 		"UNKNOW_KARAS": {
 			"TITLE": "Chansons inconnues détectées",
 			"DESCRIPTION": "Cette playlist contient des karaokés que vous n'avez pas encore. Nous les avons trouvés sur les dépôts en ligne que vous avez configurés. Ces chansons n'apparaîtront pas dans la playlist tant qu'elles ne seront pas téléchargées.",
@@ -445,6 +435,16 @@
 			"ONLINE_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte sur le serveur en ligne @{{instance}}. Êtes-vous sûr de vouloir faire ça ?",
 			"LOCAL_DELETE": "Supprimer mon compte localement",
 			"LOCAL_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte localement. Si vous possédez un compte en ligne, ce dernier restera actif. Êtes-vous sûr de vouloir faire ça ?"
+		},
+		"SHUFFLE_MODAL": {
+			"TITLE": "Mélanger la liste de lecture",
+			"LABEL": "Le mélange n'affecte pas les chansons déjà passées. Choisissez une méthode pour mélanger la liste de lecture :",
+			"SHUFFLE": "Aléatoire",
+			"SHUFFLE_DESC": "La liste de lecture sera mélangée aléatoirement, sans aucune influence appliquée sur le mélange.",
+			"SMART_SHUFFLE": "Intelligent",
+			"SMART_SHUFFLE_DESC": "Mélange en évitant que les chansons longues ou les chansons de la même personne ne se succèdent",
+			"BALANCE": "Equitable",
+			"BALANCE_DESC": "Réordonne le passage des chansons du public par groupement d'utilisateurs (A-B-C, A-B-C, etc.)"
 		}
 	},
 	"SETUP_PAGE": {
@@ -517,7 +517,7 @@
 		"ADD_FILE_SUCCESS": "Le fichier {{name}} a été ajouté avec succès",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} n'est pas un média",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} n'est pas un fichier de sous-titres",
-		"TITLE": "Titre du morceau",
+		"TITLE": "Titre",
 		"TITLE_TOOLTIP": "Si vous ne le connaissez pas, mettez le nom de la série. Dans le cas d'une version alternative, nommez votre titre ainsi : 'Mon titre ~ Disco vers.' par exemple",
 		"TITLE_REQUIRED": "Le titre est obligatoire",
 		"SERIES": "Série(s)",
@@ -530,13 +530,9 @@
 		"LANGUAGES_REQUIRED": "Choisissez une langue",
 		"YEAR": "Année de diffusion",
 		"YEAR_TOOLTIP": "Année de la diffusion de la série ou de la vidéo",
-		"SINGERS": "Chanteur(s)",
-		"SERIES_SINGERS_REQUIRED": "Les champs Séries et Chanteurs ne peuvent être vide en même temps.",
-		"SONGWRITERS": "Compositeur(s)",
+		"SERIES_SINGERS_REQUIRED": "Les champs Séries et Chanté par ne peuvent être vide en même temps.",
 		"SONGWRITERS_TOOLTIP": "Compositeurs et paroliers",
-		"CREATORS": "Créateur(s)",
 		"CREATORS_TOOLTIP": "Entité qui a créé la série ou le clip. Peut être un studio d'animation, de cinéma, de jeu vidéo, etc.",
-		"KARA_AUTHORS": "Auteur(s) du karaoké",
 		"KARA_AUTHORS_REQUIRED": "L'auteur du karaoké est obligatoire",
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
 		"FAMILIES": "Famille(s)",
@@ -589,7 +585,11 @@
 			"SELECT_TAG": "Sélectionnez un tag :",
 			"EDIT": "Edition en masse",
 			"SELECT": "Sélectionnez"
-		}
+		},
+		"SINGERS_BY": "Chanté par",
+		"SONGWRITERS_BY": "Composé par",
+		"CREATORS_BY": "Créé par",
+		"AUTHORS_BY": "Karaoké créé par"
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -642,6 +642,7 @@
 		"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",
 		"DELETE_USER_CONFIRM": "Suppression de l'utilisateur",
 		"LOG_IN": "Connexion",
+		"NEW_USER": "Nouvel utilisateur",
 		"EDIT_ONLINE_ACCOUNT": "Les utilisateurs en ligne ne peuvent pas être édités depuis cette page hormis pour changer leur rôle sur cette instance de Karaoke Mugen. Pour éditer votre propre profil en ligne, faites cela depuis l'interface publique ou opérateur."
 	},
 	"DATABASE": {
@@ -736,7 +737,7 @@
 		"ADD_DIRECTORY": "Ajouter un dossier",
 		"ADD_FILE": "Ajouter un fichier",
 		"REPOSITORIES_PAGES": "Page des dépôts",
-		"PROPERTIES" : {
+		"PROPERTIES": {
 			"APP_QUICKSTART": "Démarrage rapide de l'application",
 			"APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
 			"ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
@@ -761,6 +762,12 @@
 	"SESSIONS": {
 		"EXPORT": "Exporter",
 		"SESSION_EXPORTED_BUTTON": "Exporter les données en CSV",
+		"SESSION_EXPORTED_TITLE": "Données de session exportées",
+		"SESSION_EXPORTED_DESC": "Téléchargez les données de session en cliquant sur les liens suivants",
+		"SESSION_EXPORT_PLAYED": "Historique des karaokés joués",
+		"SESSION_EXPORT_PLAYED_COUNT": "Karaokés joués (groupés par nombre de fois joués)",
+		"SESSION_EXPORT_REQUESTED": "Historique des karaokés demandés",
+		"SESSION_EXPORT_REQUESTED_COUNT": "Karaokés demandés (groupés par nombre de fois demandés)",
 		"NAME": "Nom",
 		"STARTED_AT": "Début à",
 		"ENDED_AT": "Finie à",
@@ -776,7 +783,7 @@
 		"MERGE_WITH_BUTTON": "Fusion !",
 		"KARA_PLAYED": "Karaokés joués",
 		"KARA_REQUESTED": "Karaokés demandés",
-		"NEW_SESSION": "Nouvelle session :",
+		"NEW_SESSION": "Nouvelle session",
 		"ACTIVE": "Active ?",
 		"PRIVATE": "Privée ?"
 	},
@@ -788,7 +795,7 @@
 		"PATH_LYRICS": "Paroles",
 		"PATH_MEDIAS": "Medias",
 		"PATH_TAGS": "Tags",
-		"NEW_REPOSITORY": "Nouveau dépôt :",
+		"NEW_REPOSITORY": "Nouveau dépôt",
 		"ONLINE": "En ligne",
 		"ENABLED": "Actif",
 		"FOLDERS_REQUIRED": "Un dossier de {{name}} est obligatoire.",
@@ -831,16 +838,33 @@
 		"BLCTYPE_13": "Origine"
 	},
 	"HOME": {
-		"WELCOME": "Bienvenue dans le panneau de configuration de Karaoke Mugen",
-		"DIFFERENTS_MENUS": "Voici les différents menus que vous pouvez utiliser :",
-		"SYSTEM_DESCRIPTION": "Voir les logs, changer les options de configuration, sauvegarder et restore votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
-		"KARAS_DESCRIPTION_1": "Voir, modifier, ",
-		"KARAS_DESCRIPTION_2": "télécharger",
-		"KARAS_DESCRIPTION_3": ", et créer des fichiers de karaokés. Vous pouvez aussi éditer la liste noire de téléchargement, voir les karaokés les plus demandés, joués et l'historique",
-		"TAGS_DESCRIPTION": "Gérer les tags (chanteurs, compositeurs, créateurs, types de chanson, etc.)",
-		"USERS_DESCRIPTION_1": "Créer/",
-		"USERS_DESCRIPTION_2": "éditer/voir les utilisateurs",
-		"USERS_DESCRIPTION_3": ", changer les mots de passe, créer de nouveaux comptes invités"
+		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
+		"KARAS_DESCRIPTION": "Lister, modifier, télécharger, et créer des fichiers de karaokés. Vous pouvez aussi éditer la liste noire de téléchargement, voir les karaokés les plus demandés, joués et l'historique",
+		"TAGS_DESCRIPTION": "Créer, lister, éditer les tags (séries, chanteurs, compositeurs, créateurs, types de chanson, etc.)",
+		"USERS_DESCRIPTION": "Lister, créer et modifier les utilisateurs, changer leur mot de passe, créer de nouveaux comptes invités.",
+		"SYSTEM": {
+			"CONFIG": "Modifier la configuration",
+			"REPOSITORIES": "Dépôts de karaokés",
+			"SESSIONS": "Sessions de karaoké",
+			"LOGS": "Journaux système",
+			"DATABASE": "Base de données"
+		},
+		"KARAS": {
+			"DOWNLOAD": "Télécharger des karaokés",
+			"BROWSE": "Parcourir les karaokés",
+			"CREATE": "Créer un karaoké",
+			"BLACKLIST": "Gérer la liste noire de téléchargement",
+			"HISTORY": "Historique des karaokés joués"
+		},
+		"TAGS": {
+			"CREATE": "Créer un tag",
+			"BROWSE": "Parcourir les tags",
+			"MERGE": "Fusionner des tags dupliqués"
+		},
+		"USERS": {
+			"CREATE": "Créer un utilisateur",
+			"BROWSE": "Parcourir les utilisateurs"
+		}
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics...",
@@ -903,8 +927,6 @@
 		"FAVORITES_DELETED_ERROR": "Erreur lors de la suppression de favoris",
 		"FAVORITES_EXPORTED_ERROR": "Erreur lors de l'export de favoris",
 		"FAVORITES_IMPORTED_ERROR": "Erreur lors de l'import de favoris",
-		"KARA_SUGGESTION_ERROR": "Erreur lors de la suggestion d'une nouvelle chanson à la base de données",
-		"GITLAB_DISABLED": "La propriété pour suggérer des chansons n'est pas active",
 		"KARA_CREATED_ERROR": "Erreur lors de la génération de la chanson",
 		"KARA_HISTORY_ERROR": "Erreur lors de la récupération des chansons triés par date jouée",
 		"KARA_RANKING_ERROR": "Erreur lors de la récupération des chansons triés par les plus demandés",
@@ -1049,7 +1071,6 @@
 		"SESSION_CREATED": "Session créé avec succès",
 		"SESSION_EDITED": "Session éditée avec succès",
 		"SESSION_MERGED": "Sessions mergées avec succès",
-		"SESSION_EXPORTED": "Données de session exportées dans le dossier de l'application",
 		"SESSION_ACTIVATED": "Session activée avec succès",
 		"SESSION_DELETED": "Session supprimée avec succès",
 		"TAG_CREATED": "Tag créé avec succès",
@@ -1068,5 +1089,119 @@
 		"BLC_COPIED": "Copie avec succès des critères de liste noire",
 		"STOP_AFTER": "La lecture sera arrêtée à la fin de la chanson. Cliquez une seconde fois sur le bouton pour arrêter immédiatement."
 	},
-	"SHOW_DETAILS": "Afficher détails"
+	"SHOW_DETAILS": "Afficher détails",
+	"HEADERS": {
+		"HOME": {
+			"TITLE": "Accueil",
+			"DESCRIPTION": "C'est ici que tout commence. Choisissez votre action."
+		},
+		"LOGS": {
+			"TITLE": "Journal d'évènements",
+			"DESCRIPTION": "Tout ce que vous avez toujours voulu ne pas savoir sur le fonctionnement de votre karaoké."
+		},
+		"SYSTEM_PREFERENCES": {
+			"TITLE": "Préférences système",
+			"DESCRIPTION": "Paramètres uniquement liés à l'application Karaoke Mugen"
+		},
+		"CONFIGURATION": {
+			"TITLE": "Configuration avancée",
+			"DESCRIPTION": "Reservé aux experts. Tous les paramètres de Karaoke Mugen sont ici, attention là où vous mettez les doigts."
+		},
+		"SESSIONS": {
+			"TITLE": "Gestion des sessions",
+			"DESCRIPTION": "Ajoutez, supprimez, ou afficher les données des différentes sessions de Karaoke que vous avez faites."
+		},
+		"SESSIONS_NEW": {
+			"TITLE": "Créer une session de karaoké",
+			"DESCRIPTION": "Formulaire de création de session de karaoké."
+		},
+		"SESSIONS_EDIT": {
+			"TITLE": "Modifier une session de karaoké",
+			"DESCRIPTION": "Formulaire de modification de session de karaoké."
+		},
+		"REPOSITORIES": {
+			"TITLE": "Gestion des dépôts",
+			"DESCRIPTION": "Les dépôts sont des sources de karaokés. Ajoutez, (des)activez, ou supprimez des dépôts depuis cette page."
+		},
+		"REPOSITORIES_NEW": {
+			"TITLE": "Créer un dépôt",
+			"DESCRIPTION": "Formulaire de création de dépôt."
+		},
+		"REPOSITORIES_EDIT": {
+			"TITLE": "Modifier un dépôt",
+			"DESCRIPTION": "Formulaire de modification de dépôt."
+		},
+		"UNUSED_FILES": {
+			"TITLE": "Fichiers inutilisés",
+			"DESCRIPTION": "Vous pouvez lister les fichiers inutiles (utilisés par aucun karaoké) dans vos dépôts d'ici."
+		},
+		"DATABASE": {
+			"TITLE": "Base de données",
+			"DESCRIPTION": "Outils de gestion de la base de données. Database, database, just living in the database wow wow."
+		},
+		"KARAOKE_LIST": {
+			"TITLE": "Liste des karaokés",
+			"DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés"
+		},
+		"KARAOKE_NEW": {
+			"TITLE": "Ajouter un karaoké",
+			"DESCRIPTION": "Ce formulaire vous permet d'ajouter un karaoké déjà existant à l'un de vos dépôts."
+		},
+		"KARAOKE_EDIT": {
+			"TITLE": "Modifier un karaoké",
+			"DESCRIPTION": "Formulaire de modification de karaoké."
+		},
+		"DOWNLOAD": {
+			"TITLE": "Gestionnaire de téléchargements",
+			"DESCRIPTION": "Recherchez et récupérez des karaokés depuis vos dépôts configurés."
+		},
+		"DOWNLOAD_BLACKLIST": {
+			"TITLE": "Liste noire de téléchargement",
+			"DESCRIPTION": "Paramètrez ce que vous ne voulez jamais télécharger de façon automatique. Vous pourrez toujours télécharger ce que vous voulez manuellement."
+		},
+		"HISTORY": {
+			"TITLE": "Historique de lecture",
+			"DESCRIPTION": "Liste tous les karaokés joués sur votre application, par ordre chronologique décroissant."
+		},
+		"MOST_REQUESTED": {
+			"TITLE": "Chansons les plus demandées",
+			"DESCRIPTION": "Liste les chansons les plus demandées sur votre application. Ne prend en compte que les karaokés ajoutés depuis l'interface publique."
+		},
+		"MOST_PLAYED": {
+			"TITLE": "Chansons les plus jouées",
+			"DESCRIPTION": "Liste les chansons les plus jouées sur votre application"
+		},
+		"KARATAG_BATCH_EDIT": {
+			"TITLE": "Ajout/suppression de tag en masse",
+			"DESCRIPTION": "Réservé aux mainteneurs : cette page vous permet d'ajouter ou supprimer un tag sur plusieurs karaokés simultanément."
+		},
+		"TAG_LIST": {
+			"TITLE": "Liste des tags",
+			"DESCRIPTION": "Liste des tags composant les métadonnées d'un karaoké, réservé aux mainteneurs."
+		},
+		"TAG_NEW": {
+			"TITLE": "Créer un tag",
+			"DESCRIPTION": "Formulaire de création de tag. Pensez à ajouter une traduction anglaise au minimum."
+		},
+		"TAG_EDIT": {
+			"TITLE": "Modifier un tag",
+			"DESCRIPTION": "Formulaire de modification de tag. Seul le changement de nom d'origine entraîne un chagnement de nom de fichier."
+		},
+		"TAG_DUPLICATES": {
+			"TITLE": "Liste des tags en double",
+			"DESCRIPTION": "Cette page vous permet de voir les tags qui possèdent le même nom mais pas la même catégorie afin de les fusionner si nécessaire."
+		},
+		"USER_LIST": {
+			"TITLE": "Gestion des utilisateurs",
+			"DESCRIPTION": "D'ici vous pouvez créer, supprimer, modifier des utilisateurs mais aussi réinitialiser leur mot de passe ou changer leurs droîts"
+		},
+		"USER_NEW": {
+			"TITLE": "Créer un utilisateur",
+			"DESCRIPTION": "Formulaire de création d'utilisateur local"
+		},
+		"USER_EDIT": {
+			"TITLE": "Modifier un utilisateur",
+			"DESCRIPTION": "Formulaire de modification d'utilisateur"
+		}
+	}
 }

@@ -10,6 +10,7 @@ import {resolve} from 'path';
 import authController from '../controllers/auth';
 import blacklistController from '../controllers/frontend/blacklist';
 import downloadController from '../controllers/frontend/download';
+import emulateController from '../controllers/frontend/emulate';
 import favoritesController from '../controllers/frontend/favorites';
 import filesController from '../controllers/frontend/files';
 import karaController from '../controllers/frontend/kara';
@@ -32,9 +33,10 @@ import { getState } from '../utils/state';
 
 /** Declare all routers for API types */
 
-function apiHTTPRouter(): Router {
+function apiHTTPRouter(ws: SocketIOApp): Router {
 	const apiRouter = express.Router();
 	filesController(apiRouter);
+	emulateController(apiRouter, ws);
 	return apiRouter;
 }
 
@@ -98,10 +100,12 @@ export function initFrontend(): number {
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
+		//Serve session export data
+		app.use('/sessionExports', express.static(resolve(state.dataPath, 'sessionExports/')));
+
 		//HTTP standards are important.
 		app.use('/coffee', (_req, res) => res.status(418).json());
 
-		app.use('/api', apiHTTPRouter());
 		app.use('/', cspMiddleware, express.static(resolve(state.resourcePath, 'kmfrontend/build')));
 		app.get('/*', cspMiddleware, (_req, res) => {
 			res.sendFile(resolve(state.resourcePath, 'kmfrontend/build/index.html'));
@@ -111,6 +115,7 @@ export function initFrontend(): number {
 		// Init websockets
 		const ws = initWS(server);
 		apiRouter(ws);
+		app.use('/api', apiHTTPRouter(ws));
 		let port = state.frontendPort;
 		try {
 			server.listen(port, () => {
@@ -118,19 +123,15 @@ export function initFrontend(): number {
 			});
 		} catch(err) {
 			// Likely port is busy for some reason, so we're going to change that number to something else.
-			try {
-				port = port + 1;
-				server.listen(port, () => {
-					logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
-				});
-			} catch(err) {
-				// Utter failure
-				logger.error('Webapp is NOT READY', {service: 'Webapp', obj: err});
-				throw err;
-			}
+			port = port + 1;
+			server.listen(port, () => {
+				logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
+			});
 		}
 		return port;
 	} catch(err) {
+		// Utter failure
+		logger.error('Webapp is NOT READY', {service: 'Webapp', obj: err});
 		sentry.error(err);
 		throw err;
 	}

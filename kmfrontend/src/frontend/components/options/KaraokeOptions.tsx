@@ -150,14 +150,26 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 
 						<div className="settings-line">
-							<label className="col-xs-4 control-label" title={i18next.t('ENGINEENABLESMARTINSERT_TOOLTIP')}>
-								{i18next.t('ENGINEENABLESMARTINSERT')}
+							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}>
+								{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}
               &nbsp;
   						<i className="far fa-question-circle"></i>
 							</label>
 							<div className="col-xs-6">
 								<Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
 									isChecked={this.state.config['Karaoke.SmartInsert']} />
+							</div>
+						</div>
+
+						<div className="settings-line">
+							<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE_TOOLTIP')}>
+								{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}
+              &nbsp;
+  						<i className="far fa-question-circle"></i>
+							</label>
+							<div className="col-xs-6">
+								<Switch idInput="Karaoke.AutoBalance" handleChange={this.onChange}
+									isChecked={this.state.config['Karaoke.AutoBalance']} />
 							</div>
 						</div>
 

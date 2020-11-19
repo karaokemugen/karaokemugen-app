@@ -454,7 +454,7 @@ class Players {
 		];
 		if (withAvatar) {
 			subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl]');
-			subOptions.push(`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo]`);
+			subOptions.push(`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo]`);
 			subOptions.push('[logo][ovrl]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]');
 			subOptions.push(`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
 		} else {
@@ -468,10 +468,11 @@ class Players {
 			`nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
 			'[vid1]scale=-2:1080[vidInp]',
 			'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
-			`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo]`,
-			'[logo][vpoc]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
+			`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo]`,
+			'[logo]geq=\'st(3,pow(X-(W/2),2)+pow(Y-(H/2),2));if(lte(ld(3),80*80),255,0)\'[logo1]',
+			'[logo1][vpoc]scale2ref=w=(ih*.128):h=(ih*.128)[logo2][base]',
 			'[base][emp]overlay[ovrl]',
-			`[ovrl][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
+			`[ovrl][logo2]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
 		];
 		return subOptions.join(';');
 	}
@@ -591,10 +592,11 @@ class Players {
 		try {
 			playerState.mediaType = 'background';
 			playerState.playerStatus = 'stop';
+			playerState.currentSong = null;
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
-			await this.exec({command: ['loadfile', backgroundImageFile]});
+			await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {title: 'Karaoke Mugen Player'}]});
 		} catch(err) {
 			logger.error('Unable to load background', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -688,7 +690,8 @@ class Players {
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
 		const options: any = {
-			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0'
+			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0',
+			title: `${mediaData.currentSong.title} - Karaoke Mugen Player`
 		};
 		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
 			.catch(err => {
@@ -697,10 +700,10 @@ class Players {
 			}) || []; // Empty array
 		if (subFiles[0]) {
 			options['sub-file'] = subFiles[0];
-			options['sid'] = '1';
+			options.sid = '1';
 		} else {
 			options['sub-file'] = '';
-			options['sid'] = 'none';
+			options.sid = 'none';
 		}
 		if (mediaFile.endsWith('.mp3')) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
@@ -717,12 +720,12 @@ class Players {
 				options['external-file'] = defaultImageFile.replace(/\\/g,'/');
 				options['force-window'] = 'yes';
 				options['image-display-duration'] = 'inf';
-				options['vid'] = '1';
+				options.vid = '1';
 			}
 		} else {
 			// If video, display avatar if it's defined.
 			// Again, lavfi-complex expert @nah comes to the rescue!
-			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options['lavfi-complex'] = `movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`;
+			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options['lavfi-complex'] = `movie=\\'${mediaData.avatar.replace(/\\/g,'/').replace(/circle\./g, '')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`;
 		}
 		// Load all thoses files into mpv and let's go!
 		try {
@@ -768,7 +771,8 @@ class Players {
 			setState({currentlyPlayingKara: mediaType});
 			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
 			const options: any = {
-				'replaygain-fallback': media.audiogain.toString()
+				'replaygain-fallback': media.audiogain.toString(),
+				title: `${mediaType} - Karaoke Mugen Player`
 			};
 			const subFile = replaceExt(media.filename, '.ass');
 			logger.debug(`Searching for ${subFile}`, {service: 'Player'});

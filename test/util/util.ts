@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import langs from 'langs';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 import { DBTag } from '../../src/lib/types/database/tag';
 import { md5Regexp,tagTypes, uuidPlusTypeRegexp,uuidRegexp } from '../../src/lib/utils/constants';

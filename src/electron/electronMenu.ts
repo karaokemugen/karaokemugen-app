@@ -11,6 +11,7 @@ import logger from '../lib/utils/logger';
 import { getState } from '../utils/state';
 import {handleFile,win} from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
+import {removeNulls} from "../lib/utils/object_helpers";
 
 const isMac = process.platform === 'darwin';
 
@@ -48,7 +49,7 @@ export function initMenu() {
 					label: i18next.t('MENU_FILE_ABOUT'),
 					click: displayAbout
 				},
-				{ type: 'separator', visible: isMac },
+				isMac ? { type: 'separator', visible: isMac }:null,
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
 					accelerator: 'CmdOrCtrl+F',
@@ -222,14 +223,6 @@ export function initMenu() {
 			visible: !isMac,
 			submenu: [
 				{
-					label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
-					type: 'checkbox',
-					checked: getConfig().GUI.OpenInElectron,
-					click: () => {
-						setConfig({ GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
-					}
-				},
-				{
 					label: i18next.t('MENU_OPTIONS_CHECKFORUPDATES'),
 					type: 'checkbox',
 					checked: getConfig().Online.Updates.App,
@@ -264,7 +257,7 @@ export function initMenu() {
 			label: i18next.t('MENU_WINDOW'),
 			submenu: [
 				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
-				{ type: 'separator', visible: isMac },
+				{ type: 'separator' },
 				{
 					label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
 					type: 'checkbox',
@@ -383,6 +376,7 @@ export function initMenu() {
 				]
 			});
 	}
+	menuItems = removeNulls(menuItems);
 }
 
 function openURL(url: string) {

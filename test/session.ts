@@ -83,8 +83,8 @@ describe('Sessions', () => {
 	});
 
 	it('Export session', async () => {
-		const data = await commandBackend(token, 'exportSession', {seid: createdSession.seid});
-		expect(data.code).to.be.equal('SESSION_EXPORTED');
+		const session = await commandBackend(token, 'exportSession', {seid: createdSession.seid});
+		expect(session).to.not.be.undefined;
 	});
 
 	let mergedSession: Session;

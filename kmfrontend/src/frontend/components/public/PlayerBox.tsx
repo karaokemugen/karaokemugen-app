@@ -2,7 +2,7 @@ import './PlayerBox.scss';
 
 import i18next from 'i18next';
 import React, {Component, createRef, RefObject} from 'react';
-import ReactTextLoop from 'react-text-loop';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import {ASSLine} from '../../../../../src/lib/types/ass';
 import {PublicPlayerState} from '../../../../../src/types/state';
@@ -16,6 +16,7 @@ interface IProps {
 	show: boolean
 	goToCurrentPL: () => void
 	onResize?: (bottom: string) => void
+	onKaraChange?: (kid: string) => void
 }
 
 interface IState {
@@ -34,6 +35,8 @@ interface IState {
 class PlayerBox extends Component<IProps, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
+
+	observer: ResizeObserver
 
 	static resetBox = {
 		title: i18next.t('KARA_PAUSED_WAITING'),
@@ -66,13 +69,8 @@ class PlayerBox extends Component<IProps, IState> {
 		}
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
 		if (this.props.fixed) {
-			this.resizeCheck();
-			window.addEventListener('resize', this.resizeCheck);
-		}
-	}
-
-	componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
-		if (this.props.fixed && (prevProps.show !== this.props.show || prevState.timePosition !== this.state.timePosition || prevState.subtitle !== this.state.subtitle)) {
+			this.observer = new ResizeObserver(this.resizeCheck);
+			this.observer.observe(this.state.containerRef.current);
 			this.resizeCheck();
 		}
 	}
@@ -80,12 +78,71 @@ class PlayerBox extends Component<IProps, IState> {
 	componentWillUnmount() {
 		getSocket().off('playerStatus', this.refreshPlayerInfos);
 		window.removeEventListener('resize', this.resizeCheck);
+		if (this.observer) {
+			this.observer.disconnect();
+		}
 	}
 
 	/**
 	 * refresh the player infos
 	 */
 	refreshPlayerInfos = async (data: PublicPlayerState) => {
+		if (data.mediaType || data.currentSong) {
+			this.setState({ width: '0' });
+			if (data.mediaType === 'background') {
+				this.setState({
+					...PlayerBox.resetBox,
+					title: i18next.t('KARA_PAUSED_WAITING')
+				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
+			} else if (data.mediaType === 'Jingles') {
+				this.setState({
+					...PlayerBox.resetBox,
+					title: i18next.t('JINGLE_TIME')
+				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
+			} else if (data.mediaType === 'Intros') {
+				this.setState({
+					...PlayerBox.resetBox,
+					title: i18next.t('INTRO_TIME')
+				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
+			} else if (data.mediaType === 'Outros') {
+				this.setState({
+					...PlayerBox.resetBox,
+					title: i18next.t('OUTRO_TIME')
+				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
+			} else if (data.mediaType === 'Encores') {
+				this.setState({
+					...PlayerBox.resetBox,
+					title: i18next.t('ENCORES_TIME')
+				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
+			} else if (data.mediaType === 'Sponsors') {
+				this.setState({
+					...PlayerBox.resetBox,
+					title: i18next.t('SPONSOR_TIME')
+				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
+			} else {
+				const kara = data.currentSong.currentSong;
+				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getSerieLanguage(this.context.globalState.settings.data, e, kara.langs[0].name)).join(', ')
+					+ (kara.series.length > 3 ? '...' : '')
+					: (kara.singers ? kara.singers.slice(0, 3).map(e => e.name).join(', ') + (kara.singers.length > 3 ? '...' : '') : '');
+				const songtypeText = kara.songtypes.sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
+				const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
+				if (this.props.onKaraChange) this.props.onKaraChange(kara.kid);
+				this.setState({
+					...PlayerBox.resetBox,
+					title: kara.title,
+					subtitle: `${serieText} - ${songtypeText}${songorderText}`,
+					length: kara.duration,
+					img: `url(${getPreviewLink(kara)})`
+				});
+			}
+		}
+
 		if (this.state.ref.current) {
 			const newWidth = this.state.ref.current.offsetWidth *
 				(data.timeposition) / this.state.length + 'px';
@@ -97,107 +154,40 @@ class PlayerBox extends Component<IProps, IState> {
 				});
 			}
 		}
-
-		if (data.mediaType || data.currentSong) {
-			this.setState({ width: '0' });
-			if (data.mediaType === 'background') {
-				this.setState({
-					...PlayerBox.resetBox,
-					title: i18next.t('KARA_PAUSED_WAITING')
-				});
-			} else if (data.mediaType === 'Jingles') {
-				this.setState({
-					...PlayerBox.resetBox,
-					title: i18next.t('JINGLE_TIME')
-				});
-			} else if (data.mediaType === 'Intros') {
-				this.setState({
-					...PlayerBox.resetBox,
-					title: i18next.t('INTRO_TIME')
-				});
-			} else if (data.mediaType === 'Outros') {
-				this.setState({
-					...PlayerBox.resetBox,
-					title: i18next.t('OUTRO_TIME')
-				});
-			} else if (data.mediaType === 'Encores') {
-				this.setState({
-					...PlayerBox.resetBox,
-					title: i18next.t('ENCORES_TIME')
-				});
-			} else if (data.mediaType === 'Sponsors') {
-				this.setState({
-					...PlayerBox.resetBox,
-					title: i18next.t('SPONSOR_TIME')
-				});
-			} else {
-				const kara = data.currentSong.currentSong;
-				const lyrics = await commandBackend('getKaraLyrics', {kid: data.currentSong.currentSong.kid});
-				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getSerieLanguage(this.context.globalState.settings.data, e, kara.langs[0].name)).join(', ')
-					+ (kara.series.length > 3 ? '...' : '')
-					: (kara.singers ? kara.singers.slice(0, 3).map(e => e.name).join(', ') + (kara.singers.length > 3 ? '...' : '') : '');
-				const songtypeText = kara.songtypes.sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
-				const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
-				this.setState({
-					...PlayerBox.resetBox,
-					title: kara.title,
-					subtitle: `${serieText} - ${songtypeText}${songorderText}`,
-					length: kara.duration,
-					img: `url(${getPreviewLink(kara)})`,
-					lyrics: lyrics || []
-				});
-			}
-		}
 	};
 
 	render() {
 		return (
-			<>
-				<div onClick={this.props.goToCurrentPL}
-					 className={`player-box${this.props.fixed ? ' fixed':''}`}
-					 style={{['--img' as any]: this.state.img, display: ((this.props.fixed && !this.state.subtitle) || !this.props.show) ? 'none':undefined}}
-					 ref={this.state.containerRef}>
-					{!this.props.fixed ? <div className="first">
-						<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
-						<p className="next" tabIndex={0}>{i18next.t('PUBLIC_HOMEPAGE.NEXT')}</p>
-					</div>:null}
-					{!this.props.fixed ?
-						<div className="title">
+			<div onClick={this.props.goToCurrentPL}
+				 className={`player-box${this.props.fixed ? ' fixed':''}`}
+				 style={{['--img' as any]: this.state.img, display: ((this.props.fixed && !this.state.subtitle) || !this.props.show) ? 'none':undefined}}
+				 ref={this.state.containerRef}>
+				{!this.props.fixed ? <div className="first">
+					<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
+					<p className="next" tabIndex={0}>{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" /></p>
+				</div>:null}
+				{!this.props.fixed ?
+					<div className="title">
+						<h3 className="song">{this.state.title}</h3>
+						<h4 className="series">{this.state.subtitle}</h4>
+					</div> :
+					(this.state.subtitle ?
+						<div className="title inline">
 							<h3 className="song">{this.state.title}</h3>
 							<h4 className="series">{this.state.subtitle}</h4>
-						</div> :
-						(this.state.subtitle ?
-							<ReactTextLoop interval={[4500,6000]} mask className="title">
-								<h3 className="song">{this.state.title}</h3>
-								<h3 className="song">{this.state.subtitle}</h3>
-							</ReactTextLoop>:null)}
-					{this.state.length !== 0 ?
-						<React.Fragment>
-							{!this.props.fixed ?
-								<div className="timers">
-									<div>{secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
-									<div>{secondsTimeSpanToHMS(this.state.length, 'mm:ss')}</div>
-								</div>:null}
-							<div className="progress-bar-container" ref={this.state.ref}>
-								<div className="progress-bar" style={{width: this.state.width}} />
-							</div>
-						</React.Fragment>:null}
-				</div>
-				{(this.state.lyrics.length > 0) && !this.props.fixed ?
-					<div className="lyrics-box">
-						<div onClick={() => this.setState({showLyrics: !this.state.showLyrics})} tabIndex={0}>
-							{i18next.t('PUBLIC_HOMEPAGE.SHOW_LYRICS')}
-							<i className={this.state.showLyrics ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'}/></div>
-						{this.state.showLyrics ?
-							<div className="lyrics">
-								{
-									this.state.lyrics.map(val => {
-										return <div className={(val.start+0.5 < this.state.timePosition) && (this.state.timePosition < val.end-0.5) ? 'current':null}>{val.text}</div>;
-									})
-								}
-							</div> : null}
-					</div>:null}
-			</>);
+						</div>:null)}
+				{this.state.length !== 0 ?
+					<React.Fragment>
+						{!this.props.fixed ?
+							<div className="timers">
+								<div>{secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
+								<div>{secondsTimeSpanToHMS(this.state.length, 'mm:ss')}</div>
+							</div>:null}
+						<div className="progress-bar-container" ref={this.state.ref}>
+							<div className="progress-bar" style={{width: this.state.width}} />
+						</div>
+					</React.Fragment>:null}
+			</div>);
 	}
 }
 

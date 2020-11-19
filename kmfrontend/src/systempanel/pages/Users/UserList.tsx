@@ -1,5 +1,5 @@
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Avatar, Button, Checkbox, Divider, Layout, Modal, Table } from 'antd';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Avatar, Button, Checkbox, Divider, Layout, Modal,Table } from 'antd';
 import i18next from 'i18next';
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
@@ -41,24 +41,36 @@ class UserList extends Component<unknown, UserListState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Table
-					dataSource={this.state.users}
-					columns={this.columns}
-					rowKey='nickname'
-				/>
-				<Modal
-					title={i18next.t('USERS.USER_DELETED_CONFIRM')}
-					visible={this.state.deleteModal}
-					onOk={() => this.delete(this.state.user.login)}
-					onCancel={() => this.setState({deleteModal: false, user: {}})}
-					okText={i18next.t('YES')}
-					cancelText={i18next.t('NO')}
-				>
-					<p>{i18next.t('USERS.DELETE_USER_CONFIRM')} <b>{this.state.user.login}</b></p>
-					<p>{i18next.t('CONFIRM_SURE')}</p>
-				</Modal>
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.USER_LIST.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.USER_LIST.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Link to={'/system/km/users/create'}>
+						<Button style={{ margin: '0.75em' }} type='primary'>
+							{i18next.t('USERS.NEW_USER')}
+							<PlusOutlined />
+						</Button>
+					</Link>
+					<Table
+						dataSource={this.state.users}
+						columns={this.columns}
+						rowKey='nickname'
+					/>
+					<Modal
+						title={i18next.t('USERS.USER_DELETED_CONFIRM')}
+						visible={this.state.deleteModal}
+						onOk={() => this.delete(this.state.user.login)}
+						onCancel={() => this.setState({deleteModal: false, user: {}})}
+						okText={i18next.t('YES')}
+						cancelText={i18next.t('NO')}
+					>
+						<p>{i18next.t('USERS.DELETE_USER_CONFIRM')} <b>{this.state.user.login}</b></p>
+						<p>{i18next.t('CONFIRM_SURE')}</p>
+					</Modal>
+				</Layout.Content>
+			</>
 		);
 	}
 

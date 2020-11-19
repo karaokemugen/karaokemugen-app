@@ -27,12 +27,11 @@ import { addUser as DBAddUser,
 import {User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
-import {asyncCopy, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType, replaceExt} from '../lib/utils/files';
+import {asyncCopy, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
-import { createCircleAvatar } from '../utils/imageProcessing';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
@@ -110,7 +109,6 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			try {
 				user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
-				createCircleAvatar(resolve(resolvedPathAvatars(), user.avatar_file));
 			} catch(err) {
 				//Non-fatal
 				logger.warn('', {service: 'User', obj: err});
@@ -170,12 +168,6 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 				await asyncUnlink(oldAvatarPath);
 			} catch(err) {
 				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, {service: 'User', obj: err});
-			}
-			const oldAvatarCirclePath = replaceExt(oldAvatarPath, '.circle.png');
-			try {
-				await asyncUnlink(oldAvatarCirclePath);
-			} catch(err) {
-				logger.warn(`Unable to unlink old avatar circle path ${oldAvatarCirclePath}`, {service: 'User', obj: err});
 			}
 		}
 		try {
@@ -488,7 +480,6 @@ async function userChecks() {
 	await createDefaultGuests();
 	await checkGuestAvatars();
 	await checkUserAvatars();
-	await checkCircledAvatars();
 	await cleanupAvatars();
 }
 
@@ -516,22 +507,6 @@ async function checkUserAvatars() {
 	}
 }
 
-/** Verifies if all avatars have a circled version available */
-async function checkCircledAvatars() {
-	logger.debug('Checking if all avatars have circled versions', {service: 'User'});
-	const users = await listUsers();
-	for (const user of users) {
-		try {
-			const file = resolve(resolvedPathAvatars(), user.avatar_file);
-			if (await asyncExists(file) && !await asyncExists(replaceExt(file, '.circle.png'))) {
-				await createCircleAvatar(file);
-			}
-		} catch(err) {
-			logger.error(`Unable to create circled avatar for ${user.login} with ${user.avatar_file}`, {service: 'Users', obj: err});
-		}
-	}
-}
-
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
 	logger.debug('Cleaning up unused avatars', {service: 'User'});
@@ -543,15 +518,13 @@ async function cleanupAvatars() {
 	const avatarFiles = await asyncReadDir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
 		const avatar = avatars.find(a => a === file);
-		if (!avatar && !file.endsWith('.circle.png') && file !== 'blank.png') {
+		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPathAvatars(), file);
-			const fullCircleFile = replaceExt(fullFile, '.circle.png');
 			try {
-				logger.debug(`Deleting old file ${fullFile} and ${fullCircleFile}`, {service: 'Users'});
+				logger.debug(`Deleting old file ${fullFile}`, {service: 'Users'});
 				await asyncUnlink(fullFile);
-				await asyncUnlink(fullCircleFile);
 			} catch(err) {
-				logger.warn(`Failed deleting old file ${fullFile} and/or ${fullCircleFile}`, {service: 'Users', obj: err});
+				logger.warn(`Failed deleting old file ${fullFile}`, {service: 'Users', obj: err});
 				//Non-fatal
 			}
 		}

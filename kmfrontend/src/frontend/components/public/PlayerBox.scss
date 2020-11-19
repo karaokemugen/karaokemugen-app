@@ -17,14 +17,12 @@
 		bottom: 0;
 		left: 0;
 		width: 100%;
+		padding: .5em .5em 1em;
 		background-color: $mugen-background;
 		z-index: 99;
 		&::before {
 			border-radius: 0;
 			filter: blur(5px) contrast(75%) brightness(75%) saturate(80%);
-		}
-		.title .song {
-			font-size: 1.25em;
 		}
 	}
 	> * {
@@ -61,7 +59,17 @@
 			font-size: 1.25em;
 			@include shadow;
 		}
-		margin-bottom: 1em;
+		&.inline {
+			.song {
+				font-size: 1.25em;
+				text-overflow: ellipsis;
+			}
+			.series {
+				font-size: 1.1em;
+				text-overflow: ellipsis;
+			}
+		}
+		margin-bottom: .5em;
 	}
 	> .timers {
 		display: flex;
@@ -96,36 +104,7 @@
 	}
 }
 
-.lyrics-box {
-	> div:first-child {
-		text-align: center;
-		width: 100%;
-		cursor: pointer;
-		user-select: none;
-	}
-	> .lyrics {
-		width: 100%;
-		background-color: lighten($mugen-background, 10);
-		padding: 1em;
-		margin: 1em auto 2em;
-		border-radius: 15px;
-		text-align: center;
-		> div {
-			transition: font-weight, font-size, color, margin ease 100ms,100ms,100ms,100ms;
-			&.current {
-				font-size: 1.25em;
-				font-weight: bold;
-				color: gold;
-				margin: 0.25em 0;
-			}
-		}
-	}
-}
-
 @media screen and (min-width: $mugen-breakpoint-large) {
-	.lyrics-box > .lyrics {
-		width: 75%;
-	}
 	.player-box.fixed {
 		.title .song {
 			font-size: 2em;

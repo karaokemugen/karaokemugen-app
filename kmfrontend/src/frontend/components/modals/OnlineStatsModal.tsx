@@ -73,16 +73,20 @@ class OnlineStatsModal extends Component<unknown, IState> {
 									buttons={[
 										{
 											label: i18next.t('YES'),
+											activeColor: '#57bb00',
 											active: this.state.stats,
-											onClick: () => this.setState({ stats: true }),
+											onClick: () => this.setState({stats: true}),
+											description: 'hello'
 										},
 										{
 											label: i18next.t('NO'),
+											activeColor: '#880500',
 											active: this.state.stats === false,
-											onClick: () => this.setState({ stats: false }),
+											onClick: () => this.setState({stats: false}),
+											description: 'hello'
 										}
 									]}
-								></RadioButton>
+								/>
 								<br />
 								<div className="text">
 									<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
@@ -92,16 +96,20 @@ class OnlineStatsModal extends Component<unknown, IState> {
 									buttons={[
 										{
 											label: i18next.t('YES'),
+											activeColor: '#57bb00',
 											active: this.state.errorTracking,
-											onClick: () => this.setState({ errorTracking: true }),
+											onClick: () => this.setState({errorTracking: true}),
+											description: 'hello'
 										},
 										{
 											label: i18next.t('NO'),
+											activeColor: '#880500',
 											active: this.state.errorTracking === false,
-											onClick: () => this.setState({ errorTracking: false }),
+											onClick: () => this.setState({errorTracking: false}),
+											description: 'hello'
 										}
 									]}
-								></RadioButton>
+								/>
 								<br />
 								{i18next.t('ONLINE_STATS.CHANGE')}
 							</div >

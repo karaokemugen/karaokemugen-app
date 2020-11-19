@@ -52,7 +52,7 @@ import {Token, User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars} from '../lib/utils/config';
 import { bools } from '../lib/utils/constants';
 import {now} from '../lib/utils/date';
-import { asyncExists,replaceExt } from '../lib/utils/files';
+import { asyncExists } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
@@ -991,7 +991,7 @@ export async function findPlaying(playlist_id: number): Promise<number> {
 }
 
 /** Shuffle (smartly or not) a playlist */
-export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: boolean) {
+export async function shufflePlaylist(playlist_id: number, method: string) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw {code: 404, msg: `Playlist ${playlist_id} unknown`};
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
@@ -1000,9 +1000,7 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(playlist_id);
 		if (!pl.flag_current) {
-			isSmartShuffle
-				? playlist = smartShuffle(playlist)
-				: playlist = shuffle(playlist);
+			playlist = shufflePlaylistWithList(playlist, method);
 		} else {
 			// If it's current playlist, we'll make two arrays out of the playlist :
 			// - One before (and including) the current song being played (flag_playing = true)
@@ -1012,15 +1010,12 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 			if (playingPos) {
 				const BeforePlaying = playlist.filter(plc => plc.pos <= playingPos.plc_id_pos);
 				let AfterPlaying = playlist.filter(plc => plc.pos > playingPos.plc_id_pos);
-				isSmartShuffle
-					? AfterPlaying = smartShuffle(AfterPlaying)
-					: AfterPlaying = shuffle(AfterPlaying);
+
+				AfterPlaying = shufflePlaylistWithList(AfterPlaying, method);
 				playlist = BeforePlaying.concat(AfterPlaying);
 			} else {
-			// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
-				isSmartShuffle
-					? playlist = smartShuffle(playlist)
-					: playlist = shuffle(playlist);
+				// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
+				playlist = shufflePlaylistWithList(playlist, method);
 			}
 		}
 		await replacePlaylist(playlist);
@@ -1035,6 +1030,18 @@ export async function shufflePlaylist(playlist_id: number, isSmartShuffle?: bool
 		};
 	} finally {
 		profile('shuffle');
+	}
+}
+
+function shufflePlaylistWithList(playlist: DBPLC[], method: string) {
+	if (method === 'normal') {
+		return shuffle(playlist);
+	} else if (method === 'smart') {
+		return smartShuffle(playlist);
+	} else if (method === 'balance') {
+		return balancePlaylist(playlist);
+	} else {
+		return playlist;
 	}
 }
 
@@ -1111,6 +1118,40 @@ function smartShuffle(playlist: DBPLC[]) {
 	}
 
 	return playlist;
+}
+
+/** Balance playlist **/
+function balancePlaylist(playlist: DBPLC[]) {
+	const balance: Map<string, DBPLC>[] = [];
+
+	// Organisation of karaokes
+	for (const content of playlist) {
+		let hasBeenInserted = false;
+		for (const i in balance) {
+			if (!balance[i].has(content.username)) {
+				balance[i].set(content.username, content);
+				hasBeenInserted = true;
+				break;
+			}
+		}
+		if (!hasBeenInserted) balance.push(new Map().set(content.username, content));
+	}
+
+	// Re-insertion
+	const newPlaylist: DBPLC[] = [];
+	for (const pool of balance) {
+		const values = [...pool.values()];
+		// If last of previous pool and first of current pool have same user
+		if (newPlaylist.length > 0 && newPlaylist[newPlaylist.length - 1].username === values[0].username) {
+			values.push(values.shift());
+		}
+		newPlaylist.push(...values);
+	}
+
+	const state = getState();
+	state.usersBalance.clear();
+
+	return newPlaylist;
 }
 
 /** Move to previous song */
@@ -1209,8 +1250,8 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 				// User does not exist anymore, replacing it with admin
 				user = await findUserByName('admin');
 			}
-			avatarfile = replaceExt(resolve(resolvedPathAvatars(), user.avatar_file), '.circle.png');
-			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPathAvatars(), 'blank.circle.png');
+			avatarfile = resolve(resolvedPathAvatars(), user.avatar_file);
+			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPathAvatars(), 'blank.png');
 		} else {
 			requester = '';
 		}

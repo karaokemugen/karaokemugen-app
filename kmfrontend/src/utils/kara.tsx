@@ -79,13 +79,13 @@ export function buildKaraTitle(settings:SettingsStoreData, data: DBKara, onlyTex
 	} else {
 		return (
 			<React.Fragment>
-				<div>{langsText}</div>
-				<div>&nbsp;-&nbsp;</div>
-				<div className="karaTitleSerie">{serieText}</div>
-				<div>&nbsp;-&nbsp;</div>
-				<div>{`${songtypeText} ${songorderText}`}</div>
-				<div>&nbsp;-&nbsp;</div>
-				<div className="karaTitleTitle">{data.title}</div>
+				<span>{langsText}</span>
+				<span>&nbsp;-&nbsp;</span>
+				<span className="karaTitleSerie">{serieText}</span>
+				<span>&nbsp;-&nbsp;</span>
+				<span>{`${songtypeText} ${songorderText}`}</span>
+				<span>&nbsp;-&nbsp;</span>
+				<span className="karaTitleTitle">{data.title}</span>
 			</React.Fragment>
 		);
 	}

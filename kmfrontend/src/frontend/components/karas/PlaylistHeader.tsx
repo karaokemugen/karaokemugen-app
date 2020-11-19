@@ -17,6 +17,7 @@ import Autocomplete from '../generic/Autocomplete';
 import SelectWithIcon from '../generic/SelectWithIcon';
 import BlcSetCopyModal from '../modals/BlcSetCopyModal';
 import FavMixModal from '../modals/FavMixModal';
+import ShuffleModal from '../modals/ShuffleModal';
 import ActionsButtons from './ActionsButtons';
 require('./PlaylistHeader.scss');
 
@@ -124,12 +125,10 @@ class PlaylistHeader extends Component<IProps, IState> {
 				'',
 				(confirm: boolean) => {
 					if (confirm) {
-						const url = this.props.idPlaylist === -4 ?
-							'deleteBLCSet' :
-							`/playlists/${this.props.idPlaylist}`;
+						const url = this.props.idPlaylist === -4 ? 'deleteBLCSet' : 'deletePlaylist';
 						const data = this.props.idPlaylist === -4 ?
-							{set_id: this.props.bLSet?.blc_set_id} :
-							{toto: this.props.idPlaylist};
+							{ set_id: this.props.bLSet?.blc_set_id } :
+							{ pl_id: this.props.idPlaylist };
 						commandBackend(url, data);
 						if (this.props.idPlaylist === -4) {
 							this.props.changeIdPlaylist(-4);
@@ -154,12 +153,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 		let data;
 		if (this.props.idPlaylist === -4) {
 			url = 'exportBLCSet';
-			data = {set_id: this.props.bLSet?.blc_set_id};
+			data = { set_id: this.props.bLSet?.blc_set_id };
 		} else if (this.props.idPlaylist === -5) {
 			url = 'exportFavorites';
 		} else if (this.props.idPlaylist > 0) {
 			url = 'exportPlaylist';
-			data = {pl_id: this.props.idPlaylist};
+			data = { pl_id: this.props.idPlaylist };
 		}
 		if (url) {
 			const response = await commandBackend(url, data);
@@ -208,7 +207,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					data.playlist = fr.result;
 					name = JSON.parse(fr.result as string).PlaylistInformation.name;
 				}
-				const response = await commandBackend(url, {buffer: data});
+				const response = await commandBackend(url, { buffer: data });
 				if (response.unknownKaras && response.unknownKaras.length > 0) {
 					const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
@@ -246,21 +245,23 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	deleteAllKaras = () => {
 		this.togglePlaylistCommands();
-		if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
-			commandBackend('emptyBLCSet', {set_id: this.props.bLSet?.blc_set_id});
-		} else if (this.props.idPlaylist === -3) {
-			commandBackend('emptyWhitelist');
-		} else {
-			commandBackend('emptyPlaylist', {pl_id: this.props.idPlaylist});
-		}
+		callModal('confirm', i18next.t('CL_EMPTY_LIST'), '', () => {
+			if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
+				commandBackend('emptyBLCSet', { set_id: this.props.bLSet?.blc_set_id });
+			} else if (this.props.idPlaylist === -3) {
+				commandBackend('emptyWhitelist');
+			} else {
+				commandBackend('emptyPlaylist', { pl_id: this.props.idPlaylist });
+			}
+		});
 	};
 
 	setFlagCurrent = async () => {
 		this.togglePlaylistCommands();
 		if (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) {
-			commandBackend('setCurrentBLCSet', {set_id: this.props.bLSet?.blc_set_id});
+			commandBackend('setCurrentBLCSet', { set_id: this.props.bLSet?.blc_set_id });
 		} else if (!(this.props.playlistInfo as DBPL).flag_current) {
-			await commandBackend('setCurrentPlaylist', {pl_id:this.props.idPlaylist});
+			await commandBackend('setCurrentPlaylist', { pl_id: this.props.idPlaylist });
 		}
 		setSettings(this.context.globalDispatch);
 	};
@@ -268,7 +269,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	setFlagPublic = async () => {
 		this.togglePlaylistCommands();
 		if (!(this.props.playlistInfo as DBPL).flag_public) {
-			await commandBackend('setPublicPlaylist', {pl_id: this.props.idPlaylist});
+			await commandBackend('setPublicPlaylist', { pl_id: this.props.idPlaylist });
 			setSettings(this.context.globalDispatch);
 		}
 	};
@@ -280,20 +281,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 			flag_visible: !(this.props.playlistInfo as DBPL).flag_visible,
 			pl_id: this.props.idPlaylist
 		});
-	};
-
-	shuffle = async () => {
-		this.togglePlaylistCommands();
-		this.props.playlistWillUpdate();
-		await commandBackend('shufflePlaylist', { pl_id: this.props.idPlaylist });
-		this.props.playlistDidUpdate();
-	};
-
-	smartShuffle = async () => {
-		this.togglePlaylistCommands();
-		this.props.playlistWillUpdate();
-		await commandBackend('shufflePlaylist', { pl_id: this.props.idPlaylist, smartShuffle: 1 });
-		this.props.playlistDidUpdate();
 	};
 
 	getKarasList = (activeFilter: number, searchType?: string) => {
@@ -376,6 +363,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 		if (!(e.target as Element).closest('.dropdown-menu')) {
 			this.togglePlaylistCommands();
 		}
+	}
+
+	openShuffleModal = () => {
+		this.togglePlaylistCommands();
+		ReactDOM.render(<ShuffleModal
+			idPlaylist={this.props.idPlaylist}
+			playlistWillUpdate={this.props.playlistWillUpdate}
+			playlistDidUpdate={this.props.playlistDidUpdate}
+		/>, document.getElementById('modal'));
 	}
 
 	render() {
@@ -482,20 +478,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 													</li> : null
 												}
 												{this.props.idPlaylist >= 0 ?
-													<React.Fragment>
-														<li>
-															<a href="#" onClick={this.shuffle} title={i18next.t('ADVANCED.SHUFFLE')}>
-																<i className="fas fa-fw fa-random" />
-																{i18next.t('ADVANCED.SHUFFLE_SHORT')}
-															</a>
-														</li>
-														<li>
-															<a href="#" onClick={this.smartShuffle} title={i18next.t('ADVANCED.SMART_SHUFFLE')}>
-																<i className="fas fa-fw fa-random smartShuffle" />
-																{i18next.t('ADVANCED.SMART_SHUFFLE_SHORT')}
-															</a>
-														</li>
-													</React.Fragment> : null
+													<li>
+														<a href="#" onClick={this.openShuffleModal}>
+															<i className="fas fa-fw fa-random" />
+															{i18next.t('ADVANCED.SHUFFLE')}
+														</a>
+													</li> : null
 												}
 												{this.props.idPlaylistTo >= 0 && this.props.idPlaylist !== -4 ?
 													<React.Fragment>

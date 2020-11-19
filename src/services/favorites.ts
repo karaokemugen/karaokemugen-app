@@ -210,7 +210,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		// Copy karas from everyone listed
 		await addKaraToPlaylist(favs, username, playlist_id);
 		// Shuffle time.
-		await shufflePlaylist(playlist_id);
+		await shufflePlaylist(playlist_id, 'normal');
 		// Cut playlist after duration
 		await trimPlaylist(playlist_id, params.duration);
 		emitWS('playlistsUpdated');

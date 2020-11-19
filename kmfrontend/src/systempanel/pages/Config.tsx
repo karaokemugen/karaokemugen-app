@@ -248,37 +248,42 @@ class Config extends Component<ConfigProps, ConfigState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Layout>
-					<Layout.Header>
-						<Button style={{ margin: '10px' }} type='primary'
-							onClick={this.refresh}>{i18next.t('CONFIG.SAVE')}</Button>
-						{this.props.properties ? null :
-							<Button style={{ margin: '10px' }} type='primary'
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t(this.props.properties ? 
+						'HEADERS.SYSTEM_PREFERENCES.TITLE' :
+						'HEADERS.CONFIGURATION.TITLE'
+					)}</div>
+					<div className='description'>{i18next.t(this.props.properties ? 
+						'HEADERS.SYSTEM_PREFERENCES.DESCRIPTION' : 
+						'HEADERS.CONFIGURATION.DESCRIPTION'
+					)}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Button style={{ margin: '0.75em' }} type='primary'
+						onClick={this.refresh}>{i18next.t('CONFIG.SAVE')}</Button>
+					{this.props.properties ? null :
+						<>
+							<Button style={{ margin: '0.75em' }} type='primary'
 								onClick={this.configBackup}>{i18next.t('CONFIG.BACKUP_CONFIG_FILE')}</Button>
-						}
-						{this.props.properties ? null :
 							<p>{i18next.t('CONFIG.MESSAGE')}</p>
-						}
-						{this.props.properties ? null :
 							<Input.Search
 								placeholder={i18next.t('SEARCH_FILTER')}
 								value={this.state.filter}
 								onChange={event => this.setState({ filter: event.target.value })}
 								enterButton={i18next.t('SEARCH')}
+								style={{marginBottom: '0.75em'}}
 							/>
-						}
-					</Layout.Header>
-					<Layout.Content>
-						<Table
-							columns={this.columns}
-							dataSource={this.state.config.filter(property => (property.key as string)
-								.toLowerCase().includes(this.state.filter.toLowerCase()))}
-							pagination={false}
-						/>
-					</Layout.Content>
-				</Layout>
-			</Layout.Content>
+						</>
+					}
+					<Table
+						columns={this.columns}
+						dataSource={this.state.config.filter(property => (property.key as string)
+							.toLowerCase().includes(this.state.filter.toLowerCase()))}
+						pagination={false}
+					/>
+				</Layout.Content>
+			</>
 		);
 	}
 }

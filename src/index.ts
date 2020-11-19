@@ -21,7 +21,6 @@ import {Config} from './types/config';
 import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
 import {logo} from './utils/constants';
-import {createCircleAvatar} from './utils/imageProcessing';
 import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
 
@@ -222,7 +221,6 @@ export async function main() {
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
 	await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
-	createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
 
 	/**
 	 * Test if network ports are available
@@ -265,6 +263,7 @@ async function checkPaths(config: Config) {
 			}
 		}
 		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
+		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'sessionExports/')));
 		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'previews/')));
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', {service: 'Launcher'});

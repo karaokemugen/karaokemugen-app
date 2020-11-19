@@ -8,7 +8,7 @@ import { getConfig } from '../lib/utils/config';
 import { sanitizeFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
-import { Session } from '../types/session';
+import { Session, SessionExports } from '../types/session';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { getKaras, getSeriesSingers } from './kara';
@@ -140,7 +140,7 @@ function checkSessionEnd() {
 	}
 }
 
-export async function exportSession(seid: string) {
+export async function exportSession(seid: string): Promise<SessionExports> {
 	try {
 		const session = await findSession(seid);
 		if (!session) throw {code: 404, msg: 'Session does not exist'};
@@ -148,8 +148,14 @@ export async function exportSession(seid: string) {
 			getKaras({mode: 'sessionRequested', modeValue: seid, token: { role: 'admin', username: 'admin'}}),
 			getKaras({mode: 'sessionPlayed', modeValue: seid, token: { role: 'admin', username: 'admin'}})
 		]);
+		const sessionExports: SessionExports = {
+			requested: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requested.csv`),
+			played: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.played.csv`),
+			playedCount: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.playedCount.csv`),
+			requestedCount: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requestedCount.csv`),
+		};
 		const csvRequested = csvWriter({
-			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requested.csv')),
+			path: resolve(getState().dataPath, 'sessionExports/', sessionExports.requested),
 			header: [
 				{id: 'requested_at', title: 'REQUESTED AT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -160,7 +166,7 @@ export async function exportSession(seid: string) {
 			alwaysQuote: true
 		});
 		const csvPlayed = csvWriter({
-			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.played.csv')),
+			path: resolve(getState().dataPath, 'sessionExports/', sessionExports.played),
 			header: [
 				{id: 'played_at', title: 'PLAYED AT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -171,7 +177,7 @@ export async function exportSession(seid: string) {
 			alwaysQuote: true
 		});
 		const csvPlayedCount = csvWriter({
-			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.playedCount.csv')),
+			path: resolve(getState().dataPath, 'sessionExports/', sessionExports.playedCount),
 			header: [
 				{id: 'count', title: 'PLAY COUNT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -182,7 +188,7 @@ export async function exportSession(seid: string) {
 			alwaysQuote: true
 		});
 		const csvRequestedCount = csvWriter({
-			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requestedCount.csv')),
+			path: resolve(getState().dataPath, 'sessionExports/', sessionExports.requestedCount),
 			header: [
 				{id: 'count', title: 'REQUEST COUNT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -251,6 +257,7 @@ export async function exportSession(seid: string) {
 			csvPlayedCount.writeRecords(recordsPlayedCount),
 			csvRequestedCount.writeRecords(recordsRequestedCount)
 		]);
+		return sessionExports;
 	} catch(err) {
 		sentry.error(err);
 		throw err;

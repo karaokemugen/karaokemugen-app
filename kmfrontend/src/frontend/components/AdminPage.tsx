@@ -228,32 +228,31 @@ class AdminPage extends Component<IProps, IState> {
 										<div className="settings-page" id="manage">
 											<Options close={() => this.setState({ options: false })} />
 										</div>
-										: null
+										: <PlaylistMainDecorator currentSide={this.state.currentSide}>
+											<Playlist
+												scope='admin'
+												side={1}
+												idPlaylistTo={this.state.idsPlaylist.right}
+												majIdsPlaylist={this.majIdsPlaylist}
+												tags={this.state.tags}
+												toggleSearchMenu={this.toggleSearchMenu1}
+												searchMenuOpen={this.state.searchMenuOpen1}
+												playlistList={this.state.playlistList}
+												toggleKaraDetail={this.toggleKaraDetail}
+											/>
+											<Playlist
+												scope='admin'
+												side={2}
+												idPlaylistTo={this.state.idsPlaylist.left}
+												majIdsPlaylist={this.majIdsPlaylist}
+												tags={this.state.tags}
+												toggleSearchMenu={this.toggleSearchMenu2}
+												searchMenuOpen={this.state.searchMenuOpen2}
+												playlistList={this.state.playlistList}
+												toggleKaraDetail={this.toggleKaraDetail}
+											/>
+										</PlaylistMainDecorator>
 								}
-								<PlaylistMainDecorator currentSide={this.state.currentSide}>
-									<Playlist
-										scope='admin'
-										side={1}
-										idPlaylistTo={this.state.idsPlaylist.right}
-										majIdsPlaylist={this.majIdsPlaylist}
-										tags={this.state.tags}
-										toggleSearchMenu={this.toggleSearchMenu1}
-										searchMenuOpen={this.state.searchMenuOpen1}
-										playlistList={this.state.playlistList}
-										toggleKaraDetail={this.toggleKaraDetail}
-									/>
-									<Playlist
-										scope='admin'
-										side={2}
-										idPlaylistTo={this.state.idsPlaylist.left}
-										majIdsPlaylist={this.majIdsPlaylist}
-										tags={this.state.tags}
-										toggleSearchMenu={this.toggleSearchMenu2}
-										searchMenuOpen={this.state.searchMenuOpen2}
-										playlistList={this.state.playlistList}
-										toggleKaraDetail={this.toggleKaraDetail}
-									/>
-								</PlaylistMainDecorator>
 							</React.Fragment> : null
 						}
 					</KmAppBodyDecorator>

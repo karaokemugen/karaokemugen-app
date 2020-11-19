@@ -1,6 +1,6 @@
 // SQL for favorites management
 
-export const sqlgetFavorites = (filterClauses: string[], limitClause: string, offsetClause: string) => `
+export const sqlgetFavorites = (filterClauses: string[], limitClause: string, offsetClause: string, additionalFrom: string[]) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
@@ -24,6 +24,7 @@ SELECT
   count(ak.kid) OVER()::integer AS count
   FROM all_karas AS ak
   INNER JOIN favorites AS f ON f.fk_kid = ak.kid
+  ${additionalFrom.join()}
   WHERE fk_login = :username
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))

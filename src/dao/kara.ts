@@ -1,13 +1,14 @@
 import {pg as yesql} from 'yesql';
 
-import {buildClauses, buildTypeClauses, db, transaction} from '../lib/dao/database';
+import { buildClauses, buildTypeClauses, db, transaction } from '../lib/dao/database';
+import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase,DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
-import {getConfig} from '../lib/utils/config';
-import {now} from '../lib/utils/date';
+import { getConfig } from '../lib/utils/config';
+import { now } from '../lib/utils/date';
 import { DBKaraHistory } from '../types/database/kara';
 import { DBPLCAfterInsert } from '../types/database/playlist';
-import {PLC} from '../types/playlist';
+import { PLC } from '../types/playlist';
 import { getState } from '../utils/state';
 import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraHistory, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
 
@@ -72,7 +73,7 @@ export async function deleteKara(kid: string) {
 }
 
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
-	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
+	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter) : {sql: [], params: {}, additionalFrom: []};
 	let typeClauses = params.mode && params.modeValue ? buildTypeClauses(params.mode, params.modeValue) : '';
 	// Hide blacklisted songs if not admin
 	if (!params.ignoreBlacklist && (!params.admin || params.blacklist)) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
@@ -99,6 +100,10 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		orderClauses = 'played DESC, ';
 		havingClause = 'HAVING COUNT(p.*) > 1';
 	}
+	if (params.filter) {
+		orderClauses = `relevance desc, ${orderClauses}`;
+		groupClause = `${groupClause ? `${groupClause}, `:''}relevance, `;
+	}
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	// If we're asking for random songs, here we modify the query to get them.
@@ -111,7 +116,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}
 		)`;
 	}
-	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);
+	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaylistID,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),

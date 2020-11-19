@@ -1,12 +1,12 @@
 import { FileExcelOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Cascader, Checkbox, DatePicker, Divider, Form, Input, Table, Tooltip } from 'antd';
+import { Button, Cascader, Checkbox, DatePicker, Divider, Form, Input, Modal, Table, Tooltip } from 'antd';
 import { FormInstance,FormProps } from 'antd/lib/form';
 import i18next from 'i18next';
 import moment from 'moment';
 import React, { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
-import { Session } from '../../../../../src/types/session';
+import { Session, SessionExports } from '../../../../../src/types/session';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
@@ -76,7 +76,27 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	}
 
 	exportSession = async () => {
-		await commandBackend('exportSession', {seid:this.props.session.seid});
+		const exportSession:SessionExports = await commandBackend('exportSession', {seid:this.props.session.seid});
+		Modal.info({
+			title: i18next.t('SESSIONS.SESSION_EXPORTED_TITLE'),
+			content: <div>
+				<div>{i18next.t('SESSIONS.SESSION_EXPORTED_DESC')}</div>
+				<ul>
+					<li><a href={`/sessionExports/${exportSession.played}`}>
+						{i18next.t('SESSIONS.SESSION_EXPORT_PLAYED')}
+					</a></li>
+					<li><a href={`/sessionExports/${exportSession.playedCount}`}>
+						{i18next.t('SESSIONS.SESSION_EXPORT_PLAYED_COUNT')}
+					</a></li>
+					<li><a href={`/sessionExports/${exportSession.requested}`}>
+						{i18next.t('SESSIONS.SESSION_EXPORT_REQUESTED')}
+					</a></li>
+					<li><a href={`/sessionExports/${exportSession.requestedCount}`}>
+						{i18next.t('SESSIONS.SESSION_EXPORT_REQUESTED_COUNT')}
+					</a></li>
+				</ul>
+			</div>,
+		  });
 	}
 
 	onSessionDateChange = async dates => {

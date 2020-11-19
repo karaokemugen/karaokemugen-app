@@ -75,13 +75,13 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 	GROUPS: {
 		icon: 'box',
 		type: 9,
-		color: 'grey',
+		color: 'black',
 		karajson: 'groups'
 	},
 	MISC: {
 		icon: 'tag',
 		type: 7,
-		color: 'grey',
+		color: 'black',
 		karajson: 'misc'
 	}
 };

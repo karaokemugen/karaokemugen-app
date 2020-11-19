@@ -9,13 +9,13 @@ body {
 	&.forceScroll {
 		overflow-y: scroll;
 	}
+	overflow-y: hidden;
 }
 
 // Our stylesheet
 @import 'styles/components/buttons';
 @import 'styles/components/dropdowns';
 @import 'styles/components/decorators';
-@import 'styles/components/modal';
 @import 'styles/components/settings';
 @import 'styles/components/input';
 @import 'styles/components/loader';

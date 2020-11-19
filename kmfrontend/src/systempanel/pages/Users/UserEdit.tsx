@@ -1,4 +1,5 @@
 import {Layout} from 'antd';
+import i18next from 'i18next';
 import React, {Component} from 'react';
 import { RouteComponentProps,withRouter } from 'react-router';
 
@@ -51,9 +52,21 @@ class UserEdit extends Component<RouteComponentProps<{userLogin:string}>, UserEd
 
 	render() {
 		return (
-			<Layout.Content style={{padding: '25px 50px', textAlign: 'center'}}>
-				{this.state.user && (<UserForm user={this.state.user} save={this.state.save} />)}
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t(this.props.match.params.userLogin ?
+						'HEADERS.USER_EDIT.TITLE' :
+						'HEADERS.USER_NEW.TITLE'
+					)}</div>
+					<div className='description'>{i18next.t(this.props.match.params.userLogin ?
+						'HEADERS.USER_EDIT.DESCRIPTION' :
+						'HEADERS.USER_NEW.DESCRIPTION'
+					)}</div>
+				</Layout.Header>
+				<Layout.Content>
+					{this.state.user && (<UserForm user={this.state.user} save={this.state.save} />)}
+				</Layout.Content>
+			</>
 		);
 	}
 }

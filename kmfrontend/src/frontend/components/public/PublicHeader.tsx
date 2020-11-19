@@ -2,6 +2,7 @@ import './PublicHeader.scss';
 
 import i18next from 'i18next';
 import React, {Component, createRef, Ref} from 'react';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import blankAvatar from '../../../assets/blank.png';
 import nanamiPNG from '../../../assets/nanami.png';
@@ -29,7 +30,7 @@ interface IState {
 class PublicHeader extends Component<IProps, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
-	observer: MutationObserver
+	observer: ResizeObserver
 
 	state = {
 		dropDownMenu: false,
@@ -42,8 +43,8 @@ class PublicHeader extends Component<IProps, IState> {
 		getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
 		window.addEventListener('resize', this.resizeCheck);
 		this.props.onResize(`${this.state.ref.current.scrollHeight}px`);
-		this.observer = new MutationObserver(this.resizeCheck);
-		this.observer.observe(document.getElementById('menu-supp-root'), { attributes: true, childList: true, subtree: true });
+		this.observer = new ResizeObserver(this.resizeCheck);
+		this.observer.observe(document.getElementById('menu-supp-root'));
 	}
 
 	componentWillUnmount() {
@@ -108,7 +109,11 @@ class PublicHeader extends Component<IProps, IState> {
 										<div className="data">{secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')}</div>
 									</div> : null
 								}
-								<div className="link"><a href="#" onClick={this.goToFavorites}><i className='fas fa-star'/> {i18next.t('VIEW_FAVORITES')}</a></div>
+								{this.context?.globalState.auth.data.role !== 'guest' ?
+									<div className="link"><a href="#" onClick={this.goToFavorites}>
+										<i className='fas fa-star'/> {i18next.t('VIEW_FAVORITES')}
+									</a></div> : null
+								}
 								<div className="link"><a href="#" onClick={this.toggleProfileModal}>
 									<i className="fas fa-user" /> {i18next.t('PROFILE')}
 								</a></div>

@@ -82,7 +82,7 @@ class PublicPage extends Component<IProps, IState> {
 		} else if (view === 'currentPlaylist') {
 			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaylistID;
 		}
-		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria });
+		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, kara: undefined, profileModal: false });
 	};
 
 	majIdsPlaylist = (side: number, value: number) => {
@@ -191,7 +191,7 @@ class PublicPage extends Component<IProps, IState> {
 					goToCurrentPL={() => this.changeView('currentPlaylist')}
 					onResize={bottom => this.setState({ bottom })}
 				/>
-				<KmAppWrapperDecorator single top={this.state.top} bottom={this.state.bottom} view={this.state.view}>
+				<KmAppWrapperDecorator single top={this.state.top} bottom={this.state.bottom} view={this.state.view} hmagrin={(!['favorites', 'publicPlaylist', 'currentPlaylist', 'tag', 'search'].includes(this.state.view)) && this.state.kara === undefined}>
 					{this.state.profileModal ?
 						<ProfilModal
 							context={this.context}
@@ -213,45 +213,43 @@ class PublicPage extends Component<IProps, IState> {
 									}
 								/>
 								: <React.Fragment>
-									{this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
-										<KmAppHeaderDecorator mode="public">
+									<KmAppHeaderDecorator mode="public">
+										<button
+											className='btn side2Button'
+											type="button"
+											onClick={() => this.setState({ view:
+												(this.state.view === 'search' && this.state.searchCriteria ? 'tag' : 'home') })}>
+											<i className="fas fa-arrow-left" />
+										</button>
+										<div
+											className="plSearch"
+										>
+											<input
+												placeholder={`\uF002 ${i18next.t('SEARCH')}`}
+												type="text"
+												defaultValue={this.context.globalState.frontendContext.filterValue1}
+												onChange={e =>
+													setFilterValue(
+														this.context.globalDispatch,
+														e.target.value,
+														1,
+														this.state.idsPlaylist.left
+													)
+												}
+											/>
+										</div>
+										{this.state.isPollActive ? (
 											<button
-												className='btn side2Button'
-												type="button"
-												onClick={() => this.setState({ view: 
-													(this.state.view === 'search' && this.state.searchCriteria ? 'tag' : 'home') })}>
-												<i className="fas fa-arrow-left" />
-											</button>
-											<div
-												className="plSearch"
+												className="btn btn-default showPoll"
+												onClick={() => ReactDOM.render(
+													<PollModal hasVoted={() => this.setState({ isPollActive: false })} context={this.context} />,
+													document.getElementById('modal'))
+												}
 											>
-												<input
-													placeholder={`\uF002 ${i18next.t('SEARCH')}`}
-													type="text"
-													defaultValue={this.context.globalState.frontendContext.filterValue1}
-													onChange={e =>
-														setFilterValue(
-															this.context.globalDispatch,
-															e.target.value,
-															1,
-															this.state.idsPlaylist.left
-														)
-													}
-												/>
-											</div>
-											{this.state.isPollActive ? (
-												<button
-													className="btn btn-default showPoll"
-													onClick={() => ReactDOM.render(
-														<PollModal hasVoted={() => this.setState({ isPollActive: false })} context={this.context} />,
-														document.getElementById('modal'))
-													}
-												>
-													<i className="fas fa-chart-line" />
-												</button>
-											) : null}
-										</KmAppHeaderDecorator> : null
-									}
+												<i className="fas fa-chart-line" />
+											</button>
+										) : null}
+									</KmAppHeaderDecorator>
 
 									<KmAppBodyDecorator
 										mode={this.context?.globalState.settings.data.config?.Frontend.Mode}

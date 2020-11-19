@@ -9,7 +9,7 @@ execa.commandSync(`yarn sentry-cli --auth-token ${process.env.SENTRYTOKEN} relea
 execa.command(`yarn sentry-cli --auth-token ${process.env.SENTRYTOKEN} releases --org karaoke-mugen -p km-app files ${version} upload-sourcemaps --no-rewrite --url-prefix app:///dist/ dist/`,
 	{stdout: 'inherit', stderr: 'inherit'});
 
-execa.command(`yarn sentry-cli --auth-token ${process.env.SENTRYTOKEN} releases --org karaoke-mugen -p km-app files ${version} upload-sourcemaps --no-rewrite --url-prefix ~/ kmfrontend/build/`,
+execa.command(`yarn sentry-cli --auth-token ${process.env.SENTRYTOKEN} releases --org karaoke-mugen -p km-app files ${version} upload-sourcemaps --no-rewrite --url-prefix ~/static/js kmfrontend/build/static/js`,
 	{stdout: 'inherit', stderr: 'inherit'});
 
 execa.command(`yarn sentry-cli --auth-token ${process.env.SENTRYTOKEN} releases --org karaoke-mugen -p km-app set-commits --commit Karaoke\\ Mugen\\ /\\ Karaoke\\ Mugen\\ Application@${process.env.CI_COMMIT_SHA} ${version}`,

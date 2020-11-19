@@ -11,7 +11,7 @@ import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { addPlayedKara, getKara, getKaras, getSeriesSingers } from './kara';
 import { mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player';
-import { getCurrentSong, getPlaylistInfo, updateUserQuotas } from './playlist';
+import { getCurrentSong, getPlaylistContentsMini, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';
 
 export async function playSingleSong(kid?: string, randomPlaying = false) {
@@ -85,11 +85,17 @@ export async function playCurrentSong(now: boolean) {
 			// No song to play, silently return
 			if (!kara) return;
 			setState({currentSong: kara});
-			// Testing if we're on first position, if intro hasn't been played already and if we have at least one intro available
-			if (conf.Playlist.Medias.Intros.Enabled && kara?.pos === 1 && !getState().introPlayed) {
-				setState({currentlyPlayingKara: 'Intros', introPlayed: true});
-				await mpv.playMedia('Intros');
-				return;
+
+			if (kara?.pos === 1) {
+				if (conf.Karaoke.AutoBalance) {
+					await shufflePlaylist(getState().currentPlaylistID, 'balance');
+				}
+				// Testing if intro hasn't been played already and if we have at least one intro available
+				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed) {
+					setState({ currentlyPlayingKara: 'Intros', introPlayed: true });
+					await mpv.playMedia('Intros');
+					return;
+				}
 			}
 			logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
@@ -155,6 +161,26 @@ export async function playerEnding() {
 			await playRandomSongAfterPlaylist();
 			return;
 		}
+
+		// Handle balance
+		if (state.player.mediaType === 'song') {
+			const playlist = await getPlaylistContentsMini(state.currentPlaylistID);
+			const previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
+			const previousSong = playlist[previousSongIndex];
+			state.usersBalance.add(previousSong.username);
+
+			const remainingSongs = playlist.length - previousSongIndex - 1;
+			if (remainingSongs > 0) {
+				const nextSong = playlist[previousSongIndex + 1];
+				if (state.usersBalance.has(nextSong.username)) {
+					state.usersBalance.clear();
+					if (conf.Karaoke.AutoBalance && remainingSongs > 1) {
+						await shufflePlaylist(state.currentPlaylistID, 'balance');
+					}
+				}
+				state.usersBalance.add(nextSong.username);
+			}
+		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
 			if (conf.Playlist.Medias.Sponsors.Enabled) {
@@ -167,6 +193,8 @@ export async function playerEnding() {
 					await playCurrentSong(true);
 				}
 			} else {
+				// Setting introSponsorPlayed here since sponsors were disabled by the time the intro played. So we don't accidentally go into the if 20 lines or so below.
+				setState({introPlayed: true, introSponsorPlayed: true});
 				await playCurrentSong(true);
 			}
 			return;
@@ -181,7 +209,7 @@ export async function playerEnding() {
 			}
 			return;
 		}
-		// If Sponsor, just play currently selected song.
+		// If Sponsor after intro, just play currently selected song.
 		if (state.player.mediaType === 'Sponsors' && !state.introSponsorPlayed) {
 			try {
 				// If it's played just after an intro, play next song. If not, proceed as usual
@@ -298,6 +326,7 @@ export async function playerEnding() {
 				stopPlayer(true);
 			}
 		}
+
 	} catch(err) {
 		logger.error('Unable to end play properly, stopping.', {service: 'Player', obj: err});
 		sentry.error(err);

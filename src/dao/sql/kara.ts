@@ -50,7 +50,7 @@ VALUES(
 ) ON CONFLICT DO NOTHING;
 `;
 
-export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string) => `SELECT
+export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string, additionalFrom: string[]) => `SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
@@ -106,7 +106,8 @@ LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid AND pc.fk_id_playli
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
-WHERE 1 = 1
+${additionalFrom.join()}
+WHERE true
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
 GROUP BY ${groupClauses} ak.kid, pc.fk_kid, ak.title, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.series, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.subchecksum

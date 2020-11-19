@@ -54,20 +54,25 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 
 	render() {
 		return (
-			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Layout>
-					<Layout.Header>
-						<span><Link to={'/system/km/repositories/new'}>{i18next.t('REPOSITORIES.NEW_REPOSITORY')}<PlusOutlined /></Link></span>
-					</Layout.Header>
-					<Layout.Content>
-						<Table
-							dataSource={this.state.repositories}
-							columns={this.columns}
-							rowKey='Name'
-						/>
-					</Layout.Content>
-				</Layout>
-			</Layout.Content>
+			<>
+				<Layout.Header>
+					<div className='title'>{i18next.t('HEADERS.REPOSITORIES.TITLE')}</div>
+					<div className='description'>{i18next.t('HEADERS.REPOSITORIES.DESCRIPTION')}</div>
+				</Layout.Header>
+				<Layout.Content>
+					<Link to={'/system/km/repositories/new'}>
+						<Button style={{ margin: '0.75em' }} type='primary'>
+							{i18next.t('REPOSITORIES.NEW_REPOSITORY')}
+							<PlusOutlined />
+						</Button>
+					</Link>
+					<Table
+						dataSource={this.state.repositories}
+						columns={this.columns}
+						rowKey='Name'
+					/>
+				</Layout.Content>
+			</>
 		);
 	}
 

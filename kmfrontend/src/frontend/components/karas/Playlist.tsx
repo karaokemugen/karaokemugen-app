@@ -3,7 +3,6 @@ import 'react-virtualized/styles.css';
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { SortableContainer } from 'react-sortable-hoc';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
 
@@ -19,7 +18,6 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import { callModal, displayMessage, eventEmitter, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
-import SuggestionModal from '../modals/SuggestionModal';
 import BlacklistCriterias from './BlacklistCriterias';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
@@ -305,20 +303,14 @@ class Playlist extends Component<IProps, IState> {
 
 	noRowsRenderer = () => {
 		return <React.Fragment>
-			{this.context?.globalState.settings.data.config?.Gitlab.Enabled &&
-				this.state.idPlaylist === -1 ? (
-					<li className="list-group-item karaSuggestion">
-						<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-						{this.props.scope === 'admin' ?
-							<React.Fragment>
-								<div><a href="/system/km/karas/download">{i18next.t('KARA_SUGGESTION_DOWNLOAD')}</a></div>
-								<div>{i18next.t('KARA_SUGGESTION_OR')}</div>
-								<div><a onClick={this.karaSuggestion}>{i18next.t('KARA_SUGGESTION_GITLAB_ADMIN')}</a></div>
-							</React.Fragment> :
-							<div><a onClick={this.karaSuggestion}>{i18next.t('KARA_SUGGESTION_GITLAB')}</a></div>
-						}
-					</li>
-				) : null}
+			{this.state.idPlaylist === -1 && this.props.scope === 'admin'? (
+				<li className="list-group-item karaSuggestion">
+					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
+					{this.context?.globalState.settings.data.config.System.Repositories
+						.filter(value => value.Enabled && value.Online).map(value => <a href={`https://${value.Name}/base`} >{value.Name}</a>)}
+					<a href="https://suggest.karaokes.moe" >suggest.karaokes.moe</a>
+				</li>
+			) : null}
 		</React.Fragment>;
 	}
 
@@ -402,10 +394,8 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	getPlaylistInfo = async () => {
-		if (!this.state.getPlaylistInProgress) {
-			const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
-			this.setState({ playlistInfo: response });
-		}
+		const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
+		this.setState({ playlistInfo: response });
 	};
 
 	getPlaylistUrl = (idPlaylistParam?: number) => {
@@ -465,7 +455,7 @@ class Playlist extends Component<IProps, IState> {
 			param.pl_id = this.state.idPlaylist;
 		}
 		if (url === 'getBLCSet') param.set_id = this.state.bLSet?.blc_set_id;
-		
+
 		param.filter = this.getFilterValue(this.props.side);
 		param.from = (stateData?.infos?.from > 0 ? stateData.infos.from : 0);
 		param.size = chunksize;
@@ -478,12 +468,10 @@ class Playlist extends Component<IProps, IState> {
 		}
 		const karas: KaraList = await commandBackend(url, param);
 		if (this.state.idPlaylist > 0) {
-			karas.content.forEach((kara, index) => {
-				if (kara?.flag_playing) {
-					setPosPlaying(this.context.globalDispatch, kara.pos, this.props.side);
-					this.setState({ scrollToIndex: index, _goToPlaying: true, playing: index });
-				}
-			});
+			const result = await commandBackend('findPlayingSongInPlaylist', { pl_id: this.state.idPlaylist });
+			if (result?.index !== -1) {
+				this.setState({ scrollToIndex: result.index, _goToPlaying: true });
+			}
 		}
 		if (karas.infos?.from > 0) {
 			data = this.state.data;
@@ -563,9 +551,11 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	updateCounters = (event: PublicPlayerState) => {
-		if (this.state.playlistInfo && this.state.playlistInfo.flag_current)
+		if (this.state.playlistInfo && this.state.playlistInfo.flag_current) {
 			this.setState({ songsBeforeJingle: event.songsBeforeJingle, songsBeforeSponsor: event.songsBeforeSponsor });
-		else this.setState({ songsBeforeJingle: undefined, songsBeforeSponsor: undefined });
+		} else {
+			this.setState({ songsBeforeJingle: undefined, songsBeforeSponsor: undefined });
+		}
 	}
 
 	selectAllKaras = () => {
@@ -743,10 +733,6 @@ class Playlist extends Component<IProps, IState> {
 			await commandBackend(url, data);
 		}
 	};
-
-	karaSuggestion = () => {
-		ReactDOM.render(<SuggestionModal />, document.getElementById('modal'));
-	}
 
 	onChangeTags = (type: number | string, value: string) => {
 		const searchCriteria = type === 0 ? 'year' : 'tag';

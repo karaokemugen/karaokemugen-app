@@ -141,11 +141,9 @@ class TagsList extends Component<IProps, IState> {
 						}</div>
 						<div className="karacount">
 							<em>
-								{
-									(tag.karacount as unknown as Array<{count: number, type:number}>).filter(value => value.type === this.props.tagType).length > 0 ?
-										(tag.karacount as unknown as Array<{count: number, type:number}>).filter(value => value.type === this.props.tagType)[0].count
-										: 0
-								}
+								{i18next.t('KARAOKE', {count: (tag.karacount as unknown as Array<{count: number, type:number}>).filter(value => value.type === this.props.tagType).length > 0 ?
+									(tag.karacount as unknown as Array<{count: number, type:number}>).filter(value => value.type === this.props.tagType)[0].count
+									: 0})}
 							</em>
 						</div>
 					</div>

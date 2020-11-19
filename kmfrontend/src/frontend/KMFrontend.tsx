@@ -1,11 +1,13 @@
 import './KMFrontend.scss';
 
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Route,Switch } from 'react-router';
 
 import GlobalContext from '../store/context';
+import { isElectron } from '../utils/electron';
 import { commandBackend, getSocket } from '../utils/socket';
-import { is_touch_device,startIntro } from '../utils/tools';
+import { callModal, is_touch_device,startIntro } from '../utils/tools';
 import AdminPage from './components/AdminPage';
 import ShutdownModal from './components/modals/ShutdownModal';
 import NotFoundPage from './components/NotfoundPage';
@@ -50,8 +52,10 @@ class KMFrontend extends Component<unknown, IState> {
 	}
 
 	powerOff = () => {
-		commandBackend('shutdown');
-		this.setState({ shutdownPopup: true });
+		callModal('confirm', `${i18next.t('SHUTDOWN')} ?`, '', async () => {
+			await commandBackend('shutdown');
+			this.setState({ shutdownPopup: true });
+		});
 	};
 
 	showVideo = (file: string) => {
@@ -80,7 +84,7 @@ class KMFrontend extends Component<unknown, IState> {
 									<WelcomePage />
 							} />
 							<Route path="/admin" render={() => <AdminPage
-								powerOff={this.context.globalState.settings.data.state.electron ? undefined : this.powerOff}
+								powerOff={isElectron() ? undefined : this.powerOff}
 								 showVideo={this.showVideo} />} />
 							<Route exact path="/" render={() => <PublicPage showVideo={this.showVideo} />} />
 							<Route component={NotFoundPage} />

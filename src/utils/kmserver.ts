@@ -1,21 +1,27 @@
-import io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
+import { APIData } from '../lib/types/api';
 import {getConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { APIData } from '../lib/types/api';
 
-let socket: SocketIOClient.Socket;
+let socket: Socket;
 
 // Create a connection
 function connectToKMServer() {
 	return new Promise<void>((resolve, reject) => {
 		const conf = getConfig();
+		let timeout = setTimeout(() => {
+			reject(new Error('Connection timed out'));
+			socket.disconnect();
+		}, 5000);
 		socket = io(`https://${conf.Online.Host}`);
 		socket.on('connect', () => {
+			clearTimeout(timeout);
+			timeout = undefined;
 			resolve();
 		});
-		socket.on('connect_error', () => {
-			reject(new Error('Socket.IO cannot connect'));
+		socket.on('connect_error', (err) => {
+			if (timeout) reject(err);
 		});
 	});
 }
@@ -35,10 +41,14 @@ export function getKMServerSocket() {
 	return socket;
 }
 
-export function commandKMServer(name: string, data: APIData): Promise<any> {
-	return new Promise((resolve) => {
+export function commandKMServer(name: string, data: APIData, timeout = 5000): Promise<any> {
+	return new Promise((resolve, reject) => {
+		const nodeTimeout = setTimeout(() => {
+			reject(new Error('Request timed out'));
+		}, timeout);
 		socket.emit(name, data, ack => {
-			resolve(ack);
+			clearTimeout(nodeTimeout);
+			ack.err ? reject(ack.data):resolve(ack.data);
 		});
 	});
 }

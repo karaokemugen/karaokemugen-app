@@ -1,5 +1,23 @@
 @import '../../styles/variables';
 
+.public-homepage {
+	display: flex;
+	@media screen and (max-width: $mugen-breakpoint-large) {
+		display: unset;
+	}
+	> .public-homepage-wrapper {
+		flex-grow: 1;
+	}
+	> .lyrics-box:last-child {
+		flex-basis: 45%;
+		flex-grow: 0;
+		flex-shrink: 0;
+		@media screen and (max-width: $mugen-breakpoint-large) {
+			display: none;
+		}
+	}
+}
+
 .home-actions {
 	display: flex;
 	flex-flow: row wrap;
@@ -7,7 +25,7 @@
 	> .subtitle {
 		width: 100%;
 		font-size: 2em;
-		text-align: center;
+		text-align: start;
 		margin: .5em 0;
 		@media screen and (max-width: $mugen-breakpoint-large) {
 			text-align: unset;
@@ -15,10 +33,9 @@
 	}
 	> .action {
 		width: 50%;
-		text-align: center;
+		text-align: start;
 		@media screen and (max-width: $mugen-breakpoint-large) {
 			width: 100%;
-			text-align: unset;
 		}
 		> i {
 			margin-right: .25em;
@@ -34,17 +51,19 @@
 		transition: color ease-out 200ms;
 		font-family: inherit;
 		@each $name, $color in $mugen-colors {
-			&.#{$name} {
-				&:hover, &:focus {
-					color: saturate(lighten($color, 25), 10);
-				}
-				&.big {
-					color: saturate(lighten($color, 10), 20);
-				}
-				> i {
-					color: saturate(lighten($color, 10), 20);
-				}
-			}
+			 @if $name != 'black' {
+				 &.#{$name} {
+					 &:hover, &:focus {
+						 color: saturate(lighten($color, 25), 10);
+					 }
+					 &.big {
+						 color: saturate(lighten($color, 10), 20);
+					 }
+					 > i {
+						 color: saturate(lighten($color, 10), 20);
+					 }
+				 }
+			 }
 		}
 		&.big {
 			width: 100%;

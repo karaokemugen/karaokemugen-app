@@ -93,6 +93,14 @@ div > a, h5 > a {
 	font-size: 5em;
 }
 
+.btn-large-container {
+	margin-left: .5em;
+	.title {
+		font-size: 1.5em;
+		font-weight: bold;
+	}
+}
+
 .volumeButton,
 .subtitleButton,
 .messageButton {

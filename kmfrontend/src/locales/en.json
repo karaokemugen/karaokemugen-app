@@ -2,6 +2,7 @@
 	"404": "Lost on the local network?",
 	"YES": "Yes",
 	"NO": "No",
+	"AND": "and",
 	"SEARCH": "Search",
 	"ERROR": "Error",
 	"SUBMIT": "Save",
@@ -15,7 +16,7 @@
 	"DETAILS_ADDED_2": "on ",
 	"DETAILS_ADDED_3": "by ",
 	"DETAILS_PLAYING_IN": "Playing in {{time}} ({{date}})",
-	"DETAILS_LAST_PLAYED" : "Last played {{date}}",
+	"DETAILS_LAST_PLAYED": "Last played {{date}}",
 	"DETAILS_LAST_PLAYED_2": "Last played {{time}} ago",
 	"DETAILS_DURATION": "Duration",
 	"DURATION_REMAINING": "remaining",
@@ -78,7 +79,6 @@
 		"LINK": "system panel",
 		"AFTER_LINK": "."
 	},
-	"ENGINEENABLESMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
 	"ENGINEAUTOPLAY": "Autoplay on next song added",
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Force hostname or IP",
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message displayed before URL",
@@ -100,10 +100,6 @@
 	"FILTERS": "Filters",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",
-		"SHUFFLE": "Shuffle playlist",
-		"SHUFFLE_SHORT": "Shuffle",
-		"SMART_SHUFFLE": "Smart shuffle playlist (for better group experience)",
-		"SMART_SHUFFLE_SHORT": "Smart shuffle",
 		"ADD_ALL": "Add all visibles songs",
 		"ADD_RANDOM": "Add random songs",
 		"SELECT_ALL": "Select all visible elements",
@@ -120,7 +116,8 @@
 		"EXPORT": "Export playlist",
 		"ADD": "Add new playlist",
 		"AUTOMIX": "Create an automix",
-		"IMPORT": "Import playlist"
+		"IMPORT": "Import playlist",
+		"SHUFFLE": "Shuffle..."
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Song commands",
@@ -159,7 +156,7 @@
 		"RESTRICTED_DESCRIPTION": "Karaoke is in restricted mode, additions are limited.",
 		"HELLO": "Hello",
 		"NOW_PLAYING": "Now playing",
-		"NEXT": "Next...",
+		"NEXT": "Next",
 		"SHOW_LYRICS": "Show Lyrics",
 		"OPEN_POLL": "Vote for the next song",
 		"PUBLIC_SUGGESTIONS": "Public suggestions",
@@ -173,6 +170,8 @@
 	"DELETE_KARA": "Remove song",
 	"TRANSFER_KARA": "Transfer song",
 	"LYRICS": "Lyrics",
+	"KARAOKE": "{{count}} karaoke",
+	"KARAOKE_plural": "{{count}} karaokes",
 	"CL_HELP_DISCORD": "Come to our {{- discord}} if you have any questions!",
 	"CL_CONGRATS": "Congratulations",
 	"CL_ABOUT_TO_ADD": "You're about to add {{title}}",
@@ -181,6 +180,7 @@
 	"CL_RENAME_PLAYLIST": "Rename {{playlist}}",
 	"CL_CREATE_PLAYLIST": "Create new playlist",
 	"CL_DELETE_PLAYLIST": "Delete {{playlist}} forever?",
+	"CL_EMPTY_LIST": "Empty list ?",
 	"CL_SCREEN": "Screen",
 	"CL_USERS": "Users' devices",
 	"CL_ALL": "All",
@@ -276,12 +276,18 @@
 			"ADDED_SONG_VISIBILITY_PUBLIC": "Public song requests visibility",
 			"ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP": "Should songs added by the operator be visible to the public or considered mystery songs?",
 			"ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP": "Should songs added by the public be visible to the public or considered mystery songs?",
+			"ADDED_SONG_VISIBILITY_ADMIN_ON": "Songs will be added as mystery songs (you can define these songs label in settings)",
+			"ADDED_SONG_VISIBILITY_ADMIN_OFF": "Songs will be added normally (visible to the public)",
 			"LABELS_MYSTERY_SONGS": "Mystery songs labels",
 			"LABELS_MYSTERY_SONGS_ADD": "Add",
 			"LABELS_MYSTERY_SONGS_DELETE": "Remove",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
-			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning on end of session X minutes before end"
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning on end of session X minutes before end",
+			"ENABLE_SMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
+			"ENABLE_SMARTINSERT_TOOLTIP": "When a song is added by the audience, it will be placed so that those who have not requested a lot of songs to be play earlier",
+			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
+			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns."
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {
@@ -340,15 +346,7 @@
 	"VIEW_FAVORITES": "Favorites",
 	"VIEW_RECENT": "Latest",
 	"VIEW_POPULAR": "Popular",
-	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song? Click here",
-	"KARA_SUGGESTION_DOWNLOAD": "Check if the song is not available for download",
-	"KARA_SUGGESTION_OR": " or ",
-	"KARA_SUGGESTION_GITLAB_ADMIN": "click here to make an add suggestion.",
-	"KARA_SUGGESTION_GITLAB": "Click here.",
-	"KARA_SUGGESTION_NAME": "Name of the song",
-	"KARA_SUGGESTION_INFO": "Thanks for your suggestion.",
-	"KARA_SUGGESTION_LINK": "You will soon be able to see it at this address :",
-	"KARA_SUGGESTION_LINK_LIST": "issues list",
+	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song?  Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
 	"BASE_UPDATE": "Database update",
 	"MASTODON_UPDATE": "Karaoke Mugen News",
 	"APP_UPDATE": "New version",
@@ -376,7 +374,7 @@
 	"MAIN_SERIES_LANG": "Series name language",
 	"FALLBACK_SERIES_LANG": "Fallback series name language",
 	"ACTIVE_SESSION": "Active Session : ",
-	"EDIT_SESSION" : "Edit session",
+	"EDIT_SESSION": "Edit session",
 	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
 	"ESSENTIAL_MESSAGE": "Essential message",
@@ -406,13 +404,6 @@
 	"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})",
 	"USER_SONG_PLAYS_IN": "Your song {{kara}} has been added and will airing in {{time}} ({{date}})",
 	"MODAL": {
-		"SUGGESTION_MODAL": {
-			"TITLE": "Suggestion of a song",
-			"SERIE": "Series / Singers",
-			"SONGTYPE": "Songtype",
-			"NAME": "Name of the song",
-			"LINK": "Link to a video"
-		},
 		"UNKNOW_KARAS": {
 			"TITLE": "Unknown songs detected",
 			"DESCRIPTION": "This playlist contains songs you do not have yet locally. We found them on your configured online repositories. These songs won't appear in the playlist until they've been downloaded.",
@@ -427,6 +418,16 @@
 			"ONLINE_DELETE_WARN": "This will remove your account from the online server @{{instance}}. Are you sure you want to do this?",
 			"LOCAL_DELETE": "Delete this account locally",
 			"LOCAL_DELETE_WARN": "This will remove your account from this local app only. If you have an online account, it won't be disabled. Are you sure you want to do this?"
+		},
+		"SHUFFLE_MODAL": {
+			"TITLE": "Shuffle playlist",
+			"LABEL": "Shuffling does not affects songs already played. Choose a method to shuffle the playlist:",
+			"SHUFFLE": "Random",
+			"SHUFFLE_DESC": "The playlist will be shuffled randomly, without any influence applied to the mix",
+			"SMART_SHUFFLE": "Smart",
+			"SMART_SHUFFLE_DESC": "Prevents long songs or songs by the same person from following each other",
+			"BALANCE": "Balanced",
+			"BALANCE_DESC": "Reorders songs by pools of users (A-B-C, A-B-C, etc.)"
 		}
 	},
 	"SETUP_PAGE": {
@@ -499,12 +500,12 @@
 		"ADD_FILE_SUCCESS": "{{name}} file added successfully",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} is not a media file",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} is not a subtitle file",
-		"TITLE": "Song title",
+		"TITLE": "Title",
 		"TITLE_TOOLTIP": "If you don't know, put the name of the series here as well",
 		"TITLE_REQUIRED": "Please enter a song title",
 		"SERIES": "Serie(s)",
 		"SERIES_TOOLTIP": "TV series, movie title, video game title, etc.",
-		"SERIES_SINGERS_REQUIRED": "Series or singers cannot be empty in the same time.",
+		"SERIES_SINGERS_REQUIRED": "Series or Sung by cannot be empty in the same time.",
 		"SONGTYPES": "Song type(s)",
 		"TYPE_REQUIRED": "Song type is mandatory",
 		"ORDER": "Song order",
@@ -513,12 +514,8 @@
 		"LANGUAGES_REQUIRED": "Please choose a language",
 		"YEAR": "Broadcast year",
 		"YEAR_TOOLTIP": "Year when the series was broadcasted or the video was produced",
-		"SINGERS": "Singer(s)",
-		"SONGWRITERS": "Songwriter(s)",
 		"SONGWRITERS_TOOLTIP": "Songwriters compose lyrics AND music.",
-		"CREATORS": "Creator(s)",
 		"CREATORS_TOOLTIP": "Entity that created the series. Can be animation studio, movie studio, or game studio",
-		"KARA_AUTHORS": "Kara author(s)",
 		"KARA_AUTHORS_REQUIRED": "Author of the kara is mandatory",
 		"KARA_AUTHORS_TOOLTIP": "You should add yourself here ;)",
 		"FAMILIES": "Familie(s)",
@@ -571,7 +568,11 @@
 			"SELECT_TAG": "Select a tag :",
 			"EDIT": "Batch edit",
 			"SELECT": "Select"
-		}
+		},
+		"SINGERS_BY": "Sung by",
+		"SONGWRITERS_BY": "Composed by",
+		"CREATORS_BY": "Created by",
+		"AUTHORS_BY": "Karaoke created by"
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -624,6 +625,7 @@
 		"CHAR_NOT_ALLOWED": "The character '{{char}}' is not allowed",
 		"DELETE_USER_CONFIRM": "Delete user",
 		"LOG_IN": "Log in",
+		"NEW_USER": "New user",
 		"EDIT_ONLINE_ACCOUNT": "Online users cannot be edited from this page except to change their role on this instance of Karaoke Mugen. To edit your own profile online, do this from the public or operator interface."
 	},
 	"DATABASE": {
@@ -718,7 +720,7 @@
 		"ADD_DIRECTORY": "Add a directory",
 		"ADD_FILE": "Add a file",
 		"REPOSITORIES_PAGES": "Repositories page",
-		"PROPERTIES" : {
+		"PROPERTIES": {
 			"APP_QUICKSTART": "Quick start of the application",
 			"APP_QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel, database tab.",
 			"ONLINE_ERRORTRACKING": "Send error and crash reports (via sentry.io)",
@@ -743,6 +745,12 @@
 	"SESSIONS": {
 		"EXPORT": "Exporter",
 		"SESSION_EXPORTED_BUTTON": "Export data as CSV",
+		"SESSION_EXPORTED_TITLE": "Session data exported",
+		"SESSION_EXPORTED_DESC": "Download session data by clicking on the following links",
+		"SESSION_EXPORT_PLAYED": "History of karaoke played",
+		"SESSION_EXPORT_PLAYED_COUNT": "Karaoke played (grouped by number of times played)",
+		"SESSION_EXPORT_REQUESTED": "History of karaoke requested",
+		"SESSION_EXPORT_REQUESTED_COUNT": "Karaoke requested (grouped by number of times played)",
 		"NAME": "Name",
 		"STARTED_AT": "Started at",
 		"ENDED_AT": "Finished at",
@@ -757,7 +765,7 @@
 		"MERGE_WITH_BUTTON": "Merge!",
 		"KARA_PLAYED": "Karas played",
 		"KARA_REQUESTED": "Karas requested",
-		"NEW_SESSION": "New session :",
+		"NEW_SESSION": "New session",
 		"ACTIVE": "Active?",
 		"PRIVATE": "Private?"
 	},
@@ -769,7 +777,7 @@
 		"PATH_LYRICS": "Lyrics",
 		"PATH_MEDIAS": "Medias",
 		"PATH_TAGS": "Tags",
-		"NEW_REPOSITORY": "New repository :",
+		"NEW_REPOSITORY": "New repository",
 		"ONLINE": "Online",
 		"ENABLED": "Enabled",
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
@@ -812,16 +820,33 @@
 		"BLCTYPE_13": "Origin"
 	},
 	"HOME": {
-		"WELCOME": "Welcome to Karaoke Mugen's system panel",
-		"DIFFERENTS_MENUS": "Here are the different menus you can use :",
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
-		"KARAS_DESCRIPTION_1": "View, edit, ",
-		"KARAS_DESCRIPTION_2": "download",
-		"KARAS_DESCRIPTION_3": ", and create karaoke data files. You can also edit the download blacklist and view most requested, most played, and karaoke history",
-		"TAGS_DESCRIPTION": "Manage tags (singers, songwriters, creators, song types, etc.)",
-		"USERS_DESCRIPTION_1": "Create/",
-		"USERS_DESCRIPTION_2": "edit/view users",
-		"USERS_DESCRIPTION_3": ", change passwords, make new guests account"
+		"KARAS_DESCRIPTION": "List, edit, download, and create karaoke data files. You can also edit the download blacklist and view most requested, most played, and karaoke history",
+		"TAGS_DESCRIPTION": "List, create, edit tags (singers, songwriters, creators, song types, etc.)",
+		"USERS_DESCRIPTION": "List, edit, create users, change their password, create new guests account",
+		"SYSTEM": {
+			"CONFIG": "Edit configuration",
+			"REPOSITORIES": "Karaokes repositories",
+			"SESSIONS": "Karaoke sessions",
+			"LOGS": "System logs",
+			"DATABASE": "Database"
+		},
+		"KARAS": {
+			"DOWNLOAD": "Download karaokes",
+			"BROWSE": "Browse karaokes",
+			"CREATE": "Create a karaoke",
+			"BLACKLIST": "Manage download blacklist",
+			"HISTORY": "Played karaokes history"
+		},
+		"TAGS": {
+			"CREATE": "Create a tag",
+			"BROWSE": "Browse a tag",
+			"MERGE": "Merge duplicate tags"
+		},
+		"USERS": {
+			"CREATE": "Create an user",
+			"BROWSE": "Browse users"
+		}
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Updating lyrics...",
@@ -884,8 +909,6 @@
 		"FAVORITES_DELETED_ERROR": "Error deleting favorites",
 		"FAVORITES_EXPORTED_ERROR": "Error exporting favorites",
 		"FAVORITES_IMPORTED_ERROR": "Error importing favorites",
-		"KARA_SUGGESTION_ERROR": "Error suggesting a new song to the database",
-		"GITLAB_DISABLED": "Gitlab support is disabled, you can't send song suggestions",
 		"KARA_CREATED_ERROR": "Error creating the karaoke",
 		"KARA_HISTORY_ERROR": "Error getting songs sorted by date played",
 		"KARA_RANKING_ERROR": "Error getting songs sorted by most requested",
@@ -1030,7 +1053,6 @@
 		"SESSION_CREATED": "Session successfully created",
 		"SESSION_EDITED": "Session successfully edited",
 		"SESSION_MERGED": "Sessions successfully merged",
-		"SESSION_EXPORTED": "Session data exported in application folder",
 		"SESSION_ACTIVATED": "Session successfully activated",
 		"SESSION_DELETED": "Session successfully deleted",
 		"TAG_CREATED": "Tag successfully created",
@@ -1049,5 +1071,119 @@
 		"BLC_COPIED": "Blacklist criterias copied",
 		"STOP_AFTER": "The karaoke will stop at the song end. To stop now, click again on the stop button."
 	},
-	"SHOW_DETAILS": "Show details"
+	"SHOW_DETAILS": "Show details",
+	"HEADERS": {
+		"HOME": {
+			"TITLE": "Home",
+			"DESCRIPTION": "This is where it all begins. Choose your action."
+		},
+		"LOGS": {
+			"TITLE": "Logs",
+			"DESCRIPTION": "Everything you never wanted to know about how your karaoke works."
+		},
+		"SYSTEM_PREFERENCES": {
+			"TITLE": "System preferences",
+			"DESCRIPTION": "Application-related settings only"
+		},
+		"CONFIGURATION": {
+			"TITLE": "Advanced configuration",
+			"DESCRIPTION": "For experts only. All Karaoke Mugen settings are here, be careful where you put your fingers."
+		},
+		"SESSIONS": {
+			"TITLE": "Session management",
+			"DESCRIPTION": "Add, remove, or view data from the different Karaoke sessions you have done."
+		},
+		"SESSIONS_NEW": {
+			"TITLE": "Add a karaoke session",
+			"DESCRIPTION": "Karaoke session creation form."
+		},
+		"SESSIONS_EDIT": {
+			"TITLE": "Edit a karaoke session",
+			"DESCRIPTION": "Karaoke session modification form."
+		},
+		"REPOSITORIES": {
+			"TITLE": "Repositories management",
+			"DESCRIPTION": "Repositories are sources of karaoke. Add, enable, or remove repositories from this page."
+		},
+		"REPOSITORIES_NEW": {
+			"TITLE": "Add a repository",
+			"DESCRIPTION": "Repository creation form."
+		},
+		"REPOSITORIES_EDIT": {
+			"TITLE": "Edit a repository",
+			"DESCRIPTION": "Repository modification form."
+		},
+		"UNUSED_FILES": {
+			"TITLE": "Unused files",
+			"DESCRIPTION": "You can list unnecessary files (used by no karaoke) in your repositories from here."
+		},
+		"DATABASE": {
+			"TITLE": "Database",
+			"DESCRIPTION": "Database management tools. Database, database, just living in the database wow wow."
+		},
+		"KARAOKE_LIST": {
+			"TITLE": "List of karaoke",
+			"DESCRIPTION": "From here you can edit, add or delete karaoke. Usually reserved for karaoke repository maintainers"
+		},
+		"KARAOKE_NEW": {
+			"TITLE": "Add a karaoke",
+			"DESCRIPTION": "This form allows you to add an already existing karaoke to one of your repositories."
+		},
+		"KARAOKE_EDIT": {
+			"TITLE": "Edit a karaoke",
+			"DESCRIPTION": "Karaoke modification form."
+		},
+		"DOWNLOAD": {
+			"TITLE": "Download manager",
+			"DESCRIPTION": "Find and get karaoke from your configured repositories."
+		},
+		"DOWNLOAD_BLACKLIST": {
+			"TITLE": "Download blacklist",
+			"DESCRIPTION": "Set what you never want to download automatically. You can always download whatever you want manually."
+		},
+		"HISTORY": {
+			"TITLE": "Reading history",
+			"DESCRIPTION": "Lists all the karaoke played on your application, in descending chronological order."
+		},
+		"MOST_REQUESTED": {
+			"TITLE": "Most Popular Songs",
+			"DESCRIPTION": "Lists the most requested songs on your application. Only takes into account karaoke songs added from the public interface."
+		},
+		"MOST_PLAYED": {
+			"TITLE": "Most played songs",
+			"DESCRIPTION": "List the most played songs on your application"
+		},
+		"KARATAG_BATCH_EDIT": {
+			"TITLE": "Bulk add / remove tag",
+			"DESCRIPTION": "Reserved for maintainers: this page allows you to add or remove a tag on several karaokes simultaneously."
+		},
+		"TAG_LIST": {
+			"TITLE": "List of tags",
+			"DESCRIPTION": "List of tags composing the metadata of a karaoke, reserved for maintainers."
+		},
+		"TAG_NEW": {
+			"TITLE": "Create a tag",
+			"DESCRIPTION": "Tag creation form. Remember to add an English translation at least."
+		},
+		"TAG_EDIT": {
+			"TITLE": "Modify a tag",
+			"DESCRIPTION": "Tag modification form. Only the original name change results in a file name change."
+		},
+		"TAG_DUPLICATES": {
+			"TITLE": "List of duplicate tags",
+			"DESCRIPTION": "This page allows you to see tags that have the same name but not the same category in order to merge them if necessary."
+		},
+		"USER_LIST": {
+			"TITLE": "User management",
+			"DESCRIPTION": "From here you can create, delete, modify users, but also reset their password or change their rights"
+		},
+		"USER_NEW": {
+			"TITLE": "Create a user",
+			"DESCRIPTION": "Local user creation form"
+		},
+		"USER_EDIT": {
+			"TITLE": "Modify a user",
+			"DESCRIPTION": "User modification form"
+		}
+	}
 }

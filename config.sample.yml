@@ -1,6 +1,6 @@
 ---
 App:
-  # FirstRun is set to false after user completed the tutorial. Reset it to true to generate a new admin password
+  # FirstRun is set to false after user completed the tutorial.
   FirstRun: true
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
@@ -59,34 +59,6 @@ GUI:
   ChibiPlayer:
     Enabled: false
     AlwaysOnTop: true
-Gitlab:
-  # Enable or not gitlab posting
-  Enable: false
-  # URL to your gitlab instance
-  Host: https://lab.shelter.moe
-  # Access token
-  Token: xxx
-  # Project ID where you want issues posted
-  ProjectID: 1234
-  Template:
-    Suggestion:
-      Description: >
-        # Karaoke suggestion
-
-
-        **Title** : $title
-
-
-        **Serie** : $serie
-
-
-        **Type** : $type
-
-
-        **Link** : $link
-      Title: "[Suggestion] $serie - $title"
-      Labels:
-        - suggestion
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false
@@ -98,8 +70,8 @@ Karaoke:
     PauseDuration: 15
     Twitch:
       Enabled: false
-      OAuth: 'abcdefgh'
-      Channel: 'AxelTerizaki'
+      OAuth: ''
+      Channel: ''
   # Repeat playlist once reaching the end
   Repeat: false
   # In private mode try to insert songs in a smart way.

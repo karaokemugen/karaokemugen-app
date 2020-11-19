@@ -15,7 +15,6 @@ import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../
 import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import ActionsButtons from './ActionsButtons';
-import KaraDetail from './KaraDetail';
 
 require('./KaraLine.scss');
 
@@ -183,41 +182,42 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		return a.name.localeCompare(b.name);
 	}
 
-	karaFamilies = this.props.kara.families ? this.props.kara.families.sort(this.compareTag).map(tag => {
-		return <div key={tag.name} className="tag blue" title={getTagInLocale(tag, this.props.i18nTag)}>{tag.short ? tag.short : tag.name}</div>;
-	}) : [];
+	karaTags = (() => {
+		// Tags in the header
+		const karaTags: JSX.Element[] = [];
+		const data = this.props.kara;
 
-	karaPlatforms = this.props.kara.platforms ? this.props.kara.platforms.sort(this.compareTag).map(tag => {
-		return <div key={tag.name} className="tag blue" title={getTagInLocale(tag, this.props.i18nTag)}>{tag.short ? tag.short : tag.name}</div>;
-	}) : [];
-
-	karaGenres = this.props.kara.genres ? this.props.kara.genres.sort(this.compareTag).map(tag => {
-		return <div key={tag.name} className="tag blue" title={getTagInLocale(tag, this.props.i18nTag)}>{tag.short ? tag.short : tag.name}</div>;
-	}) : [];
-
-	karaOrigins = this.props.kara.origins ? this.props.kara.origins.sort(this.compareTag).map(tag => {
-		return <div key={tag.name} className="tag blue" title={getTagInLocale(tag, this.props.i18nTag)}>{tag.short ? tag.short : tag.name}</div>;
-	}) : [];
-
-	karaMisc = this.props.kara.misc ? this.props.kara.misc.sort(this.compareTag).map(tag => {
-		return <div key={tag.name} className="tag black" title={getTagInLocale(tag, this.props.i18nTag)}>{tag.short ? tag.short : tag.name}</div>;
-	}) : [];
-	isMulti = this.props.kara.langs ? this.props.kara.langs.find(e => e.name.indexOf('mul') > -1) : null;
-	karaLangs = (this.props.kara.langs && this.isMulti) ?
-		<div key={this.isMulti.name} className="tag">
-			{getTagInLocale(this.isMulti, this.props.i18nTag)}
-		</div> :
-		this.props.kara.langs ?
-			this.props.kara.langs.sort(this.compareTag).map(tag => {
-				return <div key={tag.name} className="tag green">
+		if (data.langs && this.props.scope === 'public') {
+			const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
+			isMulti ? karaTags.push(<div key={isMulti.tid} className="tag">
+				{getTagInLocale(isMulti)}
+			</div>) : karaTags.push(...data.langs.sort(this.compareTag).map(tag => {
+				return <div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
 					{getTagInLocale(tag, this.props.i18nTag)}
 				</div>;
-			}) : [];
-	karaSongTypes = this.props.kara.songtypes ? this.props.kara.songtypes.sort(this.compareTag).map(tag => {
-		return <div key={tag.name} className="tag green">
-			{getTagInLocale(tag, this.props.i18nTag)}{this.props.kara.songorder > 0 ? ' ' + this.props.kara.songorder : ''}
-		</div>;
-	}) : [];
+			}));
+		}
+		if (data.songtypes && this.props.scope === 'public') {
+			karaTags.push(...data.songtypes.sort(this.compareTag).map(tag => {
+				return <div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
+					{getTagInLocale(tag, this.props.i18nTag)}
+					{data.songorder > 0 ? ' ' + data.songorder : ''}
+				</div>;
+			}));
+		}
+		for (const type of ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'MISC']) {
+			const typeData = tagTypes[type];
+			if (data[typeData.karajson]) {
+				karaTags.push(...data[typeData.karajson].sort(this.compareTag).map(tag => {
+					return <div key={tag.tid} className={`tag ${typeData.color}`} title={tag.short ? tag.short : tag.name}>
+						{this.props.scope === 'admin' ? (tag.short ? tag.short : tag.name):getTagInLocale(tag, this.props.i18nTag)}
+					</div>;
+				}));
+			}
+		}
+		return karaTags;
+	})();
+
 	karaTitle = buildKaraTitle(this.props.context.globalState.settings.data, this.props.kara, false, this.props.i18nTag);
 
 	isProblematic = () => {
@@ -269,9 +269,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		const idPlaylist = this.props.idPlaylist;
 		return (
 			<li key={this.props.key} style={this.props.style}>
-				<div className={`list-group-item ${kara.flag_playing ? 'currentlyplaying ' : ''} ${kara.flag_dejavu ? 'dejavu ' : ''}
-				${this.props.indexInPL % 2 === 0 ? 'list-group-item-even ' : ''} ${(this.props.jingle || this.props.sponsor) && scope === 'admin' ? 'marker ' : ''}
-				${this.props.sponsor && scope === 'admin' ? 'green' : ''}`}>
+				<div className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${kara.flag_dejavu ? ' dejavu' : ''}
+				${this.props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${(this.props.jingle || this.props.sponsor) && scope === 'admin' ? ' marker' : ''}
+				${this.props.sponsor && scope === 'admin' ? ' green' : ''}`}>
 					{scope === 'public' && kara.username !== this.props.context.globalState.auth.data.username && kara.flag_visible === false ?
 						<div className="contentDiv">
 							<div>
@@ -283,12 +283,13 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						<React.Fragment>
 							<div className="actionDiv">
 								{(!(is_touch_device() && scope === 'admin') || !is_touch_device())
-									&& this.props.context.globalState.settings.data.config.Frontend.ShowAvatarsOnPlaylist
-									&& this.props.avatar_file ?
+								&& this.props.context.globalState.settings.data.config.Frontend.ShowAvatarsOnPlaylist
+								&& this.props.avatar_file ?
 									<img className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
-										src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
+										 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
 								<div className="btn-group">
-									{this.props.idPlaylistTo !== idPlaylist ?
+									{this.props.idPlaylistTo !== idPlaylist &&
+									(this.props.scope === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend.Mode === 2) ?
 										<ActionsButtons
 											idPlaylistTo={this.props.idPlaylistTo}
 											idPlaylist={idPlaylist}
@@ -316,6 +317,37 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									{kara.checked ? <i className="far fa-check-square"></i>
 										: <i className="far fa-square"></i>}
 								</span> : null}
+							{is_touch_device() || this.props.scope === 'public' ?
+								<div className={`contentDiv contentDivMobile ${this.state.problematic ? 'problematic' : ''}`} onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
+									<div className="contentDivMobileTitle">{kara.title}</div>
+									<div className="contentDivMobileSerie">{this.karaSerieOrSingers}</div>
+									{kara.upvotes && this.props.scope === 'admin' ?
+										<div className="upvoteCount"
+											 title={i18next.t('TOOLTIP_FREE')}>
+											<i className="fas fa-thumbs-up" />
+											{kara.upvotes}
+										</div> : null
+									}
+									<div className="tagConteneur">
+										{this.karaTags}
+									</div>
+								</div>:
+								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
+									<div className={`disable-select karaTitle ${this.state.problematic ? 'problematic' : ''}`}>
+										{this.karaTitle}
+										{kara.upvotes && this.props.scope === 'admin' ?
+											<div className="upvoteCount"
+												 title={i18next.t('UPVOTE_NUMBER')}>
+												<i className="fas fa-thumbs-up" />
+												{kara.upvotes}
+											</div> : null
+										}
+										<div className="tagConteneur">
+											{this.karaTags}
+										</div>
+									</div>
+								</div>
+							}
 							<div className="infoDiv">
 								{scope === 'admin' ?
 									<button title={i18next.t(idPlaylist < 0 ? 'KARA_MENU.PLAY_LIBRARY' : 'KARA_MENU.PLAY')}
@@ -327,65 +359,24 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										<i className="fas fa-eye-slash"></i>
 									</button> : null
 								}
-								{scope !== 'admin' && !kara.flag_dejavu && !kara.flag_playing && kara.username === this.props.context.globalState.auth.data.username
-									&& idPlaylist === this.props.context.globalState.settings.data.state.publicPlaylistID ?
+								{scope !== 'admin' && this.props.idPlaylist > 0 ? (!kara.flag_dejavu && !kara.flag_playing
+								&& kara.username === this.props.context.globalState.auth.data.username
+								&& this.props.playlistInfo?.flag_public ?
 									<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
-										onClick={this.deleteKara}><i className="fas fa-minus"></i></button> : null}
-								{scope !== 'admin' && this.props.idPlaylist > 0 && this.props.playlistInfo?.flag_public ?
-									<button className='upvoteKara btn btn-sm btn-action'
+										onClick={this.deleteKara}><i className={`fas fa-trash-alt ${is_touch_device() ? ' fa-2x':''}`} /></button> :
+									<button className="karaLineButton upvoteKara btn btn-sm btn-action"
 										title={i18next.t('TOOLTIP_UPVOTE')}
 										disabled={this.props.kara.username === this.props.context.globalState.auth.data.username}
 										onClick={this.upvoteKara}>
-										<i className={`fas fa-thumbs-up ${kara.flag_upvoted ? 'currentUpvote' : ''} ${kara.upvotes > 0 ? 'upvotes' : ''}`} />
+										<i className={`fas fa-thumbs-up${kara.flag_upvoted ? ' currentUpvote' : ''}
+										${kara.upvotes > 0 ? ' upvotes' : ''}${is_touch_device() ? ' fa-2x':''}`} />
 										{kara.upvotes > 0 && kara.upvotes}
-									</button> : null}
+									</button>):null}
 							</div>
-							{is_touch_device() || this.props.scope === 'public' ?
-								<div className="contentDiv contentDivMobile" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
-									<div className={`disable-select contentDivMobileTop ${this.state.problematic ? 'problematic' : ''}`}>
-										<div>
-											<div className="contentDivMobileTitle">{kara.title}</div>
-											<div className="contentDivMobileSerie">{this.karaSerieOrSingers}</div>
-										</div>
-										{kara.upvotes && this.props.scope === 'admin' ?
-											<div className="upvoteCount"
-												title={i18next.t('TOOLTIP_FREE')}>
-												<i className="fas fa-thumbs-up" />
-												{kara.upvotes}
-											</div> : null
-										}
-									</div>
-									<div className="disable-select">
-										<div className="tagConteneur mobile">
-											{this.karaLangs}
-											{this.karaSongTypes}
-											{this.karaFamilies}
-											{this.karaPlatforms}
-											{this.karaGenres}
-											{this.karaOrigins}
-											{this.karaMisc}
-										</div>
-									</div>
-								</div> :
-								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
-									<div className={`disable-select karaTitle ${this.state.problematic ? 'problematic' : ''}`}>
-										{this.karaTitle}
-										{kara.upvotes && this.props.scope === 'admin' ?
-											<div className="upvoteCount"
-												title={i18next.t('UPVOTE_NUMBER')}>
-												<i className="fas fa-thumbs-up" />
-												{kara.upvotes}
-											</div> : null
-										}
-										<div className="tagConteneur">
-											{this.karaFamilies}
-											{this.karaPlatforms}
-											{this.karaGenres}
-											{this.karaOrigins}
-											{this.karaMisc}
-										</div>
-									</div>
-								</div>
+							{is_touch_device() && this.props.scope === 'public' ?
+								<div className="tagConteneur mobile">
+									{this.karaTags}
+								</div> : null
 							}
 						</React.Fragment>
 					}
