@@ -16,7 +16,7 @@ export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
 	let url = `http://localhost:${conf.Frontend.Port}/welcome`;
 	if (conf.App.FirstRun) {
 		const adminPassword = await generateAdminPassword();
-		url = `${url}?admpwd=${adminPassword}`;
+		url = `http://localhost:${conf.Frontend.Port}/setup?admpwd=${adminPassword}`;
 	}
 	if (!state.opt.noBrowser && !state.isDemo && !state.isTest && !state.electron) open(url);
 	return url;

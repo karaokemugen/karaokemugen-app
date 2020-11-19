@@ -11,10 +11,6 @@ import { displayMessage } from '../../utils/tools';
 require('../styles/welcome/WelcomePage.scss');
 require('../styles/welcome/SetupPage.scss');
 
-interface IProps {
-	endSetup: () => void;
-}
-
 interface IState {
 	accountType: 'local' | 'online' | null;
 	onlineAction: 'create' | 'login' | null;
@@ -29,11 +25,11 @@ interface IState {
 	downloadRandomSongs: boolean;
 	error?: string
 }
-class SetupPage extends Component<IProps, IState> {
+class SetupPage extends Component<unknown, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
 
-	constructor(props: IProps) {
+	constructor(props: unknown) {
 		super(props);
 		this.state = {
 			accountType: null,
@@ -156,13 +152,13 @@ class SetupPage extends Component<IProps, IState> {
 		if (this.state.downloadRandomSongs) {
 			try {
 				commandBackend('addRandomDownloads');
-				this.props.endSetup();
+				window.location.assign('/welcome');
 			} catch (err) {
 				const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
 				this.setState({ error: error });
 			}
 		} else {
-			this.props.endSetup();
+			window.location.assign('/welcome');
 		}
 	}
 
