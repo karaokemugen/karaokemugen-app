@@ -1203,5 +1203,10 @@
 			"TITLE": "Modifier un utilisateur",
 			"DESCRIPTION": "Formulaire de modification d'utilisateur"
 		}
+	},
+	"CHIBI": {
+		"FOCUS": "Revenir à Karaoke Mugen",
+		"ONTOP": "Afficher au-dessus des autres fenêtres",
+		"CLOSE": "Fermer le lecteur chibi"
 	}
 }

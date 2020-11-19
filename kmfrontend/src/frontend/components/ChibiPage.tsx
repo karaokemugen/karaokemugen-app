@@ -148,6 +148,7 @@ class ChibiPage extends Component<unknown, IState> {
 						<div className="header-group floating-controls">
 							<button
 								className="btn btn-dark"
+								title={i18next.t('CHIBI.FOCUS')}
 								data-namecommand="focusMainWindow"
 								onClick={this.electronCmd}
 							>
@@ -155,6 +156,7 @@ class ChibiPage extends Component<unknown, IState> {
 							</button>
 							<button
 								className="btn btn-dark"
+								title={i18next.t('CHIBI.ONTOP')}
 								data-namecommand="setChibiPlayerAlwaysOnTop"
 								onClick={this.electronCmd}
 							>
@@ -162,6 +164,7 @@ class ChibiPage extends Component<unknown, IState> {
 							</button>
 							<button
 								className="btn btn-danger"
+								title={i18next.t('CHIBI.CLOSE')}
 								data-namecommand="closeChibiPlayer"
 								onClick={this.electronCmd}
 							>
