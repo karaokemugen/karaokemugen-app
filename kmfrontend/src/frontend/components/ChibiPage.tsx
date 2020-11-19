@@ -93,6 +93,32 @@ class ChibiPage extends Component<unknown, IState> {
 		return (
 			<>
 				<KmAppWrapperDecorator chibi>
+					<div className="header-group floating-controls">
+						<button
+							className="btn"
+							title={i18next.t('CHIBI.FOCUS')}
+							data-namecommand="focusMainWindow"
+							onClick={this.electronCmd}
+						>
+							<i className="fas fa-fw fa-external-link-alt" />
+						</button>
+						<button
+							className="btn"
+							title={i18next.t('CHIBI.ONTOP')}
+							data-namecommand="setChibiPlayerAlwaysOnTop"
+							onClick={this.electronCmd}
+						>
+							<i className="fas fa-fw fa-window-restore" />
+						</button>
+						<button
+							className="btn btn-danger"
+							title={i18next.t('CHIBI.CLOSE')}
+							data-namecommand="closeChibiPlayer"
+							onClick={this.electronCmd}
+						>
+							<i className="fas fa-fw fa-times" />
+						</button>
+					</div>
 					<KmAppHeaderDecorator mode="admin">
 						<div className="header-group controls">
 							<button
@@ -145,34 +171,8 @@ class ChibiPage extends Component<unknown, IState> {
 								<i className="fas fa-closed-captioning" />
 							</button>
 						</div>
-						<div className="header-group floating-controls">
-							<button
-								className="btn btn-dark"
-								title={i18next.t('CHIBI.FOCUS')}
-								data-namecommand="focusMainWindow"
-								onClick={this.electronCmd}
-							>
-								<i className="fas fa-fw fa-external-link-alt" />
-							</button>
-							<button
-								className="btn btn-dark"
-								title={i18next.t('CHIBI.ONTOP')}
-								data-namecommand="setChibiPlayerAlwaysOnTop"
-								onClick={this.electronCmd}
-							>
-								<i className="fas fa-fw fa-window-restore" />
-							</button>
-							<button
-								className="btn btn-danger"
-								title={i18next.t('CHIBI.CLOSE')}
-								data-namecommand="closeChibiPlayer"
-								onClick={this.electronCmd}
-							>
-								<i className="fas fa-fw fa-times" />
-							</button>
-						</div>
 					</KmAppHeaderDecorator>
-					<ProgressBar scope='admin'/>
+					<ProgressBar/>
 				</KmAppWrapperDecorator>
 			</>
 		);

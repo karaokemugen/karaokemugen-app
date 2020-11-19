@@ -352,8 +352,8 @@ export function updateChibiPlayerWindow(show: boolean) {
 	const state = getState();
 	if (show) {
 		chibiPlayerWindow = new BrowserWindow({
-			width: 800,
-			height: 100,
+			width: 504,
+			height: 136,
 			frame: false,
 			resizable: false,
 			show: false,
@@ -362,7 +362,6 @@ export function updateChibiPlayerWindow(show: boolean) {
 			webPreferences: {
 				nodeIntegration: true
 			},
-			parent: win,
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
 		const port = state.frontendPort;

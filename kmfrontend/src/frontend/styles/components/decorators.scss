@@ -34,6 +34,13 @@
 				cursor: pointer;
 				-webkit-app-region: no-drag;
 			}
+			&.floating-controls {
+				display: flex;
+				justify-content: flex-end;
+			}
+		}
+		.KmAppHeaderDecorator .btn {
+			border-top: solid 1px rgba(140, 140, 140, 0.7019607843);
 		}
 	}
 	&.single {
@@ -120,15 +127,6 @@
 			text-align: center;
 			> .btn {
 				height: 100%;
-			}
-		}
-
-		.header-group.floating-controls {
-			position: fixed;
-			right: 0;
-			.btn {
-				min-width: 1.25em;
-				padding: .1em;
 			}
 		}
 	}
