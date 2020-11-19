@@ -10,14 +10,15 @@ import GlobalContext from '../../../store/context';
 import { getSerieLanguage, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
+import { eventEmitter } from '../../../utils/tools';
 import { View } from '../../types/view';
 
 interface IProps {
 	tagType: number;
 	changeView: (
 		view: View,
-		tagType?:number,
-		searchValue?:string,
+		tagType?: number,
+		searchValue?: string,
 		searchCriteria?: 'year' | 'tag'
 	) => void;
 }
@@ -25,6 +26,7 @@ interface IProps {
 interface IState {
 	tags: TagsElem;
 	forceUpdate: boolean;
+	filterValue: string;
 }
 
 interface TagsElem {
@@ -53,11 +55,22 @@ class TagsList extends Component<IProps, IState> {
 				to: 0
 			}
 		},
-		forceUpdate: false
+		forceUpdate: false,
+		filterValue: ''
 	};
 
 	componentDidMount() {
 		this.props.tagType === YEARS.type ? this.getYears() : this.getTags();
+		eventEmitter.addChangeListener('playlistContentsUpdatedFromClient', this.playlistContentsUpdatedFromClient);
+	}
+
+	componentWillUnmount() {
+		eventEmitter.removeChangeListener('playlistContentsUpdatedFromClient', this.playlistContentsUpdatedFromClient);
+	}
+
+	playlistContentsUpdatedFromClient = async () => {
+		await this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1 });
+		this.getTags();
 	}
 
 	tagsListForceRefresh = () => {
@@ -67,7 +80,12 @@ class TagsList extends Component<IProps, IState> {
 
 	async getTags() {
 		const response = await commandBackend('getTags',
-			{ type: this.props.tagType, from: this.state.tags.infos.from, size: chunksize });
+			{
+				type: this.props.tagType,
+				from: this.state.tags.infos.from,
+				size: chunksize,
+				filter: this.state.filterValue
+			});
 		let data;
 		if (response.infos?.from > 0) {
 			data = this.state.tags;
@@ -95,7 +113,7 @@ class TagsList extends Component<IProps, IState> {
 	async getYears() {
 		const response = await commandBackend('getYears');
 		response.content = response.content.map((val: DBYear) => {
-			return { tid: val.year, name: val.year, type: [0], karacount: [{type:0, count:val.karacount}] };
+			return { tid: val.year, name: val.year, type: [0], karacount: [{ type: 0, count: val.karacount }] };
 		});
 		this.setState({ tags: response });
 	}
@@ -116,7 +134,7 @@ class TagsList extends Component<IProps, IState> {
 	openSearch = (tid: string) => {
 		let searchValue = tid;
 		if (this.props.tagType !== YEARS.type) searchValue = `${searchValue}~${this.props.tagType}`;
-		this.props.changeView('search', this.props.tagType, searchValue, this.props.tagType === YEARS.type ? 'year': 'tag');
+		this.props.changeView('search', this.props.tagType, searchValue, this.props.tagType === YEARS.type ? 'year' : 'tag');
 	}
 
 	rowRenderer = ({ index, isScrolling, key, parent, style }: ListRowProps) => {
@@ -131,7 +149,8 @@ class TagsList extends Component<IProps, IState> {
 					parent={parent}
 					rowIndex={index}
 				>
-					<div className={`tags-item${index % 2 === 0 ? ' even':''}`} tabIndex={0} key={tag.tid} style={style} onClick={() => this.openSearch(tag.tid)}>
+					<div className={`tags-item${index % 2 === 0 ? ' even' : ''}`} tabIndex={0}
+						key={tag.tid} style={style} onClick={() => this.openSearch(tag.tid)}>
 						<div className="title">{
 							this.props.tagType === YEARS.type ?
 								tag.name :
@@ -141,16 +160,20 @@ class TagsList extends Component<IProps, IState> {
 						}</div>
 						<div className="karacount">
 							<em>
-								{i18next.t('KARAOKE', {count: (tag.karacount as unknown as Array<{count: number, type:number}>).filter(value => value.type === this.props.tagType).length > 0 ?
-									(tag.karacount as unknown as Array<{count: number, type:number}>).filter(value => value.type === this.props.tagType)[0].count
-									: 0})}
+								{i18next.t('KARAOKE', {
+									count: (tag.karacount as unknown as Array<{ count: number, type: number }>)
+										.filter(value => value.type === this.props.tagType).length > 0 ?
+										(tag.karacount as unknown as Array<{ count: number, type: number }>)
+											.filter(value => value.type === this.props.tagType)[0].count
+										: 0
+								})}
 							</em>
 						</div>
 					</div>
 				</CellMeasurer>
 			);
 		} else {
-			return <div className="tags-item"  key={key} style={style}>
+			return <div className="tags-item" key={key} style={style}>
 				{i18next.t('LOADING')}
 			</div>;
 		}
