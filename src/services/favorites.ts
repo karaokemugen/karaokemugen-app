@@ -183,7 +183,8 @@ export async function importFavorites(favs: FavExport, username: string) {
 /* Get favorites from a user list */
 async function getAllFavorites(userList: string[]): Promise<string[]> {
 	const kids = [];
-	for (const user of userList) {
+	for (let user of userList) {
+		user = user.toLowerCase();
 		if (!await findUserByName(user)) {
 			logger.warn(`Username ${user} does not exist`, {service: 'Favorites'});
 		} else {
