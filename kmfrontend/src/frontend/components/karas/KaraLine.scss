@@ -102,10 +102,11 @@
 			font-style: italic;
 		}
 	}
+	// Overrides, original tagConteneur in styles/components/tags.scss
 	.tagConteneur {
 		margin-left: auto;
 		display: flex;
-		justify-content: flex-end;
+		align-items: end;
 		&.mobile {
 			margin: 0;
 			flex-wrap: wrap;
@@ -115,21 +116,8 @@
 			width: 100%;
 		}
 		.tag {
-			background-color: $mugen-tag-default;
-			@each $name, $color in $mugen-colors {
-				&.#{$name} {
-					background-color: darken($color, 10);
-					color: white;
-				}
-			}
 			padding: 0 .25em;
-			margin-right: .4em;
-			text-align: center;
-			font-weight: bold;
-			color: #aaa;
-			box-shadow: 0 6px 8px 2px #00000005, 0 1px 5px 2px #00000004, 0 2px 3px -1px #00000005;
-			float: right;
-			z-index: 250;
+			margin-bottom: 0;
 		}
 	}
 	// .checkboxKara: checkbox for bulk selection in admin interface
@@ -137,6 +125,9 @@
 		padding: .25em;
 		font-size: 1.25em;
 		float: right;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 
 	&.dragged {
