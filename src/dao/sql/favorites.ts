@@ -32,6 +32,16 @@ ${limitClause}
 ${offsetClause}
 `;
 
+export const sqlgetFavoritesMicro = (limitClause: string, offsetClause: string) => `
+SELECT
+  ak.kid AS kid
+  FROM all_karas AS ak
+  INNER JOIN favorites AS f ON f.fk_kid = ak.kid
+  WHERE fk_login = :username
+${limitClause}
+${offsetClause}
+`;
+
 export const sqlremoveFavorites = `
 DELETE FROM favorites
 WHERE fk_kid = $1
