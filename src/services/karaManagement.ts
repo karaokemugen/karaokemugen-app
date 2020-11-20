@@ -10,10 +10,10 @@ import { refreshKaras, refreshYears } from '../lib/dao/kara';
 import { getDataFromKaraFile, parseKara } from '../lib/dao/karafile';
 import {refreshAllKaraTags,refreshKaraTags, refreshTags} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
-import { Kara, KaraFileV4, KaraTag } from '../lib/types/kara';
+import { Kara, KaraTag } from '../lib/types/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
-import { asyncCopy, asyncReadFile, asyncUnlink, asyncWriteFile, resolveFileInDirs } from '../lib/utils/files';
+import { asyncCopy, asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
@@ -102,7 +102,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const repos = getRepos();
 		const oldRepoIndex = repos.findIndex(r => r.Name === oldRepoName);
 		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
-		if (newRepoIndex < oldRepoIndex) tasks.push(editKaraInDB(kara));
+		if (newRepoIndex < oldRepoIndex) tasks.push(editKara(kara));
 		tasks.push(asyncCopy(
 			karaFiles[0],
 			resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile),
@@ -128,13 +128,6 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			tasks.push(writeTagFile(tag, resolvedPathRepos('Tags', repoName)[0]));
 		}
 		await Promise.all(tasks);
-		// Until issue #497 is resolved, we're going to do something naughty.
-		const karaFile = resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile);
-		const karaFileRaw = await asyncReadFile(karaFile);
-		const karaFileData: KaraFileV4 = JSON.parse(karaFileRaw);
-		karaFileData.data.repository = repoName;
-		await asyncWriteFile(karaFile, JSON.stringify(karaFileData, null, 2), 'utf-8');
-		// End of naughtiness.
 	} catch(err) {
 		if (err?.code === 404) throw err;
 		sentry.error(new Error(err));
@@ -247,3 +240,4 @@ export async function integrateKaraFile(file: string) {
 	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid, token: {username: 'admin', role: 'admin'}}), 'single');
 	saveSetting('baseChecksum', getStoreChecksum());
 }
+
