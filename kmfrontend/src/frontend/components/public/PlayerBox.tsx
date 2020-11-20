@@ -29,7 +29,9 @@ interface IState {
 	timePosition: number,
 	img: string,
 	lyrics: ASSLine[],
-	showLyrics: boolean
+	showLyrics: boolean,
+	kid: string,
+	favorites: Set<string>
 }
 
 class PlayerBox extends Component<IProps, IState> {
@@ -45,7 +47,8 @@ class PlayerBox extends Component<IProps, IState> {
 		length: 0,
 		timePosition: 0,
 		img: '',
-		lyrics: []
+		lyrics: [],
+		kid: ''
 	};
 
 	constructor(props) {
@@ -54,7 +57,8 @@ class PlayerBox extends Component<IProps, IState> {
 			...PlayerBox.resetBox,
 			ref: createRef(),
 			containerRef: createRef(),
-			showLyrics: false
+			showLyrics: false,
+			favorites: new Set<string>()
 		};
 	}
 
@@ -62,16 +66,41 @@ class PlayerBox extends Component<IProps, IState> {
 		this.props.onResize(`${this.state.containerRef.current.scrollHeight}px`);
 	};
 
+	getFavorites = async (payload?: string) => {
+		if (payload === undefined || payload === this.context.globalState.auth.data.username) {
+			const result = await commandBackend('getFavorites', { mini: true });
+			const set = new Set<string>();
+			for (const kara of result) {
+				set.add(kara.kid);
+			}
+			this.setState({ favorites: set });
+		}
+	};
+
+	toggleFavorite = async (event) => {
+		event.stopPropagation();
+		if (this.state.favorites.has(this.state.kid)) {
+			await commandBackend('deleteFavorites', {kid: [this.state.kid]});
+		} else {
+			await commandBackend('addFavorites', {kid: [this.state.kid]});
+		}
+	}
+
 	async componentDidMount() {
 		if (this.context.globalState.auth.isAuthenticated) {
 			const result = await commandBackend('getPlayerStatus');
 			this.refreshPlayerInfos(result);
+			if (!this.props.fixed && this.context.globalState.auth.data.role !== 'guest') {
+				this.getFavorites();
+			}
 		}
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
 		if (this.props.fixed) {
 			this.observer = new ResizeObserver(this.resizeCheck);
 			this.observer.observe(this.state.containerRef.current);
 			this.resizeCheck();
+		} else {
+			if (this.context.globalState.auth.data.role !== 'guest') getSocket().on('favoritesUpdated', this.getFavorites);
 		}
 	}
 
@@ -80,6 +109,8 @@ class PlayerBox extends Component<IProps, IState> {
 		window.removeEventListener('resize', this.resizeCheck);
 		if (this.observer) {
 			this.observer.disconnect();
+		} else {
+			if (this.context.globalState.auth.data.role !== 'guest') getSocket().off('favoritesUpdated', this.getFavorites);
 		}
 	}
 
@@ -138,6 +169,7 @@ class PlayerBox extends Component<IProps, IState> {
 					title: kara.title,
 					subtitle: `${serieText} - ${songtypeText}${songorderText}`,
 					length: kara.duration,
+					kid: kara.kid,
 					img: `url(${getPreviewLink(kara)})`
 				});
 			}
@@ -164,7 +196,7 @@ class PlayerBox extends Component<IProps, IState> {
 				 ref={this.state.containerRef}>
 				{!this.props.fixed ? <div className="first">
 					<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
-					<p className="next" tabIndex={0}>{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" /></p>
+					<p className="next" tabIndex={0} onKeyDown={this.props.goToCurrentPL}>{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" /></p>
 				</div>:null}
 				{!this.props.fixed ?
 					<div className="title">
@@ -176,6 +208,11 @@ class PlayerBox extends Component<IProps, IState> {
 							<h3 className="song">{this.state.title}</h3>
 							<h4 className="series">{this.state.subtitle}</h4>
 						</div>:null)}
+				{!this.props.fixed && this.state.length !== 0 && this.context.globalState.auth.data.role !== 'guest' ?
+					<button className="btn favorites" onClick={this.toggleFavorite}>
+						<i className="fas fa-fw fa-star" />
+						{this.state.favorites.has(this.state.kid) ? i18next.t('TOOLTIP_FAV_DEL'):i18next.t('TOOLTIP_FAV')}
+					</button>:null}
 				{this.state.length !== 0 ?
 					<React.Fragment>
 						{!this.props.fixed ?
