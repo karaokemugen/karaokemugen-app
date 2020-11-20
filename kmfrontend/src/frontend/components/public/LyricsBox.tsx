@@ -64,10 +64,11 @@ class LyricsBox extends Component<IProps, IState> {
 			{this.state.showLyrics ?
 				<div className="lyrics">
 					{
-						this.state.lyrics.map(val => {
+						this.state.lyrics.map((val, index) => {
 							return <div
 								className={`${(val.start+0.4 < this.state.timePosition) && (this.state.timePosition < val.end-0.5) ? 'current':''}
 											${((val.start-0.15) < this.state.timePosition) && (this.state.timePosition < val.start+0.4) ? 'incoming':''}`}
+								key={index}
 							>{val.text}</div>;
 						})
 					}
