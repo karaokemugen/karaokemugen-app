@@ -140,3 +140,20 @@ UPDATE users SET
 	password = :password
 WHERE pk_login = :username
 `;
+
+export const sqlSelectAllDupeUsers = `
+SELECT *,
+	(select count(*) from favorites f where f.fk_login = ou.pk_login) AS favorites
+FROM users ou
+WHERE (select count(*) from users inr where lower(inr.pk_login) = lower(ou.pk_login)) > 1
+  AND type < 2
+ORDER BY pk_login, favorites DESC, last_login_at DESC
+`;
+
+export const sqlLowercaseAllUsers = 'UPDATE users SET pk_login = lower(pk_login) WHERE type < 2;';
+
+export const sqlMergeUserDataPlaylist = 'UPDATE playlist SET fk_login = $2 WHERE fk_login = $1;';
+
+export const sqlMergeUserDataPlaylistContent = 'UPDATE playlist_content SET fk_login = $2 WHERE fk_login = $1;';
+
+export const sqlMergeUserDataRequested = 'UPDATE requested SET fk_login = $2 WHERE fk_login = $1;';
