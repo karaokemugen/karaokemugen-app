@@ -117,12 +117,14 @@ async function migrateFromDBMigrate() {
 async function cleanupOldMigrations(migrationDir: string) {
 	// TODO: Remove this function once 6.0 or 7.0 hits.
 	const files = await asyncReadDirFilter(migrationDir, '.js');
+	const promises = [];
 	for (const file of files) {
 		if (file.substr(0, 8) < '20201120') {
 			// This means this file belongs to the old JS migration files. We delete it.
-			asyncUnlink(resolve(migrationDir, file));
+			promises.push(asyncUnlink(resolve(migrationDir, file)));
 		}
 	}
+	await Promise.all(promises);
 }
 
 async function migrateDB(): Promise<Migration[]> {
