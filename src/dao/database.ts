@@ -8,6 +8,7 @@ import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
+import { asyncReadDirFilter, asyncUnlink } from '../lib/utils/files';
 import { createImagePreviews } from '../lib/utils/previews';
 import { testCurrentBLCSet } from '../services/blacklist';
 import { getAllKaras } from '../services/kara';
@@ -112,13 +113,27 @@ async function migrateFromDBMigrate() {
 	await db().query('DROP TABLE migrations;');
 }
 
+/** Wipes old JS migrations if any are found from dbMigrate. That can happen for people updating from installs or zips since we're not deleting old migrations in the resources dir. Oversight on our part. */
+async function cleanupOldMigrations(migrationDir: string) {
+	// TODO: Remove this function once 6.0 or 7.0 hits.
+	const files = await asyncReadDirFilter(migrationDir, '.js');
+	for (const file of files) {
+		if (file.substr(0, 8) < '20201120') {
+			// This means this file belongs to the old JS migration files. We delete it.
+			asyncUnlink(resolve(migrationDir, file));
+		}
+	}
+}
+
 async function migrateDB(): Promise<Migration[]> {
 	logger.info('Running migrations if needed', {service: 'DB'});
 	// First check if database still has db-migrate and determine at which we're at.
 	await migrateFromDBMigrate();
 	const conf = getConfig();
+	const migrationDir = resolve(getState().resourcePath, 'migrations/');
+	await cleanupOldMigrations(migrationDir);
 	const migrator = new Postgrator({
-		migrationPattern: resolve(getState().resourcePath, 'migrations/*.sql'),
+		migrationDirectory: migrationDir,
 		host: conf.System.Database.host,
 		driver: 'pg',
 		username: conf.System.Database.username,
