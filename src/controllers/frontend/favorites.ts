@@ -105,7 +105,7 @@ export default function favoritesController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'user', 'limited');
 		try {
-			if (req.body.mini) {
+			if (req?.body?.mini) {
 				return await selectFavoritesMicro({
 					username: req.token.username,
 					from: +req.body?.from || 0,
