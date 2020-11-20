@@ -29,9 +29,45 @@ class LyricsBox extends Component<IProps, IState> {
 		};
 	}
 
+	static formatLyrics(lyrics: ASSLine[]) {
+		// Merge lines with the same text in it to mitigate karaokes with many effects
+		const map = new Map<string, ASSLine[][]>();
+		for (const lyric of lyrics) {
+			if (map.has(lyric.text)) {
+				const val = map.get(lyric.text);
+				const lastLines = val[val.length-1];
+				const lastLine = lastLines[lastLines.length-1];
+				if (lyric.start - lastLine.end < 0.1) {
+					lastLines.push(lyric);
+					val[val.length-1] = lastLines;
+				} else {
+					val.push([lyric]);
+				}
+				map.set(lyric.text, val);
+			} else {
+				map.set(lyric.text, [[lyric]]);
+			}
+		}
+		console.log(map);
+		// Unwrap and sort
+		const fixedLyrics: ASSLine[] = [];
+		for (const [lyric, lyricGroups] of map.entries()) {
+			for (const lyricGroup of lyricGroups) {
+				fixedLyrics.push({ start: lyricGroup[0].start, text: lyric, end: lyricGroup[lyricGroup.length-1].end });
+			}
+		}
+		fixedLyrics.sort((el1, el2) => {
+			return el1.start - el2.start;
+		});
+		return fixedLyrics;
+	}
+
 	fetchLyrics = async () => {
 		if (this.props.kid) {
-			const lyrics = await commandBackend('getKaraLyrics', {kid: this.props.kid});
+			let lyrics: ASSLine[] = await commandBackend('getKaraLyrics', {kid: this.props.kid});
+			if (lyrics.length > 100) {
+				lyrics = LyricsBox.formatLyrics(lyrics);
+			}
 			this.setState({ lyrics: lyrics || [] });
 		} else {
 			this.setState({ lyrics: [] });
