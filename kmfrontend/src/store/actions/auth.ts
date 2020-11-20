@@ -78,7 +78,7 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
 
 	if (kmToken) {
 		try {
-			const verification: IAuthenticationVerification = await commandBackend('checkAuth');
+			const verification: IAuthenticationVerification = await commandBackend('checkAuth', undefined, false, 30000);
 			dispatch({
 				type: AuthAction.LOGIN_SUCCESS,
 				payload: {
