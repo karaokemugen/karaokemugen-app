@@ -371,7 +371,7 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 	try {
 		const pl = await getPLContents({
 			playlist_id: playlist_id,
-			username: token.username,
+			username: token.username.toLowerCase(),
 			filter: filter,
 			lang: lang,
 			from: from,
@@ -397,7 +397,7 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 /** Get song information from a particular PLC */
 export async function getKaraFromPlaylist(plc_id: number, token: Token) {
 	profile('getPLCInfo');
-	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username);
+	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username.toLowerCase());
 	if (!kara) throw {code: 404, msg: 'PLCID unknown'};
 	profile('getPLCInfo');
 	return kara;
@@ -418,6 +418,7 @@ export function isAllKarasInPlaylist(karas: PLC[], playlist: PLC[]) {
 
 /** Add song to playlist */
 export async function addKaraToPlaylist(kids: string|string[], requester: string, playlist_id?: number, pos?: number) {
+	requester = requester.toLowerCase();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	const conf = getConfig();
 	const state = getState();
@@ -747,7 +748,7 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 		const plcData = await getPLCInfoMini(plcs[i]);
 		kids.push(plcData.kid);
 		if (!plcData) throw {code: 404, msg: 'At least one playlist content is unknown'};
-		if (token.role !== 'admin' && plcData.username !== token.username) throw {code: 403, msg: 'You cannot delete a song you did not add'};
+		if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {code: 403, msg: 'You cannot delete a song you did not add'};
 		if (token.role !== 'admin' && plcData.upvotes > 0) throw {code: 403, msg: 'You cannot delete a song with upvotes'};
 		if (plcData.flag_playing && getState().player.playerStatus === 'play') throw {code: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
 	}

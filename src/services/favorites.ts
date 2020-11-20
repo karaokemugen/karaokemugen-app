@@ -61,6 +61,7 @@ export async function manageFavoriteInInstanceBatch(action: 'POST' | 'DELETE', u
 export async function addToFavorites(username: string, kids: string[], sendOnline = true) {
 	try {
 		profile('addToFavorites');
+		username = username.toLowerCase();
 		await insertFavorites(kids, username);
 		if (username.includes('@') && sendOnline && getConfig().Online.Users) {
 			manageFavoriteInInstanceBatch('POST', username, kids);
@@ -94,6 +95,7 @@ export async function convertToRemoteFavorites(username: string) {
 export async function deleteFavorites(username: string, kids: string[]) {
 	try {
 		profile('deleteFavorites');
+		username = username.toLowerCase();
 		await removeFavorites(kids, username);
 		if (username.includes('@') && getConfig().Online.Users) {
 			manageFavoriteInInstanceBatch('DELETE', username, kids);
@@ -124,6 +126,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 }
 
 export async function exportFavorites(username: string) {
+	username = username.toLowerCase();
 	const favs = await getFavorites({
 		username: username,
 		filter: null,
@@ -152,6 +155,7 @@ export async function exportFavorites(username: string) {
 }
 
 export async function importFavorites(favs: FavExport, username: string) {
+	username = username.toLowerCase();
 	if (favs.Header.version !== 1) throw {code: 400, msg: 'Incompatible favorites version list'};
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw {code: 400, msg: 'Not a favorites list'};
 	if (!Array.isArray(favs.Favorites)) throw {code: 400, msg: 'Favorites item is not an array'};

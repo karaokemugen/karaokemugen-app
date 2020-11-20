@@ -107,13 +107,13 @@ export default function favoritesController(router: SocketIOApp) {
 		try {
 			if (req?.body?.mini) {
 				return await selectFavoritesMicro({
-					username: req.token.username,
+					username: req.token.username.toLowerCase(),
 					from: +req.body?.from || 0,
 					size: +req.body?.size || 9999999
 				});
 			} else {
 				return await getFavorites({
-					username: req.token.username,
+					username: req.token.username.toLowerCase(),
 					filter: req.body?.filter,
 					lang: req.langs,
 					from: +req.body?.from || 0,

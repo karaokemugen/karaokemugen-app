@@ -87,6 +87,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	renameUser: false,
 	noPasswordCheck: false
 }) {
+	username = username.toLowerCase();
 	try {
 		const currentUser = await findUserByName(username);
 		if (!currentUser) throw {code: 404, msg: 'USER_NOT_EXISTS'};
@@ -190,6 +191,8 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 export async function findUserByName(username: string, opt = {
 	public: false
 }): Promise<User> {
+	if (!username) throw('No user provided');
+	username = username.toLowerCase();
 	//Check if user exists in db
 	const userdata = await DBGetUser(username);
 	if (userdata) {
@@ -335,6 +338,8 @@ async function newUserIntegrityChecks(user: User) {
 export async function deleteUser(username: string) {
 	try {
 		if (username === 'admin') throw {code: 406, msg:  'USER_DELETE_ADMIN_DAMEDESU', details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
+		if (!username) throw('No user provided');
+		username = username.toLowerCase();
 		const user = await findUserByName(username);
 		if (!user) throw {code: 404, msg: 'USER_NOT_EXISTS'};
 		//Reassign karas and playlists owned by the user to the admin user
@@ -541,6 +546,7 @@ async function cleanupAvatars() {
 /** Update song quotas for a user */
 export async function updateSongsLeft(username: string, playlist_id?: number) {
 	const conf = getConfig();
+	username = username.toLowerCase();
 	const user = await findUserByName(username);
 	let quotaLeft: number;
 	if (!playlist_id) playlist_id = getState().publicPlaylistID;
