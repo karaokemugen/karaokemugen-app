@@ -4,11 +4,11 @@
   "private": true,
   "dependencies": {
     "@cospired/i18n-iso-languages": "^2.1.2",
-    "@fingerprintjs/fingerprintjs": "3.0.1",
-    "@sentry/integrations": "^5.27.1",
-    "@sentry/react": "^5.27.1",
-    "antd": "4.7.2",
-    "i18next": "^19.8.3",
+    "@fingerprintjs/fingerprintjs": "3.0.3",
+    "@sentry/integrations": "^5.27.4",
+    "@sentry/react": "^5.27.4",
+    "antd": "4.8.4",
+    "i18next": "^19.8.4",
     "i18next-browser-languagedetector": "^6.0.1",
     "lodash.debounce": "^4.0.8",
     "minireset.css": "^0.0.6",
@@ -24,19 +24,19 @@
     "react-virtualized": "^9.22.2",
     "resize-observer-polyfill": "^1.5.1",
     "sass": "^1.29.0",
-    "socket.io-client": "3.0.0"
+    "socket.io-client": "3.0.3"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@types/lodash.debounce": "^4.0.6",
-    "@types/react": "16.9.53",
-    "@types/react-aria-menubutton": "^6.2.5",
-    "@types/react-dom": "16.9.8",
+    "@types/react": "16.14.0",
+    "@types/react-aria-menubutton": "^6.2.7",
+    "@types/react-dom": "16.9.9",
     "@types/react-router": "5.1.8",
     "@types/react-router-dom": "5.1.6",
     "@types/react-virtualized": "^9.21.10",
     "react-scripts": "4.0.0",
-    "typescript": "4.0.5"
+    "typescript": "4.1.2"
   },
   "resolutions": {
     "**/@typescript-eslint/eslint-plugin": "^4.1.1",
