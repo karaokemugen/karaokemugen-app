@@ -57,7 +57,7 @@ describe('Users', () => {
 		const data = await commandBackend(token, 'getUsers');
 		expect(data).to.be.an('array');
 		expect(data.length).to.be.at.least(1);
-		expect(data.some((u: User) => u.login === 'BakaToTest' && u.type === 1)).to.be.true;
+		expect(data.some((u: User) => u.login === 'bakatotest' && u.type === 1)).to.be.true;
 		// Test all users info
 		for (const user of data) {
 			testUser(user);

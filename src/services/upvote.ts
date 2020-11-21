@@ -16,6 +16,7 @@ export function vote(plc_id: number, username: string, downvote: boolean) {
 /** Upvotes a song */
 export async function addUpvote(plc_id: number, username: string) {
 	try {
+		username = username.toLowerCase();
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
 		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'UPVOTE_FAILED'};
@@ -40,6 +41,7 @@ export async function addUpvote(plc_id: number, username: string) {
 /** Downvote a song */
 export async function deleteUpvote(plc_id: number, username: string) {
 	try {
+		username = username.toLowerCase();
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
 		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'DOWNVOTE_FAILED'};

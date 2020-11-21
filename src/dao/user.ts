@@ -110,6 +110,7 @@ export function resetGuestsPassword() {
 }
 
 export function updateUserLastLogin(username: string) {
+	username = username.toLowerCase();
 	newDBTask({
 		func: updateUserLastLoginTask,
 		args: [username],
@@ -132,16 +133,19 @@ export function updateUserPassword(username: string, password: string) {
 }
 
 export function getRemoteToken(username: string): RemoteToken {
+	username = username.toLowerCase();
 	const index = findRemoteToken(username);
 	if (index > -1) return remoteTokens[index];
 	return undefined;
 }
 
 function findRemoteToken(username: string): number {
+	username = username.toLowerCase();
 	return remoteTokens.findIndex(rt => rt.username === username);
 }
 
 export function upsertRemoteToken(username: string, token: string) {
+	username = username.toLowerCase();
 	const index = findRemoteToken(username);
 	index > -1
 		? remoteTokens[index] = {username, token}

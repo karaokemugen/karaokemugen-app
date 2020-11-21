@@ -250,6 +250,7 @@ export function getUsersFetched() {
 
 /** Converts a online user to a local one by removing its online account from KM Server */
 export async function removeRemoteUser(token: Token, password: string): Promise<SingleToken> {
+	token.username = token.username.toLowerCase();
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
 	// Verify that no local user exists with the name we're going to rename it to
@@ -277,6 +278,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 
 /** Converting a local account to a online one.	*/
 export async function convertToRemoteUser(token: Token, password: string , instance: string): Promise<Tokens> {
+	token.username = token.username.toLowerCase();
 	if (token.username === 'admin') throw {code: 'ADMIN_CONVERT_ERROR'};
 	const user = await findUserByName(token.username);
 	if (!user) throw {msg: 'UNKNOW_CONVERT_ERROR'};
