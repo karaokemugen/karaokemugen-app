@@ -1,6 +1,6 @@
 import { pg as yesql } from 'yesql';
 
-import { db } from '../lib/dao/database';
+import {db, paramWords} from '../lib/dao/database';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { Tag, TagAndType,TagParams } from '../lib/types/tag';
 import { WhereClause } from '../lib/types/database';
@@ -36,7 +36,7 @@ function buildTagClauses(words: string): WhereClause {
 	const sql = ['search_vector @@ query'];
 	return {
 		sql: sql,
-		params: {tsquery: words},
+		params: {tsquery: paramWords(words).join(' & ')},
 		additionalFrom: [', plainto_tsquery(\'public.unaccent_conf\', :tsquery) as query, ts_rank_cd(search_vector, query) as relevance']
 	};
 }
