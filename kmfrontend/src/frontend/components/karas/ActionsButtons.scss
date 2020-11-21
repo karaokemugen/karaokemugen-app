@@ -1,0 +1,13 @@
+@import '../../styles/variables';
+
+@media (max-width: $mugen-breakpoint-large) {
+	.karaLineButton {
+		width: 4em;
+		height: 4em;
+		font-size: 1.25em;
+	}
+}
+
+.currentUpvote {
+	color: firebrick;
+}

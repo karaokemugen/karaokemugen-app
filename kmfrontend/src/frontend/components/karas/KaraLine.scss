@@ -1,0 +1,182 @@
+@import '../../styles/variables';
+
+.list-group-item {
+	background-color: $mugen-playlist-odd;
+	&.dejavu {
+		background-color: $mugen-playlist-dejavu-odd;
+		&.list-group-item-even {
+			background-color: $mugen-playlist-dejavu-even;
+		}
+	}
+	&.currentlyplaying {
+		background-color: $mugen-playlist-currently-playing;
+	}
+	&.list-group-item-even.currentlyplaying {
+		background-color: $mugen-playlist-currently-playing;
+	}
+	&.list-group-item-even {
+		background-color: $mugen-playlist-even;
+	}
+	z-index: 20;
+	overflow: auto;
+	padding: .5em;
+	line-height: 1.5rem;
+	transition: background-color 250ms ease;
+	display: flex;
+	flex-wrap: nowrap;
+	#playlist1 & {
+		flex-direction: row-reverse;
+	}
+	@media screen and (max-width: $mugen-breakpoint-large) {
+		flex-wrap: wrap;
+	}
+
+	&.marker {
+		border-bottom: 0.25em black solid;
+		border-bottom-right-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+
+	.list-group-item.marker.green {
+		border-bottom-color: forestgreen;
+	}
+
+	.img-circle {
+		width: 100%;
+		height: 100%;
+		max-width: 2em;
+		max-height: 2em;
+		border-radius: 10%;
+		float: right;
+		display: block;
+		margin: 0 .25em;
+		user-select: none;
+		&.mobile {
+			max-width: 4em;
+			max-height: 4em;
+			margin: 0.25em;
+		}
+	}
+	// .actionDiv: profile picture of the requester and remove/add/actions buttons
+	.actionDiv {
+		display: flex;
+		flex-direction: row;
+		flex: 0 0 auto;
+		align-items: center;
+		button {
+			z-index: 52;
+			position: relative;
+		}
+		// .dragHandle: in playlists, the three-dot handle to drag (provided by react-sortable-hoc)
+		.dragHandle {
+			padding-left: .5em;
+			padding-right: .5em;
+			align-self: center;
+			cursor: move;
+		}
+	}
+	// .contentDiv: karaTitle and tags
+	> .contentDiv {
+		padding: .25em .5em;
+		overflow: auto;
+		display: flex;
+		flex-wrap: wrap;
+		flex: 1 1 auto;
+	}
+	&:not(.liTag) > .contentDiv {
+		cursor: zoom-in;
+	}
+	> .contentDivMobile {
+		&.problematic {
+			color: orange;
+		}
+		flex-direction: column;
+		display: flex;
+		> * {
+			flex: 0 0 auto !important;
+		}
+		.contentDivMobileSerie {
+			font-weight: bold;
+		}
+		.contentDivMobileTitle {
+			font-style: italic;
+		}
+	}
+	// Overrides, original tagConteneur in styles/components/tags.scss
+	.tagConteneur {
+		margin-left: auto;
+		display: flex;
+		align-items: end;
+		&.mobile {
+			margin: 0;
+			flex-wrap: wrap;
+			.tag {
+				margin-bottom: .4em;
+			}
+			width: 100%;
+		}
+		.tag {
+			padding: 0 .25em;
+			margin-bottom: 0;
+		}
+	}
+	// .checkboxKara: checkbox for bulk selection in admin interface
+	.checkboxKara {
+		padding: .25em;
+		font-size: 1.25em;
+		float: right;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	&.dragged {
+		border: none;
+		z-index: 200;
+		position: absolute;
+		width: auto;
+		> div {
+			border: solid 1px #595959;
+			width: auto;
+			background-color: #222;
+		}
+	}
+
+	.upvoteKara:disabled {
+		color: grey;
+		cursor: not-allowed;
+	}
+}
+
+.marker-label {
+	background: black;
+	&.green {
+		background: forestgreen;
+	}
+	color: white;
+	padding: 0.2em;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, -60%);
+	z-index: 999999999;
+	font-size: small;
+	font-weight: 600;
+}
+
+.upvoteCount {
+	color: #aaa;
+	margin-left: .25em;
+	background-color: #212831;
+	padding: 0 .5em;
+	text-align: center;
+	font-weight: bold;
+	border-radius: 10%;
+}
+.upvoteCount > i {
+	font-size: 88%;
+	margin-right: .5em;
+}
+
+.disable-select {
+	user-select: none;
+}

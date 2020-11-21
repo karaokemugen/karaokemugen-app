@@ -1,0 +1,79 @@
+@import '../variables';
+
+.settings-page {
+	overflow-y: scroll;
+}
+
+.settings-panel {
+	width: 75vw;
+	margin: auto;
+}
+
+@media screen and (max-width: $mugen-breakpoint-small) {
+	.settings-panel {
+		width: 100%;
+		margin: 0;
+	}
+}
+
+.settings-line {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.75em;
+	background-color: $mugen-playlist-odd;
+}
+
+.settings-line:nth-child(even) {
+	background-color: $mugen-playlist-even;
+}
+
+#manage, #manage > .panel  {
+	height: 100%;
+}
+#manage > .panel {
+	overflow: auto;
+	background-color: transparent;
+}
+.subCategoryGroupPanel {
+	background-color: #41485e61;
+	border: solid #585b65;
+	border-width: 1px 0px;
+	padding: 0.75em;
+}
+
+#settings {
+	background-color: #2d2d2f;
+	padding: 0;
+}
+.settingsGroupPanel {
+	border-left: 5px solid #ffffff40;
+	min-height: 20px;
+	margin-bottom: 10px;
+
+	.control-label {
+		padding-left: 5em;
+	}
+}
+
+.systempanel-tooltip {
+	text-align: center;
+	a {
+		color: unset;
+		&:visited {
+			color: unset;
+		}
+	}
+	padding: 1em;
+}
+
+.input-number-options {
+	width: 5em;
+}
+
+.input-options {
+	color: #555;
+}
+
+.label-input-options {
+	margin: 0 .5em;
+}

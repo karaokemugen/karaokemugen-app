@@ -1,0 +1,105 @@
+import i18next from 'i18next';
+import { Dispatch } from 'react';
+
+import { commandBackend, setAuthorization } from '../../utils/socket';
+import { displayMessage } from '../../utils/tools';
+import { AuthAction, IAuthenticationVerification, IAuthentifactionInformation, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
+import { SettingsFailure, SettingsSuccess } from '../types/settings';
+import { setSettings } from './settings';
+
+export async function login(
+	username: string,
+	password: string,
+	dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure>,
+	securityCode?: number
+): Promise<string> {
+	try {
+		const info: IAuthentifactionInformation = await commandBackend(username ? 'login' : 'loginGuest', {
+			username,
+			password,
+			fingerprint : password,
+			securityCode
+		});
+
+		// Store data, should be managed in a service and item should be enum and not string
+		localStorage.setItem('kmToken', info.token);
+		localStorage.setItem('kmOnlineToken', info.onlineToken);
+		setAuthorization(info.token, info.onlineToken);
+		displayMessage('info', i18next.t('LOG_SUCCESS', { name: info.username }));
+		dispatch({
+			type: AuthAction.LOGIN_SUCCESS,
+			payload: info
+		});
+		await setSettings(dispatch);
+		return info.role;
+	} catch (error) {
+		dispatch({
+			type: AuthAction.LOGIN_FAILURE,
+			payload: {
+				error: error.message ? error.message : error.toString()
+			}
+		});
+		throw error;
+	}
+}
+
+export function logout(dispatch: Dispatch<LogoutUser>): void {
+	localStorage.removeItem('kmToken');
+	localStorage.removeItem('kmOnlineToken');
+	setAuthorization(null, null);
+
+	dispatch({
+		type: AuthAction.LOGOUT_USER
+	});
+}
+
+export function setAuthentifactionInformation(dispatch: Dispatch<LoginSuccess | SettingsSuccess | SettingsFailure>, data: IAuthentifactionInformation) {
+	// Store data, should be managed in a service and item should be enum and not string
+	localStorage.setItem('kmToken', data.token);
+	localStorage.setItem('kmOnlineToken', data.onlineToken);
+	setAuthorization(data.token, data.onlineToken);
+
+	dispatch({
+		type: AuthAction.LOGIN_SUCCESS,
+		payload: {
+			username: data.username,
+			role: data.role,
+			token: data.token,
+			onlineToken: data.onlineToken
+		}
+	});
+	setSettings(dispatch);
+}
+
+export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | LogoutUser>) {
+	const kmToken = localStorage.getItem('kmToken');
+	const kmOnlineToken = localStorage.getItem('kmOnlineToken');
+	setAuthorization(kmToken, kmOnlineToken);
+
+	if (kmToken) {
+		try {
+			const verification: IAuthenticationVerification = await commandBackend('checkAuth', undefined, false, 30000);
+			dispatch({
+				type: AuthAction.LOGIN_SUCCESS,
+				payload: {
+					username: verification.username,
+					role: verification.role,
+					token: kmToken,
+					onlineToken: kmOnlineToken
+				}
+			});
+			await setSettings(dispatch);
+		} catch (error) {
+			logout(dispatch);
+			dispatch({
+				type: AuthAction.LOGIN_FAILURE,
+				payload: {
+					error: error
+				}
+			});
+			await setSettings(dispatch, true);
+		}
+	} else {
+		await setSettings(dispatch, true);
+	}
+}
