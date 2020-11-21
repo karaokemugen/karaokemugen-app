@@ -1,6 +1,6 @@
 [submodule "src/lib"]
 	path = src/lib
-	url = ../lib.git
+	url = ../lib
 [submodule "kmfrontend"]
 	path = kmfrontend
-	url = ../km-frontend.git
+	url = https://lab.shelter.moe/karaokemugen/km-frontend.git
