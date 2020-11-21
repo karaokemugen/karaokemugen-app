@@ -22,10 +22,10 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 			const t1 = performance.now();
 			console.log(name, `${t1 - t0}ms` , body, data);
 			if (loading) eventEmitter.emitChange('loading', false);
-			if (data?.message?.code && typeof data.data !== 'object') {
-				err ?
-					displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, {data: data.data})) :
-					displayMessage('success', i18next.t(`SUCCESS_CODES.${data.message.code}`, {data: data.data}));
+			if (!err && data?.code && typeof data.data !== 'object') {
+				displayMessage('success', i18next.t(`SUCCESS_CODES.${data.code}`, {data: data.data}));
+			} else if (err && data?.message?.code && typeof data.data !== 'object') {
+				displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, {data: data.data}));
 			}
 			err ? reject(data) : resolve(data);
 		});
