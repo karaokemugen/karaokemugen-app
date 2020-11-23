@@ -39,17 +39,18 @@
     "typescript": "4.1.2",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-simple-import-sort": "^6.0.1",
-    "eslint-plugin-you-dont-need-lodash-underscore": "^6.10.0"
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.10.0",
+    "cross-env": "^7.0.2"
   },
   "resolutions": {
     "**/@typescript-eslint/eslint-plugin": "^4.1.1",
     "**/@typescript-eslint/parser": "^4.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts start",
+    "build": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts build",
+    "test": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts test --env=jsdom",
+    "eject": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts eject"
   },
   "proxy": "http://localhost:1337",
   "browserslist": [

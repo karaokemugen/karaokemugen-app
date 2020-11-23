@@ -106,7 +106,7 @@
 	.tagConteneur {
 		margin-left: auto;
 		display: flex;
-		align-items: end;
+		align-items: flex-end;
 		&.mobile {
 			margin: 0;
 			flex-wrap: wrap;

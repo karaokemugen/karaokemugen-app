@@ -2,7 +2,7 @@
 
 .tagConteneur {
 	display: flex;
-	align-items: start;
+	align-items: flex-start;
 	flex-wrap: wrap;
 	@media screen and (max-width: $mugen-breakpoint-large) {
 		margin: 0;
