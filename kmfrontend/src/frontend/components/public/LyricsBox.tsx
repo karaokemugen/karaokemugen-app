@@ -85,6 +85,10 @@ class LyricsBox extends Component<IProps, IState> {
 		this.fetchLyrics();
 	}
 
+	componentWillUnmount() {
+		getSocket().off('playerStatus', this.refreshTimePosition);
+	}
+
 	componentDidUpdate(prevProps: Readonly<IProps>) {
 		if (prevProps.kid !== this.props.kid) {
 			this.fetchLyrics();
