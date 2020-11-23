@@ -480,7 +480,10 @@ export async function initUserSystem() {
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	// Find admin users.
 	const users = await listUsers();
-	const adminUsers = users.filter(u => u.type === 0 && u.login !== 'admin');
+	const adminUsers = users
+		.filter(u => u.type === 0 && u.login !== 'admin')
+		// Sort by last login at in descending order.
+		.sort((a, b) => (a.last_login_at < b.last_login_at) ? 1 : -1);
 	logger.debug('Admin users', {service: 'User', obj: JSON.stringify(adminUsers)});
 	sentry.setUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
 }
