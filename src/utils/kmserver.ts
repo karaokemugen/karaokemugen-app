@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 
 import { APIData } from '../lib/types/api';
-import {getConfig} from '../lib/utils/config';
+import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 
 let socket: Socket;
@@ -41,7 +41,7 @@ export function getKMServerSocket() {
 	return socket;
 }
 
-export function commandKMServer(name: string, data: APIData, timeout = 5000): Promise<any> {
+export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout = 5000): Promise<any> {
 	return new Promise((resolve, reject) => {
 		const nodeTimeout = setTimeout(() => {
 			reject(new Error('Request timed out'));
