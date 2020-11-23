@@ -413,7 +413,7 @@ async function createDefaultGuests() {
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
-		if (!guests.find(g => g.login === guest)) guestsToCreate.push(guest);
+		if (!guests.find(g => g.login === guest.toLowerCase())) guestsToCreate.push(guest);
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getState().isTest) maxGuests = 1;
