@@ -2,6 +2,7 @@ import { QueryResult } from 'pg';
 import {pg as yesql} from 'yesql';
 
 import {buildClauses, db, transaction} from '../lib/dao/database';
+import { WhereClause } from '../lib/types/database';
 import {getConfig} from '../lib/utils/config';
 import {now} from '../lib/utils/date';
 import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
@@ -120,11 +121,12 @@ export async function getPlaylistContentsMini(id: number): Promise<DBPLC[]> {
 }
 
 export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
-	const filterClauses = params.filter ? buildClauses(params.filter, true) : {sql: [], params: {}};
+	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, true, false) : {sql: [], params: {}, additionalFrom: []};
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = 'pc.pos';
 	let whereClause = '';
+	const groupClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	if (+params.random > 0) {
@@ -136,7 +138,8 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		)`;
 		orderClause = 'RANDOM()';
 	}
-	const query = sqlgetPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause);
+	const query = sqlgetPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause,
+		groupClause, filterClauses.additionalFrom.join(''));
 	const res = await db().query(yesql(query)({
 		playlist_id: params.playlist_id,
 		username: params.username,

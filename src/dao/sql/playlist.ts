@@ -118,7 +118,8 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos, pc.created_at DESC
 `;
 
-export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string) => `
+export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string,
+									   groupClause: string, additionalFrom: string) => `
 SELECT
   ak.kid AS kid,
   ak.title AS title,
@@ -186,10 +187,14 @@ LEFT OUTER JOIN favorites f ON f.fk_kid = ak.kid AND f.fk_login = :username
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
 LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
+${additionalFrom}
 WHERE pc.fk_id_playlist = :playlist_id
-  ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+  ${filterClauses.map(clause => 'AND (' + clause + ')').join(' ')}
   ${whereClause}
-GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes,
+         ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres,
+         ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname,
+         pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository${groupClause}
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
