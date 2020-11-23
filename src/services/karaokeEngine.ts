@@ -167,7 +167,7 @@ export async function playerEnding() {
 			const playlist = await getPlaylistContentsMini(state.currentPlaylistID);
 			const previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
 			if (previousSongIndex >= 0) {
-				const previousSong = playlist.find[previousSongIndex];
+				const previousSong = playlist[previousSongIndex];
 				state.usersBalance.add(previousSong.username);
 
 				const remainingSongs = playlist.length - previousSongIndex - 1;
