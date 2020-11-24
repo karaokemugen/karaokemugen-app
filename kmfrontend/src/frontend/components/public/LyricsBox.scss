@@ -26,6 +26,12 @@
 		text-align: center;
 		> div {
 			transition: font-size, color, margin ease 200ms,200ms,200ms;
+			&.hidden {
+				font-size: 0;
+			}
+			&.greyed {
+				color: lighten($mugen-background, 75);
+			}
 			&.current {
 				font-size: 1.25em;
 				font-weight: bold;

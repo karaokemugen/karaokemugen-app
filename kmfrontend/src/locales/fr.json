@@ -180,6 +180,8 @@
 		"NOW_PLAYING": "En ce moment",
 		"NEXT": "À suivre",
 		"SHOW_LYRICS": "Afficher les paroles",
+		"SHOW_ALL_LYRICS": "Afficher toutes les paroles",
+		"HIDE_LYRICS": "Masquer les paroles",
 		"OPEN_POLL": "Voter pour la prochaine chanson",
 		"PUBLIC_SUGGESTIONS": "Suggestions du public",
 		"FAVORIS": "Favoris",
