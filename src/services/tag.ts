@@ -2,7 +2,6 @@ import { dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, removeTagInStore, sortTagsStore } from '../dao/dataStore';
-import { replaceTagInKaras } from '../dao/karafile';
 import { getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini, updateKaraTagsTID, updateTag } from '../dao/tag';
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
@@ -10,7 +9,7 @@ import { refreshKaras } from '../lib/dao/kara';
 import { refreshKaraTags, refreshTags } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
 import { DBTag } from '../lib/types/database/tag';
-import { IDQueryResult, Kara } from '../lib/types/kara';
+import { IDQueryResult, Kara, KaraList } from '../lib/types/kara';
 import { Tag,TagParams } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
@@ -20,6 +19,7 @@ import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getAllKaras } from './kara';
+import { editKara } from './kara_creation';
 import { getRepo } from './repo';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
@@ -321,4 +321,24 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 		sentry.error(new Error(err));
 		throw err;
 	}
+}
+
+export async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: KaraList): Promise<string[]> {
+	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, {service: 'Kara'});
+	const modifiedKaras: string[] = [];
+	for (const kara of karas.content) {
+		let modifiedKara = false;
+		kara.modified_at = new Date();
+		for (const type of Object.keys(tagTypes)) {
+			if (kara[type]?.find((t: DBTag) => t.tid === oldTID1) || kara[type]?.find((t: DBTag) => t.tid === oldTID2)) {
+				kara[type] = kara[type].filter((t: any) => t.tid !== oldTID1 && t.tid !== oldTID2);
+				kara[type].push(newTag);
+				modifiedKara = true;
+			}
+		}
+		if (modifiedKara) {
+			await editKara(kara, false);
+		}
+	}
+	return modifiedKaras;
 }
