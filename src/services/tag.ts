@@ -147,6 +147,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
 		await addTagToStore(newTagFiles);
 		sortTagsStore();
+		const karas = await getAllKaras();
 		await Promise.all([
 			updateKaraTagsTID(tid1, tagObj.tid),
 			updateKaraTagsTID(tid2, tagObj.tid)
@@ -159,8 +160,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid1),
 			removeTagInStore(tid2)
 		]);
-		const karas = await getAllKaras();
-		const modifiedKaras = await replaceTagInKaras(tid1, tid2,tagObj.tid, karas);
+		const modifiedKaras = await replaceTagInKaras(tid1, tid2, tagObj, karas);
 		for (const kara of modifiedKaras) {
 			await editKaraInStore(kara);
 		}

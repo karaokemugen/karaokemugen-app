@@ -1,9 +1,9 @@
 import { pg as yesql } from 'yesql';
 
 import {db, paramWords} from '../lib/dao/database';
+import { WhereClause } from '../lib/types/database';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { Tag, TagAndType,TagParams } from '../lib/types/tag';
-import { WhereClause } from '../lib/types/database';
 import { sqldeleteTag,sqldeleteTagsByKara, sqlgetAllTags, sqlgetTag, sqlgetTagByNameAndType, sqlgetTagMini, sqlinsertKaraTags, sqlinsertTag, sqlselectDuplicateTags, sqlupdateKaraTagsTID, sqlupdateTag } from './sql/tag';
 
 export async function selectTag(id: string): Promise<Tag> {
