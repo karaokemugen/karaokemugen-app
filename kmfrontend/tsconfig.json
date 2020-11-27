@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-	"inlineSources": true,
-	"sourceRoot": "/",
-	"target": "es6",
+    "inlineSources": true,
+    "sourceRoot": "/",
+    "target": "es6",
     "jsx": "react",
     "module": "esnext",
     "moduleResolution": "node",
@@ -12,7 +12,7 @@
     "declaration": false,
     "noImplicitAny": false,
     "noImplicitReturns": false,
-	"noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true,
     "removeComments": true,
     "strictNullChecks": false,
     "outDir": "build",

@@ -57,6 +57,7 @@ function checkAuthPresence(data: APIData) {
 
 export async function checkValidUser(token: { username: string, role: string }, onlineToken: string): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
+	token.username = token.username.toLowerCase();
 	const user = await findUserByName(token.username);
 	if (user) {
 		if (token.role === 'admin' && user.type > 0) throw APIMessage('ADMIN_PLEASE');

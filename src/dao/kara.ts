@@ -34,8 +34,8 @@ export async function updateKara(kara: Kara) {
 		title: kara.title,
 		year: kara.year,
 		songorder: kara.songorder || null,
-		duration: kara.mediaduration || kara.duration,
-		gain: kara.mediagain || kara.gain,
+		duration: kara.duration,
+		gain: kara.gain,
 		modified_at: kara.modified_at,
 		kid: kara.kid
 	}));
@@ -50,8 +50,8 @@ export async function addKara(kara: Kara) {
 		title: kara.title,
 		year: kara.year,
 		songorder: kara.songorder || null,
-		duration: kara.mediaduration,
-		gain: kara.mediagain,
+		duration: kara.duration,
+		gain: kara.gain,
 		modified_at: kara.modified_at,
 		created_at: kara.created_at,
 		kid: kara.kid,

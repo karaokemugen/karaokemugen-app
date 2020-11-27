@@ -44,7 +44,7 @@
 	"ADMIN_PASSWORD_CHANGE": "Changer le mot de passe opérateur",
 	"PASSWORD": "Mot de passe (8 caractères minimum)",
 	"PASSWORDCONF": "Confirmation du mot de passe",
-	"NEW_PASSWORD": "Nouveau mdp",
+	"NEW_PASSWORD": "Nouveau mot de passe",
 	"MONITOR_NUMBER": "Ecran sur lequel afficher la vidéo (plein écran)",
 	"VIDEO_SIZE": "Taille du lecteur (fenêtré)",
 	"VIDEO_SIZE_TOOLTIP": "Affecte uniquement le mode fenêtré",
@@ -180,6 +180,8 @@
 		"NOW_PLAYING": "En ce moment",
 		"NEXT": "À suivre",
 		"SHOW_LYRICS": "Afficher les paroles",
+		"SHOW_ALL_LYRICS": "Afficher toutes les paroles",
+		"HIDE_LYRICS": "Masquer les paroles",
 		"OPEN_POLL": "Voter pour la prochaine chanson",
 		"PUBLIC_SUGGESTIONS": "Suggestions du public",
 		"FAVORIS": "Favoris",
@@ -589,7 +591,8 @@
 		"SINGERS_BY": "Chanté par",
 		"SONGWRITERS_BY": "Composé par",
 		"CREATORS_BY": "Créé par",
-		"AUTHORS_BY": "Karaoké créé par"
+		"AUTHORS_BY": "Karaoké créé par",
+		"DELETE_KARA": "Supprimer le karaoké ?"
 	},
 	"MENU": {
 		"HOME": "Home",

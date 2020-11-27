@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 
+import {selectFavoritesMicro} from '../../dao/favorites';
 import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
@@ -104,13 +105,21 @@ export default function favoritesController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'user', 'limited');
 		try {
-			return await getFavorites({
-				username: req.token.username,
-				filter: req.body?.filter,
-				lang: req.langs,
-				from: +req.body?.from || 0,
-				size: +req.body?.size || 9999999
-			});
+			if (req?.body?.mini) {
+				return await selectFavoritesMicro({
+					username: req.token.username.toLowerCase(),
+					from: +req.body?.from || 0,
+					size: +req.body?.size || 9999999
+				});
+			} else {
+				return await getFavorites({
+					username: req.token.username.toLowerCase(),
+					filter: req.body?.filter,
+					lang: req.langs,
+					from: +req.body?.from || 0,
+					size: +req.body?.size || 9999999
+				});
+			}
 		} catch(err) {
 			const code = 'FAVORITES_VIEW_ERROR';
 			errMessage(code, err);

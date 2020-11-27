@@ -68,8 +68,8 @@
 				font-size: 1.1em;
 				text-overflow: ellipsis;
 			}
+			margin-bottom: .5em;
 		}
-		margin-bottom: .5em;
 	}
 	> .timers {
 		display: flex;
@@ -91,6 +91,21 @@
 			transition: width linear .5s;
 			background-color: white;
 			border-radius: inherit;
+		}
+	}
+	.favorites {
+		background-color: darken(map-get($mugen-colors, "yellow"), 10);
+		width: max-content;
+		margin: .5em 0;
+		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+		box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+		transition: background-color 200ms linear;
+		border: 0;
+		> i {
+			margin-right: .25em;
+		}
+		&:hover {
+			background-color: darken(map-get($mugen-colors, "yellow"), 15);
 		}
 	}
 	&.fixed {

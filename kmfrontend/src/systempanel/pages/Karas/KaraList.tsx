@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Layout, Table } from 'antd';
+import { Button, Divider, Input, Layout, Modal, Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -53,6 +53,18 @@ class KaraList extends Component<unknown, KaraListState> {
 		this.setState({ filter: event.target.value, currentPage: 1 });
 		localStorage.setItem('karaPage', '1');
 		localStorage.setItem('karaFilter', event.target.value);
+	}
+
+	confirmDeleteKara = (kara) => {
+		Modal.confirm({
+			title: i18next.t('KARA.DELETE_KARA'),
+			okText: i18next.t('YES'),
+			cancelText: i18next.t('NO'),
+			onOk: (close) => {
+				close();
+				this.deleteKara(kara);
+			}
+		  });
 	}
 
 	deleteKara = async (kara) => {
@@ -155,7 +167,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			<Link to={`/system/km/karas/${record.kid}`}><EditOutlined /></Link>
 			<Divider type="vertical" />
 			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
-				icon={<DeleteOutlined />} onClick={() => this.deleteKara(record)}></Button>
+				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)}></Button>
 		</span>)
 	}];
 }

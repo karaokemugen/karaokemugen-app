@@ -40,7 +40,7 @@ class KmAppWrapperDecorator extends Component<IProps, IState> {
 	componentDidMount() {
 		this.resizeCheck();
 		window.addEventListener('resize', this.resizeCheck);
-		if (this.props.single && !is_touch_device()) {
+		if (this.props.single) {
 			document.getElementsByTagName('body')[0].setAttribute('class', 'forceScroll');
 		}
 	}

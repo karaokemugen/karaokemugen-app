@@ -374,7 +374,19 @@ class Player {
 	async start() {
 		this.bindEvents();
 		await retry(async () => {
-			await this.mpv.start().catch(err => {
+			try {
+				await this.mpv.start();
+				const promises = [];
+				promises.push(this.mpv.observeProperty('pause'));
+				if (!this.options.monitor) {
+					promises.push(this.mpv.observeProperty('eof-reached'));
+					promises.push(this.mpv.observeProperty('playback-time'));
+					promises.push(this.mpv.observeProperty('mute'));
+					promises.push(this.mpv.observeProperty('volume'));
+				}
+				await Promise.all(promises);
+				return true;
+			} catch(err) {
 				if (err.message === 'MPV is already running') {
 					// It's already started!
 					logger.warn('A start command was executed, but the player is already running. Not normal.', {service: 'Player'});
@@ -382,15 +394,7 @@ class Player {
 					return;
 				}
 				throw err;
-			});
-			if (!this.options.monitor) {
-				this.mpv.observeProperty('eof-reached');
-				this.mpv.observeProperty('playback-time');
-				this.mpv.observeProperty('mute');
-				this.mpv.observeProperty('volume');
 			}
-			this.mpv.observeProperty('pause');
-			return true;
 		}, {
 			retries: 3,
 			onFailedAttempt: error => {

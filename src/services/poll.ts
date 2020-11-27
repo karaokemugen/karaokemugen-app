@@ -156,7 +156,7 @@ export function addPollVote(index: number, token: Token) {
 		code: 404,
 		msg: 'POLL_VOTE_ERROR'
 	};
-	if (voters.has(token.username)) throw {
+	if (voters.has(token.username.toLowerCase())) throw {
 		code: 429,
 		msg: 'POLL_USER_ALREADY_VOTED'
 	};
@@ -171,7 +171,7 @@ export function addPollVote(index: number, token: Token) {
 		code: 'POLL_VOTE_ERROR',
 		message: 'This song is not in the poll'
 	};
-	voters.add(token.username);
+	voters.add(token.username.toLowerCase());
 	if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
 	emitWS('songPollUpdated', poll);
 	return {
@@ -273,7 +273,7 @@ export function getPoll(token: Token, from: number, size: number) {
 		},
 		poll: poll,
 		timeLeft: clock.getTimeLeft(),
-		flag_uservoted: voters.has(token.username)
+		flag_uservoted: voters.has(token.username.toLowerCase())
 	};
 }
 

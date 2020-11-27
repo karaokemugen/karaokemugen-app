@@ -202,7 +202,7 @@ export async function updateBase(repo: string) {
 }
 
 function waitForUpdateQueueToFinish() {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		once('downloadQueueDrained', () => {
 			resolve();
 		});

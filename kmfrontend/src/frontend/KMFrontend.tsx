@@ -20,7 +20,6 @@ interface IState {
 	shutdownPopup: boolean;
 
 	mediaFile?: string;
-	displaySetupPage: boolean;
 }
 
 class KMFrontend extends Component<unknown, IState> {
@@ -30,16 +29,11 @@ class KMFrontend extends Component<unknown, IState> {
 	constructor(props: unknown) {
 		super(props);
 		this.state = {
-			shutdownPopup: false,
-			displaySetupPage: false
+			shutdownPopup: false
 		};
 	}
 
 	async componentDidMount() {
-		await this.setState({
-			displaySetupPage: this.context?.globalState.settings.data.config?.App.FirstRun
-				&& this.context.globalState.auth.data.username === 'admin'
-		});
 		getSocket().on('connect', () => this.setState({ shutdownPopup: false }));
 		getSocket().on('disconnect', (reason: any) => {
 			if (reason === 'transport error') {
@@ -78,12 +72,8 @@ class KMFrontend extends Component<unknown, IState> {
 				this.context.globalState.settings.data.config ?
 					<div className={is_touch_device() ? 'touch' : ''}>
 						<Switch>
-							<Route path="/welcome" render={() =>
-								this.state.displaySetupPage ?
-									<SetupPage
-										endSetup={() => this.setState({ displaySetupPage: false })} /> :
-									<WelcomePage />
-							} />
+							<Route path="/setup" render={() => <SetupPage />} />
+							<Route path="/welcome" render={() => <WelcomePage />} />
 							<Route path="/admin" render={() => <AdminPage
 								powerOff={isElectron() ? undefined : this.powerOff}
 								 showVideo={this.showVideo} />} />

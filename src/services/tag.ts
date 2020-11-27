@@ -2,12 +2,13 @@ import { dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, removeTagInStore, sortTagsStore } from '../dao/dataStore';
-import {getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini,updateKaraTagsTID, updateTag} from '../dao/tag';
+import { replaceTagInKaras } from '../dao/karafile';
+import { getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini, updateKaraTagsTID, updateTag } from '../dao/tag';
+import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
-import { replaceTagInKaras } from '../lib/dao/karafile';
-import { refreshKaraTags,refreshTags } from '../lib/dao/tag';
-import { formatTagFile, getDataFromTagFile,removeTagFile, removeTagInKaras, writeTagFile } from '../lib/dao/tagfile';
+import { refreshKaraTags, refreshTags } from '../lib/dao/tag';
+import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
 import { DBTag } from '../lib/types/database/tag';
 import { IDQueryResult, Kara } from '../lib/types/kara';
 import { Tag,TagParams } from '../lib/types/tag';

@@ -18,8 +18,11 @@ import { addUser as DBAddUser,
 	getUser as DBGetUser,
 	listGuests as DBListGuests,
 	listUsers as DBListUsers,
+	lowercaseAllUsers,
+	mergeUserData,
 	reassignToUser as DBReassignToUser,
 	resetGuestsPassword as DBResetGuestsPassword,
+	selectAllDupeUsers,
 	updateExpiredUsers as DBUpdateExpiredUsers,
 	updateUserFingerprint as DBUpdateUserFingerprint,
 	updateUserLastLogin as DBUpdateUserLastLogin,
@@ -34,6 +37,7 @@ import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
+import { addToFavorites, getFavorites } from './favorites';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
 
 const userLoginTimes = new Map();
@@ -83,6 +87,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	renameUser: false,
 	noPasswordCheck: false
 }) {
+	username = username.toLowerCase();
 	try {
 		const currentUser = await findUserByName(username);
 		if (!currentUser) throw {code: 404, msg: 'USER_NOT_EXISTS'};
@@ -186,6 +191,8 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 export async function findUserByName(username: string, opt = {
 	public: false
 }): Promise<User> {
+	if (!username) throw('No user provided');
+	username = username.toLowerCase();
 	//Check if user exists in db
 	const userdata = await DBGetUser(username);
 	if (userdata) {
@@ -271,6 +278,7 @@ export async function createUser(user: User, opts: UserOpts = {
 	user.type = user.type || 1;
 	if (opts.admin) user.type = 0;
 	user.nickname = user.nickname || user.login;
+	user.login = user.login.toLowerCase();
 	user.last_login_at = new Date();
 	user.avatar_file = user.avatar_file || 'blank.png';
 	user.flag_online = user.flag_online || false;
@@ -330,6 +338,8 @@ async function newUserIntegrityChecks(user: User) {
 export async function deleteUser(username: string) {
 	try {
 		if (username === 'admin') throw {code: 406, msg:  'USER_DELETE_ADMIN_DAMEDESU', details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
+		if (!username) throw('No user provided');
+		username = username.toLowerCase();
 		const user = await findUserByName(username);
 		if (!user) throw {code: 404, msg: 'USER_NOT_EXISTS'};
 		//Reassign karas and playlists owned by the user to the admin user
@@ -403,7 +413,7 @@ async function createDefaultGuests() {
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
-		if (!guests.find(g => g.login === guest)) guestsToCreate.push(guest);
+		if (!guests.find(g => g.login === guest.toLowerCase())) guestsToCreate.push(guest);
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getState().isTest) maxGuests = 1;
@@ -470,7 +480,10 @@ export async function initUserSystem() {
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	// Find admin users.
 	const users = await listUsers();
-	const adminUsers = users.filter(u => u.type === 0 && u.login !== 'admin');
+	const adminUsers = users
+		.filter(u => u.type === 0 && u.login !== 'admin')
+		// Sort by last login at in descending order.
+		.sort((a, b) => (a.last_login_at < b.last_login_at) ? 1 : -1);
 	logger.debug('Admin users', {service: 'User', obj: JSON.stringify(adminUsers)});
 	sentry.setUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
 }
@@ -481,6 +494,7 @@ async function userChecks() {
 	await checkGuestAvatars();
 	await checkUserAvatars();
 	await cleanupAvatars();
+	await lowercaseMigration();
 }
 
 /** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */
@@ -535,6 +549,7 @@ async function cleanupAvatars() {
 /** Update song quotas for a user */
 export async function updateSongsLeft(username: string, playlist_id?: number) {
 	const conf = getConfig();
+	username = username.toLowerCase();
 	const user = await findUserByName(username);
 	let quotaLeft: number;
 	if (!playlist_id) playlist_id = getState().publicPlaylistID;
@@ -574,3 +589,59 @@ export async function generateAdminPassword(): Promise<string> {
 	return adminPassword;
 }
 
+export async function lowercaseMigration() {
+	// First get list of users with double names
+	const users = await selectAllDupeUsers();
+	if (users.length > 0) {
+		// So we have some users who're the same. Let's make a map
+		const duplicateUsers = new Map();
+		// Regroup users
+		for (const user of users) {
+			if (duplicateUsers.has(user.pk_login.toLowerCase())) {
+				const arr = duplicateUsers.get(user.pk_login.toLowerCase());
+				arr.push(user);
+				duplicateUsers.set(user.pk_login.toLowerCase(), arr);
+			} else {
+				duplicateUsers.set(user.pk_login.toLowerCase(), [user]);
+			}
+		}
+		// Now, let's decide what to do.
+		for (const [login, dupeUsers] of duplicateUsers.entries()) {
+			// First, is it online or local ?
+			if (login.includes('@')) {
+				// This case is simple, we keep the first one and delete the others.
+				// Profile and favorites will be redownloaded anyway.
+				// Remove first element of the users array, we'll keep this one.
+				dupeUsers.shift();
+				for (const user of dupeUsers) {
+					await deleteUser(user.pk_login);
+				}
+			} else {
+				// User is local only
+				// We take the first user since our SQL query should have ordered by number of favorites and last_login_at first.
+				// The only downside to this is the unlucky person who had alot of favorites, and created a second account later and didn't add all the old favorites he had. Poor guy.
+				const mainUser = dupeUsers[0].pk_login;
+				dupeUsers.shift();
+				// We need to merge their data with mainUser
+				for (const user of dupeUsers) {
+					// Special case for favorites since we may break the unique constraint if the two users had the same favorites.
+					const favs = await getFavorites({username: user.pk_login});
+					const favsToAdd = favs.content.map(f => f.kid);
+					const promises = [
+						mergeUserData(user.pk_login, mainUser),
+						addToFavorites(mainUser, favsToAdd)
+					];
+					await Promise.all(promises);
+					await deleteUser(user.pk_login);
+				}
+			}
+		}
+	}
+	// Let's pray this doesn't catch fire.
+	try {
+		await lowercaseAllUsers();
+	} catch(err) {
+		logger.error('Unable to lowercase all users', {service: 'User', obj: err});
+		sentry.error(err, 'Warning');
+	}
+}

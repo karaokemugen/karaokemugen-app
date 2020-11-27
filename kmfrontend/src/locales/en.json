@@ -158,6 +158,8 @@
 		"NOW_PLAYING": "Now playing",
 		"NEXT": "Next",
 		"SHOW_LYRICS": "Show Lyrics",
+		"SHOW_ALL_LYRICS": "Show All Lyrics",
+		"HIDE_LYRICS": "Hide Lyrics",
 		"OPEN_POLL": "Vote for the next song",
 		"PUBLIC_SUGGESTIONS": "Public suggestions",
 		"FAVORIS": "Favoris",
@@ -572,7 +574,8 @@
 		"SINGERS_BY": "Sung by",
 		"SONGWRITERS_BY": "Composed by",
 		"CREATORS_BY": "Created by",
-		"AUTHORS_BY": "Karaoke created by"
+		"AUTHORS_BY": "Karaoke created by",
+		"DELETE_KARA": "Delete karaoke?"
 	},
 	"MENU": {
 		"HOME": "Home",

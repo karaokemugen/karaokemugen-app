@@ -14,16 +14,24 @@
 		width: 100%;
 		cursor: pointer;
 		user-select: none;
+		font-size: 1.125em;
+		padding: 1em;
 	}
 	> .lyrics {
 		width: 100%;
 		background-color: lighten($mugen-background, 10);
 		padding: 1em;
-		margin: 0 1em;
+		margin: 0 .5em;
 		border-radius: 15px;
 		text-align: center;
 		> div {
 			transition: font-size, color, margin ease 200ms,200ms,200ms;
+			&.hidden {
+				font-size: 0;
+			}
+			&.greyed {
+				color: lighten($mugen-background, 75);
+			}
 			&.current {
 				font-size: 1.25em;
 				font-weight: bold;

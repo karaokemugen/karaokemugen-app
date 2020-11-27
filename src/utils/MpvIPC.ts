@@ -32,7 +32,7 @@ class Mpv extends EventEmitter {
 	}
 
 	private launchMpv() {
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			setTimeout(reject, 10000, new Error('Timeout')); // Set timeout to avoid hangs
 			const command = this.genCommand();
 			const program = spawn(command.binary, command.options, {stdio: ['ignore', 'pipe', 'pipe']});
@@ -68,7 +68,7 @@ class Mpv extends EventEmitter {
 	}
 
 	private setupSocket() {
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			this.socket.connect(this.socketlink, resolve);
 			this.socket.setEncoding('utf8');
 			this.socket.once('error', reject);

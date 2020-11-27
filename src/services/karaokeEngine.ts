@@ -163,22 +163,24 @@ export async function playerEnding() {
 		}
 
 		// Handle balance
-		if (state.player.mediaType === 'song') {
+		if (state.player.mediaType === 'song' && !state.singlePlay && !state.randomPlaying) {
 			const playlist = await getPlaylistContentsMini(state.currentPlaylistID);
 			const previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
-			const previousSong = playlist[previousSongIndex];
-			state.usersBalance.add(previousSong.username);
+			if (previousSongIndex >= 0) {
+				const previousSong = playlist[previousSongIndex];
+				state.usersBalance.add(previousSong.username);
 
-			const remainingSongs = playlist.length - previousSongIndex - 1;
-			if (remainingSongs > 0) {
-				const nextSong = playlist[previousSongIndex + 1];
-				if (state.usersBalance.has(nextSong.username)) {
-					state.usersBalance.clear();
-					if (conf.Karaoke.AutoBalance && remainingSongs > 1) {
-						await shufflePlaylist(state.currentPlaylistID, 'balance');
+				const remainingSongs = playlist.length - previousSongIndex - 1;
+				if (remainingSongs > 0) {
+					const nextSong = playlist[previousSongIndex + 1];
+					if (state.usersBalance.has(nextSong.username)) {
+						state.usersBalance.clear();
+						if (conf.Karaoke.AutoBalance && remainingSongs > 1) {
+							await shufflePlaylist(state.currentPlaylistID, 'balance');
+						}
 					}
+					state.usersBalance.add(nextSong.username);
 				}
-				state.usersBalance.add(nextSong.username);
 			}
 		}
 		// If we just played an intro, play a sponsor.

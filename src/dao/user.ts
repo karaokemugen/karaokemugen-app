@@ -4,7 +4,7 @@ import {db, newDBTask} from '../lib/dao/database';
 import { DBUser } from '../lib/types/database/user';
 import { User } from '../lib/types/user';
 import { DBGuest, RemoteToken } from '../types/database/user';
-import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword,sqlfindFingerprint, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlresetGuestsPassword, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateExpiredUsers, sqlupdateLastLogin, sqlupdateUserFingerprint } from './sql/user';
+import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword,sqlfindFingerprint, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlresetGuestsPassword, sqlSelectAllDupeUsers, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateExpiredUsers, sqlupdateLastLogin, sqlupdateUserFingerprint } from './sql/user';
 
 export async function getUser(username: string): Promise<DBUser> {
 	const res = await db().query(yesql(sqlselectUserByName)({username: username}));
@@ -110,6 +110,7 @@ export function resetGuestsPassword() {
 }
 
 export function updateUserLastLogin(username: string) {
+	username = username.toLowerCase();
 	newDBTask({
 		func: updateUserLastLoginTask,
 		args: [username],
@@ -132,18 +133,39 @@ export function updateUserPassword(username: string, password: string) {
 }
 
 export function getRemoteToken(username: string): RemoteToken {
+	username = username.toLowerCase();
 	const index = findRemoteToken(username);
 	if (index > -1) return remoteTokens[index];
 	return undefined;
 }
 
 function findRemoteToken(username: string): number {
+	username = username.toLowerCase();
 	return remoteTokens.findIndex(rt => rt.username === username);
 }
 
 export function upsertRemoteToken(username: string, token: string) {
+	username = username.toLowerCase();
 	const index = findRemoteToken(username);
 	index > -1
 		? remoteTokens[index] = {username, token}
 		: remoteTokens.push({username, token});
+}
+
+export async function selectAllDupeUsers() {
+	const result = await db().query(sqlSelectAllDupeUsers);
+	return result.rows;
+}
+
+export async function lowercaseAllUsers() {
+	await db().query(sqlLowercaseAllUsers);
+}
+
+export async function mergeUserData(oldUser: string, newUser: string): Promise<any> {
+	const query = [
+		db().query(sqlMergeUserDataPlaylist, [oldUser, newUser]),
+		db().query(sqlMergeUserDataPlaylistContent, [oldUser, newUser]),
+		db().query(sqlMergeUserDataRequested, [oldUser, newUser])
+	];
+	return Promise.all(query);
 }

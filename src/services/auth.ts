@@ -14,6 +14,7 @@ export async function checkLogin(username: string, password: string): Promise<To
 	const conf = getConfig();
 	let user: User = {};
 	let onlineToken: string;
+	username = username.toLowerCase();
 	if (username.includes('@') && +conf.Online.Users) {
 		try {
 			// If username has a @, check its instance for existence

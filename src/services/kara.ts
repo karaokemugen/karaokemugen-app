@@ -33,7 +33,7 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 	if (!kid) throw {code: 400};
 	try {
 		const res = await selectAllKaras({
-			username: token.username,
+			username: token.username.toLowerCase(),
 			filter: null,
 			mode: 'kid',
 			modeValue: kid,
@@ -80,7 +80,7 @@ export async function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
 	// Called by system route
 	try {
 		return await selectAllKaras({
-			username: token.username,
+			username: token.username.toLowerCase(),
 			lang: lang,
 			filter: null,
 			mode: 'requested'
@@ -96,7 +96,7 @@ export async function getKaraPlayed(token: Token, lang: string, from: number, si
 	// Called by system route
 	try {
 		return await selectAllKaras({
-			username: token.username,
+			username: token.username.toLowerCase(),
 			filter: null,
 			mode: 'played',
 			from: from,

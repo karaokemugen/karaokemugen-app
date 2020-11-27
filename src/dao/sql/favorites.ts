@@ -24,10 +24,20 @@ SELECT
   count(ak.kid) OVER()::integer AS count
   FROM all_karas AS ak
   INNER JOIN favorites AS f ON f.fk_kid = ak.kid
-  ${additionalFrom.join()}
+  ${additionalFrom.join('')}
   WHERE fk_login = :username
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))
+${limitClause}
+${offsetClause}
+`;
+
+export const sqlgetFavoritesMicro = (limitClause: string, offsetClause: string) => `
+SELECT
+  ak.kid AS kid
+  FROM all_karas AS ak
+  INNER JOIN favorites AS f ON f.fk_kid = ak.kid
+  WHERE fk_login = :username
 ${limitClause}
 ${offsetClause}
 `;
