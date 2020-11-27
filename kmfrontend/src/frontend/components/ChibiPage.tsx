@@ -15,7 +15,8 @@ import ProgressBar from './karas/ProgressBar';
 
 interface IState {
 	statusPlayer?: PublicPlayerState;
-	playlistList: PlaylistElem[]
+	playlistList: PlaylistElem[];
+	onTop?: boolean;
 }
 
 class ChibiPage extends Component<unknown, IState> {
@@ -30,14 +31,17 @@ class ChibiPage extends Component<unknown, IState> {
 	}
 
 	async componentDidMount() {
-		if (this.context.globalState.auth.data.role !== 'admin') {
-			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
-			logout(this.context.globalDispatch);
-		}
 		if (this.context.globalState.auth.isAuthenticated) {
+			if (this.context.globalState.auth.data.role !== 'admin') {
+				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
+				logout(this.context.globalDispatch);
+				return;
+			}
+
 			getSocket().on('playerStatus', this.playerUpdate);
 			const result = await commandBackend('getPlayerStatus');
-			this.setState({ statusPlayer: result });
+			this.setState({ statusPlayer: result,
+				onTop: this.context.globalState.settings.data.config.GUI.ChibiPlayer.AlwaysOnTop });
 			await this.getPlaylistList();
 		}
 	}
@@ -82,8 +86,11 @@ class ChibiPage extends Component<unknown, IState> {
 		commandBackend('sendPlayerCommand', data);
 	}
 
-	electronCmd(event: any) {
+	electronCmd = (event: any) => {
 		const namecommand = event.currentTarget.getAttribute('data-namecommand');
+		if (event.currentTarget.getAttribute('data-namecommand') === 'setChibiPlayerAlwaysOnTop') {
+			this.setState({ onTop: !this.state.onTop });
+		}
 		return sendIPC(namecommand);
 	}
 
@@ -103,7 +110,7 @@ class ChibiPage extends Component<unknown, IState> {
 							<i className="fas fa-fw fa-external-link-alt" />
 						</button>
 						<button
-							className="btn"
+							className={`btn${this.state.onTop ? ' btn-primary':''}`}
 							title={i18next.t('CHIBI.ONTOP')}
 							data-namecommand="setChibiPlayerAlwaysOnTop"
 							onClick={this.electronCmd}
