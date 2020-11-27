@@ -139,7 +139,7 @@
     "slugify": "^1.4.5",
     "socket.io": "^2.3.0",
     "socket.io-client": "^3.0.1",
-    "systeminformation": "^4.27.3",
+    "systeminformation": "^4.30.5",
     "tasklist": "^4.0.1",
     "tmi.js": "^1.5.0",
     "toyunda2ass": "^1.0.12",
