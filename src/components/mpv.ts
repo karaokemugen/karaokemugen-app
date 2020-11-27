@@ -23,7 +23,7 @@ import {endPoll} from '../services/poll';
 import {MediaType} from '../types/medias';
 import {MpvCommand} from '../types/MpvIPC';
 import {MediaData, MpvOptions, PlayerState} from '../types/player';
-import {initializationCatchphrases} from '../utils/constants';
+import { initializationCatchphrases, mpvRegex } from '../utils/constants';
 import {setDiscordActivity} from '../utils/discordRPC';
 import MpvIPC from '../utils/MpvIPC';
 import sentry from '../utils/sentry';
@@ -124,7 +124,7 @@ async function checkMpv() {
 	try {
 		const output = await execa(state.binPath.mpv,['--version']);
 		logger.debug(`mpv stdout: ${output.stdout}`, {service: 'Player'});
-		const mpv = semver.valid(output.stdout.split(' ')[1]);
+		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]);
 		mpvVersion = mpv.split('-')[0];
 		logger.debug(`mpv version: ${mpvVersion}`, {service: 'Player'});
 	} catch(err) {
