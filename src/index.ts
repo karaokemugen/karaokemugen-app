@@ -189,6 +189,10 @@ export async function preInit() {
 	logger.debug(`Locale : ${state.defaultLocale}`, {service: 'Launcher'});
 	logger.debug(`OS : ${state.os}`, {service: 'Launcher'});
 	await initConfig(argv);
+	/**
+	 * Test if network ports are available
+	 */
+	await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 }
 
 export async function main() {
@@ -222,10 +226,6 @@ export async function main() {
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
 	await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
 
-	/**
-	 * Test if network ports are available
-	 */
-	await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 	/**
 	 * Gentlemen, start your engines.
 	 */

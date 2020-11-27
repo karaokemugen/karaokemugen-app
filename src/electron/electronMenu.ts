@@ -10,7 +10,7 @@ import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/object_helpers';
 import { getState } from '../utils/state';
-import { handleFile, win, updateChibiPlayerWindow } from './electron';
+import { handleFile, updateChibiPlayerWindow,win } from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
