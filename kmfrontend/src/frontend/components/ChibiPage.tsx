@@ -3,7 +3,7 @@ import merge from 'lodash.merge';
 import React, { Component } from 'react';
 
 import { PublicPlayerState } from '../../../../src/types/state';
-import { logout } from '../../store/actions/auth';
+import { login, logout } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { sendIPC } from '../../utils/electron';
 import { commandBackend, getSocket } from '../../utils/socket';
@@ -31,6 +31,9 @@ class ChibiPage extends Component<unknown, IState> {
 	}
 
 	async componentDidMount() {
+		if (new URL(window.location.toString()).searchParams.has('admpwd') && !this.context.globalState.auth.isAuthenticated) {
+			await login('admin', new URL(window.location.toString()).searchParams.get('admpwd'), this.context.globalDispatch);
+		}
 		if (this.context.globalState.auth.isAuthenticated) {
 			if (this.context.globalState.auth.data.role !== 'admin') {
 				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));

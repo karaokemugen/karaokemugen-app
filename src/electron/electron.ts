@@ -20,6 +20,7 @@ import { isAllKaras } from '../services/kara';
 import { playSingleSong } from '../services/karaokeEngine';
 import { importPlaylist, playlistImported} from '../services/playlist';
 import { addRepo,getRepo, getRepos } from '../services/repo';
+import { generateAdminPassword } from '../services/user';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { detectKMFileTypes } from '../utils/files';
 import { getState,setState } from '../utils/state';
@@ -348,7 +349,7 @@ export function focusWindow() {
 	}
 }
 
-export function updateChibiPlayerWindow(show: boolean) {
+export async function updateChibiPlayerWindow(show: boolean) {
 	const state = getState();
 	if (show) {
 		chibiPlayerWindow = new BrowserWindow({
@@ -365,10 +366,10 @@ export function updateChibiPlayerWindow(show: boolean) {
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
 		const port = state.frontendPort;
-		chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi`);
 		chibiPlayerWindow.once('ready-to-show', () => {
 			chibiPlayerWindow.show();
 		});
+		await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
 	} else {
 		chibiPlayerWindow?.destroy();
 	}
