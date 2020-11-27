@@ -219,7 +219,7 @@ class AdminPage extends Component<IProps, IState> {
 						currentPlaylist={this.state.playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
 					/>
 
-					<ProgressBar scope='admin'/>
+					<ProgressBar/>
 					<KmAppBodyDecorator mode="admin" extraClass="fillSpace">
 						{this.state.playlistList.length > 0 ?
 							<React.Fragment>

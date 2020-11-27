@@ -5,6 +5,7 @@ import { View } from '../../types/view';
 
 interface IProps {
 	single?: boolean
+	chibi?: boolean
 	top?: string
 	bottom?: string
 	view?: View;
@@ -60,7 +61,8 @@ class KmAppWrapperDecorator extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<div className={`KmAppWrapperDecorator${this.props.single ? ' single':''}${this.props.hmagrin !== false ? ' hmargin':''}`}
+			<div className={`KmAppWrapperDecorator${this.props.single ? ' single':''}${this.props.hmagrin !== false ? ' hmargin':''}
+			${this.props.chibi ? ' chibi':''}`}
 				 style={{['--top' as any]: this.props.top, ['--bottom' as any]: this.props.bottom, ['--height' as any]: this.state.height}}
 				 ref={this.state.ref}>
 				{this.props.children}

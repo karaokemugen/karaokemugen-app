@@ -1188,5 +1188,10 @@
 			"TITLE": "Modify a user",
 			"DESCRIPTION": "User modification form"
 		}
+	},
+	"CHIBI": {
+		"FOCUS": "Go back to Karaoke Mugen",
+		"ONTOP": "Show on top of other windows",
+		"CLOSE": "Close chibi player"
 	}
 }

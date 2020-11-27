@@ -5,13 +5,13 @@ import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
 
-import {exit} from '../components/engine';
+import { exit } from '../components/engine';
 import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
+import { removeNulls } from '../lib/utils/object_helpers';
 import { getState } from '../utils/state';
-import {handleFile,win} from './electron';
+import { handleFile, win, updateChibiPlayerWindow } from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
-import {removeNulls} from "../lib/utils/object_helpers";
 
 const isMac = process.platform === 'darwin';
 
@@ -22,7 +22,7 @@ export function getMenu() {
 }
 
 export function initMenu() {
-	const port = getConfig().Frontend.Port;
+	const port = getState().frontendPort;
 	const base = 'http://localhost';
 	const urls = {
 		operatorOptions: `${base}:${port}/admin?config`,
@@ -264,6 +264,16 @@ export function initMenu() {
 					checked: getConfig().GUI.OpenInElectron,
 					click: () => {
 						setConfig({GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
+					}
+				},
+				{
+					label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
+					type: 'checkbox',
+					accelerator: 'CmdOrCtrl+I',
+					checked: getConfig().GUI.ChibiPlayer.Enabled,
+					click: () => {
+						updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
+						setConfig({GUI: {ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled }}});
 					}
 				}
 			]

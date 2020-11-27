@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { exit } from '../components/engine';
 import { listUsers } from '../dao/user';
 import { main, preInit } from '../index';
-import { getConfig } from '../lib/utils/config';
+import {getConfig, setConfig} from '../lib/utils/config';
 import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { emit,on } from '../lib/utils/pubsub';
@@ -20,6 +20,7 @@ import { isAllKaras } from '../services/kara';
 import { playSingleSong } from '../services/karaokeEngine';
 import { importPlaylist, playlistImported} from '../services/playlist';
 import { addRepo,getRepo, getRepos } from '../services/repo';
+import { generateAdminPassword } from '../services/user';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { detectKMFileTypes } from '../utils/files';
 import { getState,setState } from '../utils/state';
@@ -29,6 +30,7 @@ import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
+export let chibiPlayerWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
@@ -53,6 +55,9 @@ export function startElectron() {
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
 			if (!getState().forceDisableAppUpdate) initAutoUpdate();
+			if (getConfig().GUI.ChibiPlayer.Enabled) {
+				updateChibiPlayerWindow(true);
+			}
 			initDone = true;
 		});
 		ipcMain.once('initPageReady', async () => {
@@ -69,6 +74,19 @@ export function startElectron() {
 		});
 		ipcMain.on('tip', (_event, _eventData) => {
 			emitIPC('techTip', tip());
+		});
+		ipcMain.on('setChibiPlayerAlwaysOnTop', (_event, _eventData) => {
+			setChibiPlayerAlwaysOnTop(!getConfig().GUI.ChibiPlayer.AlwaysOnTop);
+			setConfig({GUI:{ChibiPlayer:{ AlwaysOnTop: !getConfig().GUI.ChibiPlayer.AlwaysOnTop }}});
+		});
+		ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
+			updateChibiPlayerWindow(false);
+			// TODO: reflect this in config, and uncheck in electron menu
+			// At least uncheck in Electron Menu to let user reopen the window, configuration may be set only on click
+			// in the Electron window
+		});
+		ipcMain.on('focusMainWindow', (_event, _eventData) => {
+			focusWindow();
 		});
 	});
 
@@ -283,6 +301,7 @@ async function createWindow() {
 		width: 1280,
 		height: 720,
 		backgroundColor: '#36393f',
+		show: false,
 		icon: resolve(state.resourcePath, 'build/icon.png'),
 		webPreferences: {
 			nodeIntegration: true
@@ -295,7 +314,9 @@ async function createWindow() {
 		win.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
 	}
 
-	win.show();
+	win.once('ready-to-show', () => {
+		win.show();
+	});
 	win.webContents.on('new-window', (event, url) => {
 		event.preventDefault();
 		openLink(url);
@@ -326,4 +347,34 @@ export function focusWindow() {
 		if (win.isMinimized()) win.restore();
 		win.focus();
 	}
+}
+
+export async function updateChibiPlayerWindow(show: boolean) {
+	const state = getState();
+	if (show) {
+		chibiPlayerWindow = new BrowserWindow({
+			width: 504,
+			height: 136,
+			frame: false,
+			resizable: false,
+			show: false,
+			alwaysOnTop: getConfig().GUI.ChibiPlayer.AlwaysOnTop,
+			backgroundColor: '#36393f',
+			webPreferences: {
+				nodeIntegration: true
+			},
+			icon: resolve(state.resourcePath, 'build/icon.png'),
+		});
+		const port = state.frontendPort;
+		chibiPlayerWindow.once('ready-to-show', () => {
+			chibiPlayerWindow.show();
+		});
+		await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
+	} else {
+		chibiPlayerWindow?.destroy();
+	}
+}
+
+export function setChibiPlayerAlwaysOnTop(enabled: boolean) {
+	if (chibiPlayerWindow) chibiPlayerWindow.setAlwaysOnTop(enabled);
 }

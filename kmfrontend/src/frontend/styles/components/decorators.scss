@@ -26,6 +26,23 @@
 	> * {
 		flex: 0 auto;
 	}
+	&.chibi {
+		.header-group {
+			-webkit-app-region: drag;
+			cursor: move;
+			> * {
+				cursor: pointer;
+				-webkit-app-region: no-drag;
+			}
+			&.floating-controls {
+				display: flex;
+				justify-content: flex-end;
+			}
+		}
+		.KmAppHeaderDecorator .btn {
+			border-top: solid 1px rgba(140, 140, 140, 0.7019607843);
+		}
+	}
 	&.single {
 		margin: calc(var(--top) + 1em) 0 var(--bottom);
 

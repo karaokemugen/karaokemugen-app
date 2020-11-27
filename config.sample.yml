@@ -52,7 +52,13 @@ Frontend:
   # 3 : Use user language (fallbacks to english then original)
   SeriesLanguageMode: 3
   ShowAvatarsOnPlaylist: true
-
+GUI:
+  # Should window shortcuts be opened in electron or in a browser?
+  OpenInElectron: true
+  # Enable or disable cihibi player
+  ChibiPlayer:
+    Enabled: false
+    AlwaysOnTop: true
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false

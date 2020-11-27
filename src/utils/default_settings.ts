@@ -72,7 +72,11 @@ export const defaults: Config = {
 		ShowAvatarsOnPlaylist: true
 	},
 	GUI: {
-		OpenInElectron: true
+		OpenInElectron: true,
+		ChibiPlayer: {
+			Enabled: false,
+			AlwaysOnTop: true
+		}
 	},
 	Karaoke: {
 		Autoplay: false,
