@@ -52,3 +52,4 @@ postgrator.json
 
 # Dev
 .env
+.eslintcache
