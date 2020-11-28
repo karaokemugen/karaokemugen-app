@@ -329,7 +329,7 @@ async function createWindow() {
 	// What to do when the window is closed.
 	win.on('closed', () => {
 		win = null;
-		if (chibiPlayerWindow) chibiPlayerWindow.close();
+		if (chibiPlayerWindow) chibiPlayerWindow.destroy();
 	});
 }
 
