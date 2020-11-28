@@ -180,7 +180,7 @@ export const defaults: Config = {
 		Binaries: {
 			Player: {
 				Linux: '/usr/bin/mpv',
-				OSX: app?.isPackaged 
+				OSX: app?.isPackaged
 					? 'Karaoke Mugen.app/Contents/app/bin/mpv.app/Contents/MacOS/mpv'
 					: 'app/bin/mpv.app/Contents/MacOS/mpv',
 				Windows: 'app\\bin\\mpv.exe'
@@ -250,7 +250,8 @@ export const defaults: Config = {
 			Outros: process.platform === 'win32' ? ['outros', 'outros\\KaraokeMugen'] : ['outros', 'outros/KaraokeMugen'],
 			Sponsors: process.platform === 'win32' ? ['sponsors', 'sponsors\\KaraokeMugen'] : ['sponsors', 'sponsors/KaraokeMugen'],
 			Temp: 'temp',
-			Previews: 'previews'
+			Previews: 'previews',
+			SessionExports: 'sessionExports'
 		}
 	}
 };
