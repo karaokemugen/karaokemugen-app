@@ -262,4 +262,6 @@ System:
     Encores:
       - encores
     Temp: temp
+    Previews: previews
+    SessionExports: sessionExports
     DB: db

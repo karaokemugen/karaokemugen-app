@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
-import { getConfig } from '../lib/utils/config';
+import { getConfig, resolvedPathSessionExports } from '../lib/utils/config';
 import { sanitizeFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
@@ -155,7 +155,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			requestedCount: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requestedCount.csv`),
 		};
 		const csvRequested = csvWriter({
-			path: resolve(getState().dataPath, 'sessionExports/', sessionExports.requested),
+			path: resolve(resolvedPathSessionExports(), sessionExports.requested),
 			header: [
 				{id: 'requested_at', title: 'REQUESTED AT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -166,7 +166,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			alwaysQuote: true
 		});
 		const csvPlayed = csvWriter({
-			path: resolve(getState().dataPath, 'sessionExports/', sessionExports.played),
+			path: resolve(resolvedPathSessionExports(), sessionExports.played),
 			header: [
 				{id: 'played_at', title: 'PLAYED AT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -177,7 +177,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			alwaysQuote: true
 		});
 		const csvPlayedCount = csvWriter({
-			path: resolve(getState().dataPath, 'sessionExports/', sessionExports.playedCount),
+			path: resolve(resolvedPathSessionExports(), sessionExports.playedCount),
 			header: [
 				{id: 'count', title: 'PLAY COUNT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
@@ -188,7 +188,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			alwaysQuote: true
 		});
 		const csvRequestedCount = csvWriter({
-			path: resolve(getState().dataPath, 'sessionExports/', sessionExports.requestedCount),
+			path: resolve(resolvedPathSessionExports(), sessionExports.requestedCount),
 			header: [
 				{id: 'count', title: 'REQUEST COUNT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},

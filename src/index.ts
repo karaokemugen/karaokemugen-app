@@ -12,7 +12,7 @@ import {createInterface} from 'readline';
 import {exit, initEngine} from './components/engine';
 import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
-import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathTemp, setConfig} from './lib/utils/config';
+import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathPreviews, resolvedPathSessionExports, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
@@ -263,8 +263,8 @@ async function checkPaths(config: Config) {
 			}
 		}
 		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
-		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'sessionExports/')));
-		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'previews/')));
+		checks.push(asyncCheckOrMkdir(resolvedPathSessionExports()));
+		checks.push(asyncCheckOrMkdir(resolvedPathPreviews()));
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', {service: 'Launcher'});
 	} catch(err) {

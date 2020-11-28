@@ -200,6 +200,7 @@ export interface Config {
 			Sponsors?: string[],
 			Temp?: string,
 			Previews?: string,
+			SessionExports?: string,
 			Import?: string,
 			Avatars?: string,
 		}
