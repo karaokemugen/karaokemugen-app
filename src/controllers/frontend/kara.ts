@@ -506,7 +506,7 @@ export default function karaController(router: SocketIOApp) {
 			};
 		} catch(err) {
 			errMessage(err?.code, err?.message);
-			return {code: err?.code || 500, message: APIMessage(err.message, err.data?.detail)};
+			throw {code: err?.code || 500, message: APIMessage(err.message, err.data?.detail)};
 		}
 	});
 	router.route('editKara', async (socket: Socket, req: APIData) => {

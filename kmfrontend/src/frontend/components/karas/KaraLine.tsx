@@ -141,8 +141,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			url = 'addKaraToPublicPlaylist';
 			data = { requestedby: this.props.context.globalState.auth.data.username, kid: this.props.kara.kid };
 		}
-		const response = await commandBackend(url, data);
-		if (response && response.code && response.data.plc && response.data.plc.time_before_play) {
+		const response = await commandBackend(url, data).catch(()=>{});
+		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
 			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
 			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
