@@ -1,3 +1,4 @@
+import merge from 'lodash.merge';
 import { Socket } from 'socket.io';
 
 import { getRemoteToken, upsertRemoteToken } from '../dao/user';
@@ -23,12 +24,15 @@ interface APIChecklistOptions {
 
 export async function runChecklist(socket: Socket, data: APIData, roleNeeded: Role = 'admin', webappModeNeeded: WebappModes = 'open', options?: APIChecklistOptions) {
 	// Default role needed is admin and webapp open, this should be the case for a majority of routes.
+	const defaultOptions = { allowInDemo: true, optionalAuth: false };
 
 	// Protecc against bad boys who'd like to force token and stuff
 	delete data.token;
 	delete data.user;
 
-	if (!options) options = { allowInDemo: true, optionalAuth: false };
+	options
+		? options = merge(defaultOptions, options)
+		: options = defaultOptions;
 	if (socket.handshake.headers['accept-languages']) data.langs = socket.handshake.headers['accept-languages'].split(',')[0].substring(0,2);
 	if (!options.allowInDemo && getState().isDemo) throw {code: 503, message: 'Not allowed in demo mode'};
 	if (options.optionalAuth && !data.authorization) {
