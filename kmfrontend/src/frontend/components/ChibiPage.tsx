@@ -3,6 +3,8 @@ import merge from 'lodash.merge';
 import React, { Component } from 'react';
 
 import { PublicPlayerState } from '../../../../src/types/state';
+import nanamiSmilePng from '../../assets/nanami-smile.png';
+import nanamiSmileWebp from '../../assets/nanami-smile.webp';
 import { login, logout } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { sendIPC } from '../../utils/electron';
@@ -104,6 +106,14 @@ class ChibiPage extends Component<unknown, IState> {
 			<>
 				<KmAppWrapperDecorator chibi>
 					<div className="header-group floating-controls">
+						<p>
+							<picture>
+								<source type="image/webp" srcSet={nanamiSmileWebp} />
+								<source type="image/png" srcSet={nanamiSmilePng} />
+								<img src={nanamiSmilePng} alt="Nanami logo"/>
+							</picture>
+							Karaoke Mugen Chibi Player
+						</p>
 						<button
 							className="btn"
 							title={i18next.t('CHIBI.FOCUS')}
