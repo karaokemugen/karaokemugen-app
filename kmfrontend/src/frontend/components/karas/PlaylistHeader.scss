@@ -136,16 +136,15 @@
 	position: absolute;
 	bottom: 0;
 	z-index: 10040;
-	font-size: 1rem;
 	display: flex;
 	button {
-		font-size: .5em;
+		font-size: .75em;
 	}
 	button.btn-active {
 		background-color: $mugen-btn-primary-background;
 	}
 	@media screen and (max-width: $mugen-breakpoint-large) {
-		font-size: 1.5rem;
+		font-size: 1em;
 		.plInfos {
 			vertical-align: middle;
 		}

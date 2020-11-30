@@ -192,22 +192,21 @@ class PlayerBox extends Component<IProps, IState> {
 		return (
 			<div onClick={this.props.goToCurrentPL}
 				 className={`player-box${this.props.fixed ? ' fixed':''}`}
-				 style={{['--img' as any]: this.state.img, display: ((this.props.fixed && !this.state.subtitle) || !this.props.show) ? 'none':undefined}}
+				 style={{['--img' as any]: this.state.img, display: this.props.show ? undefined:'none'}}
 				 ref={this.state.containerRef}>
 				{!this.props.fixed ? <div className="first">
 					<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
 					<p className="next" tabIndex={0} onKeyDown={this.props.goToCurrentPL}>{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" /></p>
 				</div>:null}
-				{!this.props.fixed ?
-					<div className="title">
+				{this.props.fixed ?
+					<div className="title inline">
 						<h3 className="song">{this.state.title}</h3>
 						<h4 className="series">{this.state.subtitle}</h4>
 					</div> :
-					(this.state.subtitle ?
-						<div className="title inline">
-							<h3 className="song">{this.state.title}</h3>
-							<h4 className="series">{this.state.subtitle}</h4>
-						</div>:null)}
+					<div className="title">
+						<h3 className="song">{this.state.title}</h3>
+						<h4 className="series">{this.state.subtitle}</h4>
+					</div>}
 				{!this.props.fixed && this.state.length !== 0 && this.context.globalState.auth.data.role !== 'guest' ?
 					<button className="btn favorites" onClick={this.toggleFavorite}>
 						<i className="fas fa-fw fa-star" />
