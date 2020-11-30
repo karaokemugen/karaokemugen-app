@@ -267,6 +267,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		const kara = this.props.kara;
 		const scope = this.props.scope;
 		const idPlaylist = this.props.idPlaylist;
+		const shouldShowProfile = this.props.context.globalState.settings.data.config.Frontend.ShowAvatarsOnPlaylist
+			&& this.props.avatar_file;
 		return (
 			<li key={this.props.key} style={this.props.style}>
 				<div className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${kara.flag_dejavu ? ' dejavu' : ''}
@@ -282,9 +284,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						</div> :
 						<React.Fragment>
 							<div className="actionDiv">
-								{(!(is_touch_device() && scope === 'admin') || !is_touch_device())
-								&& this.props.context.globalState.settings.data.config.Frontend.ShowAvatarsOnPlaylist
-								&& this.props.avatar_file ?
+								{!is_touch_device()
+								&& shouldShowProfile ?
 									<img className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
 										 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
 								<div className="btn-group">
@@ -328,9 +329,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 											{kara.upvotes}
 										</div> : null
 									}
-									<div className="tagConteneur">
+									{!is_touch_device() ? <div className="tagConteneur">
 										{this.karaTags}
-									</div>
+									</div> : null}
 								</div>:
 								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
 									<div className={`disable-select karaTitle ${this.state.problematic ? 'problematic' : ''}`}>
@@ -376,6 +377,11 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							{is_touch_device() && this.props.scope === 'public' ?
 								<div className="tagConteneur mobile">
 									{this.karaTags}
+									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ?
+										<div className="img-container">
+											<img className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
+												 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} />
+										</div> : null}
 								</div> : null
 							}
 						</React.Fragment>
