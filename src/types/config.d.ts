@@ -58,6 +58,8 @@ export interface Config {
 		ChibiPlayer?: {
 			Enabled?: boolean,
 			AlwaysOnTop?: boolean,
+			PositionX?: number,
+			PositionY?: number,
 		}
 	}
 	Karaoke: {

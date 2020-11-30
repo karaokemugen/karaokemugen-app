@@ -59,6 +59,8 @@ GUI:
   ChibiPlayer:
     Enabled: false
     AlwaysOnTop: true
+    PositionX: 153
+    PositionY: 800
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false

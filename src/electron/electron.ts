@@ -352,10 +352,13 @@ export function focusWindow() {
 
 export async function updateChibiPlayerWindow(show: boolean) {
 	const state = getState();
+	const conf = getConfig();
 	if (show) {
 		chibiPlayerWindow = new BrowserWindow({
 			width: 504,
 			height: 136,
+			x: conf.GUI.ChibiPlayer.PositionX,
+			y: conf.GUI.ChibiPlayer.PositionY,
 			frame: false,
 			resizable: false,
 			show: false,
@@ -369,6 +372,15 @@ export async function updateChibiPlayerWindow(show: boolean) {
 		const port = state.frontendPort;
 		chibiPlayerWindow.once('ready-to-show', () => {
 			chibiPlayerWindow.show();
+		});
+		chibiPlayerWindow.on('moved', () => {
+			const pos = chibiPlayerWindow.getPosition();
+			setConfig({ GUI: {
+				ChibiPlayer: {
+					PositionX: pos[0],
+					PositionY: pos[1]
+				}
+			}});
 		});
 		await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
 	} else {
