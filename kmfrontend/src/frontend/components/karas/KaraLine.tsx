@@ -142,10 +142,10 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			data = { requestedby: this.props.context.globalState.auth.data.username, kid: this.props.kara.kid };
 		}
 		const response = await commandBackend(url, data);
-		if (response && response.code && response.plc && response.plc.time_before_play) {
-			const playTime = new Date(Date.now() + response.plc.time_before_play * 1000);
+		if (response && response.code && response.data.plc && response.data.plc.time_before_play) {
+			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
 			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-			const beforePlayTime = secondsTimeSpanToHMS(response.plc.time_before_play, 'hm');
+			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
 			displayMessage('success', <div>
 				{i18next.t(`SUCCESS_CODES.${response.code}`)}
 				<br />
