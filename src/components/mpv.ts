@@ -447,7 +447,7 @@ class Players {
 
 	private static fillVisualizationOptions(mediaData: MediaData, withAvatar: boolean): string {
 		const subOptions = [
-			'[aid1]asplit[ao][a]',
+			'[aid1]asplit,loudnorm[ao][a]',
 			'[a]showcqt=axis=0[vis]',
 			'[vis]scale=600:400[vecPrep]',
 			`nullsrc=size=1920x1080:duration=${mediaData.duration}[nl]`,
@@ -469,6 +469,7 @@ class Players {
 
 	private static avatarFilter(mediaData: MediaData) {
 		const subOptions = [
+			'[aid1]loudnorm[ao]',
 			`nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
 			'[vid1]scale=-2:1080[vidInp]',
 			'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
@@ -694,7 +695,7 @@ class Players {
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
 		const options: any = {
-			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0',
+			// 'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0',
 			title: `${mediaData.currentSong.title} - Karaoke Mugen Player`
 		};
 		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
@@ -729,7 +730,7 @@ class Players {
 		} else {
 			// If video, display avatar if it's defined.
 			// Again, lavfi-complex expert @nah comes to the rescue!
-			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options['lavfi-complex'] = `movie=\\'${mediaData.avatar.replace(/\\/g,'/').replace(/circle\./g, '')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`;
+			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options['lavfi-complex'] = `[aid1]loudnorm[ao];movie=\\'${mediaData.avatar.replace(/\\/g,'/').replace(/circle\./g, '')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`;
 		}
 		// Load all thoses files into mpv and let's go!
 		try {
