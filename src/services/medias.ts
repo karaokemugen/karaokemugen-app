@@ -1,17 +1,14 @@
 import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
-import {resolve} from 'path';
+import {basename, resolve} from 'path';
 import prettyBytes from 'pretty-bytes';
 import {createClient} from 'webdav';
 
-import { deleteMedia,insertMedias, selectMedias } from '../dao/medias';
 import {getConfig, resolvedPathEncores, resolvedPathIntros, resolvedPathJingles, resolvedPathOutros, resolvedPathSponsors} from '../lib/utils/config';
-import { getMediaInfo } from '../lib/utils/ffmpeg';
-import {asyncCheckOrMkdir, asyncExists,asyncReadDir, asyncRemove,asyncStat, isMediaFile} from '../lib/utils/files';
+import {asyncCheckOrMkdir, asyncReadDir, asyncRemove,asyncStat, isMediaFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import {Config} from '../types/config';
-import { DBMedia } from '../types/database/medias';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
 import Downloader from '../utils/downloader';
@@ -40,9 +37,8 @@ const KMSite = {
 
 export async function buildAllMediasList() {
 	const medias = getConfig().Playlist.Medias;
-	const cachedMedias = await selectMedias();
 	for (const type of Object.keys(medias)){
-		await buildMediasList(type as MediaType, cachedMedias.filter(m => m.type === type)).catch(() => {});
+		await buildMediasList(type as MediaType);
 		// Failure is non-fatal
 	}
 }
@@ -181,7 +177,7 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 }
 
 
-export async function buildMediasList(type: MediaType, cachedMedias: DBMedia[]) {
+export async function buildMediasList(type: MediaType) {
 	medias[type] = [];
 	for (const resolvedPath of resolveMediaPath(type)) {
 		const files = [];
@@ -189,27 +185,12 @@ export async function buildMediasList(type: MediaType, cachedMedias: DBMedia[]) 
 		for (const file of dirFiles) {
 			const fullFilePath = resolve(resolvedPath, file);
 			if (isMediaFile(file)) {
-				const stats = await asyncStat(fullFilePath);
-				const media = {
+				files.push({
 					type: type,
 					filename: fullFilePath,
-					size: stats.size,
-					audiogain: null
-				};
-				const cachedMedia = cachedMedias.find(m => m.type === type && m.filename === media.filename);
-				if (cachedMedia?.size === stats.size) {
-					media.audiogain = cachedMedia.audiogain;
-				} else {
-					const mediaInfo = await getMediaInfo(fullFilePath);
-					media.audiogain = mediaInfo.gain;
-					insertMedias(media);
-				}
-				files.push(media);
+					series: file.split(' - ')[0]
+				});
 			}
-		}
-		// Remove cached medias not on disk anymore
-		for (const media of cachedMedias.filter(m => m.type === type)) {
-			if (!isMediaFile(media.filename) || !await asyncExists(media.filename)) await deleteMedia(type, media.filename);
 		}
 		medias[type] = files;
 	}
@@ -225,14 +206,16 @@ export function getSingleMedia(type: MediaType): Media {
 		// Fill it again with the original list.
 		currentMedias[type] = cloneDeep(medias[type]);
 	}
-	// If a default file is provided, search for it. If undefined or not found, pick one from a random series
-	const series = sample(currentMedias[type].map((m: Media) => m.series));
+	// Pick a media from a random series
 	let media = null;
 	//Jingles do not have a specific file to use in options
+	const series = sample(currentMedias[type].map((m: Media) => m.series));
 	if (type === 'Jingles' || type === 'Sponsors') {
 		media = sample(currentMedias[type].filter((m: Media) => m.series === series));
 	} else {
-		media = currentMedias[type].find((m: Media) => m.filename === getConfig().Playlist.Medias[type].File)
+		// For every other media type we pick the file from config if it's specified.
+		// If not we take one from the series.
+		media = currentMedias[type].find((m: Media) => basename(m.filename) === getConfig().Playlist.Medias[type].File)
 		||
 		sample(currentMedias[type].filter((m: Media) => m.series === series));
 	}

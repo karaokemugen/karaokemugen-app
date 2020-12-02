@@ -776,7 +776,6 @@ class Players {
 			setState({currentlyPlayingKara: mediaType});
 			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
 			const options: any = {
-				'replaygain-fallback': media.audiogain.toString(),
 				title: `${mediaType} - Karaoke Mugen Player`
 			};
 			const subFile = replaceExt(media.filename, '.ass');
