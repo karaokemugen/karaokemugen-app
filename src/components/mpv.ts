@@ -695,7 +695,6 @@ class Players {
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
 		const options: any = {
-			// 'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0',
 			title: `${mediaData.currentSong.title} - Karaoke Mugen Player`
 		};
 		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
@@ -717,6 +716,8 @@ class Players {
 				options['lavfi-complex'] = Players.fillVisualizationOptions(mediaData, (mediaData.avatar && conf.Karaoke.Display.Avatar));
 			} else if (mediaData.avatar && conf.Karaoke.Display.Avatar) {
 				options['lavfi-complex'] = Players.avatarFilter(mediaData);
+			} else {
+				options['lavfi-complex'] = '[aid1]loudnorm[ao]';
 			}
 
 			const id3tags = await id3.read(mediaFile);
@@ -731,6 +732,7 @@ class Players {
 			// If video, display avatar if it's defined.
 			// Again, lavfi-complex expert @nah comes to the rescue!
 			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options['lavfi-complex'] = `[aid1]loudnorm[ao];movie=\\'${mediaData.avatar.replace(/\\/g,'/').replace(/circle\./g, '')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`;
+			else options['lavfi-complex'] = '[aid1]loudnorm[ao]';
 		}
 		// Load all thoses files into mpv and let's go!
 		try {
@@ -887,8 +889,9 @@ class Players {
 	async seek(delta: number) {
 		try {
 			// Workaround for audio-only files: disable the lavfi-complex filter
-			if (playerState.currentSong.media.endsWith('.mp3') && playerState.currentSong.avatar && getConfig().Karaoke.Display.Avatar) {
-				await this.exec({command: ['set_property', 'lavfi-complex', '[vid1]null[vo]']});
+			if (playerState.currentSong.media.endsWith('.mp3') &&
+				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar || getConfig().Player.VisualizationEffects)) {
+				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
 			await this.exec({command: ['seek', delta]});
 		} catch(err) {
@@ -901,8 +904,9 @@ class Players {
 	async goTo(pos: number) {
 		try {
 			// Workaround for audio-only files: disable the lavfi-complex filter
-			if (playerState.currentSong?.media.endsWith('.mp3') && playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar) {
-				await this.exec({command: ['set_property', 'lavfi-complex', '[vid1]null[vo]']});
+			if (playerState.currentSong?.media.endsWith('.mp3') &&
+				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar || getConfig().Player.VisualizationEffects)) {
+				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
 			await this.exec({command: ['seek', pos, 'absolute']});
 		} catch(err) {
