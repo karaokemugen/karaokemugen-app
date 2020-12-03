@@ -143,7 +143,6 @@ class Player {
 	mpv: MpvIPC
 	configuration: any
 	options: MpvOptions
-	state: PlayerState
 	control: Players
 
 	constructor(options: MpvOptions, players: Players) {
