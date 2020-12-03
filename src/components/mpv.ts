@@ -776,7 +776,8 @@ class Players {
 			setState({currentlyPlayingKara: mediaType});
 			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
 			const options: any = {
-				title: `${mediaType} - Karaoke Mugen Player`
+				title: `${mediaType} - Karaoke Mugen Player`,
+				af: 'loudnorm'
 			};
 			const subFile = replaceExt(media.filename, '.ass');
 			logger.debug(`Searching for ${subFile}`, {service: 'Player'});
