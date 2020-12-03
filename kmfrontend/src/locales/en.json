@@ -23,7 +23,6 @@
 	"DETAILS_YEAR": "Year",
 	"DETAILS_TITLE": "Title",
 	"NICKNAME": "Nickname",
-	"KARA_PAUSED_WAITING": "No song playing yet",
 	"VERSION": "Version",
 	"SHUTDOWN": "Terminate Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Connection with Karaoke Mugen lost",
@@ -315,12 +314,43 @@
 			"SHOW_AVATARS_ON_PLAYLIST": "Show avatars on playlist"
 		}
 	},
+	"KARA_PAUSED_WAITING": "No song playing yet",
+	"KARA_PAUSED_TAGLINES": [
+		"...but it shouldn't last for long!",
+		"We will follow up on your call.",
+		"Your waiting time is estimated at some minutes.",
+		"Too calm, i don't like this...",
+		"Preparations are ongoing!"
+	],
 	"JINGLE_TIME": "Jingle time!",
 	"JINGLE": "Jingle",
+	"JINGLE_TAGLINES": [
+		"We'll be right back!"
+	],
 	"INTRO_TIME": "Playlist intro",
+	"INTRO_TAGLINES": [
+		"Let's go!",
+		"Starting...",
+		"Initialization...",
+		"Prepare your mic!",
+		"*clears throat*"
+	],
 	"OUTRO_TIME": "Playlist ending",
+	"OUTRO_TAGLINES": [
+		"The End :(",
+		"Thanks to all!"
+	],
 	"ENCORES_TIME": "Encore! Encore!",
+	"ENCORES_TAGLINES": [
+		"Well, that's because it's you...",
+		"Last one?",
+		"Last song, we give it all!"
+	],
 	"SPONSOR_TIME": "COMMERCIAL TIME!",
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa...",
+		"And thanks for the money."
+	],
 	"SPONSOR": "Sponsors",
 	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"QUOTA_TYPE": "Quota type",

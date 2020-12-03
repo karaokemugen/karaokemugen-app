@@ -23,7 +23,6 @@
 	"DETAILS_YEAR": "Année",
 	"DETAILS_TITLE": "Titre",
 	"NICKNAME": "Pseudo",
-	"KARA_PAUSED_WAITING": "Pas de lecture en cours",
 	"VERSION": "Version",
 	"SHUTDOWN": "Arrêter Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Communication avec Karaoke Mugen perdue",
@@ -325,12 +324,43 @@
 			"SHOW_AVATARS_ON_PLAYLIST": "Afficher les avatars sur les listes de lecture"
 		}
 	},
+	"KARA_PAUSED_WAITING": "Pas de lecture en cours",
+	"KARA_PAUSED_TAGLINES": [
+		"...mais ça ne saurait tarder !",
+		"Nous allons donner suite à votre kara.",
+		"Votre temps d'attente est estimé à quelques minutes.",
+		"C'est trop calme, j'aime pas trop beaucoup ça...",
+		"Les préparatifs sont en cours !"
+	],
 	"JINGLE_TIME": "Instant jingle !",
+	"JINGLE_TAGLINES": [
+		"On revient !"
+	],
 	"JINGLE": "Jingle",
-	"INTRO_TIME": "Intro de liste de lecture",
-	"OUTRO_TIME": "Fin de liste de lecture",
+	"INTRO_TIME": "Introduction",
+	"INTRO_TAGLINES": [
+		"C'est parti !",
+		"Démarrage en cours...",
+		"Initialisation...",
+		"Préparez votre micro !",
+		"*se racle la gorge*"
+	],
+	"OUTRO_TIME": "Fin",
+	"OUTRO_TAGLINES": [
+		"C'est fini :(",
+		"Merci à tous !"
+	],
 	"ENCORES_TIME": "Encore! Encore!",
+	"ENCORES_TAGLINES": [
+		"Bon, c'est bien parce que c'est vous...",
+		"P'tite dèr ?",
+		"Dernière chanson, on donne tout !"
+	],
 	"SPONSOR_TIME": "LA PUB !",
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa...",
+		"Et merci pour l'argent."
+	],
 	"SPONSOR": "Sponsors",
 	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"QUOTA_TYPE": "Limiter l'ajout de chanson par les utilisateurs",

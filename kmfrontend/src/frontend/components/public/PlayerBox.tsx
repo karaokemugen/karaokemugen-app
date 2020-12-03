@@ -1,14 +1,15 @@
 import './PlayerBox.scss';
 
 import i18next from 'i18next';
-import React, {Component, createRef, RefObject} from 'react';
+import sample from 'lodash.sample';
+import React, { Component, createRef, RefObject } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import {ASSLine} from '../../../../../src/lib/types/ass';
-import {PublicPlayerState} from '../../../../../src/types/state';
+import { ASSLine } from '../../../../../src/lib/types/ass';
+import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
-import {getPreviewLink, getSerieLanguage, sortTagByPriority} from '../../../utils/kara';
-import {commandBackend, getSocket} from '../../../utils/socket';
+import { getPreviewLink, getSerieLanguage, sortTagByPriority } from '../../../utils/kara';
+import { commandBackend, getSocket } from '../../../utils/socket';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
 interface IProps {
@@ -123,37 +124,43 @@ class PlayerBox extends Component<IProps, IState> {
 			if (data.mediaType === 'background') {
 				this.setState({
 					...PlayerBox.resetBox,
-					title: i18next.t('KARA_PAUSED_WAITING')
+					title: i18next.t('KARA_PAUSED_WAITING'),
+					subtitle: sample(i18next.t('KARA_PAUSED_TAGLINES', { returnObjects: true }))
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Jingles') {
 				this.setState({
 					...PlayerBox.resetBox,
-					title: i18next.t('JINGLE_TIME')
+					title: i18next.t('JINGLE_TIME'),
+					subtitle: sample(i18next.t('JINGLE_TAGLINES', { returnObjects: true }))
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Intros') {
 				this.setState({
 					...PlayerBox.resetBox,
-					title: i18next.t('INTRO_TIME')
+					title: i18next.t('INTRO_TIME'),
+					subtitle: sample(i18next.t('INTRO_TAGLINES', { returnObjects: true }))
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Outros') {
 				this.setState({
 					...PlayerBox.resetBox,
-					title: i18next.t('OUTRO_TIME')
+					title: i18next.t('OUTRO_TIME'),
+					subtitle: sample(i18next.t('OUTRO_TAGLINES', { returnObjects: true }))
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Encores') {
 				this.setState({
 					...PlayerBox.resetBox,
-					title: i18next.t('ENCORES_TIME')
+					title: i18next.t('ENCORES_TIME'),
+					subtitle: sample(i18next.t('ENCORES_TAGLINES', { returnObjects: true }))
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Sponsors') {
 				this.setState({
 					...PlayerBox.resetBox,
-					title: i18next.t('SPONSOR_TIME')
+					title: i18next.t('SPONSOR_TIME'),
+					subtitle: sample(i18next.t('SPONSOR_TAGLINES', { returnObjects: true }))
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else {
