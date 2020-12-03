@@ -446,7 +446,8 @@ class Players {
 
 	private static fillVisualizationOptions(mediaData: MediaData, withAvatar: boolean): string {
 		const subOptions = [
-			'[aid1]asplit,loudnorm[ao][a]',
+			'[aid1]loudnorm[a0]',
+			'[a0]asplit[ao][a]',
 			'[a]showcqt=axis=0[vis]',
 			'[vis]scale=600:400[vecPrep]',
 			`nullsrc=size=1920x1080:duration=${mediaData.duration}[nl]`,
