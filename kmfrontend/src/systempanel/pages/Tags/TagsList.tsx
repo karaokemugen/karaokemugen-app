@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
+import { is_touch_device } from '../../../utils/tools';
 
 interface TagsListState {
 	tags: DBTag[],
@@ -132,8 +133,10 @@ class TagsList extends Component<unknown, TagsListState> {
 	}, {
 		title: i18next.t('ACTION'),
 		render: (text, record) => (<span>
-			<Link to={`/system/km/tags/${record.tid}`}><EditOutlined /></Link>
-			<Divider type="vertical" />
+			<Link to={`/system/km/tags/${record.tid}`}>
+				<Button type="primary" icon={<EditOutlined />} />
+			</Link>
+			{!is_touch_device() ? <Divider type="vertical" />:null}
 			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
 				() => this.setState({ deleteModal: true, tag: record })
 			} />

@@ -8,6 +8,7 @@ import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
 import { getSerieLanguage, getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { is_touch_device } from '../../../utils/tools';
 
 interface KaraListState {
 	karas: DBKara[];
@@ -164,10 +165,12 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/km/karas/${record.kid}`}><EditOutlined /></Link>
-			<Divider type="vertical" />
+			<Link to={`/system/km/karas/${record.kid}`}>
+				<Button type="primary" icon={<EditOutlined />} />
+			</Link>
+			{!is_touch_device() ? <Divider type="vertical" />:null}
 			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
-				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)}></Button>
+				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)} />
 		</span>)
 	}];
 }
