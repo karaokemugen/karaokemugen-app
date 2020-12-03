@@ -82,6 +82,12 @@ class PublicPage extends Component<IProps, IState> {
 		} else if (view === 'currentPlaylist') {
 			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaylistID;
 		}
+		setFilterValue(
+			this.context.globalDispatch,
+			'',
+			1,
+			this.state.idsPlaylist.left
+		);
 		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, kara: undefined, profileModal: false });
 	};
 
@@ -215,10 +221,9 @@ class PublicPage extends Component<IProps, IState> {
 								: <React.Fragment>
 									<KmAppHeaderDecorator mode="public">
 										<button
-											className='btn side2Button'
+											className="btn side2Button"
 											type="button"
-											onClick={() => this.setState({ view:
-												(this.state.view === 'search' && this.state.searchCriteria ? 'tag' : 'home') })}>
+											onClick={() => this.changeView((this.state.view === 'search' && this.state.searchCriteria ? 'tag' : 'home'))}>
 											<i className="fas fa-arrow-left" />
 										</button>
 										<div
