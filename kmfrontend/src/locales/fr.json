@@ -31,7 +31,7 @@
 	"HIDE_SUBS": "Cacher les paroles à l'écran",
 	"OPTIONS": "Options",
 	"STOP_AFTER": "Arrêt après la chanson en cours",
-	"STOP_NOW": "Arrêt immédiat (C'est dangeureux !)",
+	"STOP_NOW": "Arrêt immédiat (C'est dangereux !)",
 	"REWIND": "Rembobiner la VHS",
 	"PREVIOUS_SONG": "Chanson précédente",
 	"PLAY_PAUSE": "Jouer/pause",
@@ -44,7 +44,7 @@
 	"PASSWORD": "Mot de passe (8 caractères minimum)",
 	"PASSWORDCONF": "Confirmation du mot de passe",
 	"NEW_PASSWORD": "Nouveau mot de passe",
-	"MONITOR_NUMBER": "Ecran sur lequel afficher la vidéo (plein écran)",
+	"MONITOR_NUMBER": "Écran sur lequel afficher la vidéo (plein écran)",
 	"VIDEO_SIZE": "Taille du lecteur (fenêtré)",
 	"VIDEO_SIZE_TOOLTIP": "Affecte uniquement le mode fenêtré",
 	"VIDEO_POSITION_X": "Alignement horizontal de la fenêtre",
@@ -121,7 +121,7 @@
 		"VISIBLE_OFF_SHORT": "Cacher",
 		"ADD_BLACKLIST": "Ajouter à la liste noire",
 		"ADD_WHITELIST": "Ajouter à la liste blanche",
-		"TRANSFER_KARA": "Transférer cette chanson en face - clic droit la transfére après la chanson en cours",
+		"TRANSFER_KARA": "Transférer cette chanson en face - clic droit la transfère après la chanson en cours",
 		"MOVE_KARA": "Déplacer après la chanson en cours"
 	},
 	"FLAGS": {
@@ -244,8 +244,8 @@
 	"UPVOTE_NUMBER": "Soutiens",
 	"PROFILE_PASSWORDCONF": "Confirmer",
 	"WLCM_CONTACT": "Contactez-nous",
-	"WLCM_GETSTARTED": "DEMARRER LE TUTO",
-	"WLCM_KARAMANAGER": "INTERFACE OPERATEUR",
+	"WLCM_GETSTARTED": "DÉMARRER LE TUTO",
+	"WLCM_KARAMANAGER": "INTERFACE OPÉRATEUR",
 	"WLCM_ADMINISTRATION": "PANNEAU SYSTÈME",
 	"WLCM_SITE": "Site web",
 	"WLCM_PUBLIC": "INTERFACE PUBLIQUE",
@@ -412,7 +412,7 @@
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
 		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?",
 		"CONFIRM": "Confirmer",
-		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de disfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?",
+		"ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de dysfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?",
 		"ERROR_TRACKING": "Suivi des erreurs"
 	},
 	"INSTANCE_NAME": "Nom du serveur",
@@ -421,7 +421,7 @@
 	"MAIN_SERIES_LANG": "Langue des noms de séries",
 	"FALLBACK_SERIES_LANG": "Langue de secours des noms de séries",
 	"ACTIVE_SESSION": "Session Active : ",
-	"EDIT_SESSION": "Editer la session",
+	"EDIT_SESSION": "Éditer la session",
 	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
 	"ESSENTIAL_MESSAGE": "Message indispensable",
@@ -440,8 +440,8 @@
 	"INTRO_ADMIN_PLAYLISTS_2": "Mais revenons aux listes de lecture.<br />Il en existe différents types : <br /><br />- La <b>Bibliothèque</b> correspond à la base de données de vos karaokés. C'est ici que les utilisateurs chercheront les chansons qu'ils souhaitent ajouter.<br /><br />- La liste avec l'attribut <i class='fas fa-play-circle'></i> <b>Courante</b> est celle diffusée à l'écran.<br /><br />- La liste avec l'attribut <i class='fas fa-globe'></i> <b>Publique</b> est celle où votre public mettra ses suggestions.<br /><br />- Les listes <i class='fas fa-eye-slash'></i> <b>cachées</b> seront invisibles par votre public. Décochez l'attribut pour cacher certaines listes !",
 	"INTRO_ADMIN_PLAYLISTS_MANAGE": "Ici, vous pouvez choisir quelle liste de lecture afficher, gérer ses propriétés, ou rechercher son contenu.",
 	"INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "Ce bouton vous permet d'afficher le menu contextuel des playlists, donnant accès à plus de fonctionnalités.<br/> Cliquez dessus pour continuer.",
-	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "Les actions possibles changent selon la liste selectionnée.",
-	"INTRO_ADMIN_SETTINGS": "Votre session de karaoké est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accéder en cliquant sur le bouton K puis en selectionnant Options.",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "Les actions possibles changent selon la liste sélectionnée.",
+	"INTRO_ADMIN_SETTINGS": "Votre session de karaoké est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accéder en cliquant sur le bouton K puis en sélectionnant Options.",
 	"INTRO_ADMIN_SETTINGS_SCREEN": "C'est ici que ça se passe, n'hésitez pas à essayer les différents paramètres.<br /> Certains ne prendront effet qu'au changement de chanson, si la lecture est en cours.",
 	"INTRO_ADMIN_INTRO_DOWNLOAD": "<b>Note : pour se connecter à l'interface publique, vos utilisateurs doivent être sur le même réseau Wifi que vous.</b><br /><br />Si vous souhaitez récupérer d'autres chansons que celles par défaut, rendez-vous dans <a href='/system'>le panneau système</a> pour consulter la base en ligne et faire votre sélection, ou tout télécharger d'un coup.",
 	"INTRO_ADMIN_INTROFINAL": "Fini ! Vous pouvez chanter !<br /><br />Merci d'avoir lu jusqu'ici. Nous allons désactiver le Dummy Plug System et vous allez pouvoir piloter votre EV... karaoké.<br /><br />Pour plus d'informations :<br /><br />-<a href='http://docs.karaokes.moe/fr'> Consulter la documentation </a><br />- <a href='http://docs.karaokes.moe/fr/user-guide/faq/'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/contact.html'>Contacter l'équipe</a> (twitter / discord)",
@@ -723,7 +723,7 @@
 		"REPOSITORY": "Dépôt",
 		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
 		"PROBLEMATIC": "Problématique",
-		"PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique? Est-ce un tag qu'on voudra probablement bannir? Cela permet de marquer plus facilement les karas à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Epilepsie",
+		"PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique? Est-ce un tag qu'on voudra probablement bannir? Cela permet de marquer plus facilement les karas à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Épilepsie",
 		"NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
 		"PRIORITY": "Priorité à l'affichage",
@@ -842,7 +842,7 @@
 		"COMPARE_LYRICS": "Mise à jour des paroles entre deux dépôts",
 		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Choix du dépôt",
 		"COMPARE_BUTTON": "Comparer",
-		"COMPARE_ABOUT_MESSAGE": "Cette action vous permettra de comparer puis éventuellement de copier les fichiers de paroles d'un dépôt à l'autre s'ils différent entre deux chansons identiques. Selectionnez un dépôt avec lequel comparer (celui-ci sera la destination de la copie des paroles)",
+		"COMPARE_ABOUT_MESSAGE": "Cette action vous permettra de comparer puis éventuellement de copier les fichiers de paroles d'un dépôt à l'autre s'ils différent entre deux chansons identiques. Sélectionnez un dépôt avec lequel comparer (celui-ci sera la destination de la copie des paroles)",
 		"LYRICS_ARE_DIFFERENT": "Les paroles de ces karaokés sont différentes entre le dépôt {{first}} et le dépôt {{second}} :",
 		"CONFIRM_SURE": "Voulez-vous synchroniser les paroles du dépôt {{second}} à partir de celles du dépôt {{first}} ?"
 	},
@@ -953,7 +953,7 @@
 		"DOWNLOADS_BLC_REMOVE_ERROR": "Erreur lors de la suppression des critères de liste noire sur les téléchargements",
 		"REMOTE_SONG_LIST_ERROR": "Erreur au chargement de la bibliothèque en ligne",
 		"REMOTE_TAGS_ERROR": "Error lors de la récupération des tags distants",
-		"AUTOMIX_ERROR": "Erreur lors de la création de la liste de lecture automix",
+		"AUTOMIX_ERROR": "Erreur lors de la création de la liste de lecture AutoMix",
 		"AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS": "Aucun favori trouvé pour ces utilisateurs",
 		"FAVORITES_VIEW_ERROR": "Erreur lors de la récupération des favoris",
 		"FAVORITES_ADDED_ERROR": "Erreur lors de l'ajout de favoris",
@@ -978,7 +978,7 @@
 		"SETTINGS_UPDATE_ERROR": "Erreur lors de la mise à jour de la configuration",
 		"STATS_ERROR": "Erreur lors de la récupération des statistiques",
 		"CONFIG_BACKUPED_ERROR": "Erreur lors de la sauvegarde du fichier de configuration",
-		"DATABASE_GENERATED_ERROR": "Erreur lors de la regénération de la base de données",
+		"DATABASE_GENERATED_ERROR": "Erreur lors de la régénération de la base de données",
 		"FILES_VALIDATED_ERROR": "Erreur lors de la validation des fichiers",
 		"DATABASE_DUMPED_ERROR": "Erreur lors de l'export de la base de données",
 		"DATABASE_RESTORED_ERROR": "Erreur lors de la restauration de la base de données",
@@ -1010,7 +1010,7 @@
 		"PL_SHUFFLE_ERROR": "Erreur lors du mélange d'une liste de lecture",
 		"POLL_LIST_ERROR": "Erreur lors de la récupération du sondage",
 		"POLL_NOT_ACTIVE": "Aucun sondage en cours",
-		"POLL_USER_ALREADY_VOTED": "Vous avez déjà vôté",
+		"POLL_USER_ALREADY_VOTED": "Vous avez déjà voté",
 		"REPO_LIST_ERROR": "Erreur lors de la récupération de la liste des dépôts",
 		"REPO_CREATE_ERROR": "Erreur lors de la création du dépôt",
 		"REPO_GET_ERROR": "Erreur lors de la récupération du dépôt",
@@ -1085,11 +1085,11 @@
 		"UPDATING_MEDIAS_IN_PROGRESS": "Mise à jour des medias en cours",
 		"KARA_CREATED": "Chanson créée avec succès",
 		"KARA_EDITED": "Chanson éditée avec succès",
-		"KARA_DELETED": "Chanson supprimée avec succcès",
+		"KARA_DELETED": "Chanson supprimée avec succès",
 		"SONG_COPIED": "Chanson copiée dans un autre dépôt avec succès",
 		"TAG_COPIED": "Tag copié dans un autre dépôt avec succès",
 		"CONFIG_BACKUPED": "Fichier de configuration file sauvegardé dans config.yml.backup",
-		"DATABASE_GENERATED": "Base de données regénérée avec succès",
+		"DATABASE_GENERATED": "Base de données régénérée avec succès",
 		"FILES_VALIDATED": "Fichiers validés avec succès",
 		"DATABASE_DUMPED": "Base de données exportée dans karaokemugen.sql",
 		"DATABASE_RESTORED": "Base de données restaurée depuis karaokemugen.sql",
@@ -1103,7 +1103,7 @@
 		"REPO_CONSOLIDATING_IN_PROGRESS": "Consolidation du dépôt en cours",
 		"SESSION_CREATED": "Session créé avec succès",
 		"SESSION_EDITED": "Session éditée avec succès",
-		"SESSION_MERGED": "Sessions mergées avec succès",
+		"SESSION_MERGED": "Sessions fusionnées avec succès",
 		"SESSION_ACTIVATED": "Session activée avec succès",
 		"SESSION_DELETED": "Session supprimée avec succès",
 		"TAG_CREATED": "Tag créé avec succès",
@@ -1138,7 +1138,7 @@
 		},
 		"CONFIGURATION": {
 			"TITLE": "Configuration avancée",
-			"DESCRIPTION": "Reservé aux experts. Tous les paramètres de Karaoke Mugen sont ici, attention là où vous mettez les doigts."
+			"DESCRIPTION": "Réservé aux experts. Tous les paramètres de Karaoke Mugen sont ici, attention là où vous mettez les doigts."
 		},
 		"SESSIONS": {
 			"TITLE": "Gestion des sessions",
@@ -1190,7 +1190,7 @@
 		},
 		"DOWNLOAD_BLACKLIST": {
 			"TITLE": "Liste noire de téléchargement",
-			"DESCRIPTION": "Paramètrez ce que vous ne voulez jamais télécharger de façon automatique. Vous pourrez toujours télécharger ce que vous voulez manuellement."
+			"DESCRIPTION": "Paramétrez ce que vous ne voulez jamais télécharger de façon automatique. Vous pourrez toujours télécharger ce que vous voulez manuellement."
 		},
 		"HISTORY": {
 			"TITLE": "Historique de lecture",
@@ -1218,7 +1218,7 @@
 		},
 		"TAG_EDIT": {
 			"TITLE": "Modifier un tag",
-			"DESCRIPTION": "Formulaire de modification de tag. Seul le changement de nom d'origine entraîne un chagnement de nom de fichier."
+			"DESCRIPTION": "Formulaire de modification de tag. Seul le changement de nom d'origine entraîne un changement de nom de fichier."
 		},
 		"TAG_DUPLICATES": {
 			"TITLE": "Liste des tags en double",
@@ -1226,7 +1226,7 @@
 		},
 		"USER_LIST": {
 			"TITLE": "Gestion des utilisateurs",
-			"DESCRIPTION": "D'ici vous pouvez créer, supprimer, modifier des utilisateurs mais aussi réinitialiser leur mot de passe ou changer leurs droîts"
+			"DESCRIPTION": "D'ici vous pouvez créer, supprimer, modifier des utilisateurs mais aussi réinitialiser leur mot de passe ou changer leurs droits"
 		},
 		"USER_NEW": {
 			"TITLE": "Créer un utilisateur",
