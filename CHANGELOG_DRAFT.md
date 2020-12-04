@@ -28,9 +28,16 @@ We reworked our shuffle modes, including a new one: balancing. Balancing creates
 
 ![Shuffle button](http://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/5307ea7a7f92e4416cca7b11881324eb/image.png)
 
-#### Sessions export (#773)
+#### Sessions exports (#773)
 
-You can now export your sessions data as .csv, it will contains songs requested by users, play history, etc.
+You can now **export your sessions data** as .csv, it will contain songs requested by users, play history, etc.
+
+#### Chibi player (#725)
+
+![Chibi player](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/b6a4a7488db7456fadc30a37a15b18fb/Capture_d_%C3%A9cran_2020-12-04_%C3%A0_22.13.15.png)
+
+**Chibi player** is a compact window designed to have easy controls over the Karaoke Mugen player, it can be set on top on other windows.
+It can be enabled to the Window menu.
 
 ### Breaking changes
 
@@ -47,6 +54,7 @@ You can now export your sessions data as .csv, it will contains songs requested 
 - Thumbnails are generated for each karaoke by now (for the public interface, #800)
 - System panel navigation has been reworked with a new home page (#724)
 - Tag names are now uniform against all our applications (#678)
+- Player is now configured to have [loudnorm](https://ffmpeg.org/ffmpeg-filters.html#loudnorm) normalization (bd2964bd)
 
 ### Fixes
 
@@ -57,6 +65,7 @@ You can now export your sessions data as .csv, it will contains songs requested 
 - Karaokes with missing tags are now not included in generation (#797)
 - In karaoke creation form, hitting "Enter" in a tag input is no longer writing a karaoke into database (#789)
 - Karaoke tags are always in the same order now (#786)
+- Some typos were corrected in French locales (a8eab177)
 
 ### Notes, misc
 
