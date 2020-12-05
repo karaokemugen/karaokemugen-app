@@ -7,7 +7,7 @@ interface Button {
 	active: boolean,
 	onClick: () => void,
 	label: string,
-	description: string
+	description?: string
 }
 
 interface IProps {

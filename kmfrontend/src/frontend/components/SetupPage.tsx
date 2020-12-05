@@ -20,10 +20,13 @@ interface IState {
 	instance?: string;
 	securityCode?: number;
 	repositoryFolder?: string;
-	activeView: 'user' | 'repo' | 'random';
+	activeView: 'user' | 'repo' | 'stats';
 	activeHelp: 'security-code' | null;
 	downloadRandomSongs: boolean;
-	error?: string
+	error?: string;
+	openDetails: boolean;
+	stats?: boolean;
+	errorTracking?: boolean
 }
 class SetupPage extends Component<unknown, IState> {
 	static contextType = GlobalContext;
@@ -37,6 +40,7 @@ class SetupPage extends Component<unknown, IState> {
 			activeView: 'user',
 			activeHelp: null,
 			downloadRandomSongs: true,
+			openDetails: false
 		};
 	}
 
@@ -46,7 +50,8 @@ class SetupPage extends Component<unknown, IState> {
 
 		this.setState({
 			instance: this.context?.globalState.settings.data.config?.Online.Host,
-			repositoryFolder: path
+			repositoryFolder: path,
+			activeView: this.context?.globalState.settings.data.user.login !== 'admin' ? 'repo' : 'user'
 		});
 	}
 
@@ -136,14 +141,11 @@ class SetupPage extends Component<unknown, IState> {
 					await commandBackend('consolidateRepo', {
 						path: this.state.repositoryFolder,
 						name: this.context?.globalState.settings.data.config?.System.Repositories[0].Name
-					});
-					this.setState({ activeView: 'random', error: undefined });
+					}, undefined, 300000);
 				} catch (err) {
 					const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
 					this.setState({ error: error });
 				}
-			} else {
-				this.setState({ activeView: 'random', error: undefined });
 			}
 		}
 	}
@@ -151,20 +153,32 @@ class SetupPage extends Component<unknown, IState> {
 	downloadRandomSongs = () => {
 		if (this.state.downloadRandomSongs) {
 			try {
-				commandBackend('addRandomDownloads');
-				commandBackend('updateSettings', { 'setting': { 'App': { 'FirstRun': false } } });
-				commandBackend('startPlayer');		
-				window.location.assign('/welcome');
+				commandBackend('addRandomDownloads', undefined, undefined, 300000);
 			} catch (err) {
 				const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
 				this.setState({ error: error });
 			}
-		} else {
-			commandBackend('updateSettings', { 'setting': { 'App': { 'FirstRun': false } } });
-			commandBackend('startPlayer');	
+		}
+		this.setState({ activeView: 'stats', error: undefined });
+	}
+
+	updateStats = async () => {
+		if (this.state.errorTracking !== undefined && this.state.stats !== undefined) {
+			await commandBackend('updateSettings', {
+				setting: {
+					Online: {
+						Stats: this.state.stats,
+						ErrorTracking: this.state.errorTracking
+					},
+					App: {
+						FirstRun: false
+					}
+				}
+			});
+			await commandBackend('startPlayer');
 			window.location.assign('/welcome');
 		}
-	}
+	};
 
 	render() {
 		return (
@@ -472,39 +486,40 @@ class SetupPage extends Component<unknown, IState> {
 									: null
 								}
 							</form>
-						) : this.state.activeView === 'repo' ? (
-							<section className="step step-repo">
-								<p>{i18next.t('SETUP_PAGE.CONNECTED_MESSAGE', {
-									user: this.state.login,
-								})}</p>
-								<p>{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_DESC_1')}
-									<strong>{this.context?.globalState.settings.data.config?.System.Repositories[0].Name}</strong>
-									{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_DESC_2')}
-								</p>
-								<div className="input-group">
-									<div className="input-control">
-										<label>{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_QUESTION')}</label>
-										<input
-											className="input-field"
-											value={this.state.repositoryFolder}
+						) : null
+						}
+						{this.state.activeView === 'repo' ? (
+							<>
+								<section className="step step-repo">
+									<p>{i18next.t('SETUP_PAGE.CONNECTED_MESSAGE', {
+										user: this.state.login,
+									})}</p>
+									<p>{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_DESC_1')}
+										<strong>{this.context?.globalState.settings.data.config?.System.Repositories[0].Name}</strong>
+										{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_DESC_2')}
+									</p>
+									<div className="input-group">
+										<div className="input-control">
+											<label>{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_QUESTION')}</label>
+											<input
+												className="input-field"
+												value={this.state.repositoryFolder}
 
-											onChange={(event) =>
-												this.setState({ repositoryFolder: event.target.value })
+												onChange={(event) =>
+													this.setState({ repositoryFolder: event.target.value })
+												}
+											/>
+											{this.context.globalState.settings.data.state.electron ?
+												<button type="button" onClick={this.onClickRepository}>{i18next.t('SETUP_PAGE.MODIFY_DIRECTORY')}</button> : null
 											}
-										/>
-										{this.context.globalState.settings.data.state.electron ?
-											<button type="button" onClick={this.onClickRepository}>{i18next.t('SETUP_PAGE.MODIFY_DIRECTORY')}</button> : null
-										}
+										</div>
 									</div>
-								</div>
-								<p>{i18next.t('SETUP_PAGE.REPOSITORY_NEED_SPACE')}</p>
-								<div className="actions">
-									<label className="error">{this.state.error}</label>
-									<button type="button" onClick={this.consolidate}>{i18next.t('SETUP_PAGE.SAVE_PARAMETER')}</button>
-								</div>
-							</section>
-						) :
-							(
+									<p>{i18next.t('SETUP_PAGE.REPOSITORY_NEED_SPACE')}</p>
+									<div className="actions">
+										<label className="error">{this.state.error}</label>
+
+									</div>
+								</section>
 								<section className="step step-random">
 									<div>
 										{i18next.t('SETUP_PAGE.DOWNLOAD_RANDOM_SONGS', {
@@ -521,10 +536,68 @@ class SetupPage extends Component<unknown, IState> {
 									</div>
 									<div className="actions">
 										<label className="error">{this.state.error}</label>
-										<button type="button" onClick={this.downloadRandomSongs}>{i18next.t('SETUP_PAGE.DONE')}</button>
+										<button type="button" onClick={async () => {
+											await this.consolidate();
+											await this.downloadRandomSongs();
+										}}>{i18next.t('SETUP_PAGE.SAVE_PARAMETER')}</button>
 									</div>
 								</section>
-							)}
+							</>
+						) : null
+						}
+						{this.state.activeView === 'stats' ? (
+							<section className="step step-random">
+								<div className="modal-message text">
+									<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
+								</div>
+								<div className="text">
+									<a className="btn-link" type="button" onClick={() => this.setState({ openDetails: !this.state.openDetails })}>
+										{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
+									</a>
+									{this.state.openDetails ?
+										<React.Fragment>
+											<ul>
+												<li>{i18next.t('ONLINE_STATS.DETAILS.1')}</li>
+												<li>{i18next.t('ONLINE_STATS.DETAILS.2')}</li>
+												<li>{i18next.t('ONLINE_STATS.DETAILS.3')}</li>
+												<li>{i18next.t('ONLINE_STATS.DETAILS.4')}</li>
+												<li>{i18next.t('ONLINE_STATS.DETAILS.5')}</li>
+											</ul>
+											<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
+											<br />
+										</React.Fragment> : null
+									}
+									<div className="text">
+										<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
+									</div>
+									<div className="input-group">
+										<button
+											className={this.state.stats ? 'on' : ''}
+											type="button" onClick={() => this.setState({ stats: true })}>{i18next.t('YES')}</button>
+										<button
+											className={this.state.stats === false ? 'off' : ''}
+											type="button" onClick={() => this.setState({ stats: false })}>{i18next.t('NO')}</button>
+									</div>
+									<div className="text">
+										<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
+									</div>
+									<div className="input-group">
+										<button
+											className={this.state.errorTracking ? 'on' : ''}
+											type="button" onClick={() => this.setState({ errorTracking: true })}>{i18next.t('YES')}</button>
+										<button
+											className={this.state.errorTracking === false ? 'off' : ''}
+											type="button" onClick={() => this.setState({ errorTracking: false })}>{i18next.t('NO')}</button>
+									</div>
+									{i18next.t('ONLINE_STATS.CHANGE')}
+								</div >
+								<div className="actions">
+									<label className="error">{this.state.error}</label>
+									<button type="button" onClick={this.updateStats}>{i18next.t('ONLINE_STATS.CONFIRM')}</button>
+								</div>
+							</section>
+						) : null
+						}
 					</div>
 				</div>
 			</div>

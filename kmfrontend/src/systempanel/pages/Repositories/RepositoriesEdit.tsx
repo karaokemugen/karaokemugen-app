@@ -62,7 +62,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 	consolidate = async (consolidatePath: string) => {
 		if (consolidatePath) {
-			await commandBackend('consolidateRepo', { path: consolidatePath, name: this.props.match.params.name }, true);
+			await commandBackend('consolidateRepo', { path: consolidatePath, name: this.props.match.params.name }, true, 300000);
 			this.props.history.push('/system/km/repositories');
 		}
 	}

@@ -75,15 +75,13 @@ class OnlineStatsModal extends Component<unknown, IState> {
 											label: i18next.t('YES'),
 											activeColor: '#57bb00',
 											active: this.state.stats,
-											onClick: () => this.setState({stats: true}),
-											description: 'hello'
+											onClick: () => this.setState({ stats: true })
 										},
 										{
 											label: i18next.t('NO'),
 											activeColor: '#880500',
 											active: this.state.stats === false,
-											onClick: () => this.setState({stats: false}),
-											description: 'hello'
+											onClick: () => this.setState({ stats: false })
 										}
 									]}
 								/>
@@ -98,15 +96,13 @@ class OnlineStatsModal extends Component<unknown, IState> {
 											label: i18next.t('YES'),
 											activeColor: '#57bb00',
 											active: this.state.errorTracking,
-											onClick: () => this.setState({errorTracking: true}),
-											description: 'hello'
+											onClick: () => this.setState({ errorTracking: true })
 										},
 										{
 											label: i18next.t('NO'),
 											activeColor: '#880500',
 											active: this.state.errorTracking === false,
-											onClick: () => this.setState({errorTracking: false}),
-											description: 'hello'
+											onClick: () => this.setState({ errorTracking: false })
 										}
 									]}
 								/>
