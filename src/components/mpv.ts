@@ -14,6 +14,7 @@ import {setProgressBar} from '../electron/electron';
 import {errorStep} from '../electron/electronLogger';
 import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
+import {getAvatarResolution} from '../lib/utils/ffmpeg';
 import {asyncExists, asyncReadDir, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
 import { playerEnding } from '../services/karaokeEngine';
 import {getSingleMedia} from '../services/medias';
@@ -445,42 +446,45 @@ class Players {
 		monitor?: Player
 	};
 
-	private static fillVisualizationOptions(mediaData: MediaData, withAvatar: boolean): string {
-		const subOptions = [
-			'[aid1]loudnorm[a0]',
-			'[a0]asplit[ao][a]',
-			'[a]showcqt=axis=0[vis]',
-			'[vis]scale=600:400[vecPrep]',
-			`nullsrc=size=1920x1080:duration=${mediaData.duration}[nl]`,
-			'[nl]setsar=1,format=rgba[emp]',
-			'[emp][vecPrep]overlay=main_w-overlay_w:main_h-overlay_h:x=0[visu]',
-			'[vid1]scale=-2:1080[vidInp]',
-			'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
-		];
-		if (withAvatar) {
-			subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl]');
-			subOptions.push(`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo]`);
-			subOptions.push('[logo][ovrl]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]');
-			subOptions.push(`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
-		} else {
-			subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
+	private static async genLavfiComplex(mediaData: MediaData): Promise<string> {
+		const isMP3 = mediaData.media.endsWith('.mp3');
+		const shouldDisplayAvatar = mediaData.avatar && getConfig().Karaoke.Display.Avatar;
+		const shouldDisplayVisualEffects = mediaData.media.endsWith('.mp3') && getConfig().Player.VisualizationEffects;
+		const MP3Boilerplate = `[vid1]scale=-2:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];nullsrc=size=1920x1080:duration=${mediaData.duration},setsar=1,format=rgba[emp]`;
+		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(mediaData.avatar)*0.5):0;
+		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
+		let audio = '[aid1]loudnorm[ao]';
+		let visu = '';
+		let avatar = '';
+		if (shouldDisplayVisualEffects) {
+			audio = '[aid1]loudnorm[a0];[a0]asplit[ao][a]';
+			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
+			// Courtesy of @nah :)
+			visu = [
+				'[a]showcqt=axis=0[vis]',
+				'[vis]scale=600:400[vecPrep]',
+				'[emp][vecPrep]overlay=main_w-overlay_w:main_h-overlay_h:x=0[visu]',
+				'[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl]'
+			].join(';');
 		}
-		return subOptions.join(';');
-	}
-
-	private static avatarFilter(mediaData: MediaData) {
-		const subOptions = [
-			'[aid1]loudnorm[ao]',
-			`nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
-			'[vid1]scale=-2:1080[vidInp]',
-			'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
-			`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo]`,
-			'[logo]geq=\'st(3,pow(X-(W/2),2)+pow(Y-(H/2),2));if(lte(ld(3),80*80),255,0)\'[logo1]',
-			'[logo1][vpoc]scale2ref=w=(ih*.128):h=(ih*.128)[logo2][base]',
-			'[base][emp]overlay[ovrl]',
-			`[ovrl][logo2]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
-		];
-		return subOptions.join(';');
+		if (shouldDisplayAvatar) {
+			// Again, lavfi-complex expert @nah comes to the rescue!
+			avatar = [
+				`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
+				`[logo][${isMP3 ? (visu ? 'ovrl':'vpoc'):'vid1'}]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]`,
+				(isMP3 && !visu) ? '[base][emp]overlay[ovrl]' : undefined,
+				`[${(isMP3 && !visu) ? 'ovrl':'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 8},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vfinal]`
+			].filter(x => !!x).join(';');
+		}
+		return [
+			audio,
+			isMP3 ? MP3Boilerplate : undefined,
+			visu,
+			avatar,
+			(!visu && !avatar) ? '[vid1]null[vfinal]' : undefined,
+			(visu && !avatar) ? '[ovrl]null[vfinal]' : undefined,
+			'[vfinal]null[vo]'
+		].filter(x => !!x).join(';');
 	}
 
 	private async extractAllBackgroundFiles(): Promise<string[]> {
@@ -681,48 +685,50 @@ class Players {
 		const conf = getConfig();
 		logger.debug('Play event triggered', {service: 'Player'});
 		playerState.playing = true;
-		//Search for media file in the different PathMedias
-		let mediaFile: string;
-		const mediaFiles: string[]|void = await resolveFileInDirs(mediaData.media, resolvedPathRepos('Medias', mediaData.repo))
-			.catch(err => {
-				logger.debug('Error while resolving media path', {service: 'Player', obj: err});
-				logger.warn(`Media NOT FOUND : ${mediaData.media}`, {service: 'Player'});
-				if (conf.Online.MediasHost) {
-					mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(mediaData.media)}`;
-					logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
-				} else {
-					throw Error(`No media source for ${mediaData.media} (tried in ${resolvedPathRepos('Medias', mediaData.repo).toString()} and HTTP source)`);
-				}
-			});
-		mediaFile = mediaFiles[0];
 		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
-		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
+		let mediaFile: string;
+		let subFile: string;
 		const options: any = {
 			title: `${mediaData.currentSong.title} - Karaoke Mugen Player`
 		};
-		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
-			.catch(err => {
-				logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
-				logger.warn(`Subs NOT FOUND : ${mediaData.subfile}`, {service: 'Player'});
-			}) || []; // Empty array
-		if (subFiles[0]) {
-			options['sub-file'] = subFiles[0];
+		const loadPromises = [
+			Players.genLavfiComplex(mediaData).then(res => options['lavfi-complex'] = res)
+				.catch(err => {
+					logger.error('Cannot compute lavfi-complex filter, disabling avatar display', {service: 'Player', obj: err});
+					// At least, loudnorm
+					options['lavfi-complex'] = '[aid1]loudnorm[ao]';
+				}),
+			resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
+				.then(res => subFile = res[0])
+				.catch(err => {
+					logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
+					logger.warn(`Subs NOT FOUND : ${mediaData.subfile}`, {service: 'Player'});
+					subFile = '';
+				}),
+			resolveFileInDirs(mediaData.media, resolvedPathRepos('Medias', mediaData.repo))
+				.then(res => mediaFile = res[0])
+				.catch(err => {
+					logger.debug('Error while resolving media path', {service: 'Player', obj: err});
+					logger.warn(`Media NOT FOUND : ${mediaData.media}`, {service: 'Player'});
+					if (conf.Online.MediasHost) {
+						mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(mediaData.media)}`;
+						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
+					} else {
+						mediaFile = '';
+						throw new Error(`No media source for ${mediaData.media} (tried in ${resolvedPathRepos('Medias', mediaData.repo).toString()} and HTTP source)`);
+					}
+				})
+		];
+		await Promise.all<Promise<any>>(loadPromises);
+		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with ${subFile}`:''}`, {service: 'Player'});
+		if (subFile) {
+			options['sub-file'] = subFile;
 			options.sid = '1';
 		} else {
 			options['sub-file'] = '';
 			options.sid = 'none';
 		}
 		if (mediaFile.endsWith('.mp3')) {
-			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
-			// Courtesy of @nah :)
-			if (conf.Player.VisualizationEffects) {
-				options['lavfi-complex'] = Players.fillVisualizationOptions(mediaData, (mediaData.avatar && conf.Karaoke.Display.Avatar));
-			} else if (mediaData.avatar && conf.Karaoke.Display.Avatar) {
-				options['lavfi-complex'] = Players.avatarFilter(mediaData);
-			} else {
-				options['lavfi-complex'] = '[aid1]loudnorm[ao]';
-			}
-
 			const id3tags = await id3.read(mediaFile);
 			if (!id3tags.image) {
 				const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
@@ -731,11 +737,6 @@ class Players {
 				options['image-display-duration'] = 'inf';
 				options.vid = '1';
 			}
-		} else {
-			// If video, display avatar if it's defined.
-			// Again, lavfi-complex expert @nah comes to the rescue!
-			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options['lavfi-complex'] = `[aid1]loudnorm[ao];movie=\\'${mediaData.avatar.replace(/\\/g,'/').replace(/circle\./g, '')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-100)*gt(abs(H/2-Y),H/2-100),if(lte(hypot(100-(W/2-abs(W/2-X)),100-(H/2-abs(H/2-Y))),100),255,0),255)'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`;
-			else options['lavfi-complex'] = '[aid1]loudnorm[ao]';
 		}
 		// Load all thoses files into mpv and let's go!
 		try {
