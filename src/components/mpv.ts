@@ -265,22 +265,23 @@ class Player {
 				playerState.nextSongNotifSent = true;
 				notificationNextSong();
 			}
-			// Display informations if timeposition is 8 seconds before end of song
 			if (position >= (playerState.currentSong.duration - 8) &&
-				!playerState.displayingInfo &&
-				playerState.mediaType === 'song')
+				playerState.mediaType === 'song') {
+				// Display informations if timeposition is 8 seconds before end of song
 				this.control.displaySongInfo(playerState.currentSong.infos);
-			// Display informations if timeposition is 8 seconds after start of song
-			if (position <= 8 &&
-				!playerState.displayingInfo &&
-				playerState.mediaType === 'song')
-				this.control.displaySongInfo(playerState.currentSong.infos, 8000, false, playerState.currentSong.spoiler);
-			// Display KM's banner if position reaches halfpoint in the song
-			if (Math.floor(position) === Math.floor(playerState.currentSong.duration / 2) &&
-				!playerState.displayingInfo &&
+				playerState.displayingInfo = true;
+			} else if (position <= 8 && playerState.mediaType === 'song') {
+				// Display informations if timeposition is 8 seconds after start of song
+				this.control.displaySongInfo(playerState.currentSong.infos, -1, false, playerState.currentSong.spoiler);
+				playerState.displayingInfo = true;
+			} else if (position >= Math.floor(playerState.currentSong.duration / 2)-4 &&
+				position <= Math.floor(playerState.currentSong.duration / 2)+4 &&
 				playerState.mediaType === 'song' && !getState().songPoll) {
-				logger.debug('Middle of song DI', {service: 'Player'});
-				this.control.displayInfo(8000);
+				// Display KM's banner if position reaches halfpoint in the song
+				this.control.displayInfo();
+				playerState.displayingInfo = true;
+			} else if (playerState.displayingInfo) {
+				this.control.clearText();
 			}
 			// Stop poll if position reaches 10 seconds before end of song
 			if (Math.floor(position) >= Math.floor(playerState.currentSong.duration - 10) &&
@@ -550,8 +551,10 @@ class Players {
 			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
 			// ensureRunning isn't needed on non-mpv commands
 			if (mpv && await this.ensureRunning(onlyOn, ignoreLock) === -1) return;
-			logger.debug(`${mpv ? 'mpv ': ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {service: 'Player'});
-			logger.debug(`Running it for players ${JSON.stringify(onlyOn ? onlyOn:Object.keys(this.players))}`, {service: 'Player'});
+			if (!(typeof cmd !== 'string' && cmd?.command[1] === 'show-text')) {
+				logger.debug(`${mpv ? 'mpv ': ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {service: 'Player'});
+				logger.debug(`Running it for players ${JSON.stringify(onlyOn ? onlyOn:Object.keys(this.players))}`, {service: 'Player'});
+			}
 			const loads = [];
 			if (!args) args = [];
 			if (onlyOn) {
@@ -1018,9 +1021,8 @@ class Players {
 		}
 	}
 
-	async displaySongInfo(infos: string, duration = 8000, nextSong = false, spoilerAlert = false) {
+	async displaySongInfo(infos: string, duration = -1, nextSong = false, spoilerAlert = false) {
 		try {
-			playerState.displayingInfo = true;
 			const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
 			const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
@@ -1033,8 +1035,6 @@ class Players {
 				]
 			};
 			await this.exec(command);
-			await sleep(duration);
-			playerState.displayingInfo = false;
 		} catch(err) {
 			logger.error('Unable to display song info', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -1044,7 +1044,6 @@ class Players {
 
 	async displayInfo(duration = 10000000) {
 		try {
-			playerState.displayingInfo = true;
 			const conf = getConfig();
 			const state = getState();
 			const ci = conf.Karaoke.Display.ConnectionInfo;
@@ -1064,8 +1063,6 @@ class Players {
 				]
 			};
 			await this.exec(command);
-			await sleep(duration);
-			playerState.displayingInfo = false;
 		} catch(err) {
 			logger.error('Unable to display infos', {service: 'Player', obj: err});
 			sentry.error(err);
