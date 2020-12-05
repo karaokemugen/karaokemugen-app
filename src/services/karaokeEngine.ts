@@ -10,7 +10,7 @@ import { CurrentSong } from '../types/playlist';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { addPlayedKara, getKara, getKaras, getSeriesSingers } from './kara';
-import { mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player';
+import {initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer} from './player';
 import { getCurrentSong, getPlaylistContentsMini, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';
 
@@ -22,6 +22,8 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		setState({singlePlay: !randomPlaying, currentSong: current, randomPlaying: randomPlaying});
 		if (!randomPlaying) {
 			stopAddASongMessage();
+		} else if (randomPlaying && getConfig().Playlist.RandomSongsAfterEndMessage) {
+			initAddASongMessage();
 		}
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
