@@ -152,12 +152,16 @@ class SetupPage extends Component<unknown, IState> {
 		if (this.state.downloadRandomSongs) {
 			try {
 				commandBackend('addRandomDownloads');
+				commandBackend('updateSettings', { 'setting': { 'App': { 'FirstRun': false } } });
+				commandBackend('startPlayer');		
 				window.location.assign('/welcome');
 			} catch (err) {
 				const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
 				this.setState({ error: error });
 			}
 		} else {
+			commandBackend('updateSettings', { 'setting': { 'App': { 'FirstRun': false } } });
+			commandBackend('startPlayer');	
 			window.location.assign('/welcome');
 		}
 	}

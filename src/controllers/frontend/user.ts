@@ -232,7 +232,7 @@ export default function userController(router: SocketIOApp) {
 		try {
 			//If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
 			const user = req.body.login.includes('@')
-				? { type: req.body.type	}
+				? { type: req.body.type, flag_tutorial_done: req.body.flag_tutorial_done }
 				: req.body;
 			const avatar = req.body.login.includes('@')
 				? null

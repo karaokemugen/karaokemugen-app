@@ -241,7 +241,7 @@ class WelcomePage extends Component<unknown, IState> {
 
 						<section className="tiles-panel">
 							{
-								this.context?.globalState.settings.data.config?.App.FirstRun
+								this.context?.globalState.settings.data.user?.flag_tutorial_done
 									? <article className="tile-tutorial">
 										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
 											<i className="fas fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>

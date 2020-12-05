@@ -116,7 +116,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 			},
 			responseType: 'json'
 		});
-		return res.body;
+		return res.body as User;
 	} catch(err) {
 		sentry.error(err);
 		if (err.statusCode === 401) throw 'Unauthorized';

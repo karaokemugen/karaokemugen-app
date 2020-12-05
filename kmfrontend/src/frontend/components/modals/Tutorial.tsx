@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactJoyride, { ACTIONS, EVENTS, STATUS, Step } from 'react-joyride';
 
+import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';
 
 export function i18nAsDiv(key: string, args?: any) {
@@ -134,8 +135,9 @@ class Tutorial extends Component<unknown, IState> {
 			this.setState({ run: false });
 		}
 		if (([STATUS.FINISHED, STATUS.SKIPPED] as Array<string>).includes(status)) {
-			await commandBackend('updateSettings', { 'setting': { 'App': { 'FirstRun': false } } });
-			commandBackend('startPlayer');
+			const user:User = await commandBackend('getMyAccount');
+			user.flag_tutorial_done = true;
+			await commandBackend('editMyAccount', user);
 		}
 		if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Array<string>).includes(type)) {
 			// Update state to advance the tour

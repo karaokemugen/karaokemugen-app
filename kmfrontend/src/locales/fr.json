@@ -433,7 +433,7 @@
 	"INTRO_ADMIN_INTRO1": "Bienvenue sur Karaoke Mugen !<br /><br />Karaoke Mugen utilise un système de comptes pour gérer et participer à votre karaoké.<br />Il y a trois types de comptes : opérateur, utilisateur, et invité. Pour gérer votre karaoké, vous avez besoin d'un compte opérateur. (comme celui créé dans l'assistant de démarrage)",
 	"INTRO_ADMIN_INTRO2": "Indiquez un nom d'utilisateur et un mot de passe ou si vous possédez déjà un compte en ligne, connectez-vous avec dans l'onglet Connexion.<br />Si vous ne souhaitez pas un compte en ligne, désactivez l'option.<br />Le code de sécurité est visible dans le menu de Karaoke Mugen. Ce code vous servira à passer votre compte utilisateur en opérateur ou à créer un nouveau compte opérateur depuis cette page, si jamais vous oubliez votre mot de passe, par exemple.<br /><br />Vous pourrez modifier votre pseudo plus tard (mais pas votre nom d'utilisateur !)",
 	"INTRO_ADMIN_EMAIL_ONLINE": "Lors de la création d'un compte en ligne, pensez à modifier votre profil pour ajouter une adresse mail afin de pouvoir récupérer votre mot de passe en cas d'oubli !",
-	"INTRO_ADMIN_INTRO3": "Votre Karaoke Mugen est configuré, nous allons maintenant vous montrer comment ça marche.<br /><br />Pour refaire cette visite guidée, allez sur la <a href='/system/km/config'>page de configuration</a>, cliquer sur le paramètre <i>App.FirstRun</i>.",
+	"INTRO_ADMIN_INTRO3": "Votre Karaoke Mugen est configuré, nous allons maintenant vous montrer comment ça marche.<br /><br />Pour refaire cette visite guidée, allez dans le panneau système, menu Utilisateurs, éditez votre profil et décochez la case \"Tutorial opérateur terminé.\"",
 	"INTRO_ADMIN_PLAYLISTS": "Voici vos listes de lecture. Vous pourrez les gérer depuis cet écran. Nous y reviendrons tout à l'heure en détail.",
 	"INTRO_ADMIN_LECTEUR": "Ici, le tableau de commandes.<br/>Vous êtes libre de piloter le karaoké à votre guise.<br />Ajoutez des karaokés à la playlist et appuyez sur <i class='fas fa-play'></i> Play pour tester.",
 	"INTRO_ADMIN_MYSTERY": "Vous avez le choix d'ajouter des chansons de façon visible ou invisible pour votre public en choisissant l'Ajout Normal ou Mystère. Idéal pour les surprises !<br /><br />Vous pouvez limiter l'utilisation de l'interface publique ici. Le mode restreint empêche vos invités d'ajouter des chansons mais leur permet tout de même de voir la liste de lecture.",
@@ -656,6 +656,7 @@
 		"TYPE": "Type"
 	},
 	"USERS": {
+		"TYPE": "Type de compte",
 		"ADMIN": "Opérateur",
 		"USER": "Utilisateur",
 		"GUEST": "Invité",
@@ -676,6 +677,7 @@
 		"DELETE_USER_CONFIRM": "Suppression de l'utilisateur",
 		"LOG_IN": "Connexion",
 		"NEW_USER": "Nouvel utilisateur",
+		"REPLAY_TUTORIAL": "Tutoriel opérateur terminé",
 		"EDIT_ONLINE_ACCOUNT": "Les utilisateurs en ligne ne peuvent pas être édités depuis cette page hormis pour changer leur rôle sur cette instance de Karaoke Mugen. Pour éditer votre propre profil en ligne, faites cela depuis l'interface publique ou opérateur."
 	},
 	"DATABASE": {
