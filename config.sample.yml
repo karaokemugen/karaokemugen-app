@@ -1,6 +1,6 @@
 ---
 App:
-  # FirstRun is set to false after user completed the tutorial.
+  # FirstRun is set to false after user setup the app.
   FirstRun: true
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me

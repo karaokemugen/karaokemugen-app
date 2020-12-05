@@ -33,6 +33,7 @@ import {imageFileTypes} from '../lib/utils/constants';
 import {asyncCopy, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
+import { DBGuest } from '../types/database/user';
 import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
 import sentry from '../utils/sentry';
@@ -108,6 +109,8 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'Only admins can change a user\'s type'};
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw {code: 409, msg: 'Nickname already exists'};
+		// Tutorial done is local only, so it's not transferred from KM Server for online users, so we'll check out with currentUser.
+		if (user.flag_tutorial_done === undefined) user.flag_tutorial_done = currentUser.flag_tutorial_done;
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
@@ -149,7 +152,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 }
 
 /** Get all guest users */
-export function listGuests(): Promise<User[]> {
+export function listGuests(): Promise<DBGuest[]> {
 	return DBListGuests();
 }
 
@@ -357,7 +360,7 @@ export async function deleteUser(username: string) {
 }
 
 /** Updates all guest avatars with those present in KM's codebase in the assets folder */
-async function updateGuestAvatar(user: User) {
+async function updateGuestAvatar(user: DBGuest) {
 	const bundledAvatarFile = `${slugify(user.login, {
 		lower: true,
 		remove: /['"!,?()]/g

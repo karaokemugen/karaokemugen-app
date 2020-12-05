@@ -27,7 +27,8 @@ SELECT
 	u.flag_online AS flag_online,
 	u.series_lang_mode AS series_lang_mode,
 	u.main_series_lang AS main_series_lang,
-	u.fallback_series_lang AS fallback_series_lang
+	u.fallback_series_lang AS fallback_series_lang,
+	u.flag_tutorial_done AS flag_tutorial_done
 FROM users AS u
 WHERE u.pk_login = :username
 `;
@@ -74,7 +75,8 @@ INSERT INTO users(
 	password,
 	nickname,
 	flag_online,
-	last_login_at
+	last_login_at,
+	flag_tutorial_done
 )
 VALUES (
 	:type,
@@ -82,7 +84,8 @@ VALUES (
 	:password,
 	:nickname,
 	:flag_online,
-	:last_login_at
+	:last_login_at,
+	:flag_tutorial_done
 );
 `;
 
@@ -131,7 +134,8 @@ UPDATE users SET
 	type = :type,
 	series_lang_mode = :series_lang_mode,
 	main_series_lang = :main_series_lang,
-	fallback_series_lang = :fallback_series_lang
+	fallback_series_lang = :fallback_series_lang,
+	flag_tutorial_done = :flag_tutorial_done
 WHERE pk_login = :old_login
 `;
 

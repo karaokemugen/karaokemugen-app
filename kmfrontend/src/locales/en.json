@@ -416,7 +416,7 @@
 	"MAKE_ACCOUNT_ADMIN": "Transform account to operator",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "If you want to make your account an operator account, write the 6 numbers security code and validate.",
 	"INTRO_ADMIN_EMAIL_ONLINE": "When creating an online account, remember to modify your profile to add an email address so that you can recover your password if you forget it!",
-	"INTRO_ADMIN_INTRO3": "Your Karaoke Mugen is configured, we are now going to show you how it works.<br/><br/>To redo this guided tour, go to the <a href='/system/km/config'>config page</a>, toggle the <i>App.FirstRun</i> setting.",
+	"INTRO_ADMIN_INTRO3": "Your Karaoke Mugen is configured, we are now going to show you how it works.<br/><br/>To redo this guided tour, go to the system panel, Users menu, edit your profile and uncheck the \"Finished operator tutorial\" box.",
 	"INTRO_ADMIN_PLAYLISTS": "Here are your playlists. You can manage them from this screen. We will learn more on them later.",
 	"INTRO_ADMIN_LECTEUR": "Here is the control panel.<br/>You can manage your karaoke as you wish.<br />Pick songs from your collection and add them to a playlist, then press <i class='fas fa-play'></i> Play to test it out.",
 	"INTRO_ADMIN_MYSTERY": "You can choose to add invisible or visible songs to your guests by choosing Normal or Mystery Add. Perfect for surprises!<br /><br />You can limit the public interface usage here. The restricted mode keeps your guests from adding songs, but they can still see the current playlist.",
@@ -639,6 +639,7 @@
 		"TYPE": "Type"
 	},
 	"USERS": {
+		"TYPE": "Account type",
 		"ADMIN": "Operator",
 		"USER": "User",
 		"GUEST": "Guest",
@@ -659,6 +660,7 @@
 		"DELETE_USER_CONFIRM": "Delete user",
 		"LOG_IN": "Log in",
 		"NEW_USER": "New user",
+		"REPLAY_TUTORIAL": "Finished operator tutorial",
 		"EDIT_ONLINE_ACCOUNT": "Online users cannot be edited from this page except to change their role on this instance of Karaoke Mugen. To edit your own profile online, do this from the public or operator interface."
 	},
 	"DATABASE": {
