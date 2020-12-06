@@ -118,8 +118,8 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 		});
 		return res.body as User;
 	} catch(err) {
+		if (err.statusCode === 401 || err.statusCode === 403) throw 'Unauthorized';
 		sentry.error(err);
-		if (err.statusCode === 401) throw 'Unauthorized';
 		throw `[RemoteUser] Got error when get remote user ${username} : ${err}`;
 	}
 }
