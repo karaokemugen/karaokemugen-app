@@ -19,12 +19,23 @@
 .settings-line {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	padding: 0.75em;
 	background-color: $mugen-playlist-odd;
 }
 
 .settings-line:nth-child(even) {
 	background-color: $mugen-playlist-even;
+}
+
+.blur-hover {
+	filter: blur(5px);
+	transition: filter 1.5s ease;
+	margin-right: .5em;
+}
+
+.blur-hover:hover {
+	filter: unset;
 }
 
 #manage, #manage > .panel  {
@@ -51,7 +62,9 @@
 	margin-bottom: 10px;
 
 	.control-label {
-		padding-left: 5em;
+		padding-left: 3em;
+		display: flex;
+		align-items: center;
 	}
 }
 

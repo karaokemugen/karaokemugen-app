@@ -5,6 +5,7 @@ import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { dotify, expand } from '../../../utils/tools';
 import Switch from '../generic/Switch';
+import RemoteStatus from './RemoteStatus';
 
 interface IProps {
 	onChange: (e: any) => void;
@@ -576,6 +577,19 @@ class KaraokeOptions extends Component<IProps, IState> {
 									isChecked={this.state.config['Online.URL']} />
 							</div>
 						</div>
+
+						<div className="settings-line">
+							<label className="col-xs-4 control-label">
+								{i18next.t('REMOTE')}
+							</label>
+							<div className="col-xs-6">
+								<Switch idInput="Online.Remote" handleChange={this.onChange}
+									isChecked={this.state.config['Online.Remote']} />
+							</div>
+						</div>
+
+						{this.state.config['Online.Remote'] ?
+							<RemoteStatus/> : null }
 
 						<div className="settings-line subCategoryGroupPanel">
 							<div className="col-xs-12" style={{ textAlign: 'center' }}>

@@ -296,6 +296,10 @@ class WelcomePage extends Component<unknown, IState> {
 											<strong>{i18next.t('WLCM_STATS_TAGS')}</strong>
 											<span>{this.state.stats?.tags}</span>
 										</li>
+										<li>
+											<strong>{i18next.t('WLCM_REMOTE')}</strong>
+											<span>{this.context.globalState?.settings?.data?.state?.url}</span>
+										</li>
 									</ul>
 								</blockquote>
 							</article>

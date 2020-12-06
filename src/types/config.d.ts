@@ -27,7 +27,8 @@ export interface Config {
 			}
 			App?: boolean
 		}
-		MediasHost: string
+		MediasHost: string,
+		Remote: boolean
 	},
 	Frontend: {
 		GeneratePreviews?: boolean,

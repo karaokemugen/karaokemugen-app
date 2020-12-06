@@ -4,11 +4,11 @@ import i18next from 'i18next';
 import React, {Component, createRef, Ref} from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import blankAvatar from '../../../assets/blank.png';
 import nanamiPNG from '../../../assets/nanami.png';
 import nanamiWebP from '../../../assets/nanami.webp';
 import { logout } from '../../../store/actions/auth';
 import GlobalContext from '../../../store/context';
+import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
@@ -91,9 +91,7 @@ class PublicHeader extends Component<IProps, IState> {
 						<div className="dropdown-container">
 							<div className={`closeHandler${this.state.dropDownMenu ? ' active':''}`} onClick={() => this.setState({ dropDownMenu: false })} />
 							<a href="#" onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}>
-								<img src={this.context.globalState.settings.data.user?.avatar_file ?
-									`/avatars/${this.context.globalState.settings.data.user?.avatar_file}`
-									: blankAvatar as string} alt={this.context.globalState.settings.data.user?.nickname} />
+								<ProfilePicture user={this.context.globalState.settings.data.user} />
 							</a>
 							<div className={`dropdown ${this.state.dropDownMenu ? 'active' : ''}`}>
 								<div className="header">{this.context.globalState.settings.data.user.nickname}</div>

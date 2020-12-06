@@ -3,6 +3,7 @@ import React from 'react';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
 import { SettingsStoreData } from '../store/types/settings';
 import { getNavigatorLanguageIn3B } from './isoLanguages';
+import { isRemote } from './socket';
 
 const navigatorLanguage: string = getNavigatorLanguageIn3B();
 
@@ -92,5 +93,9 @@ export function buildKaraTitle(settings:SettingsStoreData, data: DBKara, onlyTex
 }
 
 export function getPreviewLink(kara: DBKara) {
-	return `/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
+	if (isRemote()) {
+		return `https://${kara.repository}/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
+	} else {
+		return `/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
+	}
 }

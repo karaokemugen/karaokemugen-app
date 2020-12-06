@@ -8,8 +8,9 @@ import { Tag } from '../../../../../src/lib/types/tag';
 import { DBBlacklist } from '../../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
 import { GlobalContextInterface } from '../../../store/context';
+import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { buildKaraTitle, getSerieLanguage, getTagInLocale } from '../../../utils/kara';
-import { commandBackend } from '../../../utils/socket';
+import {commandBackend, isRemote} from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
@@ -286,8 +287,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							<div className="actionDiv">
 								{!is_touch_device()
 								&& shouldShowProfile ?
-									<img className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
-										 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} /> : null}
+									<ProfilePicture className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
+										alt="User Pic" user={{login: this.props.kara.username}} />
+									: null}
 								<div className="btn-group">
 									{this.props.idPlaylistTo !== idPlaylist &&
 									(this.props.scope === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend.Mode === 2) ?
@@ -379,8 +381,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									{this.karaTags}
 									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ?
 										<div className="img-container">
-											<img className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
-												 src={pathAvatar + this.props.avatar_file} alt="User Pic" title={kara.nickname} />
+											<ProfilePicture className={`img-circle ${is_touch_device() ? 'mobile' : ''}`}
+												alt="User Pic" user={{login: this.props.kara.username}} />
 										</div> : null}
 								</div> : null
 							}

@@ -1,3 +1,4 @@
+import {RemoteFailure, RemoteSuccess} from '../lib/types/remote';
 import { PlayerState } from './player';
 import { CurrentSong } from './playlist';
 
@@ -44,6 +45,7 @@ export interface State {
 		v4: string,
 		v6: string
 	},
+	remoteAccess?: RemoteSuccess | RemoteFailure
 	electron?: boolean,
 	defaultLocale?: string,
 	player?: PlayerState,
@@ -100,7 +102,8 @@ export interface PublicState {
 	supportedLyrics?: string[],
 	supportedMedias?: string[],
 	environment: string,
-	sentrytest: boolean
+	sentrytest: boolean,
+	url: string
 }
 
 export interface PublicPlayerState extends PlayerState {

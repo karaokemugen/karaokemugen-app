@@ -27,6 +27,7 @@ import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem} from '../services/playlist';
+import { initRemote } from '../services/remote';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
@@ -133,10 +134,11 @@ export async function initEngine() {
 			// Reinit menu since we switched ports.
 			if (app) applyMenu();
 		}
-		if (conf.Online.URL && !state.isDemo) try {
+		if ((conf.Online.URL || conf.Online.Remote) && !state.isDemo) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
 			await initKMServerCommunication();
-			await initOnlineURLSystem();
+			if (conf.Online.URL) await initOnlineURLSystem();
+			if (conf.Online.Remote) await initRemote();
 		} catch(err) {
 			//Non-blocking
 			logger.error('Failed to init online system', {service: 'Engine', obj: err});

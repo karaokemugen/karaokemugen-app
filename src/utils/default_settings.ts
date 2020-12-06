@@ -58,7 +58,8 @@ export const defaults: Config = {
 				Sponsors: true
 			},
 			App: true,
-		}
+		},
+		Remote: false
 	},
 	Frontend: {
 		GeneratePreviews: true,

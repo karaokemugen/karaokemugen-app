@@ -8,7 +8,7 @@ import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import GlobalContext, { GlobalContextInterface } from '../../../store/context';
-import { getSerieLanguage, getTagInLocale } from '../../../utils/kara';
+import { getPreviewLink, getSerieLanguage, getTagInLocale} from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -56,7 +56,7 @@ class KaraDetail extends Component<IProps, IState> {
 		if (this.props.scope === 'admin') {
 			return;
 		}
-		const generated = this.state.kara ? `url('/previews/${this.state.kara.kid}.${this.state.kara.mediasize}.25.jpg')`:'none';
+		const generated = this.state.kara ? `url('${getPreviewLink(this.state.kara)}')`:'none';
 		if (generated !== this.context.globalState.frontendContext.backgroundImg) {
 			setBgImage(this.context.globalDispatch, generated);
 		}
