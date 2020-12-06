@@ -14,7 +14,7 @@
 	"PASSWORD_DIFFERENT": "Passwords are not identical",
 	"DETAILS_ADDED": "Added ",
 	"DETAILS_ADDED_2": "on ",
-	"DETAILS_ADDED_3": "by ",
+	"DETAILS_ADDED_3": " by ",
 	"DETAILS_PLAYING_IN": "Playing in {{time}} ({{date}})",
 	"DETAILS_LAST_PLAYED": "Last played {{date}}",
 	"DETAILS_LAST_PLAYED_2": "Last played {{time}} ago",

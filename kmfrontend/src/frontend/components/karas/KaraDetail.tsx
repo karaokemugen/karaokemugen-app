@@ -239,13 +239,23 @@ class KaraDetail extends Component<IProps, IState> {
 						</div>: null
 					}
 					<div className="detailsKaraLine">
-						{i18next.t('DETAILS_ADDED') +
-						(data.created_at ? `${i18next.t('DETAILS_ADDED_2')} ${new Date(data.created_at).toLocaleString()}` : '') +
-						(data.nickname ? ` ${i18next.t('DETAILS_ADDED_3')} ${data.nickname}` : '')}
+						<span>
+							{i18next.t('DETAILS_ADDED')}
+							{data.created_at ? <>
+								{i18next.t('DETAILS_ADDED_2')}
+								<span className="boldDetails">{new Date(data.created_at).toLocaleString()}</span>
+							</> : null
+							}
+							{data.nickname ? <>
+								{i18next.t('DETAILS_ADDED_3')}
+								<span className="boldDetails">{data.nickname}</span>
+							</> : null
+							}
+						</span>
 					</div>
 					{karaBlockTags}
 					<div className="detailsKaraLine">
-						<span>
+						<span className="boldDetails">
 							<i className={`fas fa-fw fa-${YEARS.icon}`} />
 							{data.year}
 						</span>
@@ -277,7 +287,7 @@ class KaraDetail extends Component<IProps, IState> {
 
 			const lyricsKara = (
 				<div className="lyricsKara detailsKaraLine">
-					{this.state.lyrics?.length > 0 ? <div className="detailsKaraTitle">
+					{this.state.lyrics?.length > 0 ? <div className="boldDetails">
 						<i className="fas fa-fw fa-closed-captioning" />
 						{i18next.t('LYRICS')}
 					</div> : null}

@@ -64,12 +64,12 @@
 		}
 	}
 	.detailsKaraLineContent {
+		font-weight: bold;
 		overflow-wrap: anywhere;
 	}
 
 	.detailsKaraLine {
 		margin: 1em 0;
-		font-weight: bold;
 		padding-right: .5em;
 		display: flex;
 		align-items: center;
@@ -84,7 +84,7 @@
 			align-items: flex-start;
 			font-weight: normal;
 		}
-		.detailsKaraTitle {
+		.boldDetails {
 			font-weight: bold;
 		}
 		.inlineTag {
