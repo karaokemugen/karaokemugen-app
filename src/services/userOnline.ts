@@ -182,7 +182,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		try {
 			remoteUser = await getRemoteUser(username, onlineToken);
 		} catch(err) {
-			sentry.error(err);
+			if (err.statusCode !== 401 && err.statusCode !== 403) sentry.error(err);
 			throw err;
 		}
 		// Check if user exists. If it does not, create it.
