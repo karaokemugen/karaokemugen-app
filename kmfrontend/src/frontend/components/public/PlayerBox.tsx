@@ -15,6 +15,7 @@ import { secondsTimeSpanToHMS } from '../../../utils/tools';
 interface IProps {
 	fixed: boolean
 	show: boolean
+	currentVisible: boolean
 	goToCurrentPL: () => void
 	onResize?: (bottom: string) => void
 	onKaraChange?: (kid: string) => void
@@ -81,9 +82,9 @@ class PlayerBox extends Component<IProps, IState> {
 	toggleFavorite = async (event) => {
 		event.stopPropagation();
 		if (this.state.favorites.has(this.state.kid)) {
-			await commandBackend('deleteFavorites', {kid: [this.state.kid]});
+			await commandBackend('deleteFavorites', { kid: [this.state.kid] });
 		} else {
-			await commandBackend('addFavorites', {kid: [this.state.kid]});
+			await commandBackend('addFavorites', { kid: [this.state.kid] });
 		}
 	}
 
@@ -197,14 +198,20 @@ class PlayerBox extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<div onClick={this.props.goToCurrentPL}
-				 className={`player-box${this.props.fixed ? ' fixed':''}`}
-				 style={{['--img' as any]: this.state.img, display: this.props.show ? undefined:'none'}}
-				 ref={this.state.containerRef}>
-				{!this.props.fixed ? <div className="first">
-					<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
-					<p className="next" tabIndex={0} onKeyDown={this.props.goToCurrentPL}>{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" /></p>
-				</div>:null}
+			<div onClick={this.props.currentVisible ? this.props.goToCurrentPL : undefined}
+				className={`player-box${this.props.fixed ? ' fixed' : ''}`}
+				style={{ ['--img' as any]: this.state.img, display: this.props.show ? undefined : 'none' }}
+				ref={this.state.containerRef}>
+				{!this.props.fixed ?
+					<div className="first">
+						<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
+						{this.props.currentVisible ?
+							<p className="next" tabIndex={0} onKeyDown={this.props.goToCurrentPL}>
+								{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" />
+							</p> : null
+						}
+					</div> : null
+				}
 				{this.props.fixed ?
 					<div className="title inline">
 						<h3 className="song">{this.state.title}</h3>
@@ -217,19 +224,19 @@ class PlayerBox extends Component<IProps, IState> {
 				{!this.props.fixed && this.state.length !== 0 && this.context.globalState.auth.data.role !== 'guest' ?
 					<button className="btn favorites" onClick={this.toggleFavorite}>
 						<i className="fas fa-fw fa-star" />
-						{this.state.favorites.has(this.state.kid) ? i18next.t('TOOLTIP_FAV_DEL'):i18next.t('TOOLTIP_FAV')}
-					</button>:null}
+						{this.state.favorites.has(this.state.kid) ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
+					</button> : null}
 				{this.state.length !== 0 ?
 					<React.Fragment>
 						{!this.props.fixed ?
 							<div className="timers">
 								<div>{secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
 								<div>{secondsTimeSpanToHMS(this.state.length, 'mm:ss')}</div>
-							</div>:null}
+							</div> : null}
 						<div className="progress-bar-container" ref={this.state.ref}>
-							<div className="progress-bar" style={{width: this.state.width}} />
+							<div className="progress-bar" style={{ width: this.state.width }} />
 						</div>
-					</React.Fragment>:null}
+					</React.Fragment> : null}
 			</div>);
 	}
 }

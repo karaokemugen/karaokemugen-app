@@ -7,7 +7,7 @@ import { PublicPlayerState } from '../../../../../src/types/state';
 import { setFilterValue } from '../../../store/actions/frontendContext';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
-import { getSocket } from '../../../utils/socket';
+import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { View } from '../../types/view';
@@ -42,6 +42,8 @@ interface IState {
 	bottom: string;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
+	publicVisible: boolean;
+	currentVisible: boolean;
 }
 
 let timer: any;
@@ -62,14 +64,16 @@ class PublicPage extends Component<IProps, IState> {
 			kara: undefined,
 			playerStopping: false,
 			top: '0',
-			bottom: '0'
+			bottom: '0',
+			publicVisible: true,
+			currentVisible: true
 		};
 	}
 
 	changeView = (
 		view: View,
 		tagType?: number,
-		searchValue?:string,
+		searchValue?: string,
 		searchCriteria?: 'year' | 'tag'
 	) => {
 		const idsPlaylist = this.state.idsPlaylist;
@@ -99,7 +103,9 @@ class PublicPage extends Component<IProps, IState> {
 		this.setState({ idsPlaylist: idsPlaylist });
 	};
 
-	componentDidMount() {
+	async componentDidMount() {
+		await this.getPlaylistList();
+		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
 		getSocket().on('playerStatus', this.displayClassicModeModal);
 		getSocket().on('newSongPoll', this.newSongPoll);
 		getSocket().on('songPollEnded', this.songPollEnded);
@@ -117,6 +123,18 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().off('adminMessage', this.adminMessage);
 		getSocket().off('userSongPlaysIn', this.userSongPlaysIn);
 		getSocket().off('nextSong', this.nextSong);
+	}
+
+	getPlaylistList = async () => {
+		const playlistsList = await commandBackend('getPlaylists');
+		playlistsList.forEach(playlist => {
+			if (playlist.flag_public) {
+				this.setState({ publicVisible: playlist.flag_visible });
+			}
+			if (playlist.flag_current) {
+				this.setState({ currentVisible: playlist.flag_visible });
+			}
+		});
 	}
 
 	newSongPoll = () => {
@@ -194,6 +212,7 @@ class PublicPage extends Component<IProps, IState> {
 				<PlayerBox
 					fixed={true}
 					show={this.state.view !== 'home'}
+					currentVisible={this.state.currentVisible}
 					goToCurrentPL={() => this.changeView('currentPlaylist')}
 					onResize={bottom => this.setState({ bottom })}
 				/>
@@ -213,6 +232,8 @@ class PublicPage extends Component<IProps, IState> {
 								<PublicHomepage
 									changeView={this.changeView}
 									activePoll={this.state.isPollActive}
+									currentVisible={this.state.currentVisible}
+									publicVisible={this.state.publicVisible}
 									openPoll={() => ReactDOM.render(
 										<PollModal hasVoted={() => this.setState({ isPollActive: false })} context={this.context} />,
 										document.getElementById('modal'))
