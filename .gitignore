@@ -5,6 +5,7 @@
 .vs
 node_modules
 app/
+app
 
 npm-debug.log*
 yarn-debug.log*

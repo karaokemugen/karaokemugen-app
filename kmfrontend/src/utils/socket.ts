@@ -1,11 +1,20 @@
 import i18next from 'i18next';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 import { displayMessage, eventEmitter } from './tools';
 
-const socket = io();
+let socket: Socket;
+let proxy: boolean;
 let authorization;
 let onlineAuthorization;
+
+if (document.querySelector<HTMLMetaElement>('meta[name="target"]').content === 'NO-REMOTE') {
+	socket = io();
+	proxy = false;
+} else {
+	socket = io(`/${document.querySelector<HTMLMetaElement>('meta[name="target"]').content}`);
+	proxy = true;
+}
 
 export function setAuthorization(authorizationParam:string, onlineAuthorizationParam:string) {
 	authorization = authorizationParam;
@@ -38,4 +47,8 @@ socket.on('error', (err) => {
 
 export function getSocket() {
 	return socket;
+}
+
+export function isRemote() {
+	return proxy;
 }

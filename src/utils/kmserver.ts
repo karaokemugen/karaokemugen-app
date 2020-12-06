@@ -8,6 +8,7 @@ let socket: Socket;
 
 // Create a connection
 function connectToKMServer() {
+	if (socket) return;
 	return new Promise<void>((resolve, reject) => {
 		const conf = getConfig();
 		let timeout = setTimeout(() => {
@@ -22,6 +23,9 @@ function connectToKMServer() {
 		});
 		socket.on('connect_error', (err) => {
 			if (timeout) reject(err);
+		});
+		socket.on('disconnect', reason => {
+			logger.warn('Connection lost with server,', {service: 'KMOnline', obj: reason});
 		});
 	});
 }

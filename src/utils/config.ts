@@ -26,8 +26,15 @@ import { emit } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import { getAllKaras } from '../services/kara';
 import {publishURL} from '../services/online';
-import {initAddASongMessage, playerNeedsRestart, prepareClassicPauseScreen,  stopAddASongMessage } from '../services/player';
+import {
+	displayInfo,
+	initAddASongMessage,
+	playerNeedsRestart,
+	prepareClassicPauseScreen,
+	stopAddASongMessage
+} from '../services/player';
 import {setSongPoll} from '../services/poll';
+import {destroyRemote, initRemote} from '../services/remote';
 import {initStats, stopStats} from '../services/stats';
 import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
@@ -61,7 +68,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
 	const state = getState();
 	if (!isEqual(oldConfig.Player, newConfig.Player) && !state.isDemo) {
-		//If these two settings haven't been changed, it means another one has, so we're restarting mpv
+		//If these settings haven't been changed, it means another one has, so we're restarting mpv
 		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen &&
 			oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop &&
 			oldConfig.Player.Volume === newConfig.Player.Volume &&
@@ -70,7 +77,16 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			oldConfig.Player.HardwareDecoding === newConfig.Player.HardwareDecoding
 		) playerNeedsRestart();
 	}
-	if (newConfig.Online.URL !== oldConfig.Online.URL && state.ready && !state.isDemo) publishURL();
+	if (newConfig.Online.URL !== oldConfig.Online.URL && state.ready && !state.isDemo) {
+		if (newConfig.Online.URL) publishURL();
+	}
+	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready && !state.isDemo) {
+		if (newConfig.Online.Remote) {
+			initRemote();
+		} else {
+			destroyRemote();
+		}
+	}
 	// Updating quotas
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
 		const users = await listUsers();
@@ -161,19 +177,25 @@ export async function initConfig(argv: any) {
 
 /** Detect and set hostname and local IP */
 export function configureHost() {
+	const state = getState();
 	const config = getConfig();
 	const URLPort = +config.Online.Port === 80
 		? ''
 		: `:${config.Frontend.Port}`;
 	setState({osHost: {v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6')}});
-	if (config.Online.URL) {
-		setState({osURL: `http://${config.Online.Host}`});
+	if (state.remoteAccess && 'host' in state.remoteAccess) {
+		setState({osURL: `https://${state.remoteAccess.host}`});
+	} else if (config.Online.URL) {
+		setState({osURL: `https://${config.Online.Host}`});
 	} else {
 		if (!config.Karaoke.Display.ConnectionInfo.Host) {
 			setState({osURL: `http://${getState().osHost.v4}${URLPort}`}); // v6 is too long to show anyway
 		} else {
 			setState({osURL: `http://${config.Karaoke.Display.ConnectionInfo.Host}${URLPort}`});
 		}
+	}
+	if (state.player.mediaType === 'background' && !state.songPoll) {
+		displayInfo();
 	}
 }
 

@@ -118,7 +118,8 @@ export function getPublicState(admin: boolean): PublicState {
 		supportedLyrics: supportedFiles.lyrics,
 		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio),
 		environment: process.env.SENTRY_ENVIRONMENT,
-		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean
+		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
+		url: state.osURL
 	};
 }
 

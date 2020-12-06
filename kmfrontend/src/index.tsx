@@ -1,6 +1,7 @@
 import './utils/i18n';
 import './utils/isoLanguages';
 import './utils/electron';
+import './utils/socket';
 import './common.scss';
 
 import React from 'react';

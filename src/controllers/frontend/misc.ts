@@ -3,13 +3,15 @@ import { Socket } from 'socket.io';
 
 import { getKMStats,shutdown } from '../../components/engine';
 import { generateDB } from '../../dao/database';
+import {getSettings, saveSetting} from '../../lib/dao/database';
 import { generateDatabase } from '../../lib/services/generation';
 import { APIData } from '../../lib/types/api';
 import { getConfig } from '../../lib/utils/config';
 import { browseFs } from '../../lib/utils/files';
-import {enableWSLogging, readLog} from '../../lib/utils/logger';
+import { enableWSLogging, readLog } from '../../lib/utils/logger';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getFeeds } from '../../services/proxyFeeds';
+import { destroyRemote, initRemote } from '../../services/remote';
 import { updateSongsLeft } from '../../services/user';
 import { backupConfig,editSetting, getPublicConfig } from '../../utils/config';
 import { initializationCatchphrases } from '../../utils/constants';
@@ -20,6 +22,30 @@ import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function miscController(router: SocketIOApp) {
+	router.route('getRemoteData', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
+		try {
+			const state = getState();
+			if (state.remoteAccess) {
+				const settings = await getSettings();
+				return { active: true, info: state.remoteAccess, token: settings.remoteToken };
+			} else {
+				return { active: false };
+			}
+		} catch (err) {
+			throw { code: 500 };
+		}
+	});
+	router.route('resetRemoteToken', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
+		try {
+			await destroyRemote();
+			await saveSetting('remoteToken', '');
+			await initRemote();
+		} catch (err) {
+			throw { code: 500 };
+		}
+	});
 	/**
  * @api {post} Shutdown the entire application
  * @apiDescription

@@ -5,6 +5,7 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 
 import { User } from '../../../../../src/lib/types/user';
+import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { commandBackend } from '../../../utils/socket';
 
 interface UserListState {
@@ -94,7 +95,10 @@ class UserList extends Component<unknown, UserListState> {
 		title: i18next.t('USERS.AVATAR'),
 		dataIndex: 'avatar_file',
 		key: 'avatar_file',
-		render: (text, record) => <Avatar shape="square" size="large" src={`/avatars/${record.avatar_file}`}/>,
+		// render: (text, record) => <Avatar shape="square" size="large" src={`/avatars/${record.avatar_file}`}/>,
+		render: (text, record) => <span className="ant-avatar ant-avatar-lg ant-avatar-square ant-avatar-image">
+			<ProfilePicture user={record} />
+		</span>,
 		sorter: (a, b) => a.avatar_file.localeCompare(b.avatar_file)
 	}, {
 		title: i18next.t('USERS.LOGIN'),

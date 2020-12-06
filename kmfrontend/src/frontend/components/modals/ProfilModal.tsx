@@ -8,10 +8,10 @@ import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
 import { DBPLC } from '../../../../../src/types/database/playlist';
-import blankAvatar from '../../../assets/blank.png';
 import { logout, setAuthentifactionInformation } from '../../../store/actions/auth';
 import { GlobalContextInterface } from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
+import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage } from '../../../utils/tools';
@@ -280,9 +280,7 @@ class ProfilModal extends Component<IProps, IState> {
 				<div id="nav-profil" className="modal-body" >
 					<div className="profileContent">
 						<div className="profileHeader">
-							<img className="img-circle avatar"
-								src={this.state.user.avatar_file ? `/avatars/${this.state.user.avatar_file}` : blankAvatar as string}
-								alt="User Pic" />
+							<ProfilePicture user={this.state.user} className="img-circle avatar" />
 							<div>
 								<p>{this.state.user.login}</p>
 								{logInfos?.role !== 'guest' ?
