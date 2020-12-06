@@ -44,7 +44,7 @@ class WelcomePage extends Component<unknown, IState> {
 			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
 			logout(this.context.globalDispatch);
 		}
-		if (this.context?.globalState.settings.data.config?.Online.Stats === undefined 
+		if (this.context?.globalState.settings.data.config?.Online.Stats === undefined
 			|| this.context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
 			ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
 		}
@@ -98,7 +98,7 @@ class WelcomePage extends Component<unknown, IState> {
 		} else {
 			this.setState({ activeSession: sessions[0] });
 			sessionId = sessions[0].seid;
-			commandBackend('activateSession', {seid: sessionId});
+			commandBackend('activateSession', { seid: sessionId });
 		}
 	};
 
@@ -181,7 +181,7 @@ class WelcomePage extends Component<unknown, IState> {
 	};
 
 	toggleProfileModal = () => {
-		ReactDOM.render(<ProfilModal context={this.context}/>, document.getElementById('modal'));
+		ReactDOM.render(<ProfilModal context={this.context} />, document.getElementById('modal'));
 	};
 
 	render() {
@@ -242,14 +242,14 @@ class WelcomePage extends Component<unknown, IState> {
 						<section className="tiles-panel">
 							{
 								this.context?.globalState.settings.data.user?.flag_tutorial_done
-									? <article className="tile-tutorial">
-										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-											<i className="fas fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>
-										</button>
-									</article>
-									: <article className="tile-manage">
+									? <article className="tile-manage">
 										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
 											<i className="fas fa-list" /><span>{i18next.t('WLCM_KARAMANAGER')}</span>
+										</button>
+									</article>
+									: <article className="tile-tutorial">
+										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
+											<i className="fas fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>
 										</button>
 									</article>
 							}
