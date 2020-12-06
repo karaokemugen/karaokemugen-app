@@ -54,7 +54,7 @@
     "test": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts test --env=jsdom",
     "eject": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts eject"
   },
-  "proxy": "http://localhost:1529",
+  "proxy": "http://localhost:1337",
   "browserslist": [
     ">0.2%",
     "not dead",
