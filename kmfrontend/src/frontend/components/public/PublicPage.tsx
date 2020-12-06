@@ -185,7 +185,7 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	displayClassicModeModal = (data: PublicPlayerState) => {
-		this.setState({ playerStopping: data.stopping });
+		if (data.stopping !== undefined) this.setState({ playerStopping: data.stopping });
 		if (data.playerStatus === 'stop'
 			&& data.currentRequester === this.context.globalState.auth.data.username
 			&& !this.state.classicModeModal) {
