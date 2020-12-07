@@ -34,7 +34,11 @@
 			margin: .25em;
 		}
 		input[type="password"] {
-			width: calc((100% - 1rem - .25em)/2);
+			margin-right: .25em;
+			&:last-child {
+				margin-left: .25em;
+				margin-right: 0;
+			}
 		}
 		> i {
 			text-align: center;
