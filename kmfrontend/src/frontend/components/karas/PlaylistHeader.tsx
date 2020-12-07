@@ -1,3 +1,5 @@
+import './PlaylistHeader.scss';
+
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import React, { Component } from 'react';
@@ -19,7 +21,6 @@ import BlcSetCopyModal from '../modals/BlcSetCopyModal';
 import FavMixModal from '../modals/FavMixModal';
 import ShuffleModal from '../modals/ShuffleModal';
 import ActionsButtons from './ActionsButtons';
-require('./PlaylistHeader.scss');
 
 const tagsTypesList = [
 	'BLCTYPE_1',

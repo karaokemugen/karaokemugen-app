@@ -1,3 +1,5 @@
+import './KaraLine.scss';
+
 import i18next from 'i18next';
 import React, { Component, CSSProperties, Key, MouseEvent } from 'react';
 import ReactDOM from 'react-dom';
@@ -16,8 +18,6 @@ import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../
 import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import ActionsButtons from './ActionsButtons';
-
-require('./KaraLine.scss');
 
 const DragHandle = SortableHandle(() => <span className="dragHandle"><i className="fas fa-ellipsis-v"></i></span>);
 

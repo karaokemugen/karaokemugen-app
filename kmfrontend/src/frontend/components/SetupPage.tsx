@@ -1,3 +1,6 @@
+import '../styles/welcome/WelcomePage.scss';
+import '../styles/welcome/SetupPage.scss';
+
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
@@ -7,9 +10,6 @@ import { login } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
-
-require('../styles/welcome/WelcomePage.scss');
-require('../styles/welcome/SetupPage.scss');
 
 interface IState {
 	accountType: 'local' | 'online' | null;

@@ -1,10 +1,10 @@
+import './ActionsButtons.scss';
+
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { KaraElement } from '../../types/kara';
-
-require('./ActionsButtons.scss');
 
 interface IProps {
 	scope: string;
@@ -56,7 +56,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 						&& this.props.idPlaylist !== this.context.globalState.settings.data.state.currentPlaylistID && this.props.idPlaylist !== -2))
 					&& this.props.idPlaylistTo !== -5 ?
 					<button
-						title={this.props.isHeader ? i18next.t('TOOLTIP_ADD_SELECT_KARA') : 
+						title={this.props.isHeader ? i18next.t('TOOLTIP_ADD_SELECT_KARA') :
 							`${this.props.kara?.flag_inplaylist && this.props.scope !== 'admin' ? 
 								(
 									this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0] ?

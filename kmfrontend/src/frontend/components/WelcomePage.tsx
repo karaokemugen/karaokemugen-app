@@ -1,3 +1,5 @@
+import '../styles/welcome/WelcomePage.scss';
+
 import i18next from 'i18next';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
@@ -15,8 +17,6 @@ import Autocomplete from './generic/Autocomplete';
 import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
 import WelcomePageArticle from './WelcomePageArticle';
-
-require('../styles/welcome/WelcomePage.scss');
 
 interface IState {
 	news: Array<News>;

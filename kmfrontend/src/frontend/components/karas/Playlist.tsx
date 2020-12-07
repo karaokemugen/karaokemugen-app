@@ -1,4 +1,5 @@
 import 'react-virtualized/styles.css';
+import './Playlist.scss';
 
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
@@ -21,7 +22,6 @@ import { Tag } from '../../types/tag';
 import BlacklistCriterias from './BlacklistCriterias';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
-require('./Playlist.scss');
 
 const chunksize = 400;
 const _cache = new CellMeasurerCache({ defaultHeight: 44, fixedWidth: true });
