@@ -2,11 +2,10 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import { Collapse, Layout, Select,Timeline } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import { io as openSocket } from 'socket.io-client';
 
 import GlobalContext from '../../store/context';
 import i18n from '../../utils/i18n';
-import { commandBackend } from '../../utils/socket';
+import { commandBackend, getSocket } from '../../utils/socket';
 
 interface LogState {
 	log: { level: string, message: string, timestamp: string, service: string, obj?: any }[],
@@ -25,16 +24,15 @@ class Log extends Component<unknown, LogState> {
 	};
 
 	componentDidMount() {
-		this.refresh();
-		const url = window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:1337` : window.location.origin;
-		if (this.context.globalState.settings?.data.state) {
-			const socket = openSocket(`${url}/${this.context.globalState.settings.data.state.wsLogNamespace}`);
-			socket.on('log', (log) => {
-				const logs = this.state.log;
-				logs.push(log);
-				this.setState({ log: logs });
-			});
-		}
+		this.refresh().then(() => {
+			if (this.context.globalState.settings?.data.state) {
+				getSocket().on('log', (log) => {
+					const logs = this.state.log;
+					logs.push(log);
+					this.setState({ log: logs });
+				});
+			}
+		});
 	}
 
 	refresh = async () => {

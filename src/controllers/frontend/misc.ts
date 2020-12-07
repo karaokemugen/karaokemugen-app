@@ -283,6 +283,7 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			// Align socket
 			enableWSLogging(req.body.level);
+			socket.join('logs');
 			return await readLog(req.body.level);
 		} catch(err) {
 			throw {code: 500, message: APIMessage('ERROR_READING_LOGS')};
