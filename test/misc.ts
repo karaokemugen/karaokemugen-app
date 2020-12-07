@@ -22,7 +22,6 @@ describe('Main', () => {
 		expect(data.state.sentryTest).to.satisfy((e:any) => e === undefined || typeof e === 'boolean');
 		expect(data.state.supportedLyrics).to.be.a('array');
 		expect(data.state.supportedMedias).to.be.a('array');
-		expect(data.state.wsLogNamespace).to.be.a('string');
 		expect(data.config.Frontend.Port).to.be.equal(1337);
 		setConfig(data.config);
 	});
