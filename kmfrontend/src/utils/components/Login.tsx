@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import React, { Component, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
+import guideSecurityGif from '../../assets/guide-security-code.gif';
 import logo from '../../assets/Logo-fond-transp.png';
 import Switch from '../../frontend/components/generic/Switch';
 import { login, logout } from '../../store/actions/auth';
@@ -29,7 +30,8 @@ interface IState {
 	password: string;
 	passwordConfirmation?: string;
 	securityCode?: number;
-	isAdminPath: boolean
+	isAdminPath: boolean;
+	activeHelp: boolean;
 }
 
 class Login extends Component<IProps, IState> {
@@ -49,7 +51,8 @@ class Login extends Component<IProps, IState> {
 			forgotPassword: false,
 			password: '',
 			login: '',
-			isAdminPath: lastLocation && lastLocation !== '/'
+			isAdminPath: lastLocation && lastLocation !== '/',
+			activeHelp: false
 		};
 	}
 
@@ -168,6 +171,17 @@ class Login extends Component<IProps, IState> {
 	render() {
 		return (
 			<React.Fragment>
+				{this.state.activeHelp ? (
+					<div className="help-modal" onClick={() => this.setState({ activeHelp: false })}>
+						<div className="help-modal-backdrop">
+							<div className="help-modal-wrapper">
+								<button className="help-modal-close">&times;</button>
+								<img alt="" src={guideSecurityGif} />
+							</div>
+						</div>
+					</div>
+				) : null}
+
 				<div className="loginImageContainer">
 					<img src={logo} className="loginImage" alt='logo' />
 				</div>
@@ -221,7 +235,11 @@ class Login extends Component<IProps, IState> {
 								((this.state.forgotPassword && this.state.activeView === 'login' && !this.state.onlineSwitch)
 									|| this.state.activeView === 'signup') ?
 								<>
-									<label className="loginLabel">{i18next.t('SECURITY_CODE')}</label>
+									<label className="loginLabel">
+										{i18next.t('SECURITY_CODE')}
+										&nbsp;
+										<button type="button" onClick={() => this.setState({ activeHelp: true })} className="helpButton">?</button>
+									</label>
 									<div className="loginLine">
 										<input type="text" placeholder={i18next.t('SECURITY_CODE')}
 											defaultValue={this.state.securityCode} required autoFocus

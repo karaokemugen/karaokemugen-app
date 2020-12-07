@@ -2,6 +2,7 @@
 @import '../../frontend/styles/toast';
 @import '../../frontend/styles/components/buttons';
 @import '../../frontend/styles/components/input';
+@import '../../frontend/styles/components/overlays';
 @import '../../frontend/styles/fonts/Lato/stylesheet';
 
 body {
@@ -35,6 +36,15 @@ body {
 		}
 		&.switchButton {
 			background-color: darkgreen;
+		}
+	}
+
+	.helpButton {
+		border-radius: 50%;
+		margin-right: .5em;
+		padding: 0 .5em;
+		&:hover {
+			background-color: white;
 		}
 	}
 

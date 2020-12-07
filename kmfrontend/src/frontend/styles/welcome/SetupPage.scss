@@ -11,48 +11,7 @@
 		color: white;
 	}
 
-	.help-modal {
-		z-index: 100;
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		.help-modal-backdrop {
-			position: relative;
-			height: 100%;
-			width: 100%;
-			background:#000000b3;
-			padding: 2em;
 
-			.help-modal-wrapper {
-				height: 100%;
-				width: 100%;
-				overflow: auto;
-				text-align: center;
-
-				img {
-					max-width: 100%;
-					max-height: calc(100vh - 4em);
-				}
-			}
-			.help-modal-close {
-				padding: 0;
-				margin: 0;
-				position: absolute;
-				top: 0;
-				right: 0;
-				border: none;
-				background: none;
-				font-size: 4em;
-				color:tomato;
-				line-height: 1em;
-				width: 1.5em;
-				text-align: center;
-				font-weight: bold;
-			}
-		}
-	}
 }
 
 
