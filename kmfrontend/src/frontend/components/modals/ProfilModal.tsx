@@ -298,35 +298,35 @@ class ProfilModal extends Component<IProps, IState> {
 									<i className="fas fa-fw fa-user"></i>
 									<input className={this.state.nicknameMandatory} name="nickname" type="text"
 										placeholder={i18next.t('PROFILE_USERNAME')} defaultValue={this.state.user.nickname}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
 								</div>
 								<div className="profileLine">
 									<i className="fas fa-fw fa-envelope"></i>
 									<input className="form-control" name="email" type="text"
 										placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="email" />
 								</div>
 								<div className="profileLine">
 									<i className="fas fa-fw fa-link"></i>
 									<input className="form-control" name="url" type="text"
 										placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="url" />
 								</div>
 								<div className="profileLine">
 									<i className="fas fa-fw fa-leaf"></i>
 									<input className="form-control" name="bio" type="text"
 										placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
 								</div>
 								<div className="profileLine">
 									<i className="fas fa-fw fa-lock"></i>
 									<input className={this.state.passwordDifferent} name="password" type="password"
 										placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
 									<input className={this.state.passwordDifferent}
 										name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
 										defaultValue={this.state.user.passwordConfirmation}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} />
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
 								</div>
 								<div className="profileLine">
 									<i className="fas fa-fw fa-star"></i>

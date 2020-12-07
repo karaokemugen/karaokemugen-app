@@ -204,12 +204,12 @@ class Login extends Component<IProps, IState> {
 								` @ ${i18next.t('INSTANCE_NAME_SHORT')}` : ''}</label>
 							<div className="loginLine">
 								<input type="text" className={`${this.state.errorBackground} ${this.state.onlineSwitch ? 'loginName' : ''}`}
-									defaultValue={this.state.login} placeholder={i18next.t('USERNAME')}
+									defaultValue={this.state.login} placeholder={i18next.t('USERNAME')} autoComplete="username"
 									required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
 								{this.state.onlineSwitch ? <React.Fragment>
 									<div className="arobase">@</div>
 									<input type="text" className="instanceName" defaultValue={this.state.serv}
-										placeholder={i18next.t('INSTANCE_NAME_SHORT')}
+										placeholder={i18next.t('INSTANCE_NAME_SHORT')} autoComplete="off"
 										onChange={(event) => this.setState({ serv: event.target.value })} />
 								</React.Fragment> : null}
 							</div>
@@ -218,6 +218,7 @@ class Login extends Component<IProps, IState> {
 							</label>
 							<div className="loginLine">
 								<input type="password" className={this.state.redBorders}
+								    autoComplete={this.state.activeView === 'signup' ? 'new-password':'current-password'}
 									defaultValue={this.state.password} required placeholder={i18next.t('PASSWORD')}
 									onChange={(event) => this.setState({ password: event.target.value })} />
 							</div>
@@ -227,7 +228,7 @@ class Login extends Component<IProps, IState> {
 									<div className="loginLine">
 										<input type="password" className={this.state.redBorders} required defaultValue={this.state.passwordConfirmation}
 											onChange={(event) => this.setState({ passwordConfirmation: event.target.value })}
-											placeholder={i18next.t('PASSWORDCONF')} />
+											placeholder={i18next.t('PASSWORDCONF')} autoComplete="new-password" />
 									</div>
 								</> : null
 							}
@@ -243,7 +244,8 @@ class Login extends Component<IProps, IState> {
 									<div className="loginLine">
 										<input type="text" placeholder={i18next.t('SECURITY_CODE')}
 											defaultValue={this.state.securityCode} required autoFocus
-											onChange={(event) => this.setState({ securityCode: parseInt(event.target.value) })} />
+											onChange={(event) => this.setState({ securityCode: parseInt(event.target.value) })}
+											autoComplete="off" />
 									</div>
 								</> : null
 							}
