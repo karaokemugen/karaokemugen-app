@@ -182,7 +182,6 @@ export default function playlistsController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
-			name: {presence: {allowEmpty: true}},
 			flag_current: {inclusion: bools},
 			flag_public: {inclusion: bools},
 			flag_visible: {inclusion: bools},
