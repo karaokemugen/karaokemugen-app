@@ -91,7 +91,6 @@ describe('Playlists', () => {
 			flag_current: false,
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist);
-		console.log('newPlaylistID', newPlaylistID);
 		newPlaylistID = +data;
 	});
 
@@ -297,15 +296,27 @@ describe('Playlists', () => {
 			pl_id: playlistID,
 			flag_current: true
 		};
-		await commandBackend(token, 'editPlaylist', data);
+		try {
+			await commandBackend(token, 'editPlaylist', data);
+		} catch(err) {
+			console.log('Playlist edit current');
+			console.log(err);
+			throw err;
+		}
 	});
 
 	it('Set playlist to public', async () => {
-		const data = {
-			pl_id: newPublicPlaylistID,
-			flag_public: true
-		};
-		await commandBackend(token, 'editPlaylist', data);
+		try {
+			const data = {
+				pl_id: newPublicPlaylistID,
+				flag_public: true
+			};
+			await commandBackend(token, 'editPlaylist', data);
+		} catch(err) {
+			console.log('Playlist edit public');
+			console.log(err);
+			throw err;
+		}
 	});
 
 	it('Get list of playlists AFTER setting new current/public PLs', async () => {

@@ -181,27 +181,16 @@ export default function playlistsController(router: SocketIOApp) {
  * HTTP/1.1 500 Internal Server Error
  */
 		await runChecklist(socket, req);
-		const validationErrors = check(req.body, {
-			flag_current: {inclusion: bools},
-			flag_public: {inclusion: bools},
-			flag_visible: {inclusion: bools},
-		});
-		if (!validationErrors) {
-			// No errors detected
-			req.body.name = unescape(req.body.name.trim());
+		// No errors detected
+		req.body.name = unescape(req.body.name?.trim());
 
-			//Now we add playlist
-			try {
-				return await editPlaylist(req.body?.pl_id,req.body);
-			} catch(err) {
-				const code = 'PL_UPDATE_ERROR';
-				errMessage(code, err);
-				throw {code: err?.code || 500, message: APIMessage(code)};
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw {code: 400, message: validationErrors};
+		//Now we add playlist
+		try {
+			return await editPlaylist(req.body?.pl_id,req.body);
+		} catch(err) {
+			const code = 'PL_UPDATE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
 	router.route('deletePlaylist', async (socket: Socket, req: APIData) => {
