@@ -424,14 +424,14 @@ function displayAbout() {
 }
 
 async function getSecurityCode() {
-	const state = getState();
+	const securityCode = getState().securityCode.toString().padStart(6, '0');
 	const buttons = await dialog.showMessageBox({
 		type: 'none',
 		title: i18next.t('SECURITY_CODE_TITLE'),
-		message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${state.securityCode}`,
+		message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${securityCode}`,
 		buttons: [i18next.t('COPY_TO_CLIPBOARD'), i18next.t('IT_IS_IN_MY_HEAD')],
 	});
 	if (buttons.response === 0) {
-		clipboard.writeText(state.securityCode.toString());
+		clipboard.writeText(securityCode);
 	}
 }

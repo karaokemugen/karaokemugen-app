@@ -49,7 +49,8 @@ export async function checkLogin(username: string, password: string): Promise<To
 
 export function resetSecurityCode() {
 	setState({ securityCode: generateSecurityCode()});
-	logger.warn(`SECURITY CODE : ${getState().securityCode}`, {service: 'Users'});
+	const securityCodeStr = `${getState().securityCode}`.padStart(6, '0');
+	logger.warn(`SECURITY CODE : ${securityCodeStr}`, {service: 'Users'});
 }
 
 function generateSecurityCode(): number {
