@@ -29,6 +29,7 @@ export function parseArgs() {
 		.option('--noMedia', '(generation only) Do not try to fetch data from media files')
 		.option('--noPlayer', 'Do not open player on startup')
 		.option('--noTestDownloads', 'Do not attempt to download songs during unit tests')
+		.option('--noAutoTest', 'Do not attempt to start tests automatically if --test is enabled')
 		.option('--sql', 'Traces SQL query at the debug log level')
 		.parse(argv);
 }
@@ -94,6 +95,7 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 	}
 	if (cmdline?.hasSwitch('noBrowser') || argv.noBrowser) setState({opt: {noBrowser: true}});
 	if (cmdline?.hasSwitch('noTestDownloads') || argv.noTestDownloads) setState({opt: {noTestDownloads: true}});
+	if (cmdline?.hasSwitch('noAutoTest') || argv.noAutoTest) setState({opt: {noAutoTest: true}});
 	if ((cmdline?.getSwitchValue('forceAdminpassword')) || argv.forceAdminPassword) setState({opt: {forceAdminPassword: argv.forceAdminPassword || cmdline.getSwitchValue('forceAdminPassword')}});
 	if (cmdline?.hasSwitch('dumpDB') || argv.dumpDB) setState({opt: {dumpDB: true}});
 	if (cmdline?.hasSwitch('restoreDB') || argv.restoreDB) setState({opt: {restoreDB: true}});

@@ -82,6 +82,7 @@ export interface State {
 		dumpDB?: boolean,
 		restoreDB?: boolean,
 		noTestDownloads?: boolean,
+		noAutoTest?: boolean,
 	},
 	args: string[],
 	environment: string,

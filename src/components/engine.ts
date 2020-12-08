@@ -174,12 +174,12 @@ export async function initEngine() {
 				}
 			}
 			if (state.isTest) {
-				if (state.opt.noTestDownloads) {
+				if (state.opt.noTestDownloads && !state.opt.noAutoTest) {
 					runTests();
 				} else {
 					downloadTestSongs();
 					on('downloadQueueStatus', (status: string[]) => {
-						if (status.includes('stopped')) runTests();
+						if (status.includes('stopped') && !state.opt.noAutoTest) runTests();
 					});
 				}
 			}
