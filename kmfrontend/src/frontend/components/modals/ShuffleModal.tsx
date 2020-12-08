@@ -36,7 +36,7 @@ class ShuffleModal extends Component<IProps, unknown> {
 								<i className="fas fa-times"></i>
 							</button>
 						</ul>
-						<div className="modal-body shuffle-modal">
+						<div className="modal-body flex-direction-btns">
 							<div>{i18next.t('MODAL.SHUFFLE_MODAL.LABEL')}</div>
 							<div>
 								<button className="btn btn-default"

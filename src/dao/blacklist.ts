@@ -4,13 +4,14 @@ import { buildClauses, db, transaction } from '../lib/dao/database';
 import {KaraParams} from '../lib/types/kara';
 import {BLC, BLCSet} from '../types/blacklist';
 import { DBBlacklist,DBBLC } from '../types/database/blacklist';
-import { sqladdBlacklistCriteria,sqlcopyBLCSet,sqlcreateSet,sqldeleteBlacklistCriteria,sqldeleteSet,sqleditSet,sqlemptyBlacklist,sqlemptyBlacklistCriterias,sqlgenerateBlacklist,sqlgetBlacklistContents,sqlgetBlacklistCriterias,sqlselectCurrentBLCSet,sqlselectSet,sqlselectSets,sqlsetCurrentSet,sqlunsetCurrentSet } from './sql/blacklist';
+import { sqladdBlacklistCriteria,sqlcopyBLCSet,sqlcreateSet,sqldeleteBlacklistCriteria,sqldeleteSet,sqleditSet,sqlemptyBlacklist,sqlemptyBlacklistCriterias,sqlgenerateBlacklist,sqlgetBlacklistContents,sqlgetBlacklistCriterias,sqlselectCurrentBLCSet,sqlselectSet,sqlselectSets,sqlunsetCurrentSet } from './sql/blacklist';
 
 export function editBLCSet(blcset: BLCSet) {
 	return db().query(yesql(sqleditSet)({
 		blc_set_id: blcset.blc_set_id,
 		name: blcset.name,
-		modified_at: blcset.modified_at || new Date()
+		modified_at: blcset.modified_at || new Date(),
+		flag_current: blcset.flag_current || false
 	}));
 }
 
@@ -30,10 +31,6 @@ export function copyBLCSet(fromID: number, toID: number) {
 
 export function deleteSet(id: number) {
 	return db().query(sqldeleteSet, [id]);
-}
-
-export function setCurrentSet(id: number) {
-	return db().query(sqlsetCurrentSet, [id]);
 }
 
 export function unsetCurrentSet() {

@@ -4,7 +4,7 @@ import { APIData } from '../../lib/types/api';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addBlacklistCriteria, addSet, copySet, deleteBlacklistCriteria, editSet, emptyBlacklistCriterias, exportSet, getAllSets, getBlacklist, getBlacklistCriterias, getSet, importSet,removeSet, setSetCurrent } from '../../services/blacklist';
+import { addBlacklistCriteria, addSet, copySet, deleteBlacklistCriteria, editSet, emptyBlacklistCriterias, exportSet, getAllSets, getBlacklist, getBlacklistCriterias, getSet, importSet,removeSet } from '../../services/blacklist';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -310,6 +310,8 @@ export default function blacklistController(router: SocketIOApp) {
 	 *
 	 * @apiParam {Number} set_id Target Set ID.
 	 * @apiParam {String} name Name of playlist to create
+	 * @apiParam {boolean} flag_current Is this BLC Set current
+	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * @apiError BLC_SET_UPDATE_ERROR Unable to update a playlist
@@ -321,29 +323,20 @@ export default function blacklistController(router: SocketIOApp) {
 	 */
 		// Update playlist info
 		await runChecklist(socket, req);
-		const validationErrors = check(req.body, {
-			name: {presence: {allowEmpty: false}}
-		});
-		if (!validationErrors) {
 		// No errors detected
-			req.body.name = unescape(req.body.name.trim());
+		req.body.name = unescape(req.body.name?.trim());
 
-			//Now we add playlist
-			try {
-				await editSet({
-					blc_set_id: req.body.set_id,
-					...req.body
-				});
-				return;
-			} catch(err) {
-				const code = 'BLC_SET_UPDATE_ERROR';
-				errMessage(code, err);
-				throw {code: err?.code || 500, message: APIMessage(code)};
-			}
-		} else {
-		// Errors detected
-		// Sending BAD REQUEST HTTP code and error object.
-			throw {code: 400, message: validationErrors};
+		//Now we add playlist
+		try {
+			await editSet({
+				blc_set_id: req.body.set_id,
+				...req.body
+			});
+			return;
+		} catch(err) {
+			const code = 'BLC_SET_UPDATE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
 	router.route('getBLCSets', async (socket: Socket, req: APIData) => {
@@ -422,34 +415,6 @@ export default function blacklistController(router: SocketIOApp) {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.
 			throw {code: 400, message: validationErrors};
-		}
-	});
-	router.route('setCurrentBLCSet', async (socket: Socket, req: APIData) => {
-	/**
- * @api {put} Set BLC Set to current
- * @apiName setCurrentBLCSet
- * @apiVersion 5.0.0
- * @apiGroup Blacklist
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {Number} set_id Target Set ID.
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * @apiError BLC_SET_CURRENT_ERROR Unable to set this BLC Set to current.
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * @apiErrorExample Error-Response:
- * HTTP/1.1 404 Not found
- */
-		await runChecklist(socket, req);
-		try {
-			await setSetCurrent(req.body.set_id);
-			return;
-		} catch(err) {
-			const code = 'BLC_SET_CURRENT_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
 	router.route('copyBLCs', async (socket: Socket, req: APIData) => {

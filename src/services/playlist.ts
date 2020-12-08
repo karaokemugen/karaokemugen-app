@@ -32,18 +32,14 @@ import {
 	getPublicPlaylist,
 	reorderPlaylist as reorderPL,
 	replacePlaylist,
-	setCurrentPlaylist as setCurrentPL,
 	setPlaying as setPlayingFlag,
 	setPLCFree,
 	setPLCFreeBeforePos,
 	setPLCInvisible,
 	setPLCVisible,
 	setPos,
-	setPublicPlaylist as setPublicPL,
-	setVisiblePlaylist as setVisiblePL,
 	shiftPosInPlaylist,
 	trimPlaylist as trimPL,
-	unsetVisiblePlaylist as unsetVisiblePL,
 	updatePlaylistDuration,
 	updatePlaylistKaraCount,
 	updatePlaylistLastEditTime,
@@ -187,61 +183,6 @@ export async function trimPlaylist(playlist_id: number, duration: number) {
 	updatePlaylistLastEditTime(playlist_id);
 }
 
-/** Set playlist as current */
-export async function setCurrentPlaylist(playlist_id: number) {
-	const pl = await getPlaylistInfo(playlist_id);
-	if (!pl) throw {code: 404, msg: 'Playlist unknown'};
-	try {
-		const oldCurrentPlaylist_id = getState().currentPlaylistID;
-		await setCurrentPL(playlist_id);
-		updatePlaylistLastEditTime(playlist_id);
-		emitWS('playlistInfoUpdated', playlist_id);
-		emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
-		setState({currentPlaylistID: playlist_id, introPlayed: false, introSponsorPlayed: false});
-		// Event to signal the public interface the current playlist has been updated
-		emitWS('currentPlaylistUpdated', playlist_id);
-		logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
-		emitWS('playlistInfoUpdated', playlist_id);
-	} catch(err) {
-		throw {
-			message: err
-		};
-	}
-}
-
-/** Set playlist as visible to regular users */
-export async function setVisiblePlaylist(playlist_id: number) {
-	await setVisiblePL(playlist_id);
-	updatePlaylistLastEditTime(playlist_id);
-}
-
-/** Set playlist as invisible to regular users */
-export async function unsetVisiblePlaylist(playlist_id: number) {
-	await unsetVisiblePL(playlist_id);
-	updatePlaylistLastEditTime(playlist_id);
-}
-
-/** Set playlist as public */
-export async function setPublicPlaylist(playlist_id: number) {
-	const pl = await getPlaylistInfo(playlist_id);
-	if (!pl) throw {code: 404, msg: 'Playlist unknown'};
-	try {
-		const oldPublicPlaylist_id = getState().publicPlaylistID;
-		await setPublicPL(playlist_id);
-		updatePlaylistLastEditTime(playlist_id);
-		emitWS('playlistInfoUpdated', playlist_id);
-		emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
-		setState({publicPlaylistID: playlist_id});
-		emitWS('publicPlaylistUpdated', playlist_id);
-		logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
-		return playlist_id;
-	} catch(err) {
-		throw {
-			message: err
-		};
-	}
-}
-
 /** Remove playlist entirely */
 export async function deletePlaylist(playlist_id: number) {
 	const pl = await getPlaylistInfo(playlist_id);
@@ -306,13 +247,28 @@ export async function editPlaylist(playlist_id: number, playlist: Playlist) {
 		logger.debug(`Editing playlist ${playlist_id}`, {service: 'Playlist', obj: playlist});
 		await editPL({
 			id: playlist_id,
-			name: playlist.name,
-			modified_at: new Date(),
-			flag_visible: playlist.flag_visible
+			...pl,
+			...playlist
 		});
+		if (playlist.flag_current) {
+			const oldCurrentPlaylist_id = getState().currentPlaylistID;
+			updatePlaylistLastEditTime(oldCurrentPlaylist_id);
+			emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
+			setState({currentPlaylistID: playlist_id, introPlayed: false, introSponsorPlayed: false});
+			emitWS('currentPlaylistUpdated', playlist_id);
+			logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
+		}
+		if (playlist.flag_public) {
+			const oldPublicPlaylist_id = getState().publicPlaylistID;
+			updatePlaylistLastEditTime(oldPublicPlaylist_id);
+			emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
+			setState({publicPlaylistID: playlist_id});
+			emitWS('publicPlaylistUpdated', playlist_id);
+			logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
+		}
+		updatePlaylistLastEditTime(playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistsUpdated');
-
 	} catch(err) {
 		throw {
 			message: err,
@@ -332,8 +288,14 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 		flag_public: opts.public || null,
 		username: username
 	});
-	if (+opts.current) setState({currentPlaylistID: playlist_id});
-	if (+opts.public) setState({publicPlaylistID: playlist_id});
+	if (+opts.current) {
+		setState({currentPlaylistID: playlist_id});
+		emitWS('currentPlaylistUpdated', playlist_id);
+	}
+	if (+opts.public) {
+		setState({publicPlaylistID: playlist_id});
+		emitWS('publicPlaylistUpdated', playlist_id);
+	}
 	emitWS('playlistsUpdated');
 	return playlist_id;
 }

@@ -37,7 +37,7 @@ interface IProps {
 	playlistList?: Array<PlaylistElem>;
 	toggleSearchMenu?: () => void;
 	majIdsPlaylist: (side: number, value: number) => void;
-	toggleKaraDetail: (kara:KaraElement, idPlaylist: number) => void;
+	toggleKaraDetail: (kara: KaraElement, idPlaylist: number) => void;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
 }
@@ -93,7 +93,7 @@ class Playlist extends Component<IProps, IState> {
 			bLSetList: [],
 			searchType: 'search',
 			checkedkaras: 0,
-			searchCriteria : this.props.searchCriteria,
+			searchCriteria: this.props.searchCriteria,
 			searchValue: this.props.searchValue
 		};
 	}
@@ -303,7 +303,7 @@ class Playlist extends Component<IProps, IState> {
 
 	noRowsRenderer = () => {
 		return <React.Fragment>
-			{this.state.idPlaylist === -1 && this.props.scope === 'admin'? (
+			{this.state.idPlaylist === -1 && this.props.scope === 'admin' ? (
 				<li className="list-group-item karaSuggestion">
 					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 					{this.context?.globalState.settings.data.config.System.Repositories
@@ -368,31 +368,6 @@ class Playlist extends Component<IProps, IState> {
 		}
 	};
 
-	editNamePlaylist = () => {
-		if (this.state.idPlaylist === -4) {
-			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: this.state.bLSet?.name }), '', (newName: string) => {
-				commandBackend('editBLCSet', {
-					name: newName,
-					set_di: this.state.bLSet?.blc_set_id
-				});
-				const bLSet = this.state.bLSet as BLCSet;
-				bLSet.name = newName;
-				this.setState({ bLSet: bLSet });
-			});
-		} else {
-			callModal('prompt', i18next.t('CL_RENAME_PLAYLIST', { playlist: (this.state.playlistInfo as DBPL).name }), '', (newName: string) => {
-				commandBackend('editPlaylist', {
-					name: newName,
-					flag_visible: (this.state.playlistInfo as DBPL).flag_visible,
-					pl_id: this.state.idPlaylist
-				});
-				const playlistInfo = this.state.playlistInfo as DBPL;
-				playlistInfo.name = newName;
-				this.setState({ playlistInfo: playlistInfo });
-			});
-		}
-	};
-
 	getPlaylistInfo = async () => {
 		const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
 		this.setState({ playlistInfo: response });
@@ -449,7 +424,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 		await this.setState(data);
 		const url: string = this.getPlaylistUrl();
-		const param:any = {};
+		const param: any = {};
 		if (this.state.idPlaylist >= 0) {
 			this.getPlaylistInfo();
 			param.pl_id = this.state.idPlaylist;
@@ -836,7 +811,6 @@ class Playlist extends Component<IProps, IState> {
 				bLSetList={this.state.bLSetList}
 				changeIdPlaylist={this.changeIdPlaylist}
 				playlistInfo={this.state.playlistInfo}
-				editNamePlaylist={this.editNamePlaylist}
 				idPlaylistTo={this.props.idPlaylistTo}
 				selectAllKaras={this.selectAllKaras}
 				addAllKaras={this.addAllKaras}

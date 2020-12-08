@@ -26,7 +26,8 @@ WHERE pk_id_blc_set = $1;
 export const sqleditSet = `
 UPDATE blacklist_criteria_set SET
 	name = :name,
-	modified_at = :modified_at
+	modified_at = :modified_at,
+	flag_current = :flag_current
 WHERE pk_id_blc_set = :blc_set_id;
 `;
 
@@ -45,14 +46,9 @@ VALUES(
 ) RETURNING pk_id_blc_set
 `;
 
-export const sqlsetCurrentSet = `
-UPDATE blacklist_criteria_set
-SET flag_current = TRUE
-WHERE pk_id_blc_set = $1;
-`;
 
 export const sqlunsetCurrentSet = `
-UPDATE blacklist_criteria_set SET flag_current = FALSE
+UPDATE blacklist_criteria_set SET flag_current = FALSE WHERE flag_current = TRUE
 `;
 
 export const sqlselectSet = `

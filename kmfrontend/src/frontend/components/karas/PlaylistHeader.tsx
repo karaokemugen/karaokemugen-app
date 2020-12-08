@@ -9,7 +9,6 @@ import { User } from '../../../../../src/lib/types/user';
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBPL, DBPLC } from '../../../../../src/types/database/playlist';
 import { setFilterValue } from '../../../store/actions/frontendContext';
-import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
@@ -19,6 +18,7 @@ import Autocomplete from '../generic/Autocomplete';
 import SelectWithIcon from '../generic/SelectWithIcon';
 import BlcSetCopyModal from '../modals/BlcSetCopyModal';
 import FavMixModal from '../modals/FavMixModal';
+import PlaylistModal from '../modals/PlaylistModal';
 import ShuffleModal from '../modals/ShuffleModal';
 import ActionsButtons from './ActionsButtons';
 
@@ -55,7 +55,6 @@ interface IProps {
 	playlistDidUpdate: () => void;
 	getPlaylist: (searchType?: string) => void;
 	onChangeTags: (type: number | string, value: string) => void;
-	editNamePlaylist: () => void;
 	addAllKaras: () => void;
 	selectAllKaras: () => void;
 	transferCheckedKaras: () => void;
@@ -88,21 +87,16 @@ class PlaylistHeader extends Component<IProps, IState> {
 		};
 	}
 
-	addPlaylist = () => {
+	addOrEditPlaylist = (mode: 'create' | 'edit') => {
 		this.togglePlaylistCommands();
-		if (this.props.idPlaylist === -4) {
-			callModal('prompt', i18next.t('BLC.ADD'), '', (playlistName: string) => {
-				commandBackend('createBLCSet', { name: playlistName, flag_current: false }).then(response => {
-					this.props.changeIdPlaylist(-4, response.id);
-				});
-			});
-		} else {
-			callModal('prompt', i18next.t('CL_CREATE_PLAYLIST'), '', (playlistName: string) => {
-				commandBackend('createPlaylist', { name: playlistName, flag_visible: true, flag_current: false, flag_public: false }).then(response => {
-					this.props.changeIdPlaylist(response);
-				});
-			});
-		}
+		ReactDOM.render(<PlaylistModal
+			changeIdPlaylist={this.props.changeIdPlaylist}
+			idPlaylist={this.props.idPlaylist}
+			playlistInfo={this.props.playlistInfo}
+			bLSet={this.props.bLSet}
+			mode={mode}
+			context={this.context}
+		/>, document.getElementById('modal'));
 	};
 
 	deletePlaylist = () => {
@@ -254,33 +248,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 			} else {
 				commandBackend('emptyPlaylist', { pl_id: this.props.idPlaylist });
 			}
-		});
-	};
-
-	setFlagCurrent = async () => {
-		this.togglePlaylistCommands();
-		if (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) {
-			commandBackend('setCurrentBLCSet', { set_id: this.props.bLSet?.blc_set_id });
-		} else if (!(this.props.playlistInfo as DBPL).flag_current) {
-			await commandBackend('setCurrentPlaylist', { pl_id: this.props.idPlaylist });
-		}
-		setSettings(this.context.globalDispatch);
-	};
-
-	setFlagPublic = async () => {
-		this.togglePlaylistCommands();
-		if (!(this.props.playlistInfo as DBPL).flag_public) {
-			await commandBackend('setPublicPlaylist', { pl_id: this.props.idPlaylist });
-			setSettings(this.context.globalDispatch);
-		}
-	};
-
-	setFlagVisible = () => {
-		this.togglePlaylistCommands();
-		commandBackend('editPlaylist', {
-			name: (this.props.playlistInfo as DBPL).name,
-			flag_visible: !(this.props.playlistInfo as DBPL).flag_visible,
-			pl_id: this.props.idPlaylist
 		});
 	};
 
@@ -519,35 +486,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 														</a>
 													</li> : null
 												}
-												{this.props.idPlaylist >= 0 ?
-													<li>
-														<a href="#" onClick={this.setFlagVisible}>
-															{this.props.playlistInfo?.flag_visible ?
-																<i className="fas fa-fw fa-eye-slash"></i> :
-																<i className="fas fa-fw fa-eye"></i>
-															}
-															{i18next.t(this.props.playlistInfo?.flag_visible ?
-																'ADVANCED.INVISIBLE' : 'ADVANCED.VISIBLE')}
-														</a>
-													</li> : null
-												}
-												{this.props.idPlaylist >= 0 && !this.props.playlistInfo?.flag_public ?
-													<li>
-														<a href="#" onClick={this.setFlagPublic}>
-															<i className="fas fa-fw fa-globe" />
-															{i18next.t('ADVANCED.PUBLIC')}
-														</a>
-													</li> : null
-												}
-												{(this.props.idPlaylist >= 0 && !this.props.playlistInfo?.flag_current)
-													|| (this.props.idPlaylist === -4 && !this.props.bLSet?.flag_current) ?
-													<li>
-														<a href="#" onClick={this.setFlagCurrent}>
-															<i className="fas fa-fw fa-play-circle" />
-															{i18next.t(this.props.idPlaylist === -4 ? 'BLC.CURRENT' : 'ADVANCED.CURRENT')}
-														</a>
-													</li> : null
-												}
 												{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
 													<React.Fragment>
 														<li>
@@ -557,12 +495,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 															</a>
 														</li>
 														<li>
-															<a href="#" onClick={() => {
-																this.togglePlaylistCommands();
-																this.props.editNamePlaylist();
-															}}>
+															<a href="#" onClick={() => this.addOrEditPlaylist('edit')}>
 																<i className="fas fa-fw fa-pencil-alt" />
-																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EDIT' : 'ADVANCED.RENAME')}
+																{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EDIT' : 'ADVANCED.EDIT')}
 															</a>
 														</li>
 													</React.Fragment> : null
@@ -579,7 +514,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 												}
 												<hr />
 												<li>
-													<a href="#" onClick={this.addPlaylist}>
+													<a href="#" onClick={() => this.addOrEditPlaylist('create')}>
 														<i className="fas fa-fw fa-plus" />
 														{i18next.t(this.props.idPlaylist === -4 ? 'BLC.ADD' : 'ADVANCED.ADD')}
 													</a>

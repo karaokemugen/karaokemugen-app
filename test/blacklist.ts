@@ -81,14 +81,11 @@ describe('Blacklist', () => {
 		BLCSetID = data.id;
 	});
 
-	it('Turn blacklist set current', async () => {
-		await commandBackend(token, 'setCurrentBLCSet', {set_id: BLCSetID});
-	});
-
 	it('Edit blacklist set', async () => {
 		await commandBackend(token, 'editBLCSet', {
 			set_id: BLCSetID,
-			name: newBLCSetName
+			name: newBLCSetName,
+			flag_current: true
 		});
 	});
 

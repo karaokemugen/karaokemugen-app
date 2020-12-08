@@ -4,7 +4,7 @@ import { APIData } from '../../lib/types/api';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyPlaylist, exportPlaylist,findPlaying,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, setCurrentPlaylist, setPublicPlaylist, shufflePlaylist } from '../../services/playlist';
+import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyPlaylist, exportPlaylist,findPlaying,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, shufflePlaylist } from '../../services/playlist';
 import { vote } from '../../services/upvote';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
@@ -167,7 +167,9 @@ export default function playlistsController(router: SocketIOApp) {
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} name Name of playlist to create
- * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
+ * @apiParam {Boolean} flag_visible Is the playlist visible to all users? If `false`, only admins can see it.
+ * @apiParam {Boolean} flag_current Is the playlist current?
+ * @apiParam {Boolean} flag_public Is the playlist public?
  *
  * @apiSuccess {String} code Message to display
  *
@@ -285,66 +287,6 @@ export default function playlistsController(router: SocketIOApp) {
 			return {index: index};
 		} catch(err) {
 			throw {code: 500, message: err};
-		}
-	});
-	router.route('setCurrentPlaylist', async (socket: Socket, req: APIData) => {
-		/**
-	 * @api {put} Set playlist to current
-	 * @apiName setCurrentPlaylist
-	 * @apiVersion 5.0.0
-	 * @apiGroup Playlists
-	 * @apiPermission admin
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiSuccess {String} args ID of playlist updated
-	 * @apiSuccess {String} code Message to display
-	 * @apiSuccess {Number} data `null`
-	 *
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * @apiError PL_SET_CURRENT_ERROR Unable to set this playlist to current. The playlist is a public one and can't be set to current at the same time. First set another playlist as public so this playlist has no flags anymore and can be set current.
-	 *
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 */
-		await runChecklist(socket, req);
-		try {
-			return await setCurrentPlaylist(req.body?.pl_id);
-		} catch(err) {
-			const code = 'PL_SET_CURRENT_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
-		}
-	});
-
-	router.route('setPublicPlaylist', async (socket: Socket, req: APIData) => {
-		/**
-	 * @api {put} Set playlist to public
-	 * @apiName setPublicPlaylist
-	 * @apiVersion 5.0.0
-	 * @apiGroup Playlists
-	 * @apiPermission admin
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiSuccess {String} args ID of playlist updated
-	 * @apiSuccess {String} code Message to display
-	 * @apiSuccess {Number} data `null`
-	 *
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * @apiError PL_SET_PUBLIC_ERROR Unable to set this playlist to public. The playlist is a current one and can't be set to public at the same time. First set another playlist as current so this playlist has no flags anymore and can be set public.
-	 *
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 */
-		await runChecklist(socket, req);
-		// Empty playlist
-		try {
-			return await setPublicPlaylist(req.body?.pl_id);
-		} catch(err) {
-			const code = 'PL_SET_PUBLIC_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
 	router.route('getPlaylistContents', async (socket: Socket, req: APIData) => {
