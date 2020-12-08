@@ -293,11 +293,19 @@ describe('Playlists', () => {
 	});
 
 	it('Set playlist to current', async () => {
-		await commandBackend(token, 'setCurrentPlaylist', { pl_id: playlistID });
+		const data = {
+			pl_id: playlistID,
+			flag_current: true
+		};
+		await commandBackend(token, 'editPlaylist', data);
 	});
 
 	it('Set playlist to public', async () => {
-		await commandBackend(token, 'setPublicPlaylist', { pl_id: newPublicPlaylistID });
+		const data = {
+			pl_id: newPublicPlaylistID,
+			flag_public: true
+		};
+		await commandBackend(token, 'editPlaylist', data);
 	});
 
 	it('Get list of playlists AFTER setting new current/public PLs', async () => {

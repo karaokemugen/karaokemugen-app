@@ -13,7 +13,6 @@ import {	addBlacklistCriteria as addBLC,
 	getCurrentBLCSet,
 	selectSet,
 	selectSets,
-	setCurrentSet,
 	unsetCurrentSet,
 } from '../dao/blacklist';
 import {KaraList, KaraParams} from '../lib/types/kara';
@@ -30,7 +29,9 @@ import {getTag} from './tag';
 export async function editSet(params: BLCSet) {
 	const blcSet = await selectSet(params.blc_set_id);
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
-	await editBLCSet(params);
+	if (params.flag_current) await unsetCurrentSet();
+	await editBLCSet({...blcSet, ...params});
+	if (params.flag_current) await generateBlacklist();
 	updatedSetModifiedAt(blcSet.blc_set_id);
 	emitWS('BLCSetInfoUpdated', params.blc_set_id);
 	emitWS('BLCSetsUpdated');
@@ -51,7 +52,11 @@ export async function addSet(params: BLCSet) {
 		created_at: new Date(),
 		modified_at: new Date()
 	});
-	if (params.flag_current) setSetCurrent(id);
+	if (params.flag_current) {
+		await unsetCurrentSet();
+		await editBLCSet({blc_set_id: id, flag_current: true});
+		await generateBlacklist();
+	}
 	return id;
 }
 
@@ -80,16 +85,6 @@ export async function exportSet(id: number): Promise<BLCSetFile> {
 		blcSet: blcs
 	};
 	return file;
-}
-
-export async function setSetCurrent(id: number) {
-	const blcSet = await selectSet(id);
-	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
-	await unsetCurrentSet();
-	await setCurrentSet(id);
-	updatedSetModifiedAt(id);
-	emitWS('BLCSetInfoUpdated', id);
-	await generateBlacklist();
 }
 
 export async function removeSet(id: number) {

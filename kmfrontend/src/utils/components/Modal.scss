@@ -102,20 +102,28 @@
 	background-color: #5f2768;
 }
 
-.modal-body.shuffle-modal {
+.modal-body.flex-direction-btns {
 	display: flex;
 	align-items: center;
 	flex-direction: column;
+	justify-content: center;
 	margin-bottom: 0.5em;
+
+	> div {
+		width: 25em;
+	}
 
 	button {
 		display: flex;
 		align-items: center;
+		width: 100%;
+		justify-content: center;
 
-		div {
+		> div {
 			display: flex;
 			flex-direction: column;
-			max-width: 20em;
+			justify-content: center;
+			width: 20em;
 		}
 	}
 }

@@ -8,7 +8,7 @@ import {now} from '../lib/utils/date';
 import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
 import {Playlist, PLC, PLCParams} from '../types/playlist';
 import {getState} from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetCurrentPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlsetPublicPlaylist, sqlsetVisiblePlaylist, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlunsetVisiblePlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
 export function editPlaylist(pl: Playlist) {
@@ -17,6 +17,8 @@ export function editPlaylist(pl: Playlist) {
 		name: pl.name,
 		modified_at: pl.modified_at,
 		flag_visible: pl.flag_visible,
+		flag_current: pl.flag_current,
+		flag_public: pl.flag_public
 	}));
 }
 
@@ -211,22 +213,6 @@ export async function getCurrentPlaylist(): Promise<DBPL> {
 export async function getPublicPlaylist(): Promise<DBPL> {
 	const res = await db().query(sqltestPublicPlaylist);
 	return res.rows[0];
-}
-
-export function setCurrentPlaylist(id: number) {
-	return db().query(sqlsetCurrentPlaylist, [id]);
-}
-
-export function setPublicPlaylist(id: number) {
-	return db().query(sqlsetPublicPlaylist, [id]);
-}
-
-export function setVisiblePlaylist(id: number) {
-	return db().query(sqlsetVisiblePlaylist, [id]);
-}
-
-export function unsetVisiblePlaylist(id: number) {
-	return db().query(sqlunsetVisiblePlaylist, [id]);
 }
 
 export async function setPlaying(plc_id: number, playlist_id: number) {

@@ -20,7 +20,9 @@ export const sqleditPlaylist = `
 UPDATE playlist SET
 	name = :name,
 	modified_at = :modified_at,
-	flag_visible = :flag_visible
+	flag_visible = :flag_visible,
+	flag_current = :flag_current,
+	flag_public = :flag_public
 WHERE pk_id_playlist = :playlist_id;
 `;
 
@@ -438,30 +440,6 @@ export const sqlgetMaxPosInPlaylist = `
 SELECT MAX(pos) AS maxpos
 FROM playlist_content
 WHERE fk_id_playlist = $1;
-`;
-
-export const sqlsetCurrentPlaylist = `
-UPDATE playlist
-SET flag_current = TRUE
-WHERE pk_id_playlist = $1;
-`;
-
-export const sqlsetVisiblePlaylist = `
-UPDATE playlist
-SET flag_visible = TRUE
-WHERE pk_id_playlist = $1;
-`;
-
-export const sqlunsetVisiblePlaylist = `
-UPDATE playlist
-SET flag_visible = TRUE
-WHERE pk_id_playlist = $1;
-`;
-
-export const sqlsetPublicPlaylist = `
-UPDATE playlist
-SET flag_public = TRUE
-WHERE pk_id_playlist = $1;
 `;
 
 export const sqlsetPlaying = `
