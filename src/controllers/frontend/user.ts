@@ -361,7 +361,9 @@ export default function userController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await findUserByName(req.token.username, {public: false});
+			const user = await findUserByName(req.token.username, {public: false});
+			delete user.password;
+			return user;
 		} catch(err) {
 			const code = 'USER_VIEW_ERROR';
 			errMessage(code, err);
