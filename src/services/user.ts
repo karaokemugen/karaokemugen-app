@@ -203,9 +203,9 @@ export async function findUserByName(username: string, opt = {
 		if (!userdata.url || opt.public) userdata.url = null;
 		if (!userdata.email || opt.public) userdata.email = null;
 		if (opt.public) {
-			userdata.password = null;
 			userdata.fingerprint = null;
 		}
+		delete userdata.password;
 		return userdata;
 	}
 	return null;
