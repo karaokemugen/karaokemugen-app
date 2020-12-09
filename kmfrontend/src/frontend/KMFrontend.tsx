@@ -41,7 +41,7 @@ class KMFrontend extends Component<unknown, IState> {
 			}
 		});
 
-		if (this.context?.globalState.settings.data.user?.flag_tutorial_done && window.location.pathname === '/admin') {
+		if (!this.context?.globalState.settings.data.user?.flag_tutorial_done && window.location.pathname === '/admin') {
 			startIntro();
 		}
 	}
