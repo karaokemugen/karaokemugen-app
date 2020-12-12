@@ -40,8 +40,8 @@ export const defaults: Config = {
 	},
 	Online: {
 		Host: 'kara.moe',
-		MediasHost: undefined,
-		Port: undefined,
+		MediasHost: null,
+		Port: 80,
 		Stats: undefined,
 		ErrorTracking: undefined,
 		URL: true,
@@ -271,6 +271,7 @@ export const configConstraints = {
 	'Online.ErrorTracking': {boolUndefinedValidator: true},
 	'Online.Host': {presence: true, format: hostnameRegexp},
 	'Online.MediasHost': {format: hostnameRegexp},
+	'Online.Port': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
 	'Online.Discord.DisplayActivity': {inclusion: bools},
