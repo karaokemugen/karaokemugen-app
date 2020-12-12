@@ -270,7 +270,6 @@ export const configConstraints = {
 	'Online.Stats': {boolUndefinedValidator: true},
 	'Online.ErrorTracking': {boolUndefinedValidator: true},
 	'Online.Host': {presence: true, format: hostnameRegexp},
-	'Online.MediasHost': {format: hostnameRegexp},
 	'Online.Port': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
