@@ -216,6 +216,7 @@ class Playlist extends Component<IProps, IState> {
 
 	initCall = async () => {
 		await this.getIdPlaylist();
+		await this.setState({ goToPlaying: this.state.idPlaylist > 0 });
 		if (this.props.scope === 'public' || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
 			if (this.props.scope === 'admin') await this.loadBLSet();
@@ -360,7 +361,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
 		const oldIdPlaylist = this.state.idPlaylist;
-		await this.setState({ idPlaylist: Number(idPlaylist), data: undefined, playlistInfo: undefined });
+		await this.setState({ idPlaylist: Number(idPlaylist), data: undefined, playlistInfo: undefined, goToPlaying: idPlaylist > 0 });
 		this.getPlaylist();
 		this.props.majIdsPlaylist(this.props.side, idPlaylist);
 		if (idPlaylist === this.props.idPlaylistTo) {
@@ -442,7 +443,7 @@ class Playlist extends Component<IProps, IState> {
 			if (searchCriteria && this.state.searchValue) param.searchValue = searchCriteria + ':' + this.state.searchValue;
 		}
 		const karas: KaraList = await commandBackend(url, param);
-		if (this.state.idPlaylist > 0) {
+		if (this.state.goToPlaying && this.state.idPlaylist > 0) {
 			const result = await commandBackend('findPlayingSongInPlaylist', { pl_id: this.state.idPlaylist });
 			if (result?.index !== -1) {
 				this.setState({ scrollToIndex: result.index, _goToPlaying: true });
