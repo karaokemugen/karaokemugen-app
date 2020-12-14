@@ -80,9 +80,10 @@ header.menu-container {
 
 			> .link {
 				padding: .5em;
-				> a {
+				> div {
 					font-weight: bold;
 					font-size: 1.25em;
+					cursor: pointer;
 				}
 			}
 		}

@@ -2,12 +2,12 @@ import './KMFrontend.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import { Route,Switch } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router';
 
 import GlobalContext from '../store/context';
 import { isElectron } from '../utils/electron';
 import { commandBackend, getSocket } from '../utils/socket';
-import { callModal, is_touch_device,startIntro } from '../utils/tools';
+import { callModal, is_touch_device, startIntro } from '../utils/tools';
 import AdminPage from './components/AdminPage';
 import ChibiPage from './components/ChibiPage';
 import ShutdownModal from './components/modals/ShutdownModal';
@@ -76,9 +76,10 @@ class KMFrontend extends Component<unknown, IState> {
 							<Route path="/welcome" render={() => <WelcomePage />} />
 							<Route path="/admin" render={() => <AdminPage
 								powerOff={isElectron() ? undefined : this.powerOff}
-								 showVideo={this.showVideo} />} />
+								showVideo={this.showVideo} />} />
 							<Route path="/chibi" exact component={ChibiPage} />
-							<Route exact path="/" render={() => <PublicPage showVideo={this.showVideo} />} />
+							<Route path="/public" render={(route) => <PublicPage showVideo={this.showVideo} route={route} />} />
+							<Route exact path="/"><Redirect to="/public" /></Route>
 							<Route component={NotFoundPage} />
 						</Switch>
 						<a id="downloadAnchorElem" />
