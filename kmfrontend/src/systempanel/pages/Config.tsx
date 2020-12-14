@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { commandBackend } from '../../utils/socket';
+import { dotify, expand } from '../../utils/tools';
 import FoldersElement from '../components/FoldersElement';
 
 interface ConfigProps {
@@ -75,33 +76,9 @@ class Config extends Component<ConfigProps, ConfigState> {
 		});
 	}
 
-	dotify(obj: any) {
-		//Code from the package node-dotify
-		const res: any = {};
-		function recurse(obj: any, current?: any) {
-			for (const key in obj) {
-				const value = obj[key];
-				const newKey = (current ? current + '.' + key : key);  // joined key with dot
-				if (value && typeof value === 'object' && !Array.isArray(value)) {
-					recurse(value, newKey);  // it's a nested object, so do it again
-				} else {
-					res[newKey] = value;  // it's not an object, so set the property
-				}
-			}
-		}
-		recurse(obj);
-		return res;
-	}
-
-	expand = (str, val) => {
-		return str.split('.').reduceRight((acc, currentValue) => {
-			return { [currentValue]: acc };
-		}, val);
-	};
-
 	saveSetting = async (key: string, value: any) => {
 		await commandBackend('updateSettings', {
-			setting: this.expand(key, value)
+			setting: expand(key, value)
 		});
 		this.refresh();
 	}
@@ -195,6 +172,10 @@ class Config extends Component<ConfigProps, ConfigState> {
 									const target = e.target as HTMLInputElement;
 									this.saveSetting(record.key, target.value);
 								}}
+								onBlur={(e) => {
+									const target = e.target as HTMLInputElement;
+									this.saveSetting(record.key, target.value);
+								}}
 								defaultValue={record.value}
 							/> :
 							((record.key.includes('System.Binaries') || record.key.includes('System.Path')) ?
@@ -215,6 +196,10 @@ class Config extends Component<ConfigProps, ConfigState> {
 											const target = e.target as HTMLInputElement;
 											this.saveSetting(record.key, target.value);
 										}}
+										onBlur={(e) => {
+											const target = e.target as HTMLInputElement;
+											this.saveSetting(record.key, target.value);
+										}}
 										defaultValue={record.value}
 									/>
 								)
@@ -225,7 +210,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}];
 
 	configKeyValue = data => {
-		return Object.entries(this.dotify(data)).map(([k, v]) => {
+		return Object.entries(dotify(data)).map(([k, v]) => {
 			if (this.props.properties && !this.props.properties.includes(k)) {
 				return undefined;
 			}
