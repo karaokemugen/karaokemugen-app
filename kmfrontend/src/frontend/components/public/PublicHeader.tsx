@@ -1,7 +1,7 @@
 import './PublicHeader.scss';
 
 import i18next from 'i18next';
-import React, {Component, createRef, Ref} from 'react';
+import React, { Component, createRef, Ref } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import nanamiPNG from '../../../assets/nanami.png';
@@ -54,12 +54,12 @@ class PublicHeader extends Component<IProps, IState> {
 	}
 
 	toggleProfileModal = () => {
-		this.setState({dropDownMenu: false});
+		this.setState({ dropDownMenu: false });
 		this.props.openProfileModal();
 	};
 
 	goToFavorites = () => {
-		this.setState({dropDownMenu: false});
+		this.setState({ dropDownMenu: false });
 		this.props.changeView('favorites');
 	}
 
@@ -78,19 +78,19 @@ class PublicHeader extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<header className="menu-container" style={{['--img' as any]: this.context.globalState.frontendContext.backgroundImg}} ref={this.state.ref}>
+			<header className="menu-container" style={{ ['--img' as any]: this.context.globalState.frontendContext.backgroundImg }} ref={this.state.ref}>
 				<div className="menu">
 					<a href="#" className="nanamin-logo" onClick={() => this.props.changeView('home')}>
 						<picture>
-							<source srcSet={nanamiWebP} type='image/webp'/>
-							<source srcSet={nanamiPNG} type='image/png'/>
+							<source srcSet={nanamiWebP} type='image/webp' />
+							<source srcSet={nanamiPNG} type='image/png' />
 							<img src={nanamiPNG} alt="Nanamin logo" />
 						</picture>
 					</a>
 					<div className="profile-btn">
 						<div className="dropdown-container">
-							<div className={`closeHandler${this.state.dropDownMenu ? ' active':''}`} onClick={() => this.setState({ dropDownMenu: false })} />
-							<a href="#" onClick={() => this.setState({dropDownMenu: !this.state.dropDownMenu})}>
+							<div className={`closeHandler${this.state.dropDownMenu ? ' active' : ''}`} onClick={() => this.setState({ dropDownMenu: false })} />
+							<a href="#" onClick={() => this.setState({ dropDownMenu: !this.state.dropDownMenu })}>
 								<ProfilePicture user={this.context.globalState.settings.data.user} />
 							</a>
 							<div className={`dropdown ${this.state.dropDownMenu ? 'active' : ''}`}>
@@ -108,16 +108,16 @@ class PublicHeader extends Component<IProps, IState> {
 									</div> : null
 								}
 								{this.context?.globalState.auth.data.role !== 'guest' ?
-									<div className="link"><a href="#" onClick={this.goToFavorites}>
-										<i className='fas fa-star'/> {i18next.t('VIEW_FAVORITES')}
-									</a></div> : null
+									<div className="link"><div onClick={this.goToFavorites}>
+										<i className='fas fa-star' /> {i18next.t('VIEW_FAVORITES')}
+									</div></div> : null
 								}
-								<div className="link"><a href="#" onClick={this.toggleProfileModal}>
+								<div className="link"><div onClick={this.toggleProfileModal}>
 									<i className="fas fa-user" /> {i18next.t('PROFILE')}
-								</a></div>
-								<div className="link"><a href="#" onClick={() => logout(this.context.globalDispatch)}>
+								</div></div>
+								<div className="link"><div onClick={() => logout(this.context.globalDispatch)}>
 									<i className="fas fa-sign-out-alt" /> {i18next.t('LOGOUT')}
-								</a></div>
+								</div></div>
 							</div>
 						</div>
 					</div>

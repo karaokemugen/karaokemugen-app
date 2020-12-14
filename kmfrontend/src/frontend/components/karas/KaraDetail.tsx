@@ -1,14 +1,14 @@
 import './KaraDetail.scss';
 
 import i18next from 'i18next';
-import React, {Component, MouseEvent, ReactNode} from 'react';
+import React, { Component, MouseEvent, ReactNode } from 'react';
 import ReactDOM, { createPortal } from 'react-dom';
 
 import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import GlobalContext, { GlobalContextInterface } from '../../../store/context';
-import { getPreviewLink, getSerieLanguage, getTagInLocale} from '../../../utils/kara';
+import { getPreviewLink, getSerieLanguage, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -56,7 +56,7 @@ class KaraDetail extends Component<IProps, IState> {
 		if (this.props.scope === 'admin') {
 			return;
 		}
-		const generated = this.state.kara ? `url('${getPreviewLink(this.state.kara)}')`:'none';
+		const generated = this.state.kara ? `url('${getPreviewLink(this.state.kara)}')` : 'none';
 		if (generated !== this.context.globalState.frontendContext.backgroundImg) {
 			setBgImage(this.context.globalDispatch, generated);
 		}
@@ -96,10 +96,10 @@ class KaraDetail extends Component<IProps, IState> {
 		let data;
 		if (this.props.idPlaylist && this.props.idPlaylist > 0) {
 			url = 'getPLC';
-			data = {pl_id: this.props.idPlaylist, plc_id: this.props.playlistcontentId};
+			data = { pl_id: this.props.idPlaylist, plc_id: this.props.playlistcontentId };
 		} else {
 			url = 'getKara';
-			data = {kid : (kid ? kid : this.props.kid)};
+			data = { kid: (kid ? kid : this.props.kid) };
 		}
 		const kara = await commandBackend(url, data);
 		await this.setState({
@@ -133,8 +133,8 @@ class KaraDetail extends Component<IProps, IState> {
 	};
 
 	showFullLyrics = async () => {
-		const response = await commandBackend('getKaraLyrics', {kid: (this.state.kara as DBPLCInfo).kid});
-		this.setState({ lyrics: response.map(value => value.text)});
+		const response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
+		this.setState({ lyrics: response.map(value => value.text) });
 	};
 
 	getTagInLocale = (e: DBKaraTag) => {
@@ -203,7 +203,7 @@ class KaraDetail extends Component<IProps, IState> {
 						<i className={`fas fa-fw fa-${tagData.icon}`} />
 						<div>
 							{i18next.t(`KARA.${type}_BY`)}
-							<span className="detailsKaraLineContent"> {data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index+1 === arr.length) ? <span className={`colored ${tagData.color}`}> {i18next.t('AND')} </span>:<span className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
+							<span className="detailsKaraLineContent"> {data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index + 1 === arr.length) ? <span className={`colored ${tagData.color}`}> {i18next.t('AND')} </span> : <span className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
 						</div>
 					</div>);
 				}
@@ -236,7 +236,7 @@ class KaraDetail extends Component<IProps, IState> {
 								<i className="fas fa-thumbs-up" />
 								{data.upvotes}
 							</span>
-						</div>: null
+						</div> : null
 					}
 					<div className="detailsKaraLine">
 						<span>
@@ -303,24 +303,24 @@ class KaraDetail extends Component<IProps, IState> {
 			);
 
 			const header = (
-				<div className={`modal-header img-background${this.props.scope === 'public' ? ' fixed':''}`} style={{['--img' as any]: this.props.scope === 'admin' ? `url('/previews/${data.kid}.${data.mediasize}.25.jpg')`:'none'}}>
+				<div className={`modal-header img-background${this.props.scope === 'public' ? ' fixed' : ''}`} style={{ ['--img' as any]: this.props.scope === 'admin' ? `url('/previews/${data.kid}.${data.mediasize}.25.jpg')` : 'none' }}>
 					<div className="modal-header-title">
 						{this.props.scope === 'public' ?
 							<button
 								className="transparent-btn"
 								type="button" onClick={this.props.closeOnPublic}>
 								<i className="fas fa-fw fa-arrow-left" />
-							</button>:null}
+							</button> : null}
 						<div className="modal-title-block">
 							<h4 className="modal-title">{data.title}</h4>
-							<h5 className="modal-series">{data.series[0] ? getSerieLanguage(this.props.context.globalState.settings.data, data.series[0], data.langs[0].name):getTagInLocale(data.singers[0])}</h5>
+							<h5 className="modal-series">{data.series[0] ? getSerieLanguage(this.props.context.globalState.settings.data, data.series[0], data.langs[0].name) : getTagInLocale(data.singers[0])}</h5>
 						</div>
 						{this.props.scope === 'admin' ?
 							<button
 								className="transparent-btn"
 								type="button" onClick={this.closeModal}>
 								<i className="fas fa-fw fa-times" />
-							</button>:null}
+							</button> : null}
 					</div>
 					<div className="tagConteneur">
 						{karaTags}
@@ -343,7 +343,7 @@ class KaraDetail extends Component<IProps, IState> {
 											<button
 												type="button"
 												className="fullLyrics btn btn-action"
-												onClick={() => this.setState({showLyrics: !this.state.showLyrics})}
+												onClick={() => this.setState({ showLyrics: !this.state.showLyrics })}
 											>
 												<i className="fas fa-fw fa-quote-right" />
 												<span>{i18next.t('TOOLTIP_SHOWLYRICS')}</span>
@@ -361,7 +361,7 @@ class KaraDetail extends Component<IProps, IState> {
 				infoKaraTemp = (
 					<React.Fragment>
 						{this.props.scope === 'public' ?
-							this.placeHeader(header):header}
+							this.placeHeader(header) : header}
 						<div className="detailsKara">
 							<div className="centerButtons">
 								{this.props.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
