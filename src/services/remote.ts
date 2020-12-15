@@ -72,7 +72,7 @@ async function proxy(ev: string, data: APIDataProxied, ack: (res) => void) {
 async function broadcastForward(body) {
 	commandKMServer('remote broadcast', {
 		body
-	}, 5000, true).catch(err => {
+	}).catch(err => {
 		logger.warn('Failed to remote broadcast', {service: 'Remote', obj: err});
 	});
 }
