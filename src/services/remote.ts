@@ -6,8 +6,8 @@ import logger from '../lib/utils/logger';
 import { getWS } from '../lib/utils/ws';
 import { configureHost } from '../utils/config';
 import { commandKMServer, getKMServerSocket } from '../utils/kmserver';
-import { getState, setState } from '../utils/state';
 import sentry from '../utils/sentry';
+import { getState, setState } from '../utils/state';
 
 async function startRemote(): Promise<RemoteSuccess> {
 	try {
