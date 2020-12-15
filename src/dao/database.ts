@@ -45,13 +45,9 @@ function errorFunction(err: any) {
 export async function initDB() {
 	const conf = getConfig();
 	await connectDB(errorFunction, {superuser: true, db: 'postgres', log: getState().opt.sql});
-	try {
-		// Testing if database exists. If it does, no need to do the other stuff
-		const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.System.Database.database}'`);
-		if (rows.length > 0) return;
-	} catch(err) {
-		throw new Error(err);
-	}
+	// Testing if database exists. If it does, no need to do the other stuff
+	const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.System.Database.database}'`);
+	if (rows.length > 0) return;
 	try {
 		await db().query(`CREATE DATABASE ${conf.System.Database.database} ENCODING 'UTF8'`);
 		logger.debug('Database created', {service: 'DB'});
@@ -214,8 +210,7 @@ export async function generateDB(): Promise<boolean> {
 		await generateBlacklist();
 		if (getConfig().Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
+		sentry.error(err);
 		throw err;
 	}
 	return true;
