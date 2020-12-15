@@ -1142,9 +1142,8 @@ export async function nextSong(): Promise<DBPLC> {
 	try {
 		playlist = await getCurrentPlaylistContents();
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	}
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (playlist.length === 0) throw 'Playlist is empty!';

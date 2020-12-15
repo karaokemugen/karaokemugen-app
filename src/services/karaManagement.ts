@@ -130,7 +130,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		await Promise.all(tasks);
 	} catch(err) {
 		if (err?.code === 404) throw err;
-		sentry.error(new Error(err));
+		sentry.error(err);
 		throw err;
 	}
 }

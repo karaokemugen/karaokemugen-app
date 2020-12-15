@@ -292,9 +292,8 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 		if (initialKarasToAddCount !== karasToAdd.length) logger.info(`${initialKarasToAddCount - karasToAdd.length} songs have been blacklisted`, {service: 'Update'});
 		return downloads;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -384,9 +383,8 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 			refreshKaras();
 		}
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -534,9 +532,8 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 		logger.info(`Updating ${karasToUpdate.length} songs`, {service: 'Update'});
 		return downloads;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}

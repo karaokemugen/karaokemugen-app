@@ -102,9 +102,9 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 		});
 		return differentChecksums;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		if (err?.code === 404) throw err;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -135,9 +135,8 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 		}
 		refreshKaras();
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -169,9 +168,9 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 		});
 		return mediaFilesFiltered;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		if (err?.code === 404) throw err;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -210,9 +209,9 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		}
 		return tagsToDelete;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		if (err?.code === 404) throw err;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}

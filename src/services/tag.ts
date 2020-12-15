@@ -77,9 +77,8 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		}
 		return tagObj;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		if (!opts.silent) task.end();
 	}
@@ -169,7 +168,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		return tagObj;
 	} catch(err) {
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, {service: 'Tags', obj: err});
-		sentry.error(new Error(err));
+		sentry.error(err);
 		throw err;
 	} finally {
 		task.end();
@@ -253,7 +252,8 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 			await refreshTagsAfterDBChange();
 		}
 	} catch(err) {
-		sentry.error(new Error(err));
+		if (err?.code === 404) throw err;
+		sentry.error(err);
 		throw err;
 	} finally {
 		task.end();
@@ -318,7 +318,7 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 		await writeTagFile(tag, destDir);
 	} catch(err) {
 		if (err?.code === 404) throw err;
-		sentry.error(new Error(err));
+		sentry.error(err);
 		throw err;
 	}
 }

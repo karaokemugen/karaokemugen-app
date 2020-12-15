@@ -130,9 +130,8 @@ export async function getBlacklistCriterias(id: number, lang?: string, noDressin
 		if (noDressingUp) return blcs;
 		return await translateBlacklistCriterias(blcs, lang);
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		profile('getBLC');
 	}
@@ -212,8 +211,7 @@ export async function addBlacklistCriteria(type: number, value: any, set_id: num
 		emitWS('blacklistUpdated');
 	} catch(err) {
 		logger.error('Error adding criteria', {service: 'Blacklist', obj: err});
-		const error = new Error(err);
-		sentry.error(error);
+		sentry.error(err);
 		throw err;
 	} finally {
 		profile('addBLC');

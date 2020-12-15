@@ -22,9 +22,8 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 		const count = favs.length > 0 ? favs[0].count : 0;
 		return formatKaraList(favs, params.from, count);
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		profile('getFavorites');
 	}
@@ -68,9 +67,8 @@ export async function addToFavorites(username: string, kids: string[], sendOnlin
 		}
 		emitWS('favoritesUpdated', username);
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		profile('addToFavorites');
 	}

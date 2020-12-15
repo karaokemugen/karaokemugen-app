@@ -18,7 +18,7 @@ export async function addKaraToWhitelist(kids: string[], reason: string): Promis
 		emitWS('whitelistUpdated');
 		return kids;
 	} catch(err) {
-		sentry.error(new Error(err));
+		sentry.error(err);
 		throw err;
 	} finally {
 		profile('addKaraToWL');
@@ -44,9 +44,8 @@ export async function deleteKaraFromWhitelist(karas: string[]) {
 		generateBlacklist().then(() => emitWS('blacklistUpdated'));
 		emitWS('whitelistUpdated');
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		profile('deleteWLC');
 	}

@@ -29,7 +29,7 @@ export function initAutoUpdate() {
 			try {
 				await autoUpdater.downloadUpdate();
 			} catch(err) {
-				sentry.error(new Error(err));
+				sentry.error(err);
 				await dialog.showMessageBox(win, {
 					type: 'info',
 					title: i18next.t('UPDATE_FOUND'),
@@ -56,7 +56,7 @@ export function initAutoUpdate() {
 		try {
 			autoUpdater.quitAndInstall();
 		} catch(err) {
-			sentry.error(new Error(err));
+			sentry.error(err);
 			logger.error('Failed to quit and install', {service: 'AppUpdate', obj: err});
 		}
 	});
@@ -67,7 +67,7 @@ export function initAutoUpdate() {
 			autoUpdater.checkForUpdatesAndNotify();
 		} catch(err) {
 			//Non fatal, just report it
-			sentry.error(new Error(err), 'Warning');
+			sentry.error(err, 'Warning');
 			logger.warn('Unable to check for app updates', {service: 'AppUpdate', obj: err});
 		}
 	}
