@@ -51,8 +51,7 @@ export async function editSetting(part: RecursivePartial<Config>) {
 	try {
 		const config = getConfig();
 		const oldConfig = cloneDeep(config);
-		const newConfig = merge(config, part);
-		removeNulls(newConfig);
+		const newConfig = removeNulls(merge(config, part));
 		verifyConfig(newConfig);
 		await mergeConfig(newConfig, oldConfig);
 		emitWS('settingsUpdated', config);
