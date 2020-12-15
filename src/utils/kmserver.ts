@@ -45,12 +45,13 @@ export function getKMServerSocket() {
 	return socket;
 }
 
-export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout = 5000): Promise<any> {
+export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout = 5000, volatile = false): Promise<any> {
 	return new Promise((resolve, reject) => {
 		const nodeTimeout = setTimeout(() => {
 			reject(new Error('Request timed out'));
 		}, timeout);
-		socket.emit(name, data, ack => {
+		const sock = volatile ? socket.volatile:socket;
+		sock.emit(name, data, ack => {
 			clearTimeout(nodeTimeout);
 			ack.err ? reject(ack.data):resolve(ack.data);
 		});
