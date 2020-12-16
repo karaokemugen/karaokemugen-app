@@ -23,6 +23,7 @@ export default function tagsController(router: SocketIOApp) {
 		* @apiParam {String} [filter] Tag name to filter results
 		* @apiParam {Number} [from] Where to start listing from
 		* @apiParam {Number} [size] How many records to get.
+		* @apiParam {Boolean} [stripEmpty] Strip tags with 0 karas associated to them (useful for languages)
 		* @apiSuccess {String} name Name of tag
 		* @apiSuccess {Number} tid Tag ID (UUID)
 		* @apiSuccess {Number} types Tag types numbers in an array
@@ -64,7 +65,8 @@ export default function tagsController(router: SocketIOApp) {
 				filter: req.body?.filter,
 				type: req.body?.type,
 				from: req.body?.from,
-				size: req.body?.size
+				size: req.body?.size,
+				stripEmpty: req.body?.stripEmpty
 			});
 		} catch(err) {
 			const code = 'TAGS_LIST_ERROR';

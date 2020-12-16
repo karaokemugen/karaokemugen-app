@@ -28,7 +28,7 @@ SELECT * FROM all_tags ou
 WHERE (SELECT COUNT(*) FROM all_tags inr WHERE inr.name = ou.name) > 1
 `;
 
-export const sqlgetAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string, orderClauses: string, additionnalFrom: string[]) => `
+export const sqlgetAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string, orderClauses: string, additionnalFrom: string[], stripClause: string, joinClauses: string ) => `
 SELECT tid,
 	types,
 	name,
@@ -45,9 +45,11 @@ SELECT tid,
 	count(tid) OVER()::integer AS count
 FROM all_tags
 ${additionnalFrom.join()}
+${joinClauses}
 WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
+  ${stripClause}
 ORDER BY name${orderClauses}
 ${limitClause}
 ${offsetClause}
