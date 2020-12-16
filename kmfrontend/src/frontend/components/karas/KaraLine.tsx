@@ -46,7 +46,6 @@ interface IState {
 	problematic: boolean
 }
 
-const pathAvatar = '/avatars/';
 class KaraLine extends Component<IProps & SortableElementProps, IState> {
 
 	constructor(props: IProps & SortableElementProps) {
