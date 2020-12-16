@@ -28,7 +28,16 @@ SELECT * FROM all_tags ou
 WHERE (SELECT COUNT(*) FROM all_tags inr WHERE inr.name = ou.name) > 1
 `;
 
-export const sqlgetAllTags = (filterClauses: string[], typeClauses: string, limitClause: string, offsetClause: string, orderClauses: string, additionnalFrom: string[], stripClause: string, joinClauses: string ) => `
+export const sqlgetAllTags = (
+	filterClauses: string[],
+	typeClauses: string,
+	limitClause: string,
+	offsetClause: string,
+	orderClauses: string,
+	additionnalFrom: string[],
+	joinClauses: string,
+	stripClause: string
+) => `
 SELECT tid,
 	types,
 	name,

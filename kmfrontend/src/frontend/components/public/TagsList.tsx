@@ -84,7 +84,8 @@ class TagsList extends Component<IProps, IState> {
 				type: this.props.tagType,
 				from: this.state.tags.infos.from,
 				size: chunksize,
-				filter: this.state.filterValue
+				filter: this.state.filterValue,
+				stripEmpty: true
 			});
 		let data;
 		if (response.infos?.from > 0) {
