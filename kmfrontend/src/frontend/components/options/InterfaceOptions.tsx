@@ -74,7 +74,6 @@ class InterfaceOptions extends Component<IProps, IState> {
 								value={this.state.config['Frontend.SeriesLanguageMode']}
 							>
 								<option value="0">{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-								<option value="1">{i18next.t('SERIE_NAME_MODE_SONG')}</option>
 								<option value="2">{i18next.t('SERIE_NAME_MODE_ADMIN')}</option>
 								<option value="3">{i18next.t('SERIE_NAME_MODE_USER')}</option>
 							</select>

@@ -382,8 +382,6 @@ class ProfilModal extends Component<IProps, IState> {
 										onChange={this.onClickSelect}>
 										<option value={-1}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
 										<option value={0}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-										<option value={1}>{i18next.t('SERIE_NAME_MODE_SONG')}</option>
-										<option value={2}>{i18next.t('SERIE_NAME_MODE_ADMIN')}</option>
 										<option value={3}>{i18next.t('SERIE_NAME_MODE_USER')}</option>
 										<option value={4}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
 									</select>

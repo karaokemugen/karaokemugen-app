@@ -370,7 +370,6 @@
 	"FREE_AUTO_TIME_TOOLTIP": "Au bout de X minutes, la chanson ne comptera plus dans le quota de l'utilisateur. A régler selon votre nombre de participants",
 	"SERIE_NAME_MODE": "Affichage des noms des séries",
 	"SERIE_NAME_MODE_ORIGINAL": "Nom original / interne",
-	"SERIE_NAME_MODE_SONG": "Selon la langue de la chanson",
 	"SERIE_NAME_MODE_ADMIN": "Selon la langue de Karaoke Mugen",
 	"SERIE_NAME_MODE_USER": "Selon la langue de l'utilisateur",
 	"SERIE_NAME_MODE_NO_PREF": "Pas de préférence",
