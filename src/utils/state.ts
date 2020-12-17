@@ -80,15 +80,15 @@ function emitPlayerState(part: Partial<State>) {
 		case 'counterToSponsor':
 			const conf = getConfig();
 			const options = map.get(key);
-			if (typeof part[key] !== 'undefined') {
+			if (typeof state[key] !== 'undefined') {
 				if (conf.Playlist?.Medias[options.conf].Enabled) {
-					toEmit[options.state] = conf.Playlist?.Medias[options.conf].Interval - part[key];
+					toEmit[options.state] = conf.Playlist?.Medias[options.conf].Interval - state[key];
 				}
 			}
 			break;
 		default:
-			if (typeof part[key] !== 'undefined') {
-				toEmit[key] = part[key];
+			if (typeof state[key] !== 'undefined') {
+				toEmit[key] = state[key];
 			}
 			break;
 		}
