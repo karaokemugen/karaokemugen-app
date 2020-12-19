@@ -238,7 +238,7 @@ export async function playerEnding() {
 			return;
 		}
 		// Testing for position before last to play an encore
-		logger.debug(`CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl.karacount} - Playlist name: ${pl.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl.playlist_id}`, {service: 'Player'});
+		logger.debug(`CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl?.playlist_id}`, {service: 'Player'});
 		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
 			try {
 				await mpv.playMedia('Encores');
