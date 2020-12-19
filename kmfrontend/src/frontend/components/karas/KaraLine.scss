@@ -24,7 +24,7 @@
 	transition: background-color 250ms ease;
 	display: flex;
 	flex-wrap: nowrap;
-	#playlist1 & {
+	#playlist1 &:not(.karaSuggestion) {
 		flex-direction: row-reverse;
 	}
 	@media screen and (max-width: $mugen-breakpoint-large) {
