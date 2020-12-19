@@ -222,6 +222,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opts.refresh) await refreshTagsAfterDBChange();
 	} catch(err) {
+		if (err?.code === 404) throw err;
 		sentry.error(err);
 		throw err;
 	} finally {
