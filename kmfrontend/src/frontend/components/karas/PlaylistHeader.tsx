@@ -192,7 +192,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 				if (file.name.includes('.kmblc')) {
 					data.blcSet = fr.result;
 					url = 'importBLCSet';
-					name = JSON.parse(fr.result as string).blcSetInfo.name;
+					name = JSON.parse(fr.result as string)?.blcSetInfo?.name;
 				} else if (file.name.includes('.kmfavorites')) {
 					data.favorites = fr.result;
 					url = 'importFavorites';
@@ -200,7 +200,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 				} else {
 					url = 'importPlaylist';
 					data.playlist = fr.result;
-					name = JSON.parse(fr.result as string).PlaylistInformation.name;
+					name = JSON.parse(fr.result as string)?.PlaylistInformation?.name;
 				}
 				const response = await commandBackend(url, { buffer: data });
 				if (response.unknownKaras && response.unknownKaras.length > 0) {
