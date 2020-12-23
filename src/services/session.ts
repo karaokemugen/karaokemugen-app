@@ -113,7 +113,7 @@ export async function initSession() {
 
 	const sessions = await selectSessions();
 	// If last session is still on the same date as today, just set current session to this one
-	if (sessions[0]?.started_at.toDateString() === new Date().toDateString()) {
+	if (sessions[0]?.started_at instanceof Date && sessions[0]?.started_at.toDateString() === new Date().toDateString()) {
 		setActiveSession(sessions[0]);
 	} else {
 		// If no session is found or session is on another day, create a new one
