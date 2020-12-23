@@ -124,3 +124,5 @@ export default class Downloader {
 }
 
 // The crepes are a lie.
+
+// The progress bar as well. It was removed when we switched to Electron and didn't need the console anymore.
