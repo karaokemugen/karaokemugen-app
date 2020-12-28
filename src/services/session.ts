@@ -201,7 +201,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const recordsPlayed = played.content.map(k => {
 			return {
 				played_at: k.lastplayed_at.toLocaleString(),
-				seriesinger: getSeriesSingers(k),
+				seriesinger: getSeriesSingers(k, played.i18n),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: k.title,
@@ -211,7 +211,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const recordsRequested = requested.content.map(k => {
 			return {
 				requested_at: k.lastrequested_at.toLocaleString(),
-				seriesinger: getSeriesSingers(k),
+				seriesinger: getSeriesSingers(k, requested.i18n),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: k.title,
