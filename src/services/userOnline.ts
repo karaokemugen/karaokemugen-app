@@ -145,7 +145,7 @@ export async function editRemoteUser(user: User) {
 		const res = await HTTP.put(`https://${instance}/api/users/${login}`, {
 			body: form,
 			headers: {
-				authorization: remoteToken.token || null
+				authorization: remoteToken.token || undefined
 			}
 		});
 		return JSON.parse(res.body);

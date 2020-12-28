@@ -115,7 +115,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 		return await HTTP(`https://${instance}/api/favorites/${kid}`, {
 			method: action,
 			headers: {
-				authorization: remoteToken.token || null
+				authorization: remoteToken.token || undefined
 			},
 		});
 	} catch(err) {
