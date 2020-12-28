@@ -108,7 +108,7 @@ class WelcomePage extends Component<unknown, IState> {
 	};
 
 	getNewsFeed = async () => {
-		const res = await commandBackend('getNewsFeed');
+		const res = await commandBackend('getNewsFeed', undefined, undefined, 300000);
 		const data = res;
 		const base = data[0];
 		const appli = data[1];
