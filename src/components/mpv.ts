@@ -893,7 +893,7 @@ class Players {
 	async seek(delta: number) {
 		try {
 			// Workaround for audio-only files: disable the lavfi-complex filter
-			if (playerState.currentSong.media.endsWith('.mp3') &&
+			if (playerState.currentSong?.media.endsWith('.mp3') &&
 				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar || getConfig().Player.VisualizationEffects)) {
 				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
