@@ -14,9 +14,8 @@ export function requireHTTPAuth(req: any, res: any, next: any) {
 }
 
 export function requireValidUser(req: any, res: any, next: any) {
-	const onlineToken = req.get('onlineAuthorization');
 	req.authToken = req.token;
-	checkValidUser(req.token, onlineToken)
+	checkValidUser(req.token)
 		.then((user: User) => {
 			req.user = user;
 			next();

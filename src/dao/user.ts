@@ -3,20 +3,13 @@ import {pg as yesql} from 'yesql';
 import {db, newDBTask} from '../lib/dao/database';
 import { DBUser } from '../lib/types/database/user';
 import { User } from '../lib/types/user';
-import { DBGuest, RemoteToken } from '../types/database/user';
+import { DBGuest } from '../types/database/user';
 import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword,sqlfindFingerprint, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlresetGuestsPassword, sqlSelectAllDupeUsers, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateExpiredUsers, sqlupdateLastLogin, sqlupdateUserFingerprint } from './sql/user';
 
 export async function getUser(username: string): Promise<DBUser> {
 	const res = await db().query(yesql(sqlselectUserByName)({username: username}));
 	return res.rows[0];
 }
-
-const remoteTokens = [];
-// Format:
-// {
-//   username: ...
-//   token: ...
-// }
 
 export async function checkNicknameExists(nickname: string): Promise<string> {
 	const res = await db().query(yesql(sqltestNickname)({nickname: nickname}));
@@ -132,26 +125,6 @@ export function updateUserPassword(username: string, password: string) {
 		username: username,
 		password: password
 	}));
-}
-
-export function getRemoteToken(username: string): RemoteToken {
-	username = username.toLowerCase();
-	const index = findRemoteToken(username);
-	if (index > -1) return remoteTokens[index];
-	return undefined;
-}
-
-function findRemoteToken(username: string): number {
-	username = username.toLowerCase();
-	return remoteTokens.findIndex(rt => rt.username === username);
-}
-
-export function upsertRemoteToken(username: string, token: string) {
-	username = username.toLowerCase();
-	const index = findRemoteToken(username);
-	index > -1
-		? remoteTokens[index] = {username, token}
-		: remoteTokens.push({username, token});
 }
 
 export async function selectAllDupeUsers() {

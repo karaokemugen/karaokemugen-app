@@ -2,7 +2,6 @@ import formData from 'form-data';
 import { createReadStream } from 'fs-extra';
 import { resolve } from 'path';
 
-import { getRemoteToken, upsertRemoteToken } from '../dao/user';
 import { Token, User } from '../lib/types/user';
 import { resolvedPathAvatars, resolvedPathTemp } from '../lib/utils/config';
 import { writeStreamToFile } from '../lib/utils/files';
@@ -47,7 +46,7 @@ export async function remoteLogin(username: string, password: string): Promise<s
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
 		if (err.statusCode === 401) throw 'Unauthorized';
-		logger.debug(`Got error when connectiong user ${username}`, {service: 'RemoteUser', obj: err});
+		logger.debug(`Got error when connecting user ${username}`, {service: 'RemoteUser', obj: err});
 		return null;
 	}
 }
@@ -125,9 +124,8 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 }
 
 /** Edit online user's profile, including avatar. */
-export async function editRemoteUser(user: User) {
+export async function editRemoteUser(user: User, token: string) {
 	// Fetch remote token
-	const remoteToken = getRemoteToken(user.login);
 	const [login, instance] = user.login.split('@');
 	const form = new formData();
 
@@ -145,7 +143,7 @@ export async function editRemoteUser(user: User) {
 		const res = await HTTP.put(`https://${instance}/api/users/${login}`, {
 			body: form,
 			headers: {
-				authorization: remoteToken.token || null
+				authorization: token
 			}
 		});
 		return JSON.parse(res.body);
@@ -168,6 +166,12 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 		throw err;
 	}
 	return avatarPath;
+}
+
+export const usersFetched = new Set();
+
+export function getUsersFetched() {
+	return usersFetched;
 }
 
 /** Login as online user on KM Server and fetch profile data, avatar, favorites and such and upserts them in local database */
@@ -241,13 +245,6 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 	}
 }
 
-
-export const usersFetched = new Set();
-
-export function getUsersFetched() {
-	return usersFetched;
-}
-
 /** Converts a online user to a local one by removing its online account from KM Server */
 export async function removeRemoteUser(token: Token, password: string): Promise<SingleToken> {
 	token.username = token.username.toLowerCase();
@@ -281,19 +278,18 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 	token.username = token.username.toLowerCase();
 	if (token.username === 'admin') throw {code: 'ADMIN_CONVERT_ERROR'};
 	const user = await findUserByName(token.username);
-	if (!user) throw {msg: 'UNKNOW_CONVERT_ERROR'};
+	if (!user) throw {msg: 'UNKNOWN_CONVERT_ERROR'};
 	if (!await checkPassword(user, password)) throw {msg: 'PASSWORD_CONVERT_ERROR'};
 	user.login = `${token.username}@${instance}`;
 	user.password = password;
 	try {
 		await createRemoteUser(user);
 		const remoteUserToken = await remoteLogin(user.login, password);
-		upsertRemoteToken(user.login, remoteUserToken);
 		await editUser(token.username, user, null, token.role, {
 			editRemote: false,
 			renameUser: true
 		});
-		await convertToRemoteFavorites(user.login);
+		await convertToRemoteFavorites(user.login, remoteUserToken);
 		emitWS('userUpdated', user.login);
 		return {
 			onlineToken: remoteUserToken,

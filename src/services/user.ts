@@ -84,7 +84,7 @@ export function updateLastLoginName(login: string) {
 
 /** Edit local user profile */
 export async function editUser(username: string, user: User, avatar: Express.Multer.File, role: string, opts: UserOpts = {
-	editRemote: true,
+	editRemote: false,
 	renameUser: false,
 	noPasswordCheck: false
 }) {
@@ -128,9 +128,9 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		logger.debug(`${username} (${user.nickname}) profile updated`, {service: 'User'});
 		let KMServerResponse: any;
 		try {
-			if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user);
+			if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user, opts.editRemote);
 		} catch(err) {
-			logger.warn(err, {service: 'RemoteUser'});
+			logger.warn('', {service: 'RemoteUser', obj: err});
 			throw {code: 500};
 		}
 		// Modifying passwords is not allowed in demo mode

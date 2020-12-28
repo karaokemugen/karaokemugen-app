@@ -153,7 +153,7 @@ export default function favoritesController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await addToFavorites(req.token.username, req.body?.kid);
+				return await addToFavorites(req.token.username, req.body?.kid, req.onlineAuthorization);
 			} catch(err) {
 				const code = 'FAVORITES_ADDED_ERROR';
 				errMessage(code, err);
@@ -194,7 +194,7 @@ export default function favoritesController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await deleteFavorites(req.token.username, req.body?.kid );
+				return await deleteFavorites(req.token.username, req.body?.kid, req.onlineAuthorization);
 			} catch(err) {
 				const code = 'FAVORITES_DELETED_ERROR';
 				errMessage(code, err);
@@ -260,7 +260,7 @@ export default function favoritesController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				await importFavorites(JSON.parse(req.body?.favorites), req.token.username);
+				await importFavorites(JSON.parse(req.body?.favorites), req.token.username, req.onlineAuthorization);
 				return APIMessage('FAVORITES_IMPORTED');
 			} catch(err) {
 				const code = 'FAVORITES_IMPORTED_ERROR';

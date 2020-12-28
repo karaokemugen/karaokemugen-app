@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 
 import logger from '../lib/utils/logger';
-import { listUsers } from '../services/user';
+import {deleteUser, listUsers } from '../services/user';
 
 // Map io connections
 const ioMap: Map<string, Socket> = new Map();
@@ -45,8 +45,21 @@ export async function subRemoteUsers() {
 		}
 		const socket = ioMap.get(server);
 		for (const user of servers[server]) {
-			logger.debug('Watch', { service: 'RemoteUser', obj: user });
-			socket.emit('subscribe user', { body: user }, res => logger.debug(`Response for ${user}`, { service: 'RemoteUser', obj: res }));
+			socket.emit('subscribe user', { body: user }, res => {
+				if (res.err) {
+					logger.warn(`Cannot watch user ${user}@${server}`, { service: 'RemoteUser', obj: res });
+					return;
+				}
+				if (res.data === false) {
+					const name = `${user}@${server}`;
+					try {
+						logger.info(`User ${name} doesn't exist on remote, delete local version.`, { service: 'RemoteUser' });
+						deleteUser(name);
+					} catch (err) {
+						logger.warn(`Cannot delete ${name}`, { service: 'RemoteUser' });
+					}
+				}
+			});
 		}
 	}
 }

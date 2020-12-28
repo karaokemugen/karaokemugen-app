@@ -1,6 +1,5 @@
 import randomstring from 'randomstring';
 
-import { upsertRemoteToken } from '../dao/user';
 import { Role, Token, User } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
@@ -24,7 +23,6 @@ export async function checkLogin(username: string, password: string): Promise<To
 			user = await fetchAndUpdateRemoteUser(username, password);
 			onlineToken = user.onlineToken;
 			if (onlineToken) {
-				upsertRemoteToken(username, onlineToken);
 				// Download and add all favorites
 				fetchAndAddFavorites(instance, onlineToken, username);
 			}

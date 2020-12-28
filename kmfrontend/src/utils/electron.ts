@@ -43,13 +43,15 @@ export function drop(event) {
 	event.preventDefault();
 	event.stopPropagation();
 	const token = localStorage.getItem('kmToken');
+	const onlineToken = localStorage.getItem('kmOnlineToken');
 	const username = token
 		? parseJwt(token).username
 		: 'admin';
 	const { ipcRenderer } = window.require('electron');
 	ipcRenderer.send('droppedFiles', {
 		username: username,
-		files: Array.from(event.dataTransfer.files).map(file  => (file as any).path)
+		onlineToken,
+		files: Array.from(event.dataTransfer.files).map(file => (file as any).path)
 	});
 }
 
