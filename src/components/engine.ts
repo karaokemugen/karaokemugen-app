@@ -38,6 +38,7 @@ import { checkPG, dumpPG, restorePG,stopPG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
+import { subRemoteUsers } from '../utils/user_pubsub';
 import { initFrontend } from './frontend';
 
 let shutdownInProgress = false;
@@ -139,8 +140,10 @@ export async function initEngine() {
 			await initKMServerCommunication();
 			if (conf.Online.URL) await initOnlineURLSystem();
 			if (conf.Online.Remote) await initRemote();
+			// TODO: add config item for this?
+			await subRemoteUsers();
 		} catch(err) {
-			//Non-blocking
+			// Non-blocking
 			logger.error('Failed to init online system', {service: 'Engine', obj: err});
 			sentry.error(err, 'Warning');
 		}
