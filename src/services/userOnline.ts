@@ -175,7 +175,7 @@ export function getUsersFetched() {
 }
 
 /** Login as online user on KM Server and fetch profile data, avatar, favorites and such and upserts them in local database */
-export async function fetchAndUpdateRemoteUser(username: string, password: string, onlineToken?: string): Promise<User> {
+export async function fetchAndUpdateRemoteUser(username: string, password: string, onlineToken?: string, force?: boolean): Promise<User> {
 	// We try to login to KM Server using the provided login password.
 	// If login is successful, we get user profile data and create user if it doesn't exist already in our local database.
 	// If it exists, we edit the user instead.
@@ -214,7 +214,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			};
 		}
 		// Checking if user has already been fetched during this session or not
-		if (!usersFetched.has(username)) {
+		if (force || !usersFetched.has(username)) {
 			usersFetched.add(username);
 			const response = await editUser(
 				username,
@@ -237,8 +237,8 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		user.onlineToken = onlineToken;
 		return user;
 	} else {
-		//Onlinetoken was not provided : KM Server might be offline
-		//We'll try to find user in local database. If failure return an error
+		// Online token was not provided : KM Server might be offline
+		// We'll try to find user in local database. If failure return an error
 		const user = await findUserByName(username);
 		if (!user) throw {code: 'USER_LOGIN_ERROR'};
 		return user;

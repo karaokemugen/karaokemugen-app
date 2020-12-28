@@ -119,8 +119,8 @@ export default function authController(router: SocketIOApp) {
 				if (await remoteCheckAuth(req.token.username.split('@')[1], req.onlineAuthorization)) {
 					logger.debug('Fetched remote token', {service: 'RemoteUser'});
 					try {
-						await fetchAndUpdateRemoteUser(req.token.username, null, req.onlineAuthorization);
-						await fetchAndAddFavorites(req.token.username.split('@')[1], req.onlineAuthorization, req.token.username);
+						await fetchAndUpdateRemoteUser(req.token.username, null, req.onlineAuthorization, true);
+						await fetchAndAddFavorites(req.token.username, req.onlineAuthorization);
 					} catch(err) {
 						logger.error('Failed to fetch and update user/favorite from remote', {service: 'RemoteUser', obj: err});
 					}

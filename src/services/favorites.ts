@@ -28,8 +28,9 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 	}
 }
 
-export async function fetchAndAddFavorites(instance: string, token: string, username: string) {
+export async function fetchAndAddFavorites(username: string, token: string) {
 	try {
+		const instance = username.split('@')[1];
 		const res = await HTTP(`https://${instance}/api/favorites`, {
 			headers: {
 				authorization: token
