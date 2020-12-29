@@ -34,7 +34,6 @@ interface IState {
 	idsPlaylist: { left: number, right: number };
 	isPollActive: boolean;
 	classicModeModal: boolean;
-	kidPlaying?: string;
 	view: View;
 	tagType: number;
 	kara: KaraElement;
@@ -71,30 +70,31 @@ class PublicPage extends Component<IProps, IState> {
 		};
 	}
 
-	changeView = (
+	changeView = async (
 		view: View,
 		tagType?: number,
 		searchValue?: string,
 		searchCriteria?: 'year' | 'tag'
 	) => {
+		let route;
 		if (view === 'home') {
-			this.props.route.history.push('/public');
+			route = '/public';
 		} else if (view === 'tag') {
-			this.props.route.history.push(`/public/tags/${tagType}`);
+			route = `/public/tags/${tagType}`;
 		}
 		const idsPlaylist = this.state.idsPlaylist;
 		if (view === 'favorites') {
 			idsPlaylist.left = -5;
-			this.props.route.history.push('/public/favorites');
+			route = '/public/favorites';
 		} else if (view === 'search') {
 			idsPlaylist.left = -1;
-			this.props.route.history.push('/public/search');
+			route = '/public/search';
 		} else if (view === 'publicPlaylist') {
 			idsPlaylist.left = this.context.globalState.settings.data.state.publicPlaylistID;
-			this.props.route.history.push(`/public/playlist/${idsPlaylist.left}`);
+			route = `/public/playlist/${idsPlaylist.left}`;
 		} else if (view === 'currentPlaylist') {
 			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaylistID;
-			this.props.route.history.push(`/public/playlist/${idsPlaylist.left}`);
+			route = `/public/playlist/${idsPlaylist.left}`;
 		}
 		setFilterValue(
 			this.context.globalDispatch,
@@ -102,7 +102,8 @@ class PublicPage extends Component<IProps, IState> {
 			1,
 			this.state.idsPlaylist.left
 		);
-		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, kara: undefined });
+		await this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, kara: undefined });
+		this.props.route.history.push(route);
 	};
 
 	majIdsPlaylist = (side: number, value: number) => {
@@ -275,7 +276,7 @@ class PublicPage extends Component<IProps, IState> {
 							'/public/playlist/:pl_id',
 							'/public/favorites',
 							'/public/tags/:tagType'
-						]} render={() =>
+						]} render={({ match }) =>
 							<React.Fragment>
 								<KmAppHeaderDecorator mode="public">
 									<button
@@ -326,7 +327,7 @@ class PublicPage extends Component<IProps, IState> {
 										<Playlist
 											scope="public"
 											side={1}
-											idPlaylist={this.state.idsPlaylist.left}
+											idPlaylist={match.params.pl_id || this.state.idsPlaylist.left}
 											idPlaylistTo={this.context.globalState.settings.data.state.publicPlaylistID}
 											majIdsPlaylist={this.majIdsPlaylist}
 											toggleKaraDetail={this.toggleKaraDetail}
