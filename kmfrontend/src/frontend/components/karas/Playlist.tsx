@@ -97,13 +97,6 @@ class Playlist extends Component<IProps, IState> {
 			searchValue: this.props.searchValue
 		};
 	}
-
-	componentWillReceiveProps(nextProps: IProps) {
-		if (nextProps.idPlaylistTo && nextProps.idPlaylistTo !== this.props.idPlaylistTo) {
-			this.playlistForceRefresh(true);
-		}
-	}
-
 	async componentDidMount() {
 		if (this.context.globalState.auth.isAuthenticated) {
 			await this.initCall();
@@ -793,7 +786,10 @@ class Playlist extends Component<IProps, IState> {
 		_cache.clearAll();
 	}
 
-	componentDidUpdate() {
+	componentDidUpdate(prevProps: IProps) {
+		if (this.props.idPlaylistTo && this.props.idPlaylistTo !== prevProps.idPlaylistTo) {
+			this.playlistForceRefresh(true);
+		}
 		if (this.state.forceUpdateFirst) {
 			setTimeout(() => {
 				this.playlistForceRefresh(false);
