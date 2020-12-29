@@ -1,5 +1,6 @@
 import './Modal.scss';
 
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -84,11 +85,11 @@ class Modal extends Component<IProps, IState> {
 						<div className="modal-footer">
 							{this.props.type === 'confirm' || this.props.type === 'prompt' ?
 								<button type="button" className="btn btn-action btn-primary other" onClick={this.abortModal}>
-									<i className="fas fa-times"></i>
+									<i className="fas fa-times" /> {i18next.t('NO')}
 								</button> : null
 							}
 							<button type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
-								<i className="fas fa-check"></i>
+								<i className="fas fa-check" /> {i18next.t('YES')}
 							</button>
 						</div>
 					</div>

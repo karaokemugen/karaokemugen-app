@@ -16,6 +16,7 @@ import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
+import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/fr.json'));
@@ -29,10 +30,12 @@ interface IProps {
 interface IState {
 	passwordDifferent: string;
 	nicknameMandatory: string;
-	activeView: number;
+	activeView: 'profile'|'language'|'userlist';
 	user: UserProfile;
 	users: Array<User>;
 	userDetails?: User;
+	imageSource?: any;
+	cropAvatarModalOpen: boolean;
 }
 
 interface UserProfile extends User {
@@ -67,7 +70,8 @@ class ProfilModal extends Component<IProps, IState> {
 			user: {},
 			passwordDifferent: 'form-control',
 			nicknameMandatory: 'form-control',
-			activeView: 1
+			activeView: 'profile',
+			cropAvatarModalOpen: false
 		};
 	}
 
@@ -108,7 +112,7 @@ class ProfilModal extends Component<IProps, IState> {
 			const response = await commandBackend('editMyAccount', this.state.user);
 
 			const data: IAuthentifactionInformation = this.props.context.globalState.auth.data;
-			data.onlineToken = response.onlineToken;
+			data.onlineToken = response.data.onlineToken;
 			setAuthentifactionInformation(this.props.context.globalDispatch, data);
 		} else if (!this.state.user.nickname) {
 			this.setState({ nicknameMandatory: 'form-control redBorders' });
@@ -199,23 +203,22 @@ class ProfilModal extends Component<IProps, IState> {
 		}
 	};
 
-	importAvatar = async (event: any) => {
-		if (event.target.files.length > 0) {
-			const formData = new FormData();
-			formData.append('file', event.target.files[0]);
-			const response = await fetch('/api/importfile', {
-				method: 'POST',
-				body: formData,
-				headers: {
-					authorization: localStorage.getItem('kmToken'),
-					onlineAuthorization: localStorage.getItem('kmOnlineToken')
-				}
-			});
+	importAvatar = (e) => {
+		if (e.target.files?.length > 0) {
+			this.setState({cropAvatarModalOpen: true});
+		  	ReactDOM.render(<CropAvatarModal src={e.target.files[0]} saveAvatar={this.saveAvatar} />, document.getElementById('import-avatar'));
+		}
+	  };
+
+	saveAvatar = async (avatar) => {
+		if (avatar) {
 			const user = this.state.user;
-			user.avatar = await response.json();
-			await this.setState({ user });
+			user.avatar = avatar;
+			await this.setState({ user, cropAvatarModalOpen: false });
 			await this.updateUser();
 			await this.getUser();
+		} else {
+			await this.setState({ cropAvatarModalOpen: false });
 		}
 	};
 
@@ -259,16 +262,16 @@ class ProfilModal extends Component<IProps, IState> {
 		const body = (<div className="modal-content">
 			<div className="modal-header">
 				<ul className="nav nav-tabs nav-justified ">
-					<li className={(this.state.activeView === 1 ? 'active' : '')}>
-						<a onClick={() => this.setState({ activeView: 1 })}> {i18next.t('PROFILE')}</a>
+					<li className={(this.state.activeView === 'profile' ? 'active' : '')}>
+						<a onClick={() => this.setState({ activeView: 'profile' })}> {i18next.t('PROFILE')}</a>
 					</li>
 					{logInfos?.role !== 'guest' ?
-						<li className={(this.state.activeView === 2 ? 'active' : '')}>
-							<a onClick={() => this.setState({ activeView: 2 })}> {i18next.t('LANGUAGE')}</a>
+						<li className={(this.state.activeView === 'language' ? 'active' : '')}>
+							<a onClick={() => this.setState({ activeView: 'language' })}> {i18next.t('LANGUAGE')}</a>
 						</li> : null
 					}
-					<li className={(this.state.activeView === 3 ? 'active' : '')}>
-						<a onClick={() => this.setState({ activeView: 3 })}> {i18next.t('USERLIST')}</a>
+					<li className={(this.state.activeView === 'userlist' ? 'active' : '')}>
+						<a onClick={() => this.setState({ activeView: 'userlist' })}> {i18next.t('USERLIST')}</a>
 					</li>
 				</ul>
 				<button className="closeModal btn btn-action"
@@ -276,7 +279,7 @@ class ProfilModal extends Component<IProps, IState> {
 					<i className="fas fa-fw fa-times"></i>
 				</button>
 			</div>
-			{this.state.activeView === 1 ?
+			{this.state.activeView === 'profile' ?
 				<div id="nav-profil" className="modal-body" >
 					<div className="profileContent">
 						<div className="profileHeader">
@@ -371,7 +374,7 @@ class ProfilModal extends Component<IProps, IState> {
 						}
 					</div>
 				</div> : null}
-			{this.state.activeView === 2 ?
+			{this.state.activeView === 'language' ?
 				<div id="nav-lang" className="modal-body">
 					<div className="profileContent">
 						<div className="profileData">
@@ -409,7 +412,7 @@ class ProfilModal extends Component<IProps, IState> {
 					</div>
 				</div> : null
 			}
-			{this.state.activeView === 3 ?
+			{this.state.activeView === 'userlist' ?
 				<div id="nav-userlist" className="modal-body">
 					<div className="userlist list-group">
 						{this.state.users.map(user => {
@@ -432,15 +435,16 @@ class ProfilModal extends Component<IProps, IState> {
 			}
 		</div>);
 		return (
-			this.props.scope === 'public' ?
-				<div id="profilModal">
-					{body}
-				</div>
-				: <div className="modal modalPage" id="profilModal">
-					<div className="modal-dialog">
+			this.state.cropAvatarModalOpen ? null :
+				this.props.scope === 'public' ?
+					<div id="profilModal">
 						{body}
 					</div>
-				</div>
+					: <div className="modal modalPage" id="profilModal">
+						<div className="modal-dialog">
+							{body}
+						</div>
+					</div>
 		);
 	}
 }

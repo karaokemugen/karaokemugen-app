@@ -6,6 +6,7 @@
 	"SEARCH": "Search",
 	"ERROR": "Error",
 	"SUBMIT": "Save",
+	"CANCEL": "Cancel",
 	"404_2": "Do not panic, we can help you.",
 	"404_3": "You are here",
 	"404_4": "Go to Start",
@@ -477,6 +478,10 @@
 			"VISIBLE_DESC": "Visible by the audience",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
 			"CREATE_PLAYLIST": "Create new playlist"
+		},
+		"CROP_AVATAR_MODAL": {
+			"TITLE": "Crop your avatar",
+			"HELP": "Resize the square to have the perfect profile picture."
 		}
 	},
 	"SETUP_PAGE": {
