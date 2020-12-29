@@ -5,6 +5,7 @@
 	"SEARCH": "Rechercher",
 	"ERROR": "Erreur",
 	"SUBMIT": "Sauvegarder",
+	"CANCEL": "Annuler",
 	"404": "Perdu sur le réseau local ?",
 	"404_2": "Pas de panique, on va vous aider",
 	"404_3": "vous êtes ici",
@@ -494,6 +495,10 @@
 			"VISIBLE_DESC": "Visible par le public",
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
 			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture"
+		},
+		"CROP_AVATAR_MODAL": {
+			"TITLE": "Rogner votre avatar",
+			"HELP": "Redimensionnez le carré pour obtenir la parfaite photo de profil."
 		}
 	},
 	"SETUP_PAGE": {

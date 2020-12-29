@@ -35,12 +35,16 @@
 .modal .modal-footer {
 	display: flex;
 	justify-content: flex-end;
+	align-items: center;
 	border: 0;
 	padding: 0.5em;
-}
-.modal .modal-footer > button {
-	order: 0;
-	margin-left: .25em;
+	> button {
+		order: 0;
+		margin-left: .25em;
+	}
+	> .modal-help {
+		flex-grow: 1;
+	}
 }
 .modal-header {
 	padding: 1em;
@@ -157,6 +161,11 @@
 
 #modalBox {
 	z-index: 10010;
+}
+
+#import-avatar .modal-body {
+	display: flex;
+	justify-content: center;
 }
 
 .closeModal {
