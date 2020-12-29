@@ -199,15 +199,17 @@ class KaraDetail extends Component<IProps, IState> {
 			// Tags in the page/modal itself (singers, songwriters, creators, karaoke authors)
 			const karaBlockTags = [];
 			for (const type of ['SINGERS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
+				let key = 0;
 				const tagData = tagTypes[type];
 				if (data[tagData.karajson].length > 0) {
 					karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
 						<i className={`fas fa-fw fa-${tagData.icon}`} />
 						<div>
 							{i18next.t(`KARA.${type}_BY`)}
-							<span className="detailsKaraLineContent"> {data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index + 1 === arr.length) ? <span className={`colored ${tagData.color}`}> {i18next.t('AND')} </span> : <span className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
+							<span key={`${type}${key}`} className="detailsKaraLineContent"> {data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index + 1 === arr.length) ? <span className={`colored ${tagData.color}`}> {i18next.t('AND')} </span> : <span className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
 						</div>
 					</div>);
+					key++;
 				}
 			}
 
