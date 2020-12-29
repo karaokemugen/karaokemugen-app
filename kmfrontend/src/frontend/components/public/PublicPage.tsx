@@ -45,6 +45,7 @@ interface IState {
 	searchCriteria?: 'year' | 'tag';
 	publicVisible: boolean;
 	currentVisible: boolean;
+	indexKaraDetail?: number;
 }
 
 let timer: any;
@@ -226,8 +227,8 @@ class PublicPage extends Component<IProps, IState> {
 		}
 	};
 
-	toggleKaraDetail = (kara: KaraElement) => {
-		this.setState({ kara });
+	toggleKaraDetail = (kara: KaraElement, _idPlaylist: number, indexKaraDetail: number) => {
+		this.setState({ kara, indexKaraDetail });
 		this.props.route.history.push(`/public/karaoke/${kara.kid}`);
 	};
 
@@ -331,6 +332,8 @@ class PublicPage extends Component<IProps, IState> {
 											toggleKaraDetail={this.toggleKaraDetail}
 											searchValue={this.state.searchValue}
 											searchCriteria={this.state.searchCriteria}
+											indexKaraDetail={this.state.indexKaraDetail}
+											clearIndexKaraDetail={() => this.setState({ indexKaraDetail: undefined })}
 										/>
 									}
 								</KmAppBodyDecorator>

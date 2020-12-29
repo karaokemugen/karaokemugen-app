@@ -37,9 +37,11 @@ interface IProps {
 	playlistList?: Array<PlaylistElem>;
 	toggleSearchMenu?: () => void;
 	majIdsPlaylist: (side: number, value: number) => void;
-	toggleKaraDetail: (kara: KaraElement, idPlaylist: number) => void;
+	toggleKaraDetail: (kara: KaraElement, idPlaylist: number, index?: number) => void;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
+	indexKaraDetail?: number;
+	clearIndexKaraDetail?: () => void
 }
 
 interface IState {
@@ -280,7 +282,9 @@ class Playlist extends Component<IProps, IState> {
 							this.state.songsBeforeSponsor)}
 						style={style}
 						context={this.context}
-						toggleKaraDetail={this.props.toggleKaraDetail}
+						toggleKaraDetail={(kara, idPlaylist) => {
+							this.props.toggleKaraDetail(kara, idPlaylist, index);
+						}}
 					/>
 				</CellMeasurer>
 			);
@@ -441,6 +445,10 @@ class Playlist extends Component<IProps, IState> {
 			if (result?.index !== -1) {
 				this.setState({ scrollToIndex: result.index, _goToPlaying: true });
 			}
+		}
+		if (this.props.indexKaraDetail) {
+			this.setState({ scrollToIndex: this.props.indexKaraDetail });
+			this.props.clearIndexKaraDetail();
 		}
 		if (karas.infos?.from > 0) {
 			data = this.state.data;
