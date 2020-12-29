@@ -1,6 +1,5 @@
 import randomstring from 'randomstring';
 
-import { upsertRemoteToken } from '../dao/user';
 import { Role, Token, User } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
@@ -20,13 +19,11 @@ export async function checkLogin(username: string, password: string): Promise<To
 			// If username has a @, check its instance for existence
 			// If OnlineUsers is disabled, accounts are connected with
 			// their local version if it exists already.
-			const instance = username.split('@')[1];
 			user = await fetchAndUpdateRemoteUser(username, password);
 			onlineToken = user.onlineToken;
 			if (onlineToken) {
-				upsertRemoteToken(username, onlineToken);
 				// Download and add all favorites
-				fetchAndAddFavorites(instance, onlineToken, username);
+				await fetchAndAddFavorites(username, onlineToken);
 			}
 		} catch(err) {
 			logger.error(`Failed to authenticate ${username}`, {service: 'RemoteAuth', obj: err});

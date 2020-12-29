@@ -1,7 +1,6 @@
 import logger from 'winston';
 
-import {insertFavorites,removeFavorites, selectFavorites} from '../dao/favorites';
-import { getRemoteToken } from '../dao/user';
+import { clearFavorites, insertFavorites, removeFavorites, selectFavorites } from '../dao/favorites';
 import {KaraList} from '../lib/types/kara';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
@@ -29,8 +28,9 @@ export async function getFavorites(params: FavParams): Promise<KaraList> {
 	}
 }
 
-export async function fetchAndAddFavorites(instance: string, token: string, username: string) {
+export async function fetchAndAddFavorites(username: string, token: string) {
 	try {
+		const instance = username.split('@')[1];
 		const res = await HTTP(`https://${instance}/api/favorites`, {
 			headers: {
 				authorization: token
@@ -44,26 +44,23 @@ export async function fetchAndAddFavorites(instance: string, token: string, user
 			},
 			Favorites: res.body as FavExportContent[]
 		};
-		await importFavorites(favorites, username);
-		convertToRemoteFavorites(username);
+		await importFavorites(favorites, username, token);
 	} catch(err) {
 		logger.error(`Error getting remote favorites for ${username}`, {service: 'Favorites', obj: err});
 	}
 }
 
-export async function manageFavoriteInInstanceBatch(action: 'POST' | 'DELETE', username: string, kids: string[]) {
-	for (const kid of kids) {
-		await manageFavoriteInInstance(action, username, kid);
-	}
+export async function manageFavoriteInInstanceBatch(action: 'POST' | 'DELETE', username: string, kids: string[], token: string) {
+	await Promise.all(kids.map(kid => manageFavoriteInInstance(action, username, kid, token)));
 }
 
-export async function addToFavorites(username: string, kids: string[], sendOnline = true) {
+export async function addToFavorites(username: string, kids: string[], onlineToken?: string) {
 	try {
 		profile('addToFavorites');
 		username = username.toLowerCase();
 		await insertFavorites(kids, username);
-		if (username.includes('@') && sendOnline && getConfig().Online.Users) {
-			manageFavoriteInInstanceBatch('POST', username, kids);
+		if (username.includes('@') && onlineToken && getConfig().Online.Users) {
+			await manageFavoriteInInstanceBatch('POST', username, kids, onlineToken);
 		}
 		emitWS('favoritesUpdated', username);
 	} catch(err) {
@@ -74,7 +71,7 @@ export async function addToFavorites(username: string, kids: string[], sendOnlin
 	}
 }
 
-export async function convertToRemoteFavorites(username: string) {
+export async function convertToRemoteFavorites(username: string, token: string) {
 	// This is called when converting a local account to a remote one
 	// We thus know no favorites exist remotely.
 	if (!getConfig().Online.Users) return true;
@@ -83,20 +80,19 @@ export async function convertToRemoteFavorites(username: string) {
 		lang: null,
 		username: username
 	});
-	if (favorites.content.length > 0) {
-		for (const favorite of favorites.content) {
-			await manageFavoriteInInstance('POST', username, favorite.kid);
-		}
+	const localFavorites = favorites.content.map(fav => fav.kid);
+	if (localFavorites.length > 0) {
+		await manageFavoriteInInstanceBatch('POST', username, localFavorites, token);
 	}
 }
 
-export async function deleteFavorites(username: string, kids: string[]) {
+export async function deleteFavorites(username: string, kids: string[], token: string) {
 	try {
 		profile('deleteFavorites');
 		username = username.toLowerCase();
 		await removeFavorites(kids, username);
 		if (username.includes('@') && getConfig().Online.Users) {
-			manageFavoriteInInstanceBatch('DELETE', username, kids);
+			manageFavoriteInInstanceBatch('DELETE', username, kids, token);
 		}
 		emitWS('favoritesUpdated', username);
 	} catch(err) {
@@ -106,16 +102,15 @@ export async function deleteFavorites(username: string, kids: string[]) {
 	}
 }
 
-async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: string, kid: string) {
+async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: string, kid: string, token: string) {
 	// If OnlineUsers is disabled, we return early and do not try to update favorites online.
 	if (!getConfig().Online.Users) return true;
 	const instance = username.split('@')[1];
-	const remoteToken = getRemoteToken(username);
 	try {
 		return await HTTP(`https://${instance}/api/favorites/${kid}`, {
 			method: action,
 			headers: {
-				authorization: remoteToken.token || undefined
+				authorization: token
 			},
 		});
 	} catch(err) {
@@ -152,7 +147,7 @@ export async function exportFavorites(username: string) {
 	};
 }
 
-export async function importFavorites(favs: FavExport, username: string) {
+export async function importFavorites(favs: FavExport, username: string, token?: string, emptyBefore = false) {
 	username = username.toLowerCase();
 	if (favs.Header.version !== 1) throw {code: 400, msg: 'Incompatible favorites version list'};
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw {code: 400, msg: 'Not a favorites list'};
@@ -160,14 +155,18 @@ export async function importFavorites(favs: FavExport, username: string) {
 	if (favs.Favorites.some(f => !new RegExp(uuidRegexp).test(f.kid))) throw {code: 400, msg: 'One item in the favorites list is not a UUID'};
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {
+		if (emptyBefore) {
+			await clearFavorites(username);
+		}
 		const favorites = favs.Favorites.map(f => f.kid);
 		const [karasUnknown, userFavorites] = await Promise.all([
 			isAllKaras(favorites),
 			getFavorites({username: username})
 		]);
 		// Removing favorites already added
-		const favoritesToAdd = favorites.filter(f => !userFavorites.content.map(uf => uf.kid).includes(f));
-		if (favoritesToAdd.length > 0) await addToFavorites(username, favoritesToAdd, false);
+		const mappedUserFavorites = userFavorites.content.map(uf => uf.kid);
+		const favoritesToAdd = favorites.filter(f => !mappedUserFavorites.includes(f));
+		if (favoritesToAdd.length > 0) await addToFavorites(username, favoritesToAdd, token);
 		emitWS('favoritesUpdated', username);
 		return { karasUnknown: karasUnknown };
 	} catch(err) {

@@ -38,6 +38,7 @@ import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
+import { stopSub } from '../utils/user_pubsub';
 import { addToFavorites, getFavorites } from './favorites';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
 
@@ -84,7 +85,7 @@ export function updateLastLoginName(login: string) {
 
 /** Edit local user profile */
 export async function editUser(username: string, user: User, avatar: Express.Multer.File, role: string, opts: UserOpts = {
-	editRemote: true,
+	editRemote: false,
 	renameUser: false,
 	noPasswordCheck: false
 }) {
@@ -128,9 +129,9 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		logger.debug(`${username} (${user.nickname}) profile updated`, {service: 'User'});
 		let KMServerResponse: any;
 		try {
-			if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user);
+			if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user, opts.editRemote);
 		} catch(err) {
-			logger.warn(err, {service: 'RemoteUser'});
+			logger.warn('', {service: 'RemoteUser', obj: err});
 			throw {code: 500};
 		}
 		// Modifying passwords is not allowed in demo mode
@@ -348,6 +349,10 @@ export async function deleteUser(username: string) {
 		//Reassign karas and playlists owned by the user to the admin user
 		await DBReassignToUser(username, 'admin');
 		await DBDeleteUser(username);
+		if (username.includes('@')) {
+			const [login, instance] = username.split('@');
+			stopSub(login, instance);
+		}
 		if (getUsersFetched().has(username)) getUsersFetched().delete(username);
 		logger.debug(`Deleted user ${username}`, {service: 'User'});
 		emitWS('usersUpdated');

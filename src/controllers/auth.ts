@@ -1,6 +1,10 @@
+import { getConfig } from '../lib/utils/config';
+import logger from '../lib/utils/logger';
 import { SocketIOApp } from '../lib/utils/ws';
 import { checkLogin, resetSecurityCode } from '../services/auth';
+import { fetchAndAddFavorites } from '../services/favorites';
 import { editUser, findFingerprint,updateLastLoginName, updateUserFingerprint } from '../services/user';
+import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline';
 import { getState } from '../utils/state';
 import { APIMessage } from './common';
 import { runChecklist } from './middlewares';
@@ -108,6 +112,28 @@ export default function authController(router: SocketIOApp) {
 
 	router.route('checkAuth', async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed');
+		if (req.token.username.includes('@') && +getConfig().Online.Users) {
+			// Remote token does not exist, we're going to verify it and add it if it does work
+			try {
+				logger.debug('Checking remote token', {service: 'RemoteUser'});
+				if (await remoteCheckAuth(req.token.username.split('@')[1], req.onlineAuthorization)) {
+					logger.debug('Fetched remote token', {service: 'RemoteUser'});
+					try {
+						await fetchAndUpdateRemoteUser(req.token.username, null, req.onlineAuthorization, true);
+						await fetchAndAddFavorites(req.token.username, req.onlineAuthorization);
+					} catch(err) {
+						logger.error('Failed to fetch and update user/favorite from remote', {service: 'RemoteUser', obj: err});
+					}
+				} else {
+					logger.debug('Remote token invalid', {service: 'RemoteUser'});
+					// Cancelling remote token.
+					throw 'Invalid online token';
+				}
+			} catch(err) {
+				logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err});
+				if (err === 'Invalid online token') throw err;
+			}
+		}
 		return req.token;
 	});
 

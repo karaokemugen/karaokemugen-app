@@ -1,21 +1,16 @@
 import merge from 'lodash.merge';
 import { Socket } from 'socket.io';
 
-import { getRemoteToken, upsertRemoteToken } from '../dao/user';
 import { APIData } from '../lib/types/api';
 import {Role, User} from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import { userTypes } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
-import { fetchAndAddFavorites } from '../services/favorites';
-import {decodeJwtToken, findUserByName, updateLastLoginName} from '../services/user';
-import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline';
+import { decodeJwtToken, findUserByName, updateLastLoginName } from '../services/user';
 import { WebappModes } from '../types/frontend';
 import { webappModes } from '../utils/constants';
 import { getState } from '../utils/state';
 import { APIMessage } from './common';
-
-const usersFavoritesChecked = new Set();
 
 interface APIChecklistOptions {
 	allowInDemo?: boolean
@@ -59,48 +54,12 @@ function checkAuthPresence(data: APIData) {
 	}
 }
 
-export async function checkValidUser(token: { username: string, role: string }, onlineToken: string): Promise<User> {
+export async function checkValidUser(token: { username: string, role: string }): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
 	token.username = token.username.toLowerCase();
 	const user = await findUserByName(token.username);
 	if (user) {
 		if (token.role === 'admin' && user.type > 0) throw APIMessage('ADMIN_PLEASE');
-		if (token.username.includes('@') && +getConfig().Online.Users) {
-			const remoteToken = getRemoteToken(token.username);
-			if (remoteToken?.token === onlineToken) {
-				// Remote token exists, no problem here
-				return user;
-			} else {
-				// Remote token does not exist, we're going to verify it and add it if it does work
-				try {
-					// Firing this first to avoid multiple triggers, will get canceled if auth is not OK.
-					upsertRemoteToken(token.username, onlineToken);
-					logger.debug('Checking remote token', {service: 'RemoteUser'});
-					if (await remoteCheckAuth(token.username.split('@')[1], onlineToken)) {
-						logger.debug('Fetched remote token', {service: 'RemoteUser'});
-						try {
-							await fetchAndUpdateRemoteUser(token.username, null, onlineToken);
-							if (!usersFavoritesChecked.has(token.username)) {
-								await fetchAndAddFavorites(token.username.split('@')[1], onlineToken, token.username);
-								usersFavoritesChecked.add(token.username);
-							}
-						} catch(err) {
-							logger.error('Failed to fetch and update user/favorite from remote', {service: 'RemoteUser', obj: err});
-						}
-						return user;
-					} else {
-						logger.debug('Remote token invalid', {service: 'RemoteUser'});
-						// Cancelling remote token.
-						upsertRemoteToken(token.username, null);
-						throw 'Invalid online token';
-					}
-				} catch(err) {
-					upsertRemoteToken(token.username, null);
-					logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err});
-					if (err === 'Invalid online token') throw err;
-				}
-			}
-		}
 		return user;
 	} else {
 		throw 'User unknown';
@@ -117,7 +76,7 @@ function requireUserType(data: APIData, type: Role) {
 
 async function requireValidUser(data: APIData) {
 	try {
-		data.user = await checkValidUser(data.token, data.onlineAuthorization);
+		data.user = await checkValidUser(data.token);
 	} catch(err) {
 		logger.error(`Error checking user : ${JSON.stringify(data.token)}`, {service: 'API', obj: err});
 		throw err;

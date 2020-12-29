@@ -447,7 +447,9 @@ export default function userController(router: SocketIOApp) {
 			if (req.body.url) req.body.url = unescape(req.body.url.trim());
 			if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
 			try {
-				const response = await editUser(req.token.username, req.body, req.body.avatar || null, req.token.role);
+				const response = await editUser(req.token.username,
+					req.body, req.body.avatar || null,
+					req.token.role, { editRemote: req.onlineAuthorization });
 				return APIMessage('USER_EDITED', { onlineToken: response.onlineToken });
 			} catch(err) {
 				errMessage(err.msg, err);

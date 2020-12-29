@@ -69,7 +69,7 @@ export function startElectron() {
 		});
 		ipcMain.on('droppedFiles', async (_event, eventData) => {
 			for (const path of eventData.files) {
-				await handleFile(path, eventData.username);
+				await handleFile(path, eventData.username, eventData.onlineToken);
 			}
 		});
 		ipcMain.on('tip', (_event, _eventData) => {
@@ -168,7 +168,7 @@ export async function handleProtocol(args: string[]) {
 	}
 }
 
-export async function handleFile(file: string, username?: string) {
+export async function handleFile(file: string, username?: string, onlineToken?: string) {
 	try {
 		logger.info(`Received file path ${file}`, {service: 'FileHandler'});
 		if (!getState().ready) return;
@@ -207,7 +207,8 @@ export async function handleFile(file: string, username?: string) {
 			break;
 		case 'Karaoke Mugen Favorites List File':
 			if (!username) throw 'Unable to find a user to import the file to';
-			await importFavorites(data, username);
+			console.log(data, arguments);
+			await importFavorites(data, username, onlineToken);
 			if (win && !win.webContents.getURL().includes('/admin')) {
 				win.loadURL(url);
 				win.webContents.on('did-finish-load', () => emitWS('favoritesUpdated', username));
