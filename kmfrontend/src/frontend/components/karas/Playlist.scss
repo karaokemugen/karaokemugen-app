@@ -66,19 +66,6 @@
 	position: relative;
 	padding: 0;
 	overflow: hidden;
-	li {
-		display: block;
-	}
-}
-
-#playlist1 li.list-group-item  > .actionDiv, #playlist1 > li.list-group-item  > .actionDiv > span,
-#playlist2 li.list-group-item  > .infoDiv {
-	float: right;
-}
-
-#playlist2 li.list-group-item  > .actionDiv, #playlist2 li.list-group-item  > .actionDiv > span,
-#playlist1 li.list-group-item  > .infoDiv {
-	float: left;
 }
 
 // Hover events only for PCs
@@ -103,7 +90,7 @@ body:not(.touch) {
 	}
 }
 
-.playlist-main li.list-group-item.karaSuggestion {
+.playlist-main .list-group-item.karaSuggestion {
 	background-color: #5d83778c;
 	font-size: 120%;
 	padding: 1em;
@@ -126,12 +113,6 @@ body:not(.touch) {
 	padding-left: 1em;
 	font-weight: bold;
 	line-height: 1.5em;
-}
-
-.playlist-main li.list-group-item.filler {
-	width: 100% !important;
-	overflow: hidden;
-	background-color: #33333391;
 }
 
 .ReactVirtualized__Grid__innerScrollContainer {

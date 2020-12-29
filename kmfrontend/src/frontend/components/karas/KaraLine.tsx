@@ -270,7 +270,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		const shouldShowProfile = this.props.context.globalState.settings.data.config.Frontend.ShowAvatarsOnPlaylist
 			&& this.props.avatar_file;
 		return (
-			<li key={this.props.key} style={this.props.style}>
+			<div key={this.props.key} style={this.props.style}>
 				<div className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${kara.flag_dejavu ? ' dejavu' : ''}
 				${this.props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${(this.props.jingle || this.props.sponsor) && scope === 'admin' ? ' marker' : ''}
 				${this.props.sponsor && scope === 'admin' ? ' green' : ''}`}>
@@ -395,7 +395,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				</div> : this.props.sponsor && scope === 'admin' ? <div className="marker-label green">
 					{i18next.t('SPONSOR')}
 				</div> : ''}
-			</li>
+			</div>
 		);
 	}
 }

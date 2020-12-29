@@ -99,10 +99,10 @@ class BlacklistCriterias extends Component<IProps, IState> {
 				}
 				{types.map((type) => {
 					return <React.Fragment key={type}>
-						<li className="list-group-item liType">{i18next.t('BLACKLIST.BLCTYPE_' + type)}</li>
+						<div className="list-group-item liType">{i18next.t('BLACKLIST.BLCTYPE_' + type)}</div>
 						{this.props.data.map(criteria => {
 							return (criteria.type === type ?
-								<li key={criteria.blcriteria_id} className="list-group-item liTag">
+								<div key={criteria.blcriteria_id} className="list-group-item liTag">
 									{this.props.scope === 'admin' ?
 										<div className="actionDiv">
 											<button title={i18next.t('BLC.DELETE_BLC')} name="deleteCriteria"
@@ -124,7 +124,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 											)
 										}
 									</div>
-								</li> : null
+								</div> : null
 							);
 						})}
 					</React.Fragment>;

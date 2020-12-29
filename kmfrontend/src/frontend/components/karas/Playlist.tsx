@@ -292,25 +292,25 @@ class Playlist extends Component<IProps, IState> {
 				</CellMeasurer>
 			);
 		} else {
-			return <li key={key} style={style}>
+			return <div key={key} style={style}>
 				<div className="list-group-item">
 					<div className="actionDiv" />
 					<div className="infoDiv" />
 					<div className="contentDiv" >{i18next.t('LOADING')}</div>
 				</div>
-			</li>;
+			</div>;
 		}
 	}
 
 	noRowsRenderer = () => {
 		return <React.Fragment>
 			{this.state.idPlaylist === -1 && this.props.scope === 'admin' ? (
-				<li className="list-group-item karaSuggestion">
+				<div className="list-group-item karaSuggestion">
 					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 					{this.context?.globalState.settings.data.config.System.Repositories
 						.filter(value => value.Enabled && value.Online).map(value => <a href={`https://${value.Name}/base`} >{value.Name}</a>)}
 					<a href="https://suggest.karaokes.moe" >suggest.karaokes.moe</a>
-				</li>
+				</div>
 			) : null}
 		</React.Fragment>;
 	}
