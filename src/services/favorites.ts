@@ -1,6 +1,6 @@
 import logger from 'winston';
 
-import {insertFavorites,removeFavorites, selectFavorites} from '../dao/favorites';
+import { clearFavorites, insertFavorites, removeFavorites, selectFavorites } from '../dao/favorites';
 import {KaraList} from '../lib/types/kara';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
@@ -147,7 +147,7 @@ export async function exportFavorites(username: string) {
 	};
 }
 
-export async function importFavorites(favs: FavExport, username: string, token?: string) {
+export async function importFavorites(favs: FavExport, username: string, token?: string, emptyBefore = false) {
 	username = username.toLowerCase();
 	if (favs.Header.version !== 1) throw {code: 400, msg: 'Incompatible favorites version list'};
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw {code: 400, msg: 'Not a favorites list'};
@@ -155,6 +155,9 @@ export async function importFavorites(favs: FavExport, username: string, token?:
 	if (favs.Favorites.some(f => !new RegExp(uuidRegexp).test(f.kid))) throw {code: 400, msg: 'One item in the favorites list is not a UUID'};
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {
+		if (emptyBefore) {
+			await clearFavorites(username);
+		}
 		const favorites = favs.Favorites.map(f => f.kid);
 		const [karasUnknown, userFavorites] = await Promise.all([
 			isAllKaras(favorites),

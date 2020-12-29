@@ -1,7 +1,10 @@
 import { io, Socket } from 'socket.io-client';
 
+import { DBUser } from '../lib/types/database/user';
 import logger from '../lib/utils/logger';
-import {deleteUser, listUsers } from '../services/user';
+import {importFavorites} from '../services/favorites';
+import { deleteUser, editUser, listUsers } from '../services/user';
+import { Favorite } from '../types/stats';
 
 // Map io connections
 const ioMap: Map<string, Socket> = new Map();
@@ -24,15 +27,35 @@ async function listRemoteUsersByServer() {
 function setupUserWatch(server: string) {
 	const socket = io(`https://${server}`, { multiplex: true });
 	ioMap.set(server, socket);
-	socket.on('user updated', user => {
-		const login = `${user}@${server}`;
+	socket.on('user updated', (payload) => {
+		const user: DBUser = payload.user;
+		const favorites: Favorite[] = payload.favorites;
+		const login = `${user.login}@${server}`;
+		delete user.login;
+		delete user.type;
+		delete user.avatar_file;
 		logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
-		// TODO: refetch user
+		console.log(payload);
+		Promise.all([
+			editUser(login, user, null, 'admin'),
+			importFavorites({
+				Header: { version: 1, description: 'Karaoke Mugen Favorites List File' },
+				Favorites: favorites
+			}, login, undefined, true)
+		]).catch(err => {
+			logger.warn(`Cannot update remote user ${login}`, { service: 'RemoteUser', obj: err });
+		});
 	});
 	socket.on('user deleted', user => {
 		const login = `${user}@${server}`;
-		logger.debug(`${login} user was DELETED on remote`, { service: 'RemoteUser' });
-		// TODO: delete user locally
+		try {
+			logger.info(`${login} user was DELETED on remote, delete local account`, { service: 'RemoteUser' });
+			deleteUser(login).catch(err => {
+				logger.warn(`Cannot remove remote user ${login}`, { service: 'RemoteUser', obj: err });
+			});
+		} catch (err) {
+			logger.warn(`Cannot delete ${login}`, { service: 'RemoteUser' });
+		}
 	});
 }
 
