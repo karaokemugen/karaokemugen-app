@@ -133,8 +133,10 @@ class KaraDetail extends Component<IProps, IState> {
 	};
 
 	showFullLyrics = async () => {
-		const response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
-		this.setState({ lyrics: response.map(value => value.text) });
+		if (this.state.kara) {
+			const response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
+			this.setState({ lyrics: response.map(value => value.text) });
+		}
 	};
 
 	getTagInLocale = (e: DBKaraTag) => {

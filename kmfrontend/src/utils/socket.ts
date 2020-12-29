@@ -24,7 +24,10 @@ export function setAuthorization(authorizationParam:string, onlineAuthorizationP
 export function commandBackend(name: string, body?: any, loading = false, timeout = 5000): Promise<any> {
 	return new Promise((resolve, reject) => {
 		if (loading) eventEmitter.emitChange('loading', true);
-		const nodeTimeout = setTimeout(reject, timeout);
+		const nodeTimeout = setTimeout((reason) => {
+			console.log(name, body, 'timeout');
+			reject(reason);
+		}, timeout);
 		const t0 = performance.now();
 		socket.emit(name, {authorization, onlineAuthorization, body}, ({err, data}:{err: boolean, data: any}) => {
 			clearTimeout(nodeTimeout);

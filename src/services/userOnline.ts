@@ -300,7 +300,7 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 			token: createJwtToken(user.login, token.role)
 		};
 	} catch(err) {
-		if (err.msg !== 'USER_ALREADY_EXISTS_ONLINE') sentry.error(err);
+		if (err.msg !== 'USER_ALREADY_EXISTS_ONLINE' && err?.details?.message?.code !== 'ENOTFOUND') sentry.error(err);
 		throw {msg: err.msg || 'USER_CONVERT_ERROR', details: err};
 	}
 }

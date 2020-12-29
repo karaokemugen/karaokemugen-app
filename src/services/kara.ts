@@ -176,22 +176,23 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 	};
 }
 
-export function getSeriesSingers(kara: DBKara) {
+export function getSeriesSingers(kara: DBKara, i18nParam?:any) {
 	if (kara.series?.length > 0) {
 		const mode = getConfig().Frontend.SeriesLanguageMode;
+		const i18n = i18nParam ? i18nParam : kara.series[0].i18n;
 		let series = '';
 		switch(mode) {
 		case 0:
 			series = kara.series[0].name;
 			break;
 		case 1:
-			series = kara.series[0].i18n[kara.langs[0].name] || kara.series[0].i18n?.eng || kara.series[0].name;
+			series = i18n[kara.langs[0].name] || i18n?.eng || kara.series[0].name;
 			break;
 		case 2:
 		case 3:
 		default:
 			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
-			series = kara.series[0].i18n[lang] || kara.series[0].i18n?.eng || kara.series[0].name;
+			series = i18n[lang] || i18n?.eng || kara.series[0].name;
 			break;
 		}
 		return series;

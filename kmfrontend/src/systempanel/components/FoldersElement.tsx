@@ -45,7 +45,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 			await this.setState({ itemModal: item, indexModal: index, keyModal: key });
 			const { ipcRenderer: ipc } = window.require('electron');
 			const path = `${this.getPathForFileSystem(Array.isArray(item) ? item[index] : item, key)}${index === -1
-				? '/' : (this.context.globalState.settings.data.state.os === 'win32' ? (Array.isArray(item) ? item[index] : item).replace(/\//g, '\\') : (Array.isArray(item) ? item[index] : item))}`;
+				? '/' : (this.context.globalState.settings.data.state.os === 'win32' ? (Array.isArray(item) ? item[index] : item)?.replace(/\//g, '\\') : (Array.isArray(item) ? item[index] : item))}`;
 			const options = {
 				defaultPath: path,
 				title: this.getTitleModal(),
