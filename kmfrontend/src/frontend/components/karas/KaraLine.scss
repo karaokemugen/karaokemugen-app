@@ -105,6 +105,11 @@
 			font-style: italic;
 		}
 	}
+	.infoDiv {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
 	// Overrides, original tagConteneur in styles/components/tags.scss
 	.tagConteneur {
 		margin-left: auto;

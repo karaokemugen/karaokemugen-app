@@ -42,6 +42,10 @@
 	float: left;
 }
 
+.single .infoDiv {
+	order: -1;
+}
+
 #playlist2 .list-group-item > .infoDiv > button, .playlistContainer > #playlist1 .list-group-item > .actionDiv > button,
 #playlist1 .list-group-item > .actionDiv > .actionButtonsDiv
 {
