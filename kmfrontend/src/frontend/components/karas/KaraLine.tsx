@@ -12,7 +12,7 @@ import { DBPL } from '../../../../../src/types/database/playlist';
 import { GlobalContextInterface } from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { buildKaraTitle, getSerieLanguage, getTagInLocale } from '../../../utils/kara';
-import {commandBackend, isRemote} from '../../../utils/socket';
+import {commandBackend} from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
