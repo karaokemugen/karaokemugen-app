@@ -54,7 +54,6 @@ class LyricsBox extends Component<IProps, IState> {
 				map.set(lyric.text, [[lyric]]);
 			}
 		}
-		console.log(map);
 		// Unwrap and sort
 		const fixedLyrics: ASSLine[] = [];
 		for (const [lyric, lyricGroups] of map.entries()) {

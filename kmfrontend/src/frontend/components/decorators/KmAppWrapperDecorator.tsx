@@ -32,7 +32,6 @@ class KmAppWrapperDecorator extends Component<IProps, IState> {
 		// using getBoundingClientRect
 		this.setState({height: '0px'}, () => {
 			const wrapper = this.state.ref.current.getBoundingClientRect();
-			console.log(window.innerHeight, wrapper);
 			this.setState({ height: `${window.innerHeight - wrapper.bottom}px` });
 		});
 	}
