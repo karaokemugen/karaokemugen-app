@@ -182,91 +182,95 @@ class Login extends Component<IProps, IState> {
 					</div>
 				) : null}
 
-				<div className="loginImageContainer">
-					<img src={logo} className="loginImage" alt='logo' />
-				</div>
-
-				<div className="loginBox">
-					<p className="loginSlogan">{i18next.t('LOGIN_SLOGAN')}</p>
-					{this.state.activeView === 'login' && !this.state.isAdminPath ?
-						<button className="btn largeButton guestButton" onClick={this.loginGuest}>
-							{i18next.t('GUEST_CONTINUE')}
-						</button> : null
-					}
-					<form onSubmit={this.onSubmit}>
-						<div className="spacedSwitch">
-							<label className="loginLabel">{i18next.t('ONLINE_ACCOUNT')}</label>
-							<Switch handleChange={() => this.setState({ onlineSwitch: !this.state.onlineSwitch })}
-								isChecked={this.state.onlineSwitch} />
+				<div className="loginContainer">
+					<div className="loginHeader">
+						<div className="loginImage">
+							<img src={logo} alt='Logo KM' />
 						</div>
-						<div className="loginForm">
-							<label className="loginLabel">{i18next.t('USERNAME')}{this.state.onlineSwitch ?
-								` @ ${i18next.t('INSTANCE_NAME_SHORT')}` : ''}</label>
-							<div className="loginLine">
-								<input type="text" className={`${this.state.errorBackground} ${this.state.onlineSwitch ? 'loginName' : ''}`}
-									defaultValue={this.state.login} placeholder={i18next.t('USERNAME')} autoComplete="username"
-									required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-								{this.state.onlineSwitch ? <React.Fragment>
-									<div className="arobase">@</div>
-									<input type="text" className="instanceName" defaultValue={this.state.serv}
-										placeholder={i18next.t('INSTANCE_NAME_SHORT')} autoComplete="off"
-										onChange={(event) => this.setState({ serv: event.target.value })} />
-								</React.Fragment> : null}
+						<p className="loginSlogan">{i18next.t('LOGIN_SLOGAN')}</p>
+					</div>
+					<div className="loginBox">
+						{this.state.activeView === 'login' && !this.state.isAdminPath ?
+							<button className="btn largeButton guestButton" onClick={this.loginGuest}>
+								{i18next.t('GUEST_CONTINUE')}
+							</button> : null
+						}
+						<form onSubmit={this.onSubmit}>
+							<div className="spacedSwitch">
+								<label className="loginLabel">{i18next.t('ONLINE_ACCOUNT')}</label>
+								<Switch handleChange={() => this.setState({ onlineSwitch: !this.state.onlineSwitch })}
+									isChecked={this.state.onlineSwitch} />
 							</div>
-							<label className="loginLabel">{this.state.forgotPassword && !this.state.onlineSwitch ?
-								i18next.t('NEW_PASSWORD') : i18next.t('PASSWORD')}
-							</label>
-							<div className="loginLine">
-								<input type="password" className={this.state.redBorders}
-								    autoComplete={this.state.activeView === 'signup' ? 'new-password':'current-password'}
-									defaultValue={this.state.password} required placeholder={i18next.t('PASSWORD')}
-									onChange={(event) => this.setState({ password: event.target.value })} />
-							</div>
-							{this.state.activeView === 'signup' ?
-								<>
-									<label className="loginLabel">{i18next.t('PASSWORDCONF')}</label>
-									<div className="loginLine">
-										<input type="password" className={this.state.redBorders} required defaultValue={this.state.passwordConfirmation}
-											onChange={(event) => this.setState({ passwordConfirmation: event.target.value })}
-											placeholder={i18next.t('PASSWORDCONF')} autoComplete="new-password" />
-									</div>
-								</> : null
-							}
-							{this.state.isAdminPath &&
+							<div className="loginForm">
+								<label className="loginLabel">{i18next.t('USERNAME')}{this.state.onlineSwitch ?
+									` @ ${i18next.t('INSTANCE_NAME_SHORT')}` : ''}</label>
+								<div className="loginLine">
+									<input type="text" className={`${this.state.errorBackground} ${this.state.onlineSwitch ? 'loginName' : ''}`}
+										   defaultValue={this.state.login} placeholder={i18next.t('USERNAME')} autoComplete="username"
+										   required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
+									{this.state.onlineSwitch ? <React.Fragment>
+										<div className="arobase">@</div>
+										<input type="text" className="instanceName" defaultValue={this.state.serv}
+											   placeholder={i18next.t('INSTANCE_NAME_SHORT')} autoComplete="off"
+											   onChange={(event) => this.setState({ serv: event.target.value })} />
+									</React.Fragment> : null}
+								</div>
+								<label className="loginLabel">{this.state.forgotPassword && !this.state.onlineSwitch ?
+									i18next.t('NEW_PASSWORD') : i18next.t('PASSWORD')}
+								</label>
+								<div className="loginLine">
+									<input type="password" className={this.state.redBorders}
+										   autoComplete={this.state.activeView === 'signup' ? 'new-password':'current-password'}
+										   defaultValue={this.state.password} required placeholder={i18next.t('PASSWORD')}
+										   onChange={(event) => this.setState({ password: event.target.value })} />
+								</div>
+								{this.state.activeView === 'signup' ?
+									<>
+										<label className="loginLabel">{i18next.t('PASSWORDCONF')}</label>
+										<div className="loginLine">
+											<input type="password" className={this.state.redBorders} required defaultValue={this.state.passwordConfirmation}
+												   onChange={(event) => this.setState({ passwordConfirmation: event.target.value })}
+												   placeholder={i18next.t('PASSWORDCONF')} autoComplete="new-password" />
+										</div>
+									</> : null
+								}
+								{this.state.isAdminPath &&
 								((this.state.forgotPassword && this.state.activeView === 'login' && !this.state.onlineSwitch)
 									|| this.state.activeView === 'signup') ?
-								<>
-									<label className="loginLabel">
-										{i18next.t('SECURITY_CODE')}
-										&nbsp;
-										<button type="button" onClick={() => this.setState({ activeHelp: true })} className="helpButton">?</button>
-									</label>
-									<div className="loginLine">
-										<input type="text" placeholder={i18next.t('SECURITY_CODE')}
-											defaultValue={this.state.securityCode} required autoFocus
-											onChange={(event) => this.setState({ securityCode: parseInt(event.target.value) })}
-											autoComplete="off" />
-									</div>
-								</> : null
-							}
-							{this.state.activeView === 'login' && (this.state.isAdminPath || this.state.onlineSwitch) ?
-								<button type="button" className="btn largeButton" onClick={this.forgetPasswordClick}>
-									{i18next.t('FORGOT_PASSWORD')}
-								</button> : null
-							}
-							<button type="submit" className="btn largeButton submitButton">
-								{i18next.t(this.state.activeView === 'login' ? 'LOG_IN' : 'SIGN_UP')}
-							</button>
+									<>
+										<label className="loginLabel">
+											{i18next.t('SECURITY_CODE')}
+											&nbsp;
+											<button type="button" onClick={() => this.setState({ activeHelp: true })} className="helpButton">?</button>
+										</label>
+										<div className="loginLine">
+											<input type="text" placeholder={i18next.t('SECURITY_CODE')}
+												   defaultValue={this.state.securityCode} required autoFocus
+												   onChange={(event) => this.setState({ securityCode: parseInt(event.target.value) })}
+												   autoComplete="off" />
+										</div>
+									</> : null
+								}
+								{this.state.activeView === 'login' && (this.state.isAdminPath || this.state.onlineSwitch) ?
+									<button type="button" className="btn largeButton" onClick={this.forgetPasswordClick}>
+										{i18next.t('FORGOT_PASSWORD')}
+									</button> : null
+								}
+								<button type="submit" className="btn largeButton submitButton">
+									{i18next.t(this.state.activeView === 'login' ? 'LOG_IN' : 'SIGN_UP')}
+								</button>
+							</div>
+						</form>
+						<button type="button" className="btn largeButton switchButton"
+							onClick={() => this.setState({ activeView: this.state.activeView === 'login' ? 'signup' : 'login' })}>
+							{i18next.t(this.state.activeView === 'login' ? 'NEW_ACCOUNT' : 'LOGIN')}
+						</button>
+
+						<div className="versionKM">
+							<div>Karaoke Mugen</div>
+							<div>{`${i18next.t('VERSION')} ${this.props.context.globalState.settings.data.version.number} - ${this.props.context.globalState.settings.data.version.name}`}</div>
 						</div>
-					</form>
-					<button type="button" className="btn largeButton switchButton"
-						onClick={() => this.setState({ activeView: this.state.activeView === 'login' ? 'signup' : 'login' })}>
-						{i18next.t(this.state.activeView === 'login' ? 'NEW_ACCOUNT' : 'LOGIN')}
-					</button>
-				</div>
-				<div className="versionKM">
-					<div>Karaoke Mugen</div>
-					<div>{`${i18next.t('VERSION')} ${this.props.context.globalState.settings.data.version.number} - ${this.props.context.globalState.settings.data.version.name}`}</div>
+					</div>
 				</div>
 			</React.Fragment>
 		);

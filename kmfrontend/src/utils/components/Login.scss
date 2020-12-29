@@ -12,8 +12,8 @@ body {
 }
 
 .loginBox {
-	width: 95%;
-	margin: auto;
+
+	margin: 0 1em;
 
 	button {
 		border: none;
@@ -48,11 +48,6 @@ body {
 		}
 	}
 
-	.loginSlogan {
-		text-align: center;
-		font-size: 1.5em;
-		font-weight: bold;
-	}
 	> * {
 		margin: 1em 0;
 	}
@@ -61,24 +56,37 @@ body {
 	}
 }
 
-.loginImageContainer {
-	max-width: 350px;
-	margin: auto;
+.loginHeader {
+	.loginImage {
+		max-width: 350px;
+		margin: auto;
+		img {
+			width: 100%;
+		}
+	}
+	.loginSlogan {
+		text-align: center;
+		font-size: 1.5em;
+		font-weight: bold;
+	}
 }
 
-.loginImage {
-	width: 100%;
+.loginContainer {
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	height: 100vh;
+}
+
+@media screen and (max-width: 690px) {
+	.loginContainer {
+		flex-direction: column;
+	}
 }
 
 .loginForm {
 	> * {
 		margin: 1em 0;
-	}
-}
-
-@media screen and (min-width: 690px) {
-	.loginBox {
-		width: 50%;
 	}
 }
 
