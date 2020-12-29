@@ -155,20 +155,12 @@
 
 		.plSearch {
 			flex:1;
+			margin: 0em;
 			input {
 				font-weight: bold;
 				height: 100%;
 				border-radius: 0;
 				padding-right: 2em;
-			}
-		}
-
-		.switchParent .radiobutton-ui {
-			height: 100%;
-			display: flex;
-			flex-direction: column;
-			button {
-				padding: 0 0.5em;
 			}
 		}
 	}
