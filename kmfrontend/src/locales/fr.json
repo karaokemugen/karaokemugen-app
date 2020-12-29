@@ -183,7 +183,9 @@
 		"SONG_SEARCH": "Rechercher une chanson",
 		"EXPLORE": "Explorer",
 		"OTHERS": "Autres...",
-		"GET_LUCKY": "J'ai de la chance !"
+		"GET_LUCKY": "J'ai de la chance !",
+		"REQUESTED_KARAOKES": "Karaokés populaires",
+		"NEW_KARAOKES": "Nouveaux karaokés"
 	},
 	"CONFIRM_FAV_IMPORT": "Écraser vos favoris avec cet import ?",
 	"LYRICS": "Paroles",

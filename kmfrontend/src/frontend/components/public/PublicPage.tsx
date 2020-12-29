@@ -45,6 +45,7 @@ interface IState {
 	publicVisible: boolean;
 	currentVisible: boolean;
 	indexKaraDetail?: number;
+	searchType: 'search' | 'recent' | 'requested';
 }
 
 let timer: any;
@@ -66,7 +67,8 @@ class PublicPage extends Component<IProps, IState> {
 			top: '0',
 			bottom: '0',
 			publicVisible: true,
-			currentVisible: true
+			currentVisible: true,
+			searchType: 'search'
 		};
 	}
 
@@ -77,6 +79,7 @@ class PublicPage extends Component<IProps, IState> {
 		searchCriteria?: 'year' | 'tag'
 	) => {
 		let route;
+		let searchType: 'search' | 'recent' | 'requested' = 'search';
 		if (view === 'home') {
 			route = '/public';
 		} else if (view === 'tag') {
@@ -86,6 +89,14 @@ class PublicPage extends Component<IProps, IState> {
 		if (view === 'favorites') {
 			idsPlaylist.left = -5;
 			route = '/public/favorites';
+		} else if (view === 'requested') {
+			idsPlaylist.left = -1;
+			searchType = 'requested';
+			route = '/public/search/requested';
+		} else if (view === 'history') {
+			idsPlaylist.left = -1;
+			searchType = 'recent';
+			route = '/public/search/history';
 		} else if (view === 'search') {
 			idsPlaylist.left = -1;
 			route = '/public/search';
@@ -102,7 +113,7 @@ class PublicPage extends Component<IProps, IState> {
 			1,
 			this.state.idsPlaylist.left
 		);
-		await this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, kara: undefined });
+		await this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, searchType, kara: undefined });
 		this.props.route.history.push(route);
 	};
 
@@ -115,7 +126,11 @@ class PublicPage extends Component<IProps, IState> {
 	};
 
 	initView() {
-		if (this.props.route.location.pathname.includes('/public/search')) {
+		if (this.props.route.location.pathname.includes('/public/search/requested')) {
+			this.changeView('requested');
+		} if (this.props.route.location.pathname.includes('/public/search/history')) {
+			this.changeView('history');
+		} else if (this.props.route.location.pathname.includes('/public/search')) {
 			this.changeView('search');
 		} else if (this.props.route.location.pathname.includes('/public/favorites')) {
 			this.changeView('favorites');
@@ -335,6 +350,14 @@ class PublicPage extends Component<IProps, IState> {
 											searchCriteria={this.state.searchCriteria}
 											indexKaraDetail={this.state.indexKaraDetail}
 											clearIndexKaraDetail={() => this.setState({ indexKaraDetail: undefined })}
+											searchType={
+												this.props.route.location.pathname.includes('/public/search/requested') ?
+													'requested' :
+													(this.props.route.location.pathname.includes('/public/search/history') ?
+														'recent' :
+														this.state.searchType
+													)
+											}
 										/>
 									}
 								</KmAppBodyDecorator>

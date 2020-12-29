@@ -1,1 +1,1 @@
-export type View = 'home' | 'favorites' | 'publicPlaylist' | 'currentPlaylist' | 'tag' | 'search';
+export type View = 'home' | 'favorites' | 'publicPlaylist' | 'currentPlaylist' | 'tag' | 'search' | 'history' | 'requested';

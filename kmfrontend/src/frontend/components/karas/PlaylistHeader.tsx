@@ -53,7 +53,7 @@ interface IProps {
 	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void;
 	playlistWillUpdate: () => void;
 	playlistDidUpdate: () => void;
-	getPlaylist: (searchType?: string) => void;
+	getPlaylist: (searchType?: 'search' | 'recent' | 'requested') => void;
 	onChangeTags: (type: number | string, value: string) => void;
 	addAllKaras: () => void;
 	selectAllKaras: () => void;
@@ -67,7 +67,7 @@ interface IProps {
 interface IState {
 	selectAllKarasChecked: boolean;
 	tagType: number | string;
-	activeFilter: number;
+	activeFilter: 'search' | 'favorites' | 'recent' | 'requested';
 	activeFilterUUID: string;
 	playlistCommands: boolean;
 }
@@ -82,7 +82,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			playlistCommands: false,
 			selectAllKarasChecked: false,
 			tagType: 2,
-			activeFilter: 1,
+			activeFilter: 'search',
 			activeFilterUUID: ''
 		};
 	}
@@ -251,15 +251,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 		});
 	};
 
-	getKarasList = (activeFilter: number, searchType?: string) => {
-		this.setState({ activeFilter: activeFilter });
-		if (activeFilter === 2 && this.props.idPlaylist !== -5) {
+	getKarasList = (activeFilter: 'search' | 'favorites' | 'recent' | 'requested') => {
+		this.setState({ activeFilter });
+		if (activeFilter === 'favorites' && this.props.idPlaylist !== -5) {
 			this.props.changeIdPlaylist(-5);
-		} else if (activeFilter !== 2 && this.props.idPlaylist !== -1) {
+		} else if (activeFilter !== 'favorites' && this.props.idPlaylist !== -1) {
 			this.props.changeIdPlaylist(-1);
-			this.props.getPlaylist(searchType);
+			this.props.getPlaylist(activeFilter);
 		} else {
-			this.props.getPlaylist(searchType);
+			this.props.getPlaylist(activeFilter as 'search' | 'recent' | 'requested');
 		}
 	};
 
@@ -405,18 +405,22 @@ class PlaylistHeader extends Component<IProps, IState> {
 					</div>
 				</div>
 				<div className="filterContainer">
-					<div className={'filterElement ' + (this.state.activeFilter === 1 ? 'filterElementActive' : '')} onClick={() => this.getKarasList(1, 'search')}>
+					<div className={'filterElement ' + (this.state.activeFilter === 'search' ? 'filterElementActive' : '')}
+						onClick={() => this.getKarasList('search')}>
 						<i className="fas fa-sort-alpha-down"></i> {i18next.t('VIEW_STANDARD')}
 					</div>
-					<div className={'filterElement ' + (this.state.activeFilter === 2 ? 'filterElementActive' : '')} onClick={() => this.getKarasList(2)}>
+					<div className={'filterElement ' + (this.state.activeFilter === 'favorites' ? 'filterElementActive' : '')}
+						onClick={() => this.getKarasList('favorites')}>
 						<i className="fas fa-star"></i> {i18next.t('VIEW_FAVORITES')}
 					</div>
 				</div>
 				<div className="filterContainer">
-					<div className={'filterElement ' + (this.state.activeFilter === 3 ? 'filterElementActive' : '')} onClick={() => this.getKarasList(3, 'recent')}>
+					<div className={'filterElement ' + (this.state.activeFilter === 'recent' ? 'filterElementActive' : '')}
+						onClick={() => this.getKarasList('recent')}>
 						<i className="far fa-clock"></i> {i18next.t('VIEW_RECENT')}
 					</div>
-					<div className={'filterElement ' + (this.state.activeFilter === 4 ? 'filterElementActive' : '')} onClick={() => this.getKarasList(4, 'requested')}>
+					<div className={'filterElement ' + (this.state.activeFilter === 'requested' ? 'filterElementActive' : '')}
+						onClick={() => this.getKarasList('requested')}>
 						<i className="fas fa-fire"></i> {i18next.t('VIEW_POPULAR')}
 					</div>
 				</div>

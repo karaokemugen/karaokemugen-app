@@ -161,7 +161,9 @@
 		"SONG_SEARCH": "Search song",
 		"EXPLORE": "Explore",
 		"OTHERS": "Others...",
-		"GET_LUCKY": "Get lucky"
+		"GET_LUCKY": "Get lucky",
+		"REQUESTED_KARAOKES": "Requested karaokes",
+		"NEW_KARAOKES": "New karaokes"
 	},
 	"ADD_KARA": "Add song",
 	"DELETE_KARA": "Remove song",

@@ -41,13 +41,14 @@ interface IProps {
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
 	indexKaraDetail?: number;
-	clearIndexKaraDetail?: () => void
+	clearIndexKaraDetail?: () => void;
+	searchType?: 'search' | 'recent' | 'requested';
 }
 
 interface IState {
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
-	searchType?: string;
+	searchType?: 'search' | 'recent' | 'requested';
 	getPlaylistInProgress: boolean;
 	stopUpdate: boolean;
 	forceUpdate: boolean;
@@ -93,7 +94,7 @@ class Playlist extends Component<IProps, IState> {
 			bLSet: undefined,
 			data: undefined,
 			bLSetList: [],
-			searchType: 'search',
+			searchType: this.props.searchType ? this.props.searchType : 'search',
 			checkedkaras: 0,
 			searchCriteria: this.props.searchCriteria,
 			searchValue: this.props.searchValue
@@ -405,7 +406,7 @@ class Playlist extends Component<IProps, IState> {
 			this.context.globalState.frontendContext.filterValue2 || '';
 	}
 
-	getPlaylist = async (searchType?: string) => {
+	getPlaylist = async (searchType?: 'search' | 'recent' | 'requested') => {
 		const criterias: any = {
 			'year': 'y',
 			'tag': 't'

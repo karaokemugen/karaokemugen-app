@@ -117,6 +117,12 @@ class PublicHomepage extends Component<IProps, IState> {
 										<button className="action green" onClick={this.getLucky}>
 											<i className="fas fa-fw fa-dice" /> {i18next.t('PUBLIC_HOMEPAGE.GET_LUCKY')}
 										</button>
+										<button className="action purple" onClick={() => this.props.changeView('history')}>
+											<i className="fas fa-fw fa-clock" /> {i18next.t('PUBLIC_HOMEPAGE.NEW_KARAOKES')}
+										</button>
+										<button className="action orange" onClick={() => this.props.changeView('requested')}>
+											<i className="fas fa-fw fa-fire" /> {i18next.t('PUBLIC_HOMEPAGE.REQUESTED_KARAOKES')}
+										</button>
 										<h3 className="subtitle">
 											{i18next.t('PUBLIC_HOMEPAGE.EXPLORE')}
 										</h3>
