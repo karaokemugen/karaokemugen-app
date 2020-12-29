@@ -38,6 +38,7 @@ import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
+import { stopSub } from '../utils/user_pubsub';
 import { addToFavorites, getFavorites } from './favorites';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
 
@@ -348,6 +349,10 @@ export async function deleteUser(username: string) {
 		//Reassign karas and playlists owned by the user to the admin user
 		await DBReassignToUser(username, 'admin');
 		await DBDeleteUser(username);
+		if (username.includes('@')) {
+			const [login, instance] = username.split('@');
+			stopSub(login, instance);
+		}
 		if (getUsersFetched().has(username)) getUsersFetched().delete(username);
 		logger.debug(`Deleted user ${username}`, {service: 'User'});
 		emitWS('usersUpdated');

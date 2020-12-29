@@ -10,6 +10,7 @@ import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { SingleToken, Tokens } from '../types/user';
 import sentry from '../utils/sentry';
+import { startSub } from '../utils/user_pubsub';
 import { convertToRemoteFavorites } from './favorites';
 import { checkPassword, createJwtToken, createUser, editUser, findUserByName } from './user';
 
@@ -95,6 +96,7 @@ export async function createRemoteUser(user: User) {
 				password: user.password
 			}
 		});
+		startSub(login, instance);
 	} catch(err) {
 		logger.debug(`Got error when create remote user ${login}`, {service: 'RemoteUser', obj: err});
 		throw {
@@ -199,6 +201,8 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 				createRemote: false,
 				noPasswordCheck: true
 			});
+			const [login, instance] = username.split('@');
+			startSub(login, instance);
 		}
 		// Update user with new data
 		let avatar_file = null;
