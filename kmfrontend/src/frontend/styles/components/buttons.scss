@@ -164,8 +164,26 @@ div > a, h5 > a {
 	}
 }
 
+.buttonsMobileMenu, .buttonsMobileMenuSmaller {
+	display: none;
+}
+
 @media (max-width:$mugen-breakpoint-small) {
-	.buttonsNotMobile {
+	.messageButton, .subtitleButton, .rewindButton {
 		display: none;
+	}
+
+	.buttonsMobileMenu {
+		display: block;
+	}
+}
+
+@media (max-width:$mugen-breakpoint-smaller) {
+	.stopButton, .volumeButton {
+		display: none;
+	}
+
+	.buttonsMobileMenuSmaller {
+		display: block;
 	}
 }

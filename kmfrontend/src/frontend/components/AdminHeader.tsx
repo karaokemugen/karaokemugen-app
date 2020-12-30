@@ -3,7 +3,7 @@ import merge from 'lodash.merge';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import {CurrentSong} from '../../../../src/types/playlist';
+import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import { logout } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
@@ -45,8 +45,10 @@ class AdminHeader extends Component<IProps, IState> {
 	}
 
 	async componentDidMount() {
-		this.setState({songVisibilityOperator: Boolean(this.context?.globalState.settings.data.config?.Playlist.MysterySongs.AddedSongVisibilityAdmin),
-			frontendMode: this.context?.globalState.settings.data.config?.Frontend.Mode});
+		this.setState({
+			songVisibilityOperator: Boolean(this.context?.globalState.settings.data.config?.Playlist.MysterySongs.AddedSongVisibilityAdmin),
+			frontendMode: this.context?.globalState.settings.data.config?.Frontend.Mode
+		});
 		if (this.context.globalState.auth.isAuthenticated) {
 			const result = await commandBackend('getPlayerStatus');
 			await this.setState({ statusPlayer: result });
@@ -69,7 +71,7 @@ class AdminHeader extends Component<IProps, IState> {
 
 	toggleProfileModal = () => {
 		this.setState({ dropDownMenu: !this.state.dropDownMenu });
-		ReactDOM.render(<ProfilModal context={this.context}/>, document.getElementById('modal'));
+		ReactDOM.render(<ProfilModal context={this.context} />, document.getElementById('modal'));
 	};
 
 	saveOperatorAdd = (songVisibility: boolean) => {
@@ -104,7 +106,7 @@ class AdminHeader extends Component<IProps, IState> {
 				{this.props.options ?
 					<button
 						title={i18next.t('BACK_PLAYLISTS')}
-						className="btn btn-default buttonsNotMobile"
+						className="btn btn-default"
 						onClick={this.props.setOptionMode}
 					>
 						<i className="fas fa-long-arrow-alt-left "></i>
@@ -176,7 +178,7 @@ class AdminHeader extends Component<IProps, IState> {
 								title={i18next.t('STOP_NOW')}
 								id="stopNow"
 								data-namecommand="stopNow"
-								className="btn btn-danger"
+								className="btn btn-danger stopButton"
 								onClick={this.props.putPlayerCommando}
 							>
 								<i className="fas fa-stop"></i>
@@ -185,7 +187,7 @@ class AdminHeader extends Component<IProps, IState> {
 								title={i18next.t('STOP_AFTER')}
 								id="stopAfter"
 								data-namecommand="stopAfter"
-								className="btn btn-danger-low"
+								className="btn btn-danger-low stopButton"
 								onClick={this.props.putPlayerCommando}
 							>
 								<i className="fas fa-stop"></i>
@@ -226,7 +228,7 @@ class AdminHeader extends Component<IProps, IState> {
 						id="goTo"
 						data-namecommand="goTo"
 						defaultValue="0"
-						className="btn btn-danger-low"
+						className="btn btn-danger-low rewindButton"
 						onClick={this.props.putPlayerCommando}
 					>
 						<i className="fas fa-undo-alt"></i>
@@ -236,7 +238,7 @@ class AdminHeader extends Component<IProps, IState> {
 				<button
 					title={i18next.t('MESSAGE')}
 					id="adminMessage"
-					className="btn btn-dark messageButton buttonsNotMobile"
+					className="btn btn-dark messageButton"
 					onClick={this.props.adminMessage}
 				>
 					<i className="fas fa-comment"></i>
@@ -246,7 +248,7 @@ class AdminHeader extends Component<IProps, IState> {
 					title={i18next.t(this.state.statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 					id="showSubs"
 					data-namecommand={this.state.statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
-					className={`btn btn-dark subtitleButton buttonsNotMobile ${this.state.statusPlayer?.showSubs ? 'showSubs' : 'hideSubs'}`}
+					className={`btn btn-dark subtitleButton ${this.state.statusPlayer?.showSubs ? 'showSubs' : 'hideSubs'}`}
 					onClick={this.props.putPlayerCommando}
 				>
 					<span className="fa-stack">
@@ -340,6 +342,94 @@ class AdminHeader extends Component<IProps, IState> {
 									</a>
 								</li> : null
 							}
+							<li className="buttonsMobileMenu">
+								<a href="#" onClick={() => {
+									this.props.adminMessage();
+									this.setState({ dropDownMenu: !this.state.dropDownMenu });
+								}}
+								>
+									<i className="fas fa-comment" />&nbsp;{i18next.t('MESSAGE')}
+								</a>
+							</li>
+							<li className="buttonsMobileMenu">
+								<a
+									href="#"
+									onClick={(event) => {
+										this.props.putPlayerCommando(event);
+										this.setState({ dropDownMenu: !this.state.dropDownMenu });
+									}}
+									data-namecommand={this.state.statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
+									id="showSubs"
+								>
+									<i className="fas fa-closed-captioning"></i>&nbsp;{i18next.t(this.state.statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+								</a>
+							</li>
+							<li className="buttonsMobileMenu">
+								<a
+									href="#"
+									onClick={(event) => {
+										this.props.putPlayerCommando(event);
+										this.setState({ dropDownMenu: !this.state.dropDownMenu });
+									}}
+									id="goTo"
+									data-namecommand="goTo"
+								>
+									<i className="fas fa-undo-alt" />&nbsp;{i18next.t('REWIND')}
+								</a>
+							</li>
+							<li className="buttonsMobileMenuSmaller">
+								<a
+									href="#"
+									onClick={(event) => {
+										this.props.putPlayerCommando(event);
+										this.setState({ dropDownMenu: !this.state.dropDownMenu });
+									}}
+									id="mute"
+									data-namecommand={(volume === 0 || this.state.statusPlayer?.mute) ? 'unmute' : 'mute'}
+								>
+									{
+										volume === 0 || this.state.statusPlayer?.mute
+											? <i className="fas fa-volume-mute"></i>
+											: (
+												volume > 66
+													? <i className="fas fa-volume-up"></i>
+													: (
+														volume > 33
+															? <i className="fas fa-volume-down"></i>
+															: <i className="fas fa-volume-off"></i>
+													)
+											)
+									}&nbsp;{i18next.t('MUTE_UNMUTE')}
+								</a>
+							</li>
+							<li className="buttonsMobileMenuSmaller">
+								{
+									this.state.statusPlayer?.stopping ?
+										<a
+											href="#"
+											onClick={(event) => {
+												this.props.putPlayerCommando(event);
+												this.setState({ dropDownMenu: !this.state.dropDownMenu });
+											}}
+											id="stopNow"
+											data-namecommand="stopNow"
+										>
+											<i className="fas fa-stop" />&nbsp;{i18next.t('STOP_NOW')}
+										</a> :
+										<a
+											href="#"
+											onClick={(event) => {
+												this.props.putPlayerCommando(event);
+												this.setState({ dropDownMenu: !this.state.dropDownMenu });
+											}}
+											id="stopAfter"
+											data-namecommand="stopAfter"
+										>
+											<i className="fas fa-stop" />&nbsp;{i18next.t('STOP_AFTER')}
+										</a>
+
+								}
+							</li>
 						</ul> : null
 					}
 				</div>

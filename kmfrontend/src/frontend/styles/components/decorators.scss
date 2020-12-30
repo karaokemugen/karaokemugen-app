@@ -14,6 +14,18 @@
 	&.fillSpace {
 		height: var(--height);
 	}
+
+	&[data-mode="admin"] {
+		.contentDivMobile {
+			flex-basis: 60%;
+		}
+
+		@media screen and (max-width: $mugen-breakpoint-small) {
+			.contentDivMobile {
+				flex-basis: 40%;
+			}
+		}
+	}
 }
 
 .KmAppWrapperDecorator {
