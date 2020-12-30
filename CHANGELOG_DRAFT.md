@@ -6,17 +6,31 @@
 
 ## v5.0.x - Poppy Partagée
 
-5.0 introduces a brand new public interface, making it easier to add songs and browse the library.
+*clears throat* Karaoke Mugen 5.0 introduces a brand new singing experience for y'all! It contains a fully reworked public interface, which aims for ease of use and efficiency.
+It also provides an easy way to share your karaoke to the people with **kara.moe subdomains** (https://helo.kara.moe).
 
 ### New features
 
+#### Remote access (#198)
+
+Karaoke Mugen can now expose himself via kara.moe server to allow other people on another networks to access your karaoke. Perfect for remote sessions.
+
+![Remote Access control box](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/f769ef18debdb7e4d55abb9b3df91f77/Capture_d_écran_du_2020-12-31_00-08-25.png)
+
+It can be enabled in Settings -> Karaoke, it will generate for you a token kept by Karaoke Mugen. It will allow your room URL (https://XXXX.kara.moe) to be always the same after restarts.
+The tokens expire after 10 days of non-use, but you can ask an administrator of the server to promote your token into a permanent, customized one.
+
+*In order to save bandwidth, some karaokes thumbnails or profile pictures may not be available for remote users, but this will not prevent them to add these karaokes.*
+
 #### New public interface (#804, #739, #551)
+
+A brand new public interface is available with Karaoke Mugen 5.0. Our goal was to make user experience better while providing more search tools and exploring capabilities.
 
 - The current song lyrics is available on the home page
   - The current line is highlighted in yellow<br/>
-  ![Lyrics Box](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/f27fac0dc7cea1d728a9ff68c9385506/Peek_11-11-2020_21-54.gif)
+  ![Lyrics Box](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/49f8517028bc3550e72631a7370fb154/Peek_31-12-2020_00-07.gif)
 - The top progress bar has been replaced by a new bottom bar<br/>
-![Bottom bar](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/175acebc1b176e7902930e45f946dc7a/image.png)
+![Bottom bar](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/43a3b9e5a235e9c3789b1efef43cc7d2/image.png)
 - Homepage is now featuring a "now playing" box<br/>
 ![Player Box](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/8cc3b9e6d90d1bb9c6b2b16468c2962f/Capture_d_écran_2020-11-11_à_22.00.58.png)
 - You can now explore tags by category<br/>
@@ -48,6 +62,10 @@ It can be enabled to the Window menu.
 
 ### Improvements
 
+- The search is now equipped with excluding (-word) and group ("group of words") operators.
+  - The search are sorted by relevance.
+- (Admin interface) Rename, set as current/public have been merged into a single "Edit playlist" button (#832)
+  - The create playlist screen also allows you to set a playlist as public and/or current. 
 - Users now receives notification when they can add songs again (when their quota became > 0, #764).
 - Upgrade from 3.2 works again (#798)
 - When users upvotes a song, it cannot be deleted by the original requester (#803)
@@ -55,6 +73,8 @@ It can be enabled to the Window menu.
 - System panel navigation has been reworked with a new home page (#724)
 - Tag names are now uniform against all our applications (#678)
 - Player is now configured to have [loudnorm](https://ffmpeg.org/ffmpeg-filters.html#loudnorm) normalization (bd2964bd)
+- The generation of circled images has been deleted in favor of lavfi filters (fb99c6ec)
+- The stats/sentry consent is part of the setup procedure now (#830)
 
 ### Fixes
 
@@ -69,6 +89,7 @@ It can be enabled to the Window menu.
 
 ### Notes, misc
 
+- Upgraded ffmpeg toolset to 4.3.1 and mpv media player to 0.33 (with libass fixes, #826)
 - Upgraded to Typescript 4.0 (#784)
 - Karaoke Mugen 5.0 isn't generating Karaoke Mugen &lt;3.x series files (#738)
 - appPath detection has been reworked (#747)
