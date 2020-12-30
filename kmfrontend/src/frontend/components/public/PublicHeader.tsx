@@ -12,10 +12,12 @@ import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
+import PublicFixedMenu from './PublicFixedMenu';
 
 interface IProps {
 	openProfileModal: () => void;
 	onResize: (top: string) => void;
+	currentView: View;
 	changeView: (view: View) => void;
 }
 
@@ -87,6 +89,7 @@ class PublicHeader extends Component<IProps, IState> {
 							<img src={nanamiPNG} alt="Nanamin logo" />
 						</picture>
 					</a>
+					<PublicFixedMenu changeView={this.props.changeView} currentView={this.props.currentView} />
 					<div className="profile-btn">
 						<div className="dropdown-container">
 							<div className={`closeHandler${this.state.dropDownMenu ? ' active' : ''}`} onClick={() => this.setState({ dropDownMenu: false })} />

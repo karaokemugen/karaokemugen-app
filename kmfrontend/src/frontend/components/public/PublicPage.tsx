@@ -114,7 +114,7 @@ class PublicPage extends Component<IProps, IState> {
 			1,
 			this.state.idsPlaylist.left
 		);
-		await this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, searchType, kara: undefined });
+		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, searchType, kara: undefined });
 		this.props.route.history.push(route);
 	};
 
@@ -150,7 +150,7 @@ class PublicPage extends Component<IProps, IState> {
 
 	async componentDidMount() {
 		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) await this.getPlaylistList();
-		await this.initView();
+		this.initView();
 		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
 		getSocket().on('playerStatus', this.displayClassicModeModal);
 		getSocket().on('newSongPoll', this.newSongPoll);
@@ -255,7 +255,7 @@ class PublicPage extends Component<IProps, IState> {
 				<PublicHeader
 					openProfileModal={() => this.props.route.history.push('/public/user')}
 					onResize={top => this.setState({ top })}
-					changeView={this.changeView} />
+					changeView={this.changeView} currentView={this.state.view} />
 				<PlayerBox
 					fixed={true}
 					show={this.state.view !== 'home'}
