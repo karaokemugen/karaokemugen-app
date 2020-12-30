@@ -12,7 +12,7 @@ import { DBPL } from '../../../../../src/types/database/playlist';
 import { GlobalContextInterface } from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { buildKaraTitle, getSerieLanguage, getTagInLocale } from '../../../utils/kara';
-import {commandBackend} from '../../../utils/socket';
+import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
@@ -38,7 +38,7 @@ interface IProps {
 	style: CSSProperties;
 	key: Key;
 	context: GlobalContextInterface;
-	toggleKaraDetail: (kara:KaraElement, idPlaylist: number) => void;
+	toggleKaraDetail: (kara: KaraElement, idPlaylist: number) => void;
 }
 
 interface IState {
@@ -59,7 +59,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	upvoteKara = () => {
 		const data = this.props.kara.flag_upvoted ?
 			{ downvote: 'true', plc_id: this.props.kara.playlistcontent_id } :
-			{plc_id: this.props.kara.playlistcontent_id};
+			{ plc_id: this.props.kara.playlistcontent_id };
 		commandBackend('votePLC', data);
 	};
 
@@ -85,7 +85,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 
 	playKara = () => {
 		if (this.props.idPlaylist < 0) {
-			commandBackend('playKara', {kid: this.props.kara.kid});
+			commandBackend('playKara', { kid: this.props.kara.kid });
 		} else {
 			commandBackend('editPLC', {
 				flag_playing: true,
@@ -141,7 +141,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			url = 'addKaraToPublicPlaylist';
 			data = { requestedby: this.props.context.globalState.auth.data.username, kid: this.props.kara.kid };
 		}
-		const response = await commandBackend(url, data).catch(()=>{});
+		const response = await commandBackend(url, data).catch(() => { });
 		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
 			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
 			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
@@ -187,19 +187,19 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		const karaTags: JSX.Element[] = [];
 		const data = this.props.kara;
 
-		if (data.langs && this.props.scope === 'public') {
+		if (data.langs && (this.props.scope === 'public' || is_touch_device())) {
 			const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 			isMulti ? karaTags.push(<div key={isMulti.tid} className="tag">
 				{getTagInLocale(isMulti)}
 			</div>) : karaTags.push(...data.langs.sort(this.compareTag).map(tag => {
-				return <div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
+				return <div key={tag.tid} className="tag green" title={getTagInLocale(tag, this.props.i18nTag)}>
 					{getTagInLocale(tag, this.props.i18nTag)}
 				</div>;
 			}));
 		}
-		if (data.songtypes && this.props.scope === 'public') {
+		if (data.songtypes && (this.props.scope === 'public' || is_touch_device())) {
 			karaTags.push(...data.songtypes.sort(this.compareTag).map(tag => {
-				return <div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
+				return <div key={tag.tid} className="tag green" title={getTagInLocale(tag, this.props.i18nTag)}>
 					{getTagInLocale(tag, this.props.i18nTag)}
 					{data.songorder > 0 ? ' ' + data.songorder : ''}
 				</div>;
@@ -209,8 +209,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(...data[typeData.karajson].sort(this.compareTag).map(tag => {
-					return <div key={tag.tid} className={`tag ${typeData.color}`} title={tag.short ? tag.short : tag.name}>
-						{this.props.scope === 'admin' ? (tag.short ? tag.short : tag.name):getTagInLocale(tag, this.props.i18nTag)}
+					return <div key={tag.tid} className={`tag ${typeData.color}`} title={getTagInLocale(tag, this.props.i18nTag)}>
+						{this.props.scope === 'admin' && !is_touch_device() ? (tag.short ? tag.short : tag.name) : getTagInLocale(tag, this.props.i18nTag)}
 					</div>;
 				}));
 			}
@@ -285,13 +285,13 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						<React.Fragment>
 							<div className="actionDiv">
 								{!is_touch_device()
-								&& shouldShowProfile ?
+									&& shouldShowProfile ?
 									<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-										alt="User Pic" user={{login: this.props.kara.username, avatar_file: this.props.avatar_file}} />
+										alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file }} />
 									: null}
 								<div className="btn-group">
 									{this.props.idPlaylistTo !== idPlaylist &&
-									(this.props.scope === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend.Mode === 2) ?
+										(this.props.scope === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend.Mode === 2) ?
 										<ActionsButtons
 											idPlaylistTo={this.props.idPlaylistTo}
 											idPlaylist={idPlaylist}
@@ -325,7 +325,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									<div className="contentDivMobileSerie">{this.karaSerieOrSingers}</div>
 									{kara.upvotes && this.props.scope === 'admin' ?
 										<div className="upvoteCount"
-											 title={i18next.t('TOOLTIP_FREE')}>
+											title={i18next.t('TOOLTIP_FREE')}>
 											<i className="fas fa-thumbs-up" />
 											{kara.upvotes}
 										</div> : null
@@ -333,13 +333,13 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									{!is_touch_device() ? <div className="tagConteneur">
 										{this.karaTags}
 									</div> : null}
-								</div>:
+								</div> :
 								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
 									<div className={`disable-select karaTitle ${this.state.problematic ? 'problematic' : ''}`}>
 										{this.karaTitle}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"
-												 title={i18next.t('UPVOTE_NUMBER')}>
+												title={i18next.t('UPVOTE_NUMBER')}>
 												<i className="fas fa-thumbs-up" />
 												{kara.upvotes}
 											</div> : null
@@ -362,8 +362,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									</button> : null
 								}
 								{scope !== 'admin' && this.props.idPlaylist > 0 ? (!kara.flag_dejavu && !kara.flag_playing
-								&& kara.username === this.props.context.globalState.auth.data.username
-								&& this.props.playlistInfo?.flag_public ?
+									&& kara.username === this.props.context.globalState.auth.data.username
+									&& this.props.playlistInfo?.flag_public ?
 									<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
 										onClick={this.deleteKara}><i className="fas fa-trash-alt" /></button> :
 									<button className="karaLineButton upvoteKara btn btn-sm btn-action"
@@ -373,15 +373,15 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										<i className={`fas fa-thumbs-up${kara.flag_upvoted ? ' currentUpvote' : ''}
 										${kara.upvotes > 0 ? ' upvotes' : ''}`} />
 										{kara.upvotes > 0 && kara.upvotes}
-									</button>):null}
+									</button>) : null}
 							</div>
-							{is_touch_device() && this.props.scope === 'public' ?
+							{is_touch_device() ?
 								<div className="tagConteneur mobile">
 									{this.karaTags}
 									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ?
 										<div className="img-container">
 											<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-												alt="User Pic" user={{login: this.props.kara.username, avatar_file: this.props.avatar_file}} />
+												alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file }} />
 										</div> : null}
 								</div> : null
 							}
