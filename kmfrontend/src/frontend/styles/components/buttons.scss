@@ -164,18 +164,6 @@ div > a, h5 > a {
 	}
 }
 
-.side2Button {
-	order: -1 !important;
-}
-
-.side1Button {
-	order: 99 !important;
-}
-
-.sideButton {
-	display: none;
-}
-
 @media (max-width:$mugen-breakpoint-small) {
 	.buttonsNotMobile {
 		display: none;

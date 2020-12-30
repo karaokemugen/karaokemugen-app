@@ -132,6 +132,12 @@
 			}
 		}
 
+		@media (max-width: $mugen-breakpoint-larger) {
+			.header-group.switchs div {
+				min-width: 13em;
+			}
+		}
+
 		@media (max-width: $mugen-breakpoint-large) {
 			.header-group.switchs {
 				display: none;
@@ -188,5 +194,13 @@
 		z-index: 40;
 		background-color: #2d2d2f;
 		position: relative;
+
+		&.mobile {
+			z-index: unset;
+			i {
+			margin-left: 1em;
+			margin-right: 1em;
+			}
+		}
 	}
 }

@@ -22,7 +22,6 @@ interface IProps {
 	adminMessage: () => void;
 	putPlayerCommando: (event: any) => void;
 	setOptionMode: () => void;
-	changeCurrentSide: () => void;
 }
 
 interface IState {
@@ -44,7 +43,6 @@ class AdminHeader extends Component<IProps, IState> {
 			frontendMode: -1
 		};
 	}
-
 
 	async componentDidMount() {
 		this.setState({songVisibilityOperator: Boolean(this.context?.globalState.settings.data.config?.Playlist.MysterySongs.AddedSongVisibilityAdmin),
@@ -235,12 +233,6 @@ class AdminHeader extends Component<IProps, IState> {
 					</button>
 				</div>
 
-
-				<button
-					className={`btn btn-dark sideButton ${this.props.currentSide === 2 ? 'side2Button' : 'side1Button'}`}
-					type="button" onClick={this.props.changeCurrentSide}>
-					<i className="fas fa-tasks"></i>
-				</button>
 				<button
 					title={i18next.t('MESSAGE')}
 					id="adminMessage"

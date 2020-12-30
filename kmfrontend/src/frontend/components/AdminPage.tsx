@@ -135,14 +135,6 @@ class AdminPage extends Component<IProps, IState> {
 		commandBackend('sendPlayerCommand', data);
 	}
 
-	changeCurrentSide = () => {
-		if (this.state.currentSide === 1) {
-			this.setState({ currentSide: 2 });
-		} else if (this.state.currentSide === 2) {
-			this.setState({ currentSide: 1 });
-		}
-	};
-
 	async parseTags() {
 		const response = await commandBackend('getTags');
 		return response.content.filter((val: Tag) => val.karacount !== null)
@@ -213,7 +205,6 @@ class AdminPage extends Component<IProps, IState> {
 						options={this.state.options}
 						adminMessage={this.adminMessage}
 						putPlayerCommando={this.putPlayerCommando}
-						changeCurrentSide={this.changeCurrentSide}
 						currentSide={this.state.currentSide}
 						idsPlaylist={this.state.idsPlaylist}
 						currentPlaylist={this.state.playlistList.filter(playlistElem => playlistElem.flag_current)[0]}

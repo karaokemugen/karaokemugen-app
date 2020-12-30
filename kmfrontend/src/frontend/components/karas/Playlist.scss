@@ -13,22 +13,14 @@
 		}
 	}
 	@media screen and (max-width: $mugen-breakpoint-large) {
-		width: 200%;
-		transition:transform ease .5s;
-		&[data-side="2"] {
-			transform:translate(-50%);
-		}
 		.panel {
 			height: 100%;
 		}
 		.plDashboard .plSearch {
 			flex-basis : 30%;
 		}
-		#panel2 .plSearch {
-			order: 1;
-		}
-		#panel2 .plDashboard .actionDiv {
-			order: 2;
+		#panel2 {
+			display: none;
 		}
 	}
 }

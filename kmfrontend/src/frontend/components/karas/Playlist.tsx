@@ -367,6 +367,13 @@ class Playlist extends Component<IProps, IState> {
 		}
 	};
 
+	changeIdPlaylistSide2 = (idPlaylist: number) => {
+		this.props.majIdsPlaylist(2, idPlaylist);
+		if (idPlaylist === this.state.idPlaylist) {
+			this.changeIdPlaylistFromOtherSide({ side: 1, playlist: this.props.idPlaylistTo });
+		}
+	}
+
 	getPlaylistInfo = async () => {
 		const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
 		this.setState({ playlistInfo: response });
@@ -808,31 +815,33 @@ class Playlist extends Component<IProps, IState> {
 
 	render() {
 		return <div className="playlist--wrapper">
-			<PlaylistHeader
-				side={this.props.side}
-				scope={this.props.scope}
-				playlistList={this.props.playlistList}
-				idPlaylist={this.state.idPlaylist}
-				bLSet={this.state.bLSet}
-				bLSetList={this.state.bLSetList}
-				changeIdPlaylist={this.changeIdPlaylist}
-				playlistInfo={this.state.playlistInfo}
-				idPlaylistTo={this.props.idPlaylistTo}
-				selectAllKaras={this.selectAllKaras}
-				addAllKaras={this.addAllKaras}
-				addCheckedKaras={this.addCheckedKaras}
-				transferCheckedKaras={this.transferCheckedKaras}
-				deleteCheckedKaras={this.deleteCheckedKaras}
-				tags={this.props.tags}
-				onChangeTags={this.onChangeTags}
-				getPlaylist={this.getPlaylist}
-				toggleSearchMenu={this.props.toggleSearchMenu}
-				searchMenuOpen={this.props.searchMenuOpen}
-				playlistWillUpdate={this.playlistWillUpdate}
-				playlistDidUpdate={this.playlistDidUpdate}
-				checkedkaras={this.state.checkedkaras}
-				addRandomKaras={this.addRandomKaras}
-			/>
+			{this.props.scope === 'admin' ?
+				<PlaylistHeader
+					side={this.props.side}
+					playlistList={this.props.playlistList}
+					idPlaylist={this.state.idPlaylist}
+					bLSet={this.state.bLSet}
+					bLSetList={this.state.bLSetList}
+					changeIdPlaylist={this.changeIdPlaylist}
+					changeIdPlaylistSide2={this.changeIdPlaylistSide2}
+					playlistInfo={this.state.playlistInfo}
+					idPlaylistTo={this.props.idPlaylistTo}
+					selectAllKaras={this.selectAllKaras}
+					addAllKaras={this.addAllKaras}
+					addCheckedKaras={this.addCheckedKaras}
+					transferCheckedKaras={this.transferCheckedKaras}
+					deleteCheckedKaras={this.deleteCheckedKaras}
+					tags={this.props.tags}
+					onChangeTags={this.onChangeTags}
+					getPlaylist={this.getPlaylist}
+					toggleSearchMenu={this.props.toggleSearchMenu}
+					searchMenuOpen={this.props.searchMenuOpen}
+					playlistWillUpdate={this.playlistWillUpdate}
+					playlistDidUpdate={this.playlistDidUpdate}
+					checkedkaras={this.state.checkedkaras}
+					addRandomKaras={this.addRandomKaras}
+				/> : null
+			}
 			<div
 				id={'playlist' + this.props.side}
 				className="playlistContainer"
