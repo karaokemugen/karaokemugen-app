@@ -349,38 +349,42 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					<Button type='primary' htmlType='submit'
 						className='tags-form-button'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
-				<Divider />
-				<Form.Item
-					label={(
-						<span>{i18next.t('TAGS.MERGE_WITH')}&nbsp;
-							<Tooltip title={i18next.t('TAGS.MERGE_WITH_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</span>
-					)}
-					labelCol={{ flex: '0 1 300px' }}
-				>
-					<Cascader style={{ maxWidth: '40%', minWidth: '150px' }}
-						options={this.mergeCascaderOption()}
-						showSearch={{ filter: this.mergeCascaderFilter }}
-						onChange={this.handleTagMergeSelection}
-						placeholder={i18next.t('TAGS.MERGE_WITH_SELECT')} />
-				</Form.Item>
+				{this.props.tag ?
+					<>
+						<Divider />
+						<Form.Item
+							label={(
+								<span>{i18next.t('TAGS.MERGE_WITH')}&nbsp;
+									<Tooltip title={i18next.t('TAGS.MERGE_WITH_TOOLTIP')}>
+										<QuestionCircleOutlined />
+									</Tooltip>
+								</span>
+							)}
+							labelCol={{ flex: '0 1 300px' }}
+						>
+							<Cascader style={{ maxWidth: '40%', minWidth: '150px' }}
+								options={this.mergeCascaderOption()}
+								showSearch={{ filter: this.mergeCascaderFilter }}
+								onChange={this.handleTagMergeSelection}
+								placeholder={i18next.t('TAGS.MERGE_WITH_SELECT')} />
+						</Form.Item>
 
-				<Form.Item
-					wrapperCol={{ span: 8, offset: 3 }}
-					style={{ textAlign: 'right' }}
-				>
-					<Button type="primary" danger onClick={this.handleTagMerge}>
-						{i18next.t('TAGS.MERGE_WITH_BUTTON')}
-					</Button>
-					<Alert style={{ textAlign: 'left', marginTop: '20px' }}
-						message={i18next.t('TAGS.MERGE_ABOUT')}
-						description={i18next.t('TAGS.MERGE_ABOUT_MESSAGE')}
-						type="warning"
-					/>
+						<Form.Item
+							wrapperCol={{ span: 8, offset: 3 }}
+							style={{ textAlign: 'right' }}
+						>
+							<Button type="primary" danger onClick={this.handleTagMerge}>
+								{i18next.t('TAGS.MERGE_WITH_BUTTON')}
+							</Button>
+							<Alert style={{ textAlign: 'left', marginTop: '20px' }}
+								message={i18next.t('TAGS.MERGE_ABOUT')}
+								description={i18next.t('TAGS.MERGE_ABOUT_MESSAGE')}
+								type="warning"
+							/>
 
-				</Form.Item>
+						</Form.Item>
+					</> : null
+				}
 				<Divider />
 				{this.state.repositoriesValue && this.props.tag?.repository ?
 					<React.Fragment>
