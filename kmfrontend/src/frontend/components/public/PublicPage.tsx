@@ -83,6 +83,7 @@ class PublicPage extends Component<IProps, IState> {
 		if (view === 'home') {
 			route = '/public';
 		} else if (view === 'tag') {
+			tagType = tagType !== undefined ? tagType : this.state.tagType;
 			route = `/public/tags/${tagType}`;
 		}
 		const idsPlaylist = this.state.idsPlaylist;
