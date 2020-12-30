@@ -77,7 +77,7 @@ class ProfilModal extends Component<IProps, IState> {
 
 	componentDidMount() {
 		this.getUser();
-		this.getUserList();
+		if (this.props.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) this.getUserList();
 		if (this.props.scope !== 'public') document.addEventListener('keyup', this.keyObserverHandler);
 	}
 

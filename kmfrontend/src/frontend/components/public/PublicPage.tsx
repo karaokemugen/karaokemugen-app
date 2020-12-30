@@ -148,7 +148,7 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	async componentDidMount() {
-		await this.getPlaylistList();
+		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) await this.getPlaylistList();
 		await this.initView();
 		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
 		getSocket().on('playerStatus', this.displayClassicModeModal);

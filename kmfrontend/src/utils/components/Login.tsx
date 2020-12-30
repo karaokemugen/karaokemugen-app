@@ -51,7 +51,7 @@ class Login extends Component<IProps, IState> {
 			forgotPassword: false,
 			password: '',
 			login: '',
-			isAdminPath: lastLocation && lastLocation !== '/',
+			isAdminPath: lastLocation && lastLocation !== '/' && !lastLocation.includes('/public'),
 			activeHelp: false
 		};
 	}

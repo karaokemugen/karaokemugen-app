@@ -103,7 +103,7 @@ export default function favoritesController(router: SocketIOApp) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'user', 'closed');
 		try {
 			if (req?.body?.mini) {
 				return await selectFavoritesMicro({
@@ -186,7 +186,7 @@ export default function favoritesController(router: SocketIOApp) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'user', 'closed');
 		// Delete kara from favorites
 		// Deletion is through kara ID.
 		const validationErrors = check(req.body, {
@@ -224,7 +224,7 @@ export default function favoritesController(router: SocketIOApp) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 404 Not found
  */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'user', 'closed');
 		// Returns the playlist and its contents in an exportable format (to save on disk)
 		try {
 			return await exportFavorites(req.token.username);
@@ -254,7 +254,7 @@ export default function favoritesController(router: SocketIOApp) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 400 Bad Request
  */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'user', 'closed');
 		const validationErrors = check(req.body, {
 			favorites: {isJSON: true}
 		});

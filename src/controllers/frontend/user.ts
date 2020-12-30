@@ -276,7 +276,7 @@ export default function userController(router: SocketIOApp) {
 	 *   "message": null
 	 * }
 	  */
-	 	await runChecklist(socket, req, 'guest', 'limited', {allowInDemo: false, optionalAuth: true});
+	 	await runChecklist(socket, req, 'guest', 'closed', {allowInDemo: false, optionalAuth: true});
 		if (!req.body.username.includes('@')) {
 			if (+req.body.securityCode === getState().securityCode) {
 				try {
@@ -359,7 +359,7 @@ export default function userController(router: SocketIOApp) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		await runChecklist(socket, req, 'guest', 'limited');
+		await runChecklist(socket, req, 'guest', 'closed');
 		try {
 			const user = await findUserByName(req.token.username, {public: false});
 			delete user.password;
@@ -395,7 +395,7 @@ export default function userController(router: SocketIOApp) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 406 Not acceptable
 	 */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'user', 'closed');
 		try {
 			await deleteUser(req.token.username);
 			return APIMessage('USER_DELETED');
@@ -435,7 +435,7 @@ export default function userController(router: SocketIOApp) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'user', 'closed');
 
 		const validationErrors = check(req.body, {
 			nickname: {presence: true}
@@ -494,7 +494,7 @@ export default function userController(router: SocketIOApp) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'user', 'closed');
 		const validationErrors = check(req.body, {
 			instance: {presence: true},
 			password: {presence: true}
@@ -543,7 +543,7 @@ export default function userController(router: SocketIOApp) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 409 Conflict
 	 */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'user', 'closed');
 		const validationErrors = check(req.body, {
 			password: {presence: true}
 		});
