@@ -39,9 +39,6 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 			} else if (err && data?.message?.code && typeof data.data !== 'object') {
 				displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, {data: data.data}));
 			}
-			if (data === 'Unknown namespace') {
-				socket.disconnect();
-			}
 			err ? reject(data) : resolve(data);
 		});
 	});
