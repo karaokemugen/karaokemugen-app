@@ -379,7 +379,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 						<i className="fas fa-trash-alt"></i> <span>{i18next.t('CLEAR_FILTER')}</span>
 					</div>
 					<select className="filterElement filterTags" placeholder="Search"
-						onChange={e => this.setState({ tagType: (Number(e.target.value) ? Number(e.target.value) : e.target.value) })}
+						onChange={e => this.setState({ tagType: Number(e.target.value) })}
 						value={this.state.tagType}>
 						{tagsTypesList.map(val => {
 							if (val === 'DETAILS_YEAR') {
