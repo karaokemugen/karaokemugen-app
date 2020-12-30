@@ -183,7 +183,7 @@ class Playlist extends Component<IProps, IState> {
 		flag_upvoted: boolean,
 		my_public_plc_id: number
 	}[]) => {
-		if (this.state.idPlaylist === -1) {
+		if (this.state.idPlaylist === -1 && (this.state.data as KaraList)?.content ) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				for (const karaUpdated of event) {
