@@ -331,7 +331,7 @@ class PublicPage extends Component<IProps, IState> {
 								</KmAppHeaderDecorator>
 
 								<KmAppBodyDecorator
-									mode={this.context?.globalState.settings.data.config?.Frontend.Mode}
+									mode={this.context?.globalState.settings.data.config?.Frontend?.Mode}
 									extraClass='JustPlaylist fillSpace'
 								>
 									{this.state.view === 'tag' ?

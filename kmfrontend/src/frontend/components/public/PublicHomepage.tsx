@@ -61,7 +61,7 @@ class PublicHomepage extends Component<IProps, IState> {
 
 	render() {
 		return (
-			this.context?.globalState.settings.data.config?.Frontend.Mode === 0 ?
+			this.context?.globalState.settings.data.config?.Frontend?.Mode === 0 ?
 				<div
 					style={{
 						top: '25%',
@@ -80,7 +80,7 @@ class PublicHomepage extends Component<IProps, IState> {
 				<React.Fragment>
 					<div className="hello-bar">
 						<span>{`${i18next.t('PUBLIC_HOMEPAGE.HELLO')} ${this.context.globalState.settings.data.user.nickname}`}&nbsp;!</span>
-						<div>{this.context?.globalState.settings.data.config?.Frontend.Mode === 1 ? i18next.t('PUBLIC_HOMEPAGE.RESTRICTED_DESCRIPTION') : null}</div>
+						<div>{this.context?.globalState.settings.data.config?.Frontend?.Mode === 1 ? i18next.t('PUBLIC_HOMEPAGE.RESTRICTED_DESCRIPTION') : null}</div>
 					</div>
 					<div className="public-homepage">
 						<div className="public-homepage-wrapper">
@@ -109,7 +109,7 @@ class PublicHomepage extends Component<IProps, IState> {
 										<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORIS')}
 									</button> : null
 								}
-								{this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
+								{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 ?
 									<React.Fragment>
 										<button className="action blue" onClick={() => this.props.changeView('search')}>
 											<i className="fas fa-fw fa-search" /> {i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}
