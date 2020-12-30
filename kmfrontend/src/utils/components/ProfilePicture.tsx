@@ -21,7 +21,7 @@ class ProfilePicture extends Component<IProps, IState> {
 	}
 
 	componentDidMount() {
-		generateProfilePicLink(this.props.user).then(url => this.setState({ url }));
+		if (this.props.user?.login) generateProfilePicLink(this.props.user).then(url => this.setState({ url }));
 	}
 
 	componentDidUpdate(prevProps: Readonly<IProps>) {
