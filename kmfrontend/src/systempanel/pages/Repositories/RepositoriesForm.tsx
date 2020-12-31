@@ -59,7 +59,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 
 	setDefaultFolders = (): void => {
 		if (!this.props.repository.Name) {
-			const folders: {PathKaras?: string[]; PathLyrics?: string[]; PathMedias?: string[]; PathTags?: string[]} = {};
+			const folders: { PathKaras?: string[]; PathLyrics?: string[]; PathMedias?: string[]; PathTags?: string[] } = {};
 			if (this.formRef.current?.getFieldValue('PathKaras').length === 0) folders.PathKaras = [`repo/${this.formRef.current?.getFieldValue('Name')}/karaokes`];
 			if (this.formRef.current?.getFieldValue('PathLyrics').length === 0) folders.PathLyrics = [`repo/${this.formRef.current?.getFieldValue('Name')}/lyrics`];
 			if (this.formRef.current?.getFieldValue('PathMedias').length === 0) folders.PathMedias = [`repo/${this.formRef.current?.getFieldValue('Name')}/medias`];
@@ -83,12 +83,12 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					PathMedias: this.props.repository?.Path.Medias,
 					PathTags: this.props.repository?.Path.Tags
 				}}
-				style={{maxWidth: '900px'}}
+				style={{ maxWidth: '900px' }}
 			>
 				<Form.Item hasFeedback
 					label={
 						<span>{i18next.t(this.formRef.current?.getFieldValue('Online') ?
-						 'REPOSITORIES.ONLINE_NAME' : 'REPOSITORIES.NAME')}&nbsp;
+							'REPOSITORIES.ONLINE_NAME' : 'REPOSITORIES.NAME')}&nbsp;
 						<Tooltip title={i18next.t('REPOSITORIES.TOOLTIP_NAME')}>
 							<QuestionCircleOutlined />
 						</Tooltip>
@@ -169,13 +169,13 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				<Form.Item style={{ textAlign: 'right' }}>
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
-				<Divider orientation="left">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
-				<Alert style={{ textAlign: 'left', marginBottom: '10px' }}
-					message={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
-					type="info"
-				/>
 				{this.props.repository.Name ?
 					<React.Fragment>
+						<Divider orientation="left">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
+						<Alert style={{ textAlign: 'left', marginBottom: '10px' }}
+							message={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
+							type="info"
+						/>
 						{this.state.repositoriesValue ?
 							<React.Fragment>
 								<Form.Item
