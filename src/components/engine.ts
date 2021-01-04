@@ -162,7 +162,6 @@ export async function initEngine() {
 			const ready = Math.floor(Math.random() * Math.floor(10)) >= 9
 				? 'LADY'
 				: 'READY';
-			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
 			if (!state.isTest && !state.electron) await welcomeToYoukousoKaraokeMugen();
 			// This is done later because it's not important.
 			await postMigrationTasks(migrations, didGeneration);
@@ -200,6 +199,8 @@ export async function initEngine() {
 			setState({ ready: true });
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
+			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
+
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
 			sentry.error(err);
