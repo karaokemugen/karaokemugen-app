@@ -7,7 +7,7 @@ import { getPlaylistKaraIDs } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { databaseReady, saveSetting } from '../lib/dao/database';
 import { refreshKaras, refreshYears } from '../lib/dao/kara';
-import { getDataFromKaraFile, parseKara } from '../lib/dao/karafile';
+import { getDataFromKaraFile, parseKara, writeKara } from '../lib/dao/karafile';
 import {refreshAllKaraTags,refreshKaraTags, refreshTags} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
@@ -96,18 +96,14 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const oldRepoName = kara.repository;
 		kara.repository = repoName;
 		const tasks = [];
-		const karaFiles = await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', oldRepoName));
 		// Determine repository indexes so we know if we should edit our current database to change the kara's repository inside
 		// Repositories are ordered by priority so if destination repo is lower, we don't edit the song in database.
 		const repos = getRepos();
 		const oldRepoIndex = repos.findIndex(r => r.Name === oldRepoName);
 		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
+		// If the new repo has priority, edit kara so the database uses it.
 		if (newRepoIndex < oldRepoIndex) tasks.push(editKara(kara));
-		tasks.push(asyncCopy(
-			karaFiles[0],
-			resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile),
-			{ overwrite: true }
-		));
+		tasks.push(writeKara(resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile), kara));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
 		tasks.push(asyncCopy(
 			mediaFiles[0],
