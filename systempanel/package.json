@@ -8,7 +8,7 @@
     "@sentry/integrations": "^5.22.3",
     "@sentry/react": "^5.22.3",
     "antd": "4.6.1",
-    "axios": "0.19.2",
+    "axios": "0.21.1",
     "i18next": "^19.7.0",
     "i18next-browser-languagedetector": "^6.0.1",
     "pretty-bytes": "^5.4.0",
