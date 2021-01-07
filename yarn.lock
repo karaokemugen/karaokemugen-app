@@ -606,10 +606,10 @@
     "@types/mime" "*"
     "@types/node" "*"
 
-"@types/tmi.js@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@types/tmi.js/-/tmi.js-1.4.3.tgz#dfdb07478cdba5d0ad4c4d2c7e22bdeefa504f90"
-  integrity sha512-/V7REAAJL50jNDDmJ4k6KZx11Nu11AIgZWeiAetFnCDnDeZWLv/AXv6+gkSa0h8TVxI+5s/MJ8Cn/PPZ8UTckA==
+"@types/tmi.js@^1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@types/tmi.js/-/tmi.js-1.7.0.tgz#aaf8195fbdc6c13a3522266e2117568088af5a55"
+  integrity sha512-D9RuctHOsFLRLYauFXQIq1Uy7iL1A7MIyHZ5V8bTToZTMrY9tor4c4Yq9eAeJwrAad0gxhpbt3xjk+kZj7qdsQ==
 
 "@types/uuid@^8.3.0":
   version "8.3.0"
@@ -898,10 +898,10 @@ at-least-node@^1.0.0:
   resolved "https://registry.yarnpkg.com/at-least-node/-/at-least-node-1.0.0.tgz#602cd4b46e844ad4effc92a8011a3c46e0238dc2"
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
-axios@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.20.0.tgz#057ba30f04884694993a8cd07fa394cff11c50bd"
-  integrity sha512-ANA4rr2BDcmmAQLOKft2fufrtuvlqR+cXNNinUmvfeSNCOF98PZL+7M/v1zIdGo7OLjEA9J2gXJL+j4zGsl0bA==
+axios@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
   dependencies:
     follow-redirects "^1.10.0"
 
@@ -3188,10 +3188,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-open@^7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/open/-/open-7.3.0.tgz#45461fdee46444f3645b6e14eb3ca94b82e1be69"
-  integrity sha512-mgLwQIx2F/ye9SmbrUkurZCnkoXyXyu9EbHtJZrICjVAJfyMArdHp3KkixGdZx1ZHFPNIwl0DDM1dFFqXbTLZw==
+open@^7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.3.1.tgz#111119cb919ca1acd988f49685c4fdd0f4755356"
+  integrity sha512-f2wt9DCBKKjlFbjzGb8MOAW8LH8F0mrs1zc7KTjAJ9PZNQbfenzWbNP1VZJvw6ICMG9r14Ah6yfwPn7T7i646A==
   dependencies:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
@@ -4093,10 +4093,10 @@ supports-color@^5.3.0:
   dependencies:
     has-flag "^3.0.0"
 
-systeminformation@^4.34.3:
-  version "4.34.3"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.34.3.tgz#53e6faf07df5d3651f6537ce884c2704949e2459"
-  integrity sha512-V1iPDm6qDh+pI2je+mrFw4h+0aV2ID6CWBuL0OO1Z6WvUQLq4Jbme6nU3bpcx6pVr044KIvruE8Yj4hMiFKuaQ==
+systeminformation@^4.34.4:
+  version "4.34.4"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.34.4.tgz#ca8020c4c22ca5a3b085388ae6dceec5b457f5f8"
+  integrity sha512-iSlJTfRH451+rn+A5Y+zvkhX/J7r/TlOaL97lU8V6uC1QJdqbl74ZvFnBhrc0y7EvICQBEf7/7WuuS6ngMwGuQ==
 
 table-layout@^1.0.1:
   version "1.0.1"
@@ -4396,12 +4396,12 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-webdav@^3.6.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/webdav/-/webdav-3.6.1.tgz#ab01f8067faf748abe3938720dcaeb39836d78e3"
-  integrity sha512-WRE6M4iePpd4TPJ0l5PCWMuoZS4UOHawtf/fr7FcmTZWsSjx1syywyW3TbgEFHptqyh4mMoLUrv8dAUtmTqbEg==
+webdav@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/webdav/-/webdav-3.6.2.tgz#76e3d8e950e80698a2f1db23ef2496888662cbeb"
+  integrity sha512-HFRiI1jluMSPQMVgxVD6VVYNtaglO53vHG0uf7Zec+wl0A1Mei2z8/IFgAAAJMUuEWAx2AfBD5lcWhAiYA9LUw==
   dependencies:
-    axios "^0.20.0"
+    axios "^0.21.1"
     base-64 "^0.1.0"
     fast-xml-parser "^3.17.4"
     he "^1.2.0"
