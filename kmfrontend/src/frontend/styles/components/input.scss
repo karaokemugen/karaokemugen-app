@@ -4,7 +4,7 @@ select {
 	background-color: $mugen-select-background;
 	color: white;
 	border-radius: 0.5em;
-	border: 1px solid $mugen-select-border;
+	border: $mugen-select-border;
 }
 
 /* Range input sliders */
@@ -100,9 +100,9 @@ input[type="text"]:not([data-exclude="true"]), input[type="password"]:not([data-
 	padding: 0 1rem;
 	color: #ccc;
 	&.errorBackground {
-		background-color: $mugen-red;
+		background-color: map-get($mugen-colors, "red");
 		&:focus {
-			background-color: lighten($mugen-red, 5);
+			background-color: lighten(map-get($mugen-colors, "red"), 5);
 		}
 	}
 }

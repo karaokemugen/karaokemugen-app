@@ -1,6 +1,8 @@
+@import '../variables';
+
 .dropdown-menu {
-	background-color: #3b3e44;
-	border: solid 1px #595959;
+	background-color: $mugen-select-background;
+	border: $mugen-select-border;
 	position: absolute;
 	list-style: none;
 	padding: 0;
@@ -21,6 +23,5 @@
 	margin-right: .5em;
 }
 .dropdown-menu > li:hover > a {
-	color : #222;
-	background-color: #9e9e9e;
+	background-color: $mugen-select-focus;
 }

@@ -158,12 +158,12 @@
 	color: #6caae4;
 }
 .plInfos, .plBrowse {
-	background-color: #294b70e6;
+	background-color: darken(map-get($mugen-colors, "blue"), 20);
 	float: right;
 	padding: .25em;
 }
 .plQuota {
-	background-color: #3a4b35f2;
+	background-color: darken(map-get($mugen-colors, "green"), 10);
 	padding: .25em;
 	&.selection {
 		float: right;

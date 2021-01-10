@@ -131,7 +131,7 @@ class AdminHeader extends Component<IProps, IState> {
 							{
 								label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
 								active: this.state.songVisibilityOperator,
-								activeColor: '#57bb00',
+								activeColor: '#3c5c00',
 								onClick: () => this.saveOperatorAdd(true),
 								description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
 							},
@@ -157,14 +157,14 @@ class AdminHeader extends Component<IProps, IState> {
 							{
 								label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
 								active: this.state.frontendMode === 1,
-								activeColor: '#cf4200',
+								activeColor: '#a36700',
 								onClick: () => this.changePublicInterfaceMode(1),
 								description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
 							},
 							{
 								label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
 								active: this.state.frontendMode === 2,
-								activeColor: '#57bb00',
+								activeColor: '#3c5c00',
 								onClick: () => this.changePublicInterfaceMode(2),
 								description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
 							}

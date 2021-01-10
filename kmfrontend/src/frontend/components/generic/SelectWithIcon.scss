@@ -4,7 +4,7 @@
     position: relative;
     display: inline-block;
     background-color: $mugen-select-background;
-    border: 1px solid $mugen-select-border;
+    border: $mugen-select-border;
     border-radius: 4px;
 }
 
@@ -31,7 +31,7 @@
     cursor: pointer;
     background-color: $mugen-select-background;
     color: white;
-    border: 1px solid $mugen-select-border;
+    border: $mugen-select-border;
     border-radius: 4px;
     list-style-type: none;
     padding-left: 0;

@@ -126,11 +126,9 @@ body:not(.touch) {
 }
 
 .playlist-dragged-item {
+	cursor: grabbing;
 	list-style: none;
 	.list-group-item {
 		background: #333;
-	}
-	.actionDiv, .infoDiv {
-		display: none;
 	}
 }
