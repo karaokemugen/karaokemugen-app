@@ -25,7 +25,7 @@ import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
 
 dotenv.config();
-sentry.init(app);
+sentry.init(app, process.argv.includes('--strict'));
 
 let isInitError = false;
 

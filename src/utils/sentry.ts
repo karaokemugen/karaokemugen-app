@@ -1,5 +1,5 @@
-import * as SentryElectron from '@sentry/electron';
-import * as SentryNode from '@sentry/node';
+import SentryElectron from '@sentry/electron';
+import SentryNode from '@sentry/node';
 import Transport from 'winston-transport';
 
 import {getConfig} from '../lib/utils/config';
@@ -15,10 +15,12 @@ class ElectronSentryLogger extends SentryLogger {
     	super(sentry_sdk);
     }
 
-    init(electron?: any) {
-    	this.Sentry = electron ? SentryElectron:SentryNode;
-    	if (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') {
-    		console.log('CI detected/SENTRY_TEST enabled - Sentry disabled');
+    init(electron?: any, strictMode?: boolean) {
+    	this.Sentry = electron
+    		? SentryElectron
+    		: SentryNode;
+    	if (strictMode || process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') {
+    		console.log('Strict Mode / CI detected / SENTRY_TEST enabled - Disabling Sentry');
     		console.log('Have a nice day, sentries won\'t fire at you~');
     		return;
     	}
