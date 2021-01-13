@@ -143,7 +143,7 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 			modeValue: params.modeValue,
 			from: params.from || 0,
 			size: params.size || 9999999999,
-			admin: params.token?.role === 'admin' || true,
+			admin: params.token?.role === 'admin',
 			random: params.random,
 			blacklist: params.blacklist
 		});
