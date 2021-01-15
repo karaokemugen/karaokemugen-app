@@ -610,6 +610,7 @@
 		"MISC": "Misc",
 		"GROUPS": "Group(s)",
 		"GROUPS_TOOLTIP": "Download groups for this song. The song will be included in these download packs",
+		"VERSIONS_TOOLTIP": "Versions allow a better identification of songs with the same title. If no version applies to this song because it's too specific (ex. Future Vers. or Chihaya Vers.) indicate it in its title by adding \" ~Chihaya Vers.\" to it.",
 		"CREATED_AT": "Creation date",
 		"MODIFIED_AT": "Last updated date",
 		"PLAYED": "View count",
@@ -905,7 +906,8 @@
 		"BLCTYPE_10": "Family",
 		"BLCTYPE_11": "Platform",
 		"BLCTYPE_12": "Genre",
-		"BLCTYPE_13": "Origin"
+		"BLCTYPE_13": "Origin",
+		"BLCTYPE_14": "Version"
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",

@@ -498,7 +498,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			title: i18next.t('KARA.FAMILIES'),
 			dataIndex: 'families',
 			key: 'families',
-			render: (families, record) => {
+			render: (families) => {
 				return getTagInLocaleList(families, this.state.i18nTag).join(', ');
 			}
 		}, {
@@ -512,13 +512,18 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 			}
 		}, {
+			title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+			dataIndex: 'versions',
+			key: 'versions',
+			render: (versions) => getTagInLocaleList(versions, this.state.i18nTag).join(', ')
+		}, {
 			title: i18next.t('KARA.REPOSITORY'),
 			dataIndex: 'repository',
 			key: 'repository',
 		}, {
 			title: i18next.t('KARA.DETAILS'),
 			key: 'details',
-			render: (text, record) => {
+			render: (_text, record) => {
 				return <Button type="default" href={`https://${record.repository}/base/kara/${record.kid}`}><InfoCircleTwoTone /></Button>;
 			}
 		}, {
@@ -526,7 +531,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				onClick={this.downloadAll}><DownloadOutlined /></Button>{i18next.t('KARA.DOWNLOAD')}
 			</span>,
 			key: 'download',
-			render: (text, record) => {
+			render: (_text, record) => {
 				let button = null;
 				const blacklisted = !this.blacklistCheck(record);
 				if (this.isLocalKara(record)) {

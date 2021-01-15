@@ -1,12 +1,14 @@
 import './ProgressBar.scss';
 
 import i18next from 'i18next';
-import React, {Component, createRef, Ref, RefObject} from 'react';
+import React, { Component, createRef } from 'react';
 
+import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
-import { buildKaraTitle } from '../../../utils/kara';
+import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
+import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
 interface IProps {
@@ -17,7 +19,7 @@ interface IState {
 	mouseDown: boolean;
 	refreshTime: number;
 	playerStatus?: string;
-	karaInfoText: string|React.ReactFragment;
+	karaInfoText: string | React.ReactFragment;
 	length: number;
 	width: string;
 	timePosition: number;
@@ -46,7 +48,7 @@ class ProgressBar extends Component<IProps, IState> {
 
 	refBar = createRef<HTMLDivElement>();
 	refCont = createRef<HTMLDivElement>();
-	refP =  createRef<HTMLParagraphElement>();
+	refP = createRef<HTMLParagraphElement>();
 
 	mouseDown = (e: any) => {
 		if (this.state.playerStatus && this.state.playerStatus !== 'stop' && this.state.length !== -1) {
@@ -100,15 +102,19 @@ class ProgressBar extends Component<IProps, IState> {
 	resizeCheck = () => {
 		const offset = this.refP.current.getBoundingClientRect().width - this.refCont.current.getBoundingClientRect().width;
 		if (offset > 0) {
-			this.setState({ animate: -offset-5, duration: Math.round(offset*0.05) });
+			this.setState({ animate: -offset - 5, duration: Math.round(offset * 0.05) });
 		} else {
 			this.setState({ animate: 0 });
 		}
 	}
 
+	compareTag = (a: DBKaraTag, b: DBKaraTag) => {
+		return a.name.localeCompare(b.name);
+	}
+
 	/**
-    * refresh the player infos
-    */
+	* refresh the player infos
+	*/
 	refreshPlayerInfos = async (data: PublicPlayerState) => {
 		const element = this.refBar.current;
 		if (element && data.timeposition) {
@@ -143,6 +149,7 @@ class ProgressBar extends Component<IProps, IState> {
 			} else {
 				const kara = data.currentSong.currentSong;
 				const karaInfo = buildKaraTitle(this.context.globalState.settings.data, kara);
+
 				this.setState({ karaInfoText: karaInfo, length: kara.duration }, this.resizeCheck);
 			}
 		}
@@ -163,15 +170,18 @@ class ProgressBar extends Component<IProps, IState> {
 					ref={this.refBar}
 				>
 					<div className="actualTime">{this.state.timePosition > 0 && this.state.length > 0 && secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
-					<div className={`karaTitle${this.state.animate !== 0 ? ' animate':''}`}
-						 style={{['--offset' as any]: `${this.state.animate}px`,
-							 ['--duration' as any]: `${this.state.duration}s`}}
-						 ref={this.refCont}>
+					<div className={`karaTitle${this.state.animate !== 0 ? ' animate' : ''}`}
+						style={{
+							['--offset' as any]: `${this.state.animate}px`,
+							['--duration' as any]: `${this.state.duration}s`
+						}}
+						ref={this.refCont}>
 						<p ref={this.refP}>{this.state.karaInfoText}</p>
 					</div>
-					<div className="remainTime">{this.state.length > 0 && `-${secondsTimeSpanToHMS(Math.round(this.state.length-this.state.timePosition), 'mm:ss')}`}</div>
+
+					<div className="remainTime">{this.state.length > 0 && `-${secondsTimeSpanToHMS(Math.round(this.state.length - this.state.timePosition), 'mm:ss')}`}</div>
 				</div>
-				<div id="progressBarColor" style={{width: this.state.width}}/>
+				<div id="progressBarColor" style={{ width: this.state.width }} />
 			</div>
 		);
 	}

@@ -1,8 +1,11 @@
 .karaTitle {
 	display: flex;
 	flex-grow: 1;
-	align-items: baseline;
+	align-items: center;
 	flex-wrap: wrap;
+	.tag.inline {
+		padding: 0.15em 0.2em;
+	}
 	&.problematic {
 		color: orange;
 	}

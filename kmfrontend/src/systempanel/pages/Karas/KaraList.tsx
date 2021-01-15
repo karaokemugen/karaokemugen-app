@@ -152,11 +152,16 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('KARA.FAMILIES'),
 		dataIndex: 'families',
 		key: 'families',
-		render: (families, record) => getTagInLocaleList(families, this.state.i18nTag).join(', ')
+		render: (families) => getTagInLocaleList(families, this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
 		key: 'title'
+	}, {
+		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+		dataIndex: 'versions',
+		key: 'versions',
+		render: (versions) => getTagInLocaleList(versions, this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.REPOSITORY'),
 		dataIndex: 'repository',

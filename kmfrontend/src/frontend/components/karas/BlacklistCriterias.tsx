@@ -27,7 +27,8 @@ const listTypeBlc = [
 	'BLCTYPE_10',
 	'BLCTYPE_11',
 	'BLCTYPE_12',
-	'BLCTYPE_13',];
+	'BLCTYPE_13',
+	'BLCTYPE_14'];
 
 interface IProps {
 	scope: string;

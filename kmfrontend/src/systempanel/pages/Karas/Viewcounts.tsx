@@ -76,6 +76,11 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 		dataIndex: 'title',
 		key: 'title'
 	}, {
+		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+		dataIndex: 'versions',
+		key: 'versions',
+		render: (versions) => getTagInLocaleList(versions).join(', ')
+	}, {
 		title: i18next.t('KARA.PLAYED'),
 		dataIndex: 'played',
 		key: 'played',

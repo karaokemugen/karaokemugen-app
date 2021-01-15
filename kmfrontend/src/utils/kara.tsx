@@ -76,8 +76,13 @@ export function buildKaraTitle(settings:SettingsStoreData, data: DBKara, onlyTex
 	const songtypeText = data.songtypes.sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
 	const songorderText = data.songorder > 0 ? ' ' + data.songorder : '';
 	if (onlyText) {
-		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${data.title}`;
+		const versions = data.versions?.map(t => `[${getTagInLocale(t, i18nParam)}]`);
+		const version = versions?.length > 0
+			? ` ${versions.join(' ')}`
+			: '';
+		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${data.title} ${version}`;
 	} else {
+		const versions = data.versions?.map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, i18nParam)}</span>);
 		return (
 			<React.Fragment>
 				<span>{langsText}</span>
@@ -87,6 +92,7 @@ export function buildKaraTitle(settings:SettingsStoreData, data: DBKara, onlyTex
 				<span>{`${songtypeText} ${songorderText}`}</span>
 				<span>&nbsp;-&nbsp;</span>
 				<span className="karaTitleTitle">{data.title}</span>
+				{versions}
 			</React.Fragment>
 		);
 	}

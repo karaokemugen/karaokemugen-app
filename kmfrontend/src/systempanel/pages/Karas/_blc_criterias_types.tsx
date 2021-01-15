@@ -84,6 +84,10 @@ export const criteras_types = [
 	{
 		value:13,
 		mode:'tag',
+	},
+	{
+		value:14,
+		mode:'tag',
 	}
 ];
 

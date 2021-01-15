@@ -16,7 +16,7 @@ import { PollItem,PollResults } from '../types/poll';
 import { State } from '../types/state';
 import {getState, setState} from '../utils/state';
 import { sayTwitch } from '../utils/twitch';
-import { getSeriesSingers } from './kara';
+import { getSongSeriesSingers, getSongVersion } from './kara';
 import { displayInfo,playerMessage } from './player';
 import {copyKaraToPlaylist, editPLC,getPlaylistContentsMini} from './playlist';
 const sleep = promisify(setTimeout);
@@ -48,12 +48,13 @@ async function displayPoll(winner?: number) {
 			? `0${percentage.toFixed(1)}`
 			: percentage.toFixed(1);
 		// If series is empty, pick singer information instead
-		const series = getSeriesSingers(kara);
+		const series = getSongSeriesSingers(kara);
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-		let songorder = `${kara.songorder}`;
-		if (!kara.songorder || kara.songorder === 0) songorder = '';
-
-		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes.map(s => s.name).join(' ')}${songorder} - ${kara.title}${boldWinnerClose}`;
+		const songorder = !kara.songorder || kara.songorder === 0
+			? `${kara.songorder}`
+			: '';
+		const version = getSongVersion(kara);
+		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes.map(s => s.name).join(' ')}${songorder} - ${kara.title}${version}${boldWinnerClose}`;
 	});
 	const voteMessage = winner
 		? i18n.t('VOTE_MESSAGE_SCREEN_WINNER')
@@ -125,7 +126,9 @@ export async function getPollResults(): Promise<PollResults> {
 
 	emitWS('playlistInfoUpdated', playlist_id);
 	emitWS('playlistContentsUpdated', playlist_id);
-	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}`;
+
+	const version = getSongVersion(winner);
+	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}${version}`;
 	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, {service: 'Poll'});
 	return {
 		votes: maxVotes,
@@ -247,12 +250,13 @@ async function displayPollTwitch() {
 		logger.info('Announcing vote on Twitch', {service: 'Poll'});
 		await sayTwitch(i18n.t('TWITCH.CHAT.VOTE'));
 		for (const kara of poll) {
-			const series = getSeriesSingers(kara);
+			const series = getSongSeriesSingers(kara);
 			// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 			let songorder = `${kara.songorder}`;
 			if (!kara.songorder || kara.songorder === 0) songorder = '';
 			await sleep(1000);
-			await sayTwitch(`${kara.index}. ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${kara.title}`);
+			const version = getSongVersion(kara);
+			await sayTwitch(`${kara.index}. ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${kara.title}${version}`);
 		}
 	} catch(err) {
 		logger.error('Unable to post poll on twitch', {service: 'Poll', obj: err});

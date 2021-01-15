@@ -102,7 +102,10 @@
 			font-weight: bold;
 		}
 		.contentDivMobileTitle {
-			font-style: italic;
+			display: flex;
+			.div:not(.tagConteneur) {
+				font-style: italic;
+			}
 		}
 	}
 	.infoDiv {

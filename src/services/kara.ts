@@ -176,10 +176,11 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 	};
 }
 
-export function getSeriesSingers(kara: DBKara, i18nParam?:any) {
+/** Returns a string with series or singers with their correct i18n.*/
+export function getSongSeriesSingers(kara: DBKara): string {
 	if (kara.series?.length > 0) {
 		const mode = getConfig().Frontend.SeriesLanguageMode;
-		const i18n = i18nParam ? i18nParam : kara.series[0].i18n;
+		const i18n = kara.series[0].i18n;
 		let series = '';
 		switch(mode) {
 		case 0:
@@ -198,5 +199,34 @@ export function getSeriesSingers(kara: DBKara, i18nParam?:any) {
 		return series;
 	} else {
 		return kara.singers.map(s => s.name).join(', ');
+	}
+}
+
+export function getSongVersion(kara: DBKara): string {
+	if (kara.versions?.length > 0) {
+		const mode = getConfig().Frontend.SeriesLanguageMode;
+		const versions = kara.versions.map(v => {
+			let ret = '';
+			switch(mode) {
+			case 0:
+				// Original name
+				ret = v.name;
+				break;
+			case 1:
+				// Name according to song language
+				ret = v.i18n[kara.langs[0].name] || v.i18n?.eng || v.name;
+				break;
+			case 2:
+			case 3:
+			default:
+				const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
+				ret = v.i18n[lang] || v.i18n?.eng || v.name;
+				break;
+			}
+			return `[${ret}]`;
+		});
+		return ` ${versions.join(' ')}`;
+	} else {
+		return '';
 	}
 }

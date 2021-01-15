@@ -83,7 +83,13 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 		type: 7,
 		color: 'black',
 		karajson: 'misc'
-	}
+	},
+	VERSIONS: {
+		icon: 'tachometer-alt',
+		type: 14,
+		color: 'white',
+		karajson: 'versions'
+	},
 };
 
 Object.freeze(tagTypes);

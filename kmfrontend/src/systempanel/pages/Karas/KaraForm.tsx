@@ -34,6 +34,7 @@ interface KaraFormState {
 	genres?: DBTag[];
 	platforms?: DBTag[];
 	origins?: DBTag[];
+	versions?: DBTag[];
 	created_at?: Date;
 	modified_at?: Date;
 	repositoriesValue: string[];
@@ -84,6 +85,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			platforms: this.getTagArray(kara?.platforms),
 			genres: this.getTagArray(kara?.genres),
 			origins: this.getTagArray(kara?.origins),
+			versions: this.getTagArray(kara?.versions),
 			created_at: kara?.created_at ? kara.created_at : new Date(),
 			modified_at: kara?.modified_at ? kara.modified_at : new Date(),
 			repositoriesValue: null,
@@ -153,6 +155,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		kara.genres = this.getTagObject(kara.genres);
 		kara.origins = this.getTagObject(kara.origins);
 		kara.songtypes = this.getTagObject(kara.songtypes);
+		kara.versions = this.getTagObject(kara.versions);
 
 		this.props.save(kara);
 	};
@@ -240,7 +243,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					creators: this.state.creators, authors: this.state.authors,
 					families: this.state.families, platforms: this.state.platforms,
 					genres: this.state.genres, origins: this.state.origins,
-					misc: this.state.misc, groups: this.state.groups,
+					misc: this.state.misc, groups: this.state.groups, versions: this.state.versions,
 					repository: this.props.kara?.repository ? this.props.kara.repository : null,
 					created_at: this.state.created_at, modified_at: this.state.modified_at,
 					mediafile: this.props.kara?.mediafile, subfile: this.props.kara?.subfile
@@ -330,7 +333,25 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						onKeyPress={this.submitHandler}
 					/>
 				</Form.Item>
-
+				<Form.Item
+					label={(
+						<span>{i18next.t('TAG_TYPES.VERSIONS', { count: 2 })}&nbsp;
+							<Tooltip title={i18next.t('KARA.VERSIONS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 10 }}
+					name="versions"
+				>
+					<EditableTagGroup
+						tagType={14}
+						checkboxes={true}
+						search={'tag'}
+						onChange={(tags) => this.formRef.current.setFieldsValue({ versions: tags })}
+					/>
+				</Form.Item>
 				<Form.Item
 					label={
 						<span>{i18next.t('KARA.SERIES')}&nbsp;
