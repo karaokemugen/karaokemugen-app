@@ -626,6 +626,7 @@
 		"MISC": "Divers",
 		"GROUPS": "Groupe(s)",
 		"GROUPS_TOOLTIP": "Groupes de téléchargement pour ce morceau. Le morceau sera ajouté dans ces paquets pour le téléchargement",
+		"VERSIONS_TOOLTIP": "Les versions permettent d'identifier plus facilement différents karaokés avec le même titre de chanson. Si aucune version ne s'applique car la version est trop spécifique (ex. Future Vers. ou Chihaya Vers.) indiquez-la dans le titre avec \" ~ Chihaya Vers.\" à la fin de celui-ci.",
 		"CREATED_AT": "Date de création",
 		"MODIFIED_AT": "Date de dernière mise à jour",
 		"PLAYED": "Nombre de vues",
@@ -809,7 +810,9 @@
 		"PLATFORMS": "Plateforme",
 		"PLATFORMS_plural": "Plateformes",
 		"SERIES": "Série",
-		"SERIES_plural": "Séries"
+		"SERIES_plural": "Séries",
+		"VERSIONS": "Version",
+		"VERSIONS_plural": "Versions"
 	},
 	"CONFIG": {
 		"PROPERTY": "Propriété",
@@ -922,7 +925,8 @@
 		"BLCTYPE_10": "Famille",
 		"BLCTYPE_11": "Plateforme",
 		"BLCTYPE_12": "Thème",
-		"BLCTYPE_13": "Origine"
+		"BLCTYPE_13": "Origine",
+		"BLCTYPE_14": "Version"
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",

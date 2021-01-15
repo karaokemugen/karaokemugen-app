@@ -50,6 +50,10 @@
 		}
 	}
 	> .title {
+		& > div {
+			display: flex;
+			align-items: center;
+		}
 		.song {
 			font-size: 2em;
 			font-weight: bold;

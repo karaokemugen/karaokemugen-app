@@ -59,7 +59,7 @@ import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './downloadUpdater';
-import { formatKaraList, getKara, getSeriesSingers,isAllKaras} from './kara';
+import { formatKaraList, getKara, getSongSeriesSingers,getSongVersion,isAllKaras} from './kara';
 import {playingUpdated, playPlayer} from './player';
 import { addUpvotes } from './upvote';
 //KM Modules
@@ -1218,15 +1218,16 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			requester = '';
 		}
 		// If series is empty, pick singer information instead
-		const series = getSeriesSingers(kara);
+		const series = getSongSeriesSingers(kara);
 
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 		let songorder = `${kara.songorder}`;
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
 
+		const versions = getSongVersion(kara);
 		const currentSong: CurrentSong = {...kara};
 		// Construct mpv message to display.
-		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {

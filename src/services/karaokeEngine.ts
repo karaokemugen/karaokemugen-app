@@ -9,7 +9,7 @@ import { emitWS } from '../lib/utils/ws';
 import { CurrentSong } from '../types/playlist';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
-import { addPlayedKara, getKara, getKaras, getSeriesSingers } from './kara';
+import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongVersion } from './kara';
 import {initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer} from './player';
 import { getCurrentSong, getPlaylistContentsMini, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';
@@ -28,13 +28,15 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
 		// If series is empty, pick singer information instead
-		const series = getSeriesSingers(kara);
+		const series = getSongSeriesSingers(kara);
 
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 		let songorder = `${kara.songorder}`;
+
+		const versions = getSongVersion(kara);
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
 		// Construct mpv message to display.
-		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+'{\\i0}';
+		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}';
 		await mpv.play({
 			media: kara.mediafile,
 			subfile: kara.subfile,

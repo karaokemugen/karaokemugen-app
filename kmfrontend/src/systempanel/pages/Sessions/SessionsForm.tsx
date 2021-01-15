@@ -243,7 +243,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	}, {
 		title: i18next.t('SESSIONS.TITLE'),
 		dataIndex: 'title',
-		render: (text, kara) => buildKaraTitle(this.context.globalState.settings.data, kara)
+		render: (text, kara) => buildKaraTitle(this.context.globalState.settings.data, kara, true)
 	}];
 
 }

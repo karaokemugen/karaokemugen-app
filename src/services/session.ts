@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
+import { selectAllKaras } from '../dao/kara';
 import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
 import { getConfig, resolvedPathSessionExports } from '../lib/utils/config';
 import { sanitizeFile } from '../lib/utils/files';
@@ -11,7 +12,7 @@ import { emitWS } from '../lib/utils/ws';
 import { Session, SessionExports } from '../types/session';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
-import { getKaras, getSeriesSingers } from './kara';
+import { getSongSeriesSingers, getSongVersion } from './kara';
 
 export async function getSessions() {
 	const sessions = await selectSessions();
@@ -145,8 +146,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const session = await findSession(seid);
 		if (!session) throw {code: 404, msg: 'Session does not exist'};
 		const [requested, played] = await Promise.all([
-			getKaras({mode: 'sessionRequested', modeValue: seid, token: { role: 'admin', username: 'admin'}}),
-			getKaras({mode: 'sessionPlayed', modeValue: seid, token: { role: 'admin', username: 'admin'}})
+			selectAllKaras({mode: 'sessionRequested', modeValue: seid, admin: true}),
+			selectAllKaras({mode: 'sessionPlayed', modeValue: seid, admin: true})
 		]);
 		const sessionExports: SessionExports = {
 			requested: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requested.csv`),
@@ -161,7 +162,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
 				{id: 'songtype', title: 'TYPE'},
 				{id: 'order', title: 'ORDER'},
-				{id: 'title', title: 'TITLE'}
+				{id: 'title', title: 'TITLE'},
+				{id: 'version', title: 'VERSION'}
 			],
 			alwaysQuote: true
 		});
@@ -172,7 +174,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
 				{id: 'songtype', title: 'TYPE'},
 				{id: 'order', title: 'ORDER'},
-				{id: 'title', title: 'TITLE'}
+				{id: 'title', title: 'TITLE'},
+				{id: 'version', title: 'VERSION'}
 			],
 			alwaysQuote: true
 		});
@@ -183,7 +186,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
 				{id: 'songtype', title: 'TYPE'},
 				{id: 'order', title: 'ORDER'},
-				{id: 'title', title: 'TITLE'}
+				{id: 'title', title: 'TITLE'},
+				{id: 'version', title: 'VERSION'}
 			],
 			alwaysQuote: true
 		});
@@ -194,24 +198,27 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
 				{id: 'songtype', title: 'TYPE'},
 				{id: 'order', title: 'ORDER'},
-				{id: 'title', title: 'TITLE'}
+				{id: 'title', title: 'TITLE'},
+				{id: 'version', title: 'VERSION'}
 			],
 			alwaysQuote: true
 		});
-		const recordsPlayed = played.content.map(k => {
+		const recordsPlayed = played.map(k => {
 			return {
 				played_at: k.lastplayed_at.toLocaleString(),
-				seriesinger: getSeriesSingers(k, played.i18n),
+				seriesinger: getSongSeriesSingers(k),
+				version: getSongVersion(k),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: k.title,
 				kid: k.kid
 			};
 		});
-		const recordsRequested = requested.content.map(k => {
+		const recordsRequested = requested.map(k => {
 			return {
 				requested_at: k.lastrequested_at.toLocaleString(),
-				seriesinger: getSeriesSingers(k, requested.i18n),
+				seriesinger: getSongSeriesSingers(k),
+				version: getSongVersion(k),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: k.title,

@@ -72,6 +72,11 @@ class Ranking extends Component<unknown, RankingState> {
 		dataIndex: 'title',
 		key: 'title'
 	}, {
+		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+		dataIndex: 'versions',
+		key: 'versions',
+		render: (versions) => getTagInLocaleList(versions).join(', ')
+	}, {
 		title: i18next.t('KARA.REQUESTED'),
 		dataIndex: 'requested',
 		key: 'requested',

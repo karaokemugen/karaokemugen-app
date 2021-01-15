@@ -18,6 +18,7 @@ SELECT
   COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
   COALESCE(ak.families, '[]'::jsonb) AS families,
   COALESCE(ak.genres, '[]'::jsonb) AS genres,
+  COALESCE(ak.versions, '[]'::jsonb) AS versions,
   ak.duration AS duration,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,

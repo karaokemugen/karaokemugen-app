@@ -6,10 +6,12 @@ import React, { Component, createRef, RefObject } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import { ASSLine } from '../../../../../src/lib/types/ass';
+import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
-import { getPreviewLink, getSerieLanguage, sortTagByPriority } from '../../../utils/kara';
+import { getPreviewLink, getSerieLanguage, getTagInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
+import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
 interface IProps {
@@ -33,7 +35,8 @@ interface IState {
 	lyrics: ASSLine[],
 	showLyrics: boolean,
 	kid: string,
-	favorites: Set<string>
+	favorites: Set<string>,
+	karaVersions?: React.ReactFragment
 }
 
 class PlayerBox extends Component<IProps, IState> {
@@ -116,6 +119,10 @@ class PlayerBox extends Component<IProps, IState> {
 		}
 	}
 
+	compareTag = (a: DBKaraTag, b: DBKaraTag) => {
+		return a.name.localeCompare(b.name);
+	}
+
 	/**
 	 * refresh the player infos
 	 */
@@ -169,8 +176,22 @@ class PlayerBox extends Component<IProps, IState> {
 				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getSerieLanguage(this.context.globalState.settings.data, e, kara.langs[0].name)).join(', ')
 					+ (kara.series.length > 3 ? '...' : '')
 					: (kara.singers ? kara.singers.slice(0, 3).map(e => e.name).join(', ') + (kara.singers.length > 3 ? '...' : '') : '');
-				const songtypeText = kara.songtypes.sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
+				const songtypeText = [...kara.songtypes].sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
 				const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
+				const karaVersions = (() => {
+					// Tags in the header
+					const typeData = tagTypes['VERSIONS'];
+					if (kara.versions) {
+						return kara[typeData.karajson].sort(this.compareTag).map(tag => {
+							return <div key={tag.tid} className={`tag inline ${typeData.color}`} title={getTagInLocale(tag)}>
+								{getTagInLocale(tag)}
+							</div>;
+						});
+					} else {
+						return null;
+					}
+				})();
+
 				if (this.props.onKaraChange) this.props.onKaraChange(kara.kid);
 				this.setState({
 					...PlayerBox.resetBox,
@@ -178,7 +199,8 @@ class PlayerBox extends Component<IProps, IState> {
 					subtitle: `${serieText} - ${songtypeText}${songorderText}`,
 					length: kara.duration,
 					kid: kara.kid,
-					img: `url(${getPreviewLink(kara)})`
+					img: `url(${getPreviewLink(kara)})`,
+					karaVersions
 				});
 			}
 		}
@@ -214,11 +236,17 @@ class PlayerBox extends Component<IProps, IState> {
 				}
 				{this.props.fixed ?
 					<div className="title inline">
-						<h3 className="song">{this.state.title}</h3>
+						<div>
+							<h3 className="song">{this.state.title}</h3>
+							{this.state.karaVersions}
+						</div>
 						<h4 className="series">{this.state.subtitle}</h4>
 					</div> :
 					<div className="title">
-						<h3 className="song">{this.state.title}</h3>
+						<div>
+							<h3 className="song">{this.state.title}</h3>
+							{this.state.karaVersions}
+						</div>
 						<h4 className="series">{this.state.subtitle}</h4>
 					</div>}
 				{!this.props.fixed && this.state.length !== 0 && this.context.globalState.auth.data.role !== 'guest' ?
