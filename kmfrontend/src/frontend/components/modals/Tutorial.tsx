@@ -127,6 +127,8 @@ class Tutorial extends Component<unknown, IState> {
 				</ul>
 			</div>;
 			break;
+		default:
+			break;
 		}
 		return (<div className="tutorial">
 			<div className={`dimmer${this.state.stepIndex > 0 ? ' transparent':''}${this.state.stepIndex === 2 ? ' player-bar':''}`} />
