@@ -437,28 +437,18 @@ export default function userController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'user', 'closed');
 
-		const validationErrors = check(req.body, {
-			nickname: {presence: true}
-		});
-		if (!validationErrors) {
-			// No errors detected
-			if (req.body.bio) req.body.bio = unescape(req.body.bio.trim());
-			if (req.body.email) req.body.email = unescape(req.body.email.trim());
-			if (req.body.url) req.body.url = unescape(req.body.url.trim());
-			if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
-			try {
-				const response = await editUser(req.token.username,
-					req.body, req.body.avatar || null,
-					req.token.role, { editRemote: req.onlineAuthorization });
-				return APIMessage('USER_EDITED', { onlineToken: response.onlineToken });
-			} catch(err) {
-				errMessage(err.msg, err);
-				throw {code: err?.code || 500, message: APIMessage(err?.msg)};
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw {code: 400, message: validationErrors};
+		if (req.body.bio) req.body.bio = unescape(req.body.bio.trim());
+		if (req.body.email) req.body.email = unescape(req.body.email.trim());
+		if (req.body.url) req.body.url = unescape(req.body.url.trim());
+		if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
+		try {
+			const response = await editUser(req.token.username,
+				req.body, req.body.avatar || null,
+				req.token.role, { editRemote: req.onlineAuthorization });
+			return APIMessage('USER_EDITED', { onlineToken: response.onlineToken });
+		} catch(err) {
+			errMessage(err.msg, err);
+			throw {code: err?.code || 500, message: APIMessage(err?.msg)};
 		}
 	});
 

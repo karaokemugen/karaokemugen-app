@@ -7,6 +7,7 @@ import Tutorial from '../frontend/components/modals/Tutorial';
 import Modal from './components/Modal';
 
 let is_touch = window.outerWidth <= 1023;
+let is_large = window.outerWidth <= 1860;
 let tuto:any;
 export let lastLocation = '';
 
@@ -35,6 +36,15 @@ export function is_touch_device() {
 		return is_touch;
 	} else {
 		return is_touch;
+	}
+}
+
+export function is_large_device() {
+	if (!document.hidden) {
+		is_large = window.outerWidth <= 1860;
+		return is_large;
+	} else {
+		return is_large;
 	}
 }
 
