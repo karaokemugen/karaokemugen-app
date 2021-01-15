@@ -1,229 +1,146 @@
 import './Tutorial.scss';
 
 import i18next from 'i18next';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactJoyride, { ACTIONS, EVENTS, STATUS, Step } from 'react-joyride';
+import { unmountComponentAtNode } from 'react-dom';
 
-import { User } from '../../../../../src/lib/types/user';
+import TutoKaraLine from '../../../assets/tuto_karaline.png';
 import { commandBackend } from '../../../utils/socket';
-
-export function i18nAsDiv(key: string, args?: any) {
-	return (<div dangerouslySetInnerHTML={{ __html: i18next.t(key, args) }} />);
-}
+import { is_large_device } from '../../../utils/tools';
 
 interface IState {
-	scope: string;
-	run: boolean;
 	stepIndex: number;
-	steps: Array<CustomStep>;
-}
-
-interface CustomStep extends Step {
-	label?: string;
-	tooltipClass?: string;
+	isLargeDevice: boolean;
 }
 
 class Tutorial extends Component<unknown, IState> {
-	constructor(props) {
-		super(props);
-		this.state = {
-			scope: props.scope,
-			run: true,
-			stepIndex: 0,
-			steps: [{
-				target: 'body',
-				placement: 'center',
-				content: i18nAsDiv('INTRO_ADMIN_EMAIL_ONLINE'),
-			},
-			{
-				target: 'body',
-				placement: 'center',
-				content: i18nAsDiv('INTRO_ADMIN_INTRO3'),
-			},
-			{
-				placement: 'bottom',
-				target: '.KmAppBodyDecorator',
-				content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS'),
-			},
-			{
-				placement: 'auto',
-				target: '.KmAppHeaderDecorator',
-				content: i18nAsDiv('INTRO_ADMIN_LECTEUR'),
-			},
-			{
-				placement: 'auto',
-				target: '#switchValue',
-				content: i18nAsDiv('INTRO_ADMIN_MYSTERY'),
-			},
-			{
-				placement: 'auto',
-				target: '#playlist',
-				content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_2'),
-			},
-			{
-				placement: 'auto',
-				target: '#panel2 .panel-heading.plDashboard',
-				content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE'),
-			},
-			{
-				placement: 'auto',
-				target: '#panel2 .btn.btn-default.showPlaylistCommands',
-				content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON'),
-				hideFooter: true,
-			},
-			{
-				placement: 'left',
-				target: '#panel2',
-				content: i18nAsDiv('INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED'),
-			},
-			{
-				label: 'options_button',
-				placement: 'auto',
-				target: '#optionsButton',
-				content: i18nAsDiv('INTRO_ADMIN_SETTINGS'),
-				hideFooter: true,
-			},
-			{
-				placement: 'auto',
-				target: '#settingsNav',
-				content: i18nAsDiv('INTRO_ADMIN_SETTINGS_SCREEN'),
-				styles: {
-					buttonBack: {
-						display: 'none',
-					}
-				}
-			},
-			{
-				placement: 'center',
-				target: '.panel.col-lg-8.modalPage',
-				content: i18nAsDiv('INTRO_ADMIN_INTRO_DOWNLOAD'),
-			},
-			{
-				placement: 'center',
-				target: '.panel.col-lg-8.modalPage',
-				content: i18nAsDiv('INTRO_ADMIN_INTROFINAL'),
-			}]
-		};
+	state = {
+		stepIndex: 0,
+		isLargeDevice: is_large_device()
+	};
+
+	componentDidMount() {
+		window.addEventListener('resize', this.resize);
 	}
 
-	static propTypes = {
-		joyride: PropTypes.shape({
-			callback: PropTypes.func
-		})
-	};
-
-	static defaultProps = {
-		joyride: {}
-	};
-
-	handleClickStart = (e: any) => {
-		e.preventDefault();
-
-		this.setState({
-			run: true
-		});
-
-	};
-
-
-	handleJoyrideCallback = async (data: { action: string, index: number, status: string, type: string }) => {
-		const { joyride }: any = this.props;
-		const { action, index, status, type } = data;
-		if (type === EVENTS.TOUR_END && this.state.run) {
-			// Need to set our running state to false, so we can restart if we click start again.
-			this.setState({ run: false });
-		}
-		if (([STATUS.FINISHED, STATUS.SKIPPED] as Array<string>).includes(status)) {
-			const user:User = await commandBackend('getMyAccount');
-			user.flag_tutorial_done = true;
-			await commandBackend('editMyAccount', user);
-		}
-		if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Array<string>).includes(type)) {
-			// Update state to advance the tour
-			if (this.state.steps[index + 1]?.label === 'options_button') {
-				document.getElementById('menuPC')?.click();
-			}
-			this.setState({ stepIndex: index + (action === ACTIONS.PREV ? -1 : 1) });
-		}
-
-		if (typeof joyride.callback === 'function') {
-			joyride.callback(data);
-		}
-	};
-
-	getStepLabel = () => {
-		const { stepIndex, steps } = this.state;
-		return steps[stepIndex]?.label || stepIndex;
+	componentWillUnmount() {
+		window.removeEventListener('resize', this.resize);
 	}
 
-	move = (i: number) => {
-		const { stepIndex } = this.state;
+	resize = () => {
+		this.setState({isLargeDevice: is_large_device()});
+	}
 
-		this.setState({
-			stepIndex: stepIndex + i
-		});
+	nextStep = () => {
+		if (this.state.stepIndex === 2) {
+			unmountComponentAtNode(document.getElementById('tuto'));
+			commandBackend('editMyAccount', { flag_tutorial_done: true });
+		}
+		this.setState({ stepIndex: this.state.stepIndex + 1 });
 	}
 
 	render() {
-		const { run, stepIndex, steps } = this.state;
-		// more css details on https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js
-		return (<div>
-			<ReactJoyride
-				continuous
-				scrollToFirstStep
-				showProgress
-				showSkipButton
-				spotlightClicks
-				run={run}
-				steps={steps}
-				stepIndex={stepIndex}
-				locale={{
-					back: i18next.t('INTRO_LABEL_PREV'),
-					close: i18next.t('INTRO_LABEL_SKIP'),
-					last: i18next.t('INTRO_LABEL_SKIP'),
-					next: i18next.t('INTRO_LABEL_NEXT'),
-					skip: i18next.t('INTRO_LABEL_SKIP'),
-				}}
-				styles={{
-					options: {
-						arrowColor: '#e3ffeb',
-						backgroundColor: '#344638f7',
-						overlayColor: '#000000b3',
-						textColor: '#eee',
-						zIndex: 20000
-					},
-					tooltip: {
-						fontSize: 16,
-					},
-					tooltipContainer: {
-						textAlign: 'left',
-					},
-					tooltipTitle: {
-						textAlign: 'center',
-						fontSize: 19,
-						margin: '0 0 10px 0',
-					},
-					buttonNext: {
-						borderRadius: 0,
-						backgroundColor: '#000000c2'
-					},
-					buttonBack: {
-						color: '#eee',
-						backgroundColor: '#0000004d'
-					},
-					buttonSkip: {
-						backgroundColor: '#0000004d'
-					}
-
-				}
-				}
-				callback={this.handleJoyrideCallback}
-			/>
-		</div>
-		);
+		let slide = <></>;
+		switch (this.state.stepIndex) {
+		case 0:
+			slide = <>
+				<p className="title">{i18next.t('MODAL.TUTORIAL.WELCOME')}</p>
+				<div className="playlists">
+					{i18next.t('MODAL.TUTORIAL.PLAYLIST')} <i className="fas fa-fw fa-plus" />.
+					<br /><br />
+					<div className="kara-line-image">
+						<img src={TutoKaraLine} alt="KaraLine" />
+						<p className="caption-left">
+							{i18next.t('MODAL.TUTORIAL.TITLE_CLICK')}
+							{!this.state.isLargeDevice ?
+								<>
+										&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE_CLICK_DESC')}
+								</> : null}.<br />
+							{i18next.t('MODAL.TUTORIAL.THE_BUTTON')} <i className="fas fa-fw fa-play" title="Lecture" /> {i18next.t('MODAL.TUTORIAL.PLAY_BUTTON')}
+							{!this.state.isLargeDevice ?
+								<>
+										&nbsp;({i18next.t('MODAL.TUTORIAL.THE_BUTTON')} <i className="fas fa-fw fa-play-circle" /> {i18next.t('MODAL.TUTORIAL.CURSOR_BUTTON')})
+								</> : null}.
+						</p>
+						<p className="caption-right">
+							{i18next.t('MODAL.TUTORIAL.CHECK_CASE')} <i className="far fa-fw fa-square" title="Case à cocher" /> {i18next.t('MODAL.TUTORIAL.CHECK_CASE_ADD')} <em>{i18next.t('MODAL.TUTORIAL.CHECK_CASE_MORE')}</em>.<br />
+							{i18next.t('MODAL.TUTORIAL.THE_BUTTON')} <i className="fas fa-fw fa-plus" title="Ajout" /> {i18next.t('MODAL.TUTORIAL.ADD_TO_OTHER_PLAYLIST')}<br />
+							{i18next.t('MODAL.TUTORIAL.WRENCH_BUTTON')} <i className="fas fa-fw fa-wrench" /> {i18next.t('MODAL.TUTORIAL.WRENCH_BUTTON_DESC')}
+						</p>
+					</div>
+					{i18next.t('MODAL.TUTORIAL.LINES_WITH')} <span className="orange">{i18next.t('MODAL.TUTORIAL.ORANGE')}</span> {i18next.t('MODAL.TUTORIAL.KARAOKE_PLAYED')}<br />
+					{i18next.t('MODAL.TUTORIAL.LINE_WITH')} <span className="blue">{i18next.t('MODAL.TUTORIAL.BLUE')}</span> {i18next.t('MODAL.TUTORIAL.KARAOKE_PLAYING')}
+				</div>
+			</>;
+			break;
+		case 1:
+			slide = <div className="header-presentation">
+				<ul>
+					<li><i className="fas fa-fw fa-wrench" /> {i18next.t('MODAL.TUTORIAL.CREATE_PLAYLIST_BUTTON')}</li>
+					<li>
+						<i className="fas fa-fw fa-list" /> {i18next.t('MODAL.TUTORIAL.SELECT_PLAYLIST_BUTTON')}
+						<ul className="ul-l1">
+							<li><i className="fas fa-fw fa-book" /> {i18next.t('MODAL.TUTORIAL.LIBRARY')}<br />
+								{i18next.t('MODAL.TUTORIAL.DOWNLOAD')} <a href="/system/km/karas/download" target="_blank">{i18next.t('MODAL.TUTORIAL.SYSTEM_PANEL')}</a>.</li>
+							<li><i className="fas fa-fw fa-play-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_DESC')}</li>
+							<li><i className="fas fa-fw fa-globe" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.PUBLIC_DESC')}</li>
+							<li><i className="fas fa-fw fa-info-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.AND')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_PUBLIC_DESC')}</li>
+						</ul>
+					</li>
+				</ul>
+			</div>;
+			break;
+		case 2:
+			slide = <div className="player-presentation">
+				<ul>
+					<li><i className="fas fa-fw fa-play" />
+						{i18next.t('MODAL.TUTORIAL.PLAYER_BAR')}
+					</li>
+					<li><i className="fas fa-fw fa-play-circle" />
+						{i18next.t('MODAL.TUTORIAL.PLAYER_CURRENT_HINT')}&nbsp;
+						<strong>
+							{i18next.t('MODAL.TUTORIAL.PLAYER_CURRENT_HINT2')}
+						</strong>
+						.
+					</li>
+					<li><i className="fas fa-fw fa-undo-alt" />
+						{i18next.t('MODAL.TUTORIAL.PLAYER_GO_BACK')}
+						<strong>
+							{i18next.t('MODAL.TUTORIAL.PLAYER_GOING_BACK')}
+						</strong>
+						{i18next.t('MODAL.TUTORIAL.PLAYER_GO_BACK_2')}
+						.
+					</li>
+					<li><i className="fas fa-fw fa-stop" />
+						{i18next.t('MODAL.TUTORIAL.PLAYER_STOP')}
+						<strong>
+							{i18next.t('MODAL.TUTORIAL.NOW')}
+						</strong>
+						.
+					</li>
+					<li><i className="fas fa-fw fa-comment" />
+						{i18next.t('MODAL.TUTORIAL.MESSAGE')}
+					</li>
+					<li><span className="klogo" />
+						{i18next.t('MODAL.TUTORIAL.K_MENU')}
+					</li>
+				</ul>
+			</div>;
+			break;
+		}
+		return (<div className="tutorial">
+			<div className={`dimmer${this.state.stepIndex > 0 ? ' transparent':''}${this.state.stepIndex === 2 ? ' player-bar':''}`} />
+			{slide}
+			<button onClick={this.nextStep} className="next">
+				{this.state.stepIndex > 1 ?
+					<>
+						<i className="fas fa-check" /> {i18next.t('MODAL.TUTORIAL.END')}
+					</>:<>
+						{i18next.t('MODAL.TUTORIAL.NEXT')} <i className="fas fa-arrow-right" />
+					</>}
+			</button>
+		</div>);
 	}
-
 }
 
 export default Tutorial;

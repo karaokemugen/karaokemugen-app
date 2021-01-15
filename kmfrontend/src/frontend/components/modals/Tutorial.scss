@@ -1,4 +1,134 @@
+@import '../../styles/variables';
 
-div[id^="react-joyride-step"] button {
-	padding: .25em !important;
+.tutorial {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	z-index: 100;
+
+	.dimmer {
+		background-color: black;
+		opacity: 0.5;
+		&.transparent {
+			background: linear-gradient(transparent 0%, transparent 165px, black 170px);
+			&.player-bar {
+				background: linear-gradient(transparent 0%, transparent 95px, black 100px);
+			}
+		}
+		width: 100%;
+		height: 100%;
+		position: absolute;
+	}
+
+	.title {
+		position: absolute;
+		left: .25em;
+		top: .25em;
+		font-size: 2em;
+		background-color: black;
+		padding: .5em;
+	}
+
+	.next {
+		cursor: pointer;
+		color: unset;
+		text-decoration: none;
+		position: absolute;
+		bottom: 100px;
+		width: 10%;
+		margin: 0 45%;
+		font-size: 1.5em;
+		text-align: center;
+		background-color: black;
+		padding: 1em;
+		border: grey 2px solid;
+		@media screen and (max-height: $mugen-height-small) {
+			margin: 0 10%;
+		}
+	}
+
+	.playlists {
+		position: absolute;
+		top: 100px;
+		width: 50%;
+		margin: 0 25%;
+		text-align: center;
+		background-color: black;
+		padding: 1em;
+
+		@media screen and (max-width: $mugen-breakpoint-xl) {
+			width: 75%;
+			margin: 0 12.5%;
+		}
+
+		.orange {
+			color: coral;
+		}
+
+		.blue {
+			color: deepskyblue;
+		}
+
+		.kara-line-image {
+			position: relative;
+			.caption-left {
+				text-align: left;
+				line-height: 1.5em;
+				font-weight: bold;
+				position: absolute;
+				top: 32%;
+				left: 10%;
+				width: 75%;
+			}
+			.caption-right {
+				text-align: right;
+				line-height: 1.5em;
+				font-weight: bold;
+				position: absolute;
+				top: 58%;
+				right: 15%;
+			}
+		}
+	}
+
+	.header-presentation, .player-presentation {
+		position: absolute;
+		background-color: black;
+		padding: 1em;
+		@media screen and (max-width: $mugen-breakpoint-larger) {
+			width: 98.5%;
+		}
+		a {
+			color: lightskyblue;
+		}
+		li {
+			margin: .25em 0;
+		}
+		.ul-l1 {
+			margin-left: 1.5em;
+		}
+		.klogo {
+			display: inline-block;
+			background-size: contain;
+			height: 1em;
+			width: 1.25em;
+		}
+	}
+
+	.header-presentation {
+		top: 170px;
+		left: 8px;
+		width: 49.5%;
+	}
+
+	.player-presentation {
+		top: 100px;
+		margin: 0 25%;
+		width: 50%;
+		@media screen and (max-width: $mugen-breakpoint-larger) {
+			margin: 0 0.75%;
+		}
+	}
 }
