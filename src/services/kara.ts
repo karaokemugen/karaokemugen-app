@@ -184,16 +184,16 @@ export function getSongSeriesSingers(kara: DBKara): string {
 		let series = '';
 		switch(mode) {
 		case 0:
-			series = kara.series[0].name;
+			series = kara.series[0]?.name;
 			break;
 		case 1:
-			series = i18n[kara.langs[0].name] || i18n?.eng || kara.series[0].name;
+			series = i18n ? i18n[kara.langs[0].name] : null || i18n?.eng || kara.series[0]?.name;
 			break;
 		case 2:
 		case 3:
 		default:
 			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
-			series = i18n[lang] || i18n?.eng || kara.series[0].name;
+			series = i18n ? i18n[lang] : null || i18n?.eng || kara.series[0].name;
 			break;
 		}
 		return series;
@@ -214,7 +214,7 @@ export function getSongVersion(kara: DBKara): string {
 				break;
 			case 1:
 				// Name according to song language
-				ret = v.i18n[kara.langs[0].name] || v.i18n?.eng || v.name;
+				ret = v.i18n ? v.i18n[kara.langs[0].name] : null || v.i18n?.eng || v.name;
 				break;
 			case 2:
 			case 3:
