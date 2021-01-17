@@ -25,7 +25,6 @@ function setupUserWatch(server: string) {
 		delete user.type;
 		delete user.avatar_file;
 		logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
-		console.log(payload);
 		Promise.all([
 			editUser(login, user, null, 'admin'),
 			importFavorites({
@@ -50,7 +49,6 @@ function setupUserWatch(server: string) {
 }
 
 export function startSub(user: string, server: string) {
-	console.log(arguments);
 	if (!ioMap.has(server)) {
 		setupUserWatch(server);
 	}
@@ -83,7 +81,6 @@ export function stopSub(user: string, server: string) {
 export async function subRemoteUsers() {
 	logger.debug('Starting watching users online', { service: 'RemoteUser' });
 	const users = await listRemoteUsers();
-	console.log(users);
 	for (const user of users) {
 		const [login, instance] = user.split('@');
 		startSub(login, instance);

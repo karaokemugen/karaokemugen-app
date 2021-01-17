@@ -299,7 +299,6 @@ describe('Playlists', () => {
 		try {
 			await commandBackend(token, 'editPlaylist', data);
 		} catch(err) {
-			console.log('Playlist edit current');
 			console.log(err);
 			throw err;
 		}
@@ -313,7 +312,6 @@ describe('Playlists', () => {
 			};
 			await commandBackend(token, 'editPlaylist', data);
 		} catch(err) {
-			console.log('Playlist edit public');
 			console.log(err);
 			throw err;
 		}

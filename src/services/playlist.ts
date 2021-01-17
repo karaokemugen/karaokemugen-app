@@ -196,8 +196,6 @@ export async function deletePlaylist(playlist_id: number) {
 			await deletePL(playlist_id);
 			emitWS('playlistsUpdated');
 		} catch(err) {
-			console.log(playlist_id);
-			console.log('Delete error');
 			console.log(err);
 			throw err;
 		}

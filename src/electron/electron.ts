@@ -207,7 +207,6 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 			break;
 		case 'Karaoke Mugen Favorites List File':
 			if (!username) throw 'Unable to find a user to import the file to';
-			console.log(data, arguments);
 			await importFavorites(data, username, onlineToken);
 			if (win && !win.webContents.getURL().includes('/admin')) {
 				win.loadURL(url);
