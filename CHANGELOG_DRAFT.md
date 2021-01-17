@@ -77,6 +77,7 @@ It can be enabled in the Window menu.
 
 ### Improvements
 
+- KM will now ask you if you want to resume pending download on startup if there are any, instead of resuming them automatically like it did before (#852)
 - The tutorial has been revamped to be shorter and easier to understand (#839)
 - The search engine can now understand exclusion (-word) and group ("group of words") operators.
   - Search results are now sorted by relevance.
