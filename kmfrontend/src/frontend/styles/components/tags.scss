@@ -30,7 +30,7 @@
 			}
 		} @else {
 			&.#{$name} {
-				background-color: $color;
+				background-color: scale-color($color, $lightness: -10%, $saturation: -40%);
 				color: white;
 			}
 		}
