@@ -57,8 +57,7 @@ export async function initDownloader() {
 	if (!downloaderReady) {
 		downloaderReady = true;
 		initDownloadQueue();
-		await initDownloads();
-		await startDownloads();
+		initDownloads();
 	}
 	return;
 }

@@ -529,6 +529,13 @@
 			"NOW": "immédiatement",
 			"MESSAGE": "Vous pouvez passer un message à votre public (sur leur téléphone ou sur l'écran du lecteur) avec le bouton \"Message\".",
 			"K_MENU": "Le \"menu K\" permet d'accéder à différentes paramètres (gestion de sessions, etc.)."
+		},
+		"RESTART_DOWNLOADS_MODAL": {
+			"TITLE": "Téléchargements interrompus",
+			"LABEL": "Vous avez des téléchargements en attente, que voulez-vous faire ?",
+			"LATER": "Me redemander plus tard",
+			"DELETE": "Effacer la liste des téléchargements",
+			"CONTINUE": "Continuer les téléchargements"
 		}
 	},
 	"SETUP_PAGE": {
