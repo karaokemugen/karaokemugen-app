@@ -513,6 +513,13 @@
 			"NOW": "immediately",
 			"MESSAGE": "You can send a message to your public (on their devices or the player screen) with the Message button.",
 			"K_MENU": "The \"K Menu\" allows you to modify your profile and other karaoke settings."
+		},
+		"RESTART_DOWNLOADS_MODAL": {
+			"TITLE": "Downloads pending",
+			"LABEL": "Some downloads are pending from last session. What do you want to do?",
+			"LATER": "Ask me later",
+			"DELETE": "Abort all pending downloads",
+			"CONTINUE": "Resume all downloads"
 		}
 	},
 	"SETUP_PAGE": {

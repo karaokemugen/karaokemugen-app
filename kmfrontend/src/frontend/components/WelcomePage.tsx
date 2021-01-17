@@ -16,6 +16,7 @@ import { News } from '../types/news';
 import Autocomplete from './generic/Autocomplete';
 import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
+import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
 
 interface IState {
@@ -48,6 +49,7 @@ class WelcomePage extends Component<unknown, IState> {
 			|| this.context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
 			ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
 		}
+		this.getDownloadQueue();
 		this.getCatchphrase();
 		this.getNewsFeed();
 		this.getSessions();
@@ -67,6 +69,13 @@ class WelcomePage extends Component<unknown, IState> {
 			activeSession: res.filter((valueSession: Session) => valueSession.active)[0]
 		});
 	};
+
+	getDownloadQueue = async () => {
+		const downloadQueue = await commandBackend('getDownloads');
+		if (downloadQueue.length > 0 && !sessionStorage.getItem('dlQueueRestart')) {
+			ReactDOM.render(<RestartDownloadsModal />, document.getElementById('modal'));
+		}
+	}
 
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
