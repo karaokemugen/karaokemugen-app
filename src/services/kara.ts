@@ -20,6 +20,7 @@ import {profile} from '../lib/utils/logger';
 import { DBKaraHistory } from '../types/database/kara';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
+import { getTagNameInLanguage } from './tag';
 
 
 /* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
@@ -180,23 +181,14 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 export function getSongSeriesSingers(kara: DBKara): string {
 	if (kara.series?.length > 0) {
 		const mode = getConfig().Frontend.SeriesLanguageMode;
-		const i18n = kara.series[0].i18n;
-		let series = '';
-		switch(mode) {
-		case 0:
-			series = kara.series[0]?.name;
-			break;
-		case 1:
-			series = i18n ? i18n[kara.langs[0].name] : null || i18n?.eng || kara.series[0]?.name;
-			break;
-		case 2:
-		case 3:
-		default:
+		if (mode === 0) { // Original name
+			return kara.series[0]?.name;
+		} else if (mode === 1) { // Based on song language
+			return getTagNameInLanguage(kara.series[0], kara.langs[0].name, 'eng');
+		} else { // All other cases, based on application defaultLocale or English if unavailable
 			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
-			series = i18n ? i18n[lang] : null || i18n?.eng || kara.series[0].name;
-			break;
+			return getTagNameInLanguage(kara.series[0], lang, 'eng');
 		}
-		return series;
 	} else {
 		return kara.singers.map(s => s.name).join(', ');
 	}

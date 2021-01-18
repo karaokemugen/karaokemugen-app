@@ -8,6 +8,7 @@ import { saveSetting } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
 import { refreshKaraTags, refreshTags } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
+import {DBKaraTag} from '../lib/types/database/kara';
 import { DBTag } from '../lib/types/database/tag';
 import { IDQueryResult, Kara, KaraList } from '../lib/types/kara';
 import { Tag,TagParams } from '../lib/types/tag';
@@ -109,6 +110,14 @@ export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
 	return {id: tagObj.tid, new: true};
 }
 
+export function getTagNameInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string): string {
+	if (tag.i18n) {
+		return tag.i18n[mainLanguage] ? tag.i18n[mainLanguage] :
+			(tag.i18n[fallbackLanguage] ? tag.i18n[fallbackLanguage] : tag.name);
+	} else {
+		return tag.name;
+	}
+}
 
 export async function mergeTags(tid1: string, tid2: string) {
 	const task = new Task({
