@@ -69,7 +69,9 @@ class TagsList extends Component<IProps, IState> {
 	}
 
 	playlistContentsUpdatedFromClient = async () => {
-		await this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1 });
+		const tags = this.state.tags;
+		tags.infos.from = 0;
+		await this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1, tags });
 		this.props.tagType === YEARS.type ? this.getYears() : this.getTags();
 	}
 
