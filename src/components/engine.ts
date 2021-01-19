@@ -2,6 +2,7 @@
 import { app } from 'electron';
 import execa from 'execa';
 import i18n from 'i18next';
+import internetAvailable from 'internet-available';
 import logger from 'winston';
 
 import { generateBlacklist } from '../dao/blacklist';
@@ -47,6 +48,14 @@ export async function initEngine() {
 	profile('Init');
 	const conf = getConfig();
 	const state = getState();
+	const internet = await (async () => {
+		try {
+			await internetAvailable();
+			return true;
+		} catch (err) {
+			return false;
+		}
+	});
 	setState({
 		fullscreen: conf.Player.FullScreen,
 		ontop: conf.Player.StayOnTop
@@ -135,27 +144,35 @@ export async function initEngine() {
 			// Reinit menu since we switched ports.
 			if (app) applyMenu();
 		}
-		if ((conf.Online.URL || conf.Online.Remote) && !state.isDemo) try {
+		if ((conf.Online.URL || conf.Online.Remote) && !state.isDemo && internet) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
 			await initKMServerCommunication();
-			if (conf.Online.URL) await initOnlineURLSystem();
-			if (conf.Online.Remote) await initRemote();
-			// TODO: add config item for this?
-			await subRemoteUsers();
+			const onlinePromises = [
+				// TODO: add config item for this?
+				subRemoteUsers()
+			];
+			if (conf.Online.URL) onlinePromises.push(initOnlineURLSystem());
+			if (conf.Online.Remote) onlinePromises.push(initRemote());
 		} catch(err) {
 			// Non-blocking
 			logger.error('Failed to init online system', {service: 'Engine', obj: err});
 			sentry.error(err, 'Warning');
 		}
-		if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) await initTwitch();
-		await initBlacklistSystem();
-		await initPlaylistSystem();
-		if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) await initPlayer();
-		if (app) registerShortcuts();
-		await initDownloader();
-		await initSession();
-		if (conf.Online.Stats === true) initStats(false);
 		try {
+			if (app) registerShortcuts();
+			initStep(i18n.t('INIT_PLAYLIST'));
+			const initPromises = [
+				initBlacklistSystem(),
+				initPlaylistSystem(),
+				initDownloader(),
+				initSession()
+			];
+			if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) initPromises.push(initTwitch());
+			if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPromises.push(initPlayer());
+			await Promise.all(initPromises);
+			if (conf.Online.Stats === true) initStats(false);
+
+
 			initStep(i18n.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			//Easter egg
@@ -164,7 +181,7 @@ export async function initEngine() {
 				: 'READY';
 			if (!state.isTest && !state.electron) await welcomeToYoukousoKaraokeMugen();
 			// This is done later because it's not important.
-			await postMigrationTasks(migrations, didGeneration);
+			postMigrationTasks(migrations, didGeneration);
 			if (state.args.length > 0) {
 				// Let's try the last argument
 				const file = state.args[state.args.length-1];
@@ -188,11 +205,10 @@ export async function initEngine() {
 			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
 			if (!state.isTest && !state.isDemo && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			if (!state.isTest && !state.isDemo) {
-				try {
-					await updatePlaylistMedias();
-					await buildAllMediasList();
-				} catch(err) {
-					//Non fatal
+				if (internet) {
+					updatePlaylistMedias().then(buildAllMediasList).catch(() => {});
+				} else {
+					buildAllMediasList().catch(() => {});
 				}
 			}
 			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
@@ -200,7 +216,6 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
 			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
-
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
 			sentry.error(err);
