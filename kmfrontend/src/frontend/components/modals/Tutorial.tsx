@@ -104,15 +104,15 @@ class Tutorial extends Component<unknown, IState> {
 						.
 					</li>
 					<li><i className="fas fa-fw fa-undo-alt" />
-						{i18next.t('MODAL.TUTORIAL.PLAYER_GO_BACK')}
+						{i18next.t('MODAL.TUTORIAL.PLAYER_GO_BACK')}&nbsp;
 						<strong>
-							{i18next.t('MODAL.TUTORIAL.PLAYER_GOING_BACK')}
+							{i18next.t('MODAL.TUTORIAL.PLAYER_GOING_BACK')}&nbsp;
 						</strong>
 						{i18next.t('MODAL.TUTORIAL.PLAYER_GO_BACK_2')}
 						.
 					</li>
 					<li><i className="fas fa-fw fa-stop" />
-						{i18next.t('MODAL.TUTORIAL.PLAYER_STOP')}
+						{i18next.t('MODAL.TUTORIAL.PLAYER_STOP')}&nbsp;
 						<strong>
 							{i18next.t('MODAL.TUTORIAL.NOW')}
 						</strong>
