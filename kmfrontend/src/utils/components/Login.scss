@@ -32,10 +32,13 @@ body {
 			background-color: $mugen-btn-primary-background;
 		}
 		&.guestButton {
-			background-color: #007fa5;
+			background-color: scale-color(map-get($mugen-colors, 'blue'), $lightness: 20%);
 		}
-		&.switchButton {
-			background-color: darkgreen;
+		&.loginButton {
+			background-color: scale-color(map-get($mugen-colors, 'green'), $lightness: 10%);
+		}
+		&.signupButton {
+			background-color: scale-color(map-get($mugen-colors, 'green'), $lightness: 15%);
 		}
 	}
 
@@ -81,6 +84,7 @@ body {
 @media screen and (max-width: 690px) {
 	.loginContainer {
 		flex-direction: column;
+		justify-content: flex-start;
 	}
 }
 

@@ -213,6 +213,8 @@
 	"ACCOUNT": "Mon compte",
 	"USERLIST": "Participants",
 	"LOGIN_SLOGAN": "Identifiez-vous avec un compte pour suggérer des chansons.",
+	"LOGIN_SLOGAN_ADMIN": "Identifiez-vous avec un compte pour accéder à Karaoke Mugen.",
+	"FUCK_GO_BACK": "Retour",
 	"LOGIN": "Connexion",
 	"USERNAME": "Nom d'utilisateur",
 	"NEW_ACCOUNT": "Nouveau compte",

@@ -203,6 +203,8 @@
 	"ACCOUNT": "My account",
 	"USERLIST": "Users",
 	"LOGIN_SLOGAN": "Login with an account to suggest songs.",
+	"LOGIN_SLOGAN_ADMIN": "Login with an account.",
+	"FUCK_GO_BACK": "Back",
 	"LOGIN": "Login",
 	"USERNAME": "Username",
 	"NEW_ACCOUNT": "New account",
