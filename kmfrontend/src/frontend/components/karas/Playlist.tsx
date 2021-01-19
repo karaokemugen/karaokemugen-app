@@ -891,7 +891,6 @@ class Playlist extends Component<IProps, IState> {
 									this.state.data &&
 									<BlacklistCriterias
 										data={this.state.data as DBBLC[]}
-										scope={this.props.scope}
 										tags={this.props.tags}
 										blSet={this.state.bLSet as BLCSet}
 									/>

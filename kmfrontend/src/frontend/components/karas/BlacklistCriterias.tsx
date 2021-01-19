@@ -31,7 +31,6 @@ const listTypeBlc = [
 	'BLCTYPE_14'];
 
 interface IProps {
-	scope: string;
 	data: Array<BLC>;
 	tags: Array<Tag> | undefined;
 	blSet: BLCSet;
@@ -75,43 +74,40 @@ class BlacklistCriterias extends Component<IProps, IState> {
 		const tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.bcType)) : [];
 		return (
 			<React.Fragment>
-				{this.props.scope === 'admin' ?
-					<div className="blacklist-criterias-input">
-						<select onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
-							{listTypeBlc.map((value) => {
-								return <option key={value} value={value.replace('BLCTYPE_', '')}>{i18next.t(`BLACKLIST.${value}`)}</option>;
-							})
-							}
-						</select>
-						<div className="bcValContainer">
-							{tagsFiltered.length > 0 ?
-								<Autocomplete value={this.state.bcVal}
-									options={tagsFiltered} onChange={value => this.setState({ bcVal: value })} /> :
-								<input type="text" value={this.state.bcVal} placeholder={i18next.t('BLC.ADD_BLC')}
-									className="input-blc" onChange={e => this.setState({ bcVal: e.target.value })}
-									   onKeyPress={e => {
-										   if (e.key === 'Enter') this.addBlacklistCriteria();
-									   }} />
-							}
-							<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}><i className="fas fa-plus"></i></button>
-						</div>
+				<div className="bcDescription">{i18next.t('BLC.BLC_DESC')}</div>
+				<div className="blacklist-criterias-input">
+					<select onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
+						{listTypeBlc.map((value) => {
+							return <option key={value} value={value.replace('BLCTYPE_', '')}>{i18next.t(`BLACKLIST.${value}`)}</option>;
+						})
+						}
+					</select>
+					<div className="bcValContainer">
+						{tagsFiltered.length > 0 ?
+							<Autocomplete value={this.state.bcVal}
+								options={tagsFiltered} onChange={value => this.setState({ bcVal: value })} /> :
+							<input type="text" value={this.state.bcVal} placeholder={i18next.t('BLC.ADD_BLC')}
+								className="input-blc" onChange={e => this.setState({ bcVal: e.target.value })}
+								onKeyPress={e => {
+									if (e.key === 'Enter') this.addBlacklistCriteria();
+								}} />
+						}
+						<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}><i className="fas fa-plus"></i></button>
+					</div>
 
-					</div> : null
-				}
+				</div>
 				{types.map((type) => {
 					return <React.Fragment key={type}>
 						<div className="list-group-item liType">{i18next.t('BLACKLIST.BLCTYPE_' + type)}</div>
 						{this.props.data.map(criteria => {
 							return (criteria.type === type ?
 								<div key={criteria.blcriteria_id} className="list-group-item liTag">
-									{this.props.scope === 'admin' ?
-										<div className="actionDiv">
-											<button title={i18next.t('BLC.DELETE_BLC')} name="deleteCriteria"
-												className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id as number)}>
-												<i className="fas fa-minus"></i>
-											</button>
-										</div> : null
-									}
+									<div className="actionDiv">
+										<button title={i18next.t('BLC.DELETE_BLC')} name="deleteCriteria"
+											className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id as number)}>
+											<i className="fas fa-minus"></i>
+										</button>
+									</div>
 									<div className="contentDiv">
 										{criteria.type === 1001 ?
 											buildKaraTitle(

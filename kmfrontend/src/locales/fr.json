@@ -127,6 +127,7 @@
 		"CURRENT_PUBLIC": "Courante et publique"
 	},
 	"BLC": {
+		"BLC_DESC": "Sélectionnez et ajoutez des critères de liste noire pour automatiquement interdire certaines chansons",
 		"ADD": "Créer une liste de critères",
 		"EDIT": "Editer la liste de critères",
 		"DELETE": "Supprimer la liste de critères",
@@ -921,7 +922,7 @@
 		"BLCTYPE_1002": "Plus long que (s)",
 		"BLCTYPE_1003": "Plus court que (s)",
 		"BLCTYPE_1004": "Titre contenant",
-		"BLCTYPE_0": "Métadonnées",
+		"BLCTYPE_0": "Année",
 		"BLCTYPE_1": "Série",
 		"BLCTYPE_2": "Chanteur",
 		"BLCTYPE_3": "Type",

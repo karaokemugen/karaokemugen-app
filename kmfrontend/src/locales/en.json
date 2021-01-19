@@ -136,6 +136,7 @@
 		"CURRENT_PUBLIC": "Current and public"
 	},
 	"BLC": {
+		"BLC_DESC": "Select and add blacklist criterias to automatically disable certain songs.",
 		"ADD": "Create criterias list",
 		"EDIT": "Edit criterias list",
 		"DELETE": "Delete criterias list",
@@ -902,7 +903,7 @@
 		"BLCTYPE_1002": "Longer than (sec)",
 		"BLCTYPE_1003": "Shorter than (sec)",
 		"BLCTYPE_1004": "Title contains",
-		"BLCTYPE_0": "Metadatas",
+		"BLCTYPE_0": "Years",
 		"BLCTYPE_1": "Series",
 		"BLCTYPE_2": "Singer",
 		"BLCTYPE_3": "Type",

@@ -1,8 +1,16 @@
 @import '../../styles/variables';
 
-.blacklist-criterias-input {
-	background-color: #333333ab;
+.bcDescription {
 	margin: 1em;
+	font-weight: bold;
+}
+
+.blacklist-criterias-input {
+	margin: 1em;
+
+	select {
+		margin-bottom: 1em;
+	}
 
 	.bcValContainer {
 		display: flex;
