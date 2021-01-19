@@ -1,11 +1,20 @@
-import repl from 'repl';
-import socket from 'socket.io-client';
+/**
+ * How to use
+ *
+ * ts-node socketClient.ts
+ * in a TTY-compatible terminal (cmd on Windows, not git bash)
+ * use sendCommand('login', {body: {...}})  with the right params
+ *
+ */
 
-const io = socket(process.argv[2] || 'http://localhost:1337');
+import repl from 'repl';
+import {io} from 'socket.io-client';
+
+const socket = io(process.argv[2] || 'http://localhost:1337');
 
 function sendCommand(name: string, data: any) {
-	io.emit(name, data, (ack) => {
-		console.log(ack);
+	socket.emit(name, data, (ack) => {
+		console.log(JSON.stringify(ack, null, 2));
 	});
 }
 
