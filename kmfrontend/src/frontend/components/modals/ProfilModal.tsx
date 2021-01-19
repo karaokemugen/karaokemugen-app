@@ -420,7 +420,7 @@ class ProfilModal extends Component<IProps, IState> {
 								id={user.login}>
 								<div className="userLine" onClick={() => this.getUserDetails(user)}>
 									<span className="nickname">{user.nickname}</span>
-									<img className="avatar" alt="avatar" src={`/avatars/${user.avatar_file}`} />
+									<ProfilePicture user={user} className="img-circle avatar" />
 								</div>
 								{this.state.userDetails?.login === user.login ?
 									<div className="userDetails">
