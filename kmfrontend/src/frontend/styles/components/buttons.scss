@@ -169,12 +169,14 @@ div > a, h5 > a {
 }
 
 @media (max-width:$mugen-breakpoint-small) {
-	.messageButton, .subtitleButton, .rewindButton {
-		display: none;
-	}
+	.KmAppWrapperDecorator:not(.chibi) {
+		.messageButton, .subtitleButton, .rewindButton {
+			display: none;
+		}
 
-	.buttonsMobileMenu {
-		display: block;
+		.buttonsMobileMenu {
+			display: block;
+		}
 	}
 }
 
