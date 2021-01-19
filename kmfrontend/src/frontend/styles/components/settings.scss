@@ -22,10 +22,28 @@
 	align-items: center;
 	padding: 0.75em;
 	background-color: $mugen-playlist-odd;
+
+	> div {
+		display: flex;
+		align-items: center;
+
+		input:not([type="range"]) {
+			background-color: scale-color($mugen-playlist-odd, $lightness: 15%);
+			color: white;
+			border: darkgrey 1px solid;
+			padding: .5em;
+			&:focus {
+				border: white 1px solid;
+			}
+		}
+	}
 }
 
 .settings-line:nth-child(even) {
 	background-color: $mugen-playlist-even;
+	> div input:not([type="range"]) {
+		background-color: scale-color($mugen-playlist-even, $lightness: 15%);
+	}
 }
 
 .blur-hover {
@@ -60,12 +78,6 @@
 	border-left: 5px solid #ffffff40;
 	min-height: 20px;
 	margin-bottom: 10px;
-
-	.control-label {
-		padding-left: 3em;
-		display: flex;
-		align-items: center;
-	}
 }
 
 .systempanel-tooltip {
