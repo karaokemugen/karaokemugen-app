@@ -274,7 +274,7 @@ class ProfilModal extends Component<IProps, IState> {
 						<a onClick={() => this.setState({ activeView: 'userlist' })}> {i18next.t('USERLIST')}</a>
 					</li>
 				</ul>
-				<button className="closeModal btn btn-action"
+				<button className="closeModal"
 					onClick={this.closeModal}>
 					<i className="fas fa-fw fa-times"></i>
 				</button>

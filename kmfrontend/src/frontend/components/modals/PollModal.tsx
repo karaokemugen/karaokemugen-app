@@ -49,7 +49,7 @@ class PollModal extends Component<IProps, IState> {
 							<li className="modal-title active">
 								<a style={{ fontWeight: 'bold' }}>{i18next.t('POLLTITLE')}</a>
 							</li>
-							<button className="closeModal btn btn-action"
+							<button className="closeModal"
 								onClick={() => {
 									const element = document.getElementById('modal');
 									if (element) ReactDOM.unmountComponentAtNode(element);

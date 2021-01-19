@@ -50,6 +50,7 @@
 	padding: 1em;
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	.modal-title {
 		font-size: 2rem;
 		@media screen and (max-width: $mugen-breakpoint-small) {
@@ -170,11 +171,13 @@
 
 .closeModal {
 	border: none;
-	background-color: transparent;
-	color: #dbdbdbde;
-	height: 2em;
+	background-color: $mugen-btn-background;
+	color: whitesmoke;
+	font-size: 2em;
 	cursor: pointer;
 	z-index: 10007;
+	padding: 0.25em;
+	border: $mugen-btn-border;
 }
 .closeModal:hover {
 	color: #e6e6e6fa;
@@ -189,6 +192,7 @@
 		background-color: $mugen-nav-background;
 		position: unset;
 		margin: 0;
+		color: #dbdbdbde;
 		padding: 0 0.5em;
 		border-radius: 0;
 		line-height: 1.75em;

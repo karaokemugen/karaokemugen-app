@@ -41,7 +41,7 @@ class BlcSetCopyModal extends Component<IProps, IState> {
 					<div className="modal-content">
 						<div className="modal-header">
 							<h4 className="modal-title">{i18next.t('BLC.COPY_TO')}</h4>
-							<button className="closeModal btn btn-action"
+							<button className="closeModal"
 								onClick={() => {
 									const element = document.getElementById('modal');
 									if (element) ReactDOM.unmountComponentAtNode(element);

@@ -57,7 +57,7 @@ class OnlineProfileModal extends Component<IProps, IState> {
 									: i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')
 								}
 							</h4>
-							<button className="closeModal btn btn-action"
+							<button className="closeModal"
 								onClick={() => {
 									const element = document.getElementById('modal');
 									if (element) ReactDOM.unmountComponentAtNode(element);

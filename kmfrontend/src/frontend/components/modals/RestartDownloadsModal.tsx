@@ -29,7 +29,7 @@ class RestartDownloadsModal extends Component<unknown, unknown> {
 					<div className="modal-content">
 						<ul className="modal-header">
 							<h4 className="modal-title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.TITLE')}</h4>
-							<button className="closeModal btn btn-action"
+							<button className="closeModal"
 								onClick={this.closeModal}>
 								<i className="fas fa-times"></i>
 							</button>

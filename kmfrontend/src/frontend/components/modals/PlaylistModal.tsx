@@ -75,7 +75,7 @@ class PlaylistModal extends Component<IProps, IState> {
 								i18next.t('MODAL.PLAYLIST_MODAL.EDIT_PLAYLIST', { playlist: this.props.playlistInfo.name }) :
 								i18next.t('MODAL.PLAYLIST_MODAL.CREATE_PLAYLIST')
 							}</h4>
-							<button className="closeModal btn btn-action"
+							<button className="closeModal"
 								onClick={this.closeModal}>
 								<i className="fas fa-times"></i>
 							</button>
