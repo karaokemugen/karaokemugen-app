@@ -1,6 +1,6 @@
 import {pg as yesql} from 'yesql';
 
-import { buildClauses, buildTypeClauses, db, transaction } from '../lib/dao/database';
+import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase,DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
@@ -10,7 +10,7 @@ import { DBKaraHistory } from '../types/database/kara';
 import { DBPLCAfterInsert } from '../types/database/playlist';
 import { PLC } from '../types/playlist';
 import { getState } from '../utils/state';
-import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraHistory, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
+import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraHistory, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
 
 
 export async function getSongCountForUser(playlist_id: number, username: string): Promise<number> {
@@ -82,6 +82,8 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let offsetClause = '';
 	let havingClause = '';
 	let groupClause = '';
+	let selectRequested = '';
+	let groupClauseEnd = '';
 	// Search mode to filter karas played or requested in a particular session
 	if (params.mode === 'sessionPlayed') {
 		orderClauses = groupClause = 'p.played_at, ';
@@ -90,11 +92,24 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (params.mode === 'sessionRequested') {
 		orderClauses = groupClause = 'rq.requested_at, ';
 		typeClauses = `AND rq.fk_seid = '${params.modeValue}'`;
+		filterClauses.additionalFrom.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
 	}
 	if (params.mode === 'recent') orderClauses = 'created_at DESC, ';
 	if (params.mode === 'requested') {
-		orderClauses = 'requested DESC, ';
-		havingClause = 'HAVING COUNT(rq.*) > 1';
+		if (getConfig().Online.FetchPopularSongs) {
+			orderClauses = 'requested DESC, ';
+			groupClauseEnd = ', requested';
+			selectRequested = 'orq.requested AS requested, ';
+			filterClauses.additionalFrom.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.kid ');
+			typeClauses = ' AND requested > 1';
+		} else {
+			orderClauses = 'requested DESC, ';
+			filterClauses.additionalFrom.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
+			havingClause = 'HAVING COUNT(rq.*) > 1';
+			selectRequested = `COUNT(rq.*)::integer AS requested,
+			MAX(rq.requested_at) AS lastrequested_at,
+			`;
+		}
 	}
 	if (params.mode === 'played') {
 		orderClauses = 'played DESC, ';
@@ -116,7 +131,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}
 		)`;
 	}
-	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom);
+	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom, selectRequested, groupClauseEnd);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaylistID,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
@@ -196,4 +211,12 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 
 export function removeKaraFromPlaylist(karas: number[], playlist_id: number) {
 	return db().query(sqlremoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
+}
+
+export function emptyOnlineRequested() {
+	return db().query(sqlTruncateOnlineRequested);
+}
+
+export function insertOnlineRequested(requested: string[][]) {
+	return copyFromData('online_requested', requested);
 }

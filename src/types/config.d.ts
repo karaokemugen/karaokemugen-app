@@ -27,8 +27,9 @@ export interface Config {
 			}
 			App?: boolean
 		}
-		MediasHost: string,
-		Remote: boolean
+		MediasHost?: string,
+		Remote?: boolean,
+		FetchPopularSongs?: boolean
 	},
 	Frontend: {
 		GeneratePreviews?: boolean,

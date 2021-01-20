@@ -30,6 +30,10 @@ Online:
   # Use Discord's rich presence to display your activity on your profile
   Discord:
     DisplayActivity: true
+  # Remote URL xxxx.kara.moe enabled ?
+  Remote: true
+  # Fetch popular songs from remote repos ?
+  FetchPopularSongs: true
 Frontend:
   # Enable previews (thumbnail) generation. Should be disabled for tests without all medias present
   GeneratePreviews: true

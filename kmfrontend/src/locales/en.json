@@ -373,6 +373,7 @@
 	"POLLENDED": "{{kara}} wins with {{votes}} votes!",
 	"MYSTERY_SONG_SETTINGS": "Mystery song",
 	"ONLINEURL": "Short URL (kara.moe)",
+	"FETCHPOPULARSONGS": "Fetch popular songs from your online repositories",
 	"REMOTE": "Allow remote access (<code>.kara.moe)",
 	"REMOTE_URL": "Remote access URL",
 	"REMOTE_STATUS": {
@@ -1247,7 +1248,8 @@
 		},
 		"MOST_REQUESTED": {
 			"TITLE": "Most Popular Songs",
-			"DESCRIPTION": "Lists the most requested songs on your application. Only takes into account karaoke songs added from the public interface."
+			"DESCRIPTION": "Lists the most requested songs on your application. Only takes into account karaoke songs added from the public interface.",
+			"DESCRIPTION_ONLINE": "You're seeing the ONLINE popular song list right now. Disable the \"Fetch popular songs online\" setting to only see those from your instance."
 		},
 		"MOST_PLAYED": {
 			"TITLE": "Most played songs",
