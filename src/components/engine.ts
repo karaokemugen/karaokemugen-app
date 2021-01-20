@@ -207,9 +207,8 @@ export async function initEngine() {
 			if (!state.isTest && !state.isDemo) {
 				if (internet) {
 					updatePlaylistMedias().then(buildAllMediasList).catch(() => {});
-				} else {
-					buildAllMediasList().catch(() => {});
 				}
+				buildAllMediasList().catch(() => {});
 			}
 			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
 			initFetchPopularSongs();
