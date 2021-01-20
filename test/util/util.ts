@@ -81,7 +81,7 @@ export function testKara(kara: any, details: TestDetails) {
 	expect(kara.karafile).to.be.a('string');
 	expect(kara.kid).to.be.a('string').and.match(new RegExp(uuidRegexp));
 	if (details.kara || details.plcDetail) expect(kara.lastplayed_ago).to.satisfy((e:any) => typeof e === 'string' || e === null);
-	if (details.kara) expect(kara.lastrequested_at).to.satisfy((e:any) => typeof e === 'string' || e === null || e === undefined);
+	if (details.kara) expect(kara.lastrequested_at).to.satisfy((e:any) => typeof e === 'string' || e === null);
 	expect(kara.lastplayed_at).to.satisfy((e:any) => typeof e === 'string' || e === null);
 	expect(kara.mediafile).to.be.a('string');
 	expect(kara.mediasize).to.be.a('number').and.at.least(0);
