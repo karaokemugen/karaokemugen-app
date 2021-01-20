@@ -82,9 +82,12 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let offsetClause = '';
 	let havingClause = '';
 	let groupClause = '';
-	let selectRequested = '';
+	let selectRequested = `COUNT(rq.*)::integer AS requested,
+	MAX(rq.requested_at) AS lastrequested_at,
+	`;
+	const joinClauses = [' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid '];
+	// This is normal behaviour without anyone.
 	let groupClauseEnd = '';
-	const joinClauses = [];
 	// Search mode to filter karas played or requested in a particular session
 	if (params.mode === 'sessionPlayed') {
 		orderClauses = groupClause = 'p.played_at, ';
@@ -93,7 +96,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (params.mode === 'sessionRequested') {
 		orderClauses = groupClause = 'rq.requested_at, ';
 		typeClauses = `AND rq.fk_seid = '${params.modeValue}'`;
-		joinClauses.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
 	}
 	if (params.mode === 'recent') orderClauses = 'created_at DESC, ';
 	if (params.mode === 'requested') {
@@ -101,19 +103,14 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			orderClauses = 'requested DESC, ';
 			groupClauseEnd = ', requested';
 			selectRequested = 'orq.requested AS requested, ';
+			// Emptying joinClauses first before adding something to it.
+			joinClauses.splice(0, joinClauses.length);
 			joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.kid ');
 			typeClauses = ' AND requested > 1';
 		} else {
 			orderClauses = 'requested DESC, ';
-			joinClauses.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
 			havingClause = 'HAVING COUNT(rq.*) > 1';
-			selectRequested = `COUNT(rq.*)::integer AS requested,
-			MAX(rq.requested_at) AS lastrequested_at,
-			`;
 		}
-	} else {
-		selectRequested = 'MAX(rq.requested_at) AS lastrequested_at, ';
-		joinClauses.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
 	}
 	if (params.mode === 'played') {
 		orderClauses = 'played DESC, ';
