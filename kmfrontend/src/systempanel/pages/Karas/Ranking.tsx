@@ -36,7 +36,12 @@ class Ranking extends Component<unknown, RankingState> {
 			<>
 				<Layout.Header>
 					<div className='title'>{i18next.t('HEADERS.MOST_REQUESTED.TITLE')}</div>
-					<div className='description'>{i18next.t('HEADERS.MOST_REQUESTED.DESCRIPTION')}</div>
+					<div className='description'>
+						{this.context.globalState.settings.data.config?.Online?.FetchPopularSongs ?
+							i18next.t('HEADERS.MOST_REQUESTED.DESCRIPTION_ONLINE') : 
+							i18next.t('HEADERS.MOST_REQUESTED.DESCRIPTION')
+						}
+					</div>
 				</Layout.Header>
 				<Layout.Content>
 					<Button style={{margin: '1em'}} type='primary' onClick={this.refresh}>{i18next.t('REFRESH')}</Button>

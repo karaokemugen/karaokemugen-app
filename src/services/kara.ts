@@ -1,9 +1,11 @@
-import logger from 'winston';
+import internet from 'internet-available';
 
 import {	addPlayed,
+	emptyOnlineRequested,
 	getKaraHistory as getKaraHistoryDB,
 	getKaraMini as getKaraMiniDB,
 	getYears as getYearsDB,
+	insertOnlineRequested,
 	selectAllKaras,
 	selectAllKIDs,
 } from '../dao/kara';
@@ -15,13 +17,20 @@ import {KaraList, KaraParams, YearList} from '../lib/types/kara';
 import { Token } from '../lib/types/user';
 import {ASSToLyrics} from '../lib/utils/ass';
 import { getConfig } from '../lib/utils/config';
+import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
-import {profile} from '../lib/utils/logger';
+import logger, {profile} from '../lib/utils/logger';
 import { DBKaraHistory } from '../types/database/kara';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getTagNameInLanguage } from './tag';
 
+let popularKaraFetchIntervalID: any;
+
+export function initFetchPopularSongs() {
+	if (!popularKaraFetchIntervalID) popularKaraFetchIntervalID = setInterval(fetchPopularSongs, 3600000);
+	fetchPopularSongs();
+}
 
 /* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
 export async function isAllKaras(karas: string[]): Promise<string[]> {
@@ -220,5 +229,40 @@ export function getSongVersion(kara: DBKara): string {
 		return ` ${versions.join(' ')}`;
 	} else {
 		return '';
+	}
+}
+
+export async function fetchPopularSongs() {
+	try {
+		const conf = getConfig();
+		profile('initPopularSongs');
+		const popularKIDs: Map<string, string> = new Map();
+		try {
+			await internet();
+		} catch(err) {
+			logger.warn('Internet not available, cannot init popular songs', {service: 'Kara', obj: err});
+			profile('initPopularSongs');
+			throw err;
+		}
+		const repos = conf.System.Repositories.filter(r => r.Enabled && r.Online);
+		for (const repo of repos) {
+			try {
+				const res = await HTTP.get(`https://${repo.Name}/api/karas/search?order=requested`);
+				const karas = JSON.parse(res.body);
+				for (const kara of karas.content) {
+					popularKIDs.set(kara.kid, kara.requested);
+				}
+			} catch(err) {
+				logger.warn(`Failed to fetch popular songs from ${repo.Name}`);
+				throw err;
+			}
+		}
+		await emptyOnlineRequested();
+		const kidRequested = Array.from(popularKIDs.entries());
+		await insertOnlineRequested(kidRequested);
+	} catch(err) {
+		// Non fatal
+	} finally {
+		profile('initPopularSongs');
 	}
 }

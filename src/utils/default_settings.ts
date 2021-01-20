@@ -59,7 +59,8 @@ export const defaults: Config = {
 			},
 			App: true,
 		},
-		Remote: false
+		Remote: false,
+		FetchPopularSongs: true
 	},
 	Frontend: {
 		GeneratePreviews: true,

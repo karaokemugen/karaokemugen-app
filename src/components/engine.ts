@@ -23,7 +23,7 @@ import {emit, on} from '../lib/utils/pubsub';
 import {initBlacklistSystem} from '../services/blacklist';
 import {initDownloader, wipeDownloadQueue} from '../services/download';
 import { downloadTestSongs, updateAllBases, updateAllMedias } from '../services/downloadUpdater';
-import { getAllKaras } from '../services/kara';
+import { getAllKaras, initFetchPopularSongs } from '../services/kara';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
@@ -212,6 +212,7 @@ export async function initEngine() {
 				}
 			}
 			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
+			initFetchPopularSongs();
 			setState({ ready: true });
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
