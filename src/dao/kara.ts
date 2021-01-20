@@ -110,6 +110,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			MAX(rq.requested_at) AS lastrequested_at,
 			`;
 		}
+	} else {
+		selectRequested = 'MAX(rq.requested_at) AS lastrequested_at, '
+		filterClauses.additionalFrom.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
 	}
 	if (params.mode === 'played') {
 		orderClauses = 'played DESC, ';
