@@ -50,7 +50,7 @@ VALUES(
 ) ON CONFLICT DO NOTHING;
 `;
 
-export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string, additionalFrom: string[], selectRequested: string, groupClauseEnd: string) => `SELECT
+export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string, additionalFrom: string[], selectRequested: string, groupClauseEnd: string, joinClauses: string[]) => `SELECT
   ak.kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
@@ -105,6 +105,7 @@ LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid AND pc.fk_id_playli
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
+${joinClauses.join('')}
 ${additionalFrom.join('')}
 WHERE true
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}

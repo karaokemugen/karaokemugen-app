@@ -84,6 +84,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let groupClause = '';
 	let selectRequested = '';
 	let groupClauseEnd = '';
+	const joinClauses = [];
 	// Search mode to filter karas played or requested in a particular session
 	if (params.mode === 'sessionPlayed') {
 		orderClauses = groupClause = 'p.played_at, ';
@@ -92,7 +93,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (params.mode === 'sessionRequested') {
 		orderClauses = groupClause = 'rq.requested_at, ';
 		typeClauses = `AND rq.fk_seid = '${params.modeValue}'`;
-		filterClauses.additionalFrom.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
+		joinClauses.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
 	}
 	if (params.mode === 'recent') orderClauses = 'created_at DESC, ';
 	if (params.mode === 'requested') {
@@ -100,19 +101,19 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			orderClauses = 'requested DESC, ';
 			groupClauseEnd = ', requested';
 			selectRequested = 'orq.requested AS requested, ';
-			filterClauses.additionalFrom.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.kid ');
+			joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.kid ');
 			typeClauses = ' AND requested > 1';
 		} else {
 			orderClauses = 'requested DESC, ';
-			filterClauses.additionalFrom.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
+			joinClauses.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
 			havingClause = 'HAVING COUNT(rq.*) > 1';
 			selectRequested = `COUNT(rq.*)::integer AS requested,
 			MAX(rq.requested_at) AS lastrequested_at,
 			`;
 		}
 	} else {
-		selectRequested = 'MAX(rq.requested_at) AS lastrequested_at, '
-		filterClauses.additionalFrom.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
+		selectRequested = 'MAX(rq.requested_at) AS lastrequested_at, ';
+		joinClauses.push(' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid ');
 	}
 	if (params.mode === 'played') {
 		orderClauses = 'played DESC, ';
@@ -134,7 +135,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}
 		)`;
 	}
-	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom, selectRequested, groupClauseEnd);
+	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom, selectRequested, groupClauseEnd, joinClauses);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaylistID,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
