@@ -880,6 +880,8 @@
 		"NEW_REPOSITORY": "New repository",
 		"ONLINE": "Online",
 		"ENABLED": "Enabled",
+		"SENDSTATS": "Send statistics",
+		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
 		"MOVE": "Define the priority of repositories",
 		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",

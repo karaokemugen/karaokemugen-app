@@ -254,6 +254,7 @@ async function checkRepositoryExists(repoName: string, useLocal = true): Promise
 				Name: repoName,
 				Online: true,
 				Enabled: true,
+				SendStats: getConfig().Online.Stats,
 				Path: {
 					Karas: [`repos/${repoName}/karaokes`],
 					Lyrics: [`repos/${repoName}/lyrics`],

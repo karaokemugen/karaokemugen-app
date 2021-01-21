@@ -218,6 +218,8 @@ System:
   Repositories:
     - Name: kara.moe
       Online: true
+      Enabled: true
+      SendStats: false
       Path:
         Karas:
           - repos/kara.moe/karaokes
@@ -230,6 +232,7 @@ System:
     - Name: world.karaokes.moe
       Online: true
       Enabled: false
+      SendStats: false
       Path:
         Karas:
           - repos/world/karaokes

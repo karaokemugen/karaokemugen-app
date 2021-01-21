@@ -47,6 +47,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			Name: values.Name,
 			Online: values.Online,
 			Enabled: values.Enabled,
+			SendStats: values.SendStats,
 			Path: {
 				Karas: values.PathKaras,
 				Lyrics: values.PathLyrics,
@@ -78,6 +79,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					Name: this.props.repository?.Name,
 					Online: this.props.repository?.Online,
 					Enabled: this.props.repository?.Enabled,
+					SendStats: this.props.repository?.SendStats,
 					PathKaras: this.props.repository?.Path.Karas,
 					PathLyrics: this.props.repository?.Path.Lyrics,
 					PathMedias: this.props.repository?.Path.Medias,
@@ -119,6 +121,20 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					labelCol={{ flex: '0 1 200px' }}
 					valuePropName="checked"
 					name="Enabled"
+				>
+					<Checkbox />
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>{i18next.t('REPOSITORIES.SENDSTATS')}&nbsp;
+							<Tooltip title={i18next.t('REPOSITORIES.SENDSTATS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 200px' }}
+					valuePropName="checked"
+					name="SendStats"
 				>
 					<Checkbox />
 				</Form.Item>

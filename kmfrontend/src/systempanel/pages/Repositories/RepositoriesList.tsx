@@ -119,6 +119,11 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		key: 'enabled',
 		render: (text, record) => (<Checkbox disabled={true} checked={record.Enabled} />)
 	}, {
+		title: i18next.t('REPOSITORIES.SENDSTATS'),
+		dataIndex: 'SendStats',
+		key: 'sendStats',
+		render: (text, record) => (<Checkbox disabled={true} checked={record.SendStats} />)
+	}, {
 		title: <span>{i18next.t('REPOSITORIES.MOVE')}&nbsp;
 			<Tooltip title={i18next.t('REPOSITORIES.MOVE_TOOLTIP')}>
 				<QuestionCircleOutlined />

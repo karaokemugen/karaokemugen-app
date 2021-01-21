@@ -19,6 +19,7 @@ const newrepository: Repository = {
 	Name: undefined,
 	Online: false,
 	Enabled: true,
+	SendStats: false,
 	Path: {
 		Karas: [],
 		Lyrics: [],

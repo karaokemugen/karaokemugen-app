@@ -207,6 +207,7 @@ export const defaults: Config = {
 				Name: 'kara.moe',
 				Online: true,
 				Enabled: true,
+				SendStats: true,
 				Path: process.platform === 'win32'
 					? {
 						Karas: ['repos\\kara.moe\\karaokes'],
