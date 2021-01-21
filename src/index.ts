@@ -162,7 +162,7 @@ if (app) {
 	});
 }
 
-if (app && !argv.cli) {
+if (app && !argv.opts().cli) {
 	startElectron();
 } else {
 	// This is in case we're running with yarn startNoElectron or with --cli or --help
@@ -173,7 +173,7 @@ if (app && !argv.cli) {
 
 export async function preInit() {
 	await configureLocale();
-	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
+	await configureLogger(dataPath, argv.opts().debug || (app?.commandLine.hasSwitch('debug')), true);
 	resetSecurityCode();
 	setState({ os: process.platform });
 	const state = getState();
@@ -236,7 +236,7 @@ export async function main() {
 		sentry.error(err);
 		console.log(err);
 		errorStep(i18n.t('ERROR_UNKNOWN'));
-		if (!app || argv.cli) exit(1);
+		if (!app || argv.opts().cli) exit(1);
 	}
 }
 
