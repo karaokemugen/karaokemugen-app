@@ -53,6 +53,8 @@ export default function repoController(router: SocketIOApp) {
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {string} Name Repository name
  * @apiParam {boolean} Online Is the repository an online or local one ?
+ * @apiParam {boolean} Enabled Is the repository enabled
+ * @apiParam {boolean} SendStats Do we send stats over to that repository ?
  * @apiParam {string[]} Path.Karas Directories where to store files
  * @apiParam {string[]} Path.Lyrics Directories where to store files
  * @apiParam {string[]} Path.Medias Directories where to store files
@@ -167,7 +169,7 @@ export default function repoController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			await editRepo(req.body.name, req.body);
+			await editRepo(req.body.Name, req.body);
 			return APIMessage('REPO_EDITED');
 		} catch(err) {
 			const code = 'REPO_EDIT_ERROR';

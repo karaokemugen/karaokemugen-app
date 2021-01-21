@@ -20,8 +20,8 @@ let intervalID: any;
 
 /** Initialize stats upload */
 export function initStats(sendLater: boolean) {
-	if (!intervalID) intervalID = setInterval(sendPayload, 3600000);
-	if (!sendLater) sendPayload();
+	if (!intervalID) intervalID = setInterval(sendAllPayloads, 3600000);
+	if (!sendLater) sendAllPayloads();
 }
 
 /** Stop stats upload */
@@ -30,8 +30,16 @@ export function stopStats() {
 	intervalID = undefined;
 }
 
+export async function sendAllPayloads() {
+	const repos = getConfig().System.Repositories.filter(r => r.Online && r.Enabled && r.SendStats);
+	for (const repo of repos) {
+		const minimal = getConfig().Online.Host !== repo.Name;
+		sendPayload(repo.Name, minimal);
+	}
+}
+
 /** Send stats payload to KM Server */
-export async function sendPayload() {
+export async function sendPayload(host: string, minimal: boolean) {
 	let payload: any;
 	try {
 		try {
@@ -39,17 +47,17 @@ export async function sendPayload() {
 		} catch(err) {
 			throw 'This instance is not connected to the internets';
 		}
-		payload = await buildPayload();
+		payload = await buildPayload(minimal);
 		if (!payload.instance.instance_id) throw 'Could not fetch instance ID';
-		logger.info(`Sending payload (${prettyBytes(JSON.stringify(payload).length)})`, {service: 'Stats'});
-		const conf = getConfig();
-		await HTTP.post(`https://${conf.Online.Host}/api/stats`, {
+		logger.info(`Sending payload to ${host} (${prettyBytes(JSON.stringify(payload).length)})`, {service: 'Stats'});
+		savePayload(payload, host);
+		await HTTP.post(`https://${host}/api/stats`, {
 			json: payload
 		});
-		savePayload(payload);
-		logger.info('Payload sent successfully', {service: 'Stats'});
+
+		logger.info(`Payload sent successfully to ${host}`, {service: 'Stats'});
 	} catch(err) {
-		logger.warn('Uploading stats payload failed', {service: 'Stats', obj: err});
+		logger.warn(`Uploading stats payload failed (${host})`, {service: 'Stats', obj: err});
 		if (err !== 'This instance is not connected to the internets' &&
 			err !== 'Could not fetch instance ID'
 		) {
@@ -61,9 +69,9 @@ export async function sendPayload() {
 
 }
 
-async function savePayload(payload: any) {
+async function savePayload(payload: any, host: string) {
 	try {
-		await asyncWriteFile(resolve(getState().dataPath, 'logs/statsPayload.json'), JSON.stringify(payload, null, 2), 'utf-8');
+		await asyncWriteFile(resolve(getState().dataPath, `logs/statsPayload-${host}.json`), JSON.stringify(payload, null, 2), 'utf-8');
 		logger.info('Payload data saved locally to logs/statsPayload.json', {service: 'Stats'});
 	} catch(err) {
 		// Non-fatal
@@ -73,10 +81,10 @@ async function savePayload(payload: any) {
 }
 
 /** Create stats payload */
-async function buildPayload() {
+async function buildPayload(minimal: boolean) {
 	return {
 		payloadVersion: 3,
-		instance: await buildInstanceStats(),
+		instance: await buildInstanceStats(minimal),
 		viewcounts: await exportPlayed(),
 		requests: await exportRequests(),
 		sessions: await getSessions()
@@ -84,38 +92,47 @@ async function buildPayload() {
 }
 
 /** Create system information stats */
-async function buildInstanceStats() {
-	const conf = cloneDeep(getConfig());
+async function buildInstanceStats(minimal: boolean) {
 	const state = getState();
-	// Delete sensitive info
-	delete conf.App.JwtSecret;
-	delete conf.System.Database;
-	if (conf.Karaoke.StreamerMode.Twitch.OAuth) delete conf.Karaoke.StreamerMode.Twitch.OAuth;
-	const [cpu, mem, gfx, os, disks] = await Promise.all([
-		si.cpu(),
-		si.mem(),
-		si.graphics(),
-		si.osInfo(),
-		si.diskLayout()
-	]);
-	let total_disk_size = 0;
-	disks.forEach(d => {
-		total_disk_size += d.size;
-	});
+	let extraStats = {};
+	let conf: any;
+	if (minimal) {
+		conf = { minimal: true };
+	} else {
+		conf = cloneDeep(getConfig());
+		// Delete sensitive info
+		delete conf.App.JwtSecret;
+		delete conf.System.Database;
+		if (conf.Karaoke.StreamerMode.Twitch.OAuth) delete conf.Karaoke.StreamerMode.Twitch.OAuth;
+		const [cpu, mem, gfx, os, disks] = await Promise.all([
+			si.cpu(),
+			si.mem(),
+			si.graphics(),
+			si.osInfo(),
+			si.diskLayout()
+		]);
+		let total_disk_size = 0;
+		disks.forEach(d => {
+			total_disk_size += d.size;
+		});
+		extraStats = {
+			locale: state.defaultLocale,
+			screens: gfx.displays.length,
+			cpu_manufacturer: cpu.manufacturer,
+			cpu_model: cpu.brand,
+			cpu_speed: cpu.speed,
+			cpu_cores: cpu.cores,
+			memory: mem.total,
+			total_disk_space: total_disk_size,
+			os_platform: os.platform,
+			os_distro: os.distro,
+			os_release: os.release
+		};
+	}
 	return {
 		config: {...conf},
 		instance_id: await getInstanceID(),
 		version: state.version.number,
-		locale: state.defaultLocale,
-		screens: gfx.displays.length,
-		cpu_manufacturer: cpu.manufacturer,
-		cpu_model: cpu.brand,
-		cpu_speed: cpu.speed,
-		cpu_cores: cpu.cores,
-		memory: mem.total,
-		total_disk_space: total_disk_size,
-		os_platform: os.platform,
-		os_distro: os.distro,
-		os_release: os.release
+		...extraStats
 	};
 }

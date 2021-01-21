@@ -9,7 +9,7 @@ import { readAllKaras,readAllTags } from '../lib/services/generation';
 import { Kara,KaraTag } from '../lib/types/kara';
 import { Repository } from '../lib/types/repo';
 import { Tag } from '../lib/types/tag';
-import { resolvedPathRepos } from '../lib/utils/config';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
 import { asyncCheckOrMkdir, asyncCopy,asyncExists, asyncMoveAll, asyncReadDir, extractAllFiles, relativePath, resolveFileInDirs } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
@@ -19,6 +19,7 @@ import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getRemoteKaras } from './downloadUpdater';
 import { editKaraInDB } from './karaManagement';
+import { sendPayload } from './stats';
 import { getTag } from './tag';
 
 type UUIDSet = Set<string>
@@ -66,6 +67,9 @@ export async function editRepo(name: string, repo: Repository) {
 	await checkRepoPaths(repo);
 	if (oldRepo.Enabled !== repo.Enabled) {
 		if (await compareKarasChecksum()) generateDB();
+	}
+	if (!oldRepo.SendStats && repo.SendStats) {
+		sendPayload(repo.Name, repo.Name === getConfig().Online.Host);
 	}
 	logger.info(`Updated ${name}`, {service: 'Repo'});
 }
