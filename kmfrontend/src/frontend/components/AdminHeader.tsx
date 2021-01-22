@@ -88,8 +88,8 @@ class AdminHeader extends Component<IProps, IState> {
 
 	play = (event: any) => {
 		if ((!this.state.statusPlayer || this.state.statusPlayer?.playerStatus === 'stop')
-			&& this.props.idsPlaylist.left !== this.props.currentPlaylist.playlist_id
-			&& this.props.idsPlaylist.right !== this.props.currentPlaylist.playlist_id
+			&& this.props.idsPlaylist.left !== this.props.currentPlaylist?.playlist_id
+			&& this.props.idsPlaylist.right !== this.props.currentPlaylist?.playlist_id
 			&& (this.props.idsPlaylist.left > 0 || this.props.idsPlaylist.right > 0)) {
 			callModal('confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: this.props.currentPlaylist.name }), '',
 				() => commandBackend('sendPlayerCommand', { command: 'play' }));
