@@ -347,7 +347,7 @@ class Playlist extends Component<IProps, IState> {
 		const bLSetList = await commandBackend('getBLCSets');
 		const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
 		await this.setState({ bLSetList: bLSetList, bLSet: bLSet });
-		setCurrentBlSet(this.context.globalDispatch, bLSet.blc_set_id);
+		setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id);
 	}
 
 	changeIdPlaylist = async (idPlaylist: number, idBLSet?: number) => {

@@ -27,8 +27,11 @@ interface IState {
 class PlaylistModal extends Component<IProps, IState> {
 
 	state = {
-		name: this.props.mode === 'edit' && this.props.playlistInfo?.name || undefined,
-		flag_current: this.props.mode === 'edit' && this.props.playlistInfo?.flag_current || false,
+		name: this.props.mode === 'edit' && (this.props.idPlaylist === -4 ?
+			this.props.bLSet?.name
+			: this.props.playlistInfo?.name) || undefined,
+		flag_current: this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current 
+		|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current)) || false,
 		flag_public: this.props.mode === 'edit' && this.props.playlistInfo?.flag_public || false,
 		flag_visible: this.props.mode === 'edit' && this.props.playlistInfo?.flag_visible || true
 	}
@@ -72,7 +75,11 @@ class PlaylistModal extends Component<IProps, IState> {
 					<div className="modal-content">
 						<ul className="modal-header">
 							<h4 className="modal-title">{this.props.mode === 'edit' ?
-								i18next.t('MODAL.PLAYLIST_MODAL.EDIT_PLAYLIST', { playlist: this.props.playlistInfo.name }) :
+								i18next.t('MODAL.PLAYLIST_MODAL.EDIT_PLAYLIST', { playlist: 
+									(this.props.idPlaylist === -4 ?
+										this.props.bLSet.name
+										: this.props.playlistInfo.name)
+								}) :
 								i18next.t('MODAL.PLAYLIST_MODAL.CREATE_PLAYLIST')
 							}</h4>
 							<button className="closeModal"
@@ -89,7 +96,8 @@ class PlaylistModal extends Component<IProps, IState> {
 							<div>
 								<button className="btn btn-default"
 									type="button" onClick={() => this.setState({ flag_current: !this.state.flag_current })}>
-									<input type="checkbox" checked={this.state.flag_current} />
+									<input type="checkbox" checked={this.state.flag_current}
+										onChange={() => this.setState({ flag_current: !this.state.flag_current })} />
 									<div className="btn-large-container">
 										<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT')}</div>
 										<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT_DESC')}</div>
@@ -101,7 +109,8 @@ class PlaylistModal extends Component<IProps, IState> {
 									<div>
 										<button className="btn btn-default"
 											type="button" onClick={() => this.setState({ flag_public: !this.state.flag_public })}>
-											<input type="checkbox" checked={this.state.flag_public} />
+											<input type="checkbox" checked={this.state.flag_public} 
+												onChange={() => this.setState({ flag_public: !this.state.flag_public })} />
 											<div className="btn-large-container">
 												<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC')}</div>
 												<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC_DESC')}</div>
@@ -111,7 +120,8 @@ class PlaylistModal extends Component<IProps, IState> {
 									<div>
 										<button className="btn btn-default"
 											type="button" onClick={() => this.setState({ flag_visible: !this.state.flag_visible })}>
-											<input type="checkbox" checked={this.state.flag_visible} />
+											<input type="checkbox" checked={this.state.flag_visible} 
+												onChange={() => this.setState({ flag_visible: !this.state.flag_visible })} />
 											<div className="btn-large-container">
 												<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE')}</div>
 												<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_DESC')}</div>

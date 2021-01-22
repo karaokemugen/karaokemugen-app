@@ -54,7 +54,7 @@ export async function addSet(params: BLCSet) {
 	});
 	if (params.flag_current) {
 		await unsetCurrentSet();
-		await editBLCSet({blc_set_id: id, flag_current: true});
+		await editBLCSet({name: params.name, blc_set_id: id, flag_current: true});
 		await generateBlacklist();
 	}
 	return id;

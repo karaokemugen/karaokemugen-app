@@ -182,7 +182,7 @@ export default function playlistsController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		// No errors detected
-		req.body.name = unescape(req.body.name?.trim());
+		if (req.body.name) req.body.name = unescape(req.body.name?.trim());
 
 		//Now we add playlist
 		try {
