@@ -39,7 +39,7 @@ class TagEdit extends Component<RouteComponentProps<{ tid: string }>, TagEditSta
 	};
 
 	handleTagMerge = async (tid1: string, tid2: string) => {
-		await commandBackend('mergeTags', {tid1, tid2}, true);
+		await commandBackend('mergeTags', {tid1, tid2}, true, 300000);
 		this.props.history.push('/system/km/tags/');
 	}
 
