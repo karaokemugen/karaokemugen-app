@@ -657,6 +657,7 @@
 		"CLEAN_ALL_DESC": "Supprime les chansons qui n'existent plus sur le(s) dépôt(s) distants.",
 		"QUEUE_LABEL": "File d'attente des téléchargements",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} chansons)\u00a0:",
+		"VIEW_DOWNLOAD_QUEUE": "Voir",
 		"WIPE_DOWNLOAD_QUEUE": "Vider",
 		"START_DOWNLOAD_QUEUE": "Démarrer",
 		"PAUSE_DOWNLOAD_QUEUE": "Pause",
@@ -701,6 +702,7 @@
 		"KARAS": "Karaokés",
 		"LIST": "Liste",
 		"NEW": "Nouveau",
+		"DOWNLOAD_QUEUE": "File d'attente des téléchargements",
 		"DOWNLOAD": "Téléchargement",
 		"BLACKLIST": "Liste noire de téléchargement",
 		"HISTORY": "Historique",
@@ -1256,6 +1258,10 @@
 		"KARAOKE_EDIT": {
 			"TITLE": "Modifier un karaoké",
 			"DESCRIPTION": "Formulaire de modification de karaoké."
+		},
+		"DOWNLOAD_QUEUE": {
+			"TITLE": "File d'attente des téléchargements",
+			"DESCRIPTION": "Voir la liste des téléchargements en cours et en attente."
 		},
 		"DOWNLOAD": {
 			"TITLE": "Gestionnaire de téléchargements",

@@ -21,6 +21,7 @@ import KaraBlacklist from '../pages/Karas/KaraBlacklist';
 import KaraDownload from '../pages/Karas/KaraDownload';
 import KaraEdit from '../pages/Karas/KaraEdit';
 import KaraList from '../pages/Karas/KaraList';
+import QueueDownload from '../pages/Karas/QueueDownload';
 import KaraRanking from '../pages/Karas/Ranking';
 import KaraViewcounts from '../pages/Karas/Viewcounts';
 import Log from '../pages/Log';
@@ -75,6 +76,7 @@ class KMSystem extends Component<unknown, unknown> {
 							<Route path='/system/km/repositories/:name' component={RepositoriesEdit} />
 							<Route path='/system/km/repositories' component={RepositoriesList} />
 
+							<Route path='/system/km/karas/download/queue' component={QueueDownload} />
 							<Route path='/system/km/karas/download' component={KaraDownload} />
 							<Route path='/system/km/karas/blacklist' component={KaraBlacklist} />
 							<Route path='/system/km/karas/create' component={KaraEdit} />

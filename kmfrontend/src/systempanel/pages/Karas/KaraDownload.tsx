@@ -3,6 +3,7 @@ import { Button, Cascader, Col, Input, Layout, Radio, Row, Select, Table } from 
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
@@ -357,7 +358,22 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 					</Row>
 					<Row style={{ margin: '10px' }}>
 						<Col span={11}>
-							<label>{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {this.state.totalMediaSize}</label>
+							<Row>
+								<label>{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {this.state.totalMediaSize}</label>
+							</Row>
+						</Col>
+						<Col span={9}>
+						</Col>
+						<Col span={4}>
+							<Row>
+								<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
+							</Row>
+							<Row>
+								<label>{i18next.t('KARA.QUEUE_LABEL_SONGS', {
+									numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE'
+										&& kara.status !== 'DL_FAILED').length
+								})}</label>
+							</Row>
 						</Col>
 					</Row>
 					<Row justify="space-between">
@@ -372,13 +388,11 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						</Col>
 						<Col span={4}>
 							<Row>
-								<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
-							</Row>
-							<Row>
-								<label>{i18next.t('KARA.QUEUE_LABEL_SONGS', {
-									numberSongs: this.state.karasQueue.filter(kara => kara.status !== 'DL_DONE'
-										&& kara.status !== 'DL_FAILED').length
-								})}</label>
+								<Link to='/system/km/karas/download/queue'>
+									<Button style={{ width: '100px' }} type="primary" key="queueView">
+										{i18next.t('KARA.VIEW_DOWNLOAD_QUEUE')}
+									</Button>
+								</Link>
 							</Row>
 						</Col>
 					</Row>

@@ -34,6 +34,7 @@ class KMMenu extends Component<unknown, unknown> {
 				<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')}>
 					<Menu.Item key='karalist'><Link to='/system/km/karas'>{i18next.t('MENU.LIST')}</Link></Menu.Item>
 					<Menu.Item key='karaimport'><Link to='/system/km/karas/create'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
+					<Menu.Item key='queuedownload'><Link to='/system/km/karas/download/queue'>{i18next.t('MENU.DOWNLOAD_QUEUE')}</Link></Menu.Item>
 					<Menu.Item key='karadownload'><Link to='/system/km/karas/download'>{i18next.t('MENU.DOWNLOAD')}</Link></Menu.Item>
 					<Menu.Item key='karablacklist'><Link to='/system/km/karas/blacklist'>{i18next.t('MENU.BLACKLIST')}</Link></Menu.Item>
 					<Menu.Item key='karahistory'><Link to='/system/km/karas/history'>{i18next.t('MENU.HISTORY')}</Link></Menu.Item>

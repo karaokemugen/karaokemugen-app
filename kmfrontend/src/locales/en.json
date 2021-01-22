@@ -641,6 +641,7 @@
 		"CLEAN_ALL_DESC": "Deletes songs that no longer exist on the remote repository (s).",
 		"QUEUE_LABEL": "Download queue",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} songs):",
+		"VIEW_DOWNLOAD_QUEUE": "View",
 		"WIPE_DOWNLOAD_QUEUE": "Wipe",
 		"START_DOWNLOAD_QUEUE": "Start",
 		"PAUSE_DOWNLOAD_QUEUE": "Pause",
@@ -685,6 +686,7 @@
 		"KARAS": "Karas",
 		"LIST": "List",
 		"NEW": "New",
+		"DOWNLOAD_QUEUE": "Download queue",
 		"DOWNLOAD": "Download",
 		"BLACKLIST": "Download Blacklist",
 		"HISTORY": "History",
@@ -1237,6 +1239,10 @@
 		"KARAOKE_EDIT": {
 			"TITLE": "Edit a karaoke",
 			"DESCRIPTION": "Karaoke modification form."
+		},
+		"DOWNLOAD_QUEUE": {
+			"TITLE": "Download queue",
+			"DESCRIPTION": "See the list of current and pending downloads."
 		},
 		"DOWNLOAD": {
 			"TITLE": "Download manager",
