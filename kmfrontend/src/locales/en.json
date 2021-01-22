@@ -105,9 +105,6 @@
 		"SELECT_ALL": "Select all visible elements",
 		"EMPTY_LIST": "Empty playlist",
 		"DELETE": "Delete playlist",
-		"DELETE_PUBLIC": "This list is defined as public, change the public playlist for another to delete this one.",
-		"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",
-		"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one.",
 		"EDIT": "Edit playlist",
 		"EXPORT": "Export playlist",
 		"ADD": "Add new playlist",
@@ -140,7 +137,6 @@
 		"ADD": "Create criterias list",
 		"EDIT": "Edit criterias list",
 		"DELETE": "Delete criterias list",
-		"DELETE_CURRENT": "This list is defined as current , change the current criterias list for another to delete this one.",
 		"IMPORT": "Import criterias list",
 		"EXPORT": "Export criterias list",
 		"COPY": "Copy this criteria list",
@@ -179,7 +175,6 @@
 	"CL_ABOUT_TO_ADD": "You're about to add {{title}}",
 	"CL_ADD_RANDOM_TITLE": "How many random songs do you want to add?",
 	"CL_INFORMATIVE_MESSAGE": "Informative message",
-	"CL_DELETE_PLAYLIST": "Delete {{playlist}} forever?",
 	"CL_EMPTY_LIST": "Empty list ?",
 	"CL_SCREEN": "Screen",
 	"CL_USERS": "Users' devices",
@@ -524,6 +519,13 @@
 			"LATER": "Ask me later",
 			"DELETE": "Abort all pending downloads",
 			"CONTINUE": "Resume all downloads"
+		},
+		"DELETE_PLAYLIST_MODAL": {
+			"TITLE": "Delete {{playlist}} forever?",
+			"DELETE_CURRENT_BLC": "This list is defined as current , change the current criterias list for another to delete this one.",
+			"DELETE_PUBLIC": "This list is defined as public, change the public playlist for another to delete this one.",
+			"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",
+			"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one."	
 		}
 	},
 	"SETUP_PAGE": {

@@ -17,6 +17,7 @@ import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 import SelectWithIcon from '../generic/SelectWithIcon';
 import BlcSetCopyModal from '../modals/BlcSetCopyModal';
+import DeletePlaylistModal from '../modals/DeletePlaylistModal';
 import FavMixModal from '../modals/FavMixModal';
 import PlaylistModal from '../modals/PlaylistModal';
 import ShuffleModal from '../modals/ShuffleModal';
@@ -102,38 +103,19 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	deletePlaylist = () => {
 		this.togglePlaylistCommands();
-		if (this.props.idPlaylist === -4 && this.props.bLSet?.flag_current) {
-			displayMessage('warning', i18next.t('BLC.DELETE_CURRENT'));
-		} else if (this.props.playlistInfo?.flag_current && this.props.playlistInfo?.flag_public) {
-			displayMessage('warning', i18next.t('ADVANCED.DELETE_CURRENT_PUBLIC'));
-		} else if (this.props.playlistInfo?.flag_public) {
-			displayMessage('warning', i18next.t('ADVANCED.DELETE_PUBLIC'));
-		} else if (this.props.playlistInfo?.flag_current) {
-			displayMessage('warning', i18next.t('ADVANCED.DELETE_CURRENT'));
-		} else {
-			callModal('confirm',
-				i18next.t('CL_DELETE_PLAYLIST',
-					{
-						playlist: this.props.idPlaylist === -4 ?
-							this.props.bLSet?.name :
-							(this.props.playlistInfo as DBPL).name
-					}),
-				'',
-				(confirm: boolean) => {
-					if (confirm) {
-						const url = this.props.idPlaylist === -4 ? 'deleteBLCSet' : 'deletePlaylist';
-						const data = this.props.idPlaylist === -4 ?
-							{ set_id: this.props.bLSet?.blc_set_id } :
-							{ pl_id: this.props.idPlaylist };
-						commandBackend(url, data);
-						if (this.props.idPlaylist === -4) {
-							this.props.changeIdPlaylist(-4);
-						} else {
-							this.props.changeIdPlaylist(this.context.globalState.settings.data.state.publicPlaylistID);
-						}
-					}
-				});
-		}
+		ReactDOM.render(<DeletePlaylistModal
+			changeIdPlaylist={this.props.changeIdPlaylist}
+			idPlaylist={this.props.idPlaylist}
+			playlistInfo={this.props.playlistInfo}
+			bLSet={this.props.bLSet}
+			playlistList={this.getListToSelect()
+				.filter(pl => Number(pl.value) > 0
+				&& Number(pl.value) !== this.props.idPlaylist)}
+			bLSetList={this.props.bLSetList?.filter(set => set.blc_set_id !== this.props.bLSet.blc_set_id).map(set => {
+				return { value: set.blc_set_id.toString(), label: set.name, icons: [] };
+			})}
+			context={this.context}
+		/>, document.getElementById('modal'));
 	};
 
 	startFavMix = async () => {
@@ -536,13 +518,13 @@ class PlaylistHeader extends Component<IProps, IState> {
 					<SelectWithIcon list={this.getListToSelect()} value={this.props.idPlaylist?.toString()}
 						onChange={(value: any) => this.props.changeIdPlaylist(Number(value))} />
 					{this.props.idPlaylist === -4 ?
-						<select
-							value={this.props.bLSet?.blc_set_id}
-							onChange={(e) => this.props.changeIdPlaylist(this.props.idPlaylist, Number(e.target.value))}>
-							{this.props.bLSetList.map(set => {
-								return <option key={set.blc_set_id} value={set.blc_set_id}>{set.name}</option>;
+						<SelectWithIcon 
+							list={this.props.bLSetList.map(set => {
+								return { value: set.blc_set_id.toString(), label: set.name, icons: set.flag_current ? ['fa-play-circle'] : [] };
 							})}
-						</select> : null
+							value={this.props.bLSet?.blc_set_id.toString()}
+							onChange={(value: any) => this.props.changeIdPlaylist(this.props.idPlaylist, Number(value))}
+							 /> : null
 					}
 					{this.props.idPlaylist === -1 ?
 						<div className="searchMenuButtonContainer btn-group">

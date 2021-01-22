@@ -96,9 +96,6 @@
 		"SELECT_ALL": "Sélectionner tous les éléments visibles",
 		"EMPTY_LIST": "Vider la liste",
 		"DELETE": "Supprimer la liste",
-		"DELETE_PUBLIC": "Cette liste est définie comme étant publique, pour la supprimer, définissez une autre liste publique.",
-		"DELETE_CURRENT": "Cette liste est définie comme étant courante, pour la supprimer, définissez une autre liste courante.",
-		"DELETE_CURRENT_PUBLIC": "Cette liste est définie comme étant courante et publique, pour la supprimer, définissez une autre liste courante et publique.",
 		"EDIT": "Editer la liste",
 		"EXPORT": "Exporter la liste",
 		"ADD": "Créer une nouvelle liste",
@@ -131,7 +128,6 @@
 		"ADD": "Créer une liste de critères",
 		"EDIT": "Editer la liste de critères",
 		"DELETE": "Supprimer la liste de critères",
-		"DELETE_CURRENT": "Cette liste est définie comme courante, changez la liste de critère courante pour une autre pour supprimer celle-ci.",
 		"IMPORT": "Importer une liste de critères",
 		"EXPORT": "Exporter la liste de critères",
 		"COPY": "Copier cette liste de critères",
@@ -198,7 +194,6 @@
 	"CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter {{title}}",
 	"CL_ADD_RANDOM_TITLE": "Combien de chansons aléatoires voulez-vous ajouter ?",
 	"CL_INFORMATIVE_MESSAGE": "Message à caractère informatif",
-	"CL_DELETE_PLAYLIST": "Supprimer {{playlist}} pour toujours ?",
 	"CL_EMPTY_LIST": "Vider la liste ?",
 	"CL_SCREEN": "Écran",
 	"CL_USERS": "Utilisateurs",
@@ -540,6 +535,13 @@
 			"LATER": "Me redemander plus tard",
 			"DELETE": "Effacer la liste des téléchargements",
 			"CONTINUE": "Continuer les téléchargements"
+		},
+		"DELETE_PLAYLIST_MODAL": {
+			"TITLE": "Supprimer {{playlist}} pour toujours ?",
+			"DELETE_CURRENT_BLC": "Cette liste est définie comme courante, changez la liste de critère courante pour une autre pour supprimer celle-ci.",
+			"DELETE_PUBLIC": "Cette liste est définie comme étant publique, pour la supprimer, définissez une autre liste publique.",
+			"DELETE_CURRENT": "Cette liste est définie comme étant courante, pour la supprimer, définissez une autre liste courante.",
+			"DELETE_CURRENT_PUBLIC": "Cette liste est définie comme étant courante et publique, pour la supprimer, définissez une autre liste courante et publique."
 		}
 	},
 	"SETUP_PAGE": {
