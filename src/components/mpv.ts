@@ -449,8 +449,8 @@ class Players {
 	private static async genLavfiComplex(mediaData: MediaData): Promise<string> {
 		const isMP3 = mediaData.media.endsWith('.mp3');
 		const shouldDisplayAvatar = mediaData.avatar && getConfig().Karaoke.Display.Avatar;
-		const shouldDisplayVisualEffects = mediaData.media.endsWith('.mp3') && getConfig().Player.VisualizationEffects;
-		const MP3Boilerplate = `[vid1]scale=-2:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];nullsrc=size=1920x1080:duration=${mediaData.duration},setsar=1,format=rgba[emp]`;
+		const shouldDisplayVisualEffects = isMP3 && getConfig().Player.VisualizationEffects;
+		const MP3Boilerplate = '[vid1]scale=-2:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]';
 		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(mediaData.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio = '[aid1]loudnorm[ao]';
@@ -461,6 +461,7 @@ class Players {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)
 			visu = [
+				`nullsrc=size=1920x1080:duration=${mediaData.duration},setsar=1,format=rgba[emp]`,
 				'[a]showcqt=axis=0[vis]',
 				'[vis]scale=600:400[vecPrep]',
 				'[emp][vecPrep]overlay=main_w-overlay_w:main_h-overlay_h:x=0[visu]',
@@ -472,8 +473,8 @@ class Players {
 			avatar = [
 				`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
 				`[logo][${isMP3 ? (visu ? 'ovrl':'vpoc'):'vid1'}]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]`,
-				(isMP3 && !visu) ? '[base][emp]overlay[ovrl]' : undefined,
-				`[${(isMP3 && !visu) ? 'ovrl':'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 8},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vfinal]`
+				(isMP3 && visu) ? '[base][emp]overlay[ovrl]' : undefined,
+				`[${(isMP3 && visu) ? 'ovrl':'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 8},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vfinal]`
 			].filter(x => !!x).join(';');
 		}
 		return [
@@ -481,7 +482,8 @@ class Players {
 			isMP3 ? MP3Boilerplate : undefined,
 			visu,
 			avatar,
-			(!visu && !avatar) ? '[vid1]null[vfinal]' : undefined,
+			(isMP3 && !visu && !avatar) ? '[vpoc]null[vfinal]' : undefined,
+			(!isMP3 && !visu && !avatar) ? '[vid1]null[vfinal]' : undefined,
 			(visu && !avatar) ? '[ovrl]null[vfinal]' : undefined,
 			'[vfinal]null[vo]'
 		].filter(x => !!x).join(';');
@@ -685,7 +687,6 @@ class Players {
 		const conf = getConfig();
 		logger.debug('Play event triggered', {service: 'Player'});
 		playerState.playing = true;
-		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
 		let mediaFile: string;
 		let subFile: string;
 		const options: any = {
