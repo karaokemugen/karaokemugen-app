@@ -60,6 +60,7 @@ class KMSystem extends Component<unknown, unknown> {
 						<Loading />
 						<TasksEvent limit={5} />
 						<Switch>
+							<Redirect from='/system/km' to='/system/home' />
 							<Redirect from='/system' exact to='/system/home' />
 							<Route path='/system/home' component={Home} />
 
