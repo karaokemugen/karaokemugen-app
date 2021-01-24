@@ -30,6 +30,8 @@
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
+	width: 100%;
+	margin-bottom: 1em;
 	.modal-title-block {
 		flex-grow: 2;
 		overflow-wrap: anywhere;

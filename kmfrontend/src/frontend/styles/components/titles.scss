@@ -4,7 +4,8 @@
 	align-items: center;
 	flex-wrap: wrap;
 	.tag.inline {
-		padding: 0.15em 0.2em;
+		padding: 0 .25em;
+		margin-bottom: 0;
 	}
 	&.problematic {
 		color: orange;
