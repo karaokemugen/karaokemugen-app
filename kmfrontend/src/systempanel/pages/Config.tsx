@@ -163,7 +163,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 				<Select.Option value="yes"> {i18next.t('CONFIG.PROPERTIES.PLAYER_HARDWAREDECODING_OPTIONS.FORCE')} </Select.Option>
 			</Select> :
 				(record.key === 'System.Repositories' ?
-					<label><Link to={'/system/km/repositories'}>{i18next.t('CONFIG.REPOSITORIES_PAGES')}</Link></label> :
+					<label><Link to={'/system/repositories'}>{i18next.t('CONFIG.REPOSITORIES_PAGES')}</Link></label> :
 					(typeof record.value === 'boolean' ?
 						<Switch onChange={(e) => this.saveSetting(record.key, e)} defaultChecked={record.value} /> :
 						(typeof record.value === 'number' ?

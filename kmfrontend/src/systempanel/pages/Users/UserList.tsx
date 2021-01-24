@@ -48,7 +48,7 @@ class UserList extends Component<unknown, UserListState> {
 					<div className='description'>{i18next.t('HEADERS.USER_LIST.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
-					<Link to={'/system/km/users/create'}>
+					<Link to={'/system/users/create'}>
 						<Button style={{ margin: '0.75em' }} type='primary'>
 							{i18next.t('USERS.NEW_USER')}
 							<PlusOutlined />
@@ -104,13 +104,13 @@ class UserList extends Component<unknown, UserListState> {
 		title: i18next.t('USERS.LOGIN'),
 		dataIndex: 'login',
 		key: 'login',
-		render: (text, record) => <Link to={`/system/km/users/${record.login}`}>{text}</Link>,
+		render: (text, record) => <Link to={`/system/users/${record.login}`}>{text}</Link>,
 		sorter: (a, b) => a.login.localeCompare(b.login)
 	}, {
 		title: i18next.t('USERS.NICKNAME'),
 		dataIndex: 'nickname',
 		key: 'nickname',
-		render: (text, record) => <Link to={`/system/km/users/${record.login}`}>{text}</Link>,
+		render: (text, record) => <Link to={`/system/users/${record.login}`}>{text}</Link>,
 		sorter: (a, b) => a.nickname.localeCompare(b.nickname)
 	}, {
 		title: i18next.t('USERS.LAST_LOGIN_AT'),
@@ -133,7 +133,7 @@ class UserList extends Component<unknown, UserListState> {
 		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/km/users/${record.login}`}><EditOutlined /></Link>
+			<Link to={`/system/users/${record.login}`}><EditOutlined /></Link>
 			<Divider type="vertical"/>
 			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
 				() => this.setState({deleteModal: true, user: record})

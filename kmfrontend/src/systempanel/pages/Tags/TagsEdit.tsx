@@ -30,17 +30,17 @@ class TagEdit extends Component<RouteComponentProps<{ tid: string }>, TagEditSta
 
 	saveNew = async (tag: DBTag) => {
 		await commandBackend('addTag', tag, true, 300000);
-		this.props.history.push('/system/km/tags');
+		this.props.history.push('/system/tags');
 	};
 
 	saveUpdate = async (tag: DBTag) => {
 		await commandBackend('editTag', tag, true, 300000);
-		this.props.history.push('/system/km/tags');
+		this.props.history.push('/system/tags');
 	};
 
 	handleTagMerge = async (tid1: string, tid2: string) => {
 		await commandBackend('mergeTags', {tid1, tid2}, true, 300000);
-		this.props.history.push('/system/km/tags/');
+		this.props.history.push('/system/tags/');
 	}
 
 	loadTag = async () => {
@@ -57,7 +57,7 @@ class TagEdit extends Component<RouteComponentProps<{ tid: string }>, TagEditSta
 
 	handleCopy = async (tid, repo) => {
 		await commandBackend('copyTagToRepo', { repo, tid }, true);
-		this.props.history.push('/system/km/tags');
+		this.props.history.push('/system/tags');
 	}
 
 	render() {

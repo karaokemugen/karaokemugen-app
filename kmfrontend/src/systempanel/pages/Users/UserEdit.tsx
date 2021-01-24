@@ -32,12 +32,12 @@ class UserEdit extends Component<RouteComponentProps<{userLogin:string}>, UserEd
 
 	saveNew = async (user) => {
 		await commandBackend('createUser', user, true);
-		this.props.history.push('/system/km/users');
+		this.props.history.push('/system/users');
 	};
 
 	saveUpdate = async (user) => {
 		await commandBackend('editUser', user, true);
-		this.props.history.push('/system/km/users');
+		this.props.history.push('/system/users');
 	};
 
 	loadUser = async () => {

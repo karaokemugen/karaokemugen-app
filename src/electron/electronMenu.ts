@@ -26,15 +26,15 @@ export function initMenu() {
 	const base = 'http://localhost';
 	const urls = {
 		operatorOptions: `${base}:${port}/admin?config`,
-		systemOptions: `${base}:${port}/system/km/options`,
+		systemOptions: `${base}:${port}/system/options`,
 		home: `${base}:${port}/welcome`,
 		operator: `${base}:${port}/admin`,
-		public: `${base}:${port}/`,
-		system: `${base}:${port}/system`,
-		logs: `${base}:${port}/system/km/log`,
-		download: `${base}:${port}/system/km/karas/download`,
-		karas: `${base}:${port}/system/km/karas`,
-		database: `${base}:${port}/system/km/db`
+		public: `${base}:${port}/public`,
+		system: `${base}:${port}/system/home`,
+		logs: `${base}:${port}/system/log`,
+		download: `${base}:${port}/system/karas/download`,
+		karas: `${base}:${port}/system/karas`,
+		database: `${base}:${port}/system/db`
 	};
 	menuItems = [
 		/**

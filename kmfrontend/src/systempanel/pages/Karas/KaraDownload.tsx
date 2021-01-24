@@ -388,7 +388,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						</Col>
 						<Col span={4}>
 							<Row>
-								<Link to='/system/km/karas/download/queue'>
+								<Link to='/system/karas/download/queue'>
 									<Button style={{ width: '100px' }} type="primary" key="queueView">
 										{i18next.t('KARA.VIEW_DOWNLOAD_QUEUE')}
 									</Button>

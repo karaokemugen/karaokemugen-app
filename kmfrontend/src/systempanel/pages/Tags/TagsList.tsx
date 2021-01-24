@@ -133,7 +133,7 @@ class TagsList extends Component<unknown, TagsListState> {
 	}, {
 		title: i18next.t('ACTION'),
 		render: (text, record) => (<span>
-			<Link to={`/system/km/tags/${record.tid}`}>
+			<Link to={`/system/tags/${record.tid}`}>
 				<Button type="primary" icon={<EditOutlined />} />
 			</Link>
 			{!is_touch_device() ? <Divider type="vertical" />:null}

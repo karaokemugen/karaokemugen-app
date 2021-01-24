@@ -43,12 +43,12 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 	saveNew = async (repository) => {
 		await commandBackend('addRepo', repository, true);
-		this.props.history.push('/system/km/repositories');
+		this.props.history.push('/system/repositories');
 	};
 
 	saveUpdate = async (repository) => {
 		await commandBackend('editRepo', repository, true);
-		this.props.history.push('/system/km/repositories');
+		this.props.history.push('/system/repositories');
 	};
 
 	loadrepository = async () => {
@@ -64,7 +64,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 	consolidate = async (consolidatePath: string) => {
 		if (consolidatePath) {
 			await commandBackend('consolidateRepo', { path: consolidatePath, name: this.props.match.params.name }, true, 300000);
-			this.props.history.push('/system/km/repositories');
+			this.props.history.push('/system/repositories');
 		}
 	}
 

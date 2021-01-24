@@ -237,7 +237,7 @@ class WelcomePage extends Component<unknown, IState> {
 										/>
 									</article>
 									<article>
-										<a href={`/system/km/sessions/${this.state.activeSession?.seid}`} title={i18next.t('EDIT_SESSION')} >
+										<a href={`/system/sessions/${this.state.activeSession?.seid}`} title={i18next.t('EDIT_SESSION')} >
 											<i className="fas fa-edit" />
 										</a>
 									</article>
@@ -278,12 +278,12 @@ class WelcomePage extends Component<unknown, IState> {
 								</button>
 							</article>
 							<article className="tile-download">
-								<button type="button" onClick={() => window.location.assign('/system/km/karas/download')}>
+								<button type="button" onClick={() => window.location.assign('/system/karas/download')}>
 									<i className="fas fa-download" /><span>{i18next.t('WLCM_DOWNLOAD')}</span>
 								</button>
 							</article>
 							<article className="tile-logs">
-								<button type="button" onClick={() => window.location.assign('/system/km/log')}>
+								<button type="button" onClick={() => window.location.assign('/system/log')}>
 									<i className="fas fa-terminal" /><span>{i18next.t('WLCM_LOGS')}</span>
 								</button>
 							</article>
@@ -293,15 +293,15 @@ class WelcomePage extends Component<unknown, IState> {
 										<i className="fas fa-chart-line" />{i18next.t('WLCM_STATS')}
 									</label>
 									<ul>
-										<li onClick={() => window.location.assign('/system/km/karas')}>
+										<li onClick={() => window.location.assign('/system/karas')}>
 											<strong>{i18next.t('WLCM_STATS_KARAS')}</strong>
 											<span>{this.state.stats?.karas}</span>
 										</li>
-										<li onClick={() => window.location.assign('/system/km/tags?type=1')}>
+										<li onClick={() => window.location.assign('/system/tags?type=1')}>
 											<strong>{i18next.t('WLCM_STATS_SERIES')}</strong>
 											<span>{this.state.stats?.series}</span>
 										</li>
-										<li onClick={() => window.location.assign('/system/km/tags')}>
+										<li onClick={() => window.location.assign('/system/tags')}>
 											<strong>{i18next.t('WLCM_STATS_TAGS')}</strong>
 											<span>{this.state.stats?.tags}</span>
 										</li>
@@ -314,14 +314,14 @@ class WelcomePage extends Component<unknown, IState> {
 							</article>
 							<article className="tile-repositories">
 								<blockquote>
-									<button type="button" onClick={() => window.location.assign('/system/km/repositories')}>
+									<button type="button" onClick={() => window.location.assign('/system/repositories')}>
 										<i className="fas fa-network-wired" />{i18next.t('WLCM_REPOSITORY')}
 									</button>
 									<ul>
 										{this.state.repositories.map(repository => {
 											return (
 												<li key={repository.Name} className={repository.Enabled ? '' : 'disabled'}
-													onClick={() => window.location.assign(`/system/km/repositories/${repository.Name}`)}>
+													onClick={() => window.location.assign(`/system/repositories/${repository.Name}`)}>
 													<i className={`fas ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
 													<span>{repository.Name}</span>
 												</li>

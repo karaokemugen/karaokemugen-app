@@ -754,7 +754,7 @@
 		"VALIDATE_FILES": "Valider les fichiers",
 		"VALIDATE_FILES_DESCRIPTION": "Valide tous les fichiers de vos dépôts actifs afin de les corriger si nécessaires. Utilisation pour mainteneurs uniquement.",
 		"UPDATE_MEDIA": "Mise à jour des médias uniquement",
-		"UPDATE_MEDIA_DESCRIPTION": "Mainteneurs de dépôt de karaokés uniquement : Si vous gardez à jour votre base via git (utilisateurs avancés) ceci téléchargera <b>tous les médias</b> pour vous mettre à jour. <a href='/system/km/karas/download'><b>Utilisez plutôt le gestionnaire de téléchargements</b></a> pour récupérer de nouveaux karaokés.",
+		"UPDATE_MEDIA_DESCRIPTION": "Mainteneurs de dépôt de karaokés uniquement : Si vous gardez à jour votre base via git (utilisateurs avancés) ceci téléchargera <b>tous les médias</b> pour vous mettre à jour. <a href='/system/karas/download'><b>Utilisez plutôt le gestionnaire de téléchargements</b></a> pour récupérer de nouveaux karaokés.",
 		"DUMP_DATABASE": "Sauvegarder la base de données",
 		"DUMP_DATABASE_DESCRIPTION": "Crée un fichier de sauvegarde karaokemugen.sql dans votre répertoire de données. Ce fichier peut servir de point de restauration ou pour envoyer votre base de données aux développeurs s'ils vous le demande.",
 		"RESTORE_DATABASE": "Restaurer la base de données",

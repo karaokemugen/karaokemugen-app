@@ -71,7 +71,7 @@ class SessionList extends Component<unknown, SessionListState> {
 					<div className='description'>{i18next.t('HEADERS.SESSIONS.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
-					<Link to={'/system/km/sessions/new'}>
+					<Link to={'/system/sessions/new'}>
 						<Button style={{ margin: '0.75em' }} type='primary'>
 							{i18next.t('SESSIONS.NEW_SESSION')}
 							<PlusOutlined />
@@ -139,7 +139,7 @@ class SessionList extends Component<unknown, SessionListState> {
 		key: 'action',
 		render: (text, record) => (
 			<span>
-				<Link to={`/system/km/sessions/${record.seid}`}><EditOutlined /></Link>
+				<Link to={`/system/sessions/${record.seid}`}><EditOutlined /></Link>
 				{record.active ? '' :
 					<React.Fragment>
 						<Divider type="vertical" />

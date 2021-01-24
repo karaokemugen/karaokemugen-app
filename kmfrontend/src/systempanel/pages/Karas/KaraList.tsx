@@ -170,7 +170,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/km/karas/${record.kid}`}>
+			<Link to={`/system/karas/${record.kid}`}>
 				<Button type="primary" icon={<EditOutlined />} />
 			</Link>
 			{!is_touch_device() ? <Divider type="vertical" />:null}

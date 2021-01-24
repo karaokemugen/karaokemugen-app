@@ -60,43 +60,43 @@ class KMSystem extends Component<unknown, unknown> {
 						<Loading />
 						<TasksEvent limit={5} />
 						<Switch>
-							<Redirect from='/system/km' exact to='/system/km/home' />
-							<Route path='/system/km/home' component={Home} />
+							<Redirect from='/system' exact to='/system/home' />
+							<Route path='/system/home' component={Home} />
 
-							<Route path='/system/km/log' component={Log} />
-							<Route path='/system/km/options' component={Options} />
-							<Route path='/system/km/config' component={Config} />
-							<Route path='/system/km/unused' component={UnusedList} />
+							<Route path='/system/log' component={Log} />
+							<Route path='/system/options' component={Options} />
+							<Route path='/system/config' component={Config} />
+							<Route path='/system/unused' component={UnusedList} />
 
-							<Route path='/system/km/sessions/new' component={SessionsEdit} />
-							<Route path='/system/km/sessions/:seid' component={SessionsEdit} />
-							<Route path='/system/km/sessions' component={SessionsList} />
+							<Route path='/system/sessions/new' component={SessionsEdit} />
+							<Route path='/system/sessions/:seid' component={SessionsEdit} />
+							<Route path='/system/sessions' component={SessionsList} />
 
-							<Route path='/system/km/repositories/new' component={RepositoriesEdit} />
-							<Route path='/system/km/repositories/:name' component={RepositoriesEdit} />
-							<Route path='/system/km/repositories' component={RepositoriesList} />
+							<Route path='/system/repositories/new' component={RepositoriesEdit} />
+							<Route path='/system/repositories/:name' component={RepositoriesEdit} />
+							<Route path='/system/repositories' component={RepositoriesList} />
 
-							<Route path='/system/km/karas/download/queue' component={QueueDownload} />
-							<Route path='/system/km/karas/download' component={KaraDownload} />
-							<Route path='/system/km/karas/blacklist' component={KaraBlacklist} />
-							<Route path='/system/km/karas/create' component={KaraEdit} />
-							<Route path='/system/km/karas/history' component={KaraHistory} />
-							<Route path='/system/km/karas/ranking' component={KaraRanking} />
-							<Route path='/system/km/karas/viewcounts' component={KaraViewcounts} />
-							<Route path='/system/km/karas/batch' component={KaraBatchEdit} />
-							<Route path='/system/km/karas/:kid' component={KaraEdit} />
-							<Route path='/system/km/karas' component={KaraList} />
+							<Route path='/system/karas/download/queue' component={QueueDownload} />
+							<Route path='/system/karas/download' component={KaraDownload} />
+							<Route path='/system/karas/blacklist' component={KaraBlacklist} />
+							<Route path='/system/karas/create' component={KaraEdit} />
+							<Route path='/system/karas/history' component={KaraHistory} />
+							<Route path='/system/karas/ranking' component={KaraRanking} />
+							<Route path='/system/karas/viewcounts' component={KaraViewcounts} />
+							<Route path='/system/karas/batch' component={KaraBatchEdit} />
+							<Route path='/system/karas/:kid' component={KaraEdit} />
+							<Route path='/system/karas' component={KaraList} />
 
-							<Route path='/system/km/tags/duplicate' component={TagsDuplicate} />
-							<Route path='/system/km/tags/new' component={TagsEdit} />
-							<Route path='/system/km/tags/:tid' component={TagsEdit} />
-							<Route path='/system/km/tags' component={TagsList} />
+							<Route path='/system/tags/duplicate' component={TagsDuplicate} />
+							<Route path='/system/tags/new' component={TagsEdit} />
+							<Route path='/system/tags/:tid' component={TagsEdit} />
+							<Route path='/system/tags' component={TagsList} />
 
-							<Route path='/system/km/db' component={Database} />
+							<Route path='/system/db' component={Database} />
 
-							<Route path='/system/km/users/create' component={UserEdit} />
-							<Route path='/system/km/users/:userLogin' component={UserEdit} />
-							<Route path='/system/km/users' component={UserList} />
+							<Route path='/system/users/create' component={UserEdit} />
+							<Route path='/system/users/:userLogin' component={UserEdit} />
+							<Route path='/system/users' component={UserList} />
 						</Switch>
 					</Layout>
 				</Layout>

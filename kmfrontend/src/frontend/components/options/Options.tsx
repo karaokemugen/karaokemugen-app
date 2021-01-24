@@ -81,7 +81,7 @@ class Options extends Component<IProps, IState> {
 						<div className="settings-line systempanel-tooltip">
 							{i18next.t('SYSTEMPANEL_TIP.QUESTION')}
 							<strong>
-								{i18next.t('SYSTEMPANEL_TIP.RESPONSE')}<a href="/system/km/options">{i18next.t('SYSTEMPANEL_TIP.LINK')}</a>{i18next.t('SYSTEMPANEL_TIP.AFTER_LINK')}
+								{i18next.t('SYSTEMPANEL_TIP.RESPONSE')}<a href="/system/options">{i18next.t('SYSTEMPANEL_TIP.LINK')}</a>{i18next.t('SYSTEMPANEL_TIP.AFTER_LINK')}
 							</strong>
 						</div>
 					</div>

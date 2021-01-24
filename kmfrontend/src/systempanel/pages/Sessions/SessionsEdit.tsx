@@ -36,17 +36,17 @@ class SessionEdit extends Component<RouteComponentProps<{seid: string}>, Session
 
 	saveNew = async (session:Session) => {
 		await commandBackend('createSession', session, true);
-		this.props.history.push('/system/km/sessions');
+		this.props.history.push('/system/sessions');
 	};
 
 	saveUpdate = async (session:Session) => {
 		await commandBackend('editSession', session, true);
-		this.props.history.push('/system/km/sessions');
+		this.props.history.push('/system/sessions');
 	};
 
 	handleSessionMerge = async (seid1:string, seid2:string) => {
 		await commandBackend('mergeSessions', {seid1: seid1, seid2:seid2}, true);
-		this.props.history.push('/system/km/sessions/');
+		this.props.history.push('/system/sessions/');
 	}
 
 	loadsession = async () => {

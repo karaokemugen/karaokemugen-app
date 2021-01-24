@@ -60,7 +60,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 					<div className='description'>{i18next.t('HEADERS.REPOSITORIES.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
-					<Link to={'/system/km/repositories/new'}>
+					<Link to={'/system/repositories/new'}>
 						<Button style={{ margin: '0.75em' }} type='primary'>
 							{i18next.t('REPOSITORIES.NEW_REPOSITORY')}
 							<PlusOutlined />
@@ -145,7 +145,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		key: 'action',
 		render: (text, record: Repository) => (
 			<span>
-				<Link to={`/system/km/repositories/${record.Name}`}><EditOutlined /></Link>
+				<Link to={`/system/repositories/${record.Name}`}><EditOutlined /></Link>
 				{this.state.repositories.length > 1 ?
 					<React.Fragment>
 						<Divider type="vertical" />

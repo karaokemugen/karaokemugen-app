@@ -109,7 +109,7 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 	}, {
 		title: i18next.t('ACTION'),
 		render: (text, record) => (<span>
-			<Link to={`/system/km/tags/${record.tid}`}><EditOutlined /></Link>
+			<Link to={`/system/tags/${record.tid}`}><EditOutlined /></Link>
 			<Divider type="vertical"/>
 			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
 				() => this.setState({deleteModal: true, tag: record})

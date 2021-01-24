@@ -738,7 +738,7 @@
 		"VALIDATE_FILES": "Validate files",
 		"VALIDATE_FILES_DESCRIPTION": "Validate all files in all enabled repositories to fix them if necessary. Maintainer use only.",
 		"UPDATE_MEDIA": "Update your medias only",
-		"UPDATE_MEDIA_DESCRIPTION": "Karaoke repository mantainers only : If you keep your base updated through git (advanced users) this will download <b>all medias</b> to keep you up to date. <a href='/system/km/karas/download'><b>You should rather use the download manager</b></a> to get new songs.",
+		"UPDATE_MEDIA_DESCRIPTION": "Karaoke repository mantainers only : If you keep your base updated through git (advanced users) this will download <b>all medias</b> to keep you up to date. <a href='/system/karas/download'><b>You should rather use the download manager</b></a> to get new songs.",
 		"DUMP_DATABASE": "Dump database",
 		"DUMP_DATABASE_DESCRIPTION": "Creates a karaokemugen.sql backup file in your data folder. This file can be used to create a restore point ou to send your database to the devs if they ask you to do so.",
 		"RESTORE_DATABASE": "Restore database",

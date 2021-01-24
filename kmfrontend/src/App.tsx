@@ -1,5 +1,5 @@
 import React, { Component, lazy, Suspense } from 'react';
-import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import { isAlreadyLogged } from './store/actions/auth';
@@ -46,8 +46,7 @@ class App extends Component<unknown, AppState> {
 							<Route path='/login' render={() => <Login
 								context={this.context}
 							/> }/>
-							<Redirect from='/system' exact to='/system/km/home' /> {/* Maybe remove this? */}
-							<PrivateRoute path='/system/km' component={KMSystem} />
+							<PrivateRoute path='/system' component={KMSystem} />
 							<PrivateRoute component={KMFrontend} />
 						</Switch>
 					</Suspense>
