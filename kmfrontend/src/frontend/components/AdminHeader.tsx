@@ -71,7 +71,7 @@ class AdminHeader extends Component<IProps, IState> {
 
 	toggleProfileModal = () => {
 		this.setState({ dropDownMenu: !this.state.dropDownMenu });
-		ReactDOM.render(<ProfilModal context={this.context} />, document.getElementById('modal'));
+		ReactDOM.render(<ProfilModal context={this.context} scope="admin" />, document.getElementById('modal'));
 	};
 
 	saveOperatorAdd = (songVisibility: boolean) => {
