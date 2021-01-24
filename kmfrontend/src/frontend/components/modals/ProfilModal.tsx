@@ -274,10 +274,12 @@ class ProfilModal extends Component<IProps, IState> {
 						<a onClick={() => this.setState({ activeView: 'userlist' })}> {i18next.t('USERLIST')}</a>
 					</li>
 				</ul>
-				<button className="closeModal"
-					onClick={this.closeModal}>
-					<i className="fas fa-fw fa-times"></i>
-				</button>
+				{this.props.scope === 'admin' ? // aka. it's a modal, otherwise it's a page and close button is not needed
+					<button className="closeModal"
+						onClick={this.closeModal}>
+						<i className="fas fa-fw fa-times" />
+					</button>:null
+				}
 			</div>
 			{this.state.activeView === 'profile' ?
 				<div id="nav-profil" className="modal-body" >

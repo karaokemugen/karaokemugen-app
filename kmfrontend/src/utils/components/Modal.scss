@@ -170,7 +170,6 @@
 }
 
 .closeModal {
-	border: none;
 	background-color: $mugen-btn-background;
 	color: whitesmoke;
 	font-size: 2em;
@@ -196,6 +195,8 @@
 		padding: 0 0.5em;
 		border-radius: 0;
 		line-height: 1.75em;
+		font-size: 1.25em;
+		border: none;
 		height: unset;
 	}
 }
