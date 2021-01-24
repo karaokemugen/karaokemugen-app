@@ -13,20 +13,24 @@ import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
 import Downloader from '../utils/downloader';
 
-const medias = {
-	Intros: [] as Media[],
-	Outros: [] as Media[],
-	Encores: [] as Media[],
-	Jingles: [] as Media[],
-	Sponsors: [] as Media[],
-};
-
 interface File {
 	basename: string,
 	size: number
 }
 
-const currentMedias = {};
+type Medias = {
+	[key in MediaType]: Media[];
+};
+
+const medias: Medias = {
+	Intros: [],
+	Outros: [],
+	Encores: [],
+	Jingles: [],
+	Sponsors: [],
+};
+
+const currentMedias: Partial<Medias> = {};
 
 // This is public but we need a user/pass for webdav
 const KMSite = {
@@ -197,30 +201,33 @@ export async function buildMediasList(type: MediaType) {
 	currentMedias[type] = cloneDeep(medias[type]);
 }
 
-export function getSingleMedia(type: MediaType): Media {
+export function getSingleMedia(type: MediaType): Media|null {
 	// If no medias exist, return null.
 	if (!medias[type] || medias[type]?.length === 0) {
 		return null;
-	} else {
+	} else if (currentMedias[type]?.length === 0) {
 		// If our current files list is empty after the previous removal
 		// Fill it again with the original list.
 		currentMedias[type] = cloneDeep(medias[type]);
 	}
 	// Pick a media from a random series
-	let media = null;
-	//Jingles do not have a specific file to use in options
-	const series = sample(currentMedias[type].map((m: Media) => m.series));
+	let media: Media|null = null;
+	let fromConfig = false;
 	if (type === 'Jingles' || type === 'Sponsors') {
-		media = sample(currentMedias[type].filter((m: Media) => m.series === series));
+		// Jingles and sponsors do not have a specific file to use in options
+		media = sample(currentMedias[type]);
 	} else {
 		// For every other media type we pick the file from config if it's specified.
-		// If not we take one from the series.
-		media = currentMedias[type].find((m: Media) => basename(m.filename) === getConfig().Playlist.Medias[type].File)
-		||
-		sample(currentMedias[type].filter((m: Media) => m.series === series));
+		const configCandidate = currentMedias[type].find((m: Media) =>
+			basename(m.filename) === getConfig().Playlist.Medias[type].File);
+		if (configCandidate) {
+			fromConfig = true;
+		}
+		media = configCandidate || sample(currentMedias[type]);
 	}
-	//Let's remove the serie of the jingle we just selected so it won't be picked again next time.
-	currentMedias[type] = currentMedias[type].filter((m: Media) => m.series !== media.series);
+	// Let's remove the series of the jingle we just selected so it won't be picked again next time.
+	if (!fromConfig)
+		currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
 	logger.info(`${type} time !`, {service: 'Player'});
 	return media;
 }
