@@ -166,7 +166,7 @@ class Playlist extends Component<IProps, IState> {
 			for (const kara of data.content) {
 				if (kara) {
 					kara.my_public_plc_id = [];
-					kara.flag_inplaylist = false;
+					kara.public_plc_id = [];
 					kara.flag_upvoted = false;
 				}
 			}
@@ -177,20 +177,19 @@ class Playlist extends Component<IProps, IState> {
 
 	KIDUpdated = async (event: {
 		kid: string,
-		flag_inplaylist: boolean,
 		username: string,
 		requester: string,
 		flag_upvoted: boolean,
-		my_public_plc_id: number
+		plc_id: number[]
 	}[]) => {
-		if (this.state.idPlaylist === -1 && (this.state.data as KaraList)?.content ) {
+		if ((this.state.idPlaylist === -1 || this.state.idPlaylist === -5) && (this.state.data as KaraList)?.content ) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				for (const karaUpdated of event) {
 					if (kara?.kid === karaUpdated.kid) {
-						if (karaUpdated.flag_inplaylist === false || karaUpdated.flag_inplaylist === true) {
-							kara.flag_inplaylist = karaUpdated.flag_inplaylist;
-							if (karaUpdated.flag_inplaylist === false) {
+						if (karaUpdated.plc_id) {
+							kara.public_plc_id = karaUpdated.plc_id;
+							if (!karaUpdated.plc_id[0]) {
 								kara.my_public_plc_id = [];
 							}
 						}
@@ -200,7 +199,7 @@ class Playlist extends Component<IProps, IState> {
 							}
 						}
 						if (karaUpdated.requester === this.context.globalState.auth.data.username) {
-							kara.my_public_plc_id = [karaUpdated.my_public_plc_id];
+							kara.my_public_plc_id = karaUpdated.plc_id;
 						}
 					}
 				}
@@ -719,6 +718,16 @@ class Playlist extends Component<IProps, IState> {
 		}
 	};
 
+	deleteCheckedFavorites = async () => {
+		const stateData = this.state.data as KaraList;
+		const listKara = stateData.content.filter(a => a.checked);
+		if (listKara.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
+		await commandBackend('deleteFavorites', { kid: listKara.map(a => a.kid) });
+	};
+
 	onChangeTags = (type: number | string, value: string) => {
 		const searchCriteria = type === 0 ? 'year' : 'tag';
 		const stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
@@ -834,6 +843,7 @@ class Playlist extends Component<IProps, IState> {
 					addCheckedKaras={this.addCheckedKaras}
 					transferCheckedKaras={this.transferCheckedKaras}
 					deleteCheckedKaras={this.deleteCheckedKaras}
+					deleteCheckedFavorites={this.deleteCheckedFavorites}
 					tags={this.props.tags}
 					onChangeTags={this.onChangeTags}
 					getPlaylist={this.getPlaylist}

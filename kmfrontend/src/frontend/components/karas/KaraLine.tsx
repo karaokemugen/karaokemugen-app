@@ -57,20 +57,17 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	}
 
 	upvoteKara = () => {
-		const data = this.props.kara.flag_upvoted ?
-			{ downvote: 'true', plc_id: this.props.kara.playlistcontent_id } :
-			{ plc_id: this.props.kara.playlistcontent_id };
+		const plc_id = this.props.kara.playlistcontent_id ? this.props.kara.playlistcontent_id : this.props.kara.public_plc_id[0];
+		const data = this.props.kara.flag_upvoted ? { downvote: 'true', plc_id: plc_id } : { plc_id: plc_id };
 		commandBackend('votePLC', data);
 	};
 
 	deleteKara = async () => {
-		if (this.props.idPlaylist === -1) {
+		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
 				plc_id: this.props.kara.my_public_plc_id,
 				pl_id: this.props.context.globalState.settings.data.state.publicPlaylistID
 			});
-		} else if (this.props.idPlaylist === -5) {
-			await commandBackend('deleteFavorites', { kid: [this.props.kara.kid] });
 		} else if (this.props.idPlaylist === -2) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
 		} else if (this.props.idPlaylist === -3) {
@@ -82,6 +79,10 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			});
 		}
 	};
+
+	deleteFavorite = () => {
+		commandBackend('deleteFavorites', { kid: [this.props.kara.kid] });
+	}
 
 	playKara = () => {
 		if (this.props.idPlaylist < 0) {
@@ -284,14 +285,12 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						</div> :
 						<React.Fragment>
 							<div className="actionDiv">
-								{!is_touch_device()
-									&& shouldShowProfile ?
+								{!is_touch_device() && shouldShowProfile ?
 									<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-										alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file }} />
-									: null}
+										alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file }} /> : null
+								}
 								<div className="btn-group">
-									{this.props.idPlaylistTo !== idPlaylist &&
-										(this.props.scope === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend.Mode === 2) ?
+									{this.props.scope === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
 										<ActionsButtons
 											idPlaylistTo={this.props.idPlaylistTo}
 											idPlaylist={idPlaylist}
@@ -300,8 +299,12 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 											kara={kara}
 											addKara={this.addKara}
 											deleteKara={this.deleteKara}
-											transferKara={this.transferKara} />
-										: null}
+											transferKara={this.transferKara}
+											deleteFavorite={this.deleteFavorite}
+											upvoteKara={this.upvoteKara}
+											flag_public={this.props.playlistInfo?.flag_public}
+										/> : null
+									}
 									{scope === 'admin' ?
 										<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}
 											onClick={(event) => {
@@ -361,19 +364,6 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										<i className="fas fa-eye-slash"></i>
 									</button> : null
 								}
-								{scope !== 'admin' && this.props.idPlaylist > 0 ? (!kara.flag_dejavu && !kara.flag_playing
-									&& kara.username === this.props.context.globalState.auth.data.username
-									&& this.props.playlistInfo?.flag_public ?
-									<button title={i18next.t('TOOLTIP_DELETEKARA')} className="btn btn-sm btn-action karaLineButton"
-										onClick={this.deleteKara}><i className="fas fa-trash-alt" /></button> :
-									<button className="karaLineButton upvoteKara btn btn-sm btn-action"
-										title={i18next.t('TOOLTIP_UPVOTE')}
-										disabled={this.props.kara.username === this.props.context.globalState.auth.data.username}
-										onClick={this.upvoteKara}>
-										<i className={`fas fa-thumbs-up${kara.flag_upvoted ? ' currentUpvote' : ''}
-										${kara.upvotes > 0 ? ' upvotes' : ''}`} />
-										{kara.upvotes > 0 && kara.upvotes}
-									</button>) : null}
 							</div>
 							{is_touch_device() ?
 								<div className="tagConteneur mobile">

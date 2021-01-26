@@ -71,7 +71,6 @@ export function testKara(kara: any, details: TestDetails) {
 	expect(kara.flag_dejavu).to.be.a('boolean');
 	expect(kara.flag_favorites).to.be.a('boolean');
 	if (details.plc) expect(kara.flag_free).to.be.a('boolean');
-	if (details.kara) expect(kara.flag_inplaylist).to.be.a('boolean');
 	expect(kara.flag_upvoted).to.be.a('boolean');
 	if (details.plc) expect(kara.flag_visible).to.be.a('boolean');
 	if (details.plc) expect(kara.flag_whitelisted).to.be.a('boolean');
@@ -89,6 +88,10 @@ export function testKara(kara: any, details: TestDetails) {
 	if (details.kara) {
 		expect(kara.my_public_plc_id).to.be.an('array');
 		for (const plcid of kara.my_public_plc_id) {
+			expect(plcid).to.satisfy((p:any) => typeof p === 'number' || p === null);
+		}
+		expect(kara.public_plc_id).to.be.an('array');
+		for (const plcid of kara.public_plc_id) {
 			expect(plcid).to.satisfy((p:any) => typeof p === 'number' || p === null);
 		}
 	}

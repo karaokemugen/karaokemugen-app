@@ -577,9 +577,8 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			emitWS('KIDUpdated', PLCsInserted.map(plc => {
 				return {
 					kid: plc.kid,
-					flag_inplaylist: true,
 					requester: plc.username,
-					my_public_plc_id: plc.plc_id
+					plc_id: [plc.plc_id]
 				};
 			}));
 		}
@@ -677,9 +676,8 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 			emitWS('KIDUpdated', plcList.map(plc => {
 				return {
 					kid: plc.kid,
-					flag_inplaylist: true,
 					requester: plc.username,
-					my_public_plc_id: plc.playlistcontent_id
+					plc_id: [plc.playlistcontent_id]
 				};
 			}));
 		}
@@ -727,7 +725,7 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 			emitWS('KIDUpdated', kids.map(kid => {
 				return {
 					kid: kid,
-					flag_inplaylist: false
+					plc_id: []
 				};
 			}));
 		}

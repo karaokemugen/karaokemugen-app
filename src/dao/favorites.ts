@@ -4,6 +4,7 @@ import { buildClauses, db, transaction} from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
 import { DBKara } from '../lib/types/database/kara';
 import { FavParams } from '../types/favorites';
+import { getState } from '../utils/state';
 import {
 	sqlclearFavorites,
 	sqlgetFavorites,
@@ -20,7 +21,10 @@ export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	const query = sqlgetFavorites(filterClauses.sql, limitClause, offsetClause, filterClauses.additionalFrom);
-	const res = await db().query(yesql(query)(filterClauses.params));
+	const res = await db().query(yesql(query)({
+		publicPlaylist_id: getState().publicPlaylistID,
+		...filterClauses.params
+	}));
 	return res.rows;
 }
 
