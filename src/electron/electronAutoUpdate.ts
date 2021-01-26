@@ -14,7 +14,11 @@ export function initAutoUpdate() {
 	autoUpdater.autoDownload = false;
 	autoUpdater.on('error', (error) => {
 		logger.error('', {service: 'AppUpdate', obj: error});
-		dialog.showErrorBox(`${i18next.t('ERROR')}: `, error === null ? 'unknown' : (error.stack || error).toString());
+		dialog.showMessageBox({
+			type: 'none',
+			title: i18next.t('ERROR'),
+			message: error === null ? 'unknown' : (error.stack || error).toString()
+		});
 	});
 	autoUpdater.on('update-available', async () => {
 		logger.info('Update detected', {service: 'AppUpdate'});

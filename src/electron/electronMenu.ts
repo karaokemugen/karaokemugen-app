@@ -388,7 +388,9 @@ function openURL(url: string) {
 async function checkForUpdates() {
 	setManualUpdate(true);
 	logger.info('Checking for updates manually', {service: 'AppUpdate'});
-	await autoUpdater.checkForUpdates();
+	await autoUpdater.checkForUpdates().catch(() => {
+		// Handled in electronAutoUpadte.ts
+	});
 	setManualUpdate(false);
 }
 
