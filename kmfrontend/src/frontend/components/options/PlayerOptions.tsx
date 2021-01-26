@@ -74,7 +74,7 @@ class PlayerOptions extends Component<IProps, IState> {
 				? this.state.displays.map((display: any, index: number) => (
 					<option key={index} value={index} >
 						&nbsp;
-						{index + 1} - ({display.resolutionx}x{display.resolutiony}) {display.model}
+						{index + 1} - ({display.resolutionX}x{display.resolutionY}) {display.model}
 					</option>
 				))
 				: null;
