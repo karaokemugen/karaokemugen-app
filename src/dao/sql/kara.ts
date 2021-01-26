@@ -92,10 +92,7 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   END) as flag_favorites,
   ak.repository as repository,
   ak.tid AS tid,
-  (CASE WHEN pc.fk_kid IS NULL
-	THEN FALSE
-	ELSE TRUE
-  END) as flag_inplaylist,
+  array_agg(DISTINCT pc.pk_id_plcontent) AS public_plc_id,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   array_agg(DISTINCT pc_self.pk_id_plcontent) AS my_public_plc_id,
   count(ak.kid) OVER()::integer AS count
@@ -103,7 +100,7 @@ FROM all_karas AS ak
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
 LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid AND pc.fk_id_playlist = :publicPlaylist_id
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
-LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
+LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
 LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.kid
 ${joinClauses.join('')}
 ${additionalFrom.join('')}

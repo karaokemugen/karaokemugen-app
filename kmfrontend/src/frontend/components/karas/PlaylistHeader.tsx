@@ -61,6 +61,7 @@ interface IProps {
 	selectAllKaras: () => void;
 	transferCheckedKaras: () => void;
 	deleteCheckedKaras: () => void;
+	deleteCheckedFavorites: () => void;
 	addCheckedKaras: () => void;
 	toggleSearchMenu?: () => void;
 	addRandomKaras: () => void;
@@ -346,7 +347,10 @@ class PlaylistHeader extends Component<IProps, IState> {
 									addKara={this.props.addCheckedKaras}
 									deleteKara={this.props.deleteCheckedKaras}
 									transferKara={this.props.transferCheckedKaras}
-									checkedkaras={this.props.checkedkaras} />
+									deleteFavorite={this.props.deleteCheckedFavorites}
+									checkedkaras={this.props.checkedkaras}
+									flag_public={this.props.playlistInfo?.flag_public}
+								/>
 							</React.Fragment> : null
 						}
 					</div>
