@@ -196,7 +196,7 @@
     "@typescript-eslint/parser": "^4.1.1",
     "apidoc": "^0.25.0",
     "chai": "^4.2.0",
-    "electron": "^10.1.2",
+    "electron": "^10.2.0",
     "eslint": "^7.9.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",
