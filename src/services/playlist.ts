@@ -372,7 +372,6 @@ function getPLCByKIDUser(kid: string, username: string, playlist_id: number) {
 export function isAllKarasInPlaylist(karas: PLC[], playlist: PLC[]) {
 	return {
 		notPresent: karas.filter(k => !playlist.map(plc => plc.kid).includes(k.kid)),
-		alreadyPresent: playlist.filter(p => karas.map(k => k.kid).includes(p.kid))
 	};
 }
 
@@ -442,37 +441,19 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		const playingPos = playingObject?.plc_id_pos || 0;
 		// If no song is currently playing, plContentsBeforePlay returns all songs in playlist. These are all songs not played yet.
 		const plContentsAfterPlay = plContents.filter((plc: PLC) => plc.pos >= playingPos);
-		if (user.type === 0) {
+		const songs = user.type === 0
 			// Admin can add a song multiple times in the current or any other playlist, even by the same user
-			if (!conf.Playlist.AllowDuplicates) {
-				// Option to allow is not set : removing duplicates from songs to add
-				const songs = isAllKarasInPlaylist(karaList, plContents);
-				karaList = songs.notPresent;
-			} else {
+			? conf.Playlist.AllowDuplicates
 				// If it's set we allow it only for songs after play cursor.
-				const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
-				karaList = songs.notPresent;
-			}
-		} else {
-			// Not an admin adding this. Adding an upvote to all songs already in playlist, adding the rest
-			// Note from Axel from the future: You blind idiot, a non-admin can only add one song at a time, so this means you can't add multiple upvotes at once.
-			// Note from Axel from the future +1: But the API could change someday to allow non-admins to add multiple songs. Then this code will be broken somehow.
-			// Note from present Axel: No it won't, you two shut up.
-			const songs = isAllKarasInPlaylist(karaList, plContentsAfterPlay);
-			karaList = songs.notPresent;
-			// Upvoting each song already present
-			if (songs.alreadyPresent.length > 0) {
-				addUpvotes(songs.alreadyPresent.map(plc => plc.playlistcontent_id), requester);
-				return {
-					action: 'UPVOTED',
-					kara: kara.title,
-					playlist: pl.name,
-					kid: songs.alreadyPresent[0].kid,
-					playlist_id: playlist_id,
-					plc: songs.alreadyPresent[0]
-				};
-			}
-		}
+				// This means you can readd a song if it's already been played.
+				// I hate this logic.
+				? isAllKarasInPlaylist(karaList, plContentsAfterPlay)
+				// Option to allow is not set : removing duplicates from songs to add
+				: isAllKarasInPlaylist(karaList, plContents)
+			// Not an admin adding this these songs.
+			: isAllKarasInPlaylist(karaList, plContents);
+		karaList = songs.notPresent;
+
 		// If AllowDuplicateSeries is set to false, remove all songs with the same SIDs
 		if (!conf.Playlist.AllowDuplicateSeries && user.type > 0) {
 			const seriesSingersInPlaylist = plContentsAfterPlay.map(plc => {
