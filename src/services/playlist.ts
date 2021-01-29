@@ -61,7 +61,6 @@ import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './downloadUpdater';
 import { formatKaraList, getKara, getSongSeriesSingers,getSongVersion,isAllKaras} from './kara';
 import {playingUpdated, playPlayer} from './player';
-import { addUpvotes } from './upvote';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
 
