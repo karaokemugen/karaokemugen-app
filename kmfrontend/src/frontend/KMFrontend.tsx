@@ -10,6 +10,7 @@ import { commandBackend, getSocket } from '../utils/socket';
 import { callModal, is_touch_device, startIntro } from '../utils/tools';
 import AdminPage from './components/AdminPage';
 import ChibiPage from './components/ChibiPage';
+import MigratePage from './components/MigratePage';
 import ShutdownModal from './components/modals/ShutdownModal';
 import NotFoundPage from './components/NotfoundPage';
 import PublicPage from './components/public/PublicPage';
@@ -73,6 +74,7 @@ class KMFrontend extends Component<unknown, IState> {
 					<div className={is_touch_device() ? 'touch' : ''}>
 						<Switch>
 							<Route path="/setup" render={() => <SetupPage />} />
+							<Route path="/migrate" render={() => <MigratePage />} />
 							<Route path="/welcome" render={() => <WelcomePage />} />
 							<Route path="/admin" render={() => <AdminPage
 								powerOff={isElectron() ? undefined : this.powerOff}
