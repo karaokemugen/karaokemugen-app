@@ -341,6 +341,8 @@ class Player {
 						await next();
 					} else if (message.args[0] === 'go-back') {
 						await prev();
+					} else if (message.args[0] === 'seek') {
+						await this.control.seek(parseInt(message.args[1]));
 					}
 				} catch(err) {
 					logger.warn('Cannot handle mpv script command', {service: 'mpv'});
@@ -893,6 +895,10 @@ class Players {
 
 	async seek(delta: number) {
 		try {
+			// Skip the song if we try to seek after the end of the song
+			if (playerState.timeposition + delta > playerState.currentSong.duration) {
+				return next();
+			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (playerState.currentSong?.media.endsWith('.mp3') &&
 				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar || getConfig().Player.VisualizationEffects)) {
@@ -908,6 +914,10 @@ class Players {
 
 	async goTo(pos: number) {
 		try {
+			// Skip the song if we try to go after the end of the song
+			if (pos > playerState.currentSong.duration) {
+				return next();
+			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (playerState.currentSong?.media.endsWith('.mp3') &&
 				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar || getConfig().Player.VisualizationEffects)) {
