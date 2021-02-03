@@ -895,7 +895,7 @@ class Players {
 	async seek(delta: number) {
 		try {
 			// Skip the song if we try to seek after the end of the song
-			if (playerState.timeposition + delta > playerState.currentSong.duration) {
+			if (playerState.mediaType === 'song' && playerState.timeposition + delta > playerState.currentSong.duration) {
 				return next();
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
@@ -914,7 +914,7 @@ class Players {
 	async goTo(pos: number) {
 		try {
 			// Skip the song if we try to go after the end of the song
-			if (pos > playerState.currentSong.duration) {
+			if (playerState.mediaType === 'song' && pos > playerState.currentSong.duration) {
 				return next();
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
