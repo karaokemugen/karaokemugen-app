@@ -9,10 +9,10 @@ let authorization;
 let onlineAuthorization;
 
 if (document.querySelector<HTMLMetaElement>('meta[name="target"]').content === 'NO-REMOTE') {
-	socket = io();
+	socket = io({ transports: ['websocket'], upgrade: false });
 	proxy = false;
 } else {
-	socket = io(`/${document.querySelector<HTMLMetaElement>('meta[name="target"]').content}`);
+	socket = io(`/${document.querySelector<HTMLMetaElement>('meta[name="target"]').content}`, { transports: ['websocket'], upgrade: false });
 	proxy = true;
 }
 
