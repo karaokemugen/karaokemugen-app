@@ -147,7 +147,7 @@ class ProgressBar extends Component<IProps, IState> {
 			} else if (data.mediaType === 'Sponsors') {
 				this.setState({ karaInfoText: i18next.t('SPONSOR_TIME'), length: -1, animate: 0 });
 			} else {
-				const kara = data.currentSong.currentSong;
+				const kara = data.currentSong;
 				const karaInfo = buildKaraTitle(this.context.globalState.settings.data, kara);
 
 				this.setState({ karaInfoText: karaInfo, length: kara.duration }, this.resizeCheck);

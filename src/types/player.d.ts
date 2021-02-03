@@ -1,4 +1,3 @@
-import { DBKara } from '../lib/types/database/kara';
 import { Media } from './medias';
 import { CurrentSong } from './playlist';
 
@@ -9,7 +8,7 @@ export interface PlayerState {
 	_playing?: boolean, // internal delay flag
 	timeposition?: number,
 	mute?: boolean,
-	currentSong?: MediaData,
+	currentSong?: CurrentSong,
 	currentMedia?: Media,
 	mediaType?: 'song' | 'background' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
 	showSubs?: boolean,
@@ -26,18 +25,6 @@ export interface PlayerState {
 export interface mpvStatus {
 	property: string,
 	value: any
-}
-
-export interface MediaData {
-	media: string,
-	subfile: string,
-	gain: number,
-	currentSong: CurrentSong | DBKara,
-	infos: string,
-	avatar: string,
-	duration: number,
-	repo: string
-	spoiler: boolean
 }
 
 export interface MpvOptions {

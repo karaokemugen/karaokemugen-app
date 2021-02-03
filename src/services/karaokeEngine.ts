@@ -18,8 +18,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 	try {
 		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
 		if (!kara) throw {code: 404, msg: 'KID not found'};
-		const current: CurrentSong = merge(kara, {nickname: 'Admin', flag_playing: true, pos: 1, flag_free: false, flag_visible: false, username: 'admin', repo: kara.repository, playlistcontent_id: -1, playlist_id: -1});
-		setState({singlePlay: !randomPlaying, currentSong: current, randomPlaying: randomPlaying});
+
 		if (!randomPlaying) {
 			stopAddASongMessage();
 		} else if (randomPlaying && getConfig().Playlist.RandomSongsAfterEndMessage) {
@@ -27,28 +26,35 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		}
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
+
 		// If series is empty, pick singer information instead
 		const series = getSongSeriesSingers(kara);
 
-		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 		let songorder = `${kara.songorder}`;
-
-		const versions = getSongVersion(kara);
+		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 		if (!kara.songorder || kara.songorder === 0) songorder = '';
+
+		// Get song versions for display
+		const versions = getSongVersion(kara);
+
 		// Construct mpv message to display.
 		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}';
-		await mpv.play({
-			media: kara.mediafile,
-			subfile: kara.subfile,
-			gain: kara.gain,
-			infos: infos,
-			currentSong: kara,
-			avatar: null,
-			duration: kara.duration,
+		const current: CurrentSong = merge(kara, {
+			nickname: 'Admin',
+			flag_playing: true,
+			pos: 1,
+			flag_free: false,
+			flag_visible: false,
+			username: 'admin',
 			repo: kara.repository,
-			spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
+			playlistcontent_id: -1,
+			playlist_id: -1,
+			avatar: null,
+			infos
 		});
-		setState({currentlyPlayingKara: kara.kid});
+		await mpv.play(current);
+
+		setState({singlePlay: !randomPlaying, currentSong: current, randomPlaying: randomPlaying, currentlyPlayingKara: kara.kid});
 	} catch(err) {
 		logger.error('Error during song playback', {service: 'Player', obj: err});
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
@@ -104,7 +110,7 @@ export async function playCurrentSong(now: boolean) {
 			logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
 
-			await mpv.play({
+			/*await mpv.play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
 				gain: kara.gain,
@@ -114,7 +120,8 @@ export async function playCurrentSong(now: boolean) {
 				duration: kara.duration,
 				repo: kara.repo,
 				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
-			});
+			});*/
+			await mpv.play(kara);
 			setState({currentlyPlayingKara: kara.kid, randomPlaying: false});
 			addPlayedKara(kara.kid);
 			await setPLCVisible(kara.playlistcontent_id);
