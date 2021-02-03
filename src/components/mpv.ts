@@ -783,7 +783,6 @@ class Players {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
 		if (media) {
-			setState({currentlyPlayingKara: mediaType});
 			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
 			const options: any = {
 				title: `${mediaType} - Karaoke Mugen Player`,
@@ -810,7 +809,6 @@ class Players {
 				});
 				playerState.playerStatus = 'play';
 				playerState._playing = true;
-				// Subtitles load is handled by `file-loaded` event on the Player class
 				(mediaType === 'Jingles' || mediaType === 'Sponsors')
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message

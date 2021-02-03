@@ -54,7 +54,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		});
 		await mpv.play(current);
 
-		setState({singlePlay: !randomPlaying, currentSong: current, randomPlaying: randomPlaying, currentlyPlayingKara: kara.kid});
+		setState({singlePlay: !randomPlaying, randomPlaying: randomPlaying});
 	} catch(err) {
 		logger.error('Error during song playback', {service: 'Player', obj: err});
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
@@ -94,7 +94,6 @@ export async function playCurrentSong(now: boolean) {
 			const kara = await getCurrentSong();
 			// No song to play, silently return
 			if (!kara) return;
-			setState({currentSong: kara});
 
 			if (kara?.pos === 1) {
 				if (conf.Karaoke.AutoBalance) {
@@ -102,7 +101,7 @@ export async function playCurrentSong(now: boolean) {
 				}
 				// Testing if intro hasn't been played already and if we have at least one intro available
 				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed) {
-					setState({ currentlyPlayingKara: 'Intros', introPlayed: true });
+					setState({ introPlayed: true });
 					await mpv.playMedia('Intros');
 					return;
 				}
@@ -122,7 +121,7 @@ export async function playCurrentSong(now: boolean) {
 				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
 			});*/
 			await mpv.play(kara);
-			setState({currentlyPlayingKara: kara.kid, randomPlaying: false});
+			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
 			await setPLCVisible(kara.playlistcontent_id);
 			await updatePlaylistDuration(kara.playlist_id);
@@ -199,7 +198,6 @@ export async function playerEnding() {
 			if (conf.Playlist.Medias.Sponsors.Enabled) {
 				try {
 					await mpv.playMedia('Sponsors');
-					setState({currentlyPlayingKara: 'Sponsors'});
 				} catch(err) {
 					logger.warn('Skipping sponsors due to error, playing current song', {service: 'Player', obj: err});
 					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
@@ -212,9 +210,8 @@ export async function playerEnding() {
 			}
 			return;
 		}
-		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
 		// If Outro, load the background.
-		if (state.player.mediaType === 'Outros' && state.currentSong?.pos === pl.karacount) {
+		if (state.player.mediaType === 'Outros') {
 			if (getConfig().Playlist.EndOfPlaylistAction === 'random') {
 				await playRandomSongAfterPlaylist();
 			} else {
@@ -247,11 +244,12 @@ export async function playerEnding() {
 			return;
 		}
 		// Testing for position before last to play an encore
-		logger.debug(`CurrentSong Pos : ${state.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl?.playlist_id}`, {service: 'Player'});
-		if (conf.Playlist.Medias.Encores.Enabled && state.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
+		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
+		logger.debug(`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl?.playlist_id}`, {service: 'Player'});
+		if (conf.Playlist.Medias.Encores.Enabled && state.player.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
 			try {
 				await mpv.playMedia('Encores');
-				setState({currentlyPlayingKara: 'Encores', encorePlayed: true});
+				setState({ encorePlayed: true });
 			} catch(err) {
 				logger.error('Unable to play encore file, going to next song', {service: 'Player', obj: err});
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
@@ -267,11 +265,10 @@ export async function playerEnding() {
 		}
 		// Outros code, we're at the end of a playlist.
 		// Outros are played after the very last song.
-		if (state.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
+		if (state.player.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
 			if (conf.Playlist.Medias.Outros.Enabled && !state.randomPlaying) {
 				try {
 					await mpv.playMedia('Outros');
-					setState({currentlyPlayingKara: 'Outros'});
 				} catch(err) {
 					logger.error('Unable to play outro file', {service: 'Player', obj: err});
 					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
@@ -294,7 +291,6 @@ export async function playerEnding() {
 			try {
 				setState({counterToJingle: 0});
 				await mpv.playMedia('Jingles');
-				setState({currentlyPlayingKara: 'Jingles'});
 			} catch(err) {
 				logger.error('Unable to play jingle file, going to next song', {service: 'Player', obj: err});
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
@@ -309,7 +305,6 @@ export async function playerEnding() {
 			try {
 				setState({counterToSponsor: 0});
 				await mpv.playMedia('Sponsors');
-				setState({currentlyPlayingKara: 'Sponsors'});
 			} catch(err) {
 				logger.error('Unable to play sponsor file, going to next song', {service: 'Player', obj: err});
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));

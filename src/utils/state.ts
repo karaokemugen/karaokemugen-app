@@ -15,8 +15,6 @@ let state: State = {
 	playerNeedsRestart: false,
 	currentRequester: null,
 	stopping: false,
-	currentlyPlayingKara: null,
-	currentSong: null,
 	counterToJingle: 0,
 	counterToSponsor: 0,
 	introPlayed: false,
@@ -126,9 +124,6 @@ export function setState(part: Partial<State>) {
 	// lodash merges must not merge karas info.
 	if (part?.player?.currentSong && part?.player?.currentSong?.kid !== state?.player?.currentSong?.kid) {
 		state.player.currentSong = null;
-	}
-	if (part?.currentSong && part?.currentSong?.kid !== state?.currentSong?.kid) {
-		state.currentSong = null;
 	}
 	state = merge(state, part);
 	emit('stateUpdated', state);
