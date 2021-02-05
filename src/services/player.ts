@@ -141,7 +141,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 	if (now || getState().stopping) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		await mpv.stop();
-		setState({currentlyPlayingKara: null, randomPlaying: false, stopping: false});
+		setState({ randomPlaying: false, stopping: false });
 		stopAddASongMessage();
 		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode) {
 			await prepareClassicPauseScreen();

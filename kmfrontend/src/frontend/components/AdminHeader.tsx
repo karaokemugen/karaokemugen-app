@@ -199,9 +199,9 @@ class AdminHeader extends Component<IProps, IState> {
 						data-namecommand="prev"
 						className="btn btn-default"
 						onClick={this.props.putPlayerCommando}
-						disabled={(this.state.statusPlayer?.currentSong?.currentSong as CurrentSong)?.pos === 1}
+						disabled={(this.state.statusPlayer?.currentSong as CurrentSong)?.pos === 1}
 					>
-						<i className="fas fa-fast-backward"></i>
+						<i className="fas fa-fast-backward" />
 					</button>
 					<button
 						title={i18next.t('PLAY_PAUSE')}
@@ -219,9 +219,9 @@ class AdminHeader extends Component<IProps, IState> {
 						data-namecommand="skip"
 						className="btn btn-default"
 						onClick={this.props.putPlayerCommando}
-						disabled={(this.state.statusPlayer?.currentSong?.currentSong as CurrentSong)?.pos === this.props.currentPlaylist?.karacount}
+						disabled={(this.state.statusPlayer?.currentSong as CurrentSong)?.pos === this.props.currentPlaylist?.karacount}
 					>
-						<i className="fas fa-fast-forward"></i>
+						<i className="fas fa-fast-forward" />
 					</button>
 					<button
 						title={i18next.t('REWIND')}

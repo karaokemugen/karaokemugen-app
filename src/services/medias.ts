@@ -2,7 +2,7 @@ import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
 import {basename, resolve} from 'path';
 import prettyBytes from 'pretty-bytes';
-import {createClient} from 'webdav';
+import {createClient, FileStat} from 'webdav';
 
 import {getConfig, resolvedPathEncores, resolvedPathIntros, resolvedPathJingles, resolvedPathOutros, resolvedPathSponsors} from '../lib/utils/config';
 import {asyncCheckOrMkdir, asyncReadDir, asyncRemove,asyncStat, isMediaFile} from '../lib/utils/files';
@@ -70,7 +70,7 @@ function resolveMediaPath(type: MediaType): string[] {
 	if (type === 'Sponsors') return resolvedPathSponsors();
 }
 
-function listRemoteMedias(type: MediaType): Promise<File[]> {
+async function listRemoteMedias(type: MediaType): Promise<FileStat[]> {
 	const webdavClient = createClient(
 		KMSite.url,
 		{
@@ -78,10 +78,11 @@ function listRemoteMedias(type: MediaType): Promise<File[]> {
 			password: KMSite.password
 		}
 	);
-	return webdavClient.getDirectoryContents('/' + type);
+	return await webdavClient.getDirectoryContents('/' + type) as FileStat[];
+
 }
 
-async function listLocalFiles(dir: string): Promise<File[]> {
+async function listLocalFiles(dir: string): Promise<FileStat[]> {
 	const localFiles = await asyncReadDir(dir);
 	const files = [];
 	for (const file of localFiles) {
@@ -103,7 +104,7 @@ async function removeFiles(files: string[], dir: string) {
 
 export async function updateMediasHTTP(type: MediaType, task: Task) {
 	try {
-		const remoteFiles = await listRemoteMedias(type);
+		const remoteFiles: FileStat[] = await listRemoteMedias(type);
 		const localDir = resolve(resolveMediaPath(type)[0], 'KaraokeMugen/');
 		await asyncCheckOrMkdir(localDir);
 		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)
@@ -118,9 +119,9 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			editSetting(ConfigPart);
 		}
 		const localFiles = await listLocalFiles(localDir);
-		const removedFiles: File[] = [];
-		const addedFiles: File[] = [];
-		const updatedFiles: File[] = [];
+		const removedFiles: FileStat[] = [];
+		const addedFiles: FileStat[] = [];
+		const updatedFiles: FileStat[] = [];
 		for (const remoteFile of remoteFiles) {
 			const filePresent = localFiles.some(localFile => {
 				if (localFile.basename === remoteFile.basename) {

@@ -307,7 +307,7 @@ class KaraDetail extends Component<IProps, IState> {
 			);
 
 			const header = (
-				<div className={`modal-header img-background${this.props.scope === 'public' ? ' fixed' : ''}`} style={{ ['--img' as any]: this.props.scope === 'admin' ? `url('/previews/${data.kid}.${data.mediasize}.25.jpg')` : 'none' }}>
+				<div className={`modal-header img-background${this.props.scope === 'public' ? ' fixed' : ''}`} style={{ ['--img' as any]: this.props.scope === 'admin' ? `url('${getPreviewLink(data)}')` : 'none' }}>
 					<div className="modal-header-title">
 						{this.props.scope === 'public' ?
 							<button

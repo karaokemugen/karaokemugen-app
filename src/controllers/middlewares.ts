@@ -28,7 +28,10 @@ export async function runChecklist(socket: Socket, data: APIData, roleNeeded: Ro
 	options
 		? options = merge(defaultOptions, options)
 		: options = defaultOptions;
-	if (socket.handshake.headers['accept-languages']) data.langs = socket.handshake.headers['accept-languages'].split(',')[0].substring(0,2);
+	if (socket.handshake.headers['accept-languages']) {
+		const langs = socket.handshake.headers['accept-languages'] as string;
+		data.langs = langs.split(',')[0].substring(0,2);
+	}
 	if (!options.allowInDemo && getState().isDemo) throw {code: 503, message: 'Not allowed in demo mode'};
 	if (options.optionalAuth && !data.authorization) {
 		checkWebAppMode(data, webappModeNeeded);

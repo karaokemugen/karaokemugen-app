@@ -79,6 +79,7 @@ build-react:
 deploy_kmremote:
   stage: deploy
   interruptible: true
+  cache: {}
   image: minidocks/lftp
   dependencies:
     - build-react

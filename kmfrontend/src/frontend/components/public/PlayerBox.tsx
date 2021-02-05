@@ -172,7 +172,7 @@ class PlayerBox extends Component<IProps, IState> {
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else {
-				const kara = data.currentSong.currentSong;
+				const kara = data.currentSong;
 				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getSerieLanguage(this.context.globalState.settings.data, e, kara.langs[0].name)).join(', ')
 					+ (kara.series.length > 3 ? '...' : '')
 					: (kara.singers ? kara.singers.slice(0, 3).map(e => e.name).join(', ') + (kara.singers.length > 3 ? '...' : '') : '');

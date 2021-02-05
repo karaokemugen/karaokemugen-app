@@ -44,9 +44,9 @@ class AdminButtons extends Component<IProps, unknown> {
 				data-namecommand="prev"
 				className="btn btn-default"
 				onClick={this.props.putPlayerCommando}
-				disabled={(this.props.statusPlayer?.currentSong?.currentSong as CurrentSong)?.pos === 1}
+				disabled={(this.props.statusPlayer?.currentSong as CurrentSong)?.pos === 1}
 			>
-				<i className="fas fa-fast-backward"></i>
+				<i className="fas fa-fast-backward" />
 			</button>
 			<button
 				title={i18next.t('PLAY_PAUSE')}
@@ -64,9 +64,9 @@ class AdminButtons extends Component<IProps, unknown> {
 				data-namecommand="skip"
 				className="btn btn-default"
 				onClick={this.props.putPlayerCommando}
-				disabled={(this.props.statusPlayer?.currentSong?.currentSong as CurrentSong)?.pos === this.props.currentPlaylist?.karacount}
+				disabled={(this.props.statusPlayer?.currentSong as CurrentSong)?.pos === this.props.currentPlaylist?.karacount}
 			>
-				<i className="fas fa-fast-forward"></i>
+				<i className="fas fa-fast-forward" />
 			</button>
 			<button
 				title={i18next.t('REWIND')}

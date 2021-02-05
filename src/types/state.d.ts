@@ -18,8 +18,6 @@ export interface State {
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
 	stopping: boolean,
-	currentlyPlayingKara?: string,
-	currentSong: CurrentSong
 	randomPlaying: boolean,
 	counterToJingle?: number,
 	counterToSponsor?: number,
