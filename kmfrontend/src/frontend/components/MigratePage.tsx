@@ -1,3 +1,6 @@
+import '../styles/start/Start.scss';
+import '../styles/start/MigratePage.scss';
+
 import i18next from 'i18next';
 import React, { Fragment, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -32,12 +35,12 @@ export default function MigratePage() {
 
 	const MigrationComponent = components[migrations[0]?.name] || (() => <Fragment/>);
 
-	return <div id="setupPage">
-		<div className="setupPage--wrapper">
+	return <div className="start-page">
+		<div className="wrapper migrate">
 			<div className="logo">
 				<img src={logo} alt="Logo Karaoke Mugen" />
 			</div>
-			<div className="title">{i18next.t('SETUP_PAGE.TITLE')}</div>
+			<div className="title">{i18next.t('MIGRATE.TITLE')}</div>
 			<div className="aside">
 				<nav>
 					<ul>

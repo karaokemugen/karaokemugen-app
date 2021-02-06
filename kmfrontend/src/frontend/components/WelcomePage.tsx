@@ -1,4 +1,5 @@
-import '../styles/welcome/WelcomePage.scss';
+import '../styles/start/Start.scss';
+import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
@@ -199,8 +200,8 @@ class WelcomePage extends Component<unknown, IState> {
 			sessions.push({ label: session.name, value: session.name });
 		}
 		return (
-			<div id="welcomePage">
-				<div className="welcomePage--wrapper">
+			<div className="start-page">
+				<div className="wrapper welcome">
 
 					<div className="logo">
 						<img src={logo} alt="Logo Karaoke Mugen" />

@@ -6,10 +6,6 @@ body {
 	font-family: Lato, "Helvetica Neue", Cantarell, sans-serif;
 	background: $mugen-background;
 	color: white;
-	&.forceScroll {
-		overflow-y: scroll;
-	}
-	overflow-y: hidden;
 }
 
 // Our stylesheet

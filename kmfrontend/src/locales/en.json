@@ -527,7 +527,7 @@
 			"DELETE_CURRENT_BLC": "This list is defined as current , change the current criterias list for another to delete this one.",
 			"DELETE_PUBLIC": "This list is defined as public, change the public playlist for another to delete this one.",
 			"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",
-			"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one."	
+			"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one."
 		}
 	},
 	"SETUP_PAGE": {
@@ -1304,5 +1304,27 @@
 		"FOCUS": "Go back to Karaoke Mugen",
 		"ONTOP": "Show on top of other windows",
 		"CLOSE": "Close chibi player"
+	},
+	"MIGRATE": {
+		"TITLE": "Migration",
+		"CONTINUE": "Continue."
+	},
+	"PRIVACY_POLICY": {
+		"TITLE": "Privacy",
+		"P1": "Thank you for using Karaoke Mugen. We are managing the database and developing its software for free so any attention you give us make us happy. So again, thanks ❤.",
+		"P2": "Your app was just updated to version 5.0 with a lot of new features, like a new public interface, remote access (we'll tell you about it later), a new version tag type which allows us to identify covers, alternative versions, etc. more easily.",
+		"P3": "Since this is a free (as in free speech) and free (as in free beer) project, we consider it normal that you expect complete transparency from us on how your data is used. To reach this goal, we're going to sum up the data we're processing and how you can control that.",
+		"T1": "Are you spying on us?!",
+		"P4": "Not at all, the data we get is anonymized or linked to your username. Let's see:",
+		"L1": "If you use the online profile feature, your profile data (email, bio, site URL, etc.) as well as your favorites are sent in realtime to the server hosting your profile (by default it's kara.moe, our server.)",
+		"L2": "If you use the URL shortener feature (https://kara.moe), your local and public IP addresses (IPv6 prefix if available) are sent to the server for processing. This data is deleted once you close the app or disable the feature.",
+		"L3": "If you use the remote access feature (https://<code>.kara.moe), your generated code is stored in memory on our serveur and your app. It expires after 10 days of not using it (so you can keep the same code if you use it often).",
+		"L4": "If you enable stats, the app will periodically send stats on songs played, requested, and your karaoke sessions list. This data is never linked to your name or username. However, a unique ID is linked to your app so we can regroup stats.",
+		"L4_DETAILS": "These statistics also include data on your computer hardware (RAM memory, monitors, processor, operating system). The played and requested karaokes are sent without us knowing who is behind these additions. This is used to feed our lists of popular karaoke on your public interface but also on our karaoke explorer.",
+		"L5": "If you enable Sentry reports, then error reports created by the app are sent automatically to Sentry.io, a third-party service we used to collect information about errors. This allows us to better understand how an error happened and fix it in a future release. The service will send some of the app's event log, which can contain usernames. These logs contain minimal information.",
+		"L5_DETAILS": "The Sentry report includes OS used, your Karaoke Mugen App version, the execution stack (where the code brainfarted), the app's state as well as your app's configuration (without any confidential information like Twitch tokens or JWT secrets). These reports are associated with your nickname (the nickname of the person who installed the application), which makes it possible to find your reports easily if you ask us for help regarding a Karaoke Mugen bug. These reports are also published on our Discord (with a limited set of information, not compromising your configuration and the state of the application, these details being reserved to the maintainers of the application) to be easily found.",
+		"T2": "How can I disable this?",
+		"P5": "You can definitely do that! Online accounts aren't mandatory, as well as the other features mentioned above. You can enable/disable either stats and/or error reports in the system panel. You're still owning your data at any time.",
+		"P6": "If you have questions or you want us to delete data, you can send us an e-mail at mugen@karaokes.moe."
 	}
 }

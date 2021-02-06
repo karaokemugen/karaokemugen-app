@@ -1,22 +1,8 @@
 @import '../variables';
 
-#welcomePage {
-	height: 100vh;
-	margin: 0;
-	padding: 0;
-	overflow: auto;
-	font-family: 'Lato', sans-serif;
-	font-weight: 300;
-	background: $mugen-welcome-page-background;
-}
+.start-page .wrapper.welcome {
+	min-height: 100vh;
 
-.welcomePage--wrapper {
-	height: 100vh;
-	padding: 1em;
-
-	display: grid;
-	grid-template-columns: 200px 1fr 1.4fr;
-	grid-template-rows: 100px  auto;
 	grid-template-areas:
 		"logo tasks aside"
 		"main main main";
@@ -29,22 +15,6 @@
 			"main main";
 	}
 
-	a {
-		color:inherit;
-		text-decoration: underline;
-	}
-
-
-	.logo {
-		grid-area: logo;
-
-		img {
-			filter: hue-rotate(427deg) saturate(0) brightness(156%);
-			max-height: 100%;
-			max-width: 100%;
-		}
-	}
-
 	.welcome-page-tasks-wrapper {
 		grid-area: tasks;
 		@media (max-width: $mugen-breakpoint-large) {
@@ -55,71 +25,12 @@
 		}
 	}
 
-	.aside {
-		grid-area: aside;
-
-		nav {
-			margin-bottom: 1em;
-			ul {
-				padding: 0;
-				margin: 0;
-				display: flex;
-				flex-direction: row;
-				justify-content: flex-end;
-				list-style: none;
-				li {
-					margin-right: 1em;
-					border-radius: .75em;
-					padding: .5em;
-					border: .1em solid #BBBCBC;
-					a {
-						display: flex;
-						text-decoration: none;
-						i {
-							margin-right: 0.5em;
-							margin-top: 0.2em;
-						}
-					}
-				}
-			}
-		}
-
-		.session-setting {
-			display: flex;
-			flex-direction: row;
-			justify-content: flex-end;
-			article {
-				display: flex;
-				flex-direction: row;
-				align-items: center;
-				margin-right: 0.5em;
-				label {
-					display: block;
-					padding-right: 0.5em;
-				}
-				&:last-child {
-					margin-right: 0;
-				}
-
-				.UI-autocomplete {
-					transform-origin: 0.8 0.8; // ?
-					width: 15rem;
-					input {
-						text-align: center;
-					}
-				}
-			}
-		}
-	}
-
-	main.main {
-		grid-area: main;
+	.main {
 		padding-top: 1em;
-		height: 100%;
-		overflow: hidden;
 
-		display: flex;
-		flex-direction: row;
+		@media (max-width: $mugen-breakpoint-large) {
+			flex-direction: column;
+		}
 
 		section.tiles-panel {
 			flex: 1;
@@ -155,6 +66,7 @@
 					font-weight: bold;
 					font-size: medium;
 					color: white;
+					flex-shrink: 0;
 					i {
 						margin-right: 0.3em;
 						font-size: 2em;
@@ -253,6 +165,7 @@
 			border-radius: 0 .5em .5em 0;
 			border: 1px solid #ffffff80;
 			> div {
+				max-height: 75vh;
 				overflow: auto;
 				padding-right: .5em;
 			}

@@ -1,0 +1,66 @@
+@import '../variables';
+
+.start-page .wrapper.migrate {
+	font-weight: 300;
+
+	grid-template-columns: 200px auto;
+	grid-template-areas:
+				"logo title aside"
+				"other main main";
+
+	@media (max-width: $mugen-breakpoint-large) {
+		grid-template-columns: auto 200px ;
+		grid-template-rows: auto auto 100%;
+		grid-template-areas:
+					"aside logo"
+					"title logo"
+					"main main";
+	}
+
+	@media (max-width: $mugen-breakpoint-small) {
+		grid-template-columns: auto;
+		grid-template-rows: auto;
+		grid-template-areas:
+					"logo"
+					"aside"
+					"title"
+					"main";
+	}
+
+	.limited-width {
+		max-width: 900px;
+	}
+
+	.justified {
+		text-align: justify;
+
+		h2 {
+			font-size: 2.5em;
+			margin-bottom: .25em;
+		}
+
+		p {
+			margin-bottom: 1em;
+		}
+
+		ul {
+			margin: 1em 0;
+			list-style: circle;
+			li {
+				margin-bottom: .5em;
+			}
+		}
+	}
+
+	.continue-btn {
+		cursor: pointer;
+		color: white;
+		border: 2px solid white;
+		border-radius: .5em;
+		padding: .5em 1em;
+		text-transform: uppercase;
+		font-weight: bold;
+		background: none;
+		outline: none;
+	}
+}
