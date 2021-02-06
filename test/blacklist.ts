@@ -11,8 +11,12 @@ describe('Blacklist', () => {
 	});
 	it(`Add a blacklist criteria (song ${bannedKID}`, async () => {
 		const data = {
-			blcriteria_type: 1001,
-			blcriteria_value: bannedKID,
+			blcs: [
+				{
+					type: 1001,
+					value: bannedKID,
+				}
+			],
 			set_id: 1
 		};
 		await commandBackend(token, 'createBLC', data);
@@ -42,10 +46,15 @@ describe('Blacklist', () => {
 
 	it('Re-add a blacklist criteria', async () => {
 		const data = {
-			blcriteria_type: 1001,
-			blcriteria_value: bannedKID,
+			blcs: [
+				{
+					type: 1001,
+					value: bannedKID,
+				}
+			],
 			set_id: 1
 		};
+
 		await commandBackend(token, 'createBLC', data);
 	});
 
@@ -63,10 +72,15 @@ describe('Blacklist', () => {
 
 	it('Re-add a blacklist criteria before testing sets', async () => {
 		const data = {
-			blcriteria_type: 1001,
-			blcriteria_value: bannedKID,
+			blcs: [
+				{
+					type: 1001,
+					value: bannedKID,
+				}
+			],
 			set_id: 1
 		};
+
 		await commandBackend(token, 'createBLC', data);
 	});
 

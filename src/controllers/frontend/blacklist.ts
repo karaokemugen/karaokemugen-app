@@ -166,8 +166,7 @@ export default function blacklistController(router: SocketIOApp) {
 	 * @apiGroup Blacklist
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
-	 * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
+	 * @apiParam {BLC[]} blcs Blacklist criteria type and value (refer to docs)
 	 * @apiParam {Number} set_id BLC Set ID
 	 * @apiSuccess {String} message Message to display
 	 *
@@ -185,25 +184,14 @@ export default function blacklistController(router: SocketIOApp) {
 	 */
 		//Add blacklist criteria
 		await runChecklist(socket, req);
-		const validationErrors = check(req.body, {
-			blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
-			blcriteria_value: {presence: {allowEmpty: false}}
-		});
-		if (!validationErrors) {
-			try {
-				await addBlacklistCriteria(req.body.blcriteria_type, req.body.blcriteria_value, req.body.set_id);
-				return;
-			} catch(err) {
-				const code = 'BLC_ADD_ERROR';
-				errMessage(code, err);
-				throw {code: err?.code || 500, message: APIMessage(code)};
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw {code: 400, message: validationErrors};
+		try {
+			await addBlacklistCriteria(req.body.blcs, req.body.set_id);
+			return;
+		} catch(err) {
+			const code = 'BLC_ADD_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
-
 	});
 
 	router.route('deleteBLC', async (socket: Socket, req: APIData) => {

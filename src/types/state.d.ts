@@ -1,6 +1,5 @@
 import {RemoteFailure, RemoteSuccess} from '../lib/types/remote';
 import { PlayerState } from './player';
-import { CurrentSong } from './playlist';
 
 export interface Version {
 	number?: string,

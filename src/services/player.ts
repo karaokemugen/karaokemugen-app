@@ -22,8 +22,7 @@ export function playerMessage(msg: string, duration: number, align = 4) {
 
 /* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */
 export function playingUpdated() {
-	const state = getState();
-	if (state.player.playerStatus !== 'stop') playPlayer(true);
+	if (getState().player.playerStatus !== 'stop') playPlayer(true);
 }
 
 export async function prev() {

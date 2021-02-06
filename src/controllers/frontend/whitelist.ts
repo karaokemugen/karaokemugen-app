@@ -110,7 +110,7 @@ export default function whitelistController(router: SocketIOApp) {
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid[]} kid Karaoke song IDs
+ * @apiParam {uuid[]} kids Karaoke song IDs
  * @apiParam {String} [reason] Reason the song was added
  *
  * @apiSuccessExample Success-Response:
@@ -125,11 +125,11 @@ export default function whitelistController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
-			kid: {uuidArrayValidator: true}
+			kids: {uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
-				return await addKaraToWhitelist(req.body.kid, req.body.reason);
+				return await addKaraToWhitelist(req.body.kids, req.body.reason);
 			} catch(err) {
 				const code = 'WL_ADD_SONG_ERROR';
 				errMessage(code, err);
@@ -151,7 +151,7 @@ export default function whitelistController(router: SocketIOApp) {
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid[]} kid Kara IDs to delete from whitelist in an array
+ * @apiParam {uuid[]} kids Kara IDs to delete from whitelist in an array
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -160,11 +160,11 @@ export default function whitelistController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
-			kid: {uuidArrayValidator: true}
+			kids: {uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
-				return await deleteKaraFromWhitelist(req.body.kid);
+				return await deleteKaraFromWhitelist(req.body.kids);
 			} catch(err) {
 				const code = 'WL_DELETE_SONG_ERROR';
 				errMessage(code, err);

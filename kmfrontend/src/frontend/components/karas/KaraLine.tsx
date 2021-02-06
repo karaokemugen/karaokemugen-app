@@ -65,33 +65,38 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	deleteKara = async () => {
 		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_id: this.props.kara.my_public_plc_id,
+				plc_ids: this.props.kara.my_public_plc_id,
 				pl_id: this.props.context.globalState.settings.data.state.publicPlaylistID
 			});
 		} else if (this.props.idPlaylist === -2) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
 		} else if (this.props.idPlaylist === -3) {
-			await commandBackend('deleteKaraFromWhitelist', { kid: [this.props.kara.kid] });
+			await commandBackend('deleteKaraFromWhitelist', {
+				kids: [this.props.kara.kid]
+			});
 		} else {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_id: [this.props.kara.playlistcontent_id],
+				plc_ids: [this.props.kara.playlistcontent_id],
 				pl_id: this.props.idPlaylist
 			});
 		}
 	};
 
 	deleteFavorite = () => {
-		commandBackend('deleteFavorites', { kid: [this.props.kara.kid] });
+		commandBackend('deleteFavorites', {
+			kid: [this.props.kara.kid]
+		});
 	}
 
 	playKara = () => {
 		if (this.props.idPlaylist < 0) {
-			commandBackend('playKara', { kid: this.props.kara.kid });
+			commandBackend('playKara', {
+				kid: this.props.kara.kid
+			});
 		} else {
 			commandBackend('editPLC', {
 				flag_playing: true,
-				pl_id: this.props.idPlaylist,
-				plc_id: this.props.kara.playlistcontent_id
+				plc_ids: [this.props.kara.playlistcontent_id]
 			});
 		}
 	};
@@ -101,14 +106,16 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		let data;
 		if (this.props.idPlaylistTo === -5) {
 			url = 'addFavorites';
-			data = { kid: [this.props.kara.kid] };
+			data = {
+				kids: [this.props.kara.kid]
+			};
 		} else if (this.props.scope === 'admin') {
 			if (this.props.idPlaylistTo > 0) {
 				if (this.props.idPlaylist > 0 && !pos) {
 					url = 'copyKaraToPlaylist';
 					data = {
 						pl_id: this.props.idPlaylistTo,
-						plc_id: [this.props.kara.playlistcontent_id]
+						plc_ids: [this.props.kara.playlistcontent_id]
 					};
 				} else {
 					url = 'addKaraToPlaylist';
@@ -116,33 +123,37 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						data = {
 							pl_id: this.props.idPlaylistTo,
 							requestedby: this.props.context.globalState.auth.data.username,
-							kid: this.props.kara.kid,
+							kids: [this.props.kara.kid],
 							pos: pos + 1
 						};
 					} else {
 						data = {
 							pl_id: this.props.idPlaylistTo,
 							requestedby: this.props.context.globalState.auth.data.username,
-							kid: this.props.kara.kid
+							kids: [this.props.kara.kid]
 						};
 					}
 				}
 			} else if (this.props.idPlaylistTo === -2 || this.props.idPlaylistTo === -4) {
 				url = 'createBLC';
 				data = {
-					blcriteria_type: 1001,
-					blcriteria_value: this.props.kara.kid,
+					blcs: [{ type: 1001, value: this.props.kara.kid }],
 					set_id: this.props.context.globalState.frontendContext.currentBlSet
 				};
 			} else if (this.props.idPlaylistTo === -3) {
 				url = 'addKaraToWhitelist';
-				data = { kid: [this.props.kara.kid] };
+				data = {
+					kids: [this.props.kara.kid]
+				};
 			}
 		} else {
 			url = 'addKaraToPublicPlaylist';
-			data = { requestedby: this.props.context.globalState.auth.data.username, kid: this.props.kara.kid };
+			data = {
+				requestedby: this.props.context.globalState.auth.data.username,
+				kid: this.props.kara.kid
+			};
 		}
-		const response = await commandBackend(url, data).catch(() => { });
+		const response = await commandBackend(url, data);
 		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
 			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
 			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
@@ -174,8 +185,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	changeVisibilityKara = () => {
 		commandBackend('editPLC', {
 			flag_visible: true,
-			pl_id: this.props.idPlaylist,
-			plc_id: this.props.kara.playlistcontent_id
+			plc_ids: [this.props.kara.playlistcontent_id]
 		});
 	};
 

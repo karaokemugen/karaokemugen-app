@@ -36,11 +36,11 @@ export async function getWhitelistContents(params: KaraParams) {
 }
 
 /** Remove KIDs from the whitelist */
-export async function deleteKaraFromWhitelist(karas: string[]) {
+export async function deleteKaraFromWhitelist(kids: string[]) {
 	try {
 		profile('deleteWLC');
-		logger.info('Deleting karaokes from whitelist', {service: 'Whitelist', obj: karas});
-		await removeKaraFromWhitelist(karas);
+		logger.info('Deleting karaokes from whitelist', {service: 'Whitelist', obj: kids});
+		await removeKaraFromWhitelist(kids);
 		generateBlacklist().then(() => emitWS('blacklistUpdated'));
 		emitWS('whitelistUpdated');
 	} catch(err) {

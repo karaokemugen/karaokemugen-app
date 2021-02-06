@@ -85,9 +85,13 @@ class PlayerBox extends Component<IProps, IState> {
 	toggleFavorite = async (event) => {
 		event.stopPropagation();
 		if (this.state.favorites.has(this.state.kid)) {
-			await commandBackend('deleteFavorites', { kid: [this.state.kid] });
+			await commandBackend('deleteFavorites', {
+				kids: [this.state.kid]
+			});
 		} else {
-			await commandBackend('addFavorites', { kid: [this.state.kid] });
+			await commandBackend('addFavorites', {
+				kids: [this.state.kid]
+			});
 		}
 	}
 

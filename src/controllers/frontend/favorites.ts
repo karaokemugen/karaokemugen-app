@@ -134,7 +134,7 @@ export default function favoritesController(router: SocketIOApp) {
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid[]} kid kara IDs to add
+ * @apiParam {uuid[]} kids kara IDs to add
  * @apiSuccess {String} message Message to display
  *
  * @apiSuccessExample Success-Response:
@@ -149,11 +149,11 @@ export default function favoritesController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'user', 'limited');
 		const validationErrors = check(req.body, {
-			kid: {uuidArrayValidator: true}
+			kids: {uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
-				return await addToFavorites(req.token.username, req.body?.kid, req.onlineAuthorization);
+				return await addToFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
 			} catch(err) {
 				const code = 'FAVORITES_ADDED_ERROR';
 				errMessage(code, err);
@@ -173,7 +173,7 @@ export default function favoritesController(router: SocketIOApp) {
  * @apiGroup Favorites
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid[]} kid kara IDs to add
+ * @apiParam {uuid[]} kids kara IDs to add
  * @apiSuccess {String} code Message to display
  *
  * @apiSuccessExample Success-Response:
@@ -190,11 +190,11 @@ export default function favoritesController(router: SocketIOApp) {
 		// Delete kara from favorites
 		// Deletion is through kara ID.
 		const validationErrors = check(req.body, {
-			kid: {uuidArrayValidator: true}
+			kids: {uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
-				return await deleteFavorites(req.token.username, req.body?.kid, req.onlineAuthorization);
+				return await deleteFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
 			} catch(err) {
 				const code = 'FAVORITES_DELETED_ERROR';
 				errMessage(code, err);
