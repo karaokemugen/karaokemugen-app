@@ -2,10 +2,10 @@ System:
   Database:
     bundledPostgresBinary: false
     database: karaokemugen_app
-    host: localhost
+    host: postgres
     password: musubi
     port: 5432
-    superuser: postgres
+    superuser: karaokemugen_app
     superuserPassword: musubi
     username: karaokemugen_app
   Binaries:
