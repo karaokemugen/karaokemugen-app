@@ -204,13 +204,13 @@ Playlist:
 System:
   Database:
     bundledPostgresBinary: false
-		database: karaokemugen_app
-		host: localhost
-		password: musubi
-		port: 6559
-		superuser: postgres
-		superuserPassword: musubi
-		username: karaokemugen_app
+    database: karaokemugen_app
+    host: localhost
+    password: musubi
+    port: 6559
+    superuser: postgres
+    superuserPassword: musubi
+    username: karaokemugen_app
   Binaries:
     Player:
       Linux: /usr/bin/mpv
