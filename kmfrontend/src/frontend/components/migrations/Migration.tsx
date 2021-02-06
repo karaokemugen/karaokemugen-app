@@ -7,8 +7,7 @@ export default function useMigration(name: string, onEnd: () => void): [() => JS
 	const EndButton = () => <button className="continue-btn" onClick={saveMigration}>{i18next.t('MIGRATE.CONTINUE')}</button>;
 
 	function saveMigration() {
-		commandBackend('setMigrationsFrontend', {mig: {name, flag_done: true}});
-		onEnd();
+		commandBackend('setMigrationsFrontend', {mig: {name, flag_done: true}}).then(onEnd);
 	}
 
 	return [EndButton, saveMigration];
