@@ -3,6 +3,8 @@ import { io, Socket } from 'socket.io-client';
 import { APIData } from '../lib/types/api';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
+// import { APIData } from '../lib/types/api';
+// TODO: reimport this when available on this branch (lib not compatible with master as of 24 oct.)
 
 let socket: Socket;
 
@@ -22,6 +24,7 @@ function connectToKMServer() {
 			clearTimeout(timeout);
 			timeout = undefined;
 			resolve();
+			clearTimeout(timeout);
 		});
 		socket.on('connect_error', (err) => {
 			if (timeout) reject(err);
