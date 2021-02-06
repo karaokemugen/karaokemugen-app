@@ -400,11 +400,10 @@
 		"TITLE": "Stats",
 		"INTRO": "Karaoke Mugen can send anonymous information about your instance to Karaoke Mugen Server to establish usage statistics.",
 		"DETAILS": {
-			"1": "Which karaokes are favorited (but not by whom)",
-			"2": "Which karaokes got played",
-			"3": "Which karaokes gott requested (but not by whom)",
-			"4": "Information about the computer (CPU, available RAM, OS name and version ...)",
-			"5": "Application' settings (excluding any private info like password)",
+			"1": "Which karaokes got played",
+			"2": "Which karaokes gott requested (but not by whom)",
+			"3": "Information about the computer (CPU, available RAM, OS name and version ...)",
+			"4": "Application' settings (excluding any private info like password)",
 			"TITLE": "Details of sent informations",
 			"OUTRO": "Stats are sent at each startup, then at each hour of use. You can consult the information sent in the Karaoke Mugen log directory."
 		},
