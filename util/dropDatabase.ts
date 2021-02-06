@@ -3,7 +3,7 @@
 // DO NOT DO THIS AT HOME.
 
 import {readFileSync} from 'fs';
-import {safeLoad} from 'js-yaml';
+import {load} from 'js-yaml';
 import merge from 'lodash.merge';
 import {Pool} from 'pg';
 
@@ -11,7 +11,7 @@ import {dbConfig} from '../src/utils/default_settings';
 
 async function main() {
 	const configFile = readFileSync('app/config.yml', 'utf-8');
-	const configData: any = safeLoad(configFile);
+	const configData: any = load(configFile);
 	const config = merge(dbConfig, configData.System.Database);
 	const databaseConfig = {
 		host: config.host,

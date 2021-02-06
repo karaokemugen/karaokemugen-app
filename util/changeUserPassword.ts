@@ -2,7 +2,7 @@
 
 const {Pool} = require('pg');
 const {hash, genSalt} = require('bcrypt');
-const {safeLoad} = require('js-yaml');
+const {load} = require('js-yaml');
 const {readFileSync} = require('fs');
 
 async function hashPassword(password: string): Promise<string> {
@@ -11,7 +11,7 @@ async function hashPassword(password: string): Promise<string> {
 
 async function main() {
 	const configFile = readFileSync('app/config.yml', 'utf-8');
-	const config: any = safeLoad(configFile);
+	const config: any = load(configFile);
 	const dbConfig = {
 		host: config.System.Database.host,
 		user: config.System.Database.username,

@@ -2,12 +2,12 @@
 // It requires superuser access.
 
 const {Pool} = require('pg');
-const {safeLoad} = require('js-yaml');
+const {load} = require('js-yaml');
 const {readFileSync} = require('fs');
 
 async function main() {
 	const configFile = readFileSync('app/config.yml', 'utf-8');
-	const config: any = safeLoad(configFile);
+	const config: any = load(configFile);
 	const dbConfig = {
 		host: config.System.Database.host,
 		user: config.System.Database.username,
