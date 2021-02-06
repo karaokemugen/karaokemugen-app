@@ -3,7 +3,7 @@
 // Node modules
 import execa from 'execa';
 import i18next from 'i18next';
-//import deburr from 'lodash.deburr';
+import deburr from 'lodash.deburr';
 import {resolve} from 'path';
 import {StringDecoder} from 'string_decoder';
 import tasklist from 'tasklist';
@@ -158,16 +158,13 @@ export async function initPGData() {
 	logger.info('No database present, initializing a new one...', {service: 'DB'});
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
-		//if (deburr(binPath) !== binPath || deburr(conf.System.Path.DB) !== conf.System.Path.DB) throw 'DB path or Postgres path contain non-ASCII characters. Please put Karaoke Mugen in a path with no accent characters or the like and try again.';
+		if (deburr(binPath) !== binPath || deburr(conf.System.Path.DB) !== conf.System.Path.DB) throw 'DB path or Postgres path contain non-ASCII characters. Please put Karaoke Mugen in a path with no accent characters or the like and try again.';
 
 		const options = [ 'init','-o', `-U ${conf.System.Database.superuser} -E UTF8`, '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit',
-			env: {
-				PGCLIENTENCODING: 'utf-8'
-			}
 		});
 	} catch(err) {
 		sentry.error(err);
@@ -245,9 +242,6 @@ export async function initPG(relaunch = true) {
 		await execa(binPath, options, {
 			cwd: pgBinDir,
 			stdio: 'ignore',
-			env: {
-				PGCLIENTENCODING: 'utf-8'
-			}
 		});
 		return true;
 	} catch(err) {
