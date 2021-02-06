@@ -62,9 +62,7 @@ export async function addSet(params: BLCSet) {
 
 export async function importSet(file: BLCSetFile) {
 	const id = await addSet(file.blcSetInfo);
-	for (const blc of file.blcSet) {
-		await addBlacklistCriteria(blc.type, blc.value, id);
-	}
+	await addBlacklistCriteria(file.blcSet, id);
 	emitWS('BLCSetsUpdated');
 	return id;
 }
@@ -184,27 +182,28 @@ export async function deleteBlacklistCriteria(blc_id: number, set_id: number) {
 	emitWS('blacklistUpdated');
 }
 
-export async function addBlacklistCriteria(type: number, value: any, set_id: number) {
+export async function addBlacklistCriteria(BLCs: BLC[], set_id: number) {
 	profile('addBLC');
-	const blcvalues = typeof value === 'string'
-		? value.split(',')
-		: [value];
-	logger.info(`Adding criteria ${type} = ${blcvalues.toString()}`, {service: 'Blacklist'});
-	const blcList = blcvalues.map((e: string) => {
+	if (!Array.isArray(BLCs)) throw {code: 400};
+	logger.info(`Adding criterias = ${JSON.stringify(BLCs)}`, {service: 'Blacklist'});
+	const blcList = BLCs.map(blc => {
 		return {
-			value: e,
-			type: type,
+			value: blc.value,
+			type: blc.type,
 			blc_set_id: set_id
 		};
 	});
 	try {
 		const blcset = await selectSet(set_id);
 		if (!blcset) throw {code: 404, msg: 'BLC set unknown'};
-		if (type < 0 || type > 1004 || type === 1000) throw {code: 400, msg: `Incorrect BLC type (${type})`};
-		if (type === 1001 || type < 1000) {
-			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${type} must have UUID values`};
+		// Validation
+		for (const blc of blcList) {
+			if (blc.type < 0 || blc.type > 1004 || blc.type === 1000) throw {code: 400, msg: `Incorrect BLC type (${blc.type})`};
+			if (blc.type === 1001 || blc.type < 1000) {
+				if (!new RegExp(uuidRegexp).test(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`};
+			}
+			if ((blc.type === 1002 || blc.type === 1003) && !isNumber(blc.value)) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`};
 		}
-		if ((type === 1002 || type === 1003) && !blcvalues.some(e => isNumber(e))) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${type} must have a numeric value!`};
 		await addBLC(blcList);
 		if (blcset.flag_current) await generateBlacklist();
 		updatedSetModifiedAt(set_id);

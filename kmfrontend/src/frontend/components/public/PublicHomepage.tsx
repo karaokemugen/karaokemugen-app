@@ -47,13 +47,17 @@ class PublicHomepage extends Component<IProps, IState> {
 			});
 			if (response?.content && response.content[0]) {
 				const chosenOne = response.content[0].kid;
-				const response2 = await commandBackend('getKara', { kid: chosenOne });
-				callModal('confirm', i18next.t('CL_CONGRATS'),
-					i18next.t('CL_ABOUT_TO_ADD',
-						{ title: buildKaraTitle(this.context.globalState.settings.data, response2, true) }),
-					() => {
-						commandBackend('addKaraToPublicPlaylist',
-							{ requestedby: this.context.globalState.auth.data.username, kid: chosenOne });
+				const response2 = await commandBackend('getKara', {
+					kid: chosenOne
+				});
+				callModal('confirm', i18next.t('CL_CONGRATS'), 
+					i18next.t('CL_ABOUT_TO_ADD', {
+						title: buildKaraTitle(this.context.globalState.settings.data, response2, true)
+					}), () => {
+						commandBackend('addKaraToPublicPlaylist', {
+							requestedby: this.context.globalState.auth.data.username,
+							kid: chosenOne
+						});
 					}, 'lucky');
 			}
 		}

@@ -11,7 +11,7 @@ describe('Whitelist', () => {
 	});
 	it('Add song to whitelist', async () => {
 		const data = {
-			kid: [kid],
+			kids: [kid],
 			reason: 'Because reasons'
 		};
 		await commandBackend(token, 'addKaraToWhitelist', data);
@@ -32,7 +32,7 @@ describe('Whitelist', () => {
 
 	it('Delete whitelist item', async () => {
 		const data = {
-			kid: [kid]
+			kids: [kid]
 		};
 		await commandBackend(token, 'deleteKaraFromWhitelist', data);
 	});
@@ -44,7 +44,7 @@ describe('Whitelist', () => {
 
 	it('Add song to whitelist again', async () => {
 		const data = {
-			kid: [kid],
+			kids: [kid],
 			reason: 'Because reasons'
 		};
 		await commandBackend(token, 'addKaraToWhitelist', data);

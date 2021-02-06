@@ -61,8 +61,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 
 	freeKara = () => {
 		commandBackend('editPLC', {
-			pl_id: this.props.idPlaylist,
-			plc_id: this.state.kara?.playlistcontent_id,
+			plc_ids: [this.state.kara?.playlistcontent_id],
 			flag_free: true
 		});
 		this.props.closeKaraMenu();
@@ -71,8 +70,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 
 	changeVisibilityKara = () => {
 		commandBackend('editPLC', {
-			pl_id: this.props.idPlaylist,
-			plc_id: this.state.kara?.playlistcontent_id,
+			plc_ids: [this.state.kara?.playlistcontent_id],
 			flag_visible: !this.state.kara?.flag_visible
 		});
 		this.props.closeKaraMenu();
@@ -80,22 +78,27 @@ class KaraMenuModal extends Component<IProps, IState> {
 
 	makeFavorite = () => {
 		this.state.kara?.flag_favorites ?
-			commandBackend('deleteFavorites', { 'kid': [this.state.kara?.kid] }) :
-			commandBackend('addFavorites', { 'kid': [this.state.kara?.kid] });
+			commandBackend('deleteFavorites', {
+				kids: [this.state.kara?.kid]
+			}) :
+			commandBackend('addFavorites', {
+				kids: [this.state.kara?.kid]
+			});
 		this.props.closeKaraMenu();
 	};
 
 	addToBlacklist = () => {
 		commandBackend('createBLC', {
-			blcriteria_type: 1001,
-			blcriteria_value: this.state.kara?.kid,
+			blcs: [{ type: 1001, value: this.state.kara?.kid }],
 			set_id: this.props.context.globalState.frontendContext.currentBlSet
 		});
 		this.props.closeKaraMenu();
 	}
 
 	addToWhitelist = () => {
-		commandBackend('addKaraToWhitelist', { kid: [this.state.kara?.kid] });
+		commandBackend('addKaraToWhitelist', {
+			kids: [this.state.kara?.kid]
+		});
 		this.props.closeKaraMenu();
 	}
 
@@ -146,8 +149,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 							<a href="#" onClick={() => {
 								commandBackend('editPLC', {
 									pos: this.getPosPlaying(this.props.side) + 1,
-									pl_id: this.props.idPlaylist,
-									plc_id: this.props.kara.playlistcontent_id
+									plc_ids: [this.props.kara.playlistcontent_id]
 								});
 								this.props.closeKaraMenu();
 							}}>
@@ -157,13 +159,15 @@ class KaraMenuModal extends Component<IProps, IState> {
 							</a>
 						</li> : null
 					}
-					<li>
-						<a href="#" onClick={this.makeFavorite}>
-							<i className="fas fa-star" />
-							&nbsp;
-							{this.state.kara.flag_favorites ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
-						</a>
-					</li>
+					{this.props.idPlaylist !== -5 ?
+						<li>
+							<a href="#" onClick={this.makeFavorite}>
+								<i className="fas fa-star" />
+								&nbsp;
+								{this.state.kara.flag_favorites ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
+							</a>
+						</li> : null
+					}
 					{this.props.publicOuCurrent && !this.state.kara.flag_free ?
 						<li>
 							<a href="#" onClick={this.freeKara} title={i18next.t('KARA_MENU.FREE')}>
