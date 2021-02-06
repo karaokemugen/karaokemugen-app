@@ -39,7 +39,6 @@ test:
     - touch mpv
     - mkdir app
     - cp -f config.CICD.yml app/config.yml
-    - cp -f database.CICD.json app/database.json
     - export LANG=en_US
     - node --version
     - node util/extUnaccent.js

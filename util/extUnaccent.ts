@@ -1,17 +1,20 @@
 // This script installs the unaccent extension in a database.
 // It requires superuser access.
 
-const dbConfigFile = require('../app/database.json');
 const {Pool} = require('pg');
+const {safeLoad} = require('js-yaml');
+const {readFileSync} = require('fs');
 
-const dbConfig = {
-	host: dbConfigFile.prod.host,
-	user: dbConfigFile.prod.user,
-	port: dbConfigFile.prod.port,
-	password: dbConfigFile.prod.password,
-	database: dbConfigFile.prod.database
-};
 async function main() {
+	const configFile = readFileSync('../app/config.yml', 'utf-8');
+	const config: any = safeLoad(configFile);
+	const dbConfig = {
+		host: config.System.Database.host,
+		user: config.System.Database.username,
+		port: config.System.Database.port,
+		password: config.System.Database.password,
+		database: config.System.Database.database
+	};
 	const client = new Pool(dbConfig);
 	await client.connect();
 	try {

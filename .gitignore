@@ -16,15 +16,11 @@ out/
 doc/
 \.DS_Store
 *.backup
-config\.ini
-config\.ini_old
 config\.yml
-database\.json
 *.bak
 karaokemugen-app-linux
 karaokemugen-app-macos
 dist/
-apidoc/
 bin/
 logs/
 updater/
