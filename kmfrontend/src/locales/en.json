@@ -400,11 +400,10 @@
 		"TITLE": "Stats",
 		"INTRO": "Karaoke Mugen can send anonymous information about your instance to Karaoke Mugen Server to establish usage statistics.",
 		"DETAILS": {
-			"1": "Which karaokes are favorited (but not by whom)",
-			"2": "Which karaokes got played",
-			"3": "Which karaokes gott requested (but not by whom)",
-			"4": "Information about the computer (CPU, available RAM, OS name and version ...)",
-			"5": "Application' settings (excluding any private info like password)",
+			"1": "Which karaokes got played",
+			"2": "Which karaokes gott requested (but not by whom)",
+			"3": "Information about the computer (CPU, available RAM, OS name and version ...)",
+			"4": "Application' settings (excluding any private info like password)",
 			"TITLE": "Details of sent informations",
 			"OUTRO": "Stats are sent at each startup, then at each hour of use. You can consult the information sent in the Karaoke Mugen log directory."
 		},
@@ -1178,7 +1177,9 @@
 		"USER_RESETPASSWORD_ONLINE": "An email has been sent with a link to reset your password.",
 		"REPO_LYRICS_COPIED": "Copy lyrics between two repositories successfully finished",
 		"FAVORITES_IMPORTED": "Favorites imported",
+		"WL_ADD_SONG": "Song added to whitelist",
 		"BLC_SET_IMPORTED": "Blacklist criterias set imported",
+		"BLC_CREATED": "Blacklist criterias created",
 		"BLC_COPIED": "Blacklist criterias copied",
 		"STOP_AFTER": "The karaoke will stop at the song end. To stop now, click again on the stop button."
 	},

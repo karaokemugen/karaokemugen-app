@@ -415,11 +415,10 @@
 		"TITLE": "Statistiques",
 		"INTRO": "Karaoke Mugen peut envoyer des informations anonymisées sur votre instance à Karaoke Mugen Server afin d'établir des statistiques d'utilisation.",
 		"DETAILS": {
-			"1": "Quels karaokés sont en favori (mais pas par qui)",
-			"2": "Quels karaokés ont été joués",
-			"3": "Quels karaokés ont été demandés (mais pas par qui)",
-			"4": "Des informations sur la machine (CPU, RAM disponible, nom et version de l'OS...)",
-			"5": "Votre configuration de l'application (sans aucun élément secret, type mot de passe)",
+			"1": "Quels karaokés ont été joués",
+			"2": "Quels karaokés ont été demandés (mais pas par qui)",
+			"3": "Des informations sur la machine (CPU, RAM disponible, nom et version de l'OS...)",
+			"4": "Votre configuration de l'application (sans aucun élément secret, type mot de passe)",
 			"TITLE": "Détails des informations envoyées",
 			"OUTRO": "Cet envoi a lieu à chaque démarrage puis à chaque heure d'utilisation. Vous pouvez consulter les informations envoyées dans le dossier log de Karaoke Mugen."
 		},
@@ -1197,7 +1196,9 @@
 		"USER_RESETPASSWORD_ONLINE": "Un email avec un lien pour réinitialiser votre mot de passe vous a été envoyé.",
 		"REPO_LYRICS_COPIED": "Copie des paroles entre les deux dépôts finie avec succès",
 		"FAVORITES_IMPORTED": "Favoris importés",
+		"WL_ADD_SONG": "Chanson ajoutée à la liste blanche",
 		"BLC_SET_IMPORTED": "Liste de critères de liste noire importé",
+		"BLC_CREATED": "Création avec succès d'un critère de liste noire",
 		"BLC_COPIED": "Copie avec succès des critères de liste noire",
 		"STOP_AFTER": "La lecture sera arrêtée à la fin de la chanson. Cliquez une seconde fois sur le bouton pour arrêter immédiatement."
 	},

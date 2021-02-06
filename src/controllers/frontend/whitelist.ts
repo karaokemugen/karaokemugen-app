@@ -129,7 +129,8 @@ export default function whitelistController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await addKaraToWhitelist(req.body.kids, req.body.reason);
+				await addKaraToWhitelist(req.body.kids, req.body.reason);
+				return APIMessage('WL_ADD_SONG');
 			} catch(err) {
 				const code = 'WL_ADD_SONG_ERROR';
 				errMessage(code, err);
