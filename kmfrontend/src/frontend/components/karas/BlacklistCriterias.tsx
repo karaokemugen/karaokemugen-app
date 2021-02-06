@@ -56,14 +56,13 @@ class BlacklistCriterias extends Component<IProps, IState> {
 
 	addBlacklistCriteria = () => {
 		commandBackend('createBLC', {
-			blcriteria_type: this.state.bcType,
-			blcriteria_value: this.state.bcVal,
+			blcs: [{ type: this.state.bcType, value: this.state.bcVal }],
 			set_id: this.props.blSet.blc_set_id
 		});
 	};
 
 	deleteCriteria = (bcId: number) => {
-		commandBackend('deleteBLC', {set_id: this.props.blSet.blc_set_id, blc_id:bcId});
+		commandBackend('deleteBLC', { set_id: this.props.blSet.blc_set_id, blc_id: bcId });
 	};
 
 	render() {
@@ -105,7 +104,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 									<div className="actionDiv">
 										<button title={i18next.t('BLC.DELETE_BLC')} name="deleteCriteria"
 											className="btn btn-action deleteCriteria" onClick={() => this.deleteCriteria(criteria.blcriteria_id as number)}>
-											<i className="fas fa-minus"></i>
+											<i className="fas fa-eraser"></i>
 										</button>
 									</div>
 									<div className="contentDiv">

@@ -2,7 +2,7 @@ import './PlaylistHeader.scss';
 
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
-import React, { Component } from 'react';
+import React, { Component, MouseEvent as MouseEventReact } from 'react';
 import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
@@ -13,10 +13,12 @@ import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage, getTuto, is_touch_device } from '../../../utils/tools';
+import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 import SelectWithIcon from '../generic/SelectWithIcon';
 import BlcSetCopyModal from '../modals/BlcSetCopyModal';
+import CheckedKaraMenuModal from '../modals/CheckedKaraMenuModal';
 import DeletePlaylistModal from '../modals/DeletePlaylistModal';
 import FavMixModal from '../modals/FavMixModal';
 import PlaylistModal from '../modals/PlaylistModal';
@@ -50,7 +52,7 @@ interface IProps {
 	playlistList: Array<PlaylistElem>;
 	searchMenuOpen?: boolean;
 	bLSetList: BLCSet[];
-	checkedkaras: number;
+	checkedkaras: KaraElement[];
 	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void;
 	changeIdPlaylistSide2?: (idPlaylist: number) => void;
 	playlistWillUpdate: () => void;
@@ -73,6 +75,7 @@ interface IState {
 	activeFilter: 'search' | 'favorites' | 'recent' | 'requested';
 	activeFilterUUID: string;
 	playlistCommands: boolean;
+	karaMenu: boolean;
 }
 
 class PlaylistHeader extends Component<IProps, IState> {
@@ -82,6 +85,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
+			karaMenu: false,
 			playlistCommands: false,
 			selectAllKarasChecked: false,
 			tagType: 2,
@@ -111,7 +115,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			bLSet={this.props.bLSet}
 			playlistList={this.getListToSelect()
 				.filter(pl => Number(pl.value) > 0
-				&& Number(pl.value) !== this.props.idPlaylist)}
+					&& Number(pl.value) !== this.props.idPlaylist)}
 			bLSetList={this.props.bLSetList?.filter(set => set.blc_set_id !== this.props.bLSet.blc_set_id).map(set => {
 				return { value: set.blc_set_id.toString(), label: set.name, icons: [] };
 			})}
@@ -317,6 +321,28 @@ class PlaylistHeader extends Component<IProps, IState> {
 		/>, document.getElementById('modal'));
 	}
 
+	openKaraMenu(event: MouseEventReact) {
+		if (event?.currentTarget) {
+			const element = (event.currentTarget as Element).getBoundingClientRect();
+			ReactDOM.render(<CheckedKaraMenuModal
+				checkedkaras={this.props.checkedkaras}
+				idPlaylist={this.props.idPlaylist}
+				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
+				topKaraMenu={element.bottom}
+				leftKaraMenu={element.left}
+				closeKaraMenu={this.closeKaraMenu}
+				context={this.context}
+			/>, document.getElementById('modal'));
+			this.setState({ karaMenu: true });
+		}
+	}
+
+	closeKaraMenu = () => {
+		const element = document.getElementById('modal');
+		if (element) ReactDOM.unmountComponentAtNode(element);
+		this.setState({ karaMenu: false });
+	}
+
 	render() {
 		const plCommandsContainer = (
 			this.props.idPlaylist !== -4 ?
@@ -348,9 +374,16 @@ class PlaylistHeader extends Component<IProps, IState> {
 									deleteKara={this.props.deleteCheckedKaras}
 									transferKara={this.props.transferCheckedKaras}
 									deleteFavorite={this.props.deleteCheckedFavorites}
-									checkedkaras={this.props.checkedkaras}
+									checkedkaras={this.props.checkedkaras?.length}
 									flag_public={this.props.playlistInfo?.flag_public}
 								/>
+								<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}
+									onClick={(event) => {
+										this.state.karaMenu ? this.closeKaraMenu() : this.openKaraMenu(event);
+									}}
+									className={'btn btn-sm btn-action showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
+									<i className="fas fa-wrench"></i>
+								</button>
 							</React.Fragment> : null
 						}
 					</div>
@@ -363,7 +396,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 						await this.setState({ activeFilterUUID: '' });
 						this.props.getPlaylist();
 					}}>
-						<i className="fas fa-trash-alt"></i> <span>{i18next.t('CLEAR_FILTER')}</span>
+						<i className="fas fa-eraser"></i> <span>{i18next.t('CLEAR_FILTER')}</span>
 					</div>
 					<select className="filterElement filterTags" placeholder="Search"
 						onChange={e => this.setState({ tagType: Number(e.target.value) })}
@@ -522,13 +555,13 @@ class PlaylistHeader extends Component<IProps, IState> {
 					<SelectWithIcon list={this.getListToSelect()} value={this.props.idPlaylist?.toString()}
 						onChange={(value: any) => this.props.changeIdPlaylist(Number(value))} />
 					{this.props.idPlaylist === -4 ?
-						<SelectWithIcon 
+						<SelectWithIcon
 							list={this.props.bLSetList.map(set => {
 								return { value: set.blc_set_id.toString(), label: set.name, icons: set.flag_current ? ['fa-play-circle'] : [] };
 							})}
 							value={this.props.bLSet?.blc_set_id.toString()}
 							onChange={(value: any) => this.props.changeIdPlaylist(this.props.idPlaylist, Number(value))}
-							 /> : null
+						/> : null
 					}
 					{this.props.idPlaylist === -1 ?
 						<div className="searchMenuButtonContainer btn-group">

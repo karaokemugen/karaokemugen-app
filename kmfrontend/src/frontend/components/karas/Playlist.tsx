@@ -607,7 +607,10 @@ class Playlist extends Component<IProps, IState> {
 					const karaList = randomKaras.content.map((a: KaraElement) => {
 						return a.kid;
 					});
-					commandBackend('addKaraToPlaylist', { kid: karaList, pl_id: this.props.idPlaylistTo });
+					commandBackend('addKaraToPlaylist', {
+						kids: karaList,
+						pl_id: this.props.idPlaylistTo
+					});
 				}, '');
 			}
 		}, '1');
@@ -621,7 +624,11 @@ class Playlist extends Component<IProps, IState> {
 		});
 		const karaList = response.content.map((a: KaraElement) => a.kid);
 		displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', { count: response.content.length }));
-		commandBackend('addKaraToPlaylist', { kid: karaList, requestedby: this.context.globalState.auth.data.username, pl_id: this.props.idPlaylistTo });
+		commandBackend('addKaraToPlaylist', {
+			kids: karaList,
+			requestedby: this.context.globalState.auth.data.username,
+			pl_id: this.props.idPlaylistTo
+		});
 	};
 
 	addCheckedKaras = async (_event?: any, pos?: number) => {
@@ -631,8 +638,8 @@ class Playlist extends Component<IProps, IState> {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		const idKara = listKara.map(a => a.kid);
-		const idKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
+		const idsKara = listKara.map(a => a.kid);
+		const idsKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
 		let url = '';
 		let data;
 
@@ -641,7 +648,7 @@ class Playlist extends Component<IProps, IState> {
 				url = 'copyKaraToPlaylist';
 				data = {
 					pl_id: this.props.idPlaylistTo,
-					plc_id: idKaraPlaylist
+					plc_ids: idsKaraPlaylist
 				};
 			} else {
 				url = 'addKaraToPlaylist';
@@ -649,30 +656,33 @@ class Playlist extends Component<IProps, IState> {
 					data = {
 						pl_id: this.props.idPlaylistTo,
 						requestedby: this.context.globalState.auth.data.username,
-						kid: idKara,
+						kids: idsKara,
 						pos: pos + 1
 					};
 				} else {
 					data = {
 						pl_id: this.props.idPlaylistTo,
 						requestedby: this.context.globalState.auth.data.username,
-						kid: idKara
+						kids: idsKara
 					};
 				}
 			}
 		} else if (this.props.idPlaylistTo === -2 || this.props.idPlaylistTo === -4) {
 			url = 'createBLC';
 			data = {
-				blcriteria_type: 1001,
-				blcriteria_value: idKara,
+				blcs: [{ type: 1001, value: idsKara }],
 				set_id: this.context.globalState.frontendContext.currentBlSet
 			};
 		} else if (this.props.idPlaylistTo === -3) {
 			url = 'addKaraToWhitelist';
-			data = { kid: idKara };
+			data = {
+				kids: idsKara
+			};
 		} else if (this.props.idPlaylistTo === -5) {
 			url = 'addFavorites';
-			data = { kid: stateData.content.filter(a => a.checked).map(a => a.kid) };
+			data = {
+				kids: stateData.content.filter(a => a.checked).map(a => a.kid)
+			};
 		}
 		await commandBackend(url, data);
 		const karaList = (this.state.data as KaraList);
@@ -700,18 +710,22 @@ class Playlist extends Component<IProps, IState> {
 			return;
 		}
 		if (this.state.idPlaylist > 0) {
-			const idKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+			const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
 			url = 'deleteKaraFromPlaylist';
 			data = {
-				plc_id: idKaraPlaylist,
+				plc_ids: idsKaraPlaylist,
 				pl_id: this.state.idPlaylist
 			};
 		} else if (this.state.idPlaylist === -3) {
 			url = 'deleteKaraFromWhitelist';
-			data = { kid: listKara.map(a => a.kid) };
+			data = {
+				kids: listKara.map(a => a.kid)
+			};
 		} else if (this.state.idPlaylist === -5) {
 			url = 'deleteFavorites';
-			data = { kid: listKara.map(a => a.kid) };
+			data = {
+				kids: listKara.map(a => a.kid)
+			};
 		}
 		if (url) {
 			await commandBackend(url, data);
@@ -764,8 +778,7 @@ class Playlist extends Component<IProps, IState> {
 
 			commandBackend('editPLC', {
 				pos: apiIndex,
-				pl_id: this.state.idPlaylist,
-				plc_id: playlistcontent_id
+				plc_ids: [playlistcontent_id]
 			});
 
 			let karas: Array<KaraElement> = [];
@@ -851,7 +864,7 @@ class Playlist extends Component<IProps, IState> {
 					searchMenuOpen={this.props.searchMenuOpen}
 					playlistWillUpdate={this.playlistWillUpdate}
 					playlistDidUpdate={this.playlistDidUpdate}
-					checkedkaras={this.state.checkedkaras}
+					checkedkaras={(this.state.data as KaraList)?.content?.filter(a => a.checked)}
 					addRandomKaras={this.addRandomKaras}
 				/> : null
 			}

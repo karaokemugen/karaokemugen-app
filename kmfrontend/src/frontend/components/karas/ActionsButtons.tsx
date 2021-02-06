@@ -48,16 +48,23 @@ class ActionsButtons extends Component<IProps, unknown> {
 		const classValue = this.props.isHeader ? 'btn btn-default karaLineButton' : 'btn btn-sm btn-action karaLineButton';
 		return (
 			<>
-				{(this.props.scope === 'admin' && this.props.idPlaylist !== -1)
+				{this.props.idPlaylist !== -5 && ((this.props.scope === 'admin' && this.props.idPlaylist !== -1)
 					|| (this.props.scope !== 'admin' && !this.props.kara?.flag_dejavu && !this.props.kara?.flag_playing
 						&& (this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]
-							|| (this.props.flag_public && this.props.kara.username === this.context.globalState.auth.data.username))) ?
+							|| (this.props.flag_public && this.props.kara.username === this.context.globalState.auth.data.username)))) ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_KARA' : 'TOOLTIP_DELETEKARA')}
 						disabled={this.props.kara?.flag_upvoted || this.props?.checkedkaras === 0}
 						className={classValue} onClick={this.props.deleteKara}>
-						<i className="fas fa-minus" />
-					</button> : null}
+						<i className="fas fa-eraser" />
+					</button> : null
+				}
 
+				{this.props.idPlaylist === -5 ?
+					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_FAVS' : 'TOOLTIP_DELETE_FAVS')}
+						className={classValue} onClick={this.props.deleteFavorite}>
+						<i className="fas fa-star" />
+					</button> : null
+				}
 
 				{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1 && this.props.idPlaylistTo !== -5)
 					|| (this.props.scope === 'public' && this.props.idPlaylist !== this.context.globalState.settings.data.state.publicPlaylistID
@@ -88,12 +95,6 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{this.props.idPlaylist === -5 ?
-					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_FAVS' : 'TOOLTIP_DELETE_FAVS')}
-						className={classValue} onClick={this.props.deleteFavorite}>
-						<i className="fas fa-star" />
-					</button> : null
-				}
 				{this.props.scope === 'admin' && this.props.isHeader && this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
 					<button
 						title={i18next.t('TOOLTIP_TRANSFER_SELECT_KARA')}

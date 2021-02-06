@@ -22,7 +22,7 @@ describe('Playlists', () => {
 	});
 	it(`Add all songs to playlist ${playlistID}`, async () => {
 		await commandBackend(token, 'addKaraToPlaylist', {
-			kid: allKIDs,
+			kids: allKIDs,
 			requestedby: 'Test',
 			pl_id: playlistID
 		});
@@ -31,7 +31,7 @@ describe('Playlists', () => {
 	it(`Add karaoke ${KIDToAdd} again to playlist ${playlistID} to see if it fails`, async () => {
 		try {
 			await commandBackend(token, 'addKaraToPlaylist', {
-				kid: [KIDToAdd],
+				kids: [KIDToAdd],
 				requestedby: 'Test',
 				pl_id: playlistID
 			});
@@ -43,7 +43,7 @@ describe('Playlists', () => {
 	it(`Add an unknown karaoke to playlist ${playlistID} to see if it fails`, async () => {
 		try {
 			await commandBackend(token, 'addKaraToPlaylist', {
-				kid: ['c28c8739-da02-49b4-889e-b15d1e9b2132'],
+				kids: ['c28c8739-da02-49b4-889e-b15d1e9b2132'],
 				requestedby: 'Test',
 				pl_id: playlistID
 			}, true);
@@ -56,7 +56,7 @@ describe('Playlists', () => {
 		try {
 
 			await commandBackend(token, 'addKaraToPlaylist', {
-				kid: [KIDToAdd],
+				kids: [KIDToAdd],
 				requestedby: 'Test',
 				pl_id: 10000
 			}, true);
@@ -135,7 +135,7 @@ describe('Playlists', () => {
 
 	it('Copy karaokes to another playlist', async () => {
 		await commandBackend(token, 'copyKaraToPlaylist', {
-			plc_id: [PLCID],
+			plc_ids: [PLCID],
 			pl_id: newPlaylistID
 		});
 	});
@@ -158,7 +158,7 @@ describe('Playlists', () => {
 
 	it('Delete karaokes from playlist', async () => {
 		const data = {
-			plc_id: [PLCID],
+			plc_ids: [PLCID],
 			pl_id: newPlaylistID
 		};
 		await commandBackend(token, 'deleteKaraFromPlaylist', data);
@@ -260,8 +260,7 @@ describe('Playlists', () => {
 	it('Edit karaoke from playlist : flag_playing', async () => {
 		const data = {
 			flag_playing: true,
-			pl_id: newPublicPlaylistID,
-			plc_id: currentPLCID
+			plc_ids: [currentPLCID]
 		};
 		await commandBackend(token, 'editPLC', data);
 	});
@@ -273,8 +272,7 @@ describe('Playlists', () => {
 
 	it('Edit karaoke from playlist : position', async () => {
 		await commandBackend(token, 'editPLC', {
-			pl_id: newPublicPlaylistID,
-			plc_id: currentPLCID,
+			plc_ids: [currentPLCID],
 			pos: 1
 		});
 	});

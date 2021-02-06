@@ -11,7 +11,7 @@ import GlobalContext, { GlobalContextInterface } from '../../../store/context';
 import { getPreviewLink, getSerieLanguage, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 
 interface IProps {
 	kid: string | undefined;
@@ -152,10 +152,34 @@ class KaraDetail extends Component<IProps, IState> {
 
 	makeFavorite = () => {
 		this.state.isFavorite ?
-			commandBackend('deleteFavorites', { 'kid': [this.props.kid] }) :
-			commandBackend('addFavorites', { 'kid': [this.props.kid] });
+			commandBackend('deleteFavorites', {
+				kids: [this.props.kid]
+			}) :
+			commandBackend('addFavorites', {
+				kids: [this.props.kid]
+			});
 		this.setState({ isFavorite: !this.state.isFavorite });
 	};
+
+	addKara = async () => {
+		const response = await commandBackend('addKaraToPublicPlaylist', {
+			requestedby: this.props.context.globalState.auth.data.username,
+			kid: this.props.kid
+		});
+		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
+			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+			displayMessage('success', <div>
+				{i18next.t(`SUCCESS_CODES.${response.code}`)}
+				<br />
+				{i18next.t('TIME_BEFORE_PLAY', {
+					time: beforePlayTime,
+					date: playTimeDate
+				})}
+			</div>);
+		}
+	}
 
 	compareTag = (a: DBKaraTag, b: DBKaraTag) => {
 		return a.name.localeCompare(b.name);
@@ -206,7 +230,10 @@ class KaraDetail extends Component<IProps, IState> {
 						<i className={`fas fa-fw fa-${tagData.icon}`} />
 						<div>
 							{i18next.t(`KARA.${type}_BY`)}
-							<span key={`${type}${key}`} className="detailsKaraLineContent"> {data[tagData.karajson].map(e => this.getTagInLocale(e)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index + 1 === arr.length) ? <span className={`colored ${tagData.color}`}> {i18next.t('AND')} </span> : <span className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
+							<span key={`${type}${key}`} className="detailsKaraLineContent"> {data[tagData.karajson]
+								.map(e => this.getTagInLocale(e)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index + 1 === arr.length) ? 
+									<span key={`${type}${key}`} className={`colored ${tagData.color}`}> {i18next.t('AND')} </span> :
+									<span key={`${type}${key}`} className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
 						</div>
 					</div>);
 					key++;
@@ -265,6 +292,17 @@ class KaraDetail extends Component<IProps, IState> {
 						</span>
 					</div>
 				</React.Fragment>
+			);
+
+			const addKaraButton = (
+				<button
+					type="button"
+					onClick={this.addKara}
+					className="btn btn-action"
+				>
+					<i className="fas fa-fw fa-plus" />
+					<span>{i18next.t('TOOLTIP_ADDKARA')}</span>
+				</button>
 			);
 
 			const makeFavButton = (
@@ -369,6 +407,7 @@ class KaraDetail extends Component<IProps, IState> {
 						<div className="detailsKara">
 							<div className="centerButtons">
 								{this.props.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
+								{this.state.kara?.public_plc_id && this.state.kara?.public_plc_id[0] ? null : addKaraButton}
 								{showVideoButton}
 							</div>
 							{details}

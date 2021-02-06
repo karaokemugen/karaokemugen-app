@@ -340,7 +340,7 @@ export default function playlistsController(router: SocketIOApp) {
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiParam {uuid[]} kid List of `kid`.
+	 * @apiParam {uuid[]} kids List of `kid`.
 	 * @apiParam {Number} [pos] Position in target playlist where to add the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
 	 * @apiSuccess {String} args/kara Karaoke title added
 	 * @apiSuccess {uuid} args/kid Karaoke ID added.
@@ -359,11 +359,11 @@ export default function playlistsController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'guest');
 		//add a kara to a playlist
 		const validationErrors = check(req.body, {
-			kid: {presence: true, uuidArrayValidator: true}
+			kids: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
-				return await addKaraToPlaylist(req.body.kid, req.token.username, req.body.pl_id, req.body.pos);
+				return await addKaraToPlaylist(req.body.kids, req.token.username, req.body.pl_id, req.body.pos);
 			} catch(err) {
 				const code = 'PL_ADD_SONG_ERROR';
 				errMessage(code, err);
@@ -384,7 +384,7 @@ export default function playlistsController(router: SocketIOApp) {
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiParam {Number[]} plc_id List of `playlistcontent_id` in an array
+	 * @apiParam {Number[]} plc_ids List of `playlistcontent_id` in an array
 	 * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist
 	 * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
 	 * @apiSuccess {String} args/playlist_id ID of destinaton playlist
@@ -401,11 +401,11 @@ export default function playlistsController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		//add karas from a playlist to another
 		const validationErrors = check(req.body, {
-			plc_id: {presence: true, numbersArrayValidator: true}
+			plc_ids: {presence: true, numbersArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
-				return await copyKaraToPlaylist(req.body.plc_id, req.body.pl_id, req.body.pos);
+				return await copyKaraToPlaylist(req.body.plc_ids, req.body.pl_id, req.body.pos);
 			} catch(err) {
 				const code = 'PL_SONG_COPY_ERROR';
 				errMessage(code, err);
@@ -426,7 +426,7 @@ export default function playlistsController(router: SocketIOApp) {
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiParam {Number[]} plc_id List of `plc_id` in an array
+	 * @apiParam {Number[]} plc_ids List of `plc_id` in an array
 	 * @apiSuccess {String} args Name of playlist the song was deleted from
 	 * @apiSuccess {String} code Message to display
 	 *
@@ -440,11 +440,11 @@ export default function playlistsController(router: SocketIOApp) {
 	 */
 		await runChecklist(socket, req, 'guest');
 		const validationErrors = check(req.body, {
-			plc_id: {presence: true, numbersArrayValidator: true}
+			plc_ids: {presence: true, numbersArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
-				return await deleteKaraFromPlaylist(req.body.plc_id, req.body.pl_id, req.token);
+				return await deleteKaraFromPlaylist(req.body.plc_ids, req.body.pl_id, req.token);
 			} catch(err) {
 				const code = 'PL_DELETE_SONG_ERROR';
 				errMessage(code, err);
@@ -522,8 +522,7 @@ export default function playlistsController(router: SocketIOApp) {
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
-	 * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
+	 * @apiParam {Number[]} plc_ids `playlistcontent_id` of the song to update
 	 * @apiParam {Number} [pos] Position in target playlist where to move the song to.
 	 * @apiParam {Boolean} [flag_playing] If set to true, the selected song will become the currently playing song.
 	 * @apiParam {Boolean} [flag_free] If set to true, the selected song will be marked as free. Setting it to false has no effect.
@@ -541,13 +540,14 @@ export default function playlistsController(router: SocketIOApp) {
 	 */
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
+			plc_ids: {numbersArrayValidator: true},
 			flag_playing: {inclusion: bools},
 			flag_free: {inclusion: bools},
 			flag_visible: {inclusion: bools}
 		});
 		if (!validationErrors) {
 			try {
-				return await editPLC(req.body.plc_id, {
+				return await editPLC(req.body.plc_ids, {
 					pos: +req.body.pos,
 					flag_playing: req.body.flag_playing,
 					flag_free: req.body.flag_free,

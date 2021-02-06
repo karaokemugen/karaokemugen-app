@@ -53,7 +53,7 @@ import logger, {profile} from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import {emitWS} from '../lib/utils/ws';
-import { DBPLC } from '../types/database/playlist';
+import { DBPL, DBPLC } from '../types/database/playlist';
 import { CurrentSong,Playlist, PlaylistExport, PlaylistOpts, PLC, PLCEditParams, Pos } from '../types/playlist';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
@@ -600,16 +600,16 @@ export async function notifyUserOfSongPlayTime(plc_id: number, username: string)
 }
 
 /** Copy song from one playlist to another */
-export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, pos?: number) {
+export async function copyKaraToPlaylist(plc_ids: number[], playlist_id: number, pos?: number) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw {code: 404, msg: `Playlist ${playlist_id} unknown`};
-	logger.info(`Copying ${plc_id.length} karaokes to playlist ${pl.name}`, {service: 'Playlist'});
+	logger.info(`Copying ${plc_ids.length} karaokes to playlist ${pl.name}`, {service: 'Playlist'});
 	try {
 		profile('copyKaraToPL');
 		const playlist = await getPlaylistKaraIDs(playlist_id);
 		// plcs is an array of plc_ids.
 		const date_add = new Date();
-		let plcList: PLC[] = plc_id.map(p => {
+		let plcList: PLC[] = plc_ids.map(p => {
 			return {
 				playlistcontent_id: p,
 				playlist_id: playlist_id,
@@ -676,14 +676,14 @@ export async function copyKaraToPlaylist(plc_id: number[], playlist_id: number, 
 }
 
 /** Remove song from a playlist */
-export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number, token: Token) {
+export async function deleteKaraFromPlaylist(plc_ids: number[], playlist_id:number, token: Token) {
 	profile('deleteKara');
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw {code: 404, msg: `Playlist ${playlist_id} unknown`};
 	// If we get a single song, it's a user deleting it (most probably)
 	const kids = [];
-	for (const i in plcs) {
-		const plcData = await getPLCInfoMini(plcs[i]);
+	for (const i in plc_ids) {
+		const plcData = await getPLCInfoMini(plc_ids[i]);
 		kids.push(plcData.kid);
 		if (!plcData) throw {code: 404, msg: 'At least one playlist content is unknown'};
 		if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {code: 403, msg: 'You cannot delete a song you did not add'};
@@ -693,7 +693,7 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 	logger.debug(`Deleting karaokes from playlist ${pl.name}`, {service: 'Playlist'});
 	try {
 		// Removing karaoke here.
-		await removeKaraFromPlaylist(plcs, playlist_id);
+		await removeKaraFromPlaylist(plc_ids, playlist_id);
 		await Promise.all([
 			updatePlaylistDuration(playlist_id),
 			updatePlaylistKaraCount(playlist_id),
@@ -729,40 +729,63 @@ export async function deleteKaraFromPlaylist(plcs: number[], playlist_id:number,
 }
 
 /** Edit PLC's properties in a playlist */
-export async function editPLC(plc_id: number, params: PLCEditParams) {
+export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 	profile('editPLC');
 	if (params.flag_playing === false) throw {code: 400, msg: 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one'};
+	if (params.flag_playing === true && plc_ids.length > 1) throw {code: 400, msg: 'flag_playing cannot be set to multiple songs at once'};
 	if (params.flag_free === false) throw {code: 400, msg: 'flag_free cannot be unset!'};
-	const plcData = await getPLCInfoMini(plc_id);
-	if (!plcData) throw {code: 404, msg: 'PLC ID unknown'};
-	const pl = await getPlaylistInfo(plcData.playlist_id);
-	if (params.flag_playing === true) {
-		await setPlaying(plc_id, pl.playlist_id);
-		if (pl.flag_current) playingUpdated();
+	const plcData: DBPLC[] = [];
+	for (const plc_id of plc_ids) {
+		plcData.push(await getPLCInfoMini(plc_id));
 	}
-	if (params.flag_free === true) {
-		await freePLC(plc_id);
-		updateSongsLeft(plcData.username, pl.playlist_id);
-	}
-	if (params.flag_visible === true) await setPLCVisible(plc_id);
-	if (params.flag_visible === false) await setPLCInvisible(plc_id);
-	if (params.pos) {
-		// If -1 move the song right after the one playing.
-		if (params.pos === -1) {
-			const plc = await getPLCInfoMini(pl.plcontent_id_playing);
-			params.pos = plc.pos + 1;
+	if (plcData.includes(undefined)) throw {code: 404, msg: 'PLC ID unknown'};
+
+	// Validations donne
+	const pls: Set<number> = new Set();
+	const songsLeftToUpdate: Set<string> = new Set();
+	for (const plc of plcData) {
+		pls.add(plc.playlist_id);
+		// Get playlist info in these cases
+		let pl: DBPL;
+		if (params.flag_playing === true || params.pos === -1) {
+			pl = await getPlaylistInfo(plc.playlist_id);
 		}
-		await shiftPosInPlaylist(pl.playlist_id, params.pos, 1);
-		await setPos(plc_id, params.pos);
-		await reorderPlaylist(pl.playlist_id);
+		if (params.flag_playing === true) {
+			await setPlaying(plc.playlistcontent_id, plc.playlist_id);
+			// This only occurs to one playlist anyway
+			if (pl.flag_current) playingUpdated();
+		}
+		if (params.flag_free === true) {
+			await freePLC(plc.playlistcontent_id);
+		}
+		if (params.flag_visible === true) await setPLCVisible(plc.playlistcontent_id);
+		if (params.flag_visible === false) await setPLCInvisible(plc.playlistcontent_id);
+		if (params.pos) {
+			// If -1 move the song right after the one playing.
+			if (params.pos === -1) {
+				const plc = await getPLCInfoMini(pl.plcontent_id_playing);
+				params.pos = plc.pos + 1;
+			}
+			songsLeftToUpdate.add(`${plc.username},${plc.playlist_id}`);
+			await shiftPosInPlaylist(plc.playlist_id, params.pos, 1);
+			await setPos(plc.playlistcontent_id, params.pos);
+			await reorderPlaylist(plc.playlist_id);
+		}
+	}
+	for (const songUpdate of songsLeftToUpdate.values()) {
+		const username = songUpdate.split(',')[0];
+		const playlist_id = +songUpdate.split(',')[1];
+		updateSongsLeft(username, playlist_id);
+	}
+	for (const playlist_id of pls.values()) {
+		updatePlaylistLastEditTime(playlist_id);
+		emitWS('playlistContentsUpdated', playlist_id);
+		emitWS('playlistInfoUpdated', playlist_id);
 
 	}
-	updatePlaylistLastEditTime(pl.playlist_id);
-	emitWS('playlistContentsUpdated', pl.playlist_id);
-	emitWS('playlistInfoUpdated', pl.playlist_id);
 	profile('editPLC');
 	return {
-		pl_id: pl.playlist_id
+		pl_ids: pls.values()
 	};
 }
 

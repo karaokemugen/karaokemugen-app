@@ -164,9 +164,6 @@
 		"REQUESTED_KARAOKES": "Requested karaokes",
 		"NEW_KARAOKES": "New karaokes"
 	},
-	"ADD_KARA": "Add song",
-	"DELETE_KARA": "Remove song",
-	"TRANSFER_KARA": "Transfer song",
 	"LYRICS": "Lyrics",
 	"KARAOKE": "{{count}} karaoke",
 	"KARAOKE_plural": "{{count}} karaokes",

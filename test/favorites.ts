@@ -11,7 +11,7 @@ describe('Favorites', () => {
 	});
 	it('Add karaoke to your favorites', async () => {
 		const data = {
-			kid: [favoriteKID]
+			kids: [favoriteKID]
 		};
 		await commandBackend(token, 'addFavorites', data);
 	});
@@ -54,7 +54,7 @@ describe('Favorites', () => {
 
 	it('Delete karaoke from your favorites', async () => {
 		const data = {
-			kid: [favoriteKID]
+			kids: [favoriteKID]
 		};
 		await commandBackend(token, 'deleteFavorites', data);
 	});
