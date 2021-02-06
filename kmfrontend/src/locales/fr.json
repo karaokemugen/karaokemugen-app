@@ -86,6 +86,11 @@
 		"LINK": "panneau système",
 		"AFTER_LINK": "."
 	},
+	"INLINE_TAG": {
+		"COUNT": "{{count}} karaoké",
+		"COUNT_plural": "{{count}} karaokés",
+		"SEARCH": "Karaokés avec {{tag}}"
+	},
 	"FAVORITES_IMPORT": "Importer vos favoris",
 	"FAVORITES_EXPORT": "Exporter vos favoris",
 	"FILTERS": "Filtres",

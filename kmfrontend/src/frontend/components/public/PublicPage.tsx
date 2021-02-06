@@ -284,8 +284,8 @@ class PublicPage extends Component<IProps, IState> {
 								closeOnPublic={() => {
 									this.props.route.history.goBack();
 									this.setState({ kara: undefined });
-								}}>
-							</KaraDetail>
+								}}
+								changeView={this.changeView} />
 						} />
 						<Route path={[
 							'/public/search',
