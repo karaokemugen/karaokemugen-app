@@ -1178,7 +1178,9 @@
 		"USER_RESETPASSWORD_ONLINE": "An email has been sent with a link to reset your password.",
 		"REPO_LYRICS_COPIED": "Copy lyrics between two repositories successfully finished",
 		"FAVORITES_IMPORTED": "Favorites imported",
+		"WL_ADD_SONG": "Song added to whitelist",
 		"BLC_SET_IMPORTED": "Blacklist criterias set imported",
+		"BLC_CREATED": "Blacklist criterias created",
 		"BLC_COPIED": "Blacklist criterias copied",
 		"STOP_AFTER": "The karaoke will stop at the song end. To stop now, click again on the stop button."
 	},

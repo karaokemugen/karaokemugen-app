@@ -1197,7 +1197,9 @@
 		"USER_RESETPASSWORD_ONLINE": "Un email avec un lien pour réinitialiser votre mot de passe vous a été envoyé.",
 		"REPO_LYRICS_COPIED": "Copie des paroles entre les deux dépôts finie avec succès",
 		"FAVORITES_IMPORTED": "Favoris importés",
+		"WL_ADD_SONG": "Chanson ajoutée à la liste blanche",
 		"BLC_SET_IMPORTED": "Liste de critères de liste noire importé",
+		"BLC_CREATED": "Création avec succès d'un critère de liste noire",
 		"BLC_COPIED": "Copie avec succès des critères de liste noire",
 		"STOP_AFTER": "La lecture sera arrêtée à la fin de la chanson. Cliquez une seconde fois sur le bouton pour arrêter immédiatement."
 	},
