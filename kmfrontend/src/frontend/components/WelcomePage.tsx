@@ -1,4 +1,5 @@
-import '../styles/welcome/WelcomePage.scss';
+import '../styles/start/Start.scss';
+import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
@@ -40,16 +41,18 @@ class WelcomePage extends Component<unknown, IState> {
 		};
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		if (this.context.globalState.auth.data.role !== 'admin') {
 			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
 			logout(this.context.globalDispatch);
-		}
-		if (this.context?.globalState.settings.data.config?.Online.Stats === undefined
+		} else if ((await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0) {
+			window.location.assign('/migrate');
+		} else if (this.context?.globalState.settings.data.config?.Online.Stats === undefined
 			|| this.context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
 			ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
+		} else {
+			this.getDownloadQueue();
 		}
-		this.getDownloadQueue();
 		this.getCatchphrase();
 		this.getNewsFeed();
 		this.getSessions();
@@ -199,8 +202,8 @@ class WelcomePage extends Component<unknown, IState> {
 			sessions.push({ label: session.name, value: session.name });
 		}
 		return (
-			<div id="welcomePage">
-				<div className="welcomePage--wrapper">
+			<div className="start-page">
+				<div className="wrapper welcome">
 
 					<div className="logo">
 						<img src={logo} alt="Logo Karaoke Mugen" />

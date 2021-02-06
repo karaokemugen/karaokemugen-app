@@ -1,5 +1,5 @@
-import '../styles/welcome/WelcomePage.scss';
-import '../styles/welcome/SetupPage.scss';
+import '../styles/start/Start.scss';
+import '../styles/start/SetupPage.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
@@ -47,6 +47,7 @@ class SetupPage extends Component<unknown, IState> {
 	componentDidMount() {
 		const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].Path.Karas[0].slice(0, -9);
 		const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
+		document.getElementsByTagName('body')[0].className = 'forceScroll';
 
 		this.setState({
 			instance: this.context?.globalState.settings.data.config?.Online.Host,
@@ -182,7 +183,7 @@ class SetupPage extends Component<unknown, IState> {
 
 	render() {
 		return (
-			<div id="setupPage">
+			<div className="start-page">
 				{this.state.activeHelp === 'security-code' ? (
 					<div className="help-modal" onClick={() => this.setState({ activeHelp: null })}>
 						<div className="help-modal-backdrop">
@@ -193,7 +194,7 @@ class SetupPage extends Component<unknown, IState> {
 						</div>
 					</div>
 				) : null}
-				<div className="setupPage--wrapper">
+				<div className="wrapper setup">
 					<div className="logo">
 						<img src={logo} alt="Logo Karaoke Mugen" />
 					</div>
@@ -442,16 +443,16 @@ class SetupPage extends Component<unknown, IState> {
 								{this.state.accountType === 'local' || (this.state.accountType === 'online' && this.state.onlineAction !== null)
 									? (
 										<section className="step step-3">
-											<p className="intro">
-												{i18next.t(
-													this.context.globalState.settings.data.state.electron
-														? 'SETUP_PAGE.SECURITY_CODE_DESC_ELECTRON'
-														: 'SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE'
-												)}
-												&nbsp;
-												<em>{i18next.t('SETUP_PAGE.SECURITY_CODE_USE')}</em>
-											</p>
 											<div className="input-group">
+												<p className="intro">
+													{i18next.t(
+														this.context.globalState.settings.data.state.electron
+															? 'SETUP_PAGE.SECURITY_CODE_DESC_ELECTRON'
+															: 'SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE'
+													)}
+													<br/>
+													<em>{i18next.t('SETUP_PAGE.SECURITY_CODE_USE')}</em>
+												</p>
 												<div className="input-control">
 													<label>
 														{i18next.t('SECURITY_CODE')}
@@ -509,30 +510,31 @@ class SetupPage extends Component<unknown, IState> {
 													this.setState({ repositoryFolder: event.target.value })
 												}
 											/>
-											{this.context.globalState.settings.data.state.electron ?
-												<button type="button" onClick={this.onClickRepository}>{i18next.t('SETUP_PAGE.MODIFY_DIRECTORY')}</button> : null
-											}
+											<div className="actions">
+												{this.context.globalState.settings.data.state.electron ?
+													<button type="button" onClick={this.onClickRepository}>{i18next.t('SETUP_PAGE.MODIFY_DIRECTORY')}</button> : null
+												}
+												<label className="error">{this.state.error}</label>
+											</div>
 										</div>
 									</div>
 									<p>{i18next.t('SETUP_PAGE.REPOSITORY_NEED_SPACE')}</p>
-									<div className="actions">
-										<label className="error">{this.state.error}</label>
-
-									</div>
 								</section>
-								<section className="step step-random">
+								<section className="step step-choice">
 									<div>
 										{i18next.t('SETUP_PAGE.DOWNLOAD_RANDOM_SONGS', {
 											instance: this.context?.globalState.settings.data.config?.System.Repositories[0].Name,
 										})}
 									</div>
 									<div className="input-group">
-										<button
-											className={this.state.downloadRandomSongs ? 'on' : ''}
-											type="button" onClick={() => this.setState({ downloadRandomSongs: true })}>{i18next.t('YES')}</button>
-										<button
-											className={!this.state.downloadRandomSongs ? 'off' : ''}
-											type="button" onClick={() => this.setState({ downloadRandomSongs: false })}>{i18next.t('NO')}</button>
+										<div className="actions">
+											<button
+												className={this.state.downloadRandomSongs ? 'on' : ''}
+												type="button" onClick={() => this.setState({ downloadRandomSongs: true })}>{i18next.t('YES')}</button>
+											<button
+												className={!this.state.downloadRandomSongs ? 'off' : ''}
+												type="button" onClick={() => this.setState({ downloadRandomSongs: false })}>{i18next.t('NO')}</button>
+										</div>
 									</div>
 									<div className="actions">
 										<label className="error">{this.state.error}</label>
@@ -546,11 +548,9 @@ class SetupPage extends Component<unknown, IState> {
 						) : null
 						}
 						{this.state.activeView === 'stats' ? (
-							<section className="step step-random">
-								<div className="modal-message text">
-									<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
-								</div>
-								<div className="text">
+							<section className="step step-choice">
+								<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
+								<p>
 									<a className="btn-link" type="button" onClick={() => this.setState({ openDetails: !this.state.openDetails })}>
 										{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
 									</a>
@@ -567,10 +567,10 @@ class SetupPage extends Component<unknown, IState> {
 											<br />
 										</React.Fragment> : null
 									}
-									<div className="text">
-										<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
-									</div>
-									<div className="input-group">
+								</p>
+								<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
+								<div className="input-group">
+									<div className="actions">
 										<button
 											className={this.state.stats ? 'on' : ''}
 											type="button" onClick={() => this.setState({ stats: true })}>{i18next.t('YES')}</button>
@@ -578,10 +578,10 @@ class SetupPage extends Component<unknown, IState> {
 											className={this.state.stats === false ? 'off' : ''}
 											type="button" onClick={() => this.setState({ stats: false })}>{i18next.t('NO')}</button>
 									</div>
-									<div className="text">
-										<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
-									</div>
-									<div className="input-group">
+								</div>
+								<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
+								<div className="input-group">
+									<div className="actions">
 										<button
 											className={this.state.errorTracking ? 'on' : ''}
 											type="button" onClick={() => this.setState({ errorTracking: true })}>{i18next.t('YES')}</button>
@@ -589,8 +589,8 @@ class SetupPage extends Component<unknown, IState> {
 											className={this.state.errorTracking === false ? 'off' : ''}
 											type="button" onClick={() => this.setState({ errorTracking: false })}>{i18next.t('NO')}</button>
 									</div>
-									{i18next.t('ONLINE_STATS.CHANGE')}
-								</div >
+								</div>
+								<p>{i18next.t('ONLINE_STATS.CHANGE')}</p>
 								<div className="actions">
 									<label className="error">{this.state.error}</label>
 									<button type="button" onClick={this.updateStats}>{i18next.t('ONLINE_STATS.CONFIRM')}</button>

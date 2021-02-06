@@ -1,7 +1,8 @@
+import '../styles/start/WelcomePageArticle.scss';
+
 import React, { Component } from 'react';
 
 import { News } from '../types/news';
-require ('../styles/welcome/WelcomePageArticle.scss');
 
 interface IProps {
 	article: News;

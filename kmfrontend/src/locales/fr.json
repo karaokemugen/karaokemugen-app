@@ -1325,5 +1325,28 @@
 		"FOCUS": "Revenir à Karaoke Mugen",
 		"ONTOP": "Afficher au-dessus des autres fenêtres",
 		"CLOSE": "Fermer le lecteur chibi"
+	},
+	"MIGRATE": {
+		"TITLE": "Assistant de migration",
+		"CONTINUE": "Continuer."
+	},
+	"PRIVACY_POLICY": {
+		"TITLE": "Vie Privée",
+		"P1": "Merci d'utiliser Karaoke Mugen. Nous sommes un groupe de bénévoles qui faisons vivre le logiciel ainsi que la base de karaokés. Donc chaque attention que vous nous donnez fait très plaisir, encore une fois merci ❤.",
+		"P2": "L'application vient d'être mise à jour en 5.0 avec tout un tas de nouvelles fonctionnalités, parmi lesquelles un ravalement de façade sur l'interface publique, l'accès à distance (on vous en reparle après), le nouveau type de tag version qui permet d'identifier et de trier les covers, versions alternatives, etc. plus facilement.",
+		"P3": "En étant un projet libre et bénévole, il est normal que vous attendez de nous une transparence complète sur comment vos données sont utilisées. Pour remplir cette mission, nous allons vous résumer les données que nous traitons et comment vous pouvez contrôler cela.",
+		"T1": "Vous nous espionnez !?",
+		"MORE": "Détails",
+		"P4": "Pas du tout, les données que nous récupérerons sont anonymes ou rattachés à votre pseudo, pas plus. Résumons :",
+		"L1": "Si vous utilisez les profils en ligne, les données de votre profil (adresse e-mail, biographie, site internet, etc.) ainsi que vos favoris sont transmis en temps réel au serveur contenant votre profil (par défaut il s'agit de kara.moe, notre serveur, vous pouvez en configurer un autre)",
+		"L2": "Si vous utilisez la fonction raccourcisseur d'URL (https://kara.moe), votre adresse IP locale et distante (préfixe IPv6 si disponible) sont transmises au serveur pour traitement. Ces données sont supprimées dès qu'elles ne servent plus (quand vous désactivez l'option ou que vous fermez l'application)",
+		"L3": "Si vous utilisez la fonction d'accès à distance (https://<code>.kara.moe), votre code généré est stocké en mémoire sur le serveur et sur votre application, celui-ci expire au bout de 10 jours sans utilisation. (pour vous permettre de conserver le même code d'une session à l'autre)",
+		"L4": "Si vous avez décidé d'activer les statistiques, l'application Karaoke Mugen envoie de façon périodique des statistiques sur les chansons qui sont jouées, demandées, et votre liste de sessions de karaoké. Ces données ne sont à aucun moment associés à votre nom ou pseudo, en revanche un identifiant unique et aléatoire est associé à votre application afin qu'on puisse regrouper les statistiques envoyées.",
+		"L4_DETAILS": "Ces statistiques comprennent également des données sur le matériel de votre ordinateur (mémoire RAM, écrans, processeur, système d'exploitation). Les karaokés joués et demandés sont envoyés sans que nous puissions savoir qui est à l'origine de ces ajouts. Cela nous sert à alimenter nos listes de karaokés populaires sur votre interface publique mais aussi sur notre explorateur de karaokés.",
+		"L5": "Si vous avez décidé d'activer les rapports Sentry, alors les rapports d'erreur créées par l'application seront envoyées automatiquement à Sentry.io, un service tiers de gestion des erreurs, cela nous permet d'obtenir les informations nécessaires pour qu'on puisse réparer les dysfonctionnements que vous pouvez rencontrer. Le service enverra un extrait des journaux de l'application, qui peuvent contenir des données nominatives (pseudos de ceux qui se sont connectés par exemple), ces données sont réduites au minimum.",
+		"L5_DETAILS": "Le rapport Sentry inclut le système d'exploitation utilisé, la version de Karaoke Mugen actuellement utilisée, les journaux de votre application, la pile d'appels (l'endroit où le code a mal fonctionné), une copie de l'état de l'application ainsi qu'un extrait de votre configuration (aucune information confidentielle n'est transmise, ni les identifiants Twitch, ni les secrets JWT, etc.). Ces rapports sont associés avec votre pseudo (le pseudo de la personne qui a installé l'application), ce qui permet de retrouver vos rapports facilement si vous nous demander de l'aide par rapport à un bug de Karaoke Mugen. Ces rapports sont aussi publiés sur notre Discord (avec un jeu d'informations limitées, ne compromettant pas votre configuration et l'état de l'application, ces détails étant réservés aux mainteneurs de l'application) pour être facilement repérées.",
+		"T2": "Mais du coup comment je peux m'opposer à ça ?",
+		"P5": "Vous pouvez ! Les comptes en ligne n'ont rien d'obligatoire, tout comme les autres fonctions en ligne. Pour ce qui est des statistiques et de Sentry, vous pouvez activer et désactiver ces deux mécanismes dans le panneau système. Vous restez maître de vos données à tout moment.",
+		"P6": "Si vous avez des questions ou que vous voulez qu'on supprime des données pour vous, vous pouvez nous envoyer un message à mugen@karaokes.moe."
 	}
 }

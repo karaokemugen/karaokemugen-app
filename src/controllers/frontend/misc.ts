@@ -10,6 +10,7 @@ import { getConfig } from '../../lib/utils/config';
 import { browseFs } from '../../lib/utils/files';
 import { enableWSLogging, readLog } from '../../lib/utils/logger';
 import { SocketIOApp } from '../../lib/utils/ws';
+import { getMigrationsFrontend, setMigrationsFrontend } from '../../services/migrationsFrontend';
 import { getFeeds } from '../../services/proxyFeeds';
 import { destroyRemote, initRemote } from '../../services/remote';
 import { updateSongsLeft } from '../../services/user';
@@ -22,6 +23,23 @@ import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function miscController(router: SocketIOApp) {
+	router.route('getMigrationsFrontend', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
+		try {
+			return getMigrationsFrontend();
+		} catch (err) {
+			throw { code: 500 };
+		}
+	});
+	router.route('setMigrationsFrontend', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
+		try {
+			return await setMigrationsFrontend(req.body.mig);
+		} catch(err) {
+			throw {code: 500};
+		}
+	});
+
 	router.route('getRemoteData', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
 		try {
