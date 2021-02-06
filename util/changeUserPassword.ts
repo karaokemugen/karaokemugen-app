@@ -10,7 +10,7 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 async function main() {
-	const configFile = readFileSync('../app/config.yml', 'utf-8');
+	const configFile = readFileSync('app/config.yml', 'utf-8');
 	const config: any = safeLoad(configFile);
 	const dbConfig = {
 		host: config.System.Database.host,
