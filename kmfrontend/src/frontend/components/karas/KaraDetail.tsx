@@ -12,6 +12,8 @@ import { getPreviewLink, getSerieLanguage, getTagInLocale } from '../../../utils
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import { View } from '../../types/view';
+import InlineTag from './InlineTag';
 
 interface IProps {
 	kid: string | undefined;
@@ -21,6 +23,12 @@ interface IProps {
 	showVideo?: (file: string) => void;
 	context: GlobalContextInterface;
 	closeOnPublic?: () => void;
+	changeView?: (
+		view: View,
+		tagType?: number,
+		searchValue?: string,
+		searchCriteria?: 'year' | 'tag'
+	) => void;
 }
 
 interface IState {
@@ -139,10 +147,15 @@ class KaraDetail extends Component<IProps, IState> {
 		}
 	};
 
-	getTagInLocale = (e: DBKaraTag) => {
-		return <span key={e.tid} className={e.problematic ? 'problematicTag' : 'inlineTag'}>
-			{getTagInLocale(e)}
-		</span>;
+	getInlineTag = (e: DBKaraTag, tagType: number) => {
+		return <InlineTag
+			key={e.tid}
+			scope={this.props.scope}
+			tag={e}
+			tagType={tagType}
+			className={e.problematic ? 'problematicTag' : 'inlineTag'}
+			changeView={this.props.changeView}
+		/>;
 	};
 
 	onClick = () => {
@@ -197,25 +210,27 @@ class KaraDetail extends Component<IProps, IState> {
 			if (data.langs) {
 				const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 				isMulti ? karaTags.push(<div key={isMulti.tid} className="tag">
-					{getTagInLocale(isMulti)}
+					{this.getInlineTag(isMulti, tagTypes.LANGS.type)}
 				</div>) : karaTags.push(...data.langs.sort(this.compareTag).map(tag => {
 					return <div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
-						{getTagInLocale(tag)}
+						{this.getInlineTag(tag, tagTypes.LANGS.type)}
 					</div>;
 				}));
 			}
 			if (data.songtypes) {
 				karaTags.push(...data.songtypes.sort(this.compareTag).map(tag => {
 					return <div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
-						{getTagInLocale(tag)}{data.songorder > 0 ? ' ' + data.songorder : ''}
+						{this.getInlineTag(tag, tagTypes.SONGTYPES.type)}{data.songorder > 0 ? ' ' + data.songorder : ''}
 					</div>;
 				}));
 			}
 			for (const type of ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']) {
-				const typeData = tagTypes[type];
-				if (data[typeData.karajson]) {
-					karaTags.push(...data[typeData.karajson].sort(this.compareTag).map(tag => {
-						return <div key={tag.tid} className={`tag ${typeData.color}`} title={tag.short ? tag.short : tag.name}>{getTagInLocale(tag)}</div>;
+				const tagData = tagTypes[type];
+				if (data[tagData.karajson]) {
+					karaTags.push(...data[tagData.karajson].sort(this.compareTag).map(tag => {
+						return <div key={tag.tid} className={`tag ${tagData.color}`} title={tag.short ? tag.short : tag.name}>
+							{this.getInlineTag(tag, tagData.type)}
+						</div>;
 					}));
 				}
 			}
@@ -231,7 +246,7 @@ class KaraDetail extends Component<IProps, IState> {
 						<div>
 							{i18next.t(`KARA.${type}_BY`)}
 							<span key={`${type}${key}`} className="detailsKaraLineContent"> {data[tagData.karajson]
-								.map(e => this.getTagInLocale(e)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index + 1 === arr.length) ? 
+								.map(e => this.getInlineTag(e, tagData.type)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index + 1 === arr.length) ?
 									<span key={`${type}${key}`} className={`colored ${tagData.color}`}> {i18next.t('AND')} </span> :
 									<span key={`${type}${key}`} className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
 						</div>
@@ -355,7 +370,10 @@ class KaraDetail extends Component<IProps, IState> {
 							</button> : null}
 						<div className="modal-title-block">
 							<h4 className="modal-title">{data.title}</h4>
-							<h5 className="modal-series">{data.series[0] ? getSerieLanguage(this.props.context.globalState.settings.data, data.series[0], data.langs[0].name) : getTagInLocale(data.singers[0])}</h5>
+							<h5 className="modal-series">{data.series[0] ?
+								getSerieLanguage(this.props.context.globalState.settings.data, data.series[0], data.langs[0].name) :
+								getTagInLocale(data.singers[0], tagTypes.SERIES.type)}
+							</h5>
 						</div>
 						{this.props.scope === 'admin' ?
 							<button

@@ -79,6 +79,11 @@
 		"LINK": "system panel",
 		"AFTER_LINK": "."
 	},
+	"INLINE_TAG": {
+		"COUNT": "{{count}} karaoke",
+		"COUNT_plural": "{{count}} karaokes",
+		"SEARCH": "Karaokes with {{tag}}"
+	},
 	"ENGINEAUTOPLAY": "Autoplay on next song added",
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Force hostname or IP",
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message displayed before URL",
@@ -524,7 +529,7 @@
 			"DELETE_CURRENT_BLC": "This list is defined as current , change the current criterias list for another to delete this one.",
 			"DELETE_PUBLIC": "This list is defined as public, change the public playlist for another to delete this one.",
 			"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",
-			"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one."	
+			"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one."
 		}
 	},
 	"SETUP_PAGE": {
