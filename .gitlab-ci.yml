@@ -41,7 +41,7 @@ test:
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US
     - node --version
-    - node util/extUnaccent.js
+    - yarn ts-node util/extUnaccent
     - yarn test --debug
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
