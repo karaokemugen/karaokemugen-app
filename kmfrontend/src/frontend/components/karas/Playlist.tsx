@@ -779,24 +779,18 @@ class Playlist extends Component<IProps, IState> {
 			commandBackend('editPLC', {
 				pos: apiIndex,
 				plc_ids: [playlistcontent_id]
+			}).finally(() => {
+				this.setState({ stopUpdate: false });
 			});
 
-			let karas: Array<KaraElement> = [];
-			if (oldIndex < newIndex) {
-				karas = data.content.splice(0, oldIndex).concat(
-					data.content.splice(oldIndex + 1, newIndex - oldIndex),
-					data.content[oldIndex],
-					data.content.splice(newIndex)
-				);
-			} else if (oldIndex > newIndex) {
-				karas = data.content.splice(0, newIndex).concat(
-					data.content[oldIndex],
-					data.content.splice(newIndex, oldIndex - newIndex),
-					data.content.splice(oldIndex + 1)
-				);
-			}
+			const kara = data.content[oldIndex];
+			let karas: Array<KaraElement> = [...data.content];
+			delete karas[oldIndex];
+			karas = karas.filter(kara => !!kara);
+			karas.splice(newIndex, 0, kara);
 			data.content = karas;
-			this.setState({ data: data, stopUpdate: false });
+			console.log(data.content);
+			this.setState({ data, forceUpdate: !this.state.forceUpdate });
 		}
 	}
 
