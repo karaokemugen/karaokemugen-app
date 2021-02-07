@@ -789,7 +789,6 @@ class Playlist extends Component<IProps, IState> {
 			karas = karas.filter(kara => !!kara);
 			karas.splice(newIndex, 0, kara);
 			data.content = karas;
-			console.log(data.content);
 			this.setState({ data, forceUpdate: !this.state.forceUpdate });
 		}
 	}
