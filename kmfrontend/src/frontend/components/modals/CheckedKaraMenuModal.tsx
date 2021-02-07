@@ -7,7 +7,7 @@ import { displayMessage, is_touch_device } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 
 interface IProps {
-	checkedkaras: KaraElement[]
+	checkedKaras: KaraElement[]
 	idPlaylist: number;
 	publicOuCurrent?: boolean | undefined;
 	topKaraMenu: number;
@@ -19,12 +19,12 @@ interface IProps {
 class CheckedKaraMenuModal extends Component<IProps, unknown> {
 
 	freeKara = async () => {
-		if (this.props.checkedkaras.length === 0) {
+		if (this.props.checkedKaras.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
 		await commandBackend('editPLC', {
-			plc_ids: this.props.checkedkaras.map(a => a.playlistcontent_id),
+			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
 			flag_free: true
 		});
 		this.props.closeKaraMenu();
@@ -33,7 +33,7 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 
 	changeVisibilityKaraOn = () => {
 		commandBackend('editPLC', {
-			plc_ids: this.props.checkedkaras.map(a => a.playlistcontent_id),
+			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
 			flag_visible: true
 		});
 		this.props.closeKaraMenu();
@@ -41,7 +41,7 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 
 	changeVisibilityKaraOff = () => {
 		commandBackend('editPLC', {
-			plc_ids: this.props.checkedkaras.map(a => a.playlistcontent_id),
+			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
 			flag_visible: false
 		});
 		this.props.closeKaraMenu();
@@ -49,14 +49,14 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 
 	makeFavorite = () => {
 		commandBackend('addFavorites', {
-			kids: this.props.checkedkaras.map(a => a.kid)
+			kids: this.props.checkedKaras.map(a => a.kid)
 		});
 		this.props.closeKaraMenu();
 	};
 
 	addToBlacklist = () => {
 		commandBackend('createBLC', {
-			blcs: this.props.checkedkaras.map(a => {
+			blcs: this.props.checkedKaras.map(a => {
 				return { type: 1001, value: a.kid };
 			}),
 			set_id: this.props.context.globalState.frontendContext.currentBlSet
@@ -66,7 +66,7 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 
 	addToWhitelist = () => {
 		commandBackend('addKaraToWhitelist', {
-			kids: this.props.checkedkaras.map(a => a.kid)
+			kids: this.props.checkedKaras.map(a => a.kid)
 		});
 		this.props.closeKaraMenu();
 	}

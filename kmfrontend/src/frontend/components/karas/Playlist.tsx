@@ -182,7 +182,7 @@ class Playlist extends Component<IProps, IState> {
 		flag_upvoted: boolean,
 		plc_id: number[]
 	}[]) => {
-		if ((this.state.idPlaylist === -1 || this.state.idPlaylist === -5) && (this.state.data as KaraList)?.content ) {
+		if ((this.state.idPlaylist === -1 || this.state.idPlaylist === -5) && (this.state.data as KaraList)?.content) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				for (const karaUpdated of event) {
@@ -544,40 +544,40 @@ class Playlist extends Component<IProps, IState> {
 
 	selectAllKaras = () => {
 		const data = this.state.data;
-		let checkedkaras = 0;
+		let checkedKaras = 0;
 		for (const kara of (this.state.data as KaraList)?.content) {
 			if (kara) {
 				kara.checked = !kara.checked;
-				if (kara.checked) checkedkaras++;
+				if (kara.checked) checkedKaras++;
 			}
 		}
-		this.setState({ data, checkedKaras: checkedkaras });
+		this.setState({ data, checkedKaras });
 		this.playlistForceRefresh(true);
 	};
 
 	checkKara = (id: string | number) => {
 		const data = this.state.data as KaraList;
-		let checkedkaras = this.state.checkedKaras;
+		let checkedKaras = this.state.checkedKaras;
 		for (const kara of data.content) {
 			if (this.state.idPlaylist >= 0) {
 				if (kara.playlistcontent_id === id) {
 					kara.checked = !kara.checked;
 					if (kara.checked) {
-						checkedkaras++;
+						checkedKaras++;
 					} else {
-						checkedkaras--;
+						checkedKaras--;
 					}
 				}
 			} else if (kara.kid === id) {
 				kara.checked = !kara.checked;
 				if (kara.checked) {
-					checkedkaras++;
+					checkedKaras++;
 				} else {
-					checkedkaras--;
+					checkedKaras--;
 				}
 			}
 		}
-		this.setState({ data: data, checkedKaras: checkedkaras });
+		this.setState({ data, checkedKaras });
 		this.playlistForceRefresh(true);
 	};
 
@@ -857,7 +857,7 @@ class Playlist extends Component<IProps, IState> {
 					searchMenuOpen={this.props.searchMenuOpen}
 					playlistWillUpdate={this.playlistWillUpdate}
 					playlistDidUpdate={this.playlistDidUpdate}
-					checkedkaras={(this.state.data as KaraList)?.content?.filter(a => a.checked)}
+					checkedKaras={(this.state.data as KaraList)?.content?.filter(a => a.checked)}
 					addRandomKaras={this.addRandomKaras}
 				/> : null
 			}

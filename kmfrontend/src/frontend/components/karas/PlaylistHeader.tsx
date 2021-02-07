@@ -52,7 +52,7 @@ interface IProps {
 	playlistList: Array<PlaylistElem>;
 	searchMenuOpen?: boolean;
 	bLSetList: BLCSet[];
-	checkedkaras: KaraElement[];
+	checkedKaras: KaraElement[];
 	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void;
 	changeIdPlaylistSide2?: (idPlaylist: number) => void;
 	playlistWillUpdate: () => void;
@@ -325,7 +325,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 		if (event?.currentTarget) {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			ReactDOM.render(<CheckedKaraMenuModal
-				checkedkaras={this.props.checkedkaras}
+				checkedKaras={this.props.checkedKaras}
 				idPlaylist={this.props.idPlaylist}
 				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
 				topKaraMenu={element.bottom}
@@ -374,7 +374,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 									deleteKara={this.props.deleteCheckedKaras}
 									transferKara={this.props.transferCheckedKaras}
 									deleteFavorite={this.props.deleteCheckedFavorites}
-									checkedkaras={this.props.checkedkaras?.length}
+									checkedKaras={this.props.checkedKaras?.length}
 									flag_public={this.props.playlistInfo?.flag_public}
 								/>
 								<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}

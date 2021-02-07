@@ -13,7 +13,7 @@ interface IProps {
 	idPlaylist: number;
 	idPlaylistTo: number;
 	kara?: KaraElement;
-	checkedkaras?: number;
+	checkedKaras?: number;
 	flag_public: boolean;
 	addKara: (event?: any, pos?: number) => void;
 	deleteKara: () => void;
@@ -53,7 +53,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 						&& (this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]
 							|| (this.props.flag_public && this.props.kara.username === this.context.globalState.auth.data.username)))) ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_KARA' : 'TOOLTIP_DELETEKARA')}
-						disabled={this.props.kara?.flag_upvoted || this.props?.checkedkaras === 0}
+						disabled={this.props.kara?.flag_upvoted || this.props?.checkedKaras === 0}
 						className={classValue} onClick={this.props.deleteKara}>
 						<i className="fas fa-eraser" />
 					</button> : null
@@ -75,7 +75,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 							`${i18next.t('TOOLTIP_ADDKARA')}${(this.props.scope === 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : '')}`}
 						className={classValue} onContextMenu={this.onRightClickAdd}
 						onClick={this.props.addKara}
-						disabled={this.props?.checkedkaras === 0}>
+						disabled={this.props?.checkedKaras === 0}>
 						<i className="fas fa-plus" />
 					</button> : null
 				}
@@ -98,7 +98,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 				{this.props.scope === 'admin' && this.props.isHeader && this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
 					<button
 						title={i18next.t('TOOLTIP_TRANSFER_SELECT_KARA')}
-						className={classValue} disabled={this.props?.checkedkaras === 0}
+						className={classValue} disabled={this.props?.checkedKaras === 0}
 						onContextMenu={this.onRightClickTransfer}
 						onClick={this.props.transferKara}>
 						<i className="fas fa-exchange-alt" />
