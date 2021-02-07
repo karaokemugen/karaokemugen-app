@@ -259,7 +259,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 8 }}
+					wrapperCol={{ span: 12 }}
 					name="mediafile"
 					rules={[{
 						required: true,
@@ -293,7 +293,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 8  }}
+					wrapperCol={{ span: 12 }}
 					name="subfile"
 				>
 					<Upload
