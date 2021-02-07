@@ -193,7 +193,7 @@ class WelcomePage extends Component<unknown, IState> {
 	};
 
 	toggleProfileModal = () => {
-		ReactDOM.render(<ProfilModal context={this.context} />, document.getElementById('modal'));
+		ReactDOM.render(<ProfilModal context={this.context} scope="admin" />, document.getElementById('modal'));
 	};
 
 	render() {
