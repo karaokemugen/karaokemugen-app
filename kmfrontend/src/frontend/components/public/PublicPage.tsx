@@ -38,6 +38,7 @@ interface IState {
 	tagType: number;
 	kara: KaraElement;
 	playerStopping: boolean;
+	playerStopped: boolean;
 	top: string;
 	bottom: string;
 	searchValue?: string;
@@ -64,6 +65,7 @@ class PublicPage extends Component<IProps, IState> {
 			tagType: undefined,
 			kara: undefined,
 			playerStopping: false,
+			playerStopped: false,
 			top: '0',
 			bottom: '0',
 			publicVisible: true,
@@ -232,12 +234,14 @@ class PublicPage extends Component<IProps, IState> {
 
 	displayClassicModeModal = (data: PublicPlayerState) => {
 		if (data.stopping !== undefined) this.setState({ playerStopping: data.stopping });
-		if (data.playerStatus === 'stop'
+		if (data.playerStatus === 'stop') this.setState({ playerStopped: true });
+		else if (typeof data.playerStatus === 'string') this.setState({ playerStopped: false });
+		if (this.state.playerStopped
 			&& data.currentRequester === this.context.globalState.auth.data.username
 			&& !this.state.classicModeModal) {
 			ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
 			this.setState({ classicModeModal: true });
-		} else if (data.playerStatus === 'play' && this.state.classicModeModal) {
+		} else if (!this.state.playerStopped && this.state.classicModeModal) {
 			const element = document.getElementById('modal');
 			if (element) ReactDOM.unmountComponentAtNode(element);
 			this.setState({ classicModeModal: false });
