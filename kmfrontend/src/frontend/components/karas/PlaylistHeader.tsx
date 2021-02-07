@@ -190,7 +190,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					data.playlist = fr.result;
 					name = JSON.parse(fr.result as string)?.PlaylistInformation?.name;
 				}
-				const response = await commandBackend(url, { buffer: data });
+				const response = await commandBackend(url, data);
 				if (response.unknownKaras && response.unknownKaras.length > 0) {
 					const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>

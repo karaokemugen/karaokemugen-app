@@ -60,7 +60,7 @@ interface IState {
 	scrollToIndex?: number;
 	playlistInfo?: DBPL;
 	bLSetList: BLCSet[];
-	checkedkaras: number;
+	checkedKaras: number;
 	playing?: number;
 	songsBeforeJingle?: number;
 	songsBeforeSponsor?: number;
@@ -95,7 +95,7 @@ class Playlist extends Component<IProps, IState> {
 			data: undefined,
 			bLSetList: [],
 			searchType: this.props.searchType ? this.props.searchType : 'search',
-			checkedkaras: 0,
+			checkedKaras: 0,
 			searchCriteria: this.props.searchCriteria,
 			searchValue: this.props.searchValue
 		};
@@ -240,7 +240,7 @@ class Playlist extends Component<IProps, IState> {
 		return Boolean(this.state.data && (this.state.data as KaraList).content[index]);
 	}
 
-	loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
+	loadMoreRows = async ({ stopIndex }: IndexRange) => {
 		if (!this.state.getPlaylistInProgress) {
 			const data = this.state.data as KaraList;
 			data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
@@ -250,7 +250,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 	}
 
-	rowRenderer = ({ index, isScrolling, key, parent, style }: ListRowProps) => {
+	rowRenderer = ({ index, key, parent, style }: ListRowProps) => {
 		let content: KaraElement;
 		if (this.state.data && (this.state.data as KaraList).content && (this.state.data as KaraList).content[index]) {
 			content = (this.state.data as KaraList).content[index];
@@ -551,13 +551,13 @@ class Playlist extends Component<IProps, IState> {
 				if (kara.checked) checkedkaras++;
 			}
 		}
-		this.setState({ data, checkedkaras });
+		this.setState({ data, checkedKaras: checkedkaras });
 		this.playlistForceRefresh(true);
 	};
 
 	checkKara = (id: string | number) => {
 		const data = this.state.data as KaraList;
-		let checkedkaras = this.state.checkedkaras;
+		let checkedkaras = this.state.checkedKaras;
 		for (const kara of data.content) {
 			if (this.state.idPlaylist >= 0) {
 				if (kara.playlistcontent_id === id) {
@@ -577,7 +577,7 @@ class Playlist extends Component<IProps, IState> {
 				}
 			}
 		}
-		this.setState({ data: data, checkedkaras: checkedkaras });
+		this.setState({ data: data, checkedKaras: checkedkaras });
 		this.playlistForceRefresh(true);
 	};
 
@@ -923,7 +923,7 @@ class Playlist extends Component<IProps, IState> {
 						className="btn btn-sm btn-action"
 						onClick={() => this.setState({ scrollToIndex: 0, goToPlaying: false, _goToPlaying: false })}
 					>
-						<i className="fas fa-chevron-up"></i>
+						<i className="fas fa-chevron-up" />
 					</button>
 					{this.state.idPlaylist > 0 ?
 						<button
@@ -933,7 +933,7 @@ class Playlist extends Component<IProps, IState> {
 							onClick={this.scrollToPlaying}
 							value="playing"
 						>
-							<i className="fas fa-play"></i>
+							<i className="fas fa-play" />
 						</button> : null
 					}
 					<button
@@ -942,13 +942,13 @@ class Playlist extends Component<IProps, IState> {
 						className="btn btn-sm btn-action"
 						onClick={() => this.setState({ scrollToIndex: (this.state.data as KaraList).infos.count - 1, goToPlaying: false, _goToPlaying: false })}
 					>
-						<i className="fas fa-chevron-down"></i>
+						<i className="fas fa-chevron-down" />
 					</button>
 				</div>
 				<div className="plInfos">{this.getPlInfosElement()}</div>
-				{this.state.checkedkaras > 0 ?
+				{this.state.checkedKaras > 0 ?
 					<div className="plQuota selection">
-						{i18next.t('CHECKED')}{this.state.checkedkaras}
+						{i18next.t('CHECKED')}{this.state.checkedKaras}
 					</div> : null
 				}
 			</div>
