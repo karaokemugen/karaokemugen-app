@@ -215,7 +215,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				info.file.status = 'error';
 				this.setState({ subfile: [], subfile_orig: null });
 			}
-		} else if (info.file.status === 'error') {
+		} else if (info.file.status === 'error' || info.file.status === 'removed') {
 			this.formRef.current.setFieldsValue({ subfile: null });
 			this.setState({ subfile: [], subfile_orig: null });
 		}
