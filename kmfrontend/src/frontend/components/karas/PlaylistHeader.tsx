@@ -191,8 +191,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 					name = JSON.parse(fr.result as string)?.PlaylistInformation?.name;
 				}
 				const response = await commandBackend(url, data);
-				if (response.unknownKaras && response.unknownKaras.length > 0) {
-					const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
+				if (response.data.unknownKaras && response.data.unknownKaras.length > 0) {
+					const mediasize = response.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
 						<p>
 							{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
@@ -219,7 +219,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					!file.name.includes('.kmfavorites') &&
 						displayMessage('success', i18next.t(i18next.t(`SUCCESS_CODES.${response.code}`, { data: name })));
 				}
-				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.playlist_id;
+				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.data.playlist_id;
 				this.props.changeIdPlaylist(playlist_id);
 			};
 			fr.readAsText(file);
