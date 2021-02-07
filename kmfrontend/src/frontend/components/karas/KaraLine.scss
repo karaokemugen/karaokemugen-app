@@ -141,15 +141,15 @@
 		justify-content: center;
 	}
 
-	&.dragged {
-		border: none;
-		z-index: 200;
-		position: absolute;
-		width: auto;
-		> div {
-			border: solid 1px #595959;
-			width: auto;
-			background-color: #222;
+	// Axial symmetry
+
+	&.side-2 {
+		.actionDiv {
+			float: left;
+			flex-direction: row-reverse;
+		}
+		.checkboxKara {
+			float: left;
 		}
 	}
 

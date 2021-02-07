@@ -25,34 +25,8 @@
 	}
 }
 
-// Overrides to have an axial symmetry
-#panel2 .actionDiv {
-	float: left;
-	flex-direction: row-reverse;
-}
-#panel2 .checkboxKara {
-	float: left;
-}
-
 .single .infoDiv {
 	order: -1;
-}
-
-#playlist2 .list-group-item > .infoDiv > button, .playlistContainer > #playlist1 .list-group-item > .actionDiv > button,
-#playlist1 .list-group-item > .actionDiv > .actionButtonsDiv
-{
-	float: right;
-	display: block;
-}
-
-#playlist1 .list-group-item > .infoDiv > button, .playlistContainer > #playlist2 .list-group-item > .actionDiv > button,
-#playlist2 .list-group-item > .actionDiv > .actionButtonsDiv {
-	float: left;
-	display: block;
-}
-
-.list-group-item > .contentDiv > * {
-	flex-grow: 1;
 }
 
 .playlistContainer {
@@ -130,5 +104,6 @@ body:not(.touch) {
 	list-style: none;
 	.list-group-item {
 		background: #333;
+		z-index: 200;
 	}
 }
