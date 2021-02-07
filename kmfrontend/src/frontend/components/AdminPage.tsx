@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 import { DBYear } from '../../../../src/lib/types/database/kara';
-import { KaraTag } from '../../../../src/lib/types/kara';
 import { PublicPlayerState } from '../../../../src/types/state';
 import { logout } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
