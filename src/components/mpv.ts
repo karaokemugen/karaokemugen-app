@@ -170,6 +170,7 @@ class Player {
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--sub-visibility',
+			'--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no'
 		];
 
