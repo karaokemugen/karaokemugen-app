@@ -161,13 +161,13 @@ Create a `config.yml` and place it in your data directory (`$HOME/KaraokeMugen` 
 System:
   Database:
     bundledPostgresBinary: false
-      database: karaokemugen_app
-      host: localhost
-      password: musubi
-      port: 6559
-      superuser: postgres
-      superuserPassword: musubi
-      username: karaokemugen_app
+	database: karaokemugen_app
+	host: localhost
+	password: musubi
+	port: 5432
+	superuser: postgres
+	superuserPassword: musubi
+	username: karaokemugen_app
 ```
 
 As a superuser on PostgreSQL, you need to create the database properly. Use the `psql` command-line tool to connect to your PostgreSQL cluster and create the needed database and extension. Example with the `config.yml` above :
