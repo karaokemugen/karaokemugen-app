@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 
 import guideSecurityGif from '../../assets/guide-security-code.gif';
 import logo from '../../assets/Logo-final-fond-transparent.png';
-import { login } from '../../store/actions/auth';
+import { setAuthentifactionInformation } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
@@ -76,11 +76,11 @@ class SetupPage extends Component<unknown, IState> {
 		try {
 			await commandBackend('createUser', {
 				login: username,
-				password: this.state.password as string,
+				password: this.state.password,
 				role: 'admin'
 			});
 			this.setState({ error: undefined });
-			this.login(username, this.state.password as string);
+			this.login(username);
 		} catch (err) {
 			const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
@@ -91,15 +91,34 @@ class SetupPage extends Component<unknown, IState> {
 		const username =
 			this.state.login +
 			(this.state.accountType === 'online' ? '@' + this.state.instance : '');
-		this.login(username, this.state.password as string);
+		this.login(username);
 	};
 
-	login = async (username: string, password: string) => {
+	login = async (username: string) => {
 		try {
-			login(username, password, this.context.globalDispatch, this.state.securityCode);
-			this.setState({ activeView: 'repo', error: undefined });
+			if (!this.state.login) {
+				const error = i18next.t('LOGIN_MANDATORY');
+				displayMessage('warning', error);
+				this.setState({ error: error });
+			} else  if (!this.state.password) {
+				const error = i18next.t('PASSWORD_MANDATORY');
+				displayMessage('warning', error);
+				this.setState({ error: error });
+			} else if (!this.state.securityCode) {
+				const error = i18next.t('SECURITY_CODE_MANDATORY');
+				displayMessage('warning', error);
+				this.setState({ error: error });
+			} else {
+				const infos = await commandBackend('login', {
+					username: username,
+					password: this.state.password,
+					securityCode: this.state.securityCode
+				});
+				setAuthentifactionInformation(this.context.globalDispatch, infos);
+				this.setState({ activeView: 'repo', error: undefined });
+			}
 		} catch (err) {
-			const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
+			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
 		}
 	};
