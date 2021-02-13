@@ -1,6 +1,5 @@
 {
   "name": "kmfrontend",
-  "version": "5.0.7",
   "private": true,
   "dependencies": {
     "@cospired/i18n-iso-languages": "^2.2.0",
