@@ -186,7 +186,7 @@ class PlayerBox extends Component<IProps, IState> {
 					// Tags in the header
 					const typeData = tagTypes['VERSIONS'];
 					if (kara.versions) {
-						return kara[typeData.karajson].sort(this.compareTag).map(tag => {
+						return kara[typeData.karajson].sort(sortTagByPriority).sort(this.compareTag).map(tag => {
 							return <div key={tag.tid} className={`tag inline ${typeData.color}`} title={getTagInLocale(tag)}>
 								{getTagInLocale(tag)}
 							</div>;
