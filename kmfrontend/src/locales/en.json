@@ -787,7 +787,7 @@
 		"NOLIVEDOWNLOAD": "Disallow on Live/Web Downloads",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Karaokes with this tag won't be able to be downloaded on KMServer from the web interface, or visible on Live",
 		"PRIORITY": "Display priority",
-		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 0 by default.",
+		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default.",
 		"COPY_TAG": "Copy tag to another repository"
 	},
 	"TAG_TYPES": {
