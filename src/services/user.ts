@@ -2,7 +2,7 @@ import {compare, genSalt, hash} from 'bcryptjs';
 import {createHash} from 'crypto';
 import {decode,encode} from 'jwt-simple';
 import {has as hasLang} from 'langs';
-import {join,resolve} from 'path';
+import {resolve} from 'path';
 import randomstring from 'randomstring';
 import slugify from 'slugify';
 import { v4 as uuidV4 } from 'uuid';
@@ -370,7 +370,7 @@ async function updateGuestAvatar(user: DBGuest) {
 		lower: true,
 		remove: /['"!,?()]/g
 	})}.jpg`;
-	const bundledAvatarPath = join(__dirname, '../../assets/guestAvatars/', bundledAvatarFile);
+	const bundledAvatarPath = resolve(getState().resourcePath, 'assets/guestAvatars/', bundledAvatarFile);
 	if (!await asyncExists(bundledAvatarPath)) {
 		// Bundled avatar does not exist for this user, skipping.
 		return false;
