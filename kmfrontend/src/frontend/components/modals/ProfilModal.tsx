@@ -150,7 +150,7 @@ class ProfilModal extends Component<IProps, IState> {
 				callModal('confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', async (confirm: boolean) => {
 					if (confirm) {
 						const data = { favorites: fr['result'] };
-						const response = await commandBackend('importFavorites', { buffer: data });
+						const response = await commandBackend('importFavorites', data);
 						if (response.unknownKaras && response.unknownKaras.length > 0) {
 							const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 							callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>

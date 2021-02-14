@@ -52,7 +52,7 @@ interface IProps {
 	playlistList: Array<PlaylistElem>;
 	searchMenuOpen?: boolean;
 	bLSetList: BLCSet[];
-	checkedkaras: KaraElement[];
+	checkedKaras: KaraElement[];
 	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void;
 	changeIdPlaylistSide2?: (idPlaylist: number) => void;
 	playlistWillUpdate: () => void;
@@ -190,9 +190,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 					data.playlist = fr.result;
 					name = JSON.parse(fr.result as string)?.PlaylistInformation?.name;
 				}
-				const response = await commandBackend(url, { buffer: data });
-				if (response.unknownKaras && response.unknownKaras.length > 0) {
-					const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
+				const response = await commandBackend(url, data);
+				if (response.data.unknownKaras && response.data.unknownKaras.length > 0) {
+					const mediasize = response.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
 						<p>
 							{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
@@ -219,7 +219,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					!file.name.includes('.kmfavorites') &&
 						displayMessage('success', i18next.t(i18next.t(`SUCCESS_CODES.${response.code}`, { data: name })));
 				}
-				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.playlist_id;
+				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.data.playlist_id;
 				this.props.changeIdPlaylist(playlist_id);
 			};
 			fr.readAsText(file);
@@ -325,7 +325,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 		if (event?.currentTarget) {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			ReactDOM.render(<CheckedKaraMenuModal
-				checkedkaras={this.props.checkedkaras}
+				checkedKaras={this.props.checkedKaras}
 				idPlaylist={this.props.idPlaylist}
 				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
 				topKaraMenu={element.bottom}
@@ -374,7 +374,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 									deleteKara={this.props.deleteCheckedKaras}
 									transferKara={this.props.transferCheckedKaras}
 									deleteFavorite={this.props.deleteCheckedFavorites}
-									checkedkaras={this.props.checkedkaras?.length}
+									checkedKaras={this.props.checkedKaras?.length}
 									flag_public={this.props.playlistInfo?.flag_public}
 								/>
 								<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}

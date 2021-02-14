@@ -9,6 +9,7 @@ import { generateBlacklist } from '../dao/blacklist';
 import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
+import { markAllMigrationsFrontendAsDone } from '../dao/migrationsFrontend';
 import { applyMenu, handleFile, handleProtocol } from '../electron/electron';
 import { errorStep,initStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
@@ -172,7 +173,6 @@ export async function initEngine() {
 			await Promise.all(initPromises);
 			if (conf.Online.Stats === true) initStats(false);
 
-
 			initStep(i18n.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			//Easter egg
@@ -211,6 +211,8 @@ export async function initEngine() {
 				buildAllMediasList().catch(() => {});
 			}
 			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
+			// Mark all migrations as done for the first run to avoid the user to have to do all the migrations from start
+			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
 			initFetchPopularSongs();
 			setState({ ready: true });
 			initStep(i18n.t('INIT_DONE'), true);

@@ -284,7 +284,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			<div key={this.props.key} style={this.props.style}>
 				<div className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${kara.flag_dejavu ? ' dejavu' : ''}
 				${this.props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${(this.props.jingle || this.props.sponsor) && scope === 'admin' ? ' marker' : ''}
-				${this.props.sponsor && scope === 'admin' ? ' green' : ''}`}>
+				${this.props.sponsor && scope === 'admin' ? ' green' : ''}${this.props.side === 2 ? ' side-2' : ''}`}>
 					{scope === 'public' && kara.username !== this.props.context.globalState.auth.data.username && kara.flag_visible === false ?
 						<div className="contentDiv">
 							<div>

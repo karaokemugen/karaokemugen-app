@@ -170,6 +170,7 @@ class Player {
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--sub-visibility',
+			'--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no'
 		];
 
@@ -654,10 +655,12 @@ class Players {
 
 	@needsLock()
 	quit() {
-		return this.exec('destroy').catch(err => {
-			// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
-			logger.warn('Failed to quit mpv', {service: 'Player', obj: err});
-		});
+		if (this.players.main.isRunning || this.players.monitor?.isRunning) {
+			return this.exec('destroy').catch(err => {
+				// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
+				logger.warn('Failed to quit mpv', {service: 'Player', obj: err});
+			});
+		}
 	}
 
 	// Lock

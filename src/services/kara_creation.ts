@@ -50,6 +50,8 @@ export async function editKara(kara: Kara, refresh = true) {
 				subFile = (await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0];
 				subDir = dirname(subFile);
 			}
+		} else {
+			subDir = resolvedPathRepos('Lyrics', kara.repository)[0];
 		}
 		karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0];
 		const karaDir = dirname(karaFile);

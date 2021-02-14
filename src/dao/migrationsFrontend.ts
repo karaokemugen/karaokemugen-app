@@ -1,6 +1,6 @@
-import {db} from '../lib/dao/database';
-import {MigrationsFrontend} from '../types/database/migrationsFrontend';
-import {sqlSelectAllMigrations, sqlUpdateMigrations} from './sql/migrationsFrontend';
+import { db } from '../lib/dao/database';
+import { MigrationsFrontend } from '../types/database/migrationsFrontend';
+import { sqlMarkAllMigrationsAsDone, sqlSelectAllMigrations, sqlUpdateMigrations } from './sql/migrationsFrontend';
 
 export async function selectMigrationsFrontend(): Promise<MigrationsFrontend[]> {
 	const migs = await db().query(sqlSelectAllMigrations);
@@ -8,5 +8,9 @@ export async function selectMigrationsFrontend(): Promise<MigrationsFrontend[]> 
 }
 
 export async function updateMigrationsFrontend(mig: MigrationsFrontend) {
-	return db().query(sqlUpdateMigrations, [mig.name, mig.flag_done]);
+	await db().query(sqlUpdateMigrations, [mig.name, mig.flag_done]);
+}
+
+export async function markAllMigrationsFrontendAsDone() {
+	await db().query(sqlMarkAllMigrationsAsDone);
 }

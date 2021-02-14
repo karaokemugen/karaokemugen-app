@@ -11,6 +11,8 @@
 	"404_3": "You are here",
 	"404_4": "Go to Start",
 	"CHAR_NOT_ALLOWED": "The character '{{char}}' is not allowed",
+	"LOGIN_MANDATORY": "The login is mandatory",
+	"PASSWORD_MANDATORY": "The password is mandatory",
 	"SECURITY_CODE_MANDATORY": "The security code is mandatory for create an operator account",
 	"PASSWORD_DIFFERENT": "Passwords are not identical",
 	"DETAILS_ADDED": "Added ",

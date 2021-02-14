@@ -60,7 +60,7 @@ interface IState {
 	scrollToIndex?: number;
 	playlistInfo?: DBPL;
 	bLSetList: BLCSet[];
-	checkedkaras: number;
+	checkedKaras: number;
 	playing?: number;
 	songsBeforeJingle?: number;
 	songsBeforeSponsor?: number;
@@ -95,7 +95,7 @@ class Playlist extends Component<IProps, IState> {
 			data: undefined,
 			bLSetList: [],
 			searchType: this.props.searchType ? this.props.searchType : 'search',
-			checkedkaras: 0,
+			checkedKaras: 0,
 			searchCriteria: this.props.searchCriteria,
 			searchValue: this.props.searchValue
 		};
@@ -182,7 +182,7 @@ class Playlist extends Component<IProps, IState> {
 		flag_upvoted: boolean,
 		plc_id: number[]
 	}[]) => {
-		if ((this.state.idPlaylist === -1 || this.state.idPlaylist === -5) && (this.state.data as KaraList)?.content ) {
+		if ((this.state.idPlaylist === -1 || this.state.idPlaylist === -5) && (this.state.data as KaraList)?.content) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				for (const karaUpdated of event) {
@@ -240,7 +240,7 @@ class Playlist extends Component<IProps, IState> {
 		return Boolean(this.state.data && (this.state.data as KaraList).content[index]);
 	}
 
-	loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
+	loadMoreRows = async ({ stopIndex }: IndexRange) => {
 		if (!this.state.getPlaylistInProgress) {
 			const data = this.state.data as KaraList;
 			data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
@@ -250,7 +250,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 	}
 
-	rowRenderer = ({ index, isScrolling, key, parent, style }: ListRowProps) => {
+	rowRenderer = ({ index, key, parent, style }: ListRowProps) => {
 		let content: KaraElement;
 		if (this.state.data && (this.state.data as KaraList).content && (this.state.data as KaraList).content[index]) {
 			content = (this.state.data as KaraList).content[index];
@@ -544,40 +544,40 @@ class Playlist extends Component<IProps, IState> {
 
 	selectAllKaras = () => {
 		const data = this.state.data;
-		let checkedkaras = 0;
+		let checkedKaras = 0;
 		for (const kara of (this.state.data as KaraList)?.content) {
 			if (kara) {
 				kara.checked = !kara.checked;
-				if (kara.checked) checkedkaras++;
+				if (kara.checked) checkedKaras++;
 			}
 		}
-		this.setState({ data, checkedkaras });
+		this.setState({ data, checkedKaras });
 		this.playlistForceRefresh(true);
 	};
 
 	checkKara = (id: string | number) => {
 		const data = this.state.data as KaraList;
-		let checkedkaras = this.state.checkedkaras;
+		let checkedKaras = this.state.checkedKaras;
 		for (const kara of data.content) {
 			if (this.state.idPlaylist >= 0) {
 				if (kara.playlistcontent_id === id) {
 					kara.checked = !kara.checked;
 					if (kara.checked) {
-						checkedkaras++;
+						checkedKaras++;
 					} else {
-						checkedkaras--;
+						checkedKaras--;
 					}
 				}
 			} else if (kara.kid === id) {
 				kara.checked = !kara.checked;
 				if (kara.checked) {
-					checkedkaras++;
+					checkedKaras++;
 				} else {
-					checkedkaras--;
+					checkedKaras--;
 				}
 			}
 		}
-		this.setState({ data: data, checkedkaras: checkedkaras });
+		this.setState({ data, checkedKaras });
 		this.playlistForceRefresh(true);
 	};
 
@@ -779,24 +779,17 @@ class Playlist extends Component<IProps, IState> {
 			commandBackend('editPLC', {
 				pos: apiIndex,
 				plc_ids: [playlistcontent_id]
+			}).finally(() => {
+				this.setState({ stopUpdate: false });
 			});
 
-			let karas: Array<KaraElement> = [];
-			if (oldIndex < newIndex) {
-				karas = data.content.splice(0, oldIndex).concat(
-					data.content.splice(oldIndex + 1, newIndex - oldIndex),
-					data.content[oldIndex],
-					data.content.splice(newIndex)
-				);
-			} else if (oldIndex > newIndex) {
-				karas = data.content.splice(0, newIndex).concat(
-					data.content[oldIndex],
-					data.content.splice(newIndex, oldIndex - newIndex),
-					data.content.splice(oldIndex + 1)
-				);
-			}
+			const kara = data.content[oldIndex];
+			let karas: Array<KaraElement> = [...data.content];
+			delete karas[oldIndex];
+			karas = karas.filter(kara => !!kara);
+			karas.splice(newIndex, 0, kara);
 			data.content = karas;
-			this.setState({ data: data, stopUpdate: false });
+			this.setState({ data, forceUpdate: !this.state.forceUpdate });
 		}
 	}
 
@@ -864,7 +857,7 @@ class Playlist extends Component<IProps, IState> {
 					searchMenuOpen={this.props.searchMenuOpen}
 					playlistWillUpdate={this.playlistWillUpdate}
 					playlistDidUpdate={this.playlistDidUpdate}
-					checkedkaras={(this.state.data as KaraList)?.content?.filter(a => a.checked)}
+					checkedKaras={(this.state.data as KaraList)?.content?.filter(a => a.checked)}
 					addRandomKaras={this.addRandomKaras}
 				/> : null
 			}
@@ -930,7 +923,7 @@ class Playlist extends Component<IProps, IState> {
 						className="btn btn-sm btn-action"
 						onClick={() => this.setState({ scrollToIndex: 0, goToPlaying: false, _goToPlaying: false })}
 					>
-						<i className="fas fa-chevron-up"></i>
+						<i className="fas fa-chevron-up" />
 					</button>
 					{this.state.idPlaylist > 0 ?
 						<button
@@ -940,7 +933,7 @@ class Playlist extends Component<IProps, IState> {
 							onClick={this.scrollToPlaying}
 							value="playing"
 						>
-							<i className="fas fa-play"></i>
+							<i className="fas fa-play" />
 						</button> : null
 					}
 					<button
@@ -949,13 +942,13 @@ class Playlist extends Component<IProps, IState> {
 						className="btn btn-sm btn-action"
 						onClick={() => this.setState({ scrollToIndex: (this.state.data as KaraList).infos.count - 1, goToPlaying: false, _goToPlaying: false })}
 					>
-						<i className="fas fa-chevron-down"></i>
+						<i className="fas fa-chevron-down" />
 					</button>
 				</div>
 				<div className="plInfos">{this.getPlInfosElement()}</div>
-				{this.state.checkedkaras > 0 ?
+				{this.state.checkedKaras > 0 ?
 					<div className="plQuota selection">
-						{i18next.t('CHECKED')}{this.state.checkedkaras}
+						{i18next.t('CHECKED')}{this.state.checkedKaras}
 					</div> : null
 				}
 			</div>

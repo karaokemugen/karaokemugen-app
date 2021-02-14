@@ -36,7 +36,7 @@ export async function login(
 		dispatch({
 			type: AuthAction.LOGIN_FAILURE,
 			payload: {
-				error: error.message ? error.message : error.toString()
+				error: error?.message ? error?.message : error?.toString()
 			}
 		});
 		throw error;

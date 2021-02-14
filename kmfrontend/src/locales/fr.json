@@ -11,6 +11,8 @@
 	"404_3": "vous êtes ici",
 	"404_4": "Revenir au début",
 	"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",
+	"LOGIN_MANDATORY": "Le nom d'utilisateur est obligatoire",
+	"PASSWORD_MANDATORY": "Le mot de passe est obligatoire",
 	"SECURITY_CODE_MANDATORY": "Le code de sécurité est obligatoire pour créer un compte opérateur",
 	"PASSWORD_DIFFERENT": "Les mots de passe ne sont pas identiques",
 	"DETAILS_ADDED": "Ajouté ",

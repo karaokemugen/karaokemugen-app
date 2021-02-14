@@ -126,7 +126,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	apiGetLocalKaras = async () => {
-		const res = await commandBackend('getKaras');
+		const res = await commandBackend('getKaras', undefined, false, 300000);
 		this.setState({ karas_local: res.content });
 	}
 
