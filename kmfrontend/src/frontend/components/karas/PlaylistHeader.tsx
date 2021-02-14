@@ -258,28 +258,28 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	getPlaylistIcon(playlist: PlaylistElem) {
 		// public & current playlist :  play-circle & globe icons
-		if (playlist.flag_public && playlist.flag_current) return ['fa-play-circle', 'fa-globe'];
+		if (playlist?.flag_public && playlist?.flag_current) return ['fa-play-circle', 'fa-globe'];
 		// public playlist : globe icon
-		if (playlist.flag_public) return ['fa-globe'];
+		if (playlist?.flag_public) return ['fa-globe'];
 		// current playlist : play-circle icon
-		if (playlist.flag_current) return ['fa-play-circle'];
+		if (playlist?.flag_current) return ['fa-play-circle'];
 		// library : book icon
 		if (playlist.playlist_id === -1) return ['fa-book'];
 		// blacklist : ban icon
-		if (playlist.playlist_id === -2) return ['fa-ban'];
+		if (playlist?.playlist_id === -2) return ['fa-ban'];
 		// whitelist : check-circle icon
-		if (playlist.playlist_id === -3) return ['fa-check-circle'];
+		if (playlist?.playlist_id === -3) return ['fa-check-circle'];
 		// blacklist criterias : not-equal icon
-		if (playlist.playlist_id === -4) return ['fa-not-equal'];
+		if (playlist?.playlist_id === -4) return ['fa-not-equal'];
 		// favorites : star icon
-		if (playlist.playlist_id === -5) return ['fa-star'];
+		if (playlist?.playlist_id === -5) return ['fa-star'];
 		// others playlist : list-ol icon
 		return ['fa-list-ol'];
 	}
 
 	getListToSelect = () => {
 		return this.props.playlistList.map(playlist => {
-			return { value: playlist.playlist_id.toString(), label: playlist.name, icons: this.getPlaylistIcon(playlist) };
+			return { value: playlist?.playlist_id?.toString(), label: playlist.name, icons: this.getPlaylistIcon(playlist) };
 		});
 	}
 
