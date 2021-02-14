@@ -26,7 +26,9 @@ class TagsList extends Component<unknown, TagsListState> {
 		this.state = {
 			tags: [],
 			deleteModal: false,
-			type: window.location.search.indexOf('type=') !== -1 ? parseInt(window.location.search.split('=')[1]) : undefined
+			type: window.location.search.indexOf('type=') !== -1 ?
+				parseInt(window.location.search.split('=')[1]) :
+				(localStorage.getItem('typeTagList') ? parseInt(localStorage.getItem('typeTagList')) : undefined)
 		};
 	}
 
@@ -51,6 +53,7 @@ class TagsList extends Component<unknown, TagsListState> {
 
 	changeType = async (value) => {
 		await this.setState({ type: value });
+		localStorage.setItem('typeTagList', value);
 		this.refresh();
 	}
 
