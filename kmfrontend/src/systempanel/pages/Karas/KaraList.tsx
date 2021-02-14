@@ -46,7 +46,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			filter: this.state.filter,
 			from: (this.state.currentPage - 1) * this.state.currentPageSize,
 			size: this.state.currentPageSize
-		});
+		}, undefined, 300000);
 		this.setState({ karas: res.content, i18nTag: res.i18n, totalCount: res.infos.count });
 	}
 
