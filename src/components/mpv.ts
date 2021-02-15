@@ -1038,7 +1038,7 @@ class Players {
 	async displaySongInfo(infos: string, duration = -1, nextSong = false, spoilerAlert = false) {
 		try {
 			const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
-			const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
+			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
 			const command = {
 				command: [
