@@ -17,6 +17,7 @@ export interface State {
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
 	stopping: boolean,
+	streamerPause: boolean,
 	randomPlaying: boolean,
 	counterToJingle?: number,
 	counterToSponsor?: number,

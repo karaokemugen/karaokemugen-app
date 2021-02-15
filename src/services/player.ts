@@ -46,9 +46,11 @@ export async function next() {
 			if (conf.Karaoke.ClassicMode) {
 				stopPlayer(true);
 				if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					setState({ streamerPause: true });
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 					// Recheck if classic mode is still enabled after the sleep timer. If it's disabled now, do not play song.
-					if (getState().player.playerStatus === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
+					if (getState().streamerPause && getState().player.playerStatus === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
+					setState({ streamerPause: false });
 				}
 			} else if (conf.Karaoke.StreamerMode.Enabled) {
 				setState({currentRequester: null});
@@ -64,8 +66,10 @@ export async function next() {
 					mpv.displaySongInfo(kara.infos, 10000000, true);
 				}
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					setState({ streamerPause: true });
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-					if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
+					if (getState().streamerPause && getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
+					setState({ streamerPause: false });
 				}
 			} else {
 				setState({currentRequester: null});
@@ -137,6 +141,7 @@ export async function playPlayer(now?: boolean) {
 }
 
 export async function stopPlayer(now = true, endOfPlaylist = false) {
+	setState({ streamerPause: false });
 	if (now || getState().stopping) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		await mpv.stop();

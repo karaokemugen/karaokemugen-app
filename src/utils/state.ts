@@ -37,6 +37,7 @@ let state: State = {
 	noAutoTest: false,
 	singlePlay: false,
 	randomPlaying: false,
+	streamerPause: false,
 	player: {},
 	opt: {},
 	args: [],
