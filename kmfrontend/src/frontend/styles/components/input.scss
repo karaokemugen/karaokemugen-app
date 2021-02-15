@@ -87,8 +87,8 @@ input[type=range]:focus::-ms-fill-upper {
 	background: lighten($mugen-background, 10);
 }
 
-input[type="text"]:not([data-exclude="true"]):not(.ant-input), input[type="password"]:not([data-exclude="true"]):not(.ant-input) {
-	height: inherit;
+input[type="text"]:not([data-exclude="true"]):not(.ant-input), input[type="password"]:not([data-exclude="true"]):not(.ant-input),
+input[type="number"]:not([data-exclude="true"]):not(.ant-input) {
 	width: 100%;
 	border: 0;
 	box-shadow: none;
@@ -107,7 +107,8 @@ input[type="text"]:not([data-exclude="true"]):not(.ant-input), input[type="passw
 	}
 }
 
-input[type="text"]:not([data-exclude="true"]):not(.ant-input):focus, input[type="password"]:not([data-exclude="true"]):not(.ant-input):focus {
+input[type="text"]:not([data-exclude="true"]):not(.ant-input):focus, input[type="password"]:not([data-exclude="true"]):not(.ant-input):focus,
+input[type="number"]:not([data-exclude="true"]):not(.ant-input):focus {
 	box-shadow: 0 1px 0 0 #546e7a;
 }
 
