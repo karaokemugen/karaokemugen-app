@@ -44,7 +44,7 @@ export async function fetchAndAddFavorites(username: string, token: string) {
 			},
 			Favorites: res.body as FavExportContent[]
 		};
-		await importFavorites(favorites, username, token);
+		await importFavorites(favorites, username, token, false, false);
 	} catch(err) {
 		logger.error(`Error getting remote favorites for ${username}`, {service: 'Favorites', obj: err});
 	}
@@ -54,12 +54,12 @@ export async function manageFavoriteInInstanceBatch(action: 'POST' | 'DELETE', u
 	await Promise.all(kids.map(kid => manageFavoriteInInstance(action, username, kid, token)));
 }
 
-export async function addToFavorites(username: string, kids: string[], onlineToken?: string) {
+export async function addToFavorites(username: string, kids: string[], onlineToken?: string, updateRemote = true) {
 	try {
 		profile('addToFavorites');
 		username = username.toLowerCase();
 		await insertFavorites(kids, username);
-		if (username.includes('@') && onlineToken && getConfig().Online.Users) {
+		if (username.includes('@') && onlineToken && getConfig().Online.Users && updateRemote) {
 			await manageFavoriteInInstanceBatch('POST', username, kids, onlineToken);
 		}
 		emitWS('favoritesUpdated', username);
@@ -147,7 +147,7 @@ export async function exportFavorites(username: string) {
 	};
 }
 
-export async function importFavorites(favs: FavExport, username: string, token?: string, emptyBefore = false) {
+export async function importFavorites(favs: FavExport, username: string, token?: string, emptyBefore = false, updateRemote = true) {
 	username = username.toLowerCase();
 	if (favs.Header.version !== 1) throw {code: 400, msg: 'Incompatible favorites version list'};
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') throw {code: 400, msg: 'Not a favorites list'};
@@ -166,7 +166,7 @@ export async function importFavorites(favs: FavExport, username: string, token?:
 		// Removing favorites already added
 		const mappedUserFavorites = userFavorites.content.map(uf => uf.kid);
 		const favoritesToAdd = favorites.filter(f => !mappedUserFavorites.includes(f));
-		if (favoritesToAdd.length > 0) await addToFavorites(username, favoritesToAdd, token);
+		if (favoritesToAdd.length > 0) await addToFavorites(username, favoritesToAdd, token, updateRemote);
 		emitWS('favoritesUpdated', username);
 		return { karasUnknown: karasUnknown };
 	} catch(err) {
