@@ -25,14 +25,14 @@ class ClassicModeModal extends Component {
 									const element = document.getElementById('modal');
 									if (element) ReactDOM.unmountComponentAtNode(element);
 								}}>
-								<i className="fas fa-times"></i>
+								<i className="fas fa-times" />
 							</button>
 						</div>
 						<div className="modal-body"
-							style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-							<div className="modal-message">{i18next.t('CLASSIC_MODE_TEXT_MODAL')}</div>
+							style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '1em' }}>
+							<div className="modal-message" style={{ textAlign: 'center', marginBottom: '.5em' }}>{i18next.t('CLASSIC_MODE_TEXT_MODAL')}</div>
 							<button className="btn btn-default btn-primary btn-big" type="button" onClick={this.playSong}>
-								<i className="fas fa-play"></i>
+								<i className="fas fa-play" />
 							</button>
 						</div>
 					</div>

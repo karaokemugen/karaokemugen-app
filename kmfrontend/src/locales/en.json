@@ -172,14 +172,21 @@
 		"NEW_KARAOKES": "New karaokes"
 	},
 	"ADMIN_MESSAGE": {
-		"ESSENTIAL_MESSAGE": "Message indispensable",
-		"CL_SCREEN": "Afficher sur l'écran du lecteur",
-		"CL_USERS": "Afficher sur l'interface des utilisateurs",
-		"CL_ALL": "Afficher sur les deux",
-		"DURATION": "Durée (en secondes)",
+		"ESSENTIAL_MESSAGE": "Essential message",
+		"CL_SCREEN": "Show on the player screen",
+		"CL_USERS": "Show on the user's screens",
+		"CL_ALL": "Show on both",
+		"DURATION": "Duration (in seconds)",
 		"MESSAGE": "Message",
-		"EMPTY": "Le message est vide",
-		"CONFIRM": "Envoyer le message"
+		"EMPTY": "The message is empty",
+		"CONFIRM": "Send message"
+	},
+	"AUTOMIX_MODAL": {
+		"TITLE": "Create an AutoMix",
+		"DESCRIPTION": "The created playlist will be filled with the selected users favorites for the duration you specified.",
+		"DURATION": "Duration (in minutes)",
+		"MIX": "Create AutoMix",
+		"EMPTY": "Select users and a duration"
 	},
 	"LYRICS": "Lyrics",
 	"KARAOKE": "{{count}} karaoke",

@@ -200,6 +200,13 @@
 		"EMPTY": "Le message est vide",
 		"CONFIRM": "Envoyer le message"
 	},
+	"AUTOMIX_MODAL": {
+		"TITLE": "Créer un AutoMix",
+		"DESCRIPTION": "La playlist créée va être remplie avec les favoris des utilisateurs que vous avez sélectionnés durant la durée que vous avez spécifiée.",
+		"DURATION": "Durée (en minutes)",
+		"MIX": "Créer l'automix",
+		"EMPTY": "Choisissez un utilisateur et spécifiez une durée"
+	},
 	"CONFIRM_FAV_IMPORT": "Écraser vos favoris avec cet import ?",
 	"LYRICS": "Paroles",
 	"KARAOKE": "{{count}} karaoké",
