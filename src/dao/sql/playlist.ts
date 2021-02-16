@@ -22,7 +22,8 @@ UPDATE playlist SET
 	modified_at = :modified_at,
 	flag_visible = :flag_visible,
 	flag_current = :flag_current,
-	flag_public = :flag_public
+	flag_public = :flag_public,
+	flag_autosortbylike = :flag_autosortbylike
 WHERE pk_id_playlist = :playlist_id;
 `;
 
@@ -36,6 +37,7 @@ INSERT INTO playlist(
 	flag_visible,
 	flag_current,
 	flag_public,
+	flag_autosortbylike,
 	fk_login,
 	time_left
 )
@@ -48,6 +50,7 @@ VALUES(
 	:flag_visible,
 	:flag_current,
 	:flag_public,
+	:flag_autosortbylike,
 	:username,
 	0
 ) RETURNING pk_id_playlist
@@ -229,7 +232,8 @@ SELECT ak.kid AS kid,
 	pc.flag_free AS flag_free,
 	pc.flag_visible AS flag_visible,
 	ak.duration AS duration,
-	ak.repository as repository
+	ak.repository as repository,
+	(SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
@@ -362,36 +366,38 @@ WHERE pc.fk_id_playlist = :playlist_id
 `;
 
 export const sqlgetPlaylistInfo = `
-SELECT p.pk_id_playlist AS playlist_id,
-	p.name AS name,
-	p.karacount AS karacount,
-	p.duration AS duration,
-	p.time_left AS time_left,
-	p.created_at AS created_at,
-	p.modified_at AS modified_at,
-	p.flag_visible AS flag_visible,
-	p.flag_current AS flag_current,
-	p.flag_public AS flag_public,
-	p.fk_id_plcontent_playing AS plcontent_id_playing,
-	p.fk_login AS username
-FROM playlist AS p
+SELECT pk_id_playlist AS playlist_id,
+	name,
+	karacount,
+	duration,
+	time_left,
+	created_at,
+	modified_at,
+	flag_visible,
+	flag_current,
+	flag_public,
+	flag_autosortbylike AS flag_autosortbylike,
+	fk_id_plcontent_playing AS plcontent_id_playing,
+	fk_login AS username
+FROM playlist
 WHERE pk_id_playlist = $1
 `;
 
 export const sqlgetPlaylists = `
-SELECT p.pk_id_playlist AS playlist_id,
-	p.name AS name,
-	p.karacount AS karacount,
-	p.duration AS duration,
-	p.time_left AS time_left,
-	p.created_at AS created_at,
-	p.modified_at AS modified_at,
-	p.flag_visible AS flag_visible,
-	COALESCE(p.flag_current, false) AS flag_current,
-	COALESCE(p.flag_public, false) AS flag_public,
-	p.fk_id_plcontent_playing AS plcontent_id_playing,
-	p.fk_login AS username
-FROM playlist AS p
+SELECT pk_id_playlist AS playlist_id,
+	name,
+	karacount,
+	duration,
+	time_left,
+	created_at,
+	modified_at,
+	flag_visible,
+	COALESCE(flag_current, false) AS flag_current,
+	COALESCE(flag_public, false) AS flag_public,
+	flag_autosortbylike AS flag_autosortbylike,
+	fk_id_plcontent_playing AS plcontent_id_playing,
+	fk_login AS username
+FROM playlist
 `;
 
 export const sqltestCurrentPlaylist = `
