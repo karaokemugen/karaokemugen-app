@@ -729,6 +729,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 		if (url) {
 			await commandBackend(url, data);
+			this.setState({checkedKaras: 0});
 		}
 	};
 
