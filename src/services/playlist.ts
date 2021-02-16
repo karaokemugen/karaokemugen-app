@@ -54,7 +54,7 @@ import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import {emitWS} from '../lib/utils/ws';
 import { DBPL, DBPLC } from '../types/database/playlist';
-import { CurrentSong,Playlist, PlaylistExport, PlaylistOpts, PLC, PLCEditParams, Pos } from '../types/playlist';
+import { CurrentSong, PlaylistExport, PlaylistOpts, PLC, PLCEditParams, Pos,ShuffleMethods } from '../types/playlist';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {getBlacklist} from './blacklist';
@@ -73,7 +73,8 @@ export async function testPlaylists() {
 		const pl_id = await createPlaylist(i18n.t('MY_PLAYLIST'),{
 			visible: true,
 			current: true,
-			public: true
+			public: true,
+			autoSortByLike: false,
 		}, 'admin');
 		setState({currentPlaylistID: pl_id, publicPlaylistID: pl_id});
 		logger.debug('Initial current playlist created', {service: 'Playlist'});
@@ -237,13 +238,12 @@ export async function emptyPlaylist(playlist_id: number): Promise<number> {
 }
 
 /** Edit playlist properties */
-export async function editPlaylist(playlist_id: number, playlist: Playlist) {
+export async function editPlaylist(playlist_id: number, playlist: DBPL) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw {code: 404, msg: `Playlist ${playlist_id} unknown`};
 	try {
 		logger.debug(`Editing playlist ${playlist_id}`, {service: 'Playlist', obj: playlist});
 		await editPL({
-			id: playlist_id,
 			...pl,
 			...playlist
 		});
@@ -262,6 +262,10 @@ export async function editPlaylist(playlist_id: number, playlist: Playlist) {
 			setState({publicPlaylistID: playlist_id});
 			emitWS('publicPlaylistUpdated', playlist_id);
 			logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
+		}
+		if (playlist.flag_autosortbylike) {
+			// This can be done async
+			shufflePlaylist(playlist_id, 'upvotes');
 		}
 		updatePlaylistLastEditTime(playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
@@ -283,6 +287,7 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 		flag_visible: opts.visible,
 		flag_current: opts.current || null,
 		flag_public: opts.public || null,
+		flag_autosortbylike: opts.autoSortByLike || null,
 		username: username
 	});
 	if (+opts.current) {
@@ -953,7 +958,7 @@ export async function findPlaying(playlist_id: number): Promise<number> {
 }
 
 /** Shuffle (smartly or not) a playlist */
-export async function shufflePlaylist(playlist_id: number, method: string) {
+export async function shufflePlaylist(playlist_id: number, method: ShuffleMethods ) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw {code: 404, msg: `Playlist ${playlist_id} unknown`};
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
@@ -982,7 +987,7 @@ export async function shufflePlaylist(playlist_id: number, method: string) {
 		}
 		await replacePlaylist(playlist);
 		updatePlaylistLastEditTime(playlist_id);
-		logger.info(`Playlist ${pl.name} shuffled`, {service: 'Playlist'});
+		logger.info(`Playlist ${pl.name} shuffled (method: ${method})`, {service: 'Playlist'});
 		emitWS('playlistContentsUpdated', playlist_id);
 	} catch(err) {
 		logger.error('Could not shuffle playlist', {service: 'Playlist', obj: err});
@@ -995,16 +1000,23 @@ export async function shufflePlaylist(playlist_id: number, method: string) {
 	}
 }
 
-function shufflePlaylistWithList(playlist: DBPLC[], method: string) {
+function shufflePlaylistWithList(playlist: DBPLC[], method: ShuffleMethods ) {
 	if (method === 'normal') {
 		return shuffle(playlist);
 	} else if (method === 'smart') {
 		return smartShuffle(playlist);
 	} else if (method === 'balance') {
 		return balancePlaylist(playlist);
+	} else if (method === 'upvotes') {
+		return sortPlaylistByUpvote(playlist);
 	} else {
 		return playlist;
 	}
+}
+
+/** Sort playlist by number of upvotes descending order */
+function sortPlaylistByUpvote(playlist: DBPLC[]) {
+	return playlist.sort((a, b) => b.upvotes - a.upvotes);
 }
 
 /** Smart shuffle */

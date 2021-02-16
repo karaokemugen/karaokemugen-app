@@ -117,7 +117,7 @@
 		"ADD": "Add new playlist",
 		"AUTOMIX": "Create an automix",
 		"IMPORT": "Import playlist",
-		"SHUFFLE": "Shuffle..."
+		"SHUFFLE": "Shuffle / Sort..."
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Song commands",
@@ -463,7 +463,9 @@
 			"SMART_SHUFFLE": "Smart",
 			"SMART_SHUFFLE_DESC": "Prevents long songs or songs by the same person from following each other",
 			"BALANCE": "Balanced",
-			"BALANCE_DESC": "Reorders songs by pools of users (A-B-C, A-B-C, etc.)"
+			"BALANCE_DESC": "Reorders songs by pools of users (A-B-C, A-B-C, etc.)",
+			"SORTUPVOTES": "Sort by likes",
+			"SORTUPVOTES_DESC": "Sorts by number of likes in descending order (most popular songs first)"
 		},
 		"PLAYLIST_MODAL": {
 			"NAME": "Name",
@@ -473,6 +475,8 @@
 			"PUBLIC_DESC": "The public list is the one collecting suggestions from the public",
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible by the audience",
+			"AUTOSORTBYLIKE": "Auto-sort by likes",
+			"AUTOSORTBYLIKE_DESC": "The list will be sorted automatically by number of likes",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
 			"CREATE_PLAYLIST": "Create new playlist"
 		},

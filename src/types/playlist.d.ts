@@ -55,19 +55,11 @@ export interface PLCParams extends KaraParams {
 	playlist_id: number
 }
 
-export interface Playlist {
-	id?: number,
-	name: string,
-	modified_at: Date,
-	created_at?: Date,
-	flag_visible?: boolean,
-	flag_current?: boolean,
-	flag_public?: boolean,
-	username?: string
-}
-
 export interface PlaylistOpts {
 	visible?: boolean,
 	current?: boolean,
-	public?: boolean
+	public?: boolean,
+	autoSortByLike?: boolean
 }
+
+export type ShuffleMethods = 'normal' | 'smart' | 'balance' | 'upvotes';

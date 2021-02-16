@@ -68,6 +68,16 @@ class ShuffleModal extends Component<IProps, unknown> {
 									</div>
 								</button>
 							</div>
+							<div>
+								<button className="btn btn-default"
+									type="button" onClick={() => this.shuffle('upvotes')}>
+									<i className="fas fa-fw fa-thumbs-up fa-2x" />
+									<div className="btn-large-container">
+										<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SORTUPVOTES')}</div>
+										<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.SORTUPVOTES_DESC')}</div>
+									</div>
+								</button>
+							</div>
 						</div >
 					</div >
 				</div >
