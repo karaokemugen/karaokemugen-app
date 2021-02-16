@@ -857,7 +857,7 @@ class Playlist extends Component<IProps, IState> {
 					searchMenuOpen={this.props.searchMenuOpen}
 					playlistWillUpdate={this.playlistWillUpdate}
 					playlistDidUpdate={this.playlistDidUpdate}
-					checkedKaras={(this.state.data as KaraList)?.content?.filter(a => a.checked)}
+					checkedKaras={(this.state.data as KaraList)?.content?.filter(a => a?.checked)}
 					addRandomKaras={this.addRandomKaras}
 				/> : null
 			}
