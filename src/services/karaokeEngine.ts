@@ -164,6 +164,7 @@ export async function playerEnding() {
 		if (state.stopping) {
 			stopPlayer(true);
 			setState({stopping: false});
+			next();
 			return;
 		}
 		// When random karas are being played
