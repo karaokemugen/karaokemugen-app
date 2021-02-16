@@ -196,6 +196,7 @@ class SetupPage extends Component<unknown, IState> {
 				}
 			});
 			await commandBackend('startPlayer');
+			sessionStorage.setItem('dlQueueRestart', 'true');
 			window.location.assign('/welcome');
 		}
 	};
