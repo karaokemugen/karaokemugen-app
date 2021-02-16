@@ -3,6 +3,7 @@ import '../styles/start/SetupPage.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
+import { RouteComponentProps } from 'react-router';
 
 import guideSecurityGif from '../../assets/guide-security-code.gif';
 import logo from '../../assets/Logo-final-fond-transparent.png';
@@ -10,6 +11,10 @@ import { setAuthentifactionInformation } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { commandBackend } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
+
+interface IProps {
+	route: RouteComponentProps;
+}
 
 interface IState {
 	accountType: 'local' | 'online' | null;
@@ -28,11 +33,11 @@ interface IState {
 	stats?: boolean;
 	errorTracking?: boolean
 }
-class SetupPage extends Component<unknown, IState> {
+class SetupPage extends Component<IProps, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
 
-	constructor(props: unknown) {
+	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			accountType: null,
@@ -197,7 +202,7 @@ class SetupPage extends Component<unknown, IState> {
 			});
 			await commandBackend('startPlayer');
 			sessionStorage.setItem('dlQueueRestart', 'true');
-			window.location.assign('/welcome');
+			this.props.route.history.push('/welcome');
 		}
 	};
 
