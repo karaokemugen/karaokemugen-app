@@ -57,10 +57,6 @@ export async function initEngine() {
 			return false;
 		}
 	});
-	setState({
-		fullscreen: conf.Player.FullScreen,
-		ontop: conf.Player.StayOnTop
-	});
 	if (state.opt.validate) {
 		try {
 			initStep(i18n.t('INIT_VALIDATION'));

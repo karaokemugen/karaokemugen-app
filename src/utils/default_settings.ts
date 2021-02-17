@@ -120,6 +120,7 @@ export const defaults: Config = {
 		Background: '',
 		FullScreen: false,
 		Monitor: false,
+		Borders: true,
 		ExtraCommandLine: '',
 		mpvVideoOutput: '',
 		NoBar: true,

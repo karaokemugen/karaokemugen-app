@@ -46,8 +46,9 @@ const playerState: PlayerState = {
 	currentSong: null,
 	mediaType: 'background',
 	showSubs: true,
-	stayontop: false,
+	onTop: false,
 	fullscreen: false,
+	border: false,
 	url: null,
 	monitorEnabled: false,
 	songNearEnd: false,
@@ -171,7 +172,9 @@ class Player {
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--sub-visibility',
 			'--sub-ass-vsfilter-aspect-compat=no',
-			'--loop-file=no'
+			'--loop-file=no',
+			`--title=${options.monitor ? '[MONITOR] ':''}\${force-media-title} - Karaoke Mugen Player`,
+			'--force-media-title=Loading...'
 		];
 
 		if (options.monitor) {
@@ -180,10 +183,8 @@ class Player {
 				'--reset-on-next-file=pause,loop-file,mute',
 				'--ao=null');
 		} else {
-			NodeMPVArgs.push(
-				'--no-border',
-				'--reset-on-next-file=pause,loop-file');
-
+			NodeMPVArgs.push('--reset-on-next-file=pause,loop-file');
+			if (!conf.Player.Borders) NodeMPVArgs.push('--no-border');
 			if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
 				NodeMPVArgs.push('--fullscreen');
 			}
@@ -196,7 +197,6 @@ class Player {
 		}
 
 		if (conf.Player.StayOnTop) {
-			playerState.stayontop = true;
 			NodeMPVArgs.push('--ontop');
 		}
 
@@ -614,7 +614,7 @@ class Players {
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
-			await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {title: 'Karaoke Mugen Player'}]});
+			await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {'force-media-title': 'Background'}]});
 		} catch(err) {
 			logger.error('Unable to load background', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -635,9 +635,9 @@ class Players {
 
 	async initPlayerSystem() {
 		const conf = getConfig();
-		const state = getState();
-		playerState.fullscreen = state.fullscreen;
-		playerState.stayontop = state.ontop;
+		playerState.fullscreen = conf.Player.FullScreen;
+		playerState.onTop = conf.Player.StayOnTop;
+		playerState.border = conf.Player.Borders;
 		playerState.volume = conf.Player.Volume;
 		playerState.monitorEnabled = conf.Player.Monitor;
 		emitPlayerState();
@@ -696,7 +696,7 @@ class Players {
 		let mediaFile: string;
 		let subFile: string;
 		const options: any = {
-			title: `${song.title} - Karaoke Mugen Player`
+			'force-media-title': song.title
 		};
 		const loadPromises = [
 			Players.genLavfiComplex(song).then(res => options['lavfi-complex'] = res)
@@ -788,7 +788,7 @@ class Players {
 		if (media) {
 			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
 			const options: any = {
-				title: `${mediaType} - Karaoke Mugen Player`,
+				'force-media-title': mediaType,
 				af: 'loudnorm'
 			};
 			const subFile = replaceExt(media.filename, '.ass');
@@ -968,12 +968,12 @@ class Players {
 		}
 	}
 
-	async setFullscreen(fsState: boolean): Promise<PlayerState> {
+	async toggleFullscreen(): Promise<boolean> {
 		try {
-			await this.exec({command: ['set_property', 'fullscreen', fsState]});
-			playerState.fullscreen = fsState;
+			await this.exec({command: ['set_property', 'fullscreen', !playerState.fullscreen]});
+			playerState.border = !playerState.fullscreen;
 			emitPlayerState();
-			return playerState;
+			return playerState.fullscreen;
 		} catch (err) {
 			logger.error('Unable to toggle fullscreen', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -981,12 +981,25 @@ class Players {
 		}
 	}
 
+	async toggleBorders(): Promise<boolean> {
+		try {
+			await this.exec({command: ['set_property', 'border', !playerState.border]});
+			playerState.border = !playerState.border;
+			emitPlayerState();
+			return playerState.border;
+		} catch (err) {
+			logger.error('Unable to toggle ontop', {service: 'Player', obj: err});
+			sentry.error(err);
+			throw err;
+		}
+	}
+
 	async toggleOnTop(): Promise<boolean> {
 		try {
-			await this.exec({command: ['set_property', 'ontop', !playerState.stayontop]});
-			playerState.stayontop = !playerState.stayontop;
+			await this.exec({command: ['set_property', 'ontop', !playerState.onTop]});
+			playerState.onTop = !playerState.onTop;
 			emitPlayerState();
-			return playerState.stayontop;
+			return playerState.onTop;
 		} catch (err) {
 			logger.error('Unable to toggle ontop', {service: 'Player', obj: err});
 			sentry.error(err);

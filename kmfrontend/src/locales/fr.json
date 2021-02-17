@@ -43,6 +43,8 @@
 	"ALWAYS_ON_TOP_TOOLTIP": "Si coché, la fenêtre du lecteur sera toujours au dessus des autres à l'écran",
 	"FULLSCREEN": "Plein écran",
 	"FULLSCREEN_TOOLTIP": "PROTIP: Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré",
+	"WINDOWBORDERS": "Activer les bordures sur la fenêtre du lecteur",
+	"WINDOWBORDERS_TOOLTIP": "Les désactiver n'affecte pas la fenêtre du moniteur, où elles seront toujours activées",
 	"ADMIN_PASSWORD_CHANGE": "Changer le mot de passe opérateur",
 	"PASSWORD": "Mot de passe (8 caractères minimum)",
 	"PASSWORDCONF": "Confirmation du mot de passe",

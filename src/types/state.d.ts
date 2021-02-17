@@ -25,8 +25,6 @@ export interface State {
 	introSponsorPlayed?: boolean,
 	encorePlayed?: boolean,
 	usersBalance: Set<string>,
-	fullscreen?: boolean,
-	ontop?: boolean,
 	playlist?: null,
 	timeposition?: 0,
 	songPoll?: boolean,
@@ -104,7 +102,6 @@ export interface PublicState {
 }
 
 export interface PublicPlayerState extends PlayerState {
-	onTop: boolean,
 	stopping: boolean,
 	currentRequester: string,
 	currentSessionID: string,
