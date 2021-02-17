@@ -174,7 +174,8 @@ class Player {
 			'--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
 			`--title=${options.monitor ? '[MONITOR] ':''}\${force-media-title} - Karaoke Mugen Player`,
-			'--force-media-title=Loading...'
+			'--force-media-title=Loading...',
+			'--no-keepaspect-window'
 		];
 
 		if (options.monitor) {
@@ -201,23 +202,22 @@ class Player {
 		}
 
 		if (conf.Player.PIP.Enabled) {
-			NodeMPVArgs.push(`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`);
 			// By default, center.
 			let positionX = 50;
 			let positionY = 50;
-			if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
+			if (conf.Player.PIP.PositionX === 'Left') positionX = 5;
 			if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
-			if (conf.Player.PIP.PositionX === 'Right') positionX = 99;
+			if (conf.Player.PIP.PositionX === 'Right') positionX = -5;
 			if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
 			if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
-			if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
+			if (conf.Player.PIP.PositionY === 'Bottom') positionY = -5;
 			if (options.monitor) {
-				if (positionX <= 10) positionX += 10;
+				if (positionX >= 0) positionX += 10;
 				else positionX -= 10;
-				if (positionY <= 10) positionY += 10;
+				if (positionY >= 0) positionY += 10;
 				else positionY -= 10;
 			}
-			NodeMPVArgs.push(`--geometry=${+positionX}%:${+positionY}%`);
+			NodeMPVArgs.push(`--geometry=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%${positionX > 0 ? `+${positionX}`:positionX}%${positionY > 0 ? `+${positionY}`:positionY}%`);
 		}
 
 		if (conf.Player.NoHud) NodeMPVArgs.push('--no-osc');
