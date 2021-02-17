@@ -70,6 +70,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		//If these settings haven't been changed, it means another one has, so we're restarting mpv
 		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen &&
 			oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop &&
+			oldConfig.Player.Borders === newConfig.Player.Borders &&
 			oldConfig.Player.Volume === newConfig.Player.Volume &&
 			oldConfig.Player.PIP.Size === newConfig.Player.PIP.Size &&
 			oldConfig.Player.VisualizationEffects === newConfig.Player.VisualizationEffects &&

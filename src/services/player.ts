@@ -104,19 +104,21 @@ export async function next() {
 }
 
 async function toggleFullScreenPlayer() {
-	let state = getState();
-	state = setState({fullscreen: !state.fullscreen});
-	await mpv.setFullscreen(state.fullscreen);
-	state.fullscreen
+	const fsState = await mpv.toggleFullscreen();
+	fsState
 		? logger.info('Player going to full screen', {service: 'Player'})
 		: logger.info('Player going to windowed mode', {service: 'Player'});
 }
 
 async function toggleOnTopPlayer() {
-	const state = setState({ontop: await mpv.toggleOnTop()});
-	state.ontop
+	const onTop = await mpv.toggleOnTop();
+	onTop
 		? logger.info('Player staying on top', {service: 'Player'})
 		: logger.info('Player NOT staying on top', {service: 'Player'});
+}
+
+async function toggleBordersPlayer() {
+	await mpv.toggleBorders();
 }
 
 async function setPiPSizePlayer(nb: number) {
@@ -273,6 +275,8 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 			await toggleFullScreenPlayer();
 		} else if (command === 'toggleAlwaysOnTop') {
 			await toggleOnTopPlayer();
+		} else if (command === 'toggleBorders') {
+			await toggleBordersPlayer();
 		} else if (command === 'setPiPSize') {
 			if (isNaN(options)) throw 'Command setPiPSize must have a numeric option value';
 			await setPiPSizePlayer(options);
