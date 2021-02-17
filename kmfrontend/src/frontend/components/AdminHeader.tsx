@@ -12,6 +12,7 @@ import { callModal, expand } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import ProfilModal from './modals/ProfilModal';
+import UsersModal from './modals/UsersModal';
 
 interface IProps {
 	options: boolean;
@@ -74,6 +75,11 @@ class AdminHeader extends Component<IProps, IState> {
 		ReactDOM.render(<ProfilModal context={this.context} scope="admin" />, document.getElementById('modal'));
 	};
 
+	toggleUsersModal = () => {
+		this.setState({ dropDownMenu: !this.state.dropDownMenu });
+		ReactDOM.render(<UsersModal context={this.context} scope="admin" />, document.getElementById('modal'));
+	};
+
 	saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
 		this.setState({ songVisibilityOperator: songVisibility });
@@ -109,19 +115,19 @@ class AdminHeader extends Component<IProps, IState> {
 						className="btn btn-default"
 						onClick={this.props.setOptionMode}
 					>
-						<i className="fas fa-long-arrow-alt-left "></i>
+						<i className="fas fa-fw fa-long-arrow-alt-left "/>
 					</button> : null
 				}
 				<div className="header-group switchs">
 					<label className="control-label" title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
 						{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
               &nbsp;
-  						<i className="far fa-question-circle"></i>
+  						<i className="far fa-question-circle"/>
 					</label>
 					<label className="control-label" title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
 						{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
             &nbsp;
-  					<i className="far fa-question-circle"></i>
+  					<i className="far fa-question-circle"/>
 					</label>
 				</div>
 				<div id="switchValue" className="header-group switchs">
@@ -181,7 +187,7 @@ class AdminHeader extends Component<IProps, IState> {
 								className="btn btn-danger stopButton"
 								onClick={this.props.putPlayerCommando}
 							>
-								<i className="fas fa-stop"></i>
+								<i className="fas fa-fw fa-stop"/>
 							</button> :
 							<button
 								title={i18next.t('STOP_AFTER')}
@@ -190,7 +196,7 @@ class AdminHeader extends Component<IProps, IState> {
 								className="btn btn-danger-low stopButton"
 								onClick={this.props.putPlayerCommando}
 							>
-								<i className="fas fa-stop"></i>
+								<i className="fas fa-fw fa-stop"/>
 							</button>
 					}
 					<button
@@ -201,7 +207,7 @@ class AdminHeader extends Component<IProps, IState> {
 						onClick={this.props.putPlayerCommando}
 						disabled={(this.state.statusPlayer?.currentSong as CurrentSong)?.pos === 1}
 					>
-						<i className="fas fa-fast-backward" />
+						<i className="fas fa-fw fa-fast-backward" />
 					</button>
 					<button
 						title={i18next.t('PLAY_PAUSE')}
@@ -211,7 +217,7 @@ class AdminHeader extends Component<IProps, IState> {
 						onClick={this.play}
 						disabled={this.state.statusPlayer?.playerStatus === 'pause' && this.props.currentPlaylist?.karacount === 0}
 					>
-						{this.state.statusPlayer?.playerStatus === 'play' ? <i className="fas fa-pause" /> : <i className="fas fa-play" />}
+						{this.state.statusPlayer?.playerStatus === 'play' ? <i className="fas fa-fw fa-pause" /> : <i className="fas fa-fw fa-play" />}
 					</button>
 					<button
 						title={i18next.t('NEXT_SONG')}
@@ -221,7 +227,7 @@ class AdminHeader extends Component<IProps, IState> {
 						onClick={this.props.putPlayerCommando}
 						disabled={(this.state.statusPlayer?.currentSong as CurrentSong)?.pos === this.props.currentPlaylist?.karacount}
 					>
-						<i className="fas fa-fast-forward" />
+						<i className="fas fa-fw fa-fast-forward" />
 					</button>
 					<button
 						title={i18next.t('REWIND')}
@@ -231,7 +237,7 @@ class AdminHeader extends Component<IProps, IState> {
 						className="btn btn-danger-low rewindButton"
 						onClick={this.props.putPlayerCommando}
 					>
-						<i className="fas fa-undo-alt"></i>
+						<i className="fas fa-fw fa-undo-alt"/>
 					</button>
 				</div>
 
@@ -241,7 +247,7 @@ class AdminHeader extends Component<IProps, IState> {
 					className="btn btn-dark messageButton"
 					onClick={this.props.adminMessage}
 				>
-					<i className="fas fa-comment"></i>
+					<i className="fas fa-fw fa-comment"/>
 				</button>
 
 				<button
@@ -252,10 +258,10 @@ class AdminHeader extends Component<IProps, IState> {
 					onClick={this.props.putPlayerCommando}
 				>
 					<span className="fa-stack">
-						<i className="fas fa-closed-captioning fa-stack-1x"></i>
-						<i className="fas fa-ban fa-stack-2x" style={{ color: '#943d42', opacity: 0.7 }}></i>
+						<i className="fas fa-fw fa-closed-captioning fa-stack-1x"/>
+						<i className="fas fa-fw fa-ban fa-stack-2x" style={{color: '#943d42', opacity: 0.7}}/>
 					</span>
-					<i className="fas fa-closed-captioning"></i>
+					<i className="fas fa-fw fa-closed-captioning"/>
 				</button>
 				<button
 					type="button"
@@ -268,14 +274,14 @@ class AdminHeader extends Component<IProps, IState> {
 					>
 						{
 							volume === 0 || this.state.statusPlayer?.mute
-								? <i className="fas fa-volume-mute"></i>
+								? <i className="fas fa-fw fa-volume-mute"/>
 								: (
 									volume > 66
-										? <i className="fas fa-volume-up"></i>
+										? <i className="fas fa-fw fa-volume-up"/>
 										: (
 											volume > 33
-												? <i className="fas fa-volume-down"></i>
-												: <i className="fas fa-volume-off"></i>
+												? <i className="fas fa-fw fa-volume-down"/>
+												: <i className="fas fa-fw fa-volume-off"/>
 										)
 								)
 						}
@@ -310,10 +316,10 @@ class AdminHeader extends Component<IProps, IState> {
 								>
 									{this.props.options ?
 										<React.Fragment>
-											<i className="fas fa-list-ul" />&nbsp;{i18next.t('CL_PLAYLISTS')}
+											<i className="fas fa-fw fa-list-ul" />&nbsp;{i18next.t('CL_PLAYLISTS')}
 										</React.Fragment> :
 										<React.Fragment>
-											<i className="fas fa-cog" />&nbsp;{i18next.t('OPTIONS')}
+											<i className="fas fa-fw fa-cog" />&nbsp;{i18next.t('OPTIONS')}
 										</React.Fragment>
 									}
 								</a>
@@ -323,13 +329,21 @@ class AdminHeader extends Component<IProps, IState> {
 									href="#"
 									onClick={this.toggleProfileModal}
 								>
-									<i className="fas fa-user" />&nbsp;{i18next.t('ACCOUNT')}
+									<i className="fas fa-fw fa-user" />&nbsp;{i18next.t('ACCOUNT')}
+								</a>
+							</li>
+							<li>
+								<a
+									href="#"
+									onClick={this.toggleUsersModal}
+								>
+									<i className="fas fa-fw fa-users" />&nbsp;{i18next.t('USERLIST')}
 								</a>
 							</li>
 							<li>
 								<a href="#" onClick={() => logout(this.context.globalDispatch)}
 								>
-									<i className="fas fa-sign-out-alt" />&nbsp;{i18next.t('LOGOUT')}
+									<i className="fas fa-fw fa-sign-out-alt" />&nbsp;{i18next.t('LOGOUT')}
 								</a>
 							</li>
 							{this.props.powerOff ?
@@ -338,7 +352,7 @@ class AdminHeader extends Component<IProps, IState> {
 										href="#"
 										onClick={this.props.powerOff}
 									>
-										<i className="fas fa-power-off" />&nbsp;{i18next.t('SHUTDOWN')}
+										<i className="fas fa-fw fa-power-off" />&nbsp;{i18next.t('SHUTDOWN')}
 									</a>
 								</li> : null
 							}
@@ -348,7 +362,7 @@ class AdminHeader extends Component<IProps, IState> {
 									this.setState({ dropDownMenu: !this.state.dropDownMenu });
 								}}
 								>
-									<i className="fas fa-comment" />&nbsp;{i18next.t('MESSAGE')}
+									<i className="fas fa-fw fa-comment" />&nbsp;{i18next.t('MESSAGE')}
 								</a>
 							</li>
 							<li className="buttonsMobileMenu">
@@ -361,7 +375,7 @@ class AdminHeader extends Component<IProps, IState> {
 									data-namecommand={this.state.statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 									id="showSubs"
 								>
-									<i className="fas fa-closed-captioning"></i>&nbsp;{i18next.t(this.state.statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+									<i className="fas fa-fw fa-closed-captioning"/>&nbsp;{i18next.t(this.state.statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 								</a>
 							</li>
 							<li className="buttonsMobileMenu">
@@ -374,7 +388,7 @@ class AdminHeader extends Component<IProps, IState> {
 									id="goTo"
 									data-namecommand="goTo"
 								>
-									<i className="fas fa-undo-alt" />&nbsp;{i18next.t('REWIND')}
+									<i className="fas fa-fw fa-undo-alt" />&nbsp;{i18next.t('REWIND')}
 								</a>
 							</li>
 							<li className="buttonsMobileMenuSmaller">
@@ -389,14 +403,14 @@ class AdminHeader extends Component<IProps, IState> {
 								>
 									{
 										volume === 0 || this.state.statusPlayer?.mute
-											? <i className="fas fa-volume-mute"></i>
+											? <i className="fas fa-fw fa-volume-mute"/>
 											: (
 												volume > 66
-													? <i className="fas fa-volume-up"></i>
+													? <i className="fas fa-fw fa-volume-up"/>
 													: (
 														volume > 33
-															? <i className="fas fa-volume-down"></i>
-															: <i className="fas fa-volume-off"></i>
+															? <i className="fas fa-fw fa-volume-down"/>
+															: <i className="fas fa-fw fa-volume-off"/>
 													)
 											)
 									}&nbsp;{i18next.t('MUTE_UNMUTE')}
@@ -414,7 +428,7 @@ class AdminHeader extends Component<IProps, IState> {
 											id="stopNow"
 											data-namecommand="stopNow"
 										>
-											<i className="fas fa-stop" />&nbsp;{i18next.t('STOP_NOW')}
+											<i className="fas fa-fw fa-stop" />&nbsp;{i18next.t('STOP_NOW')}
 										</a> :
 										<a
 											href="#"
@@ -425,7 +439,7 @@ class AdminHeader extends Component<IProps, IState> {
 											id="stopAfter"
 											data-namecommand="stopAfter"
 										>
-											<i className="fas fa-stop" />&nbsp;{i18next.t('STOP_AFTER')}
+											<i className="fas fa-fw fa-stop" />&nbsp;{i18next.t('STOP_AFTER')}
 										</a>
 
 								}

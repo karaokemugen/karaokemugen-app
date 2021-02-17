@@ -100,64 +100,6 @@
 		font-size: 1em;
     }
 
-    .userlist {
-        width: 100%;
-		list-style: none;
-    }
-
-    .userlist .userLine {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .userlist .list-group-item {
-        border: solid #565656;
-        background-color: #2b2b2b;
-        border-width: 1px 1px 1px 3px;
-        border-left-color: #893230;
-        line-height: 2.5em;
-    }
-
-    .userlist .list-group-item.online {
-        border-left-color: #4c8830;
-    }
-
-    .userLine {
-        height: 3em;
-        padding: 3px;
-		cursor: pointer;
-    }
-
-    .userlist>li:hover {
-        background-color: #333333;
-    }
-
-    .userLine>img,
-    .userLine>div {
-        vertical-align: middle;
-        height: 100%;
-    }
-
-	.userLine>img {
-		border-radius: 15%;
-	}
-
-    .userlist>li.open>.userDetails {
-        display: block;
-    }
-
-    .userDetails {
-        background-color: #212121;
-        text-align: start;
-        padding: 1em;
-        margin-top: .25em;
-    }
-
-    .userDetails>div>i {
-        padding: 1em;
-		margin-right: 1em;
-    }
-
     .nickname {
         font-size: 1.5em;
     }

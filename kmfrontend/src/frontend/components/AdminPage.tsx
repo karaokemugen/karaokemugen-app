@@ -198,7 +198,6 @@ class AdminPage extends Component<IProps, IState> {
 					<AdminHeader
 						setOptionMode={() => {
 							this.setState({options: !this.state.options});
-							getTuto()?.move(1);
 						}}
 						powerOff={this.props.powerOff}
 						options={this.state.options}

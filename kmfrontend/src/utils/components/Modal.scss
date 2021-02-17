@@ -183,8 +183,7 @@
 }
 
 // Nav from Bootstrap
-// Used in ProfileModal
-#profilModal .modal-header, #manage .modalPage {
+#manage .modalPage {
 	padding: 0;
 	.closeModal {
 		background-color: $mugen-nav-background;

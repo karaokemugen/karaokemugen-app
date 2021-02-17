@@ -20,6 +20,7 @@ import Playlist from '../karas/Playlist';
 import ClassicModeModal from '../modals/ClassicModeModal';
 import PollModal from '../modals/PollModal';
 import ProfilModal from '../modals/ProfilModal';
+import UsersModal from '../modals/UsersModal';
 import PlayerBox from './PlayerBox';
 import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
@@ -257,7 +258,7 @@ class PublicPage extends Component<IProps, IState> {
 		return (
 			<>
 				<PublicHeader
-					openProfileModal={() => this.props.route.history.push('/public/user')}
+					openModal={(type: string) => this.props.route.history.push(`/public/${type}`)}
 					onResize={top => this.setState({ top })}
 					changeView={this.changeView} currentView={this.state.view} />
 				<PlayerBox
@@ -276,6 +277,13 @@ class PublicPage extends Component<IProps, IState> {
 								context={this.context}
 								scope='public'
 								closeProfileModal={() => this.props.route.history.goBack()}
+							/>
+						} />
+						<Route path="/public/users" render={() =>
+							<UsersModal
+								context={this.context}
+								scope='public'
+								closeModal={() => this.props.route.history.goBack()}
 							/>
 						} />
 						<Route path="/public/karaoke/:kid" render={({ match }) =>
