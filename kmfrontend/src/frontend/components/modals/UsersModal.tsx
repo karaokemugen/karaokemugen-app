@@ -29,7 +29,7 @@ class UsersModal extends Component<IProps, IState> {
 	}
 
 	componentDidMount() {
-		if (this.props.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) this.getUserList();
+		if (this.props.context?.globalState.auth.data.role === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) this.getUserList();
 	}
 
 	async getUserList() {
