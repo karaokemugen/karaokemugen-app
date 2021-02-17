@@ -9,7 +9,11 @@ let authorization;
 let onlineAuthorization;
 
 if (document.querySelector<HTMLMetaElement>('meta[name="target"]').content === 'NO-REMOTE') {
-	socket = io({ transports: ['websocket'], upgrade: false });
+	if (process.env.NODE_ENV === 'development') {
+		socket = io('http://localhost:1337', { transports: ['websocket'], upgrade: false });
+	} else {
+		socket = io({ transports: ['websocket'], upgrade: false });
+	}
 	proxy = false;
 } else {
 	socket = io(`/${document.querySelector<HTMLMetaElement>('meta[name="target"]').content}`, { transports: ['websocket'], upgrade: false });
