@@ -356,7 +356,7 @@ export async function updateChibiPlayerWindow(show: boolean) {
 	const conf = getConfig();
 	if (show) {
 		chibiPlayerWindow = new BrowserWindow({
-			width: 504,
+			width: 512,
 			height: 136,
 			x: conf.GUI.ChibiPlayer.PositionX,
 			y: conf.GUI.ChibiPlayer.PositionY,
