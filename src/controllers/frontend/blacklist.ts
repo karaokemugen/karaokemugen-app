@@ -36,7 +36,7 @@ export default function blacklistController(router: SocketIOApp) {
 		} catch(err) {
 			const code = 'BLC_EMPTY_ERROR';
 			errMessage(code, err);
-			throw {code: 500, message: APIMessage(code)};
+			throw {code: err?.code || 500, message: APIMessage(code, err)};
 		}
 	});
 	router.route('getBlacklist', async (socket: Socket, req: APIData) => {
@@ -186,7 +186,7 @@ export default function blacklistController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		try {
 			await addBlacklistCriteria(req.body.blcs, req.body.set_id);
-			return APIMessage('BLC_CREATED');
+			return {code: 201, message: APIMessage('BLC_CREATED')};
 		} catch(err) {
 			const code = 'BLC_ADD_ERROR';
 			errMessage(code, err);
@@ -344,16 +344,12 @@ export default function blacklistController(router: SocketIOApp) {
 	 * HTTP/1.1 500 Internal Server Error
 	 */
 		await runChecklist(socket, req, 'guest');
-		if (req.token.role === 'admin') {
-			try {
-				return await getAllSets();
-			} catch(err) {
-				const code = 'BLC_SET_GET_ERROR';
-				errMessage(code, err);
-				throw {code: err?.code || 500, message: APIMessage(code)};
-			}
-		} else {
-			throw {code: 403, message: APIMessage('BLC_VIEW_FORBIDDEN')};
+		try {
+			return await getAllSets();
+		} catch(err) {
+			const code = 'BLC_SET_GET_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
 	router.route('createBLCSet', async (socket: Socket, req: APIData) => {
@@ -367,7 +363,7 @@ export default function blacklistController(router: SocketIOApp) {
 	 *
 	 * @apiParam {String} name Name of BLC set to create
 	 * @apiParam {Boolean} flag_current Is the BLC Set to create current? This unsets `flag_current` on the previous BLC Set which had it.
-	 * @apiSuccess {Number} id ID Number of BLC Set created
+	 * @apiSuccess {Number} set_id ID Number of BLC Set created
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 201 Created
 	 * @apiError BLC_SET_CREATE_ERROR Unable to create a playlist
@@ -393,7 +389,7 @@ export default function blacklistController(router: SocketIOApp) {
 					created_at: null,
 					modified_at: null,
 				});
-				return {id: id};
+				return {set_id: id};
 			} catch(err) {
 				const code = 'BLC_SET_CREATE_ERROR';
 				errMessage(code, err);
@@ -427,7 +423,7 @@ export default function blacklistController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		try {
 			await copySet(req.body.fromSet_id, req.body.toSet_id);
-			return APIMessage('BLC_COPIED');
+			return {code: 200, message: APIMessage('BLC_COPIED')};
 		} catch(err) {
 			const code = 'BLC_COPY_ERROR';
 			errMessage(code, err);
@@ -532,7 +528,7 @@ export default function blacklistController(router: SocketIOApp) {
 			} catch(err) {
 				const code = 'BLC_SET_IMPORT_ERROR';
 				errMessage(code, err);
-				throw {code: err?.code || 500, message: APIMessage(code)};
+				throw {code: err?.code || 500, message: APIMessage(code, err)};
 			}
 		} else {
 			// Errors detected
