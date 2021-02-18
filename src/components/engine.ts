@@ -14,6 +14,7 @@ import { applyMenu, handleFile, handleProtocol } from '../electron/electron';
 import { errorStep,initStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
+import { refreshTags } from '../lib/dao/tag';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation';
 //Utils
 import {getConfig, setConfig} from '../lib/utils/config';
@@ -194,7 +195,7 @@ export async function initEngine() {
 				} else {
 					downloadTestSongs();
 					on('downloadQueueStatus', (status: string[]) => {
-						if (status.includes('stopped') && !state.opt.noAutoTest) runTests();
+						if (status.includes('stopped') && !state.opt.noAutoTest) refreshTags().then(() => runTests());
 					});
 				}
 			}

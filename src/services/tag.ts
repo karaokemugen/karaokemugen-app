@@ -224,7 +224,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opts.refresh) {
 			await refreshKaras();
-			refreshTags();
+			await refreshTags();
 		}
 	} catch(err) {
 		if (err?.code === 404) throw err;
