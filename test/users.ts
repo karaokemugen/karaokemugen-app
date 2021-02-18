@@ -100,7 +100,6 @@ function testUser(u: User, full?: boolean) {
 		if (u.fallback_series_lang) {
 			expect(allLangs).to.include(u.fallback_series_lang);
 		}
-		expect(u.fingerprint).to.satisfy((e:any) => typeof e === 'string' || e === null);
 		expect(u.main_series_lang).to.satisfy((e:any) => typeof e === 'string' || e === null);
 		if (u.main_series_lang) {
 			expect(allLangs).to.include(u.main_series_lang);

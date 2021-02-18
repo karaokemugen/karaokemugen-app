@@ -33,7 +33,7 @@ export async function checkLogin(username: string, password: string): Promise<To
 	// User is a local user
 	user = await findUserByName(username);
 	if (!user) throw false;
-	if (!await checkPassword(user, password)) throw false;
+	if (user.type < 2 && !await checkPassword(user, password)) throw false;
 	const role = getRole(user);
 	updateLastLoginName(username);
 	return {

@@ -4,7 +4,7 @@ import {db, newDBTask} from '../lib/dao/database';
 import { DBUser } from '../lib/types/database/user';
 import { User } from '../lib/types/user';
 import { DBGuest } from '../types/database/user';
-import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword,sqlfindFingerprint, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlresetGuestsPassword, sqlSelectAllDupeUsers, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateExpiredUsers, sqlupdateLastLogin, sqlupdateUserFingerprint } from './sql/user';
+import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlresetGuestsPassword, sqlSelectAllDupeUsers, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateExpiredUsers, sqlupdateLastLogin } from './sql/user';
 
 export async function getUser(username: string): Promise<DBUser> {
 	const res = await db().query(yesql(sqlselectUserByName)({username: username}));
@@ -82,22 +82,10 @@ export function updateExpiredUsers(expireTime: Date) {
 	return db().query(sqlupdateExpiredUsers, [expireTime]);
 }
 
-export function updateUserFingerprint(username: string, fingerprint: string) {
-	return db().query(yesql(sqlupdateUserFingerprint)({
-		username: username,
-		fingerprint: fingerprint
-	}));
-}
-
 export async function getRandomGuest(): Promise<string> {
 	const res = await db().query(sqlselectRandomGuestName);
 	if (res.rows[0]) return res.rows[0].login;
 	return null;
-}
-
-export async function findFingerprint(fingerprint: string): Promise<string> {
-	const res = await db().query(sqlfindFingerprint, [fingerprint] );
-	if (res.rows[0]) return res.rows[0].login;
 }
 
 export function resetGuestsPassword() {
