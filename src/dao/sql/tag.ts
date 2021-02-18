@@ -18,8 +18,20 @@ WHERE pk_tid = $1
 `;
 
 export const sqlgetTag = `
-SELECT pk_tid AS tid, name, types, short, aliases, i18n, modified_at, tagfile, repository, problematic, nolivedownload AS "noLiveDownload", priority
-FROM tag
+SELECT pk_tid AS tid,
+	name,
+	types,
+	short,
+	aliases,
+	i18n,
+	modified_at,
+	tagfile,
+	repository,
+	problematic,
+	nolivedownload AS "noLiveDownload",
+	priority,
+	karacount
+FROM all_tags
 WHERE pk_tid = $1
 `;
 

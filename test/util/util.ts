@@ -109,7 +109,7 @@ export function testKara(kara: any, details: TestDetails) {
 	if (details.kara) {
 		expect(kara.tid).to.be.an('array');
 		for (const tid of kara.tid) {
-			expect(tid).to.be.a('string').and.match(new RegExp(uuidPlusTypeRegexp));
+			if (tid) expect(tid).to.be.a('string').and.match(new RegExp(uuidPlusTypeRegexp));
 		}
 	}
 	if (details.plcDetail) expect(kara.time_before_play).to.satisfy((s:any) => typeof s === 'number' || s === null);
@@ -135,10 +135,6 @@ export function testTag(tag: DBTag, type: 'short'|'full'|'tag') {
 		// Langs should be included in all Langs
 		for (const lang of langs) {
 			expect(allLangs).to.include(lang);
-		}
-		expect(tag.types).to.be.an('array');
-		for (const type of tag.types) {
-			expect(type).to.be.a('number').and.at.least(1);
 		}
 	}
 	if (type === 'tag') {
