@@ -7,6 +7,7 @@ import retry from 'p-retry';
 import {extname, resolve} from 'path';
 import randomstring from 'randomstring';
 import semver from 'semver';
+import {graphics} from 'systeminformation';
 import {promisify} from 'util';
 import logger from 'winston';
 
@@ -149,15 +150,18 @@ class Player {
 	control: Players
 
 	constructor(options: MpvOptions, players: Players) {
-		// Generate node mpv options
 		this.options = options;
-		this.configuration = this.genConf(options);
 		this.control = players;
+	}
+
+	async init() {
+		// Generate the configuration
+		this.configuration = await this.genConf(this.options);
 		// Instantiate mpv
 		this.mpv = new MpvIPC(this.configuration[0], this.configuration[1], this.configuration[2]);
 	}
 
-	private genConf(options: MpvOptions) {
+	private async genConf(options: MpvOptions) {
 		const conf = getConfig();
 		const state = getState();
 
@@ -174,8 +178,7 @@ class Player {
 			'--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
 			`--title=${options.monitor ? '[MONITOR] ':''}\${force-media-title} - Karaoke Mugen Player`,
-			'--force-media-title=Loading...',
-			'--no-keepaspect-window'
+			'--force-media-title=Loading...'
 		];
 
 		if (options.monitor) {
@@ -202,6 +205,11 @@ class Player {
 		}
 
 		if (conf.Player.PIP.Enabled) {
+			// We want a 16/9
+			const screens = await graphics();
+			const screen = conf.Player.Screen ? screens.displays[conf.Player.Screen] || screens.displays[0] : screens.displays[0];
+			const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
+			const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
 			// By default, center.
 			let positionX = 50;
 			let positionY = 50;
@@ -217,7 +225,7 @@ class Player {
 				if (positionY >= 0) positionY += 10;
 				else positionY -= 10;
 			}
-			NodeMPVArgs.push(`--geometry=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%${positionX > 0 ? `+${positionX}`:positionX}%${positionY > 0 ? `+${positionY}`:positionY}%`);
+			NodeMPVArgs.push(`--geometry=${targetResolution}${positionX > 0 ? `+${positionX}`:positionX}%${positionY > 0 ? `+${positionY}`:positionY}%`);
 		}
 
 		if (conf.Player.NoHud) NodeMPVArgs.push('--no-osc');
@@ -377,6 +385,9 @@ class Player {
 	}
 
 	async start() {
+		if (!this.configuration) {
+			await this.init();
+		}
 		this.bindEvents();
 		await retry(async () => {
 			try {
@@ -418,10 +429,8 @@ class Player {
 			if (this.isRunning) await this.destroy();
 			// Set options if supplied
 			if (options) this.options = options;
-			// Regen config
-			this.configuration = this.genConf(this.options);
-			// Recreate mpv
-			this.mpv = new MpvIPC(this.configuration[0], this.configuration[1], this.configuration[2]);
+			// Re-init the player
+			await this.init();
 			if (restart) await this.start();
 		} catch (err) {
 			logger.error('mpvAPI (recreate)', {service: 'Player', obj: err});
@@ -745,7 +754,7 @@ class Players {
 				options.vid = '1';
 			}
 		}
-		// Load all thoses files into mpv and let's go!
+		// Load all those files into mpv and let's go!
 		try {
 			playerState.currentSong = song;
 			playerState.mediaType = 'song';
