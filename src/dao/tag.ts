@@ -59,7 +59,7 @@ export async function insertTag(tag: Tag) {
 		tag.types,
 		tag.short || null,
 		tag.i18n || {},
-		JSON.stringify(tag.aliases) || [],
+		JSON.stringify(tag.aliases || []),
 		tag.tagfile,
 		tag.repository,
 		tag.modified_at,
@@ -103,7 +103,7 @@ export async function selectTagByNameAndType(name: string, type: number): Promis
 export function updateTag(tag: Tag) {
 	return db().query(sqlupdateTag, [
 		tag.name,
-		JSON.stringify(tag.aliases) || [],
+		JSON.stringify(tag.aliases || []),
 		tag.tagfile,
 		tag.short || null,
 		tag.types,
