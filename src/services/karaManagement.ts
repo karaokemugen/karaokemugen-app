@@ -193,7 +193,7 @@ export async function refreshKarasAfterDBChange(newTags: boolean) {
 	await refreshKaras();
 	refreshYears();
 	if (newTags) {
-		refreshTags();
+		await refreshTags();
 	}
 	logger.debug('Done refreshing DB after kara change', {service: 'DB'});
 	profile('RefreshAfterDBChange');

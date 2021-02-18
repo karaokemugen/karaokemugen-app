@@ -74,7 +74,7 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		saveSetting('baseChecksum', getStoreChecksum());
 
 		if (opts.refresh) {
-			refreshTags();
+			await refreshTags();
 		}
 		return tagObj;
 	} catch(err) {
@@ -166,7 +166,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
 		await refreshKaras();
-		refreshTags();
+		await refreshTags();
 		return tagObj;
 	} catch(err) {
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, {service: 'Tags', obj: err});
@@ -256,7 +256,7 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opt.refresh) {
 			await refreshKaras();
-			refreshTags();
+			await refreshTags();
 		}
 	} catch(err) {
 		if (err?.code === 404) throw err;
