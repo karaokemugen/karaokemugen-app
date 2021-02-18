@@ -17,7 +17,6 @@ export async function login(
 		const info: IAuthentifactionInformation = await commandBackend(username ? 'login' : 'loginGuest', {
 			username,
 			password,
-			fingerprint : password,
 			securityCode
 		});
 

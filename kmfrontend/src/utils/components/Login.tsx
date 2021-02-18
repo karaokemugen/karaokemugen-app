@@ -1,6 +1,5 @@
 import './Login.scss';
 
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import i18next from 'i18next';
 import React, { Component, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -71,7 +70,7 @@ class Login extends Component<IProps, IState> {
 	}
 
 
-	login = async (username: string | undefined, password: string, securityCode?: number) => {
+	login = async (username: string | undefined, password: string | undefined, securityCode?: number) => {
 		if (this.state.forgotPassword) {
 			await this.callForgetPasswordApi();
 		}
@@ -101,9 +100,7 @@ class Login extends Component<IProps, IState> {
 	};
 
 	loginGuest = async () => {
-		const fp = await FingerprintJS.load();
-		const result = await fp.get();
-		this.login('', result.visitorId);
+		this.login(undefined, undefined);
 	};
 
 	loginUser = () => {

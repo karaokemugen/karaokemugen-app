@@ -3,7 +3,6 @@
   "private": true,
   "dependencies": {
     "@cospired/i18n-iso-languages": "^2.2.0",
-    "@fingerprintjs/fingerprintjs": "3.0.6",
     "@sentry/integrations": "^6.1.0",
     "@sentry/react": "^6.1.0",
     "antd": "4.12.3",
