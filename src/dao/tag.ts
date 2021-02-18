@@ -20,7 +20,7 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildTagClauses(params.filter)
 		: {sql: [], params: {}, additionalFrom: []};
-	const typeClauses = params.type ? ` AND types @> ARRAY[${params.type}]` : '';
+	const typeClauses = params.type ? ` AND t.types @> ARRAY[${params.type}]` : '';
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = '';
@@ -44,11 +44,11 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 }
 
 function buildTagClauses(words: string): WhereClause {
-	const sql = ['search_vector @@ query'];
+	const sql = ['tag_search_vector @@ query'];
 	return {
 		sql: sql,
 		params: {tsquery: paramWords(words).join(' & ')},
-		additionalFrom: [', to_tsquery(\'public.unaccent_conf\', :tsquery) as query, ts_rank_cd(search_vector, query) as relevance']
+		additionalFrom: [', to_tsquery(\'public.unaccent_conf\', :tsquery) as query, ts_rank_cd(tag_search_vector, query) as relevance']
 	};
 }
 

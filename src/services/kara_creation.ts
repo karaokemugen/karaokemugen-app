@@ -6,7 +6,7 @@ import {generateKara} from '../lib/services/kara_creation';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
 import { asyncCopy, asyncExists, asyncMove,asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
 import {getKara} from './kara';
@@ -21,6 +21,7 @@ export async function editKara(kara: Kara, refresh = true) {
 	let newKara: NewKara;
 	let karaFile: string;
 	try {
+		profile('editKaraFile');
 		const oldKara = await getKara(kara.kid, {role: 'admin', username: 'admin'});
 		let mediaFile: string;
 		let mediaDir: string;
@@ -120,6 +121,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		saveSetting('baseChecksum', getStoreChecksum());
 		newKara.data.karafile = basename(newKara.file);
 		// Update in database
+		profile('editKaraFile');
 		await Promise.all([
 			editKaraInDB(newKara.data, { refresh: refresh }),
 			consolidateTagsInRepo(newKara.data)

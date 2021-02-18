@@ -117,7 +117,7 @@ SELECT pc.fk_kid AS kid,
 	ak.series AS series,
 	ak.singers AS singer
 FROM playlist_content pc
-INNER JOIN all_karas ak ON pc.fk_kid = ak.kid
+INNER JOIN all_karas ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos, pc.created_at DESC
@@ -126,7 +126,7 @@ ORDER BY pc.pos, pc.created_at DESC
 export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string,
 									   groupClause: string, additionalFrom: string) => `
 SELECT
-  ak.kid AS kid,
+  ak.pk_kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
@@ -170,11 +170,11 @@ SELECT
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_playing,
-  (CASE WHEN wl.fk_kid = ak.kid
+  (CASE WHEN wl.fk_kid = ak.pk_kid
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_whitelisted,
-  (CASE WHEN bl.fk_kid = ak.kid
+  (CASE WHEN bl.fk_kid = ak.pk_kid
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_blacklisted,
@@ -185,20 +185,20 @@ SELECT
   COUNT(pc.pk_id_plcontent) OVER()::integer AS count,
   ak.repository AS repository
 FROM all_karas AS ak
-INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
-LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
-LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
+LEFT OUTER JOIN blacklist AS bl ON ak.pk_kid = bl.fk_kid
+LEFT OUTER JOIN whitelist AS wl ON ak.pk_kid = wl.fk_kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
-LEFT OUTER JOIN favorites f ON f.fk_kid = ak.kid AND f.fk_login = :username
-LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
-LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
+LEFT OUTER JOIN favorites f ON f.fk_kid = ak.pk_kid AND f.fk_login = :username
+LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
+LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 ${additionalFrom}
 WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').join(' ')}
   ${whereClause}
-GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes,
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes,
          ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres,
          ak.platforms, ak.versions, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname,
          pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository${groupClause}
@@ -208,7 +208,7 @@ ${offsetClause}
 `;
 
 export const sqlgetPlaylistContentsMini = `
-SELECT ak.kid AS kid,
+SELECT ak.pk_kid AS kid,
     ak.languages AS langs,
 	ak.title AS title,
 	ak.songorder AS songorder,
@@ -235,7 +235,7 @@ SELECT ak.kid AS kid,
 	ak.repository as repository,
 	(SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes
 FROM all_karas AS ak
-INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos;
@@ -251,7 +251,7 @@ ORDER BY pc.pos,pc.created_at DESC;
 
 export const sqlgetPLCInfo = (forUser: boolean) => `
 SELECT
-  ak.kid AS kid,
+  ak.pk_kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
@@ -313,17 +313,17 @@ SELECT
   ak.repository as repository
 FROM playlist_content AS pc
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
-INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
+INNER JOIN all_karas AS ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
-LEFT OUTER JOIN played p ON ak.kid = p.fk_kid
+LEFT OUTER JOIN played p ON ak.pk_kid = p.fk_kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
-LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.kid
-LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
-LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
-LEFT OUTER JOIN favorites AS f on ak.kid = f.fk_kid AND f.fk_login = :username
+LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.pk_kid
+LEFT OUTER JOIN blacklist AS bl ON ak.pk_kid = bl.fk_kid
+LEFT OUTER JOIN whitelist AS wl ON ak.pk_kid = wl.fk_kid
+LEFT OUTER JOIN favorites AS f on ak.pk_kid = f.fk_kid AND f.fk_login = :username
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
 `;
 
 export const sqlgetPLCInfoMini = `
@@ -342,7 +342,7 @@ SELECT pc.fk_kid AS kid,
 		ELSE FALSE
 	END) AS flag_playing
 FROM all_karas AS ak
-INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = $1
