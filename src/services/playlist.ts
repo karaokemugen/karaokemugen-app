@@ -192,13 +192,8 @@ export async function deletePlaylist(playlist_id: number) {
 		logger.info(`Deleting playlist ${pl.name}`, {service: 'Playlist'});
 		if (pl.flag_current) throw {code: 409, msg: `Playlist ${playlist_id} is current. Unable to delete it. Make another playlist current first.`};
 		logger.info(`Deleting playlist ${pl.name}`, {service: 'Playlist'});
-		try {
-			await deletePL(playlist_id);
-			emitWS('playlistsUpdated');
-		} catch(err) {
-			console.log(err);
-			throw err;
-		}
+		await deletePL(playlist_id);
+		emitWS('playlistsUpdated');
 
 	} catch(err) {
 		throw {
