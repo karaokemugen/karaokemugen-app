@@ -1,20 +1,19 @@
 import { basename, resolve } from 'path';
-import { profile } from 'winston';
 
 import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore, sortKaraStore } from '../dao/dataStore';
 import { addKara, deleteKara as deleteKaraDB, getKaraMini, updateKara } from '../dao/kara';
 import { getPlaylistKaraIDs } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
-import { databaseReady, saveSetting } from '../lib/dao/database';
+import { saveSetting } from '../lib/dao/database';
 import { refreshKaras, refreshYears } from '../lib/dao/kara';
 import { getDataFromKaraFile, parseKara, writeKara } from '../lib/dao/karafile';
-import {refreshAllKaraTags,refreshKaraTags, refreshTags} from '../lib/dao/tag';
+import { refreshTags} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { asyncCopy, asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -46,10 +45,12 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 export async function editKaraInDB(kara: Kara, opts = {
 	refresh: true
 }) {
+	profile('editKaraDB');
 	const promises = [updateKara(kara)];
 	if (kara.newTags) promises.push(updateTags(kara));
 	await Promise.all(promises);
 	if (opts.refresh) await refreshKarasAfterDBChange(kara.newTags);
+	profile('editKaraDB');
 }
 
 export async function deleteKara(kid: string, refresh = true) {
@@ -82,7 +83,7 @@ export async function deleteKara(kid: string, refresh = true) {
 	if (refresh) {
 		await refreshKaras();
 		refreshTags();
-		refreshAllKaraTags();
+		refreshYears();
 	}
 }
 
@@ -175,9 +176,9 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 			}
 			task.incr();
 		}
-		refreshKaraTags();
-		refreshKaras();
-		await databaseReady();
+		await refreshKaras();
+		refreshTags();
+		refreshYears();
 		logger.info('Batch tag edit finished', {service: 'Kara'});
 	} catch(err) {
 		logger.info('Batch tag edit failed', {service: 'Kara', obj: err});
@@ -189,12 +190,11 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 export async function refreshKarasAfterDBChange(newTags: boolean) {
 	profile('RefreshAfterDBChange');
 	logger.debug('Refreshing DB after kara change', {service: 'DB'});
-	if (newTags) {
-		await refreshKaraTags();
-		await refreshTags();
-	}
 	await refreshKaras();
-	await refreshYears();
+	refreshYears();
+	if (newTags) {
+		refreshTags();
+	}
 	logger.debug('Done refreshing DB after kara change', {service: 'DB'});
 	profile('RefreshAfterDBChange');
 }
