@@ -70,7 +70,7 @@ class Login extends Component<IProps, IState> {
 	}
 
 
-	login = async (username: string | undefined, password: string | undefined, securityCode?: number) => {
+	login = async (username: string | undefined, password?: string, securityCode?: number) => {
 		if (this.state.forgotPassword) {
 			await this.callForgetPasswordApi();
 		}
@@ -100,7 +100,7 @@ class Login extends Component<IProps, IState> {
 	};
 
 	loginGuest = async () => {
-		this.login(undefined, undefined);
+		this.login(undefined);
 	};
 
 	loginUser = () => {
