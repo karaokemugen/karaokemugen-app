@@ -195,7 +195,7 @@ export async function initEngine() {
 				} else {
 					downloadTestSongs();
 					on('downloadQueueStatus', (status: string[]) => {
-						if (status.includes('stopped') && !state.opt.noAutoTest) refreshTags().then(() => runTests());
+						if (status.includes('stopped') && !state.opt.noAutoTest) runTests();
 					});
 				}
 			}
