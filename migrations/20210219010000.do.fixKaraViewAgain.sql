@@ -1,6 +1,14 @@
-DROP TABLE all_karas;
+DROP MATERIALIZED VIEW IF EXISTS all_karas;
 
-CREATE MATERIALIZED VIEW all_karas AS
+UPDATE tag SET tag_search_vector =
+to_tsvector('public.unaccent_conf', name) ||
+(select tsvector_agg(to_tsvector('public.unaccent_conf', i18nj.value)) from tag t2, jsonb_each_text(i18n) i18nj where t2.pk_tid = tag.pk_tid group by t2.pk_tid ) ||
+CASE WHEN aliases::text != '[]' THEN (select tsvector_agg(to_tsvector('public.unaccent_conf', aliasesj)) from tag t2, jsonb_array_elements(aliases) aliasesj where t2.pk_tid = tag.pk_tid group by t2.pk_tid ) ELSE to_tsvector('public.unaccent_conf', '') END;
+
+UPDATE kara SET title_search_vector = to_tsvector('public.unaccent_conf', title);
+
+DROP TABLE IF EXISTS all_karas;
+CREATE TABLE all_karas AS
 SELECT k.*,
   CASE WHEN MIN(tauthor.pk_tid::text) IS NULL THEN null ELSE jsonb_agg(DISTINCT json_build_object('tid', tauthor.pk_tid, 'short', tauthor.short, 'name', tauthor.name, 'problematic', tauthor.problematic, 'aliases', tauthor.aliases, 'i18n', tauthor.i18n)::jsonb) END as authors,
   CASE WHEN MIN(tcreator.pk_tid::text) IS NULL THEN null ELSE jsonb_agg(DISTINCT json_build_object('tid', tcreator.pk_tid, 'short', tcreator.short, 'name', tcreator.name, 'problematic', tcreator.problematic, 'aliases', tcreator.aliases, 'i18n', tcreator.i18n)::jsonb) END as creators,
@@ -107,7 +115,6 @@ LEFT JOIN tag tsongwriter on ks3.fk_tid = tsongwriter.pk_tid
 LEFT JOIN kara_tag kv on k.pk_kid = kv.fk_kid and kv.type = 14
 LEFT JOIN tag tversion on kv.fk_tid = tversion.pk_tid
 GROUP BY k.pk_kid;
-
 
 create index idx_ak_search_vector
     on all_karas using gin (search_vector);
