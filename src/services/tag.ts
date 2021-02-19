@@ -6,7 +6,7 @@ import { getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selec
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
-import { refreshTags } from '../lib/dao/tag';
+import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
 import {DBKaraTag} from '../lib/types/database/kara';
 import { DBTag } from '../lib/types/database/tag';
@@ -74,6 +74,7 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		saveSetting('baseChecksum', getStoreChecksum());
 
 		if (opts.refresh) {
+			await updateTagSearchVector();
 			await refreshTags();
 		}
 		return tagObj;
@@ -165,6 +166,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			await editKaraInStore(kara);
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
+		await updateTagSearchVector();
 		await refreshKaras();
 		await refreshTags();
 		return tagObj;
@@ -223,8 +225,9 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opts.refresh) {
-			await refreshKaras();
+			await updateTagSearchVector();
 			await refreshTags();
+			await refreshKaras();
 		}
 	} catch(err) {
 		if (err?.code === 404) throw err;

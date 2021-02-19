@@ -5,9 +5,9 @@ import { addKara, deleteKara as deleteKaraDB, getKaraMini, updateKara } from '..
 import { getPlaylistKaraIDs } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
-import { refreshKaras, refreshYears } from '../lib/dao/kara';
+import { refreshKaras, refreshYears, updateKaraSearchVector } from '../lib/dao/kara';
 import { getDataFromKaraFile, parseKara, writeKara } from '../lib/dao/karafile';
-import { refreshTags} from '../lib/dao/tag';
+import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
@@ -190,9 +190,11 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 export async function refreshKarasAfterDBChange(newTags: boolean) {
 	profile('RefreshAfterDBChange');
 	logger.debug('Refreshing DB after kara change', {service: 'DB'});
+	await updateKaraSearchVector();
 	await refreshKaras();
 	refreshYears();
 	if (newTags) {
+		await updateTagSearchVector();
 		await refreshTags();
 	}
 	logger.debug('Done refreshing DB after kara change', {service: 'DB'});
