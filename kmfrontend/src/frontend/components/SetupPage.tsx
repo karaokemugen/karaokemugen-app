@@ -50,7 +50,6 @@ class SetupPage extends Component<IProps, IState> {
 	componentDidMount() {
 		const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].Path.Karas[0].slice(0, -9);
 		const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
-		document.getElementsByTagName('body')[0].className = 'forceScroll';
 
 		this.setState({
 			instance: this.context?.globalState.settings.data.config?.Online.Host,
