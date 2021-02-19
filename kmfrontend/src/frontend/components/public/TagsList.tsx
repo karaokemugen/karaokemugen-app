@@ -27,6 +27,7 @@ interface IState {
 	tags: TagsElem;
 	forceUpdate: boolean;
 	filterValue: string;
+	scrollToIndex: number;
 }
 
 interface TagsElem {
@@ -56,7 +57,8 @@ class TagsList extends Component<IProps, IState> {
 			}
 		},
 		forceUpdate: false,
-		filterValue: ''
+		filterValue: '',
+		scrollToIndex: -1
 	};
 
 	componentDidMount() {
@@ -71,7 +73,7 @@ class TagsList extends Component<IProps, IState> {
 	playlistContentsUpdatedFromClient = async () => {
 		const tags = this.state.tags;
 		tags.infos.from = 0;
-		await this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1, tags });
+		await this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1, tags, scrollToIndex: 0 });
 		this.props.tagType === YEARS.type ? this.getYears() : this.getTags();
 	}
 
@@ -109,7 +111,7 @@ class TagsList extends Component<IProps, IState> {
 		} else {
 			data = response;
 		}
-		this.setState({ tags: data });
+		this.setState({ tags: data, scrollToIndex: -1 });
 		this.tagsListForceRefresh();
 	}
 
@@ -118,7 +120,7 @@ class TagsList extends Component<IProps, IState> {
 		response.content = response.content.map((val: DBYear) => {
 			return { tid: val.year, name: val.year, type: [0], karacount: [{ type: 0, count: val.karacount }] };
 		});
-		this.setState({ tags: response });
+		this.setState({ tags: response, scrollToIndex: -1 });
 	}
 
 
@@ -202,6 +204,7 @@ class TagsList extends Component<IProps, IState> {
 										rowRenderer={this.rowRenderer}
 										height={height}
 										width={width}
+										scrollToIndex={this.state.scrollToIndex}
 									/>);
 							}}
 						</AutoSizer>

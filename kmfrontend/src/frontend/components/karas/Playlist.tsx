@@ -222,7 +222,7 @@ class Playlist extends Component<IProps, IState> {
 	playlistContentsUpdatedFromClient = (idPlaylist: number) => {
 		const data = this.state.data as KaraList;
 		if (this.state.idPlaylist > 0 && data) data.infos.from = 0;
-		this.setState({ data: data });
+		this.setState({ data: data, scrollToIndex: 0 });
 		if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist(this.state.searchType);
 	}
 
