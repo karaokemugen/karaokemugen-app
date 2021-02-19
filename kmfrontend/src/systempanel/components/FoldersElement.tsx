@@ -55,7 +55,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 			if (this.props.openFile) options.properties.push('openFile');
 			if (this.props.openDirectory) options.properties.push('openDirectory');
 			ipc.send('get-file-paths', options);
-			ipc.once('get-file-paths-response', async (event, filepaths) => {
+			ipc.once('get-file-paths-response', async (_event, filepaths) => {
 				if (filepaths.length > 0) {
 					await this.setState({ newValueModal: filepaths[0] });
 					this.saveFolders();
