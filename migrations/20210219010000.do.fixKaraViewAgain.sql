@@ -24,9 +24,9 @@ SELECT k.*,
   CASE WHEN MIN(tsongtype.pk_tid::text) IS NULL THEN null ELSE jsonb_agg(DISTINCT json_build_object('tid', tsongtype.pk_tid, 'short', tsongtype.short, 'name', tsongtype.name, 'problematic', tsongtype.problematic, 'aliases', tsongtype.aliases, 'i18n', tsongtype.i18n)::jsonb) END as songtypes,
   CASE WHEN MIN(tsongwriter.pk_tid::text) IS NULL THEN null ELSE jsonb_agg(DISTINCT json_build_object('tid', tsongwriter.pk_tid, 'short', tsongwriter.short, 'name', tsongwriter.name, 'problematic', tsongwriter.problematic, 'aliases', tsongwriter.aliases, 'i18n', tsongwriter.i18n)::jsonb) END as songwriters,
   CASE WHEN MIN(tversion.pk_tid::text) IS NULL THEN null ELSE jsonb_agg(DISTINCT json_build_object('tid', tversion.pk_tid, 'short', tversion.short, 'name', tversion.name, 'problematic', tversion.problematic, 'aliases', tversion.aliases, 'i18n', tversion.i18n)::jsonb) END as versions,
-  string_agg(lower(unaccent(tlang.name)), ', ' ORDER BY tlang.name) AS languages_sortable,
-  string_agg(lower(unaccent(tsongtype.name)), ', ' ORDER BY tsongtype.name) AS songtypes_sortable,
-  COALESCE(string_agg(lower(unaccent(tserie.name)), ', ' ORDER BY tserie.name), string_agg(lower(unaccent(tsinger.name)), ', ' ORDER BY tsinger.name)) AS serie_singer_sortable,
+  string_agg(DISTINCT lower(unaccent(tlang.name)), ', ' ORDER BY lower(unaccent(tlang.name))) AS languages_sortable,
+  string_agg(DISTINCT lower(unaccent(tsongtype.name)), ', ' ORDER BY lower(unaccent(tsongtype.name))) AS songtypes_sortable,
+  COALESCE(string_agg(DISTINCT lower(unaccent(tserie.name)), ', ' ORDER BY lower(unaccent(tserie.name))), string_agg(lower(unaccent(tsinger.name)), ', ' ORDER BY lower(unaccent(tsinger.name)))) AS serie_singer_sortable,
   tsvector_agg(tauthor.tag_search_vector) ||
 	tsvector_agg(tcreator.tag_search_vector) ||
 	tsvector_agg(tfamily.tag_search_vector) ||
@@ -42,34 +42,34 @@ SELECT k.*,
 	tsvector_agg(tsongwriter.tag_search_vector) ||
 	tsvector_agg(tversion.tag_search_vector) ||
 	k.title_search_vector AS search_vector,
-  array_agg(DISTINCT tauthor.tagfile) ||
-    array_agg(DISTINCT tcreator.tagfile) ||
-    array_agg(DISTINCT tfamily.tagfile) ||
-    array_agg(DISTINCT tgenre.tagfile) ||
-    array_agg(DISTINCT tgroup.tagfile) ||
-    array_agg(DISTINCT tlang.tagfile) ||
-    array_agg(DISTINCT tmisc.tagfile) ||
-    array_agg(DISTINCT torigin.tagfile) ||
-    array_agg(DISTINCT tplatform.tagfile) ||
-    array_agg(DISTINCT tserie.tagfile) ||
-    array_agg(DISTINCT tsinger.tagfile) ||
-    array_agg(DISTINCT tsongtype.tagfile) ||
-    array_agg(DISTINCT tsongwriter.tagfile) ||
-    array_agg(DISTINCT tversion.tagfile) AS tagfiles,
-  array_agg(DISTINCT tauthor.pk_tid::text || '~6') ||
-    array_agg(DISTINCT tcreator.pk_tid::text || '~4') ||
-    array_agg(DISTINCT tfamily.pk_tid::text || '~10') ||
-    array_agg(DISTINCT tgenre.pk_tid::text || '~12') ||
-    array_agg(DISTINCT tgroup.pk_tid::text || '~9') ||
-    array_agg(DISTINCT tlang.pk_tid::text || '~5') ||
-    array_agg(DISTINCT tmisc.pk_tid::text || '~7') ||
-    array_agg(DISTINCT torigin.pk_tid::text || '~11') ||
-    array_agg(DISTINCT tplatform.pk_tid::text || '~13') ||
-    array_agg(DISTINCT tserie.pk_tid::text || '~1') ||
-    array_agg(DISTINCT tsinger.pk_tid::text || '~2') ||
-    array_agg(DISTINCT tsongtype.pk_tid::text || '~3') ||
-    array_agg(DISTINCT tsongwriter.pk_tid::text || '~8') ||
-    array_agg(DISTINCT tversion.pk_tid::text || '~14' ) AS tid
+    CASE WHEN MIN(tauthor.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tauthor.tagfile) END ||
+    CASE WHEN MIN(tcreator.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tcreator.tagfile) END ||
+    CASE WHEN MIN(tfamily.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tfamily.tagfile) END ||
+    CASE WHEN MIN(tgenre.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tgenre.tagfile) END ||
+    CASE WHEN MIN(tgroup.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tgroup.tagfile) END ||
+    CASE WHEN MIN(tlang.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tlang.tagfile) END ||
+    CASE WHEN MIN(tmisc.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tmisc.tagfile) END ||
+    CASE WHEN MIN(torigin.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT torigin.tagfile) END ||
+    CASE WHEN MIN(tplatform.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tplatform.tagfile) END ||
+    CASE WHEN MIN(tserie.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tserie.tagfile) END ||
+    CASE WHEN MIN(tsinger.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tsinger.tagfile) END ||
+    CASE WHEN MIN(tsongtype.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tsongtype.tagfile) END ||
+    CASE WHEN MIN(tsongwriter.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tsongwriter.tagfile) END ||
+    CASE WHEN MIN(tversion.tagfile) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tversion.tagfile) END AS tagfiles,
+  CASE WHEN MIN(tauthor.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tauthor.pk_tid::text || '~6') END ||
+    CASE WHEN MIN(tcreator.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tcreator.pk_tid::text || '~4') END ||
+    CASE WHEN MIN(tfamily.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tfamily.pk_tid::text || '~10') END ||
+    CASE WHEN MIN(tgenre.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tgenre.pk_tid::text || '~12') END ||
+    CASE WHEN MIN(tgroup.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tgroup.pk_tid::text || '~9') END ||
+    CASE WHEN MIN(tlang.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tlang.pk_tid::text || '~5') END ||
+    CASE WHEN MIN(tmisc.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tmisc.pk_tid::text || '~7') END ||
+    CASE WHEN MIN(torigin.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT torigin.pk_tid::text || '~11') END ||
+    CASE WHEN MIN(tplatform.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tplatform.pk_tid::text || '~13') END ||
+    CASE WHEN MIN(tserie.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tserie.pk_tid::text || '~1') END ||
+    CASE WHEN MIN(tsinger.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tsinger.pk_tid::text || '~2') END ||
+    CASE WHEN MIN(tsongtype.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tsongtype.pk_tid::text || '~3') END ||
+    CASE WHEN MIN(tsongwriter.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tsongwriter.pk_tid::text || '~8') END ||
+    CASE WHEN MIN(tversion.pk_tid::text) IS NULL THEN ARRAY[]::text[] ELSE array_agg(DISTINCT tversion.pk_tid::text || '~14' ) END AS tid
 
 FROM kara k
 
