@@ -278,11 +278,11 @@ export async function integrateTagFile(file: string): Promise<string> {
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository) {
 				// Only edit if repositories are the same.
-				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true });
+				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: true, repoCheck: true });
 			}
 			return tagFileData.name;
 		} else {
-			await addTag(tagFileData, { silent: true, refresh: false });
+			await addTag(tagFileData, { silent: true, refresh: true });
 			return tagFileData.name;
 		}
 	} catch(err) {
