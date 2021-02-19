@@ -18,26 +18,27 @@ WHERE pk_tid = $1
 `;
 
 export const sqlgetTag = `
-SELECT pk_tid AS tid,
-	name,
-	types,
-	short,
-	aliases,
-	i18n,
-	modified_at,
-	tagfile,
-	repository,
-	problematic,
-	nolivedownload AS "noLiveDownload",
-	priority,
-	karacount
-FROM all_tags
-WHERE pk_tid = $1
+SELECT t.pk_tid AS tid,
+	t.name,
+	t.types,
+	t.short,
+	t.aliases,
+	t.i18n,
+	t.modified_at,
+	t.tagfile,
+	t.repository,
+	t.problematic,
+	t.nolivedownload AS "noLiveDownload",
+	t.priority,
+	at.karacount
+FROM tag t
+LEFT JOIN all_tags at ON at.pk_tid = $1
+WHERE t.pk_tid = $1
 `;
 
 export const sqlselectDuplicateTags = `
-SELECT pk_tid AS tid, name, types, short, aliases, i18n, modified_at, karacount, tagfile, repository, problematic, nolivedownload AS "noLiveDownload", priority FROM all_tags ou
-WHERE (SELECT COUNT(*) FROM all_tags inr WHERE inr.name = ou.name) > 1
+SELECT pk_tid AS tid, name, types, short, aliases, i18n, modified_at, tagfile, repository, problematic, nolivedownload AS "noLiveDownload", priority FROM tag ou
+WHERE (SELECT COUNT(*) FROM tag inr WHERE inr.name = ou.name) > 1
 `;
 
 export const sqlgetAllTags = (
