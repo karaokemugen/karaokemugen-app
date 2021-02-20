@@ -138,7 +138,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 								this.props.transferKara(event);
 								this.props.closeKaraMenu();
 							}}>
-								<i className="fas fa-exchange-alt" />
+								<i className="fas fa-fw fa-exchange-alt" />
 								&nbsp;
 								{i18next.t('KARA_MENU.TRANSFER_KARA')}
 							</a>
@@ -153,7 +153,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 								});
 								this.props.closeKaraMenu();
 							}}>
-								<i className="fas fa-level-up-alt" />
+								<i className="fas fa-fw fa-level-up-alt" />
 								&nbsp;
 								{i18next.t('KARA_MENU.MOVE_KARA')}
 							</a>
@@ -162,7 +162,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 					{this.props.idPlaylist !== -5 ?
 						<li>
 							<a href="#" onClick={this.makeFavorite}>
-								<i className="fas fa-star" />
+								<i className="fas fa-fw fa-star" />
 								&nbsp;
 								{this.state.kara.flag_favorites ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
 							</a>
@@ -171,7 +171,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 					{this.props.publicOuCurrent && !this.state.kara.flag_free ?
 						<li>
 							<a href="#" onClick={this.freeKara} title={i18next.t('KARA_MENU.FREE')}>
-								<i className="fas fa-gift" />
+								<i className="fas fa-fw fa-gift" />
 								&nbsp;
 								{i18next.t('KARA_MENU.FREE_SHORT')}
 							</a>
@@ -183,12 +183,12 @@ class KaraMenuModal extends Component<IProps, IState> {
 								title={this.state.kara.flag_visible ? i18next.t('KARA_MENU.VISIBLE_OFF') : i18next.t('KARA_MENU.VISIBLE_ON')}>
 								{this.state.kara.flag_visible ?
 									<React.Fragment>
-										<i className="fas fa-eye-slash" />
+										<i className="fas fa-fw fa-eye-slash" />
 										&nbsp;
 										{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
 									</React.Fragment> :
 									<React.Fragment>
-										<i className="fas fa-eye" />
+										<i className="fas fa-fw fa-eye" />
 										&nbsp;
 										{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
 									</React.Fragment>
@@ -199,7 +199,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 					{this.props.idPlaylist !== -2 && this.props.idPlaylist !== -4 ?
 						<li>
 							<a href="#" onClick={this.addToBlacklist}>
-								<i className="fas fa-ban" />
+								<i className="fas fa-fw fa-ban" />
 								&nbsp;
 								{i18next.t('KARA_MENU.ADD_BLACKLIST')}
 							</a>
@@ -208,7 +208,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 					{this.props.idPlaylist !== -3 ?
 						<li>
 							<a href="#" onClick={this.addToWhitelist}>
-								<i className="fas fa-check-circle" />
+								<i className="fas fa-fw fa-check-circle" />
 								&nbsp;
 								{i18next.t('KARA_MENU.ADD_WHITELIST')}
 							</a>
