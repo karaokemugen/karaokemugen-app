@@ -17,12 +17,6 @@ export default function (state: FrontendContextStore, action): FrontendContextSt
 		} else {
 			return { ...state, filterValue2: action.payload.filterValue };
 		}
-	case FrontendContextAction.POS_PLAYING:
-		if (action.payload.side === 1) {
-			return { ...state, posPlaying1: action.payload.posPlaying };
-		} else {
-			return { ...state, posPlaying2: action.payload.posPlaying };
-		}
 	case FrontendContextAction.BG_IMAGE:
 		return { ...state, backgroundImg: action.payload.backgroundImg };
 	default:

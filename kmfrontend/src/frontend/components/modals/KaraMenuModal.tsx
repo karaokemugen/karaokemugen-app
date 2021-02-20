@@ -54,7 +54,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 	onRightClickTransfer = (e: any) => {
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.transferKara(e, this.getPosPlayingOpposite(this.props.side));
+		this.props.transferKara(e, -1);
 		this.props.closeKaraMenu();
 	};
 
@@ -112,14 +112,6 @@ class KaraMenuModal extends Component<IProps, IState> {
 		document.getElementById('root').removeEventListener('click', this.handleClick);
 	}
 
-	getPosPlaying(side: number) {
-		return side === 1 ? this.props.context.globalState.frontendContext.posPlaying1 : this.props.context.globalState.frontendContext.posPlaying2;
-	}
-
-	getPosPlayingOpposite(side: number) {
-		return side === 1 ? this.props.context.globalState.frontendContext.posPlaying2 : this.props.context.globalState.frontendContext.posPlaying1;
-	}
-
 	render() {
 		return (
 			this.state.kara ?
@@ -148,7 +140,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 						<li>
 							<a href="#" onClick={() => {
 								commandBackend('editPLC', {
-									pos: this.getPosPlaying(this.props.side) + 1,
+									pos: -1,
 									plc_ids: [this.props.kara.playlistcontent_id]
 								});
 								this.props.closeKaraMenu();

@@ -26,22 +26,18 @@ class ActionsButtons extends Component<IProps, unknown> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
 
-	getPosPlayingOpposite(side: number) {
-		return side === 1 ? this.context.globalState.frontendContext.posPlaying2 : this.context.globalState.frontendContext.posPlaying1;
-	}
-
 	onRightClickAdd = (e: any) => {
 		if (this.props.scope === 'admin') {
 			e.preventDefault();
 			e.stopPropagation();
-			this.props.addKara(e, this.getPosPlayingOpposite(this.props.side));
+			this.props.addKara(e, -1);
 		}
 	};
 
 	onRightClickTransfer = (e: any) => {
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.transferKara(e, this.getPosPlayingOpposite(this.props.side));
+		this.props.transferKara(e, -1);
 	};
 
 	render() {
