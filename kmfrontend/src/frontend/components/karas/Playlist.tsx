@@ -656,7 +656,7 @@ class Playlist extends Component<IProps, IState> {
 						pl_id: this.props.idPlaylistTo,
 						requestedby: this.context.globalState.auth.data.username,
 						kids: idsKara,
-						pos: pos + 1
+						pos: pos
 					};
 				} else {
 					data = {
