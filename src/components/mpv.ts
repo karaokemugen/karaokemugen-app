@@ -449,7 +449,7 @@ class Player {
 	}
 
 	get isRunning() {
-		return this.mpv.isRunning;
+		return !!this.mpv?.isRunning;
 	}
 }
 
