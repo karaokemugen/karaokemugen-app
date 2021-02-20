@@ -73,7 +73,7 @@ export async function next() {
 				}
 			} else {
 				setState({currentRequester: null});
-				playPlayer(true);
+				if (getState().player.playerStatus !== 'stop') playPlayer(true);
 			}
 		} else {
 			// End of playlist, let's see what to do with our different modes.
