@@ -4,7 +4,9 @@ import {resolve} from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import { APIMessage } from '../controllers/common';
+import { compareKarasChecksum } from '../dao/database';
 import {emptyDownload, initDownloads, insertDownloads, selectDownload, selectDownloads, selectPendingDownloads, updateDownload} from '../dao/download';
+import { refreshAll, vacuum } from '../lib/dao/database';
 import { DownloadBundle } from '../lib/types/downloads';
 import {resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {asyncMove, asyncStat, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
@@ -63,9 +65,19 @@ export async function initDownloader() {
 
 export function initDownloadQueue() {
 	// We'll compare data dir checksum and execute refresh every 5 downloads and everytime the queue is drained
+	let taskCounter = 0;
+	let refreshing = false;
 	q = new Queue(queueDownload, queueOptions);
 	q.on('task_finish', () => {
 		if (q.length > 0) logger.info(`${q.length - 1} items left in queue`, {service: 'Download'});
+		taskCounter++;
+		if (taskCounter >= 100 ) {
+			logger.debug('Triggering database refresh', {service: 'Download'});
+			compareKarasChecksum();
+			refreshing = true;
+			refreshAll().then(() => refreshing = false);
+			taskCounter = 0;
+		}
 		emitQueueStatus('updated');
 	});
 	q.on('task_failed', (taskId: string, err: any) => {
@@ -75,6 +87,11 @@ export function initDownloadQueue() {
 	q.on('empty', () => emitQueueStatus('updated'));
 	q.on('drain', async () => {
 		logger.info('No tasks left, stopping queue', {service: 'Download'});
+		if (!refreshing) {
+			refreshAll().then(() => vacuum());
+			await compareKarasChecksum();
+		}
+		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
 		emit('downloadQueueDrained');

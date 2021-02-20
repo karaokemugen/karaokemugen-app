@@ -215,7 +215,7 @@ export async function integrateKaraFile(file: string) {
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData);
 	const karaDB = await getKara(karaData.kid, {role: 'admin', username: 'admin'});
 	if (karaDB) {
-		await editKaraInDB(karaData, { refresh: true });
+		await editKaraInDB(karaData, { refresh: false });
 		try {
 			const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0];
 			if (karaDB.karafile !== karaData.karafile) {
@@ -240,7 +240,7 @@ export async function integrateKaraFile(file: string) {
 		}
 		sortKaraStore();
 	} else {
-		await createKaraInDB(karaData, { refresh: true });
+		await createKaraInDB(karaData, { refresh: false });
 	}
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid, token: {username: 'admin', role: 'admin'}}), 'single');
