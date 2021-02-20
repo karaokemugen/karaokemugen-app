@@ -532,10 +532,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.19.16.tgz#15753af35cbef636182d8d8ca55b37c8583cecb3"
   integrity sha512-7xHmXm/QJ7cbK2laF+YYD7gb5MggHIIQwqyjin3bpEGiSuvScMQ5JZZXPvRipi1MwckTQbJZROMns/JxdnIL1Q==
 
-"@types/node@^14.14.28":
-  version "14.14.28"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.28.tgz#cade4b64f8438f588951a6b35843ce536853f25b"
-  integrity sha512-lg55ArB+ZiHHbBBttLpzD07akz0QPrZgUODNakeC09i62dnrywr9mFErHuaPlB6I7z+sEbK+IYmplahvplCj2g==
+"@types/node@^14.14.31":
+  version "14.14.31"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.31.tgz#72286bd33d137aa0d152d47ec7c1762563d34055"
+  integrity sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g==
 
 "@types/pg-copy-streams@^1.2.1":
   version "1.2.1"
@@ -1557,10 +1557,10 @@ electron-updater@^4.3.5:
     lodash.isequal "^4.5.0"
     semver "^7.3.2"
 
-electron@^11.2.3:
-  version "11.2.3"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-11.2.3.tgz#8ad1d9858436cfca0e2e5ea7fea326794ae58ebb"
-  integrity sha512-6yxOc42nDAptHKNlUG/vcOh2GI9x2fqp2nQbZO0/3sz2CrwsJkwR3i3oMN9XhVJaqI7GK1vSCJz0verOkWlXcQ==
+electron@^11.3.0:
+  version "11.3.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-11.3.0.tgz#87e8528fd23ae53b0eeb3a738f1fe0a3ad27c2db"
+  integrity sha512-MhdS0gok3wZBTscLBbYrOhLaQybCSAfkupazbK1dMP5c+84eVMxJE/QGohiWQkzs0tVFIJsAHyN19YKPbelNrQ==
   dependencies:
     "@electron/get" "^1.0.1"
     "@types/node" "^12.0.12"
@@ -4353,10 +4353,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-webdav@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/webdav/-/webdav-4.1.0.tgz#8926f946933d9bf492064e930645b925b66b570f"
-  integrity sha512-u6FEH1zlKPfbw3F24mEfh9W0Y6BSXZpjOoCGYOPOJc0+nzstVbB62g2k0v37xwuvWahyN0cRZWdiCRsrYuTqPw==
+webdav@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/webdav/-/webdav-4.2.0.tgz#03585e60ed6a74245595d444a2f98880e77ff1e9"
+  integrity sha512-d5Ju204grww5xqDDvFxctkprUEVReb/0nL16Q3a1FcWb8KdCZuKLPbUKgt2FKm1xTNEQKUJaojf4UWnNawa3cg==
   dependencies:
     axios "^0.21.1"
     base-64 "^1.0.0"
