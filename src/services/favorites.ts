@@ -205,6 +205,7 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 
 export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
 	profile('AutoMix');
+	params.users = params.users.map(u => u.toLowerCase());
 	try {
 		const favs = await getAllFavorites(params.users);
 		if (favs.length === 0) throw {code: 404, msg: 'AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS'};
