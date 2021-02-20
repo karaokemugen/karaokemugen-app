@@ -99,8 +99,12 @@ class PlaylistModal extends Component<IProps, IState> {
 							</div>
 							<div>
 								<button className="btn btn-default"
+									disabled={this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current
+										|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current))}
 									type="button" onClick={() => this.setState({ flag_current: !this.state.flag_current })}>
 									<input type="checkbox" checked={this.state.flag_current}
+										disabled={this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current
+										|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current))}
 										onChange={() => this.setState({ flag_current: !this.state.flag_current })} />
 									<div className="btn-large-container">
 										<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT')}</div>
@@ -112,8 +116,10 @@ class PlaylistModal extends Component<IProps, IState> {
 								<>
 									<div>
 										<button className="btn btn-default"
+											disabled={this.props.mode === 'edit' && this.props.playlistInfo?.flag_public }
 											type="button" onClick={() => this.setState({ flag_public: !this.state.flag_public })}>
 											<input type="checkbox" checked={this.state.flag_public}
+												disabled={this.props.mode === 'edit' && this.props.playlistInfo?.flag_public }
 												onChange={() => this.setState({ flag_public: !this.state.flag_public })} />
 											<div className="btn-large-container">
 												<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC')}</div>
