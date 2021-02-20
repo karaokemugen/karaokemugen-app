@@ -147,7 +147,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathKaras"
 				>
-					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathKaras': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current?.setFieldsValue({ 'PathKaras': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_LYRICS')}
@@ -158,7 +158,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathLyrics"
 				>
-					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathLyrics': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current?.setFieldsValue({ 'PathLyrics': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_MEDIAS')}
@@ -169,7 +169,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathMedias"
 				>
-					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathMedias': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current?.setFieldsValue({ 'PathMedias': value })} />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('REPOSITORIES.PATH_TAGS')}
@@ -180,7 +180,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					}]}
 					name="PathTags"
 				>
-					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current.setFieldsValue({ 'PathTags': value })} />
+					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current?.setFieldsValue({ 'PathTags': value })} />
 				</Form.Item>
 				<Form.Item style={{ textAlign: 'right' }}>
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>

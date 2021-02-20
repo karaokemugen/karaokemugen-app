@@ -48,7 +48,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
 		await this.setState({ repositoriesValue: res.map(repo => repo.Name) });
-		this.formRef.current.setFieldsValue({
+		this.formRef.current?.setFieldsValue({
 			repository: this.props.tag?.repository ? this.props.tag.repository :
 				(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null)
 		});
@@ -236,7 +236,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				>
 					<EditableTagGroup
 						search={'aliases'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ aliases: tags })}
+						onChange={(tags) => this.formRef.current?.setFieldsValue({ aliases: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
