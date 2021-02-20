@@ -1180,7 +1180,10 @@ async function getCurrentPlaylistContents(): Promise<DBPLC[]> {
 export async function notificationNextSong(): Promise<void> {
 	try {
 		const kara = await nextSong();
-		if (kara) emitWS('nextSong', kara);
+		if (kara?.flag_visible) {
+			const pl = await getPlaylistInfo(kara.playlist_id);
+			if (pl.flag_visible) emitWS('nextSong', kara);
+		}
 	} catch(err) {
 		//Non-fatal, it usually means we're at the last song
 	}
