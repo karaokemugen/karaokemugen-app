@@ -375,7 +375,7 @@ export function isAllKarasInPlaylist(karas: PLC[], playlist: PLC[]) {
 }
 
 /** Add song to playlist */
-export async function addKaraToPlaylist(kids: string|string[], requester: string, playlist_id?: number, pos?: number) {
+export async function addKaraToPlaylist(kids: string|string[], requester: string, playlist_id?: number, pos?: number, ignoreQuota?: boolean) {
 	requester = requester.toLowerCase();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	const conf = getConfig();
@@ -397,7 +397,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		if (karasUnknown.length > 0) throw {code: 404, msg: 'One of the karaokes does not exist'};
 		logger.debug(`Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`, {service: 'Playlist'});
 
-		if (user.type > 0) {
+		if (user.type > 0 && !ignoreQuota) {
 			// If user is not admin
 			// Check if we're using correct playlist. User is only allowed to add to public Playlist
 			if (playlist_id !== state.publicPlaylistID) throw {code: 403, msg: 'User is not allowed to add to this playlist'};

@@ -8,7 +8,7 @@ import {date} from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import {profile} from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
-import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,FavParams} from '../types/favorites';
+import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,Favorite,FavParams} from '../types/favorites';
 import sentry from '../utils/sentry';
 import {formatKaraList, isAllKaras} from './kara';
 import {addKaraToPlaylist,createPlaylist, shufflePlaylist, trimPlaylist} from './playlist';
@@ -178,8 +178,8 @@ export async function importFavorites(favs: FavExport, username: string, token?:
 }
 
 /* Get favorites from a user list */
-async function getAllFavorites(userList: string[]): Promise<string[]> {
-	const kids = [];
+async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
+	const faves: Favorite[] = [];
 	for (let user of userList) {
 		user = user.toLowerCase();
 		if (!await findUserByName(user)) {
@@ -192,12 +192,15 @@ async function getAllFavorites(userList: string[]): Promise<string[]> {
 				from: 0,
 				size: 9999999
 			});
-			favs.content.forEach(f => {
-				if (!kids.includes(f.kid)) kids.push(f.kid);
-			});
+			for (const f of favs.content) {
+				if (!faves.find(fav => fav.kid === f.kid)) faves.push({
+					kid: f.kid,
+					username: user
+				});
+			}
 		}
 	}
-	return kids;
+	return faves;
 }
 
 export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
@@ -210,11 +213,18 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			visible: true
 		}, username);
 		// Copy karas from everyone listed
-		await addKaraToPlaylist(favs, username, playlist_id);
-		// Shuffle time.
-		await shufflePlaylist(playlist_id, 'normal');
+		for (const user of params.users) {
+			const userFaves = favs.filter(f => f.username === user);
+			if (userFaves.length > 0) {
+				await addKaraToPlaylist(userFaves.map(f => f.kid), user, playlist_id, null, true);
+			}
+		}
+		// Shuffle time. First we shuffle with balanced to make sure everyone gets to have some songs in.
+		await shufflePlaylist(playlist_id, 'balance');
 		// Cut playlist after duration
 		await trimPlaylist(playlist_id, params.duration);
+		// Let's reshuffle normally now that the playlist is trimmed.
+		await shufflePlaylist(playlist_id, 'normal');
 		emitWS('playlistsUpdated');
 		return {
 			playlist_id: playlist_id,
