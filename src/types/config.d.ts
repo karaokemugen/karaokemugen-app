@@ -123,6 +123,7 @@ export interface Config {
 		},
 		ProgressBarDock?: boolean,
 		ExtraCommandLine?: string,
+		Borders?: boolean,
 		HardwareDecoding?: 'auto-safe' | 'no' | 'yes'
 		Volume?: number
 	},

@@ -7,7 +7,7 @@ import { editKara } from '../services/kara_creation';
 export async function removeTagInKaras(tid: string, karas: KaraList) {
 	logger.info(`Removing tag ${tid} in kara files`, {service: 'Kara'});
 	const karasWithTag = karas.content.filter((k: any) => {
-		if (k.tid?.some((t: string) => t.startsWith(tid))) return true;
+		if (k.tid?.some((t: string) => t && t.startsWith(tid))) return true;
 		return false;
 	});
 	if (karasWithTag.length > 0) logger.info(`Removing in ${karasWithTag.length} files`, {service: 'Kara'});

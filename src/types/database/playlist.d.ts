@@ -40,17 +40,18 @@ export interface DBPLKidUser extends DBPLPos {
 }
 
 export interface DBPL {
-	playlist_id: number,
+	playlist_id?: number,
 	name: string,
-	karacount: number,
-	duration: number,
-	time_left: number,
-	created_at: Date,
-	modified_at: Date,
+	karacount?: number,
+	duration?: number,
+	time_left?: number,
+	created_at?: Date,
+	modified_at?: Date,
 	flag_visible: boolean,
 	flag_current: boolean,
 	flag_public: boolean,
-	plcontent_id_playing: number,
+	flag_autosortbylike: boolean,
+	plcontent_id_playing?: number,
 	username: string
 }
 export interface DBPLC extends DBPLCBase {

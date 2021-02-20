@@ -3,13 +3,18 @@ import '../styles/start/SetupPage.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
+import { RouteComponentProps } from 'react-router';
 
-import guideSecurityGif from '../../assets/guide-security-code.gif';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { setAuthentifactionInformation } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
+import { isElectron } from '../../utils/electron';
 import { commandBackend } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
+
+interface IProps {
+	route: RouteComponentProps;
+}
 
 interface IState {
 	accountType: 'local' | 'online' | null;
@@ -21,24 +26,22 @@ interface IState {
 	securityCode?: number;
 	repositoryFolder?: string;
 	activeView: 'user' | 'repo' | 'stats';
-	activeHelp: 'security-code' | null;
 	downloadRandomSongs: boolean;
 	error?: string;
 	openDetails: boolean;
 	stats?: boolean;
 	errorTracking?: boolean
 }
-class SetupPage extends Component<unknown, IState> {
+class SetupPage extends Component<IProps, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
 
-	constructor(props: unknown) {
+	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			accountType: null,
 			onlineAction: null,
 			activeView: 'user',
-			activeHelp: null,
 			downloadRandomSongs: true,
 			openDetails: false
 		};
@@ -47,7 +50,6 @@ class SetupPage extends Component<unknown, IState> {
 	componentDidMount() {
 		const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].Path.Karas[0].slice(0, -9);
 		const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
-		document.getElementsByTagName('body')[0].className = 'forceScroll';
 
 		this.setState({
 			instance: this.context?.globalState.settings.data.config?.Online.Host,
@@ -80,48 +82,54 @@ class SetupPage extends Component<unknown, IState> {
 				role: 'admin'
 			});
 			this.setState({ error: undefined });
-			this.login(username);
+			this.login();
 		} catch (err) {
 			const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
 		}
 	};
 
-	loginUser = () => {
-		const username =
-			this.state.login +
-			(this.state.accountType === 'online' ? '@' + this.state.instance : '');
-		this.login(username);
+	login = async () => {
+		if (!this.state.login) {
+			const error = i18next.t('LOGIN_MANDATORY');
+			displayMessage('warning', error);
+			this.setState({ error: error });
+		} else  if (!this.state.password) {
+			const error = i18next.t('PASSWORD_MANDATORY');
+			displayMessage('warning', error);
+			this.setState({ error: error });
+		} else if (!this.state.securityCode && !isElectron()) {
+			const error = i18next.t('SECURITY_CODE_MANDATORY');
+			displayMessage('warning', error);
+			this.setState({ error: error });
+		} else if (isElectron()) {
+			const { ipcRenderer:ipc } = window.require('electron');
+			ipc.send('getSecurityCode');
+			ipc.once('getSecurityCodeResponse', async (_event, securityCode) => {
+				this.loginFinish(securityCode);
+			});
+		} else {
+			this.loginFinish(this.state.securityCode);
+		}
 	};
 
-	login = async (username: string) => {
+	loginFinish = async (securityCode: number) => {
 		try {
-			if (!this.state.login) {
-				const error = i18next.t('LOGIN_MANDATORY');
-				displayMessage('warning', error);
-				this.setState({ error: error });
-			} else  if (!this.state.password) {
-				const error = i18next.t('PASSWORD_MANDATORY');
-				displayMessage('warning', error);
-				this.setState({ error: error });
-			} else if (!this.state.securityCode) {
-				const error = i18next.t('SECURITY_CODE_MANDATORY');
-				displayMessage('warning', error);
-				this.setState({ error: error });
-			} else {
-				const infos = await commandBackend('login', {
-					username: username,
-					password: this.state.password,
-					securityCode: this.state.securityCode
-				});
-				setAuthentifactionInformation(this.context.globalDispatch, infos);
-				this.setState({ activeView: 'repo', error: undefined });
-			}
+			const username =
+				this.state.login +
+				(this.state.accountType === 'online' ? '@' + this.state.instance : '');
+			const infos = await commandBackend('login', {
+				username: username,
+				password: this.state.password,
+				securityCode: securityCode
+			});
+			setAuthentifactionInformation(this.context.globalDispatch, infos);
+			this.setState({ activeView: 'repo', error: undefined });	
 		} catch (err) {
 			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
 		}
-	};
+	}
 
 	getPathForFileSystem(value: string) {
 		const state = this.context.globalState.settings.data.state;
@@ -196,23 +204,14 @@ class SetupPage extends Component<unknown, IState> {
 				}
 			});
 			await commandBackend('startPlayer');
-			window.location.assign('/welcome');
+			sessionStorage.setItem('dlQueueRestart', 'true');
+			this.props.route.history.push('/welcome');
 		}
 	};
 
 	render() {
 		return (
 			<div className="start-page">
-				{this.state.activeHelp === 'security-code' ? (
-					<div className="help-modal" onClick={() => this.setState({ activeHelp: null })}>
-						<div className="help-modal-backdrop">
-							<div className="help-modal-wrapper">
-								<button className="help-modal-close">&times;</button>
-								<img alt="" src={guideSecurityGif} />
-							</div>
-						</div>
-					</div>
-				) : null}
 				<div className="wrapper setup">
 					<div className="logo">
 						<img src={logo} alt="Logo Karaoke Mugen" />
@@ -462,37 +461,35 @@ class SetupPage extends Component<unknown, IState> {
 								{this.state.accountType === 'local' || (this.state.accountType === 'online' && this.state.onlineAction !== null)
 									? (
 										<section className="step step-3">
-											<div className="input-group">
-												<p className="intro">
-													{i18next.t(
-														this.context.globalState.settings.data.state.electron
-															? 'SETUP_PAGE.SECURITY_CODE_DESC_ELECTRON'
-															: 'SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE'
-													)}
-													<br/>
-													<em>{i18next.t('SETUP_PAGE.SECURITY_CODE_USE')}</em>
-												</p>
-												<div className="input-control">
-													<label>
-														{i18next.t('SECURITY_CODE')}
-														&nbsp;
-														<button type="button" onClick={() => this.setState({ activeHelp: 'security-code' })} className="fas fa-question-circle"></button>
-													</label>
-													<input
-														className="input-field"
-														type="text"
-														required
-														onChange={(event) =>
-															this.setState({ securityCode: parseInt(event.target.value) })
-														}
-													/>
-												</div>
-											</div>
+											{!isElectron()
+												? (
+													<div className="input-group">
+														<p className="intro">
+															{i18next.t('SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE')}
+															<br/>
+															<em>{i18next.t('SETUP_PAGE.SECURITY_CODE_USE')}</em>
+														</p>
+														<div className="input-control">
+															<label>
+																{i18next.t('SECURITY_CODE')}
+															</label>
+															<input
+																className="input-field"
+																type="text"
+																required
+																onChange={(event) =>
+																	this.setState({ securityCode: parseInt(event.target.value) })
+																}
+															/>
+														</div>
+													</div>
+											
+												) : null }
 											<div className="actions">
 												<label className="error">{this.state.error}</label>
 												{this.state.accountType === 'online' &&
 													this.state.onlineAction === 'login' ? (
-														<button type="button" onClick={this.loginUser}>
+														<button type="button" onClick={this.login}>
 															{i18next.t('LOG_IN')}
 														</button>
 													) : (

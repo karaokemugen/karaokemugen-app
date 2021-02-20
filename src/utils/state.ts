@@ -21,8 +21,6 @@ let state: State = {
 	introSponsorPlayed: false,
 	encorePlayed: false,
 	usersBalance: new Set<string>(),
-	fullscreen: false,
-	ontop: true,
 	playlist: null,
 	timeposition: 0,
 	songPoll: false,
@@ -37,6 +35,7 @@ let state: State = {
 	noAutoTest: false,
 	singlePlay: false,
 	randomPlaying: false,
+	streamerPause: false,
 	player: {},
 	opt: {},
 	args: [],
@@ -55,9 +54,8 @@ export function getPlayerState(): PublicPlayerState {
 	return {
 		...state.player,
 		currentSessionID: state.currentSessionID,
-		stopping: state.stopping,
-		onTop: state.ontop,
 		currentRequester: state.currentRequester,
+		stopping: state.stopping,
 		defaultLocale: state.defaultLocale,
 		songsBeforeJingle: conf.Playlist?.Medias.Jingles.Enabled ? conf.Playlist?.Medias.Jingles.Interval - state.counterToJingle:undefined,
 		songsBeforeSponsor: conf.Playlist?.Medias.Sponsors.Enabled ? conf.Playlist?.Medias.Sponsors.Interval - state.counterToSponsor:undefined
@@ -72,7 +70,7 @@ function emitPlayerState(part: Partial<State>) {
 		['counterToSponsor', {conf: 'Sponsors', state: 'songsBeforeSponsor'}]
 	]);
 	const toEmit: Partial<PublicPlayerState> = {...part.player};
-	for (const key of ['currentSessionID', 'currentRequester', 'stopping', 'ontop', 'defaultLocale', 'counterToJingle', 'counterToSponsor']) {
+	for (const key of ['currentSessionID', 'currentRequester', 'stopping', 'defaultLocale', 'counterToJingle', 'counterToSponsor']) {
 		switch (key) {
 		case 'counterToJingle':
 		case 'counterToSponsor':

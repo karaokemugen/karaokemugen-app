@@ -1,0 +1,24 @@
+p.autoMixExplanation {
+	margin: 1em;
+}
+
+.autoMixUserlist {
+	max-height: 75vh;
+	overflow-y: auto;
+	display: flex;
+	flex-wrap: wrap;
+	margin: 1em;
+
+	.checkbox {
+		padding: .25em 0;
+		flex: 33%;
+		display: inline-flex;
+		> label {
+			display: inline-flex;
+			align-items: center;
+			> input {
+				margin-right: .5em;
+			}
+		}
+	}
+}

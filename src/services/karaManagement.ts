@@ -1,20 +1,19 @@
 import { basename, resolve } from 'path';
-import { profile } from 'winston';
 
 import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore, sortKaraStore } from '../dao/dataStore';
 import { addKara, deleteKara as deleteKaraDB, getKaraMini, updateKara } from '../dao/kara';
 import { getPlaylistKaraIDs } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
-import { databaseReady, saveSetting } from '../lib/dao/database';
-import { refreshKaras, refreshYears } from '../lib/dao/kara';
+import { saveSetting } from '../lib/dao/database';
+import { refreshKaras, refreshKarasDelete, refreshKarasInsert, refreshKarasUpdate, refreshYears, updateKaraSearchVector } from '../lib/dao/kara';
 import { getDataFromKaraFile, parseKara, writeKara } from '../lib/dao/karafile';
-import {refreshAllKaraTags,refreshKaraTags, refreshTags} from '../lib/dao/tag';
+import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { asyncCopy, asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -40,16 +39,18 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await addKara(kara);
 	emitWS('statsRefresh');
 	await updateTags(kara);
-	if (opts.refresh) await refreshKarasAfterDBChange(true);
+	if (opts.refresh) await refreshKarasAfterDBChange('ADD', kara.kid, true);
 }
 
 export async function editKaraInDB(kara: Kara, opts = {
 	refresh: true
 }) {
+	profile('editKaraDB');
 	const promises = [updateKara(kara)];
 	if (kara.newTags) promises.push(updateTags(kara));
 	await Promise.all(promises);
-	if (opts.refresh) await refreshKarasAfterDBChange(kara.newTags);
+	if (opts.refresh) await refreshKarasAfterDBChange('UPDATE', kara.kid, kara.newTags);
+	profile('editKaraDB');
 }
 
 export async function deleteKara(kid: string, refresh = true) {
@@ -80,9 +81,9 @@ export async function deleteKara(kid: string, refresh = true) {
 	logger.info(`Song ${kara.karafile} removed`, {service: 'Kara'});
 
 	if (refresh) {
-		await refreshKaras();
+		await refreshKarasDelete(kid);
 		refreshTags();
-		refreshAllKaraTags();
+		refreshYears();
 	}
 }
 
@@ -175,9 +176,9 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 			}
 			task.incr();
 		}
-		refreshKaraTags();
-		refreshKaras();
-		await databaseReady();
+		await refreshKaras();
+		refreshTags();
+		refreshYears();
 		logger.info('Batch tag edit finished', {service: 'Kara'});
 	} catch(err) {
 		logger.info('Batch tag edit failed', {service: 'Kara', obj: err});
@@ -186,15 +187,24 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 	}
 }
 
-export async function refreshKarasAfterDBChange(newTags: boolean) {
+export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', kid?: string, newTags?: boolean) {
 	profile('RefreshAfterDBChange');
 	logger.debug('Refreshing DB after kara change', {service: 'DB'});
-	if (newTags) {
-		await refreshKaraTags();
-		await refreshTags();
+	await updateKaraSearchVector(kid);
+	if (action === 'ADD') {
+		await refreshKarasInsert(kid);
+	} else if (action === 'UPDATE') {
+		await refreshKarasUpdate(kid);
+	} else if (action === 'DELETE') {
+		await refreshKarasDelete(kid);
+	} else if (action === 'ALL') {
+		await refreshKaras();
 	}
-	await refreshKaras();
-	await refreshYears();
+	refreshYears();
+	if (newTags) {
+		await updateTagSearchVector();
+		refreshTags();
+	}
 	logger.debug('Done refreshing DB after kara change', {service: 'DB'});
 	profile('RefreshAfterDBChange');
 }
@@ -205,7 +215,7 @@ export async function integrateKaraFile(file: string) {
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData);
 	const karaDB = await getKara(karaData.kid, {role: 'admin', username: 'admin'});
 	if (karaDB) {
-		await editKaraInDB(karaData, { refresh: false });
+		await editKaraInDB(karaData, { refresh: true });
 		try {
 			const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0];
 			if (karaDB.karafile !== karaData.karafile) {
@@ -230,7 +240,7 @@ export async function integrateKaraFile(file: string) {
 		}
 		sortKaraStore();
 	} else {
-		await createKaraInDB(karaData, { refresh: false });
+		await createKaraInDB(karaData, { refresh: true });
 	}
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({mode: 'kid', modeValue: karaData.kid, token: {username: 'admin', role: 'admin'}}), 'single');

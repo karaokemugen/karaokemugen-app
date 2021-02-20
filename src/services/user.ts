@@ -2,7 +2,7 @@ import {compare, genSalt, hash} from 'bcryptjs';
 import {createHash} from 'crypto';
 import {decode,encode} from 'jwt-simple';
 import {has as hasLang} from 'langs';
-import {join,resolve} from 'path';
+import {resolve} from 'path';
 import randomstring from 'randomstring';
 import slugify from 'slugify';
 import { v4 as uuidV4 } from 'uuid';
@@ -13,7 +13,6 @@ import { addUser as DBAddUser,
 	checkNicknameExists as DBCheckNicknameExists,
 	deleteUser as DBDeleteUser,
 	editUser as DBEditUser,
-	findFingerprint as DBFindFingerprint,
 	getRandomGuest as DBGetRandomGuest,
 	getUser as DBGetUser,
 	listGuests as DBListGuests,
@@ -24,7 +23,6 @@ import { addUser as DBAddUser,
 	resetGuestsPassword as DBResetGuestsPassword,
 	selectAllDupeUsers,
 	updateExpiredUsers as DBUpdateExpiredUsers,
-	updateUserFingerprint as DBUpdateUserFingerprint,
 	updateUserLastLogin as DBUpdateUserLastLogin,
 	updateUserPassword as DBUpdateUserPassword} from '../dao/user';
 import {User} from '../lib/types/user';
@@ -43,6 +41,13 @@ import { addToFavorites, getFavorites } from './favorites';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
 
 const userLoginTimes = new Map();
+
+export async function findAvailableGuest() {
+	const guest = await DBGetRandomGuest();
+	if (!guest) return null;
+	if (getState().isTest) logger.debug('New guest logging in: ', {service: 'User', obj: guest});
+	return guest;
+}
 
 /** Unflag connected accounts from database if they expired	 */
 async function updateExpiredUsers() {
@@ -203,10 +208,7 @@ export async function findUserByName(username: string, opt = {
 		if (!userdata.bio || opt.public) userdata.bio = null;
 		if (!userdata.url || opt.public) userdata.url = null;
 		if (!userdata.email || opt.public) userdata.email = null;
-		if (opt.public) {
-			userdata.password = null;
-			userdata.fingerprint = null;
-		}
+		if (opt.public) userdata.password = null;
 		return userdata;
 	}
 	return null;
@@ -238,30 +240,9 @@ export async function checkPassword(user: User, password: string): Promise<boole
 	}
 
 	if (await compare(password, user.password) || (user.type === 2 && !user.password)) {
-		// If password was empty for a guest, we set it to the password given on login (which is its device fingerprint).
-		if (user.type === 2 && !user.password) await DBUpdateUserPassword(user.login, hashedPasswordbcrypt);
 		return true;
 	}
 	return false;
-}
-
-/** Checks database for a user's fingerprint */
-export async function findFingerprint(fingerprint: string): Promise<string> {
-	// If fingerprint is present we return the login name of that user
-	// If not we find a new guest account to assign to the user.
-	let guest = await DBFindFingerprint(fingerprint);
-	if (getState().isTest) logger.debug('Guest matches fingerprint: ', {service: 'User', obj: guest});
-	if (guest) return guest;
-	guest = await DBGetRandomGuest();
-	if (getState().isTest) logger.debug('New guest logging in: ', {service: 'User', obj: guest});
-	if (!guest) return null;
-	await DBUpdateUserPassword(guest, await hashPasswordbcrypt(fingerprint));
-	return guest;
-}
-
-/** Update a guest user's fingerprint */
-export function updateUserFingerprint(username: string, fingerprint: string) {
-	return DBUpdateUserFingerprint(username, fingerprint);
 }
 
 /** Create ADMIN user only if security code matches */
@@ -370,7 +351,7 @@ async function updateGuestAvatar(user: DBGuest) {
 		lower: true,
 		remove: /['"!,?()]/g
 	})}.jpg`;
-	const bundledAvatarPath = join(__dirname, '../../assets/guestAvatars/', bundledAvatarFile);
+	const bundledAvatarPath = resolve(getState().resourcePath, 'assets/guestAvatars/', bundledAvatarFile);
 	if (!await asyncExists(bundledAvatarPath)) {
 		// Bundled avatar does not exist for this user, skipping.
 		return false;

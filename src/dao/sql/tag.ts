@@ -18,14 +18,27 @@ WHERE pk_tid = $1
 `;
 
 export const sqlgetTag = `
-SELECT tid, name, types, short, aliases, i18n, modified_at, karacount, tagfile, repository, problematic, nolivedownload AS "noLiveDownload", priority
-FROM all_tags
-WHERE tid = $1
+SELECT t.pk_tid AS tid,
+	t.name,
+	t.types,
+	t.short,
+	t.aliases,
+	t.i18n,
+	t.modified_at,
+	t.tagfile,
+	t.repository,
+	t.problematic,
+	t.nolivedownload AS "noLiveDownload",
+	t.priority,
+	at.karacount
+FROM tag t
+LEFT JOIN all_tags at ON at.pk_tid = $1
+WHERE t.pk_tid = $1
 `;
 
 export const sqlselectDuplicateTags = `
-SELECT * FROM all_tags ou
-WHERE (SELECT COUNT(*) FROM all_tags inr WHERE inr.name = ou.name) > 1
+SELECT pk_tid AS tid, name, types, short, aliases, i18n, modified_at, tagfile, repository, problematic, nolivedownload AS "noLiveDownload", priority FROM tag ou
+WHERE (SELECT COUNT(*) FROM tag inr WHERE inr.name = ou.name) > 1
 `;
 
 export const sqlgetAllTags = (
@@ -38,21 +51,22 @@ export const sqlgetAllTags = (
 	joinClauses: string,
 	stripClause: string
 ) => `
-SELECT tid,
-	types,
-	name,
-	short,
-	aliases,
-	i18n,
-	karacount,
-	tagfile,
-	modified_at,
-	repository,
-	problematic,
-	nolivedownload AS "noLiveDownload",
-	priority,
-	count(tid) OVER()::integer AS count
-FROM all_tags
+SELECT t.pk_tid AS tid,
+	t.types,
+	t.name,
+	t.short,
+	t.aliases,
+	t.i18n,
+	at.karacount AS karacount,
+	t.tagfile,
+	t.modified_at,
+	t.repository,
+	t.problematic,
+	t.nolivedownload AS "noLiveDownload",
+	t.priority,
+	count(t.pk_tid) OVER()::integer AS count
+FROM tag t
+LEFT JOIN all_tags at ON at.pk_tid = t.pk_tid
 ${additionnalFrom.join()}
 ${joinClauses}
 WHERE 1 = 1

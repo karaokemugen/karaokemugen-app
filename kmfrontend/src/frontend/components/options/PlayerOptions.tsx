@@ -95,12 +95,23 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('FULLSCREEN_TOOLTIP')}>
 							{i18next.t('FULLSCREEN')}
-            &nbsp;
-  					<i className="far fa-question-circle"></i>
+							&nbsp;
+							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Player.FullScreen" handleChange={this.putPlayerCommando}
 								isChecked={this.state.config['Player.FullScreen']} nameCommand="toggleFullscreen" />
+						</div>
+					</div>
+					<div className="settings-line">
+						<label className="col-xs-4 control-label" title={i18next.t('WINDOWBORDERS_TOOLTIP')}>
+							{i18next.t('WINDOWBORDERS')}
+            				&nbsp;
+  							<i className="far fa-question-circle" />
+						</label>
+						<div className="col-xs-6">
+							<Switch idInput="Player.Borders" handleChange={this.putPlayerCommando}
+								isChecked={this.state.config['Player.Borders']} nameCommand="toggleBorders" />
 						</div>
 					</div>
 					<div className="settings-line">

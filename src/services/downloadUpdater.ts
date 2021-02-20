@@ -7,7 +7,6 @@ import prettyBytes from 'pretty-bytes';
 import { compareKarasChecksum } from '../dao/database';
 import { emptyDownload } from '../dao/download';
 import { refreshAll } from '../lib/dao/database';
-import { refreshKaras } from '../lib/dao/kara';
 import { extractAssInfos } from '../lib/dao/karafile';
 import { APIMessage } from '../lib/services/frontend';
 import { DBKara } from '../lib/types/database/kara';
@@ -380,7 +379,7 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 		await Promise.all(promises);
 		if (karasToRemove.length > 0) {
 			compareKarasChecksum();
-			refreshKaras();
+			refreshAll();
 		}
 	} catch(err) {
 		sentry.error(err);

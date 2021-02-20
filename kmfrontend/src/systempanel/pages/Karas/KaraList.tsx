@@ -46,7 +46,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			filter: this.state.filter,
 			from: (this.state.currentPage - 1) * this.state.currentPageSize,
 			size: this.state.currentPageSize
-		});
+		}, undefined, 300000);
 		this.setState({ karas: res.content, i18nTag: res.i18n, totalCount: res.infos.count });
 	}
 
@@ -90,6 +90,10 @@ class KaraList extends Component<unknown, KaraListState> {
 		localStorage.setItem('karaPageSize', pagination.pageSize);
 		setTimeout(this.refresh, 10);
 	};
+
+	sortTagByPriority(a: any, b: any) {
+		return a.priority < b.priority ? 1 : -1;
+	}
 
 	render() {
 		return (
@@ -147,7 +151,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
-		render: (songtypes, record) => getTagInLocaleList(songtypes).sort().join(', ') + ' ' + (record.songorder || '')
+		render: (songtypes, record) => getTagInLocaleList(songtypes.sort(this.sortTagByPriority), this.state.i18nTag).join(', ') + ' ' + (record.songorder || '')
 	}, {
 		title: i18next.t('KARA.FAMILIES'),
 		dataIndex: 'families',
@@ -161,7 +165,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
 		dataIndex: 'versions',
 		key: 'versions',
-		render: (versions) => getTagInLocaleList(versions, this.state.i18nTag).join(', ')
+		render: (versions) => getTagInLocaleList(versions.sort(this.sortTagByPriority), this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.REPOSITORY'),
 		dataIndex: 'repository',

@@ -33,7 +33,9 @@ export default function InlineTag(props: Props) {
 
 	const getTag = async () => {
 		const res = await commandBackend('getTag', {tid: props.tag.tid});
-		const count = res.karacount.filter(karacount => karacount.type === props.tagType);
+		const count = Array.isArray(res.karacount)
+			? res.karacount.filter((karacount: any) => karacount.type === props.tagType)
+			: [];
 		if (count.length > 0) setCount(count[0].count);
 	};
 
@@ -56,7 +58,7 @@ export default function InlineTag(props: Props) {
 	});
 
 	getTag();
-	
+
 	return (
 		<div className={`inline-tag ${props.scope === 'public' ? 'public' : ''}`} ref={node}>
 			<span className={props.className} onClick={() => {

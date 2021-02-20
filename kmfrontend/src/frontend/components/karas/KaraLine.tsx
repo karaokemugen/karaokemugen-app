@@ -124,7 +124,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							pl_id: this.props.idPlaylistTo,
 							requestedby: this.props.context.globalState.auth.data.username,
 							kids: [this.props.kara.kid],
-							pos: pos + 1
+							pos: pos
 						};
 					} else {
 						data = {

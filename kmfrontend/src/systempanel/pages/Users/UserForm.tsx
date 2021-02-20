@@ -28,7 +28,7 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 	}
 
 	passwordValidator = (_, value) => {
-		if (+this.formRef.current.getFieldValue('type') < 2 && !this.state.initialLogin && !value) {
+		if (+this.formRef.current?.getFieldValue('type') < 2 && !this.state.initialLogin && !value) {
 			return Promise.reject(i18next.t('USERS.PASSWORD_VALIDATOR_MESSAGE'));
 		} else {
 			return Promise.resolve();

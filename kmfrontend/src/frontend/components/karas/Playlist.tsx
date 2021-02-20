@@ -11,7 +11,7 @@ import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBBlacklist, DBBLC } from '../../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
-import { setCurrentBlSet, setPosPlaying } from '../../../store/actions/frontendContext';
+import { setCurrentBlSet } from '../../../store/actions/frontendContext';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
@@ -222,7 +222,7 @@ class Playlist extends Component<IProps, IState> {
 	playlistContentsUpdatedFromClient = (idPlaylist: number) => {
 		const data = this.state.data as KaraList;
 		if (this.state.idPlaylist > 0 && data) data.infos.from = 0;
-		this.setState({ data: data });
+		this.setState({ data: data, scrollToIndex: 0 });
 		if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist(this.state.searchType);
 	}
 
@@ -492,7 +492,6 @@ class Playlist extends Component<IProps, IState> {
 				} else if (kara?.playlistcontent_id === data.plc_id) {
 					kara.flag_playing = true;
 					indexPlaying = index;
-					setPosPlaying(this.context.globalDispatch, kara.pos, this.props.side);
 					if (this.state.goToPlaying) this.setState({ scrollToIndex: index, _goToPlaying: true });
 					this.setState({ playing: indexPlaying });
 				}
@@ -657,7 +656,7 @@ class Playlist extends Component<IProps, IState> {
 						pl_id: this.props.idPlaylistTo,
 						requestedby: this.context.globalState.auth.data.username,
 						kids: idsKara,
-						pos: pos + 1
+						pos: pos
 					};
 				} else {
 					data = {
@@ -729,6 +728,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 		if (url) {
 			await commandBackend(url, data);
+			this.setState({checkedKaras: 0});
 		}
 	};
 
@@ -857,7 +857,7 @@ class Playlist extends Component<IProps, IState> {
 					searchMenuOpen={this.props.searchMenuOpen}
 					playlistWillUpdate={this.playlistWillUpdate}
 					playlistDidUpdate={this.playlistDidUpdate}
-					checkedKaras={(this.state.data as KaraList)?.content?.filter(a => a.checked)}
+					checkedKaras={(this.state.data as KaraList)?.content?.filter(a => a?.checked)}
 					addRandomKaras={this.addRandomKaras}
 				/> : null
 			}

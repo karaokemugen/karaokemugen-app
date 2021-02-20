@@ -1,5 +1,5 @@
 import openAboutWindow from 'about-window';
-import { clipboard,dialog } from 'electron';
+import { dialog } from 'electron';
 import {autoUpdater} from 'electron-updater';
 import i18next from 'i18next';
 import open from 'open';
@@ -101,20 +101,6 @@ export function initMenu() {
 					label: isMac ? i18next.t('MENU_FILE_QUIT_OSX') : i18next.t('MENU_FILE_QUIT'),
 					accelerator: 'CmdOrCtrl+Q',
 					click: exit
-				}
-			]
-		},
-		/**
-		*
-		* SECURITY CODE MENU
-		*
-		*/
-		{
-			label: i18next.t('MENU_SECURITYCODE'),
-			submenu: [
-				{
-					label: i18next.t('MENU_SECURITYCODE_SHOW'),
-					click: getSecurityCode
 				}
 			]
 		},
@@ -422,18 +408,5 @@ function displayAbout() {
 			use_version_info: true,
 			css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
 		});
-	}
-}
-
-async function getSecurityCode() {
-	const securityCode = getState().securityCode.toString().padStart(6, '0');
-	const buttons = await dialog.showMessageBox({
-		type: 'none',
-		title: i18next.t('SECURITY_CODE_TITLE'),
-		message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${securityCode}`,
-		buttons: [i18next.t('COPY_TO_CLIPBOARD'), i18next.t('IT_IS_IN_MY_HEAD')],
-	});
-	if (buttons.response === 0) {
-		clipboard.writeText(securityCode);
 	}
 }

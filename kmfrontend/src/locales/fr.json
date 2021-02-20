@@ -43,6 +43,8 @@
 	"ALWAYS_ON_TOP_TOOLTIP": "Si coché, la fenêtre du lecteur sera toujours au dessus des autres à l'écran",
 	"FULLSCREEN": "Plein écran",
 	"FULLSCREEN_TOOLTIP": "PROTIP: Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré",
+	"WINDOWBORDERS": "Activer les bordures sur la fenêtre du lecteur",
+	"WINDOWBORDERS_TOOLTIP": "Les désactiver n'affecte pas la fenêtre du moniteur, où elles seront toujours activées",
 	"ADMIN_PASSWORD_CHANGE": "Changer le mot de passe opérateur",
 	"PASSWORD": "Mot de passe (8 caractères minimum)",
 	"PASSWORDCONF": "Confirmation du mot de passe",
@@ -108,7 +110,7 @@
 		"ADD": "Créer une nouvelle liste",
 		"AUTOMIX": "Créer un AutoMix",
 		"IMPORT": "Importer une liste",
-		"SHUFFLE": "Mélanger..."
+		"SHUFFLE": "Mélanger / Trier..."
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Commandes sur une chanson",
@@ -190,6 +192,23 @@
 		"REQUESTED_KARAOKES": "Karaokés populaires",
 		"NEW_KARAOKES": "Nouveaux karaokés"
 	},
+	"ADMIN_MESSAGE": {
+		"ESSENTIAL_MESSAGE": "Message indispensable",
+		"CL_SCREEN": "Afficher sur l'écran du lecteur",
+		"CL_USERS": "Afficher sur l'interface des utilisateurs",
+		"CL_ALL": "Afficher sur les deux",
+		"DURATION": "Durée (en secondes)",
+		"MESSAGE": "Message",
+		"EMPTY": "Le message est vide",
+		"CONFIRM": "Envoyer le message"
+	},
+	"AUTOMIX_MODAL": {
+		"TITLE": "Créer un AutoMix",
+		"DESCRIPTION": "La playlist créée va être remplie avec les favoris des utilisateurs que vous avez sélectionnés durant la durée que vous avez spécifiée.",
+		"DURATION": "Durée (en minutes)",
+		"MIX": "Créer l'automix",
+		"EMPTY": "Choisissez un utilisateur et spécifiez une durée"
+	},
 	"CONFIRM_FAV_IMPORT": "Écraser vos favoris avec cet import ?",
 	"LYRICS": "Paroles",
 	"KARAOKE": "{{count}} karaoké",
@@ -199,9 +218,6 @@
 	"CL_ADD_RANDOM_TITLE": "Combien de chansons aléatoires voulez-vous ajouter ?",
 	"CL_INFORMATIVE_MESSAGE": "Message à caractère informatif",
 	"CL_EMPTY_LIST": "Vider la liste ?",
-	"CL_SCREEN": "Écran",
-	"CL_USERS": "Utilisateurs",
-	"CL_ALL": "Tous",
 	"CL_HELP_DISCORD": "N'hésitez pas à venir sur le {{- discord}} !",
 	"CL_PLAYLISTS": "Listes de chansons",
 	"BACK_PLAYLISTS": "Retourner aux listes de chansons",
@@ -439,7 +455,6 @@
 	"EDIT_SESSION": "Éditer la session",
 	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
-	"ESSENTIAL_MESSAGE": "Message indispensable",
 	"ONLINE_ACCOUNT": "Compte en ligne ?",
 	"SECURITY_CODE": "Code de sécurité",
 	"FORGOT_PASSWORD": "Mot de passe oublié ?",
@@ -472,7 +487,9 @@
 			"SMART_SHUFFLE": "Intelligent",
 			"SMART_SHUFFLE_DESC": "Mélange en évitant que les chansons longues ou les chansons de la même personne ne se succèdent",
 			"BALANCE": "Equitable",
-			"BALANCE_DESC": "Réordonne le passage des chansons du public par groupement d'utilisateurs (A-B-C, A-B-C, etc.)"
+			"BALANCE_DESC": "Réordonne le passage des chansons du public par groupement d'utilisateurs (A-B-C, A-B-C, etc.)",
+			"SORTUPVOTES": "Trier par like",
+			"SORTUPVOTES_DESC": "Trie par nombre de likes décroissant (les chansons les plus populaires en premier)"
 		},
 		"PLAYLIST_MODAL": {
 			"NAME": "Nom",
@@ -482,6 +499,8 @@
 			"PUBLIC_DESC": "La liste publique est celle recueillant les suggestions du public",
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible par le public",
+			"AUTOSORTBYLIKE": "Tri auto par likes",
+			"AUTOSORTBYLIKE_DESC": "La liste sera triée automatiquement lorsqu'un like sera ajouté/retiré",
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
 			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture"
 		},
@@ -802,7 +821,7 @@
 		"NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
 		"PRIORITY": "Priorité à l'affichage",
-		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 0",
+		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10",
 		"COPY_TAG": "Copier le tag vers un autre dépôt"
 	},
 	"TAG_TYPES": {

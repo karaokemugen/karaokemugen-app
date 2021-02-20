@@ -138,7 +138,7 @@ class AdminPage extends Component<IProps, IState> {
 		const response = await commandBackend('getTags');
 		return response.content.filter((val: Tag) => val.karacount !== null)
 			.map((val: { i18n: { [key: string]: string }, tid: string, name: string, types: Array<number | string>, karacount: string }) => {
-				const trad = val.i18n[getNavigatorLanguageIn3B() as string];
+				const trad = val?.i18n && val.i18n[getNavigatorLanguageIn3B() as string];
 				return { value: val.tid, label: trad ? trad : (val.i18n['eng'] ? val.i18n['eng'] : val.name), type: val.types, karacount: val.karacount };
 			});
 	}
@@ -198,7 +198,6 @@ class AdminPage extends Component<IProps, IState> {
 					<AdminHeader
 						setOptionMode={() => {
 							this.setState({options: !this.state.options});
-							getTuto()?.move(1);
 						}}
 						powerOff={this.props.powerOff}
 						options={this.state.options}

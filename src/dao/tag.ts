@@ -20,7 +20,7 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildTagClauses(params.filter)
 		: {sql: [], params: {}, additionalFrom: []};
-	const typeClauses = params.type ? ` AND types @> ARRAY[${params.type}]` : '';
+	const typeClauses = params.type ? ` AND t.types @> ARRAY[${params.type}]` : '';
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = '';
@@ -32,7 +32,7 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 	if (params.type && params.stripEmpty) {
 		joinClauses = `LEFT   JOIN LATERAL (
 			SELECT elem->>'count' AS karacounttype
-			FROM   jsonb_array_elements(all_tags.karacount::jsonb) a(elem)
+			FROM   jsonb_array_elements(at.karacount::jsonb) a(elem)
 			WHERE  elem->>'type' = '${params.type}'
 			) a ON true
 		 `;
@@ -44,11 +44,11 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 }
 
 function buildTagClauses(words: string): WhereClause {
-	const sql = ['search_vector @@ query'];
+	const sql = ['t.tag_search_vector @@ query'];
 	return {
 		sql: sql,
 		params: {tsquery: paramWords(words).join(' & ')},
-		additionalFrom: [', to_tsquery(\'public.unaccent_conf\', :tsquery) as query, ts_rank_cd(search_vector, query) as relevance']
+		additionalFrom: [', to_tsquery(\'public.unaccent_conf\', :tsquery) as query, ts_rank_cd(t.tag_search_vector, query) as relevance']
 	};
 }
 
@@ -59,13 +59,13 @@ export async function insertTag(tag: Tag) {
 		tag.types,
 		tag.short || null,
 		tag.i18n || {},
-		JSON.stringify(tag.aliases) || null,
+		JSON.stringify(tag.aliases || []),
 		tag.tagfile,
 		tag.repository,
 		tag.modified_at,
 		tag.problematic || false,
 		tag.noLiveDownload || false,
-		tag.priority || 0
+		tag.priority || 10
 	]);
 }
 
@@ -103,7 +103,7 @@ export async function selectTagByNameAndType(name: string, type: number): Promis
 export function updateTag(tag: Tag) {
 	return db().query(sqlupdateTag, [
 		tag.name,
-		JSON.stringify(tag.aliases) || null,
+		JSON.stringify(tag.aliases || []),
 		tag.tagfile,
 		tag.short || null,
 		tag.types,
@@ -113,7 +113,7 @@ export function updateTag(tag: Tag) {
 		tag.modified_at,
 		tag.problematic || false,
 		tag.noLiveDownload || false,
-		tag.priority || 0
+		tag.priority || 10
 	]);
 }
 

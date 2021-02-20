@@ -76,7 +76,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter) : {sql: [], params: {}, additionalFrom: []};
 	let typeClauses = params.mode && params.modeValue ? buildTypeClauses(params.mode, params.modeValue) : '';
 	// Hide blacklisted songs if not admin
-	if (!params.ignoreBlacklist && (!params.admin || params.blacklist)) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
+	if (!params.ignoreBlacklist && (!params.admin || params.blacklist)) typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM blacklist)`;
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -85,7 +85,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let selectRequested = `COUNT(rq.*)::integer AS requested,
 	MAX(rq.requested_at) AS lastrequested_at,
 	`;
-	const joinClauses = [' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid '];
+	const joinClauses = [' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.pk_kid '];
 	// This is normal behaviour without anyone.
 	let groupClauseEnd = '';
 	// Search mode to filter karas played or requested in a particular session
@@ -105,7 +105,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			selectRequested = 'orq.requested AS requested, ';
 			// Emptying joinClauses first before adding something to it.
 			joinClauses.splice(0, joinClauses.length);
-			joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.kid ');
+			joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.pk_kid ');
 			typeClauses = ' AND requested > 1';
 		} else {
 			orderClauses = 'requested DESC, ';
@@ -126,7 +126,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (params.random > 0) {
 		orderClauses = `RANDOM(), ${orderClauses}`;
 		limitClause = `LIMIT ${params.random}`;
-		typeClauses = `${typeClauses} AND ak.kid NOT IN (
+		typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
 			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}

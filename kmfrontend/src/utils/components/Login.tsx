@@ -1,15 +1,14 @@
 import './Login.scss';
 
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import i18next from 'i18next';
 import React, { Component, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import guideSecurityGif from '../../assets/guide-security-code.gif';
 import logo from '../../assets/Logo-fond-transp.png';
 import Switch from '../../frontend/components/generic/Switch';
 import { login, logout } from '../../store/actions/auth';
 import { GlobalContextInterface } from '../../store/context';
+import { isElectron } from '../electron';
 import { commandBackend } from '../socket';
 import { callModal, displayMessage, lastLocation } from '../tools';
 
@@ -31,7 +30,6 @@ interface IState {
 	passwordConfirmation?: string;
 	securityCode?: number;
 	isAdminPath: boolean;
-	activeHelp: boolean;
 }
 
 class Login extends Component<IProps, IState> {
@@ -51,8 +49,7 @@ class Login extends Component<IProps, IState> {
 			forgotPassword: false,
 			password: '',
 			login: '',
-			isAdminPath: lastLocation && lastLocation !== '/' && !lastLocation.includes('/public'),
-			activeHelp: false
+			isAdminPath: lastLocation && lastLocation !== '/' && !lastLocation.includes('/public')
 		};
 	}
 
@@ -71,11 +68,23 @@ class Login extends Component<IProps, IState> {
 	}
 
 
-	login = async (username: string | undefined, password: string, securityCode?: number) => {
+	login = async (username: string | undefined, password?: string, securityCode?: number) => {
 		if (this.state.forgotPassword) {
 			await this.callForgetPasswordApi();
 		}
 
+		if (this.state.isAdminPath && isElectron()) {
+			const { ipcRenderer: ipc } = window.require('electron');
+			ipc.send('getSecurityCode');
+			ipc.once('getSecurityCodeResponse', async (_event, securityCodeViaElectron) => {
+				this.loginFinish(username, password, securityCodeViaElectron);
+			});
+		} else {
+			this.loginFinish(username, password, securityCode);
+		}
+	};
+
+	loginFinish = async (username: string, password: string, securityCode: number) => {
 		const role = await login(username, password, this.props.context.globalDispatch, securityCode);
 		if (this.state.isAdminPath && role !== 'admin') {
 			if (!username) {
@@ -98,12 +107,10 @@ class Login extends Component<IProps, IState> {
 				this.props.history.replace('/');
 			}
 		}
-	};
+	}
 
 	loginGuest = async () => {
-		const fp = await FingerprintJS.load();
-		const result = await fp.get();
-		this.login('', result.visitorId);
+		this.login(undefined);
 	};
 
 	loginUser = () => {
@@ -133,7 +140,7 @@ class Login extends Component<IProps, IState> {
 		} else {
 			const data: { login: string, password: string, securityCode?: number, role: string }
 				= { login: username, password: password, role: this.state.isAdminPath ? 'admin' : 'user' };
-			if (this.state.isAdminPath) {
+			if (this.state.isAdminPath && !isElectron()) {
 				if (!this.state.securityCode) {
 					displayMessage('error', i18next.t('SECURITY_CODE_MANDATORY'));
 					return;
@@ -170,126 +177,111 @@ class Login extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<React.Fragment>
-				{this.state.activeHelp ? (
-					<div className="help-modal" onClick={() => this.setState({ activeHelp: false })}>
-						<div className="help-modal-backdrop">
-							<div className="help-modal-wrapper">
-								<button className="help-modal-close">&times;</button>
-								<img alt="" src={guideSecurityGif} />
+			<div className="loginContainer">
+				<div className="loginHeader">
+					<div className="loginImage">
+						<img src={logo} alt='Logo KM' />
+					</div>
+					<p className="loginSlogan">
+						{this.state.isAdminPath ?
+							i18next.t('LOGIN_SLOGAN_ADMIN')
+							: i18next.t('LOGIN_SLOGAN')
+						}
+					</p>
+				</div>
+				<div className="loginBox">
+					{this.state.activeView === 'welcome' ? <>
+						{!this.state.isAdminPath ?
+							<button className="btn largeButton guestButton" onClick={this.loginGuest}>
+								{i18next.t('GUEST_CONTINUE')}
+							</button> : null
+						}
+						<button type="button" className="btn largeButton loginButton"
+							onClick={() => this.setState({ activeView: 'login' })}>
+							{i18next.t('LOGIN')}
+						</button>
+						<button type="button" className="btn largeButton signupButton"
+							onClick={() => this.setState({ activeView: 'signup' })}>
+							{i18next.t('NEW_ACCOUNT')}
+						</button>
+					</> : null}
+					{this.state.activeView !== 'welcome' ? <>
+						<button type="button" className="btn largeButton"
+							onClick={() => this.setState({ activeView: 'welcome' })}>
+							{i18next.t('FUCK_GO_BACK')}
+						</button>
+						<form onSubmit={this.onSubmit}>
+							<div className="spacedSwitch">
+								<label className="loginLabel">{i18next.t('ONLINE_ACCOUNT')}</label>
+								<Switch handleChange={() => this.setState({ onlineSwitch: !this.state.onlineSwitch })}
+									isChecked={this.state.onlineSwitch} />
 							</div>
-						</div>
-					</div>
-				) : null}
-
-				<div className="loginContainer">
-					<div className="loginHeader">
-						<div className="loginImage">
-							<img src={logo} alt='Logo KM' />
-						</div>
-						<p className="loginSlogan">
-							{this.state.isAdminPath ?
-								i18next.t('LOGIN_SLOGAN_ADMIN')
-								:i18next.t('LOGIN_SLOGAN')
-							}
-						</p>
-					</div>
-					<div className="loginBox">
-						{this.state.activeView === 'welcome' ? <>
-							{!this.state.isAdminPath ?
-								<button className="btn largeButton guestButton" onClick={this.loginGuest}>
-									{i18next.t('GUEST_CONTINUE')}
-								</button> : null
-							}
-							<button type="button" className="btn largeButton loginButton"
-								onClick={() => this.setState({ activeView: 'login' })}>
-								{i18next.t('LOGIN')}
-							</button>
-							<button type="button" className="btn largeButton signupButton"
-								onClick={() => this.setState({ activeView: 'signup' })}>
-								{i18next.t('NEW_ACCOUNT')}
-							</button>
-						</>:null}
-						{this.state.activeView !== 'welcome' ? <>
-							<button type="button" className="btn largeButton"
-								onClick={() => this.setState({ activeView: 'welcome' })}>
-								{i18next.t('FUCK_GO_BACK')}
-							</button>
-							<form onSubmit={this.onSubmit}>
-								<div className="spacedSwitch">
-									<label className="loginLabel">{i18next.t('ONLINE_ACCOUNT')}</label>
-									<Switch handleChange={() => this.setState({ onlineSwitch: !this.state.onlineSwitch })}
-										isChecked={this.state.onlineSwitch} />
+							<div className="loginForm">
+								<label className="loginLabel">{i18next.t('USERNAME')}{this.state.onlineSwitch ?
+									` @ ${i18next.t('INSTANCE_NAME_SHORT')}` : ''}</label>
+								<div className="loginLine">
+									<input type="text" className={`${this.state.errorBackground} ${this.state.onlineSwitch ? 'loginName' : ''}`}
+										defaultValue={this.state.login} placeholder={i18next.t('USERNAME')} autoComplete="username"
+										required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
+									{this.state.onlineSwitch ? <React.Fragment>
+										<div className="arobase">@</div>
+										<input type="text" className="instanceName" defaultValue={this.state.serv}
+											placeholder={i18next.t('INSTANCE_NAME_SHORT')} autoComplete="off"
+											onChange={(event) => this.setState({ serv: event.target.value })} />
+									</React.Fragment> : null}
 								</div>
-								<div className="loginForm">
-									<label className="loginLabel">{i18next.t('USERNAME')}{this.state.onlineSwitch ?
-										` @ ${i18next.t('INSTANCE_NAME_SHORT')}` : ''}</label>
-									<div className="loginLine">
-										<input type="text" className={`${this.state.errorBackground} ${this.state.onlineSwitch ? 'loginName' : ''}`}
-											   defaultValue={this.state.login} placeholder={i18next.t('USERNAME')} autoComplete="username"
-											   required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-										{this.state.onlineSwitch ? <React.Fragment>
-											<div className="arobase">@</div>
-											<input type="text" className="instanceName" defaultValue={this.state.serv}
-												   placeholder={i18next.t('INSTANCE_NAME_SHORT')} autoComplete="off"
-												   onChange={(event) => this.setState({ serv: event.target.value })} />
-										</React.Fragment> : null}
-									</div>
-									<label className="loginLabel">{this.state.forgotPassword && !this.state.onlineSwitch ?
-										i18next.t('NEW_PASSWORD') : i18next.t('PASSWORD')}
-									</label>
-									<div className="loginLine">
-										<input type="password" className={this.state.redBorders}
-											   autoComplete={this.state.activeView === 'signup' ? 'new-password':'current-password'}
-											   defaultValue={this.state.password} required placeholder={i18next.t('PASSWORD')}
-											   onChange={(event) => this.setState({ password: event.target.value })} />
-									</div>
-									{this.state.activeView === 'signup' ?
-										<>
-											<label className="loginLabel">{i18next.t('PASSWORDCONF')}</label>
-											<div className="loginLine">
-												<input type="password" className={this.state.redBorders} required defaultValue={this.state.passwordConfirmation}
-													   onChange={(event) => this.setState({ passwordConfirmation: event.target.value })}
-													   placeholder={i18next.t('PASSWORDCONF')} autoComplete="new-password" />
-											</div>
-										</> : null
-									}
-									{this.state.isAdminPath &&
+								<label className="loginLabel">{this.state.forgotPassword && !this.state.onlineSwitch ?
+									i18next.t('NEW_PASSWORD') : i18next.t('PASSWORD')}
+								</label>
+								<div className="loginLine">
+									<input type="password" className={this.state.redBorders}
+										autoComplete={this.state.activeView === 'signup' ? 'new-password' : 'current-password'}
+										defaultValue={this.state.password} required placeholder={i18next.t('PASSWORD')}
+										onChange={(event) => this.setState({ password: event.target.value })} />
+								</div>
+								{this.state.activeView === 'signup' ?
+									<>
+										<label className="loginLabel">{i18next.t('PASSWORDCONF')}</label>
+										<div className="loginLine">
+											<input type="password" className={this.state.redBorders} required defaultValue={this.state.passwordConfirmation}
+												onChange={(event) => this.setState({ passwordConfirmation: event.target.value })}
+												placeholder={i18next.t('PASSWORDCONF')} autoComplete="new-password" />
+										</div>
+									</> : null
+								}
+								{this.state.isAdminPath && !isElectron() &&
 									((this.state.forgotPassword && this.state.activeView === 'login' && !this.state.onlineSwitch)
 										|| this.state.activeView === 'signup') ?
-										<>
-											<label className="loginLabel">
-												{i18next.t('SECURITY_CODE')}
-												&nbsp;
-												<button type="button" onClick={() => this.setState({ activeHelp: true })} className="helpButton">?</button>
-											</label>
-											<div className="loginLine">
-												<input type="text" placeholder={i18next.t('SECURITY_CODE')}
-													   defaultValue={this.state.securityCode} required autoFocus
-													   onChange={(event) => this.setState({ securityCode: parseInt(event.target.value) })}
-													   autoComplete="off" />
-											</div>
-										</> : null
-									}
-									{this.state.activeView === 'login' && (this.state.isAdminPath || this.state.onlineSwitch) ?
-										<button type="button" className="btn largeButton" onClick={this.forgetPasswordClick}>
-											{i18next.t('FORGOT_PASSWORD')}
-										</button> : null
-									}
-									<button type="submit" className="btn largeButton submitButton">
-										{i18next.t(this.state.activeView === 'login' ? 'LOG_IN' : 'SIGN_UP')}
-									</button>
-								</div>
-							</form>
-						</>:null}
+									<>
+										<label className="loginLabel">
+											{i18next.t('SECURITY_CODE')}
+										</label>
+										<div className="loginLine">
+											<input type="text" placeholder={i18next.t('SECURITY_CODE')}
+												defaultValue={this.state.securityCode} required autoFocus
+												onChange={(event) => this.setState({ securityCode: parseInt(event.target.value) })}
+												autoComplete="off" />
+										</div>
+									</> : null
+								}
+								{this.state.activeView === 'login' && (this.state.isAdminPath || this.state.onlineSwitch) ?
+									<button type="button" className="btn largeButton" onClick={this.forgetPasswordClick}>
+										{i18next.t('FORGOT_PASSWORD')}
+									</button> : null
+								}
+								<button type="submit" className="btn largeButton submitButton">
+									{i18next.t(this.state.activeView === 'login' ? 'LOG_IN' : 'SIGN_UP')}
+								</button>
+							</div>
+						</form>
+					</> : null}
 
-						<div className="versionKM">
-							<div>Karaoke Mugen</div>
-							<div>{`${i18next.t('VERSION')} ${this.props.context.globalState.settings.data.version.number} - ${this.props.context.globalState.settings.data.version.name}`}</div>
-						</div>
+					<div className="versionKM">
+						<div>Karaoke Mugen</div>
+						<div>{`${i18next.t('VERSION')} ${this.props.context.globalState.settings.data.version.number} - ${this.props.context.globalState.settings.data.version.name}`}</div>
 					</div>
 				</div>
-			</React.Fragment>
+			</div>
 		);
 	}
 }

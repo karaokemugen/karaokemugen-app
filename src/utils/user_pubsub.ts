@@ -30,7 +30,7 @@ function setupUserWatch(server: string) {
 			importFavorites({
 				Header: { version: 1, description: 'Karaoke Mugen Favorites List File' },
 				Favorites: favorites
-			}, login, undefined, true)
+			}, login, undefined, true, false)
 		]).catch(err => {
 			logger.warn(`Cannot update remote user ${login}`, { service: 'RemoteUser', obj: err });
 		});

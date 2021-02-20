@@ -15,7 +15,7 @@ import { View } from '../../types/view';
 import PublicFixedMenu from './PublicFixedMenu';
 
 interface IProps {
-	openProfileModal: () => void;
+	openModal: (type: string) => void;
 	onResize: (top: string) => void;
 	currentView: View;
 	changeView: (view: View) => void;
@@ -57,7 +57,12 @@ class PublicHeader extends Component<IProps, IState> {
 
 	toggleProfileModal = () => {
 		this.setState({ dropDownMenu: false });
-		this.props.openProfileModal();
+		this.props.openModal('user');
+	};
+
+	toggleUsersModal = () => {
+		this.setState({ dropDownMenu: false });
+		this.props.openModal('users');
 	};
 
 	goToFavorites = () => {
@@ -111,15 +116,20 @@ class PublicHeader extends Component<IProps, IState> {
 									</div> : null
 								}
 								{this.context?.globalState.auth.data.role !== 'guest' ?
-									<div className="link"><div onClick={this.goToFavorites}>
-										<i className='fas fa-star' /> {i18next.t('VIEW_FAVORITES')}
-									</div></div> : null
+									<>
+										<div className="link"><div onClick={this.goToFavorites}>
+											<i className="fas fa-fw fa-star" /> {i18next.t('VIEW_FAVORITES')}
+										</div></div>
+										<div className="link"><div onClick={this.toggleProfileModal}>
+											<i className="fas fa-fw fa-user" /> {i18next.t('PROFILE')}
+										</div></div>
+									</> : null
 								}
-								<div className="link"><div onClick={this.toggleProfileModal}>
-									<i className="fas fa-user" /> {i18next.t('PROFILE')}
+								<div className="link"><div onClick={this.toggleUsersModal}>
+									<i className="fas fa-fw fa-users" /> {i18next.t('USERLIST')}
 								</div></div>
 								<div className="link"><div onClick={() => logout(this.context.globalDispatch)}>
-									<i className="fas fa-sign-out-alt" /> {i18next.t('LOGOUT')}
+									<i className="fas fa-fw fa-sign-out-alt" /> {i18next.t('LOGOUT')}
 								</div></div>
 							</div>
 						</div>

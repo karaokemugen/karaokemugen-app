@@ -6,7 +6,7 @@ import { getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selec
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
-import { refreshKaraTags, refreshTags } from '../lib/dao/tag';
+import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
 import {DBKaraTag} from '../lib/types/database/kara';
 import { DBTag } from '../lib/types/database/tag';
@@ -74,7 +74,8 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		saveSetting('baseChecksum', getStoreChecksum());
 
 		if (opts.refresh) {
-			await refreshTags();
+			await updateTagSearchVector();
+			refreshTags();
 		}
 		return tagObj;
 	} catch(err) {
@@ -83,14 +84,6 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 	} finally {
 		if (!opts.silent) task.end();
 	}
-}
-
-export async function refreshTagsAfterDBChange() {
-	logger.debug('Refreshing DB after tag change', {service: 'DB'});
-	await refreshTags();
-	refreshKaraTags();
-	refreshKaras();
-	logger.debug('Done refreshing DB after tag change', {service: 'DB'});
 }
 
 export function getTag(tid: string) {
@@ -173,7 +166,9 @@ export async function mergeTags(tid1: string, tid2: string) {
 			await editKaraInStore(kara);
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
-		await refreshTagsAfterDBChange();
+		await updateTagSearchVector();
+		await refreshKaras();
+		refreshTags();
 		return tagObj;
 	} catch(err) {
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, {service: 'Tags', obj: err});
@@ -229,7 +224,11 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 			await editTagInStore(newTagFiles[0]);
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
-		if (opts.refresh) await refreshTagsAfterDBChange();
+		if (opts.refresh) {
+			await updateTagSearchVector();
+			await refreshKaras();
+			refreshTags();
+		}
 	} catch(err) {
 		if (err?.code === 404) throw err;
 		sentry.error(err);
@@ -259,7 +258,8 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 		removeTagInStore(tid);
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opt.refresh) {
-			await refreshTagsAfterDBChange();
+			await refreshKaras();
+			refreshTags();
 		}
 	} catch(err) {
 		if (err?.code === 404) throw err;
@@ -278,11 +278,11 @@ export async function integrateTagFile(file: string): Promise<string> {
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository) {
 				// Only edit if repositories are the same.
-				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true });
+				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: true, repoCheck: true });
 			}
 			return tagFileData.name;
 		} else {
-			await addTag(tagFileData, { silent: true, refresh: false });
+			await addTag(tagFileData, { silent: true, refresh: true });
 			return tagFileData.name;
 		}
 	} catch(err) {
@@ -292,6 +292,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 
 
 export async function consolidateTagsInRepo(kara: Kara) {
+	profile('consolidateTagsInRepo');
 	const copies = [];
 	for (const tagType of Object.keys(tagTypes)) {
 		for (const karaTag of kara[tagType]) {
@@ -315,6 +316,7 @@ export async function consolidateTagsInRepo(kara: Kara) {
 		}
 	}
 	await Promise.all(copies);
+	profile('consolidateTagsInRepo');
 }
 
 export async function copyTagToRepo(tid: string, repoName: string) {

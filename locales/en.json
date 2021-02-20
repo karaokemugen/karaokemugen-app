@@ -39,8 +39,6 @@
 	"MENU_FILE_QUIT_OSX": "Quit Karaoke Mugen",
 	"MENU_FILE_ABOUT": "&About Karaoke Mugen",
 	"MENU_FILE_UPDATE": "&Search for update...",
-	"MENU_SECURITYCODE": "&Security Code",
-	"MENU_SECURITYCODE_SHOW": "&Show code...",
 	"MENU_VIEW": "&View",
 	"MENU_VIEW_RELOAD": "&Reload",
 	"MENU_VIEW_RELOADFORCE": "&Force reload",
@@ -91,8 +89,6 @@
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Preferences...",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System preferences...",
 	"MENU_OPTIONS_CHIBIPLAYER": "Display Chibi Player",
-	"SECURITY_CODE_TITLE": "Security code",
-	"SECURITY_CODE_MESSAGE": "This is the current security code:",
 	"ERROR": "Error",
 	"UNKNOWN": "unknown",
 	"YES": "Yes",
@@ -113,8 +109,6 @@
 		"TITLE": "No more karaoke modes!",
 		"MESSAGE": "New in version 4.0:\n\nThe public/private karaoke modes have disappeared! Shock! Horror! *dramatic music ensues*\n\nPlaylists can now have both public and current flag at the same time.\n\n- The current flag means the playlist is the one used by the player\n- The public flag means the playlist is th eone receiving song suggestions from your users\n\nPut simply, combine both flags on a playlist to emulate the old private mode, and create two playlists, each one with a different flag to emulate the old public mode."
 	},
-	"COPY_TO_CLIPBOARD": "Copy to clipboard",
-	"IT_IS_IN_MY_HEAD": "No need, it's in my head!",
 	"TIPS": {
 		"TITLES": {
 			"NORMAL": "Tips and Tricks with Nanamin",

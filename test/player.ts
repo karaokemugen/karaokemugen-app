@@ -13,7 +13,6 @@ describe('Player', () => {
 		expect(data.currentRequester).to.satisfy((e:any) => typeof e === 'string' || e === null);
 		expect(data.currentSessionID).to.be.a('string').and.match(new RegExp(uuidRegexp));
 		expect(data.defaultLocale).to.be.a('string').and.have.lengthOf(2);
-		expect(data.onTop).to.be.a('boolean');
 		// other data cannot be tested because of mpv lack in CI
 	});
 });

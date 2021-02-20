@@ -46,9 +46,11 @@ export async function next() {
 			if (conf.Karaoke.ClassicMode) {
 				stopPlayer(true);
 				if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					setState({ streamerPause: true });
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 					// Recheck if classic mode is still enabled after the sleep timer. If it's disabled now, do not play song.
-					if (getState().player.playerStatus === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
+					if (getState().streamerPause && getState().player.playerStatus === 'stop' && getConfig().Karaoke.ClassicMode) await playPlayer(true);
+					setState({ streamerPause: false });
 				}
 			} else if (conf.Karaoke.StreamerMode.Enabled) {
 				setState({currentRequester: null});
@@ -64,12 +66,14 @@ export async function next() {
 					mpv.displaySongInfo(kara.infos, 10000000, true);
 				}
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					setState({ streamerPause: true });
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-					if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
+					if (getState().streamerPause && getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
+					setState({ streamerPause: false });
 				}
 			} else {
 				setState({currentRequester: null});
-				playPlayer(true);
+				if (getState().player.playerStatus !== 'stop') playPlayer(true);
 			}
 		} else {
 			// End of playlist, let's see what to do with our different modes.
@@ -100,19 +104,21 @@ export async function next() {
 }
 
 async function toggleFullScreenPlayer() {
-	let state = getState();
-	state = setState({fullscreen: !state.fullscreen});
-	await mpv.setFullscreen(state.fullscreen);
-	state.fullscreen
+	const fsState = await mpv.toggleFullscreen();
+	fsState
 		? logger.info('Player going to full screen', {service: 'Player'})
 		: logger.info('Player going to windowed mode', {service: 'Player'});
 }
 
 async function toggleOnTopPlayer() {
-	const state = setState({ontop: await mpv.toggleOnTop()});
-	state.ontop
+	const onTop = await mpv.toggleOnTop();
+	onTop
 		? logger.info('Player staying on top', {service: 'Player'})
 		: logger.info('Player NOT staying on top', {service: 'Player'});
+}
+
+async function toggleBordersPlayer() {
+	await mpv.toggleBorders();
 }
 
 async function setPiPSizePlayer(nb: number) {
@@ -137,6 +143,7 @@ export async function playPlayer(now?: boolean) {
 }
 
 export async function stopPlayer(now = true, endOfPlaylist = false) {
+	setState({ streamerPause: false });
 	if (now || getState().stopping) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		await mpv.stop();
@@ -268,6 +275,8 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 			await toggleFullScreenPlayer();
 		} else if (command === 'toggleAlwaysOnTop') {
 			await toggleOnTopPlayer();
+		} else if (command === 'toggleBorders') {
+			await toggleBordersPlayer();
 		} else if (command === 'setPiPSize') {
 			if (isNaN(options)) throw 'Command setPiPSize must have a numeric option value';
 			await setPiPSizePlayer(options);

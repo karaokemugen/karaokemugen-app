@@ -41,6 +41,9 @@
 	"NEXT_SONG": "Next song",
 	"ALWAYS_ON_TOP": "Always on top",
 	"FULLSCREEN": "Fullscreen",
+	"FULLSCREEN_TOOLTIP": "PROTIP: Hit F on a fullscreen player to reduce it to windowed mode.",
+	"WINDOWBORDERS": "Enable borders on the player window",
+	"WINDOWBORDERS_TOOLTIP": "Disabling them won't disable them for the monitor, where they're always enabled.",
 	"ADMIN_PASSWORD_CHANGE": "Change operator password",
 	"PASSWORD": "Password (minimum 8 characters)",
 	"PASSWORDCONF": "Password confirmation",
@@ -117,7 +120,7 @@
 		"ADD": "Add new playlist",
 		"AUTOMIX": "Create an automix",
 		"IMPORT": "Import playlist",
-		"SHUFFLE": "Shuffle..."
+		"SHUFFLE": "Shuffle / Sort..."
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Song commands",
@@ -171,6 +174,23 @@
 		"REQUESTED_KARAOKES": "Requested karaokes",
 		"NEW_KARAOKES": "New karaokes"
 	},
+	"ADMIN_MESSAGE": {
+		"ESSENTIAL_MESSAGE": "Essential message",
+		"CL_SCREEN": "Show on the player screen",
+		"CL_USERS": "Show on the user's screens",
+		"CL_ALL": "Show on both",
+		"DURATION": "Duration (in seconds)",
+		"MESSAGE": "Message",
+		"EMPTY": "The message is empty",
+		"CONFIRM": "Send message"
+	},
+	"AUTOMIX_MODAL": {
+		"TITLE": "Create an AutoMix",
+		"DESCRIPTION": "The created playlist will be filled with the selected users favorites for the duration you specified.",
+		"DURATION": "Duration (in minutes)",
+		"MIX": "Create AutoMix",
+		"EMPTY": "Select users and a duration"
+	},
 	"LYRICS": "Lyrics",
 	"KARAOKE": "{{count}} karaoke",
 	"KARAOKE_plural": "{{count}} karaokes",
@@ -180,9 +200,6 @@
 	"CL_ADD_RANDOM_TITLE": "How many random songs do you want to add?",
 	"CL_INFORMATIVE_MESSAGE": "Informative message",
 	"CL_EMPTY_LIST": "Empty list ?",
-	"CL_SCREEN": "Screen",
-	"CL_USERS": "Users' devices",
-	"CL_ALL": "All",
 	"CL_PLAYLISTS": "Song lists",
 	"BACK_PLAYLISTS": "Back to song lists",
 	"CL_DELETE_CRITERIAS_PLAYLIST": "Delete criterias blacklist of type '{{type}}' that contains all this songs :",
@@ -424,7 +441,6 @@
 	"EDIT_SESSION": "Edit session",
 	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
-	"ESSENTIAL_MESSAGE": "Essential message",
 	"ONLINE_ACCOUNT": "Online account",
 	"SECURITY_CODE": "Security code",
 	"FORGOT_PASSWORD": "Forgot password?",
@@ -457,7 +473,9 @@
 			"SMART_SHUFFLE": "Smart",
 			"SMART_SHUFFLE_DESC": "Prevents long songs or songs by the same person from following each other",
 			"BALANCE": "Balanced",
-			"BALANCE_DESC": "Reorders songs by pools of users (A-B-C, A-B-C, etc.)"
+			"BALANCE_DESC": "Reorders songs by pools of users (A-B-C, A-B-C, etc.)",
+			"SORTUPVOTES": "Sort by likes",
+			"SORTUPVOTES_DESC": "Sorts by number of likes in descending order (most popular songs first)"
 		},
 		"PLAYLIST_MODAL": {
 			"NAME": "Name",
@@ -467,6 +485,8 @@
 			"PUBLIC_DESC": "The public list is the one collecting suggestions from the public",
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible by the audience",
+			"AUTOSORTBYLIKE": "Auto-sort by likes",
+			"AUTOSORTBYLIKE_DESC": "The list will be sorted automatically by number of likes",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
 			"CREATE_PLAYLIST": "Create new playlist"
 		},
@@ -787,7 +807,7 @@
 		"NOLIVEDOWNLOAD": "Disallow on Live/Web Downloads",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Karaokes with this tag won't be able to be downloaded on KMServer from the web interface, or visible on Live",
 		"PRIORITY": "Display priority",
-		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 0 by default.",
+		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default.",
 		"COPY_TAG": "Copy tag to another repository"
 	},
 	"TAG_TYPES": {

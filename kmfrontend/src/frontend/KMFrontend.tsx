@@ -73,7 +73,7 @@ class KMFrontend extends Component<unknown, IState> {
 				this.context.globalState.settings.data.config ?
 					<div className={is_touch_device() ? 'touch' : ''}>
 						<Switch>
-							<Route path="/setup" render={() => <SetupPage />} />
+							<Route path="/setup" render={(route) => <SetupPage route={route} />} />
 							<Route path="/migrate" render={() => <MigratePage />} />
 							<Route path="/welcome" render={() => <WelcomePage />} />
 							<Route path="/admin" render={() => <AdminPage

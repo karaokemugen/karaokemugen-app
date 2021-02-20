@@ -22,7 +22,6 @@ SELECT
 	u.bio AS bio,
 	u.url AS url,
 	u.email AS email,
-	u.fingerprint AS fingerprint,
 	u.last_login_at AS last_login_at,
 	u.flag_online AS flag_online,
 	u.series_lang_mode AS series_lang_mode,
@@ -45,8 +44,7 @@ export const sqlselectGuests = `
 SELECT
 	u.nickname AS nickname,
 	u.pk_login AS login,
-	u.avatar_file AS avatar_file,
-	(fingerprint IS NULL) AS available
+	u.avatar_file AS avatar_file
 FROM users AS u
 WHERE u.type = 2;
 `;
@@ -91,7 +89,6 @@ VALUES (
 
 export const sqlupdateExpiredUsers = `
 UPDATE users SET
-	fingerprint = NULL,
 	flag_online = FALSE
 WHERE last_login_at <= $1;
 `;
@@ -101,19 +98,6 @@ UPDATE users SET
 	last_login_at = :now,
 	flag_online = TRUE
 WHERE pk_login = :username;
-`;
-
-export const sqlupdateUserFingerprint = `
-UPDATE users SET
-	fingerprint = :fingerprint,
-	flag_online = TRUE
-WHERE pk_login = :username;
-`;
-
-export const sqlfindFingerprint = `
-SELECT pk_login
-FROM users
-WHERE fingerprint = $1;
 `;
 
 export const sqlresetGuestsPassword = `

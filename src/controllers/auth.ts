@@ -3,7 +3,7 @@ import logger from '../lib/utils/logger';
 import { SocketIOApp } from '../lib/utils/ws';
 import { checkLogin, resetSecurityCode } from '../services/auth';
 import { fetchAndAddFavorites } from '../services/favorites';
-import { editUser, findFingerprint,updateLastLoginName, updateUserFingerprint } from '../services/user';
+import { editUser, findAvailableGuest, updateLastLoginName } from '../services/user';
 import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline';
 import { getState } from '../utils/state';
 import { APIMessage } from './common';
@@ -59,7 +59,7 @@ export default function authController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('loginGuest', async (_, req) => {
+	router.route('loginGuest', async () => {
 		/**
  * @api {post} Login / Sign in (as guest)
  * @apiName loginGuest
@@ -91,22 +91,17 @@ export default function authController(router: SocketIOApp) {
  *   "message": null
  * }
  */
-		if (!req.body.fingerprint || req.body.fingerprint === '') {
-			throw {code: 401, message: APIMessage('LOG_ERROR')};
-		} else {
-			try {
-				const guest = await findFingerprint(req.body.fingerprint);
-				if (guest) {
-					const token = await checkLogin(guest, req.body.fingerprint);
-					updateUserFingerprint(guest, req.body.fingerprint);
-					updateLastLoginName(guest);
-					return token;
-				} else {
-					throw {code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE')};
-				}
-			} catch (err) {
-				throw {code: 401, message: APIMessage('LOG_ERROR')};
+		try {
+			const guest = await findAvailableGuest();
+			if (guest) {
+				const token = await checkLogin(guest, null);
+				updateLastLoginName(guest);
+				return token;
+			} else {
+				throw {code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE')};
 			}
+		} catch (err) {
+			throw {code: 401, message: APIMessage('LOG_ERROR')};
 		}
 	});
 

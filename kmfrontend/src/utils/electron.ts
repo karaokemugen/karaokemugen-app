@@ -47,8 +47,7 @@ export function drop(event) {
 	const username = token
 		? parseJwt(token).username
 		: 'admin';
-	const { ipcRenderer } = window.require('electron');
-	ipcRenderer.send('droppedFiles', {
+	sendIPC('droppedFiles', {
 		username: username,
 		onlineToken,
 		files: Array.from(event.dataTransfer.files).map(file => (file as any).path)

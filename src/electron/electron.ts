@@ -67,6 +67,9 @@ export function startElectron() {
 				logger.error('Error during launch', {service: 'Launcher', obj: err});
 			}
 		});
+		ipcMain.on('getSecurityCode', (event, _eventData) => {
+			event.sender.send('getSecurityCodeResponse', getState().securityCode);
+		});
 		ipcMain.on('droppedFiles', async (_event, eventData) => {
 			for (const path of eventData.files) {
 				await handleFile(path, eventData.username, eventData.onlineToken);
@@ -356,7 +359,7 @@ export async function updateChibiPlayerWindow(show: boolean) {
 	const conf = getConfig();
 	if (show) {
 		chibiPlayerWindow = new BrowserWindow({
-			width: 504,
+			width: 512,
 			height: 136,
 			x: conf.GUI.ChibiPlayer.PositionX,
 			y: conf.GUI.ChibiPlayer.PositionY,

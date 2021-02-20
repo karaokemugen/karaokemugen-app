@@ -2,7 +2,6 @@
 export enum FrontendContextAction {
     CURRENT_BL_SET = 'currentBlSet',
     FILTER_VALUE = 'filterValue',
-    POS_PLAYING = 'posPlaying',
 	BG_IMAGE = 'bgImage'
 }
 
@@ -23,14 +22,6 @@ export interface FilterValue {
     };
 }
 
-export interface PosPlaying {
-    type: FrontendContextAction.POS_PLAYING;
-    payload: {
-        posPlaying: number,
-        side: number
-    };
-}
-
 export interface BackgroundImage {
 	type: FrontendContextAction.BG_IMAGE,
 	payload: {
@@ -44,7 +35,5 @@ export interface FrontendContextStore {
 	currentBlSet: number,
 	filterValue1: string,
     filterValue2: string,
-    posPlaying1: number,
-    posPlaying2: number,
 	backgroundImg: string
 }

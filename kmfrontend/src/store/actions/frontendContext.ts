@@ -1,6 +1,6 @@
 import {Dispatch} from 'react';
 
-import {BackgroundImage, CurrentBlSet, FilterValue, FrontendContextAction, PosPlaying} from '../types/frontendContext';
+import {BackgroundImage, CurrentBlSet, FilterValue, FrontendContextAction} from '../types/frontendContext';
 
 export function setCurrentBlSet(dispatch: Dispatch<CurrentBlSet>, currentBlSet) {
 	dispatch({
@@ -13,13 +13,6 @@ export function setFilterValue(dispatch: Dispatch<FilterValue>, filterValue, sid
 	dispatch({
 		type: FrontendContextAction.FILTER_VALUE,
 		payload: { filterValue, side, idPlaylist }
-	});
-}
-
-export function setPosPlaying(dispatch: Dispatch<PosPlaying>, posPlaying, side) {
-	dispatch({
-		type: FrontendContextAction.POS_PLAYING,
-		payload: { posPlaying, side }
 	});
 }
 

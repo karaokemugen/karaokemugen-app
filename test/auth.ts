@@ -4,9 +4,7 @@ import {commandBackend, passwordAdmin,usernameAdmin} from './util/util';
 
 describe('Auth', () => {
 	it('Login / Sign in (as guest)', async () => {
-		const data = await commandBackend(undefined, 'loginGuest', {
-			fingerprint: '666'
-		});
+		const data = await commandBackend(undefined, 'loginGuest');
 		expect(data.role).to.be.equal('guest');
 	});
 	it('Login / Sign in', async () => {

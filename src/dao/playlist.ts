@@ -6,23 +6,24 @@ import { WhereClause } from '../lib/types/database';
 import {getConfig} from '../lib/utils/config';
 import {now} from '../lib/utils/date';
 import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
-import {Playlist, PLC, PLCParams} from '../types/playlist';
+import { PLC, PLCParams} from '../types/playlist';
 import {getState} from '../utils/state';
 import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
-export function editPlaylist(pl: Playlist) {
+export function editPlaylist(pl: DBPL) {
 	return db().query(yesql(sqleditPlaylist)({
-		playlist_id: pl.id,
+		playlist_id: pl.playlist_id,
 		name: pl.name,
 		modified_at: pl.modified_at,
 		flag_visible: pl.flag_visible,
 		flag_current: pl.flag_current,
-		flag_public: pl.flag_public
+		flag_public: pl.flag_public,
+		flag_autosortbylike: pl.flag_autosortbylike,
 	}));
 }
 
-export async function createPlaylist(pl: Playlist): Promise<number> {
+export async function createPlaylist(pl: DBPL): Promise<number> {
 	const res = await db().query(yesql(sqlcreatePlaylist)({
 		name: pl.name,
 		created_at: pl.created_at,
@@ -30,6 +31,7 @@ export async function createPlaylist(pl: Playlist): Promise<number> {
 		flag_visible: pl.flag_visible || false,
 		flag_current: pl.flag_current || null,
 		flag_public: pl.flag_public || null,
+		flag_autosortbylike: pl.flag_autosortbylike || false,
 		username: pl.username.toLowerCase()
 	}));
 	return res.rows[0].pk_id_playlist;
@@ -195,10 +197,10 @@ export async function getPlaylistInfo(id: number): Promise<DBPL> {
 
 export async function getPlaylists(forUser: boolean): Promise<DBPL[]> {
 	const query = sqlgetPlaylists;
-	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';
+	const order = ' ORDER BY flag_current DESC, flag_public DESC, name';
 	let res: QueryResult;
 	if (forUser) {
-		res = await db().query(query + ' WHERE p.flag_visible = TRUE ' + order);
+		res = await db().query(query + ' WHERE flag_visible = TRUE ' + order);
 	} else {
 		res = await db().query(query + order);
 	}
