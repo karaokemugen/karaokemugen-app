@@ -1,6 +1,6 @@
 # Versions
 
-## v5.0.19 "Poppy Partagée" - 06/02/2021
+## v5.0.20 "Poppy Partagée" - 20/02/2021
 
 ### Important notice
 
@@ -67,6 +67,10 @@ We reworked our shuffle modes, including a new one: balancing. Balancing creates
 
 ![Shuffle button](http://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/5307ea7a7f92e4416cca7b11881324eb/image.png)
 
+#### Sort playlist by likes (#887)
+
+You can now sort a playlist by its number of likes from your guests. The playlist can also auto-sort itself (it's another property in the edit playlist window)
+
 #### Sessions exports (#773)
 
 You can now more easily **export your sessions data** as .csv, it will contain songs requested by users, play history, etc.
@@ -88,6 +92,11 @@ It can be enabled in the Window menu.
 
 ### Improvements
 
+- Security code begone! The security code still exists when you're using a browser, but when using the app's electron browser, it will communicate with the app directly to get it and authenticate you. (#891)
+- In streamer mode, stopping the player during a pause will disable pause time (allowing you to manually play the song once you're ready to sing again.) (#890)
+- The player window now has borders! (you can disable them like it was before) (#889)
+- Player window will stop resizing itself depending on the aspect ratio of the video (#888)
+- In classic/streamer mode, the "Next song" text isn't underlined anymore. Apparently it was a crime against mankind to do so (#886)
 - You can now bulk-add songs to your favorites, the white or black list from the operator panel. (#853)
 - Blacklist criterias panel is now explained (#867)
 - You can now see the download queue (#862)
@@ -106,6 +115,10 @@ It can be enabled in the Window menu.
 - Player is now configured to have [loudnorm](https://ffmpeg.org/ffmpeg-filters.html#loudnorm) normalization (bd2964bd) instead of replay gain calculation.
 - Circled avatars aren't created by KM now but instead are automatically generated at playtime by lavfi filters (fb99c6ec)
 - The stats/sentry consent is part of the setup procedure now (#830)
+- Fingerprinting has been disabled. It allowed to recognize browsers/devices to keep them from unlogging and relogging as random guests to get new ones. Problem is a lot of browsers now keep the fingerprintjs library from working correctly for privacy/tracking reasons, so we stopped using it (#893)
+- Database rework! We reworked how songs are stored and accessed in the database, making adding/editing/removing karaokes and tags will be much faster for karaoke database maintainers. It also allows you to edit your song library during a karaoke as it won't conflict with users accessing it (#884 #882)
+- All window modals have been reworked and are more beautiful. (#881)
+
 
 ### Fixes
 
