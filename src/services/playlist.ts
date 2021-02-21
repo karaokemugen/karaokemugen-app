@@ -1304,19 +1304,19 @@ export async function updateUserQuotas(kara: PLC) {
 		getPlaylistContentsMini(state.currentPlaylistID)
 	]);
 	const freeTasks = [];
-	const usersNeedingUpdate = [];
+	const usersNeedingUpdate: Set<string> = new Set();
 	for (const currentSong of currentPlaylist) {
 		for (const publicSong of publicPlaylist) {
 			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
 				freeTasks.push(freePLC(publicSong.playlistcontent_id));
-				if (!usersNeedingUpdate.includes(publicSong.username)) usersNeedingUpdate.push(publicSong.username);
+				usersNeedingUpdate.add(publicSong.username);
 			}
 		}
 	}
 	await Promise.all(freeTasks);
-	usersNeedingUpdate.forEach(username => {
+	for (const username of usersNeedingUpdate.values()) {
 		updateSongsLeft(username, state.publicPlaylistID);
-	});
+	}
 	profile('updateUserQuotas');
 }
 

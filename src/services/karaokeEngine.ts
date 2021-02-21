@@ -108,18 +108,6 @@ export async function playCurrentSong(now: boolean) {
 			}
 			logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
-
-			/*await mpv.play({
-				media: kara.mediafile,
-				subfile: kara.subfile,
-				gain: kara.gain,
-				infos: kara.infos,
-				avatar: kara.avatar,
-				currentSong: kara,
-				duration: kara.duration,
-				repo: kara.repo,
-				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
-			});*/
 			await mpv.play(kara);
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
