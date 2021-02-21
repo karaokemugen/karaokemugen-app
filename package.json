@@ -103,7 +103,7 @@
     "js-yaml": "^4.0.0",
     "jwt-simple": "^0.5.6",
     "kar-to-ass": "^1.0.5",
-    "kfn-to-ass": "^1.0.12",
+    "kfn-to-ass": "^1.0.13",
     "langs": "^2.0.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",

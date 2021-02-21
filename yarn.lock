@@ -2708,10 +2708,10 @@ keyv@^4.0.0:
   dependencies:
     json-buffer "3.0.1"
 
-kfn-to-ass@^1.0.12:
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/kfn-to-ass/-/kfn-to-ass-1.0.12.tgz#64f4ca9a376bd848b5935944441213bed90a75f5"
-  integrity sha512-6vOwqvDMh2YNMEL35XjxJebPJqkyMxer15LcyriK7NbzkusLlanfGlRsgvF/9MGxev8YRQcqmXZIU0/jtpCD2w==
+kfn-to-ass@^1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/kfn-to-ass/-/kfn-to-ass-1.0.13.tgz#30621dc954952f0140a0bd6a2ec534f4d1227790"
+  integrity sha512-CFOcG8B0HKeZPITnDVNLlnZNG20mFUW05AZK/MMFEVbigPr7qzDaWFiavbYrpU6fEhPrVw+kT78Rww26KRRfDQ==
   dependencies:
     ass-stringify "^0.1.3"
     commander "^3.0.1"
