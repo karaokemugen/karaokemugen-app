@@ -22,7 +22,7 @@ UPDATE playlist SET
 	modified_at = :modified_at,
 	flag_visible = :flag_visible,
 	flag_current = :flag_current,
-	flag_public = :flag_public,
+	flag_public = :flag_public
 WHERE pk_id_playlist = :playlist_id;
 `;
 
