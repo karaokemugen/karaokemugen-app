@@ -683,7 +683,6 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], playlist_id:numb
 		kids.push(plcData.kid);
 		if (!plcData) throw {code: 404, msg: 'At least one playlist content is unknown'};
 		if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {code: 403, msg: 'You cannot delete a song you did not add'};
-		if (token.role !== 'admin' && plcData.upvotes > 0) throw {code: 403, msg: 'You cannot delete a song with upvotes'};
 		if (plcData.flag_playing && getState().player.playerStatus === 'play') throw {code: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
 	}
 	logger.debug(`Deleting karaokes from playlist ${pl.name}`, {service: 'Playlist'});
