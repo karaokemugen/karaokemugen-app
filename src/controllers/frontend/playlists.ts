@@ -59,7 +59,6 @@ export default function playlistsController(router: SocketIOApp) {
  * @apiParam {Boolean} flag_public Is the playlist to create public? This unsets `flag_public` on the previous playlist which had it.
  * @apiParam {Boolean} flag_current Is the playlist to create current? This unsets `flag_current` on the previous playlist which had it.
  * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
- * @apiParam {Boolean} flag_autosortbylike Is the playlist to be auto-sorted by like whenever one is added or removed?
  *
  * @apiSuccess {String} args Name of playlist created
  * @apiSuccess {String} code Message to display
@@ -81,7 +80,6 @@ export default function playlistsController(router: SocketIOApp) {
 			flag_visible: {inclusion: bools},
 			flag_public: {inclusion: bools},
 			flag_current: {inclusion: bools},
-			flag_autosortbylike: {inclusion: bools}
 		});
 		if (!validationErrors) {
 			// No errors detected
@@ -93,7 +91,6 @@ export default function playlistsController(router: SocketIOApp) {
 					visible: req.body.flag_visible,
 					current: req.body.flag_current,
 					public: req.body.flag_public,
-					autoSortByLike: req.body.flag_autosortbylike
 				}, req.token.username);
 			} catch(err) {
 				const code = 'PL_CREATE_ERROR';
@@ -173,7 +170,6 @@ export default function playlistsController(router: SocketIOApp) {
  * @apiParam {Boolean} flag_visible Is the playlist visible to all users? If `false`, only admins can see it.
  * @apiParam {Boolean} flag_current Is the playlist current?
  * @apiParam {Boolean} flag_public Is the playlist public?
- * @apiParam {Boolean} flag_autosortbylike Is the playlist to be auto-sorted by like whenever one is added or removed?
  *
  * @apiSuccess {String} code Message to display
  *

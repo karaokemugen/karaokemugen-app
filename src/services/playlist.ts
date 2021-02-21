@@ -258,10 +258,6 @@ export async function editPlaylist(playlist_id: number, playlist: DBPL) {
 			emitWS('publicPlaylistUpdated', playlist_id);
 			logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
 		}
-		if (playlist.flag_autosortbylike) {
-			// This can be done async
-			shufflePlaylist(playlist_id, 'upvotes');
-		}
 		updatePlaylistLastEditTime(playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistsUpdated');
@@ -282,7 +278,6 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 		flag_visible: opts.visible,
 		flag_current: opts.current || null,
 		flag_public: opts.public || null,
-		flag_autosortbylike: opts.autoSortByLike || null,
 		username: username
 	});
 	if (+opts.current) {

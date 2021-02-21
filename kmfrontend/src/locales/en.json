@@ -485,8 +485,6 @@
 			"PUBLIC_DESC": "The public list is the one collecting suggestions from the public",
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible by the audience",
-			"AUTOSORTBYLIKE": "Auto-sort by likes",
-			"AUTOSORTBYLIKE_DESC": "The list will be sorted automatically by number of likes",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
 			"CREATE_PLAYLIST": "Create new playlist"
 		},

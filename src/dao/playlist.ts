@@ -19,7 +19,6 @@ export function editPlaylist(pl: DBPL) {
 		flag_visible: pl.flag_visible,
 		flag_current: pl.flag_current,
 		flag_public: pl.flag_public,
-		flag_autosortbylike: pl.flag_autosortbylike,
 	}));
 }
 
@@ -31,7 +30,6 @@ export async function createPlaylist(pl: DBPL): Promise<number> {
 		flag_visible: pl.flag_visible || false,
 		flag_current: pl.flag_current || null,
 		flag_public: pl.flag_public || null,
-		flag_autosortbylike: pl.flag_autosortbylike || false,
 		username: pl.username.toLowerCase()
 	}));
 	return res.rows[0].pk_id_playlist;

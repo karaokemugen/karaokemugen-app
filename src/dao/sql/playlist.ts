@@ -23,7 +23,6 @@ UPDATE playlist SET
 	flag_visible = :flag_visible,
 	flag_current = :flag_current,
 	flag_public = :flag_public,
-	flag_autosortbylike = :flag_autosortbylike
 WHERE pk_id_playlist = :playlist_id;
 `;
 
@@ -37,7 +36,6 @@ INSERT INTO playlist(
 	flag_visible,
 	flag_current,
 	flag_public,
-	flag_autosortbylike,
 	fk_login,
 	time_left
 )
@@ -50,7 +48,6 @@ VALUES(
 	:flag_visible,
 	:flag_current,
 	:flag_public,
-	:flag_autosortbylike,
 	:username,
 	0
 ) RETURNING pk_id_playlist
@@ -376,7 +373,6 @@ SELECT pk_id_playlist AS playlist_id,
 	flag_visible,
 	flag_current,
 	flag_public,
-	flag_autosortbylike AS flag_autosortbylike,
 	fk_id_plcontent_playing AS plcontent_id_playing,
 	fk_login AS username
 FROM playlist
@@ -394,7 +390,6 @@ SELECT pk_id_playlist AS playlist_id,
 	flag_visible,
 	COALESCE(flag_current, false) AS flag_current,
 	COALESCE(flag_public, false) AS flag_public,
-	flag_autosortbylike AS flag_autosortbylike,
 	fk_id_plcontent_playing AS plcontent_id_playing,
 	fk_login AS username
 FROM playlist
