@@ -251,7 +251,21 @@
       "packageCategory": "video"
     },
     "dmg": {
-      "icon": "build/DMG.icns"
+      "icon": "build/DMG.icns",
+      "contents":
+      [
+	  {
+	    "x": 800,
+	    "y": 208,
+	    "name": "Karaoke Mugen.app"
+	  },
+	  {
+	    "x": 1000,
+	    "y": 208,
+	    "type": "link",
+	    "path": "/Applications"
+	  }
+	]
     },
     "win": {
       "target": [
@@ -288,7 +302,7 @@
       }
     },
     "productName": "Karaoke Mugen",
-    "copyright": "(c) 2017-2020 Karaoke Mugen Team",
+    "copyright": "(c) 2017-2021 Karaoke Mugen Team",
     "extraResources": [
       "migrations/**",
       "locales/*",
