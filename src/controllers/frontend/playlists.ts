@@ -292,6 +292,7 @@ export default function playlistsController(router: SocketIOApp) {
 	 * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
 	 * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
 	 * @apiParam {Number} [random=0] Return a [random] number of karaokes from that playlist.
+	 * @apiParam {Boolean} [orderByLikes=false] Returns the playlist ordered by number of likes in descending order
 	 *
 	 * @apiSuccess {Object[]} data/content/plc Array of `playlistcontent` objects
 	 * @apiSuccess {Number} data/infos/count Number of karaokes in playlist

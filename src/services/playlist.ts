@@ -318,7 +318,7 @@ export function getPlaylistContentsMini(playlist_id: number) {
 }
 
 /** Get playlist contents */
-export async function getPlaylistContents(playlist_id: number, token: Token, filter: string, lang: string, from = 0, size = 99999999999, random = 0) {
+export async function getPlaylistContents(playlist_id: number, token: Token, filter: string, lang: string, from = 0, size = 99999999999, random = 0, orderByLikes = false) {
 	profile('getPLC');
 	const plInfo = await getPlaylistInfo(playlist_id, token);
 	if (!plInfo) throw {code: 404, msg: `Playlist ${playlist_id} unknown`};
@@ -330,7 +330,8 @@ export async function getPlaylistContents(playlist_id: number, token: Token, fil
 			lang: lang,
 			from: from,
 			size: size,
-			random: random
+			random: random,
+			orderByLikes: orderByLikes
 		});
 		if (from === -1) {
 			const pos = getPlayingPos(pl);
