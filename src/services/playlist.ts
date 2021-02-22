@@ -781,7 +781,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 			await reorderPlaylist(plc.playlist_id);
 			const currentSong = getState().player.currentSong;
 			// If our new PLC has a position higher or equal than the current song pos in state, we need to update getCurrentSong's position
-			if (currentSong.pos <= params.pos && plc.playlist_id === getState().currentPlaylistID) {
+			if (currentSong && currentSong.pos <= params.pos && plc.playlist_id === getState().currentPlaylistID) {
 				setState({player: {currentSong: await getCurrentSong()}});
 			}
 		}
