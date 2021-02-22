@@ -20,9 +20,7 @@ import { addUser as DBAddUser,
 	lowercaseAllUsers,
 	mergeUserData,
 	reassignToUser as DBReassignToUser,
-	resetGuestsPassword as DBResetGuestsPassword,
 	selectAllDupeUsers,
-	updateExpiredUsers as DBUpdateExpiredUsers,
 	updateUserLastLogin as DBUpdateUserLastLogin,
 	updateUserPassword as DBUpdateUserPassword} from '../dao/user';
 import {User} from '../lib/types/user';
@@ -47,17 +45,6 @@ export async function findAvailableGuest() {
 	if (!guest) return null;
 	if (getState().isTest) logger.debug('New guest logging in: ', {service: 'User', obj: guest});
 	return guest;
-}
-
-/** Unflag connected accounts from database if they expired	 */
-async function updateExpiredUsers() {
-	try {
-		const time = new Date().getTime() - (getConfig().Frontend.AuthExpireTime * 60 * 1000);
-		await DBUpdateExpiredUsers(new Date(time));
-		await DBResetGuestsPassword();
-	} catch(err) {
-		logger.error('Expiring users failed (will try again in one minute)', {service: 'User', obj: err});
-	}
 }
 
 /** Create JSON Web Token from timestamp, JWT Secret, role and username */
@@ -418,10 +405,6 @@ async function createDefaultGuests() {
 
 /** Initializing user auth module */
 export async function initUserSystem() {
-	// Expired guest accounts will be cleared on launch and every minute via repeating action
-	updateExpiredUsers();
-	setInterval(updateExpiredUsers, 60000);
-
 	// Check if a admin user exists just in case. If not create it with a random password.
 	if (!await findUserByName('admin')) {
 		await createUser({

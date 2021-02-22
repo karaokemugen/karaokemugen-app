@@ -23,7 +23,10 @@ SELECT
 	u.url AS url,
 	u.email AS email,
 	u.last_login_at AS last_login_at,
-	u.flag_online AS flag_online,
+	(CASE WHEN :last_login_time_limit < u.last_login_at
+		THEN TRUE
+		ELSE FALSE
+    END)  AS flag_online,
 	u.series_lang_mode AS series_lang_mode,
 	u.main_series_lang AS main_series_lang,
 	u.fallback_series_lang AS fallback_series_lang,
@@ -36,7 +39,7 @@ export const sqlselectRandomGuestName = `
 SELECT pk_login AS login
 FROM users
 WHERE type = 2
-	AND flag_online = FALSE
+	($1 < last_login_at)
 ORDER BY RANDOM() LIMIT 1;
 `;
 
@@ -56,9 +59,12 @@ SELECT
 	u.pk_login AS login,
 	u.nickname AS nickname,
 	u.last_login_at AS last_login_at,
-	u.flag_online AS flag_online
+	(CASE WHEN $1 < u.last_login_at
+		THEN TRUE
+		ELSE FALSE
+    END)  AS flag_online
 FROM users AS u
-ORDER BY u.flag_online DESC, u.nickname
+ORDER BY flag_online DESC, u.nickname
 `;
 
 export const sqldeleteUser = `
@@ -72,7 +78,6 @@ INSERT INTO users(
 	pk_login,
 	password,
 	nickname,
-	flag_online,
 	last_login_at,
 	flag_tutorial_done
 )
@@ -81,30 +86,15 @@ VALUES (
 	:login,
 	:password,
 	:nickname,
-	:flag_online,
 	:last_login_at,
 	:flag_tutorial_done
 );
 `;
 
-export const sqlupdateExpiredUsers = `
-UPDATE users SET
-	flag_online = FALSE
-WHERE last_login_at <= $1;
-`;
-
 export const sqlupdateLastLogin = `
 UPDATE users SET
-	last_login_at = :now,
-	flag_online = TRUE
+	last_login_at = :now
 WHERE pk_login = :username;
-`;
-
-export const sqlresetGuestsPassword = `
-UPDATE users SET
-	password = null
-WHERE flag_online = FALSE
-AND type = 2
 `;
 
 export const sqleditUser = `

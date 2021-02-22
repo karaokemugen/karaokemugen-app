@@ -3,11 +3,16 @@ import {pg as yesql} from 'yesql';
 import {db, newDBTask} from '../lib/dao/database';
 import { DBUser } from '../lib/types/database/user';
 import { User } from '../lib/types/user';
+import { getConfig } from '../lib/utils/config';
+import { now } from '../lib/utils/date';
 import { DBGuest } from '../types/database/user';
-import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlresetGuestsPassword, sqlSelectAllDupeUsers, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateExpiredUsers, sqlupdateLastLogin } from './sql/user';
+import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlSelectAllDupeUsers, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateLastLogin } from './sql/user';
 
 export async function getUser(username: string): Promise<DBUser> {
-	const res = await db().query(yesql(sqlselectUserByName)({username: username}));
+	const res = await db().query(yesql(sqlselectUserByName)({
+		username: username,
+		last_login_time_limit: new Date(now() - (getConfig().Frontend.AuthExpireTime * 60 * 1000))
+	}));
 	return res.rows[0];
 }
 
@@ -22,7 +27,7 @@ export function deleteUser(username: string) {
 }
 
 export async function listUsers(): Promise<DBUser[]> {
-	const res = await db().query(sqlselectUsers);
+	const res = await db().query(sqlselectUsers, [new Date(now() - (getConfig().Frontend.AuthExpireTime * 60 * 1000))]);
 	return res.rows;
 }
 
@@ -38,7 +43,6 @@ export function addUser(user: User) {
 		password: user.password,
 		nickname: user.nickname,
 		last_login_at: user.last_login_at,
-		flag_online: user.flag_online,
 		flag_tutorial_done: user.flag_tutorial_done || false
 	}));
 }
@@ -78,18 +82,10 @@ export function reassignToUser(oldUsername: string, username: string) {
 	]);
 }
 
-export function updateExpiredUsers(expireTime: Date) {
-	return db().query(sqlupdateExpiredUsers, [expireTime]);
-}
-
 export async function getRandomGuest(): Promise<string> {
-	const res = await db().query(sqlselectRandomGuestName);
+	const res = await db().query(sqlselectRandomGuestName, [new Date(now() - (getConfig().Frontend.AuthExpireTime * 60 * 1000))]);
 	if (res.rows[0]) return res.rows[0].login;
 	return null;
-}
-
-export function resetGuestsPassword() {
-	return db().query(sqlresetGuestsPassword);
 }
 
 export function updateUserLastLogin(username: string) {
