@@ -251,7 +251,7 @@ export async function createUser(user: User, opts: UserOpts = {
 	if (opts.admin) user.type = 0;
 	user.nickname = user.nickname || user.login;
 	user.login = user.login.toLowerCase();
-	user.last_login_at = new Date();
+	user.last_login_at = new Date(0);
 	user.avatar_file = user.avatar_file || 'blank.png';
 	user.flag_online = user.flag_online || false;
 
