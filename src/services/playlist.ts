@@ -769,8 +769,8 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 		if (params.pos) {
 			// If -1 move the song right after the one playing.
 			if (params.pos === -1) {
-				const plc = await getPLCInfoMini(pl.plcontent_id_playing);
-				params.pos = plc.pos + 1;
+				const playingPLC = await getPLCInfoMini(pl.plcontent_id_playing);
+				params.pos = playingPLC.pos + 1;
 			}
 			songsLeftToUpdate.add({
 				username: plc.username,
@@ -779,6 +779,11 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 			await shiftPosInPlaylist(plc.playlist_id, params.pos, 1);
 			await setPos(plc.playlistcontent_id, params.pos);
 			await reorderPlaylist(plc.playlist_id);
+			const currentSong = getState().player.currentSong;
+			// If our new PLC has a position higher or equal than the current song pos in state, we need to update getCurrentSong's position
+			if (currentSong.pos <= params.pos && plc.playlist_id === getState().currentPlaylistID) {
+				setState({player: {currentSong: await getCurrentSong()}});
+			}
 		}
 	}
 	for (const songUpdate of songsLeftToUpdate.values()) {
