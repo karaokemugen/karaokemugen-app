@@ -39,7 +39,7 @@ export const sqlselectRandomGuestName = `
 SELECT pk_login AS login
 FROM users
 WHERE type = 2
-	($1 < last_login_at)
+	AND ($1 > last_login_at)
 ORDER BY RANDOM() LIMIT 1;
 `;
 
