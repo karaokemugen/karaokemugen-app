@@ -19,6 +19,7 @@ import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
+import { generateBlacklist } from './blacklist';
 import {getKara, getKaras} from './kara';
 import { editKara } from './kara_creation';
 import { getRepo, getRepos } from './repo';
@@ -39,7 +40,10 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await addKara(kara);
 	emitWS('statsRefresh');
 	await updateTags(kara);
-	if (opts.refresh) await refreshKarasAfterDBChange('ADD', kara.kid, true);
+	if (opts.refresh) {
+		await refreshKarasAfterDBChange('ADD', kara.kid, true);
+		generateBlacklist();
+	}
 }
 
 export async function editKaraInDB(kara: Kara, opts = {
@@ -49,7 +53,10 @@ export async function editKaraInDB(kara: Kara, opts = {
 	const promises = [updateKara(kara)];
 	if (kara.newTags) promises.push(updateTags(kara));
 	await Promise.all(promises);
-	if (opts.refresh) await refreshKarasAfterDBChange('UPDATE', kara.kid, kara.newTags);
+	if (opts.refresh) {
+		await refreshKarasAfterDBChange('UPDATE', kara.kid, kara.newTags);
+		generateBlacklist();
+	}
 	profile('editKaraDB');
 }
 
@@ -84,6 +91,7 @@ export async function deleteKara(kid: string, refresh = true) {
 		await refreshKarasDelete(kid);
 		refreshTags();
 		refreshYears();
+		generateBlacklist();
 	}
 }
 

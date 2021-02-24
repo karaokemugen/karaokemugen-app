@@ -18,6 +18,7 @@ import { emitWS } from '../lib/utils/ws';
 import { KaraDownload, KaraDownloadRequest, QueueStatus } from '../types/download';
 import { DownloadItem } from '../types/downloader';
 import Downloader from '../utils/downloader';
+import { generateBlacklist } from './blacklist';
 import { integrateKaraFile } from './karaManagement';
 import { integrateTagFile } from './tag';
 
@@ -75,7 +76,10 @@ export function initDownloadQueue() {
 			logger.debug('Triggering database refresh', {service: 'Download'});
 			compareKarasChecksum();
 			refreshing = true;
-			refreshAll().then(() => refreshing = false);
+			refreshAll().then(() => {
+				refreshing = false;
+				generateBlacklist();
+			});
 			taskCounter = 0;
 		}
 		emitQueueStatus('updated');
@@ -88,7 +92,10 @@ export function initDownloadQueue() {
 	q.on('drain', async () => {
 		logger.info('No tasks left, stopping queue', {service: 'Download'});
 		if (!refreshing) {
-			refreshAll().then(() => vacuum());
+			refreshAll().then(() => {
+				generateBlacklist();
+				vacuum();
+			});
 			await compareKarasChecksum();
 		}
 		taskCounter = 0;
