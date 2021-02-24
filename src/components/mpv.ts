@@ -470,7 +470,7 @@ class Players {
 		let visu = '';
 		let avatar = '';
 		if (shouldDisplayVisualEffects) {
-			audio = '[aid1]loudnorm[a0];[a0]asplit[ao][a]';
+			audio += ';[a0]asplit[ao][a]';
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)
 			visu = [
