@@ -39,9 +39,9 @@ export default function downloadController(router: SocketIOApp) {
 			const numberOfDLs = await addDownloads(req.body.downloads);
 			return APIMessage('DOWNLOADS_QUEUED', numberOfDLs);
 		} catch(err) {
-			const code = 'DOWNLOADS_QUEUED_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
+			const msg = 'DOWNLOADS_QUEUED_ERROR';
+			errMessage(err?.msg || msg, err);
+			throw {code: err?.code || 500, message: APIMessage(err?.msg || msg)};
 		}
 	});
 	router.route('getDownloads', async (socket: Socket, req: APIData) => {
