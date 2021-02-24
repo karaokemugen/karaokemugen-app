@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api';
 import { SocketIOApp } from '../../lib/utils/ws';
-import {addDownloads, getDownload, getDownloads, pauseQueue, startDownloads, wipeDownloads} from '../../services/download';
+import {addDownloads, getDownloads, pauseQueue, startDownloads, wipeDownloads} from '../../services/download';
 import { addDownloadBLC, getDownloadBLC, removeDownloadBLC } from '../../services/downloadBLC';
 import { cleanAllKaras, downloadAllKaras, downloadRandomSongs, getAllRemoteKaras, getAllRemoteTags, updateAllBases, updateAllKaras, updateAllMedias } from '../../services/downloadUpdater';
 import { APIMessage,errMessage } from '../common';
@@ -91,55 +91,7 @@ export default function downloadController(router: SocketIOApp) {
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
-	});
-	router.route('getDownload', async (socket: Socket, req: APIData) => {
-		/**
-	 * @api {get} /downloads Get queued downloads
-	 * @apiName GetDownloads
-	 * @apiVersion 3.1.0
-	 * @apiGroup Downloader
-	 * @apiPermission admin
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiSuccess {Object[]} downloads Queued download objects
-	 * @apiSuccess {string} downloads/name Name of song in queue (cosmetic)
-	 * @apiSuccess {Object} downloads/urls List of URLs for the various files needed: `media`, `lyrics`, `kara`, `serie` and `tag`. Tag and Serie are arrays, the rest are objects with a `remote` URL and `local` file property
-	 * @apiSuccess {number} downloads/size Size in bytes for download
-	 * @apiSuccess {uuid} downloads/uuid Download UUID
-	 * @apiSuccess {date} downloads/started_at When the download was started
-	 * @apiSuccess {string} downloads/status Status codes : `DL_PLANNED`, `DL_DONE`, `DL_FAILED`, `DL_RUNNING`
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * [
-	 * 	{
-	 * 		name: "ENG - Cowboy Bebop - OP - Tank",
-	 * 		urls: {
-	 * 			media: {
-	 * 				remote: "http://xxx/downloads/ENG - Cowboy Bebop - OP - Tank.mp4",
-	 * 				local: "ENG - Cowboy Bebop - OP - Tank.mp4"
-	 * 			}
-	 * 			...
-	 * 		},
-	 * 		size: 12931930,
-	 * 		uuid: "3e1efc1c-e289-4445-8637-b944a6b00c6f",
-	 * 		started_at: 2019-12-31T01:21:00
-	 * 		status: "DL_PLANNED"
-	 * 	},
-	 * 	...
-	 * ]
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 * "Error getting downloads: ..."
-	 */
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
-		try {
-			const download = await getDownload(req.body.uuid);
-			return download;
-		} catch(err) {
-			const code = 'DOWNLOADS_GET_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
-		}
-	});
+	});	
 	router.route('deleteDownloads', async (socket: Socket, req: APIData) => {
 	/**
  * @api {delete} Empty download queue

@@ -5,7 +5,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import { APIMessage } from '../controllers/common';
 import { compareKarasChecksum } from '../dao/database';
-import {emptyDownload, initDownloads, insertDownloads, selectDownload, selectDownloads, selectPendingDownloads, updateDownload} from '../dao/download';
+import {emptyDownload, initDownloads, insertDownloads, selectDownloads, selectPendingDownloads, updateDownload} from '../dao/download';
 import { refreshAll, vacuum } from '../lib/dao/database';
 import { DownloadBundle } from '../lib/types/downloads';
 import {resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
@@ -320,10 +320,6 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 
 export function getDownloads() {
 	return selectDownloads();
-}
-
-export function getDownload(uuid: string) {
-	return selectDownload(uuid);
 }
 
 export function setDownloadStatus(uuid: string, status: string) {
