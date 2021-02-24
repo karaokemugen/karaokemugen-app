@@ -17,6 +17,7 @@ It also provides an easy way to share your karaoke with friends with **kara.moe 
 Upon your first launch of thi snew version, you'll get a summary of the data we collect and how we use it. You can choose to disable data collection at anytime if you object to it.
 
 We also added a system to more easily manage news updates whenever you install a new version of Karaoke Mugen (#845)
+
 #### Stats are now per repository (#875)
 
 Stats can now be sent per-repository and are not global anymore. This means you can choose to send your stats data only to one repository but not to the other.
@@ -93,6 +94,7 @@ It can be enabled in the Window menu.
 ### Improvements
 
 - Security code begone! The security code still exists when you're using a browser, but when using the app's electron browser, it will communicate with the app directly to get it and authenticate you. (#891)
+- When creating automixes, the songs' requesters are now the ones who had that song in their favorites (#897)
 - In streamer mode, stopping the player during a pause will disable pause time (allowing you to manually play the song once you're ready to sing again.) (#890)
 - The player window now has borders! (you can disable them like it was before) (#889)
 - Player window will stop resizing itself depending on the aspect ratio of the video (#888)
@@ -119,9 +121,12 @@ It can be enabled in the Window menu.
 - Database rework! We reworked how songs are stored and accessed in the database, making adding/editing/removing karaokes and tags will be much faster for karaoke database maintainers. It also allows you to edit your song library during a karaoke as it won't conflict with users accessing it (#884 #882)
 - All window modals have been reworked and are more beautiful. (#881)
 
-
 ### Fixes
 
+- "Next song is..." notifications are disabled if the playlist is set as non visible (#896)
+- Playing a song from the library when the current playlist is near the end does not trigger a outro/encore jingle anymore (#908)
+- Telling if a user is connected to your karaoke session is now clearer (#906)
+- Fixed playlist outro triggered even though another song is due to play. This happened when you moved around a song from the playlsit to the end, after the currently last song (#905)
 - Karaoke and tag metadata can now contain | (pipe) characters (#844)
 - Editing a kara repository was creating errors (#780)
   - Copying a karaoke to a new repo updates correctly the database (#778)
