@@ -56,7 +56,7 @@ export async function initEngine() {
 		} catch (err) {
 			return false;
 		}
-	});
+	})();
 	if (state.opt.validate) {
 		try {
 			initStep(i18n.t('INIT_VALIDATION'));
