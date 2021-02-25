@@ -207,7 +207,10 @@ class Player {
 		if (conf.Player.PIP.Enabled) {
 			// We want a 16/9
 			const screens = await graphics();
-			const screen = conf.Player.Screen ? screens.displays[conf.Player.Screen] || screens.displays[0] : screens.displays[0];
+			const screen = (conf.Player.Screen ? 
+				(screens.displays[conf.Player.Screen] || screens.displays[0])
+				// Assume 1080p screen if systeminformation can't find the screen
+				: screens.displays[0]) || { currentResX: 1920 }; 
 			const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
 			const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
 			// By default, center.
