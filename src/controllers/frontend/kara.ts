@@ -278,6 +278,7 @@ export default function karaController(router: SocketIOApp) {
  *           "flag_favorites": false,
  *           "flag_upvoted": false,
  *           "gain": 6.34,
+ *           "loudnorm": "-9.48,-0.29,15.10,-20.44,-0.66"
  *           "karafile": "ENG - Dokidoki! PreCure - OP - Glitter Force Doki Doki Theme Song.kara",
  *           "kid": "aa252a23-c5b5-43f3-978e-f960b6bb1ef1",
  *           "languages": [

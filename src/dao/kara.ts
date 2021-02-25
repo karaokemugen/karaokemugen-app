@@ -36,6 +36,7 @@ export async function updateKara(kara: Kara) {
 		songorder: kara.songorder || null,
 		duration: kara.duration,
 		gain: kara.gain,
+		loudnorm: kara.loudnorm,
 		modified_at: kara.modified_at,
 		kid: kara.kid
 	}));
@@ -52,6 +53,7 @@ export async function addKara(kara: Kara) {
 		songorder: kara.songorder || null,
 		duration: kara.duration,
 		gain: kara.gain,
+		loudnorm: kara.loudnorm,
 		modified_at: kara.modified_at,
 		created_at: kara.created_at,
 		kid: kara.kid,
