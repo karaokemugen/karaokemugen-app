@@ -46,8 +46,14 @@ async function startRemote(): Promise<RemoteSuccess> {
 	}
 }
 
+function removeRemote() {
+	setState({ remoteAccess: null });
+	configureHost();
+}
+
 async function stopRemote() {
 	await commandKMServer<Record<never,never>>('remote stop', {body: {}});
+	removeRemote();
 }
 
 async function restartRemote() {
@@ -98,6 +104,7 @@ export async function initRemote() {
 		getKMServerSocket().onAny(proxy);
 		// This will be triggered on reconnection, as the first connect is handled by initKMServerCommunication
 		getKMServerSocket().on('connect', restartRemote);
+		getKMServerSocket().on('disconnect', removeRemote);
 		getWS().on('broadcast', broadcastForward);
 		// Strip token from public output to avoid leaks
 		delete data.token;
