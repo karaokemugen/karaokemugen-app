@@ -466,7 +466,13 @@ class Players {
 		const MP3Boilerplate = '[vid1]scale=-2:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]';
 		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
-		let audio = '[aid1]loudnorm[ao]';
+		let audio = '';
+		if (song.loudnorm) {
+			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
+			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}[ao]`;
+		} else {
+			audio = `[aid1]volume=${song.gain}dB[ao]`;
+		}
 		let visu = '';
 		let avatar = '';
 		if (shouldDisplayVisualEffects) {

@@ -214,6 +214,7 @@ SELECT ak.pk_kid AS kid,
 	ak.singers AS singers,
 	ak.misc AS misc,
     ak.gain AS gain,
+	ak.loudnorm AS loudnorm,
     pc.nickname AS nickname,
 	pc.created_at AS created_at,
 	ak.mediafile AS mediafile,
@@ -271,6 +272,7 @@ SELECT
   ak.karafile AS karafile,
   ak.duration AS duration,
   ak.gain AS gain,
+  ak.loudnorm AS loudnorm,
   pc.created_at AS created_at,
   ak.created_at AS kara_created_at,
   ak.modified_at AS kara_modified_at,
@@ -320,7 +322,7 @@ LEFT OUTER JOIN whitelist AS wl ON ak.pk_kid = wl.fk_kid
 LEFT OUTER JOIN favorites AS f on ak.pk_kid = f.fk_kid AND f.fk_login = :username
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
 `;
 
 export const sqlgetPLCInfoMini = `
