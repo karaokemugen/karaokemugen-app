@@ -111,9 +111,11 @@ export async function playCurrentSong(now: boolean) {
 			await mpv.play(kara);
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
-			await setPLCVisible(kara.playlistcontent_id);
-			await updatePlaylistDuration(kara.playlist_id);
-			await updateUserQuotas(kara);
+			await Promise.all([
+				setPLCVisible(kara.playlistcontent_id),
+				updatePlaylistDuration(kara.playlist_id),
+				updateUserQuotas(kara)
+			]);
 			emitWS('playlistInfoUpdated', kara.playlist_id);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
