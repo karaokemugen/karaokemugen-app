@@ -1321,12 +1321,12 @@ export async function updateUserQuotas(kara: PLC) {
 	]);
 	const freeTasks = [];
 	const usersNeedingUpdate: Set<string> = new Set();
-	for (const currentSong of currentPlaylist) {
-		for (const publicSong of publicPlaylist) {
-			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
-				freeTasks.push(freePLC(publicSong.playlistcontent_id));
-				usersNeedingUpdate.add(publicSong.username);
-			}
+	const freeSongs = currentPlaylist.filter(plc => plc.flag_free);
+	for (const freeSong of freeSongs) {
+		const publicSong = publicPlaylist.find(plc => plc.kid === freeSong.kid);
+		if (publicSong) {
+			freeTasks.push(freePLC(publicSong.playlistcontent_id));
+			usersNeedingUpdate.add(publicSong.username);
 		}
 	}
 	await Promise.all(freeTasks);
