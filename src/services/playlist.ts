@@ -612,9 +612,14 @@ export async function copyKaraToPlaylist(plc_ids: number[], playlist_id: number,
 				date_add: date_add
 			};
 		});
+		const PLCsToFree: number[] = [];
 		for (const index in plcList) {
 			const plcData = await getPLCInfoMini(plcList[index].playlistcontent_id);
 			if (!plcData) throw {code: 404, msg: `PLC ${plcList[index].playlistcontent_id} does not exist`};
+			// If source is public playlist and destination current playlist, free up PLCs from the public playlist.
+			if (plcList[index].playlist_id === getState().publicPlaylistID && playlist_id === getState().currentPlaylistID) {
+				PLCsToFree.push(plcList[index].playlistcontent_id);
+			}
 			plcList[index].kid = plcData.kid;
 			plcList[index].nickname = plcData.nickname;
 			plcList[index].created_at = new Date();
@@ -639,6 +644,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], playlist_id: number,
 		}
 		await addKaraToPL(plcList);
 		await Promise.all([
+			editPLC(PLCsToFree, {flag_free: true}),
 			updatePlaylistDuration(playlist_id),
 			updatePlaylistKaraCount(playlist_id)
 		]);
