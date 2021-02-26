@@ -86,7 +86,8 @@ export async function endPoll() {
 		const winner = await getPollResults();
 		const streamConfig = getConfig().Karaoke.StreamerMode;
 		if (streamConfig.Enabled) {
-			if (getState().player.mediaType === 'background') displayPoll(winner.index);
+			const state = getState();
+			if (state.player.mediaType === 'background' || state.player.mediaType ==='pauseScreen') displayPoll(winner.index);
 			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(winner);
 		}
 		pollEnding = true;
@@ -175,7 +176,7 @@ export function addPollVote(index: number, token: Token) {
 		message: 'This song is not in the poll'
 	};
 	voters.add(token.username.toLowerCase());
-	if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
+	if (getConfig().Karaoke.StreamerMode.Enabled && (getState().player.mediaType === 'background' || getState().player.mediaType === 'pauseScreen')) displayPoll();
 	emitWS('songPollUpdated', poll);
 	return {
 		code: 'POLL_VOTED',
@@ -241,7 +242,7 @@ export async function startPoll(): Promise<boolean> {
 		emitWS('newSongPoll',poll);
 	}
 	timerPoll();
-	if (conf.Karaoke.StreamerMode.Enabled && getState().player.mediaType === 'background') displayPoll();
+	if (conf.Karaoke.StreamerMode.Enabled && (getState().player.mediaType === 'background' || getState().player.mediaType === 'pauseScreen')) displayPoll();
 	return true;
 }
 

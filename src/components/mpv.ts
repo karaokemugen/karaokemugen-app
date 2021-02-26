@@ -207,10 +207,10 @@ class Player {
 		if (conf.Player.PIP.Enabled) {
 			// We want a 16/9
 			const screens = await graphics();
-			const screen = (conf.Player.Screen ? 
+			const screen = (conf.Player.Screen ?
 				(screens.displays[conf.Player.Screen] || screens.displays[0])
 				// Assume 1080p screen if systeminformation can't find the screen
-				: screens.displays[0]) || { currentResX: 1920 }; 
+				: screens.displays[0]) || { currentResX: 1920 };
 			const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
 			const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
 			// By default, center.
@@ -318,10 +318,9 @@ class Player {
 					playerState[status.name] = status.data;
 				}
 				// If we're displaying an image, it means it's the pause inbetween songs
-				if (/*playerState._playing && */!playerState.isOperating && playerState.mediaType !== 'background' &&
+				if (!playerState.isOperating && playerState.mediaType !== 'background' && playerState.mediaType !== 'pauseScreen' &&
 					(
-						/*(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||*/
-						(status.name === 'eof-reached' && status.data === true)
+						status.name === 'eof-reached' && status.data === true
 					)
 				) {
 					// Do not trigger 'pause' event from mpv
@@ -336,7 +335,7 @@ class Player {
 		// Handle pause/play via external ways
 		this.mpv.on('property-change', (status) => {
 			if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
-				playerState._playing === status.data || playerState.mediaType === 'background'
+				playerState._playing === status.data || playerState.mediaType === 'background' || playerState.mediaType === 'pauseScreen'
 			)) {
 				logger.debug(`${status.data ? 'Paused':'Resumed'} event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
 				playerState._playing = !status.data;
@@ -702,7 +701,7 @@ class Players {
 		await this.exec('recreate', [null, true]).catch(err => {
 			logger.error('Cannot restart mpv', {service: 'Player', obj: err});
 		});
-		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background') {
+		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background' || playerState.mediaType === 'pauseScreen') {
 			await this.loadBackground();
 		}
 	}
@@ -1070,6 +1069,10 @@ class Players {
 		try {
 			const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
 			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
+			if (nextSong) {
+				playerState.mediaType = 'pauseScreen';
+				emitPlayerState();
+			}
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
 			const command = {
 				command: [

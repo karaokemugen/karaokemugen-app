@@ -194,7 +194,7 @@ export function configureHost() {
 			setState({osURL: `http://${config.Karaoke.Display.ConnectionInfo.Host}${URLPort}`});
 		}
 	}
-	if (state.player.mediaType === 'background' && !state.songPoll) {
+	if ((state.player.mediaType === 'background' || state.player.mediaType === 'pauseScreen') && !state.songPoll) {
 		displayInfo();
 	}
 }
