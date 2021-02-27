@@ -100,6 +100,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<div>
 									<input
 										type="number"
+										data-exclude="true"
 										className=""
 										id="Karaoke.Quota.Time"
 										placeholder="1000"
@@ -119,6 +120,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<div>
 									<input
 										type="number"
+										data-exclude="true"
 										className=""
 										id="Karaoke.Quota.Songs"
 										placeholder="1000"
@@ -138,6 +140,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<div>
 									<input
 										type="number"
+										data-exclude="true"
 										className=""
 										id="Karaoke.Quota.FreeAutoTime"
 										placeholder="1000"
@@ -250,6 +253,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										</label>
 										<input
 											type="number"
+											data-exclude="true"
 											className="input-number-options"
 											id="Playlist.Medias.Jingles.Interval"
 											placeholder="20"
@@ -278,6 +282,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										</label>
 										<input
 											type="number"
+											data-exclude="true"
 											className="input-number-options"
 											id="Playlist.Medias.Sponsors.Interval"
 											placeholder="50"
@@ -406,6 +411,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 									<div>
 										<input
 											type="number"
+											data-exclude="true"
 											className=""
 											id="Karaoke.StreamerMode.PauseDuration"
 											placeholder="20"
@@ -486,6 +492,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										<input
 											className=""
 											type="number"
+											data-exclude="true"
 											id="Karaoke.Quota.FreeUpVotesRequiredMin"
 											onChange={this.onChange}
 											value={this.state.config['Karaoke.Quota.FreeUpVotesRequiredMin']}
@@ -502,6 +509,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										<input
 											className=""
 											type="number"
+											data-exclude="true"
 											id="Karaoke.Quota.FreeUpVotesRequiredPercent"
 											onChange={this.onChange}
 											value={this.state.config['Karaoke.Quota.FreeUpVotesRequiredPercent']}
@@ -518,6 +526,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<div>
 								<input
 									type="number"
+									data-exclude="true"
 									className=""
 									id="Karaoke.MinutesBeforeSessionEndsWarning"
 									placeholder="15"
@@ -546,6 +555,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										<input
 											className=""
 											type="number"
+											data-exclude="true"
 											id="Karaoke.Poll.Choices"
 											onChange={this.onChange}
 											value={this.state.config['Karaoke.Poll.Choices']}
@@ -560,6 +570,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										<input
 											className=""
 											type="number"
+											data-exclude="true"
 											id="Karaoke.Poll.Timeout"
 											onChange={this.onChange}
 											value={this.state.config['Karaoke.Poll.Timeout']}
