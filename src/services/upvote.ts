@@ -4,7 +4,7 @@ import {getUpvotesByPLC,insertUpvote,removeUpvote} from '../dao/upvote';
 import {getConfig} from '../lib/utils/config';
 import { emitWS } from '../lib/utils/ws';
 import {getState} from '../utils/state';
-import {freePLC, getPlaylistInfo, getPLCInfoMini, shufflePlaylist} from './playlist';
+import {freePLC, getPLCInfoMini} from './playlist';
 import {listUsers, updateSongsLeft} from './user';
 
 /** (Up|Down)vote a song. */
@@ -31,13 +31,8 @@ export async function addUpvote(plc_id: number, username: string) {
 		if (plc.playlist_id === getState().publicPlaylistID) {
 			emitWS('KIDUpdated', [{kid: plc.kid, flag_upvoted: true, username: username}]);
 		}
-		const pl = await getPlaylistInfo(plc.playlist_id, {role: 'admin', username: 'admin'});
 		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
-		if (pl.flag_autosortbylike) {
-			shufflePlaylist(pl.playlist_id, 'upvotes');
-		} else {
-			emitWS('playlistContentsUpdated', plc.playlist_id);
-		}
+		emitWS('playlistContentsUpdated', plc.playlist_id);
 	} catch(err) {
 		if (!err.msg) err.msg = 'UPVOTE_FAILED';
 		throw err;
@@ -61,13 +56,8 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		if (plc.playlist_id === getState().publicPlaylistID) {
 			emitWS('KIDUpdated', [{kid: plc.kid, flag_upvoted: false, username: username}]);
 		}
-		const pl = await getPlaylistInfo(plc.playlist_id, {role: 'admin', username: 'admin'});
 		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
-		if (pl.flag_autosortbylike) {
-			shufflePlaylist(pl.playlist_id, 'upvotes');
-		} else {
-			emitWS('playlistContentsUpdated', plc.playlist_id);
-		}
+		emitWS('playlistContentsUpdated', plc.playlist_id);
 	} catch(err) {
 		if (!err.msg) err.msg = 'DOWNVOTE_FAILED';
 		throw err;

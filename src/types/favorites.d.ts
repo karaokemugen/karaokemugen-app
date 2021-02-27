@@ -8,6 +8,10 @@ interface FavExportContent {
 	kid: string
 }
 
+export interface Favorite {
+	kid: string,
+	username: string
+}
 export interface FavExport {
 	Header: {
 		description: string,

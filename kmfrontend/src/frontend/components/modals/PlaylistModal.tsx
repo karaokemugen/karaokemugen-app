@@ -22,7 +22,6 @@ interface IState {
 	flag_current: boolean;
 	flag_public: boolean;
 	flag_visible: boolean;
-	flag_autosortbylike: boolean;
 }
 
 class PlaylistModal extends Component<IProps, IState> {
@@ -35,7 +34,6 @@ class PlaylistModal extends Component<IProps, IState> {
 		|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current)) || false,
 		flag_public: this.props.mode === 'edit' && this.props.playlistInfo?.flag_public || false,
 		flag_visible: this.props.mode === 'edit' && this.props.playlistInfo?.flag_visible || true,
-		flag_autosortbylike: this.props.mode === 'edit' && this.props.playlistInfo?.flag_autosortbylike || false
 	}
 
 	createPlaylist = async () => {
@@ -46,7 +44,6 @@ class PlaylistModal extends Component<IProps, IState> {
 				flag_visible: this.state.flag_visible,
 				flag_current: this.state.flag_current,
 				flag_public: this.state.flag_public,
-				flag_autosortbylike: this.state.flag_autosortbylike,
 			}
 		);
 		this.props.idPlaylist === -4 ? this.props.changeIdPlaylist(-4, response.id) : this.props.changeIdPlaylist(response);
@@ -60,7 +57,6 @@ class PlaylistModal extends Component<IProps, IState> {
 			flag_visible: this.state.flag_visible,
 			flag_current: this.state.flag_current,
 			flag_public: this.state.flag_public,
-			flag_autosortbylike: this.state.flag_autosortbylike,
 			pl_id: this.props.idPlaylist
 		});
 		setSettings(this.props.context.globalDispatch);
@@ -135,17 +131,6 @@ class PlaylistModal extends Component<IProps, IState> {
 											<div className="btn-large-container">
 												<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE')}</div>
 												<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.VISIBLE_DESC')}</div>
-											</div>
-										</button>
-									</div>
-									<div>
-										<button className="btn btn-default"
-											type="button" onClick={() => this.setState({ flag_visible: !this.state.flag_autosortbylike })}>
-											<input type="checkbox" checked={this.state.flag_autosortbylike}
-												onChange={() => this.setState({ flag_autosortbylike: !this.state.flag_autosortbylike })} />
-											<div className="btn-large-container">
-												<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.AUTOSORTBYLIKE')}</div>
-												<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.AUTOSORTBYLIKE_DESC')}</div>
 											</div>
 										</button>
 									</div>

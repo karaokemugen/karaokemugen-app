@@ -207,7 +207,10 @@ class Player {
 		if (conf.Player.PIP.Enabled) {
 			// We want a 16/9
 			const screens = await graphics();
-			const screen = conf.Player.Screen ? screens.displays[conf.Player.Screen] || screens.displays[0] : screens.displays[0];
+			const screen = (conf.Player.Screen ? 
+				(screens.displays[conf.Player.Screen] || screens.displays[0])
+				// Assume 1080p screen if systeminformation can't find the screen
+				: screens.displays[0]) || { currentResX: 1920 }; 
 			const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
 			const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
 			// By default, center.
@@ -449,7 +452,7 @@ class Player {
 	}
 
 	get isRunning() {
-		return this.mpv.isRunning;
+		return !!this.mpv?.isRunning;
 	}
 }
 
@@ -466,11 +469,17 @@ class Players {
 		const MP3Boilerplate = '[vid1]scale=-2:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]';
 		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
-		let audio = '[aid1]loudnorm[ao]';
+		let audio = '';
+		if (song.loudnorm) {
+			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
+			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}[ao]`;
+		} else {
+			audio = `[aid1]volume=${song.gain}dB[ao]`;
+		}
 		let visu = '';
 		let avatar = '';
 		if (shouldDisplayVisualEffects) {
-			audio = '[aid1]loudnorm[a0];[a0]asplit[ao][a]';
+			audio += ';[a0]asplit[ao][a]';
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)
 			visu = [

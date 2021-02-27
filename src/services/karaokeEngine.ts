@@ -108,24 +108,14 @@ export async function playCurrentSong(now: boolean) {
 			}
 			logger.debug('Karaoke selected', {service: 'Player', obj: kara});
 			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
-
-			/*await mpv.play({
-				media: kara.mediafile,
-				subfile: kara.subfile,
-				gain: kara.gain,
-				infos: kara.infos,
-				avatar: kara.avatar,
-				currentSong: kara,
-				duration: kara.duration,
-				repo: kara.repo,
-				spoiler: kara.misc && kara.misc.some(t => t.name === 'Spoiler')
-			});*/
 			await mpv.play(kara);
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
-			await setPLCVisible(kara.playlistcontent_id);
-			await updatePlaylistDuration(kara.playlist_id);
-			await updateUserQuotas(kara);
+			await Promise.all([
+				setPLCVisible(kara.playlistcontent_id),
+				updatePlaylistDuration(kara.playlist_id),
+				updateUserQuotas(kara)
+			]);
 			emitWS('playlistInfoUpdated', kara.playlist_id);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
@@ -246,7 +236,7 @@ export async function playerEnding() {
 		// Testing for position before last to play an encore
 		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
 		logger.debug(`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl?.playlist_id}`, {service: 'Player'});
-		if (conf.Playlist.Medias.Encores.Enabled && state.player.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed) {
+		if (conf.Playlist.Medias.Encores.Enabled && state.player.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed && !getState().singlePlay) {
 			try {
 				await mpv.playMedia('Encores');
 				setState({ encorePlayed: true });
@@ -265,7 +255,7 @@ export async function playerEnding() {
 		}
 		// Outros code, we're at the end of a playlist.
 		// Outros are played after the very last song.
-		if (state.player.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background') {
+		if (state.player.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background' && !state.singlePlay) {
 			if (conf.Playlist.Medias.Outros.Enabled && !state.randomPlaying) {
 				try {
 					await mpv.playMedia('Outros');

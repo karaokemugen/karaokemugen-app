@@ -22,8 +22,7 @@ UPDATE playlist SET
 	modified_at = :modified_at,
 	flag_visible = :flag_visible,
 	flag_current = :flag_current,
-	flag_public = :flag_public,
-	flag_autosortbylike = :flag_autosortbylike
+	flag_public = :flag_public
 WHERE pk_id_playlist = :playlist_id;
 `;
 
@@ -37,7 +36,6 @@ INSERT INTO playlist(
 	flag_visible,
 	flag_current,
 	flag_public,
-	flag_autosortbylike,
 	fk_login,
 	time_left
 )
@@ -50,7 +48,6 @@ VALUES(
 	:flag_visible,
 	:flag_current,
 	:flag_public,
-	:flag_autosortbylike,
 	:username,
 	0
 ) RETURNING pk_id_playlist
@@ -217,6 +214,7 @@ SELECT ak.pk_kid AS kid,
 	ak.singers AS singers,
 	ak.misc AS misc,
     ak.gain AS gain,
+	ak.loudnorm AS loudnorm,
     pc.nickname AS nickname,
 	pc.created_at AS created_at,
 	ak.mediafile AS mediafile,
@@ -274,6 +272,7 @@ SELECT
   ak.karafile AS karafile,
   ak.duration AS duration,
   ak.gain AS gain,
+  ak.loudnorm AS loudnorm,
   pc.created_at AS created_at,
   ak.created_at AS kara_created_at,
   ak.modified_at AS kara_modified_at,
@@ -323,7 +322,7 @@ LEFT OUTER JOIN whitelist AS wl ON ak.pk_kid = wl.fk_kid
 LEFT OUTER JOIN favorites AS f on ak.pk_kid = f.fk_kid AND f.fk_login = :username
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
 `;
 
 export const sqlgetPLCInfoMini = `
@@ -376,7 +375,6 @@ SELECT pk_id_playlist AS playlist_id,
 	flag_visible,
 	flag_current,
 	flag_public,
-	flag_autosortbylike AS flag_autosortbylike,
 	fk_id_plcontent_playing AS plcontent_id_playing,
 	fk_login AS username
 FROM playlist
@@ -394,7 +392,6 @@ SELECT pk_id_playlist AS playlist_id,
 	flag_visible,
 	COALESCE(flag_current, false) AS flag_current,
 	COALESCE(flag_public, false) AS flag_public,
-	flag_autosortbylike AS flag_autosortbylike,
 	fk_id_plcontent_playing AS plcontent_id_playing,
 	fk_login AS username
 FROM playlist

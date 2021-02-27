@@ -499,8 +499,6 @@
 			"PUBLIC_DESC": "La liste publique est celle recueillant les suggestions du public",
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible par le public",
-			"AUTOSORTBYLIKE": "Tri auto par likes",
-			"AUTOSORTBYLIKE_DESC": "La liste sera triée automatiquement lorsqu'un like sera ajouté/retiré",
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
 			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture"
 		},

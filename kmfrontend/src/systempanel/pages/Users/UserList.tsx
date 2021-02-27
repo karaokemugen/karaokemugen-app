@@ -123,10 +123,10 @@ class UserList extends Component<unknown, UserListState> {
 		dataIndex: 'flag_online',
 		key: 'flag_online',
 		filters: [
-			{ text: i18next.t('USERS.ONLINE'), value: '1' },
-			{ text: i18next.t('USERS.OFFLINE'), value: '0' },
+			{ text: i18next.t('USERS.ONLINE'), value: true },
+			{ text: i18next.t('USERS.OFFLINE'), value: false },
 		],
-		render: text => <Checkbox disabled defaultChecked={text === 1} />,
+		render: text => <Checkbox disabled defaultChecked={text === true} />,
 		filterMultiple: false,
 		onFilter: (value, record) => `${record.flag_online}` === value,
 	}, {

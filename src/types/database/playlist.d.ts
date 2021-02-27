@@ -50,7 +50,6 @@ export interface DBPL {
 	flag_visible: boolean,
 	flag_current: boolean,
 	flag_public: boolean,
-	flag_autosortbylike: boolean,
 	plcontent_id_playing?: number,
 	username: string
 }

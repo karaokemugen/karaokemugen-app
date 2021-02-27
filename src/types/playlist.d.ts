@@ -52,7 +52,8 @@ export interface Pos {
 }
 
 export interface PLCParams extends KaraParams {
-	playlist_id: number
+	playlist_id: number,
+	orderByLikes: boolean,
 }
 
 export interface PlaylistOpts {
