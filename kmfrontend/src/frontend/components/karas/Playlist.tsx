@@ -506,12 +506,9 @@ class Playlist extends Component<IProps, IState> {
 		const stateData = this.state.data as KaraList;
 		if (this.state.idPlaylist && stateData && stateData.infos && stateData.infos.count) {
 			plInfos =
-				this.state.idPlaylist !== -4 ? stateData.infos.from + '-' + stateData.infos.to : '';
-			plInfos +=
 				(this.state.idPlaylist !== -4
-					? ' / ' +
-					stateData.infos.count +
-					(!is_touch_device() ? ' karas' : '')
+					? stateData.infos.count +
+					' karas'
 					: '') +
 				(this.state.idPlaylist > -1 && this.state.playlistInfo
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS_DURATION')} ` +
