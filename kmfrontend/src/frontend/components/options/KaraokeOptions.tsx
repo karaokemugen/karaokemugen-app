@@ -613,9 +613,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<RemoteStatus/> : null }
 
 						<div className="settings-line subCategoryGroupPanel">
-							<div className="2" style={{ textAlign: 'center' }}>
-								{i18next.t('MYSTERY_SONG_SETTINGS')}
-							</div>
+							{i18next.t('MYSTERY_SONG_SETTINGS')}
 						</div>
 
 						<div className="settings-line">
