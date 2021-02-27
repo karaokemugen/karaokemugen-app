@@ -216,7 +216,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				</div>;
 			}));
 		}
-		for (const type of ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'MISC']) {
+		for (const type of ['FAMILIES', 'PLATFORMS', 'ORIGINS', 'MISC']) {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(...data[typeData.karajson].sort(this.compareTag).map(tag => {
