@@ -302,7 +302,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 			document.getElementById('root').removeEventListener('click', this.handleClick) :
 			document.getElementById('root').addEventListener('click', this.handleClick);
 		this.setState({ playlistCommands: !this.state.playlistCommands });
-		getTuto()?.move(1);
 	};
 
 	handleClick = (e: MouseEvent) => {
@@ -442,7 +441,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					>
 						<button title={i18next.t('ADVANCED.PLAYLIST_COMMANDS')} onClick={this.togglePlaylistCommands}
 							className={'btn btn-default showPlaylistCommands karaLineButton' + (this.state.playlistCommands ? ' btn-primary' : '')}>
-							<i className="fas fa-wrench"></i>
+							<i className="fas fa-cog" />
 						</button>
 						{this.state.playlistCommands ?
 							<ul className="dropdown-menu">
