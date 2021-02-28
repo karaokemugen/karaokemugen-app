@@ -11,7 +11,7 @@ import { DBPL } from '../../../../../src/types/database/playlist';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { buildKaraTitle, getSerieLanguage, getTagInLocale } from '../../../utils/kara';
+import {buildKaraTitle, getSerieLanguage, getTagInLocale, sortTagByPriority} from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -331,7 +331,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								</span> : null}
 							{is_touch_device() || this.props.scope === 'public' ?
 								<div className={`contentDiv contentDivMobile ${this.state.problematic ? 'problematic' : ''}`} onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
-									<div className="contentDivMobileTitle">{kara.title}</div>
+									<div className="contentDivMobileTitle">{kara.title} {kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}</div>
 									<div className="contentDivMobileSerie">{karaSerieOrSingers}</div>
 									{kara.upvotes && this.props.scope === 'admin' ?
 										<div className="upvoteCount"
