@@ -1,15 +1,17 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 class RestartDownloadsModal extends Component<unknown, unknown> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	closeModal = () => {
 		sessionStorage.setItem('dlQueueRestart', 'true');
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	}
 
 	deleteQueue = () => {

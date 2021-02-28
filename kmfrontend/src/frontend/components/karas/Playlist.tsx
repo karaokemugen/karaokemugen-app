@@ -281,7 +281,6 @@ class Playlist extends Component<IProps, IState> {
 						sponsor={typeof this.state.songsBeforeSponsor === 'number' && (index === this.state.playing +
 							this.state.songsBeforeSponsor)}
 						style={style}
-						context={this.context}
 						toggleKaraDetail={(kara, idPlaylist) => {
 							this.props.toggleKaraDetail(kara, idPlaylist, index);
 						}}
@@ -590,7 +589,7 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	addRandomKaras = () => {
-		callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', async (nbOfRandoms: number) => {
+		callModal(this.context.globalDispatch, 'prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', async (nbOfRandoms: number) => {
 			const randomKaras = await commandBackend(this.getPlaylistUrl(), {
 				filter: this.getFilterValue(this.props.side),
 				pl_id: this.state.idPlaylist,
@@ -599,7 +598,7 @@ class Playlist extends Component<IProps, IState> {
 			});
 			if (randomKaras.content.length > 0) {
 				const textContent = randomKaras.content.map((e: KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(this.context.globalState.settings.data, e, true)} <br /><br /></React.Fragment>);
-				callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
+				callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
 					const karaList = randomKaras.content.map((a: KaraElement) => {
 						return a.kid;
 					});
@@ -746,7 +745,7 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	deleteCriteria = (kara: DBBlacklist) => {
-		callModal('confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLACKLIST.BLCTYPE_${kara.blc_type}`) }),
+		callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLACKLIST.BLCTYPE_${kara.blc_type}`) }),
 			<div style={{ maxHeight: '200px' }}>
 				{((this.state.data as KaraList).content as unknown as DBBlacklist[])
 					.filter((e: DBBlacklist) => e.blc_id === kara.blc_id).map((criteria: DBBlacklist) => {

@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
-import { GlobalContextInterface } from '../../../store/context';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { is_touch_device } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
@@ -16,7 +16,6 @@ interface IProps {
 	leftKaraMenu: number;
 	closeKaraMenu: () => void;
 	transferKara: (event: any, pos?: number) => void;
-	context: GlobalContextInterface;
 }
 
 interface IState {
@@ -24,6 +23,8 @@ interface IState {
 }
 
 class KaraMenuModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	constructor(props: IProps) {
 		super(props);
@@ -90,7 +91,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 	addToBlacklist = () => {
 		commandBackend('createBLC', {
 			blcs: [{ type: 1001, value: this.state.kara?.kid }],
-			set_id: this.props.context.globalState.frontendContext.currentBlSet
+			set_id: this.context.globalState.frontendContext.currentBlSet
 		});
 		this.props.closeKaraMenu();
 	}

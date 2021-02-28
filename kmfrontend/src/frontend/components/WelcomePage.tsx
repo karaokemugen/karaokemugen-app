@@ -3,12 +3,12 @@ import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { Repository } from '../../../../src/lib/types/repo';
 import { Session } from '../../../../src/types/session';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { logout } from '../../store/actions/auth';
+import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import TasksEvent from '../../TasksEvent';
 import { commandBackend, getSocket } from '../../utils/socket';
@@ -49,7 +49,7 @@ class WelcomePage extends Component<unknown, IState> {
 			window.location.assign('/migrate');
 		} else if (this.context?.globalState.settings.data.config?.Online.Stats === undefined
 			|| this.context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
-			ReactDOM.render(<OnlineStatsModal />, document.getElementById('modal'));
+			showModal(this.context.globalDispatch, <OnlineStatsModal />);
 		} else {
 			this.getDownloadQueue();
 		}
@@ -76,7 +76,7 @@ class WelcomePage extends Component<unknown, IState> {
 	getDownloadQueue = async () => {
 		const downloadQueue = await commandBackend('getDownloads');
 		if (downloadQueue.length > 0 && !sessionStorage.getItem('dlQueueRestart')) {
-			ReactDOM.render(<RestartDownloadsModal />, document.getElementById('modal'));
+			showModal(this.context.globalDispatch, <RestartDownloadsModal />);
 		}
 	}
 
@@ -193,7 +193,7 @@ class WelcomePage extends Component<unknown, IState> {
 	};
 
 	toggleProfileModal = () => {
-		ReactDOM.render(<ProfilModal context={this.context} scope="admin" />, document.getElementById('modal'));
+		showModal(this.context.globalDispatch, <ProfilModal scope="admin" />);
 	};
 
 	render() {
@@ -204,7 +204,6 @@ class WelcomePage extends Component<unknown, IState> {
 		return (
 			<div className="start-page">
 				<div className="wrapper welcome">
-
 					<div className="logo">
 						<img src={logo} alt="Logo Karaoke Mugen" />
 					</div>

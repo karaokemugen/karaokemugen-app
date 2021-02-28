@@ -91,7 +91,7 @@ class Login extends Component<IProps, IState> {
 				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
 				logout(this.props.context.globalDispatch);
 			} else {
-				callModal('prompt', i18next.t('MAKE_ACCOUNT_ADMIN'), i18next.t('MAKE_ACCOUNT_ADMIN_MESSAGE'), async (securityCodeString: string) => {
+				callModal(this.props.context.globalDispatch, 'prompt', i18next.t('MAKE_ACCOUNT_ADMIN'), i18next.t('MAKE_ACCOUNT_ADMIN_MESSAGE'), async (securityCodeString: string) => {
 					await login(username, password, this.props.context.globalDispatch, parseInt(securityCodeString));
 					if (lastLocation) {
 						this.props.history.replace(lastLocation);

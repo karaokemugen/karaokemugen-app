@@ -2,13 +2,14 @@ import './KaraDetail.scss';
 
 import i18next from 'i18next';
 import React, { Component, MouseEvent, ReactNode } from 'react';
-import ReactDOM, { createPortal } from 'react-dom';
+import { createPortal } from 'react-dom';
 
 import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { setBgImage } from '../../../store/actions/frontendContext';
-import GlobalContext, { GlobalContextInterface } from '../../../store/context';
-import { getPreviewLink, getSerieLanguage, getTagInLocale } from '../../../utils/kara';
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
+import { getPreviewLink } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -21,7 +22,6 @@ interface IProps {
 	idPlaylist?: number;
 	playlistcontentId?: number;
 	showVideo?: (file: string) => void;
-	context: GlobalContextInterface;
 	closeOnPublic?: () => void;
 	changeView?: (
 		view: View,
@@ -70,9 +70,8 @@ class KaraDetail extends Component<IProps, IState> {
 		}
 	}
 
-	closeModal() {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+	closeModal = () => {
+		closeModal(this.context.globalDispatch);
 	}
 
 	componentDidUpdate() {
@@ -159,8 +158,7 @@ class KaraDetail extends Component<IProps, IState> {
 	};
 
 	onClick = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	}
 
 	makeFavorite = () => {
@@ -176,7 +174,7 @@ class KaraDetail extends Component<IProps, IState> {
 
 	addKara = async () => {
 		const response = await commandBackend('addKaraToPublicPlaylist', {
-			requestedby: this.props.context.globalState.auth.data.username,
+			requestedby: this.context.globalState.auth.data.username,
 			kid: this.props.kid
 		});
 		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
@@ -370,9 +368,12 @@ class KaraDetail extends Component<IProps, IState> {
 							</button> : null}
 						<div className="modal-title-block">
 							<h4 className="modal-title">{data.title}</h4>
-							<h5 className="modal-series">{data.series[0] ?
-								getSerieLanguage(this.props.context.globalState.settings.data, data.series[0], data.langs[0].name) :
-								getTagInLocale(data.singers[0], tagTypes.SERIES.type)}
+							<h5 className="modal-series">
+								<InlineTag tag={data.series[0] || data.singers[0]}
+									scope={this.props.scope}
+									changeView={this.props.changeView}
+									karaLang={data.langs[0].name}
+									tagType={data.series[0] ? 1:2} />
 							</h5>
 						</div>
 						{this.props.scope === 'admin' ?
@@ -397,7 +398,7 @@ class KaraDetail extends Component<IProps, IState> {
 								{header}
 								<div className="detailsKara">
 									<div className="centerButtons">
-										{this.props.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
+										{this.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
 										{showVideoButton}
 										{data.subfile ? (
 											<button
@@ -424,7 +425,7 @@ class KaraDetail extends Component<IProps, IState> {
 							this.placeHeader(header) : header}
 						<div className="detailsKara">
 							<div className="centerButtons">
-								{this.props.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
+								{this.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
 								{this.state.kara?.public_plc_id && this.state.kara?.public_plc_id[0] ? null : addKaraButton}
 								{showVideoButton}
 							</div>

@@ -48,7 +48,7 @@ class KMFrontend extends Component<unknown, IState> {
 	}
 
 	powerOff = () => {
-		callModal('confirm', `${i18next.t('SHUTDOWN')} ?`, '', async () => {
+		callModal(this.context.globalDispatch, 'confirm', `${i18next.t('SHUTDOWN')} ?`, '', async () => {
 			await commandBackend('shutdown');
 			this.setState({ shutdownPopup: true });
 		});

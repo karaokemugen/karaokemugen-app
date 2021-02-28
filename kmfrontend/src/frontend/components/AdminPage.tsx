@@ -1,10 +1,10 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { DBYear } from '../../../../src/lib/types/database/kara';
 import { PublicPlayerState } from '../../../../src/types/state';
 import { logout } from '../../store/actions/auth';
+import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { getNavigatorLanguageIn3B } from '../../utils/isoLanguages';
 import { commandBackend, getSocket } from '../../utils/socket';
@@ -105,7 +105,7 @@ class AdminPage extends Component<IProps, IState> {
 	};
 
 	adminMessage = () => {
-		ReactDOM.render(<AdminMessageModal />, document.getElementById('modal'));
+		showModal(this.context.globalDispatch, <AdminMessageModal />);
 	};
 
 	putPlayerCommando(event: any) {
@@ -186,9 +186,8 @@ class AdminPage extends Component<IProps, IState> {
 	};
 
 	toggleKaraDetail = (kara:KaraElement, idPlaylist: number) => {
-		ReactDOM.render(<KaraDetail kid={kara.kid} playlistcontentId={kara.playlistcontent_id} scope='admin'
-			idPlaylist={idPlaylist} showVideo={this.props.showVideo} context={this.context}>
-		</KaraDetail>, document.getElementById('modal'));
+		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.playlistcontent_id} scope='admin'
+			idPlaylist={idPlaylist} showVideo={this.props.showVideo} />);
 	};
 
 	render() {

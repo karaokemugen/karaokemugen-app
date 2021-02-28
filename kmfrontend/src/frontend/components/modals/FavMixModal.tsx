@@ -2,9 +2,10 @@ import './FavMixModal.scss';
 
 import i18next from 'i18next';
 import React, {Component, MouseEvent} from 'react';
-import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
@@ -18,6 +19,9 @@ interface IState {
 }
 
 class FavMixModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
+
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -36,8 +40,7 @@ class FavMixModal extends Component<IProps, IState> {
 	};
 
 	closeModal = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	};
 
 	onClickOutsideModal = (e: MouseEvent) => {

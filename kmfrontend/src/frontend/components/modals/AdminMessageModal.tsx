@@ -2,8 +2,9 @@ import './AdminMessageModal.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 interface IState {
@@ -13,6 +14,9 @@ interface IState {
 }
 
 class AdminMessageModal extends Component<unknown, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
+
 	constructor(props: unknown) {
 		super(props);
 		this.state = {
@@ -36,8 +40,7 @@ class AdminMessageModal extends Component<unknown, IState> {
 					: this.state.duration
 		};
 		commandBackend('displayPlayerMessage', msgData);
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	};
 
 	keyObserverHandler = (e: KeyboardEvent) => {
@@ -45,8 +48,7 @@ class AdminMessageModal extends Component<unknown, IState> {
 			this.onClick();
 		}
 		if (e.code === 'Escape') {
-			const element = document.getElementById('modal');
-			if (element) ReactDOM.unmountComponentAtNode(element);
+			closeModal(this.context.globalDispatch);
 		}
 	}
 
@@ -64,11 +66,10 @@ class AdminMessageModal extends Component<unknown, IState> {
 				<div className="modal-dialog">
 					<div className="modal-content">
 						<ul className="modal-header">
-							<h4 className="modal-title">{i18next.t('ESSENTIAL_MESSAGE')}</h4>
+							<h4 className="modal-title">{i18next.t('ADMIN_MESSAGE.ESSENTIAL_MESSAGE')}</h4>
 							<button className="closeModal"
 								onClick={() => {
-									const element = document.getElementById('modal');
-									if (element) ReactDOM.unmountComponentAtNode(element);
+									closeModal(this.context.globalDispatch);
 								}}>
 								<i className="fas fa-times" />
 							</button>

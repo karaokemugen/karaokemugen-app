@@ -1,15 +1,14 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { PollItem } from '../../../../../src/types/poll';
-import { GlobalContextInterface } from '../../../store/context';
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
 	hasVoted: () => void;
-	context: GlobalContextInterface;
 }
 
 interface IState {
@@ -18,6 +17,8 @@ interface IState {
 	poll: Array<PollItem>
 }
 class PollModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	constructor(props: IProps) {
 		super(props);
@@ -36,8 +37,7 @@ class PollModal extends Component<IProps, IState> {
 	postSong = (event: any) => {
 		commandBackend('votePoll', { index: event.target.value });
 		this.props.hasVoted();
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	};
 
 	render() {
@@ -51,8 +51,7 @@ class PollModal extends Component<IProps, IState> {
 							</li>
 							<button className="closeModal"
 								onClick={() => {
-									const element = document.getElementById('modal');
-									if (element) ReactDOM.unmountComponentAtNode(element);
+									closeModal(this.context.globalDispatch);
 								}}>
 								<i className="fas fa-times"></i>
 							</button>
@@ -69,7 +68,7 @@ class PollModal extends Component<IProps, IState> {
 												+ Math.floor(Math.random() * 256)
 												+ ',20%, 26%)'
 										}}>
-										{buildKaraTitle(this.props.context.globalState.settings.data, kara, true)}
+										{buildKaraTitle(this.context.globalState.settings.data, kara, true)}
 									</button>;
 								})}
 							</div>

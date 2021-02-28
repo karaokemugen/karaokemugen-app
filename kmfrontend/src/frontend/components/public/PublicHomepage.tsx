@@ -50,7 +50,7 @@ class PublicHomepage extends Component<IProps, IState> {
 				const response2 = await commandBackend('getKara', {
 					kid: chosenOne
 				});
-				callModal('confirm', i18next.t('CL_CONGRATS'), 
+				callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_CONGRATS'),
 					i18next.t('CL_ABOUT_TO_ADD', {
 						title: buildKaraTitle(this.context.globalState.settings.data, response2, true)
 					}), () => {

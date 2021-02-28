@@ -1,15 +1,17 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 class ClassicModeModal extends Component {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	playSong() {
 		commandBackend('play');
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	}
 
 	render() {
@@ -22,8 +24,7 @@ class ClassicModeModal extends Component {
 							<h4 className="modal-title">{i18next.t('CLASSIC_MODE_TITLE_MODAL')}</h4>
 							<button className="closeModal"
 								onClick={() => {
-									const element = document.getElementById('modal');
-									if (element) ReactDOM.unmountComponentAtNode(element);
+									closeModal(this.context.globalDispatch);
 								}}>
 								<i className="fas fa-times" />
 							</button>

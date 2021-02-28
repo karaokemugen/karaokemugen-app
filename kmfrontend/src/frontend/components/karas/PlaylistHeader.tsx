@@ -3,12 +3,12 @@ import './PlaylistHeader.scss';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import React, { Component, MouseEvent as MouseEventReact } from 'react';
-import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBPL, DBPLC } from '../../../../../src/types/database/playlist';
 import { setFilterValue } from '../../../store/actions/frontendContext';
+import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
@@ -96,19 +96,18 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	addOrEditPlaylist = (mode: 'create' | 'edit') => {
 		this.togglePlaylistCommands();
-		ReactDOM.render(<PlaylistModal
+		showModal(this.context.globalDispatch, <PlaylistModal
 			changeIdPlaylist={this.props.changeIdPlaylist}
 			idPlaylist={this.props.idPlaylist}
 			playlistInfo={this.props.playlistInfo}
 			bLSet={this.props.bLSet}
 			mode={mode}
-			context={this.context}
-		/>, document.getElementById('modal'));
+		/>);
 	};
 
 	deletePlaylist = () => {
 		this.togglePlaylistCommands();
-		ReactDOM.render(<DeletePlaylistModal
+		showModal(this.context.globalDispatch, <DeletePlaylistModal
 			changeIdPlaylist={this.props.changeIdPlaylist}
 			idPlaylist={this.props.idPlaylist}
 			playlistInfo={this.props.playlistInfo}
@@ -120,14 +119,14 @@ class PlaylistHeader extends Component<IProps, IState> {
 				return { value: set.blc_set_id.toString(), label: set.name, icons: [] };
 			})}
 			context={this.context}
-		/>, document.getElementById('modal'));
+		/>);
 	};
 
 	startFavMix = async () => {
 		this.togglePlaylistCommands();
 		const response = await commandBackend('getUsers');
 		const userList = response.filter((u: User) => (u.type as number) < 2);
-		ReactDOM.render(<FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />, document.getElementById('modal'));
+		showModal(this.context.globalDispatch, <FavMixModal changeIdPlaylist={this.props.changeIdPlaylist} userList={userList} />);
 	};
 
 	exportPlaylist = async () => {
@@ -193,7 +192,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 				const response = await commandBackend(url, data);
 				if (response.data.unknownKaras && response.data.unknownKaras.length > 0) {
 					const mediasize = response.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
-					callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
+					callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
 						<p>
 							{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
 						</p>
@@ -228,7 +227,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	deleteAllKaras = () => {
 		this.togglePlaylistCommands();
-		callModal('confirm', i18next.t('CL_EMPTY_LIST'), '', () => {
+		callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_EMPTY_LIST'), '', () => {
 			if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
 				commandBackend('emptyBLCSet', { set_id: this.props.bLSet?.blc_set_id });
 			} else if (this.props.idPlaylist === -3) {
@@ -292,10 +291,10 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	copyBlcSet = () => {
 		this.togglePlaylistCommands();
-		ReactDOM.render(<BlcSetCopyModal
+		showModal(this.context.globalDispatch, <BlcSetCopyModal
 			bLSetFrom={this.props.bLSet?.blc_set_id as number}
 			bLSetList={this.props.bLSetList.filter(blcset => blcset.blc_set_id !== this.props.bLSet?.blc_set_id)}
-		/>, document.getElementById('modal'));
+		/>);
 	}
 
 	togglePlaylistCommands = () => {
@@ -314,17 +313,17 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	openShuffleModal = () => {
 		this.togglePlaylistCommands();
-		ReactDOM.render(<ShuffleModal
+		showModal(this.context.globalDispatch, <ShuffleModal
 			idPlaylist={this.props.idPlaylist}
 			playlistWillUpdate={this.props.playlistWillUpdate}
 			playlistDidUpdate={this.props.playlistDidUpdate}
-		/>, document.getElementById('modal'));
+		/>);
 	}
 
 	openKaraMenu(event: MouseEventReact) {
 		if (event?.currentTarget) {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
-			ReactDOM.render(<CheckedKaraMenuModal
+			showModal(this.context.globalDispatch, <CheckedKaraMenuModal
 				checkedKaras={this.props.checkedKaras}
 				idPlaylist={this.props.idPlaylist}
 				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
@@ -332,14 +331,13 @@ class PlaylistHeader extends Component<IProps, IState> {
 				leftKaraMenu={element.left}
 				closeKaraMenu={this.closeKaraMenu}
 				context={this.context}
-			/>, document.getElementById('modal'));
+			/>);
 			this.setState({ karaMenu: true });
 		}
 	}
 
 	closeKaraMenu = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 		this.setState({ karaMenu: false });
 	}
 
