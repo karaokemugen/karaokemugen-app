@@ -222,7 +222,7 @@ class KaraDetail extends Component<IProps, IState> {
 					</div>;
 				}));
 			}
-			for (const type of ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']) {
+			for (const type of ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']) {
 				const tagData = tagTypes[type];
 				if (data[tagData.karajson]) {
 					karaTags.push(...data[tagData.karajson].sort(this.compareTag).map(tag => {
@@ -421,8 +421,7 @@ class KaraDetail extends Component<IProps, IState> {
 			} else {
 				infoKaraTemp = (
 					<React.Fragment>
-						{this.props.scope === 'public' ?
-							this.placeHeader(header) : header}
+						{this.placeHeader(header)}
 						<div className="detailsKara">
 							<div className="centerButtons">
 								{this.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
