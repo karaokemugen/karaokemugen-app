@@ -380,6 +380,12 @@
 		"Kono bangumi wa...",
 		"And thanks for the money."
 	],
+	"PAUSE_TIME": "Pause",
+	"PAUSE_TAGLINES": [
+		"Take a breath!",
+		"Time to drink!",
+		"We'll be right back!"
+	],
 	"SPONSOR": "Sponsors",
 	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"QUOTA_TYPE": "Quota type",

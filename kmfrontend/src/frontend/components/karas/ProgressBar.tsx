@@ -6,9 +6,8 @@ import React, { Component, createRef } from 'react';
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
-import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
+import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
 interface IProps {
@@ -146,6 +145,8 @@ class ProgressBar extends Component<IProps, IState> {
 				this.setState({ karaInfoText: i18next.t('ENCORES_TIME'), length: -1, animate: 0 });
 			} else if (data.mediaType === 'Sponsors') {
 				this.setState({ karaInfoText: i18next.t('SPONSOR_TIME'), length: -1, animate: 0 });
+			} else if (data.mediaType === 'pauseScreen') {
+				this.setState({ karaInfoText: i18next.t('PAUSE_TIME'), length: -1, animate: 0 });
 			} else {
 				const kara = data.currentSong;
 				const karaInfo = buildKaraTitle(this.context.globalState.settings.data, kara);
