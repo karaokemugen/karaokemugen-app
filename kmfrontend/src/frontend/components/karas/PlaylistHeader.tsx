@@ -305,7 +305,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	};
 
 	handleClick = (e: MouseEvent) => {
-		if (!(e.target as Element).closest('.dropdown-menu')) {
+		if (!(e.target as Element).closest('.dropdown-menu') && !(e.target as Element).closest('.showPlaylistCommands')) {
 			this.togglePlaylistCommands();
 		}
 	}
