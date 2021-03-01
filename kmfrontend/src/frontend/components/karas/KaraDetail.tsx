@@ -413,7 +413,10 @@ class KaraDetail extends Component<IProps, IState> {
 						<div className="detailsKara">
 							<div className="centerButtons">
 								{this.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
-								{this.state.kara?.public_plc_id && this.state.kara?.public_plc_id[0] ? null : addKaraButton}
+								{
+									this.state.kara?.public_plc_id?.length >= 1 &&
+									!this.context.globalState.settings.data.config.Playlist.AllowDuplicates ? null : addKaraButton
+								}
 								{showVideoButton}
 							</div>
 							{details}
