@@ -207,10 +207,10 @@ class Player {
 		if (conf.Player.PIP.Enabled) {
 			// We want a 16/9
 			const screens = await graphics();
-			const screen = (conf.Player.Screen ? 
+			const screen = (conf.Player.Screen ?
 				(screens.displays[conf.Player.Screen] || screens.displays[0])
 				// Assume 1080p screen if systeminformation can't find the screen
-				: screens.displays[0]) || { currentResX: 1920 }; 
+				: screens.displays[0]) || { currentResX: 1920 };
 			const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
 			const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
 			// By default, center.
@@ -723,14 +723,14 @@ class Players {
 					// At least, loudnorm
 					options['lavfi-complex'] = '[aid1]loudnorm[ao]';
 				}),
-			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repo))
+			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repository))
 				.then(res => subFile = res[0])
 				.catch(err => {
 					logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
 					logger.warn(`Subs NOT FOUND : ${song.subfile}`, {service: 'Player'});
 					subFile = '';
 				}),
-			resolveFileInDirs(song.mediafile, resolvedPathRepos('Medias', song.repo))
+			resolveFileInDirs(song.mediafile, resolvedPathRepos('Medias', song.repository))
 				.then(res => mediaFile = res[0])
 				.catch(err => {
 					logger.debug('Error while resolving media path', {service: 'Player', obj: err});
@@ -740,7 +740,7 @@ class Players {
 						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
 					} else {
 						mediaFile = '';
-						throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repo).toString()} and HTTP source)`);
+						throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source)`);
 					}
 				})
 		];
