@@ -389,6 +389,12 @@
 		"Kono bangumi wa...",
 		"Et merci pour l'argent."
 	],
+	"PAUSE_TIME": "Pause",
+	"PAUSE_TAGLINES": [
+		"On respire !",
+		"Buvez un coup !",
+		"On revient tout de suite !"
+	],
 	"SPONSOR": "Sponsors",
 	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"QUOTA_TYPE": "Limiter l'ajout de chanson par les utilisateurs",

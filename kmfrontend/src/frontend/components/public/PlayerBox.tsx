@@ -175,6 +175,13 @@ class PlayerBox extends Component<IProps, IState> {
 					subtitle: sample(i18next.t('SPONSOR_TAGLINES', { returnObjects: true }))
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
+			} else if (data.mediaType === 'pauseScreen') {
+				this.setState({
+					...PlayerBox.resetBox,
+					title: i18next.t('PAUSE_TIME'),
+					subtitle: sample(i18next.t('PAUSE_TAGLINES', { returnObjects: true }))
+				});
+				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else {
 				const kara = data.currentSong;
 				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getSerieLanguage(this.context.globalState.settings.data, e, kara.langs[0].name)).join(', ')
