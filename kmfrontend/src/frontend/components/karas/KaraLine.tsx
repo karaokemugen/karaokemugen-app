@@ -294,7 +294,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							<div className="actionDiv">
 								{!is_touch_device() && shouldShowProfile ?
 									<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-										alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file }} /> : null
+										alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file,
+											nickname: this.props.kara.username }} /> : null
 								}
 								<div className="btn-group">
 									{this.props.scope === 'admin' || this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
@@ -378,7 +379,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ?
 										<div className="img-container">
 											<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-												alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file }} />
+												alt="User Pic" user={{ login: this.props.kara.username,
+													avatar_file: this.props.avatar_file,
+													nickname: this.props.kara.username }} />
 										</div> : null}
 								</div> : null
 							}
