@@ -15,6 +15,7 @@
 	"PASSWORD_MANDATORY": "Le mot de passe est obligatoire",
 	"SECURITY_CODE_MANDATORY": "Le code de sécurité est obligatoire pour créer un compte opérateur",
 	"PASSWORD_DIFFERENT": "Les mots de passe ne sont pas identiques",
+	"DETAILS_CREATED": "Karaoké créé ",
 	"DETAILS_ADDED": "Ajouté ",
 	"DETAILS_ADDED_2": "le ",
 	"DETAILS_ADDED_3": " par ",

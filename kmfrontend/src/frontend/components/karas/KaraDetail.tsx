@@ -284,7 +284,7 @@ class KaraDetail extends Component<IProps, IState> {
 					}
 					<div className="detailsKaraLine">
 						<span>
-							{i18next.t('DETAILS_ADDED')}
+							{this.props.playlistcontentId ? i18next.t('DETAILS_ADDED'):i18next.t('DETAILS_CREATED')}
 							{data.created_at ? <>
 								{i18next.t('DETAILS_ADDED_2')}
 								<span className="boldDetails">{new Date(data.created_at).toLocaleString()}</span>

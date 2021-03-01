@@ -15,6 +15,7 @@
 	"PASSWORD_MANDATORY": "The password is mandatory",
 	"SECURITY_CODE_MANDATORY": "The security code is mandatory for create an operator account",
 	"PASSWORD_DIFFERENT": "Passwords are not identical",
+	"DETAILS_CREATED": "Karaoke created ",
 	"DETAILS_ADDED": "Added ",
 	"DETAILS_ADDED_2": "on ",
 	"DETAILS_ADDED_3": " by ",
