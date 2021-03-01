@@ -87,7 +87,7 @@ export async function endPoll() {
 		const streamConfig = getConfig().Karaoke.StreamerMode;
 		if (streamConfig.Enabled) {
 			const state = getState();
-			if (state.player.mediaType === 'background' || state.player.mediaType ==='pauseScreen') displayPoll(winner.index);
+			if (state.player.mediaType === 'pauseScreen') displayPoll(winner.index);
 			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(winner);
 		}
 		pollEnding = true;
