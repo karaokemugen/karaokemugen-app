@@ -105,7 +105,6 @@ It can be enabled in the Window menu.
 - KM will now ask you if you want to resume pending download on startup if there are any, instead of resuming them automatically like it did before (#852)
 - The tutorial has been revamped to be shorter and easier to understand (#839)
 - The search engine can now understand exclusion (-word) and group ("group of words") operators.
-  - Search results are now sorted by relevance.
 - (Admin interface) Rename, set as current/public have been merged into a single "Edit playlist" button (#832)
   - The create playlist screen also allows you to set a playlist as public and/or current.
 - Users now receive notifications when they can add songs again (when their quota becomes positive, #764).
