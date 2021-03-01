@@ -85,7 +85,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 
 	deleteFavorite = () => {
 		commandBackend('deleteFavorites', {
-			kid: [this.props.kara.kid]
+			kids: [this.props.kara.kid]
 		});
 	}
 
