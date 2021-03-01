@@ -12,7 +12,7 @@ import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { callModal, displayMessage, getTuto, is_touch_device } from '../../../utils/tools';
+import { callModal, displayMessage, is_touch_device } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';

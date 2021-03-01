@@ -259,6 +259,7 @@
 	"TOOLTIP_FAV_DEL": "Delete from favorites",
 	"TOOLTIP_SHOWLYRICS": "Show lyrics",
 	"TOOLTIP_SHOWVIDEO": "Show video preview",
+	"TOOLTIP_HIDEVIDEO": "Close video preview",
 	"TOOLTIP_UPVOTE": "Vote for this kara",
 	"WLCM_CONTACT": "Contact us",
 	"WLCM_GETSTARTED": "START TUTORIAL",

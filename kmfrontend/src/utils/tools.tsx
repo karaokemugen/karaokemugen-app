@@ -101,10 +101,6 @@ export function startIntro() {
 	return tuto;
 }
 
-export function getTuto() {
-	return tuto;
-}
-
 export function displayMessage(type: TypeOptions, message: any, time?: number) {
 	if (!document.hidden) {
 		if (!time) time = 3500;

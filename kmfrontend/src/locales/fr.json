@@ -266,6 +266,7 @@
 	"TOOLTIP_FAV_DEL": "Retirer des favoris",
 	"TOOLTIP_SHOWLYRICS": "Afficher les paroles",
 	"TOOLTIP_SHOWVIDEO": "Afficher un aperçu vidéo",
+	"TOOLTIP_HIDEVIDEO": "Fermer l'aperçu vidéo",
 	"TOOLTIP_UPVOTE": "Voter pour cette chanson",
 	"UPVOTE_NUMBER": "Soutiens",
 	"PROFILE_PASSWORDCONF": "Confirmer",

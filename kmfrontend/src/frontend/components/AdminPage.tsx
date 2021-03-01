@@ -8,7 +8,7 @@ import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { getNavigatorLanguageIn3B } from '../../utils/isoLanguages';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { displayMessage, getTuto } from '../../utils/tools';
+import { displayMessage } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import { Tag } from '../types/tag';
 import AdminHeader from './AdminHeader';
@@ -23,7 +23,6 @@ import Options from './options/Options';
 
 interface IProps {
 	powerOff: (() => void) | undefined;
-	showVideo: (file: string) => void;
 }
 
 interface IState {
@@ -187,7 +186,7 @@ class AdminPage extends Component<IProps, IState> {
 
 	toggleKaraDetail = (kara:KaraElement, idPlaylist: number) => {
 		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.playlistcontent_id} scope='admin'
-			idPlaylist={idPlaylist} showVideo={this.props.showVideo} />);
+			idPlaylist={idPlaylist} />);
 	};
 
 	render() {

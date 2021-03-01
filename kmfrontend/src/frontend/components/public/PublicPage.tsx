@@ -27,7 +27,6 @@ import PublicHomepage from './PublicHomepage';
 import TagsList from './TagsList';
 
 interface IProps {
-	showVideo: (file: string) => void;
 	route: RouteComponentProps;
 }
 
@@ -287,7 +286,6 @@ class PublicPage extends Component<IProps, IState> {
 								playlistcontentId={this.state.kara?.playlistcontent_id}
 								scope='public'
 								idPlaylist={this.state.idsPlaylist.left}
-								showVideo={this.props.showVideo}
 								closeOnPublic={() => {
 									this.props.route.history.goBack();
 									this.setState({ kara: undefined });

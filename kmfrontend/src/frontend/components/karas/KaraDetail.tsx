@@ -21,7 +21,6 @@ interface IProps {
 	scope: string;
 	idPlaylist?: number;
 	playlistcontentId?: number;
-	showVideo?: (file: string) => void;
 	closeOnPublic?: () => void;
 	changeView?: (
 		view: View,
@@ -33,8 +32,8 @@ interface IProps {
 
 interface IState {
 	kara?: DBPLCInfo;
-	showLyrics: boolean;
 	isFavorite: boolean;
+	showVideo: boolean;
 	lyrics: Array<string>;
 }
 
@@ -45,8 +44,8 @@ class KaraDetail extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			showLyrics: false,
 			isFavorite: false,
+			showVideo: false,
 			lyrics: []
 		};
 		if (this.props.kid || this.props.idPlaylist) {
@@ -92,8 +91,7 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	onClickOutsideModal = (e: MouseEvent) => {
-		const myElementToCheckIfClicksAreInsideOf = document.getElementsByClassName('modal-dialog')[0];
-		if (!myElementToCheckIfClicksAreInsideOf?.contains((e.target as Node))) {
+		if (!(e.target as Element).closest('.modal-dialog')) {
 			this.closeModal();
 		}
 	}
@@ -329,16 +327,23 @@ class KaraDetail extends Component<IProps, IState> {
 				</button>
 			);
 
-			const showVideoButton = isRemote() ? null : (
+			const showVideoButton = (isRemote() && !/\./.test(data.repository)) ? null : (
 				<button
 					type="button"
 					className="showVideo btn btn-action"
-					onClick={() => this.props.showVideo && this.props.showVideo((data as DBPLCInfo).mediafile)}
+					onClick={() => this.setState({ showVideo: !this.state.showVideo })}
 				>
 					<i className="fas fa-fw fa-video" />
-					<span>{i18next.t('TOOLTIP_SHOWVIDEO')}</span>
+					<span>{this.state.showVideo ? i18next.t('TOOLTIP_HIDEVIDEO'):i18next.t('TOOLTIP_SHOWVIDEO')}</span>
 				</button>
 			);
+
+			const video = this.state.showVideo ? (
+				<video src={isRemote() ?
+					`https://${data.repository}/downloads/medias/${data.mediafile}`:`/medias/${data.mediafile}`}
+					   controls={true} autoPlay={true} loop={true} playsInline={true}
+					   className={`modal-video${this.props.scope === 'public' ? ' public':''}`} />
+			) : null;
 
 			const lyricsKara = data.subfile ? (<div className="lyricsKara detailsKaraLine">
 				{this.state.lyrics?.length > 0 ? <div className="boldDetails">
@@ -399,6 +404,7 @@ class KaraDetail extends Component<IProps, IState> {
 										{makeFavButton}
 										{showVideoButton}
 									</div>
+									{video}
 									{details}
 									{lyricsKara}
 								</div>
@@ -419,10 +425,10 @@ class KaraDetail extends Component<IProps, IState> {
 								}
 								{showVideoButton}
 							</div>
+							{video}
 							{details}
 							{lyricsKara}
 						</div>
-
 					</React.Fragment>
 				);
 			}
