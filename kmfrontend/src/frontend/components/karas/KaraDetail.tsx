@@ -10,7 +10,7 @@ import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { getPreviewLink } from '../../../utils/kara';
-import { commandBackend } from '../../../utils/socket';
+import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
@@ -329,7 +329,7 @@ class KaraDetail extends Component<IProps, IState> {
 				</button>
 			);
 
-			const showVideoButton = (
+			const showVideoButton = isRemote() ? null : (
 				<button
 					type="button"
 					className="showVideo btn btn-action"
@@ -340,22 +340,20 @@ class KaraDetail extends Component<IProps, IState> {
 				</button>
 			);
 
-			const lyricsKara = (
-				<div className="lyricsKara detailsKaraLine">
-					{this.state.lyrics?.length > 0 ? <div className="boldDetails">
-						<i className="fas fa-fw fa-closed-captioning" />
-						{i18next.t('LYRICS')}
-					</div> : null}
-					{data.subfile && this.state.lyrics?.map((ligne, index) => {
-						return (
-							<React.Fragment key={index}>
-								{ligne}
-								<br />
-							</React.Fragment>
-						);
-					})}
-				</div>
-			);
+			const lyricsKara = data.subfile ? (<div className="lyricsKara detailsKaraLine">
+				{this.state.lyrics?.length > 0 ? <div className="boldDetails">
+					<i className="fas fa-fw fa-closed-captioning" />
+					{i18next.t('LYRICS')}
+				</div> : null}
+				{data.subfile && this.state.lyrics?.map((ligne, index) => {
+					return (
+						<React.Fragment key={index}>
+							{ligne}
+							<br />
+						</React.Fragment>
+					);
+				})}
+			</div>) : null;
 
 			const header = (
 				<div className={`modal-header img-background${this.props.scope === 'public' ? ' fixed' : ''}`} style={{ ['--img' as any]: this.props.scope === 'admin' ? `url('${getPreviewLink(data)}')` : 'none' }}>
@@ -398,21 +396,11 @@ class KaraDetail extends Component<IProps, IState> {
 								{header}
 								<div className="detailsKara">
 									<div className="centerButtons">
-										{this.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
+										{makeFavButton}
 										{showVideoButton}
-										{data.subfile ? (
-											<button
-												type="button"
-												className="fullLyrics btn btn-action"
-												onClick={() => this.setState({ showLyrics: !this.state.showLyrics })}
-											>
-												<i className="fas fa-fw fa-quote-right" />
-												<span>{i18next.t('TOOLTIP_SHOWLYRICS')}</span>
-											</button>
-										) : null}
 									</div>
 									{details}
-									{this.state.showLyrics ? lyricsKara : null}
+									{lyricsKara}
 								</div>
 							</div>
 						</div>
