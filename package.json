@@ -252,20 +252,19 @@
     },
     "dmg": {
       "icon": "build/DMG.icns",
-      "contents":
-      [
-	  {
-	    "x": 800,
-	    "y": 208,
-	    "name": "Karaoke Mugen.app"
-	  },
-	  {
-	    "x": 1000,
-	    "y": 208,
-	    "type": "link",
-	    "path": "/Applications"
-	  }
-	]
+      "contents": [
+        {
+          "x": 800,
+          "y": 208,
+          "name": "Karaoke Mugen.app"
+        },
+        {
+          "x": 1000,
+          "y": 208,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     },
     "win": {
       "target": [
