@@ -95,6 +95,18 @@
 	}
 }
 
+.modal-video {
+	border-radius: 8px;
+	margin-top: 1em;
+	width: 100%;
+	&.public {
+		@media screen and (min-width: $mugen-breakpoint-large) {
+			width: 33%;
+			margin: 1em 33% 0 33%;
+		}
+	}
+}
+
 .currentFav {
     color: #F3C71E !important;
 }

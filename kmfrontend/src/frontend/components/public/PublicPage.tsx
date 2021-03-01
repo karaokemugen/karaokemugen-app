@@ -1,11 +1,11 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { Route, RouteComponentProps, Switch } from 'react-router';
 
 import { DBPLC, DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import { setFilterValue } from '../../../store/actions/frontendContext';
+import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
@@ -27,7 +27,6 @@ import PublicHomepage from './PublicHomepage';
 import TagsList from './TagsList';
 
 interface IProps {
-	showVideo: (file: string) => void;
 	route: RouteComponentProps;
 }
 
@@ -189,15 +188,14 @@ class PublicPage extends Component<IProps, IState> {
 	newSongPoll = () => {
 		if (this.context.globalState.auth.isAuthenticated) {
 			this.setState({ isPollActive: true });
-			ReactDOM.render(<PollModal hasVoted={() => this.setState({ isPollActive: false })} context={this.context} />,
-				document.getElementById('modal'));
+			showModal(this.context.globalDispatch,
+				<PollModal hasVoted={() => this.setState({ isPollActive: false })} />);
 		}
 	}
 
 	songPollEnded = () => {
 		this.setState({ isPollActive: false });
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	}
 
 	songPollResult = (data: any) => {
@@ -240,11 +238,10 @@ class PublicPage extends Component<IProps, IState> {
 		if (this.state.playerStopped
 			&& data.currentRequester === this.context.globalState.auth.data.username
 			&& !this.state.classicModeModal) {
-			ReactDOM.render(<ClassicModeModal />, document.getElementById('modal'));
+			showModal(this.context.globalDispatch, <ClassicModeModal />);
 			this.setState({ classicModeModal: true });
 		} else if (!this.state.playerStopped && this.state.classicModeModal) {
-			const element = document.getElementById('modal');
-			if (element) ReactDOM.unmountComponentAtNode(element);
+			closeModal(this.context.globalDispatch);
 			this.setState({ classicModeModal: false });
 		}
 	};
@@ -274,14 +271,12 @@ class PublicPage extends Component<IProps, IState> {
 					<Switch>
 						<Route path="/public/user" render={() =>
 							<ProfilModal
-								context={this.context}
 								scope='public'
 								closeProfileModal={() => this.props.route.history.goBack()}
 							/>
 						} />
 						<Route path="/public/users" render={() =>
 							<UsersModal
-								context={this.context}
 								scope='public'
 								closeModal={() => this.props.route.history.goBack()}
 							/>
@@ -291,8 +286,6 @@ class PublicPage extends Component<IProps, IState> {
 								playlistcontentId={this.state.kara?.playlistcontent_id}
 								scope='public'
 								idPlaylist={this.state.idsPlaylist.left}
-								showVideo={this.props.showVideo}
-								context={this.context}
 								closeOnPublic={() => {
 									this.props.route.history.goBack();
 									this.setState({ kara: undefined });
@@ -333,9 +326,8 @@ class PublicPage extends Component<IProps, IState> {
 									{this.state.isPollActive ? (
 										<button
 											className="btn btn-default showPoll"
-											onClick={() => ReactDOM.render(
-												<PollModal hasVoted={() => this.setState({ isPollActive: false })} context={this.context} />,
-												document.getElementById('modal'))
+											onClick={() => showModal(this.context.globalDispatch,
+												<PollModal hasVoted={() => this.setState({ isPollActive: false })} />)
 											}
 										>
 											<i className="fas fa-chart-line" />
@@ -382,9 +374,8 @@ class PublicPage extends Component<IProps, IState> {
 								activePoll={this.state.isPollActive}
 								currentVisible={this.state.currentVisible}
 								publicVisible={this.state.publicVisible}
-								openPoll={() => ReactDOM.render(
-									<PollModal hasVoted={() => this.setState({ isPollActive: false })} context={this.context} />,
-									document.getElementById('modal'))
+								openPoll={() => showModal(this.context.globalDispatch,
+									<PollModal hasVoted={() => this.setState({ isPollActive: false })} />)
 								}
 							/>
 						} />

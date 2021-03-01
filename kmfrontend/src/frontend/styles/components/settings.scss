@@ -39,7 +39,7 @@
 	}
 }
 
-.settings-line:nth-child(even) {
+.settings-line:not(.subCategoryGroupPanel):nth-child(even) {
 	background-color: $mugen-playlist-even;
 	> div input:not([type="range"]) {
 		background-color: scale-color($mugen-playlist-even, $lightness: 15%);
@@ -63,11 +63,14 @@
 	overflow: auto;
 	background-color: transparent;
 }
+
 .subCategoryGroupPanel {
-	background-color: #41485e61;
-	border: solid #585b65;
+	background-color: scale-color($mugen-background, $lightness: 5%);
+	border: solid scale-color($mugen-background, $lightness: 15%);
 	border-width: 1px 0px;
-	padding: 0.75em;
+	padding: 0.5em;
+	font-size: 1.5em;
+	font-weight: bold;
 }
 
 #settings {

@@ -57,7 +57,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 
 				{this.props.idPlaylist === -5 ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_FAVS' : 'TOOLTIP_DELETE_FAVS')}
-						className={classValue} onClick={this.props.deleteFavorite}>
+						className={classValue + ' yellow'} onClick={this.props.deleteFavorite}>
 						<i className="fas fa-star" />
 					</button> : null
 				}

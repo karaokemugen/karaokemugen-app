@@ -32,6 +32,7 @@ import MpvIPC from '../utils/MpvIPC';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
+import Timeout = NodeJS.Timeout;
 
 const sleep = promisify(setTimeout);
 
@@ -87,6 +88,51 @@ function needsLock() {
 			return originFunc.call(target, ...params).then(releaseLock);
 		};
 	};
+}
+
+class MessageManager {
+	messages: Map<string, string>
+	timeouts: Map<string, Timeout>
+
+	constructor() {
+		this.messages = new Map();
+		this.timeouts = new Map();
+	}
+
+	addMessage(type: string, message: string, duration: number | 'infinite' = 'infinite') {
+		this.messages.set(type, message);
+		if (this.timeouts.has(type)) {
+			clearTimeout(this.timeouts.get(type));
+			this.timeouts.delete(type);
+		}
+		if (duration !== 'infinite') {
+			this.timeouts.set(type, setTimeout(this.messages.delete.bind(this.messages, type), duration).unref());
+		}
+	}
+
+	removeMessage(type: string) {
+		this.messages.delete(type);
+		if (this.timeouts.has(type)) {
+			clearTimeout(this.timeouts.get(type));
+			this.timeouts.delete(type);
+		}
+	}
+
+	getText() {
+		let txt = '';
+		for (const line of this.messages.values()) {
+			txt += line+'\n';
+		}
+		return txt;
+	}
+
+	clearMessages() {
+		this.messages.clear();
+		for (const timeout of this.timeouts.values()) {
+			clearTimeout(timeout);
+		}
+		this.timeouts.clear();
+	}
 }
 
 // Compute a quick diff for state
@@ -268,6 +314,7 @@ class Player {
 		playerState.timeposition = position;
 		emitPlayerState();
 		const conf = getConfig();
+		this.control.tickDisplay();
 		if (playerState?.currentSong?.duration) {
 			if (conf.Player.ProgressBarDock) {
 				playerState.mediaType === 'song'
@@ -295,7 +342,7 @@ class Player {
 				this.control.displayInfo();
 				playerState.displayingInfo = true;
 			} else if (playerState.displayingInfo) {
-				this.control.clearText();
+				this.control.messages.removeMessage('DI');
 			}
 			// Stop poll if position reaches 10 seconds before end of song
 			if (Math.floor(position) >= Math.floor(playerState.currentSong.duration - 10) &&
@@ -461,6 +508,8 @@ class Players {
 		monitor?: Player
 	};
 
+	messages: MessageManager
+
 	private static async genLavfiComplex(song: CurrentSong): Promise<string> {
 		const isMP3 = song.mediafile.endsWith('.mp3');
 		const shouldDisplayAvatar = song.avatar && getConfig().Karaoke.Display.Avatar;
@@ -468,7 +517,7 @@ class Players {
 		const MP3Boilerplate = '[vid1]scale=-2:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]';
 		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
-		let audio = '';
+		let audio: string;
 		if (song.loudnorm) {
 			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
 			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}[ao]`;
@@ -578,7 +627,7 @@ class Players {
 			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
 			// ensureRunning isn't needed on non-mpv commands
 			if (mpv && await this.ensureRunning(onlyOn, ignoreLock) === -1) return;
-			if (!(typeof cmd !== 'string' && cmd?.command[1] === 'show-text')) {
+			if (!(typeof cmd !== 'string' && cmd?.command[1] === 'osd-overlay')) {
 				logger.debug(`${mpv ? 'mpv ': ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {service: 'Player'});
 				logger.debug(`Running it for players ${JSON.stringify(onlyOn ? onlyOn:Object.keys(this.players))}`, {service: 'Player'});
 			}
@@ -642,6 +691,7 @@ class Players {
 	@needsLock()
 	private async bootstrapPlayers() {
 		await checkMpv();
+		this.messages = new MessageManager();
 		this.players = {
 			main: new Player({monitor: false}, this)
 		};
@@ -722,14 +772,14 @@ class Players {
 					// At least, loudnorm
 					options['lavfi-complex'] = '[aid1]loudnorm[ao]';
 				}),
-			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repo))
+			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repository))
 				.then(res => subFile = res[0])
 				.catch(err => {
 					logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
 					logger.warn(`Subs NOT FOUND : ${song.subfile}`, {service: 'Player'});
 					subFile = '';
 				}),
-			resolveFileInDirs(song.mediafile, resolvedPathRepos('Medias', song.repo))
+			resolveFileInDirs(song.mediafile, resolvedPathRepos('Medias', song.repository))
 				.then(res => mediaFile = res[0])
 				.catch(err => {
 					logger.debug('Error while resolving media path', {service: 'Player', obj: err});
@@ -739,7 +789,7 @@ class Players {
 						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
 					} else {
 						mediaFile = '';
-						throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repo).toString()} and HTTP source)`);
+						throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source)`);
 					}
 				})
 		];
@@ -784,7 +834,6 @@ class Players {
 			playerState.playing = true;
 			playerState._playing = true;
 			playerState.playerStatus = 'play';
-			this.clearText();
 			emitPlayerState();
 			setDiscordActivity('song', {
 				title: song.title,
@@ -832,8 +881,8 @@ class Players {
 				(mediaType === 'Jingles' || mediaType === 'Sponsors')
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
-						? this.message(conf.Playlist.Medias[mediaType].Message, 1000000)
-						: this.clearText();
+						? this.message(conf.Playlist.Medias[mediaType].Message)
+						: undefined;
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
@@ -1042,10 +1091,14 @@ class Players {
 		return playerState;
 	}
 
-	async message(message: string, duration = 10000, alignCode = 5) {
+	async tickDisplay() {
+		this.exec({ command: ['expand-properties', 'osd-overlay', 1, 'ass-events', this.messages?.getText() || ''] });
+	}
+
+	async message(message: string, duration = -1, alignCode = 5, forceType = 'admin') {
 		try {
 			const alignCommand = `{\\an${alignCode}}`;
-			const command = {
+			/*const command = {
 				command: [
 					'expand-properties',
 					'show-text',
@@ -1053,7 +1106,9 @@ class Players {
 					duration
 				]
 			};
-			await this.exec(command);
+			await this.exec(command);*/
+			this.messages.addMessage(forceType, alignCommand+message,
+				duration === -1 ? 'infinite':duration);
 			if (playerState.playing === false && !getState().songPoll) {
 				await sleep(duration);
 				this.displayInfo();
@@ -1074,7 +1129,7 @@ class Players {
 				emitPlayerState();
 			}
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
-			const command = {
+			/*const command = {
 				command: [
 					'expand-properties',
 					'show-text',
@@ -1082,7 +1137,9 @@ class Players {
 					duration,
 				]
 			};
-			await this.exec(command);
+			await this.exec(command);*/
+			this.messages.addMessage('DI', position+spoilerString+nextSongString+infos, duration === -1 ? 'infinite':duration);
+			this.tickDisplay();
 		} catch(err) {
 			logger.error('Unable to display song info', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -1090,7 +1147,7 @@ class Players {
 		}
 	}
 
-	async displayInfo(duration = 10000000) {
+	async displayInfo(duration = -1) {
 		try {
 			const conf = getConfig();
 			const state = getState();
@@ -1101,8 +1158,8 @@ class Players {
 				: '';
 			if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${state.osURL} !`; // TODO: internationalize the exclamation mark
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - http://karaokes.moe`;
-			const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
-			const command = {
+			const message = '{\\an1}{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
+			/*const command = {
 				command: [
 					'expand-properties',
 					'show-text',
@@ -1110,7 +1167,9 @@ class Players {
 					duration,
 				]
 			};
-			await this.exec(command);
+			await this.exec(command);*/
+			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite':duration);
+			this.tickDisplay();
 		} catch(err) {
 			logger.error('Unable to display infos', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -1118,34 +1177,16 @@ class Players {
 		}
 	}
 
-	static displayAddASong(thisArg: Players) {
-		if (!playerState.displayingInfo && getState().randomPlaying) thisArg.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'), 1000);
-	}
-
-	clearText() {
-		const command = {
-			command: [
-				'expand-properties',
-				'show-text',
-				'',
-				10,
-			]
-		};
-		return this.exec(command).then(() => {
-			playerState.displayingInfo = false;
-		}).catch(err => {
-			logger.error('Unable to clear text', {service: 'Player', obj: err});
-			sentry.error(err);
-			throw err;
-		});
+	displayAddASong() {
+		if (!playerState.displayingInfo && getState().randomPlaying) this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'),
+			1000, 4, 'addASong');
 	}
 
 	intervalIDAddASong: NodeJS.Timeout;
 
 	/** Initialize start displaying the "Add a song to the list" */
 	initAddASongMessage() {
-		const thisArg = this;
-		if (!this.intervalIDAddASong && getState().randomPlaying) this.intervalIDAddASong = setInterval(Players.displayAddASong, 2000, thisArg);
+		if (!this.intervalIDAddASong && getState().randomPlaying) this.intervalIDAddASong = setInterval(this.displayAddASong.bind(this), 2000);
 	}
 
 	/** Stop displaying the Add a song to the list */

@@ -31,7 +31,8 @@ class ProfilePicture extends Component<IProps, IState> {
 	}
 
 	render() {
-		return (<img src={this.state.url} alt={this.props.user?.nickname} title={this.props.user?.nickname} {...this.props} />);
+		const htmlProps = {...this.props, user: undefined};
+		return (<img src={this.state.url} alt={this.props.user?.nickname} title={this.props.user?.nickname} {...htmlProps} />);
 	}
 }
 

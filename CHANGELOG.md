@@ -105,7 +105,6 @@ It can be enabled in the Window menu.
 - KM will now ask you if you want to resume pending download on startup if there are any, instead of resuming them automatically like it did before (#852)
 - The tutorial has been revamped to be shorter and easier to understand (#839)
 - The search engine can now understand exclusion (-word) and group ("group of words") operators.
-  - Search results are now sorted by relevance.
 - (Admin interface) Rename, set as current/public have been merged into a single "Edit playlist" button (#832)
   - The create playlist screen also allows you to set a playlist as public and/or current.
 - Users now receive notifications when they can add songs again (when their quota becomes positive, #764).
@@ -120,6 +119,7 @@ It can be enabled in the Window menu.
 - Fingerprinting has been disabled. It allowed to recognize browsers/devices to keep them from unlogging and relogging as random guests to get new ones. Problem is a lot of browsers now keep the fingerprintjs library from working correctly for privacy/tracking reasons, so we stopped using it (#893)
 - Database rework! We reworked how songs are stored and accessed in the database, making adding/editing/removing karaokes and tags will be much faster for karaoke database maintainers. It also allows you to edit your song library during a karaoke as it won't conflict with users accessing it (#884 #882)
 - All window modals have been reworked and are more beautiful. (#881)
+- Admin messages can now coexist with the other messages (Go to kara.moe, song informations, b2e2bc52)
 
 ### Fixes
 

@@ -1,11 +1,11 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
+import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
-import { GlobalContextInterface } from '../../../store/context';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
@@ -14,7 +14,6 @@ interface IProps {
 	mode: 'create' | 'edit';
 	playlistInfo?: DBPL;
 	bLSet?: BLCSet;
-	context: GlobalContextInterface;
 }
 
 interface IState {
@@ -25,6 +24,8 @@ interface IState {
 }
 
 class PlaylistModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	state = {
 		name: this.props.mode === 'edit' && (this.props.idPlaylist === -4 ?
@@ -59,13 +60,12 @@ class PlaylistModal extends Component<IProps, IState> {
 			flag_public: this.state.flag_public,
 			pl_id: this.props.idPlaylist
 		});
-		setSettings(this.props.context.globalDispatch);
+		setSettings(this.context.globalDispatch);
 		this.closeModal();
 	};
 
 	closeModal = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	}
 
 	render() {

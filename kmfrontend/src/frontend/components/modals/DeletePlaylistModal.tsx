@@ -1,9 +1,9 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
+import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import { GlobalContextInterface } from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
@@ -55,8 +55,7 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 	};
 
 	closeModal = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.props.context.globalDispatch);
 	}
 
 	render() {

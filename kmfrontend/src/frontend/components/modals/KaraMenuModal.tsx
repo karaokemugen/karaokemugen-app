@@ -1,7 +1,9 @@
+import './KaraMenuModal.scss';
+
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
-import { GlobalContextInterface } from '../../../store/context';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { is_touch_device } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
@@ -16,19 +18,30 @@ interface IProps {
 	leftKaraMenu: number;
 	closeKaraMenu: () => void;
 	transferKara: (event: any, pos?: number) => void;
-	context: GlobalContextInterface;
 }
 
 interface IState {
 	kara?: KaraElement;
+	effect_favorite: boolean,
+	effect_blacklist: boolean,
+	effect_whitelist: boolean,
+	effect_free: boolean,
+	effect_visibility: boolean
 }
 
 class KaraMenuModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			kara: this.props.kara
+			kara: this.props.kara,
+			effect_favorite: false,
+			effect_blacklist: false,
+			effect_whitelist: false,
+			effect_free: false,
+			effect_visibility: false
 		};
 		this.getKaraDetail();
 	}
@@ -64,7 +77,8 @@ class KaraMenuModal extends Component<IProps, IState> {
 			plc_ids: [this.state.kara?.playlistcontent_id],
 			flag_free: true
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_free: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	};
 
 
@@ -73,7 +87,8 @@ class KaraMenuModal extends Component<IProps, IState> {
 			plc_ids: [this.state.kara?.playlistcontent_id],
 			flag_visible: !this.state.kara?.flag_visible
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_visibility: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	};
 
 	makeFavorite = () => {
@@ -84,26 +99,30 @@ class KaraMenuModal extends Component<IProps, IState> {
 			commandBackend('addFavorites', {
 				kids: [this.state.kara?.kid]
 			});
-		this.props.closeKaraMenu();
+		this.setState({ effect_favorite: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	};
 
 	addToBlacklist = () => {
 		commandBackend('createBLC', {
 			blcs: [{ type: 1001, value: this.state.kara?.kid }],
-			set_id: this.props.context.globalState.frontendContext.currentBlSet
+			set_id: this.context.globalState.frontendContext.currentBlSet
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_blacklist: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	}
 
 	addToWhitelist = () => {
 		commandBackend('addKaraToWhitelist', {
 			kids: [this.state.kara?.kid]
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_whitelist: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	}
 
 	handleClick = (e: MouseEvent) => {
-		if (!(e.target as Element).closest('#modal')) {
+		if (!(e.target as Element).closest('#modal') && !(e.target as Element).closest('.karaLineButton')) {
+			e.preventDefault();
 			this.props.closeKaraMenu();
 		}
 	}
@@ -152,25 +171,35 @@ class KaraMenuModal extends Component<IProps, IState> {
 						</li> : null
 					}
 					{this.props.idPlaylist !== -5 ?
-						<li>
+						<li className="animate-button-container">
 							<a href="#" onClick={this.makeFavorite}>
 								<i className="fas fa-fw fa-star" />
 								&nbsp;
 								{this.state.kara.flag_favorites ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
 							</a>
+							<a href="#" className={`animate-button-success${this.state.effect_favorite ? ' activate':''}`}>
+								<i className="fas fa-fw fa-check-square" />
+								&nbsp;
+								{this.state.kara.flag_favorites ? i18next.t('KARA_MENU.FAVORITES_REMOVED') : i18next.t('KARA_MENU.FAVORITES_ADDED')}
+							</a>
 						</li> : null
 					}
 					{this.props.publicOuCurrent && !this.state.kara.flag_free ?
-						<li>
+						<li className="animate-button-container">
 							<a href="#" onClick={this.freeKara} title={i18next.t('KARA_MENU.FREE')}>
 								<i className="fas fa-fw fa-gift" />
 								&nbsp;
 								{i18next.t('KARA_MENU.FREE_SHORT')}
 							</a>
+							<a href="#" className={`animate-button-success${this.state.effect_free ? ' activate':''}`}>
+								<i className="fas fa-fw fa-check-square" />
+								&nbsp;
+								{i18next.t('KARA_MENU.FREED')}
+							</a>
 						</li> : null
 					}
 					{this.props.idPlaylist >= 0 ?
-						<li>
+						<li className="animate-button-container">
 							<a href="#" onClick={this.changeVisibilityKara}
 								title={this.state.kara.flag_visible ? i18next.t('KARA_MENU.VISIBLE_OFF') : i18next.t('KARA_MENU.VISIBLE_ON')}>
 								{this.state.kara.flag_visible ?
@@ -186,23 +215,38 @@ class KaraMenuModal extends Component<IProps, IState> {
 									</React.Fragment>
 								}
 							</a>
+							<a href="#" className={`animate-button-success${this.state.effect_visibility ? ' activate':''}`}>
+								<i className="fas fa-fw fa-check-square" />
+								&nbsp;
+								{this.state.kara.flag_visible ? i18next.t('KARA_MENU.HIDDEN'):i18next.t('KARA_MENU.SHOWN')}
+							</a>
 						</li> : null
 					}
 					{this.props.idPlaylist !== -2 && this.props.idPlaylist !== -4 ?
-						<li>
+						<li className="animate-button-container">
 							<a href="#" onClick={this.addToBlacklist}>
 								<i className="fas fa-fw fa-ban" />
 								&nbsp;
 								{i18next.t('KARA_MENU.ADD_BLACKLIST')}
 							</a>
+							<a href="#" className={`animate-button-success${this.state.effect_blacklist ? ' activate':''}`}>
+								<i className="fas fa-fw fa-check-square" />
+								&nbsp;
+								{i18next.t('KARA_MENU.BLACKLISTED')}
+							</a>
 						</li> : null
 					}
 					{this.props.idPlaylist !== -3 ?
-						<li>
+						<li className="animate-button-container">
 							<a href="#" onClick={this.addToWhitelist}>
 								<i className="fas fa-fw fa-check-circle" />
 								&nbsp;
 								{i18next.t('KARA_MENU.ADD_WHITELIST')}
+							</a>
+							<a href="#" className={`animate-button-success${this.state.effect_whitelist ? ' activate':''}`}>
+								<i className="fas fa-fw fa-check-square" />
+								&nbsp;
+								{i18next.t('KARA_MENU.WHITELISTED')}
 							</a>
 						</li> : null
 					}

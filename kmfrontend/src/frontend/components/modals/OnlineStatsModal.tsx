@@ -2,8 +2,9 @@ import './OnlineProfileModal.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import RadioButton from '../generic/RadioButton';
 
@@ -14,6 +15,9 @@ interface IState {
 }
 
 class OnlineStatsModal extends Component<unknown, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
+
 	constructor(props: unknown) {
 		super(props);
 		this.state = {
@@ -31,8 +35,7 @@ class OnlineStatsModal extends Component<unknown, IState> {
 					}
 				}
 			});
-			const element = document.getElementById('modal');
-			if (element) ReactDOM.unmountComponentAtNode(element);
+			closeModal(this.context.globalDispatch);
 		}
 	};
 

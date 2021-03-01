@@ -1,16 +1,14 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
-import { Tokens } from '../../../../../src/types/user';
 import { setAuthentifactionInformation } from '../../../store/actions/auth';
-import { GlobalContextInterface } from '../../../store/context';
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
 	loginServ?: string;
 	type: 'delete' | 'convert';
-	context: GlobalContextInterface
 }
 
 interface IState {
@@ -19,6 +17,8 @@ interface IState {
 }
 
 class OnlineProfileModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	constructor(props: IProps) {
 		super(props);
@@ -37,12 +37,11 @@ class OnlineProfileModal extends Component<IProps, IState> {
 			response = await commandBackend('convertMyOnlineUserToLocal',
 				{ password: this.state.password });
 		}
-		const user = this.props.context.globalState.auth.data;
+		const user = this.context.globalState.auth.data;
 		user.token = response.token;
 		user.onlineToken = response.onlineToken;
-		setAuthentifactionInformation(this.props.context.globalDispatch, user);
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		setAuthentifactionInformation(this.context.globalDispatch, user);
+		closeModal(this.context.globalDispatch);
 	};
 
 	render() {
@@ -59,8 +58,7 @@ class OnlineProfileModal extends Component<IProps, IState> {
 							</h4>
 							<button className="closeModal"
 								onClick={() => {
-									const element = document.getElementById('modal');
-									if (element) ReactDOM.unmountComponentAtNode(element);
+									closeModal(this.context.globalDispatch);
 								}}>
 								<i className="fas fa-times"></i>
 							</button>

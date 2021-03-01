@@ -612,9 +612,14 @@ export async function copyKaraToPlaylist(plc_ids: number[], playlist_id: number,
 				date_add: date_add
 			};
 		});
+		const PLCsToFree: number[] = [];
 		for (const index in plcList) {
 			const plcData = await getPLCInfoMini(plcList[index].playlistcontent_id);
 			if (!plcData) throw {code: 404, msg: `PLC ${plcList[index].playlistcontent_id} does not exist`};
+			// If source is public playlist and destination current playlist, free up PLCs from the public playlist.
+			if (plcList[index].playlist_id === getState().publicPlaylistID && playlist_id === getState().currentPlaylistID) {
+				PLCsToFree.push(plcList[index].playlistcontent_id);
+			}
 			plcList[index].kid = plcData.kid;
 			plcList[index].nickname = plcData.nickname;
 			plcList[index].created_at = new Date();
@@ -639,6 +644,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], playlist_id: number,
 		}
 		await addKaraToPL(plcList);
 		await Promise.all([
+			editPLC(PLCsToFree, {flag_free: true}),
 			updatePlaylistDuration(playlist_id),
 			updatePlaylistKaraCount(playlist_id)
 		]);
@@ -1248,7 +1254,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		const versions = getSongVersion(kara);
 		const currentSong: CurrentSong = {...kara};
 		// Construct mpv message to display.
-		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.infos = '{\\bord1.2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {

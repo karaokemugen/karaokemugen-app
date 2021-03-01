@@ -10,4 +10,4 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import GlobalStateProvider from './store/GlobalStateProvider';
 
-ReactDOM.render(<GlobalStateProvider><App /></GlobalStateProvider>, document.getElementById('root'));
+ReactDOM.render(<GlobalStateProvider><App /></GlobalStateProvider>, document.getElementById('mountpoint'));

@@ -12,6 +12,10 @@
 	}
 }
 
+.karaLineButton.yellow {
+	color: map-get($mugen-colors, 'yellow');
+}
+
 .currentUpvote {
 	color: orangered;
 }

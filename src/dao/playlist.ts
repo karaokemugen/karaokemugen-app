@@ -123,7 +123,7 @@ export async function getPlaylistContentsMini(id: number): Promise<DBPLC[]> {
 }
 
 export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
-	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, true, false) : {sql: [], params: {}, additionalFrom: []};
+	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, true) : {sql: [], params: {}, additionalFrom: []};
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = 'pc.pos';
@@ -169,7 +169,8 @@ export async function getPLCInfo(id: number, forUser: boolean, username: string)
 		{
 			playlistcontent_id: id,
 			dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
-			username: username
+			username: username,
+			publicPlaylist_id: getState().publicPlaylistID
 		}));
 	return res.rows[0];
 }

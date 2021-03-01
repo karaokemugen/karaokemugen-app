@@ -2,7 +2,9 @@ import './Modal.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+
+import {closeModal} from '../../store/actions/modal';
+import GlobalContext from '../../store/context';
 
 interface IProps {
 	placeholder?: string;
@@ -18,6 +20,9 @@ interface IState {
 }
 
 class Modal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
+
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -35,13 +40,11 @@ class Modal extends Component<IProps, IState> {
 				this.props.callback();
 			}
 		}
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	};
 
 	abortModal = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	};
 
 

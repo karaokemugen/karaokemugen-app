@@ -1,9 +1,6 @@
 .inline-tag {
 	display: inline-block;
 	position: relative;
-	> span {
-		user-select: none;
-	}
 }
 
 .inline-tag.public span {

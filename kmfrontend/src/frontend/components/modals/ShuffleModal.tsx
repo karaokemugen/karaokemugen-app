@@ -1,7 +1,8 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
@@ -11,6 +12,8 @@ interface IProps {
 }
 
 class ShuffleModal extends Component<IProps, unknown> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	shuffle = async (method: string) => {
 		this.props.playlistWillUpdate();
@@ -20,8 +23,7 @@ class ShuffleModal extends Component<IProps, unknown> {
 	};
 
 	closeModal = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	}
 
 	render() {

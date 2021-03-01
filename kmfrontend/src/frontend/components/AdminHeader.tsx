@@ -1,11 +1,11 @@
 import i18next from 'i18next';
 import merge from 'lodash.merge';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import { logout } from '../../store/actions/auth';
+import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { callModal, expand } from '../../utils/tools';
@@ -72,12 +72,12 @@ class AdminHeader extends Component<IProps, IState> {
 
 	toggleProfileModal = () => {
 		this.setState({ dropDownMenu: !this.state.dropDownMenu });
-		ReactDOM.render(<ProfilModal context={this.context} scope="admin" />, document.getElementById('modal'));
+		showModal(this.context.globalDispatch, <ProfilModal scope="admin" />);
 	};
 
 	toggleUsersModal = () => {
 		this.setState({ dropDownMenu: !this.state.dropDownMenu });
-		ReactDOM.render(<UsersModal context={this.context} scope="admin" />, document.getElementById('modal'));
+		showModal(this.context.globalDispatch, <UsersModal scope="admin" />);
 	};
 
 	saveOperatorAdd = (songVisibility: boolean) => {
@@ -97,7 +97,7 @@ class AdminHeader extends Component<IProps, IState> {
 			&& this.props.idsPlaylist.left !== this.props.currentPlaylist?.playlist_id
 			&& this.props.idsPlaylist.right !== this.props.currentPlaylist?.playlist_id
 			&& (this.props.idsPlaylist.left > 0 || this.props.idsPlaylist.right > 0)) {
-			callModal('confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: this.props.currentPlaylist.name }), '',
+			callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: this.props.currentPlaylist.name }), '',
 				() => commandBackend('sendPlayerCommand', { command: 'play' }));
 		} else {
 			this.props.putPlayerCommando(event);

@@ -1,9 +1,12 @@
 import { EventEmitter } from 'events';
-import React from 'react';
+import React, { Dispatch } from 'react';
 import ReactDOM from 'react-dom';
 import { toast, TypeOptions } from 'react-toastify';
 
 import Tutorial from '../frontend/components/modals/Tutorial';
+import { showModal } from '../store/actions/modal';
+import { ShowModal } from '../store/types/modal';
+import useGlobalState from '../store/useGlobalState';
 import Modal from './components/Modal';
 
 let is_touch = window.outerWidth <= 1023;
@@ -98,10 +101,6 @@ export function startIntro() {
 	return tuto;
 }
 
-export function getTuto() {
-	return tuto;
-}
-
 export function displayMessage(type: TypeOptions, message: any, time?: number) {
 	if (!document.hidden) {
 		if (!time) time = 3500;
@@ -109,10 +108,9 @@ export function displayMessage(type: TypeOptions, message: any, time?: number) {
 	}
 }
 
-export function callModal(type: string, title: any, message: any, callback?: any, placeholder?: string, forceSmall?: boolean) {
-	ReactDOM.render(
+export function callModal(dispatch: Dispatch<ShowModal>, type: string, title: any, message: any, callback?: any, placeholder?: string, forceSmall?: boolean) {
+	showModal(dispatch,
 		React.createElement(Modal,
-			{ type: type, title: title, message: message, callback: callback, placeholder: placeholder, forceSmall: forceSmall }),
-		document.getElementById('modal')
+			{ type: type, title: title, message: message, callback: callback, placeholder: placeholder, forceSmall: forceSmall })
 	);
 }

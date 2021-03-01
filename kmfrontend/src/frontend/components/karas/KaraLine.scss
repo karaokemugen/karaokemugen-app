@@ -103,8 +103,11 @@
 		}
 		.contentDivMobileTitle {
 			display: flex;
-			.div:not(.tagConteneur) {
-				font-style: italic;
+			font-style: italic;
+			.tag.inline {
+				margin-bottom: 0;
+				padding: 0 0.25em;
+				font-style: normal;
 			}
 		}
 	}
