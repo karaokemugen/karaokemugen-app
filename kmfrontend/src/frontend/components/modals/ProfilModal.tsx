@@ -30,8 +30,7 @@ interface IProps {
 interface IState {
 	passwordDifferent: string;
 	nicknameMandatory: string;
-	user: UserProfile;
-	users: Array<User>;
+	user?: UserProfile;
 	userDetails?: User;
 	imageSource?: any;
 	cropAvatarModalOpen: boolean;
@@ -68,8 +67,7 @@ class ProfilModal extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			users: [],
-			user: {},
+			user: null,
 			passwordDifferent: 'form-control',
 			nicknameMandatory: 'form-control',
 			cropAvatarModalOpen: false
@@ -94,7 +92,6 @@ class ProfilModal extends Component<IProps, IState> {
 		const user = this.state.user;
 		(user[event.target.name as typesAttrUser] as number) = parseInt(event.target.value);
 		this.setState({ user: user });
-		this.updateUser();
 	};
 
 	changeLanguageFallback(name: 'main_series_lang' | 'fallback_series_lang', value: string) {
@@ -123,8 +120,8 @@ class ProfilModal extends Component<IProps, IState> {
 
 	async getUser() {
 		const user = await commandBackend('getMyAccount');
-		user.password = undefined;
-		this.setState({ user: user });
+		delete user.password;
+		this.setState({ user });
 	}
 
 	profileConvert = () => {
@@ -244,7 +241,7 @@ class ProfilModal extends Component<IProps, IState> {
 				displayMessage('warning', <div><label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br /> {i18next.t('LOG_OFFLINE.MESSAGE')}</div>, 8000);
 			}, 500);
 		}
-		const body = (<div className="modal-content">
+		const body = this.state.user ? (<div className="modal-content">
 			<div className="modal-header">
 				<h4 className="modal-title">{i18next.t('PROFILE')}</h4>
 				{this.props.scope === 'admin' ? // aka. it's a modal, otherwise it's a page and close button is not needed
@@ -308,12 +305,12 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine row">
 								<label className="col-xs-6 control-label">{i18next.t('SERIE_NAME_MODE')}</label>
 								<div className="col-xs-6">
-									<select name="series_lang_mode" defaultValue={this.state.user.series_lang_mode}
-										onChange={this.onClickSelect}>
-										<option value={-1}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
-										<option value={0}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-										<option value={3}>{i18next.t('SERIE_NAME_MODE_USER')}</option>
-										<option value={4}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
+									<select name="series_lang_mode" onChange={this.onClickSelect}
+										defaultValue={this.state.user.series_lang_mode.toString()}>
+										<option value={'-1'}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
+										<option value={'0'}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
+										<option value={'3'}>{i18next.t('SERIE_NAME_MODE_USER')}</option>
+										<option value={'4'}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
 									</select>
 								</div>
 							</div>
@@ -366,8 +363,8 @@ class ProfilModal extends Component<IProps, IState> {
 							</div>
 							<div className="profileLine profileButtonLine" >
 								<button type="button" className="btn btn-action"
-									onClick={() => {
-										this.updateUser();
+									onClick={async () => {
+										await this.updateUser();
 										this.closeModal();
 									}}>
 									{i18next.t('SUBMIT')}
@@ -378,7 +375,7 @@ class ProfilModal extends Component<IProps, IState> {
 					}
 				</div>
 			</div>
-		</div>);
+		</div>) : null;
 		return (
 			this.state.cropAvatarModalOpen ? null :
 				this.props.scope === 'public' ?
