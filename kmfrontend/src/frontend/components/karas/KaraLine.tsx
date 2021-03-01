@@ -241,12 +241,12 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		return problematic;
 	}
 
-	getSerieOrSingers(data: KaraElement) {
+	getSerieOrSingers = (data: KaraElement) => {
 		return (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(this.context.globalState.settings.data, e, data.langs[0].name, this.props.i18nTag)).join(', ')
 			: data.singers.map(e => getTagInLocale(e, this.props.i18nTag)).join(', ');
 	}
 
-	openKaraMenu(event: MouseEvent) {
+	openKaraMenu = (event: MouseEvent) => {
 		if (event?.currentTarget) {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			showModal(this.context.globalDispatch, <KaraMenuModal
@@ -318,7 +318,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 												this.state.karaMenu ? this.closeKaraMenu() : this.openKaraMenu(event);
 											}}
 											className={'btn btn-sm btn-action showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
-											<i className="fas fa-wrench"></i>
+											<i className="fas fa-wrench" />
 										</button> : null
 									}
 								</div>
