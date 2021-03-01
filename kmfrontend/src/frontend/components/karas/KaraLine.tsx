@@ -317,7 +317,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 											onClick={(event) => {
 												this.state.karaMenu ? this.closeKaraMenu() : this.openKaraMenu(event);
 											}}
-											className={'btn btn-sm btn-action showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
+											className={'btn btn-sm showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
 											<i className="fas fa-wrench" />
 										</button> : null
 									}
