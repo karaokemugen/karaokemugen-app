@@ -1366,5 +1366,9 @@
 		"T2": "How can I disable this?",
 		"P5": "You can definitely do that! Online accounts aren't mandatory, as well as the other features mentioned above. You can enable/disable either stats and/or error reports in the system panel. You're still owning your data at any time.",
 		"P6": "If you have questions or you want us to delete data, you can send us an e-mail at mugen@karaokes.moe."
+	},
+	"ONLINE": {
+		"TITLE": "Karaoke Mugen Online",
+		"P1": "Your Karaoke Mugen App was updated to 5.0, new features are available and someones might require your attention. Do you want to enable the remote access for your instance? By clicking yes, a remote token will be attributed automatically by the Karaoke Mugen server. It expires after 10 days of inactivity."
 	}
 }

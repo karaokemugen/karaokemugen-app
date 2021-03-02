@@ -1385,5 +1385,9 @@
 		"T2": "Mais du coup comment je peux m'opposer à ça ?",
 		"P5": "Vous pouvez ! Les comptes en ligne n'ont rien d'obligatoire, tout comme les autres fonctions en ligne. Pour ce qui est des statistiques et de Sentry, vous pouvez activer et désactiver ces deux mécanismes dans le panneau système. Vous restez maître de vos données à tout moment.",
 		"P6": "Si vous avez des questions ou que vous voulez qu'on supprime des données pour vous, vous pouvez nous envoyer un message à mugen@karaokes.moe."
+	},
+	"ONLINE": {
+		"TITLE": "Karaoke Mugen en ligne",
+		"P1": "Votre application Karaoke Mugen s'est mise à jour en 5.0, des nouvelles fonctionnalités sont disponibles et certaines nécessitent (peut-être) votre attention. Souhaitez-vous activer l'accès à distance de votre instance ? En l'activant, un code de session vous sera attribué automatiquement par le serveur Karaoke Mugen. Celui-ci expirera au bout de 10 jours d'inactivité."
 	}
 }
