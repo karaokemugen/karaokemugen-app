@@ -59,10 +59,10 @@ class BlcSetCopyModal extends Component<IProps, IState> {
 						</div>
 						<div className="modal-footer">
 							<button type="button" className="btn btn-action btn-primary other" onClick={this.abortModal}>
-								<i className="fas fa-times"></i>
+								<i className="fas fa-times" /> {i18next.t('CANCEL')}
 							</button>
 							<button type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
-								<i className="fas fa-check"></i>
+								<i className="fas fa-check" /> {i18next.t('BLC.COPY_SHORT')}
 							</button>
 						</div>
 					</div>

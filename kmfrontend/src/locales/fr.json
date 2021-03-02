@@ -149,6 +149,7 @@
 		"IMPORT": "Importer une liste de critères",
 		"EXPORT": "Exporter la liste de critères",
 		"COPY": "Copier cette liste de critères",
+		"COPY_SHORT": "Copier",
 		"COPY_TO": "Copier les critères dans la liste suivante : ",
 		"ADD_BLC": "Ajouter une valeur au critère",
 		"DELETE_BLC": "Supprimer ce critère de liste noire"
@@ -516,7 +517,8 @@
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible par le public",
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
-			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture"
+			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture",
+			"CREATE": "Créer"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Rogner votre avatar",

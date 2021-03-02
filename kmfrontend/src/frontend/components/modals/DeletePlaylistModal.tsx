@@ -102,11 +102,11 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 						}
 						<div className="modal-footer">
 							<button type="button" className="btn btn-action btn-primary other" onClick={this.closeModal}>
-								<i className="fas fa-times" />
+								<i className="fas fa-times" /> {i18next.t('CANCEL')}
 							</button>
 							<button type="button" className="btn btn-action btn-default ok"
 								onClick={this.deletePlaylist}>
-								<i className="fas fa-check" />
+								<i className="fas fa-check" /> {i18next.t('YES')}
 							</button>
 						</div>
 					</div >

@@ -159,6 +159,7 @@
 		"IMPORT": "Import criterias list",
 		"EXPORT": "Export criterias list",
 		"COPY": "Copy this criteria list",
+		"COPY_SHORT": "Copy",
 		"COPY_TO": "Copy criterias to the following list : ",
 		"ADD_BLC": "Add a value to criteria",
 		"DELETE_BLC": "Delete this blacklist criteria"
@@ -502,7 +503,8 @@
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible by the audience",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
-			"CREATE_PLAYLIST": "Create new playlist"
+			"CREATE_PLAYLIST": "Create new playlist",
+			"CREATE": "Créer"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Crop your avatar",
