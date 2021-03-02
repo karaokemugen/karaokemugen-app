@@ -109,6 +109,7 @@
 	"CLASSIC_MODE_TEXT_MODAL": "Click on the Play button to start your song.",
 	"MESSAGE": "Message",
 	"FILTERS": "Filters",
+	"ACTIVE_FILTER": "Active filter",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",
 		"ADD_ALL": "Add all visibles songs",

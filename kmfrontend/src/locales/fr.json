@@ -99,6 +99,7 @@
 	"FAVORITES_IMPORT": "Importer vos favoris",
 	"FAVORITES_EXPORT": "Exporter vos favoris",
 	"FILTERS": "Filtres",
+	"ACTIVE_FILTER": "Filtre actif",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Commandes de liste de lecture",
 		"ADD_ALL": "Ajouter toutes les chansons en face",
