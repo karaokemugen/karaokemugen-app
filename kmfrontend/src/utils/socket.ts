@@ -32,11 +32,8 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 			console.log(name, body, 'timeout');
 			reject(reason);
 		}, timeout);
-		const t0 = performance.now();
 		socket.emit(name, {authorization, onlineAuthorization, body}, ({err, data}:{err: boolean, data: any}) => {
 			clearTimeout(nodeTimeout);
-			const t1 = performance.now();
-			console.log(name, `${t1 - t0}ms` , body, data);
 			if (loading) eventEmitter.emitChange('loading', false);
 			if (!err && data?.code && typeof data.data !== 'object') {
 				displayMessage('success', i18next.t(`SUCCESS_CODES.${data.code}`, {data: data.data}));
