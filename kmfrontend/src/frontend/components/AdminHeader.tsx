@@ -55,10 +55,18 @@ class AdminHeader extends Component<IProps, IState> {
 			await this.setState({ statusPlayer: result });
 		}
 		getSocket().on('playerStatus', this.playerUpdate);
+		document.getElementById('root').addEventListener('click', this.closeDropdownMenu);
 	}
 
 	componentWillUnmount() {
 		getSocket().off('playerStatus', this.playerUpdate);
+		document.getElementById('root').removeEventListener('click', this.closeDropdownMenu);
+	}
+
+	closeDropdownMenu = (e: MouseEvent) => {
+		if (!(e.target as Element).closest('#menuPC')) {
+			this.setState({ dropDownMenu: false });
+		}
 	}
 
 	playerUpdate = (data: PublicPlayerState) => {

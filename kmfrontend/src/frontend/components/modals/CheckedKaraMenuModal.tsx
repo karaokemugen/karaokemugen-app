@@ -77,6 +77,10 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 		}
 	}
 
+	componentDidMount() {
+		document.getElementById('root').addEventListener('click', this.handleClick);
+	}
+
 	componentWillUnmount() {
 		document.getElementById('root').removeEventListener('click', this.handleClick);
 	}
