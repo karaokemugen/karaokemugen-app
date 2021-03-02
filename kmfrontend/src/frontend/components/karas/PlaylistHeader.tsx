@@ -118,6 +118,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			showModal(this.context.globalDispatch, <DeletePlaylistModal
 				changeIdPlaylist={this.props.changeIdPlaylist}
 				idPlaylist={this.props.idPlaylist}
+				idPlaylistTo={this.props.idPlaylistTo}
 				playlistInfo={this.props.playlistInfo}
 				bLSet={this.props.bLSet}
 				playlistList={playlistList}

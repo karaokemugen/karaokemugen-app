@@ -11,6 +11,7 @@ import SelectWithIcon from '../generic/SelectWithIcon';
 
 interface IProps {
 	idPlaylist?: number;
+	idPlaylistTo?: number;
 	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void
 	playlistInfo?: DBPL;
 	bLSet?: BLCSet;
@@ -46,7 +47,9 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 		} else {
 			this.props.changeIdPlaylist(this.state.idPlaylistChosen ?
 				this.state.idPlaylistChosen :
-				this.props.context.globalState.settings.data.state.publicPlaylistID);
+				(this.props.idPlaylistTo === this.props.context.globalState.settings.data.state.publicPlaylistID ?
+					-1 :
+					this.props.context.globalState.settings.data.state.publicPlaylistID));
 			commandBackend('deletePlaylist', {
 				pl_id: this.props.idPlaylist
 			});
