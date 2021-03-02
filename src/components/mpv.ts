@@ -314,7 +314,7 @@ class Player {
 		playerState.timeposition = position;
 		emitPlayerState();
 		const conf = getConfig();
-		if (playerState?.currentSong?.duration) {
+		if (playerState.mediaType === 'song' && playerState?.currentSong?.duration) {
 			if (conf.Player.ProgressBarDock) {
 				playerState.mediaType === 'song'
 					? setProgressBar(position / playerState.currentSong.duration)
@@ -1100,7 +1100,7 @@ class Players {
 			const alignCommand = `{\\an${alignCode}}`;
 			this.messages.addMessage(forceType, alignCommand+message,
 				duration === -1 ? 'infinite':duration);
-			if (playerState.playing === false && !getState().songPoll) {
+			if (duration !== -1 && playerState.playing === false && !getState().songPoll) {
 				await sleep(duration);
 				this.displayInfo();
 			}
@@ -1151,15 +1151,15 @@ class Players {
 	}
 
 	displayAddASong() {
-		if (!playerState.displayingInfo && getState().randomPlaying) this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'),
-			1000, 4, 'addASong');
+		if (getState().randomPlaying) this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'),
+			1000, 5, 'addASong');
 	}
 
 	intervalIDAddASong: NodeJS.Timeout;
 
 	/** Initialize start displaying the "Add a song to the list" */
 	initAddASongMessage() {
-		if (!this.intervalIDAddASong && getState().randomPlaying) this.intervalIDAddASong = setInterval(this.displayAddASong.bind(this), 2000);
+		if (!this.intervalIDAddASong) this.intervalIDAddASong = setInterval(this.displayAddASong.bind(this), 2000);
 	}
 
 	/** Stop displaying the Add a song to the list */
