@@ -400,7 +400,7 @@
 	"FREE_AUTO_TIME": "Songs are freed from quota after (min)",
 	"SERIE_NAME_MODE": "Series language mode",
 	"SERIE_NAME_MODE_ORIGINAL": "Original title",
-	"SERIE_NAME_MODE_ADMIN": "Karaoke Mugen language",
+	"SERIE_NAME_MODE_ADMIN": "Computer language",
 	"SERIE_NAME_MODE_USER": "User language",
 	"SERIE_NAME_MODE_NO_PREF": "No preference",
 	"SERIE_NAME_MODE_USER_FORCE": "Force your own language",
