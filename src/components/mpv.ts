@@ -314,7 +314,6 @@ class Player {
 		playerState.timeposition = position;
 		emitPlayerState();
 		const conf = getConfig();
-		this.control.tickDisplay();
 		if (playerState?.currentSong?.duration) {
 			if (conf.Player.ProgressBarDock) {
 				playerState.mediaType === 'song'
@@ -372,9 +371,12 @@ class Player {
 				) {
 					// Do not trigger 'pause' event from mpv
 					playerState._playing = false;
+					// Delete any media DI
+					this.control.messages.removeMessage('mediaDI');
+					// Load up the next song
 					playerEnding();
-					emitPlayerState();
 				} else if (status.name === 'playback-time') {
+					this.control.tickDisplay();
 					this.debouncedTimePosition(status.data);
 				}
 			});
@@ -881,7 +883,7 @@ class Players {
 				(mediaType === 'Jingles' || mediaType === 'Sponsors')
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
-						? this.message(conf.Playlist.Medias[mediaType].Message)
+						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'mediaDI')
 						: undefined;
 				emitPlayerState();
 				return playerState;
@@ -1098,15 +1100,6 @@ class Players {
 	async message(message: string, duration = -1, alignCode = 5, forceType = 'admin') {
 		try {
 			const alignCommand = `{\\an${alignCode}}`;
-			/*const command = {
-				command: [
-					'expand-properties',
-					'show-text',
-					'${osd-ass-cc/0}' + alignCommand + message,
-					duration
-				]
-			};
-			await this.exec(command);*/
 			this.messages.addMessage(forceType, alignCommand+message,
 				duration === -1 ? 'infinite':duration);
 			if (playerState.playing === false && !getState().songPoll) {
@@ -1129,15 +1122,6 @@ class Players {
 				emitPlayerState();
 			}
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
-			/*const command = {
-				command: [
-					'expand-properties',
-					'show-text',
-					'${osd-ass-cc/0}'+position+spoilerString+nextSongString+infos,
-					duration,
-				]
-			};
-			await this.exec(command);*/
 			this.messages.addMessage('DI', position+spoilerString+nextSongString+infos, duration === -1 ? 'infinite':duration);
 			this.tickDisplay();
 		} catch(err) {
@@ -1159,15 +1143,6 @@ class Players {
 			if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${state.osURL} !`; // TODO: internationalize the exclamation mark
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - http://karaokes.moe`;
 			const message = '{\\an1}{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
-			/*const command = {
-				command: [
-					'expand-properties',
-					'show-text',
-					'${osd-ass-cc/0}{\\an1}'+message,
-					duration,
-				]
-			};
-			await this.exec(command);*/
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite':duration);
 			this.tickDisplay();
 		} catch(err) {
