@@ -270,7 +270,7 @@ class WelcomePage extends Component<unknown, IState> {
 								</button>
 							</article>
 							<article className="tile-system">
-								<button type="button" onClick={() => window.location.assign('/' + window.location.search)}>
+								<button type="button" onClick={() => window.location.assign('/public' + window.location.search)}>
 									<i className="fas fa-user" /><span>{i18next.t('WLCM_PUBLIC')}</span>
 								</button>
 							</article>
