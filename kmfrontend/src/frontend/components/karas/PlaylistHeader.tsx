@@ -109,19 +109,23 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	deletePlaylist = () => {
 		this.togglePlaylistCommands();
-		showModal(this.context.globalDispatch, <DeletePlaylistModal
-			changeIdPlaylist={this.props.changeIdPlaylist}
-			idPlaylist={this.props.idPlaylist}
-			playlistInfo={this.props.playlistInfo}
-			bLSet={this.props.bLSet}
-			playlistList={this.getListToSelect()
-				.filter(pl => Number(pl.value) > 0
-					&& Number(pl.value) !== this.props.idPlaylist)}
-			bLSetList={this.props.bLSetList?.filter(set => set.blc_set_id !== this.props.bLSet.blc_set_id).map(set => {
-				return {value: set.blc_set_id.toString(), label: set.name, icons: []};
-			})}
-			context={this.context}
-		/>);
+		const playlistList = this.getListToSelect()
+			.filter(pl => Number(pl.value) > 0
+				&& Number(pl.value) !== this.props.idPlaylist);
+		if (playlistList.length === 0)
+			displayMessage('error', i18next.t('MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE'));
+		else
+			showModal(this.context.globalDispatch, <DeletePlaylistModal
+				changeIdPlaylist={this.props.changeIdPlaylist}
+				idPlaylist={this.props.idPlaylist}
+				playlistInfo={this.props.playlistInfo}
+				bLSet={this.props.bLSet}
+				playlistList={playlistList}
+				bLSetList={this.props.bLSetList?.filter(set => set.blc_set_id !== this.props.bLSet.blc_set_id).map(set => {
+					return {value: set.blc_set_id.toString(), label: set.name, icons: []};
+				})}
+				context={this.context}
+			/>);
 	};
 
 	startFavMix = async () => {

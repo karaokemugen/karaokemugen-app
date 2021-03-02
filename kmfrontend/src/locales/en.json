@@ -561,6 +561,7 @@
 		},
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Delete {{playlist}} forever?",
+			"IMPOSSIBLE": "You cannot delete the only playlist.",
 			"DELETE_CURRENT_BLC": "This list is defined as current , change the current criterias list for another to delete this one.",
 			"DELETE_PUBLIC": "This list is defined as public, change the public playlist for another to delete this one.",
 			"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",

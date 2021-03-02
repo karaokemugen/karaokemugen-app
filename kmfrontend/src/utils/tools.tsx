@@ -101,9 +101,8 @@ export function startIntro() {
 	return tuto;
 }
 
-export function displayMessage(type: TypeOptions, message: any, time?: number) {
+export function displayMessage(type: TypeOptions, message: any, time = 3500) {
 	if (!document.hidden) {
-		if (!time) time = 3500;
 		toast(message, { type: type, autoClose: time, position: 'top-left', pauseOnFocusLoss: false });
 	}
 }

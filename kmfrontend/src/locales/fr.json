@@ -576,6 +576,7 @@
 		},
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Supprimer {{playlist}} pour toujours ?",
+			"IMPOSSIBLE": "Vous ne pouvez pas supprimer la seule playlist.",
 			"DELETE_CURRENT_BLC": "Cette liste est définie comme courante, changez la liste de critère courante pour une autre pour supprimer celle-ci.",
 			"DELETE_PUBLIC": "Cette liste est définie comme étant publique, pour la supprimer, définissez une autre liste publique.",
 			"DELETE_CURRENT": "Cette liste est définie comme étant courante, pour la supprimer, définissez une autre liste courante.",

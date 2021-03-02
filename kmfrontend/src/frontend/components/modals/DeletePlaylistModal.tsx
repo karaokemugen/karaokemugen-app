@@ -83,10 +83,6 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 										(this.props.playlistInfo as DBPL).name
 								})}
 							</h4>
-							<button className="closeModal"
-								onClick={this.closeModal}>
-								<i className="fas fa-times"></i>
-							</button>
 						</ul>
 						{message ?
 							<div className="modal-body">
@@ -103,11 +99,11 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 						}
 						<div className="modal-footer">
 							<button type="button" className="btn btn-action btn-primary other" onClick={this.closeModal}>
-								<i className="fas fa-times"></i>
+								<i className="fas fa-times" />
 							</button>
 							<button type="button" className="btn btn-action btn-default ok"
 								onClick={this.deletePlaylist}>
-								<i className="fas fa-check"></i>
+								<i className="fas fa-check" />
 							</button>
 						</div>
 					</div >
