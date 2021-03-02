@@ -128,7 +128,6 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 	let offsetClause = '';
 	let orderClause = 'pc.pos';
 	let whereClause = '';
-	const groupClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	if (+params.random > 0) {
@@ -142,7 +141,7 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 	}
 	if (params.orderByLikes) orderClause = 'upvotes DESC';
 	const query = sqlgetPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause,
-		groupClause, filterClauses.additionalFrom.join(''));
+		filterClauses.additionalFrom.join(''));
 	const res = await db().query(yesql(query)({
 		playlist_id: params.playlist_id,
 		username: params.username,

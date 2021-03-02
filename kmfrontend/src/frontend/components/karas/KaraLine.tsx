@@ -295,7 +295,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								{!is_touch_device() && shouldShowProfile ?
 									<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
 										alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file,
-											nickname: this.props.kara.username }} /> : null
+											nickname: this.props.kara.nickname, type: this.props.kara.user_type }} /> : null
 								}
 								<div className="btn-group">
 									{this.props.scope === 'admin' || this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?

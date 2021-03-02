@@ -121,7 +121,7 @@ ORDER BY pc.pos, pc.created_at DESC
 `;
 
 export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string,
-									   groupClause: string, additionalFrom: string) => `
+									   additionalFrom: string) => `
 SELECT
   ak.pk_kid AS kid,
   ak.title AS title,
@@ -161,6 +161,7 @@ SELECT
   pc.nickname AS nickname,
   pc.fk_login AS username,
   u.avatar_file AS avatar_file,
+  u.type AS user_type,
   pc.pos AS pos,
   pc.pk_id_plcontent AS playlistcontent_id,
   (CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
@@ -198,7 +199,7 @@ WHERE pc.fk_id_playlist = :playlist_id
 GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes,
          ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres,
          ak.platforms, ak.versions, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname,
-         pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository${groupClause}
+         pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
@@ -288,6 +289,7 @@ SELECT
   pc.nickname AS nickname,
   pc.fk_login AS username,
   u.avatar_file AS avatar_file,
+  u.type AS user_type,
   pc.pos AS pos,
   pc.pk_id_plcontent AS playlistcontent_id,
   pc.fk_id_playlist as playlist_id,
@@ -326,7 +328,7 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository
 `;
 
 export const sqlgetPLCInfoMini = `
