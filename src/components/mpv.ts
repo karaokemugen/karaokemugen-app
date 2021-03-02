@@ -371,8 +371,6 @@ class Player {
 				) {
 					// Do not trigger 'pause' event from mpv
 					playerState._playing = false;
-					// Delete any media DI
-					this.control.messages.removeMessage('mediaDI');
 					// Load up the next song
 					playerEnding();
 				} else if (status.name === 'playback-time') {
@@ -883,7 +881,7 @@ class Players {
 				(mediaType === 'Jingles' || mediaType === 'Sponsors')
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
-						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'mediaDI')
+						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
 						: undefined;
 				emitPlayerState();
 				return playerState;
