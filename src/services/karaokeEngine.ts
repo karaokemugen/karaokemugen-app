@@ -46,6 +46,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			flag_free: false,
 			flag_visible: false,
 			username: 'admin',
+			user_type: 0,
 			repo: kara.repository,
 			playlistcontent_id: -1,
 			playlist_id: -1,
