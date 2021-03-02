@@ -66,7 +66,9 @@ class KMFrontend extends Component<unknown, IState> {
 								powerOff={isElectron() ? undefined : this.powerOff} />} />
 							<Route path="/chibi" exact component={ChibiPage} />
 							<Route path="/public" render={(route) => <PublicPage route={route} />} />
-							<Route exact path="/"><Redirect to="/public" /></Route>
+							<Route exact path="/">{this.context.globalState.auth.data.role === 'admin' ?
+								<Redirect to="/welcome" /> :<Redirect to="/public" />
+							}</Route>
 							<Route component={NotFoundPage} />
 						</Switch>
 						<a id="downloadAnchorElem" />
