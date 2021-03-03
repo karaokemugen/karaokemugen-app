@@ -63,6 +63,21 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		commandBackend('votePLC', data);
 	};
 
+
+	refuseKara = () => {
+		commandBackend('editPLC', {
+			flag_refused: !this.props.kara.flag_refused,
+			plc_ids: [this.props.kara.playlistcontent_id]
+		});
+	};
+
+	acceptKara = () => {
+		commandBackend('editPLC', {
+			flag_accepted: !this.props.kara.flag_accepted,
+			plc_ids: [this.props.kara.playlistcontent_id]
+		});
+	};
+
 	deleteKara = async () => {
 		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
@@ -307,9 +322,10 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 											kara={kara}
 											addKara={this.addKara}
 											deleteKara={this.deleteKara}
-											transferKara={this.transferKara}
 											deleteFavorite={this.deleteFavorite}
 											upvoteKara={this.upvoteKara}
+											refuseKara={this.refuseKara}
+											acceptKara={this.acceptKara}
 											flag_public={this.props.playlistInfo?.flag_public}
 										/> : null
 									}

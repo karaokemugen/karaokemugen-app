@@ -65,6 +65,8 @@ interface IProps {
 	deleteCheckedKaras: () => void;
 	deleteCheckedFavorites: () => void;
 	addCheckedKaras: () => void;
+	refuseCheckedKara: () => void;
+	acceptCheckedKara: () => void;
 	toggleSearchMenu?: () => void;
 	addRandomKaras: () => void;
 }
@@ -332,10 +334,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 			showModal(this.context.globalDispatch, <CheckedKaraMenuModal
 				checkedKaras={this.props.checkedKaras}
 				idPlaylist={this.props.idPlaylist}
+				idPlaylistTo={this.props.idPlaylistTo}
 				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
 				topKaraMenu={element.bottom}
 				leftKaraMenu={element.left}
 				closeKaraMenu={this.closeKaraMenu}
+				transferKara={this.props.transferCheckedKaras}
 				context={this.context}
 			/>);
 			this.setState({karaMenu: true});
@@ -376,7 +380,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 									isHeader={true}
 									addKara={this.props.addCheckedKaras}
 									deleteKara={this.props.deleteCheckedKaras}
-									transferKara={this.props.transferCheckedKaras}
+									refuseKara={this.props.refuseCheckedKara}
+									acceptKara={this.props.acceptCheckedKara}
 									deleteFavorite={this.props.deleteCheckedFavorites}
 									checkedKaras={this.props.checkedKaras?.length}
 									flag_public={this.props.playlistInfo?.flag_public}

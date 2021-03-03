@@ -44,6 +44,8 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			flag_playing: true,
 			pos: 1,
 			flag_free: false,
+			flag_refused: false,
+			flag_accepted: false,
 			flag_visible: false,
 			username: 'admin',
 			user_type: 0,

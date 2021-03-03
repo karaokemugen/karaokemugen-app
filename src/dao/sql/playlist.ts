@@ -180,6 +180,8 @@ SELECT
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   pc.flag_visible AS flag_visible,
   pc.flag_free AS flag_free,
+  pc.flag_refused AS flag_refused,
+  pc.flag_accepted AS flag_accepted,
   COUNT(pc.pk_id_plcontent) OVER()::integer AS count,
   ak.repository AS repository
 FROM all_karas AS ak
@@ -229,6 +231,8 @@ SELECT ak.pk_kid AS kid,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.fk_login AS username,
 	pc.flag_free AS flag_free,
+	pc.flag_refused AS flag_refused,
+    pc.flag_accepted AS flag_accepted,
 	pc.flag_visible AS flag_visible,
 	ak.duration AS duration,
 	ak.repository as repository,
@@ -427,6 +431,17 @@ SET flag_visible = FALSE
 WHERE pk_id_plcontent = $1;
 `;
 
+export const sqlsetPLCAccepted = `
+UPDATE playlist_content
+SET flag_accepted = $2
+WHERE pk_id_plcontent = $1;
+`;
+
+export const sqlsetPLCRefused = `
+UPDATE playlist_content
+SET flag_refused = $2
+WHERE pk_id_plcontent = $1;
+`;
 
 export const sqlsetPLCFreeBeforePos = `
 UPDATE playlist_content

@@ -735,7 +735,38 @@ class Playlist extends Component<IProps, IState> {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		await commandBackend('deleteFavorites', { kid: listKara.map(a => a.kid) });
+		await commandBackend('deleteFavorites', {
+			kid: listKara.map(a => a.kid)
+		});
+	};
+
+	acceptCheckedKara = async () => {
+		const stateData = this.state.data as KaraList;
+		const listKara = stateData.content.filter(a => a.checked);
+		if (listKara.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
+		const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+		await commandBackend('editPLC', {
+			plc_ids: idsKaraPlaylist,
+			flag_accepted: true
+		});
+	};
+
+	
+	refuseCheckedKara = async () => {
+		const stateData = this.state.data as KaraList;
+		const listKara = stateData.content.filter(a => a.checked);
+		if (listKara.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
+		const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+		await commandBackend('editPLC', {
+			plc_ids: idsKaraPlaylist,
+			flag_refused: true
+		});
 	};
 
 	onChangeTags = (type: number | string, value: string) => {
@@ -846,6 +877,8 @@ class Playlist extends Component<IProps, IState> {
 					transferCheckedKaras={this.transferCheckedKaras}
 					deleteCheckedKaras={this.deleteCheckedKaras}
 					deleteCheckedFavorites={this.deleteCheckedFavorites}
+					refuseCheckedKara={this.refuseCheckedKara}
+					acceptCheckedKara={this.acceptCheckedKara}
 					tags={this.props.tags}
 					onChangeTags={this.onChangeTags}
 					getPlaylist={this.getPlaylist}
