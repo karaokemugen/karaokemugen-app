@@ -81,8 +81,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	deleteKara = async () => {
 		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_ids: this.props.kara.my_public_plc_id,
-				pl_id: this.context.globalState.settings.data.state.publicPlaylistID
+				plc_ids: this.props.kara.my_public_plc_id			
 			});
 		} else if (this.props.idPlaylist === -2) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
@@ -92,8 +91,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			});
 		} else {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_ids: [this.props.kara.playlistcontent_id],
-				pl_id: this.props.idPlaylist
+				plc_ids: [this.props.kara.playlistcontent_id]
 			});
 		}
 	};

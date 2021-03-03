@@ -445,7 +445,7 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await deleteKaraFromPlaylist(req.body.plc_ids, req.body.pl_id, req.token);
+				return await deleteKaraFromPlaylist(req.body.plc_ids, req.token);
 			} catch(err) {
 				const code = 'PL_DELETE_SONG_ERROR';
 				errMessage(code, err);

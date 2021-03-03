@@ -708,8 +708,7 @@ class Playlist extends Component<IProps, IState> {
 			const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
 			url = 'deleteKaraFromPlaylist';
 			data = {
-				plc_ids: idsKaraPlaylist,
-				pl_id: this.state.idPlaylist
+				plc_ids: idsKaraPlaylist				
 			};
 		} else if (this.state.idPlaylist === -3) {
 			url = 'deleteKaraFromWhitelist';

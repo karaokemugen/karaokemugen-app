@@ -212,8 +212,8 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 	}
 }
 
-export function removeKaraFromPlaylist(karas: number[], playlist_id: number) {
-	return db().query(sqlremoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
+export function removeKaraFromPlaylist(karas: number[]) {
+	return db().query(sqlremoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')));
 }
 
 export function emptyOnlineRequested() {
