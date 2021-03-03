@@ -171,7 +171,9 @@
 .closeModal {
 	background-color: $mugen-btn-background;
 	color: whitesmoke;
-	font-size: 2em;
+	font-size: 1.75em;
+	width: 1.75em;
+	height: 1.75em;
 	cursor: pointer;
 	z-index: 10007;
 	padding: 0.25em;
