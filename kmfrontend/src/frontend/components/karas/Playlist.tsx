@@ -411,7 +411,7 @@ class Playlist extends Component<IProps, IState> {
 			this.context.globalState.frontendContext.filterValue2 || '';
 	}
 
-	getPlaylist = async (searchType?: 'search' | 'recent' | 'requested') => {
+	getPlaylist = async (searchType?: 'search' | 'recent' | 'requested', orderByLikes = false) => {
 		const criterias: any = {
 			'year': 'y',
 			'tag': 't'
@@ -432,6 +432,9 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.idPlaylist >= 0) {
 			this.getPlaylistInfo();
 			param.pl_id = this.state.idPlaylist;
+			if (orderByLikes) {
+				param.orderByLikes = true;
+			}
 		}
 		if (url === 'getBLCSet') param.set_id = this.state.bLSet?.blc_set_id;
 
@@ -708,7 +711,7 @@ class Playlist extends Component<IProps, IState> {
 			const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
 			url = 'deleteKaraFromPlaylist';
 			data = {
-				plc_ids: idsKaraPlaylist				
+				plc_ids: idsKaraPlaylist
 			};
 		} else if (this.state.idPlaylist === -3) {
 			url = 'deleteKaraFromWhitelist';
@@ -753,7 +756,7 @@ class Playlist extends Component<IProps, IState> {
 		});
 	};
 
-	
+
 	refuseCheckedKara = async () => {
 		const stateData = this.state.data as KaraList;
 		const listKara = stateData.content.filter(a => a.checked);

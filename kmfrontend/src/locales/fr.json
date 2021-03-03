@@ -446,6 +446,8 @@
 	"VIEW_FAVORITES": "Favoris",
 	"VIEW_RECENT": "Nouveau",
 	"VIEW_POPULAR": "Populaire",
+	"VIEW_LIKES": "Likes",
+	"VIEW_LIKES_TOOLTIP": "Les chansons avec le plus de likes sont affichées en premier, cela n'impacte pas l'ordonnancement de la playlist.",
 	"KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ? Vérifiez sur vos dépôts en ligne configurés ainsi que sur le site de suggestions si votre souhait n'est pas déjà exaucé :",
 	"BASE_UPDATE": "Nouvelles de la base",
 	"APP_UPDATE": "Nouvelle version de l'application",

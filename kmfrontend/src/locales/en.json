@@ -432,6 +432,8 @@
 	"VIEW_FAVORITES": "Favorites",
 	"VIEW_RECENT": "Latest",
 	"VIEW_POPULAR": "Popular",
+	"VIEW_LIKES": "Likes",
+	"VIEW_LIKES_TOOLTIP": "The song with the most likes will be showed first, this does not impact the real playlist order.",
 	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song?  Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
 	"BASE_UPDATE": "Database update",
 	"MASTODON_UPDATE": "Karaoke Mugen News",

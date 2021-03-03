@@ -325,7 +325,7 @@ export default function playlistsController(router: SocketIOApp) {
 	 */
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await getPlaylistContents(req.body?.pl_id, req.token, req.body?.filter,req.langs, req.body?.from || 0, req.body?.size || 9999999, req.body?.random || 0);
+			return await getPlaylistContents(req.body?.pl_id, req.token, req.body?.filter,req.langs, req.body?.from || 0, req.body?.size || 9999999, req.body?.random || 0, req.body?.orderByLikes);
 		} catch(err) {
 			const code = 'PL_VIEW_SONGS_ERROR';
 			errMessage(code, err);

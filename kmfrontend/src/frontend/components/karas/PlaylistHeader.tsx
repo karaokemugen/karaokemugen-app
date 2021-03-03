@@ -57,7 +57,7 @@ interface IProps {
 	changeIdPlaylistSide2?: (idPlaylist: number) => void;
 	playlistWillUpdate: () => void;
 	playlistDidUpdate: () => void;
-	getPlaylist: (searchType?: 'search' | 'recent' | 'requested') => void;
+	getPlaylist: (searchType?: 'search' | 'recent' | 'requested', orderByLikes?: boolean) => void;
 	onChangeTags: (type: number | string, value: string) => void;
 	addAllKaras: () => void;
 	selectAllKaras: () => void;
@@ -76,6 +76,7 @@ interface IState {
 	tagType: number;
 	tags: Tag[];
 	activeFilter: 'search' | 'recent' | 'requested';
+	orderByLikes: boolean;
 	activeFilterUUID: string;
 	playlistCommands: boolean;
 	karaMenu: boolean;
@@ -94,6 +95,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			tagType: 2,
 			tags: this.props.tags?.filter(tag => tag.type.includes(2)) || [],
 			activeFilter: 'search',
+			orderByLikes: false,
 			activeFilterUUID: ''
 		};
 	}
@@ -250,9 +252,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 		});
 	};
 
-	getKarasList = (activeFilter: 'search' | 'recent' | 'requested') => {
-		this.setState({activeFilter});
-		this.props.getPlaylist(activeFilter);
+	getKarasList = (activeFilter: 'search' | 'recent' | 'requested', orderByLikes = false) => {
+		this.setState({activeFilter, orderByLikes});
+		this.props.getPlaylist(activeFilter, orderByLikes);
 	};
 
 	onChangeTags = (value: string) => {
@@ -398,12 +400,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 					</div>
 				</div> : null);
 
-		const searchMenu = (this.props.tags && this.props.tags.filter(tag => tag.type.includes(this.state.tagType)).length > 0 ?
+		const searchMenu = (this.props.tags ?
 			<div className="searchMenuContainer">
-				<div className="filterContainer">
-					<div className="filterButton" onClick={async () => {
-						await this.setState({activeFilterUUID: ''});
-						this.props.getPlaylist(this.state.activeFilter);
+				{this.props.idPlaylist === -1 ? <div className="filterContainer">
+					<div className="filterButton" onClick={() => {
+						this.setState({activeFilterUUID: ''},
+							() => this.props.getPlaylist(this.state.activeFilter));
 					}}>
 						<i className="fas fa-eraser"/> <span>{i18next.t('CLEAR_FILTER')}</span>
 					</div>
@@ -427,24 +429,36 @@ class PlaylistHeader extends Component<IProps, IState> {
 									  options={this.state.tags}
 									  onChange={this.onChangeTags}/>
 					</div>
-				</div>
+				</div> : null}
 				<div className="filterContainer">
 					<div tabIndex={0}
 						 className={'filterElement ' + (this.state.activeFilter === 'search' ? 'filterElementActive' : '')}
-						 onClick={() => this.getKarasList('search')} onKeyPress={() => this.getKarasList('search')}>
-						<i className="fas fa-sort-alpha-down"/> {i18next.t('VIEW_STANDARD')}
+						 onClick={() => this.getKarasList('search')}
+						 onKeyPress={() => this.getKarasList('search')}>
+						<i className={`fas fa-fw ${this.props.idPlaylist >= 0 ? 'fa-list-ol':'fa-sort-alpha-down'}`} /> {i18next.t('VIEW_STANDARD')}
 					</div>
-					<div tabIndex={0}
-						 className={'filterElement ' + (this.state.activeFilter === 'recent' ? 'filterElementActive' : '')}
-						 onClick={() => this.getKarasList('recent')} onKeyPress={() => this.getKarasList('recent')}>
-						<i className="far fa-clock"/> {i18next.t('VIEW_RECENT')}
-					</div>
-					<div tabIndex={0}
-						 className={'filterElement ' + (this.state.activeFilter === 'requested' ? 'filterElementActive' : '')}
-						 onClick={() => this.getKarasList('requested')}
-						 onKeyPress={() => this.getKarasList('requested')}>
-						<i className="fas fa-fire"/> {i18next.t('VIEW_POPULAR')}
-					</div>
+					{this.props.idPlaylist === -1 ? <>
+						<div tabIndex={0}
+							 className={'filterElement ' + (this.state.activeFilter === 'recent' ? 'filterElementActive' : '')}
+							 onClick={() => this.getKarasList('recent')}
+							 onKeyPress={() => this.getKarasList('recent')}>
+							<i className="far fa-clock"/> {i18next.t('VIEW_RECENT')}
+						</div>
+						<div tabIndex={0}
+							 className={'filterElement ' + (this.state.activeFilter === 'requested' ? 'filterElementActive' : '')}
+							 onClick={() => this.getKarasList('requested')}
+							 onKeyPress={() => this.getKarasList('requested')}>
+							<i className="fas fa-fire"/> {i18next.t('VIEW_POPULAR')}
+						</div>
+					</> : null}
+					{this.props.idPlaylist >= 0 ?
+						<div tabIndex={0}
+						   className={'filterElement ' + (this.state.orderByLikes ? 'filterElementActive' : '')}
+						   onClick={() => this.getKarasList(undefined, true)}
+						   onKeyPress={() => this.getKarasList(undefined, true)}
+						   title={i18next.t('VIEW_LIKES_TOOLTIP')}>
+							<i className="fas fa-thumbs-up"/> {i18next.t('VIEW_LIKES')}
+						</div>:null}
 				</div>
 			</div> : null);
 		return (
@@ -579,13 +593,14 @@ class PlaylistHeader extends Component<IProps, IState> {
 							onChange={(value: any) => this.props.changeIdPlaylist(this.props.idPlaylist, Number(value))}
 						/> : null
 					}
-					{this.props.idPlaylist === -1 ?
+					{this.props.idPlaylist >= -1 ?
 						<div className="searchMenuButtonContainer btn-group">
 							<button type="button" title={i18next.t('FILTERS')}
 								className={'searchMenuButton collapsed btn btn-default karaLineButton'
 									+ ((this.props.searchMenuOpen ||
 										this.state.activeFilter !== 'search' ||
-										this.state.activeFilterUUID !== '') ? ' btn-primary' : '')}
+										this.state.activeFilterUUID !== '' ||
+										this.state.orderByLikes) ? ' btn-primary' : '')}
 								onClick={this.props.toggleSearchMenu}>
 								<i className="fas fa-fw fa-filter"/>
 								{(this.state.activeFilter !== 'search' ||
