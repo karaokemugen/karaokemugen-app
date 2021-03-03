@@ -23,12 +23,12 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 	const typeClauses = params.type ? ` AND t.types @> ARRAY[${params.type}]` : '';
 	let limitClause = '';
 	let offsetClause = '';
-	let orderClause = '';
+	const orderClause = '';
 	let stripClause = '';
 	let joinClauses = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
-	if (params.filter) orderClause = ', relevance desc';
+	//if (params.filter) orderClause = ', relevance desc';
 	if (params.type && params.stripEmpty) {
 		joinClauses = `LEFT   JOIN LATERAL (
 			SELECT elem->>'count' AS karacounttype
