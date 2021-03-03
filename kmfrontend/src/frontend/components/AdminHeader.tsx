@@ -64,7 +64,7 @@ class AdminHeader extends Component<IProps, IState> {
 	}
 
 	closeDropdownMenu = (e: MouseEvent) => {
-		if (!(e.target as Element).closest('#menuPC')) {
+		if (!(e.target as Element).closest('#menuPC') && !(e.target as Element).closest('.dropdown-menu')) {
 			this.setState({ dropDownMenu: false });
 		}
 	}
