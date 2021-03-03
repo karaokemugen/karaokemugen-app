@@ -29,6 +29,7 @@ test:
   retry:
     max: 2
   interruptible: true
+  needs: []
   services:
     - postgres:12
   variables:
@@ -55,6 +56,7 @@ test:
 build-react:
   stage: build
   interruptible: true
+  needs: []
   artifacts:
     expire_in: 8 hours
     name: km-app-build-${CI_COMMIT_REF_SLUG}
@@ -82,6 +84,8 @@ deploy_kmremote:
   image: minidocks/lftp
   dependencies:
     - build-react
+  needs:
+    - build-react
   script: bash util/pushKMRemote.sh
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
@@ -107,6 +111,9 @@ pkg_linux:
       - release_linux
   dependencies:
     - build-react
+  needs:
+    - build-react
+    - test
   script:
     - rm -Rf release_linux
     - yarn add --dev electron-builder
@@ -142,6 +149,9 @@ pkg_win:
       - release_win
   dependencies:
     - build-react
+  needs:
+    - build-react
+    - test
   script:
     - rm -Rf release_win
     - yarn add --dev electron-builder
@@ -186,6 +196,9 @@ pkg_mac:
       - release_mac
   dependencies:
     - build-react
+  needs:
+    - build-react
+    - test
   variables:
     CSC_IDENTITY_AUTO_DISCOVERY: "false"
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
@@ -229,24 +242,24 @@ deploy_mac:
     - when: never
 
 deploy_linux:
-    stage: deploy
-    image: minidocks/lftp
-    interruptible: true
-    cache: {}
-    variables:
-      GIT_STRATEGY: none
-    dependencies:
-      - pkg_linux
-    needs:
-      - pkg_linux
-    script:
-      - ls -la release_linux/*
-      - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
-    rules:
-      - if: '$SCHEDULED_RELEASES == "true"'
-        when: never
-      - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-      - if: $CI_COMMIT_TAG
+  stage: deploy
+  image: minidocks/lftp
+  interruptible: true
+  cache: {}
+  variables:
+    GIT_STRATEGY: none
+  dependencies:
+    - pkg_linux
+  needs:
+    - pkg_linux
+  script:
+    - ls -la release_linux/*
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; mput release_linux/*"
+  rules:
+    - if: '$SCHEDULED_RELEASES == "true"'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
+    - if: $CI_COMMIT_TAG
 
 deploy_win:
   stage: deploy
@@ -275,6 +288,10 @@ release_site:
   interruptible: true
   dependencies: []
   cache: {}
+  needs:
+    - deploy_win
+    - deploy_linux
+    - deploy_mac
   script:
     - sh util/triggerWebsite.sh
   rules:
@@ -289,10 +306,11 @@ weekly_releases:
   image: axelterizaki/karaokemugen-git-ssh:latest
   interruptible: true
   cache: {}
+  needs: []
   script:
     - bash util/gitPush.sh
   rules:
-# This prevents job from starting if last commit starts with a new release, which means we don't need to make a new one.
+    # This prevents job from starting if last commit starts with a new release, which means we don't need to make a new one.
     - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
       when: never
     - if: '$SCHEDULED_RELEASES == "true"'
