@@ -97,6 +97,10 @@ class PublicHeader extends Component<IProps, IState> {
 						</picture>
 					</a>
 					<PublicFixedMenu changeView={this.props.changeView} currentView={this.props.currentView} />
+					{this.state.quotaType > 0 ? <div className={`quota-bar${this.state.quotaLeft <= 5 ? ' exhaust':''}`}>
+						{this.state.quotaType === 1 ? i18next.t('QUOTA_KARA'):
+							i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;{this.state.quotaLeft}
+					</div> : null}
 					<div className="profile-btn">
 						<div className="dropdown-container">
 							<div className={`closeHandler${this.state.dropDownMenu ? ' active' : ''}`} onClick={() => this.setState({ dropDownMenu: false })} />
