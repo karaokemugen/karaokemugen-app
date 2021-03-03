@@ -71,7 +71,6 @@ class KaraMenuModal extends Component<IProps, IState> {
 		this.props.closeKaraMenu();
 	};
 
-
 	freeKara = () => {
 		commandBackend('editPLC', {
 			plc_ids: [this.state.kara?.playlistcontent_id],

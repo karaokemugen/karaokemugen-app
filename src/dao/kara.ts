@@ -188,7 +188,9 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 			kara.created_at,
 			kara.pos,
 			false,
-			kara.flag_visible || true
+			kara.flag_visible || true,
+			kara.flag_refused || null,
+			kara.flag_accepted || null
 		]));
 		const res = await transaction({params: karas, sql: sqladdKaraToPlaylist});
 		return res;
@@ -202,7 +204,9 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 			kara.created_at,
 			kara.pos,
 			false,
-			kara.flag_visible
+			kara.flag_visible,
+			kara.flag_refused || null,
+			kara.flag_accepted || null
 		]);
 		return res.rows;
 	}
