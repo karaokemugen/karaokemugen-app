@@ -307,7 +307,7 @@ SELECT
   (CASE WHEN bl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
-  COALESCE(SELECT
+  COALESCE((SELECT
 	SUM(k.duration)	
    FROM kara k
    LEFT OUTER JOIN playlist_content AS plc ON plc.fk_kid = pc.fk_kid

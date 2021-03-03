@@ -175,7 +175,7 @@ class KaraDetail extends Component<IProps, IState> {
 			requestedby: this.context.globalState.auth.data.username,
 			kid: this.props.kid
 		});
-		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
+		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play > 0) {
 			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
 			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
@@ -251,7 +251,7 @@ class KaraDetail extends Component<IProps, IState> {
 				}
 			}
 
-			const playTime = new Date(Date.now() + data.time_before_play * 1000);
+			const playTime = data.time_before_play > 0 ? new Date(Date.now() + data.time_before_play * 1000): null;
 			const details = (
 				<React.Fragment>
 					<div className="detailsKaraLine timeData">
@@ -260,7 +260,7 @@ class KaraDetail extends Component<IProps, IState> {
 							{secondsTimeSpanToHMS(data.duration, 'mm:ss')}
 						</span>
 						<span>
-							{data.time_before_play
+							{playTime
 								? i18next.t('DETAILS_PLAYING_IN', {
 									time: secondsTimeSpanToHMS(data.time_before_play, 'hm'),
 									date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2)
