@@ -47,6 +47,13 @@
 		@media screen and (max-height: $mugen-height-small) {
 			margin: 0 10%;
 		}
+		&.inline {
+			position: static;
+			bottom: unset;
+			margin: auto;
+			padding: .5em;
+			font-size: 1.25em;
+		}
 	}
 
 	.playlists {
@@ -129,6 +136,11 @@
 		width: 50%;
 		@media screen and (max-width: $mugen-breakpoint-larger) {
 			margin: 0 0.75%;
+		}
+
+		.center {
+			display: flex;
+			justify-content: center;
 		}
 	}
 }

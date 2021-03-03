@@ -33,8 +33,8 @@ class Tutorial extends Component<unknown, IState> {
 
 	nextStep = () => {
 		if (this.state.stepIndex === 2) {
-			unmountComponentAtNode(document.getElementById('tuto'));
 			commandBackend('editMyAccount', { flag_tutorial_done: true });
+			unmountComponentAtNode(document.getElementById('tuto'));
 		}
 		this.setState({ stepIndex: this.state.stepIndex + 1 });
 	}
@@ -125,6 +125,9 @@ class Tutorial extends Component<unknown, IState> {
 						{i18next.t('MODAL.TUTORIAL.K_MENU')}
 					</li>
 				</ul>
+				<div className="center"><button onClick={this.nextStep} className="next inline">
+					<i className="fas fa-check" /> {i18next.t('MODAL.TUTORIAL.END')}
+				</button></div>
 			</div>;
 			break;
 		default:
@@ -133,14 +136,9 @@ class Tutorial extends Component<unknown, IState> {
 		return (<div className="tutorial">
 			<div className={`dimmer${this.state.stepIndex > 0 ? ' transparent':''}${this.state.stepIndex === 2 ? ' player-bar':''}`} />
 			{slide}
-			<button onClick={this.nextStep} className="next">
-				{this.state.stepIndex > 1 ?
-					<>
-						<i className="fas fa-check" /> {i18next.t('MODAL.TUTORIAL.END')}
-					</>:<>
-						{i18next.t('MODAL.TUTORIAL.NEXT')} <i className="fas fa-arrow-right" />
-					</>}
-			</button>
+			{this.state.stepIndex < 2 ? <button onClick={this.nextStep} className="next">
+				{i18next.t('MODAL.TUTORIAL.NEXT')} <i className="fas fa-arrow-right" />
+			</button>:null}
 		</div>);
 	}
 }
