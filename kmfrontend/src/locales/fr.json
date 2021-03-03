@@ -527,7 +527,8 @@
 			"VISIBLE_DESC": "Visible par le public",
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
 			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture",
-			"CREATE": "Créer"
+			"CREATE": "Créer",
+			"EDIT": "Éditer"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Rogner votre avatar",

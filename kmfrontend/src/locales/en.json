@@ -513,7 +513,8 @@
 			"VISIBLE_DESC": "Visible by the audience",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
 			"CREATE_PLAYLIST": "Create new playlist",
-			"CREATE": "Créer"
+			"CREATE": "Créer",
+			"EDIT": "Edit"
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Crop your avatar",

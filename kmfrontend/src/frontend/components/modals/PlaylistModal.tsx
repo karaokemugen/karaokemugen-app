@@ -82,10 +82,6 @@ class PlaylistModal extends Component<IProps, IState> {
 								}) :
 								i18next.t('MODAL.PLAYLIST_MODAL.CREATE_PLAYLIST')
 							}</h4>
-							<button className="closeModal"
-								onClick={this.closeModal}>
-								<i className="fas fa-times"></i>
-							</button>
 						</ul>
 						<div className="modal-body flex-direction-btns">
 							<div>{i18next.t('MODAL.PLAYLIST_MODAL.NAME')}</div>
@@ -143,7 +139,9 @@ class PlaylistModal extends Component<IProps, IState> {
 							</button>
 							<button type="button" className="btn btn-action btn-default ok"
 								onClick={this.props.mode === 'create' ? this.createPlaylist : this.editPlaylist}>
-								<i className="fas fa-check" /> {i18next.t('MODAL.PLAYLIST_MODAL.CREATE')}
+								<i className="fas fa-check" /> {this.props.mode === 'create' ?
+									i18next.t('MODAL.PLAYLIST_MODAL.CREATE'):i18next.t('MODAL.PLAYLIST_MODAL.EDIT')
+								}
 							</button>
 						</div>
 					</div >
