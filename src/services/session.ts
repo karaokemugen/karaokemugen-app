@@ -146,8 +146,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const session = await findSession(seid);
 		if (!session) throw {code: 404, msg: 'Session does not exist'};
 		const [requested, played] = await Promise.all([
-			selectAllKaras({order: 'sessionRequested', q: `seid=${seid}`, admin: true}),
-			selectAllKaras({order: 'sessionPlayed', q: `seid=${seid}`, admin: true})
+			selectAllKaras({order: 'sessionRequested', q: `seid:${seid}`, admin: true}),
+			selectAllKaras({order: 'sessionPlayed', q: `seid:${seid}`, admin: true})
 		]);
 		const sessionExports: SessionExports = {
 			requested: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requested.csv`),

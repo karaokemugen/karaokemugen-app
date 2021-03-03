@@ -45,7 +45,7 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 		const res = await selectAllKaras({
 			username: token.username.toLowerCase(),
 			filter: null,
-			q: `k=${kid}`,
+			q: `k:${kid}`,
 			lang: lang,
 			admin: token.role === 'admin',
 			ignoreBlacklist: true
