@@ -9,7 +9,7 @@ import nanamiWebP from '../../../assets/nanami.webp';
 import { logout } from '../../../store/actions/auth';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { getSocket } from '../../../utils/socket';
+import { commandBackend,getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
 import PublicFixedMenu from './PublicFixedMenu';
@@ -43,6 +43,8 @@ class PublicHeader extends Component<IProps, IState> {
 
 	componentDidMount() {
 		getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
+		// This will emit a quotaAvailableUpdated event
+		commandBackend('refreshUserQuotas');
 		window.addEventListener('resize', this.resizeCheck);
 		this.props.onResize(`${this.state.ref.current.scrollHeight}px`);
 		this.observer = new ResizeObserver(this.resizeCheck);
