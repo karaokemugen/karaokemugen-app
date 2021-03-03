@@ -441,12 +441,14 @@ class Playlist extends Component<IProps, IState> {
 		param.filter = this.getFilterValue(this.props.side);
 		param.from = (stateData?.infos?.from > 0 ? stateData.infos.from : 0);
 		param.size = chunksize;
-		if ((this.state.searchType && this.state.searchType !== 'search') || (this.state.searchCriteria && this.state.searchValue)) {
+		if (this.state.searchType && this.state.searchType !== 'search') {
+			param.order = this.state.searchType;
+		}
+		if (this.state.searchCriteria && this.state.searchValue) {
 			const searchCriteria = this.state.searchCriteria ?
 				criterias[this.state.searchCriteria]
 				: '';
-			param.searchType = this.state.searchType;
-			if (searchCriteria && this.state.searchValue) param.searchValue = searchCriteria + ':' + this.state.searchValue;
+			if (searchCriteria && this.state.searchValue) param.q = searchCriteria + ':' + this.state.searchValue;
 		}
 		const karas: KaraList = await commandBackend(url, param);
 		if (this.state.goToPlaying && this.state.idPlaylist > 0) {
@@ -584,9 +586,8 @@ class Playlist extends Component<IProps, IState> {
 			'year': 'y',
 			'tag': 't'
 		};
-		return (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) ? {
-			searchType: this.state.searchType,
-			searchValue: ((this.state.searchCriteria && criterias[this.state.searchCriteria] && this.state.searchValue) ?
+		return (this.state.searchCriteria && this.state.searchValue) ? {
+			q: ((this.state.searchCriteria && criterias[this.state.searchCriteria] && this.state.searchValue) ?
 				`${criterias[this.state.searchCriteria]}:${this.state.searchValue}` : undefined)
 		} : {};
 	}
@@ -773,7 +774,7 @@ class Playlist extends Component<IProps, IState> {
 
 	onChangeTags = (type: number | string, value: string) => {
 		const searchCriteria = type === 0 ? 'year' : 'tag';
-		const stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
+		const stringValue = (value && searchCriteria === 'tag') ? `${value}~${type}` : value;
 		this.setState({ searchCriteria: searchCriteria, searchValue: stringValue }, () => this.getPlaylist('search'));
 	};
 

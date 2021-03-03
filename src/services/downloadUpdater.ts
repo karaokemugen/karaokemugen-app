@@ -88,8 +88,7 @@ export async function getRemoteKaras(repo: string, params: KaraParams, compare?:
 		const karas = await getKaras({
 			filter: params.filter,
 			token: {username: 'admin', role: 'admin'},
-			mode: 'search',
-			modeValue: query
+			q: query
 		});
 		karas.content.forEach(k => localKIDs[k.kid] = k.modified_at);
 	}

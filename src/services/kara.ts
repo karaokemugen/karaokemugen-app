@@ -45,8 +45,7 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 		const res = await selectAllKaras({
 			username: token.username.toLowerCase(),
 			filter: null,
-			mode: 'kid',
-			modeValue: kid,
+			q: `k=${kid}`,
 			lang: lang,
 			admin: token.role === 'admin',
 			ignoreBlacklist: true
@@ -93,7 +92,7 @@ export async function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
 			username: token.username.toLowerCase(),
 			lang: lang,
 			filter: null,
-			mode: 'requested'
+			order: 'requested'
 		});
 	} catch(err) {
 		sentry.error(err);
@@ -108,7 +107,7 @@ export async function getKaraPlayed(token: Token, lang: string, from: number, si
 		return await selectAllKaras({
 			username: token.username.toLowerCase(),
 			filter: null,
-			mode: 'played',
+			order: 'played',
 			from: from,
 			size: size,
 			lang: lang
@@ -149,8 +148,8 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 		const pl = await selectAllKaras({
 			username: params.token?.username || 'admin',
 			filter: params.filter || '',
-			mode: params.mode,
-			modeValue: params.modeValue,
+			order: params.order,
+			q: params.q,
 			from: params.from || 0,
 			size: params.size || 9999999999,
 			admin: params.token?.role === 'admin',

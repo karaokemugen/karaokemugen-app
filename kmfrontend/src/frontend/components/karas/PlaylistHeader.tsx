@@ -100,6 +100,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 		};
 	}
 
+	componentDidUpdate(prevProps: Readonly<IProps>) {
+		if (prevProps.tags?.length !== this.props.tags?.length) {
+			this.setState({ tags: this.props.tags?.filter(tag => tag.type.includes(this.state.tagType)) });
+		}
+	}
+
 	addOrEditPlaylist = (mode: 'create' | 'edit') => {
 		this.togglePlaylistCommands();
 		showModal(this.context.globalDispatch, <PlaylistModal
@@ -400,12 +406,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 					</div>
 				</div> : null);
 
-		const searchMenu = (this.props.tags ?
+		const searchMenu = (this.state.tags.length > 0 ?
 			<div className="searchMenuContainer">
 				{this.props.idPlaylist === -1 ? <div className="filterContainer">
 					<div className="filterButton" onClick={() => {
 						this.setState({activeFilterUUID: ''},
-							() => this.props.getPlaylist(this.state.activeFilter));
+							() => this.props.onChangeTags(this.state.tagType, ''));
 					}}>
 						<i className="fas fa-eraser"/> <span>{i18next.t('CLEAR_FILTER')}</span>
 					</div>
