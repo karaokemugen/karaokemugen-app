@@ -47,9 +47,9 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	async componentDidMount() {
 		if (this.props.session.seid) {
 			const played = await commandBackend('getKaras', 
-				{searchType: 'sessionPlayed', searchValue: this.props.session.seid});
+				{order: 'sessionPlayed', q: `seid=${this.props.session.seid}`});
 			const requested = await commandBackend('getKaras', 
-				{searchType: 'sessionRequested', searchValue: this.props.session.seid});
+				{order: 'sessionRequested', q: `seid=${this.props.session.seid}`});
 			this.setState({ sessionPlayed: played.content, sessionRequested: requested.content });
 		}
 	}
