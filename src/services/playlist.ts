@@ -691,6 +691,7 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 		const playlistsNeedingUpdate: Set<number> = new Set();
 		const plcsNeedingDelete: any[] = [];
 		for (const plc_id of plc_ids) {
+			if (typeof plc_id !== 'number') throw {code: 400, msg: 'At least one PLC ID is invalid'};
 			const plcData = await getPLCInfoMini(plc_id);
 			if (!plcData) throw {code: 404, msg: 'At least one playlist content is unknown'};
 			if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {code: 403, msg: 'You cannot delete a song you did not add'};
