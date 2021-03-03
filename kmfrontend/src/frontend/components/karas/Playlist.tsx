@@ -481,8 +481,7 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			data = karas;
 		}
-		this.setState({ data: data, getPlaylistInProgress: false });
-		this.playlistForceRefresh(true);
+		this.setState({ data: data, getPlaylistInProgress: false }, () => this.playlistForceRefresh(true));
 	};
 
 	playingUpdate = (data: { playlist_id: number, plc_id: number }) => {
