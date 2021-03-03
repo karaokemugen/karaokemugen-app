@@ -56,7 +56,10 @@ test:
 build-react:
   stage: build
   interruptible: true
-  needs: []
+  dependencies:
+    - test
+  needs:
+    - test
   artifacts:
     expire_in: 8 hours
     name: km-app-build-${CI_COMMIT_REF_SLUG}
