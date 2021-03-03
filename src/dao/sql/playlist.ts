@@ -308,18 +308,19 @@ SELECT
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   (SELECT
-	SUM(k.duration)
+	SUM(DISTINCT k.duration)	
    FROM kara k
-   LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing AND plc_current_playing.fk_id_playlist = pc.fk_id_playlist
-   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (pc.pos - 1) AND plc_before.fk_id_playlist = pc.fk_id_playlist
-   WHERE k.pk_kid = plc_before.fk_kid
+   LEFT OUTER JOIN playlist_content AS plc ON plc.fk_kid = pc.fk_kid
+   LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing AND plc_current_playing.fk_id_playlist = :currentPlaylist_id
+   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (plc.pos) AND plc_before.fk_id_playlist = :currentPlaylist_id 
+   WHERE plc_before.fk_kid = k.pk_kid     
   ) AS time_before_play,
   pc.flag_visible AS flag_visible,
   ak.repository as repository,
   array_agg(DISTINCT pc_pub.pk_id_plcontent) AS public_plc_id,
   array_agg(DISTINCT pc_self.pk_id_plcontent) AS my_public_plc_id
 FROM playlist_content AS pc
-INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
+INNER JOIN playlist AS pl ON pl.pk_id_playlist = :currentPlaylist_id
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
 LEFT OUTER JOIN played p ON ak.pk_kid = p.fk_kid

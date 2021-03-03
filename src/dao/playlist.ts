@@ -177,7 +177,8 @@ export async function getPLCInfo(id: number, forUser: boolean, username: string)
 			playlistcontent_id: id,
 			dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 			username: username,
-			publicPlaylist_id: getState().publicPlaylistID
+			publicPlaylist_id: getState().publicPlaylistID,
+			currentPlaylist_id: getState().currentPlaylistID,
 		}));
 	return res.rows[0];
 }
