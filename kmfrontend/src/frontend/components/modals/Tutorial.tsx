@@ -39,6 +39,12 @@ class Tutorial extends Component<unknown, IState> {
 		this.setState({ stepIndex: this.state.stepIndex + 1 });
 	}
 
+	previousStep = () => {
+		if (this.state.stepIndex !== 0) {
+			this.setState({ stepIndex: this.state.stepIndex - 1 });
+		}
+	}
+
 	render() {
 		let slide = <></>;
 		switch (this.state.stepIndex) {
@@ -76,9 +82,9 @@ class Tutorial extends Component<unknown, IState> {
 		case 1:
 			slide = <div className="header-presentation">
 				<ul>
-					<li><i className="fas fa-fw fa-wrench" /> {i18next.t('MODAL.TUTORIAL.CREATE_PLAYLIST_BUTTON')}</li>
+					<li><i className="fas fa-fw fa-cog" /> {i18next.t('MODAL.TUTORIAL.CREATE_PLAYLIST_BUTTON')}</li>
 					<li>
-						<i className="fas fa-fw fa-list" /> {i18next.t('MODAL.TUTORIAL.SELECT_PLAYLIST_BUTTON')}
+						<i className="fas fa-fw fa-list-ol" /> {i18next.t('MODAL.TUTORIAL.SELECT_PLAYLIST_BUTTON')}
 						<ul className="ul-l1">
 							<li><i className="fas fa-fw fa-book" /> {i18next.t('MODAL.TUTORIAL.LIBRARY')}<br />
 								{i18next.t('MODAL.TUTORIAL.DOWNLOAD')} <a href="/system/karas/download" target="_blank">{i18next.t('MODAL.TUTORIAL.SYSTEM_PANEL')}</a>.</li>
@@ -125,7 +131,7 @@ class Tutorial extends Component<unknown, IState> {
 						{i18next.t('MODAL.TUTORIAL.K_MENU')}
 					</li>
 				</ul>
-				<div className="center"><button onClick={this.nextStep} className="next inline">
+				<div className="center"><button onClick={this.nextStep} className="step inline">
 					<i className="fas fa-check" /> {i18next.t('MODAL.TUTORIAL.END')}
 				</button></div>
 			</div>;
@@ -136,8 +142,11 @@ class Tutorial extends Component<unknown, IState> {
 		return (<div className="tutorial">
 			<div className={`dimmer${this.state.stepIndex > 0 ? ' transparent':''}${this.state.stepIndex === 2 ? ' player-bar':''}`} />
 			{slide}
-			{this.state.stepIndex < 2 ? <button onClick={this.nextStep} className="next">
+			{this.state.stepIndex < 2 ? <button onClick={this.nextStep} className="step next">
 				{i18next.t('MODAL.TUTORIAL.NEXT')} <i className="fas fa-arrow-right" />
+			</button>:null}
+			{this.state.stepIndex > 0 ? <button onClick={this.previousStep} className="step back">
+				{i18next.t('MODAL.TUTORIAL.BACK')} <i className="fas fa-arrow-left" />
 			</button>:null}
 		</div>);
 	}

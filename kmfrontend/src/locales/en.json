@@ -521,7 +521,9 @@
 			"HELP": "Resize the square to have the perfect profile picture."
 		},
 		"TUTORIAL": {
+			"TITLE": "Tutorial",
 			"NEXT": "Next",
+			"BACK": "Back",
 			"WELCOME": "Welcome to Karaoke Mugen! Here's what you need to know.",
 			"PLAYLIST": "The screen shows two playlists. You can add a song from the left playlist to the right playlist and vice versa just by clicking on",
 			"TITLE_CLICK": "Click on the karaoke title for more information",

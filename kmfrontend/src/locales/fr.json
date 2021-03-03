@@ -535,7 +535,9 @@
 			"HELP": "Redimensionnez le carré pour obtenir la parfaite photo de profil."
 		},
 		"TUTORIAL": {
+			"TITLE": "Tutoriel",
 			"NEXT": "Suivant",
+			"BACK": "Précédent",
 			"END": "Terminer",
 			"WELCOME": "Bienvenue dans Karaoke Mugen ! Voici ce que vous devez savoir.",
 			"PLAYLIST": "L'écran affiche 2 playlists. Vous pouvez ajouter une chanson de la playlist de gauche vers la playlist de droite et vice-versa juste en appuyant sur le ",

@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import merge from 'lodash.merge';
 import React, { Component } from 'react';
+import { render } from 'react-dom';
 
 import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
@@ -12,6 +13,7 @@ import { callModal, expand } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import ProfilModal from './modals/ProfilModal';
+import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 
 interface IProps {
@@ -349,9 +351,16 @@ class AdminHeader extends Component<IProps, IState> {
 								</a>
 							</li>
 							<li>
-								<a href="#" onClick={() => logout(this.context.globalDispatch)}
-								>
+								<a href="#" onClick={() => logout(this.context.globalDispatch)}>
 									<i className="fas fa-fw fa-sign-out-alt" />&nbsp;{i18next.t('LOGOUT')}
+								</a>
+							</li>
+							<li>
+								<a href="#" onClick={() => {
+									render(<Tutorial/>, document.getElementById('tuto'));
+									this.setState({ dropDownMenu: !this.state.dropDownMenu });
+								}}>
+									<i className="fas fa-fw fa-question-circle" />&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
 								</a>
 							</li>
 							{this.props.powerOff ?

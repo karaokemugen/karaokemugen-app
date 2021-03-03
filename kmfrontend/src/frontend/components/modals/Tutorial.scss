@@ -31,12 +31,17 @@
 		padding: .5em;
 	}
 
-	.next {
+	.step {
 		cursor: pointer;
 		color: unset;
 		text-decoration: none;
 		position: absolute;
-		bottom: 100px;
+		&.next {
+			bottom: 150px;
+		}
+		&.back {
+			bottom: 50px;
+		}
 		width: 25%;
 		margin: 0 37.5%;
 		font-size: 1.5em;
