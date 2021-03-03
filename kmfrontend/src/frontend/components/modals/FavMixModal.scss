@@ -16,6 +16,7 @@ p.autoMixExplanation {
 		> label {
 			display: inline-flex;
 			align-items: center;
+			user-select: none;
 			> input {
 				margin-right: .5em;
 			}
