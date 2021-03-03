@@ -18,21 +18,21 @@ describe('Karas information', () => {
 	});
 
 	it('Get all japanese songs', async () => {
-		const data = await commandBackend(token, 'getKaras', {searchValue: `t:${jpnTag}`, searchType: 'search'});
+		const data = await commandBackend(token, 'getKaras', {q: `t:${jpnTag}`});
 		for (const kara of data.content) {
 			expect(kara.tid).to.include(jpnTag);
 		}
 	});
 
 	it('Get songs from 2004', async () => {
-		const data = await commandBackend(token, 'getKaras', {searchValue: 'y:2004', searchType: 'search'});
+		const data = await commandBackend(token, 'getKaras', {q: 'y:2004'});
 		for (const kara of data.content) {
 			expect(kara.year).to.be.equal(2004);
 		}
 	});
 
 	it('Get songs from 2004 AND japanese', async () => {
-		const data = await commandBackend(token, 'getKaras', {searchValue: `y:2004!t:${jpnTag}`, searchType: 'search'});
+		const data = await commandBackend(token, 'getKaras', {q: `y:2004!t:${jpnTag}`});
 		for (const kara of data.content) {
 			expect(kara.year).to.be.equal(2004);
 			expect(kara.tid).to.include(jpnTag);
@@ -40,7 +40,7 @@ describe('Karas information', () => {
 	});
 
 	it('Get songs in most recent order', async () => {
-		const data = await commandBackend(token, 'getKaras', {searchType: 'recent'});
+		const data = await commandBackend(token, 'getKaras', {order: 'recent'});
 		const dateList = data.content.map((k: DBKara) => k.created_at);
 		const dateList2 = [].concat(dateList);
 		dateList2.sort();
