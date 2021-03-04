@@ -128,6 +128,7 @@ It can be enabled in the Window menu.
 - Database rework! We reworked how songs are stored and accessed in the database, making adding/editing/removing karaokes and tags will be much faster for karaoke database maintainers. It also allows you to edit your song library during a karaoke as it won't conflict with users accessing it (#884 #882)
 - All window modals have been reworked and are more beautiful. (#881)
 - Admin messages can now coexist with the other messages (Go to kara.moe, song informations, b2e2bc52)
+- You can now delete a song with the flag_playing attribute set as long as it's not currently playing (#917)
 
 ### Fixes
 

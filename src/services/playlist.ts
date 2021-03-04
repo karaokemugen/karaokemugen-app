@@ -695,12 +695,12 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 			const plcData = await getPLCInfoMini(plc_id);
 			if (!plcData) throw {code: 404, msg: 'At least one playlist content is unknown'};
 			if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {code: 403, msg: 'You cannot delete a song you did not add'};
-			if (plcData.flag_playing && getState().player.playerStatus === 'play') throw {code: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
+			if (plcData.flag_playing && getState().player.playerStatus === 'play' && plcData.playlist_id === getState().currentPlaylistID) throw {code: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
 			usersNeedingUpdate.add(plcData.username);
 			playlistsNeedingUpdate.add(plcData.playlist_id);
-			plcsNeedingDelete.push({ 
-				id: plc_id, 
-				playlist_id: plcData.playlist_id, 
+			plcsNeedingDelete.push({
+				id: plc_id,
+				playlist_id: plcData.playlist_id,
 				kid: plcData.kid
 			});
 		}
@@ -726,7 +726,7 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 				reorderPlaylist(playlist_id)
 			]);
 			updatePlaylistLastEditTime(playlist_id);
-			
+
 			emitWS('playlistContentsUpdated', playlist_id);
 			emitWS('playlistInfoUpdated', playlist_id);
 			const pl = await getPlaylistInfo(playlist_id, {role: 'admin', username: 'admin'});
@@ -739,11 +739,11 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 	} catch(err) {
 		throw {
 			code: err?.code,
-			message: err			
+			message: err
 		};
 	} finally {
 		profile('deleteKara');
-	}	
+	}
 }
 
 export async function resetAllAcceptedPLCs() {
@@ -752,7 +752,7 @@ export async function resetAllAcceptedPLCs() {
 		getPlaylistContentsMini(getState().currentPlaylistID),
 	]);
 	// Filter public playlist with only songs that are accepted and which are missing from current playlist.
-	const PLCsToResetAccepted = publicPL.filter(pubPLC => 
+	const PLCsToResetAccepted = publicPL.filter(pubPLC =>
 		pubPLC.flag_accepted && !currentPL.find(curPLC => curPLC.kid === pubPLC.kid && pubPLC.username === curPLC.username));
 	await editPLC(PLCsToResetAccepted.map(plc => plc.playlistcontent_id), {flag_accepted: false});
 }
@@ -808,7 +808,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 			if (currentPLC) PLCsToDeleteFromCurrent.push(currentPLC.playlistcontent_id);
 			await setPLCAccepted(plc.playlistcontent_id, params.flag_accepted);
 		}
-		if (params.flag_refused === true) {			
+		if (params.flag_refused === true) {
 			const currentPLC = currentPlaylist.find(curplc => curplc.kid === plc.kid && curplc.username === plc.username);
 			if (currentPLC) PLCsToDeleteFromCurrent.push(currentPLC.playlistcontent_id);
 			params.flag_free = true;
