@@ -46,6 +46,8 @@ function setupUserWatch(server: string) {
 			logger.warn(`Cannot delete ${login}`, { service: 'RemoteUser' });
 		}
 	});
+	// in case of reconnections, resub to all users
+	socket.on('connect', subRemoteUsers);
 }
 
 export function startSub(user: string, server: string) {

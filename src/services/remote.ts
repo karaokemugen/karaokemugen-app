@@ -75,11 +75,25 @@ async function proxy(ev: string, data: APIDataProxied, ack: (res) => void) {
 	}
 }
 
+let errCount = 0;
+
 async function broadcastForward(body) {
 	commandKMServer('remote broadcast', {
 		body
+	}).then(() => {
+		errCount = 0;
 	}).catch(err => {
 		logger.warn('Failed to remote broadcast', {service: 'Remote', obj: err});
+		if (errCount !== -1) errCount++;
+		if (errCount >= 10) {
+			logger.warn('The remote broadcast failed 10 times in a row, restart remote');
+			errCount = -1;
+			getKMServerSocket().disconnect();
+			setTimeout(() => {
+				getKMServerSocket().connect();
+				errCount = 0;
+			}, 2500).unref();
+		}
 	});
 }
 
@@ -92,6 +106,7 @@ export async function destroyRemote() {
 	// Remove all subscriptions
 	getKMServerSocket().offAny(proxy);
 	getKMServerSocket().off('connect', restartRemote);
+	getKMServerSocket().off('disconnect', removeRemote);
 	getWS().off('broadcast', broadcastForward);
 	logger.info('Remote is STOPPED', {service: 'Remote'});
 	setState({ remoteAccess: null });
