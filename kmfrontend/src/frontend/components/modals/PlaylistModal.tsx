@@ -32,10 +32,10 @@ class PlaylistModal extends Component<IProps, IState> {
 		name: this.props.mode === 'edit' && (this.props.idPlaylist === -4 ?
 			this.props.bLSet?.name
 			: this.props.playlistInfo?.name) || undefined,
-		flag_current: this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current
-		|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current)) || false,
-		flag_public: this.props.mode === 'edit' && this.props.playlistInfo?.flag_public || false,
-		flag_visible: this.props.mode === 'edit' && this.props.playlistInfo?.flag_visible || true,
+		flag_current: this.props.mode === 'edit' ? (this.props.playlistInfo?.flag_current
+		|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current)) : false,
+		flag_public: this.props.mode === 'edit' ? this.props.playlistInfo?.flag_public : false,
+		flag_visible: this.props.mode === 'edit' ? this.props.playlistInfo?.flag_visible : true,
 	}
 
 	createPlaylist = async () => {
