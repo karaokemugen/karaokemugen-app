@@ -5,6 +5,7 @@ import { render } from 'react-dom';
 
 import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
+import KLogo from '../../assets/Klogo.png';
 import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
@@ -66,7 +67,7 @@ class AdminHeader extends Component<IProps, IState> {
 	}
 
 	closeDropdownMenu = (e: MouseEvent) => {
-		if (!(e.target as Element).closest('#menuPC') && !(e.target as Element).closest('.dropdown-menu')) {
+		if (!(e.target as Element).closest('.klogo') && !(e.target as Element).closest('.dropdown-menu')) {
 			this.setState({ dropDownMenu: false });
 		}
 	}
@@ -311,9 +312,10 @@ class AdminHeader extends Component<IProps, IState> {
 					<button
 						className="btn btn-dark dropdown-toggle klogo"
 						type="button"
-						id="menuPC"
 						onClick={() => this.setState({ dropDownMenu: !this.state.dropDownMenu })}
-					/>
+					>
+						<img src={KLogo} alt="Karaoke Mugen logo" />
+					</button>
 					{this.state.dropDownMenu ?
 						<ul className="dropdown-menu">
 							<li id="optionsButton">
