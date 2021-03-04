@@ -130,7 +130,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	async apiGetBlacklistCriterias() {
-		const res = await commandBackend('getDownloadBLCs');
+		const res = await commandBackend('getDownloadBLCs', undefined, false, 300000);
 		if (res.length) {
 			const criterias = res.map(function (criteria) {
 				const c = getCriterasByValue(criteria.type);
@@ -213,7 +213,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	apiReadKaraQueue = async () => {
-		const res = await commandBackend('getDownloads');
+		const res = await commandBackend('getDownloads', undefined, false, 300000);
 		this.setState({ karasQueue: res });
 	}
 

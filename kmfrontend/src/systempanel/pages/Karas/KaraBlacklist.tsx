@@ -40,7 +40,7 @@ class KaraBlacklist extends Component<unknown, KaraBlacklistState> {
 	}
 
 	refresh = async () => {
-		const data = await commandBackend('getDownloadBLCs');
+		const data = await commandBackend('getDownloadBLCs', undefined, false, 300000);
 		this.setState({ criterias: data });
 	}
 

@@ -101,7 +101,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	apiReadKaraQueue = async () => {
-		const res = await commandBackend('getDownloads');
+		const res = await commandBackend('getDownloads', undefined, false, 300000);
 		this.setState({ karasQueue: res });
 	}
 
