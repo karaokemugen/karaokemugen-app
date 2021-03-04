@@ -78,7 +78,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	async getTags() {
-		const res = await commandBackend('getRemoteTags');
+		const res = await commandBackend('getRemoteTags', undefined, false, 300000);
 		this.setState({ tags: res.content }, () => this.FilterTagCascaderOption());
 	}
 
@@ -108,7 +108,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			from: pfrom,
 			size: psz,
 			compare: this.state.compare
-		});
+		}, false, 300000);
 		const karas = response.content;
 		const karasToDownload: KaraDownloadRequest[] = [];
 		for (const kara of karas) {
@@ -198,7 +198,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			from: pfrom,
 			size: psz,
 			compare: this.state.compare
-		});
+		}, false, 300000);
 		let karas = res.content;
 		karas = karas.map((kara) => {
 			kara.name = kara.karafile.replace('.kara.json', '');
