@@ -73,7 +73,7 @@ class TagsList extends Component<IProps, IState> {
 	playlistContentsUpdatedFromClient = async () => {
 		const tags = this.state.tags;
 		tags.infos.from = 0;
-		await this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1, tags, scrollToIndex: 0 });
+		this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1, tags, scrollToIndex: 0 });
 		this.props.tagType === YEARS.type ? this.getYears() : this.getTags();
 	}
 
@@ -131,7 +131,7 @@ class TagsList extends Component<IProps, IState> {
 	loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
 		const data = this.state.tags;
 		data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
-		await this.setState({ tags: data });
+		this.setState({ tags: data });
 		if (timer) clearTimeout(timer);
 		timer = setTimeout(() => this.props.tagType === YEARS.type ? this.getYears() : this.getTags(), 1000);
 	}

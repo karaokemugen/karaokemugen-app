@@ -100,7 +100,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	}
 
 	onSessionDateChange = async dates => {
-		await this.setState({ started_at: dates && dates[0] ? dates[0].format() : null, ended_at: dates && dates[1] ? dates[1].format() : null });
+		this.setState({ started_at: dates && dates[0] ? dates[0].format() : null, ended_at: dates && dates[1] ? dates[1].format() : null });
 		this.formRef.current?.validateFields();
 	}
 

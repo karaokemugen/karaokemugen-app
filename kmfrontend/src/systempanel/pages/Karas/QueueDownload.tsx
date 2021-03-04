@@ -61,8 +61,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 
 	async getTags() {
 		const res = await commandBackend('getRemoteTags');
-		await this.setState({ tags: res.content });
-		this.FilterTagCascaderOption();
+		this.setState({ tags: res.content }, this.FilterTagCascaderOption);
 	}
 
 	changeFilter = (event) => {

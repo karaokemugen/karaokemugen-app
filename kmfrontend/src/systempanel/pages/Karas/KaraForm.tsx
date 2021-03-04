@@ -129,11 +129,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
-		await this.setState({ repositoriesValue: res.map(repo => repo.Name) });
-		this.formRef.current.setFieldsValue({
-			repository: this.props.kara?.repository ? this.props.kara.repository :
-				(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null)
-		});
+		this.setState({ repositoriesValue: res.map(repo => repo.Name) }, () =>
+			this.formRef.current.setFieldsValue({
+				repository: this.props.kara?.repository ? this.props.kara.repository :
+					(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null)
+			})
+		);
 	};
 
 	handleSubmit = (values) => {

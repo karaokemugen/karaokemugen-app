@@ -79,8 +79,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	async getTags() {
 		const res = await commandBackend('getRemoteTags');
-		await this.setState({ tags: res.content });
-		this.FilterTagCascaderOption();
+		this.setState({ tags: res.content }, () => this.FilterTagCascaderOption());
 	}
 
 	changeFilter = (event) => {
@@ -404,11 +403,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 							{i18next.t('KARA.DOWNLOAD_ALL_DESC')}
 						</Col>
 						<Col span={4}>
-							<Radio checked={this.state.compare === ''}
-								onChange={async () => {
-									await this.setState({ compare: '', currentPage: 0 });
-									this.api_get_online_karas();
-								}}>{i18next.t('KARA.FILTER_ALL')}</Radio>
+							<Radio
+								checked={this.state.compare === ''}
+								onChange={() =>	this.setState({ compare: '', currentPage: 0 }, this.api_get_online_karas)}
+							>
+								{i18next.t('KARA.FILTER_ALL')}
+							</Radio>
 						</Col>
 						<Col span={4}>
 							<Button style={{ width: '100px' }} type="primary" key="queueStart"
@@ -423,11 +423,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 							{i18next.t('KARA.UPDATE_ALL_DESC')}
 						</Col>
 						<Col span={4}>
-							<Radio checked={this.state.compare === 'updated'}
-								onChange={async () => {
-									await this.setState({ compare: 'updated', currentPage: 0 });
-									this.api_get_online_karas();
-								}}>{i18next.t('KARA.FILTER_UPDATED')}</Radio>
+							<Radio
+								checked={this.state.compare === 'updated'}
+								onChange={() => this.setState({ compare: 'updated', currentPage: 0 }, this.api_get_online_karas)}
+							>
+								{i18next.t('KARA.FILTER_UPDATED')}
+							</Radio>
 						</Col>
 						<Col span={4}>
 							<Button style={{ width: '100px' }} type="primary" key="queuePause"
@@ -442,11 +443,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 							{i18next.t('KARA.CLEAN_ALL_DESC')}
 						</Col>
 						<Col span={4}>
-							<Radio checked={this.state.compare === 'missing'}
-								onChange={async () => {
-									await this.setState({ compare: 'missing', currentPage: 0 });
-									this.api_get_online_karas();
-								}}>{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}</Radio>
+							<Radio
+								checked={this.state.compare === 'missing'}
+								onChange={() => this.setState({ compare: 'missing', currentPage: 0 }, this.api_get_online_karas)}
+							>
+								{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}
+							</Radio>
 						</Col>
 						<Col span={4}>
 							<Button style={{ width: '100px' }} type="primary" key="queueDelete"

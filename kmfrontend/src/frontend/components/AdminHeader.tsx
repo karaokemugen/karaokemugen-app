@@ -54,7 +54,7 @@ class AdminHeader extends Component<IProps, IState> {
 		});
 		if (this.context.globalState.auth.isAuthenticated) {
 			const result = await commandBackend('getPlayerStatus');
-			await this.setState({ statusPlayer: result });
+			this.setState({ statusPlayer: result });
 		}
 		getSocket().on('playerStatus', this.playerUpdate);
 		document.getElementById('root').addEventListener('click', this.closeDropdownMenu);

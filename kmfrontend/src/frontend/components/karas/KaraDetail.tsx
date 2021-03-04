@@ -107,11 +107,12 @@ class KaraDetail extends Component<IProps, IState> {
 			data = { kid: (kid ? kid : this.props.kid) };
 		}
 		const kara = await commandBackend(url, data);
-		await this.setState({
+		this.setState({
 			kara: kara,
 			isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
+		}, () => {
+			if (kara.subfile) this.fetchLyrics();
 		});
-		if (kara.subfile) this.fetchLyrics();
 	};
 
 	getLastPlayed = (lastPlayed_at: Date, lastPlayed: lastplayed_ago) => {

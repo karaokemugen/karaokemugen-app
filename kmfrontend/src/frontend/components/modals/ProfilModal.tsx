@@ -197,11 +197,12 @@ class ProfilModal extends Component<IProps, IState> {
 		if (avatar) {
 			const user = this.state.user;
 			user.avatar = avatar;
-			await this.setState({ user, cropAvatarModalOpen: false });
-			await this.updateUser();
-			await this.getUser();
+			this.setState({ user, cropAvatarModalOpen: false }, async () => {
+				await this.updateUser();
+				await this.getUser();
+			});
 		} else {
-			await this.setState({ cropAvatarModalOpen: false });
+			this.setState({ cropAvatarModalOpen: false });
 		}
 	};
 

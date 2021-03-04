@@ -52,9 +52,10 @@ class TagsList extends Component<unknown, TagsListState> {
 	};
 
 	changeType = async (value) => {
-		await this.setState({ type: value });
-		localStorage.setItem('typeTagList', value);
-		this.refresh();
+		this.setState({ type: value }, () => {
+			localStorage.setItem('typeTagList', value);
+			this.refresh();
+		});
 	}
 
 

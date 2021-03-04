@@ -152,9 +152,9 @@ class SetupPage extends Component<IProps, IState> {
 		ipc.send('get-file-paths', options);
 		ipc.once(
 			'get-file-paths-response',
-			async (event: any, filepaths: Array<string>) => {
+			async (_event: any, filepaths: Array<string>) => {
 				if (filepaths.length > 0) {
-					await this.setState({ repositoryFolder: filepaths[0] });
+					this.setState({ repositoryFolder: filepaths[0] });
 				}
 			}
 		);

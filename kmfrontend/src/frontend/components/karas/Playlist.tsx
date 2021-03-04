@@ -160,7 +160,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 	}
 
-	publicPlaylistEmptied = async () => {
+	publicPlaylistEmptied = () => {
 		if (this.state.idPlaylist === -1) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
@@ -170,8 +170,7 @@ class Playlist extends Component<IProps, IState> {
 					kara.flag_upvoted = false;
 				}
 			}
-			await this.setState({ data });
-			this.playlistForceRefresh(true);
+			this.setState({ data }, () => this.playlistForceRefresh(true));
 		}
 	}
 
@@ -204,14 +203,13 @@ class Playlist extends Component<IProps, IState> {
 					}
 				}
 			}
-			await this.setState({ data });
-			this.playlistForceRefresh(true);
+			this.setState({ data }, () => this.playlistForceRefresh(true));
 		}
 	}
 
 	initCall = async () => {
 		await this.getIdPlaylist();
-		await this.setState({ goToPlaying: this.state.idPlaylist > 0 });
+		this.setState({ goToPlaying: this.state.idPlaylist > 0 });
 		if (this.props.scope === 'public' || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
 			if (this.props.scope === 'admin') await this.loadBLSet();
@@ -244,7 +242,7 @@ class Playlist extends Component<IProps, IState> {
 		if (!this.state.getPlaylistInProgress) {
 			const data = this.state.data as KaraList;
 			data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
-			await this.setState({ data: data });
+			this.setState({ data: data });
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(this.getPlaylist, 1000);
 		}
@@ -337,15 +335,13 @@ class Playlist extends Component<IProps, IState> {
 					Number(plVal2Cookie) : this.context.globalState.settings.data.state.currentPlaylistID;
 			}
 		}
-		await this.setState({ idPlaylist: value });
-		this.props.majIdsPlaylist(this.props.side, value);
+		this.setState({ idPlaylist: value }, () => this.props.majIdsPlaylist(this.props.side, value));
 	};
 
 	loadBLSet = async (idBLSet?: number) => {
 		const bLSetList = await commandBackend('getBLCSets');
 		const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
-		await this.setState({ bLSetList: bLSetList, bLSet: bLSet });
-		setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id);
+		this.setState({ bLSetList: bLSetList, bLSet: bLSet }, () => setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id));
 	}
 
 	changeIdPlaylist = async (idPlaylist: number, idBLSet?: number) => {
@@ -357,12 +353,13 @@ class Playlist extends Component<IProps, IState> {
 		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
 		const oldIdPlaylist = this.state.idPlaylist;
-		await this.setState({ idPlaylist: Number(idPlaylist), data: undefined, playlistInfo: undefined, goToPlaying: idPlaylist > 0 });
-		this.getPlaylist();
-		this.props.majIdsPlaylist(this.props.side, idPlaylist);
-		if (idPlaylist === this.props.idPlaylistTo) {
-			eventEmitter.emitChange('changeIdPlaylist', { side: this.props.side === 1 ? 2 : 1, playlist: oldIdPlaylist });
-		}
+		this.setState({ idPlaylist: Number(idPlaylist), data: undefined, playlistInfo: undefined, goToPlaying: idPlaylist > 0 }, () => {
+			this.getPlaylist();
+			this.props.majIdsPlaylist(this.props.side, idPlaylist);
+			if (idPlaylist === this.props.idPlaylistTo) {
+				eventEmitter.emitChange('changeIdPlaylist', { side: this.props.side === 1 ? 2 : 1, playlist: oldIdPlaylist });
+			}
+		});
 	};
 
 	changeIdPlaylistSide2 = (idPlaylist: number) => {
@@ -426,7 +423,7 @@ class Playlist extends Component<IProps, IState> {
 		} else if (stateData?.infos?.from === 0) {
 			data.searchType = undefined;
 		}
-		await this.setState(data);
+		this.setState(data);
 		const url: string = this.getPlaylistUrl();
 		const param: any = {};
 		if (this.state.idPlaylist >= 0) {
