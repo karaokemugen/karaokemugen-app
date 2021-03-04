@@ -151,6 +151,8 @@ class PublicPage extends Component<IProps, IState> {
 		}
 	}
 
+	historyCallback: () => void
+
 	async componentDidMount() {
 		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) await this.getPlaylistList();
 		this.initView();
@@ -162,6 +164,9 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().on('adminMessage', this.adminMessage);
 		getSocket().on('userSongPlaysIn', this.userSongPlaysIn);
 		getSocket().on('nextSong', this.nextSong);
+		this.historyCallback = this.props.route.history.listen(() => {
+			setFilterValue(this.context.globalDispatch, '', 1, this.state.idsPlaylist.left);
+		});
 	}
 
 	componentWillUnmount() {
@@ -172,6 +177,7 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().off('adminMessage', this.adminMessage);
 		getSocket().off('userSongPlaysIn', this.userSongPlaysIn);
 		getSocket().off('nextSong', this.nextSong);
+		this.historyCallback();
 	}
 
 	getPlaylistList = async () => {
@@ -328,7 +334,7 @@ class PublicPage extends Component<IProps, IState> {
 											<input
 												placeholder={`\uF002 ${i18next.t('SEARCH')}`}
 												type="text"
-												defaultValue={this.context.globalState.frontendContext.filterValue1}
+												value={this.context.globalState.frontendContext.filterValue1}
 												onChange={e =>
 													setFilterValue(
 														this.context.globalDispatch,
