@@ -212,9 +212,7 @@ class AdminPage extends Component<IProps, IState> {
 							<React.Fragment>
 								{
 									this.state.options ?
-										<div className="settings-page" id="manage">
-											<Options close={() => this.setState({ options: false })} />
-										</div>
+										<Options close={() => this.setState({ options: false })} />
 										: <PlaylistMainDecorator currentSide={this.state.currentSide}>
 											<Playlist
 												scope='admin'

@@ -51,10 +51,8 @@ class Options extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<div
-				className="settings-panel modalPage"
-			>
-				<form className="form-horizontal" id="settings">
+			<>
+				<div className="settings-nav">
 					<ul className="nav nav-tabs nav-justified" id="settingsNav">
 						<li className={(this.state.activeView === 1 ? 'active' : '')}>
 							<a onClick={() => this.setState({ activeView: 1 })}>{i18next.t('SETTINGS.PLAYER.LABEL')}</a>
@@ -66,7 +64,10 @@ class Options extends Component<IProps, IState> {
 							<a onClick={() => this.setState({ activeView: 3 })}>{i18next.t('SETTINGS.INTERFACE.LABEL')}</a>
 						</li>
 					</ul>
-
+				</div>
+				<div
+					className="settings-panel"
+				>
 					<div>
 						{this.state.activeView === 1 ?
 							<PlayerOptions onChange={this.saveSettings} /> : null
@@ -85,8 +86,8 @@ class Options extends Component<IProps, IState> {
 							</strong>
 						</div>
 					</div>
-				</form>
-			</div>
+				</div>
+			</>
 		);
 	}
 }
