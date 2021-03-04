@@ -18,6 +18,8 @@ interface IProps {
 	openModal: (type: string) => void;
 	onResize: (top: string) => void;
 	currentView: View;
+	publicVisible: boolean;
+	currentVisible: boolean;
 	changeView: (view: View) => void;
 }
 
@@ -96,7 +98,12 @@ class PublicHeader extends Component<IProps, IState> {
 							<img src={nanamiPNG} alt="Nanamin logo" />
 						</picture>
 					</a>
-					<PublicFixedMenu changeView={this.props.changeView} currentView={this.props.currentView} />
+					<PublicFixedMenu
+						changeView={this.props.changeView}
+						currentView={this.props.currentView}
+						publicVisible={this.props.publicVisible}
+						currentVisible={this.props.currentVisible}
+					/>
 					{this.state.quotaType > 0 ? <div className={`quota-bar${this.state.quotaLeft <= 5 ? ' exhaust':''}`}>
 						{this.state.quotaType === 1 ? i18next.t('QUOTA_KARA'):
 							i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;{this.state.quotaLeft}

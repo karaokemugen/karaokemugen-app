@@ -69,8 +69,8 @@ class PublicPage extends Component<IProps, IState> {
 			playerStopped: false,
 			top: '0',
 			bottom: '0',
-			publicVisible: true,
-			currentVisible: true,
+			publicVisible: false,
+			currentVisible: false,
 			searchType: 'search'
 		};
 	}
@@ -279,7 +279,10 @@ class PublicPage extends Component<IProps, IState> {
 					<PublicHeader
 						openModal={(type: string) => this.props.route.history.push(`/public/${type}`)}
 						onResize={top => this.setState({ top })}
-						changeView={this.changeView} currentView={this.state.view} />
+						changeView={this.changeView} currentView={this.state.view}
+						currentVisible={this.state.currentVisible}
+						publicVisible={this.state.publicVisible}
+					/>
 					<PlayerBox
 						fixed={true}
 						show={this.state.view !== 'home'}
