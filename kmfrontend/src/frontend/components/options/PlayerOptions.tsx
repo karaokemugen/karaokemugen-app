@@ -84,8 +84,8 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('ALWAYS_ON_TOP_TOOLTIP')}>
 							{i18next.t('ALWAYS_ON_TOP')}
-            &nbsp;
-  					<i className="far fa-question-circle"></i>
+           	 				&nbsp;
+  							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Player.StayOnTop" handleChange={this.putPlayerCommando}
@@ -147,8 +147,8 @@ class PlayerOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYCONNECTIONINFOHOST_TOOLTIP')}>
 									{i18next.t('ENGINEDISPLAYCONNECTIONINFOHOST')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
+                					&nbsp;
+									<i className="far fa-question-circle" />
 								</label>
 								<div className="col-xs-6">
 									<input
@@ -163,8 +163,8 @@ class PlayerOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYCONNECTIONINFOMESSAGE_TOOLTIP')}>
 									{i18next.t('ENGINEDISPLAYCONNECTIONINFOMESSAGE')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
+                					&nbsp;
+  									<i className="far fa-question-circle" />
 								</label>
 								<div className="col-xs-6">
 									<input
@@ -181,8 +181,8 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('PLAYERPIP_TOOLTIP')}>
 							{i18next.t('PLAYERPIP')}
-            &nbsp;
-  					<i className="far fa-question-circle"></i>
+            				&nbsp;
+  							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Player.PIP.Enabled" handleChange={this.onChange}
@@ -194,8 +194,8 @@ class PlayerOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_SIZE_TOOLTIP')}>
 									{`${i18next.t('VIDEO_SIZE')} (${this.state.config['Player.PIP.Size']}%)`}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
+                					&nbsp;
+  									<i className="far fa-question-circle" />
 								</label>
 								<div className="col-xs-6">
 									<input
@@ -211,8 +211,8 @@ class PlayerOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_POSITION_X_TOOLTIP')}>
 									{i18next.t('VIDEO_POSITION_X')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
+                					&nbsp;
+  									<i className="far fa-question-circle" />
 								</label>
 								<div className="col-xs-6">
 									<select
@@ -230,8 +230,8 @@ class PlayerOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_POSITION_Y_TOOLTIP')}>
 									{i18next.t('VIDEO_POSITION_Y')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
+									&nbsp;
+  									<i className="far fa-question-circle" />
 								</label>
 								<div className="col-xs-6">
 									<select
@@ -250,8 +250,8 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYNICKNAME_TOOLTIP')}>
 							{i18next.t('ENGINEDISPLAYNICKNAME')}
-			&nbsp;
-  					<i className="far fa-question-circle"></i>
+							&nbsp;
+  							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
@@ -272,8 +272,8 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('PLAYERMONITOR_TOOLTIP')}>
 							{i18next.t('PLAYERMONITOR')}
-			&nbsp;
-  					<i className="far fa-question-circle"></i>
+							&nbsp;
+  						<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Player.Monitor" handleChange={this.onChange}
@@ -284,8 +284,8 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
 							{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
-						&nbsp;
-  						<i className="far fa-question-circle"></i>
+							&nbsp;
+  							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}

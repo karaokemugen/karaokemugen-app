@@ -77,8 +77,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('QUOTA_TYPE_TOOLTIP')}>
 								{i18next.t('QUOTA_TYPE')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+								&nbsp;
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<select
@@ -114,8 +114,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label title={i18next.t('SONGS_BY_USER_TOOLTIP')}>
 									{i18next.t('SONGS_BY_USER')}
-                			&nbsp;
-  							<i className="far fa-question-circle"></i>
+									&nbsp;
+									<i className="far fa-question-circle" />
 								</label>
 								<div>
 									<input
@@ -134,8 +134,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label title={i18next.t('FREE_AUTO_TIME_TOOLTIP')}>
 									{i18next.t('FREE_AUTO_TIME')}
-                				&nbsp;
-  							<i className="far fa-question-circle"/>
+									&nbsp;
+									<i className="far fa-question-circle"/>
 								</label>
 								<div>
 									<input
@@ -156,8 +156,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}
-              				&nbsp;
-  						<i className="far fa-question-circle"/>
+								&nbsp;
+								<i className="far fa-question-circle"/>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
@@ -168,8 +168,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}
-              				&nbsp;
-  						<i className="far fa-question-circle"/>
+								&nbsp;
+								<i className="far fa-question-circle"/>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.AutoBalance" handleChange={this.onChange}
@@ -192,8 +192,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.TOOLTIP')}>
 								{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.NAME')}
-              				&nbsp;
-  						<i className="far fa-question-circle"/>
+								&nbsp;
+								<i className="far fa-question-circle"/>
 							</label>
 							<div>
 								<select
@@ -300,8 +300,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+								&nbsp;
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Intros.Enabled" handleChange={this.onChange}
@@ -328,8 +328,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+								&nbsp;
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Outros.Enabled" handleChange={this.onChange}
@@ -355,8 +355,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+								&nbsp;
+  								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Encores.Enabled" handleChange={this.onChange}
@@ -382,8 +382,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('CLASSIC_MODE_TOOLTIP')}>
 								{i18next.t('CLASSIC_MODE')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+              					&nbsp;
+  								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Karaoke.ClassicMode" handleChange={this.onChange}
@@ -502,8 +502,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<div className="settings-line">
 									<label title={i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT_TOOLTIP')}>
 										{i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT')}
-                  					&nbsp;
-  								<i className="far fa-question-circle"></i>
+										&nbsp;
+  										<i className="far fa-question-circle" />
 									</label>
 									<div>
 										<input
@@ -521,7 +521,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label>
 								{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')}
 								&nbsp;
-								<i className="far fa-question-circle"></i>
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<input
@@ -635,8 +635,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+              					&nbsp;
+  								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<select
@@ -654,7 +654,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC')}
 								&nbsp;
-  						<i className="far fa-question-circle"></i>
+  								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<select

@@ -47,8 +47,8 @@ class InterfaceOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
 							{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE')}
-            &nbsp;
-  					<i className="far fa-question-circle"></i>
+            				&nbsp;
+  							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<select
