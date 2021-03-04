@@ -72,6 +72,14 @@ We reworked our shuffle modes, including a new one: balancing. Balancing creates
 
 You can now sort a playlist by its number of likes from your guests. The playlist can also auto-sort itself (it's another property in the edit playlist window)
 
+#### Accept/refuse songs (#902)
+
+When having a public and current playlist side by side in the operator page, you can accept or refuse songs in the suggestion playlist.
+
+- Accepted songs are copied into the current playlist and marked as free (thus freeing quota for the users who requested them)
+- Refused songs just sit there. Refusing a song frees it for the user who requested it, but since the song is in the public playlist the song will not be requested ever again.
+- Playlist can be viewed sorted by number of likes. Unaccepted/unrefused songs are shown first, then accepted then refused songs.
+
 #### Sessions exports (#773)
 
 You can now more easily **export your sessions data** as .csv, it will contain songs requested by users, play history, etc.
@@ -89,7 +97,7 @@ It can be enabled in the Window menu.
 - API is now **using a socket.io** interface, however `POST /api/command` with `{cmd: 'GetKaras', body: {body: {from: 0, size: 400}}}` can be used to send commands without establishing a socket.io command (#666).
   - This new API will be documented later, we lack workforce to do so right now.
 - database.json config file is now merged with config.yml in `System.Database` object, see config sample (#746)
-  - Karaoke Mugen should handle this change automatically for you and merge the 2 files
+  - Karaoke Mugen should handle this change automatically for you and merge the two files
 
 ### Improvements
 
@@ -123,6 +131,7 @@ It can be enabled in the Window menu.
 
 ### Fixes
 
+- Time before a song is going to play is now correctly displaying the right time (#912)
 - "Next song is..." notifications are disabled if the playlist is set as non visible (#896)
 - Playing a song from the library when the current playlist is near the end does not trigger a outro/encore jingle anymore (#908)
 - Telling if a user is connected to your karaoke session is now clearer (#906)
