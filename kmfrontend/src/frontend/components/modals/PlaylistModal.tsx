@@ -79,7 +79,7 @@ class PlaylistModal extends Component<IProps, IState> {
 
 	togglePublic = () => {
 		if (this.props.mode === 'edit' && this.props.playlistInfo?.flag_public) {
-			displayMessage('warning', i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_PUBLIC_PLAYLIST'), 4500, 'top-center');
+			displayMessage('warning', i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_PUBLIC'), 4500, 'top-center');
 		} else {
 			this.setState({ flag_public: !this.state.flag_public });
 		}
