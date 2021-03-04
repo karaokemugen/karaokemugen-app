@@ -721,9 +721,11 @@ class Players {
 	}
 
 	@needsLock()
-	quit() {
+	async quit() {
 		if (this.players.main.isRunning || this.players.monitor?.isRunning) {
-			return this.exec('destroy').catch(err => {
+			// needed to wait for lock release
+			// eslint-disable-next-line no-return-await
+			return await this.exec('destroy').catch(err => {
 				// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
 				logger.warn('Failed to quit mpv', {service: 'Player', obj: err});
 			});
