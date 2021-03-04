@@ -521,6 +521,8 @@
 			"NAME": "Nom",
 			"CURRENT": "Courante",
 			"CURRENT_DESC": "La liste courante est celle lue par le lecteur vidéo",
+			"ACTIVE": "Active",
+			"ACTIVE_DESC": "La liste de critères active est celle utilisée par Karaoke Mugen",
 			"PUBLIC": "Publique",
 			"PUBLIC_DESC": "La liste publique est celle recueillant les suggestions du public",
 			"VISIBLE": "Visible",
@@ -528,7 +530,10 @@
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
 			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture",
 			"CREATE": "Créer",
-			"EDIT": "Éditer"
+			"EDIT": "Éditer",
+			"CANNOT_CURRENT_PLAYLIST": "Vous ne pouvez pas avoir aucune playlist courante, éditez celle que vous voulez définir comme la nouvelle playlist courante.",
+			"CANNOT_CURRENT_BLC": "Vous ne pouvez pas avoir aucune liste de critères active, éditez celle que vous voulez définir comme la nouvelle liste active (ou videz-la si vous souhaitez n'avoir aucun critère).",
+			"CANNOT_PUBLIC": "Vous ne pouvez pas avoir aucune playlist publique, éditez celle que vous voulez définir comme la nouvelle playlist publique."
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Rogner votre avatar",

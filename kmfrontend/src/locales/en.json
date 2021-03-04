@@ -507,6 +507,8 @@
 			"NAME": "Name",
 			"CURRENT": "Current",
 			"CURRENT_DESC": "The current list is the one read by the video player",
+			"ACTIVE": "Active",
+			"ACTIVE_DESC": "The active blacklist criteria set is the one used by Karaoke Mugen.",
 			"PUBLIC": "Public",
 			"PUBLIC_DESC": "The public list is the one collecting suggestions from the public",
 			"VISIBLE": "Visible",
@@ -514,7 +516,10 @@
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
 			"CREATE_PLAYLIST": "Create new playlist",
 			"CREATE": "Créer",
-			"EDIT": "Edit"
+			"EDIT": "Edit",
+			"CANNOT_CURRENT_PLAYLIST": "You cannot have no current playlist, edit the one you want to set as the new current playlist.",
+			"CANNOT_CURRENT_BLC": "You cannot have no active blacklist criteria set, edit the one you want to set as the new active set (or empty it if you want no blacklist).",
+			"CANNOT_PUBLIC": "You cannot have no public playlist, edit the one you want to set as the new public playlist."
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Crop your avatar",

@@ -7,6 +7,7 @@ import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
+import {displayMessage} from '../../../utils/tools';
 
 interface IProps {
 	idPlaylist?: number;
@@ -64,6 +65,26 @@ class PlaylistModal extends Component<IProps, IState> {
 		this.closeModal();
 	};
 
+	toggleCurrent = () => {
+		if (this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current
+			|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current))) {
+			displayMessage('warning',
+				this.props.idPlaylist === -4 ? i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_CURRENT_BLC')
+					:i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_CURRENT_PLAYLIST'),
+				4500, 'top-center');
+		} else {
+			this.setState({ flag_current: !this.state.flag_current });
+		}
+	}
+
+	togglePublic = () => {
+		if (this.props.mode === 'edit' && this.props.playlistInfo?.flag_public) {
+			displayMessage('warning', i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_PUBLIC_PLAYLIST'), 4500, 'top-center');
+		} else {
+			this.setState({ flag_public: !this.state.flag_public });
+		}
+	}
+
 	closeModal = () => {
 		closeModal(this.context.globalDispatch);
 	}
@@ -91,16 +112,22 @@ class PlaylistModal extends Component<IProps, IState> {
 							</div>
 							<div>
 								<button className="btn btn-default"
-									disabled={this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current
-										|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current))}
-									type="button" onClick={() => this.setState({ flag_current: !this.state.flag_current })}>
+									type="button" onClick={this.toggleCurrent}>
 									<input type="checkbox" checked={this.state.flag_current}
 										disabled={this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current
 										|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current))}
-										onChange={() => this.setState({ flag_current: !this.state.flag_current })} />
+										onChange={this.toggleCurrent} />
 									<div className="btn-large-container">
-										<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT')}</div>
-										<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.CURRENT_DESC')}</div>
+										<div className="title">
+											{this.props.idPlaylist === -4 ?
+												i18next.t('MODAL.PLAYLIST_MODAL.ACTIVE')
+												:i18next.t('MODAL.PLAYLIST_MODAL.CURRENT')}
+										</div>
+										<div className="desc">
+											{this.props.idPlaylist === -4 ?
+												i18next.t('MODAL.PLAYLIST_MODAL.ACTIVE_DESC')
+												:i18next.t('MODAL.PLAYLIST_MODAL.CURRENT_DESC')}
+										</div>
 									</div>
 								</button>
 							</div>
@@ -108,11 +135,10 @@ class PlaylistModal extends Component<IProps, IState> {
 								<>
 									<div>
 										<button className="btn btn-default"
-											disabled={this.props.mode === 'edit' && this.props.playlistInfo?.flag_public }
-											type="button" onClick={() => this.setState({ flag_public: !this.state.flag_public })}>
+											type="button" onClick={this.togglePublic}>
 											<input type="checkbox" checked={this.state.flag_public}
 												disabled={this.props.mode === 'edit' && this.props.playlistInfo?.flag_public }
-												onChange={() => this.setState({ flag_public: !this.state.flag_public })} />
+												onChange={this.togglePublic} />
 											<div className="btn-large-container">
 												<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC')}</div>
 												<div className="desc">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC_DESC')}</div>

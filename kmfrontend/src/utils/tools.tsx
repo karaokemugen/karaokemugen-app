@@ -1,12 +1,11 @@
 import { EventEmitter } from 'events';
 import React, { Dispatch } from 'react';
 import ReactDOM from 'react-dom';
-import { toast, TypeOptions } from 'react-toastify';
+import { toast, ToastPosition, TypeOptions } from 'react-toastify';
 
 import Tutorial from '../frontend/components/modals/Tutorial';
 import { showModal } from '../store/actions/modal';
 import { ShowModal } from '../store/types/modal';
-import useGlobalState from '../store/useGlobalState';
 import Modal from './components/Modal';
 
 let is_touch = window.outerWidth <= 1023;
@@ -101,9 +100,9 @@ export function startIntro() {
 	return tuto;
 }
 
-export function displayMessage(type: TypeOptions, message: any, time = 3500) {
+export function displayMessage(type: TypeOptions, message: any, time = 3500, position: ToastPosition = 'top-left') {
 	if (!document.hidden) {
-		toast(message, { type: type, autoClose: time, position: 'top-left', pauseOnFocusLoss: false });
+		toast(message, { type: type, autoClose: time, position, pauseOnFocusLoss: false });
 	}
 }
 
