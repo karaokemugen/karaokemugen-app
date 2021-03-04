@@ -242,7 +242,13 @@ class ProfilModal extends Component<IProps, IState> {
 			}, 500);
 		}
 		const body = this.state.user ? (<div className="modal-content">
-			<div className="modal-header">
+			<div className={`modal-header${this.props.scope === 'public' ? ' public-modal':''}`}>
+				{this.props.scope === 'public' ? <button
+					className="closeModal"
+					type="button"
+					onClick={() => this.closeModal()}>
+					<i className="fas fa-arrow-left" />
+				</button> : null}
 				<h4 className="modal-title">{i18next.t('PROFILE')}</h4>
 				{this.props.scope === 'admin' ? // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal"
@@ -377,7 +383,7 @@ class ProfilModal extends Component<IProps, IState> {
 			</div>
 		</div>) : null;
 		return (
-			this.state.cropAvatarModalOpen ? null :
+			(this.state.cropAvatarModalOpen && this.props.scope === 'admin') ? null :
 				this.props.scope === 'public' ?
 					<div id="profilModal">
 						{body}

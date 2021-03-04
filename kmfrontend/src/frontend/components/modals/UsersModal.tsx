@@ -58,7 +58,13 @@ class UsersModal extends Component<IProps, IState> {
 
 	render() {
 		const body = (<div className="modal-content">
-			<div className="modal-header">
+			<div className={`modal-header${this.props.scope === 'public' ? ' public-modal':''}`}>
+				{this.props.scope === 'public' ? <button
+					className="closeModal"
+					type="button"
+					onClick={() => this.closeModal()}>
+					<i className="fas fa-arrow-left" />
+				</button> : null}
 				<h4 className="modal-title">{i18next.t('USERLIST')}</h4>
 				{this.props.scope === 'admin' ? // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal"

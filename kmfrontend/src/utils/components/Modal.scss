@@ -184,6 +184,13 @@
 	background-color: transparent;
 }
 
+.public-modal.modal-header {
+	justify-content: start;
+	.modal-title {
+		margin-left: .25em;
+	}
+}
+
 // Nav from Bootstrap
 #manage .modalPage {
 	padding: 0;
