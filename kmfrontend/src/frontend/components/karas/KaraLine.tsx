@@ -81,7 +81,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	deleteKara = async () => {
 		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_ids: this.props.kara.my_public_plc_id			
+				plc_ids: this.props.kara.my_public_plc_id
 			});
 		} else if (this.props.idPlaylist === -2) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
@@ -216,14 +216,16 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 			isMulti ? karaTags.push(<div key={isMulti.tid} className="tag">
 				{getTagInLocale(isMulti)}
-			</div>) : karaTags.push(...data.langs.sort(this.compareTag).map(tag => {
+			</div>) : karaTags.push(...data.langs.sort(this.compareTag).map((tag, i) => {
+				if (i === 0) return undefined;
 				return <div key={tag.tid} className="tag green" title={getTagInLocale(tag, this.props.i18nTag)}>
 					{getTagInLocale(tag, this.props.i18nTag)}
 				</div>;
 			}));
 		}
 		if (data.songtypes && (this.props.scope === 'public' || is_touch_device())) {
-			karaTags.push(...data.songtypes.sort(this.compareTag).map(tag => {
+			karaTags.push(...data.songtypes.sort(this.compareTag).map((tag, i) => {
+				if (i === 0) return undefined;
 				return <div key={tag.tid} className="tag green" title={getTagInLocale(tag, this.props.i18nTag)}>
 					{getTagInLocale(tag, this.props.i18nTag)}
 					{data.songorder > 0 ? ' ' + data.songorder : ''}
@@ -240,7 +242,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				}));
 			}
 		}
-		return karaTags;
+		return karaTags.filter(el => !!el);
 	})();
 
 	isProblematic = () => {
@@ -346,8 +348,18 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								</span> : null}
 							{is_touch_device() || this.props.scope === 'public' ?
 								<div className={`contentDiv contentDivMobile ${this.state.problematic ? 'problematic' : ''}`} onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
-									<div className="contentDivMobileTitle">{kara.title} {kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}</div>
-									<div className="contentDivMobileSerie">{karaSerieOrSingers}</div>
+									<div className="contentDivMobileTitle">
+										<span className="tag inline green" title={getTagInLocale(kara.langs[0], this.props.i18nTag)}>
+											{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
+										</span>
+										{kara.title}
+										{kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}</div>
+									<div className="contentDivMobileSerie">
+										<span className="tag inline green" title={getTagInLocale(kara.songtypes[0], this.props.i18nTag)}>
+											{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}
+										</span>
+										{karaSerieOrSingers}
+									</div>
 									{kara.upvotes && this.props.scope === 'admin' ?
 										<div className="upvoteCount"
 											title={i18next.t('TOOLTIP_FREE')}>
