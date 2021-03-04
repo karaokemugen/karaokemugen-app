@@ -99,11 +99,13 @@ class ProgressBar extends Component<IProps, IState> {
 	};
 
 	resizeCheck = () => {
-		const offset = this.refP.current.getBoundingClientRect().width - this.refCont.current.getBoundingClientRect().width;
-		if (offset > 0) {
-			this.setState({ animate: -offset - 5, duration: Math.round(offset * 0.05) });
-		} else {
-			this.setState({ animate: 0 });
+		if (this.refP?.current) {
+			const offset = this.refP.current.getBoundingClientRect().width - this.refCont.current.getBoundingClientRect().width;
+			if (offset > 0) {
+				this.setState({ animate: -offset - 5, duration: Math.round(offset * 0.05) });
+			} else {
+				this.setState({ animate: 0 });
+			}
 		}
 	}
 
