@@ -93,10 +93,22 @@ function needsLock() {
 class MessageManager {
 	messages: Map<string, string>
 	timeouts: Map<string, Timeout>
+	tickFn: () => void
+	cache: string
 
-	constructor() {
+	constructor(tickFn: () => void) {
 		this.messages = new Map();
 		this.timeouts = new Map();
+		this.tickFn = tickFn;
+		this.cache = '';
+	}
+
+	private tick() {
+		const str = this.getText();
+		if (str !== this.cache) {
+			this.cache = str;
+			this.tickFn();
+		}
 	}
 
 	addMessage(type: string, message: string, duration: number | 'infinite' = 'infinite') {
@@ -108,6 +120,7 @@ class MessageManager {
 		if (duration !== 'infinite') {
 			this.timeouts.set(type, setTimeout(this.messages.delete.bind(this.messages, type), duration).unref());
 		}
+		this.tick();
 	}
 
 	removeMessage(type: string) {
@@ -116,6 +129,7 @@ class MessageManager {
 			clearTimeout(this.timeouts.get(type));
 			this.timeouts.delete(type);
 		}
+		this.tick();
 	}
 
 	getText() {
@@ -132,6 +146,7 @@ class MessageManager {
 			clearTimeout(timeout);
 		}
 		this.timeouts.clear();
+		this.tick();
 	}
 }
 
@@ -374,7 +389,6 @@ class Player {
 					// Load up the next song
 					playerEnding();
 				} else if (status.name === 'playback-time') {
-					this.control.tickDisplay();
 					this.debouncedTimePosition(status.data);
 				}
 			});
@@ -410,25 +424,14 @@ class Player {
 			}
 		});
 		// Handle manually exits/crashes
-		this.mpv.once('shutdown', () => {
-			logger.debug('mpv closed', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+		this.mpv.once('close', () => {
+			logger.debug('mpv closed (?)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
 			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
 			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
 			this.recreate();
-			emitPlayerState();
-		});
-		this.mpv.once('crashed', () => {
-			logger.warn('mpv crashed', {service: `mpv${this.options.monitor ? ' monitor':''}`});
-			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
-			playerState.playing = false;
-			playerState._playing = false;
-			playerState.playerStatus = 'stop';
-			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
-			// In case of a crash, restart immediately
-			this.recreate(null, true);
 			emitPlayerState();
 		});
 	}
@@ -691,7 +694,7 @@ class Players {
 	@needsLock()
 	private async bootstrapPlayers() {
 		await checkMpv();
-		this.messages = new MessageManager();
+		this.messages = new MessageManager(this.tickDisplay.bind(this));
 		this.players = {
 			main: new Player({monitor: false}, this)
 		};
@@ -1093,7 +1096,7 @@ class Players {
 		return playerState;
 	}
 
-	async tickDisplay() {
+	tickDisplay() {
 		this.exec({ command: ['expand-properties', 'osd-overlay', 1, 'ass-events', this.messages?.getText() || ''] });
 	}
 
@@ -1123,7 +1126,6 @@ class Players {
 			}
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
 			this.messages.addMessage('DI', position+spoilerString+nextSongString+infos, duration === -1 ? 'infinite':duration);
-			this.tickDisplay();
 		} catch(err) {
 			logger.error('Unable to display song info', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -1144,7 +1146,6 @@ class Players {
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - http://karaokes.moe`;
 			const message = '{\\an1}{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite':duration);
-			this.tickDisplay();
 		} catch(err) {
 			logger.error('Unable to display infos', {service: 'Player', obj: err});
 			sentry.error(err);
