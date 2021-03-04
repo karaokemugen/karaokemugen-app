@@ -1,18 +1,47 @@
 @import '../../styles/variables';
 
+// Hover events only for PCs
+body:not(.touch) {
+	.playlist-main .list-group-item:hover {
+		background-color: scale-color($mugen-playlist-odd, $lightness: -35%);
+		&.list-group-item-even {
+			background-color: scale-color($mugen-playlist-even, $lightness: -25%);
+		}
+		&.dejavu {
+			background-color: scale-color($mugen-playlist-dejavu-odd, $lightness: -35%);
+			&.list-group-item-even {
+				background-color: scale-color($mugen-playlist-dejavu-even, $lightness: -25%);
+			}
+		}
+		&.currentlyplaying {
+			background-color: scale-color($mugen-playlist-currently-playing, $lightness: -55%, $saturation: -25%);
+			&.list-group-item-even {
+				background-color: scale-color($mugen-playlist-currently-playing, $lightness: -45%, $saturation: -25%);
+			}
+		}
+	}
+}
+
 .list-group-item {
 	background-color: $mugen-playlist-odd;
 	&.dejavu {
-		background-color: $mugen-playlist-dejavu-odd;
-		&.list-group-item-even {
-			background-color: $mugen-playlist-dejavu-even;
+		.playKara { background-color: $mugen-playlist-dejavu-odd; }
+		.contentDiv {
+			i.fas.dejavu-icon {
+				color: scale-color($mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
+			}
 		}
 	}
-	&.currentlyplaying {
-		background-color: $mugen-playlist-currently-playing;
-	}
-	&.list-group-item-even.currentlyplaying {
-		background-color: $mugen-playlist-currently-playing;
+	&.currentlyplaying, &.dejavu.currentlyplaying,
+	&.list-group-item-even.currentlyplaying, &.list-group-item-even.dejavu.currentlyplaying {
+		background-color: scale-color($mugen-playlist-currently-playing, $lightness: -50%, $saturation: -15%, $alpha: -25%);
+		.playKara {
+			background-color: $mugen-playlist-currently-playing;
+			animation: btn-pulse infinite ease-in-out 1s;
+		}
+		.contentDiv {
+			color: inherit;
+		}
 	}
 	&.list-group-item-even {
 		background-color: $mugen-playlist-even;
@@ -84,13 +113,16 @@
 		display: flex;
 		flex-wrap: wrap;
 		flex: 1 1 auto;
+		i.fas.problematic {
+			color: gold;
+		}
 	}
 	&:not(.liTag) > .contentDiv {
 		cursor: zoom-in;
 	}
 	> .contentDivMobile {
 		&.problematic {
-			color: orange;
+			color: gold;
 		}
 		flex-direction: column;
 		display: flex;
@@ -112,6 +144,10 @@
 			display: flex;
 			font-style: italic;
 			margin-bottom: .25em;
+			> i.fas {
+				margin-left: .375em;
+				line-height: 1.2;
+			}
 		}
 	}
 	.infoDiv {
@@ -182,18 +218,30 @@
 
 .upvoteCount {
 	color: #aaa;
-	margin-left: .25em;
+	margin-left: .5em;
 	background-color: #212831;
 	padding: 0 .5em;
 	text-align: center;
 	font-weight: bold;
 	border-radius: 10%;
-}
-.upvoteCount > i {
-	font-size: 88%;
-	margin-right: .5em;
+	> i {
+		font-size: 88%;
+		margin-right: .5em;
+	}
 }
 
 .disable-select {
 	user-select: none;
+}
+
+@keyframes btn-pulse {
+	0% {
+		background-color: scale-color($mugen-playlist-currently-playing, $lightness: -55%);
+	}
+	50% {
+		background-color: scale-color($mugen-playlist-currently-playing, $lightness: -65%, $saturation: -5%);
+	}
+	100% {
+		background-color: scale-color($mugen-playlist-currently-playing, $lightness: -55%);
+	}
 }

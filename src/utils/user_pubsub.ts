@@ -63,7 +63,7 @@ export function startSub(user: string, server: string) {
 		if (res.data === false) {
 			const name = `${user}@${server}`;
 			try {
-				logger.info(`User ${name} doesn't exist on remote, delete local version.`, { service: 'RemoteUser' });
+				logger.info(`User ${name} doesn't exist anymore on remote, delete local version.`, { service: 'RemoteUser' });
 				deleteUser(name);
 			} catch (err) {
 				logger.warn(`Cannot delete ${name}`, { service: 'RemoteUser' });

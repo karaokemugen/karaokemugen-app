@@ -111,10 +111,6 @@
     color: #F3C71E !important;
 }
 
-.problematicTag {
-	color: orange;
-}
-
 .colored {
 	@each $name, $color in $mugen-colors {
 		&.#{$name} {

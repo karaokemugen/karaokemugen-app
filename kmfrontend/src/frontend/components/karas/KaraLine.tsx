@@ -236,7 +236,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(...data[typeData.karajson].sort(this.compareTag).map(tag => {
-					return <div key={tag.tid} className={`tag ${typeData.color}`} title={getTagInLocale(tag, this.props.i18nTag)}>
+					return <div key={tag.tid} className={`tag ${typeData.color}${tag.problematic ? ' problematicTag':''}`} title={getTagInLocale(tag, this.props.i18nTag)}>
 						{this.props.scope === 'admin' && !is_touch_device() ? (tag.short ? tag.short : tag.name) : getTagInLocale(tag, this.props.i18nTag)}
 					</div>;
 				}));
@@ -347,13 +347,16 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										: <i className="far fa-square"></i>}
 								</span> : null}
 							{is_touch_device() || this.props.scope === 'public' ?
-								<div className={`contentDiv contentDivMobile ${this.state.problematic ? 'problematic' : ''}`} onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
+								<div className="contentDiv contentDivMobile" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
 									<div className="contentDivMobileTitle">
 										<span className="tag inline green" title={getTagInLocale(kara.langs[0], this.props.i18nTag)}>
 											{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 										</span>
 										{kara.title}
-										{kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}</div>
+										{kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}
+										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" />:null}
+										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" />:null}
+									</div>
 									<div className="contentDivMobileSerie">
 										<span className="tag inline green" title={getTagInLocale(kara.songtypes[0], this.props.i18nTag)}>
 											{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}
@@ -372,8 +375,10 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									</div> : null}
 								</div> :
 								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
-									<div className={`disable-select karaTitle ${this.state.problematic ? 'problematic' : ''}`}>
+									<div className="disable-select karaTitle">
 										{karaTitle}
+										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" />:null}
+										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" />:null}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"
 												title={i18next.t('UPVOTE_NUMBER')}>

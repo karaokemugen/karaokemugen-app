@@ -3,12 +3,12 @@
 	flex-grow: 1;
 	align-items: center;
 	flex-wrap: wrap;
+	> i.fas {
+		margin-left: .375em;
+	}
 	.tag.inline {
 		padding: 0 .25em;
 		margin-bottom: 0;
-	}
-	&.problematic {
-		color: orange;
 	}
 	.karaTitleSerie {
 		font-weight: bold;
