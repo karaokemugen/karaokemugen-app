@@ -9,7 +9,7 @@ import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
-import { getPreviewLink } from '../../../utils/kara';
+import {formatLyrics, getPreviewLink} from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -111,7 +111,7 @@ class KaraDetail extends Component<IProps, IState> {
 			kara: kara,
 			isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
 		});
-		if (kara.subfile) this.showFullLyrics();
+		if (kara.subfile) this.fetchLyrics();
 	};
 
 	getLastPlayed = (lastPlayed_at: Date, lastPlayed: lastplayed_ago) => {
@@ -137,10 +137,13 @@ class KaraDetail extends Component<IProps, IState> {
 		return null;
 	};
 
-	showFullLyrics = async () => {
+	fetchLyrics = async () => {
 		if (this.state.kara) {
-			const response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
-			this.setState({ lyrics: response.map(value => value.text) });
+			let response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
+			if (response?.length > 0) {
+				response = formatLyrics(response);
+			}
+			this.setState({ lyrics: response?.map(value => value.text) || [] });
 		}
 	};
 

@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 
 import {ASSLine} from '../../../../../src/lib/types/ass';
 import {PublicPlayerState} from '../../../../../src/types/state';
+import {formatLyrics} from '../../../utils/kara';
 import {commandBackend, getSocket} from '../../../utils/socket';
 import {is_touch_device} from '../../../utils/tools';
 
@@ -33,38 +34,6 @@ class LyricsBox extends Component<IProps, IState> {
 			showLyrics: is_touch_device() ? LyricsStatus.hide:LyricsStatus.compact,
 			timePosition: -1
 		};
-	}
-
-	static formatLyrics(lyrics: ASSLine[]) {
-		// Merge lines with the same text in it to mitigate karaokes with many effects
-		const map = new Map<string, ASSLine[][]>();
-		for (const lyric of lyrics) {
-			if (map.has(lyric.text)) {
-				const val = map.get(lyric.text);
-				const lastLines = val[val.length-1];
-				const lastLine = lastLines[lastLines.length-1];
-				if (lyric.start - lastLine.end < 0.1) {
-					lastLines.push(lyric);
-					val[val.length-1] = lastLines;
-				} else {
-					val.push([lyric]);
-				}
-				map.set(lyric.text, val);
-			} else {
-				map.set(lyric.text, [[lyric]]);
-			}
-		}
-		// Unwrap and sort
-		const fixedLyrics: ASSLine[] = [];
-		for (const [lyric, lyricGroups] of map.entries()) {
-			for (const lyricGroup of lyricGroups) {
-				fixedLyrics.push({ start: lyricGroup[0].start, text: lyric, end: lyricGroup[lyricGroup.length-1].end });
-			}
-		}
-		fixedLyrics.sort((el1, el2) => {
-			return el1.start - el2.start;
-		});
-		return fixedLyrics;
 	}
 
 	static i18nText(actualMode: LyricsStatus) {
@@ -105,7 +74,7 @@ class LyricsBox extends Component<IProps, IState> {
 		if (this.props.kid) {
 			let lyrics: ASSLine[] = await commandBackend('getKaraLyrics', {kid: this.props.kid});
 			if (lyrics?.length > 100) {
-				lyrics = LyricsBox.formatLyrics(lyrics);
+				lyrics = formatLyrics(lyrics);
 			}
 			this.setState({ lyrics: lyrics || [] });
 		} else {
@@ -137,6 +106,9 @@ class LyricsBox extends Component<IProps, IState> {
 	render() {
 		return (<div className={`lyrics-box${this.props.mobile ? ' mobile':''}`}>
 			<div className="toggle" onClick={() => this.setState(
+				{
+					showLyrics: this.state.showLyrics === LyricsStatus.full ? LyricsStatus.hide:this.state.showLyrics+1
+				})} onKeyPress={() => this.setState(
 				{
 					showLyrics: this.state.showLyrics === LyricsStatus.full ? LyricsStatus.hide:this.state.showLyrics+1
 				})} tabIndex={0}>
