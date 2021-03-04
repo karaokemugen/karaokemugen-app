@@ -4,8 +4,6 @@
 
 export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806';
 
-export const sentryCSP = 'https://o399537.ingest.sentry.io/api/5256806/security/?sentry_key=464814b9419a4880a2197b1df7e1d0ed';
-
 export const discordClientID = '718211141033263145';
 
 export const expectedPGVersion = 10;
