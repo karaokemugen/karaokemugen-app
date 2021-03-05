@@ -32,9 +32,7 @@ function AdminHeader(props: IProps) {
 
 	const context: GlobalContextInterface = useContext(GlobalContext);
 	const [dropDownMenu, setDropDownMenu] = useState(false);
-	const [songVisibilityOperator, setSongVisibilityOperator] = useState(context?.globalState.settings.data.config?.Playlist.MysterySongs.AddedSongVisibilityAdmin || false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
-	const [frontendMode, setFrontendMode] = useState(context?.globalState.settings.data.config?.Frontend.Mode || -1);
 
 	const closeDropdownMenu = (e: MouseEvent) => {
 		if (!(e.target as Element).closest('.klogo') && !(e.target as Element).closest('.dropdown-menu')) {
@@ -63,13 +61,11 @@ function AdminHeader(props: IProps) {
 
 	const saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
-		setSongVisibilityOperator(songVisibility);
 		commandBackend('updateSettings', { setting: data });
 	};
 
 	const changePublicInterfaceMode = (value: number) => {
 		const data = expand('Frontend.Mode', value);
-		setFrontendMode(value);
 		commandBackend('updateSettings', { setting: data });
 	};
 
@@ -132,14 +128,14 @@ function AdminHeader(props: IProps) {
 					buttons={[
 						{
 							label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
-							active: songVisibilityOperator,
+							active: context?.globalState.settings.data.config?.Playlist.MysterySongs.AddedSongVisibilityAdmin,
 							activeColor: '#3c5c00',
 							onClick: () => saveOperatorAdd(true),
 							description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
 						},
 						{
 							label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
-							active: !songVisibilityOperator,
+							active: !context?.globalState.settings.data.config?.Playlist.MysterySongs.AddedSongVisibilityAdmin,
 							activeColor: '#880500',
 							onClick: () => saveOperatorAdd(false),
 							description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON')
@@ -151,21 +147,21 @@ function AdminHeader(props: IProps) {
 					buttons={[
 						{
 							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
-							active: frontendMode === 0,
+							active: context?.globalState.settings.data.config?.Frontend.Mode === 0,
 							activeColor: '#880500',
 							onClick: () => changePublicInterfaceMode(0),
 							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')
 						},
 						{
 							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
-							active: frontendMode === 1,
+							active: context?.globalState.settings.data.config?.Frontend.Mode === 1,
 							activeColor: '#a36700',
 							onClick: () => changePublicInterfaceMode(1),
 							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
 						},
 						{
 							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
-							active: frontendMode === 2,
+							active: context?.globalState.settings.data.config?.Frontend.Mode === 2,
 							activeColor: '#3c5c00',
 							onClick: () => changePublicInterfaceMode(2),
 							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
