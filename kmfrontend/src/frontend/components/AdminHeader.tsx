@@ -41,12 +41,15 @@ function AdminHeader(props: IProps) {
 	};
 
 	const playerUpdate = (data: PublicPlayerState) => {
-		let val = data.volume || statusPlayer.volume;
+		let val = data.volume;
 		const base = 100;
 		const pow = 0.76;
 		val = val / base;
-		data.volume = base * Math.pow(val, 1 / pow);
-		setStatusPlayer(merge(statusPlayer, data));
+		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
+		setStatusPlayer(oldState => {
+			const state = {...oldState};
+			return merge(state, data);
+		});
 	};
 
 	const toggleProfileModal = () => {
@@ -96,7 +99,7 @@ function AdminHeader(props: IProps) {
 			getSocket().off('playerStatus', playerUpdate);
 			document.getElementById('root').removeEventListener('click', closeDropdownMenu);
 		};
-	}, [statusPlayer]);
+	}, []);
 
 	const volume: number = (statusPlayer && !isNaN(statusPlayer.volume)) ? statusPlayer.volume : 100;
 	return (
