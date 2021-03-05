@@ -54,7 +54,7 @@ export async function editSetting(part: RecursivePartial<Config>) {
 		const newConfig = removeNulls(merge(config, part));
 		verifyConfig(newConfig);
 		await mergeConfig(newConfig, oldConfig);
-		emitWS('settingsUpdated', config);
+		emitWS('settingsUpdated', part);
 		return config;
 	} catch(err) {
 		sentry.error(err);
