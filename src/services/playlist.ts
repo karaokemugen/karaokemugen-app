@@ -976,6 +976,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 		const users = new Map();
 		for (const index in playlist.PlaylistContents) {
 			const kara = playlist.PlaylistContents[index];
+			kara.username = kara.username.toLowerCase();
 			let user: User = users.get(kara.username);
 			if (!user) {
 				user = await findUserByName(kara.username);
