@@ -33,6 +33,7 @@ import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
 import Timeout = NodeJS.Timeout;
+import {editSetting} from '../utils/config';
 
 const sleep = promisify(setTimeout);
 
@@ -250,7 +251,7 @@ class Player {
 		} else {
 			NodeMPVArgs.push('--reset-on-next-file=pause,loop-file');
 			if (!conf.Player.Borders) NodeMPVArgs.push('--no-border');
-			if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
+			if (conf.Player.FullScreen) {
 				NodeMPVArgs.push('--fullscreen');
 			}
 		}
@@ -265,32 +266,30 @@ class Player {
 			NodeMPVArgs.push('--ontop');
 		}
 
-		if (conf.Player.PIP.Enabled) {
-			// We want a 16/9
-			const screens = await graphics();
-			const screen = (conf.Player.Screen ?
-				(screens.displays[conf.Player.Screen] || screens.displays[0])
-				// Assume 1080p screen if systeminformation can't find the screen
-				: screens.displays[0]) || { currentResX: 1920 };
-			const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
-			const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
-			// By default, center.
-			let positionX = 50;
-			let positionY = 50;
-			if (conf.Player.PIP.PositionX === 'Left') positionX = 5;
-			if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
-			if (conf.Player.PIP.PositionX === 'Right') positionX = -5;
-			if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
-			if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
-			if (conf.Player.PIP.PositionY === 'Bottom') positionY = -5;
-			if (options.monitor) {
-				if (positionX >= 0) positionX += 10;
-				else positionX -= 10;
-				if (positionY >= 0) positionY += 10;
-				else positionY -= 10;
-			}
-			NodeMPVArgs.push(`--geometry=${targetResolution}${positionX > 0 ? `+${positionX}`:positionX}%${positionY > 0 ? `+${positionY}`:positionY}%`);
+		// We want a 16/9
+		const screens = await graphics();
+		const screen = (conf.Player.Screen ?
+			(screens.displays[conf.Player.Screen] || screens.displays[0])
+			// Assume 1080p screen if systeminformation can't find the screen
+			: screens.displays[0]) || { currentResX: 1920 };
+		const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
+		const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
+		// By default, center.
+		let positionX = 50;
+		let positionY = 50;
+		if (conf.Player.PIP.PositionX === 'Left') positionX = 5;
+		if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
+		if (conf.Player.PIP.PositionX === 'Right') positionX = -5;
+		if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
+		if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
+		if (conf.Player.PIP.PositionY === 'Bottom') positionY = -5;
+		if (options.monitor) {
+			if (positionX >= 0) positionX += 10;
+			else positionX -= 10;
+			if (positionY >= 0) positionY += 10;
+			else positionY -= 10;
 		}
+		NodeMPVArgs.push(`--geometry=${targetResolution}${positionX > 0 ? `+${positionX}`:positionX}%${positionY > 0 ? `+${positionY}`:positionY}%`);
 
 		if (conf.Player.NoHud) NodeMPVArgs.push('--no-osc');
 		if (conf.Player.NoBar) NodeMPVArgs.push('--no-osd-bar');
@@ -378,6 +377,9 @@ class Player {
 					logger.debug('mpv status', {service: 'Player', obj: status});
 					playerState[status.name] = status.data;
 				}
+				if (status.name === 'fullscreen') {
+					editSetting({ Player: { FullScreen: !!status.data } });
+				}
 				// If we're displaying an image, it means it's the pause inbetween songs
 				if (!playerState.isOperating && playerState.mediaType !== 'background' && playerState.mediaType !== 'pauseScreen' &&
 					(
@@ -451,6 +453,7 @@ class Player {
 					promises.push(this.mpv.observeProperty('playback-time'));
 					promises.push(this.mpv.observeProperty('mute'));
 					promises.push(this.mpv.observeProperty('volume'));
+					promises.push(this.mpv.observeProperty('fullscreen'));
 				}
 				await Promise.all(promises);
 				return true;
@@ -1042,7 +1045,7 @@ class Players {
 	async toggleFullscreen(): Promise<boolean> {
 		try {
 			await this.exec({command: ['set_property', 'fullscreen', !playerState.fullscreen]});
-			playerState.border = !playerState.fullscreen;
+			playerState.fullscreen = !playerState.fullscreen;
 			emitPlayerState();
 			return playerState.fullscreen;
 		} catch (err) {
