@@ -215,6 +215,7 @@ SELECT ak.pk_kid AS kid,
 	ak.songtypes AS songtypes,
 	ak.series AS series,
 	ak.singers AS singers,
+	ak.versions AS versions,
 	ak.misc AS misc,
     ak.gain AS gain,
 	ak.loudnorm AS loudnorm,
@@ -308,12 +309,12 @@ SELECT
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   COALESCE((SELECT
-	SUM(k.duration)	
+	SUM(k.duration)
    FROM kara k
    LEFT OUTER JOIN playlist_content AS plc ON plc.fk_kid = pc.fk_kid
    LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing AND plc_current_playing.fk_id_playlist = :currentPlaylist_id
-   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (plc.pos - 1) AND plc_before.fk_id_playlist = :currentPlaylist_id 
-   WHERE plc_before.fk_kid = k.pk_kid     
+   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (plc.pos - 1) AND plc_before.fk_id_playlist = :currentPlaylist_id
+   WHERE plc_before.fk_kid = k.pk_kid
   )::integer, 0) AS time_before_play,
   pc.flag_visible AS flag_visible,
   ak.repository as repository,
