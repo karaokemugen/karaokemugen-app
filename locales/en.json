@@ -141,11 +141,14 @@
 			"Does your karaoke session end soon? Switch the interface to restricted mode: users won't be able to add songs anymore but will be able to see what's coming next.",
 			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!",
 			"When you search, you can type \"-word\" to exclude karaokes containing that word (whether it's in the tile, the series, the singers, etc.) from your search results.",
+			"You can accept or refuse songs in the public playlist. To do this, display the public and current playlist side by side.",
+			"Accepting a public suggestion gives back song quota to the user who requested it, and adds the song in the current playlist!",
+			"Refusing a public suggestion gives back song quota to the user who requested it, and keeps the song in the public playlist so it can't be requested again!",
 			"When you search, you can put a word group between double quotes to ask precisely for that text. Type in \"love live\" to have karaokes from Love Live series only."
 		],
 		"ERRORS": [
 			"Come see us on Discord if you need help: https://karaokes.moe/discord",
-			"Please check if a running Karaoke Mugen instance is in background.",
+			"Please check if a running Karaoke Mugen instance runs in the background.",
 			"Take a look at logs, the reason behind the error might be inside!",
 			"Please don't panic, everything's going to be daijokay"
 		]
