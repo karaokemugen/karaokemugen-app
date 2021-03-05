@@ -41,7 +41,7 @@ function AdminHeader(props: IProps) {
 	};
 
 	const playerUpdate = (data: PublicPlayerState) => {
-		let val = data.volume;
+		let val = data.volume || statusPlayer.volume;
 		const base = 100;
 		const pow = 0.76;
 		val = val / base;
