@@ -91,13 +91,13 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 							<div className="modal-body">
 								<div className="modal-message text">
 									<p>{i18next.t(message)}</p>
+									<SelectWithIcon
+										list={this.props.idPlaylist === -4 ?
+											this.props.bLSetList :
+											this.props.playlistList}
+										value={this.state.idPlaylistChosen?.toString()}
+										onChange={(value: any) => this.setState({ idPlaylistChosen: Number(value) })} />
 								</div>
-								<SelectWithIcon
-									list={this.props.idPlaylist === -4 ?
-										this.props.bLSetList :
-										this.props.playlistList}
-									value={this.state.idPlaylistChosen?.toString()}
-									onChange={(value: any) => this.setState({ idPlaylistChosen: Number(value) })} />
 							</div> : null
 						}
 						<div className="modal-footer">
