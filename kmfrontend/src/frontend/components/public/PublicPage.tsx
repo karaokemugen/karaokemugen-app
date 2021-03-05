@@ -396,6 +396,7 @@ class PublicPage extends Component<IProps, IState> {
 							<Route path='/public' render={() =>
 								<PublicHomepage
 									changeView={this.changeView}
+									toggleKaraDetail={this.toggleKaraDetail}
 									activePoll={this.state.isPollActive}
 									currentVisible={this.state.currentVisible}
 									publicVisible={this.state.publicVisible}

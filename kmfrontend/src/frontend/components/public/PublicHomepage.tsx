@@ -4,10 +4,10 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
-import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { callModal, is_touch_device } from '../../../utils/tools';
+import { is_touch_device } from '../../../utils/tools';
+import { KaraElement } from '../../types/kara';
 import { View } from '../../types/view';
 import LyricsBox from './LyricsBox';
 import PlayerBox from './PlayerBox';
@@ -19,6 +19,7 @@ interface IProps {
 		searchValue?: string,
 		searchCriteria?: 'year' | 'tag'
 	) => void;
+	toggleKaraDetail: (kara: KaraElement, idPlaylist: number, indexPlaylist: number) => void
 	activePoll: boolean;
 	publicVisible: boolean;
 	currentVisible: boolean;
@@ -49,15 +50,7 @@ class PublicHomepage extends Component<IProps, IState> {
 				const response2 = await commandBackend('getKara', {
 					kid: chosenOne
 				});
-				callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_CONGRATS'),
-					i18next.t('CL_ABOUT_TO_ADD', {
-						title: buildKaraTitle(this.context.globalState.settings.data, response2, true)
-					}), () => {
-						commandBackend('addKaraToPublicPlaylist', {
-							requestedby: this.context.globalState.auth.data.username,
-							kid: chosenOne
-						});
-					}, 'lucky');
+				this.props.toggleKaraDetail(response2, -1, 0);
 			}
 		}
 	};
