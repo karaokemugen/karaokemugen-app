@@ -9,6 +9,7 @@
     "i18next": "^19.8.7",
     "i18next-browser-languagedetector": "^6.0.1",
     "lodash.debounce": "^4.0.8",
+    "lodash.difference": "^4.5.0",
     "lodash.sample": "^4.2.1",
     "minireset.css": "^0.0.7",
     "pretty-bytes": "^5.5.0",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@types/lodash.debounce": "^4.0.6",
+    "@types/lodash.difference": "^4.5.6",
     "@types/lodash.sample": "^4.2.6",
     "@types/react": "17.0.2",
     "@types/react-aria-menubutton": "^6.2.7",

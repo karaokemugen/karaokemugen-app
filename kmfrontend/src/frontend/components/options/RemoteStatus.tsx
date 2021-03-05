@@ -45,9 +45,9 @@ class RemoteStatus extends Component<unknown, IState> {
 		});
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
 		this.updateRemoteData();
-		this.timeout = setInterval(this.updateRemoteData, 250);
+		this.timeout = setInterval(this.updateRemoteData, 500);
 	}
 
 	componentWillUnmount() {

@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import difference from 'lodash.difference';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
@@ -12,7 +13,7 @@ interface IProps {
 
 interface IState {
 	config?: any;
-	displays: any;
+	displays?: any;
 }
 class PlayerOptions extends Component<IProps, IState> {
 	static contextType = GlobalContext;
@@ -20,13 +21,34 @@ class PlayerOptions extends Component<IProps, IState> {
 
 	constructor(props: IProps) {
 		super(props);
-		this.state = {
-			displays: this.getDisplays()
-		};
+		this.state = {};
 	}
 
 	componentDidMount() {
 		this.setState({ config: dotify(this.context.globalState.settings.data.config) });
+		this.getDisplays();
+	}
+
+	componentDidUpdate(_prevProps:Readonly<IProps>, prevState:Readonly<IState>) {
+		// Find differences
+		let different = false;
+		const newConfig = dotify(this.context.globalState.settings.data.config);
+		for (const i in prevState.config) {
+			// Hack for null -> '' conversion by React
+			if (prevState.config[i] === '') newConfig[i] = '';
+			if (newConfig[i] !== prevState.config[i]) {
+				if (Array.isArray(prevState.config[i])) {
+					if (difference(prevState.config[i], newConfig[i]).length > 0) {
+						different = true;
+						break;
+					}
+				} else {
+					different = true;
+					break;
+				}
+			}
+		}
+		if (different) this.setState({ config: newConfig });
 	}
 
 	getDisplays = async () => {

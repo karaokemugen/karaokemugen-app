@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import difference from 'lodash.difference';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
@@ -24,6 +25,28 @@ class InterfaceOptions extends Component<IProps, IState> {
 
 	componentDidMount() {
 		this.setState({ config: dotify(this.context.globalState.settings.data.config) });
+	}
+
+	componentDidUpdate(_prevProps:Readonly<IProps>, prevState:Readonly<IState>) {
+		// Find differences
+		let different = false;
+		const newConfig = dotify(this.context.globalState.settings.data.config);
+		for (const i in prevState.config) {
+			// Hack for null -> '' conversion by React
+			if (prevState.config[i] === '') newConfig[i] = '';
+			if (newConfig[i] !== prevState.config[i]) {
+				if (Array.isArray(prevState.config[i])) {
+					if (difference(prevState.config[i], newConfig[i]).length > 0) {
+						different = true;
+						break;
+					}
+				} else {
+					different = true;
+					break;
+				}
+			}
+		}
+		if (different) this.setState({ config: newConfig });
 	}
 
 	onChange = (e: any) => {
