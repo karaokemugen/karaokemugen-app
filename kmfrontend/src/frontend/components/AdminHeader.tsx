@@ -96,7 +96,7 @@ function AdminHeader(props: IProps) {
 			getSocket().off('playerStatus', playerUpdate);
 			document.getElementById('root').removeEventListener('click', closeDropdownMenu);
 		};
-	}, []);
+	}, [statusPlayer]);
 
 	const volume: number = (statusPlayer && !isNaN(statusPlayer.volume)) ? statusPlayer.volume : 100;
 	return (
