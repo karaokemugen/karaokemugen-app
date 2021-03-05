@@ -2,6 +2,7 @@ import './SelectWithIcon.scss';
 
 import React from 'react';
 import { Button, Menu, MenuItem,Wrapper } from 'react-aria-menubutton';
+import i18next from 'i18next';
 
 interface IProps {
 	list: { value: string; label: string; icons?: string[]; }[];
@@ -26,7 +27,7 @@ class SelectWithIcon extends React.Component<IProps, unknown> {
 							return (<React.Fragment key={icon}><i className={`fas ${icon}`} />&nbsp;</React.Fragment>);
 						}) : null}
 						<span className="selectWithIcon-label">
-							{select?.label}
+							{this.props.value ? select?.label : i18next.t('SELECT_PLACEHOLDER')}
 						</span>
 					</span>
 				</Button>
