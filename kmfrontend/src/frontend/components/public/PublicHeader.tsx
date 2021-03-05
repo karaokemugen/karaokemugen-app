@@ -59,17 +59,20 @@ class PublicHeader extends Component<IProps, IState> {
 		this.observer.disconnect();
 	}
 
-	toggleProfileModal = () => {
+	toggleProfileModal = e => {
+		e.preventDefault();
 		this.setState({ dropDownMenu: false });
 		this.props.openModal('user');
 	};
 
-	toggleUsersModal = () => {
+	toggleUsersModal = e => {
+		e.preventDefault();
 		this.setState({ dropDownMenu: false });
 		this.props.openModal('users');
 	};
 
-	goToFavorites = () => {
+	goToFavorites = e => {
+		e.preventDefault();
 		this.setState({ dropDownMenu: false });
 		this.props.changeView('favorites');
 	}
@@ -91,7 +94,10 @@ class PublicHeader extends Component<IProps, IState> {
 		return (
 			<header className="menu-container" style={{ ['--img' as any]: this.context.globalState.frontendContext.backgroundImg }} ref={this.state.ref}>
 				<div className="menu">
-					<a href="#" className="nanamin-logo" onClick={() => this.props.changeView('home')}>
+					<a href="/public" className="nanamin-logo" onClick={e => {
+						e.preventDefault();
+						this.props.changeView('home');
+					}}>
 						<picture>
 							<source srcSet={nanamiWebP} type='image/webp' />
 							<source srcSet={nanamiPNG} type='image/png' />
@@ -106,7 +112,7 @@ class PublicHeader extends Component<IProps, IState> {
 					/>
 					{this.state.quotaType > 0 ? <div className={`quota-bar${this.state.quotaLeft <= 5 ? ' exhaust':''}`}>
 						{this.state.quotaType === 1 ? i18next.t('QUOTA_KARA'):
-							i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;{this.state.quotaLeft}
+							i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;{this.state.quotaLeft === -1 ? '∞':this.state.quotaLeft}
 					</div> : null}
 					<div className="profile-btn">
 						<div className="dropdown-container">
@@ -118,32 +124,36 @@ class PublicHeader extends Component<IProps, IState> {
 								<div className="header">{this.context.globalState.settings.data.user.nickname}</div>
 								{this.state.quotaType === 1 ?
 									<div className="info">
-										<div className="title">{i18next.t('QUOTA_KARA')}&nbsp;:&nbsp;</div>
-										<div className="data">{this.state.quotaLeft}</div>
+										{i18next.t('QUOTA_KARA')}
+										&nbsp;:&nbsp;
+										<span className="data">{this.state.quotaLeft === -1 ? '∞':this.state.quotaLeft}</span>
 									</div> : null
 								}
 								{this.state.quotaType === 2 ?
 									<div className="info">
 										<div className="title">{i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;</div>
-										<div className="data">{secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')}</div>
+										<div className="data">{this.state.quotaLeft === -1 ? '∞':secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')}</div>
 									</div> : null
 								}
 								{this.context?.globalState.auth.data.role !== 'guest' ?
 									<>
-										<div className="link"><div onClick={this.goToFavorites}>
+										<div className="link"><a href="/public/favorites" onClick={this.goToFavorites}>
 											<i className="fas fa-fw fa-star" /> {i18next.t('VIEW_FAVORITES')}
-										</div></div>
-										<div className="link"><div onClick={this.toggleProfileModal}>
+										</a></div>
+										<div className="link"><a href="/public/user" onClick={this.toggleProfileModal}>
 											<i className="fas fa-fw fa-user" /> {i18next.t('PROFILE')}
-										</div></div>
+										</a></div>
 									</> : null
 								}
-								<div className="link"><div onClick={this.toggleUsersModal}>
+								<div className="link"><a href="/public/users" onClick={this.toggleUsersModal}>
 									<i className="fas fa-fw fa-users" /> {i18next.t('USERLIST')}
-								</div></div>
-								<div className="link"><div onClick={() => logout(this.context.globalDispatch)}>
+								</a></div>
+								<div className="link"><a href="/login" onClick={e => {
+									e.preventDefault();
+									logout(this.context.globalDispatch);
+								}}>
 									<i className="fas fa-fw fa-sign-out-alt" /> {i18next.t('LOGOUT')}
-								</div></div>
+								</a></div>
 							</div>
 						</div>
 					</div>

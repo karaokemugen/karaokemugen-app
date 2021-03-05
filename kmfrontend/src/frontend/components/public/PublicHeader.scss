@@ -86,7 +86,6 @@ header.menu-container {
 			}
 
 			.info {
-				display: flex;
 				font-weight: bold;
 				> .data {
 					color: gold;
@@ -95,7 +94,13 @@ header.menu-container {
 
 			> .link {
 				padding: .5em;
-				> div {
+				> a {
+					> i {
+						margin-right: .25em;
+					}
+					display: flex;
+					flex-wrap: nowrap;
+					align-items: center;
 					font-weight: bold;
 					font-size: 1.25em;
 					cursor: pointer;
