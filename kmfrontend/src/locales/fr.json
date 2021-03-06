@@ -76,8 +76,6 @@
 	"PLAYERVISUALIZATIONEFFECTS_TOOLTIP": "Uniquement valable pour les chansons audio uniquement (MP3, OGG, etc.)",
 	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les listes de lecture",
 	"ENGINEALLOWDUPLICATESSERIES": "Permettre les doublons de séries ou chanteurs dans les listes de lecture",
-	"ENGINE_HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
-	"ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Invisible",
 	"ENGINEDISPLAYNICKNAME": "Afficher le pseudo du demandeur en début et en fin de chanson",
 	"ENGINEDISPLAYNICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
 	"ENGINEDISPLAYAVATAR": "Afficher l'avatar du demandeur",
@@ -335,7 +333,10 @@
 			"ENABLE_SMARTINSERT": "Activer l'ajout intelligent du public pour éviter les monopoles de liste de lecture",
 			"ENABLE_SMARTINSERT_TOOLTIP": "Au moment de l'ajout d'une chanson par le public, celle-ci sera placée de façon à permettre à ceux qui n'ont pas beaucoup demandé de chansons de passer plus tôt",
 			"ENABLE_AUTOBALANCE": "Activer l'équilibrage automatique de la liste de lecture",
-			"ENABLE_AUTOBALANCE_TOOLTIP": "La playlist sera réorganisée régulièrement pour que les requêtes des utilisateurs passent à tour de rôle."
+			"ENABLE_AUTOBALANCE_TOOLTIP": "La playlist sera réorganisée régulièrement pour que les requêtes des utilisateurs passent à tour de rôle.",
+			"HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
+			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Ne pas afficher",
+			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Libellés mystère"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {

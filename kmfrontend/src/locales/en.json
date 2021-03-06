@@ -72,8 +72,6 @@
 	"PLAYERVISUALIZATIONEFFECTS": "Enable music visualization effects",
 	"ENGINEALLOWDUPLICATES": "Allow duplicate songs in playlists",
 	"ENGINEALLOWDUPLICATESSERIES": "Allow songs with duplicate series or singers in playlists",
-	"ENGINE_HIDE_INVISIBLE_SONGS": "Mystery songs display as",
-	"ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Hidden",
 	"ENGINEDISPLAYNICKNAME": "Display nicknames in karaokes",
 	"ENGINEDISPLAYAVATAR": "Display avatar in karaokes",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Stop! We're closed right now.",
@@ -327,7 +325,10 @@
 			"ENABLE_SMARTINSERT": "Enable smart insert of songs to avoid user monopolies",
 			"ENABLE_SMARTINSERT_TOOLTIP": "When a song is added by the audience, it will be placed so that those who have not requested a lot of songs to be play earlier",
 			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
-			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns."
+			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns.",
+			"HIDE_INVISIBLE_SONGS": "Mystery songs display as",
+			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Don't display",
+			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Mystery labels"
 		},
 		"PLAYLIST": {
 			"ENDOFPLAYLISTACTION": {

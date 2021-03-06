@@ -643,7 +643,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						<div className="settings-line">
 							<label>
-								{i18next.t('ENGINE_HIDE_INVISIBLE_SONGS')}
+								{i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS')}
 							</label>
 							<div>
 								<select
@@ -651,8 +651,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 									onChange={this.onChange}
 									value={this.state.config['Playlist.MysterySongs.Hide']}
 								>
-									<option value='true'> {i18next.t('ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION')} </option>
-									<option value='false'>???</option>
+									<option value='true'> {i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS_HIDDEN_OPTION')} </option>
+									<option value='false'>{i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS_VISIBLE_OPTION')}</option>
 								</select>
 							</div>
 						</div>
