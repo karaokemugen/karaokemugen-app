@@ -11,7 +11,7 @@ import { DBPL } from '../../../../../src/types/database/playlist';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import {buildKaraTitle, getSerieLanguage, getTagInLocale, sortTagByPriority} from '../../../utils/kara';
+import { buildKaraTitle, getSerieLanguage, getTagInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -236,7 +236,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(...data[typeData.karajson].sort(this.compareTag).map(tag => {
-					return <div key={tag.tid} className={`tag ${typeData.color}${tag.problematic ? ' problematicTag':''}`} title={getTagInLocale(tag, this.props.i18nTag)}>
+					return <div key={tag.tid} className={`tag ${typeData.color}${tag.problematic ? ' problematicTag' : ''}`} title={getTagInLocale(tag, this.props.i18nTag)}>
 						{this.props.scope === 'admin' && !is_touch_device() ? (tag.short ? tag.short : tag.name) : getTagInLocale(tag, this.props.i18nTag)}
 					</div>;
 				}));
@@ -301,7 +301,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						<div className="contentDiv">
 							<div>
 								{
-									(this.context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])[(this.context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[]).length * Math.random() | 0]
+									(this.context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])[this.props.kara.pos % (this.context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[]).length | 0]
 								}
 							</div>
 						</div> :
@@ -309,8 +309,10 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							<div className="actionDiv">
 								{!is_touch_device() && shouldShowProfile ?
 									<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-										alt="User Pic" user={{ login: this.props.kara.username, avatar_file: this.props.avatar_file,
-											nickname: this.props.kara.nickname, type: this.props.kara.user_type }} /> : null
+										alt="User Pic" user={{
+											login: this.props.kara.username, avatar_file: this.props.avatar_file,
+											nickname: this.props.kara.nickname, type: this.props.kara.user_type
+										}} /> : null
 								}
 								<div className="btn-group">
 									{this.props.scope === 'admin' || this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
@@ -354,8 +356,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										</span>
 										{kara.title}
 										{kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}
-										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" />:null}
-										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" />:null}
+										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" /> : null}
+										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" /> : null}
 									</div>
 									<div className="contentDivMobileSerie">
 										<span className="tag inline green" title={getTagInLocale(kara.songtypes[0], this.props.i18nTag)}>
@@ -377,8 +379,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
 									<div className="disable-select karaTitle">
 										{karaTitle}
-										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" />:null}
-										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" />:null}
+										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" /> : null}
+										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" /> : null}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"
 												title={i18next.t('UPVOTE_NUMBER')}>
@@ -410,9 +412,11 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ?
 										<div className="img-container">
 											<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-												alt="User Pic" user={{ login: this.props.kara.username,
+												alt="User Pic" user={{
+													login: this.props.kara.username,
 													avatar_file: this.props.avatar_file,
-													nickname: this.props.kara.username }} />
+													nickname: this.props.kara.username
+												}} />
 										</div> : null}
 								</div> : null
 							}
