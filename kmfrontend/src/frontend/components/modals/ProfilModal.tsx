@@ -316,7 +316,7 @@ class ProfilModal extends Component<IProps, IState> {
 										defaultValue={this.state.user.series_lang_mode.toString()}>
 										<option value={'-1'}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
 										<option value={'0'}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-										<option value={'3'}>{i18next.t('SERIE_NAME_MODE_USER')}</option>
+										<option value={'3'}>{i18next.t('SERIE_NAME_MODE_USER_PROFILE')}</option>
 										<option value={'4'}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
 									</select>
 								</div>
