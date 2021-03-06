@@ -175,7 +175,7 @@ class ProfilModal extends Component<IProps, IState> {
 		}
 	};
 
-	async favExport() {
+	favExport = async () => {
 		const exportFile = await commandBackend('exportFavorites');
 		const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
 		const dlAnchorElem = document.getElementById('downloadAnchorElem');
