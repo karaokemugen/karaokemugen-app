@@ -33,6 +33,19 @@
 		display: flex;
 		align-items: center;
 
+		&.mysterySongs {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+		
+			> div {
+				margin: 0.2em;
+				button {
+					margin-left: 0.5em;
+				}
+			}
+		}
+
 		input:not([type="range"]) {
 			background-color: scale-color($mugen-playlist-odd, $lightness: 15%);
 			color: white;

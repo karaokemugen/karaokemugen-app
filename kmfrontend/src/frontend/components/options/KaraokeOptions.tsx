@@ -695,23 +695,27 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label>
 								{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS')}
 							</label>
-							<div>
-								<div>
-									<input value={this.state.mysterySongLabel} style={{ margin: '10px', color: '#555' }}
-										onChange={e => this.setState({ mysterySongLabel: e.target.value })} />
-									<button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_ADD')}</button>
-								</div>
+							<div className='mysterySongs'>
 								{this.state.config['Playlist.MysterySongs.Labels'].map((value: string) => {
 									return (
 										<div key={value}>
 											<label>{value}</label>
 											{this.state.config['Playlist.MysterySongs.Labels'].length > 1 ?
 												<button type="button" className="btn btn-default"
-													onClick={() => this.deleteMysterySongLabel(value)}>{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_DELETE')}</button> : null
+													onClick={() => this.deleteMysterySongLabel(value)}>
+													{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_DELETE')}
+												</button> : null
 											}
 										</div>
 									);
 								})}
+								<div>
+									<input value={this.state.mysterySongLabel}
+										onChange={e => this.setState({ mysterySongLabel: e.target.value })} />
+									<button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>
+										{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_ADD')}
+									</button>
+								</div>
 							</div>
 						</div>
 					</div>
