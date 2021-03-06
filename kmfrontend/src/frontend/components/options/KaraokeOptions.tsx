@@ -31,7 +31,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 		this.setState({ config: dotify(this.context.globalState.settings.data.config) });
 	}
 
-	componentDidUpdate(_prevProps:Readonly<IProps>, prevState:Readonly<IState>) {
+	componentDidUpdate(_prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
 		// Find differences
 		let different = false;
 		const newConfig = dotify(this.context.globalState.settings.data.config);
@@ -160,7 +160,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<label title={i18next.t('FREE_AUTO_TIME_TOOLTIP')}>
 									{i18next.t('FREE_AUTO_TIME')}
 									&nbsp;
-									<i className="far fa-question-circle"/>
+									<i className="far fa-question-circle" />
 								</label>
 								<div>
 									<input
@@ -182,7 +182,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}
 								&nbsp;
-								<i className="far fa-question-circle"/>
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
@@ -194,7 +194,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}
 								&nbsp;
-								<i className="far fa-question-circle"/>
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Karaoke.AutoBalance" handleChange={this.onChange}
@@ -206,7 +206,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('ENGINEAUTOPLAY_TOOLTIP')}>
 								{i18next.t('ENGINEAUTOPLAY')}
               				&nbsp;
-  						<i className="far fa-question-circle"/>
+  						<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Karaoke.Autoplay" handleChange={this.onChange}
@@ -218,7 +218,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.TOOLTIP')}>
 								{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.NAME')}
 								&nbsp;
-								<i className="far fa-question-circle"/>
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<select
@@ -635,7 +635,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						{this.state.config['Online.Remote'] ?
-							<RemoteStatus/> : null }
+							<RemoteStatus /> : null}
 
 						<div className="settings-line subCategoryGroupPanel">
 							{i18next.t('MYSTERY_SONG_SETTINGS')}
