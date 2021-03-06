@@ -9,7 +9,7 @@ class ClassicModeModal extends Component {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
 
-	playSong() {
+	playSong = () => {
 		commandBackend('play');
 		closeModal(this.context.globalDispatch);
 	}
