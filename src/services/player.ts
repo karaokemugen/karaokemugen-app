@@ -83,7 +83,7 @@ export async function next() {
 					await startPoll();
 					on('songPollResult', () => {
 						// We're not at the end of playlsit anymore!
-						nextSong().then(kara => setPlaying(kara.playlistcontent_id, getState().currentPlaylistID));
+						nextSong().then(kara => setPlaying(kara.playlistcontent_id, getState().currentPlaylistID)).catch(() => {});
 					});
 					if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 						await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
