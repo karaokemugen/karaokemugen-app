@@ -94,7 +94,7 @@ class SetupPage extends Component<IProps, IState> {
 			const error = i18next.t('LOGIN_MANDATORY');
 			displayMessage('warning', error);
 			this.setState({ error: error });
-		} else  if (!this.state.password) {
+		} else if (!this.state.password) {
 			const error = i18next.t('PASSWORD_MANDATORY');
 			displayMessage('warning', error);
 			this.setState({ error: error });
@@ -103,7 +103,7 @@ class SetupPage extends Component<IProps, IState> {
 			displayMessage('warning', error);
 			this.setState({ error: error });
 		} else if (isElectron()) {
-			const { ipcRenderer:ipc } = window.require('electron');
+			const { ipcRenderer: ipc } = window.require('electron');
 			ipc.send('getSecurityCode');
 			ipc.once('getSecurityCodeResponse', async (_event, securityCode) => {
 				this.loginFinish(securityCode);
@@ -124,7 +124,7 @@ class SetupPage extends Component<IProps, IState> {
 				securityCode: securityCode
 			});
 			setAuthentifactionInformation(this.context.globalDispatch, infos);
-			this.setState({ activeView: 'repo', error: undefined });	
+			this.setState({ activeView: 'repo', error: undefined });
 		} catch (err) {
 			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
@@ -161,7 +161,9 @@ class SetupPage extends Component<IProps, IState> {
 	}
 
 	consolidate = async () => {
-		if (this.state.repositoryFolder) {
+		if (this.state.repositoryFolder
+			&& this.context?.globalState.settings.data.config?.System.Repositories.length > 0
+			&& this.context?.globalState.settings.data.config?.System.Repositories[0].Name) {
 			const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].Path.Karas[0].slice(0, -9);
 			const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
 			if (this.state.repositoryFolder !== path) {
@@ -466,7 +468,7 @@ class SetupPage extends Component<IProps, IState> {
 													<div className="input-group">
 														<p className="intro">
 															{i18next.t('SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE')}
-															<br/>
+															<br />
 															<em>{i18next.t('SETUP_PAGE.SECURITY_CODE_USE')}</em>
 														</p>
 														<div className="input-control">
@@ -483,12 +485,13 @@ class SetupPage extends Component<IProps, IState> {
 															/>
 														</div>
 													</div>
-											
-												) : null }
+
+												) : null}
 											<div className="actions">
 												<label className="error">{this.state.error}</label>
 												{this.state.accountType === 'online' &&
-													this.state.onlineAction === 'login' ? (
+													this.state.onlineAction === 'login' ?
+													(
 														<button type="button" onClick={this.login}>
 															{i18next.t('LOG_IN')}
 														</button>
@@ -496,7 +499,8 @@ class SetupPage extends Component<IProps, IState> {
 														<button type="button" onClick={this.signup}>
 															{i18next.t('SIGN_UP')}
 														</button>
-													)}
+													)
+												}
 											</div>
 										</section>
 									)
