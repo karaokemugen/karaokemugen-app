@@ -6,7 +6,7 @@
 
 import './Autocomplete.scss';
 
-import React, { useEffect,useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface IProps {
 	options?: Array<any>;
