@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 
 import { DBYear } from '../../../../src/lib/types/database/kara';
 import { PublicPlayerState } from '../../../../src/types/state';
-import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { getNavigatorLanguageIn3B } from '../../utils/isoLanguages';
@@ -57,10 +56,6 @@ class AdminPage extends Component<IProps, IState> {
 
 	async componentDidMount() {
 		this.addTags();
-		if (this.context.globalState.auth.data.role !== 'admin') {
-			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
-			logout(this.context.globalDispatch);
-		}
 		if (this.context.globalState.auth.isAuthenticated) {
 			await this.getPlaylistList();
 		}
