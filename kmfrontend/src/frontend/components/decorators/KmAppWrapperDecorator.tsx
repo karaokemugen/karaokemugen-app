@@ -1,6 +1,5 @@
 import React, { Component, createRef, RefObject } from 'react';
 
-import { is_touch_device } from '../../../utils/tools';
 import { View } from '../../types/view';
 
 interface IProps {
