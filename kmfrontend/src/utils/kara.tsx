@@ -3,7 +3,7 @@ import React from 'react';
 import {ASSLine} from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
 import { SettingsStoreData } from '../store/types/settings';
-import { getNavigatorLanguageIn3B } from './isoLanguages';
+import { getLanguageIn3B, getNavigatorLanguageIn3B } from './isoLanguages';
 import { isRemote } from './socket';
 
 const navigatorLanguage: string = getNavigatorLanguageIn3B();
@@ -42,7 +42,7 @@ export function getSerieLanguage(settings:SettingsStoreData, tag: DBKaraTag, kar
 	} else if (mode === 1) {
 		return getTagInLanguage(tag, karaLanguage, 'eng', i18nParam);
 	} else if (mode === 2) {
-		return getTagInLanguage(tag, settings.state.defaultLocale, 'eng', i18nParam);
+		return getTagInLanguage(tag, getLanguageIn3B(settings.state.defaultLocale), 'eng', i18nParam);
 	} else if (mode === 3) {
 		return getTagInLanguage(tag, navigatorLanguage, 'eng', i18nParam);
 	} else if (mode === 4) {
