@@ -326,14 +326,14 @@ class ProfilModal extends Component<IProps, IState> {
 									<div className="profileLine row">
 										<label className="col-xs-6 control-label">{i18next.t('MAIN_SERIES_LANG')}</label>
 										<div className="col-xs-6">
-											<Autocomplete value={this.state.user.main_series_lang} options={listLangs}
+											<Autocomplete value={this.state.user.main_series_lang} options={listLangs} forceTop={true}
 												onChange={(value) => this.changeLanguageFallback('main_series_lang', value)} />
 										</div>
 									</div>
 									<div className="profileLine row">
 										<label className="col-xs-6 control-label">{i18next.t('FALLBACK_SERIES_LANG')}</label>
 										<div className="col-xs-6">
-											<Autocomplete value={this.state.user.fallback_series_lang} options={listLangs}
+											<Autocomplete value={this.state.user.fallback_series_lang} options={listLangs} forceTop={true}
 												onChange={(value) => this.changeLanguageFallback('fallback_series_lang', value)} />
 										</div>
 									</div>
