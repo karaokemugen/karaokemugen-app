@@ -167,19 +167,23 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				kid: this.props.kara.kid
 			};
 		}
-		const response = await commandBackend(url, data);
-		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
-			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
-			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
-			displayMessage('success', <div>
-				{i18next.t(`SUCCESS_CODES.${response.code}`)}
-				<br />
-				{i18next.t('TIME_BEFORE_PLAY', {
-					time: beforePlayTime,
-					date: playTimeDate
-				})}
-			</div>);
+		try {
+			const response = await commandBackend(url, data);
+			if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
+				const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+				displayMessage('success', <div>
+					{i18next.t(`SUCCESS_CODES.${response.code}`)}
+					<br />
+					{i18next.t('TIME_BEFORE_PLAY', {
+						time: beforePlayTime,
+						date: playTimeDate
+					})}
+				</div>);
+			}
+		} catch (err) {
+			// error already display
 		}
 	};
 

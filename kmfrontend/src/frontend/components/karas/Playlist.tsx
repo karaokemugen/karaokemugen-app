@@ -604,10 +604,14 @@ class Playlist extends Component<IProps, IState> {
 					const karaList = randomKaras.content.map((a: KaraElement) => {
 						return a.kid;
 					});
-					commandBackend('addKaraToPlaylist', {
-						kids: karaList,
-						pl_id: this.props.idPlaylistTo
-					});
+					try {
+						commandBackend('addKaraToPlaylist', {
+							kids: karaList,
+							pl_id: this.props.idPlaylistTo
+						});
+					} catch (err) {
+						// error already display
+					}
 				}, '');
 			}
 		}, '1');
@@ -621,11 +625,15 @@ class Playlist extends Component<IProps, IState> {
 		});
 		const karaList = response.content.map((a: KaraElement) => a.kid);
 		displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', { count: response.content.length }));
-		commandBackend('addKaraToPlaylist', {
-			kids: karaList,
-			requestedby: this.context.globalState.auth.data.username,
-			pl_id: this.props.idPlaylistTo
-		});
+		try {
+			commandBackend('addKaraToPlaylist', {
+				kids: karaList,
+				requestedby: this.context.globalState.auth.data.username,
+				pl_id: this.props.idPlaylistTo
+			});
+		} catch (err) {
+			// error already display
+		}
 	};
 
 	addCheckedKaras = async (_event?: any, pos?: number) => {
@@ -681,15 +689,19 @@ class Playlist extends Component<IProps, IState> {
 				kids: stateData.content.filter(a => a.checked).map(a => a.kid)
 			};
 		}
-		await commandBackend(url, data);
-		const karaList = (this.state.data as KaraList);
-		for (const kara of karaList.content) {
-			if (kara) {
-				kara.checked = false;
+		try {
+			await commandBackend(url, data);
+			const karaList = (this.state.data as KaraList);
+			for (const kara of karaList.content) {
+				if (kara) {
+					kara.checked = false;
+				}
 			}
+			this.setState({ data: karaList });
+			this.playlistForceRefresh(true);
+		} catch (err) {
+			// error already display
 		}
-		this.setState({ data: karaList });
-		this.playlistForceRefresh(true);
 	};
 
 	transferCheckedKaras = () => {
