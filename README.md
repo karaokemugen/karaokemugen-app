@@ -122,8 +122,8 @@ Earlier or later PostgreSQL versions (9.x, 10.x, 12.x...) should work but have n
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
-* **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `app/database.json` file to point to the correct server and database)
-* **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `app/database.json` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
+* **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `config.yml` file to point to the correct server and database)
+* **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `config.yml` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
 
 ### Yarn
 
@@ -143,31 +143,29 @@ git config submodule.recurse true
 
 ### Dependencies
 
-Launch `yarn` to install dependencies and build the React frontend and system control panel.
+Launch `yarn` to install dependencies and build the React frontend
 
 ```sh
 yarn setup
 ```
 
-This runs install on the app, system panel and frontend then builds them.
+This runs install on the app and frontend then builds them.
 
 ### Database setup
 
 Karaoke Mugen needs a PostgreSQL database to work.
 
-Create a `config.yml` and place it in your data directory (`$HOME/KaraokeMugen` or `app/` in portable configurations). Edit it and add the following, filling in the blanks (username, password, port, host and database name of your choosing.) and switch `bundledPostgresBinary` to `false`. Leave `superuser` and `superuserPassword` blank. It should look like this :
+Create a `config.yml` and place it in your data directory (`~/KaraokeMugen` or `app/` in portable configurations). Edit it and add the following, filling in the blanks (username, password, port, host and database name of your choosing.) and switch `bundledPostgresBinary` to `false`. Leave `superuser` and `superuserPassword` blank. It should look like this :
 
 ```YAML
 System:
   Database:
     bundledPostgresBinary: false
-	database: karaokemugen_app
-	host: localhost
-	password: musubi
-	port: 5432
-	superuser: postgres
-	superuserPassword: musubi
-	username: karaokemugen_app
+    database: karaokemugen_app
+    host: localhost
+    password: musubi
+    port: 5432
+    username: karaokemugen_app
 ```
 
 As a superuser on PostgreSQL, you need to create the database properly. Use the `psql` command-line tool to connect to your PostgreSQL cluster and create the needed database and extension. Example with the `config.yml` above :
@@ -195,9 +193,9 @@ To launch the app :
 yarn start
 ```
 
-Generating a database ie required on first launch and is done automatically if the database specified in `config.yml` is empty. You can trigger it manually later by connecting to the admin panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
+Generating a database ie required on first launch and is done automatically if the database specified in `config.yml` is empty. You can trigger it manually later by connecting to the system panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
-On first run, the app will make you create an admin user and follow a guided tour of the operator/admin panel. You can trigger this tour/admin creation process again by setting `FirstRun` to `true` in your config file. Check the sample config file for example.
+On first run, the app will make you create an admin user and follow a guided tour of the operator panel. You can trigger this tour/admin creation process again by selecting the Tutorial item in the K menu on the app's operator panel.
 
 #### Launch without Electron
 
