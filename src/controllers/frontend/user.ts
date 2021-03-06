@@ -130,7 +130,6 @@ export default function userController(router: SocketIOApp) {
  * @apiSuccess {Number} last_login Last login time in `Date()` format
  * @apiSuccess {Number} user_id User's ID in the database
  * @apiSuccess {String} url User's URL in its profile
- * @apiSuccess {String} fingerprint User's fingerprint
  * @apiSuccess {String} bio User's bio
  * @apiSuccess {String} email User's email
  * @apiSuccess {Number} series_lang_mode Mode (0-4) for series' names display : -1 = Let KM settings decide, 0 = Original/internal name, 1 = Depending on song's language, 2 = Depending on KM's language, 3 = Depending on user browser's language (default), 4 = Force languages with `main_series_lang` and `fallback_series_lang`
@@ -150,7 +149,6 @@ export default function userController(router: SocketIOApp) {
  * 			 "url": null,
  * 			 "email": null,
  * 			 "bio": null,
- * 			 "fingerprint": null,
  * 			 "series_lang_mode": 4,
  * 			 "main_series_lang": "fre",
  * 			 "fallback_series_lang": "eng"
@@ -321,7 +319,6 @@ export default function userController(router: SocketIOApp) {
  * @apiSuccess {Number} data/last_login_at Last login time in UNIX timestamp.
  * @apiSuccess {Number} data/user_id User's ID in the database
  * @apiSuccess {String} data/url User's URL in its profile
- * @apiSuccess {String} data/fingerprint User's fingerprint
  * @apiSuccess {String} data/bio User's bio
  * @apiSuccess {String} data/email User's email
  * @apiSuccess {Number} data/series_lang_mode Mode (0-4) for series' names display : -1 = Let KM settings decide, 0 = Original/internal name, 1 = Depending on song's language, 2 = Depending on KM's language, 3 = Depending on user browser's language (default), 4 = Force languages with `main_series_lang` and `fallback_series_lang`
@@ -342,7 +339,6 @@ export default function userController(router: SocketIOApp) {
  * 			 "url": null,
  * 			 "email": null,
  * 			 "bio": null,
- * 			 "fingerprint": null,
  * 			 "series_lang_mode": 4,
  * 			 "main_series_lang": "fre",
  * 			 "fallback_series_lang": "eng"

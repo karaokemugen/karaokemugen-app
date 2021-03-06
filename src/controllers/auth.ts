@@ -66,11 +66,9 @@ export default function authController(router: SocketIOApp) {
  * @apiVersion 5.0.0
  * @apiGroup Auth
  * @apiPermission NoAuth
- * @apiDescription
- * Logins as guest. Uses the fingerprint provided to tell if the user already has a reserved guest account or not. If not, logs in as a random guest account.
+ * @apiDescription Logins as guest.
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
  * @apiHeader {String} charset Must be `UTF-8`
- * @apiParam {String} fingerprint Fingerprint hash. Uses client-side fingerprinting.
  * @apiSuccess {String} token Identification token for this session
  * @apiSuccess {String} username Username logged in ( contains @host if remote, with host being the instance's host)
  * @apiSuccess {String} role Role of this user (`user` or `admin`)
