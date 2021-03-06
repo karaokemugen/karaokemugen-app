@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import difference from 'lodash.difference';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
@@ -12,7 +13,7 @@ interface IProps {
 
 interface IState {
 	config?: any;
-	displays: any;
+	displays?: any;
 }
 class PlayerOptions extends Component<IProps, IState> {
 	static contextType = GlobalContext;
@@ -20,13 +21,34 @@ class PlayerOptions extends Component<IProps, IState> {
 
 	constructor(props: IProps) {
 		super(props);
-		this.state = {
-			displays: this.getDisplays()
-		};
+		this.state = {};
 	}
 
 	componentDidMount() {
 		this.setState({ config: dotify(this.context.globalState.settings.data.config) });
+		this.getDisplays();
+	}
+
+	componentDidUpdate(_prevProps:Readonly<IProps>, prevState:Readonly<IState>) {
+		// Find differences
+		let different = false;
+		const newConfig = dotify(this.context.globalState.settings.data.config);
+		for (const i in prevState.config) {
+			// Hack for null -> '' conversion by React
+			if (prevState.config[i] === '') newConfig[i] = '';
+			if (newConfig[i] !== prevState.config[i]) {
+				if (Array.isArray(prevState.config[i])) {
+					if (difference(prevState.config[i], newConfig[i]).length > 0) {
+						different = true;
+						break;
+					}
+				} else {
+					different = true;
+					break;
+				}
+			}
+		}
+		if (different) this.setState({ config: newConfig });
 	}
 
 	getDisplays = async () => {
@@ -84,8 +106,8 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('ALWAYS_ON_TOP_TOOLTIP')}>
 							{i18next.t('ALWAYS_ON_TOP')}
-            &nbsp;
-  					<i className="far fa-question-circle"></i>
+           	 				&nbsp;
+  							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Player.StayOnTop" handleChange={this.putPlayerCommando}
@@ -103,6 +125,63 @@ class PlayerOptions extends Component<IProps, IState> {
 								isChecked={this.state.config['Player.FullScreen']} nameCommand="toggleFullscreen" />
 						</div>
 					</div>
+					{!this.state.config['Player.FullScreen'] ?
+						<div id="pipSettings" className="settingsGroupPanel">
+							<div className="settings-line">
+								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_SIZE_TOOLTIP')}>
+									{`${i18next.t('VIDEO_SIZE')} (${this.state.config['Player.PIP.Size']}%)`}
+									&nbsp;
+									<i className="far fa-question-circle" />
+								</label>
+								<div className="col-xs-6">
+									<input
+										type="range"
+										id="Player.PIP.Size"
+										data-namecommand="setPiPSize"
+										onChange={this.putPlayerCommando}
+										value={this.state.config['Player.PIP.Size']}
+									/>
+								</div>
+							</div>
+
+							<div className="settings-line">
+								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_POSITION_X_TOOLTIP')}>
+									{i18next.t('VIDEO_POSITION_X')}
+									&nbsp;
+									<i className="far fa-question-circle" />
+								</label>
+								<div className="col-xs-6">
+									<select
+										id="Player.PIP.PositionX"
+										onChange={this.onChange}
+										value={this.state.config['Player.PIP.PositionX']}
+									>
+										<option value="Left"> {i18next.t('LEFT')} </option>
+										<option value="Center">{i18next.t('CENTER')}</option>
+										<option value="Right"> {i18next.t('RIGHT')} </option>
+									</select>
+								</div>
+							</div>
+
+							<div className="settings-line">
+								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_POSITION_Y_TOOLTIP')}>
+									{i18next.t('VIDEO_POSITION_Y')}
+									&nbsp;
+									<i className="far fa-question-circle" />
+								</label>
+								<div className="col-xs-6">
+									<select
+										id="Player.PIP.PositionY"
+										onChange={this.onChange}
+										value={this.state.config['Player.PIP.PositionY']}
+									>
+										<option value="Bottom"> {i18next.t('BOTTOM')} </option>
+										<option value="Center">{i18next.t('CENTER')}</option>
+										<option value="Top"> {i18next.t('TOP')} </option>
+									</select>
+								</div>
+							</div>
+						</div> : null}
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('WINDOWBORDERS_TOOLTIP')}>
 							{i18next.t('WINDOWBORDERS')}
@@ -147,8 +226,8 @@ class PlayerOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYCONNECTIONINFOHOST_TOOLTIP')}>
 									{i18next.t('ENGINEDISPLAYCONNECTIONINFOHOST')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
+                					&nbsp;
+									<i className="far fa-question-circle" />
 								</label>
 								<div className="col-xs-6">
 									<input
@@ -163,8 +242,8 @@ class PlayerOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYCONNECTIONINFOMESSAGE_TOOLTIP')}>
 									{i18next.t('ENGINEDISPLAYCONNECTIONINFOMESSAGE')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
+                					&nbsp;
+  									<i className="far fa-question-circle" />
 								</label>
 								<div className="col-xs-6">
 									<input
@@ -179,79 +258,10 @@ class PlayerOptions extends Component<IProps, IState> {
 					) : null}
 
 					<div className="settings-line">
-						<label className="col-xs-4 control-label" title={i18next.t('PLAYERPIP_TOOLTIP')}>
-							{i18next.t('PLAYERPIP')}
-            &nbsp;
-  					<i className="far fa-question-circle"></i>
-						</label>
-						<div className="col-xs-6">
-							<Switch idInput="Player.PIP.Enabled" handleChange={this.onChange}
-								isChecked={this.state.config['Player.PIP.Enabled']} />
-						</div>
-					</div>
-					{this.state.config['Player.PIP.Enabled'] ?
-						<div id="pipSettings" className="settingsGroupPanel">
-							<div className="settings-line">
-								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_SIZE_TOOLTIP')}>
-									{`${i18next.t('VIDEO_SIZE')} (${this.state.config['Player.PIP.Size']}%)`}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
-								</label>
-								<div className="col-xs-6">
-									<input
-										type="range"
-										id="Player.PIP.Size"
-										data-namecommand="setPiPSize"
-										onChange={this.putPlayerCommando}
-										value={this.state.config['Player.PIP.Size']}
-									/>
-								</div>
-							</div>
-
-							<div className="settings-line">
-								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_POSITION_X_TOOLTIP')}>
-									{i18next.t('VIDEO_POSITION_X')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
-								</label>
-								<div className="col-xs-6">
-									<select
-										id="Player.PIP.PositionX"
-										onChange={this.onChange}
-										value={this.state.config['Player.PIP.PositionX']}
-									>
-										<option value="Left"> {i18next.t('LEFT')} </option>
-										<option value="Center">{i18next.t('CENTER')}</option>
-										<option value="Right"> {i18next.t('RIGHT')} </option>
-									</select>
-								</div>
-							</div>
-
-							<div className="settings-line">
-								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_POSITION_Y_TOOLTIP')}>
-									{i18next.t('VIDEO_POSITION_Y')}
-                &nbsp;
-  							<i className="far fa-question-circle"></i>
-								</label>
-								<div className="col-xs-6">
-									<select
-										id="Player.PIP.PositionY"
-										onChange={this.onChange}
-										value={this.state.config['Player.PIP.PositionY']}
-									>
-										<option value="Bottom"> {i18next.t('BOTTOM')} </option>
-										<option value="Center">{i18next.t('CENTER')}</option>
-										<option value="Top"> {i18next.t('TOP')} </option>
-									</select>
-								</div>
-							</div>
-						</div> : null}
-
-					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('ENGINEDISPLAYNICKNAME_TOOLTIP')}>
 							{i18next.t('ENGINEDISPLAYNICKNAME')}
-			&nbsp;
-  					<i className="far fa-question-circle"></i>
+							&nbsp;
+  							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
@@ -272,8 +282,8 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('PLAYERMONITOR_TOOLTIP')}>
 							{i18next.t('PLAYERMONITOR')}
-			&nbsp;
-  					<i className="far fa-question-circle"></i>
+							&nbsp;
+  						<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Player.Monitor" handleChange={this.onChange}
@@ -284,8 +294,8 @@ class PlayerOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
 							{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
-						&nbsp;
-  						<i className="far fa-question-circle"></i>
+							&nbsp;
+  							<i className="far fa-question-circle" />
 						</label>
 						<div className="col-xs-6">
 							<Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}

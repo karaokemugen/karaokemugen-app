@@ -2,15 +2,14 @@ import './UsersModal.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
-import { GlobalContextInterface } from '../../../store/context';
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
-	context: GlobalContextInterface;
 	scope?: 'public' | 'admin';
 	closeModal?: () => void;
 }
@@ -21,6 +20,9 @@ interface IState {
 }
 
 class UsersModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
+
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -29,7 +31,7 @@ class UsersModal extends Component<IProps, IState> {
 	}
 
 	componentDidMount() {
-		if (this.props.context?.globalState.auth.data.role === 'admin' || this.props.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) this.getUserList();
+		if (this.context?.globalState.auth.data.role === 'admin' || this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) this.getUserList();
 	}
 
 	async getUserList() {
@@ -50,14 +52,19 @@ class UsersModal extends Component<IProps, IState> {
 		if (this.props.scope === 'public') {
 			this.props.closeModal();
 		} else {
-			const element = document.getElementById('modal');
-			if (element) ReactDOM.unmountComponentAtNode(element);
+			closeModal(this.context.globalDispatch);
 		}
 	}
 
 	render() {
 		const body = (<div className="modal-content">
-			<div className="modal-header">
+			<div className={`modal-header${this.props.scope === 'public' ? ' public-modal':''}`}>
+				{this.props.scope === 'public' ? <button
+					className="closeModal"
+					type="button"
+					onClick={() => this.closeModal()}>
+					<i className="fas fa-arrow-left" />
+				</button> : null}
 				<h4 className="modal-title">{i18next.t('USERLIST')}</h4>
 				{this.props.scope === 'admin' ? // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal"

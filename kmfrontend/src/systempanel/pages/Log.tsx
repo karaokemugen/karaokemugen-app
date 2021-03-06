@@ -40,9 +40,8 @@ class Log extends Component<unknown, LogState> {
 		if (res) this.setState({ log: res });
 	}
 
-	setLevel = async (level) => {
-		await this.setState({ level, log: [] });
-		this.refresh();
+	setLevel = (level) => {
+		this.setState({ level, log: [] }, this.refresh);
 	}
 
 	render() {

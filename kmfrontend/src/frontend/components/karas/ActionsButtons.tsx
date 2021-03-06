@@ -17,9 +17,10 @@ interface IProps {
 	flag_public: boolean;
 	addKara: (event?: any, pos?: number) => void;
 	deleteKara: () => void;
-	transferKara: (event: any, pos?: number) => void;
 	deleteFavorite: () => void;
 	upvoteKara?: () => void;
+	refuseKara: () => void;
+	acceptKara: () => void;
 }
 
 class ActionsButtons extends Component<IProps, unknown> {
@@ -34,17 +35,31 @@ class ActionsButtons extends Component<IProps, unknown> {
 		}
 	};
 
-	onRightClickTransfer = (e: any) => {
-		e.preventDefault();
-		e.stopPropagation();
-		this.props.transferKara(e, -1);
-	};
-
 	render() {
 		const classValue = this.props.isHeader ? 'btn btn-default karaLineButton' : 'btn btn-sm btn-action karaLineButton';
 		return (
 			<>
-				{this.props.idPlaylist !== -5 && ((this.props.scope === 'admin' && this.props.idPlaylist !== -1)
+				{this.props.scope === 'admin' && this.props.flag_public 
+					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaylistID ?
+					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_REFUSE_SELECT_KARA' : 'TOOLTIP_REFUSE_KARA')}
+						className={`${classValue} ${this.props.kara?.flag_refused ? 'off' : ''}`}
+						onClick={this.props.refuseKara}>
+						<i className="fas fa-times" />
+					</button> : null
+				}
+
+				{this.props.scope === 'admin' && this.props.flag_public 
+					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaylistID ?
+					<button
+						title={i18next.t(this.props.isHeader ? 'TOOLTIP_ACCEPT_SELECT_KARA' : 'TOOLTIP_ACCEPT_KARA')}
+						className={`${classValue} ${this.props.kara?.flag_accepted ? 'on' : ''}`}
+						onClick={this.props.acceptKara}>
+						<i className="fas fa-check" />
+					</button> : null
+				}
+
+				{this.props.idPlaylist !== -5 && ((this.props.scope === 'admin' && this.props.idPlaylist !== -1 && !(this.props.flag_public 
+					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaylistID))
 					|| (this.props.scope !== 'admin' && !this.props.kara?.flag_dejavu && !this.props.kara?.flag_playing
 						&& (this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]
 							|| (this.props.flag_public && this.props.kara.username === this.context.globalState.auth.data.username)))) ?
@@ -57,12 +72,13 @@ class ActionsButtons extends Component<IProps, unknown> {
 
 				{this.props.idPlaylist === -5 ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_FAVS' : 'TOOLTIP_DELETE_FAVS')}
-						className={classValue} onClick={this.props.deleteFavorite}>
+						className={classValue + ' yellow'} onClick={this.props.deleteFavorite}>
 						<i className="fas fa-star" />
 					</button> : null
 				}
 
-				{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1 && this.props.idPlaylistTo !== -5)
+				{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1 && this.props.idPlaylistTo !== -5 && !(this.props.flag_public 
+					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaylistID))
 					|| (this.props.scope === 'public' && this.props.idPlaylist !== this.context.globalState.settings.data.state.publicPlaylistID
 						&& this.props.idPlaylist !== this.context.globalState.settings.data.state.currentPlaylistID
 						&& (!this.props.kara?.public_plc_id || !this.props.kara?.public_plc_id[0])) ?
@@ -88,16 +104,6 @@ class ActionsButtons extends Component<IProps, unknown> {
 						<i className={`fas fa-thumbs-up ${this.props.kara?.flag_upvoted ? 'currentUpvote' : ''}
 						${this.props.kara?.upvotes > 0 ? ' upvotes' : ''}`} />
 						{this.props.kara?.upvotes > 0 && this.props.kara?.upvotes}
-					</button> : null
-				}
-
-				{this.props.scope === 'admin' && this.props.isHeader && this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
-					<button
-						title={i18next.t('TOOLTIP_TRANSFER_SELECT_KARA')}
-						className={classValue} disabled={this.props?.checkedKaras === 0}
-						onContextMenu={this.onRightClickTransfer}
-						onClick={this.props.transferKara}>
-						<i className="fas fa-exchange-alt" />
 					</button> : null
 				}
 			</>

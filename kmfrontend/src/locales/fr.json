@@ -1,4 +1,5 @@
 {
+	"SELECT_PLACEHOLDER": "Sélectionnez une liste de lecture",
 	"YES": "Oui",
 	"NO": "Non",
 	"AND": "et",
@@ -15,6 +16,7 @@
 	"PASSWORD_MANDATORY": "Le mot de passe est obligatoire",
 	"SECURITY_CODE_MANDATORY": "Le code de sécurité est obligatoire pour créer un compte opérateur",
 	"PASSWORD_DIFFERENT": "Les mots de passe ne sont pas identiques",
+	"DETAILS_CREATED": "Karaoké créé ",
 	"DETAILS_ADDED": "Ajouté ",
 	"DETAILS_ADDED_2": "le ",
 	"DETAILS_ADDED_3": " par ",
@@ -98,6 +100,7 @@
 	"FAVORITES_IMPORT": "Importer vos favoris",
 	"FAVORITES_EXPORT": "Exporter vos favoris",
 	"FILTERS": "Filtres",
+	"ACTIVE_FILTER": "Filtre actif",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Commandes de liste de lecture",
 		"ADD_ALL": "Ajouter toutes les chansons en face",
@@ -116,14 +119,21 @@
 		"KARA_COMMANDS": "Commandes sur une chanson",
 		"PLAY": "Placer le curseur de lecture ici",
 		"PLAY_LIBRARY": "Jouer maintenant",
+		"FAVORITES_ADDED": "Ajouté aux favoris",
+		"FAVORITES_REMOVED": "Retiré des favoris",
 		"FREE": "Libérer cette chanson du quota de l'utilisateur",
 		"FREE_SHORT": "Libérer",
+		"FREED": "Libéré !",
 		"VISIBLE_ON": "Montrer dans la liste de lecture",
 		"VISIBLE_ON_SHORT": "Montrer",
 		"VISIBLE_OFF": "Cacher dans la liste de lecture",
 		"VISIBLE_OFF_SHORT": "Cacher",
+		"HIDDEN": "Caché !",
+		"SHOWN": "Montré !",
 		"ADD_BLACKLIST": "Ajouter à la liste noire",
+		"BLACKLISTED": "Ajouté !",
 		"ADD_WHITELIST": "Ajouter à la liste blanche",
+		"WHITELISTED": "Ajouté !",
 		"TRANSFER_KARA": "Transférer cette chanson en face - clic droit la transfère après la chanson en cours",
 		"MOVE_KARA": "Déplacer après la chanson en cours"
 	},
@@ -140,6 +150,7 @@
 		"IMPORT": "Importer une liste de critères",
 		"EXPORT": "Exporter la liste de critères",
 		"COPY": "Copier cette liste de critères",
+		"COPY_SHORT": "Copier",
 		"COPY_TO": "Copier les critères dans la liste suivante : ",
 		"ADD_BLC": "Ajouter une valeur au critère",
 		"DELETE_BLC": "Supprimer ce critère de liste noire"
@@ -174,6 +185,9 @@
 	},
 	"PUBLIC_HOMEPAGE": {
 		"RESTRICTED_DESCRIPTION": "Le karaoké est en mode restreint, les ajouts de karaokés sont limités.",
+		"QUOTA_KARA_DESCRIPTION": "Vous ne pouvez suggérer que {{count}} chanson. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
+		"QUOTA_KARA_DESCRIPTION_plural": "Vous ne pouvez suggérer que {{count}} chansons. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
+		"QUOTA_TIME_DESCRIPTION": "Vous ne pouvez suggérer que {{time}} minutes de chanson. Vous pourrez en suggérer à nouveau une fois que l'opérateur aura ajouté (ou non) votre suggestion ou lorsque votre chanson sera passée à l'écran.",
 		"HELLO": "Bonjour",
 		"NOW_PLAYING": "En ce moment",
 		"NEXT": "À suivre",
@@ -253,11 +267,16 @@
 	"TOOLTIP_DELETE_SELECT_FAVS": "Supprimer les chansons sélectionnées des favoris",
 	"TOOLTIP_DELETE_SELECT_KARA": "Supprimer les chansons sélectionnées",
 	"TOOLTIP_TRANSFER_SELECT_KARA": "Transférer les chansons sélectionnées - clic droit les transfére après la chanson en cours",
+	"TOOLTIP_REFUSE_KARA": "Refuser la chanson (libère la chanson)",
+	"TOOLTIP_ACCEPT_KARA": "Accepter la chanson (copie dans la liste courante)",
+	"TOOLTIP_REFUSE_SELECT_KARA": "Refuser les chansons (libère les chansons)",
+	"TOOLTIP_ACCEPT_SELECT_KARA": "Accepter les chansons (copie dans la liste courante)",
 	"TOOLTIP_CLOSEPARENT": "Fermer",
 	"TOOLTIP_FAV": "Ajouter aux favoris",
 	"TOOLTIP_FAV_DEL": "Retirer des favoris",
 	"TOOLTIP_SHOWLYRICS": "Afficher les paroles",
 	"TOOLTIP_SHOWVIDEO": "Afficher un aperçu vidéo",
+	"TOOLTIP_HIDEVIDEO": "Fermer l'aperçu vidéo",
 	"TOOLTIP_UPVOTE": "Voter pour cette chanson",
 	"UPVOTE_NUMBER": "Soutiens",
 	"PROFILE_PASSWORDCONF": "Confirmer",
@@ -380,6 +399,12 @@
 		"Kono bangumi wa...",
 		"Et merci pour l'argent."
 	],
+	"PAUSE_TIME": "Pause",
+	"PAUSE_TAGLINES": [
+		"On respire !",
+		"Buvez un coup !",
+		"On revient tout de suite !"
+	],
 	"SPONSOR": "Sponsors",
 	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"QUOTA_TYPE": "Limiter l'ajout de chanson par les utilisateurs",
@@ -395,7 +420,7 @@
 	"FREE_AUTO_TIME_TOOLTIP": "Au bout de X minutes, la chanson ne comptera plus dans le quota de l'utilisateur. A régler selon votre nombre de participants",
 	"SERIE_NAME_MODE": "Affichage des noms des séries",
 	"SERIE_NAME_MODE_ORIGINAL": "Nom original / interne",
-	"SERIE_NAME_MODE_ADMIN": "Selon la langue de Karaoke Mugen",
+	"SERIE_NAME_MODE_ADMIN": "Selon la langue de votre ordinateur",
 	"SERIE_NAME_MODE_USER": "Selon la langue de l'utilisateur",
 	"SERIE_NAME_MODE_NO_PREF": "Pas de préférence",
 	"SERIE_NAME_MODE_USER_FORCE": "Forcer la langue des noms de séries",
@@ -425,6 +450,8 @@
 	"VIEW_FAVORITES": "Favoris",
 	"VIEW_RECENT": "Nouveau",
 	"VIEW_POPULAR": "Populaire",
+	"VIEW_LIKES": "Likes",
+	"VIEW_LIKES_TOOLTIP": "Les chansons avec le plus de likes sont affichées en premier, cela n'impacte pas l'ordonnancement de la playlist.",
 	"KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ? Vérifiez sur vos dépôts en ligne configurés ainsi que sur le site de suggestions si votre souhait n'est pas déjà exaucé :",
 	"BASE_UPDATE": "Nouvelles de la base",
 	"APP_UPDATE": "Nouvelle version de l'application",
@@ -495,19 +522,28 @@
 			"NAME": "Nom",
 			"CURRENT": "Courante",
 			"CURRENT_DESC": "La liste courante est celle lue par le lecteur vidéo",
+			"ACTIVE": "Active",
+			"ACTIVE_DESC": "La liste de critères active est celle utilisée par Karaoke Mugen",
 			"PUBLIC": "Publique",
 			"PUBLIC_DESC": "La liste publique est celle recueillant les suggestions du public",
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible par le public",
 			"EDIT_PLAYLIST": "Editer {{playlist}}",
-			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture"
+			"CREATE_PLAYLIST": "Créer une nouvelle liste de lecture",
+			"CREATE": "Créer",
+			"EDIT": "Éditer",
+			"CANNOT_CURRENT_PLAYLIST": "Vous ne pouvez pas avoir aucune playlist courante, éditez celle que vous voulez définir comme la nouvelle playlist courante.",
+			"CANNOT_CURRENT_BLC": "Vous ne pouvez pas avoir aucune liste de critères active, éditez celle que vous voulez définir comme la nouvelle liste active (ou videz-la si vous souhaitez n'avoir aucun critère).",
+			"CANNOT_PUBLIC": "Vous ne pouvez pas avoir aucune playlist publique, éditez celle que vous voulez définir comme la nouvelle playlist publique."
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Rogner votre avatar",
 			"HELP": "Redimensionnez le carré pour obtenir la parfaite photo de profil."
 		},
 		"TUTORIAL": {
+			"TITLE": "Tutoriel",
 			"NEXT": "Suivant",
+			"BACK": "Précédent",
 			"END": "Terminer",
 			"WELCOME": "Bienvenue dans Karaoke Mugen ! Voici ce que vous devez savoir.",
 			"PLAYLIST": "L'écran affiche 2 playlists. Vous pouvez ajouter une chanson de la playlist de gauche vers la playlist de droite et vice-versa juste en appuyant sur le ",
@@ -560,6 +596,7 @@
 		},
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Supprimer {{playlist}} pour toujours ?",
+			"IMPOSSIBLE": "Vous ne pouvez pas supprimer la seule playlist.",
 			"DELETE_CURRENT_BLC": "Cette liste est définie comme courante, changez la liste de critère courante pour une autre pour supprimer celle-ci.",
 			"DELETE_PUBLIC": "Cette liste est définie comme étant publique, pour la supprimer, définissez une autre liste publique.",
 			"DELETE_CURRENT": "Cette liste est définie comme étant courante, pour la supprimer, définissez une autre liste courante.",
@@ -1368,5 +1405,9 @@
 		"T2": "Mais du coup comment je peux m'opposer à ça ?",
 		"P5": "Vous pouvez ! Les comptes en ligne n'ont rien d'obligatoire, tout comme les autres fonctions en ligne. Pour ce qui est des statistiques et de Sentry, vous pouvez activer et désactiver ces deux mécanismes dans le panneau système. Vous restez maître de vos données à tout moment.",
 		"P6": "Si vous avez des questions ou que vous voulez qu'on supprime des données pour vous, vous pouvez nous envoyer un message à mugen@karaokes.moe."
+	},
+	"ONLINE": {
+		"TITLE": "Karaoke Mugen en ligne",
+		"P1": "Votre application Karaoke Mugen s'est mise à jour en 5.0, des nouvelles fonctionnalités sont disponibles et certaines nécessitent (peut-être) votre attention. Souhaitez-vous activer l'accès à distance de votre instance ? En l'activant, un code de session vous sera attribué automatiquement par le serveur Karaoke Mugen. Celui-ci expirera au bout de 10 jours d'inactivité."
 	}
 }

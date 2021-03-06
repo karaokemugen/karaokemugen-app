@@ -70,16 +70,18 @@ class SessionList extends Component<unknown, SessionListState> {
 						}
 						<Col style={{ paddingTop: '5px' }}>
 							<label style={{ paddingRight: '15px' }}>{i18next.t('MENU.UNUSED_FILES')}</label>
-							<Radio checked={this.state.type === 'tags'}
-								onChange={async () => {
-									await this.setState({ type: 'tags' });
-									this.getTags();
-								}}>{i18next.t('UNUSED_FILES.TAGS')}</Radio>
-							<Radio checked={this.state.type === 'medias'}
-								onChange={async () => {
-									await this.setState({ type: 'medias' });
-									this.getMedias();
-								}}>{i18next.t('UNUSED_FILES.MEDIAS')}</Radio>
+							<Radio
+								checked={this.state.type === 'tags'}
+								onChange={async () => this.setState({ type: 'tags' }, this.getTags)}
+							>
+								{i18next.t('UNUSED_FILES.TAGS')}
+							</Radio>
+							<Radio
+								checked={this.state.type === 'medias'}
+								onChange={async () => this.setState({ type: 'medias' }, this.getMedias)}
+							>
+								{i18next.t('UNUSED_FILES.MEDIAS')}
+							</Radio>
 						</Col>
 					</Row>
 					<Table

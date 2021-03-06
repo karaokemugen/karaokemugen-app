@@ -28,7 +28,7 @@ export default function playerController(router: SocketIOApp) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'guest', 'limited');
 		if (req.token.username.toLowerCase() === getState().currentRequester) {
 			await playPlayer(true);
 			return;

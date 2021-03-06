@@ -1,9 +1,9 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
+import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import { GlobalContextInterface } from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
@@ -11,6 +11,7 @@ import SelectWithIcon from '../generic/SelectWithIcon';
 
 interface IProps {
 	idPlaylist?: number;
+	idPlaylistTo?: number;
 	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void
 	playlistInfo?: DBPL;
 	bLSet?: BLCSet;
@@ -46,7 +47,9 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 		} else {
 			this.props.changeIdPlaylist(this.state.idPlaylistChosen ?
 				this.state.idPlaylistChosen :
-				this.props.context.globalState.settings.data.state.publicPlaylistID);
+				(this.props.idPlaylistTo === this.props.context.globalState.settings.data.state.publicPlaylistID ?
+					-1 :
+					this.props.context.globalState.settings.data.state.publicPlaylistID));
 			commandBackend('deletePlaylist', {
 				pl_id: this.props.idPlaylist
 			});
@@ -55,8 +58,7 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 	};
 
 	closeModal = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.props.context.globalDispatch);
 	}
 
 	render() {
@@ -84,31 +86,27 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 										(this.props.playlistInfo as DBPL).name
 								})}
 							</h4>
-							<button className="closeModal"
-								onClick={this.closeModal}>
-								<i className="fas fa-times"></i>
-							</button>
 						</ul>
 						{message ?
 							<div className="modal-body">
 								<div className="modal-message text">
 									<p>{i18next.t(message)}</p>
+									<SelectWithIcon
+										list={this.props.idPlaylist === -4 ?
+											this.props.bLSetList :
+											this.props.playlistList}
+										value={this.state.idPlaylistChosen?.toString()}
+										onChange={(value: any) => this.setState({ idPlaylistChosen: Number(value) })} />
 								</div>
-								<SelectWithIcon
-									list={this.props.idPlaylist === -4 ?
-										this.props.bLSetList :
-										this.props.playlistList}
-									value={this.state.idPlaylistChosen?.toString()}
-									onChange={(value: any) => this.setState({ idPlaylistChosen: Number(value) })} />
 							</div> : null
 						}
 						<div className="modal-footer">
 							<button type="button" className="btn btn-action btn-primary other" onClick={this.closeModal}>
-								<i className="fas fa-times"></i>
+								<i className="fas fa-times" /> {i18next.t('CANCEL')}
 							</button>
 							<button type="button" className="btn btn-action btn-default ok"
 								onClick={this.deletePlaylist}>
-								<i className="fas fa-check"></i>
+								<i className="fas fa-check" /> {i18next.t('YES')}
 							</button>
 						</div>
 					</div >

@@ -112,7 +112,7 @@ export function testKara(kara: any, details: TestDetails) {
 			if (tid) expect(tid).to.be.a('string').and.match(new RegExp(uuidPlusTypeRegexp));
 		}
 	}
-	if (details.plcDetail) expect(kara.time_before_play).to.satisfy((s:any) => typeof s === 'number' || s === null);
+	if (details.plcDetail) expect(kara.time_before_play).to.be.a('number');
 	expect(kara.title).to.be.a('string');
 	if (details.plc) expect(kara.upvotes).to.be.a('number').and.at.least(0);
 	if (details.plc) expect(kara.username).to.be.a('string');

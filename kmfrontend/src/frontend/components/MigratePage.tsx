@@ -8,12 +8,14 @@ import { useHistory } from 'react-router';
 import { MigrationsFrontend } from '../../../../src/types/database/migrationsFrontend';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { commandBackend } from '../../utils/socket';
+import KMOnline from './migrations/KMOnline';
 import PrivacyPolicy from './migrations/PrivacyPolicy';
 
 export default function MigratePage() {
 
 	const components = {
-		privacyPolicy: PrivacyPolicy
+		privacyPolicy: PrivacyPolicy,
+		KMOnline
 	};
 
 	const history = useHistory();

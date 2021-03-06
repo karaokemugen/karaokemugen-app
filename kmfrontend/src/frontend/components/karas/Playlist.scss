@@ -38,28 +38,6 @@
 	overflow: hidden;
 }
 
-// Hover events only for PCs
-body:not(.touch) {
-	.playlist-main .list-group-item:hover {
-		background-color: lighten($mugen-playlist-odd, 5);
-		&.dejavu {
-			background-color: lighten($mugen-playlist-dejavu-odd, 5);
-			&.list-group-item-even {
-				background-color: lighten($mugen-playlist-dejavu-even, 5);
-			}
-		}
-		&.currentlyplaying {
-			background-color: lighten($mugen-playlist-currently-playing, 5);
-		}
-		&.list-group-item-even.currentlyplaying {
-			background-color: lighten($mugen-playlist-currently-playing, 5);
-		}
-		&.list-group-item-even {
-			background-color: lighten($mugen-playlist-even, 5);
-		}
-	}
-}
-
 .playlist-main .list-group-item.karaSuggestion {
 	background-color: #5d83778c;
 	font-size: 120%;

@@ -158,8 +158,7 @@ describe('Playlists', () => {
 
 	it('Delete karaokes from playlist', async () => {
 		const data = {
-			plc_ids: [PLCID],
-			pl_id: newPlaylistID
+			plc_ids: [PLCID]			
 		};
 		await commandBackend(token, 'deleteKaraFromPlaylist', data);
 	});

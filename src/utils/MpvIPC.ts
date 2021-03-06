@@ -87,11 +87,7 @@ class Mpv extends EventEmitter {
 				if (line.length > 0) {
 					const payload = JSON.parse(line);
 					if (payload?.event) {
-						if (payload.event === 'shutdown') {
-							this.destroyConnection();
-						} else {
-							this.emit(payload.event, payload);
-						}
+						this.emit(payload.event, payload);
 					} else {
 						this.emit('output', payload);
 					}
@@ -99,36 +95,40 @@ class Mpv extends EventEmitter {
 			});
 		});
 		// Disconnect hook
-		this.socket.on('close', (err: boolean) => {
-			if (err) {
-				this.emit('crashed');
-			} else {
-				this.destroyConnection();
-				this.emit('shutdown');
-			}
+		this.socket.on('end', (err: boolean) => {
+			this.destroyConnection();
+			this.emit('close', err);
 		});
+		this.socket.unref();
 	}
 
 	private ishukan(command: MpvCommand) {
 		return new Promise((resolve, reject) => {
-			// LET'S ishukan COMMUNICATION :) (boh si c'est marrant arrête)
-			const req_id = Math.round(Math.random() * 1000);
-			const command_with_id = {...command, request_id: req_id, async: true};
-			const dataHandler = (data: string) => {
-				data.split('\n').forEach((payload: string) => {
-					if (payload.length > 0) {
-						const res = JSON.parse(payload);
-						if (req_id === res.request_id) {
-							this.socket.removeListener('data', dataHandler);
-							resolve(res);
-							this.socket.removeListener('error', reject);
+			try {
+				if (!this.socket.writable) reject(new Error('The socket is not writeable'));
+				// LET'S ishukan COMMUNICATION :) (boh si c'est marrant arrête)
+				const req_id = Math.round(Math.random() * 1000);
+				const command_with_id = {...command, request_id: req_id, async: true};
+				const dataHandler = (data: string) => {
+					data.split('\n').forEach((payload: string) => {
+						if (payload.length > 0) {
+							const res = JSON.parse(payload);
+							if (req_id === res.request_id) {
+								this.socket.removeListener('data', dataHandler);
+								resolve(res);
+								this.socket.removeListener('error', reject);
+							}
 						}
-					}
+					});
+				};
+				this.socket.on('data', dataHandler);
+				this.socket.once('error', reject);
+				this.socket.write(`${JSON.stringify(command_with_id)}\n`, 'utf8', (err) => {
+					if (err) reject(err);
 				});
-			};
-			this.socket.on('data', dataHandler);
-			this.socket.once('error', reject);
-			this.socket.write(`${JSON.stringify(command_with_id)}\n`);
+			} catch (err) {
+				reject(err);
+			}
 		});
 	}
 

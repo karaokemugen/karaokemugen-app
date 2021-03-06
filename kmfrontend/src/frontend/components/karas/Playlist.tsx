@@ -160,7 +160,7 @@ class Playlist extends Component<IProps, IState> {
 		}
 	}
 
-	publicPlaylistEmptied = async () => {
+	publicPlaylistEmptied = () => {
 		if (this.state.idPlaylist === -1) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
@@ -170,8 +170,7 @@ class Playlist extends Component<IProps, IState> {
 					kara.flag_upvoted = false;
 				}
 			}
-			await this.setState({ data });
-			this.playlistForceRefresh(true);
+			this.setState({ data }, () => this.playlistForceRefresh(true));
 		}
 	}
 
@@ -204,14 +203,13 @@ class Playlist extends Component<IProps, IState> {
 					}
 				}
 			}
-			await this.setState({ data });
-			this.playlistForceRefresh(true);
+			this.setState({ data }, () => this.playlistForceRefresh(true));
 		}
 	}
 
 	initCall = async () => {
 		await this.getIdPlaylist();
-		await this.setState({ goToPlaying: this.state.idPlaylist > 0 });
+		this.setState({ goToPlaying: this.state.idPlaylist > 0 });
 		if (this.props.scope === 'public' || this.props.playlistList
 			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
 			if (this.props.scope === 'admin') await this.loadBLSet();
@@ -220,10 +218,12 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	playlistContentsUpdatedFromClient = (idPlaylist: number) => {
-		const data = this.state.data as KaraList;
-		if (this.state.idPlaylist > 0 && data) data.infos.from = 0;
-		this.setState({ data: data, scrollToIndex: 0 });
-		if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist(this.state.searchType);
+		if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) {
+			const data = this.state.data as KaraList;
+			if (this.state.idPlaylist > 0 && data) data.infos.from = 0;
+			this.setState({ data: data, scrollToIndex: 0 });
+			this.getPlaylist(this.state.searchType);
+		}
 	}
 
 	refreshUiOnResize = () => {
@@ -244,7 +244,7 @@ class Playlist extends Component<IProps, IState> {
 		if (!this.state.getPlaylistInProgress) {
 			const data = this.state.data as KaraList;
 			data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
-			await this.setState({ data: data });
+			this.setState({ data: data });
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(this.getPlaylist, 1000);
 		}
@@ -281,7 +281,6 @@ class Playlist extends Component<IProps, IState> {
 						sponsor={typeof this.state.songsBeforeSponsor === 'number' && (index === this.state.playing +
 							this.state.songsBeforeSponsor)}
 						style={style}
-						context={this.context}
 						toggleKaraDetail={(kara, idPlaylist) => {
 							this.props.toggleKaraDetail(kara, idPlaylist, index);
 						}}
@@ -338,15 +337,13 @@ class Playlist extends Component<IProps, IState> {
 					Number(plVal2Cookie) : this.context.globalState.settings.data.state.currentPlaylistID;
 			}
 		}
-		await this.setState({ idPlaylist: value });
-		this.props.majIdsPlaylist(this.props.side, value);
+		this.setState({ idPlaylist: value }, () => this.props.majIdsPlaylist(this.props.side, value));
 	};
 
 	loadBLSet = async (idBLSet?: number) => {
 		const bLSetList = await commandBackend('getBLCSets');
 		const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
-		await this.setState({ bLSetList: bLSetList, bLSet: bLSet });
-		setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id);
+		this.setState({ bLSetList: bLSetList, bLSet: bLSet }, () => setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id));
 	}
 
 	changeIdPlaylist = async (idPlaylist: number, idBLSet?: number) => {
@@ -358,12 +355,13 @@ class Playlist extends Component<IProps, IState> {
 		}
 		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
 		const oldIdPlaylist = this.state.idPlaylist;
-		await this.setState({ idPlaylist: Number(idPlaylist), data: undefined, playlistInfo: undefined, goToPlaying: idPlaylist > 0 });
-		this.getPlaylist();
-		this.props.majIdsPlaylist(this.props.side, idPlaylist);
-		if (idPlaylist === this.props.idPlaylistTo) {
-			eventEmitter.emitChange('changeIdPlaylist', { side: this.props.side === 1 ? 2 : 1, playlist: oldIdPlaylist });
-		}
+		this.setState({ idPlaylist: Number(idPlaylist), data: undefined, playlistInfo: undefined, goToPlaying: idPlaylist > 0 }, () => {
+			this.getPlaylist();
+			this.props.majIdsPlaylist(this.props.side, idPlaylist);
+			if (idPlaylist === this.props.idPlaylistTo) {
+				eventEmitter.emitChange('changeIdPlaylist', { side: this.props.side === 1 ? 2 : 1, playlist: oldIdPlaylist });
+			}
+		});
 	};
 
 	changeIdPlaylistSide2 = (idPlaylist: number) => {
@@ -412,7 +410,7 @@ class Playlist extends Component<IProps, IState> {
 			this.context.globalState.frontendContext.filterValue2 || '';
 	}
 
-	getPlaylist = async (searchType?: 'search' | 'recent' | 'requested') => {
+	getPlaylist = async (searchType?: 'search' | 'recent' | 'requested', orderByLikes = false) => {
 		const criterias: any = {
 			'year': 'y',
 			'tag': 't'
@@ -427,24 +425,29 @@ class Playlist extends Component<IProps, IState> {
 		} else if (stateData?.infos?.from === 0) {
 			data.searchType = undefined;
 		}
-		await this.setState(data);
+		this.setState(data);
 		const url: string = this.getPlaylistUrl();
 		const param: any = {};
 		if (this.state.idPlaylist >= 0) {
 			this.getPlaylistInfo();
 			param.pl_id = this.state.idPlaylist;
+			if (orderByLikes) {
+				param.orderByLikes = true;
+			}
 		}
 		if (url === 'getBLCSet') param.set_id = this.state.bLSet?.blc_set_id;
 
 		param.filter = this.getFilterValue(this.props.side);
 		param.from = (stateData?.infos?.from > 0 ? stateData.infos.from : 0);
 		param.size = chunksize;
-		if ((this.state.searchType && this.state.searchType !== 'search') || (this.state.searchCriteria && this.state.searchValue)) {
+		if (this.state.searchType && this.state.searchType !== 'search') {
+			param.order = this.state.searchType;
+		}
+		if (this.state.searchCriteria && this.state.searchValue) {
 			const searchCriteria = this.state.searchCriteria ?
 				criterias[this.state.searchCriteria]
 				: '';
-			param.searchType = this.state.searchType;
-			if (searchCriteria && this.state.searchValue) param.searchValue = searchCriteria + ':' + this.state.searchValue;
+			if (searchCriteria && this.state.searchValue) param.q = searchCriteria + ':' + this.state.searchValue;
 		}
 		const karas: KaraList = await commandBackend(url, param);
 		if (this.state.goToPlaying && this.state.idPlaylist > 0) {
@@ -477,8 +480,7 @@ class Playlist extends Component<IProps, IState> {
 		} else {
 			data = karas;
 		}
-		this.setState({ data: data, getPlaylistInProgress: false });
-		this.playlistForceRefresh(true);
+		this.setState({ data: data, getPlaylistInProgress: false }, () => this.playlistForceRefresh(true));
 	};
 
 	playingUpdate = (data: { playlist_id: number, plc_id: number }) => {
@@ -506,12 +508,9 @@ class Playlist extends Component<IProps, IState> {
 		const stateData = this.state.data as KaraList;
 		if (this.state.idPlaylist && stateData && stateData.infos && stateData.infos.count) {
 			plInfos =
-				this.state.idPlaylist !== -4 ? stateData.infos.from + '-' + stateData.infos.to : '';
-			plInfos +=
 				(this.state.idPlaylist !== -4
-					? ' / ' +
-					stateData.infos.count +
-					(!is_touch_device() ? ' karas' : '')
+					? stateData.infos.count +
+					' karas'
 					: '') +
 				(this.state.idPlaylist > -1 && this.state.playlistInfo
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS_DURATION')} ` +
@@ -585,15 +584,14 @@ class Playlist extends Component<IProps, IState> {
 			'year': 'y',
 			'tag': 't'
 		};
-		return (this.state.searchType !== 'search' || (this.state.searchCriteria && this.state.searchValue)) ? {
-			searchType: this.state.searchType,
-			searchValue: ((this.state.searchCriteria && criterias[this.state.searchCriteria] && this.state.searchValue) ?
+		return (this.state.searchCriteria && this.state.searchValue) ? {
+			q: ((this.state.searchCriteria && criterias[this.state.searchCriteria] && this.state.searchValue) ?
 				`${criterias[this.state.searchCriteria]}:${this.state.searchValue}` : undefined)
 		} : {};
 	}
 
 	addRandomKaras = () => {
-		callModal('prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', async (nbOfRandoms: number) => {
+		callModal(this.context.globalDispatch, 'prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', async (nbOfRandoms: number) => {
 			const randomKaras = await commandBackend(this.getPlaylistUrl(), {
 				filter: this.getFilterValue(this.props.side),
 				pl_id: this.state.idPlaylist,
@@ -602,7 +600,7 @@ class Playlist extends Component<IProps, IState> {
 			});
 			if (randomKaras.content.length > 0) {
 				const textContent = randomKaras.content.map((e: KaraElement) => <React.Fragment key={e.kid}>{buildKaraTitle(this.context.globalState.settings.data, e, true)} <br /><br /></React.Fragment>);
-				callModal('confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
+				callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_CONGRATS'), <React.Fragment>{i18next.t('CL_ABOUT_TO_ADD')}<br /><br />{textContent}</React.Fragment>, () => {
 					const karaList = randomKaras.content.map((a: KaraElement) => {
 						return a.kid;
 					});
@@ -712,8 +710,7 @@ class Playlist extends Component<IProps, IState> {
 			const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
 			url = 'deleteKaraFromPlaylist';
 			data = {
-				plc_ids: idsKaraPlaylist,
-				pl_id: this.state.idPlaylist
+				plc_ids: idsKaraPlaylist
 			};
 		} else if (this.state.idPlaylist === -3) {
 			url = 'deleteKaraFromWhitelist';
@@ -739,17 +736,48 @@ class Playlist extends Component<IProps, IState> {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		await commandBackend('deleteFavorites', { kid: listKara.map(a => a.kid) });
+		await commandBackend('deleteFavorites', {
+			kid: listKara.map(a => a.kid)
+		});
+	};
+
+	acceptCheckedKara = async () => {
+		const stateData = this.state.data as KaraList;
+		const listKara = stateData.content.filter(a => a.checked);
+		if (listKara.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
+		const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+		await commandBackend('editPLC', {
+			plc_ids: idsKaraPlaylist,
+			flag_accepted: true
+		});
+	};
+
+
+	refuseCheckedKara = async () => {
+		const stateData = this.state.data as KaraList;
+		const listKara = stateData.content.filter(a => a.checked);
+		if (listKara.length === 0) {
+			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
+			return;
+		}
+		const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+		await commandBackend('editPLC', {
+			plc_ids: idsKaraPlaylist,
+			flag_refused: true
+		});
 	};
 
 	onChangeTags = (type: number | string, value: string) => {
 		const searchCriteria = type === 0 ? 'year' : 'tag';
-		const stringValue = searchCriteria === 'tag' ? `${value}~${type}` : value;
+		const stringValue = (value && searchCriteria === 'tag') ? `${value}~${type}` : value;
 		this.setState({ searchCriteria: searchCriteria, searchValue: stringValue }, () => this.getPlaylist('search'));
 	};
 
 	deleteCriteria = (kara: DBBlacklist) => {
-		callModal('confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLACKLIST.BLCTYPE_${kara.blc_type}`) }),
+		callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLACKLIST.BLCTYPE_${kara.blc_type}`) }),
 			<div style={{ maxHeight: '200px' }}>
 				{((this.state.data as KaraList).content as unknown as DBBlacklist[])
 					.filter((e: DBBlacklist) => e.blc_id === kara.blc_id).map((criteria: DBBlacklist) => {
@@ -850,6 +878,8 @@ class Playlist extends Component<IProps, IState> {
 					transferCheckedKaras={this.transferCheckedKaras}
 					deleteCheckedKaras={this.deleteCheckedKaras}
 					deleteCheckedFavorites={this.deleteCheckedFavorites}
+					refuseCheckedKara={this.refuseCheckedKara}
+					acceptCheckedKara={this.acceptCheckedKara}
 					tags={this.props.tags}
 					onChangeTags={this.onChangeTags}
 					getPlaylist={this.getPlaylist}

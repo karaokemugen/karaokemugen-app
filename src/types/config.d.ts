@@ -116,7 +116,6 @@ export interface Config {
 		NoBar?: boolean,
 		mpvVideoOutput?: string,
 		PIP: {
-			Enabled?: boolean,
 			Size?: number,
 			PositionX?: 'Left' | 'Right' | 'Center',
 			PositionY?: 'Top' | 'Bottom' | 'Center'

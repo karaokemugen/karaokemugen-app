@@ -1,3 +1,5 @@
+import './KaraMenuModal.scss';
+
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
@@ -9,14 +11,39 @@ import { KaraElement } from '../../types/kara';
 interface IProps {
 	checkedKaras: KaraElement[]
 	idPlaylist: number;
+	idPlaylistTo: number;
 	publicOuCurrent?: boolean | undefined;
 	topKaraMenu: number;
 	leftKaraMenu: number;
 	closeKaraMenu: () => void;
 	context: GlobalContextInterface;
+	transferKara: (event: any, pos?: number) => void;
 }
 
-class CheckedKaraMenuModal extends Component<IProps, unknown> {
+interface IState {
+	effect_favorite: boolean,
+	effect_blacklist: boolean,
+	effect_whitelist: boolean,
+	effect_free: boolean,
+	effect_visibility: boolean
+}
+
+class CheckedKaraMenuModal extends Component<IProps, IState> {
+
+	state = {
+		effect_favorite: false,
+		effect_blacklist: false,
+		effect_whitelist: false,
+		effect_free: false,
+		effect_visibility: false
+	};
+
+	onRightClickTransfer = (e: any) => {
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.transferKara(e, -1);
+		this.props.closeKaraMenu();
+	};
 
 	freeKara = async () => {
 		if (this.props.checkedKaras.length === 0) {
@@ -27,7 +54,8 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
 			flag_free: true
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_free: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	};
 
 
@@ -36,7 +64,8 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
 			flag_visible: true
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_visibility: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	};
 
 	changeVisibilityKaraOff = () => {
@@ -44,15 +73,17 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
 			flag_visible: false
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_visibility: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	};
 
 	makeFavorite = () => {
 		commandBackend('addFavorites', {
 			kids: this.props.checkedKaras.map(a => a.kid)
 		});
-		this.props.closeKaraMenu();
-	};
+		this.setState({ effect_favorite: true });
+		setTimeout(this.props.closeKaraMenu, 350);
+	}
 
 	addToBlacklist = () => {
 		commandBackend('createBLC', {
@@ -61,20 +92,27 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 			}),
 			set_id: this.props.context.globalState.frontendContext.currentBlSet
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_blacklist: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	}
 
 	addToWhitelist = () => {
 		commandBackend('addKaraToWhitelist', {
 			kids: this.props.checkedKaras.map(a => a.kid)
 		});
-		this.props.closeKaraMenu();
+		this.setState({ effect_whitelist: true });
+		setTimeout(this.props.closeKaraMenu, 350);
 	}
 
 	handleClick = (e: MouseEvent) => {
-		if (!(e.target as Element).closest('#modal')) {
+		if (!(e.target as Element).closest('#modal') && !(e.target as Element).closest('.karaLineButton')) {
+			e.preventDefault();
 			this.props.closeKaraMenu();
 		}
+	}
+
+	componentDidMount() {
+		document.getElementById('root').addEventListener('click', this.handleClick);
 	}
 
 	componentWillUnmount() {
@@ -92,59 +130,101 @@ class CheckedKaraMenuModal extends Component<IProps, unknown> {
 					top: window.innerHeight < (this.props.topKaraMenu + 250) ? undefined : this.props.topKaraMenu,
 					left: window.innerWidth < (this.props.leftKaraMenu + 250) ? window.innerWidth - 250 : this.props.leftKaraMenu
 				}}>
-				{this.props.idPlaylist !== -5 ?
+				{this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
 					<li>
+						<a href="#" onContextMenu={this.onRightClickTransfer} onClick={(event) => {
+							this.props.transferKara(event);
+							this.props.closeKaraMenu();
+						}}>
+							<i className="fas fa-fw fa-exchange-alt" />
+							&nbsp;
+							{i18next.t('TOOLTIP_TRANSFER_SELECT_KARA')}
+						</a>
+					</li> : null
+				}
+				{this.props.idPlaylist !== -5 ?
+					<li className="animate-button-container">
 						<a href="#" onClick={this.makeFavorite}>
 							<i className="fas fa-star" />
 							&nbsp;
 							{i18next.t('TOOLTIP_FAV')}
 						</a>
+						<a href="#" className={`animate-button-success${this.state.effect_favorite ? ' activate':''}`}>
+							<i className="fas fa-fw fa-check-square" />
+							&nbsp;²
+							{i18next.t('KARA_MENU.FAVORITES_ADDED')}
+						</a>
 					</li> : null
 				}
 				{this.props.publicOuCurrent ?
-					<li>
+					<li className="animate-button-container">
 						<a href="#" onClick={this.freeKara} title={i18next.t('KARA_MENU.FREE')}>
 							<i className="fas fa-gift" />
 							&nbsp;
 							{i18next.t('KARA_MENU.FREE_SHORT')}
 						</a>
+						<a href="#" className={`animate-button-success${this.state.effect_free ? ' activate':''}`}>
+							<i className="fas fa-fw fa-check-square" />
+							&nbsp;
+							{i18next.t('KARA_MENU.FREED')}
+						</a>
 					</li> : null
 				}
 				{this.props.idPlaylist >= 0 ?
-					<li>
+					<li className="animate-button-container">
 						<a href="#" onClick={this.changeVisibilityKaraOn}
 							title={i18next.t('KARA_MENU.VISIBLE_ON')}>
 							<i className="fas fa-eye" />
 							&nbsp;
 							{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
 						</a>
+						<a href="#" className={`animate-button-success${this.state.effect_visibility ? ' activate':''}`}>
+							<i className="fas fa-fw fa-check-square" />
+							&nbsp;
+							{i18next.t('KARA_MENU.SHOWN')}
+						</a>
 					</li> : null
 				}
 				{this.props.idPlaylist >= 0 ?
-					<li>
+					<li className="animate-button-container">
 						<a href="#" onClick={this.changeVisibilityKaraOff}
 							title={i18next.t('KARA_MENU.VISIBLE_OFF')}>
 							<i className="fas fa-eye-slash" />
 							&nbsp;
 							{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
 						</a>
+						<a href="#" className={`animate-button-success${this.state.effect_visibility ? ' activate':''}`}>
+							<i className="fas fa-fw fa-check-square" />
+							&nbsp;
+							{i18next.t('KARA_MENU.HIDDEN')}
+						</a>
 					</li> : null
 				}
 				{this.props.idPlaylist !== -2 && this.props.idPlaylist !== -4 ?
-					<li>
+					<li className="animate-button-container">
 						<a href="#" onClick={this.addToBlacklist}>
 							<i className="fas fa-ban" />
 							&nbsp;
 							{i18next.t('KARA_MENU.ADD_BLACKLIST')}
 						</a>
+						<a href="#" className={`animate-button-success${this.state.effect_blacklist ? ' activate':''}`}>
+							<i className="fas fa-fw fa-check-square" />
+							&nbsp;
+							{i18next.t('KARA_MENU.BLACKLISTED')}
+						</a>
 					</li> : null
 				}
 				{this.props.idPlaylist !== -3 ?
-					<li>
+					<li className="animate-button-container">
 						<a href="#" onClick={this.addToWhitelist}>
 							<i className="fas fa-check-circle" />
 							&nbsp;
 							{i18next.t('KARA_MENU.ADD_WHITELIST')}
+						</a>
+						<a href="#" className={`animate-button-success${this.state.effect_whitelist ? ' activate':''}`}>
+							<i className="fas fa-fw fa-check-square" />
+							&nbsp;
+							{i18next.t('KARA_MENU.WHITELISTED')}
 						</a>
 					</li> : null
 				}

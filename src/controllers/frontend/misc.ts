@@ -203,7 +203,7 @@ export default function miscController(router: SocketIOApp) {
 	});
 
 	router.route('refreshUserQuotas', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'user', 'limited');
+		await runChecklist(socket, req, 'guest', 'limited');
 		updateSongsLeft(req.token.username);
 	});
 

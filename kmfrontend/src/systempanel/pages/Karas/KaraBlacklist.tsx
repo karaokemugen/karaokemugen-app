@@ -35,13 +35,12 @@ class KaraBlacklist extends Component<unknown, KaraBlacklistState> {
 	}
 
 	async componentDidMount() {
-		const res = await commandBackend('getRemoteTags');
-		await this.setState({ filter_options_full: res.content });
-		await this.refresh();
+		const res = await commandBackend('getRemoteTags', undefined, false, 300000);
+		this.setState({ filter_options_full: res.content }, this.refresh);
 	}
 
 	refresh = async () => {
-		const data = await commandBackend('getDownloadBLCs');
+		const data = await commandBackend('getDownloadBLCs', undefined, false, 300000);
 		this.setState({ criterias: data });
 	}
 

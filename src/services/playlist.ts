@@ -33,9 +33,11 @@ import {
 	reorderPlaylist as reorderPL,
 	replacePlaylist,
 	setPlaying as setPlayingFlag,
+	setPLCAccepted,
 	setPLCFree,
 	setPLCFreeBeforePos,
 	setPLCInvisible,
+	setPLCRefused,
 	setPLCVisible,
 	setPos,
 	shiftPosInPlaylist,
@@ -248,6 +250,7 @@ export async function editPlaylist(playlist_id: number, playlist: DBPL) {
 			emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
 			setState({currentPlaylistID: playlist_id, introPlayed: false, introSponsorPlayed: false});
 			emitWS('currentPlaylistUpdated', playlist_id);
+			resetAllAcceptedPLCs();
 			logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
 		}
 		if (playlist.flag_public) {
@@ -626,6 +629,8 @@ export async function copyKaraToPlaylist(plc_ids: number[], playlist_id: number,
 			plcList[index].username = plcData.username;
 			plcList[index].playlist_id = playlist_id;
 			plcList[index].flag_visible = plcData.flag_visible;
+			plcList[index].flag_refused = plcData.flag_refused;
+			plcList[index].flag_accepted = plcData.flag_accepted;
 		}
 		// Remove karas already in playlist
 		plcList = plcList.filter(plc => !playlist.map(e => e.kid).includes(plc.kid));
@@ -678,62 +683,78 @@ export async function copyKaraToPlaylist(plc_ids: number[], playlist_id: number,
 }
 
 /** Remove song from a playlist */
-export async function deleteKaraFromPlaylist(plc_ids: number[], playlist_id:number, token: Token) {
+export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 	profile('deleteKara');
-	const pl = await getPlaylistInfo(playlist_id);
-	if (!pl) throw {code: 404, msg: `Playlist ${playlist_id} unknown`};
 	// If we get a single song, it's a user deleting it (most probably)
-	const kids = [];
-	const usersNeedingUpdate: Set<string> = new Set();
-	for (const i in plc_ids) {
-		const plcData = await getPLCInfoMini(plc_ids[i]);
-		kids.push(plcData.kid);
-		if (!plcData) throw {code: 404, msg: 'At least one playlist content is unknown'};
-		if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {code: 403, msg: 'You cannot delete a song you did not add'};
-		if (plcData.flag_playing && getState().player.playerStatus === 'play') throw {code: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
-		usersNeedingUpdate.add(plcData.username);
-	}
-	logger.debug(`Deleting karaokes from playlist ${pl.name}`, {service: 'Playlist'});
 	try {
-		// Removing karaoke here.
-		await removeKaraFromPlaylist(plc_ids, playlist_id);
-		await Promise.all([
-			updatePlaylistDuration(playlist_id),
-			updatePlaylistKaraCount(playlist_id),
-			reorderPlaylist(playlist_id)
-		]);
-		updatePlaylistLastEditTime(playlist_id);
-		const pubPLID = getState().publicPlaylistID;
-		if (+playlist_id === pubPLID) {
-			emitWS('KIDUpdated', kids.map(kid => {
-				return {
-					kid: kid,
-					plc_id: []
-				};
-			}));
+		const usersNeedingUpdate: Set<string> = new Set();
+		const playlistsNeedingUpdate: Set<number> = new Set();
+		const plcsNeedingDelete: any[] = [];
+		for (const plc_id of plc_ids) {
+			if (typeof plc_id !== 'number') throw {code: 400, msg: 'At least one PLC ID is invalid'};
+			const plcData = await getPLCInfoMini(plc_id);
+			if (!plcData) throw {code: 404, msg: 'At least one playlist content is unknown'};
+			if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {code: 403, msg: 'You cannot delete a song you did not add'};
+			if (plcData.flag_playing && getState().player.playerStatus === 'play' && plcData.playlist_id === getState().currentPlaylistID) throw {code: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
+			usersNeedingUpdate.add(plcData.username);
+			playlistsNeedingUpdate.add(plcData.playlist_id);
+			plcsNeedingDelete.push({
+				id: plc_id,
+				playlist_id: plcData.playlist_id,
+				kid: plcData.kid
+			});
 		}
-		emitWS('playlistContentsUpdated', playlist_id);
-		emitWS('playlistInfoUpdated', playlist_id);
-		if (pl.flag_public || pl.flag_current) {
-			for (const username of usersNeedingUpdate.values()) {
-				updateSongsLeft(username);
+		logger.debug(`Deleting songs ${plcsNeedingDelete.map(p => p.id).toString()}`, {service: 'Playlist'});
+		await removeKaraFromPlaylist(plcsNeedingDelete.map((p:any) => p.id));
+		const pubPLID = getState().publicPlaylistID;
+		const KIDsNeedingUpdate: Set<string> = new Set();
+		for (const plc of plcsNeedingDelete) {
+			if (plc.playlist_id === pubPLID) {
+				KIDsNeedingUpdate.add(plc.kid);
 			}
 		}
-		profile('deleteKara');
-		return {
-			pl_id: playlist_id,
-			pl_name: pl.name
-		};
+		emitWS('KIDUpdated', [...KIDsNeedingUpdate].map(kid => {
+			return {
+				kid: kid,
+				plc_id: []
+			};
+		}));
+		for (const playlist_id of playlistsNeedingUpdate.values()) {
+			await Promise.all([
+				updatePlaylistDuration(playlist_id),
+				updatePlaylistKaraCount(playlist_id),
+				reorderPlaylist(playlist_id)
+			]);
+			updatePlaylistLastEditTime(playlist_id);
+
+			emitWS('playlistContentsUpdated', playlist_id);
+			emitWS('playlistInfoUpdated', playlist_id);
+			const pl = await getPlaylistInfo(playlist_id, {role: 'admin', username: 'admin'});
+			if (pl.flag_public || pl.flag_current) {
+				for (const username of usersNeedingUpdate.values()) {
+					updateSongsLeft(username);
+				}
+			}
+		}
 	} catch(err) {
 		throw {
 			code: err?.code,
-			message: err,
-			data: pl.name
+			message: err
 		};
 	} finally {
 		profile('deleteKara');
 	}
+}
 
+export async function resetAllAcceptedPLCs() {
+	const [publicPL, currentPL] = await Promise.all([
+		getPlaylistContentsMini(getState().publicPlaylistID),
+		getPlaylistContentsMini(getState().currentPlaylistID),
+	]);
+	// Filter public playlist with only songs that are accepted and which are missing from current playlist.
+	const PLCsToResetAccepted = publicPL.filter(pubPLC =>
+		pubPLC.flag_accepted && !currentPL.find(curPLC => curPLC.kid === pubPLC.kid && pubPLC.username === curPLC.username));
+	await editPLC(PLCsToResetAccepted.map(plc => plc.playlistcontent_id), {flag_accepted: false});
 }
 
 /** Edit PLC's properties in a playlist */
@@ -751,6 +772,14 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 	// Validations donne
 	const pls: Set<number> = new Set();
 	const songsLeftToUpdate: Set<any> = new Set();
+	const PLCsToCopyToCurrent: number[] = [];
+	const PLCsToDeleteFromCurrent: number[] = [];
+	let currentPlaylist: DBPLC[] = [];
+	if (params.flag_accepted === false || params.flag_refused === true) {
+		//If we are cancelling flag_accepted, we'll need to remove songs from the current playlist
+		// Then we need to fetch the current playlist somehow
+		currentPlaylist = await getCurrentPlaylistContents();
+	}
 	for (const plc of plcData) {
 		pls.add(plc.playlist_id);
 		// Get playlist info in these cases
@@ -762,6 +791,35 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 			await setPlaying(plc.playlistcontent_id, plc.playlist_id);
 			// This only occurs to one playlist anyway
 			if (pl.flag_current) playingUpdated();
+		}
+		if (params.flag_accepted === true) {
+			params.flag_free = true;
+			params.flag_refused = false;
+			PLCsToCopyToCurrent.push(plc.playlistcontent_id);
+			await Promise.all([
+				setPLCAccepted(plc.playlistcontent_id, true),
+				setPLCRefused(plc.playlistcontent_id, false)
+			]);
+		}
+		// Remember kids, flags can also be undefined, that's the magic.
+		if (params.flag_accepted === false) {
+			// Let's find our PLC in the current playlist
+			const currentPLC = currentPlaylist.find(curplc => curplc.kid === plc.kid && curplc.username === plc.username);
+			if (currentPLC) PLCsToDeleteFromCurrent.push(currentPLC.playlistcontent_id);
+			await setPLCAccepted(plc.playlistcontent_id, params.flag_accepted);
+		}
+		if (params.flag_refused === true) {
+			const currentPLC = currentPlaylist.find(curplc => curplc.kid === plc.kid && curplc.username === plc.username);
+			if (currentPLC) PLCsToDeleteFromCurrent.push(currentPLC.playlistcontent_id);
+			params.flag_free = true;
+			params.flag_accepted = false;
+			await Promise.all([
+				setPLCAccepted(plc.playlistcontent_id, false),
+				setPLCRefused(plc.playlistcontent_id, true)
+			]);
+		}
+		if (params.flag_refused === false) {
+			await setPLCRefused(plc.playlistcontent_id, params.flag_refused);
 		}
 		if (params.flag_free === true) {
 			await freePLC(plc.playlistcontent_id);
@@ -792,6 +850,20 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 			}
 		}
 	}
+	if (PLCsToCopyToCurrent.length > 0) {
+		try {
+			await copyKaraToPlaylist(PLCsToCopyToCurrent, getState().currentPlaylistID);
+		} catch(err) {
+			// This is allowed to fail if the song is already in playlist
+		}
+	}
+	if (PLCsToDeleteFromCurrent.length > 0) {
+		try {
+			await deleteKaraFromPlaylist(PLCsToDeleteFromCurrent, {role: 'admin', username: 'admin'});
+		} catch(err) {
+			// This is allowed to fail if the song is not present
+		}
+	}
 	for (const songUpdate of songsLeftToUpdate.values()) {
 		updateSongsLeft(songUpdate.username, songUpdate.playlist_id);
 	}
@@ -799,7 +871,6 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 		updatePlaylistLastEditTime(playlist_id);
 		emitWS('playlistContentsUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
-
 	}
 	profile('editPLC');
 	return {
@@ -905,6 +976,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 		const users = new Map();
 		for (const index in playlist.PlaylistContents) {
 			const kara = playlist.PlaylistContents[index];
+			kara.username = kara.username.toLowerCase();
 			let user: User = users.get(kara.username);
 			if (!user) {
 				user = await findUserByName(kara.username);
@@ -1254,7 +1326,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		const versions = getSongVersion(kara);
 		const currentSong: CurrentSong = {...kara};
 		// Construct mpv message to display.
-		currentSong.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.infos = '{\\bord1.2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {

@@ -1,16 +1,18 @@
 import './InlineTag.scss';
 
 import i18next from 'i18next';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import {DBKaraTag} from '../../../../../src/lib/types/database/kara';
-import {getTagInLocale} from '../../../utils/kara';
+import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
+import GlobalContext from '../../../store/context';
+import { getSerieLanguage, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { View } from '../../types/view';
 
 interface Props {
 	tag: DBKaraTag;
-	className: string;
+	className?: string;
+	karaLang?: string;
 	scope: string;
 	tagType: number;
 	changeView: (
@@ -57,13 +59,20 @@ export default function InlineTag(props: Props) {
 		};
 	});
 
-	getTag();
+	useEffect(() => {
+		getTag();
+	}, []);
+
+	const context = useContext(GlobalContext);
 
 	return (
 		<div className={`inline-tag ${props.scope === 'public' ? 'public' : ''}`} ref={node}>
 			<span className={props.className} onClick={() => {
 				if (props.scope === 'public') setShowPopup(!showPopup);
-			}}>{getTagInLocale(props.tag)}</span>
+			}}>
+				{props.tagType === 1 ? getSerieLanguage(context.globalState.settings.data, props.tag, props.karaLang)
+					:getTagInLocale(props.tag)}
+			</span>
 			{showPopup ? <div className="tag-popup">
 				<p className="tag-name">{getTagInLocale(props.tag)}</p>
 				<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', {count: count})}</p>

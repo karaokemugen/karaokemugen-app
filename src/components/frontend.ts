@@ -3,7 +3,6 @@ import {json,urlencoded} from 'body-parser';
 import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
-import csp from 'helmet-csp';
 import {createServer} from 'http';
 import {resolve} from 'path';
 
@@ -27,7 +26,6 @@ import whitelistController from '../controllers/frontend/whitelist';
 import {resolvedPathAvatars, resolvedPathPreviews, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { initWS, SocketIOApp } from '../lib/utils/ws';
-import { sentryCSP } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 
@@ -63,19 +61,6 @@ export function initFrontend(): number {
 	try {
 		const state = getState();
 		const app = express();
-		const cspMiddleware = csp({
-			// Specify directives as normal.
-			directives: {
-				defaultSrc: ['\'self\'', 'data:'],
-				scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
-				styleSrc: ['\'self\'', '\'unsafe-inline\''],
-				connectSrc: ['\'self\'', 'https:', 'wss:'],
-				sandbox: ['allow-forms', 'allow-scripts', 'allow-same-origin', 'allow-modals'],
-				reportUri: process.env.SENTRY_CSP || sentryCSP,
-				workerSrc: ['false']  // This is not set.
-			},
-			reportOnly: true
-		});
 		app.use(cors());
 		app.use(compression());
 		app.use(urlencoded({ extended: true, limit: '50mb' }));
@@ -106,8 +91,8 @@ export function initFrontend(): number {
 		//HTTP standards are important.
 		app.use('/coffee', (_req, res) => res.status(418).json());
 
-		app.use('/', cspMiddleware, express.static(resolve(state.resourcePath, 'kmfrontend/build')));
-		app.get('/*', cspMiddleware, (_req, res) => {
+		app.use('/', express.static(resolve(state.resourcePath, 'kmfrontend/build')));
+		app.get('/*', (_req, res) => {
 			res.sendFile(resolve(state.resourcePath, 'kmfrontend/build/index.html'));
 		});
 

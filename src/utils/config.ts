@@ -54,7 +54,7 @@ export async function editSetting(part: RecursivePartial<Config>) {
 		const newConfig = removeNulls(merge(config, part));
 		verifyConfig(newConfig);
 		await mergeConfig(newConfig, oldConfig);
-		emitWS('settingsUpdated', config);
+		emitWS('settingsUpdated', part);
 		return config;
 	} catch(err) {
 		sentry.error(err);
@@ -194,7 +194,7 @@ export function configureHost() {
 			setState({osURL: `http://${config.Karaoke.Display.ConnectionInfo.Host}${URLPort}`});
 		}
 	}
-	if (state.player.mediaType === 'background' && !state.songPoll) {
+	if ((state.player.mediaType === 'background' || state.player.mediaType === 'pauseScreen') && !state.songPoll) {
 		displayInfo();
 	}
 }

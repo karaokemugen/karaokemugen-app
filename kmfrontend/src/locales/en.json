@@ -1,4 +1,5 @@
 {
+	"SELECT_PLACEHOLDER": "Select a playlist",
 	"404": "Lost on the local network?",
 	"YES": "Yes",
 	"NO": "No",
@@ -15,6 +16,7 @@
 	"PASSWORD_MANDATORY": "The password is mandatory",
 	"SECURITY_CODE_MANDATORY": "The security code is mandatory for create an operator account",
 	"PASSWORD_DIFFERENT": "Passwords are not identical",
+	"DETAILS_CREATED": "Karaoke created ",
 	"DETAILS_ADDED": "Added ",
 	"DETAILS_ADDED_2": "on ",
 	"DETAILS_ADDED_3": " by ",
@@ -108,6 +110,7 @@
 	"CLASSIC_MODE_TEXT_MODAL": "Click on the Play button to start your song.",
 	"MESSAGE": "Message",
 	"FILTERS": "Filters",
+	"ACTIVE_FILTER": "Active filter",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",
 		"ADD_ALL": "Add all visibles songs",
@@ -126,14 +129,21 @@
 		"KARA_COMMANDS": "Song commands",
 		"PLAY": "Set as 'currently playing'",
 		"PLAY_LIBRARY": "Play now",
+		"FAVORITES_ADDED": "Added to favorites",
+		"FAVORITES_REMOVED": "Removed from favorites",
 		"FREE": "Free this kara from user's quota",
 		"FREE_SHORT": "Free",
+		"FREED": "Freed!",
 		"VISIBLE_ON": "Show in playlist",
 		"VISIBLE_ON_SHORT": "Show",
 		"VISIBLE_OFF": "Hide in playlist",
 		"VISIBLE_OFF_SHORT": "Hide",
+		"HIDDEN": "Hidden!",
+		"SHOWN": "Shown!",
 		"ADD_BLACKLIST": "Add to blacklist",
+		"BLACKLISTED": "Blacklisted!",
 		"ADD_WHITELIST": "Add to whitelist",
+		"WHITELISTED": "Whitelisted!",
 		"TRANSFER_KARA": "Transfer this song - right click to transfer it after the currently playing song",
 		"MOVE_KARA": "Move after current song"
 	},
@@ -150,12 +160,16 @@
 		"IMPORT": "Import criterias list",
 		"EXPORT": "Export criterias list",
 		"COPY": "Copy this criteria list",
+		"COPY_SHORT": "Copy",
 		"COPY_TO": "Copy criterias to the following list : ",
 		"ADD_BLC": "Add a value to criteria",
 		"DELETE_BLC": "Delete this blacklist criteria"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"RESTRICTED_DESCRIPTION": "Karaoke is in restricted mode, additions are limited.",
+		"QUOTA_KARA_DESCRIPTION": "You can only suggest {{count}} song. You will be able to suggest again once the operator has added (or not added) your suggestion or when your song is played back on the screen.",
+		"QUOTA_KARA_DESCRIPTION_plural": "You can only suggest {{count}} songs. You will be able to suggest again once the operator has added (or not added) your suggestion or when your song is played back on the screen.",
+		"QUOTA_TIME_DESCRIPTION": "You can only suggest {{time}} minutes of song. You will be able to suggest again once the operator has added (or not added) your suggestion or when your song is played back on the screen.",
 		"HELLO": "Hello",
 		"NOW_PLAYING": "Now playing",
 		"NEXT": "Following",
@@ -246,11 +260,16 @@
 	"TOOLTIP_DELETE_SELECT_FAVS": "Remove selected songs from favorites",
 	"TOOLTIP_DELETE_SELECT_KARA": "Delete selected songs",
 	"TOOLTIP_TRANSFER_SELECT_KARA": "Transfer selected songs - right click to transfer it after the currently playing song",
+	"TOOLTIP_REFUSE_KARA": "Refuse song (free the song)",
+	"TOOLTIP_ACCEPT_KARA": "Accept song (copy to current list)",
+	"TOOLTIP_REFUSE_SELECT_KARA": "Refuse songs (free songs)",
+	"TOOLTIP_ACCEPT_SELECT_KARA": "Accept songs (copy to current list)",
 	"TOOLTIP_CLOSEPARENT": "Close",
 	"TOOLTIP_FAV": "Add to favorites",
 	"TOOLTIP_FAV_DEL": "Delete from favorites",
 	"TOOLTIP_SHOWLYRICS": "Show lyrics",
 	"TOOLTIP_SHOWVIDEO": "Show video preview",
+	"TOOLTIP_HIDEVIDEO": "Close video preview",
 	"TOOLTIP_UPVOTE": "Vote for this kara",
 	"WLCM_CONTACT": "Contact us",
 	"WLCM_GETSTARTED": "START TUTORIAL",
@@ -371,6 +390,12 @@
 		"Kono bangumi wa...",
 		"And thanks for the money."
 	],
+	"PAUSE_TIME": "Pause",
+	"PAUSE_TAGLINES": [
+		"Take a breath!",
+		"Time to drink!",
+		"We'll be right back!"
+	],
 	"SPONSOR": "Sponsors",
 	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"QUOTA_TYPE": "Quota type",
@@ -383,7 +408,7 @@
 	"FREE_AUTO_TIME": "Songs are freed from quota after (min)",
 	"SERIE_NAME_MODE": "Series language mode",
 	"SERIE_NAME_MODE_ORIGINAL": "Original title",
-	"SERIE_NAME_MODE_ADMIN": "Karaoke Mugen language",
+	"SERIE_NAME_MODE_ADMIN": "Computer language",
 	"SERIE_NAME_MODE_USER": "User language",
 	"SERIE_NAME_MODE_NO_PREF": "No preference",
 	"SERIE_NAME_MODE_USER_FORCE": "Force your own language",
@@ -411,6 +436,8 @@
 	"VIEW_FAVORITES": "Favorites",
 	"VIEW_RECENT": "Latest",
 	"VIEW_POPULAR": "Popular",
+	"VIEW_LIKES": "Likes",
+	"VIEW_LIKES_TOOLTIP": "The song with the most likes will be showed first, this does not impact the real playlist order.",
 	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song?  Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
 	"BASE_UPDATE": "Database update",
 	"MASTODON_UPDATE": "Karaoke Mugen News",
@@ -481,19 +508,28 @@
 			"NAME": "Name",
 			"CURRENT": "Current",
 			"CURRENT_DESC": "The current list is the one read by the video player",
+			"ACTIVE": "Active",
+			"ACTIVE_DESC": "The active blacklist criteria set is the one used by Karaoke Mugen.",
 			"PUBLIC": "Public",
 			"PUBLIC_DESC": "The public list is the one collecting suggestions from the public",
 			"VISIBLE": "Visible",
 			"VISIBLE_DESC": "Visible by the audience",
 			"EDIT_PLAYLIST": "Edit {{playlist}}",
-			"CREATE_PLAYLIST": "Create new playlist"
+			"CREATE_PLAYLIST": "Create new playlist",
+			"CREATE": "Créer",
+			"EDIT": "Edit",
+			"CANNOT_CURRENT_PLAYLIST": "You cannot have no current playlist, edit the one you want to set as the new current playlist.",
+			"CANNOT_CURRENT_BLC": "You cannot have no active blacklist criteria set, edit the one you want to set as the new active set (or empty it if you want no blacklist).",
+			"CANNOT_PUBLIC": "You cannot have no public playlist, edit the one you want to set as the new public playlist."
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Crop your avatar",
 			"HELP": "Resize the square to have the perfect profile picture."
 		},
 		"TUTORIAL": {
+			"TITLE": "Tutorial",
 			"NEXT": "Next",
+			"BACK": "Back",
 			"WELCOME": "Welcome to Karaoke Mugen! Here's what you need to know.",
 			"PLAYLIST": "The screen shows two playlists. You can add a song from the left playlist to the right playlist and vice versa just by clicking on",
 			"TITLE_CLICK": "Click on the karaoke title for more information",
@@ -545,6 +581,7 @@
 		},
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Delete {{playlist}} forever?",
+			"IMPOSSIBLE": "You cannot delete the only playlist.",
 			"DELETE_CURRENT_BLC": "This list is defined as current , change the current criterias list for another to delete this one.",
 			"DELETE_PUBLIC": "This list is defined as public, change the public playlist for another to delete this one.",
 			"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",
@@ -1349,5 +1386,9 @@
 		"T2": "How can I disable this?",
 		"P5": "You can definitely do that! Online accounts aren't mandatory, as well as the other features mentioned above. You can enable/disable either stats and/or error reports in the system panel. You're still owning your data at any time.",
 		"P6": "If you have questions or you want us to delete data, you can send us an e-mail at mugen@karaokes.moe."
+	},
+	"ONLINE": {
+		"TITLE": "Karaoke Mugen Online",
+		"P1": "Your Karaoke Mugen App was updated to 5.0, new features are available and someones might require your attention. Do you want to enable the remote access for your instance? By clicking yes, a remote token will be attributed automatically by the Karaoke Mugen server. It expires after 10 days of inactivity."
 	}
 }

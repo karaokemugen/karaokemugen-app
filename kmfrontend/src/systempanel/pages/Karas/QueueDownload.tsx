@@ -60,9 +60,8 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	async getTags() {
-		const res = await commandBackend('getRemoteTags');
-		await this.setState({ tags: res.content });
-		this.FilterTagCascaderOption();
+		const res = await commandBackend('getRemoteTags', undefined, false, 300000);
+		this.setState({ tags: res.content }, this.FilterTagCascaderOption);
 	}
 
 	changeFilter = (event) => {
@@ -89,7 +88,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			from: pfrom,
 			size: psz,
 			compare: this.state.compare
-		});
+		}, false, 300000);
 		let karas = res.content;
 		karas = karas.map((kara) => {
 			kara.name = kara.karafile.replace('.kara.json', '');
@@ -102,7 +101,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	apiReadKaraQueue = async () => {
-		const res = await commandBackend('getDownloads');
+		const res = await commandBackend('getDownloads', undefined, false, 300000);
 		this.setState({ karasQueue: res });
 	}
 

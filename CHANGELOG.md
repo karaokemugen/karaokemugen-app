@@ -1,6 +1,6 @@
 # Versions
 
-## v5.0.20 "Poppy Partagée" - 20/02/2021
+## v5.0.23 "Poppy Partagée" - 06/03/2021
 
 ### Important notice
 
@@ -72,6 +72,14 @@ We reworked our shuffle modes, including a new one: balancing. Balancing creates
 
 You can now sort a playlist by its number of likes from your guests. The playlist can also auto-sort itself (it's another property in the edit playlist window)
 
+#### Accept/refuse songs (#902)
+
+When having a public and current playlist side by side in the operator page, you can accept or refuse songs in the suggestion playlist.
+
+- Accepted songs are copied into the current playlist and marked as free (thus freeing quota for the users who requested them)
+- Refused songs just sit there. Refusing a song frees it for the user who requested it, but since the song is in the public playlist the song will not be requested ever again.
+- Playlist can be viewed sorted by number of likes. Unaccepted/unrefused songs are shown first, then accepted then refused songs.
+
 #### Sessions exports (#773)
 
 You can now more easily **export your sessions data** as .csv, it will contain songs requested by users, play history, etc.
@@ -89,7 +97,7 @@ It can be enabled in the Window menu.
 - API is now **using a socket.io** interface, however `POST /api/command` with `{cmd: 'GetKaras', body: {body: {from: 0, size: 400}}}` can be used to send commands without establishing a socket.io command (#666).
   - This new API will be documented later, we lack workforce to do so right now.
 - database.json config file is now merged with config.yml in `System.Database` object, see config sample (#746)
-  - Karaoke Mugen should handle this change automatically for you and merge the 2 files
+  - Karaoke Mugen should handle this change automatically for you and merge the two files
 
 ### Improvements
 
@@ -105,7 +113,6 @@ It can be enabled in the Window menu.
 - KM will now ask you if you want to resume pending download on startup if there are any, instead of resuming them automatically like it did before (#852)
 - The tutorial has been revamped to be shorter and easier to understand (#839)
 - The search engine can now understand exclusion (-word) and group ("group of words") operators.
-  - Search results are now sorted by relevance.
 - (Admin interface) Rename, set as current/public have been merged into a single "Edit playlist" button (#832)
   - The create playlist screen also allows you to set a playlist as public and/or current.
 - Users now receive notifications when they can add songs again (when their quota becomes positive, #764).
@@ -120,9 +127,12 @@ It can be enabled in the Window menu.
 - Fingerprinting has been disabled. It allowed to recognize browsers/devices to keep them from unlogging and relogging as random guests to get new ones. Problem is a lot of browsers now keep the fingerprintjs library from working correctly for privacy/tracking reasons, so we stopped using it (#893)
 - Database rework! We reworked how songs are stored and accessed in the database, making adding/editing/removing karaokes and tags will be much faster for karaoke database maintainers. It also allows you to edit your song library during a karaoke as it won't conflict with users accessing it (#884 #882)
 - All window modals have been reworked and are more beautiful. (#881)
+- Admin messages can now coexist with the other messages (Go to kara.moe, song informations, b2e2bc52)
+- You can now delete a song with the flag_playing attribute set as long as it's not currently playing (#917)
 
 ### Fixes
 
+- Time before a song is going to play is now correctly displaying the right time (#912)
 - "Next song is..." notifications are disabled if the playlist is set as non visible (#896)
 - Playing a song from the library when the current playlist is near the end does not trigger a outro/encore jingle anymore (#908)
 - Telling if a user is connected to your karaoke session is now clearer (#906)

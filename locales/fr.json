@@ -142,6 +142,9 @@
 			"Votre karaoké se termine bientôt ? Passez l'interface en mode restreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
 			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !",
 			"Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, la série, les chanteurs, etc.) de vos résultats de recherche.",
+			"Vous pouvez accepter ou refuser des chansons de la liste de suggestions du public. Pour cela, affichez les listes de suggestion et courante côte à côte.",
+			"Accepter une suggestion du public redonne du quota à la personne qui a demandé, et ajoute la chanson dans la liste courante si celle-ci est en face !",
+			"Refuser une suggestion du public redonne du quota à la personne qui a demandé, et garde la chanson dans la liste de suggestion pour éviter qu'elle ne soit redemandée !",
 			"Dans la recherche, vous pouvez taper un groupe de mots entre guillemets pour demander ce groupe de mots à la suite. Tapez donc \"love live\" pour avoir les karaokés de cette série uniquement."
 		],
 		"ERRORS": [

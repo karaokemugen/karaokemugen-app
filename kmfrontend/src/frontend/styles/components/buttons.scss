@@ -109,21 +109,22 @@ div > a, h5 > a {
 }
 
 .klogo {
-	background-image: url('../../../assets/Klogo.png') !important;
-	background-size: 67%;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-#menuPC:after {
-	content: "";
-	display: inline-block;
-	position: relative;
-	top: 35%;
-	left: 35%;
-	border-color: currentColor transparent transparent;
-	border-width: .25em;
-	border-style: solid;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	img {
+		height: 2em;
+		width: 2em;
+	}
+	&:after {
+		content: "";
+		display: inline-block;
+		position: relative;
+		top: .25em;
+		border-color: currentColor transparent transparent;
+		border-width: .25em;
+		border-style: solid;
+	}
 }
 
 .volumeButton {

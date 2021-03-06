@@ -76,7 +76,7 @@ export async function deleteKara(kid: string) {
 
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter) : {sql: [], params: {}, additionalFrom: []};
-	let typeClauses = params.mode && params.modeValue ? buildTypeClauses(params.mode, params.modeValue) : '';
+	let typeClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
 	// Hide blacklisted songs if not admin
 	if (!params.ignoreBlacklist && (!params.admin || params.blacklist)) typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM blacklist)`;
 	let orderClauses = '';
@@ -91,16 +91,14 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	// This is normal behaviour without anyone.
 	let groupClauseEnd = '';
 	// Search mode to filter karas played or requested in a particular session
-	if (params.mode === 'sessionPlayed') {
-		orderClauses = groupClause = 'p.played_at, ';
-		typeClauses = `AND p.fk_seid = '${params.modeValue}'`;
+	if (params.order === 'sessionPlayed') {
+		orderClauses = groupClause = 'p.played_at, ';		
 	}
-	if (params.mode === 'sessionRequested') {
-		orderClauses = groupClause = 'rq.requested_at, ';
-		typeClauses = `AND rq.fk_seid = '${params.modeValue}'`;
+	if (params.order === 'sessionRequested') {
+		orderClauses = groupClause = 'rq.requested_at, ';		
 	}
-	if (params.mode === 'recent') orderClauses = 'created_at DESC, ';
-	if (params.mode === 'requested') {
+	if (params.order === 'recent') orderClauses = 'created_at DESC, ';
+	if (params.order === 'requested') {
 		if (getConfig().Online.FetchPopularSongs) {
 			orderClauses = 'requested DESC, ';
 			groupClauseEnd = ', requested';
@@ -114,13 +112,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			havingClause = 'HAVING COUNT(rq.*) > 1';
 		}
 	}
-	if (params.mode === 'played') {
+	if (params.order === 'played') {
 		orderClauses = 'played DESC, ';
 		havingClause = 'HAVING COUNT(p.*) > 1';
-	}
-	if (params.filter) {
-		orderClauses = `relevance desc, ${orderClauses}`;
-		groupClause = `${groupClause ? `${groupClause}, `:''}relevance, `;
 	}
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
@@ -192,7 +186,9 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 			kara.created_at,
 			kara.pos,
 			false,
-			kara.flag_visible || true
+			kara.flag_visible || true,
+			kara.flag_refused || false,
+			kara.flag_accepted || false
 		]));
 		const res = await transaction({params: karas, sql: sqladdKaraToPlaylist});
 		return res;
@@ -206,14 +202,16 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 			kara.created_at,
 			kara.pos,
 			false,
-			kara.flag_visible
+			kara.flag_visible,
+			kara.flag_refused || false,
+			kara.flag_accepted || false
 		]);
 		return res.rows;
 	}
 }
 
-export function removeKaraFromPlaylist(karas: number[], playlist_id: number) {
-	return db().query(sqlremoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
+export function removeKaraFromPlaylist(karas: number[]) {
+	return db().query(sqlremoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')));
 }
 
 export function emptyOnlineRequested() {

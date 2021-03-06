@@ -2,14 +2,15 @@ import './KaraDetail.scss';
 
 import i18next from 'i18next';
 import React, { Component, MouseEvent, ReactNode } from 'react';
-import ReactDOM, { createPortal } from 'react-dom';
+import { createPortal } from 'react-dom';
 
 import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { setBgImage } from '../../../store/actions/frontendContext';
-import GlobalContext, { GlobalContextInterface } from '../../../store/context';
-import { getPreviewLink, getSerieLanguage, getTagInLocale } from '../../../utils/kara';
-import { commandBackend } from '../../../utils/socket';
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
+import {formatLyrics, getPreviewLink} from '../../../utils/kara';
+import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
@@ -20,8 +21,6 @@ interface IProps {
 	scope: string;
 	idPlaylist?: number;
 	playlistcontentId?: number;
-	showVideo?: (file: string) => void;
-	context: GlobalContextInterface;
 	closeOnPublic?: () => void;
 	changeView?: (
 		view: View,
@@ -33,8 +32,8 @@ interface IProps {
 
 interface IState {
 	kara?: DBPLCInfo;
-	showLyrics: boolean;
 	isFavorite: boolean;
+	showVideo: boolean;
 	lyrics: Array<string>;
 }
 
@@ -45,8 +44,8 @@ class KaraDetail extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			showLyrics: false,
 			isFavorite: false,
+			showVideo: false,
 			lyrics: []
 		};
 		if (this.props.kid || this.props.idPlaylist) {
@@ -70,9 +69,8 @@ class KaraDetail extends Component<IProps, IState> {
 		}
 	}
 
-	closeModal() {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+	closeModal = () => {
+		closeModal(this.context.globalDispatch);
 	}
 
 	componentDidUpdate() {
@@ -93,8 +91,7 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	onClickOutsideModal = (e: MouseEvent) => {
-		const myElementToCheckIfClicksAreInsideOf = document.getElementsByClassName('modal-dialog')[0];
-		if (!myElementToCheckIfClicksAreInsideOf?.contains((e.target as Node))) {
+		if (!(e.target as Element).closest('.modal-dialog')) {
 			this.closeModal();
 		}
 	}
@@ -110,11 +107,12 @@ class KaraDetail extends Component<IProps, IState> {
 			data = { kid: (kid ? kid : this.props.kid) };
 		}
 		const kara = await commandBackend(url, data);
-		await this.setState({
+		this.setState({
 			kara: kara,
 			isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
+		}, () => {
+			if (kara.subfile) this.fetchLyrics();
 		});
-		if (kara.subfile) this.showFullLyrics();
 	};
 
 	getLastPlayed = (lastPlayed_at: Date, lastPlayed: lastplayed_ago) => {
@@ -140,10 +138,13 @@ class KaraDetail extends Component<IProps, IState> {
 		return null;
 	};
 
-	showFullLyrics = async () => {
+	fetchLyrics = async () => {
 		if (this.state.kara) {
-			const response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
-			this.setState({ lyrics: response.map(value => value.text) });
+			let response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
+			if (response?.length > 0) {
+				response = formatLyrics(response);
+			}
+			this.setState({ lyrics: response?.map(value => value.text) || [] });
 		}
 	};
 
@@ -159,8 +160,7 @@ class KaraDetail extends Component<IProps, IState> {
 	};
 
 	onClick = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	}
 
 	makeFavorite = () => {
@@ -176,10 +176,10 @@ class KaraDetail extends Component<IProps, IState> {
 
 	addKara = async () => {
 		const response = await commandBackend('addKaraToPublicPlaylist', {
-			requestedby: this.props.context.globalState.auth.data.username,
+			requestedby: this.context.globalState.auth.data.username,
 			kid: this.props.kid
 		});
-		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
+		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play > 0) {
 			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
 			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
@@ -224,7 +224,7 @@ class KaraDetail extends Component<IProps, IState> {
 					</div>;
 				}));
 			}
-			for (const type of ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']) {
+			for (const type of ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']) {
 				const tagData = tagTypes[type];
 				if (data[tagData.karajson]) {
 					karaTags.push(...data[tagData.karajson].sort(this.compareTag).map(tag => {
@@ -255,7 +255,7 @@ class KaraDetail extends Component<IProps, IState> {
 				}
 			}
 
-			const playTime = new Date(Date.now() + data.time_before_play * 1000);
+			const playTime = data.time_before_play > 0 ? new Date(Date.now() + data.time_before_play * 1000): null;
 			const details = (
 				<React.Fragment>
 					<div className="detailsKaraLine timeData">
@@ -264,7 +264,7 @@ class KaraDetail extends Component<IProps, IState> {
 							{secondsTimeSpanToHMS(data.duration, 'mm:ss')}
 						</span>
 						<span>
-							{data.time_before_play
+							{playTime
 								? i18next.t('DETAILS_PLAYING_IN', {
 									time: secondsTimeSpanToHMS(data.time_before_play, 'hm'),
 									date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2)
@@ -286,7 +286,7 @@ class KaraDetail extends Component<IProps, IState> {
 					}
 					<div className="detailsKaraLine">
 						<span>
-							{i18next.t('DETAILS_ADDED')}
+							{this.props.playlistcontentId ? i18next.t('DETAILS_ADDED'):i18next.t('DETAILS_CREATED')}
 							{data.created_at ? <>
 								{i18next.t('DETAILS_ADDED_2')}
 								<span className="boldDetails">{new Date(data.created_at).toLocaleString()}</span>
@@ -331,33 +331,38 @@ class KaraDetail extends Component<IProps, IState> {
 				</button>
 			);
 
-			const showVideoButton = (
+			const showVideoButton = (isRemote() && !/\./.test(data.repository)) ? null : (
 				<button
 					type="button"
 					className="showVideo btn btn-action"
-					onClick={() => this.props.showVideo && this.props.showVideo((data as DBPLCInfo).mediafile)}
+					onClick={() => this.setState({ showVideo: !this.state.showVideo })}
 				>
 					<i className="fas fa-fw fa-video" />
-					<span>{i18next.t('TOOLTIP_SHOWVIDEO')}</span>
+					<span>{this.state.showVideo ? i18next.t('TOOLTIP_HIDEVIDEO'):i18next.t('TOOLTIP_SHOWVIDEO')}</span>
 				</button>
 			);
 
-			const lyricsKara = (
-				<div className="lyricsKara detailsKaraLine">
-					{this.state.lyrics?.length > 0 ? <div className="boldDetails">
-						<i className="fas fa-fw fa-closed-captioning" />
-						{i18next.t('LYRICS')}
-					</div> : null}
-					{data.subfile && this.state.lyrics?.map((ligne, index) => {
-						return (
-							<React.Fragment key={index}>
-								{ligne}
-								<br />
-							</React.Fragment>
-						);
-					})}
-				</div>
-			);
+			const video = this.state.showVideo ? (
+				<video src={isRemote() ?
+					`https://${data.repository}/downloads/medias/${data.mediafile}`:`/medias/${data.mediafile}`}
+					   controls={true} autoPlay={true} loop={true} playsInline={true}
+					   className={`modal-video${this.props.scope === 'public' ? ' public':''}`} />
+			) : null;
+
+			const lyricsKara = data.subfile ? (<div className="lyricsKara detailsKaraLine">
+				{this.state.lyrics?.length > 0 ? <div className="boldDetails">
+					<i className="fas fa-fw fa-closed-captioning" />
+					{i18next.t('LYRICS')}
+				</div> : null}
+				{data.subfile && this.state.lyrics?.map((ligne, index) => {
+					return (
+						<React.Fragment key={index}>
+							{ligne}
+							<br />
+						</React.Fragment>
+					);
+				})}
+			</div>) : null;
 
 			const header = (
 				<div className={`modal-header img-background${this.props.scope === 'public' ? ' fixed' : ''}`} style={{ ['--img' as any]: this.props.scope === 'admin' ? `url('${getPreviewLink(data)}')` : 'none' }}>
@@ -370,9 +375,12 @@ class KaraDetail extends Component<IProps, IState> {
 							</button> : null}
 						<div className="modal-title-block">
 							<h4 className="modal-title">{data.title}</h4>
-							<h5 className="modal-series">{data.series[0] ?
-								getSerieLanguage(this.props.context.globalState.settings.data, data.series[0], data.langs[0].name) :
-								getTagInLocale(data.singers[0], tagTypes.SERIES.type)}
+							<h5 className="modal-series">
+								<InlineTag tag={data.series[0] || data.singers[0]}
+									scope={this.props.scope}
+									changeView={this.props.changeView}
+									karaLang={data.langs[0].name}
+									tagType={data.series[0] ? 1:2} />
 							</h5>
 						</div>
 						{this.props.scope === 'admin' ?
@@ -397,21 +405,12 @@ class KaraDetail extends Component<IProps, IState> {
 								{header}
 								<div className="detailsKara">
 									<div className="centerButtons">
-										{this.props.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
+										{makeFavButton}
 										{showVideoButton}
-										{data.subfile ? (
-											<button
-												type="button"
-												className="fullLyrics btn btn-action"
-												onClick={() => this.setState({ showLyrics: !this.state.showLyrics })}
-											>
-												<i className="fas fa-fw fa-quote-right" />
-												<span>{i18next.t('TOOLTIP_SHOWLYRICS')}</span>
-											</button>
-										) : null}
 									</div>
+									{video}
 									{details}
-									{this.state.showLyrics ? lyricsKara : null}
+									{lyricsKara}
 								</div>
 							</div>
 						</div>
@@ -420,18 +419,20 @@ class KaraDetail extends Component<IProps, IState> {
 			} else {
 				infoKaraTemp = (
 					<React.Fragment>
-						{this.props.scope === 'public' ?
-							this.placeHeader(header) : header}
+						{this.placeHeader(header)}
 						<div className="detailsKara">
 							<div className="centerButtons">
-								{this.props.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
-								{this.state.kara?.public_plc_id && this.state.kara?.public_plc_id[0] ? null : addKaraButton}
+								{this.context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
+								{
+									this.state.kara?.public_plc_id?.length >= 1 &&
+									!this.context.globalState.settings.data.config.Playlist.AllowDuplicates ? null : addKaraButton
+								}
 								{showVideoButton}
 							</div>
+							{video}
 							{details}
 							{lyricsKara}
 						</div>
-
 					</React.Fragment>
 				);
 			}

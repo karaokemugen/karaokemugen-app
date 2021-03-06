@@ -129,7 +129,6 @@ export const defaults: Config = {
 		StayOnTop: true,
 		VisualizationEffects: false,
 		PIP: {
-			Enabled: true,
 			PositionX: 'Right',
 			PositionY: 'Bottom',
 			Size: 30,
@@ -317,7 +316,6 @@ export const configConstraints = {
 	'Player.StayOnTop': {inclusion : bools},
 	'Player.Screen': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Player.VisualizationEffects': {inclusion : bools},
-	'Player.PIP.Enabled': {inclusion : bools},
 	'Player.PIP.PositionX': {inclusion : horizontalPosArray},
 	'Player.PIP.PositionY': {inclusion : verticalPosArray},
 	'Player.PIP.Size': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100}},

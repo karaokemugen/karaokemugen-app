@@ -9,7 +9,8 @@ import ReactDOM from 'react-dom';
 import { User } from '../../../../../src/lib/types/user';
 import { DBPLC } from '../../../../../src/types/database/playlist';
 import { logout, setAuthentifactionInformation } from '../../../store/actions/auth';
-import { GlobalContextInterface } from '../../../store/context';
+import { closeModal, showModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { buildKaraTitle } from '../../../utils/kara';
@@ -22,7 +23,6 @@ languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
 languages.registerLocale(require('@cospired/i18n-iso-languages/langs/fr.json'));
 
 interface IProps {
-	context: GlobalContextInterface;
 	scope?: 'public' | 'admin';
 	closeProfileModal?: () => void;
 }
@@ -30,8 +30,7 @@ interface IProps {
 interface IState {
 	passwordDifferent: string;
 	nicknameMandatory: string;
-	user: UserProfile;
-	users: Array<User>;
+	user?: UserProfile;
 	userDetails?: User;
 	imageSource?: any;
 	cropAvatarModalOpen: boolean;
@@ -62,11 +61,13 @@ type typesAttrUser =
 	| 'passwordConfirmation';
 
 class ProfilModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
+
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			users: [],
-			user: {},
+			user: null,
 			passwordDifferent: 'form-control',
 			nicknameMandatory: 'form-control',
 			cropAvatarModalOpen: false
@@ -91,7 +92,6 @@ class ProfilModal extends Component<IProps, IState> {
 		const user = this.state.user;
 		(user[event.target.name as typesAttrUser] as number) = parseInt(event.target.value);
 		this.setState({ user: user });
-		this.updateUser();
 	};
 
 	changeLanguageFallback(name: 'main_series_lang' | 'fallback_series_lang', value: string) {
@@ -108,9 +108,9 @@ class ProfilModal extends Component<IProps, IState> {
 			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
 			const response = await commandBackend('editMyAccount', this.state.user);
 
-			const data: IAuthentifactionInformation = this.props.context.globalState.auth.data;
+			const data: IAuthentifactionInformation = this.context.globalState.auth.data;
 			data.onlineToken = response.data.onlineToken;
-			setAuthentifactionInformation(this.props.context.globalDispatch, data);
+			setAuthentifactionInformation(this.context.globalDispatch, data);
 		} else if (!this.state.user.nickname) {
 			this.setState({ nicknameMandatory: 'form-control redBorders' });
 		} else {
@@ -120,16 +120,16 @@ class ProfilModal extends Component<IProps, IState> {
 
 	async getUser() {
 		const user = await commandBackend('getMyAccount');
-		user.password = undefined;
-		this.setState({ user: user });
+		delete user.password;
+		this.setState({ user });
 	}
 
 	profileConvert = () => {
-		ReactDOM.render(<OnlineProfileModal context={this.props.context} type="convert" loginServ={this.props.context?.globalState.settings.data.config?.Online.Host} />, document.getElementById('modal'));
+		showModal(this.context.globalDispatch, <OnlineProfileModal type="convert" loginServ={this.context?.globalState.settings.data.config?.Online.Host} />);
 	};
 
 	profileDelete = () => {
-		ReactDOM.render(<OnlineProfileModal context={this.props.context} type="delete" loginServ={this.state.user.login?.split('@')[1]} />, document.getElementById('modal'));
+		showModal(this.context.globalDispatch, <OnlineProfileModal type="delete" loginServ={this.state.user.login?.split('@')[1]} />);
 	};
 
 	favImport = (event: any) => {
@@ -139,13 +139,13 @@ class ProfilModal extends Component<IProps, IState> {
 			const file = input.files[0];
 			const fr = new FileReader();
 			fr.onload = () => {
-				callModal('confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', async (confirm: boolean) => {
+				callModal(this.context.globalDispatch, 'confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', async (confirm: boolean) => {
 					if (confirm) {
 						const data = { favorites: fr['result'] };
 						const response = await commandBackend('importFavorites', data);
 						if (response.unknownKaras && response.unknownKaras.length > 0) {
 							const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
-							callModal('confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
+							callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
 								<p>
 									{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
 								</p>
@@ -155,7 +155,7 @@ class ProfilModal extends Component<IProps, IState> {
 								</div>
 								<br />
 								{response.unknownKaras.map((kara: DBPLC) =>
-									<label key={kara.kid}>{buildKaraTitle(this.props.context.globalState.settings.data, kara, true)}</label>)}
+									<label key={kara.kid}>{buildKaraTitle(this.context.globalState.settings.data, kara, true)}</label>)}
 							</React.Fragment>), () => commandBackend('addDownloads', {
 								downloads: response.unknownKaras.map((kara: DBPLC) => {
 									return {
@@ -181,7 +181,7 @@ class ProfilModal extends Component<IProps, IState> {
 		const dlAnchorElem = document.getElementById('downloadAnchorElem');
 		if (dlAnchorElem) {
 			dlAnchorElem.setAttribute('href', dataStr);
-			dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.props.context.globalState.auth.data.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
+			dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.context.globalState.auth.data.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
 			dlAnchorElem.click();
 		}
 	}
@@ -197,18 +197,19 @@ class ProfilModal extends Component<IProps, IState> {
 		if (avatar) {
 			const user = this.state.user;
 			user.avatar = avatar;
-			await this.setState({ user, cropAvatarModalOpen: false });
-			await this.updateUser();
-			await this.getUser();
+			this.setState({ user, cropAvatarModalOpen: false }, async () => {
+				await this.updateUser();
+				await this.getUser();
+			});
 		} else {
-			await this.setState({ cropAvatarModalOpen: false });
+			this.setState({ cropAvatarModalOpen: false });
 		}
 	};
 
 	deleteAccount = () => {
-		callModal('confirm', i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE'), i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE_WARN'), async () => {
+		callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE'), i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE_WARN'), async () => {
 			await commandBackend('deleteMyUser');
-			logout(this.props.context.globalDispatch);
+			logout(this.context.globalDispatch);
 		});
 	}
 
@@ -226,24 +227,29 @@ class ProfilModal extends Component<IProps, IState> {
 		if (this.props.scope === 'public') {
 			this.props.closeProfileModal();
 		} else {
-			const element = document.getElementById('modal');
-			if (element) ReactDOM.unmountComponentAtNode(element);
+			closeModal(this.context.globalDispatch);
 		}
 	}
 
 	render() {
-		const logInfos = this.props.context?.globalState.auth.data;
+		const logInfos = this.context?.globalState.auth.data;
 		const listLangs = [];
 		for (const [key, value] of Object.entries(languages.getNames(i18next.languages[0]))) {
 			listLangs.push({ 'label': value, 'value': languages.alpha2ToAlpha3B(key) });
 		}
-		if (!this.props.context?.globalState.settings.data.config?.Online.Users && logInfos?.username.includes('@')) {
+		if (!this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username.includes('@')) {
 			setTimeout(function () {
 				displayMessage('warning', <div><label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br /> {i18next.t('LOG_OFFLINE.MESSAGE')}</div>, 8000);
 			}, 500);
 		}
-		const body = (<div className="modal-content">
-			<div className="modal-header">
+		const body = this.state.user ? (<div className="modal-content">
+			<div className={`modal-header${this.props.scope === 'public' ? ' public-modal':''}`}>
+				{this.props.scope === 'public' ? <button
+					className="closeModal"
+					type="button"
+					onClick={() => this.closeModal()}>
+					<i className="fas fa-arrow-left" />
+				</button> : null}
 				<h4 className="modal-title">{i18next.t('PROFILE')}</h4>
 				{this.props.scope === 'admin' ? // aka. it's a modal, otherwise it's a page and close button is not needed
 					<button className="closeModal"
@@ -306,12 +312,12 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine row">
 								<label className="col-xs-6 control-label">{i18next.t('SERIE_NAME_MODE')}</label>
 								<div className="col-xs-6">
-									<select name="series_lang_mode" defaultValue={this.state.user.series_lang_mode}
-										onChange={this.onClickSelect}>
-										<option value={-1}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
-										<option value={0}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-										<option value={3}>{i18next.t('SERIE_NAME_MODE_USER')}</option>
-										<option value={4}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
+									<select name="series_lang_mode" onChange={this.onClickSelect}
+										defaultValue={this.state.user.series_lang_mode.toString()}>
+										<option value={'-1'}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
+										<option value={'0'}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
+										<option value={'3'}>{i18next.t('SERIE_NAME_MODE_USER')}</option>
+										<option value={'4'}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
 									</select>
 								</div>
 							</div>
@@ -343,7 +349,7 @@ class ProfilModal extends Component<IProps, IState> {
 									<i className="fas fa-fw fa-upload"/> {i18next.t('FAVORITES_EXPORT')}
 								</button>
 							</div>
-							{this.props.context?.globalState.settings.data.config?.Online.Users && logInfos?.username !== 'admin' ?
+							{this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username !== 'admin' ?
 								<div className="profileLine">
 									{logInfos?.onlineToken ?
 										<button type="button" className="btn btn-danger profileDelete" onClick={this.profileDelete}>
@@ -364,8 +370,8 @@ class ProfilModal extends Component<IProps, IState> {
 							</div>
 							<div className="profileLine profileButtonLine" >
 								<button type="button" className="btn btn-action"
-									onClick={() => {
-										this.updateUser();
+									onClick={async () => {
+										await this.updateUser();
 										this.closeModal();
 									}}>
 									{i18next.t('SUBMIT')}
@@ -376,9 +382,9 @@ class ProfilModal extends Component<IProps, IState> {
 					}
 				</div>
 			</div>
-		</div>);
+		</div>) : null;
 		return (
-			this.state.cropAvatarModalOpen ? null :
+			(this.state.cropAvatarModalOpen && this.props.scope === 'admin') ? null :
 				this.props.scope === 'public' ?
 					<div id="profilModal">
 						{body}

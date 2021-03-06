@@ -168,11 +168,10 @@ export async function initEngine() {
 			if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPromises.push(initPlayer());
 			await Promise.all(initPromises);
 			if (conf.Online.Stats === true) initStats(false);
-
 			initStep(i18n.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			//Easter egg
-			const ready = Math.floor(Math.random() * Math.floor(10)) >= 9
+			const ready = Math.floor(Math.random() * 10) >= 9
 				? 'LADY'
 				: 'READY';
 			if (!state.isTest && !state.electron) await welcomeToYoukousoKaraokeMugen();

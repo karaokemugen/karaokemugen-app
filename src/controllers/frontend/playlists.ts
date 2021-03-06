@@ -325,7 +325,7 @@ export default function playlistsController(router: SocketIOApp) {
 	 */
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await getPlaylistContents(req.body?.pl_id, req.token, req.body?.filter,req.langs, req.body?.from || 0, req.body?.size || 9999999, req.body?.random || 0);
+			return await getPlaylistContents(req.body?.pl_id, req.token, req.body?.filter,req.langs, req.body?.from || 0, req.body?.size || 9999999, req.body?.random || 0, req.body?.orderByLikes);
 		} catch(err) {
 			const code = 'PL_VIEW_SONGS_ERROR';
 			errMessage(code, err);
@@ -445,7 +445,7 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await deleteKaraFromPlaylist(req.body.plc_ids, req.body.pl_id, req.token);
+				return await deleteKaraFromPlaylist(req.body.plc_ids, req.token);
 			} catch(err) {
 				const code = 'PL_DELETE_SONG_ERROR';
 				errMessage(code, err);
@@ -475,6 +475,8 @@ export default function playlistsController(router: SocketIOApp) {
 	 * @apiSuccess {Boolean} flag_blacklisted Is the song in the blacklist ?
 	 * @apiSuccess {Boolean} flag_whitelisted Is the song in the whitelist ?
 	 * @apiSuccess {Boolean} flag_free Wether the song has been marked as free or not
+	 * @apiSuccess {Boolean} flag_refused Wether the song has been refused by operator or not
+	 * @apiSuccess {Boolean} flag_accepted Wether the song has been refused by operator or not
 	 * @apiSuccess {Number} playlist_id ID of playlist this song belongs to
 	 * @apiSuccess {Number} playlistcontent_ID PLC ID of this song.
 	 * @apiSuccess {Number} pos Position in the playlist. First song has a position of `1`
@@ -488,6 +490,8 @@ export default function playlistsController(router: SocketIOApp) {
 	 * 	         "created_at": "2019-01-01T10:01:01.000Z"
 	 *           "flag_blacklisted": false,
 	 *           "flag_free": false,
+	 *           "flag_refused": false,
+	 *           "flag_accepted": false,
 	 * 			 "flag_playing": true,
 	 * 			 "flag_visible": true
 	 *           "flag_whitelisted": false,
@@ -544,7 +548,9 @@ export default function playlistsController(router: SocketIOApp) {
 			plc_ids: {numbersArrayValidator: true},
 			flag_playing: {inclusion: bools},
 			flag_free: {inclusion: bools},
-			flag_visible: {inclusion: bools}
+			flag_visible: {inclusion: bools},
+			flag_accepted: {inclusion: bools},
+			flag_refused: {inclusion: bools}
 		});
 		if (!validationErrors) {
 			try {
@@ -552,7 +558,9 @@ export default function playlistsController(router: SocketIOApp) {
 					pos: +req.body.pos,
 					flag_playing: req.body.flag_playing,
 					flag_free: req.body.flag_free,
-					flag_visible: req.body.flag_visible
+					flag_visible: req.body.flag_visible,
+					flag_accepted: req.body.flag_accepted,
+					flag_refused: req.body.flag_refused
 				});
 			} catch(err) {
 				const code = 'PL_MODIFY_CONTENT_ERROR';

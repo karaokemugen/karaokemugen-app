@@ -8,7 +8,7 @@ import {now} from '../lib/utils/date';
 import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
 import { PLC, PLCParams} from '../types/playlist';
 import {getState} from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
 export function editPlaylist(pl: DBPL) {
@@ -53,6 +53,14 @@ export function setPLCInvisible(plc_id: number) {
 
 export function setPLCFree(plc_id: number) {
 	return db().query(sqlsetPLCFree, [plc_id]);
+}
+
+export function setPLCAccepted(plc_id: number, flag_accepted: boolean) {
+	return db().query(sqlsetPLCAccepted, [plc_id, flag_accepted]);
+}
+
+export function setPLCRefused(plc_id: number, flag_refused: boolean) {
+	return db().query(sqlsetPLCRefused, [plc_id, flag_refused]);
 }
 
 export function setPLCFreeBeforePos(pos: number, playlist_id: number) {
@@ -123,12 +131,11 @@ export async function getPlaylistContentsMini(id: number): Promise<DBPLC[]> {
 }
 
 export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
-	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, true, false) : {sql: [], params: {}, additionalFrom: []};
+	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, true) : {sql: [], params: {}, additionalFrom: []};
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = 'pc.pos';
 	let whereClause = '';
-	const groupClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	if (+params.random > 0) {
@@ -140,9 +147,9 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		)`;
 		orderClause = 'RANDOM()';
 	}
-	if (params.orderByLikes) orderClause = 'upvotes DESC';
+	if (params.orderByLikes) orderClause = 'COALESCE(flag_accepted, flag_refused), upvotes DESC';
 	const query = sqlgetPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause,
-		groupClause, filterClauses.additionalFrom.join(''));
+		filterClauses.additionalFrom.join(''));
 	const res = await db().query(yesql(query)({
 		playlist_id: params.playlist_id,
 		username: params.username,
@@ -169,7 +176,9 @@ export async function getPLCInfo(id: number, forUser: boolean, username: string)
 		{
 			playlistcontent_id: id,
 			dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
-			username: username
+			username: username,
+			publicPlaylist_id: getState().publicPlaylistID,
+			currentPlaylist_id: getState().currentPlaylistID,
 		}));
 	return res.rows[0];
 }

@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import difference from 'lodash.difference';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
@@ -28,6 +29,28 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 	componentDidMount() {
 		this.setState({ config: dotify(this.context.globalState.settings.data.config) });
+	}
+
+	componentDidUpdate(_prevProps:Readonly<IProps>, prevState:Readonly<IState>) {
+		// Find differences
+		let different = false;
+		const newConfig = dotify(this.context.globalState.settings.data.config);
+		for (const i in prevState.config) {
+			// Hack for null -> '' conversion by React
+			if (prevState.config[i] === '') newConfig[i] = '';
+			if (newConfig[i] !== prevState.config[i]) {
+				if (Array.isArray(prevState.config[i])) {
+					if (difference(prevState.config[i], newConfig[i]).length > 0) {
+						different = true;
+						break;
+					}
+				} else {
+					different = true;
+					break;
+				}
+			}
+		}
+		if (different) this.setState({ config: newConfig });
 	}
 
 	addMysterySongLabel = () => {
@@ -77,8 +100,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('QUOTA_TYPE_TOOLTIP')}>
 								{i18next.t('QUOTA_TYPE')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+								&nbsp;
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<select
@@ -100,6 +123,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<div>
 									<input
 										type="number"
+										data-exclude="true"
 										className=""
 										id="Karaoke.Quota.Time"
 										placeholder="1000"
@@ -113,12 +137,13 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label title={i18next.t('SONGS_BY_USER_TOOLTIP')}>
 									{i18next.t('SONGS_BY_USER')}
-                			&nbsp;
-  							<i className="far fa-question-circle"></i>
+									&nbsp;
+									<i className="far fa-question-circle" />
 								</label>
 								<div>
 									<input
 										type="number"
+										data-exclude="true"
 										className=""
 										id="Karaoke.Quota.Songs"
 										placeholder="1000"
@@ -132,12 +157,13 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<div className="settings-line">
 								<label title={i18next.t('FREE_AUTO_TIME_TOOLTIP')}>
 									{i18next.t('FREE_AUTO_TIME')}
-                				&nbsp;
-  							<i className="far fa-question-circle"/>
+									&nbsp;
+									<i className="far fa-question-circle"/>
 								</label>
 								<div>
 									<input
 										type="number"
+										data-exclude="true"
 										className=""
 										id="Karaoke.Quota.FreeAutoTime"
 										placeholder="1000"
@@ -153,8 +179,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}
-              				&nbsp;
-  						<i className="far fa-question-circle"/>
+								&nbsp;
+								<i className="far fa-question-circle"/>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
@@ -165,8 +191,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}
-              				&nbsp;
-  						<i className="far fa-question-circle"/>
+								&nbsp;
+								<i className="far fa-question-circle"/>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.AutoBalance" handleChange={this.onChange}
@@ -189,8 +215,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.TOOLTIP')}>
 								{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.NAME')}
-              				&nbsp;
-  						<i className="far fa-question-circle"/>
+								&nbsp;
+								<i className="far fa-question-circle"/>
 							</label>
 							<div>
 								<select
@@ -250,6 +276,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										</label>
 										<input
 											type="number"
+											data-exclude="true"
 											className="input-number-options"
 											id="Playlist.Medias.Jingles.Interval"
 											placeholder="20"
@@ -278,6 +305,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										</label>
 										<input
 											type="number"
+											data-exclude="true"
 											className="input-number-options"
 											id="Playlist.Medias.Sponsors.Interval"
 											placeholder="50"
@@ -295,8 +323,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+								&nbsp;
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Intros.Enabled" handleChange={this.onChange}
@@ -323,8 +351,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+								&nbsp;
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Outros.Enabled" handleChange={this.onChange}
@@ -350,8 +378,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+								&nbsp;
+  								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Encores.Enabled" handleChange={this.onChange}
@@ -377,8 +405,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('CLASSIC_MODE_TOOLTIP')}>
 								{i18next.t('CLASSIC_MODE')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+              					&nbsp;
+  								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Karaoke.ClassicMode" handleChange={this.onChange}
@@ -406,6 +434,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 									<div>
 										<input
 											type="number"
+											data-exclude="true"
 											className=""
 											id="Karaoke.StreamerMode.PauseDuration"
 											placeholder="20"
@@ -486,6 +515,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										<input
 											className=""
 											type="number"
+											data-exclude="true"
 											id="Karaoke.Quota.FreeUpVotesRequiredMin"
 											onChange={this.onChange}
 											value={this.state.config['Karaoke.Quota.FreeUpVotesRequiredMin']}
@@ -495,13 +525,14 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<div className="settings-line">
 									<label title={i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT_TOOLTIP')}>
 										{i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT')}
-                  					&nbsp;
-  								<i className="far fa-question-circle"></i>
+										&nbsp;
+  										<i className="far fa-question-circle" />
 									</label>
 									<div>
 										<input
 											className=""
 											type="number"
+											data-exclude="true"
 											id="Karaoke.Quota.FreeUpVotesRequiredPercent"
 											onChange={this.onChange}
 											value={this.state.config['Karaoke.Quota.FreeUpVotesRequiredPercent']}
@@ -513,11 +544,12 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label>
 								{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')}
 								&nbsp;
-								<i className="far fa-question-circle"></i>
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<input
 									type="number"
+									data-exclude="true"
 									className=""
 									id="Karaoke.MinutesBeforeSessionEndsWarning"
 									placeholder="15"
@@ -546,6 +578,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										<input
 											className=""
 											type="number"
+											data-exclude="true"
 											id="Karaoke.Poll.Choices"
 											onChange={this.onChange}
 											value={this.state.config['Karaoke.Poll.Choices']}
@@ -560,6 +593,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 										<input
 											className=""
 											type="number"
+											data-exclude="true"
 											id="Karaoke.Poll.Timeout"
 											onChange={this.onChange}
 											value={this.state.config['Karaoke.Poll.Timeout']}
@@ -570,21 +604,21 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						<div className="settings-line">
 							<label>
-								{i18next.t('ONLINEURL')}
-							</label>
-							<div>
-								<Switch idInput="Online.URL" handleChange={this.onChange}
-									isChecked={this.state.config['Online.URL']} />
-							</div>
-						</div>
-
-						<div className="settings-line">
-							<label>
 								{i18next.t('FETCHPOPULARSONGS')}
 							</label>
 							<div>
 								<Switch idInput="Online.FetchPopularSongs" handleChange={this.onChange}
 									isChecked={this.state.config['Online.FetchPopularSongs']} />
+							</div>
+						</div>
+
+						<div className="settings-line">
+							<label>
+								{i18next.t('ONLINEURL')}
+							</label>
+							<div>
+								<Switch idInput="Online.URL" handleChange={this.onChange}
+									isChecked={this.state.config['Online.URL']} />
 							</div>
 						</div>
 
@@ -602,9 +636,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<RemoteStatus/> : null }
 
 						<div className="settings-line subCategoryGroupPanel">
-							<div className="2" style={{ textAlign: 'center' }}>
-								{i18next.t('MYSTERY_SONG_SETTINGS')}
-							</div>
+							{i18next.t('MYSTERY_SONG_SETTINGS')}
 						</div>
 
 						<div className="settings-line">
@@ -626,8 +658,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN')}
-              				&nbsp;
-  						<i className="far fa-question-circle"></i>
+              					&nbsp;
+  								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<select
@@ -645,7 +677,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC')}
 								&nbsp;
-  						<i className="far fa-question-circle"></i>
+  								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<select

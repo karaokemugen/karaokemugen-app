@@ -39,19 +39,24 @@ class App extends Component<unknown, AppState> {
 
 	render() {
 		return (
-			this.state.isInitialized ?
-				<Router>
-					<Suspense fallback={<Loading />}>
-						<Switch>
-							<Route path='/login' render={() => <Login
-								context={this.context}
-							/> }/>
-							<PrivateRoute path='/system' component={KMSystem} />
-							<PrivateRoute component={KMFrontend} />
-						</Switch>
-					</Suspense>
-					<ToastContainer />
-				</Router> : <Loading />
+			<>
+				<div id="root">
+					{this.state.isInitialized ?
+						<Router>
+							<Suspense fallback={<Loading />}>
+								<Switch>
+									<Route path='/login' render={() => <Login
+										context={this.context}
+									/> }/>
+									<PrivateRoute path='/system' component={KMSystem} />
+									<PrivateRoute component={KMFrontend} />
+								</Switch>
+							</Suspense>
+							<ToastContainer />
+						</Router> : <Loading />}
+				</div>
+				<div id="modal">{this.context.globalState.modal.modal}</div>
+			</>
 		);
 	}
 }

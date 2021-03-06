@@ -19,8 +19,6 @@ import WelcomePage from './components/WelcomePage';
 
 interface IState {
 	shutdownPopup: boolean;
-
-	mediaFile?: string;
 }
 
 class KMFrontend extends Component<unknown, IState> {
@@ -48,22 +46,10 @@ class KMFrontend extends Component<unknown, IState> {
 	}
 
 	powerOff = () => {
-		callModal('confirm', `${i18next.t('SHUTDOWN')} ?`, '', async () => {
+		callModal(this.context.globalDispatch, 'confirm', `${i18next.t('SHUTDOWN')} ?`, '', async () => {
 			await commandBackend('shutdown');
 			this.setState({ shutdownPopup: true });
 		});
-	};
-
-	showVideo = (file: string) => {
-		this.setState({ mediaFile: file });
-		document.addEventListener('keyup', this.closeVideo);
-	};
-
-	closeVideo = (e: KeyboardEvent) => {
-		if (e.key === 'Escape') {
-			this.setState({ mediaFile: undefined });
-			document.removeEventListener('keyup', this.closeVideo);
-		}
 	};
 
 	render() {
@@ -77,22 +63,15 @@ class KMFrontend extends Component<unknown, IState> {
 							<Route path="/migrate" render={() => <MigratePage />} />
 							<Route path="/welcome" render={() => <WelcomePage />} />
 							<Route path="/admin" render={() => <AdminPage
-								powerOff={isElectron() ? undefined : this.powerOff}
-								showVideo={this.showVideo} />} />
+								powerOff={isElectron() ? undefined : this.powerOff} />} />
 							<Route path="/chibi" exact component={ChibiPage} />
-							<Route path="/public" render={(route) => <PublicPage showVideo={this.showVideo} route={route} />} />
-							<Route exact path="/"><Redirect to="/public" /></Route>
+							<Route path="/public" render={(route) => <PublicPage route={route} />} />
+							<Route exact path="/">{this.context.globalState.auth.data.role === 'admin' ?
+								<Redirect to="/welcome" /> :<Redirect to="/public" />
+							}</Route>
 							<Route component={NotFoundPage} />
 						</Switch>
 						<a id="downloadAnchorElem" />
-						{this.state.mediaFile ?
-							<div className="overlay" onClick={() => {
-								this.setState({ mediaFile: undefined });
-								document.removeEventListener('keyup', this.closeVideo);
-							}}>
-								<video id="video" autoPlay src={`/medias/${encodeURIComponent(this.state.mediaFile)}`} />
-							</div> : null
-						}
 					</div> : null
 		);
 	}

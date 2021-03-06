@@ -35,6 +35,9 @@
 			}
 		}
 	}
+	&.problematicTag, .problematicTag {
+		color: gold;
+	}
 	&.inline {
 		margin: 0 .5em;
 	}

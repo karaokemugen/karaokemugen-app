@@ -16,8 +16,8 @@ import {startPoll} from './poll';
 const sleep = promisify(setTimeout);
 export const mpv = new Players();
 
-export function playerMessage(msg: string, duration: number, align = 4) {
-	return mpv.message(msg, duration, align);
+export function playerMessage(msg: string, duration: number, align = 4, type = 'admin') {
+	return mpv.message(msg, duration, align, type);
 }
 
 /* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */

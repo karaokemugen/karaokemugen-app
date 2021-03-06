@@ -88,12 +88,17 @@
 .modal.modalPage .modal-body div.text {
 	text-align: left;
 	line-height: 1.6em;
+	margin: 1em;
 }
 .modal.modalPage .modal-body div.text br{
 	line-height: 2.6em;
 }
 .modalPage .modal-message div {
 	height: 100%;
+
+	&.selectWithIcon {
+		margin: 0.5em;
+	}
 }
 
 .nav>li>a:focus, .nav>li>a:hover {
@@ -171,7 +176,9 @@
 .closeModal {
 	background-color: $mugen-btn-background;
 	color: whitesmoke;
-	font-size: 2em;
+	font-size: 1.75em;
+	width: 1.75em;
+	height: 1.75em;
 	cursor: pointer;
 	z-index: 10007;
 	padding: 0.25em;
@@ -180,6 +187,13 @@
 .closeModal:hover {
 	color: #e6e6e6fa;
 	background-color: transparent;
+}
+
+.public-modal.modal-header {
+	justify-content: start;
+	.modal-title {
+		margin-left: .25em;
+	}
 }
 
 // Nav from Bootstrap

@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { RemoteFailure, RemoteSuccess } from '../../../../../src/lib/types/remote';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { callModal } from '../../../utils/tools';
 
@@ -22,6 +23,8 @@ interface IState {
 }
 
 class RemoteStatus extends Component<unknown, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	constructor(props) {
 		super(props);
@@ -37,14 +40,14 @@ class RemoteStatus extends Component<unknown, IState> {
 
 	reset = (e: any) => {
 		e.preventDefault();
-		callModal('confirm', i18next.t('REMOTE_RESET'), i18next.t('REMOTE_RESET_CONFIRM'), () => {
+		callModal(this.context.globalDispatch, 'confirm', i18next.t('REMOTE_RESET'), i18next.t('REMOTE_RESET_CONFIRM'), () => {
 			commandBackend('resetRemoteToken');
 		});
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
 		this.updateRemoteData();
-		this.timeout = setInterval(this.updateRemoteData, 250);
+		this.timeout = setInterval(this.updateRemoteData, 500);
 	}
 
 	componentWillUnmount() {

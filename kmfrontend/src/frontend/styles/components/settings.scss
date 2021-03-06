@@ -1,18 +1,24 @@
 @import '../variables';
 
-.settings-page {
+.settings-panel {
+	width: 75vw;
+	margin: 0 auto;
 	overflow-y: scroll;
 }
 
-.settings-panel {
+.settings-nav {
 	width: 75vw;
-	margin: auto;
+	margin: 0 auto;
 }
 
 @media screen and (max-width: $mugen-breakpoint-small) {
 	.settings-panel {
 		width: 100%;
 		margin: 0;
+	}
+	.settings-nav {
+		width: 100%;
+		margin: 0 auto;
 	}
 }
 
@@ -39,7 +45,7 @@
 	}
 }
 
-.settings-line:nth-child(even) {
+.settings-line:not(.subCategoryGroupPanel):nth-child(even) {
 	background-color: $mugen-playlist-even;
 	> div input:not([type="range"]) {
 		background-color: scale-color($mugen-playlist-even, $lightness: 15%);
@@ -63,17 +69,16 @@
 	overflow: auto;
 	background-color: transparent;
 }
+
 .subCategoryGroupPanel {
-	background-color: #41485e61;
-	border: solid #585b65;
+	background-color: scale-color($mugen-background, $lightness: 5%);
+	border: solid scale-color($mugen-background, $lightness: 15%);
 	border-width: 1px 0px;
-	padding: 0.75em;
+	padding: 0.5em;
+	font-size: 1.5em;
+	font-weight: bold;
 }
 
-#settings {
-	background-color: #2d2d2f;
-	padding: 0;
-}
 .settingsGroupPanel {
 	border-left: 5px solid #ffffff40;
 	min-height: 20px;

@@ -44,8 +44,11 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			flag_playing: true,
 			pos: 1,
 			flag_free: false,
+			flag_refused: false,
+			flag_accepted: false,
 			flag_visible: false,
 			username: 'admin',
+			user_type: 0,
 			repo: kara.repository,
 			playlistcontent_id: -1,
 			playlist_id: -1,
@@ -255,7 +258,7 @@ export async function playerEnding() {
 		}
 		// Outros code, we're at the end of a playlist.
 		// Outros are played after the very last song.
-		if (state.player.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background' && !state.singlePlay) {
+		if (state.player.currentSong?.pos === pl.karacount && state.player.mediaType !== 'background' &&state.player.mediaType !== 'pauseScreen' && !state.singlePlay) {
 			if (conf.Playlist.Medias.Outros.Enabled && !state.randomPlaying) {
 				try {
 					await mpv.playMedia('Outros');

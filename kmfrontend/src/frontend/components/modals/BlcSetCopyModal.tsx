@@ -1,8 +1,9 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 
 import { BLCSet } from '../../../../../src/types/blacklist';
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
@@ -15,6 +16,8 @@ interface IState {
 }
 
 class BlcSetCopyModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	state = {
 		blSetToCopy: this.props.bLSetList[0].blc_set_id
@@ -23,14 +26,12 @@ class BlcSetCopyModal extends Component<IProps, IState> {
 	confirmModal = () => {
 		if (this.state.blSetToCopy) {
 			commandBackend('copyBLCs', { fromSet_id: this.props.bLSetFrom, toSet_id: this.state.blSetToCopy });
-			const element = document.getElementById('modal');
-			if (element) ReactDOM.unmountComponentAtNode(element);
+			closeModal(this.context.globalDispatch);
 		}
 	};
 
 	abortModal = () => {
-		const element = document.getElementById('modal');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		closeModal(this.context.globalDispatch);
 	};
 
 	render() {
@@ -43,8 +44,7 @@ class BlcSetCopyModal extends Component<IProps, IState> {
 							<h4 className="modal-title">{i18next.t('BLC.COPY_TO')}</h4>
 							<button className="closeModal"
 								onClick={() => {
-									const element = document.getElementById('modal');
-									if (element) ReactDOM.unmountComponentAtNode(element);
+									closeModal(this.context.globalDispatch);
 								}}>
 								<i className="fas fa-times"></i>
 							</button>
@@ -59,10 +59,10 @@ class BlcSetCopyModal extends Component<IProps, IState> {
 						</div>
 						<div className="modal-footer">
 							<button type="button" className="btn btn-action btn-primary other" onClick={this.abortModal}>
-								<i className="fas fa-times"></i>
+								<i className="fas fa-times" /> {i18next.t('CANCEL')}
 							</button>
 							<button type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
-								<i className="fas fa-check"></i>
+								<i className="fas fa-check" /> {i18next.t('BLC.COPY_SHORT')}
 							</button>
 						</div>
 					</div>

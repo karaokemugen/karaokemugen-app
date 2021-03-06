@@ -9,7 +9,9 @@ INSERT INTO playlist_content(
 	created_at,
 	pos,
 	flag_free,
-	flag_visible
+	flag_visible,
+	flag_refused,
+	flag_accepted
 ) VALUES(
 	$1,
 	$2,
@@ -18,7 +20,9 @@ INSERT INTO playlist_content(
 	$5,
 	$6,
 	$7,
-	$8
+	$8,
+	$9,
+	$10
 ) RETURNING pk_id_plcontent AS plc_id, fk_kid AS kid, pos, fk_login AS username
 `;
 
@@ -148,8 +152,7 @@ DELETE FROM kara WHERE pk_kid = $1;
 
 export const sqlremoveKaraFromPlaylist = `
 DELETE FROM playlist_content
-WHERE pk_id_plcontent IN ($playlistcontent_id)
-	AND fk_id_playlist = $1;
+WHERE pk_id_plcontent IN ($playlistcontent_id)	
 `;
 
 export const sqlgetSongCountPerUser = `
