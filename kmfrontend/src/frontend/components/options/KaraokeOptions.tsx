@@ -54,13 +54,15 @@ class KaraokeOptions extends Component<IProps, IState> {
 	}
 
 	addMysterySongLabel = () => {
-		const mysterySongsLabels = this.state.config['Playlist.MysterySongs.Labels'];
-		mysterySongsLabels.push(this.state.mysterySongLabel);
-		const config = this.state.config;
-		config['Playlist.MysterySongs.Labels'] = mysterySongsLabels;
-		this.setState({ config: config });
-		this.saveMysterySongsLabels(mysterySongsLabels);
-		this.setState({ mysterySongLabel: '' });
+		if (this.state.mysterySongLabel) {
+			const mysterySongsLabels = this.state.config['Playlist.MysterySongs.Labels'];
+			mysterySongsLabels.push(this.state.mysterySongLabel);
+			const config = this.state.config;
+			config['Playlist.MysterySongs.Labels'] = mysterySongsLabels;
+			this.setState({ config: config });
+			this.saveMysterySongsLabels(mysterySongsLabels);
+			this.setState({ mysterySongLabel: '' });
+		}
 	};
 
 	deleteMysterySongLabel = (value: string) => {
