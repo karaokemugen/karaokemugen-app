@@ -62,7 +62,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						status: 'done'
 					}
 				]
-				: null,
+				: [],
 			mediafile: kara?.mediafile
 				? [
 					{
@@ -71,7 +71,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						status: 'done'
 					}
 				]
-				: null,
+				: [],
 			singers: this.getTagArray(kara?.singers),
 			authors: this.getTagArray(kara?.authors),
 			misc: this.getTagArray(kara?.misc),
