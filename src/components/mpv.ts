@@ -748,15 +748,15 @@ class Players {
 				this.players.monitor = new Player({monitor: true}, this);
 			} else {
 				// Monitor needs to be destroyed
-				await this.exec('destroy', null, 'monitor');
+				await this.exec('destroy', null, 'monitor', true);
 				delete this.players.monitor;
 			}
 		}
-		await this.exec('recreate', [null, true]).catch(err => {
+		await this.exec('recreate', [null, true], undefined, true).catch(err => {
 			logger.error('Cannot restart mpv', {service: 'Player', obj: err});
 		});
 		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background' || playerState.mediaType === 'pauseScreen') {
-			await this.loadBackground();
+			setImmediate(this.loadBackground.bind(this));
 		}
 	}
 
