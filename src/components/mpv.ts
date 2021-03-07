@@ -56,7 +56,6 @@ const playerState: PlayerState = {
 	monitorEnabled: false,
 	songNearEnd: false,
 	nextSongNotifSent: false,
-	displayingInfo: false,
 	isOperating: false
 };
 
@@ -343,18 +342,15 @@ class Player {
 				playerState.mediaType === 'song') {
 				// Display informations if timeposition is 8 seconds before end of song
 				this.control.displaySongInfo(playerState.currentSong.infos);
-				playerState.displayingInfo = true;
 			} else if (position <= 8 && playerState.mediaType === 'song') {
 				// Display informations if timeposition is 8 seconds after start of song
 				this.control.displaySongInfo(playerState.currentSong.infos, -1, false, playerState.currentSong?.misc?.some(t => t.name === 'Spoiler'));
-				playerState.displayingInfo = true;
 			} else if (position >= Math.floor(playerState.currentSong.duration / 2)-4 &&
 				position <= Math.floor(playerState.currentSong.duration / 2)+4 &&
 				playerState.mediaType === 'song' && !getState().songPoll) {
 				// Display KM's banner if position reaches halfpoint in the song
 				this.control.displayInfo();
-				playerState.displayingInfo = true;
-			} else if (playerState.displayingInfo) {
+			} else {
 				this.control.messages.removeMessage('DI');
 			}
 			// Stop poll if position reaches 10 seconds before end of song
@@ -890,7 +886,7 @@ class Players {
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
 						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
-						: undefined;
+						: this.messages.removeMessage('DI');
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
