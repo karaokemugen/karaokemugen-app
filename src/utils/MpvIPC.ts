@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { Socket } from 'net';
 
@@ -11,6 +11,7 @@ class Mpv extends EventEmitter {
 	socket: Socket
 	isRunning: boolean
 	observedProperties: string[]
+	program: ChildProcess
 
 	constructor(binary: string, socket: string, args: string[]) {
 		super();
@@ -64,6 +65,7 @@ class Mpv extends EventEmitter {
 					reject(new Error(str));
 				}
 			});
+			this.program = program;
 		});
 	}
 
@@ -137,6 +139,7 @@ class Mpv extends EventEmitter {
 		this.observedProperties = [];
 		this.socket.removeAllListeners();
 		this.socket.destroy();
+		if (!this.program.exitCode) this.program.kill();
 	}
 
 	async start() {

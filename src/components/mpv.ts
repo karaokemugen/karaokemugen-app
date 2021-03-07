@@ -227,7 +227,7 @@ class Player {
 		const state = getState();
 
 		const NodeMPVArgs = [
-			'--keep-open=yes',
+			'--keep-open=always',
 			'--osd-level=0',
 			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
