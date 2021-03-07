@@ -207,6 +207,12 @@ export async function playerEnding() {
 		if (state.player.mediaType === 'Outros') {
 			if (getConfig().Playlist.EndOfPlaylistAction === 'random') {
 				await playRandomSongAfterPlaylist();
+			} else if (getConfig().Playlist.EndOfPlaylistAction === 'repeat') {
+				try {
+					await next();
+				} catch(err) {
+					logger.error('Failed going to next song', {service: 'Player', obj: err});
+				}
 			} else {
 				stopPlayer(true);
 			}

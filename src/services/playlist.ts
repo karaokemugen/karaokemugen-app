@@ -1250,7 +1250,7 @@ export async function nextSong(): Promise<DBPLC> {
 		return null;
 	} else {
 		// If we're here, it means either we're beyond the length of the playlist
-		// OR that RepeatPlaylist is set to 1.
+		// OR that RepeatPlaylist is set.
 		// We test again if we're at the end of the playlist. If so we go back to first song.
 		if (conf.Playlist.EndOfPlaylistAction === 'repeat' && currentPos + 1 >= playlist.length) currentPos = -1;
 		const kara = playlist[currentPos + 1];
