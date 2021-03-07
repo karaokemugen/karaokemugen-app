@@ -62,7 +62,7 @@ class AdminPage extends Component<IProps, IState> {
 		getSocket().on('publicPlaylistUpdated', this.getPlaylistList);
 		getSocket().on('playlistsUpdated', this.getPlaylistList);
 		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
-		getSocket().on('operatorNotificationInfo ', this.operatorNotificationInfo);
+		getSocket().on('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().on('operatorNotificationError', this.operatorNotificationError);
 		getSocket().on('notificationEndOfSessionNear', this.notificationEndOfSessionNear);
 	}
@@ -71,7 +71,7 @@ class AdminPage extends Component<IProps, IState> {
 		getSocket().off('publicPlaylistUpdated', this.getPlaylistList);
 		getSocket().off('playlistsUpdated', this.getPlaylistList);
 		getSocket().off('playlistInfoUpdated', this.getPlaylistList);
-		getSocket().off('operatorNotificationInfo ', this.operatorNotificationInfo);
+		getSocket().off('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().off('operatorNotificationError', this.operatorNotificationError);
 		getSocket().off('notificationEndOfSessionNear', this.notificationEndOfSessionNear);
 	}
