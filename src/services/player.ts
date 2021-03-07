@@ -121,10 +121,6 @@ async function toggleBordersPlayer() {
 	await mpv.toggleBorders();
 }
 
-async function setPiPSizePlayer(nb: number) {
-	await mpv.setPiPSize(nb);
-}
-
 async function setHwDecPlayer(method: string) {
 	await mpv.setHwDec(method);
 }
@@ -277,9 +273,6 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 			await toggleOnTopPlayer();
 		} else if (command === 'toggleBorders') {
 			await toggleBordersPlayer();
-		} else if (command === 'setPiPSize') {
-			if (isNaN(options)) throw 'Command setPiPSize must have a numeric option value';
-			await setPiPSizePlayer(options);
 		} else if (command === 'setHwDec') {
 			await setHwDecPlayer(options);
 		} else if (command === 'mute') {

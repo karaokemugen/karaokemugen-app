@@ -1077,15 +1077,6 @@ class Players {
 		}
 	}
 
-	async setPiPSize(pct: number) {
-		await this.exec({command: ['set_property', 'autofit', `${pct}%x${pct}%`]}).catch(err => {
-			logger.error('Unable to set PiP size', {service: 'Player', obj: err});
-			sentry.error(err);
-			throw err;
-		});
-		return playerState;
-	}
-
 	async setHwDec(method: string) {
 		await this.exec({command: ['set_property', 'hwdec', method]}).catch(err => {
 			logger.error('Unable to set hwdec method', {service: 'Player', obj: err});
