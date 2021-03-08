@@ -14,7 +14,7 @@ It also provides an easy way to share your karaoke with friends with **kara.moe 
 
 #### Privacy policy (#861)
 
-Upon your first launch of thi snew version, you'll get a summary of the data we collect and how we use it. You can choose to disable data collection at anytime if you object to it.
+Upon your first launch of this new version, you'll get a summary of the data we collect and how we use it. You can choose to disable data collection at anytime if you object to it.
 
 We also added a system to more easily manage news updates whenever you install a new version of Karaoke Mugen (#845)
 
