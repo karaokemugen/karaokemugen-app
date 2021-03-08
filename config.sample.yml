@@ -11,10 +11,10 @@ App:
 Online:
   # Host for your KM Server
   Host: kara.moe
-  # Should your instance sends stats? True/false. Undefined means the app will ask the user a question if it wants to send stats to KM Server.
-  Stats: undefined
-  # Should your instance sends error logs to sentry.io? True/false. Undefined means the app will ask the user a question if it wants to send errors.
-  ErrorTracking: undefined
+  # Should your instance sends stats? True/false. Non-existant means the app will ask the user a question if it wants to send stats to KM Server.
+  Stats: false
+  # Should your instance sends error logs to sentry.io? True/false. Non-existant means the app will ask the user a question if it wants to send errors.
+  ErrorTracking: false
   # Should we use KM Server's URL shortener? Turns connection URL into http://kara.moe for example
   URL: true
   # Should we allow users to register/login accounts on kara.moe ?
@@ -91,9 +91,9 @@ Karaoke:
       # Enable display of connection messages
       Enabled: true
       # Additional message prepended to the connection URL
-      Message: null
+      Message: 'lol'
       # Override host/IP address
-      Host: null
+      Host: '192.168.0.1'
   Poll:
     # Number of choices in poll
     Choices: 4
@@ -255,6 +255,8 @@ System:
           - repos/world/tags
     - Name: Local
       Online: false
+      Enabled: true
+      SendStats: false
       Path:
         Karas:
           - repos/Local/karaokes
