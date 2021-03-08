@@ -48,7 +48,7 @@ class PlaylistModal extends Component<IProps, IState> {
 				flag_public: this.state.flag_public,
 			}
 		);
-		this.props.idPlaylist === -4 ? this.props.changeIdPlaylist(-4, response.id) : this.props.changeIdPlaylist(response);
+		this.props.idPlaylist === -4 ? this.props.changeIdPlaylist(-4, response.set_id) : this.props.changeIdPlaylist(response);
 		this.closeModal();
 	};
 
