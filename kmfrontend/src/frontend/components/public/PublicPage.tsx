@@ -259,7 +259,7 @@ class PublicPage extends Component<IProps, IState> {
 	};
 
 	render() {
-		return this.context.globalState.settings.data.config.Frontend.Mode === 0 ?
+		return this.context?.globalState.settings.data.config.Frontend.Mode === 0 ?
 			(<div
 				style={{
 					top: '25%',
@@ -372,7 +372,7 @@ class PublicPage extends Component<IProps, IState> {
 											<Playlist
 												scope="public"
 												side={1}
-												idPlaylist={Number(match.params.pl_id) || this.state.idsPlaylist.left}
+												idPlaylist={Number((match.params as { pl_id: string; }).pl_id) || this.state.idsPlaylist.left}
 												idPlaylistTo={this.context.globalState.settings.data.state.publicPlaylistID}
 												majIdsPlaylist={this.majIdsPlaylist}
 												toggleKaraDetail={this.toggleKaraDetail}

@@ -94,7 +94,7 @@ class ProfilModal extends Component<IProps, IState> {
 		this.setState({ user: user });
 	};
 
-	changeLanguageFallback(name: 'main_series_lang' | 'fallback_series_lang', value: string) {
+	changeLanguageFallback = (name: 'main_series_lang' | 'fallback_series_lang', value: string) => {
 		const user = this.state.user;
 		user[name] = value;
 		this.setState({ user: user });
@@ -175,7 +175,7 @@ class ProfilModal extends Component<IProps, IState> {
 		}
 	};
 
-	async favExport() {
+	favExport = async () => {
 		const exportFile = await commandBackend('exportFavorites');
 		const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
 		const dlAnchorElem = document.getElementById('downloadAnchorElem');
@@ -188,10 +188,10 @@ class ProfilModal extends Component<IProps, IState> {
 
 	importAvatar = (e) => {
 		if (e.target.files?.length > 0) {
-			this.setState({cropAvatarModalOpen: true});
-		  	ReactDOM.render(<CropAvatarModal src={e.target.files[0]} saveAvatar={this.saveAvatar} />, document.getElementById('import-avatar'));
+			this.setState({ cropAvatarModalOpen: true });
+			ReactDOM.render(<CropAvatarModal src={e.target.files[0]} saveAvatar={this.saveAvatar} />, document.getElementById('import-avatar'));
 		}
-	  };
+	};
 
 	saveAvatar = async (avatar) => {
 		if (avatar) {
@@ -243,7 +243,7 @@ class ProfilModal extends Component<IProps, IState> {
 			}, 500);
 		}
 		const body = this.state.user ? (<div className="modal-content">
-			<div className={`modal-header${this.props.scope === 'public' ? ' public-modal':''}`}>
+			<div className={`modal-header${this.props.scope === 'public' ? ' public-modal' : ''}`}>
 				{this.props.scope === 'public' ? <button
 					className="closeModal"
 					type="button"
@@ -255,7 +255,7 @@ class ProfilModal extends Component<IProps, IState> {
 					<button className="closeModal"
 						onClick={this.closeModal}>
 						<i className="fas fa-fw fa-times" />
-					</button>:null
+					</button> : null
 				}
 			</div>
 			<div id="nav-profil" className="modal-body" >
@@ -276,31 +276,31 @@ class ProfilModal extends Component<IProps, IState> {
 					{logInfos?.role !== 'guest' ?
 						<div className="profileData">
 							<div className="profileLine">
-								<i className="fas fa-fw fa-user"/>
+								<i className="fas fa-fw fa-user" />
 								<input className={this.state.nicknameMandatory} name="nickname" type="text"
 									placeholder={i18next.t('PROFILE_USERNAME')} defaultValue={this.state.user.nickname}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
 							</div>
 							<div className="profileLine">
-								<i className="fas fa-fw fa-envelope"/>
+								<i className="fas fa-fw fa-envelope" />
 								<input className="form-control" name="email" type="text"
 									placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="email" />
 							</div>
 							<div className="profileLine">
-								<i className="fas fa-fw fa-link"/>
+								<i className="fas fa-fw fa-link" />
 								<input className="form-control" name="url" type="text"
 									placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="url" />
 							</div>
 							<div className="profileLine">
-								<i className="fas fa-fw fa-leaf"/>
+								<i className="fas fa-fw fa-leaf" />
 								<input className="form-control" name="bio" type="text"
 									placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
 							</div>
 							<div className="profileLine">
-								<i className="fas fa-fw fa-lock"/>
+								<i className="fas fa-fw fa-lock" />
 								<input className={this.state.passwordDifferent} name="password" type="password"
 									placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
@@ -316,7 +316,7 @@ class ProfilModal extends Component<IProps, IState> {
 										defaultValue={this.state.user.series_lang_mode.toString()}>
 										<option value={'-1'}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
 										<option value={'0'}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-										<option value={'3'}>{i18next.t('SERIE_NAME_MODE_USER')}</option>
+										<option value={'3'}>{i18next.t('SERIE_NAME_MODE_USER_PROFILE')}</option>
 										<option value={'4'}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
 									</select>
 								</div>
@@ -326,38 +326,38 @@ class ProfilModal extends Component<IProps, IState> {
 									<div className="profileLine row">
 										<label className="col-xs-6 control-label">{i18next.t('MAIN_SERIES_LANG')}</label>
 										<div className="col-xs-6">
-											<Autocomplete value={this.state.user.main_series_lang} options={listLangs}
-														  onChange={(value) => this.changeLanguageFallback('main_series_lang', value)} />
+											<Autocomplete value={this.state.user.main_series_lang} options={listLangs} forceTop={true}
+												onChange={(value) => this.changeLanguageFallback('main_series_lang', value)} />
 										</div>
 									</div>
 									<div className="profileLine row">
 										<label className="col-xs-6 control-label">{i18next.t('FALLBACK_SERIES_LANG')}</label>
 										<div className="col-xs-6">
-											<Autocomplete value={this.state.user.fallback_series_lang} options={listLangs}
-														  onChange={(value) => this.changeLanguageFallback('fallback_series_lang', value)} />
+											<Autocomplete value={this.state.user.fallback_series_lang} options={listLangs} forceTop={true}
+												onChange={(value) => this.changeLanguageFallback('fallback_series_lang', value)} />
 										</div>
 									</div>
 								</React.Fragment> : null
 							}
 							<div className="profileLine">
-								<i className="fas fa-fw fa-star"/>
+								<i className="fas fa-fw fa-star" />
 								<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
-									<i className="fas fa-fw fa-download"/> {i18next.t('FAVORITES_IMPORT')}
+									<i className="fas fa-fw fa-download" /> {i18next.t('FAVORITES_IMPORT')}
 								</label>
 								<input id="favImport" className="import-file" type="file" accept=".kmfavorites" style={{ display: 'none' }} onChange={this.favImport} />
 								<button type="button" title={i18next.t('FAVORITES_EXPORT')} className="btn btn-action btn-default favExport" onClick={this.favExport}>
-									<i className="fas fa-fw fa-upload"/> {i18next.t('FAVORITES_EXPORT')}
+									<i className="fas fa-fw fa-upload" /> {i18next.t('FAVORITES_EXPORT')}
 								</button>
 							</div>
 							{this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username !== 'admin' ?
 								<div className="profileLine">
 									{logInfos?.onlineToken ?
 										<button type="button" className="btn btn-danger profileDelete" onClick={this.profileDelete}>
-											<i className="fas fa-fw fa-retweet"/> {i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
+											<i className="fas fa-fw fa-retweet" /> {i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
 										</button>
 										:
 										<button type="button" className="btn btn-primary profileConvert" onClick={this.profileConvert}>
-											<i className="fas fa-fw fa-retweet"/> {i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
+											<i className="fas fa-fw fa-retweet" /> {i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
 										</button>
 									}
 								</div> : null
@@ -365,7 +365,7 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine" >
 								<button type="button" className={`btn profileDelete ${logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'}`}
 									onClick={this.deleteAccount}>
-									<i className="fas fa-fw fa-trash-alt"/> {i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE')}
+									<i className="fas fa-fw fa-trash-alt" /> {i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE')}
 								</button>
 							</div>
 							<div className="profileLine profileButtonLine" >

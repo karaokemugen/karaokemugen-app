@@ -2,7 +2,7 @@ import { Layout } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import { RouteComponentProps,withRouter } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { Repository } from '../../../../../src/lib/types/repo';
 import { commandBackend } from '../../../utils/socket';
@@ -53,7 +53,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 	loadrepository = async () => {
 		if (this.props.match.params.name) {
-			const res = await commandBackend('getRepo', {name: this.props.match.params.name});
+			const res = await commandBackend('getRepo', { name: this.props.match.params.name });
 			this.setState({ repository: res, save: this.saveUpdate });
 		} else {
 			this.setState({ repository: { ...newrepository }, save: this.saveNew });
@@ -62,7 +62,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 
 	consolidate = async (consolidatePath: string) => {
-		if (consolidatePath) {
+		if (consolidatePath && this.props.match.params.name) {
 			await commandBackend('consolidateRepo', { path: consolidatePath, name: this.props.match.params.name }, true, 300000);
 			this.props.history.push('/system/repositories');
 		}
@@ -71,7 +71,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 	compareLyrics = async (repo: string) => {
 		if (repo) {
 			const response = await commandBackend('compareLyricsBetweenRepos',
-				{ repo: repo, name: this.props.match.params.name}
+				{ repo: repo, name: this.props.match.params.name }
 			);
 			this.setState({ report: response, selectedRepo: repo });
 		}

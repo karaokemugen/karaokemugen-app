@@ -24,3 +24,7 @@ export function getLanguagesInLocaleFromCode(code:string) {
 export function getNavigatorLanguageIn3B() {
 	return languages.alpha2ToAlpha3B(navigatorLanguage);
 }
+
+export function getLanguageIn3B(code) {
+	return languages.alpha2ToAlpha3B(code);
+}

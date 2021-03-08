@@ -29,7 +29,7 @@ class PlayerOptions extends Component<IProps, IState> {
 		this.getDisplays();
 	}
 
-	componentDidUpdate(_prevProps:Readonly<IProps>, prevState:Readonly<IState>) {
+	componentDidUpdate(_prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
 		// Find differences
 		let different = false;
 		const newConfig = dotify(this.context.globalState.settings.data.config);
@@ -137,8 +137,7 @@ class PlayerOptions extends Component<IProps, IState> {
 									<input
 										type="range"
 										id="Player.PIP.Size"
-										data-namecommand="setPiPSize"
-										onChange={this.putPlayerCommando}
+										onChange={this.onChange}
 										value={this.state.config['Player.PIP.Size']}
 									/>
 								</div>

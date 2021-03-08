@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { DBUser } from '../lib/types/database/user';
 import logger from '../lib/utils/logger';
 import {importFavorites} from '../services/favorites';
-import { deleteUser, editUser, listUsers } from '../services/user';
+import { deleteUser, editUser, findUserByName, listUsers } from '../services/user';
 import { Favorite } from '../types/stats';
 
 // Map io connections
@@ -17,13 +17,17 @@ async function listRemoteUsers() {
 function setupUserWatch(server: string) {
 	const socket = io(`https://${server}`, { multiplex: true });
 	ioMap.set(server, socket);
-	socket.on('user updated', (payload) => {
-		const user: DBUser = payload.user;
+	socket.on('user updated', async (payload) => {
+		const userRemote: DBUser = payload.user;
+		const login = `${userRemote.login}@${server}`;
+		const user: DBUser = await findUserByName(login);		
+		user.bio = userRemote.bio;
+		user.url = userRemote.url;
+		user.fallback_series_lang = userRemote.fallback_series_lang;
+		user.main_series_lang = userRemote.main_series_lang;
+		user.series_lang_mode = userRemote.series_lang_mode;
+		user.nickname = userRemote.nickname;
 		const favorites: Favorite[] = payload.favorites;
-		const login = `${user.login}@${server}`;
-		delete user.login;
-		delete user.type;
-		delete user.avatar_file;
 		logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
 		Promise.all([
 			editUser(login, user, null, 'admin'),

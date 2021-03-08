@@ -5,11 +5,11 @@ import { v4 as uuidV4 } from 'uuid';
 
 import { APIMessage } from '../controllers/common';
 import { compareKarasChecksum } from '../dao/database';
-import {emptyDownload, initDownloads, insertDownloads, selectDownload, selectDownloads, selectPendingDownloads, updateDownload} from '../dao/download';
+import {emptyDownload, initDownloads, insertDownloads, selectDownloads, selectPendingDownloads, updateDownload} from '../dao/download';
 import { refreshAll, vacuum } from '../lib/dao/database';
 import { DownloadBundle } from '../lib/types/downloads';
 import {resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
-import {asyncMove, asyncStat, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
+import {asyncCopy, asyncMove, asyncStat, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import { emit } from '../lib/utils/pubsub';
@@ -26,7 +26,8 @@ let downloaderReady = false;
 
 const queueOptions = {
 	id: 'uuid',
-	cancelIfRunning: true
+	cancelIfRunning: true,
+	concurrent: 3
 };
 
 let q: any;
@@ -207,7 +208,8 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, download_i
 		}
 		for (const tag of tags) {
 			try {
-				await asyncMove(resolve(tempDir, tag.file), resolve(localTagsPath, tag.file), {overwrite: true});
+				// Tags are copied, not moved, becaue they can be used by several karas at once now that we use concurrent queue.
+				await asyncCopy(resolve(tempDir, tag.file), resolve(localTagsPath, tag.file), {overwrite: true});
 			} catch(err) {
 				logger.error(`Unable to move ${resolve(tempDir, tag.file)} to ${resolve(localTagsPath, tag.file)}`, {service: 'Debug'});
 			}
@@ -320,10 +322,6 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 
 export function getDownloads() {
 	return selectDownloads();
-}
-
-export function getDownload(uuid: string) {
-	return selectDownload(uuid);
 }
 
 export function setDownloadStatus(uuid: string, status: string) {

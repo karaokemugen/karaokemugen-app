@@ -37,12 +37,6 @@ class ChibiPage extends Component<unknown, IState> {
 			await login('admin', new URL(window.location.toString()).searchParams.get('admpwd'), this.context.globalDispatch);
 		}
 		if (this.context.globalState.auth.isAuthenticated) {
-			if (this.context.globalState.auth.data.role !== 'admin') {
-				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
-				logout(this.context.globalDispatch);
-				return;
-			}
-
 			getSocket().on('playerStatus', this.playerUpdate);
 			const result = await commandBackend('getPlayerStatus');
 			this.setState({ statusPlayer: result,

@@ -88,6 +88,7 @@ export async function exportSet(id: number): Promise<BLCSetFile> {
 export async function removeSet(id: number) {
 	const blcSet = await selectSet(id);
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
+	if (blcSet.flag_current) throw {code: 403, msg: 'Unable to remove a current BLC Set'};
 	await deleteSet(id);
 	emitWS('BLCSetsUpdated');
 }
@@ -163,7 +164,7 @@ export async function testCurrentBLCSet() {
 export async function emptyBlacklistCriterias(id: number) {
 	logger.debug('Wiping criterias', {service: 'Blacklist'});
 	const blcSet = await selectSet(id);
-	if (!blcSet) throw 'BLC set unknown';
+	if (!blcSet) throw {code: 404, message: 'BLC set unknown'};
 	await emptyBLC(id);
 	if (blcSet.flag_current) await generateBlacklist();
 	updatedSetModifiedAt(id);

@@ -23,18 +23,6 @@ WHERE status = 'DL_PLANNED'
 ORDER BY started_at DESC
 `;
 
-export const sqlselectDownload = `
-SELECT name,
-	size,
-	status,
-	pk_uuid as uuid,
-	started_at,
-	repository,
-	kid
-FROM download
-WHERE pk_uuid = $1
-`;
-
 export const sqlupdateRunningDownloads = `
 UPDATE download
 SET status = 'DL_PLANNED'

@@ -14,7 +14,7 @@ It also provides an easy way to share your karaoke with friends with **kara.moe 
 
 #### Privacy policy (#861)
 
-Upon your first launch of thi snew version, you'll get a summary of the data we collect and how we use it. You can choose to disable data collection at anytime if you object to it.
+Upon your first launch of this new version, you'll get a summary of the data we collect and how we use it. You can choose to disable data collection at anytime if you object to it.
 
 We also added a system to more easily manage news updates whenever you install a new version of Karaoke Mugen (#845)
 
@@ -101,6 +101,7 @@ It can be enabled in the Window menu.
 
 ### Improvements
 
+- Downloads are now made 3 at a time, not one at a time, to speed up big download queues (#910)
 - Security code begone! The security code still exists when you're using a browser, but when using the app's electron browser, it will communicate with the app directly to get it and authenticate you. (#891)
 - When creating automixes, the songs' requesters are now the ones who had that song in their favorites (#897)
 - In streamer mode, stopping the player during a pause will disable pause time (allowing you to manually play the song once you're ready to sing again.) (#890)

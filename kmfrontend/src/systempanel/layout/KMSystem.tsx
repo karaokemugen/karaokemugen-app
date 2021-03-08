@@ -3,14 +3,10 @@ import '../App.scss';
 import { ConfigProvider, Layout } from 'antd';
 import enUS from 'antd/es/locale/en_US';
 import frFR from 'antd/es/locale/fr_FR';
-import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import { logout } from '../../store/actions/auth';
-import GlobalContext from '../../store/context';
 import TasksEvent from '../../TasksEvent';
-import { displayMessage } from '../../utils/tools';
 import Loading from '../components/Loading';
 import Config from '../pages/Config';
 import Database from '../pages/Database';
@@ -39,16 +35,6 @@ import UserList from '../pages/Users/UserList';
 import KMMenu from './KMMenu';
 
 class KMSystem extends Component<unknown, unknown> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
-
-	componentDidMount() {
-		if (this.context.globalState.auth.data.role !== 'admin') {
-			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
-			logout(this.context.globalDispatch);
-		}
-	}
-
 	render() {
 		return (
 			<ConfigProvider locale={navigator.languages[0].includes('fr') ? frFR : enUS}>

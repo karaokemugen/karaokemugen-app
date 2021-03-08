@@ -84,9 +84,8 @@ export function startElectron() {
 		});
 		ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
 			updateChibiPlayerWindow(false);
-			// TODO: reflect this in config, and uncheck in electron menu
-			// At least uncheck in Electron Menu to let user reopen the window, configuration may be set only on click
-			// in the Electron window
+			setConfig({GUI: {ChibiPlayer: { Enabled: false }}});
+			applyMenu();
 		});
 		ipcMain.on('focusMainWindow', (_event, _eventData) => {
 			focusWindow();

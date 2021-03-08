@@ -6,7 +6,7 @@
 
 import './Autocomplete.scss';
 
-import React, { useEffect,useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface IProps {
 	options?: Array<any>;
@@ -14,6 +14,7 @@ interface IProps {
 	value: any;
 	acceptNewValues?: boolean;
 	onChange: (value: any) => void;
+	forceTop?: boolean
 }
 
 function Autocomplete(props: IProps) {
@@ -131,7 +132,8 @@ function Autocomplete(props: IProps) {
 					onChange={handleSearchChange}
 					onKeyUp={handleSearchKeyUp}
 				/>
-				<ul className="UI-autocomplete-options">
+				<ul className="UI-autocomplete-options"
+					style={{top: node.current && props.forceTop ? node.current.getBoundingClientRect().top - 30 : undefined }}>
 					<div className="UI-autocomplete-options-wrapper">
 						{filteredOptions().map((o, index) =>
 							<li className="UI-autocomplete-option" data-active={index === activeIndex ? 'true' : 'false'}

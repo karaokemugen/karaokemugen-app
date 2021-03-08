@@ -56,7 +56,6 @@ const playerState: PlayerState = {
 	monitorEnabled: false,
 	songNearEnd: false,
 	nextSongNotifSent: false,
-	displayingInfo: false,
 	isOperating: false
 };
 
@@ -228,7 +227,7 @@ class Player {
 		const state = getState();
 
 		const NodeMPVArgs = [
-			'--keep-open=yes',
+			'--keep-open=always',
 			'--osd-level=0',
 			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
@@ -343,18 +342,15 @@ class Player {
 				playerState.mediaType === 'song') {
 				// Display informations if timeposition is 8 seconds before end of song
 				this.control.displaySongInfo(playerState.currentSong.infos);
-				playerState.displayingInfo = true;
 			} else if (position <= 8 && playerState.mediaType === 'song') {
 				// Display informations if timeposition is 8 seconds after start of song
 				this.control.displaySongInfo(playerState.currentSong.infos, -1, false, playerState.currentSong?.misc?.some(t => t.name === 'Spoiler'));
-				playerState.displayingInfo = true;
 			} else if (position >= Math.floor(playerState.currentSong.duration / 2)-4 &&
 				position <= Math.floor(playerState.currentSong.duration / 2)+4 &&
 				playerState.mediaType === 'song' && !getState().songPoll) {
 				// Display KM's banner if position reaches halfpoint in the song
 				this.control.displayInfo();
-				playerState.displayingInfo = true;
-			} else if (playerState.displayingInfo) {
+			} else {
 				this.control.messages.removeMessage('DI');
 			}
 			// Stop poll if position reaches 10 seconds before end of song
@@ -752,15 +748,15 @@ class Players {
 				this.players.monitor = new Player({monitor: true}, this);
 			} else {
 				// Monitor needs to be destroyed
-				await this.exec('destroy', null, 'monitor');
+				await this.exec('destroy', null, 'monitor', true);
 				delete this.players.monitor;
 			}
 		}
-		await this.exec('recreate', [null, true]).catch(err => {
+		await this.exec('recreate', [null, true], undefined, true).catch(err => {
 			logger.error('Cannot restart mpv', {service: 'Player', obj: err});
 		});
 		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background' || playerState.mediaType === 'pauseScreen') {
-			await this.loadBackground();
+			setImmediate(this.loadBackground.bind(this));
 		}
 	}
 
@@ -890,7 +886,7 @@ class Players {
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
 						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
-						: undefined;
+						: this.messages.removeMessage('DI');
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
@@ -1079,15 +1075,6 @@ class Players {
 			sentry.error(err);
 			throw err;
 		}
-	}
-
-	async setPiPSize(pct: number) {
-		await this.exec({command: ['set_property', 'autofit', `${pct}%x${pct}%`]}).catch(err => {
-			logger.error('Unable to set PiP size', {service: 'Player', obj: err});
-			sentry.error(err);
-			throw err;
-		});
-		return playerState;
 	}
 
 	async setHwDec(method: string) {

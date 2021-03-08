@@ -91,8 +91,8 @@ describe('Blacklist', () => {
 		const data = await commandBackend(token, 'createBLCSet', {
 			name: 'Second set'
 		});
-		expect(data.id).to.be.a('number').and.at.least(0);
-		BLCSetID = data.id;
+		expect(data.set_id).to.be.a('number').and.at.least(0);
+		BLCSetID = data.set_id;
 	});
 
 	it('Edit blacklist set', async () => {
@@ -184,8 +184,8 @@ describe('Blacklist', () => {
 		const data = await commandBackend(token, 'createBLCSet', {
 			name: 'Delete set'
 		});
-		expect(data.id).to.be.a('number').and.at.least(0);
-		BLCSetIDToDelete = data.id;
+		expect(data.set_id).to.be.a('number').and.at.least(0);
+		BLCSetIDToDelete = data.set_id;
 	});
 
 	it('Delete Blacklist Set', async () => {

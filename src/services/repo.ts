@@ -55,7 +55,7 @@ export async function addRepo(repo: Repository) {
 }
 
 /** Edit a repository. Folders will be created if necessary */
-export async function editRepo(name: string, repo: Repository) {
+export async function editRepo(name: string, repo: Repository, refresh?: boolean) {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw {code: 404};
 	if (!oldRepo.Online && repo.Online) {
@@ -65,7 +65,7 @@ export async function editRepo(name: string, repo: Repository) {
 	}
 	updateRepo(repo, name);
 	await checkRepoPaths(repo);
-	if (oldRepo.Enabled !== repo.Enabled) {
+	if (oldRepo.Enabled !== repo.Enabled || refresh) {
 		if (await compareKarasChecksum()) generateDB();
 	}
 	if (!oldRepo.SendStats && repo.SendStats) {
@@ -260,7 +260,7 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		repo.Path.Lyrics = [relativePath(state.dataPath, resolve(newPath, 'lyrics/'))];
 		repo.Path.Medias = [relativePath(state.dataPath, resolve(newPath, 'medias/'))];
 		repo.Path.Tags = [relativePath(state.dataPath, resolve(newPath, 'tags/'))];
-		await editRepo(repoName, repo);
+		await editRepo(repoName, repo, true);
 	} catch(err) {
 		logger.error(`Failed to move repo ${name}`, {service: 'Repo', obj: err});
 		throw err;

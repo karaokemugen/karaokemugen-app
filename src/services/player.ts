@@ -83,7 +83,7 @@ export async function next() {
 					await startPoll();
 					on('songPollResult', () => {
 						// We're not at the end of playlsit anymore!
-						nextSong().then(kara => setPlaying(kara.playlistcontent_id, getState().currentPlaylistID));
+						nextSong().then(kara => setPlaying(kara.playlistcontent_id, getState().currentPlaylistID)).catch(() => {});
 					});
 					if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 						await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
@@ -119,10 +119,6 @@ async function toggleOnTopPlayer() {
 
 async function toggleBordersPlayer() {
 	await mpv.toggleBorders();
-}
-
-async function setPiPSizePlayer(nb: number) {
-	await mpv.setPiPSize(nb);
 }
 
 async function setHwDecPlayer(method: string) {
@@ -277,9 +273,6 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 			await toggleOnTopPlayer();
 		} else if (command === 'toggleBorders') {
 			await toggleBordersPlayer();
-		} else if (command === 'setPiPSize') {
-			if (isNaN(options)) throw 'Command setPiPSize must have a numeric option value';
-			await setPiPSizePlayer(options);
 		} else if (command === 'setHwDec') {
 			await setHwDecPlayer(options);
 		} else if (command === 'mute') {

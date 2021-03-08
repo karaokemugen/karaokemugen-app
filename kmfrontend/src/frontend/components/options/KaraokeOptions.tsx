@@ -31,7 +31,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 		this.setState({ config: dotify(this.context.globalState.settings.data.config) });
 	}
 
-	componentDidUpdate(_prevProps:Readonly<IProps>, prevState:Readonly<IState>) {
+	componentDidUpdate(_prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
 		// Find differences
 		let different = false;
 		const newConfig = dotify(this.context.globalState.settings.data.config);
@@ -54,13 +54,15 @@ class KaraokeOptions extends Component<IProps, IState> {
 	}
 
 	addMysterySongLabel = () => {
-		const mysterySongsLabels = this.state.config['Playlist.MysterySongs.Labels'];
-		mysterySongsLabels.push(this.state.mysterySongLabel);
-		const config = this.state.config;
-		config['Playlist.MysterySongs.Labels'] = mysterySongsLabels;
-		this.setState({ config: config });
-		this.saveMysterySongsLabels(mysterySongsLabels);
-		this.setState({ mysterySongLabel: '' });
+		if (this.state.mysterySongLabel) {
+			const mysterySongsLabels = this.state.config['Playlist.MysterySongs.Labels'];
+			mysterySongsLabels.push(this.state.mysterySongLabel);
+			const config = this.state.config;
+			config['Playlist.MysterySongs.Labels'] = mysterySongsLabels;
+			this.setState({ config: config });
+			this.saveMysterySongsLabels(mysterySongsLabels);
+			this.setState({ mysterySongLabel: '' });
+		}
 	};
 
 	deleteMysterySongLabel = (value: string) => {
@@ -158,7 +160,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<label title={i18next.t('FREE_AUTO_TIME_TOOLTIP')}>
 									{i18next.t('FREE_AUTO_TIME')}
 									&nbsp;
-									<i className="far fa-question-circle"/>
+									<i className="far fa-question-circle" />
 								</label>
 								<div>
 									<input
@@ -180,7 +182,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}
 								&nbsp;
-								<i className="far fa-question-circle"/>
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
@@ -192,7 +194,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE_TOOLTIP')}>
 								{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}
 								&nbsp;
-								<i className="far fa-question-circle"/>
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Karaoke.AutoBalance" handleChange={this.onChange}
@@ -204,7 +206,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('ENGINEAUTOPLAY_TOOLTIP')}>
 								{i18next.t('ENGINEAUTOPLAY')}
               				&nbsp;
-  						<i className="far fa-question-circle"/>
+  						<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<Switch idInput="Karaoke.Autoplay" handleChange={this.onChange}
@@ -216,7 +218,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label title={i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.TOOLTIP')}>
 								{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.NAME')}
 								&nbsp;
-								<i className="far fa-question-circle"/>
+								<i className="far fa-question-circle" />
 							</label>
 							<div>
 								<select
@@ -633,7 +635,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						{this.state.config['Online.Remote'] ?
-							<RemoteStatus/> : null }
+							<RemoteStatus /> : null}
 
 						<div className="settings-line subCategoryGroupPanel">
 							{i18next.t('MYSTERY_SONG_SETTINGS')}
@@ -641,7 +643,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						<div className="settings-line">
 							<label>
-								{i18next.t('ENGINE_HIDE_INVISIBLE_SONGS')}
+								{i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS')}
 							</label>
 							<div>
 								<select
@@ -649,8 +651,8 @@ class KaraokeOptions extends Component<IProps, IState> {
 									onChange={this.onChange}
 									value={this.state.config['Playlist.MysterySongs.Hide']}
 								>
-									<option value='true'> {i18next.t('ENGINE_HIDE_INVISIBLE_SONGS_HIDDEN_OPTION')} </option>
-									<option value='false'>???</option>
+									<option value='true'> {i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS_HIDDEN_OPTION')} </option>
+									<option value='false'>{i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS_VISIBLE_OPTION')}</option>
 								</select>
 							</div>
 						</div>
@@ -695,23 +697,27 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<label>
 								{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS')}
 							</label>
-							<div>
-								<div>
-									<input value={this.state.mysterySongLabel} style={{ margin: '10px', color: '#555' }}
-										onChange={e => this.setState({ mysterySongLabel: e.target.value })} />
-									<button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_ADD')}</button>
-								</div>
+							<div className='mysterySongs'>
 								{this.state.config['Playlist.MysterySongs.Labels'].map((value: string) => {
 									return (
 										<div key={value}>
 											<label>{value}</label>
 											{this.state.config['Playlist.MysterySongs.Labels'].length > 1 ?
 												<button type="button" className="btn btn-default"
-													onClick={() => this.deleteMysterySongLabel(value)}>{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_DELETE')}</button> : null
+													onClick={() => this.deleteMysterySongLabel(value)}>
+													{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_DELETE')}
+												</button> : null
 											}
 										</div>
 									);
 								})}
+								<div>
+									<input value={this.state.mysterySongLabel}
+										onChange={e => this.setState({ mysterySongLabel: e.target.value })} />
+									<button type="button" className="btn btn-default" onClick={this.addMysterySongLabel}>
+										{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_ADD')}
+									</button>
+								</div>
 							</div>
 						</div>
 					</div>
