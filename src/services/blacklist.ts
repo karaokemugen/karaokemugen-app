@@ -88,7 +88,7 @@ export async function exportSet(id: number): Promise<BLCSetFile> {
 export async function removeSet(id: number) {
 	const blcSet = await selectSet(id);
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
-	if (!blcSet.flag_current) throw {code: 403, msg: 'Unable to remove a current BLC Set'};
+	if (blcSet.flag_current) throw {code: 403, msg: 'Unable to remove a current BLC Set'};
 	await deleteSet(id);
 	emitWS('BLCSetsUpdated');
 }
