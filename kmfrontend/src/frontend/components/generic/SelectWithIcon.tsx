@@ -1,8 +1,8 @@
 import './SelectWithIcon.scss';
 
+import i18next from 'i18next';
 import React from 'react';
 import { Button, Menu, MenuItem,Wrapper } from 'react-aria-menubutton';
-import i18next from 'i18next';
 
 interface IProps {
 	list: { value: string; label: string; icons?: string[]; }[];

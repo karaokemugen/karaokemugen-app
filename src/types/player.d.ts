@@ -17,7 +17,6 @@ export interface PlayerState {
 	border?: boolean,
 	url?: string,
 	monitorEnabled?: boolean,
-	displayingInfo?: boolean,
 	songNearEnd?: boolean,
 	nextSongNotifSent?: boolean,
 	isOperating?: boolean

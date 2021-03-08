@@ -67,14 +67,11 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
 	const state = getState();
 	if (!isEqual(oldConfig.Player, newConfig.Player) && !state.isDemo) {
-		//If these settings haven't been changed, it means another one has, so we're restarting mpv
-		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen &&
-			oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop &&
-			oldConfig.Player.Borders === newConfig.Player.Borders &&
-			oldConfig.Player.Volume === newConfig.Player.Volume &&
-			oldConfig.Player.PIP.Size === newConfig.Player.PIP.Size &&
-			oldConfig.Player.VisualizationEffects === newConfig.Player.VisualizationEffects &&
-			oldConfig.Player.HardwareDecoding === newConfig.Player.HardwareDecoding
+		// If these settings have been changed, a restart of mpv is necessary
+		if (
+			oldConfig.Player.mpvVideoOutput !== newConfig.Player.mpvVideoOutput ||
+			oldConfig.Player.ExtraCommandLine !== newConfig.Player.ExtraCommandLine ||
+			oldConfig.Player.Monitor !== newConfig.Player.Monitor
 		) playerNeedsRestart();
 	}
 	if (newConfig.Online.URL !== oldConfig.Online.URL && state.ready && !state.isDemo) {
