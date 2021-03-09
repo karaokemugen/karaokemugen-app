@@ -200,7 +200,7 @@ export async function addBlacklistCriteria(BLCs: BLC[], set_id: number) {
 		// Validation
 		for (const blc of blcList) {
 			if (blc.type < 0 || blc.type > 1004 || blc.type === 1000) throw {code: 400, msg: `Incorrect BLC type (${blc.type})`};
-			if (blc.type === 1001 || blc.type < 1000) {
+			if (blc.type === 1001 || (blc.type >= 1 && blc.type < 1000)) {
 				if (!new RegExp(uuidRegexp).test(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`};
 			}
 			if ((blc.type === 1002 || blc.type === 1003) && !isNumber(blc.value)) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`};
