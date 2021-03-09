@@ -35,7 +35,9 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 		socket.emit(name, {authorization, onlineAuthorization, body}, ({err, data}:{err: boolean, data: any}) => {
 			clearTimeout(nodeTimeout);
 			if (loading) eventEmitter.emitChange('loading', false);
-			if (!err && data?.code && typeof data.data !== 'object') {
+			if (!err && data?.message?.code && typeof data.data !== 'object') {
+				displayMessage('success', i18next.t(`SUCCESS_CODES.${data.message.code}`, {data: data.data}));
+			} else if (!err && data?.code && typeof data.data !== 'object') {
 				displayMessage('success', i18next.t(`SUCCESS_CODES.${data.code}`, {data: data.data}));
 			} else if (err && data?.message?.code && typeof data.data !== 'object') {
 				displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, {data: data.data}));
