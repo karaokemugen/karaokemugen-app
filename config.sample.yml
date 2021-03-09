@@ -12,9 +12,9 @@ Online:
   # Host for your KM Server
   Host: kara.moe
   # Should your instance sends stats? True/false. Non-existant means the app will ask the user a question if it wants to send stats to KM Server.
-  Stats: false
+  #Stats: false
   # Should your instance sends error logs to sentry.io? True/false. Non-existant means the app will ask the user a question if it wants to send errors.
-  ErrorTracking: false
+  #ErrorTracking: false
   # Should we use KM Server's URL shortener? Turns connection URL into http://kara.moe for example
   URL: true
   # Should we allow users to register/login accounts on kara.moe ?
@@ -91,7 +91,7 @@ Karaoke:
       # Enable display of connection messages
       Enabled: true
       # Additional message prepended to the connection URL
-      Message: 'lol'
+      #Message: 'Connect to Wifi xxx'
       # Override host/IP address
       Host: '192.168.0.1'
   Poll:
