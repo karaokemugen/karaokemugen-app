@@ -154,6 +154,7 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		playlist_id: params.playlist_id,
 		username: params.username,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
+		publicPlaylist_id: getState().publicPlaylistID,
 		...filterClauses.params
 	}));
 	return res.rows;
