@@ -1,14 +1,14 @@
 import { QueryResult } from 'pg';
-import {pg as yesql} from 'yesql';
+import { pg as yesql } from 'yesql';
 
-import {buildClauses, db, transaction} from '../lib/dao/database';
+import { buildClauses, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import {getConfig} from '../lib/utils/config';
-import {now} from '../lib/utils/date';
-import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
+import { getConfig } from '../lib/utils/config';
+import { now } from '../lib/utils/date';
+import { DBPL, DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { PLC, PLCParams} from '../types/playlist';
-import {getState} from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { getState } from '../utils/state';
+import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
 export function editPlaylist(pl: DBPL) {
@@ -161,12 +161,6 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 
 export async function getPlaylistKaraIDs(id: number): Promise<DBPLCKID[]> {
 	const res = await db().query(sqlgetPlaylistContentsKaraIDs, [id]);
-	return res.rows;
-}
-
-
-export async function getPlaylistPos(id: number): Promise<DBPLPos[]> {
-	const res = await db().query(sqlgetPlaylistPos, [id]);
 	return res.rows;
 }
 
