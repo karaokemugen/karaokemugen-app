@@ -97,9 +97,9 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   END) as flag_favorites,
   ak.repository as repository,
   ak.tid AS tid,
-  array_agg(DISTINCT pc.pk_id_plcontent) AS public_plc_id,
+  array_remove(array_agg(DISTINCT pc.pk_id_plcontent), null) AS public_plc_id,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
-  array_agg(DISTINCT pc_self.pk_id_plcontent) AS my_public_plc_id,
+  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
   count(ak.pk_kid) OVER()::integer AS count
 FROM all_karas AS ak
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid

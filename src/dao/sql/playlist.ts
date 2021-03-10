@@ -310,8 +310,8 @@ SELECT
   )::integer, 0) AS time_before_play,
   pc.flag_visible AS flag_visible,
   ak.repository as repository,
-  array_agg(DISTINCT pc_pub.pk_id_plcontent) AS public_plc_id,
-  array_agg(DISTINCT pc_self.pk_id_plcontent) AS my_public_plc_id
+  array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
+  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id
 FROM playlist_content AS pc
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = :currentPlaylist_id
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.pk_kid
