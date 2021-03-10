@@ -735,7 +735,9 @@
 		"SONGWRITERS_BY": "Composed by",
 		"CREATORS_BY": "Created by",
 		"AUTHORS_BY": "Karaoke created by",
-		"DELETE_KARA": "Delete karaoke?"
+		"DELETE_KARA": "Delete karaoke?",
+		"DEJAVU_TOOLTIP": "Already played song",
+		"PROBLEMATIC_TOOLTIP": "This song contains scenes ({{tags}}) that may be problematic for some persons."
 	},
 	"MENU": {
 		"HOME": "Home",

@@ -6,7 +6,6 @@ import { SortableElement, SortableElementProps, SortableHandle } from 'react-sor
 import { toast } from 'react-toastify';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
-import { Tag } from '../../../../../src/lib/types/tag';
 import { DBBlacklist } from '../../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
 import { closeModal, showModal } from '../../../store/actions/modal';
@@ -43,7 +42,7 @@ interface IProps {
 
 interface IState {
 	karaMenu: boolean;
-	problematic: boolean
+	problematic: DBKaraTag[]
 }
 
 class KaraLine extends Component<IProps & SortableElementProps, IState> {
@@ -270,11 +269,10 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	})();
 
 	isProblematic = () => {
-		let problematic = false;
+		const problematic: DBKaraTag[] = [];
 		for (const tagType of Object.keys(tagTypes)) {
-			if ((this.props.kara[tagType.toLowerCase()] as unknown as Tag[])?.length > 0
-				&& this.props.kara[tagType.toLowerCase()].some((t: Tag) => t.problematic)) {
-				problematic = true;
+			if ((this.props.kara[tagType.toLowerCase()] as unknown as DBKaraTag[])?.length > 0) {
+				problematic.push(...this.props.kara[tagType.toLowerCase()].filter((t: DBKaraTag) => t.problematic));
 			}
 		}
 		return problematic;
@@ -378,10 +376,13 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										<span className="tag inline green" title={getTagInLocale(kara.langs[0], this.props.i18nTag)}>
 											{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 										</span>
+										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon"
+																					 title={i18next.t('KARA.DEJAVU_TOOLTIP')} /> : null}
 										{kara.title}
 										{kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}
-										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" /> : null}
-										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" /> : null}
+										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
+											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
+												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })}/> : null}
 									</div>
 									<div className="contentDivMobileSerie">
 										<span className="tag inline green" title={getTagInLocale(kara.songtypes[0], this.props.i18nTag)}>
@@ -402,9 +403,12 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								</div> :
 								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
 									<div className="disable-select karaTitle">
+										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon"
+																					 title={i18next.t('KARA.DEJAVU_TOOLTIP')} /> : null}
 										{karaTitle}
-										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" /> : null}
-										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" /> : null}
+										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
+											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
+												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })}/> : null}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"
 												title={i18next.t('UPVOTE_NUMBER')}>

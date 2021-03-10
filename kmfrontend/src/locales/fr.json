@@ -750,7 +750,9 @@
 		"SONGWRITERS_BY": "Composé par",
 		"CREATORS_BY": "Créé par",
 		"AUTHORS_BY": "Karaoké créé par",
-		"DELETE_KARA": "Supprimer le karaoké ?"
+		"DELETE_KARA": "Supprimer le karaoké ?",
+		"DEJAVU_TOOLTIP": "Chanson déjà passée",
+		"PROBLEMATIC_TOOLTIP": "Cette chanson comprend des scènes ({{tags}}) pouvant poser problème à certaines personnes."
 	},
 	"MENU": {
 		"HOME": "Home",
