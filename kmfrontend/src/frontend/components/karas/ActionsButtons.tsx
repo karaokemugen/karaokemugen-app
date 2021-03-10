@@ -39,7 +39,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 		const classValue = this.props.isHeader ? 'btn btn-default karaLineButton' : 'btn btn-sm btn-action karaLineButton';
 		return (
 			<>
-				{this.props.scope === 'admin' && this.props.flag_public 
+				{this.props.scope === 'admin' && this.props.flag_public
 					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaylistID ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_REFUSE_SELECT_KARA' : 'TOOLTIP_REFUSE_KARA')}
 						className={`${classValue} ${this.props.kara?.flag_refused ? 'off' : ''}`}
@@ -48,7 +48,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{this.props.scope === 'admin' && this.props.flag_public 
+				{this.props.scope === 'admin' && this.props.flag_public
 					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaylistID ?
 					<button
 						title={i18next.t(this.props.isHeader ? 'TOOLTIP_ACCEPT_SELECT_KARA' : 'TOOLTIP_ACCEPT_KARA')}
@@ -58,13 +58,13 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{this.props.idPlaylist !== -5 && ((this.props.scope === 'admin' && this.props.idPlaylist !== -1 && !(this.props.flag_public 
+				{this.props.idPlaylist !== -5 && ((this.props.scope === 'admin' && this.props.idPlaylist !== -1 && !(this.props.flag_public
 					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaylistID))
 					|| (this.props.scope !== 'admin' && !this.props.kara?.flag_dejavu && !this.props.kara?.flag_playing
 						&& (this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]
 							|| (this.props.flag_public && this.props.kara.username === this.context.globalState.auth.data.username)))) ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_KARA' : 'TOOLTIP_DELETEKARA')}
-						disabled={this.props.kara?.flag_upvoted || this.props?.checkedKaras === 0}
+						disabled={this.props?.checkedKaras === 0}
 						className={classValue} onClick={this.props.deleteKara}>
 						<i className="fas fa-eraser" />
 					</button> : null
@@ -77,7 +77,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1 && this.props.idPlaylistTo !== -5 && !(this.props.flag_public 
+				{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1 && this.props.idPlaylistTo !== -5 && !(this.props.flag_public
 					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaylistID))
 					|| (this.props.scope === 'public' && this.props.idPlaylist !== this.context.globalState.settings.data.state.publicPlaylistID
 						&& this.props.idPlaylist !== this.context.globalState.settings.data.state.currentPlaylistID
@@ -92,15 +92,13 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{this.context.globalState.auth.data.role !== 'admin' && (this.props.kara?.upvotes > 0
-					|| this.props.kara.username !== this.context.globalState.auth.data.username)
-					&& (this.props.flag_public || (this.props.kara?.public_plc_id && this.props.kara?.public_plc_id[0]
-						&& !(this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]))) ?
+				{this.props.scope !== 'admin' && ((this.props.kara.public_plc_id?.length > 0
+					&& this.props.kara.my_public_plc_id?.length === 0) || this.props.kara?.upvotes > 0) ?
 					<button
 						title={i18next.t('TOOLTIP_UPVOTE')}
 						className={`${classValue} upvoteKara`}
 						onClick={this.props.upvoteKara}
-						disabled={this.props.kara.username === this.context.globalState.auth.data.username}>
+						disabled={this.props.kara.my_public_plc_id?.length > 0}>
 						<i className={`fas fa-thumbs-up ${this.props.kara?.flag_upvoted ? 'currentUpvote' : ''}
 						${this.props.kara?.upvotes > 0 ? ' upvotes' : ''}`} />
 						{this.props.kara?.upvotes > 0 && this.props.kara?.upvotes}
