@@ -81,7 +81,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	deleteKara = async () => {
 		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_ids: this.props.kara.my_public_plc_id
+				plc_ids: this.props.kara?.playlistcontent_id ? [this.props.kara.playlistcontent_id]:this.props.kara.my_public_plc_id
 			});
 		} else if (this.props.idPlaylist === -2) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
@@ -169,18 +169,33 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		}
 		try {
 			const response = await commandBackend(url, data);
-			if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
-				const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
-				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+			if (response && response.code && response.data?.plc) {
+				let message;
+				if (response.data?.plc.time_before_play) {
+					const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+					const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+					const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+					message = (<>
+						{i18next.t(`SUCCESS_CODES.${response.code}`)}
+						<br />
+						{i18next.t('TIME_BEFORE_PLAY', {
+							time: beforePlayTime,
+							date: playTimeDate
+						})}
+					</>);
+				} else {
+					message = (<>
+						{i18next.t(`SUCCESS_CODES.${response.code}`)}
+					</>);
+				}
 				displayMessage('success', <div>
-					{i18next.t(`SUCCESS_CODES.${response.code}`)}
-					<br />
-					{i18next.t('TIME_BEFORE_PLAY', {
-						time: beforePlayTime,
-						date: playTimeDate
-					})}
-				</div>);
+					{message}
+					<button className="btn" onClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]});
+					}}>{i18next.t('CANCEL')}</button>
+				</div>, 10000);
 			}
 		} catch (err) {
 			// error already display
