@@ -3,6 +3,7 @@ import './KaraLine.scss';
 import i18next from 'i18next';
 import React, { Component, CSSProperties, Key, MouseEvent } from 'react';
 import { SortableElement, SortableElementProps, SortableHandle } from 'react-sortable-hoc';
+import { toast } from 'react-toastify';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { Tag } from '../../../../../src/lib/types/tag';
@@ -193,7 +194,11 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 					<button className="btn" onClick={e => {
 						e.preventDefault();
 						e.stopPropagation();
-						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]});
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
+							.then(() => {
+								toast.dismiss();
+								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+							});
 					}}>{i18next.t('CANCEL')}</button>
 				</div>, 10000);
 			}
