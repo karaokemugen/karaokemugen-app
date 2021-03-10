@@ -691,12 +691,12 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 		const playlistsNeedingUpdate: Set<number> = new Set();
 		const plcsNeedingDelete: any[] = [];
 		for (const plc_id of plc_ids) {
-			if (typeof plc_id !== 'number') throw {code: 400, msg: 'At least one PLC ID is invalid'};
+			if (typeof plc_id !== 'number') throw {errno: 400, msg: 'At least one PLC ID is invalid'};
 			const plcData = await getPLCInfoMini(plc_id);
-			if (!plcData) throw {code: 404, msg: 'At least one playlist content is unknown'};
-			if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {code: 403, msg: 'You cannot delete a song you did not add'};
-			if (token.role !== 'admin' && plcData.upvotes > 0) throw {code: 403, msg: 'You cannot delete a song with upvotes'};
-			if (plcData.flag_playing && getState().player.playerStatus === 'play' && plcData.playlist_id === getState().currentPlaylistID) throw {code: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
+			if (!plcData) throw {errno: 404, msg: 'At least one playlist content is unknown'};
+			if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {errno: 403, msg: 'You cannot delete a song you did not add'};
+			if (token.role !== 'admin' && plcData.upvotes > 0) throw {errno: 403, code: 'PL_DELETE_UPVOTED', msg: 'You cannot delete a song with upvotes'};
+			if (plcData.flag_playing && getState().player.playerStatus === 'play' && plcData.playlist_id === getState().currentPlaylistID) throw {errno: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
 			usersNeedingUpdate.add(plcData.username);
 			playlistsNeedingUpdate.add(plcData.playlist_id);
 			plcsNeedingDelete.push({
@@ -739,7 +739,7 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 		}
 	} catch(err) {
 		throw {
-			code: err?.code,
+			code: err?.errno,
 			message: err
 		};
 	} finally {

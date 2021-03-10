@@ -1072,6 +1072,7 @@
 		"BLC_DELETE_ERROR": "Erreur lors de la suppression du critère de liste noire",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Mauvais code de sécurité",
 		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer ce morceau",
+		"PL_DELETE_UPVOTED": "Vous ne pouvez pas supprimer votre ajout, il est trop ancien.",
 		"PL_VIEW_SONGS_ERROR": "Erreur au chargement de la liste de lecture",
 		"SONG_LIST_ERROR": "Erreur au chargement de la bibliothèque",
 		"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture",

@@ -449,7 +449,7 @@ export default function playlistsController(router: SocketIOApp) {
 			} catch(err) {
 				const code = 'PL_DELETE_SONG_ERROR';
 				errMessage(code, err);
-				throw {code: err?.code || 500, message: APIMessage(code)};
+				throw err?.code ? err:APIMessage(code, err);
 			}
 		} else {
 			// Errors detected

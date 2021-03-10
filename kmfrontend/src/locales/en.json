@@ -1054,6 +1054,7 @@
 		"BLC_DELETE_ERROR": "Unable to delete Blacklist criteria",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Wrong security code",
 		"PL_DELETE_SONG_ERROR": "You cannot delete that song",
+		"PL_DELETE_UPVOTED": "You cannot delete your suggestion, it's too late.",
 		"PL_VIEW_SONGS_ERROR": "Error loading the playlist",
 		"SONG_LIST_ERROR": "Error loading the library",
 		"PL_ADD_SONG_ERROR": "No songs could be added, all are in destination playlist already",
