@@ -41,8 +41,6 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 				displayMessage('success', i18next.t(`SUCCESS_CODES.${data.code}`, {data: data.data}));
 			} else if (err && data?.message?.code && typeof data.data !== 'object') {
 				displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, {data: data.data}));
-				// Do not consider shown errors as unhandled
-				err = false;
 			}
 			err ? reject(data) : resolve(data);
 		});
