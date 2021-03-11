@@ -829,7 +829,7 @@
 	},
 	"TAGS": {
 		"NAME": "Nom original",
-		"NAME_REQUIRED": "Entrez un nom svp",
+		"NAME_REQUIRED": "Entrez un nom",
 		"NAME_TOOLTIP": "Ceci est le nom interne utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
 		"SHORT_NAME": "Nom court",
 		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
@@ -839,7 +839,7 @@
 		"ALIASES_TOOLTIP": "Noms courts ou alternatifs d'un tag qui peut être recherché.",
 		"I18N": "Noms par langues",
 		"I18N_TOOLTIP": "Il doit y avoir au moins un nom dans n'importe quelle langue (entrez le nom original par défaut)",
-		"I18N_ERROR": "Entrez une traduction svp",
+		"I18N_ERROR": "Entrez une traduction",
 		"I18N_NAME": "Nom dans cette langue",
 		"I18N_DELETE": "Supprimer le nom",
 		"I18N_SELECT": "Sélectionner une langue",
