@@ -49,7 +49,7 @@ export default function favoritesController(router: SocketIOApp) {
 			} catch(err) {
 				const code = 'AUTOMIX_ERROR';
 				errMessage(code, err);
-				throw {code: err?.code || 500, message: APIMessage(code)};
+				throw {code: err?.code || 500, message: APIMessage(err?.msg || code)};
 			}
 		} else {
 			// Errors detected
