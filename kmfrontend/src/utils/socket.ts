@@ -25,7 +25,7 @@ export function setAuthorization(authorizationParam:string, onlineAuthorizationP
 	if (!authorizationParam || onlineAuthorizationParam) onlineAuthorization = onlineAuthorizationParam;
 }
 
-export function commandBackend(name: string, body?: any, loading = false, timeout = 5000): Promise<any> {
+export function commandBackend(name: string, body?: any, loading = false, timeout = 10000): Promise<any> {
 	return new Promise((resolve, reject) => {
 		if (loading) eventEmitter.emitChange('loading', true);
 		const nodeTimeout = setTimeout((reason) => {

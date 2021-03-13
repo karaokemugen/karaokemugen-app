@@ -114,11 +114,7 @@ class Login extends Component<IProps, IState> {
 	}
 
 	loginGuest = async () => {
-		try {
-			this.login(undefined);
-		} catch (err) {
-			// error already display
-		}
+		this.login(undefined).catch(() => {});
 	};
 
 	loginUser = () => {

@@ -605,14 +605,10 @@ class Playlist extends Component<IProps, IState> {
 					const karaList = randomKaras.content.map((a: KaraElement) => {
 						return a.kid;
 					});
-					try {
-						commandBackend('addKaraToPlaylist', {
-							kids: karaList,
-							pl_id: this.props.idPlaylistTo
-						});
-					} catch (err) {
-						// error already display
-					}
+					commandBackend('addKaraToPlaylist', {
+						kids: karaList,
+						pl_id: this.props.idPlaylistTo
+					}).catch(() => {});
 				}, '');
 			}
 		}, '1');
@@ -626,15 +622,11 @@ class Playlist extends Component<IProps, IState> {
 		});
 		const karaList = response.content.map((a: KaraElement) => a.kid);
 		displayMessage('info', i18next.t('PL_MULTIPLE_ADDED', { count: response.content.length }));
-		try {
-			commandBackend('addKaraToPlaylist', {
-				kids: karaList,
-				requestedby: this.context.globalState.auth.data.username,
-				pl_id: this.props.idPlaylistTo
-			});
-		} catch (err) {
-			// error already display
-		}
+		commandBackend('addKaraToPlaylist', {
+			kids: karaList,
+			requestedby: this.context.globalState.auth.data.username,
+			pl_id: this.props.idPlaylistTo
+		}).catch(() => {});
 	};
 
 	addCheckedKaras = async (_event?: any, pos?: number) => {

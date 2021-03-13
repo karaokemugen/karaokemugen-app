@@ -12,7 +12,7 @@ import { DBPLC } from '../../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import { getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import { tagTypes } from '../../../utils/tagTypes';
+import { getTagTypeName,tagTypes } from '../../../utils/tagTypes';
 import { getCriterasByValue } from './_blc_criterias_types';
 
 let blacklistCache = {};
@@ -21,7 +21,18 @@ interface KaraDownloadState {
 	karas_local: any[];
 	karas_online: any[];
 	i18nTag: any;
-	blacklistCriterias: any[];
+	blacklistCriterias: {
+		dlblc_id: number,
+		type: number,
+		value: string,
+		uniquevalue: string,
+		filter?: {
+			value: number|string;
+			mode: string;
+			fields: string[];
+			test: string;
+		}
+	}[];
 	karasOnlineCount: number;
 	karasQueue: DBDownload[];
 	kara: any;
@@ -137,9 +148,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				if (c && c.fields && c.fields.length > 0) {
 					criteria.filter = c;
 					criteria.value = criteria.value.toLowerCase();
-					return criteria;
 				}
-				return null;
+				return criteria;
 			});
 			this.setState({ blacklistCriterias: criterias });
 		}
@@ -150,14 +160,13 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 	blacklistCheck(kara) {
 		// avoid lots of kara check operation on re-render
-		if (blacklistCache[kara.kid] !== undefined)
-			return blacklistCache[kara.kid];
-
+		if (blacklistCache[kara.kid] !== undefined) return blacklistCache[kara.kid];
+		
 		blacklistCache[kara.kid] = true;
 		if (this.state.blacklistCriterias.length) {
 			this.state.blacklistCriterias.map(criteria => {
-				if (criteria.filter.test === 'contain') {
-					criteria.filter.fields.map(field => {
+				if (criteria.filter?.test === 'contain') {
+					criteria.filter?.fields.map(field => {
 						if (typeof (kara[field]) === 'string') {
 							if (kara[field].toLowerCase().match(criteria.value)) {
 								blacklistCache[kara.kid] = false;
@@ -166,7 +175,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 							kara[field].map(t => {
 								if (t) {
 									if (typeof t === 'string') {
-										if (t.toLowerCase().match(criteria.value)) {
+										if (t.toLowerCase().match(criteria.value as string)) {
 											blacklistCache[kara.kid] = false;
 										}
 									} else if (t.name) {
@@ -180,6 +189,11 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						}
 						return null;
 					});
+				} else {
+					const listTid:string[] = kara[tagTypes[getTagTypeName(criteria.type)].karajson].map(tag => tag.tid);
+					if (listTid.includes(criteria.value)) {
+						blacklistCache[kara.kid] = false;
+					}
 				}
 				return null;
 			});

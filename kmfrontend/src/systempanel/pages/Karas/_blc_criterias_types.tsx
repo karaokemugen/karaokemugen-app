@@ -38,8 +38,6 @@ export const criteras_types = [
 	{
 		value:2,
 		mode:'tag',
-		fields: ['singers'],
-		test: 'contain',
 	},
 	{
 		value:3,

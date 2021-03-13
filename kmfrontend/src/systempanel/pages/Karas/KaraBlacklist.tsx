@@ -2,6 +2,7 @@ import { Button, Input, InputNumber, Layout, Select,Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
+import { DBDownloadBLC } from '../../../../../src/types/database/download';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
@@ -10,7 +11,7 @@ import criteras_types from './_blc_criterias_types';
 const { Option } = Select;
 
 interface KaraBlacklistState {
-	criterias: any[],
+	criterias: DBDownloadBLC[],
 	filter_type: number,
 	filter_mode: string,
 	filter_options: any[],
@@ -40,7 +41,7 @@ class KaraBlacklist extends Component<unknown, KaraBlacklistState> {
 	}
 
 	refresh = async () => {
-		const data = await commandBackend('getDownloadBLCs', undefined, false, 300000);
+		const data:DBDownloadBLC[] = await commandBackend('getDownloadBLCs', undefined, false, 300000);
 		this.setState({ criterias: data });
 	}
 
@@ -116,13 +117,13 @@ class KaraBlacklist extends Component<unknown, KaraBlacklistState> {
 		} else if (this.state.filter_mode === 'number') {
 			return <InputNumber value={this.state.filter_value} onChange={this.handleCriteriaValue} />;
 		} else if (this.state.filter_mode === 'tag' && this.state.filter_options.length) {
-			return <select
+			return <Select
 				style={{ width: 200 }}
 				onChange={this.handleCriteriaValue}
 			>
 				<option key="null" value=""></option>
 				{this.state.filter_options.map(o => <option key={o.tid} value={o.tid}>{o.name}</option>)}
-			</select>;
+			</Select>;
 		}
 	}
 
