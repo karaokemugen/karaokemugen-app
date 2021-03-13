@@ -60,11 +60,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	upvoteKara = () => {
 		const plc_id = this.props.kara.playlistcontent_id ? this.props.kara.playlistcontent_id : this.props.kara.public_plc_id[0];
 		const data = this.props.kara.flag_upvoted ? { downvote: 'true', plc_id: plc_id } : { plc_id: plc_id };
-		try {
-			commandBackend('votePLC', data);
-		} catch (err) {
-			// error already display
-		}
+		commandBackend('votePLC', data).catch(() => {});
 	};
 
 
@@ -171,42 +167,38 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				kid: this.props.kara.kid
 			};
 		}
-		try {
-			const response = await commandBackend(url, data);
-			if (response && response.code && response.data?.plc) {
-				let message;
-				if (response.data?.plc.time_before_play) {
-					const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
-					const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-					const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
-					message = (<>
-						{i18next.t(`SUCCESS_CODES.${response.code}`)}
-						<br />
-						{i18next.t('TIME_BEFORE_PLAY', {
-							time: beforePlayTime,
-							date: playTimeDate
-						})}
-					</>);
-				} else {
-					message = (<>
-						{i18next.t(`SUCCESS_CODES.${response.code}`)}
-					</>);
-				}
-				displayMessage('success', <div>
-					{message}
-					<button className="btn" onClick={e => {
-						e.preventDefault();
-						e.stopPropagation();
-						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
-							.then(() => {
-								toast.dismiss();
-								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
-							});
-					}}>{i18next.t('CANCEL')}</button>
-				</div>, 10000);
+		const response = await commandBackend(url, data).catch(() => {});
+		if (response && response.code && response.data?.plc) {
+			let message;
+			if (response.data?.plc.time_before_play) {
+				const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+				message = (<>
+					{i18next.t(`SUCCESS_CODES.${response.code}`)}
+					<br />
+					{i18next.t('TIME_BEFORE_PLAY', {
+						time: beforePlayTime,
+						date: playTimeDate
+					})}
+				</>);
+			} else {
+				message = (<>
+					{i18next.t(`SUCCESS_CODES.${response.code}`)}
+				</>);
 			}
-		} catch (err) {
-			// error already display
+			displayMessage('success', <div>
+				{message}
+				<button className="btn" onClick={e => {
+					e.preventDefault();
+					e.stopPropagation();
+					commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
+						.then(() => {
+							toast.dismiss();
+							displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+						});
+				}}>{i18next.t('CANCEL')}</button>
+			</div>, 10000);
 		}
 	};
 
