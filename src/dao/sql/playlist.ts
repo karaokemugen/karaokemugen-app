@@ -183,7 +183,9 @@ SELECT
   pc.flag_refused AS flag_refused,
   pc.flag_accepted AS flag_accepted,
   COUNT(pc.pk_id_plcontent) OVER()::integer AS count,
-  ak.repository AS repository
+  ak.repository AS repository,
+  array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
+  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
@@ -194,6 +196,8 @@ LEFT OUTER JOIN favorites f ON f.fk_kid = ak.pk_kid AND f.fk_login = :username
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
+LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_pub.fk_id_playlist = :publicPlaylist_id
+LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
 ${additionalFrom}
 WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').join(' ')}
@@ -243,14 +247,6 @@ INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos;
-`;
-
-export const sqlgetPlaylistPos = `
-SELECT pc.pos AS pos,
-	pc.pk_id_plcontent AS playlistcontent_id
-FROM playlist_content AS pc
-WHERE pc.fk_id_playlist = $1
-ORDER BY pc.pos,pc.created_at DESC;
 `;
 
 export const sqlgetPLCInfo = (forUser: boolean) => `
@@ -318,8 +314,8 @@ SELECT
   )::integer, 0) AS time_before_play,
   pc.flag_visible AS flag_visible,
   ak.repository as repository,
-  array_agg(DISTINCT pc_pub.pk_id_plcontent) AS public_plc_id,
-  array_agg(DISTINCT pc_self.pk_id_plcontent) AS my_public_plc_id
+  array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
+  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id
 FROM playlist_content AS pc
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = :currentPlaylist_id
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.pk_kid

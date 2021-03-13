@@ -4,7 +4,7 @@ import { getConfig } from '../../lib/utils/config';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getState } from '../../utils/state';
 
-export default function miscController(router: SocketIOApp) {
+export default function testController(router: SocketIOApp) {
 	router.route('getState', async (_socket: any, _req: any) => {
 		return getState();
 	});

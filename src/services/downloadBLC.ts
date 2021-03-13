@@ -4,7 +4,7 @@ import { KaraDownloadBLC } from '../types/download';
 
 export function addDownloadBLC(blc: KaraDownloadBLC) {
 	if (blc.type < 0 && blc.type > 1006) throw {code: 400, msg: `Incorrect BLC type (${blc.type})`};
-	if ((blc.type <= 1001) && !new RegExp(uuidRegexp).test(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`};
+	if ((blc.type >= 1 && blc.type <= 1001) && !new RegExp(uuidRegexp).test(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have UUID value`};
 	if ((blc.type >= 1002) && isNaN(blc.value)) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`};
 	return insertDownloadBLC(blc);
 }

@@ -38,6 +38,7 @@ header.menu-container {
 			padding: .5em;
 			border-radius: 8px;
 			height: min-content;
+			z-index: 1000;
 			&.exhaust {
 				color: goldenrod;
 			}

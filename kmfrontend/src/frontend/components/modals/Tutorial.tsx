@@ -4,6 +4,7 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 import { unmountComponentAtNode } from 'react-dom';
 
+import KLogo from '../../../assets/Klogo.png';
 import TutoKaraLine from '../../../assets/tuto_karaline.png';
 import { commandBackend } from '../../../utils/socket';
 import { is_large_device } from '../../../utils/tools';
@@ -127,7 +128,10 @@ class Tutorial extends Component<unknown, IState> {
 					<li><i className="fas fa-fw fa-comment" />
 						{i18next.t('MODAL.TUTORIAL.MESSAGE')}
 					</li>
-					<li><span className="klogo" />
+					<li>
+						<span className="klogo">
+							<img src={KLogo} alt="Karaoke Mugen logo" />
+						</span>
 						{i18next.t('MODAL.TUTORIAL.K_MENU')}
 					</li>
 				</ul>
@@ -142,12 +146,14 @@ class Tutorial extends Component<unknown, IState> {
 		return (<div className="tutorial">
 			<div className={`dimmer${this.state.stepIndex > 0 ? ' transparent':''}${this.state.stepIndex === 2 ? ' player-bar':''}`} />
 			{slide}
-			{this.state.stepIndex < 2 ? <button onClick={this.nextStep} className="step next">
-				{i18next.t('MODAL.TUTORIAL.NEXT')} <i className="fas fa-arrow-right" />
-			</button>:null}
-			{this.state.stepIndex > 0 ? <button onClick={this.previousStep} className="step back">
-				{i18next.t('MODAL.TUTORIAL.BACK')} <i className="fas fa-arrow-left" />
-			</button>:null}
+			<div className="steps">
+				{this.state.stepIndex > 0 ? <button onClick={this.previousStep} className="step back">
+					<i className="fas fa-arrow-left" /> {i18next.t('MODAL.TUTORIAL.BACK')}
+				</button>:null}
+				{this.state.stepIndex < 2 ? <button onClick={this.nextStep} className="step next">
+					{i18next.t('MODAL.TUTORIAL.NEXT')} <i className="fas fa-arrow-right" />
+				</button>:null}
+			</div>
 		</div>);
 	}
 }

@@ -3,9 +3,9 @@ import './KaraLine.scss';
 import i18next from 'i18next';
 import React, { Component, CSSProperties, Key, MouseEvent } from 'react';
 import { SortableElement, SortableElementProps, SortableHandle } from 'react-sortable-hoc';
+import { toast } from 'react-toastify';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
-import { Tag } from '../../../../../src/lib/types/tag';
 import { DBBlacklist } from '../../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
 import { closeModal, showModal } from '../../../store/actions/modal';
@@ -42,7 +42,7 @@ interface IProps {
 
 interface IState {
 	karaMenu: boolean;
-	problematic: boolean
+	problematic: DBKaraTag[]
 }
 
 class KaraLine extends Component<IProps & SortableElementProps, IState> {
@@ -81,7 +81,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	deleteKara = async () => {
 		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_ids: this.props.kara.my_public_plc_id
+				plc_ids: this.props.kara?.playlistcontent_id ? [this.props.kara.playlistcontent_id]:this.props.kara.my_public_plc_id
 			});
 		} else if (this.props.idPlaylist === -2) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
@@ -169,18 +169,37 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		}
 		try {
 			const response = await commandBackend(url, data);
-			if (response && response.code && response.data?.plc && response.data?.plc.time_before_play) {
-				const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
-				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+			if (response && response.code && response.data?.plc) {
+				let message;
+				if (response.data?.plc.time_before_play) {
+					const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+					const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+					const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+					message = (<>
+						{i18next.t(`SUCCESS_CODES.${response.code}`)}
+						<br />
+						{i18next.t('TIME_BEFORE_PLAY', {
+							time: beforePlayTime,
+							date: playTimeDate
+						})}
+					</>);
+				} else {
+					message = (<>
+						{i18next.t(`SUCCESS_CODES.${response.code}`)}
+					</>);
+				}
 				displayMessage('success', <div>
-					{i18next.t(`SUCCESS_CODES.${response.code}`)}
-					<br />
-					{i18next.t('TIME_BEFORE_PLAY', {
-						time: beforePlayTime,
-						date: playTimeDate
-					})}
-				</div>);
+					{message}
+					<button className="btn" onClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
+							.then(() => {
+								toast.dismiss();
+								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+							});
+					}}>{i18next.t('CANCEL')}</button>
+				</div>, 10000);
 			}
 		} catch (err) {
 			// error already display
@@ -250,11 +269,10 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	})();
 
 	isProblematic = () => {
-		let problematic = false;
+		const problematic: DBKaraTag[] = [];
 		for (const tagType of Object.keys(tagTypes)) {
-			if ((this.props.kara[tagType.toLowerCase()] as unknown as Tag[])?.length > 0
-				&& this.props.kara[tagType.toLowerCase()].some((t: Tag) => t.problematic)) {
-				problematic = true;
+			if ((this.props.kara[tagType.toLowerCase()] as unknown as DBKaraTag[])?.length > 0) {
+				problematic.push(...this.props.kara[tagType.toLowerCase()].filter((t: DBKaraTag) => t.problematic));
 			}
 		}
 		return problematic;
@@ -358,10 +376,13 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										<span className="tag inline green" title={getTagInLocale(kara.langs[0], this.props.i18nTag)}>
 											{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 										</span>
+										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon"
+																					 title={i18next.t('KARA.DEJAVU_TOOLTIP')} /> : null}
 										{kara.title}
 										{kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}
-										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" /> : null}
-										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" /> : null}
+										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
+											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
+												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })}/> : null}
 									</div>
 									<div className="contentDivMobileSerie">
 										<span className="tag inline green" title={getTagInLocale(kara.songtypes[0], this.props.i18nTag)}>
@@ -382,9 +403,12 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								</div> :
 								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
 									<div className="disable-select karaTitle">
+										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon"
+																					 title={i18next.t('KARA.DEJAVU_TOOLTIP')} /> : null}
 										{karaTitle}
-										{this.state.problematic ? <i className="fas fa-fw fa-exclamation-triangle problematic" /> : null}
-										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon" /> : null}
+										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
+											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
+												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })}/> : null}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"
 												title={i18next.t('UPVOTE_NUMBER')}>

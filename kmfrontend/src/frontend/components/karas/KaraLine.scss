@@ -29,6 +29,8 @@ body:not(.touch) {
 		.contentDiv {
 			i.fas.dejavu-icon {
 				color: scale-color($mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
+				margin-left: unset;
+				margin-right: .25em;
 			}
 		}
 	}

@@ -230,7 +230,7 @@ System:
     - Name: kara.moe
       Online: true
       Enabled: true
-      SendStats: false
+      SendStats: true
       Path:
         Karas:
           - repos/kara.moe/karaokes
@@ -243,7 +243,7 @@ System:
     - Name: world.karaokes.moe
       Online: true
       Enabled: false
-      SendStats: false
+      SendStats: true
       Path:
         Karas:
           - repos/world/karaokes
@@ -256,7 +256,7 @@ System:
     - Name: Local
       Online: false
       Enabled: true
-      SendStats: false
+      SendStats: true
       Path:
         Karas:
           - repos/Local/karaokes

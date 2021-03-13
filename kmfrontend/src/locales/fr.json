@@ -750,7 +750,9 @@
 		"SONGWRITERS_BY": "Composé par",
 		"CREATORS_BY": "Créé par",
 		"AUTHORS_BY": "Karaoké créé par",
-		"DELETE_KARA": "Supprimer le karaoké ?"
+		"DELETE_KARA": "Supprimer le karaoké ?",
+		"DEJAVU_TOOLTIP": "Chanson déjà passée",
+		"PROBLEMATIC_TOOLTIP": "Cette chanson comprend des scènes ({{tags}}) pouvant poser problème à certaines personnes."
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -827,7 +829,7 @@
 	},
 	"TAGS": {
 		"NAME": "Nom original",
-		"NAME_REQUIRED": "Entrez un nom svp",
+		"NAME_REQUIRED": "Entrez un nom",
 		"NAME_TOOLTIP": "Ceci est le nom interne utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
 		"SHORT_NAME": "Nom court",
 		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
@@ -837,7 +839,7 @@
 		"ALIASES_TOOLTIP": "Noms courts ou alternatifs d'un tag qui peut être recherché.",
 		"I18N": "Noms par langues",
 		"I18N_TOOLTIP": "Il doit y avoir au moins un nom dans n'importe quelle langue (entrez le nom original par défaut)",
-		"I18N_ERROR": "Entrez une traduction svp",
+		"I18N_ERROR": "Entrez une traduction",
 		"I18N_NAME": "Nom dans cette langue",
 		"I18N_DELETE": "Supprimer le nom",
 		"I18N_SELECT": "Sélectionner une langue",
@@ -1072,6 +1074,7 @@
 		"BLC_DELETE_ERROR": "Erreur lors de la suppression du critère de liste noire",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Mauvais code de sécurité",
 		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer ce morceau",
+		"PL_DELETE_UPVOTED": "Vous ne pouvez pas supprimer votre ajout, il est trop ancien.",
 		"PL_VIEW_SONGS_ERROR": "Erreur au chargement de la liste de lecture",
 		"SONG_LIST_ERROR": "Erreur au chargement de la bibliothèque",
 		"PL_ADD_SONG_ERROR": "Aucune chanson ne peut être ajoutée, elles sont déjà toutes dans la liste de lecture",
