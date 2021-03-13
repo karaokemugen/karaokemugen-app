@@ -266,7 +266,7 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 			getTags({})
 		]);
 		for (const blc of blcs) {
-			let filterFunction: any;
+			let filterFunction: any = null;
 			if (blc.type === 0) filterFunction = filterTagName;
 			if (blc.type >= 1 && blc.type < 1000) filterFunction = filterTagID;
 			if (blc.type === 1001) filterFunction = filterKID;
@@ -275,6 +275,10 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 			if (blc.type === 1004) filterFunction = filterTitle;
 			if (blc.type === 1005) filterFunction = filterYearOlder;
 			if (blc.type === 1006) filterFunction = filterYearYounger;
+			if (!filterFunction) {
+				logger.error(`Unknown BLC type : ${JSON.stringify(blc)}`, {service: 'DownloadBLC'});
+				throw new Error(`Unknown BLC type ${JSON.stringify(blc)}`);
+			}
 			karasToAdd = karasToAdd.filter(k => filterFunction(k, blc.value, blc.type, tags.content));
 		}
 		const downloads = karasToAdd.map(k => {
