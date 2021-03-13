@@ -60,7 +60,11 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	upvoteKara = () => {
 		const plc_id = this.props.kara.playlistcontent_id ? this.props.kara.playlistcontent_id : this.props.kara.public_plc_id[0];
 		const data = this.props.kara.flag_upvoted ? { downvote: 'true', plc_id: plc_id } : { plc_id: plc_id };
-		commandBackend('votePLC', data);
+		try {
+			commandBackend('votePLC', data);
+		} catch (err) {
+			// error already display
+		}
 	};
 
 
