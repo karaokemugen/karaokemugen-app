@@ -117,13 +117,13 @@ class KaraBlacklist extends Component<unknown, KaraBlacklistState> {
 		} else if (this.state.filter_mode === 'number') {
 			return <InputNumber value={this.state.filter_value} onChange={this.handleCriteriaValue} />;
 		} else if (this.state.filter_mode === 'tag' && this.state.filter_options.length) {
-			return <select
+			return <Select
 				style={{ width: 200 }}
 				onChange={this.handleCriteriaValue}
 			>
 				<option key="null" value=""></option>
 				{this.state.filter_options.map(o => <option key={o.tid} value={o.tid}>{o.name}</option>)}
-			</select>;
+			</Select>;
 		}
 	}
 
