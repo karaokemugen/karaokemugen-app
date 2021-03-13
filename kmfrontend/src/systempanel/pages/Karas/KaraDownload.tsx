@@ -144,7 +144,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 					criteria.value = criteria.value.toLowerCase();
 					return criteria;
 				}
-				return null;
+				return criteria;
 			});
 			this.setState({ blacklistCriterias: criterias });
 		}
@@ -155,14 +155,13 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 	blacklistCheck(kara) {
 		// avoid lots of kara check operation on re-render
-		if (blacklistCache[kara.kid] !== undefined)
-			return blacklistCache[kara.kid];
-
+		if (blacklistCache[kara.kid] !== undefined) return blacklistCache[kara.kid];
+		
 		blacklistCache[kara.kid] = true;
 		if (this.state.blacklistCriterias.length) {
 			this.state.blacklistCriterias.map(criteria => {
-				if (criteria.filter.test === 'contain') {
-					criteria.filter.fields.map(field => {
+				if (criteria.test === 'contain') {
+					criteria.fields.map(field => {
 						if (typeof (kara[field]) === 'string') {
 							if (kara[field].toLowerCase().match(criteria.value)) {
 								blacklistCache[kara.kid] = false;
