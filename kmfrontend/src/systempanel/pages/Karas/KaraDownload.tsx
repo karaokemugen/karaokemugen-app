@@ -21,7 +21,12 @@ interface KaraDownloadState {
 	karas_local: any[];
 	karas_online: any[];
 	i18nTag: any;
-	blacklistCriterias: any[];
+	blacklistCriterias: {
+		value: number|string;
+		mode: string;
+		fields?: string[];
+		test?: string;
+	}[];
 	karasOnlineCount: number;
 	karasQueue: DBDownload[];
 	kara: any;
@@ -166,7 +171,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 							kara[field].map(t => {
 								if (t) {
 									if (typeof t === 'string') {
-										if (t.toLowerCase().match(criteria.value)) {
+										if (t.toLowerCase().match(criteria.value as string)) {
 											blacklistCache[kara.kid] = false;
 										}
 									} else if (t.name) {
