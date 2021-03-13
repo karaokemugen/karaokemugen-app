@@ -12,7 +12,7 @@ import { DBPLC } from '../../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import { getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import { tagTypes } from '../../../utils/tagTypes';
+import { getTagTypeName,tagTypes } from '../../../utils/tagTypes';
 import { getCriterasByValue } from './_blc_criterias_types';
 
 let blacklistCache = {};
@@ -22,10 +22,16 @@ interface KaraDownloadState {
 	karas_online: any[];
 	i18nTag: any;
 	blacklistCriterias: {
-		value: number|string;
-		mode: string;
-		fields?: string[];
-		test?: string;
+		dlblc_id: number,
+		type: number,
+		value: string,
+		uniquevalue: string,
+		filter?: {
+			value: number|string;
+			mode: string;
+			fields: string[];
+			test: string;
+		}
 	}[];
 	karasOnlineCount: number;
 	karasQueue: DBDownload[];
@@ -142,7 +148,6 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				if (c && c.fields && c.fields.length > 0) {
 					criteria.filter = c;
 					criteria.value = criteria.value.toLowerCase();
-					return criteria;
 				}
 				return criteria;
 			});
@@ -160,8 +165,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		blacklistCache[kara.kid] = true;
 		if (this.state.blacklistCriterias.length) {
 			this.state.blacklistCriterias.map(criteria => {
-				if (criteria.test === 'contain') {
-					criteria.fields.map(field => {
+				if (criteria.filter?.test === 'contain') {
+					criteria.filter?.fields.map(field => {
 						if (typeof (kara[field]) === 'string') {
 							if (kara[field].toLowerCase().match(criteria.value)) {
 								blacklistCache[kara.kid] = false;
@@ -184,6 +189,11 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						}
 						return null;
 					});
+				} else {
+					const listTid:string[] = kara[tagTypes[getTagTypeName(criteria.type)].karajson].map(tag => tag.tid);
+					if (listTid.includes(criteria.value)) {
+						blacklistCache[kara.kid] = false;
+					}
 				}
 				return null;
 			});
