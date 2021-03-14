@@ -516,15 +516,15 @@ class Players {
 		const isMP3 = song.mediafile.endsWith('.mp3');
 		const shouldDisplayAvatar = song.avatar && getConfig().Karaoke.Display.Avatar;
 		const shouldDisplayVisualEffects = isMP3 && getConfig().Player.VisualizationEffects;
-		const MP3Boilerplate = '[vid1]scale=-2:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]';
+		const MP3Boilerplate = '[vid1]scale=1920:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]';
 		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
 		if (song.loudnorm) {
 			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
-			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}[ao]`;
+			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}[a0]`;
 		} else {
-			audio = `[aid1]volume=${song.gain}dB[ao]`;
+			audio = `[aid1]volume=${song.gain}dB[a0]`;
 		}
 		let visu = '';
 		let avatar = '';
@@ -539,7 +539,7 @@ class Players {
 				'[emp][vecPrep]overlay=main_w-overlay_w:main_h-overlay_h:x=0[visu]',
 				'[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl]'
 			].join(';');
-		}
+		} else audio = audio.replace('a0', 'ao');
 		if (shouldDisplayAvatar) {
 			// Again, lavfi-complex expert @nah comes to the rescue!
 			avatar = [
