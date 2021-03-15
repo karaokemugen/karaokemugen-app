@@ -131,6 +131,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			if (!opts.noPasswordCheck && user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
+			delete user.password;
 		}
 		emitWS('userUpdated', username);
 		return {
@@ -229,6 +230,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 	if (await compare(password, user.password) || (user.type === 2 && !user.password)) {
 		return true;
 	}
+	delete user.password;
 	return false;
 }
 
