@@ -46,11 +46,7 @@ class PublicHomepage extends Component<IProps, IState> {
 				random: 1
 			});
 			if (response?.content && response.content[0]) {
-				const chosenOne = response.content[0].kid;
-				const response2 = await commandBackend('getKara', {
-					kid: chosenOne
-				});
-				this.props.toggleKaraDetail(response2, -1, 0);
+				this.props.toggleKaraDetail(response.content[0], -1, 0);
 			}
 		}
 	};
