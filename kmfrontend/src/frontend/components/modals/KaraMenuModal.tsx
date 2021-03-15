@@ -47,21 +47,25 @@ class KaraMenuModal extends Component<IProps, IState> {
 	}
 
 	getKaraDetail = async () => {
-		let url;
-		let data;
-		if (this.props.idPlaylist && this.props.idPlaylist > 0) {
-			url = 'getPLC';
-			data = {
-				pl_id: this.props.idPlaylist,
-				plc_id: this.props.kara.playlistcontent_id
-			};
-		} else {
-			url = 'getKara';
-			data = { kid: this.props.kara.kid };
+		try {
+			let url;
+			let data;
+			if (this.props.idPlaylist && this.props.idPlaylist > 0) {
+				url = 'getPLC';
+				data = {
+					pl_id: this.props.idPlaylist,
+					plc_id: this.props.kara.playlistcontent_id
+				};
+			} else {
+				url = 'getKara';
+				data = { kid: this.props.kara.kid };
+			}
+			const response = await commandBackend(url, data);
+			this.setState({ kara: response });
+			document.getElementById('root').addEventListener('click', this.handleClick);
+		} catch (err) {
+			this.props.closeKaraMenu();
 		}
-		const response = await commandBackend(url, data);
-		this.setState({ kara: response });
-		document.getElementById('root').addEventListener('click', this.handleClick);
 	};
 
 	onRightClickTransfer = (e: any) => {
@@ -176,7 +180,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 								&nbsp;
 								{this.state.kara.flag_favorites ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
 							</a>
-							<a href="#" className={`animate-button-success${this.state.effect_favorite ? ' activate':''}`}>
+							<a href="#" className={`animate-button-success${this.state.effect_favorite ? ' activate' : ''}`}>
 								<i className="fas fa-fw fa-check-square" />
 								&nbsp;
 								{this.state.kara.flag_favorites ? i18next.t('KARA_MENU.FAVORITES_REMOVED') : i18next.t('KARA_MENU.FAVORITES_ADDED')}
@@ -190,7 +194,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 								&nbsp;
 								{i18next.t('KARA_MENU.FREE_SHORT')}
 							</a>
-							<a href="#" className={`animate-button-success${this.state.effect_free ? ' activate':''}`}>
+							<a href="#" className={`animate-button-success${this.state.effect_free ? ' activate' : ''}`}>
 								<i className="fas fa-fw fa-check-square" />
 								&nbsp;
 								{i18next.t('KARA_MENU.FREED')}
@@ -214,10 +218,10 @@ class KaraMenuModal extends Component<IProps, IState> {
 									</React.Fragment>
 								}
 							</a>
-							<a href="#" className={`animate-button-success${this.state.effect_visibility ? ' activate':''}`}>
+							<a href="#" className={`animate-button-success${this.state.effect_visibility ? ' activate' : ''}`}>
 								<i className="fas fa-fw fa-check-square" />
 								&nbsp;
-								{this.state.kara.flag_visible ? i18next.t('KARA_MENU.HIDDEN'):i18next.t('KARA_MENU.SHOWN')}
+								{this.state.kara.flag_visible ? i18next.t('KARA_MENU.HIDDEN') : i18next.t('KARA_MENU.SHOWN')}
 							</a>
 						</li> : null
 					}
@@ -228,7 +232,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 								&nbsp;
 								{i18next.t('KARA_MENU.ADD_BLACKLIST')}
 							</a>
-							<a href="#" className={`animate-button-success${this.state.effect_blacklist ? ' activate':''}`}>
+							<a href="#" className={`animate-button-success${this.state.effect_blacklist ? ' activate' : ''}`}>
 								<i className="fas fa-fw fa-check-square" />
 								&nbsp;
 								{i18next.t('KARA_MENU.BLACKLISTED')}
@@ -242,7 +246,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 								&nbsp;
 								{i18next.t('KARA_MENU.ADD_WHITELIST')}
 							</a>
-							<a href="#" className={`animate-button-success${this.state.effect_whitelist ? ' activate':''}`}>
+							<a href="#" className={`animate-button-success${this.state.effect_whitelist ? ' activate' : ''}`}>
 								<i className="fas fa-fw fa-check-square" />
 								&nbsp;
 								{i18next.t('KARA_MENU.WHITELISTED')}
