@@ -167,7 +167,7 @@
 		"RESTRICTED_DESCRIPTION": "Karaoke is in restricted mode, additions are limited.",
 		"QUOTA_KARA_DESCRIPTION": "You can only suggest {{count}} song. You will be able to suggest again once the operator has added (or not added) your suggestion or when your song is played back on the screen.",
 		"QUOTA_KARA_DESCRIPTION_plural": "You can only suggest {{count}} songs. You will be able to suggest again once the operator has added (or not added) your suggestion or when your song is played back on the screen.",
-		"QUOTA_TIME_DESCRIPTION": "You can only suggest {{time}} minutes of song. You will be able to suggest again once the operator has added (or not added) your suggestion or when your song is played back on the screen.",
+		"QUOTA_TIME_DESCRIPTION": "You can only suggest {{time}} of song. You will be able to suggest again once the operator has added (or not added) your suggestion or when your song is played back on the screen.",
 		"HELLO": "Hello",
 		"NOW_PLAYING": "Now playing",
 		"NEXT": "Following",
