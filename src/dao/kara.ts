@@ -92,10 +92,10 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	let groupClauseEnd = '';
 	// Search mode to filter karas played or requested in a particular session
 	if (params.order === 'sessionPlayed') {
-		orderClauses = groupClause = 'p.played_at, ';		
+		orderClauses = groupClause = 'p.played_at, ';
 	}
 	if (params.order === 'sessionRequested') {
-		orderClauses = groupClause = 'rq.requested_at, ';		
+		orderClauses = groupClause = 'rq.requested_at, ';
 	}
 	if (params.order === 'recent') orderClauses = 'created_at DESC, ';
 	if (params.order === 'requested') {
@@ -185,7 +185,7 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 			kara.kid,
 			kara.created_at,
 			kara.pos,
-			false,
+			kara.flag_free || false,
 			kara.flag_visible || true,
 			kara.flag_refused || false,
 			kara.flag_accepted || false

@@ -892,20 +892,25 @@ export async function exportPlaylist(playlist_id: number) {
 		logger.debug(`Exporting playlist ${playlist_id}`, {service: 'Playlist'});
 		const plContents = await getPlaylistContentsMini(playlist_id);
 		const playlist: PlaylistExport = {};
+		// We only need a few things
 		const plExport = {
 			name: pl.name,
 			created_at: pl.created_at,
 			modified_at: pl.modified_at,
 			flag_visible: pl.flag_visible
 		};
-		const plcFiltered = plContents.map((plc: any) => {
+		const plcFiltered = plContents.map((plc: DBPLC) => {
 			return {
 				kid: plc.kid,
 				nickname: plc.nickname,
 				created_at: plc.created_at,
 				pos: plc.pos,
 				username: plc.username,
-				flag_playing: plc.flag_playing
+				flag_playing: plc.flag_playing,
+				flag_free: plc.flag_free,
+				flag_visible: plc.flag_visible,
+				flag_accepted: plc.flag_accepted,
+				flag_refused: plc.flag_refused
 			};
 		});
 		playlist.Header = {
@@ -937,6 +942,9 @@ export const PLCImportConstraints = {
 	kid: {presence: true, uuidArrayValidator: true},
 	created_at: {presence: {allowEmpty: false}},
 	flag_playing: {inclusion: bools},
+	flag_visible: {inclusion: bools},
+	flag_accepted: {inclusion: bools},
+	flag_refused: {inclusion: bools},
 	pos: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	nickname: {presence: {allowEmpty: false}},
 	username: {presence: {allowEmpty: false}}
@@ -944,20 +952,6 @@ export const PLCImportConstraints = {
 
 /** Import playlist from JSON */
 export async function importPlaylist(playlist: any, username: string, playlist_id?: number) {
-	// Check if format is valid :
-	// Header must contain :
-	// description = Karaoke Mugen Playlist File
-	// version <= 4
-	//
-	// PlaylistContents array must contain at least one element.
-	// That element needs to have at least kid. flag_playing is optional
-	// kid must be uuid
-	// Test each element for those.
-	//
-	// PlaylistInformation must contain :
-	// - flag_visible : (true / false)
-	// - name : playlist name
-	//
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	const task = new Task({
