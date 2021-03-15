@@ -49,6 +49,7 @@ interface IState {
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
 	searchType?: 'search' | 'recent' | 'requested';
+	orderByLikes: boolean
 	getPlaylistInProgress: boolean;
 	stopUpdate: boolean;
 	forceUpdate: boolean;
@@ -95,6 +96,7 @@ class Playlist extends Component<IProps, IState> {
 			data: undefined,
 			bLSetList: [],
 			searchType: this.props.searchType ? this.props.searchType : 'search',
+			orderByLikes: false,
 			checkedKaras: 0,
 			searchCriteria: this.props.searchCriteria,
 			searchValue: this.props.searchValue
@@ -410,7 +412,7 @@ class Playlist extends Component<IProps, IState> {
 			this.context.globalState.frontendContext.filterValue2 || '';
 	}
 
-	getPlaylist = async (searchType?: 'search' | 'recent' | 'requested', orderByLikes = false) => {
+	getPlaylist = async (searchType?: 'search' | 'recent' | 'requested', orderByLikes?: boolean) => {
 		const criterias: any = {
 			'year': 'y',
 			'tag': 't'
@@ -424,13 +426,16 @@ class Playlist extends Component<IProps, IState> {
 		} else if (stateData?.infos?.from === 0) {
 			state.searchType = undefined;
 		}
+		if (orderByLikes !== undefined) {
+			state.orderByLikes = orderByLikes;
+		}
 		this.setState(state);
 		const url: string = this.getPlaylistUrl();
 		const param: any = {};
 		if (this.state.idPlaylist >= 0) {
 			this.getPlaylistInfo();
 			param.pl_id = this.state.idPlaylist;
-			if (orderByLikes) {
+			if (orderByLikes || (orderByLikes === undefined && this.state.orderByLikes)) {
 				param.orderByLikes = true;
 			}
 		}
