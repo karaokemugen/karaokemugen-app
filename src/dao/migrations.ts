@@ -14,6 +14,7 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 	for (const migration of migrations) {
 		let breakFromLoop = false;
 		switch (migration.name) {
+		// 4.0 migrations
 		case 'initial':
 			//Initial migration will likely trigger generation anyway.
 			breakFromLoop = true;
@@ -43,6 +44,7 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 				});
 			}
 			break;
+		// 5.0 migrations
 		case 'addPriorityToTags':
 			if (!didGeneration) doGenerate = true;
 			logger.info('Migration adding priority to tags detected, forcing generation', {service: 'DB'});
