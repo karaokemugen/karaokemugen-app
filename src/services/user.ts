@@ -459,7 +459,7 @@ export async function initUserSystem() {
 		// Sort by last login at in descending order.
 		.sort((a, b) => (a.last_login_at < b.last_login_at) ? 1 : -1);
 	logger.debug('Admin users', {service: 'User', obj: JSON.stringify(adminUsers)});
-	sentry.setUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
+	sentry.setUser(adminUsers[0]?.login || 'admin');
 }
 
 /** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */
