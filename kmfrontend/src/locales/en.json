@@ -71,7 +71,6 @@
 	"PLAYERMONITOR": "Second window (monitor)",
 	"PLAYERVISUALIZATIONEFFECTS": "Enable music visualization effects",
 	"ENGINEALLOWDUPLICATES": "Allow duplicate songs in playlists",
-	"ENGINEALLOWDUPLICATESSERIES": "Allow songs with duplicate series or singers in playlists",
 	"ENGINEDISPLAYNICKNAME": "Display nicknames in karaokes",
 	"ENGINEDISPLAYAVATAR": "Display avatar in karaokes",
 	"WEBAPPMODE_CLOSED_MESSAGE": "Stop! We're closed right now.",

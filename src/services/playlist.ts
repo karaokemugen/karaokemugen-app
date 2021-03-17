@@ -61,7 +61,7 @@ import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './downloadUpdater';
-import { formatKaraList, getKara, getSongSeriesSingers,getSongVersion,isAllKaras} from './kara';
+import { formatKaraList, getSongSeriesSingers,getSongVersion,isAllKaras} from './kara';
 import {playingUpdated, playPlayer} from './player';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
@@ -452,29 +452,6 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			: isAllKarasInPlaylist(karaList, plContents);
 		karaList = songs.notPresent;
 
-		// If AllowDuplicateSeries is set to false, remove all songs with the same SIDs
-		if (!conf.Playlist.AllowDuplicateSeries && user.type > 0) {
-			const seriesSingersInPlaylist = plContentsAfterPlay.map(plc => {
-				if (plc.series.length > 0) return plc.series[0].name;
-				return plc.singer[0].name;
-			});
-			for (const i in karaList) {
-				const karaInfo = await getKara(karaList[i].kid, {username: 'admin', role: 'admin'});
-				karaInfo.series.length > 0
-					? karaList[i].uniqueSerieSinger = karaInfo.series[0].name
-					: karaList[i].uniqueSerieSinger = karaInfo.singers[0].name;
-			}
-			karaList = karaList.filter(k => {
-				return !seriesSingersInPlaylist.includes(k.uniqueSerieSinger);
-			});
-			if (karaList.length === 0) {
-				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
-				throw {
-					code: 406,
-					msg: 'Adding karaokes from the same series / singer is not allowed'
-				};
-			}
-		}
 		if (karaList.length === 0) {
 			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 			throw {

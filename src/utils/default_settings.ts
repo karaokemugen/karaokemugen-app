@@ -139,7 +139,6 @@ export const defaults: Config = {
 	},
 	Playlist: {
 		AllowDuplicates: false,
-		AllowDuplicateSeries: true,
 		MaxDejaVuTime: 60,
 		Medias: {
 			Sponsors: {
@@ -323,7 +322,6 @@ export const configConstraints = {
 	'Player.Volume': {numericality: {greaterThanOrEqualTo: 0, lessThanOrEqualTo: 100}},
 	'Player.HardwareDecoding': {inclusion: hwdecModes},
 	'Playlist.AllowDuplicates': {inclusion : bools},
-	'Playlist.AllowDuplicateSeries': {inclusion : bools},
 	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Playlist.Medias.Intros.Enabled': {inclusion: bools},
 	'Playlist.Medias.Sponsors.Enabled': {inclusion: bools},

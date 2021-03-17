@@ -150,6 +150,7 @@ It can be enabled in the Window menu.
 
 ### Notes, misc
 
+- Removed option to disallow duplicates of the same series/singer in a playlist.
 - New icon for macOS 11 Big Sur (#856)
 - Upgraded ffmpeg toolset to 4.3.1 and mpv media player to 0.33 (with libass fixes, #826)
 - Upgraded to Typescript 4.0 (#784)
