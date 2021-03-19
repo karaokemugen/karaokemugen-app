@@ -110,7 +110,6 @@ export interface Config {
 		FullScreen?: boolean,
 		Background?: string,
 		Screen?: number,
-		VisualizationEffects?: boolean,
 		Monitor?: boolean,
 		NoHud?: boolean,
 		NoBar?: boolean,
