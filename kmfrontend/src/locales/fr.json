@@ -72,6 +72,8 @@
 	"PLAYLIST_KARAS": "Bibliothèque",
 	"PLAYERPIP": "Mode fenêtré + toujours au dessus",
 	"PLAYERPIP_TOOLTIP": "Maintient la fenêtre dans un coin de l'écran",
+	"PLAYERVISUALIZATIONEFFECTS": "Activer les effets de visualisation du son (karaokés audio uniquement)",
+	"PLAYERVISUALIZATIONEFFECTS_TOOLTIP": "Uniquement valable pour les chansons audio uniquement (MP3, OGG, etc.)",
 	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les listes de lecture",
 	"ENGINEDISPLAYNICKNAME": "Afficher le pseudo du demandeur en début et en fin de chanson",
 	"ENGINEDISPLAYNICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",

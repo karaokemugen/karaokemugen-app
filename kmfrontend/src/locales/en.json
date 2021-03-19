@@ -69,6 +69,7 @@
 	"PLAYERPIP": "Picture-in-Picture mode",
 	"PLAYERPIP_TOOLTIP": "Hold the window in a screen corner",
 	"PLAYERMONITOR": "Second window (monitor)",
+	"PLAYERVISUALIZATIONEFFECTS": "Enable music visualization effects",
 	"ENGINEALLOWDUPLICATES": "Allow duplicate songs in playlists",
 	"ENGINEDISPLAYNICKNAME": "Display nicknames in karaokes",
 	"ENGINEDISPLAYAVATAR": "Display avatar in karaokes",

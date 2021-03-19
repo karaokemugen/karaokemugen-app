@@ -289,6 +289,18 @@ class PlayerOptions extends Component<IProps, IState> {
 								isChecked={this.state.config['Player.Monitor']} />
 						</div>
 					</div>
+
+					<div className="settings-line">
+						<label className="col-xs-4 control-label" title={i18next.t('PLAYERVISUALIZATIONEFFECTS_TOOLTIP')}>
+							{i18next.t('PLAYERVISUALIZATIONEFFECTS')}
+							&nbsp;
+  							<i className="far fa-question-circle" />
+						</label>
+						<div className="col-xs-6">
+							<Switch idInput="Player.VisualizationEffects" handleChange={this.onChange}
+								isChecked={this.state.config['Player.VisualizationEffects']} />
+						</div>
+					</div>
 				</React.Fragment> : null
 		);
 	}

@@ -151,7 +151,6 @@ It can be enabled in the Window menu.
 ### Notes, misc
 
 - Removed option to disallow duplicates of the same series/singer in a playlist.
-- Removed option to display visualization effects during audio-only karaokes. This wasn't very nice-looking and caused issues with some songs. (#934)
 - New icon for macOS 11 Big Sur (#856)
 - Upgraded ffmpeg toolset to 4.3.1 and mpv media player to 0.33 (with libass fixes, #826)
 - Upgraded to Typescript 4.0 (#784)
