@@ -52,7 +52,7 @@ export function initMenu() {
 				isMac ? { type: 'separator', visible: isMac }:null,
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
-					accelerator: 'CmdOrCtrl+F',
+					accelerator: 'CmdOrCtrl+T',
 					visible: isMac,
 					click: () => {
 						openURL(urls.operatorOptions);
@@ -220,7 +220,7 @@ export function initMenu() {
 				{ type: 'separator' },
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
-					accelerator: 'CmdOrCtrl+F',
+					accelerator: 'CmdOrCtrl+T',
 					click: () => {
 						openURL(urls.operatorOptions);
 					}
