@@ -211,7 +211,7 @@ export async function addBlacklistCriteria(BLCs: BLC[], set_id: number) {
 		emitWS('blacklistUpdated');
 	} catch(err) {
 		logger.error('Error adding criteria', {service: 'Blacklist', obj: err});
-		sentry.error(err);
+		if (!err.code || err.code >= 500) sentry.error(err);
 		throw err;
 	} finally {
 		profile('addBLC');
