@@ -131,6 +131,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			if (!opts.noPasswordCheck && user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);
+			delete user.password;
 		}
 		emitWS('userUpdated', username);
 		return {
@@ -229,6 +230,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 	if (await compare(password, user.password) || (user.type === 2 && !user.password)) {
 		return true;
 	}
+	delete user.password;
 	return false;
 }
 
@@ -457,7 +459,7 @@ export async function initUserSystem() {
 		// Sort by last login at in descending order.
 		.sort((a, b) => (a.last_login_at < b.last_login_at) ? 1 : -1);
 	logger.debug('Admin users', {service: 'User', obj: JSON.stringify(adminUsers)});
-	sentry.setUser(adminUsers[0]?.login || 'admin', adminUsers[0]?.email || undefined);
+	sentry.setUser(adminUsers[0]?.login || 'admin');
 }
 
 /** Performs defaults checks and creations for avatars/guests. This is done synchronously here because these are linked, but userChecks is called asynchronously to speed up init process */

@@ -147,7 +147,7 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		)`;
 		orderClause = 'RANDOM()';
 	}
-	if (params.orderByLikes) orderClause = 'COALESCE(flag_accepted, flag_refused), upvotes DESC';
+	if (params.orderByLikes) orderClause = '(CASE WHEN pc.flag_accepted = FALSE AND pc.flag_refused = FALSE THEN TRUE ELSE FALSE END) DESC, pc.flag_accepted DESC, pc.flag_refused DESC, upvotes DESC';
 	const query = sqlgetPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause,
 		filterClauses.additionalFrom.join(''));
 	const res = await db().query(yesql(query)({

@@ -106,7 +106,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		if (this.props.idPlaylist < 0) {
 			commandBackend('playKara', {
 				kid: this.props.kara.kid
-			});
+			}).catch(() => {});
 		} else {
 			commandBackend('editPLC', {
 				flag_playing: true,

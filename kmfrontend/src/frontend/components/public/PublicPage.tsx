@@ -253,8 +253,10 @@ class PublicPage extends Component<IProps, IState> {
 		}
 	};
 
-	toggleKaraDetail = (kara: KaraElement, _idPlaylist: number, indexKaraDetail: number) => {
-		this.setState({ kara, indexKaraDetail });
+	toggleKaraDetail = (kara: KaraElement, idPlaylist: number, indexKaraDetail: number) => {
+		const idsPlaylist = this.state.idsPlaylist;
+		idsPlaylist.left = idPlaylist;
+		this.setState({ kara, indexKaraDetail, idsPlaylist });
 		this.props.route.history.push(`/public/karaoke/${kara.kid}`);
 	};
 

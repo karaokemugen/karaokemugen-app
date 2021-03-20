@@ -256,16 +256,6 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						<div className="settings-line">
 							<label>
-								{i18next.t('ENGINEALLOWDUPLICATESSERIES')}
-							</label>
-							<div>
-								<Switch idInput="Playlist.AllowDuplicateSeries" handleChange={this.onChange}
-									isChecked={this.state.config['Playlist.AllowDuplicateSeries']} />
-							</div>
-						</div>
-
-						<div className="settings-line">
-							<label>
 								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS')}
 							</label>
 							<div>

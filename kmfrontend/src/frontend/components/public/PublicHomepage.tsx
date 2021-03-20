@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { is_touch_device } from '../../../utils/tools';
+import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { View } from '../../types/view';
 import LyricsBox from './LyricsBox';
@@ -46,11 +46,7 @@ class PublicHomepage extends Component<IProps, IState> {
 				random: 1
 			});
 			if (response?.content && response.content[0]) {
-				const chosenOne = response.content[0].kid;
-				const response2 = await commandBackend('getKara', {
-					kid: chosenOne
-				});
-				this.props.toggleKaraDetail(response2, -1, 0);
+				this.props.toggleKaraDetail(response.content[0], -1, 0);
 			}
 		}
 	};
@@ -65,7 +61,7 @@ class PublicHomepage extends Component<IProps, IState> {
 						i18next.t('PUBLIC_HOMEPAGE.QUOTA_KARA_DESCRIPTION', { count: this.context.globalState.settings.data.config?.Karaoke?.Quota?.Songs }):null}
 					</div>
 					<div>{this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 2 ?
-						i18next.t('PUBLIC_HOMEPAGE.QUOTA_TIME_DESCRIPTION', { time: this.context.globalState.settings.data.config?.Karaoke?.Quota?.Time }):null}
+						i18next.t('PUBLIC_HOMEPAGE.QUOTA_TIME_DESCRIPTION', { time: secondsTimeSpanToHMS(this.context.globalState.settings.data.config?.Karaoke?.Quota?.Time, 'ms') }):null}
 					</div>
 				</div>
 				<div className="public-homepage">

@@ -44,16 +44,9 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 			ignoreErrors: ['Network Error', 'Request failed with status code', 'Request aborted']
 		});
 		Sentry.configureScope((scope) => {
-			if (user?.email) {
-				scope.setUser({
-					username: user.login,
-					email: user.email
-				});
-			} else {
-				scope.setUser({
-					username: user?.login
-				});
-			}
+			scope.setUser({
+				username: user?.login
+			});
 		});
 		if (version.sha) Sentry.configureScope((scope) => {
 			scope.setTag('commit', version.sha as string);

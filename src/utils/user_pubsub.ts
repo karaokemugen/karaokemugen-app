@@ -20,7 +20,8 @@ function setupUserWatch(server: string) {
 	socket.on('user updated', async (payload) => {
 		const userRemote: DBUser = payload.user;
 		const login = `${userRemote.login}@${server}`;
-		const user: DBUser = await findUserByName(login);		
+		const user: DBUser = await findUserByName(login);
+		delete user.password;	
 		user.bio = userRemote.bio;
 		user.url = userRemote.url;
 		user.fallback_series_lang = userRemote.fallback_series_lang;

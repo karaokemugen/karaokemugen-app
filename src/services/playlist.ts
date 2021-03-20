@@ -61,7 +61,7 @@ import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './downloadUpdater';
-import { formatKaraList, getKara, getSongSeriesSingers,getSongVersion,isAllKaras} from './kara';
+import { formatKaraList, getSongSeriesSingers,getSongVersion,isAllKaras} from './kara';
 import {playingUpdated, playPlayer} from './player';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
@@ -452,29 +452,6 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			: isAllKarasInPlaylist(karaList, plContents);
 		karaList = songs.notPresent;
 
-		// If AllowDuplicateSeries is set to false, remove all songs with the same SIDs
-		if (!conf.Playlist.AllowDuplicateSeries && user.type > 0) {
-			const seriesSingersInPlaylist = plContentsAfterPlay.map(plc => {
-				if (plc.series.length > 0) return plc.series[0].name;
-				return plc.singer[0].name;
-			});
-			for (const i in karaList) {
-				const karaInfo = await getKara(karaList[i].kid, {username: 'admin', role: 'admin'});
-				karaInfo.series.length > 0
-					? karaList[i].uniqueSerieSinger = karaInfo.series[0].name
-					: karaList[i].uniqueSerieSinger = karaInfo.singers[0].name;
-			}
-			karaList = karaList.filter(k => {
-				return !seriesSingersInPlaylist.includes(k.uniqueSerieSinger);
-			});
-			if (karaList.length === 0) {
-				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS';
-				throw {
-					code: 406,
-					msg: 'Adding karaokes from the same series / singer is not allowed'
-				};
-			}
-		}
 		if (karaList.length === 0) {
 			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 			throw {
@@ -892,20 +869,25 @@ export async function exportPlaylist(playlist_id: number) {
 		logger.debug(`Exporting playlist ${playlist_id}`, {service: 'Playlist'});
 		const plContents = await getPlaylistContentsMini(playlist_id);
 		const playlist: PlaylistExport = {};
+		// We only need a few things
 		const plExport = {
 			name: pl.name,
 			created_at: pl.created_at,
 			modified_at: pl.modified_at,
 			flag_visible: pl.flag_visible
 		};
-		const plcFiltered = plContents.map((plc: any) => {
+		const plcFiltered = plContents.map((plc: DBPLC) => {
 			return {
 				kid: plc.kid,
 				nickname: plc.nickname,
 				created_at: plc.created_at,
 				pos: plc.pos,
 				username: plc.username,
-				flag_playing: plc.flag_playing
+				flag_playing: plc.flag_playing,
+				flag_free: plc.flag_free,
+				flag_visible: plc.flag_visible,
+				flag_accepted: plc.flag_accepted,
+				flag_refused: plc.flag_refused
 			};
 		});
 		playlist.Header = {
@@ -937,6 +919,9 @@ export const PLCImportConstraints = {
 	kid: {presence: true, uuidArrayValidator: true},
 	created_at: {presence: {allowEmpty: false}},
 	flag_playing: {inclusion: bools},
+	flag_visible: {inclusion: bools},
+	flag_accepted: {inclusion: bools},
+	flag_refused: {inclusion: bools},
 	pos: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	nickname: {presence: {allowEmpty: false}},
 	username: {presence: {allowEmpty: false}}
@@ -944,20 +929,6 @@ export const PLCImportConstraints = {
 
 /** Import playlist from JSON */
 export async function importPlaylist(playlist: any, username: string, playlist_id?: number) {
-	// Check if format is valid :
-	// Header must contain :
-	// description = Karaoke Mugen Playlist File
-	// version <= 4
-	//
-	// PlaylistContents array must contain at least one element.
-	// That element needs to have at least kid. flag_playing is optional
-	// kid must be uuid
-	// Test each element for those.
-	//
-	// PlaylistInformation must contain :
-	// - flag_visible : (true / false)
-	// - name : playlist name
-	//
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	const task = new Task({

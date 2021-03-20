@@ -97,22 +97,26 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	getKaraDetail = async (kid?: string) => {
-		let url;
-		let data;
-		if (this.props.idPlaylist && this.props.idPlaylist > 0) {
-			url = 'getPLC';
-			data = { pl_id: this.props.idPlaylist, plc_id: this.props.playlistcontentId };
-		} else {
-			url = 'getKara';
-			data = { kid: (kid ? kid : this.props.kid) };
+		try {
+			let url;
+			let data;
+			if (this.props.idPlaylist && this.props.idPlaylist > 0) {
+				url = 'getPLC';
+				data = { pl_id: this.props.idPlaylist, plc_id: this.props.playlistcontentId };
+			} else {
+				url = 'getKara';
+				data = { kid: (kid ? kid : this.props.kid) };
+			}
+			const kara = await commandBackend(url, data);
+			this.setState({
+				kara: kara,
+				isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
+			}, () => {
+				if (kara.subfile) this.fetchLyrics();
+			});
+		} catch (err) {
+			this.closeModal();
 		}
-		const kara = await commandBackend(url, data);
-		this.setState({
-			kara: kara,
-			isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
-		}, () => {
-			if (kara.subfile) this.fetchLyrics();
-		});
 	};
 
 	getLastPlayed = (lastPlayed_at: Date, lastPlayed: lastplayed_ago) => {
