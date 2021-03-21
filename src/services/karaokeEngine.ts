@@ -188,6 +188,7 @@ export async function playerEnding() {
 		}
 		// If we just played an intro, play a sponsor.
 		if (state.player.mediaType === 'Intros') {
+			setState({introPlayed: true});
 			if (conf.Playlist.Medias.Sponsors.Enabled) {
 				try {
 					await mpv.playMedia('Sponsors');
@@ -198,7 +199,7 @@ export async function playerEnding() {
 				}
 			} else {
 				// Setting introSponsorPlayed here since sponsors were disabled by the time the intro played. So we don't accidentally go into the if 20 lines or so below.
-				setState({introPlayed: true, introSponsorPlayed: true});
+				setState({introSponsorPlayed: true});
 				await playCurrentSong(true);
 			}
 			return;
@@ -219,7 +220,7 @@ export async function playerEnding() {
 			return;
 		}
 		// If Sponsor after intro, just play currently selected song.
-		if (state.player.mediaType === 'Sponsors' && !state.introSponsorPlayed) {
+		if (state.player.mediaType === 'Sponsors' && !state.introSponsorPlayed && state.introPlayed) {
 			try {
 				// If it's played just after an intro, play next song. If not, proceed as usual
 				setState({introPlayed: true, introSponsorPlayed: true});
