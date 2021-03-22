@@ -769,6 +769,7 @@ class Players {
 		const options: any = {
 			'force-media-title': song.title
 		};
+		let onlineMedia = false;
 		const loadPromises = [
 			Players.genLavfiComplex(song).then(res => options['lavfi-complex'] = res)
 				.catch(err => {
@@ -790,7 +791,7 @@ class Players {
 					logger.warn(`Media NOT FOUND : ${song.mediafile}`, {service: 'Player'});
 					if (conf.Online.MediasHost) {
 						mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(song.mediafile)}`;
-						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
+						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});	onlineMedia = true;
 					} else {
 						mediaFile = '';
 						throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source)`);
@@ -808,7 +809,7 @@ class Players {
 		}
 		if (mediaFile.endsWith('.mp3')) {
 			const id3tags = await id3.read(mediaFile);
-			if (!id3tags.image) {
+			if (!id3tags.image || onlineMedia) {
 				const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
 				options['external-file'] = defaultImageFile.replace(/\\/g,'/');
 				options['force-window'] = 'yes';
