@@ -513,9 +513,7 @@ class Players {
 	messages: MessageManager
 
 	private static async genLavfiComplex(song: CurrentSong): Promise<string> {
-		const isMP3 = song.mediafile.endsWith('.mp3');
 		const shouldDisplayAvatar = song.avatar && getConfig().Karaoke.Display.Avatar;
-		const MP3Boilerplate = '[vid1]scale=1920:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]';
 		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
@@ -532,19 +530,13 @@ class Players {
 			// Again, lavfi-complex expert @nah comes to the rescue!
 			avatar = [
 				`movie=\\'${song.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
-				`[logo][${isMP3 ? 'ovrl' : 'vid1' }]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]`,
-				(isMP3) ? '[base][emp]overlay[ovrl]' : undefined,
-				`[${(isMP3) ? 'ovrl':'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${song.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vfinal]`
+				'[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
+				`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${song.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
 			].filter(x => !!x).join(';');
 		}
 		return [
 			audio,
-			isMP3 ? MP3Boilerplate : undefined,
-			avatar,
-			(isMP3 && !avatar) ? '[vpoc]null[vfinal]' : undefined,
-			(!isMP3 && !avatar) ? '[vid1]null[vfinal]' : undefined,
-			(!avatar) ? '[ovrl]null[vfinal]' : undefined,
-			'[vfinal]null[vo]'
+			avatar || '[vid1]null[vo]'
 		].filter(x => !!x).join(';');
 	}
 
