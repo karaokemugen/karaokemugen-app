@@ -19,8 +19,8 @@ export async function checkLogin(username: string, password: string): Promise<To
 			// If username has a @, check its instance for existence
 			// If OnlineUsers is disabled, accounts are connected with
 			// their local version if it exists already.
-			await fetchAndUpdateRemoteUser(username, password, undefined, true);
-			onlineToken = user.onlineToken;
+			const res = await fetchAndUpdateRemoteUser(username, password, undefined, true);
+			onlineToken = res.onlineToken;
 			if (onlineToken) {
 				// Download and add all favorites
 				await fetchAndAddFavorites(username, onlineToken);
