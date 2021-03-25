@@ -177,7 +177,9 @@ export async function updateBase(repo: string) {
 		logger.info('Getting local and remote song inventory', {service: 'Update'});
 		const karas = await getKaraInventory(repo);
 		logger.info('Removing songs...', {service: 'Update'});
-		await cleanKaras(repo, karas.local, karas.remote);
+		await cleanKaras(repo, karas.local, karas.remote).catch(() => {
+			logger.warn('Cleaning karas failed, going on anyway', {service: 'Update'});
+		});
 		logger.info('Adding updated/new songs...', {service: 'Update'});
 		const [updatedSongs, newSongs] = await Promise.all([
 			updateKaras(repo, karas.local, karas.remote),
