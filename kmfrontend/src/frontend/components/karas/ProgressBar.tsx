@@ -24,6 +24,7 @@ interface IState {
 	timePosition: number;
 	animate: number;
 	duration: number;
+	animationPause: boolean;
 }
 
 class ProgressBar extends Component<IProps, IState> {
@@ -41,13 +42,15 @@ class ProgressBar extends Component<IProps, IState> {
 			width: '0',
 			timePosition: 0,
 			animate: 0,
-			duration: 0
+			duration: 0,
+			animationPause: false
 		};
 	}
 
 	refBar = createRef<HTMLDivElement>();
 	refCont = createRef<HTMLDivElement>();
 	refP = createRef<HTMLParagraphElement>();
+	timeout: NodeJS.Timeout
 
 	mouseDown = (e: any) => {
 		if (this.state.playerStatus && this.state.playerStatus !== 'stop' && this.state.length !== -1) {
@@ -67,6 +70,15 @@ class ProgressBar extends Component<IProps, IState> {
 		}
 	};
 
+	suspendAnimation = () => {
+		if (!this.state.animationPause) {
+			this.setState({ animationPause: true });
+			this.timeout = setTimeout(() => {
+				this.setState({ animationPause: false });
+			}, 3000);
+		}
+	}
+
 	async componentDidMount() {
 		if (this.context.globalState.auth.isAuthenticated) {
 			const result = await commandBackend('getPlayerStatus');
@@ -74,11 +86,17 @@ class ProgressBar extends Component<IProps, IState> {
 		}
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
 		window.addEventListener('resize', this.resizeCheck, { passive: true });
+		if (this.refP.current) {
+			this.refP.current.addEventListener('animationiteration', this.suspendAnimation, { passive: true });
+		}
 	}
 
 	componentWillUnmount() {
 		getSocket().off('playerStatus', this.refreshPlayerInfos);
 		window.removeEventListener('resize', this.resizeCheck);
+		if (this.timeout) {
+			clearTimeout(this.timeout);
+		}
 	}
 
 	goToPosition(e: any) {
@@ -173,7 +191,7 @@ class ProgressBar extends Component<IProps, IState> {
 					ref={this.refBar}
 				>
 					<div className="actualTime">{this.state.timePosition > 0 && this.state.length > 0 && secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
-					<div className={`karaTitle${this.state.animate !== 0 ? ' animate' : ''}`}
+					<div className={`karaTitle${this.state.animate !== 0 ? ' animate' : ''}${this.state.animationPause ? ' pause':''}`}
 						style={{
 							['--offset' as any]: `${this.state.animate}px`,
 							['--duration' as any]: `${this.state.duration}s`
