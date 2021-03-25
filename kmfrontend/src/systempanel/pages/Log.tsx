@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 
 import GlobalContext from '../../store/context';
 import i18n from '../../utils/i18n';
-import { commandBackend, getSocket } from '../../utils/socket';
+import { commandBackend, getSocket, isRemote } from '../../utils/socket';
 
 interface LogState {
 	log: { level: string, message: string, timestamp: string, service: string, obj?: any }[],
@@ -23,16 +23,29 @@ class Log extends Component<unknown, LogState> {
 		level: 'info'
 	};
 
+	interval: NodeJS.Timeout
+
 	componentDidMount() {
 		this.refresh().then(() => {
 			if (this.context.globalState.settings?.data.state) {
-				getSocket().on('log', (log) => {
-					const logs = this.state.log;
-					logs.push(log);
-					this.setState({ log: logs });
-				});
+				if (!isRemote()) {
+					getSocket().on('log', (log) => {
+						const logs = [...this.state.log];
+						logs.push(log);
+						this.setState({ log: logs });
+					});
+				} else {
+					// Event-based logs aren't available on remote, use polling-method instead
+					this.interval = setInterval(this.refresh.bind(this), 4500);
+				}
 			}
 		});
+	}
+
+	componentWillUnmount() {
+		if (this.interval) {
+			clearInterval(this.interval);
+		}
 	}
 
 	refresh = async () => {
