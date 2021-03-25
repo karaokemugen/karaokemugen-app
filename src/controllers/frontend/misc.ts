@@ -301,7 +301,9 @@ export default function miscController(router: SocketIOApp) {
 		try {
 			// Align socket
 			enableWSLogging(req.body.level);
-			socket.join('logs');
+			// remote environments doesn't support rooms... yet
+			// FIXME: find a way to support this
+			if ('join' in socket) socket.join('logs');
 			return await readLog(req.body.level);
 		} catch(err) {
 			throw {code: 500, message: APIMessage('ERROR_READING_LOGS')};
