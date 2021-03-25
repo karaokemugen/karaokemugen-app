@@ -261,7 +261,7 @@ class PublicPage extends Component<IProps, IState> {
 	};
 
 	render() {
-		return this.context?.globalState.settings.data.config.Frontend.Mode === 0 ?
+		return this.context?.globalState.settings.data.config.Frontend?.Mode === 0 ?
 			(<div
 				style={{
 					top: '25%',
