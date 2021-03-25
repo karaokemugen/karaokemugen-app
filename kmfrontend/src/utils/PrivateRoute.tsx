@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { RouteProps } from 'react-router';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 import GlobalContext from '../store/context';
 import { setLastLocation } from './tools';
