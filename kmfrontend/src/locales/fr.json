@@ -1190,7 +1190,7 @@
 		"WL_ADD_SONG_ERROR": "Erreur lors de l'ajout à la liste blanche",
 		"WL_DELETE_SONG_ERROR": "Erreur lors de la suppression de la liste blanche",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez",
-		"BASES_SYNC_ERROR": "Le dépôt {{repo}} ne s'est pas synchroniser correctement : {{err}}",
+		"BASES_SYNC_ERROR": "Le dépôt {{repo}} ne s'est pas synchronisé correctement : {{err}}",
 		"DOWNLOAD_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à télécharger toutes les chansons correctement : {{err}}",
 		"CLEAN_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à nettoyer les chansons obsolètes correctement : {{err}}",
 		"SONGS_UPDATE_ERROR": "Le dépôt {{repo}} ne s'est pas mise à jour correctement : {{err}}",
