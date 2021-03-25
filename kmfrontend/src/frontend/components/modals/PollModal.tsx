@@ -35,9 +35,13 @@ class PollModal extends Component<IProps, IState> {
 	};
 
 	postSong = (event: any) => {
-		commandBackend('votePoll', { index: event.target.value });
-		this.props.hasVoted();
-		closeModal(this.context.globalDispatch);
+		try {
+			commandBackend('votePoll', { index: event.target.value });
+			this.props.hasVoted();
+			closeModal(this.context.globalDispatch);
+		} catch (e) {
+			//already display
+		}
 	};
 
 	render() {

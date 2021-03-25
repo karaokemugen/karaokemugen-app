@@ -82,24 +82,24 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
 				plc_ids: this.props.kara?.playlistcontent_id ? [this.props.kara.playlistcontent_id]:this.props.kara.my_public_plc_id
-			});
+			}).catch(() => {});
 		} else if (this.props.idPlaylist === -2) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
 		} else if (this.props.idPlaylist === -3) {
 			await commandBackend('deleteKaraFromWhitelist', {
 				kids: [this.props.kara.kid]
-			});
+			}).catch(() => {});
 		} else {
 			await commandBackend('deleteKaraFromPlaylist', {
 				plc_ids: [this.props.kara.playlistcontent_id]
-			});
+			}).catch(() => {});
 		}
 	};
 
 	deleteFavorite = () => {
 		commandBackend('deleteFavorites', {
 			kids: [this.props.kara.kid]
-		});
+		}).catch(() => {});
 	}
 
 	playKara = () => {
@@ -111,7 +111,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			commandBackend('editPLC', {
 				flag_playing: true,
 				plc_ids: [this.props.kara.playlistcontent_id]
-			});
+			}).catch(() => {});
 		}
 	};
 
@@ -196,6 +196,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						.then(() => {
 							toast.dismiss();
 							displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+						}).catch(() => {
+							toast.dismiss();
 						});
 				}}>{i18next.t('CANCEL')}</button>
 			</div>, 10000);
