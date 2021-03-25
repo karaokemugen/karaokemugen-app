@@ -24,17 +24,24 @@ import { integrateTagFile } from './tag';
 
 let downloaderReady = false;
 
-const queueOptions = {
+const downloadQueueOptions = {
 	id: 'uuid',
 	cancelIfRunning: true,
 	concurrent: 3
 };
 
-let q: any;
+const integrationQueueOptions = {
+	id: 'uuid',
+	cancelIfRunning: true,
+	concurrent: 1
+};
+
+let dq: any;
+let iq: any;
 let downloadTask: Task;
 
 export function getDownloadQueue() {
-	return q;
+	return dq;
 }
 
 function initTask() {
@@ -49,8 +56,15 @@ async function emitQueueStatus(status: QueueStatus) {
 }
 
 function queueDownload(input: KaraDownload, done: any) {
-	logger.info(`Processing song : ${input.name}`, {service: 'Download'});
+	logger.info(`Processing download : ${input.name}`, {service: 'Download'});
 	processDownload(input)
+		.then(() => done())
+		.catch(err => done(err));
+}
+
+function queueIntegrate(input: DownloadBundle, done: any) {
+	logger.info(`Processing integration : ${input.name}`, {service: 'Download'});
+	processIntegration(input)
 		.then(() => done())
 		.catch(err => done(err));
 }
@@ -69,9 +83,10 @@ export function initDownloadQueue() {
 	// We'll compare data dir checksum and execute refresh every 5 downloads and everytime the queue is drained
 	let taskCounter = 0;
 	let refreshing = false;
-	q = new Queue(queueDownload, queueOptions);
-	q.on('task_finish', () => {
-		if (q.length > 0) logger.info(`${q.length - 1} items left in queue`, {service: 'Download'});
+	dq = new Queue(queueDownload, downloadQueueOptions);
+	iq = new Queue(queueIntegrate, integrationQueueOptions);
+	iq.on('task_finish', () => {
+		if (dq.length > 0) logger.info(`${dq.length - 1} items left in queue`, {service: 'Download'});
 		taskCounter++;
 		if (taskCounter >= 100 ) {
 			logger.debug('Triggering database refresh', {service: 'Download'});
@@ -85,12 +100,12 @@ export function initDownloadQueue() {
 		}
 		emitQueueStatus('updated');
 	});
-	q.on('task_failed', (taskId: string, err: any) => {
+	iq.on('task_failed', (taskId: string, err: any) => {
 		logger.error(`Task ${taskId} failed`, {service: 'Download', obj: err});
 		emitQueueStatus('updated');
 	});
-	q.on('empty', () => emitQueueStatus('updated'));
-	q.on('drain', async () => {
+	iq.on('empty', () => emitQueueStatus('updated'));
+	iq.on('drain', async () => {
 		logger.info('No tasks left, stopping queue', {service: 'Download'});
 		if (!refreshing) {
 			refreshAll().then(() => {
@@ -111,12 +126,12 @@ export function initDownloadQueue() {
 }
 
 export async function startDownloads() {
-	if (q) resumeQueue();
-	if (q?.length === 0) {
+	if (dq) resumeQueue();
+	if (dq?.length === 0) {
 		const downloads = await selectPendingDownloads();
 		try {
 			await internet();
-			downloads.forEach(dl => q.push(dl));
+			downloads.forEach(dl => dq.push(dl));
 			logger.info('Download queue starting up', {service: 'Downloader'});
 			emitQueueStatus('started');
 		} catch(err) {
@@ -126,7 +141,7 @@ export async function startDownloads() {
 	}
 }
 
-export async function integrateDownloadBundle(bundle: DownloadBundle, download_id: string, destRepo?: string) {
+export async function integrateDownloadBundle(bundle: DownloadBundle, destRepo?: string) {
 	try {
 		if (!downloadTask) initTask();
 		downloadTask.update({
@@ -172,7 +187,7 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, download_i
 				id: kara.file.replace('.kara.json','')
 			});
 		}
-		if (list.length > 0) await downloadFiles(download_id, list, downloadTask);
+		if (list.length > 0) await downloadFiles(bundle.uuid, list, downloadTask);
 
 		const writes = [];
 		let tempLyrics: string;
@@ -216,7 +231,7 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, download_i
 		}
 		logger.info(`Finished downloading "${kara.file}"`, {service: 'Download'});
 		// Now adding our newly downloaded kara
-		await integrateDownload(bundle, localKaraPath, localTagsPath, download_id);
+		await integrateDownload(bundle, localKaraPath, localTagsPath);
 	} catch(err) {
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.DOWNLOAD', err));
 	}
@@ -232,7 +247,10 @@ async function processDownload(download: KaraDownload) {
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.DOWNLOAD', err));
 			throw err;
 		}
-		await integrateDownloadBundle(bundle, download.uuid);
+		bundle.uuid = download.uuid;
+		bundle.name = download.name;
+		bundle.size = download.size;
+		iq.push(bundle);
 	} catch(err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		throw err;
@@ -245,7 +263,22 @@ async function processDownload(download: KaraDownload) {
 	}
 }
 
-async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, localTagsPath: string, download_id: string ) {
+async function processIntegration(bundle: DownloadBundle) {
+	try {
+		await integrateDownloadBundle(bundle);
+	} catch(err) {
+		setDownloadStatus(bundle.uuid, 'DL_FAILED');
+		throw err;
+	} finally {
+		if (downloadTask) downloadTask.update({
+			subtext: bundle.name,
+			value: bundle.size,
+			total: bundle.size
+		});
+	}
+}
+
+async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, localTagsPath: string ) {
 	try {
 		for (const tag of bundle.tags) {
 			try {
@@ -259,14 +292,14 @@ async function integrateDownload(bundle: DownloadBundle, localKaraPath: string, 
 		try {
 			await integrateKaraFile(resolve(localKaraPath, bundle.kara.file));
 			logger.info(`Song "${bundle.kara.file}" added to database`, {service: 'Download'});
-			await setDownloadStatus(download_id, 'DL_DONE');
+			await setDownloadStatus(bundle.uuid, 'DL_DONE');
 		} catch(err) {
 			logger.error(`Song "${bundle.kara.file}" not properly added to database`, {service: 'Download', obj: err});
 			throw err;
 		}
 	} catch(err) {
 		logger.error(`Song "${bundle.kara.file}" downloaded but not properly added to database. Regenerate your database manually after fixing errors`, {service: 'Download'});
-		setDownloadStatus(download_id, 'DL_FAILED');
+		setDownloadStatus(bundle.uuid, 'DL_FAILED');
 		throw err;
 	}
 }
@@ -286,12 +319,12 @@ export async function downloadFiles(download_id?: string, list?: DownloadItem[],
 export function pauseQueue() {
 	// Queue is paused but the current running task is not paused.
 	emitQueueStatus('paused');
-	return q.pause();
+	return dq.pause();
 }
 
 export function resumeQueue() {
 	emitQueueStatus('started');
-	return q.resume();
+	return dq.resume();
 }
 
 export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<number> {
@@ -316,7 +349,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 		};
 	});
 	await insertDownloads(dls);
-	dls.forEach(dl => q.push(dl));
+	dls.forEach(dl => dq.push(dl));
 	return dls.length;
 }
 
@@ -329,7 +362,7 @@ export function setDownloadStatus(uuid: string, status: string) {
 }
 
 export function wipeDownloadQueue() {
-	if (q) q.destroy();
+	if (dq) dq.destroy();
 }
 
 export function wipeDownloads() {
