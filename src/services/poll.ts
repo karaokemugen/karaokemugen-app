@@ -172,8 +172,8 @@ export function addPollVote(index: number, token: Token) {
 		return false;
 	});
 	if (!choiceFound) throw {
-		code: 'POLL_VOTE_ERROR',
-		message: 'This song is not in the poll'
+		code: '404',
+		message: 'POLL_VOTE_ERROR'
 	};
 	voters.add(token.username.toLowerCase());
 	if (getConfig().Karaoke.StreamerMode.Enabled && (getState().player.mediaType === 'background' || getState().player.mediaType === 'pauseScreen')) displayPoll();

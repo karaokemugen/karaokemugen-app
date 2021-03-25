@@ -1192,7 +1192,8 @@
 		"BLC_SET_EXPORT_ERROR": "Error exporting blacklist criterias set",
 		"BLC_SET_IMPORT_ERROR": "Error importing blacklist criterias set",
 		"ERROR_READING_LOGS": "Unable to read event logs",
-		"SUBFILE_FORMAT_UNKOWN": "Subfile format unkown"
+		"SUBFILE_FORMAT_UNKOWN": "Subfile format unkown",
+		"POLL_VOTE_ERROR": "This song is not in the poll"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
