@@ -2010,14 +2010,6 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react-router@5.1.13":
-  version "5.1.13"
-  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-5.1.13.tgz#051c0d229bd48ad90558a1db500708127cc512f7"
-  integrity sha512-ZIuaO9Yrln54X6elg8q2Ivp6iK6p4syPsefEYAhRDAoqNh48C8VYUmB9RkXjKSQAJSJV0mbIFCX7I4vZDcHrjg==
-  dependencies:
-    "@types/history" "*"
-    "@types/react" "*"
-
 "@types/react-virtualized@^9.21.11":
   version "9.21.11"
   resolved "https://registry.yarnpkg.com/@types/react-virtualized/-/react-virtualized-9.21.11.tgz#8eb60ed12ef0b2625769819f9fd10ad4bb1bdce0"

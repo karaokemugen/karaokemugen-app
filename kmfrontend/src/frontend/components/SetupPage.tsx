@@ -3,7 +3,7 @@ import '../styles/start/SetupPage.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { setAuthentifactionInformation } from '../../store/actions/auth';
