@@ -222,10 +222,6 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		});
 	};
 
-	compareTag = (a: DBKaraTag, b: DBKaraTag) => {
-		return a.name.localeCompare(b.name);
-	}
-
 	karaTags = (() => {
 		// Tags in the header
 		const karaTags: JSX.Element[] = [];
@@ -235,7 +231,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 			isMulti ? karaTags.push(<div key={isMulti.tid} className="tag">
 				{getTagInLocale(isMulti)}
-			</div>) : karaTags.push(...data.langs.sort(this.compareTag).map((tag, i) => {
+			</div>) : karaTags.push(...data.langs.sort(sortTagByPriority).map((tag, i) => {
 				if (i === 0) return undefined;
 				return <div key={tag.tid} className="tag green" title={getTagInLocale(tag, this.props.i18nTag)}>
 					{getTagInLocale(tag, this.props.i18nTag)}
@@ -243,7 +239,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			}));
 		}
 		if (data.songtypes && (this.props.scope === 'public' || is_touch_device())) {
-			karaTags.push(...data.songtypes.sort(this.compareTag).map((tag, i) => {
+			karaTags.push(...data.songtypes.sort(sortTagByPriority).map((tag, i) => {
 				if (i === 0) return undefined;
 				return <div key={tag.tid} className="tag green" title={getTagInLocale(tag, this.props.i18nTag)}>
 					{getTagInLocale(tag, this.props.i18nTag)}
@@ -254,7 +250,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		for (const type of ['FAMILIES', 'PLATFORMS', 'ORIGINS', 'MISC']) {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
-				karaTags.push(...data[typeData.karajson].sort(this.compareTag).map(tag => {
+				karaTags.push(...data[typeData.karajson].sort(sortTagByPriority).map(tag => {
 					return <div key={tag.tid} className={`tag ${typeData.color}${tag.problematic ? ' problematicTag' : ''}`} title={getTagInLocale(tag, this.props.i18nTag)}>
 						{this.props.scope === 'admin' && !is_touch_device() ? (tag.short ? tag.short : tag.name) : getTagInLocale(tag, this.props.i18nTag)}
 					</div>;

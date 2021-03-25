@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getSerieLanguage, getTagInLocaleList } from '../../../utils/kara';
+import { getSerieLanguage, getTagInLocaleList, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { is_touch_device } from '../../../utils/tools';
 
@@ -91,10 +91,6 @@ class KaraList extends Component<unknown, KaraListState> {
 		setTimeout(this.refresh, 10);
 	};
 
-	sortTagByPriority(a: any, b: any) {
-		return a.priority < b.priority ? 1 : -1;
-	}
-
 	render() {
 		return (
 			<>
@@ -151,7 +147,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
-		render: (songtypes, record) => getTagInLocaleList(songtypes.sort(this.sortTagByPriority), this.state.i18nTag).join(', ') + ' ' + (record.songorder || '')
+		render: (songtypes, record) => getTagInLocaleList(songtypes.sort(sortTagByPriority), this.state.i18nTag).join(', ') + ' ' + (record.songorder || '')
 	}, {
 		title: i18next.t('KARA.FAMILIES'),
 		dataIndex: 'families',
@@ -165,7 +161,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
 		dataIndex: 'versions',
 		key: 'versions',
-		render: (versions) => getTagInLocaleList(versions.sort(this.sortTagByPriority), this.state.i18nTag).join(', ')
+		render: (versions) => getTagInLocaleList(versions.sort(sortTagByPriority), this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.REPOSITORY'),
 		dataIndex: 'repository',

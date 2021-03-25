@@ -3,7 +3,6 @@ import './ProgressBar.scss';
 import i18next from 'i18next';
 import React, { Component, createRef } from 'react';
 
-import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
@@ -125,10 +124,6 @@ class ProgressBar extends Component<IProps, IState> {
 				this.setState({ animate: 0 });
 			}
 		}
-	}
-
-	compareTag = (a: DBKaraTag, b: DBKaraTag) => {
-		return a.name.localeCompare(b.name);
 	}
 
 	/**

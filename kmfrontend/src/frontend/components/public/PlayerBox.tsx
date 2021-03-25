@@ -6,7 +6,6 @@ import React, { Component, createRef, RefObject } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import { ASSLine } from '../../../../../src/lib/types/ass';
-import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
 import { getPreviewLink, getSerieLanguage, getTagInLocale, sortTagByPriority } from '../../../utils/kara';
@@ -123,10 +122,6 @@ class PlayerBox extends Component<IProps, IState> {
 		}
 	}
 
-	compareTag = (a: DBKaraTag, b: DBKaraTag) => {
-		return a.name.localeCompare(b.name);
-	}
-
 	/**
 	 * refresh the player infos
 	 */
@@ -193,7 +188,7 @@ class PlayerBox extends Component<IProps, IState> {
 					// Tags in the header
 					const typeData = tagTypes['VERSIONS'];
 					if (kara.versions) {
-						return kara[typeData.karajson].sort(sortTagByPriority).sort(this.compareTag).map(tag => {
+						return kara[typeData.karajson].sort(sortTagByPriority).map(tag => {
 							return <div key={tag.tid} className={`tag inline ${typeData.color}`} title={getTagInLocale(tag)}>
 								{getTagInLocale(tag)}
 							</div>;

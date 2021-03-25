@@ -56,7 +56,7 @@ export function getSerieLanguage(settings:SettingsStoreData, tag: DBKaraTag, kar
 }
 
 export function sortTagByPriority(a: any, b: any) {
-	return a.priority < b.priority ? 1 : -1;
+	return a.priority < b.priority ? 1 : a.name.localeCompare(b.name);
 }
 
 /**
