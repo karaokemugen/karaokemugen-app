@@ -122,10 +122,11 @@ body:not(.touch) {
 	&:not(.liTag) > .contentDiv {
 		cursor: zoom-in;
 	}
-	> .contentDivMobile {
+	> .contentDiv.contentDivMobile {
 		&.problematic {
 			color: gold;
 		}
+		padding: 0.25em 0;
 		flex-direction: column;
 		display: flex;
 		flex-basis: 80%;
@@ -138,6 +139,13 @@ body:not(.touch) {
 			font-style: normal;
 			min-width: 3em;
 			display: inline-block;
+			height: min-content;
+			overflow-wrap: break-word;
+		}
+		.contentDivMobileSerie, .contentDivMobileTitle {
+			.tag.inline.green {
+				margin-left: 0;
+			}
 		}
 		.contentDivMobileSerie {
 			font-weight: bold;
