@@ -1243,7 +1243,6 @@
 		"BLC_COPIED": "Blacklist criterias copied",
 		"STOP_AFTER": "The karaoke will stop at the song end. To stop now, click again on the stop button."
 	},
-	"SHOW_DETAILS": "Show details",
 	"HEADERS": {
 		"HOME": {
 			"TITLE": "Home",
@@ -1362,6 +1361,15 @@
 			"TITLE": "Modify a user",
 			"DESCRIPTION": "User modification form"
 		}
+	},
+	"LOGS": {
+		"LEVELS": {
+			"ERROR": "Errors",
+			"WARNING": "Warnings",
+			"INFO": "Informations",
+			"DEBUG": "Debug"
+		},
+		"SHOW_DETAILS": "Show details"
 	},
 	"CHIBI": {
 		"FOCUS": "Go back to Karaoke Mugen",

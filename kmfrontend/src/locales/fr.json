@@ -1260,7 +1260,6 @@
 		"BLC_COPIED": "Copie avec succès des critères de liste noire",
 		"STOP_AFTER": "La lecture sera arrêtée à la fin de la chanson. Cliquez une seconde fois sur le bouton pour arrêter immédiatement."
 	},
-	"SHOW_DETAILS": "Afficher détails",
 	"HEADERS": {
 		"HOME": {
 			"TITLE": "Accueil",
@@ -1379,6 +1378,15 @@
 			"TITLE": "Modifier un utilisateur",
 			"DESCRIPTION": "Formulaire de modification d'utilisateur"
 		}
+	},
+	"LOGS": {
+		"LEVELS": {
+			"ERROR": "Erreurs",
+			"WARNING": "Avertissements",
+			"INFO": "Informations",
+			"DEBUG": "Débogage"
+		},
+		"SHOW_DETAILS": "Afficher détails"
 	},
 	"CHIBI": {
 		"FOCUS": "Revenir à Karaoke Mugen",
