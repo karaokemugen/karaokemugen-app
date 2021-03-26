@@ -180,6 +180,11 @@ function emitPlayerState() {
 	setState({player: quickDiff()});
 }
 
+export function switchToPauseScreen() {
+	playerState.mediaType = 'pauseScreen';
+	emitPlayerState();
+}
+
 async function checkMpv() {
 	const state = getState();
 
@@ -322,7 +327,7 @@ class Player {
 		return [state.binPath.mpv, socket, NodeMPVArgs];
 	}
 
-	private debounceTimePosition(position) {
+	private debounceTimePosition(position: number) {
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
@@ -801,6 +806,7 @@ class Players {
 			playerState.currentSong = song;
 			playerState.mediaType = 'song';
 			playerState.currentMedia = null;
+			this.messages.removeMessage('poll');
 			await retry(() => this.exec({command: ['loadfile', mediaFile, 'replace', options]}), {
 				retries: 3,
 				onFailedAttempt: error => {
@@ -862,11 +868,12 @@ class Players {
 				});
 				playerState.playerStatus = 'play';
 				playerState._playing = true;
-				(mediaType === 'Jingles' || mediaType === 'Sponsors')
+				mediaType === 'Jingles' || mediaType === 'Sponsors'
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
 						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
 						: this.messages.removeMessage('DI');
+				this.messages.removeMessage('poll');
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
@@ -897,10 +904,11 @@ class Players {
 		playerState.playerStatus = 'stop';
 		await this.loadBackground();
 		logger.debug('Stop DI', {service: 'Player'});
-		if (!getState().songPoll) this.displayInfo();
+		this.displayInfo();
 		emitPlayerState();
 		setProgressBar(-1);
 		setDiscordActivity('idle');
+		this.messages.removeMessage('poll');
 		return playerState;
 	}
 
