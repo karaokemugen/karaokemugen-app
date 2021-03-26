@@ -49,6 +49,7 @@ export async function initEngine() {
 	profile('Init');
 	const conf = getConfig();
 	const state = getState();
+	if (conf.Karaoke.Poll.Enabled) setState({songPoll: true});
 	const internet = await (async () => {
 		try {
 			await internetAvailable();
