@@ -119,7 +119,7 @@ export default function pollController(router: SocketIOApp) {
 				const ret = addPollVote(req.body.index,req.token);
 				return ret.data;
 			} catch(err) {
-				errMessage(err.msg);
+				errMessage(err.message);
 				throw {code: err?.code || 500, message: APIMessage(err.msg)};
 			}
 
