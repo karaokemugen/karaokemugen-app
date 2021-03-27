@@ -379,7 +379,13 @@ class Player {
 					playerState[status.name] = status.data;
 				}
 				if (status.name === 'fullscreen') {
-					editSetting({ Player: { FullScreen: !!status.data } });
+					const FullScreen = !!status.data;
+					editSetting({ Player: { FullScreen } });
+					if (FullScreen) {
+						this.control.messages.addMessage('fsTip', `{\\an7\\i1\\fs20}${i18n.t('FULLSCREEN_TIP')}`, 5000);
+					} else {
+						this.control.messages.removeMessage('fsTip');
+					}
 				}
 				// If we're displaying an image, it means it's the pause inbetween songs
 				if (!playerState.isOperating && playerState.mediaType !== 'background' && playerState.mediaType !== 'pauseScreen' &&
