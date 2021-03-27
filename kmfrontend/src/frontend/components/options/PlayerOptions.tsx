@@ -103,6 +103,9 @@ class PlayerOptions extends Component<IProps, IState> {
 		return (
 			this.state.config ?
 				<React.Fragment>
+					<div className="settings-line subCategoryGroupPanel">
+						{i18next.t('SETTINGS.PLAYER.WINDOW_SETTINGS')}
+					</div>
 					<div className="settings-line">
 						<label className="col-xs-4 control-label" title={i18next.t('ALWAYS_ON_TOP_TOOLTIP')}>
 							{i18next.t('ALWAYS_ON_TOP')}
@@ -206,7 +209,20 @@ class PlayerOptions extends Component<IProps, IState> {
 							</select>
 						</div>
 					</div>
-
+					<div className="settings-line">
+						<label className="col-xs-4 control-label" title={i18next.t('PLAYERMONITOR_TOOLTIP')}>
+							{i18next.t('PLAYERMONITOR')}
+							&nbsp;
+							<i className="far fa-question-circle" />
+						</label>
+						<div className="col-xs-6">
+							<Switch idInput="Player.Monitor" handleChange={this.onChange}
+								isChecked={this.state.config['Player.Monitor']} />
+						</div>
+					</div>
+					<div className="settings-line subCategoryGroupPanel">
+						{i18next.t('SETTINGS.PLAYER.DISPLAY_SETTINGS')}
+					</div>
 					<div className="settings-line">
 						<label className="col-xs-4 control-label">
 							{i18next.t('ENGINEDISPLAYCONNECTIONINFO')}
@@ -275,18 +291,6 @@ class PlayerOptions extends Component<IProps, IState> {
 						<div className="col-xs-6">
 							<Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
 								isChecked={this.state.config['Karaoke.Display.Avatar']} />
-						</div>
-					</div>
-
-					<div className="settings-line">
-						<label className="col-xs-4 control-label" title={i18next.t('PLAYERMONITOR_TOOLTIP')}>
-							{i18next.t('PLAYERMONITOR')}
-							&nbsp;
-  						<i className="far fa-question-circle" />
-						</label>
-						<div className="col-xs-6">
-							<Switch idInput="Player.Monitor" handleChange={this.onChange}
-								isChecked={this.state.config['Player.Monitor']} />
 						</div>
 					</div>
 				</React.Fragment> : null

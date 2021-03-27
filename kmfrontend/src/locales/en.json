@@ -289,11 +289,15 @@
 	"QUOTA_KARA": "Remaining karaokes",
 	"SETTINGS": {
 		"PLAYER": {
-			"LABEL": "Player"
+			"LABEL": "Player",
+			"WINDOW_SETTINGS": "Window",
+			"DISPLAY_SETTINGS": "Display"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",
+			"QUOTA_SETTINGS": "Quota",
 			"PLAYLIST_RANDOMSONGSAFTEREND_TOOLTIP": "At the end of your current playlist, Karaoke Mugen will play random songs from the library until someone adds a song (if autoplay is enabled)",
+			"MEDIAS_SETTINGS": "Medias",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing after playlist end",
 			"PLAYLIST_INTRO_VIDEOS": "Playlist intro video",
 			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Intro videos are played only once if you start playing the first song of the current playlist. A sponsor jingle video follows, if available.",
@@ -317,6 +321,7 @@
 			"LABELS_MYSTERY_SONGS": "Mystery songs labels",
 			"LABELS_MYSTERY_SONGS_ADD": "Add",
 			"LABELS_MYSTERY_SONGS_DELETE": "Remove",
+			"SESSION_SETTINGS": "Karaoke session",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Mystery song",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Display warning on end of session X minutes before end",
@@ -324,11 +329,14 @@
 			"ENABLE_SMARTINSERT_TOOLTIP": "When a song is added by the audience, it will be placed so that those who have not requested a lot of songs to be play earlier",
 			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns.",
+			"ONLINE_SETTINGS": "Online",
+			"MYSTERY_SONG_SETTINGS": "Mystery songs",
 			"HIDE_INVISIBLE_SONGS": "Mystery songs display as",
 			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Don't display",
 			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Mystery labels"
 		},
 		"PLAYLIST": {
+			"PLAYLIST_SETTINGS": "Playlists",
 			"ENDOFPLAYLISTACTION": {
 				"NAME": "End of playlist action",
 				"TOOLTIP": "If you choose Random Songs, they'll be picked from your song library. Combined with AutoPlay, your playlist can resume as soon as someone adds a new song.",
@@ -414,7 +422,6 @@
 	"SERIE_NAME_MODE_USER_FORCE": "Force your own language",
 	"POLLTITLE": "Your time to vote!",
 	"POLLENDED": "{{kara}} wins with {{votes}} votes!",
-	"MYSTERY_SONG_SETTINGS": "Mystery song",
 	"ONLINEURL": "Short URL (kara.moe)",
 	"FETCHPOPULARSONGS": "Fetch popular songs from your online repositories",
 	"REMOTE": "Allow remote access (<code>.kara.moe)",
