@@ -180,6 +180,11 @@ function emitPlayerState() {
 	setState({player: quickDiff()});
 }
 
+export function switchToPauseScreen() {
+	playerState.mediaType = 'pauseScreen';
+	emitPlayerState();
+}
+
 async function checkMpv() {
 	const state = getState();
 
@@ -322,7 +327,7 @@ class Player {
 		return [state.binPath.mpv, socket, NodeMPVArgs];
 	}
 
-	private debounceTimePosition(position) {
+	private debounceTimePosition(position: number) {
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
@@ -374,7 +379,13 @@ class Player {
 					playerState[status.name] = status.data;
 				}
 				if (status.name === 'fullscreen') {
-					editSetting({ Player: { FullScreen: !!status.data } });
+					const FullScreen = !!status.data;
+					editSetting({ Player: { FullScreen } });
+					if (FullScreen) {
+						this.control.messages.addMessage('fsTip', `{\\an7\\i1\\fs20}${i18n.t('FULLSCREEN_TIP')}`, 5000);
+					} else {
+						this.control.messages.removeMessage('fsTip');
+					}
 				}
 				// If we're displaying an image, it means it's the pause inbetween songs
 				if (!playerState.isOperating && playerState.mediaType !== 'background' && playerState.mediaType !== 'pauseScreen' &&
@@ -513,51 +524,30 @@ class Players {
 	messages: MessageManager
 
 	private static async genLavfiComplex(song: CurrentSong): Promise<string> {
-		const isMP3 = song.mediafile.endsWith('.mp3');
 		const shouldDisplayAvatar = song.avatar && getConfig().Karaoke.Display.Avatar;
-		const shouldDisplayVisualEffects = isMP3 && getConfig().Player.VisualizationEffects;
-		const MP3Boilerplate = '[vid1]scale=1920:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]';
 		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
 		if (song.loudnorm) {
 			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
-			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=20[a0]`;
+			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=20[ao]`;
+		} else if (song.gain) {
+			audio = `[aid1]volume=${song.gain}dB[ao]`;
 		} else {
-			audio = `[aid1]volume=${song.gain}dB[a0]`;
+			audio = '';
 		}
-		let visu = '';
 		let avatar = '';
-		if (shouldDisplayVisualEffects) {
-			audio += ';[a0]asplit[ao][a]';
-			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
-			// Courtesy of @nah :)
-			visu = [
-				`nullsrc=size=1920x1080:duration=${song.duration},setsar=1,format=rgba[emp]`,
-				'[a]showcqt=axis=0[vis]',
-				'[vis]scale=600:400[vecPrep]',
-				'[emp][vecPrep]overlay=main_w-overlay_w:main_h-overlay_h:x=0[visu]',
-				'[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl]'
-			].join(';');
-		} else audio = audio.replace('a0', 'ao');
 		if (shouldDisplayAvatar) {
 			// Again, lavfi-complex expert @nah comes to the rescue!
 			avatar = [
 				`movie=\\'${song.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
-				`[logo][${isMP3 ? (visu ? 'ovrl':'vpoc'):'vid1'}]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]`,
-				(isMP3 && visu) ? '[base][emp]overlay[ovrl]' : undefined,
-				`[${(isMP3 && visu) ? 'ovrl':'base'}][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${song.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vfinal]`
+				'[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
+				`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${song.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
 			].filter(x => !!x).join(';');
 		}
 		return [
 			audio,
-			isMP3 ? MP3Boilerplate : undefined,
-			visu,
-			avatar,
-			(isMP3 && !visu && !avatar) ? '[vpoc]null[vfinal]' : undefined,
-			(!isMP3 && !visu && !avatar) ? '[vid1]null[vfinal]' : undefined,
-			(visu && !avatar) ? '[ovrl]null[vfinal]' : undefined,
-			'[vfinal]null[vo]'
+			avatar || '[vid1]null[vo]'
 		].filter(x => !!x).join(';');
 	}
 
@@ -769,6 +759,7 @@ class Players {
 		const options: any = {
 			'force-media-title': song.title
 		};
+		let onlineMedia = false;
 		const loadPromises = [
 			Players.genLavfiComplex(song).then(res => options['lavfi-complex'] = res)
 				.catch(err => {
@@ -790,7 +781,7 @@ class Players {
 					logger.warn(`Media NOT FOUND : ${song.mediafile}`, {service: 'Player'});
 					if (conf.Online.MediasHost) {
 						mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(song.mediafile)}`;
-						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
+						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});	onlineMedia = true;
 					} else {
 						mediaFile = '';
 						throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source)`);
@@ -808,7 +799,7 @@ class Players {
 		}
 		if (mediaFile.endsWith('.mp3')) {
 			const id3tags = await id3.read(mediaFile);
-			if (!id3tags.image) {
+			if (!id3tags.image || onlineMedia) {
 				const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
 				options['external-file'] = defaultImageFile.replace(/\\/g,'/');
 				options['force-window'] = 'yes';
@@ -821,6 +812,7 @@ class Players {
 			playerState.currentSong = song;
 			playerState.mediaType = 'song';
 			playerState.currentMedia = null;
+			this.messages.removeMessage('poll');
 			await retry(() => this.exec({command: ['loadfile', mediaFile, 'replace', options]}), {
 				retries: 3,
 				onFailedAttempt: error => {
@@ -882,11 +874,12 @@ class Players {
 				});
 				playerState.playerStatus = 'play';
 				playerState._playing = true;
-				(mediaType === 'Jingles' || mediaType === 'Sponsors')
+				mediaType === 'Jingles' || mediaType === 'Sponsors'
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
 						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
 						: this.messages.removeMessage('DI');
+				this.messages.removeMessage('poll');
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
@@ -917,10 +910,11 @@ class Players {
 		playerState.playerStatus = 'stop';
 		await this.loadBackground();
 		logger.debug('Stop DI', {service: 'Player'});
-		if (!getState().songPoll) this.displayInfo();
+		this.displayInfo();
 		emitPlayerState();
 		setProgressBar(-1);
 		setDiscordActivity('idle');
+		this.messages.removeMessage('poll');
 		return playerState;
 	}
 
@@ -973,7 +967,7 @@ class Players {
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (playerState.currentSong?.mediafile.endsWith('.mp3') &&
-				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar || getConfig().Player.VisualizationEffects)) {
+				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar)) {
 				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
 			await this.exec({command: ['seek', delta]});
@@ -992,7 +986,7 @@ class Players {
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (playerState.currentSong?.mediafile.endsWith('.mp3') &&
-				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar || getConfig().Player.VisualizationEffects)) {
+				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar)) {
 				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
 			await this.exec({command: ['seek', pos, 'absolute']});

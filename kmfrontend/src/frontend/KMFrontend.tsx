@@ -2,7 +2,7 @@ import './KMFrontend.scss';
 
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import { Redirect, Route, Switch } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import GlobalContext from '../store/context';
 import { isElectron } from '../utils/electron';

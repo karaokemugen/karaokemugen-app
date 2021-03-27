@@ -72,8 +72,6 @@
 	"PLAYLIST_KARAS": "Bibliothèque",
 	"PLAYERPIP": "Mode fenêtré + toujours au dessus",
 	"PLAYERPIP_TOOLTIP": "Maintient la fenêtre dans un coin de l'écran",
-	"PLAYERVISUALIZATIONEFFECTS": "Activer les effets de visualisation du son (karaokés audio uniquement)",
-	"PLAYERVISUALIZATIONEFFECTS_TOOLTIP": "Uniquement valable pour les chansons audio uniquement (MP3, OGG, etc.)",
 	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les listes de lecture",
 	"ENGINEDISPLAYNICKNAME": "Afficher le pseudo du demandeur en début et en fin de chanson",
 	"ENGINEDISPLAYNICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
@@ -299,11 +297,15 @@
 	"QUOTA_KARA": "Karaokés restants",
 	"SETTINGS": {
 		"PLAYER": {
-			"LABEL": "Lecteur"
+			"LABEL": "Lecteur",
+			"WINDOW_SETTINGS": "Fenêtre",
+			"DISPLAY_SETTINGS": "Affichage"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
+			"QUOTA_SETTINGS": "Limites",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher un message régulier de demande d'ajout de chanson à l'écran en lecture aléatoire",
+			"MEDIAS_SETTINGS": "Intermissions",
 			"PLAYLIST_INTRO_VIDEOS": "Vidéo d'intro de liste de lecture",
 			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Les intro vidéo sont jouées uniquement une fois si vous lancez la première chanson d'une liste de lecture, sont suivies d'une vidéo sponsor si disponible dans les jingles.",
 			"PLAYLIST_OUTRO_VIDEOS": "Vidéo d'outro de liste de lecture",
@@ -326,6 +328,7 @@
 			"LABELS_MYSTERY_SONGS": "Libellés des chansons mystères",
 			"LABELS_MYSTERY_SONGS_ADD": "Ajouter",
 			"LABELS_MYSTERY_SONGS_DELETE": "Supprimer",
+			"SESSION_SETTINGS": "Session de karaoké",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Chanson mystère",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Afficher la notification de fin de session X minutes avant la fin",
@@ -333,11 +336,14 @@
 			"ENABLE_SMARTINSERT_TOOLTIP": "Au moment de l'ajout d'une chanson par le public, celle-ci sera placée de façon à permettre à ceux qui n'ont pas beaucoup demandé de chansons de passer plus tôt",
 			"ENABLE_AUTOBALANCE": "Activer l'équilibrage automatique de la liste de lecture",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "La playlist sera réorganisée régulièrement pour que les requêtes des utilisateurs passent à tour de rôle.",
+			"ONLINE_SETTINGS": "En ligne",
+			"MYSTERY_SONG_SETTINGS": "Chanson mystère",
 			"HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
 			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Ne pas afficher",
 			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Libellés mystère"
 		},
 		"PLAYLIST": {
+			"PLAYLIST_SETTINGS": "Listes de lecture",
 			"ENDOFPLAYLISTACTION": {
 				"NAME": "Que faire en fin de liste de lecture",
 				"TOOLTIP": "Plusieurs options sont disponibles. Dans le cas de l'aléatoire, des chansons de votre bibliothèque seront jouées au hasard en fin de liste de lecture. La liste de lecture peut reprendre si vous avez activé l'AutoPlay et si quelqu'un ajoute une nouvelle chanson.",
@@ -429,7 +435,6 @@
 	"POLLENDED": "{{kara}} remporte le vote avec {{votes}} voix !",
 	"PLAYERMONITOR": "Seconde fenêtre du lecteur vidéo (moniteur)",
 	"PLAYERMONITOR_TOOLTIP": "Affiche un second lecteur pour l'opérateur s'il ne peut pas voir l'écran principal directement",
-	"MYSTERY_SONG_SETTINGS": "Chanson mystère",
 	"ONLINEURL": "Permettre l'URL d'accès courte (kara.moe)",
 	"FETCHPOPULARSONGS": "Récupérer les chansons populaires depuis vos dépôts en ligne",
 	"REMOTE": "Permettre l'accès à distance (<code>.kara.moe)",
@@ -1192,7 +1197,7 @@
 		"WL_ADD_SONG_ERROR": "Erreur lors de l'ajout à la liste blanche",
 		"WL_DELETE_SONG_ERROR": "Erreur lors de la suppression de la liste blanche",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez",
-		"BASES_SYNC_ERROR": "Le dépôt {{repo}} ne s'est pas synchroniser correctement : {{err}}",
+		"BASES_SYNC_ERROR": "Le dépôt {{repo}} ne s'est pas synchronisé correctement : {{err}}",
 		"DOWNLOAD_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à télécharger toutes les chansons correctement : {{err}}",
 		"CLEAN_SONGS_ERROR": "Le dépôt {{repo}} n'a pas réussi à nettoyer les chansons obsolètes correctement : {{err}}",
 		"SONGS_UPDATE_ERROR": "Le dépôt {{repo}} ne s'est pas mise à jour correctement : {{err}}",
@@ -1211,7 +1216,8 @@
 		"BLC_SET_EXPORT_ERROR": "Erreur lors de l'export d'une liste de critères de liste noire",
 		"BLC_SET_IMPORT_ERROR": "Erreur lors de l'import d'une liste de critères de liste noire",
 		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements",
-		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus"
+		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus",
+		"POLL_VOTE_ERROR": "Cette chanson n'est pas dans le sondage"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -1262,7 +1268,6 @@
 		"BLC_COPIED": "Copie avec succès des critères de liste noire",
 		"STOP_AFTER": "La lecture sera arrêtée à la fin de la chanson. Cliquez une seconde fois sur le bouton pour arrêter immédiatement."
 	},
-	"SHOW_DETAILS": "Afficher détails",
 	"HEADERS": {
 		"HOME": {
 			"TITLE": "Accueil",
@@ -1381,6 +1386,15 @@
 			"TITLE": "Modifier un utilisateur",
 			"DESCRIPTION": "Formulaire de modification d'utilisateur"
 		}
+	},
+	"LOGS": {
+		"LEVELS": {
+			"ERROR": "Erreurs",
+			"WARNING": "Avertissements",
+			"INFO": "Informations",
+			"DEBUG": "Débogage"
+		},
+		"SHOW_DETAILS": "Afficher détails"
 	},
 	"CHIBI": {
 		"FOCUS": "Revenir à Karaoke Mugen",

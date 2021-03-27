@@ -2,7 +2,6 @@ import { app, BrowserWindow, dialog,ipcMain, Menu,protocol } from 'electron';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
-import { v4 as uuidV4 } from 'uuid';
 
 import { exit } from '../components/engine';
 import { listUsers } from '../dao/user';
@@ -196,7 +195,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 		case 'Karaoke Mugen Karaoke Bundle File':
 			const repoName = data.kara.data.data.repository;
 			const destRepo = await checkRepositoryExists(repoName);
-			await integrateDownloadBundle(data, uuidV4(), destRepo);
+			await integrateDownloadBundle(data, destRepo);
 			break;
 		case 'Karaoke Mugen BLC Set File':
 			await importSet(data);

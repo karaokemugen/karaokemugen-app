@@ -1,7 +1,7 @@
 import {Layout} from 'antd';
 import i18next from 'i18next';
 import React, {Component} from 'react';
-import { RouteComponentProps,withRouter } from 'react-router';
+import { RouteComponentProps,withRouter } from 'react-router-dom';
 
 import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';

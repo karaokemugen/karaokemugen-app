@@ -3,7 +3,7 @@ import '../styles/start/MigratePage.scss';
 
 import i18next from 'i18next';
 import React, { Fragment, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 
 import { MigrationsFrontend } from '../../../../src/types/database/migrationsFrontend';
 import logo from '../../assets/Logo-final-fond-transparent.png';

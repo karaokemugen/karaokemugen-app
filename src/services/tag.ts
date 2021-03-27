@@ -276,8 +276,8 @@ export async function integrateTagFile(file: string): Promise<string> {
 	try {
 		const tagDBData = await getTagMini(tagFileData.tid);
 		if (tagDBData) {
-			if (tagDBData.repository === tagFileData.repository) {
-				// Only edit if repositories are the same.
+			if (tagDBData.repository === tagFileData.repository && tagDBData.modified_at.toISOString() !== tagFileData.modified_at) {
+				// Only edit if repositories are the same and modified_at are different.
 				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true });
 			}
 			return tagFileData.name;

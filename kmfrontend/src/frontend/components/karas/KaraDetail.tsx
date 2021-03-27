@@ -9,7 +9,7 @@ import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
-import {formatLyrics, getPreviewLink} from '../../../utils/kara';
+import {formatLyrics, getPreviewLink, sortTagByPriority} from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -198,10 +198,6 @@ class KaraDetail extends Component<IProps, IState> {
 		}
 	}
 
-	compareTag = (a: DBKaraTag, b: DBKaraTag) => {
-		return a.name.localeCompare(b.name);
-	}
-
 	placeHeader = (headerEl: ReactNode) => createPortal(headerEl, document.getElementById('menu-supp-root'));
 
 	render() {
@@ -215,14 +211,14 @@ class KaraDetail extends Component<IProps, IState> {
 				const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 				isMulti ? karaTags.push(<div key={isMulti.tid} className="tag">
 					{this.getInlineTag(isMulti, tagTypes.LANGS.type)}
-				</div>) : karaTags.push(...data.langs.sort(this.compareTag).map(tag => {
+				</div>) : karaTags.push(...data.langs.sort(sortTagByPriority).map(tag => {
 					return <div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
 						{this.getInlineTag(tag, tagTypes.LANGS.type)}
 					</div>;
 				}));
 			}
 			if (data.songtypes) {
-				karaTags.push(...data.songtypes.sort(this.compareTag).map(tag => {
+				karaTags.push(...data.songtypes.sort(sortTagByPriority).map(tag => {
 					return <div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
 						{this.getInlineTag(tag, tagTypes.SONGTYPES.type)}{data.songorder > 0 ? ' ' + data.songorder : ''}
 					</div>;
@@ -231,7 +227,7 @@ class KaraDetail extends Component<IProps, IState> {
 			for (const type of ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']) {
 				const tagData = tagTypes[type];
 				if (data[tagData.karajson]) {
-					karaTags.push(...data[tagData.karajson].sort(this.compareTag).map(tag => {
+					karaTags.push(...data[tagData.karajson].sort(sortTagByPriority).map(tag => {
 						return <div key={tag.tid} className={`tag ${tagData.color}`} title={tag.short ? tag.short : tag.name}>
 							{this.getInlineTag(tag, tagData.type)}
 						</div>;

@@ -148,8 +148,6 @@ Player:
     Size: 30
   # Play progress bar in Dock / Taskbar
   ProgressBarDock: true
-  # When playing mp3s, enable/disable visualization effects.
-  VisualizationEffects: false
   # Volume
   Volume: 100
   # Hardware decoding. See mpv manual for more info

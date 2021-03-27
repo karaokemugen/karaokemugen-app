@@ -99,6 +99,9 @@ class KaraokeOptions extends Component<IProps, IState> {
 			this.state.config ?
 				<React.Fragment>
 					<div id="nav-karaokeAllMode">
+						<div className="settings-line subCategoryGroupPanel">
+							{i18next.t('SETTINGS.KARAOKE.QUOTA_SETTINGS')}
+						</div>
 						<div className="settings-line">
 							<label title={i18next.t('QUOTA_TYPE_TOOLTIP')}>
 								{i18next.t('QUOTA_TYPE')}
@@ -176,7 +179,57 @@ class KaraokeOptions extends Component<IProps, IState> {
 							</div> : null
 						}
 
+						<div className="settings-line">
+							<label>
+								{i18next.t('ENGINEFREEUPVOTES')}
+							</label>
+							<div>
+								<Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.onChange}
+									isChecked={this.state.config['Karaoke.Quota.FreeUpVote']} />
+							</div>
+						</div>
+						{this.state.config['Karaoke.Quota.FreeUpVote'] ?
+							<div
+								id="freeUpvotesSettings"
+								className="settingsGroupPanel"
+							>
+								<div className="settings-line">
+									<label>
+										{i18next.t('ENGINEFREEUPVOTESREQUIREDMIN')}
+									</label>
+									<div>
+										<input
+											className=""
+											type="number"
+											data-exclude="true"
+											id="Karaoke.Quota.FreeUpVotesRequiredMin"
+											onChange={this.onChange}
+											value={this.state.config['Karaoke.Quota.FreeUpVotesRequiredMin']}
+										/>
+									</div>
+								</div>
+								<div className="settings-line">
+									<label title={i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT_TOOLTIP')}>
+										{i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT')}
+										&nbsp;
+										<i className="far fa-question-circle" />
+									</label>
+									<div>
+										<input
+											className=""
+											type="number"
+											data-exclude="true"
+											id="Karaoke.Quota.FreeUpVotesRequiredPercent"
+											onChange={this.onChange}
+											value={this.state.config['Karaoke.Quota.FreeUpVotesRequiredPercent']}
+										/>
+									</div>
+								</div>
+							</div> : null}
 
+						<div className="settings-line subCategoryGroupPanel">
+							{i18next.t('SETTINGS.PLAYLIST.PLAYLIST_SETTINGS')}
+						</div>
 
 						<div className="settings-line">
 							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}>
@@ -252,6 +305,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<Switch idInput="Playlist.AllowDuplicates" handleChange={this.onChange}
 									isChecked={this.state.config['Playlist.AllowDuplicates']} />
 							</div>
+						</div>
+
+						<div className="settings-line subCategoryGroupPanel">
+							{i18next.t('SETTINGS.KARAOKE.MEDIAS_SETTINGS')}
 						</div>
 
 						<div className="settings-line">
@@ -394,6 +451,11 @@ class KaraokeOptions extends Component<IProps, IState> {
 								}
 							</div>
 						</div>
+
+						<div className="settings-line subCategoryGroupPanel">
+							{i18next.t('SETTINGS.KARAOKE.SESSION_SETTINGS')}
+						</div>
+
 						<div className="settings-line">
 							<label title={i18next.t('CLASSIC_MODE_TOOLTIP')}>
 								{i18next.t('CLASSIC_MODE')}
@@ -484,54 +546,6 @@ class KaraokeOptions extends Component<IProps, IState> {
 							</div> : null
 						}
 
-
-						<div className="settings-line">
-							<label>
-								{i18next.t('ENGINEFREEUPVOTES')}
-							</label>
-							<div>
-								<Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.onChange}
-									isChecked={this.state.config['Karaoke.Quota.FreeUpVote']} />
-							</div>
-						</div>
-						{this.state.config['Karaoke.Quota.FreeUpVote'] ?
-							<div
-								id="freeUpvotesSettings"
-								className="settingsGroupPanel"
-							>
-								<div className="settings-line">
-									<label>
-										{i18next.t('ENGINEFREEUPVOTESREQUIREDMIN')}
-									</label>
-									<div>
-										<input
-											className=""
-											type="number"
-											data-exclude="true"
-											id="Karaoke.Quota.FreeUpVotesRequiredMin"
-											onChange={this.onChange}
-											value={this.state.config['Karaoke.Quota.FreeUpVotesRequiredMin']}
-										/>
-									</div>
-								</div>
-								<div className="settings-line">
-									<label title={i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT_TOOLTIP')}>
-										{i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT')}
-										&nbsp;
-  										<i className="far fa-question-circle" />
-									</label>
-									<div>
-										<input
-											className=""
-											type="number"
-											data-exclude="true"
-											id="Karaoke.Quota.FreeUpVotesRequiredPercent"
-											onChange={this.onChange}
-											value={this.state.config['Karaoke.Quota.FreeUpVotesRequiredPercent']}
-										/>
-									</div>
-								</div>
-							</div> : null}
 						<div className="settings-line">
 							<label>
 								{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')}
@@ -594,6 +608,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 								</div>
 							</div> : null}
 
+						<div className="settings-line subCategoryGroupPanel">
+							{i18next.t('SETTINGS.KARAOKE.ONLINE_SETTINGS')}
+						</div>
+
 						<div className="settings-line">
 							<label>
 								{i18next.t('FETCHPOPULARSONGS')}
@@ -628,7 +646,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 							<RemoteStatus /> : null}
 
 						<div className="settings-line subCategoryGroupPanel">
-							{i18next.t('MYSTERY_SONG_SETTINGS')}
+							{i18next.t('SETTINGS.KARAOKE.MYSTERY_SONG_SETTINGS')}
 						</div>
 
 						<div className="settings-line">

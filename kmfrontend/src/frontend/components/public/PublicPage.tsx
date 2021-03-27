@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { DBPLC, DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
@@ -261,7 +261,7 @@ class PublicPage extends Component<IProps, IState> {
 	};
 
 	render() {
-		return this.context?.globalState.settings.data.config.Frontend.Mode === 0 ?
+		return this.context?.globalState.settings.data.config.Frontend?.Mode === 0 ?
 			(<div
 				style={{
 					top: '25%',

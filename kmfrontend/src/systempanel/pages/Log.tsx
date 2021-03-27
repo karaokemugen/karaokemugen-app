@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 
 import GlobalContext from '../../store/context';
 import i18n from '../../utils/i18n';
-import { commandBackend, getSocket } from '../../utils/socket';
+import { commandBackend, getSocket, isRemote } from '../../utils/socket';
 
 interface LogState {
 	log: { level: string, message: string, timestamp: string, service: string, obj?: any }[],
@@ -23,16 +23,29 @@ class Log extends Component<unknown, LogState> {
 		level: 'info'
 	};
 
+	interval: NodeJS.Timeout
+
 	componentDidMount() {
 		this.refresh().then(() => {
 			if (this.context.globalState.settings?.data.state) {
-				getSocket().on('log', (log) => {
-					const logs = this.state.log;
-					logs.push(log);
-					this.setState({ log: logs });
-				});
+				if (!isRemote()) {
+					getSocket().on('log', (log) => {
+						const logs = [...this.state.log];
+						logs.push(log);
+						this.setState({ log: logs });
+					});
+				} else {
+					// Event-based logs aren't available on remote, use polling-method instead
+					this.interval = setInterval(this.refresh.bind(this), 4500);
+				}
 			}
 		});
+	}
+
+	componentWillUnmount() {
+		if (this.interval) {
+			clearInterval(this.interval);
+		}
 	}
 
 	refresh = async () => {
@@ -53,10 +66,10 @@ class Log extends Component<unknown, LogState> {
 				</Layout.Header>
 				<Layout.Content>
 					<Select defaultValue="info" onChange={this.setLevel} style={{marginBottom: '1em'}}>
-						<Select.Option value="error">Erreurs</Select.Option>
-						<Select.Option value="warn">Avertissements</Select.Option>
-						<Select.Option value="info">Informations</Select.Option>
-						<Select.Option value="debug">Débogage</Select.Option>
+						<Select.Option value="error">{i18next.t('LOGS.LEVELS.ERROR')}</Select.Option>
+						<Select.Option value="warn">{i18next.t('LOGS.LEVELS.WARNING')}</Select.Option>
+						<Select.Option value="info">{i18next.t('LOGS.LEVELS.INFO')}</Select.Option>
+						<Select.Option value="debug">{i18next.t('LOGS.LEVELS.DEBUG')}</Select.Option>
 					</Select>
 					<Timeline reverse={true}>
 						{
@@ -72,7 +85,7 @@ class Log extends Component<unknown, LogState> {
 										<code style={{ whiteSpace: 'pre-wrap' }}>{line.message}</code>
 										{line.obj !== undefined ?
 											<Collapse>
-												<Collapse.Panel header={i18n.t('SHOW_DETAILS')} key="1">
+												<Collapse.Panel header={i18n.t('LOGS.SHOW_DETAILS')} key="1">
 													<pre>{JSON.stringify(line.obj, null, 2)}</pre>
 												</Collapse.Panel>
 											</Collapse>

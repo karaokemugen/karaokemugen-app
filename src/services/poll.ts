@@ -164,19 +164,16 @@ export function addPollVote(index: number, token: Token) {
 		code: 429,
 		msg: 'POLL_USER_ALREADY_VOTED'
 	};
-	const choiceFound = poll.some((choice, i) => {
-		if (+choice.index === index) {
-			poll[i].votes++;
-			return true;
-		}
-		return false;
-	});
-	if (!choiceFound) throw {
-		code: 'POLL_VOTE_ERROR',
-		message: 'This song is not in the poll'
-	};
+	const choiceFound = poll.find(choice => +choice.index === +index);
+	if (!choiceFound) {
+		throw {
+			code: 404,
+			message: 'POLL_VOTE_ERROR'
+		};
+	}
+	poll[index].votes++;
 	voters.add(token.username.toLowerCase());
-	if (getConfig().Karaoke.StreamerMode.Enabled && (getState().player.mediaType === 'background' || getState().player.mediaType === 'pauseScreen')) displayPoll();
+	if (getState().player.mediaType === 'pauseScreen') displayPoll();
 	emitWS('songPollUpdated', poll);
 	return {
 		code: 'POLL_VOTED',
@@ -242,7 +239,7 @@ export async function startPoll(): Promise<boolean> {
 		emitWS('newSongPoll',poll);
 	}
 	timerPoll();
-	if (conf.Karaoke.StreamerMode.Enabled && (getState().player.mediaType === 'background' || getState().player.mediaType === 'pauseScreen')) displayPoll();
+	if (getState().player.mediaType === 'pauseScreen') displayPoll();
 	return true;
 }
 

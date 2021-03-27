@@ -55,6 +55,9 @@
 				animation: slide-ltr var(--duration, 10s) linear infinite alternate;
 				position: absolute;
 			}
+			&.pause > p {
+				animation-play-state: paused;
+			}
 		}
 	}
 

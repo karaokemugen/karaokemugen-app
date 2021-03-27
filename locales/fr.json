@@ -199,5 +199,6 @@
 	},
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA PLAYLIST !",
-	"NEW_SESSION_NAME": "Karaoké du {{date}}"
+	"NEW_SESSION_NAME": "Karaoké du {{date}}",
+	"FULLSCREEN_TIP": "Appuyez sur F pour sortir du plein écran."
 }

@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import {promisify} from 'util';
 
-import Players from '../components/mpv';
+import Players, { switchToPauseScreen } from '../components/mpv';
 import { APIMessage } from '../controllers/common';
 import { APIMessageType } from '../lib/types/frontend';
 import {getConfig, setConfig} from '../lib/utils/config';
@@ -57,6 +57,7 @@ export async function next() {
 				const kara = await getCurrentSong();
 				await stopPlayer(true);
 				if (conf.Karaoke.Poll.Enabled) {
+					switchToPauseScreen();
 					const poll = await startPoll();
 					if (!poll) {
 						// False returned means startPoll couldn't start a poll
@@ -80,11 +81,17 @@ export async function next() {
 			if (conf.Karaoke.StreamerMode.Enabled) {
 				await stopPlayer(true, true);
 				if (conf.Karaoke.Poll.Enabled) {
-					await startPoll();
-					on('songPollResult', () => {
-						// We're not at the end of playlsit anymore!
-						nextSong().then(kara => setPlaying(kara.playlistcontent_id, getState().currentPlaylistID)).catch(() => {});
-					});
+					try {
+						await startPoll();
+						on('songPollResult', () => {
+							// We're not at the end of playlist anymore!
+							nextSong()
+								.then(kara => setPlaying(kara.playlistcontent_id, getState().currentPlaylistID))
+								.catch(() => {});
+						});
+					} catch(err) {
+						// Non-fatal
+					}
 					if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
 						await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 						if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
@@ -149,7 +156,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 			await prepareClassicPauseScreen();
 		}
 	} else {
-		if (getState().player.playerStatus !== 'stop' && !getState().stopping) {
+		if (!getState().stopping) {
 			logger.info('Karaoke stopping after current song', {service: 'Player'});
 			setState({ stopping: true });
 		}
