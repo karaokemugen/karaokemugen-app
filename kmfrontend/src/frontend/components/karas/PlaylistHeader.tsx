@@ -368,7 +368,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			this.props.idPlaylist !== -4 ?
 				<div className="actionDiv">
 					<div className="btn-group">
-						{this.props.idPlaylist !== -4 ?
+						{this.props.idPlaylist !== -4 && this.props.idPlaylist !== -2 ?
 							<React.Fragment>
 								<button
 									title={i18next.t('ADVANCED.SELECT_ALL')}
