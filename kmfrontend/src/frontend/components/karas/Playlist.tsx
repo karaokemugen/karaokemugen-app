@@ -673,7 +673,9 @@ class Playlist extends Component<IProps, IState> {
 		} else if (this.props.idPlaylistTo === -2 || this.props.idPlaylistTo === -4) {
 			url = 'createBLC';
 			data = {
-				blcs: [{ type: 1001, value: idsKara }],
+				blcs: idsKara.map(kid => {
+					return { type: 1001, value: kid };
+				}),
 				set_id: this.context.globalState.frontendContext.currentBlSet
 			};
 		} else if (this.props.idPlaylistTo === -3) {
