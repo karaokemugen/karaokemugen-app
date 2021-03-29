@@ -1,5 +1,13 @@
 @import '../../styles/variables';
 
+.blcContainer {
+	height: 100%;
+	overflow-y: scroll;
+	> *:last-child {
+		margin-bottom: 2em;
+	}
+}
+
 .bcDescription {
 	margin: 1em;
 	font-weight: bold;

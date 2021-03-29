@@ -9,7 +9,7 @@ import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function blacklistController(router: SocketIOApp) {
-	router.route('emptyBLCSet', async (socket: Socket, req: APIData) => {	
+	router.route('emptyBLCSet', async (socket: Socket, req: APIData) => {
 		// Empty blacklist criterias
 		try {
 			await runChecklist(socket, req, 'admin');
@@ -71,7 +71,7 @@ export default function blacklistController(router: SocketIOApp) {
 	router.route('deleteBLC', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
-			await deleteBlacklistCriteria(req.body.blc_id, req.body.set_id);
+			await deleteBlacklistCriteria(req.body.blc_ids, req.body.set_id);
 			return;
 		} catch(err) {
 			const code = 'BLC_DELETE_ERROR';

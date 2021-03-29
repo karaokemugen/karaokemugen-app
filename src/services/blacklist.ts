@@ -176,7 +176,7 @@ export async function deleteBlacklistCriteria(blc_ids: number[], set_id: number)
 	logger.debug(`Deleting criteria ${blc_ids.join(' ')}`, {service: 'Blacklist'});
 	const blcSet = await selectSet(set_id);
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
-	let promises: any;
+	const promises: Promise<any>[] = [];
 	for (const blc_id of blc_ids) {
 		promises.push(deleteBLC(blc_id));
 	}

@@ -62,7 +62,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 	};
 
 	deleteCriteria = (bcId: number) => {
-		commandBackend('deleteBLC', { set_id: this.props.blSet.blc_set_id, blc_id: bcId });
+		commandBackend('deleteBLC', { set_id: this.props.blSet.blc_set_id, blc_ids: [bcId] });
 	};
 
 	render() {
@@ -72,7 +72,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 		});
 		const tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.bcType)) : [];
 		return (
-			<React.Fragment>
+			<div className="blcContainer">
 				<div className="bcDescription">{i18next.t('BLC.BLC_DESC')}</div>
 				<div className="blacklist-criterias-input">
 					<select onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
@@ -126,7 +126,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 					</React.Fragment>;
 				})
 				}
-			</React.Fragment>
+			</div>
 		);
 	}
 }
