@@ -91,7 +91,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 									if (e.key === 'Enter') this.addBlacklistCriteria();
 								}} />
 						}
-						<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}><i className="fas fa-plus"></i></button>
+						<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}><i className="fas fa-plus"/></button>
 					</div>
 
 				</div>

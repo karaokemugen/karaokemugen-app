@@ -254,6 +254,7 @@
 	"PROFILE_BIO": "Biographie",
 	"PROFILE_PASSWORD": "Mot de passe",
 	"PROFILE_PASSWORD_AGAIN": "Retapez votre mot de passe",
+	"PROFILE_FAVORITES": "Favoris",
 	"TOOLTIP_ADDKARA": "Ajouter cette chanson à la liste",
 	"TOOLTIP_ADDKARA_ADMIN": "clic droit l'ajoute après la chanson en cours",
 	"TOOLTIP_ADD_SELECT_KARA": "Ajouter les chansons sélectionnées à la liste - clic droit les ajoute après la chanson en cours",

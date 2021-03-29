@@ -401,7 +401,7 @@ class KaraDetail extends Component<IProps, IState> {
 				infoKaraTemp = (
 					<div className="modal modalPage" onClick={this.onClickOutsideModal}>
 						<div className="modal-dialog">
-							<div className="modal-content">
+							<div className="modal-content detailsKara">
 								{header}
 								<div className="detailsKara">
 									<div className="centerButtons">

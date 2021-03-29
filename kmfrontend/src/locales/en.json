@@ -247,6 +247,7 @@
 	"PROFILE_PASSWORD": "Password",
 	"PROFILE_PASSWORD_AGAIN": "Type your password",
 	"PROFILE_PASSWORDCONF": "Confirm",
+	"PROFILE_FAVORITES": "Favorites",
 	"UPVOTE_NUMBER": "Upvotes",
 	"TOOLTIP_ADDKARA": "Add this song to the playlist",
 	"TOOLTIP_ADDKARA_ADMIN": "right click to append it after the currently playing song",
