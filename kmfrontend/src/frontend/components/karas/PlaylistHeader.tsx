@@ -520,7 +520,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 									</React.Fragment>
 									: null
 								}
-								{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
+								{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 || this.props.idPlaylist === -3 ?
 									<li>
 										<a href="#" onClick={this.deleteAllKaras} className="danger-hover">
 											<i className="fas fa-fw fa-eraser"/>
