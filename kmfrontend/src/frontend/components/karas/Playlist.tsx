@@ -751,7 +751,7 @@ class Playlist extends Component<IProps, IState> {
 			return;
 		}
 		await commandBackend('deleteFavorites', {
-			kid: listKara.map(a => a.kid)
+			kids: listKara.map(a => a.kid)
 		});
 	};
 
