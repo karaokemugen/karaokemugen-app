@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 import { APIData } from '../../lib/types/api';
 import { isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { getKara, getKaraHistory, getKaraLyrics, getKaraPlayed, getKaras, getTop50 } from '../../services/kara';
+import { getKara, getKaraLyrics, getKaras} from '../../services/kara';
 import { createKara, editKara } from '../../services/kara_creation';
 import { batchEditKaras, copyKaraToRepo, deleteKara } from '../../services/karaManagement';
 import { playSingleSong } from '../../services/karaokeEngine';
@@ -70,7 +70,7 @@ export default function karaController(router: SocketIOApp) {
 				order: req.body?.order,
 				q: req.body?.q,
 				token: req.token,
-				random: req.body?.random,				
+				random: req.body?.random,
 			});
 		} catch(err) {
 			const code = 'SONG_LIST_ERROR';
@@ -121,97 +121,6 @@ export default function karaController(router: SocketIOApp) {
 			return APIMessage('KARA_CREATED');
 		} catch(err) {
 			const code = 'KARA_CREATED_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
-		}
-	});
-	router.route('getKarasHistory', async (socket: Socket, req: APIData) => {
-		/**
- * @api {get} Get all karas sorted by date played
- * @apiName getKarasHistory
- * @apiVersion 5.0.0
- * @apiGroup Karaokes
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {Object[]} karas Kara object array
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * [
- * 	{
- * 		<See kara object>
- *  }
- * ]
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {code: "KARA_HISTORY_ERROR"}
- */
-		await runChecklist(socket, req);
-		try {
-			return await getKaraHistory();
-		} catch(err) {
-			const code = 'KARA_HISTORY_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
-		}
-	});
-
-	router.route('getKarasRequested', async (socket: Socket, req: APIData) => {
-	/**
- * @api {get} Get all karas sorted by most requested
- * @apiName getKarasRequested
- * @apiVersion 5.0.0
- * @apiGroup Karaokes
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiSuccess {Object[]} karas Kara object array
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * [
- * 	{
- * 		<See kara object>
- *  }
- * ]
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {code: "KARA_RANKING_ERROR"}
- */
-		await runChecklist(socket, req);
-		try {
-			return await getTop50(req.token, req.langs);
-		} catch(err) {
-			const code = 'KARA_RANKING_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
-		}
-	});
-
-	router.route('getKarasPlayed', async (socket: Socket, req: APIData) => {
-	/**
- * @api {get} Get all karas sorted by most played
- * @apiName getKarasPlayed
- * @apiVersion 5.0.0
- * @apiGroup Karaokes
- * @apiPermission admin
- * @apiHeader authorization Auth token received from logging in
- * @apiParam {number} [from] Start listing from this number
- * @apiParam {number} [size] Number of songs to display
- * @apiSuccess {Object[]} karas Kara object array
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * [
- * 	{
- * 		<See kara object>
- *  }
- * ]
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {code: "KARA_PLAYED_ERROR"}
- */
-		await runChecklist(socket, req);
-		try {
-			return await getKaraPlayed(req.token, req.langs, +req.body?.from || 0, +req.body?.size || 9999999);
-		} catch(err) {
-			const code = 'KARA_PLAYED_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
@@ -408,7 +317,7 @@ export default function karaController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+			if (!isUUID(req.body.kid)) throw {code: 400};
 			return await getKara(req.body?.kid, req.token);
 		} catch(err) {
 			const code = 'SONG_VIEW_ERROR';
@@ -435,7 +344,7 @@ export default function karaController(router: SocketIOApp) {
  * HTTP/1.1 404 Not found
  */
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
-		if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+		if (!isUUID(req.body.kid)) throw {code: 400};
 		try {
 			await deleteKara(req.body.kid);
 			return APIMessage('KARA_DELETED');
@@ -501,15 +410,15 @@ export default function karaController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'guest', 'limited');
 		// Add Kara to the playlist currently used depending on mode
-		if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+		if (!isUUID(req.body.kid)) throw {code: 400};
 		try {
 			return {
 				data: await addKaraToPlaylist(req.body.kid, req.token.username),
-				code: 'PL_SONG_ADDED'
+				code: 'PL_SONG_ADDED',
 			};
 		} catch(err) {
 			errMessage(err?.code, err?.message);
-			throw {code: err?.code || 500, message: APIMessage(err.message, err.data?.detail)};
+			throw {code: err?.code || 500, message: APIMessage(err.message, err.msg)};
 		}
 	});
 	router.route('editKara', async (socket: Socket, req: APIData) => {
@@ -552,7 +461,7 @@ export default function karaController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			await editKara(req.body);
-			return APIMessage('KARA_EDITED');
+			return {code: 200, message: APIMessage('KARA_EDITED')};
 		} catch(err) {
 			const code = 'KARA_EDITED_ERROR';
 			errMessage(code, err);
@@ -585,7 +494,7 @@ export default function karaController(router: SocketIOApp) {
  * {code:"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"}
  */
 		await runChecklist(socket, req, 'guest', 'limited');
-		if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+		if (!isUUID(req.body.kid)) throw {code: 400};
 		try {
 			return await getKaraLyrics(req.body.kid);
 		} catch(err) {
@@ -612,7 +521,7 @@ export default function karaController(router: SocketIOApp) {
  * {code: "SONG_COPIED_ERROR"}
  */
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
-		if (!isUUID(req.body.kid)) throw {code: 400, message: 'KID is not a valid UUID'};
+		if (!isUUID(req.body.kid)) throw {code: 400};
 		try {
 			await copyKaraToRepo(req.body.kid, req.body.repo);
 			return APIMessage('SONG_COPIED');
