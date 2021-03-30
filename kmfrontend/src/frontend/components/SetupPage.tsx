@@ -205,7 +205,7 @@ class SetupPage extends Component<IProps, IState> {
 					}
 				}
 			});
-			await commandBackend('startPlayer');
+			await commandBackend('startPlayer').catch(() => {});
 			sessionStorage.setItem('dlQueueRestart', 'true');
 			this.props.route.history.push('/welcome');
 		}

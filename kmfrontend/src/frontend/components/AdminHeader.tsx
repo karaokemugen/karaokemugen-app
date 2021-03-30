@@ -78,7 +78,7 @@ function AdminHeader(props: IProps) {
 			&& props.idsPlaylist.right !== props.currentPlaylist?.playlist_id
 			&& (props.idsPlaylist.left > 0 || props.idsPlaylist.right > 0)) {
 			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }));
+				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {}));
 		} else {
 			props.putPlayerCommando(event);
 		}

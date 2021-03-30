@@ -106,7 +106,7 @@ class ProgressBar extends Component<IProps, IState> {
 			const futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
 			if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
 				this.setState({ width: e.pageX });
-				commandBackend('sendPlayerCommand', { command: 'goTo', options: futurTimeSec });
+				commandBackend('sendPlayerCommand', { command: 'goTo', options: futurTimeSec }).catch(() => {});
 			}
 		}
 	}

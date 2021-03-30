@@ -70,7 +70,7 @@ class PlayerOptions extends Component<IProps, IState> {
 		commandBackend('sendPlayerCommand', {
 			command: e.target.getAttribute('data-namecommand'),
 			options: value
-		});
+		}).catch(() => {});
 		this.props.onChange(e);
 	};
 
