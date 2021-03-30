@@ -2,7 +2,6 @@ import internet from 'internet-available';
 
 import {	addPlayed,
 	emptyOnlineRequested,
-	getKaraHistory as getKaraHistoryDB,
 	getKaraMini as getKaraMiniDB,
 	getYears as getYearsDB,
 	insertOnlineRequested,
@@ -20,7 +19,6 @@ import { getConfig } from '../lib/utils/config';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, {profile} from '../lib/utils/logger';
-import { DBKaraHistory } from '../types/database/kara';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getTagNameInLanguage } from './tag';
@@ -72,51 +70,6 @@ export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
 	const ASS = await getASS(kara.subfile, kara.repository);
 	if (ASS) return ASSToLyrics(ASS);
 	return;
-}
-
-export async function getKaraHistory(): Promise<DBKaraHistory[]> {
-	// Called by system route
-	try {
-		return await getKaraHistoryDB();
-	} catch(err) {
-		sentry.error(err);
-		logger.error('Unable to get kara history', {service: 'Kara', obj: err});
-		throw err;
-	}
-}
-
-export async function getTop50(token: Token, lang?: string): Promise<DBKara[]> {
-	// Called by system route
-	try {
-		return await selectAllKaras({
-			username: token.username.toLowerCase(),
-			lang: lang,
-			filter: null,
-			order: 'requested'
-		});
-	} catch(err) {
-		sentry.error(err);
-		logger.error('Unable to get kara ranking', {service: 'Kara', obj: err});
-		throw err;
-	}
-}
-
-export async function getKaraPlayed(token: Token, lang: string, from: number, size: number): Promise<DBKara[]> {
-	// Called by system route
-	try {
-		return await selectAllKaras({
-			username: token.username.toLowerCase(),
-			filter: null,
-			order: 'played',
-			from: from,
-			size: size,
-			lang: lang
-		});
-	} catch(err) {
-		sentry.error(err);
-		logger.error('Unable to get kara history', {service: 'Kara', obj: err});
-		throw err;
-	}
 }
 
 export async function addPlayedKara(kid: string) {

@@ -398,20 +398,18 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 
 		if (user.type > 0 && !ignoreQuota) {
 			// If user is not admin
-			// Check if we're using correct playlist. User is only allowed to add to public Playlist
-			if (playlist_id !== state.publicPlaylistID) throw {code: 403, msg: 'User is not allowed to add to this playlist'};
 			// Check if karaoke is in blacklist
 			const blacklist = await getBlacklist({});
 			if (blacklist.content.some(blc => {
 				return blc.kid === karas[0];
 			})) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED';
-				throw {code: 451, msg: 'Song is blacklisted'};
+				throw {code: 451};
 			}
 			// Check user quota first
 			if (!await isUserAllowedToAddKara(playlist_id, user, kara.duration)) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
-				throw {code: 429, msg: 'User quota reached'};
+				throw {code: 429};
 			}
 		}
 		// Everything's daijokay, user is allowed to add a song.
@@ -454,10 +452,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 
 		if (karaList.length === 0) {
 			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
-			throw {
-				code: 409,
-				msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
-			};
+			throw {code: 409};
 		}
 		// Song requests by admins are ignored and not added to requests stats
 		if (user.type > 0) addKaraToRequests(user.login, karaList.map(k => k.kid));

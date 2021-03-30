@@ -25,7 +25,7 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getKarasHistory');
+		const res = await commandBackend('getKaras', {order: 'history'});
 		this.setState({karas: res});
 	}
 

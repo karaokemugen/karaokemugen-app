@@ -132,27 +132,13 @@ FROM all_karas AS ak
 WHERE ak.pk_kid = $1
 `;
 
-export const sqlgetKaraHistory = `
-SELECT ak.title AS title,
-	ak.songorder AS songorder,
-	ak.series AS series,
-	ak.singers AS singers,
-	ak.songtypes AS songtypes,
-    ak.languages AS langs,
-    (SELECT COUNT(fk_kid) AS played FROM played WHERE fk_kid = ak.pk_kid)::integer AS played,
-    p.played_at AS played_at
-FROM all_karas AS ak
-INNER JOIN played p ON p.fk_kid = ak.pk_kid
-ORDER BY p.played_at DESC
-`;
-
 export const sqldeleteKara = `
 DELETE FROM kara WHERE pk_kid = $1;
 `;
 
 export const sqlremoveKaraFromPlaylist = `
 DELETE FROM playlist_content
-WHERE pk_id_plcontent IN ($playlistcontent_id)	
+WHERE pk_id_plcontent IN ($playlistcontent_id)
 `;
 
 export const sqlgetSongCountPerUser = `

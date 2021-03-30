@@ -6,11 +6,10 @@ import { DBKara, DBKaraBase,DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
-import { DBKaraHistory } from '../types/database/kara';
 import { DBPLCAfterInsert } from '../types/database/playlist';
 import { PLC } from '../types/playlist';
 import { getState } from '../utils/state';
-import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraHistory, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
+import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
 
 
 export async function getSongCountForUser(playlist_id: number, username: string): Promise<number> {
@@ -91,6 +90,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	// This is normal behaviour without anyone.
 	let groupClauseEnd = '';
 	// Search mode to filter karas played or requested in a particular session
+	if (params.order === 'history') {
+		orderClauses = 'lastplayed_at DESC NULLS LAST, ';
+	}
 	if (params.order === 'sessionPlayed') {
 		orderClauses = groupClause = 'p.played_at, ';
 	}
@@ -98,19 +100,18 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		orderClauses = groupClause = 'rq.requested_at, ';
 	}
 	if (params.order === 'recent') orderClauses = 'created_at DESC, ';
-	if (params.order === 'requested') {
-		if (getConfig().Online.FetchPopularSongs) {
-			orderClauses = 'requested DESC, ';
-			groupClauseEnd = ', requested';
-			selectRequested = 'orq.requested AS requested, ';
-			// Emptying joinClauses first before adding something to it.
-			joinClauses.splice(0, joinClauses.length);
-			joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.pk_kid ');
-			typeClauses = ' AND requested > 1';
-		} else {
-			orderClauses = 'requested DESC, ';
-			havingClause = 'HAVING COUNT(rq.*) > 1';
-		}
+	if (params.order === 'requested' && getConfig().Online.FetchPopularSongs) {
+		orderClauses = 'requested DESC, ';
+		groupClauseEnd = ', requested';
+		selectRequested = 'orq.requested AS requested, ';
+		// Emptying joinClauses first before adding something to it.
+		joinClauses.splice(0, joinClauses.length);
+		joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.pk_kid ');
+		typeClauses = ' AND requested > 1';
+	}
+	if (params.order === 'requestedLocal' || (params.order === 'requested' && !getConfig().Online.FetchPopularSongs)) {
+		orderClauses = 'requested DESC, ';
+		havingClause = 'HAVING COUNT(rq.*) > 1';
 	}
 	if (params.order === 'played') {
 		orderClauses = 'played DESC, ';
@@ -136,11 +137,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		...filterClauses.params
 	};
 	const res = await db().query(yesql(query)(queryParams));
-	return res.rows;
-}
-
-export async function getKaraHistory(): Promise<DBKaraHistory[]> {
-	const res = await db().query(sqlgetKaraHistory);
 	return res.rows;
 }
 
