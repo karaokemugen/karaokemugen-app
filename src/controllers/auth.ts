@@ -70,8 +70,8 @@ export default function authController(router: SocketIOApp) {
 					throw 'Invalid online token';
 				}
 			} catch(err) {
-				logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err});
 				if (err === 'Invalid online token') throw err;
+				logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err});
 			}
 		}
 		return req.token;
