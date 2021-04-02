@@ -175,7 +175,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`)}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
 					<br />
 					{i18next.t('TIME_BEFORE_PLAY', {
 						time: beforePlayTime,
@@ -184,7 +184,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				</>);
 			} else {
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`)}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
 				</>);
 			}
 			displayMessage('success', <div>
@@ -194,13 +194,13 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 					e.stopPropagation();
 					commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
 						.then(() => {
-							toast.dismiss();
+							toast.dismiss(response.data.plc.playlistcontent_id);
 							displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
 						}).catch(() => {
-							toast.dismiss();
+							toast.dismiss(response.data.plc.playlistcontent_id);
 						});
 				}}>{i18next.t('CANCEL')}</button>
-			</div>, 10000);
+			</div>, 10000, 'top-left', response.data.plc.playlistcontent_id);
 		}
 	};
 

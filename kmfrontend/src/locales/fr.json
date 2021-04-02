@@ -1240,7 +1240,7 @@
 		"DATABASE_DUMPED": "Base de données exportée dans karaokemugen.sql",
 		"DATABASE_RESTORED": "Base de données restaurée depuis karaokemugen.sql",
 		"MESSAGE_SENT": "Message envoyé",
-		"PL_SONG_ADDED": "Chanson ajoutée avec succès !",
+		"PL_SONG_ADDED": "Chanson \"{{song}}\" ajoutée avec succès !",
 		"PL_IMPORTED": "Liste de lecture importée : {{data}}",
 		"POLL_VOTED": "Vote pris en compte",
 		"REPO_CREATED": "Dépôt ajouté avec succès",

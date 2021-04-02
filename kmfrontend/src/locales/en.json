@@ -1224,7 +1224,7 @@
 		"DATABASE_DUMPED": "Database dumped to karaokemugen.sql",
 		"DATABASE_RESTORED": "Database restored from karaokemugen.sql",
 		"MESSAGE_SENT": "Message sent",
-		"PL_SONG_ADDED": "Successfully added song",
+		"PL_SONG_ADDED": "Successfully added \"{{song}}\" song",
 		"PL_IMPORTED": "Playlist added : {{data}}",
 		"POLL_VOTED": "Vote registered",
 		"REPO_CREATED": "Repository successfully added",
