@@ -35,12 +35,5 @@ export interface IAuthentifactionInformation {
 	onlineToken?: string;
 	username: string;
 	role: string;
+	onlineAvailable?: boolean
   }
-
-export interface IAuthenticationVerification {
-	iat: number;
-	username: string;
-	role: string;
-  }
-  
-  

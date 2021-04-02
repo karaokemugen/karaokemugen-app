@@ -1203,7 +1203,9 @@
 		"BLC_SET_IMPORT_ERROR": "Error importing blacklist criteria set",
 		"ERROR_READING_LOGS": "Unable to read event logs",
 		"SUBFILE_FORMAT_UNKOWN": "Subfile format unknown",
-		"POLL_VOTE_ERROR": "This song is not in the poll"
+		"POLL_VOTE_ERROR": "This song is not in the poll",
+		"USER_ONLINE_NOINTERNET": "You cannot edit your profile for now, your online server isn't working.",
+		"FAVORITES_ONLINE_NOINTERNET": "You cannot edit your favorites for now, your online server isn't working."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",

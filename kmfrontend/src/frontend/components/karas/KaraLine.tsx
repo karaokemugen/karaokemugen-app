@@ -98,9 +98,14 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	};
 
 	deleteFavorite = () => {
-		commandBackend('deleteFavorites', {
-			kids: [this.props.kara.kid]
-		}).catch(() => {});
+		if (this.context.globalState.auth.data.onlineAvailable !== false) {
+			commandBackend('deleteFavorites', {
+				kids: [this.props.kara.kid]
+			}).catch(() => {});
+		} else {
+			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
+			return;
+		}
 	}
 
 	playKara = () => {
@@ -120,10 +125,15 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		let url = '';
 		let data;
 		if (this.props.idPlaylistTo === -5) {
-			url = 'addFavorites';
-			data = {
-				kids: [this.props.kara.kid]
-			};
+			if (this.context.globalState.auth.data.onlineAvailable !== false) {
+				url = 'addFavorites';
+				data = {
+					kids: [this.props.kara.kid]
+				};
+			} else {
+				displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
+				return;
+			}
 		} else if (this.props.scope === 'admin') {
 			if (this.props.idPlaylistTo > 0) {
 				if (this.props.idPlaylist > 0 && !pos) {

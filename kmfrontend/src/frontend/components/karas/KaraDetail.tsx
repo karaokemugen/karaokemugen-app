@@ -168,14 +168,19 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	makeFavorite = () => {
-		this.state.isFavorite ?
-			commandBackend('deleteFavorites', {
-				kids: [this.props.kid]
-			}) :
-			commandBackend('addFavorites', {
-				kids: [this.props.kid]
-			});
-		this.setState({ isFavorite: !this.state.isFavorite });
+		if (this.context.globalState.auth.data.onlineAvailable !== false) {
+			this.state.isFavorite ?
+				commandBackend('deleteFavorites', {
+					kids: [this.props.kid]
+				}) :
+				commandBackend('addFavorites', {
+					kids: [this.props.kid]
+				});
+			this.setState({ isFavorite: !this.state.isFavorite });
+		} else {
+			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
+			return;
+		}
 	};
 
 	addKara = async () => {

@@ -1219,7 +1219,9 @@
 		"BLC_SET_IMPORT_ERROR": "Erreur lors de l'import d'une liste de critères de liste noire",
 		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements",
 		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus",
-		"POLL_VOTE_ERROR": "Cette chanson n'est pas dans le sondage"
+		"POLL_VOTE_ERROR": "Cette chanson n'est pas dans le sondage",
+		"USER_ONLINE_NOINTERNET": "Vous ne pouvez pas éditer votre profil pour le moment, votre instance en ligne ne fonctionne pas.",
+		"FAVORITES_ONLINE_NOINTERNET": "Vous ne pouvez pas éditer vos favoris pour le moment, votre instance en ligne ne fonctionne pas."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
