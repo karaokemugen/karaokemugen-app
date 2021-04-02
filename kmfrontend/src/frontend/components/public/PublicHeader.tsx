@@ -62,7 +62,11 @@ class PublicHeader extends Component<IProps, IState> {
 	toggleProfileModal = e => {
 		e.preventDefault();
 		this.setState({ dropDownMenu: false });
-		this.props.openModal('user');
+		if (this.context.globalState.auth.data.onlineAvailable !== false) {
+			this.props.openModal('user');
+		} else {
+			displayMessage('warning', i18next.t('ERROR_CODES.USER_ONLINE_NOINTERNET'), 5000);
+		}
 	};
 
 	toggleUsersModal = e => {
