@@ -52,7 +52,9 @@ export default function authController(router: SocketIOApp) {
 
 	router.route('checkAuth', async (socket, req) => {
 		await runChecklist(socket, req, 'guest', 'closed');
+		let onlineAvailable;
 		if (req.token.username.includes('@') && +getConfig().Online.Users) {
+			onlineAvailable = true;
 			// Remote token does not exist, we're going to verify it and add it if it does work
 			try {
 				logger.debug('Checking remote token', {service: 'RemoteUser'});
@@ -72,9 +74,10 @@ export default function authController(router: SocketIOApp) {
 			} catch(err) {
 				if (err === 'Invalid online token') throw err;
 				logger.warn('Failed to check remote auth (user logged in as local only)', {service: 'RemoteUser', obj: err});
+				onlineAvailable = false;
 			}
 		}
-		return req.token;
+		return {...req.token, onlineAvailable};
 	});
 
 }
