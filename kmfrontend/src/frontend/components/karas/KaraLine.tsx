@@ -38,6 +38,7 @@ interface IProps {
 	style: CSSProperties;
 	key: Key;
 	toggleKaraDetail: (kara: KaraElement, idPlaylist: number) => void;
+	sortable: boolean;
 }
 
 interface IState {
@@ -357,7 +358,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										</button> : null
 									}
 								</div>
-								{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
+								{!is_touch_device() && scope === 'admin' && idPlaylist > 0 && this.props.sortable ? <DragHandle /> : null}
 							</div>
 							{scope === 'admin' && idPlaylist !== -2 && idPlaylist !== -4 ?
 								<span className="checkboxKara" onClick={this.checkKara}>
