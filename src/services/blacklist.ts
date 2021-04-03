@@ -171,12 +171,16 @@ export async function emptyBlacklistCriterias(id: number) {
 	emitWS('blacklistUpdated');
 }
 
-export async function deleteBlacklistCriteria(blc_id: number, set_id: number) {
+export async function deleteBlacklistCriteria(blc_ids: number[], set_id: number) {
 	profile('delBLC');
-	logger.debug(`Deleting criteria ${blc_id}`, {service: 'Blacklist'});
+	logger.debug(`Deleting criteria ${blc_ids.join(' ')}`, {service: 'Blacklist'});
 	const blcSet = await selectSet(set_id);
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
-	await deleteBLC(blc_id);
+	const promises: Promise<any>[] = [];
+	for (const blc_id of blc_ids) {
+		promises.push(deleteBLC(blc_id));
+	}
+	await Promise.all(promises);
 	if (blcSet.flag_current) await generateBlacklist();
 	profile('delBLC');
 	updatedSetModifiedAt(set_id);

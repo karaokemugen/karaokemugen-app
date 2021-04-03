@@ -1,10 +1,10 @@
 @import '../../styles/variables';
 @import '../../styles/components/blurred-bg';
 
- .modal-content {
+.modal-content.detailsKara {
 	max-height: 85vh;
 	overflow: auto;
- }
+}
 
 .modal-header.img-background {
 	flex-direction: column;
@@ -49,7 +49,7 @@
 	}
 }
 
-.detailsKara {
+.modal-content .detailsKara {
 	margin: 1em;
 
 	.centerButtons {

@@ -168,14 +168,19 @@ class KaraDetail extends Component<IProps, IState> {
 	}
 
 	makeFavorite = () => {
-		this.state.isFavorite ?
-			commandBackend('deleteFavorites', {
-				kids: [this.props.kid]
-			}) :
-			commandBackend('addFavorites', {
-				kids: [this.props.kid]
-			});
-		this.setState({ isFavorite: !this.state.isFavorite });
+		if (this.context.globalState.auth.data.onlineAvailable !== false) {
+			this.state.isFavorite ?
+				commandBackend('deleteFavorites', {
+					kids: [this.props.kid]
+				}) :
+				commandBackend('addFavorites', {
+					kids: [this.props.kid]
+				});
+			this.setState({ isFavorite: !this.state.isFavorite });
+		} else {
+			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
+			return;
+		}
 	};
 
 	addKara = async () => {
@@ -401,7 +406,7 @@ class KaraDetail extends Component<IProps, IState> {
 				infoKaraTemp = (
 					<div className="modal modalPage" onClick={this.onClickOutsideModal}>
 						<div className="modal-dialog">
-							<div className="modal-content">
+							<div className="modal-content detailsKara">
 								{header}
 								<div className="detailsKara">
 									<div className="centerButtons">

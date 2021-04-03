@@ -286,6 +286,11 @@ class Playlist extends Component<IProps, IState> {
 						toggleKaraDetail={(kara, idPlaylist) => {
 							this.props.toggleKaraDetail(kara, idPlaylist, index);
 						}}
+						sortable={this.state.searchType !== 'recent'
+						&& this.state.searchType !== 'requested'
+						&& !this.state.searchValue
+						&& !this.state.orderByLikes
+						&& !this.getFilterValue(this.props.side)}
 					/>
 				</CellMeasurer>
 			);
@@ -572,7 +577,7 @@ class Playlist extends Component<IProps, IState> {
 						checkedKaras--;
 					}
 				}
-			} else if (kara.kid === id) {
+			} else if (kara?.kid === id) {
 				kara.checked = !kara.checked;
 				if (kara.checked) {
 					checkedKaras++;
@@ -673,7 +678,9 @@ class Playlist extends Component<IProps, IState> {
 		} else if (this.props.idPlaylistTo === -2 || this.props.idPlaylistTo === -4) {
 			url = 'createBLC';
 			data = {
-				blcs: [{ type: 1001, value: idsKara }],
+				blcs: idsKara.map(kid => {
+					return { type: 1001, value: kid };
+				}),
 				set_id: this.context.globalState.frontendContext.currentBlSet
 			};
 		} else if (this.props.idPlaylistTo === -3) {
@@ -751,7 +758,7 @@ class Playlist extends Component<IProps, IState> {
 			return;
 		}
 		await commandBackend('deleteFavorites', {
-			kid: listKara.map(a => a.kid)
+			kids: listKara.map(a => a.kid)
 		});
 	};
 
@@ -862,6 +869,9 @@ class Playlist extends Component<IProps, IState> {
 	componentDidUpdate(prevProps: IProps) {
 		if (this.props.idPlaylist !== prevProps.idPlaylist) {
 			this.initCall();
+		}
+		if (this.props.searchType !== prevProps.searchType) {
+			this.getPlaylist(this.props.searchType);
 		}
 		if (this.props.idPlaylistTo && this.props.idPlaylistTo !== prevProps.idPlaylistTo) {
 			this.playlistForceRefresh(true);

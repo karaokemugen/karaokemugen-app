@@ -24,7 +24,7 @@ export async function remoteCheckAuth(instance: string, token: string) {
 		});
 		return res.body;
 	} catch(err) {
-		if (err.response?.statusCode === 403) return false;
+		if ([403, 401].includes(err.response?.statusCode)) return false;
 		logger.debug('Got error when check auth', {service: 'RemoteUser', obj: err});
 		throw err;
 	}

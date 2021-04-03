@@ -122,8 +122,14 @@ class PlaylistHeader extends Component<IProps, IState> {
 		const playlistList = this.getListToSelect()
 			.filter(pl => Number(pl.value) > 0
 				&& Number(pl.value) !== this.props.idPlaylist);
-		if (playlistList.length === 0)
-			displayMessage('error', i18next.t('MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE'));
+		const bLSetList = this.props.bLSetList?.filter(set => set.blc_set_id !== this.props.bLSet.blc_set_id).map(set => {
+			return {value: set.blc_set_id.toString(), label: set.name, icons: []};
+		});
+		if (playlistList.length === 0 || (this.props.idPlaylist === -4 && bLSetList.length === 0))
+			displayMessage('error', i18next.t(
+				this.props.idPlaylist === -4 ? 'MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE_BLC'
+					:'MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE'
+			));
 		else
 			showModal(this.context.globalDispatch, <DeletePlaylistModal
 				changeIdPlaylist={this.props.changeIdPlaylist}
@@ -132,9 +138,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 				playlistInfo={this.props.playlistInfo}
 				bLSet={this.props.bLSet}
 				playlistList={playlistList}
-				bLSetList={this.props.bLSetList?.filter(set => set.blc_set_id !== this.props.bLSet.blc_set_id).map(set => {
-					return {value: set.blc_set_id.toString(), label: set.name, icons: []};
-				})}
+				bLSetList={bLSetList}
 				context={this.context}
 			/>);
 	};
@@ -364,7 +368,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			this.props.idPlaylist !== -4 ?
 				<div className="actionDiv">
 					<div className="btn-group">
-						{this.props.idPlaylist !== -4 ?
+						{this.props.idPlaylist !== -4 && this.props.idPlaylist !== -2 ?
 							<React.Fragment>
 								<button
 									title={i18next.t('ADVANCED.SELECT_ALL')}
@@ -520,7 +524,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 									</React.Fragment>
 									: null
 								}
-								{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
+								{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 || this.props.idPlaylist === -3 ?
 									<li>
 										<a href="#" onClick={this.deleteAllKaras} className="danger-hover">
 											<i className="fas fa-fw fa-eraser"/>

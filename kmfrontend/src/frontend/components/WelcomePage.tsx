@@ -116,76 +116,80 @@ class WelcomePage extends Component<unknown, IState> {
 	};
 
 	getNewsFeed = async () => {
-		const res = await commandBackend('getNewsFeed', undefined, undefined, 300000);
-		const data = res;
-		const base = data[0];
-		const appli = data[1];
-		const mast = data[2];
-		let news: Array<News> = [];
-		if (base.body && appli.body) {
-			base.body = JSON.parse(base.body);
-			appli.body = JSON.parse(appli.body);
-			news = [
-				{
-					html: base.body.feed.entry[0].content._text,
-					date: base.body.feed.entry[0].updated._text,
-					dateStr: new Date(
-						base.body.feed.entry[0].updated._text
-					).toLocaleDateString(),
-					title:
-						i18next.t('BASE_UPDATE') +
-						' : ' +
-						base.body.feed.title._text +
-						(base.body.feed.entry[0].summary._text
-							? ' - ' + base.body.feed.entry[0].summary._text
-							: ''),
-					link: base.body.feed.entry[0].link._attributes.href,
-					type: 'base'
-				},
-				{
-					html: appli.body.feed.entry[0].content._text,
-					date: appli.body.feed.entry[0].updated._text,
-					dateStr: new Date(
-						appli.body.feed.entry[0].updated._text
-					).toLocaleDateString(),
-					title:
-						i18next.t('APP_UPDATE') +
-						' : ' +
-						appli.body.feed.entry[0].title._text +
-						(appli.body.feed.entry[0].summary._text
-							? ' - ' + appli.body.feed.entry[0].summary._text
-							: ''),
-					link: appli.body.feed.entry[0].link._attributes.href,
-					type: 'app'
-				}
-			];
-		}
-
-		if (mast.body) {
-			mast.body = JSON.parse(mast.body);
-			const max =
-				mast.body.rss.channel.item.length > 3
-					? 3
-					: mast.body.rss.channel.item.length;
-			for (let i = 0; i < max; i++) {
-				news.push({
-					html: mast.body.rss.channel.item[i].description._text,
-					date: mast.body.rss.channel.item[i].pubDate._text,
-					dateStr: new Date(
-						mast.body.rss.channel.item[i].pubDate._text
-					).toLocaleDateString(),
-					title: i18next.t('MASTODON_UPDATE'),
-					link: mast.body.rss.channel.item[i].link._text,
-					type: 'mast'
-				});
+		try {
+			const res = await commandBackend('getNewsFeed', undefined, undefined, 300000);
+			const data = res;
+			const base = data[0];
+			const appli = data[1];
+			const mast = data[2];
+			let news: Array<News> = [];
+			if (base.body && appli.body) {
+				base.body = JSON.parse(base.body);
+				appli.body = JSON.parse(appli.body);
+				news = [
+					{
+						html: base.body.feed.entry[0].content._text,
+						date: base.body.feed.entry[0].updated._text,
+						dateStr: new Date(
+							base.body.feed.entry[0].updated._text
+						).toLocaleDateString(),
+						title:
+							i18next.t('BASE_UPDATE') +
+							' : ' +
+							base.body.feed.title._text +
+							(base.body.feed.entry[0].summary._text
+								? ' - ' + base.body.feed.entry[0].summary._text
+								: ''),
+						link: base.body.feed.entry[0].link._attributes.href,
+						type: 'base'
+					},
+					{
+						html: appli.body.feed.entry[0].content._text,
+						date: appli.body.feed.entry[0].updated._text,
+						dateStr: new Date(
+							appli.body.feed.entry[0].updated._text
+						).toLocaleDateString(),
+						title:
+							i18next.t('APP_UPDATE') +
+							' : ' +
+							appli.body.feed.entry[0].title._text +
+							(appli.body.feed.entry[0].summary._text
+								? ' - ' + appli.body.feed.entry[0].summary._text
+								: ''),
+						link: appli.body.feed.entry[0].link._attributes.href,
+						type: 'app'
+					}
+				];
 			}
+
+			if (mast.body) {
+				mast.body = JSON.parse(mast.body);
+				const max =
+					mast.body.rss.channel.item.length > 3
+						? 3
+						: mast.body.rss.channel.item.length;
+				for (let i = 0; i < max; i++) {
+					news.push({
+						html: mast.body.rss.channel.item[i].description._text,
+						date: mast.body.rss.channel.item[i].pubDate._text,
+						dateStr: new Date(
+							mast.body.rss.channel.item[i].pubDate._text
+						).toLocaleDateString(),
+						title: i18next.t('MASTODON_UPDATE'),
+						link: mast.body.rss.channel.item[i].link._text,
+						type: 'mast'
+					});
+				}
+			}
+			news.sort((a, b) => {
+				const dateA = new Date(a.date);
+				const dateB = new Date(b.date);
+				return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
+			});
+			this.setState({ news: news });
+		} catch (err) {
+			// error already display
 		}
-		news.sort((a, b) => {
-			const dateA = new Date(a.date);
-			const dateB = new Date(b.date);
-			return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
-		});
-		this.setState({ news: news });
 	};
 
 	toggleProfileModal = () => {

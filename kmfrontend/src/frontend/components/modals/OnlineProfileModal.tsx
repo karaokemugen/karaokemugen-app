@@ -60,28 +60,30 @@ class OnlineProfileModal extends Component<IProps, IState> {
 								onClick={() => {
 									closeModal(this.context.globalDispatch);
 								}}>
-								<i className="fas fa-times"></i>
+								<i className="fas fa-times" />
 							</button>
 						</div>
 						<div className="modal-body">
-							{this.props.type === 'delete' ?
-								<label className="warnDeleteOnlineAccount">
-									{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE_WARN',
-										{ instance: this.state.modalLoginServ })}
-								</label> : null
-							}
-							{this.props.type === 'convert' ?
-								<React.Fragment>
-									<label>{i18next.t('INSTANCE_NAME')}</label>
-									<input type="text" value={this.state.modalLoginServ}
-										onChange={e => this.setState({ modalLoginServ: e.target.value })} />
-								</React.Fragment> : null
-							}
-							<label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
-							<input type="password" placeholder={i18next.t('PASSWORD')} className="form-control"
-								onChange={e => this.setState({ password: e.target.value })} />
+							<div className="modal-content">
+								{this.props.type === 'delete' ?
+									<p className="warnDeleteOnlineAccount">
+										{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE_WARN',
+											{ instance: this.state.modalLoginServ })}
+									</p> : null
+								}
+								{this.props.type === 'convert' ?
+									<React.Fragment>
+										<label>{i18next.t('INSTANCE_NAME')}</label>
+										<input type="text" value={this.state.modalLoginServ}
+											   onChange={e => this.setState({ modalLoginServ: e.target.value })} />
+									</React.Fragment> : null
+								}
+								<label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
+								<input type="password" placeholder={i18next.t('PASSWORD')} className="form-control"
+									   onChange={e => this.setState({ password: e.target.value })} />
+							</div>
 							<button className="btn btn-default confirm" onClick={this.onClick}>
-								<i className="fas fa-check"></i>
+								<i className="fas fa-check" />
 							</button>
 						</div >
 					</div >

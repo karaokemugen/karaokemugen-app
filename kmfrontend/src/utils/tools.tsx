@@ -100,9 +100,9 @@ export function startIntro() {
 	return tuto;
 }
 
-export function displayMessage(type: TypeOptions, message: any, time = 3500, position: ToastPosition = 'top-left') {
+export function displayMessage(type: TypeOptions, message: any, time = 3500, position: ToastPosition = 'top-left', id?: string|number) {
 	if (!document.hidden) {
-		toast(message, { type: type, autoClose: time, position, pauseOnFocusLoss: false });
+		toast(message, { type: type, autoClose: time, position, pauseOnFocusLoss: false, toastId: id });
 	}
 }
 

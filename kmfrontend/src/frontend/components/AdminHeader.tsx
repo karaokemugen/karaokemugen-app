@@ -10,7 +10,7 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext, { GlobalContextInterface } from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { callModal, expand } from '../../utils/tools';
+import {callModal, displayMessage, expand} from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import ProfilModal from './modals/ProfilModal';
@@ -54,7 +54,13 @@ function AdminHeader(props: IProps) {
 
 	const toggleProfileModal = () => {
 		setDropDownMenu(!dropDownMenu);
-		showModal(context.globalDispatch, <ProfilModal scope="admin" />);
+		// Prohibit online user editing when online is unavailable
+		// onlineAvailable is undefined for local users
+		if (context.globalState.auth.data.onlineAvailable !== false) {
+			showModal(context.globalDispatch, <ProfilModal scope="admin" />);
+		} else {
+			displayMessage('warning', i18next.t('ERROR_CODES.USER_ONLINE_NOINTERNET'), 5000);
+		}
 	};
 
 	const toggleUsersModal = () => {
@@ -78,7 +84,7 @@ function AdminHeader(props: IProps) {
 			&& props.idsPlaylist.right !== props.currentPlaylist?.playlist_id
 			&& (props.idsPlaylist.left > 0 || props.idsPlaylist.right > 0)) {
 			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }));
+				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {}));
 		} else {
 			props.putPlayerCommando(event);
 		}

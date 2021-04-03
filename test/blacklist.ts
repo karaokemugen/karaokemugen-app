@@ -33,7 +33,7 @@ describe('Blacklist', () => {
 	});
 
 	it('Delete a blacklist criteria', async () => {
-		await commandBackend(token, 'deleteBLC', {blc_id, set_id:1});
+		await commandBackend(token, 'deleteBLC', {blc_ids: [blc_id], set_id:1});
 	});
 
 	it('Get list of blacklist criterias AFTER delete', async () => {

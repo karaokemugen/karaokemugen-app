@@ -82,7 +82,7 @@ class ChibiPage extends Component<unknown, IState> {
 				command: namecommand
 			};
 		}
-		commandBackend('sendPlayerCommand', data);
+		commandBackend('sendPlayerCommand', data).catch(() => {});
 	}
 
 	electronCmd = (event: any) => {

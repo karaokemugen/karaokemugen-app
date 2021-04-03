@@ -38,6 +38,7 @@ interface IProps {
 	style: CSSProperties;
 	key: Key;
 	toggleKaraDetail: (kara: KaraElement, idPlaylist: number) => void;
+	sortable: boolean;
 }
 
 interface IState {
@@ -97,9 +98,14 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	};
 
 	deleteFavorite = () => {
-		commandBackend('deleteFavorites', {
-			kids: [this.props.kara.kid]
-		}).catch(() => {});
+		if (this.context.globalState.auth.data.onlineAvailable !== false) {
+			commandBackend('deleteFavorites', {
+				kids: [this.props.kara.kid]
+			}).catch(() => {});
+		} else {
+			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
+			return;
+		}
 	}
 
 	playKara = () => {
@@ -119,10 +125,15 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		let url = '';
 		let data;
 		if (this.props.idPlaylistTo === -5) {
-			url = 'addFavorites';
-			data = {
-				kids: [this.props.kara.kid]
-			};
+			if (this.context.globalState.auth.data.onlineAvailable !== false) {
+				url = 'addFavorites';
+				data = {
+					kids: [this.props.kara.kid]
+				};
+			} else {
+				displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
+				return;
+			}
 		} else if (this.props.scope === 'admin') {
 			if (this.props.idPlaylistTo > 0) {
 				if (this.props.idPlaylist > 0 && !pos) {
@@ -175,7 +186,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`)}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
 					<br />
 					{i18next.t('TIME_BEFORE_PLAY', {
 						time: beforePlayTime,
@@ -184,7 +195,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				</>);
 			} else {
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`)}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
 				</>);
 			}
 			displayMessage('success', <div>
@@ -194,13 +205,13 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 					e.stopPropagation();
 					commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
 						.then(() => {
-							toast.dismiss();
+							toast.dismiss(response.data.plc.playlistcontent_id);
 							displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
 						}).catch(() => {
-							toast.dismiss();
+							toast.dismiss(response.data.plc.playlistcontent_id);
 						});
 				}}>{i18next.t('CANCEL')}</button>
-			</div>, 10000);
+			</div>, 10000, 'top-left', response.data.plc.playlistcontent_id);
 		}
 	};
 
@@ -357,7 +368,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										</button> : null
 									}
 								</div>
-								{!is_touch_device() && scope === 'admin' && idPlaylist > 0 ? <DragHandle /> : null}
+								{!is_touch_device() && scope === 'admin' && idPlaylist > 0 && this.props.sortable ? <DragHandle /> : null}
 							</div>
 							{scope === 'admin' && idPlaylist !== -2 && idPlaylist !== -4 ?
 								<span className="checkboxKara" onClick={this.checkKara}>

@@ -125,7 +125,7 @@ class AdminPage extends Component<IProps, IState> {
 				command: namecommand
 			};
 		}
-		commandBackend('sendPlayerCommand', data);
+		commandBackend('sendPlayerCommand', data).catch(() => {});
 	}
 
 	async parseTags() {

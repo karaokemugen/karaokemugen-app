@@ -254,6 +254,7 @@
 	"PROFILE_BIO": "Biographie",
 	"PROFILE_PASSWORD": "Mot de passe",
 	"PROFILE_PASSWORD_AGAIN": "Retapez votre mot de passe",
+	"PROFILE_FAVORITES": "Favoris",
 	"TOOLTIP_ADDKARA": "Ajouter cette chanson à la liste",
 	"TOOLTIP_ADDKARA_ADMIN": "clic droit l'ajoute après la chanson en cours",
 	"TOOLTIP_ADD_SELECT_KARA": "Ajouter les chansons sélectionnées à la liste - clic droit les ajoute après la chanson en cours",
@@ -603,7 +604,8 @@
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Supprimer {{playlist}} pour toujours ?",
 			"IMPOSSIBLE": "Vous ne pouvez pas supprimer la seule playlist.",
-			"DELETE_CURRENT_BLC": "Cette liste est définie comme courante, changez la liste de critère courante pour une autre pour supprimer celle-ci.",
+			"IMPOSSIBLE_BLC": "Vous ne pouvez pas supprimer la seule liste de critères.",
+			"DELETE_CURRENT_BLC": "Cette liste de critères est définie comme courante, changez la liste de critère courante pour une autre pour supprimer celle-ci.",
 			"DELETE_PUBLIC": "Cette liste est définie comme étant publique, pour la supprimer, définissez une autre liste publique.",
 			"DELETE_CURRENT": "Cette liste est définie comme étant courante, pour la supprimer, définissez une autre liste courante.",
 			"DELETE_CURRENT_PUBLIC": "Cette liste est définie comme étant courante et publique, pour la supprimer, définissez une autre liste courante et publique."
@@ -1217,7 +1219,9 @@
 		"BLC_SET_IMPORT_ERROR": "Erreur lors de l'import d'une liste de critères de liste noire",
 		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements",
 		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus",
-		"POLL_VOTE_ERROR": "Cette chanson n'est pas dans le sondage"
+		"POLL_VOTE_ERROR": "Cette chanson n'est pas dans le sondage",
+		"USER_ONLINE_NOINTERNET": "Vous ne pouvez pas éditer votre profil pour le moment, votre instance en ligne ne fonctionne pas.",
+		"FAVORITES_ONLINE_NOINTERNET": "Vous ne pouvez pas éditer vos favoris pour le moment, votre instance en ligne ne fonctionne pas."
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -1238,7 +1242,7 @@
 		"DATABASE_DUMPED": "Base de données exportée dans karaokemugen.sql",
 		"DATABASE_RESTORED": "Base de données restaurée depuis karaokemugen.sql",
 		"MESSAGE_SENT": "Message envoyé",
-		"PL_SONG_ADDED": "Chanson ajoutée avec succès !",
+		"PL_SONG_ADDED": "Chanson \"{{song}}\" ajoutée avec succès !",
 		"PL_IMPORTED": "Liste de lecture importée : {{data}}",
 		"POLL_VOTED": "Vote pris en compte",
 		"REPO_CREATED": "Dépôt ajouté avec succès",

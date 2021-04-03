@@ -1,9 +1,10 @@
 import i18next from 'i18next';
 import { Dispatch } from 'react';
 
+import { Token } from '../../../../src/lib/types/user';
 import { commandBackend, setAuthorization } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
-import { AuthAction, IAuthenticationVerification, IAuthentifactionInformation, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
+import { AuthAction, IAuthentifactionInformation, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
 import { SettingsFailure, SettingsSuccess } from '../types/settings';
 import { setSettings } from './settings';
 
@@ -77,14 +78,15 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
 
 	if (kmToken) {
 		try {
-			const verification: IAuthenticationVerification = await commandBackend('checkAuth', undefined, false, 30000);
+			const verification: Token = await commandBackend('checkAuth', undefined, false, 30000);
 			dispatch({
 				type: AuthAction.LOGIN_SUCCESS,
 				payload: {
 					username: verification.username,
 					role: verification.role,
 					token: kmToken,
-					onlineToken: kmOnlineToken
+					onlineToken: kmOnlineToken,
+					onlineAvailable: verification.onlineAvailable
 				}
 			});
 			await setSettings(dispatch);
