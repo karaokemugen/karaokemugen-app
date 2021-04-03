@@ -869,6 +869,9 @@ class Playlist extends Component<IProps, IState> {
 		if (this.props.idPlaylist !== prevProps.idPlaylist) {
 			this.initCall();
 		}
+		if (this.props.searchType !== prevProps.searchType) {
+			this.getPlaylist(this.props.searchType);
+		}
 		if (this.props.idPlaylistTo && this.props.idPlaylistTo !== prevProps.idPlaylistTo) {
 			this.playlistForceRefresh(true);
 		}
