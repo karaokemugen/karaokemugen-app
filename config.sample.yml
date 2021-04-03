@@ -6,8 +6,8 @@ App:
   JwtSecret: Change me
   # Application quick start (like --noBaseCheck)
   QuickStart: false
-  # Instace ID
-  InstanceID: uuid here
+  # Instance ID
+  #InstanceID: uuid here
 Online:
   # Host for your KM Server
   Host: kara.moe
