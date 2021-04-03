@@ -577,7 +577,7 @@ class Playlist extends Component<IProps, IState> {
 						checkedKaras--;
 					}
 				}
-			} else if (kara.kid === id) {
+			} else if (kara?.kid === id) {
 				kara.checked = !kara.checked;
 				if (kara.checked) {
 					checkedKaras++;
