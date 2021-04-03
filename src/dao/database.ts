@@ -8,6 +8,7 @@ import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
+import { uuidRegexp } from '../lib/utils/constants';
 import { asyncReadDirFilter, asyncUnlink } from '../lib/utils/files';
 import { createImagePreviews } from '../lib/utils/previews';
 import { testCurrentBLCSet } from '../services/blacklist';
@@ -177,7 +178,8 @@ export async function initDBSystem(): Promise<Migration[]> {
 		throw Error(`Database system initialization failed : ${err}`);
 	}
 	if (!await getInstanceID()) {
-		conf.App.InstanceID
+		// Some interesting people actually copy/paste what's in the sample config file so we're going to be extra nice with them even though we shouldn't and set it correctly if the config's instanceID is wrong.
+		conf.App.InstanceID && new RegExp(uuidRegexp).test(conf.App.InstanceID)
 			? setInstanceID(conf.App.InstanceID)
 			: setInstanceID(uuidV4());
 	}
