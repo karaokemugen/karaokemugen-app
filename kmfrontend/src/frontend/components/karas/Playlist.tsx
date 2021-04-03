@@ -286,7 +286,8 @@ class Playlist extends Component<IProps, IState> {
 						toggleKaraDetail={(kara, idPlaylist) => {
 							this.props.toggleKaraDetail(kara, idPlaylist, index);
 						}}
-						sortable={this.state.searchType === 'search'
+						sortable={this.state.searchType !== 'recent'
+						&& this.state.searchType !== 'requested'
 						&& !this.state.searchValue
 						&& !this.state.orderByLikes
 						&& !this.getFilterValue(this.props.side)}
