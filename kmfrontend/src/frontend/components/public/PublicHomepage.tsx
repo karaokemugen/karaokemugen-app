@@ -88,7 +88,7 @@ class PublicHomepage extends Component<IProps, IState> {
 							}
 							{this.context?.globalState.auth.data.role !== 'guest' ?
 								<button className="action yellow" onClick={() => this.props.changeView('favorites')}>
-									<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORIS')}
+									<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}
 								</button> : null
 							}
 							{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 ?
