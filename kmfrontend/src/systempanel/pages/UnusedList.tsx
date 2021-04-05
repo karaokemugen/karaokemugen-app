@@ -40,7 +40,7 @@ class SessionList extends Component<unknown, SessionListState> {
 	}
 
 	getMedias = async () => {
-		const res = await commandBackend('getUnusedMedias', { name: this.state.repository }, undefined, 60000);
+		const res = await commandBackend('getUnusedMedias', { name: this.state.repository }, undefined, 600000);
 		this.setState({
 			unused: res ? res.map(value => {
 				return { file: value };
