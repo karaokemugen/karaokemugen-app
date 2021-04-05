@@ -41,7 +41,7 @@ class KaraList extends Component<unknown, KaraListState> {
 					<Table
 						dataSource={this.state.karas}
 						columns={this.columns}
-						rowKey='played_at'
+						rowKey='lastplayed_at'
 					/>
 				</Layout.Content>
 			</>
@@ -81,11 +81,11 @@ class KaraList extends Component<unknown, KaraListState> {
 		render: played => played,
 	}, {
 		title: i18next.t('KARA.PLAYED_AT'),
-		dataIndex: 'played_at',
-		key: 'played_at',
+		dataIndex: 'lastplayed_at',
+		key: 'lastplayed_at',
 		render: played_at => (new Date(played_at)).toLocaleString(),
 		defaultSortOrder: 'descend',
-		sorter: (a,b) => a.played_at - b.played_at
+		sorter: (a,b) => a.lastplayed_at - b.lastplayed_at
 	}];
 }
 
