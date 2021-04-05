@@ -17,7 +17,7 @@
 	"INIT_BASEUPDATE": "Mise à jour des karaokés...",
 	"INIT_USER": "Initialisation des utilisateurs...",
 	"INIT_ONLINEURL": "Connexion à Karaoke Mugen Server...",
-	"INIT_PLAYLIST": "Initialisation des playlists...",
+	"INIT_PLAYLIST_AND_PLAYER": "Initialisation du lecteur et des playlists...",
 	"INIT_LAST": "C'est presque fini...",
 	"INIT_DONE": "Démarrage réussi !",
 	"INIT_ERROR": "L'initialisation a échoué !",

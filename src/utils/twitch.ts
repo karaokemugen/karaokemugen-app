@@ -4,7 +4,7 @@ import tmi, { ChatUserstate,Client } from 'tmi.js';
 
 import { getConfig } from '../lib/utils/config';
 // KM Imports
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { addPollVoteIndex } from '../services/poll';
 
 // We declare our client here se we can interact with it from different functions.
@@ -19,6 +19,7 @@ export function getTwitchClient(): Client {
 export async function initTwitch() {
 	if (client) return;
 	try {
+		profile('initTwitch');
 		const conf = getConfig();
 		const opts = {
 			identity: {
@@ -33,7 +34,10 @@ export async function initTwitch() {
 		logger.debug('Twitch initialized', {service: 'Twitch'});
 	} catch(err) {
 		logger.error('Unable to login to chat', {service: 'Twitch', obj: err});
+	} finally {
+		profile('initTwitch');
 	}
+
 }
 
 /** Simple function to say something to Twitch chat */

@@ -7,7 +7,7 @@ import { selectAllKaras } from '../dao/kara';
 import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
 import { getConfig, resolvedPathSessionExports } from '../lib/utils/config';
 import { sanitizeFile } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { Session, SessionExports } from '../types/session';
 import sentry from '../utils/sentry';
@@ -109,6 +109,7 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 }
 
 export async function initSession() {
+	profile('initSession');
 	// First remove any session with no played AND no requested data
 	await cleanSessions();
 
@@ -125,6 +126,7 @@ export async function initSession() {
 	// Check every minute if we should be notifying the end of session to the operator
 	setInterval(checkSessionEnd, 1000 * 60);
 	logger.debug('Sessions initialized', {service: 'Sessions'});
+	profile('initSession');
 }
 
 function checkSessionEnd() {

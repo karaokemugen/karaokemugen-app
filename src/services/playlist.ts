@@ -1313,11 +1313,13 @@ async function updateFreeOrphanedSongs() {
 
 /** Initialize playlist tasks */
 export async function initPlaylistSystem() {
+	profile('initPL');
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.playlist_id));
 	await testPlaylists();
 	logger.debug('Playlists initialized', {service: 'Playlist'});
+	profile('initPL');
 }
 
 /** Create current playlist if it doesn't exist */

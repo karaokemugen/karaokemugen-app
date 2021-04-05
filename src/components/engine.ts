@@ -158,7 +158,7 @@ export async function initEngine() {
 		}
 		try {
 			if (app) registerShortcuts();
-			initStep(i18n.t('INIT_PLAYLIST'));
+			initStep(i18n.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [
 				initBlacklistSystem(),
 				initPlaylistSystem(),
