@@ -29,7 +29,7 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 
 	refresh = async () => {
 		const res = await commandBackend('getKaras', {order: 'karacount'});
-		this.setState({karas: res});
+		this.setState({karas: res.content});
 	}
 
 	render() {
