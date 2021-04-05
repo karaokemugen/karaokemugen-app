@@ -87,7 +87,7 @@ class SessionList extends Component<unknown, SessionListState> {
 					<Table
 						dataSource={this.state.unused}
 						columns={this.columns}
-						rowKey='seid'
+						rowKey='file'
 					/>
 				</Layout.Content>
 			</>
