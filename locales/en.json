@@ -98,7 +98,7 @@
 	"UPDATE_ERROR": "An error occured when trying to update Karaoke Mugen: ",
 	"UPDATE_NOT_AVAILABLE": "No update available",
 	"CURRENT_VERSION_OK": "You already are using the latest version of Karaoke Mugen!",
-	"UPDATE_DOWNLOADED": "Updated downloaded",
+	"UPDATE_DOWNLOADED": "Update downloaded",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karoake Mugen will restart to install the update...",
 	"ABOUT": {
 		"BUG_REPORT": "Report a bug"
@@ -155,13 +155,20 @@
 	},
 	"DISCORD": {
 		"IDLING": [
-			"prepares playlists"
+			"prepares playlists",
+			"prepares favorites",
+			"sets up everything",
+			"RTFMs (no)",
+			"idles!",
+			"does absolutely nothing",
+			"at a con (in its head)",
+			"watches trains pass"
 		]
 	},
 	"UNKNOWN_ARTIST": "Unknown artist",
 	"UNKNOWN_REPOSITORY_DOWNLOAD": {
 		"TITLE": "Unknown repository",
-		"MESSAGE": "This song's repository is unknown in y our repository list. Do you want to add it? It'll be used for online updates/sync of your song library.\n\nIf you say no, the song will be imported in your \"Local\" repository"
+		"MESSAGE": "This song's repository is unknown in your repository list. Do you want to add it? It'll be used for online updates/sync of your song library.\n\nIf you say no, the song will be imported in your \"Local\" repository"
 	},
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Repository already exists",
