@@ -35,12 +35,12 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			activity = sample(i18next.t('DISCORD.IDLING', {returnObjects: true}));
 		}
 		if (activityType === 'song') {
-			activity = sanitizeText(activityData.title);
-			activityDetail = sanitizeText(activityData.singer);
+			activity = activityData.title;
+			activityDetail = activityData.singer;
 		}
 		await rpc.setActivity({
-			details: activity.substring(0, 128),
-			state: activityDetail.substring(0, 128),
+			details: sanitizeText(activity),
+			state: sanitizeText(activityDetail),
 			startTimestamp,
 			largeImageKey: 'nanami-singing2',
 			largeImageText: 'Karaoke Mugen',
