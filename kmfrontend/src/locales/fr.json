@@ -69,6 +69,7 @@
 	"PLAYLIST_BLACKLIST_CRITERIAS": "Critères de liste noire",
 	"PLAYLIST_WHITELIST": "Liste blanche",
 	"PLAYLIST_KARAS": "Bibliothèque",
+	"PLAYLIST_FAVORITES": "Favoris",
 	"PLAYERPIP": "Mode fenêtré + toujours au dessus",
 	"PLAYERPIP_TOOLTIP": "Maintient la fenêtre dans un coin de l'écran",
 	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les listes de lecture",

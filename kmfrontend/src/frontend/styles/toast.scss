@@ -1,3 +1,22 @@
+@import '~react-toastify/scss/variables';
+
 // React Toastify
-$rt-color-warning: #de7310;
+$rt-color-info: #1861b1;
+$rt-color-success: #099242;
+$rt-color-warning: #ae5b13;
+$rt-color-error: #7d140b;
+
+.toast-with-img {
+	display: flex;
+	width: 100%;
+	height: auto;
+	> picture {
+		flex: 1 0 30%;
+		padding: .125em;
+	}
+	> span {
+		text-align: start;
+	}
+}
+
 @import '~react-toastify/scss/main';

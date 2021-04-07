@@ -1,8 +1,14 @@
 import { EventEmitter } from 'events';
-import React, { Dispatch } from 'react';
+import React, {Dispatch, ReactNode} from 'react';
 import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
 
+import nanamiCryPNG from '../assets/nanami-cry.png';
+import nanamiCryWebP from '../assets/nanami-cry.webp';
+import nanamiThinkPng from '../assets/nanami-think.png';
+import nanamiThinkWebP from '../assets/nanami-think.webp';
+import nanamiUmuPng from '../assets/nanami-umu.png';
+import nanamiUmuWebP from '../assets/nanami-umu.webp';
 import Tutorial from '../frontend/components/modals/Tutorial';
 import { showModal } from '../store/actions/modal';
 import { ShowModal } from '../store/types/modal';
@@ -100,9 +106,43 @@ export function startIntro() {
 	return tuto;
 }
 
+const chibis = new Map<TypeOptions, ReactNode>([
+	[
+		'error',
+		(<picture>
+			<source type="image/webp" srcSet={nanamiCryWebP} />
+			<source type="image/png" srcSet={nanamiCryPNG} />
+			<img src={nanamiCryPNG} alt="Nanami is crying :c" />
+		</picture>)
+	],
+	[
+		'warning',
+		(<picture>
+			<source type="image/webp" srcSet={nanamiThinkWebP} />
+			<source type="image/png" srcSet={nanamiThinkPng} />
+			<img src={nanamiThinkPng} alt="Nanami is confused :/" />
+		</picture>)
+	],
+	[
+		'success',
+		(<picture>
+			<source type="image/webp" srcSet={nanamiUmuWebP} />
+			<source type="image/png" srcSet={nanamiUmuPng} />
+			<img src={nanamiUmuPng} alt="Nanami is UmU" />
+		</picture>)
+	]
+]);
+
 export function displayMessage(type: TypeOptions, message: any, time = 3500, position: ToastPosition = 'top-left', id?: string|number) {
+	let item;
+	if (typeof message === 'string') {
+		item = (<div className="toast-with-img">
+			{chibis.has(type) ? chibis.get(type):null}
+			<span>{message}</span>
+		</div>);
+	} else item = message;
 	if (!document.hidden) {
-		toast(message, { type: type, autoClose: time, position, pauseOnFocusLoss: false, toastId: id });
+		toast(item, { type: type, autoClose: time, position, pauseOnFocusLoss: false, toastId: id });
 	}
 }
 

@@ -65,6 +65,7 @@
 	"PLAYLIST_BLACKLIST_criteria": "Blacklist criteria",
 	"PLAYLIST_WHITELIST": "Whitelist",
 	"PLAYLIST_KARAS": "Library",
+	"PLAYLIST_FAVORITES": "Favorites",
 	"PLAYERPIP": "Always-on-top + windowed mode",
 	"PLAYERPIP_TOOLTIP": "Hold the window in a screen corner",
 	"PLAYERMONITOR": "Second window (monitor)",
