@@ -75,7 +75,7 @@ class Tutorial extends Component<unknown, IState> {
 							{i18next.t('MODAL.TUTORIAL.WRENCH_BUTTON')} <i className="fas fa-fw fa-wrench" /> {i18next.t('MODAL.TUTORIAL.WRENCH_BUTTON_DESC')}
 						</p>
 					</div>
-					{i18next.t('MODAL.TUTORIAL.LINES_WITH')} <span className="orange">{i18next.t('MODAL.TUTORIAL.ORANGE')}</span> {i18next.t('MODAL.TUTORIAL.KARAOKE_PLAYED')}<br />
+					{i18next.t('MODAL.TUTORIAL.LINES_WITH')} <span className="orange"><i className="fas fa-fw fa-history" /> {i18next.t('MODAL.TUTORIAL.ORANGE')}</span> {i18next.t('MODAL.TUTORIAL.KARAOKE_PLAYED')}<br />
 					{i18next.t('MODAL.TUTORIAL.LINE_WITH')} <span className="blue">{i18next.t('MODAL.TUTORIAL.BLUE')}</span> {i18next.t('MODAL.TUTORIAL.KARAOKE_PLAYING')}
 				</div>
 			</>;
@@ -99,10 +99,8 @@ class Tutorial extends Component<unknown, IState> {
 			break;
 		case 2:
 			slide = <div className="player-presentation">
+				<p>{i18next.t('MODAL.TUTORIAL.PLAYER_BAR')}</p>
 				<ul>
-					<li><i className="fas fa-fw fa-play" />
-						{i18next.t('MODAL.TUTORIAL.PLAYER_BAR')}
-					</li>
 					<li><i className="fas fa-fw fa-play-circle" />
 						{i18next.t('MODAL.TUTORIAL.PLAYER_CURRENT_HINT')}&nbsp;
 						<strong>
