@@ -224,8 +224,7 @@ export async function initEngine() {
 	}
 }
 
-export async function exit(rc: string | number) {
-	if (!rc) rc = 0;
+export async function exit(rc: string | number = 0) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
