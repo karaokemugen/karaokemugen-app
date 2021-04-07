@@ -3,10 +3,24 @@ import i18next from 'i18next';
 import sample from 'lodash.sample';
 
 import { getConfig } from '../lib/utils/config';
-import { getState } from './state';
 import { discordClientID } from './constants';
+import { getState } from './state';
 
 let rpc: discordRPC.Client;
+
+// Sanitize text for processing in Discord (128 chars max)
+function sanitizeText(str: string): string {
+	if (str.length > 128) {
+		return `${str.substring(0, 127)}…`;
+	} else return str;
+	/* If Discord has a minimum string length (?)
+	if (str.length > 128) {
+		return `${str.substring(0, 127)}…`;
+	} else if (str.length < 32) {
+		return `${str}          `;
+	} else return str;
+	*/
+}
 
 export async function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
 	try {
@@ -21,14 +35,14 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			activity = sample(i18next.t('DISCORD.IDLING', {returnObjects: true}));
 		}
 		if (activityType === 'song') {
-			activity = activityData.title + '        ';
-			activityDetail = activityData.singer;
+			activity = sanitizeText(activityData.title);
+			activityDetail = sanitizeText(activityData.singer);
 		}
 		await rpc.setActivity({
 			details: activity.substring(0, 128),
 			state: activityDetail.substring(0, 128),
 			startTimestamp,
-			largeImageKey: 'nanami-smile',
+			largeImageKey: 'nanami-singing2',
 			largeImageText: 'Karaoke Mugen',
 			smallImageKey: activityType === 'song' ? 'play' : 'pause',
 			smallImageText: `Version ${getState().version.number} - ${getState().version.name}`,
