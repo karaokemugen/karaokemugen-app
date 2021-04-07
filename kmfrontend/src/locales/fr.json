@@ -979,7 +979,7 @@
 		"CONSOLIDATE_BUTTON": "Consolider le dépôt...",
 		"CONSOLIDATE_PANEL": "Déplacement du dépôt",
 		"WARNING": "Attention !",
-		"CONSOLIDATE_ABOUT_MESSAGE": "Tous les fichiers du dépôt (karas, médias, séries, tags...) seront déplacés avec le nouveau dossier par racine. Si votre dépôt contient des types de données avec plusieurs dossiers (plusieurs dossiers de médias par exemple), tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement.",
+		"CONSOLIDATE_ABOUT_MESSAGE": "Tous les fichiers du dépôt (karas, médias, tags...) seront déplacés avec le nouveau dossier par racine. Si votre dépôt contient des types de données avec plusieurs dossiers (plusieurs dossiers de médias par exemple), tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement.",
 		"COMPARE_LYRICS": "Mise à jour des paroles entre deux dépôts",
 		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Choix du dépôt",
 		"COMPARE_BUTTON": "Comparer",
