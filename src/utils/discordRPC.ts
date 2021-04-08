@@ -8,21 +8,21 @@ import { getState } from './state';
 
 let rpc: discordRPC.Client;
 
+interface ActivityData {
+	title: string,
+	source: string
+}
+
 // Sanitize text for processing in Discord (128 chars max)
 function sanitizeText(str: string): string {
 	if (str.length > 128) {
 		return `${str.substring(0, 127)}…`;
-	} else return str;
-	/* If Discord has a minimum string length (?)
-	if (str.length > 128) {
-		return `${str.substring(0, 127)}…`;
 	} else if (str.length < 32) {
-		return `${str}          `;
+		return `${str}                          `; // Spaces!!!!
 	} else return str;
-	*/
 }
 
-export async function setDiscordActivity(activityType: 'song' | 'idle', activityData?: any) {
+export async function setDiscordActivity(activityType: 'song' | 'idle', activityData?: ActivityData) {
 	try {
 		if (!getConfig().Online.Discord.DisplayActivity || !rpc) {
 			if (!rpc) startCheckingDiscordRPC();
@@ -36,7 +36,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 		}
 		if (activityType === 'song') {
 			activity = activityData.title;
-			activityDetail = activityData.singer;
+			activityDetail = activityData.source;
 		}
 		await rpc.setActivity({
 			details: sanitizeText(activity),

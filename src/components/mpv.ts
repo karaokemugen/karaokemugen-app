@@ -33,6 +33,7 @@ import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
 import Timeout = NodeJS.Timeout;
+import {getSongSeriesSingers} from '../services/kara';
 import {editSetting} from '../utils/config';
 
 const sleep = promisify(setTimeout);
@@ -833,7 +834,8 @@ class Players {
 			emitPlayerState();
 			setDiscordActivity('song', {
 				title: song.title,
-				singer: song.singers?.map(s => s.name).join(', ') || i18n.t('UNKNOWN_ARTIST')
+				source: getSongSeriesSingers(song)
+					|| i18n.t('UNKNOWN_ARTIST')
 			});
 			return playerState;
 		} catch(err) {
