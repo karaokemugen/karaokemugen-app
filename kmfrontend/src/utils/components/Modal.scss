@@ -1,9 +1,5 @@
 @import '../../frontend/styles/variables';
 
-.modal-body,.modal-message {
-	max-height: calc(100vh - 200px);
-}
-
 .modal {
 	position: fixed;
 	width: 100vw;
@@ -12,10 +8,11 @@
 	left: 0;
 	z-index: 999;
 	background-color: rgba(10, 10, 10, 0.66);
+	overflow-y: auto;
 	> .modal-dialog {
 		position: relative;
 		top: 10%;
-		margin: auto;
+		margin: auto auto 100px;
 		width: 95vw;
 		max-width: 700px;
 		filter: drop-shadow(0px 4px 4px black);
@@ -55,6 +52,13 @@
 	justify-content: space-between;
 	align-items: center;
 	.modal-title {
+		> picture {
+			display: flex;
+			justify-content: center;
+			> img {
+				width: 75%;
+			}
+		}
 		font-size: 2rem;
 		@media screen and (max-width: $mugen-breakpoint-small) {
 			font-size: 1.25rem;
@@ -93,9 +97,9 @@
 .modal.modalPage .modal-body div.text br{
 	line-height: 2.6em;
 }
-.modalPage .modal-message div {
+.modalPage .modal-message div:not(.selectWithIcon-menu):not(.selectWithIcon-menuItem) {
 	height: 100%;
-
+	padding: 0;
 	&.selectWithIcon {
 		margin: 0.5em;
 	}
@@ -105,9 +109,6 @@
 	border-top: none;
 	text-decoration: none;
 	background-color: #4b4b4b;
-}
-.modal .modal-message div {
-	padding: 0;
 }
 .modal button.tour {
 	height: 100%;
