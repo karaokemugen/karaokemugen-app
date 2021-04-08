@@ -13,6 +13,10 @@ $rt-color-error: #7d140b;
 	> picture {
 		flex: 1 0 30%;
 		padding: .125em;
+		> img {
+			height: auto;
+			max-width: 100%;
+		}
 	}
 	> span {
 		text-align: start;
