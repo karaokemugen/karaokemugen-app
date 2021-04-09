@@ -6,7 +6,7 @@
     "@sentry/integrations": "^6.2.5",
     "@sentry/react": "^6.2.5",
     "antd": "4.15.0",
-    "i18next": "^20.1.0",
+    "i18next": "^20.2.1",
     "i18next-browser-languagedetector": "^6.1.0",
     "lodash.debounce": "^4.0.8",
     "lodash.difference": "^4.5.0",
@@ -42,7 +42,7 @@
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.11.0",
     "react-scripts": "4.0.3",
     "source-map-explorer": "^2.5.2",
-    "typescript": "4.2.3"
+    "typescript": "4.2.4"
   },
   "resolutions": {
     "**/@typescript-eslint/eslint-plugin": "^4.1.1",
