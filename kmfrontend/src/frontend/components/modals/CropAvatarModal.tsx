@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import ReactCrop from 'react-image-crop';
 
+import { commandBackend, isRemote } from '../../../utils/socket';
+
 interface IProps {
 	src: any;
 	saveAvatar: (avatar?) => void;
@@ -83,17 +85,22 @@ class CropAvatarModal extends Component<IProps, IState> {
 		if (this.state.imageRef && this.state.crop.width && this.state.crop.height) {
 			const croppedImageUrl = await this.getCroppedImg(this.state.imageRef, this.state.crop);
 			if (croppedImageUrl) {
-				const formData = new FormData();
-				formData.append('file', croppedImageUrl as any);
-				const response = await fetch('/api/importfile', {
-					method: 'POST',
-					body: formData,
-					headers: {
-						authorization: localStorage.getItem('kmToken'),
-						onlineAuthorization: localStorage.getItem('kmOnlineToken')
-					}
-				});
-				this.props.saveAvatar(await response.json());
+				if (isRemote()) {
+					const response = await commandBackend('importfile', {extension: 'jpg', buffer: croppedImageUrl});
+					this.props.saveAvatar({path: response.filename});
+				} else {
+					const formData = new FormData();
+					formData.append('file', croppedImageUrl as any);	
+					const response = await fetch('/api/importfile', {
+						method: 'POST',
+						body: formData,
+						headers: {
+							authorization: localStorage.getItem('kmToken'),
+							onlineAuthorization: localStorage.getItem('kmOnlineToken')
+						}
+					});
+					this.props.saveAvatar(await response.json());
+				}
 				this.closeModal();
 			}
 		}

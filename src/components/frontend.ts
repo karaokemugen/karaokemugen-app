@@ -11,7 +11,7 @@ import blacklistController from '../controllers/frontend/blacklist';
 import downloadController from '../controllers/frontend/download';
 import emulateController from '../controllers/frontend/emulate';
 import favoritesController from '../controllers/frontend/favorites';
-import filesController from '../controllers/frontend/files';
+import filesController, { filesSocketController } from '../controllers/frontend/files';
 import karaController from '../controllers/frontend/kara';
 import miscController from '../controllers/frontend/misc';
 import playerController from '../controllers/frontend/player';
@@ -39,6 +39,7 @@ function apiHTTPRouter(ws: SocketIOApp): Router {
 }
 
 function apiRouter(ws: SocketIOApp) {
+	filesSocketController(ws);
 	authController(ws);
 	downloadController(ws);
 	blacklistController(ws);
