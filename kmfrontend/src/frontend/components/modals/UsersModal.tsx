@@ -42,7 +42,7 @@ class UsersModal extends Component<IProps, IState> {
 	getUserDetails = async (user: User) => {
 		if (this.state.userDetails?.login === user.login) {
 			this.setState({ userDetails: undefined });
-		} else {
+		} else if (user.type !== 2){
 			const response = await commandBackend('getUser', { username: user.login });
 			this.setState({ userDetails: response });
 		}
