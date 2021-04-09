@@ -29,13 +29,21 @@ class TagEdit extends Component<RouteComponentProps<{ tid: string }>, TagEditSta
 	}
 
 	saveNew = async (tag: DBTag) => {
-		await commandBackend('addTag', tag, true, 300000);
-		this.props.history.push('/system/tags');
+		try {
+			await commandBackend('addTag', tag, true, 300000);
+			this.props.history.push('/system/tags');
+		} catch (e) {
+			// already display
+		}
 	};
 
 	saveUpdate = async (tag: DBTag) => {
-		await commandBackend('editTag', tag, true, 300000);
-		this.props.history.push('/system/tags');
+		try {
+			await commandBackend('editTag', tag, true, 300000);
+			this.props.history.push('/system/tags');
+		} catch (e) {
+			// already display
+		}
 	};
 
 	handleTagMerge = async (tid1: string, tid2: string) => {
