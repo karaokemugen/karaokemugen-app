@@ -1,6 +1,5 @@
 {
 	"SELECT_PLACEHOLDER": "Select a playlist",
-	"404": "Lost on the local network?",
 	"YES": "Yes",
 	"NO": "No",
 	"AND": "and",
@@ -8,6 +7,7 @@
 	"ERROR": "Error",
 	"SUBMIT": "Save",
 	"CANCEL": "Cancel",
+	"404": "Lost in Karaoke Mugen?",
 	"404_2": "Do not panic, we can help you.",
 	"404_3": "You are here",
 	"404_4": "Go to home",
@@ -72,7 +72,7 @@
 	"ENGINEALLOWDUPLICATES": "Allow duplicate songs in playlists",
 	"ENGINEDISPLAYNICKNAME": "Display nicknames in karaokes",
 	"ENGINEDISPLAYAVATAR": "Display avatar in karaokes",
-	"WEBAPPMODE_CLOSED_MESSAGE": "Stop! We're closed right now.",
+	"WEBAPPMODE_CLOSED_MESSAGE": "The interface is closed, please wait.",
 	"ENGINEFREEUPVOTES": "Allow users to upvote songs to free them",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum votes required to free a song",
 	"ENGINEFREEUPVOTESREQUIREDPERCENT": "Percentage of upvotes / online users required to to free a song",
