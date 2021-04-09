@@ -89,6 +89,7 @@ class Tutorial extends Component<unknown, IState> {
 						<ul className="ul-l1">
 							<li><i className="fas fa-fw fa-book" /> {i18next.t('MODAL.TUTORIAL.LIBRARY')}<br />
 								{i18next.t('MODAL.TUTORIAL.DOWNLOAD')} <a href="/system/karas/download" target="_blank">{i18next.t('MODAL.TUTORIAL.SYSTEM_PANEL')}</a>.</li>
+							<li><i className="fas fa-fw fa-pencil-alt" /> {i18next.t('MODAL.TUTORIAL.PLAYLIST_ATTRIBUTES')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.OR')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong>.</li>
 							<li><i className="fas fa-fw fa-play-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_DESC')}</li>
 							<li><i className="fas fa-fw fa-globe" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.PUBLIC_DESC')}</li>
 							<li><i className="fas fa-fw fa-info-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.AND')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_PUBLIC_DESC')}</li>
