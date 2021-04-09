@@ -242,7 +242,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					}));
 				} else {
 					!file.name.includes('.kmfavorites') &&
-					displayMessage('success', i18next.t(i18next.t(`SUCCESS_CODES.${response.code}`, {data: name})));
+					displayMessage('success', i18next.t(`SUCCESS_CODES.${response.code}`, {data: name}));
 				}
 				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.data.playlist_id;
 				this.props.changeIdPlaylist(playlist_id);
