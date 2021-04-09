@@ -9,7 +9,8 @@ import {getSerieLanguage,getTagInLocaleList} from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 
 interface KaraListState {
-	karas: DBKara[]
+	karas: DBKara[];
+	i18n: any[];
 }
 
 class KaraList extends Component<unknown, KaraListState> {
@@ -17,7 +18,8 @@ class KaraList extends Component<unknown, KaraListState> {
 	context: React.ContextType<typeof GlobalContext>
 	
 	state = {
-		karas: []
+		karas: [],
+		i18n: []
 	};
 
 	componentDidMount() {
@@ -26,7 +28,7 @@ class KaraList extends Component<unknown, KaraListState> {
 
 	refresh = async () => {
 		const res = await commandBackend('getKaras', {order: 'history'});
-		this.setState({karas: res});
+		this.setState({karas: res.content, i18n: res.i18n});
 	}
 
 	render() {
@@ -41,7 +43,7 @@ class KaraList extends Component<unknown, KaraListState> {
 					<Table
 						dataSource={this.state.karas}
 						columns={this.columns}
-						rowKey='played_at'
+						rowKey='lastplayed_at'
 					/>
 				</Layout.Content>
 			</>
@@ -52,19 +54,19 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('KARA.LANGUAGES'),
 		dataIndex: 'langs',
 		key: 'langs',
-		render: langs => getTagInLocaleList(langs).join(', ')
+		render: langs => getTagInLocaleList(langs, this.state.i18n).join(', ')
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record) => (series && series.length > 0) ?
-			series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name)).join(', ')
-			: getTagInLocaleList(record.singers).join(', ')
+			series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18n)).join(', ')
+			: getTagInLocaleList(record.singers, this.state.i18n).join(', ')
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
-		render: (songtypes, record) => getTagInLocaleList(songtypes).join(', ') + ' ' + (record.songorder || '')
+		render: (songtypes, record) => getTagInLocaleList(songtypes, this.state.i18n).join(', ') + ' ' + (record.songorder || '')
 	}, {
 		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
@@ -73,7 +75,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
 		dataIndex: 'versions',
 		key: 'versions',
-		render: (versions) => getTagInLocaleList(versions).join(', ')
+		render: (versions) => getTagInLocaleList(versions, this.state.i18n).join(', ')
 	}, {
 		title: i18next.t('KARA.PLAYED'),
 		dataIndex: 'played',
@@ -81,11 +83,11 @@ class KaraList extends Component<unknown, KaraListState> {
 		render: played => played,
 	}, {
 		title: i18next.t('KARA.PLAYED_AT'),
-		dataIndex: 'played_at',
-		key: 'played_at',
+		dataIndex: 'lastplayed_at',
+		key: 'lastplayed_at',
 		render: played_at => (new Date(played_at)).toLocaleString(),
 		defaultSortOrder: 'descend',
-		sorter: (a,b) => a.played_at - b.played_at
+		sorter: (a,b) => a.lastplayed_at - b.lastplayed_at
 	}];
 }
 

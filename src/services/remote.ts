@@ -9,6 +9,8 @@ import { commandKMServer, getKMServerSocket } from '../utils/kmserver';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 
+let errCount = 0;
+
 async function startRemote(): Promise<RemoteSuccess> {
 	try {
 		let { remoteToken } = await getSettings();
@@ -30,6 +32,7 @@ async function startRemote(): Promise<RemoteSuccess> {
 			throw new Error(`Server refused to start remote: ${result.reason}`);
 		} else {
 			await saveSetting('remoteToken', result.token);
+			errCount = 0;
 			return result;
 		}
 	} catch (err) {
@@ -75,9 +78,8 @@ async function proxy(ev: string, data: APIDataProxied, ack: (res) => void) {
 	}
 }
 
-let errCount = 0;
-
 async function broadcastForward(body) {
+	if (errCount === -1) return;
 	commandKMServer('remote broadcast', {
 		body
 	}).then(() => {
@@ -85,13 +87,12 @@ async function broadcastForward(body) {
 	}).catch(err => {
 		logger.warn('Failed to remote broadcast', {service: 'Remote', obj: err});
 		if (errCount !== -1) errCount++;
-		if (errCount >= 10) {
-			logger.warn('The remote broadcast failed 10 times in a row, restart remote');
+		if (errCount >= 5) {
+			logger.warn('The remote broadcast failed 5 times in a row, restart remote');
 			errCount = -1;
 			getKMServerSocket().disconnect();
 			setTimeout(() => {
 				getKMServerSocket().connect();
-				errCount = 0;
 			}, 2500).unref();
 		}
 	});

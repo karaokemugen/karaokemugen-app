@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBBlacklist } from '../../../../../src/types/database/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
+import nanamiSingPng from '../../../assets/nanami-sing.png';
+import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
@@ -198,19 +200,27 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
 				</>);
 			}
-			displayMessage('success', <div>
-				{message}
-				<button className="btn" onClick={e => {
-					e.preventDefault();
-					e.stopPropagation();
-					commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
-						.then(() => {
-							toast.dismiss(response.data.plc.playlistcontent_id);
-							displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
-						}).catch(() => {
-							toast.dismiss(response.data.plc.playlistcontent_id);
-						});
-				}}>{i18next.t('CANCEL')}</button>
+			displayMessage('success', <div className="toast-with-img">
+				<picture>
+					<source type="image/webp" srcSet={nanamiSingWebP} />
+					<source type="image/png" srcSet={nanamiSingPng} />
+					<img src={nanamiSingPng} alt="Nanami is singing!" />
+				</picture>
+				<span>
+					{message}
+					<br/>
+					<button className="btn" onClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
+							.then(() => {
+								toast.dismiss(response.data.plc.playlistcontent_id);
+								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+							}).catch(() => {
+								toast.dismiss(response.data.plc.playlistcontent_id);
+							});
+					}}>{i18next.t('CANCEL')}</button>
+				</span>
 			</div>, 10000, 'top-left', response.data.plc.playlistcontent_id);
 		}
 	};

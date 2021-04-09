@@ -141,7 +141,9 @@ export function generateBlacklist() {
 }
 
 export async function initBlacklistSystem() {
+	profile('initBL');
 	await testCurrentBLCSet();
+	profile('initBL');
 }
 
 /** Create current blacklist set if it doesn't exist */

@@ -460,38 +460,42 @@ class Playlist extends Component<IProps, IState> {
 				: '';
 			if (searchCriteria && this.state.searchValue) param.q = searchCriteria + ':' + this.state.searchValue;
 		}
-		const karas: KaraList = await commandBackend(url, param);
-		if (this.state.goToPlaying && this.state.idPlaylist > 0) {
-			const result = await commandBackend('findPlayingSongInPlaylist', { pl_id: this.state.idPlaylist });
-			if (result?.index !== -1) {
-				this.setState({ scrollToIndex: result.index, _goToPlaying: true });
-			}
-		}
-		if (this.props.indexKaraDetail) {
-			this.setState({ scrollToIndex: this.props.indexKaraDetail });
-			this.props.clearIndexKaraDetail();
-		}
-		if (karas.infos?.from > 0) {
-			stateData = this.state.data as KaraList;
-			if (karas.infos.from < stateData.content.length) {
-				for (let index = 0; index < karas.content.length; index++) {
-					stateData.content[karas.infos.from + index] = karas.content[index];
+		try {
+			const karas: KaraList = await commandBackend(url, param);
+			if (this.state.goToPlaying && this.state.idPlaylist > 0) {
+				const result = await commandBackend('findPlayingSongInPlaylist', { pl_id: this.state.idPlaylist });
+				if (result?.index !== -1) {
+					this.setState({ scrollToIndex: result.index, _goToPlaying: true });
 				}
-			} else {
-				if (karas.infos.from > stateData.content.length) {
-					const nbCellToFill = stateData.infos.from - stateData.content.length;
-					for (let index = 0; index < nbCellToFill; index++) {
-						stateData.content.push(undefined);
+			}
+			if (this.props.indexKaraDetail) {
+				this.setState({ scrollToIndex: this.props.indexKaraDetail });
+				this.props.clearIndexKaraDetail();
+			}
+			if (karas.infos?.from > 0) {
+				stateData = this.state.data as KaraList;
+				if (karas.infos.from < stateData.content.length) {
+					for (let index = 0; index < karas.content.length; index++) {
+						stateData.content[karas.infos.from + index] = karas.content[index];
 					}
+				} else {
+					if (karas.infos.from > stateData.content.length) {
+						const nbCellToFill = stateData.infos.from - stateData.content.length;
+						for (let index = 0; index < nbCellToFill; index++) {
+							stateData.content.push(undefined);
+						}
+					}
+					stateData.content.push(...karas.content);
 				}
-				stateData.content.push(...karas.content);
+				stateData.infos = karas.infos;
+				stateData.i18n = Object.assign(stateData.i18n, karas.i18n);
+			} else {
+				stateData = karas;
 			}
-			stateData.infos = karas.infos;
-			stateData.i18n = Object.assign(stateData.i18n, karas.i18n);
-		} else {
-			stateData = karas;
+			this.setState({ data: stateData, getPlaylistInProgress: false }, () => this.playlistForceRefresh(true));
+		} catch (e) {
+			// already display
 		}
-		this.setState({ data: stateData, getPlaylistInProgress: false }, () => this.playlistForceRefresh(true));
 	};
 
 	playingUpdate = (data: { playlist_id: number, plc_id: number }) => {

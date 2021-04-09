@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBPL } from '../../../../../src/types/database/playlist';
+import nanamiShockedPng from '../../../assets/nanami-shocked.png';
+import nanamiShockedWebP from '../../../assets/nanami-shocked.webp';
 import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import { GlobalContextInterface } from '../../../store/context';
@@ -80,6 +82,11 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 					<div className="modal-content">
 						<ul className="modal-header">
 							<h4 className="modal-title">
+								<picture>
+									<source type="image/webp" srcSet={nanamiShockedWebP} />
+									<source type="image/png" srcSet={nanamiShockedPng} />
+									<img src={nanamiShockedPng} alt="Nanami is shocked oO" />
+								</picture>
 								{i18next.t('MODAL.DELETE_PLAYLIST_MODAL.TITLE', {
 									playlist: this.props.idPlaylist === -4 ?
 										this.props.bLSet?.name :

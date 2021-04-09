@@ -1,4 +1,6 @@
 .page404-lost {
+	padding: 1em 1em 0 1em;
+	text-align: center;
 	> h1 {
 		font-size: 2em;
 		font-weight: bold;
@@ -7,12 +9,11 @@
 		font-size: 1.25em;
 		font-weight: bold;
 	}
-	padding: 1em 1em 0 1em;
-	text-align: center;
 	img {
-		margin-top: 1.5em;
+		display: block;
 		width: auto;
 		height: 150px;
+		margin: auto;
 	}
 }
 
@@ -31,8 +32,11 @@
 }
 
 .page404-btn {
+	display: block;
 	background-color: #e2754a;
+	width: fit-content;
 	padding: 1em;
+	margin: 1em auto;
 	color: white;
 	text-decoration: none;
 }

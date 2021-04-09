@@ -158,7 +158,7 @@ export async function initEngine() {
 		}
 		try {
 			if (app) registerShortcuts();
-			initStep(i18n.t('INIT_PLAYLIST'));
+			initStep(i18n.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [
 				initBlacklistSystem(),
 				initPlaylistSystem(),
@@ -224,8 +224,7 @@ export async function initEngine() {
 	}
 }
 
-export async function exit(rc: string | number) {
-	if (!rc) rc = 0;
+export async function exit(rc: string | number = 0) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;

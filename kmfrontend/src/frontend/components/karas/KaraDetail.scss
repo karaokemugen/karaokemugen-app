@@ -2,7 +2,6 @@
 @import '../../styles/components/blurred-bg';
 
 .modal-content.detailsKara {
-	max-height: 85vh;
 	overflow: auto;
 }
 
@@ -49,7 +48,7 @@
 	}
 }
 
-.modal-content .detailsKara {
+.detailsKara {
 	margin: 1em;
 
 	.centerButtons {

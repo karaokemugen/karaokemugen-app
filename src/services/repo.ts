@@ -165,12 +165,9 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 			extractAllFiles('Karas', repo),
 			extractAllFiles('Medias', repo)
 		]);
-		let mediaFilesFiltered: string[];
 		const karas = await (readAllKaras(karaFiles, false, task));
-		karas.forEach(k => {
-			mediaFilesFiltered = mediaFiles.filter(file => basename(file) !== k.mediafile);
-		});
-		return mediaFilesFiltered;
+		const mediasFilesKaras: string[] = karas.map(k => k.mediafile);
+		return mediaFiles.filter(file => !mediasFilesKaras.includes(basename(file)));
 	} catch(err) {
 		if (err?.code === 404) throw err;
 		sentry.error(err);

@@ -137,14 +137,14 @@ function AdminHeader(props: IProps) {
 					buttons={[
 						{
 							label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
-							active: context?.globalState.settings.data.config?.Playlist.MysterySongs.AddedSongVisibilityAdmin,
+							active: context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
 							activeColor: '#3c5c00',
 							onClick: () => saveOperatorAdd(true),
 							description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
 						},
 						{
 							label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
-							active: !context?.globalState.settings.data.config?.Playlist.MysterySongs.AddedSongVisibilityAdmin,
+							active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
 							activeColor: '#880500',
 							onClick: () => saveOperatorAdd(false),
 							description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON')

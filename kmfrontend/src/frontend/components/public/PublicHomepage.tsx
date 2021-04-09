@@ -58,10 +58,10 @@ class PublicHomepage extends Component<IProps, IState> {
 					<span>{`${i18next.t('PUBLIC_HOMEPAGE.HELLO')} ${this.context.globalState.settings.data.user.nickname}`}&nbsp;!</span>
 					<div className="warning">{this.context?.globalState.settings.data.config?.Frontend?.Mode === 1 ? i18next.t('PUBLIC_HOMEPAGE.RESTRICTED_DESCRIPTION') : null}</div>
 					<div>{this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 1 ?
-						i18next.t('PUBLIC_HOMEPAGE.QUOTA_KARA_DESCRIPTION', { count: this.context.globalState.settings.data.config?.Karaoke?.Quota?.Songs }):null}
+						i18next.t('PUBLIC_HOMEPAGE.QUOTA_KARA_DESCRIPTION', { count: this.context.globalState.settings.data.config?.Karaoke?.Quota?.Songs }) : null}
 					</div>
 					<div>{this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 2 ?
-						i18next.t('PUBLIC_HOMEPAGE.QUOTA_TIME_DESCRIPTION', { time: secondsTimeSpanToHMS(this.context.globalState.settings.data.config?.Karaoke?.Quota?.Time, 'ms') }):null}
+						i18next.t('PUBLIC_HOMEPAGE.QUOTA_TIME_DESCRIPTION', { time: secondsTimeSpanToHMS(this.context.globalState.settings.data.config?.Karaoke?.Quota?.Time, 'ms') }) : null}
 					</div>
 				</div>
 				<div className="public-homepage">
@@ -81,14 +81,15 @@ class PublicHomepage extends Component<IProps, IState> {
 										<i className="fas fa-fw fa-chart-line" /> {i18next.t('PUBLIC_HOMEPAGE.OPEN_POLL')}
 									</button> : null
 							}
-							{this.props.publicVisible ?
+							{this.props.publicVisible
+								&& this.context.globalState.settings.data.state.currentPlaylistID !== this.context.globalState.settings.data.state.publicPlaylistID ?
 								<button className="action green" onClick={() => this.props.changeView('publicPlaylist')}>
 									<i className="fas fa-fw fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
 								</button> : null
 							}
 							{this.context?.globalState.auth.data.role !== 'guest' ?
 								<button className="action yellow" onClick={() => this.props.changeView('favorites')}>
-									<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORIS')}
+									<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}
 								</button> : null
 							}
 							{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 ?

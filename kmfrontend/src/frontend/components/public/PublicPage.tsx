@@ -4,7 +4,8 @@ import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { DBPLC, DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
-import webappClose from '../../../assets/dame.jpg';
+import nanamiSingingPng from '../../../assets/nanami-sing.png';
+import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
 import { setFilterValue } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
@@ -269,10 +270,13 @@ class PublicPage extends Component<IProps, IState> {
 					textAlign: 'center'
 				}}
 			>
-				<img alt=''
-				 style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 150px)' }}
-				 src={webappClose}
-				/>
+				<picture>
+					<source type="image/webp" srcSet={nanamiSingingWebP} />
+					<source type="image/png" srcSet={nanamiSingingPng} />
+					<img alt="Nanami is singing!" style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 150px)' }}
+						src={nanamiSingingPng}
+					/>
+				</picture>
 				<div style={{ fontSize: '30px', padding: '10px' }}>
 					{i18next.t('WEBAPPMODE_CLOSED_MESSAGE')}
 				</div>

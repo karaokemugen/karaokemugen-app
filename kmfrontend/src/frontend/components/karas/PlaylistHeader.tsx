@@ -7,6 +7,8 @@ import React, { Component, MouseEvent as MouseEventReact } from 'react';
 import { User } from '../../../../../src/lib/types/user';
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBPL, DBPLC } from '../../../../../src/types/database/playlist';
+import nanamiShockedPng from '../../../assets/nanami-shocked.png';
+import nanamiShockedWebP from '../../../assets/nanami-shocked.webp';
 import { setFilterValue } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
@@ -240,7 +242,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					}));
 				} else {
 					!file.name.includes('.kmfavorites') &&
-					displayMessage('success', i18next.t(i18next.t(`SUCCESS_CODES.${response.code}`, {data: name})));
+					displayMessage('success', i18next.t(`SUCCESS_CODES.${response.code}`, {data: name}));
 				}
 				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.data.playlist_id;
 				this.props.changeIdPlaylist(playlist_id);
@@ -251,7 +253,14 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	deleteAllKaras = () => {
 		this.togglePlaylistCommands();
-		callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_EMPTY_LIST'), '', () => {
+		callModal(this.context.globalDispatch, 'confirm', <>
+			<picture>
+				<source type="image/webp" srcSet={nanamiShockedWebP} />
+				<source type="image/png" srcSet={nanamiShockedPng} />
+				<img src={nanamiShockedPng} alt="Nanami is shocked oO" />
+			</picture>
+			{i18next.t('CL_EMPTY_LIST')}
+		</>, '', () => {
 			if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
 				commandBackend('emptyBLCSet', {set_id: this.props.bLSet?.blc_set_id});
 			} else if (this.props.idPlaylist === -3) {

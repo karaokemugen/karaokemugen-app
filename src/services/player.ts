@@ -312,8 +312,16 @@ export function isPlayerRunning() {
 	return mpv.isRunning();
 }
 
-export function initPlayer() {
-	return mpv.initPlayerSystem();
+export async function initPlayer() {
+	try {
+		profile('initPlayer');
+		await mpv.initPlayerSystem();
+	} catch(err) {
+		logger.error('Failed mpv init', {service: 'Player', obj: err});
+		throw err;
+	} finally {
+		profile('initPlayer');
+	}
 }
 
 export function quitmpv() {

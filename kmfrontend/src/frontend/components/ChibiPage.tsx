@@ -3,13 +3,12 @@ import merge from 'lodash.merge';
 import React, { Component } from 'react';
 
 import { PublicPlayerState } from '../../../../src/types/state';
-import nanamiSmilePng from '../../assets/nanami-smile.png';
-import nanamiSmileWebp from '../../assets/nanami-smile.webp';
-import { login, logout } from '../../store/actions/auth';
+import nanamiSingPng from '../../assets/nanami-sing.png';
+import nanamiSingWebp from '../../assets/nanami-sing.webp';
+import { login } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { sendIPC } from '../../utils/electron';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { displayMessage } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
 import AdminButtons from './karas/AdminButtons';
@@ -102,9 +101,9 @@ class ChibiPage extends Component<unknown, IState> {
 					<div className="header-group floating-controls">
 						<p>
 							<picture>
-								<source type="image/webp" srcSet={nanamiSmileWebp} />
-								<source type="image/png" srcSet={nanamiSmilePng} />
-								<img src={nanamiSmilePng} alt="Nanami logo"/>
+								<source type="image/webp" srcSet={nanamiSingWebp} />
+								<source type="image/png" srcSet={nanamiSingPng} />
+								<img src={nanamiSingPng} alt="Nanami logo"/>
 							</picture>
 							Karaoke Mugen Chibi Player
 						</p>

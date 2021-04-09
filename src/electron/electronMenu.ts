@@ -1,5 +1,5 @@
 import openAboutWindow from 'about-window';
-import { dialog } from 'electron';
+import { dialog, MenuItem, MenuItemConstructorOptions } from 'electron';
 import {autoUpdater} from 'electron-updater';
 import i18next from 'i18next';
 import open from 'open';
@@ -15,7 +15,7 @@ import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
 
-let menuItems: any;
+let menuItems: Array<(MenuItemConstructorOptions) | (MenuItem)>;
 
 export function getMenu() {
 	return menuItems;
@@ -47,7 +47,8 @@ export function initMenu() {
 			submenu: [
 				{
 					label: i18next.t('MENU_FILE_ABOUT'),
-					click: displayAbout
+					click: displayAbout,
+					visible: isMac
 				},
 				isMac ? { type: 'separator', visible: isMac }:null,
 				{
@@ -100,7 +101,9 @@ export function initMenu() {
 				{
 					label: isMac ? i18next.t('MENU_FILE_QUIT_OSX') : i18next.t('MENU_FILE_QUIT'),
 					accelerator: 'CmdOrCtrl+Q',
-					click: exit
+					click: () => {
+						exit();
+					}
 				}
 			]
 		},
@@ -113,12 +116,12 @@ export function initMenu() {
 			label: i18next.t('MENU_VIEW'),
 			submenu: [
 				{ label: i18next.t('MENU_VIEW_RELOAD'), role: 'reload' },
-				{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forcereload' },
-				{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggledevtools' },
+				{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forceReload' },
+				{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggleDevTools' },
 				{ type: 'separator' },
-				{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetzoom' },
-				{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomin' },
-				{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomout' },
+				{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetZoom' },
+				{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomIn' },
+				{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomOut' },
 				{ type: 'separator' },
 				{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
 			]
@@ -329,6 +332,11 @@ export function initMenu() {
 					click: () => {
 						open('https://lab.shelter.moe/karaokemugen/karaokemugen-app/-/issues');
 					}
+				},
+				{
+					label: i18next.t('MENU_FILE_ABOUT'),
+					click: displayAbout,
+					visible: !isMac
 				}
 			]
 		}
@@ -355,8 +363,8 @@ export function initMenu() {
 					{
 						label: i18next.t('MENU_EDIT_SPEECH'),
 						submenu: [
-							{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startspeaking' },
-							{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopspeaking' }
+							{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startSpeaking' },
+							{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopSpeaking' }
 						]
 					}
 				]

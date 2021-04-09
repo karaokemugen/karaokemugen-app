@@ -49,7 +49,10 @@ ipcRenderer.on('initStep', (event, data) => {
 	message.innerHTML = data.message;
 	dots.innerHTML += '<span></span>';
 
-	const nanamiSD =document.querySelector('.ip--nanami > img');
+	const nanamiSD = document.querySelector('.ip--nanami > img');
+	const container = document.querySelector('.ip--progress-bar-container');
+	container.dataset.showBar = 'false';
+	container.dataset.hide = 'false';
 	if (data.lastEvent) {
 		nanamiSD.src = './public/nanami-XD.png';
 	} else {
@@ -106,9 +109,14 @@ function setProgressBar(pct, text) {
 	const container = document.querySelector('.ip--progress-bar-container');
 	const bar = document.querySelector('.ip--progress-bar');
 	const textEl = document.querySelector('.ip--progress-text');
+	const nanamiSD = document.querySelector('.ip--nanami > img');
 	if (pct < 100) {
 		container.dataset.showBar = 'true';
 		dots.dataset.hide = 'true';
+		// Don't apply animations to clients asking against
+		if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			nanamiSD.src = './public/nanami-searching.gif';
+		}
 	} else {
 		container.dataset.showBar = 'false';
 		container.dataset.hide = 'false';

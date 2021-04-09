@@ -11,7 +11,7 @@ import { DownloadBundle } from '../lib/types/downloads';
 import {resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {asyncCopy, asyncMove, asyncStat, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { emit } from '../lib/utils/pubsub';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -70,11 +70,13 @@ function queueIntegrate(input: DownloadBundle, done: any) {
 }
 
 export async function initDownloader() {
+	profile('initDL');
 	if (!downloaderReady) {
 		downloaderReady = true;
 		initDownloadQueue();
 		initDownloads();
 	}
+	profile('initDL');
 	return;
 }
 
