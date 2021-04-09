@@ -31,7 +31,8 @@ class PlayerBox extends Component<IProps, unknown> {
 						{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
 					</a> : null
 				}
-				{this.props.publicVisible ?
+				{this.props.publicVisible
+					&& this.context.globalState.settings.data.state.currentPlaylistID !== this.context.globalState.settings.data.state.publicPlaylistID ?
 					<a
 						className="orange"
 						onClick={event => {
@@ -43,10 +44,10 @@ class PlayerBox extends Component<IProps, unknown> {
 					</a> : null
 				}
 				<a className="blue"
-				   onClick={event => {
+					onClick={event => {
 						event.preventDefault();
 						this.props.changeView('search');
-				   }}>
+					}}>
 					<i className="fas fa-fw fa-search fa-2x" />
 					{i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH_SHORT')}
 				</a>
