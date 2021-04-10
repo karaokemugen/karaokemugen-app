@@ -57,6 +57,9 @@
 			justify-content: center;
 			> img {
 				width: 75%;
+				// Safari Mac height hack: https://stackoverflow.com/a/61196907
+				object-fit: contain;
+				align-self: flex-start;
 			}
 		}
 		font-size: 2rem;
