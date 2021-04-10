@@ -80,12 +80,13 @@
 					flex-direction: row;
 					justify-content: flex-end;
 					@media (max-width: $mugen-breakpoint-large) {
-						justify-content: flex-start;
+						justify-content: center;
 						flex-wrap: wrap;
 					}
 					list-style: none;
 					li {
 						margin-right: 1em;
+						margin-bottom: .5em;
 						border-radius: .75em;
 						padding: .5em;
 						border: .1em solid #BBBCBC;
