@@ -80,6 +80,9 @@
 .playlist-dragged-item {
 	cursor: grabbing;
 	list-style: none;
+	&.side1 .list-group-item:not(.karaSuggestion) {
+		flex-direction: row-reverse;
+	}
 	.list-group-item {
 		background: #333;
 		z-index: 200;
