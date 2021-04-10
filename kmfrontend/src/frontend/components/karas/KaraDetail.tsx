@@ -3,9 +3,12 @@ import './KaraDetail.scss';
 import i18next from 'i18next';
 import React, { Component, MouseEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import {toast} from 'react-toastify';
 
 import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
+import nanamiSingPng from '../../../assets/nanami-sing.png';
+import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
@@ -188,18 +191,47 @@ class KaraDetail extends Component<IProps, IState> {
 			requestedby: this.context.globalState.auth.data.username,
 			kid: this.props.kid
 		});
-		if (response && response.code && response.data?.plc && response.data?.plc.time_before_play > 0) {
-			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
-			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
-			displayMessage('success', <div>
-				{i18next.t(`SUCCESS_CODES.${response.code}`)}
-				<br />
-				{i18next.t('TIME_BEFORE_PLAY', {
-					time: beforePlayTime,
-					date: playTimeDate
-				})}
-			</div>);
+		if (response && response.code && response.data?.plc) {
+			let message;
+			if (response.data?.plc.time_before_play) {
+				const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+				message = (<>
+					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
+					<br />
+					{i18next.t('TIME_BEFORE_PLAY', {
+						time: beforePlayTime,
+						date: playTimeDate
+					})}
+				</>);
+			} else {
+				message = (<>
+					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
+				</>);
+			}
+			displayMessage('success', <div className="toast-with-img">
+				<picture>
+					<source type="image/webp" srcSet={nanamiSingWebP} />
+					<source type="image/png" srcSet={nanamiSingPng} />
+					<img src={nanamiSingPng} alt="Nanami is singing!" />
+				</picture>
+				<span>
+					{message}
+					<br/>
+					<button className="btn" onClick={e => {
+						e.preventDefault();
+						e.stopPropagation();
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
+							.then(() => {
+								toast.dismiss(response.data.plc.playlistcontent_id);
+								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+							}).catch(() => {
+								toast.dismiss(response.data.plc.playlistcontent_id);
+							});
+					}}>{i18next.t('CANCEL')}</button>
+				</span>
+			</div>, 10000, 'top-left', response.data.plc.playlistcontent_id);
 		}
 	}
 
