@@ -198,7 +198,7 @@ class KaraDetail extends Component<IProps, IState> {
 				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.state.kara.title })}
 					<br />
 					{i18next.t('TIME_BEFORE_PLAY', {
 						time: beforePlayTime,
@@ -207,7 +207,7 @@ class KaraDetail extends Component<IProps, IState> {
 				</>);
 			} else {
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.state.kara.title })}
 				</>);
 			}
 			displayMessage('success', <div className="toast-with-img">
