@@ -383,7 +383,7 @@ class Player {
 					const FullScreen = !!status.data;
 					editSetting({ Player: { FullScreen } });
 					if (FullScreen) {
-						this.control.messages.addMessage('fsTip', `{\\an7\\i1\\fs20}${i18n.t('FULLSCREEN_TIP')}`, 5000);
+						this.control.messages.addMessage('fsTip', `{\\an7\\i1\\fs20}${i18n.t('FULLSCREEN_TIP')}`, 3000);
 					} else {
 						this.control.messages.removeMessage('fsTip');
 					}
