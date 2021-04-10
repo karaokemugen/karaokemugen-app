@@ -2,9 +2,11 @@ import slugify from 'slugify';
 
 import { User } from '../../../src/lib/types/user';
 import blankAvatar from '../assets/blank.png';
-import { isRemote } from './socket';
+import { getSocket, isRemote } from './socket';
 
 const cache: Map<string, string> = new Map();
+
+getSocket().on('userUpdated', (login) => cache.delete(login));
 
 export async function generateProfilePicLink(user: User): Promise<string> {
 	if (isRemote()) {
