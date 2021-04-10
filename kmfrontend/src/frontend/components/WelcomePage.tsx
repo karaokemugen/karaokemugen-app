@@ -211,10 +211,10 @@ class WelcomePage extends Component<unknown, IState> {
 					<div className="aside">
 						<nav>
 							<ul>
-								<li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-pencil-alt" />{i18next.t('WLCM_CONTACT')}</a></li>
-								<li><a href="http://mugen.karaokes.moe/"><i className="fas fa-link" />{i18next.t('WLCM_SITE')}</a></li>
+								<li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-fw fa-pencil-alt" />{i18next.t('WLCM_CONTACT')}</a></li>
+								<li><a href="http://mugen.karaokes.moe/"><i className="fas fa-fw fa-link" />{i18next.t('WLCM_SITE')}</a></li>
 								<li><a href="#" onClick={this.toggleProfileModal}>
-									<i className="fas fa-user" /><span>{this.context.globalState.settings.data.user.nickname}</span>
+									<i className="fas fa-fw fa-user" /><span>{this.context.globalState.settings.data.user.nickname}</span>
 								</a></li>
 								<li>
 									<a
@@ -222,7 +222,7 @@ class WelcomePage extends Component<unknown, IState> {
 										title={i18next.t('LOGOUT')}
 										className="logout"
 										onClick={() => logout(this.context.globalDispatch)}
-									><i className="fas fa-sign-out-alt" /><span>{i18next.t('LOGOUT')}</span></a>
+									><i className="fas fa-fw fa-sign-out-alt" /><span>{i18next.t('LOGOUT')}</span></a>
 								</li>
 							</ul>
 						</nav>
@@ -240,7 +240,7 @@ class WelcomePage extends Component<unknown, IState> {
 									</article>
 									<article>
 										<a href={`/system/sessions/${this.state.activeSession?.seid}`} title={i18next.t('EDIT_SESSION')} >
-											<i className="fas fa-edit" />
+											<i className="fas fa-fw fa-edit" />
 										</a>
 									</article>
 								</React.Fragment>
@@ -255,44 +255,44 @@ class WelcomePage extends Component<unknown, IState> {
 								this.context?.globalState.settings.data.user?.flag_tutorial_done
 									? <article className="tile-manage">
 										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-											<i className="fas fa-list" /><span>{i18next.t('WLCM_KARAMANAGER')}</span>
+											<i className="fas fa-fw fa-list" /><span>{i18next.t('WLCM_KARAMANAGER')}</span>
 										</button>
 									</article>
 									: <article className="tile-tutorial">
 										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-											<i className="fas fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>
+											<i className="fas fa-fw fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>
 										</button>
 									</article>
 							}
 							<article className="tile-system">
 								<button type="button" onClick={() => window.location.assign('/system')}>
-									<i className="fas fa-cog" /><span>{i18next.t('WLCM_ADMINISTRATION')}</span>
+									<i className="fas fa-fw fa-cog" /><span>{i18next.t('WLCM_ADMINISTRATION')}</span>
 								</button>
 							</article>
 							<article className="tile-system">
 								<button type="button" onClick={() => window.location.assign('/public' + window.location.search)}>
-									<i className="fas fa-user" /><span>{i18next.t('WLCM_PUBLIC')}</span>
+									<i className="fas fa-fw fa-user" /><span>{i18next.t('WLCM_PUBLIC')}</span>
 								</button>
 							</article>
 							<article className="tile-help">
 								<button type="button" onClick={() => window.location.assign('https://mugen.karaokes.moe/docs/')}>
-									<i className="fas fa-question-circle" /><span>{i18next.t('WLCM_HELP')}</span>
+									<i className="fas fa-fw fa-question-circle" /><span>{i18next.t('WLCM_HELP')}</span>
 								</button>
 							</article>
 							<article className="tile-download">
 								<button type="button" onClick={() => window.location.assign('/system/karas/download')}>
-									<i className="fas fa-download" /><span>{i18next.t('WLCM_DOWNLOAD')}</span>
+									<i className="fas fa-fw fa-download" /><span>{i18next.t('WLCM_DOWNLOAD')}</span>
 								</button>
 							</article>
 							<article className="tile-logs">
 								<button type="button" onClick={() => window.location.assign('/system/log')}>
-									<i className="fas fa-terminal" /><span>{i18next.t('WLCM_LOGS')}</span>
+									<i className="fas fa-fw fa-terminal" /><span>{i18next.t('WLCM_LOGS')}</span>
 								</button>
 							</article>
 							<article className="tile-stats">
 								<blockquote>
 									<label>
-										<i className="fas fa-chart-line" />{i18next.t('WLCM_STATS')}
+										<i className="fas fa-fw fa-chart-line" />{i18next.t('WLCM_STATS')}
 									</label>
 									<ul>
 										<li onClick={() => window.location.assign('/system/karas')}>
@@ -307,24 +307,20 @@ class WelcomePage extends Component<unknown, IState> {
 											<strong>{i18next.t('WLCM_STATS_TAGS')}</strong>
 											<span>{this.state.stats?.tags}</span>
 										</li>
-										<li>
-											<strong>{i18next.t('WLCM_REMOTE')}</strong>
-											<span>{this.context.globalState?.settings?.data?.state?.url}</span>
-										</li>
 									</ul>
 								</blockquote>
 							</article>
 							<article className="tile-repositories">
 								<blockquote>
 									<button type="button" onClick={() => window.location.assign('/system/repositories')}>
-										<i className="fas fa-network-wired" />{i18next.t('WLCM_REPOSITORY')}
+										<i className="fas fa-fw fa-network-wired" />{i18next.t('WLCM_REPOSITORY')}
 									</button>
 									<ul>
 										{this.state.repositories.map(repository => {
 											return (
 												<li key={repository.Name} className={repository.Enabled ? '' : 'disabled'}
 													onClick={() => window.location.assign(`/system/repositories/${repository.Name}`)}>
-													<i className={`fas ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
+													<i className={`fas fa-fw ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
 													<span>{repository.Name}</span>
 												</li>
 											);
