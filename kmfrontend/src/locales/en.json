@@ -879,7 +879,9 @@
 		"GENRES_plural": "Genres",
 		"PLATFORMS": "Platform",
 		"PLATFORMS_plural": "Platforms",
-		"SERIES": "Series"
+		"SERIES": "Series",
+		"VERSIONS": "Version",
+		"VERSIONS_plural": "Versions"
 	},
 	"CONFIG": {
 		"PROPERTY": "Property",
