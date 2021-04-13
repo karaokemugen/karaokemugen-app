@@ -1,4 +1,4 @@
-import { LogoutOutlined,UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined,UserOutlined,HomeOutlined } from '@ant-design/icons';
 import { Button,Menu } from 'antd';
 import i18next from 'i18next';
 import React, {Component} from 'react';
@@ -50,7 +50,11 @@ class KMMenu extends Component<unknown, unknown> {
 				<Menu.Item className="menuItemInactive" key='user'>
 					<span><UserOutlined /> {this.context.globalState.auth.data.username}</span>
 				</Menu.Item>
-				<Menu.Item key='logout'>
+				<Menu.Item key="change">
+					{/* The <Button href="..."> component has broken CSS */}
+					<Button icon={<HomeOutlined />} onClick={() => window.location.assign('/welcome')}>{i18next.t('CHANGE_INTERFACE')}</Button>
+				</Menu.Item>
+				<Menu.Item key="logout">
 					<Button icon={<LogoutOutlined />} onClick={() => logout(this.context.globalDispatch)}>{i18next.t('LOGOUT')}</Button>
 				</Menu.Item>
 			</Menu>
