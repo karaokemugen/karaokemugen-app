@@ -115,7 +115,7 @@ class LyricsBox extends Component<IProps, IState> {
 				{LyricsBox.i18nText(this.state.showLyrics)}
 				<i className={this.state.showLyrics > 1 ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'}/></div>
 			{this.state.showLyrics > 0 ?
-				<div className="lyrics">
+				(this.state.lyrics.length > 0 ? <div className="lyrics">
 					{
 						this.state.lyrics.map((val, index) => {
 							return <div
@@ -124,7 +124,10 @@ class LyricsBox extends Component<IProps, IState> {
 							>{val.text.replace(/\\N/g, ' ')}</div>;
 						})
 					}
-				</div> : null}
+				</div>:<div className="lyrics">
+					<div>{i18next.t('PUBLIC_HOMEPAGE.LYRICS_EXPL.LINES')}</div>
+					<div className="current">{i18next.t('PUBLIC_HOMEPAGE.LYRICS_EXPL.CURRENT')}</div>
+				</div>) : null}
 		</div>);
 	}
 }

@@ -190,6 +190,10 @@
 		"SHOW_LYRICS": "Afficher les paroles",
 		"SHOW_ALL_LYRICS": "Afficher toutes les paroles",
 		"HIDE_LYRICS": "Masquer les paroles",
+		"LYRICS_EXPL": {
+			"LINES": "Les paroles de la chanson jouée actuellement seront affichées ici.",
+			"CURRENT": "La ligne affichée en jaune représente celle qui est actuellement chantée."
+		},
 		"OPEN_POLL": "Voter pour la prochaine chanson",
 		"PUBLIC_SUGGESTIONS": "Suggestions du public",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggestions",
