@@ -3,7 +3,6 @@
 // Node modules
 import execa from 'execa';
 import i18next from 'i18next';
-import deburr from 'lodash.deburr';
 import {resolve} from 'path';
 import {StringDecoder} from 'string_decoder';
 import tasklist from 'tasklist';
