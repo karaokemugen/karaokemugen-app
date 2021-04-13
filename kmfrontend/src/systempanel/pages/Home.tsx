@@ -16,7 +16,12 @@ import i18next from 'i18next';
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 
+import GlobalContext from '../../store/context';
+
 class Home extends Component<unknown, unknown> {
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
+
 	render() {
 		return (
 			<>
@@ -100,6 +105,9 @@ class Home extends Component<unknown, unknown> {
 							</Card>
 						</Col>
 					</Row>
+					<p style={{marginTop: '1em'}}>
+						v{this.context?.globalState.settings?.data.version.number} - {this.context?.globalState.settings?.data.version.name} ({this.context?.globalState.settings?.data.version.sha})
+					</p>
 				</Layout.Content>
 			</>
 		);

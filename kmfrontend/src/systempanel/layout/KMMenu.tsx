@@ -1,4 +1,4 @@
-import { LogoutOutlined,UserOutlined,HomeOutlined } from '@ant-design/icons';
+import { HomeOutlined,LogoutOutlined,UserOutlined } from '@ant-design/icons';
 import { Button,Menu } from 'antd';
 import i18next from 'i18next';
 import React, {Component} from 'react';
