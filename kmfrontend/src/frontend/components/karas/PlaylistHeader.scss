@@ -129,16 +129,16 @@
 	.actionDiv {
 		display: flex;
 	}
+	.btn-group {
+		display: flex;
+	}
 
-	@media screen and (max-width: $mugen-breakpoint-smaller) {
-		.btn-group {
-			display: flex;
-			button {
-				height: 2em;
-			}
-			.fas.fa-fw.fa-filter {
-				width: unset;
-			}
+	@media screen and (max-width: $mugen-breakpoint-large) {
+		button {
+			height: 2em;
+		}
+		.fas.fa-fw.fa-filter {
+			width: unset;
 		}
 		.plSearch {
 			order: 2;
