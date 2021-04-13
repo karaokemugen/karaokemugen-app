@@ -394,7 +394,6 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon"
 																					 title={i18next.t('KARA.DEJAVU_TOOLTIP')} /> : null}
 										{kara.title}
-										{kara.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>)}
 										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
 												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })}/> : null}
@@ -414,6 +413,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									}
 									{!is_touch_device() ? <div className="tagConteneur">
 										{this.karaTags}
+										{kara.versions?.sort(sortTagByPriority).map(t => 
+											<span className="tag white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>
+										)}
 									</div> : null}
 								</div> :
 								<div className="contentDiv" onClick={() => this.props.toggleKaraDetail(kara, idPlaylist)} tabIndex={1}>
@@ -452,6 +454,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							{is_touch_device() ?
 								<div className="tagConteneur mobile">
 									{this.karaTags}
+									{kara.versions?.sort(sortTagByPriority).map(t => 
+										<span className="tag white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>
+									)}
 									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ?
 										<div className="img-container">
 											<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
