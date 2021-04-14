@@ -5,7 +5,6 @@ import logger, { enableProfiling } from '../lib/utils/logger';
 import {getState, setState} from './state';
 
 export function parseArgs() {
-	const argv = process.argv.filter(e => e !== '--');
 	const version = getState().version;
 	return cli
 		.command('KaraokeMugen')
@@ -31,72 +30,72 @@ export function parseArgs() {
 		.option('--noTestDownloads', 'Do not attempt to download songs during unit tests')
 		.option('--noAutoTest', 'Do not attempt to start tests automatically if --test is enabled')
 		.option('--sql', 'Traces SQL query at the debug log level')
-		.parse(argv);
+		.parse();
 }
 
 export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
-	if (cmdline?.hasSwitch('sql') || argv.opts().sql) {
+	if (argv.opts().sql) {
 		logger.info('SQL queries will be logged', {service: 'Launcher'});
 		setState({opt: {sql: true}});
 	}
-	if (cmdline?.hasSwitch('debug') || argv.opts().debug) {
+	if (argv.opts().debug) {
 		logger.info('Debug messages enabled on console', {service: 'Launcher'});
 		setState({opt: {debug: true}});
 		process.env['NODE_ENV'] = 'development';
 	}
-	if (cmdline?.hasSwitch('validate') || argv.opts().validate) {
+	if (argv.opts().validate) {
 		logger.info('Validation (no generation) requested', {service: 'Launcher'});
 		setState({opt: {validate: true}});
 	}
-	if (cmdline?.hasSwitch('reset') || argv.opts().reset) {
+	if (argv.opts().reset) {
 		logger.warn('USER DATA IS GOING TO BE RESET', {service: 'Launcher'});
 		setState({opt: {reset: true}});
 	}
-	if (cmdline?.hasSwitch('profiling') || argv.opts().profiling) {
+	if (argv.opts().profiling) {
 		logger.info('Profiling enabled', {service: 'Launcher'});
 		enableProfiling();
 	}
-	if (cmdline?.hasSwitch('generate') || argv.opts().generate) {
+	if (argv.opts().generate) {
 		logger.info('Database generation requested', {service: 'Launcher'});
 		setState({opt: {generateDB: true}});
 	}
-	if (cmdline?.hasSwitch('noMedia') || argv.opts().noMedia) {
+	if (argv.opts().noMedia) {
 		logger.info('Medias will not be read during generation', {service: 'Launcher'});
 		setState({opt: {noMedia: true}});
 	}
-	if (cmdline?.hasSwitch('noBaseCheck') || argv.opts().noBaseCheck) {
+	if (argv.opts().noBaseCheck) {
 		logger.info('Data files will not be checked. ENABLED AT YOUR OWN RISK', {service: 'Launcher'});
 		setState({opt: {noBaseCheck: true}});
 	}
-	if (cmdline?.hasSwitch('noPlayer') || argv.opts().noPlayer) {
+	if (argv.opts().noPlayer) {
 		logger.info('Player will not start.', {service: 'Launcher'});
 		setState({opt: {noPlayer: true}});
 	}
-	if (cmdline?.hasSwitch('strict') || argv.opts().strict) {
+	if (argv.opts().strict) {
 		logger.info('Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.', {service: 'Launcher'});
 		setState({opt: {strict: true}});
 	}
-	if (cmdline?.hasSwitch('updateBase') || argv.opts().updateBase) {
+	if (argv.opts().updateBase) {
 		logger.info('Base update requested', {service: 'Launcher'});
 		setState({opt: {baseUpdate: true}});
 	}
-	if (cmdline?.hasSwitch('updateMedias') || argv.opts().updateMedias) {
+	if (argv.opts().updateMedias) {
 		logger.info('Media update requested', {service: 'Launcher'});
 		setState({opt: {mediaUpdate: true}});
 	}
-	if (cmdline?.hasSwitch('test') || argv.opts().test) {
+	if (argv.opts().test) {
 		logger.info('TEST MODE ENABLED. DO NOT DO THIS AT HOME.', {service: 'Launcher'});
-		if (cmdline?.hasSwitch('noAutoTest') || argv.opts().noAutoTest) setState({noAutoTest: true});
+		if (argv.opts().noAutoTest) setState({noAutoTest: true});
 		setState({isTest: true});
 	}
-	if (cmdline?.hasSwitch('demo') || argv.opts().demo) {
+	if (argv.opts().demo) {
 		logger.info('Demo mode enabled', {service: 'Launcher'});
 		setState({isDemo: true});
 	}
-	if (cmdline?.hasSwitch('noBrowser') || argv.opts().noBrowser) setState({opt: {noBrowser: true}});
-	if (cmdline?.hasSwitch('noTestDownloads') || argv.opts().noTestDownloads) setState({opt: {noTestDownloads: true}});
-	if (cmdline?.hasSwitch('noAutoTest') || argv.opts().noAutoTest) setState({opt: {noAutoTest: true}});
-	if ((cmdline?.getSwitchValue('forceAdminpassword')) || argv.opts().forceAdminPassword) setState({opt: {forceAdminPassword: argv.opts().forceAdminPassword || cmdline.getSwitchValue('forceAdminPassword')}});
-	if (cmdline?.hasSwitch('dumpDB') || argv.opts().dumpDB) setState({opt: {dumpDB: true}});
-	if (cmdline?.hasSwitch('restoreDB') || argv.opts().restoreDB) setState({opt: {restoreDB: true}});
+	if (argv.opts().noBrowser) setState({opt: {noBrowser: true}});
+	if (argv.opts().noTestDownloads) setState({opt: {noTestDownloads: true}});
+	if (argv.opts().noAutoTest) setState({opt: {noAutoTest: true}});
+	if (argv.opts().forceAdminPassword) setState({opt: {forceAdminPassword: argv.opts().forceAdminPassword || cmdline.getSwitchValue('forceAdminPassword')}});
+	if (argv.opts().dumpDB) setState({opt: {dumpDB: true}});
+	if (argv.opts().restoreDB) setState({opt: {restoreDB: true}});
 }

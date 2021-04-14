@@ -1,5 +1,11 @@
 # Versions
 
+## v5.0.32 - xx/04/2021
+
+### Fixes
+
+- Fixed command-line processing ignoring the first argument (#986)
+
 ## v5.0.31 "Poppy Partagée" - 14/04/2021
 
 ### Important notice
