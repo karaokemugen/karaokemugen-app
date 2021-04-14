@@ -279,7 +279,11 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 			if (blc.type === 1006) filterFunction = filterYearYounger;
 			if (!filterFunction) {
 				logger.error(`Unknown BLC type : ${JSON.stringify(blc)}`, {service: 'DownloadBLC'});
-				throw new Error(`Unknown BLC type ${JSON.stringify(blc)}`);
+				sentry.addErrorInfo('BLC', JSON.stringify(blc));
+				sentry.addErrorInfo('allBLCs', JSON.stringify(blcs));
+				const err = new Error(`Unknown BLC type ${JSON.stringify(blc)}`);
+				sentry.error(err, 'Warning');
+				continue;
 			}
 			karasToAdd = karasToAdd.filter(k => filterFunction(k, blc.value, blc.type, tags.content));
 		}
