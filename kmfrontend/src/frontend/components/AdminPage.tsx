@@ -129,12 +129,16 @@ class AdminPage extends Component<IProps, IState> {
 	}
 
 	async parseTags() {
-		const response = await commandBackend('getTags');
-		return response.content.filter((val: Tag) => val.karacount !== null)
-			.map((val: { i18n: { [key: string]: string }, tid: string, name: string, types: Array<number | string>, karacount: string }) => {
-				const trad = val?.i18n && val.i18n[getNavigatorLanguageIn3B() as string];
-				return { value: val.tid, label: trad ? trad : (val.i18n['eng'] ? val.i18n['eng'] : val.name), type: val.types, karacount: val.karacount };
-			});
+		try {
+			const response = await commandBackend('getTags');
+			return response.content.filter((val: Tag) => val.karacount !== null)
+				.map((val: { i18n: { [key: string]: string }, tid: string, name: string, types: Array<number | string>, karacount: string }) => {
+					const trad = val?.i18n && val.i18n[getNavigatorLanguageIn3B() as string];
+					return { value: val.tid, label: trad ? trad : (val.i18n['eng'] ? val.i18n['eng'] : val.name), type: val.types, karacount: val.karacount };
+				});
+		} catch (e) {
+			//already display
+		}
 	}
 
 	async parseYears() {
