@@ -355,6 +355,11 @@ function AdminHeader(props: IProps) {
 								<i className="fas fa-fw fa-question-circle" />&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
 							</a>
 						</li>
+						<li>
+							<a href="/welcome">
+								<i className="fas fa-fw fa-home" />&nbsp;{i18next.t('CHANGE_INTERFACE')}
+							</a>
+						</li>
 						{props.powerOff ?
 							<li>
 								<a

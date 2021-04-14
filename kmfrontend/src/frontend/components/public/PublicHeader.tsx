@@ -152,6 +152,9 @@ class PublicHeader extends Component<IProps, IState> {
 								<div className="link"><a href="/public/users" onClick={this.toggleUsersModal}>
 									<i className="fas fa-fw fa-users" /> {i18next.t('USERLIST')}
 								</a></div>
+								{this.context?.globalState.auth.data.role === 'admin' ? <div className="link"><a href="/welcome">
+									<i className="fas fa-fw fa-home" /> {i18next.t('CHANGE_INTERFACE')}
+								</a></div>:null}
 								<div className="link"><a href="/login" onClick={e => {
 									e.preventDefault();
 									logout(this.context.globalDispatch);

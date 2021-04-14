@@ -52,13 +52,17 @@ class TagEdit extends Component<RouteComponentProps<{ tid: string }>, TagEditSta
 	}
 
 	loadTag = async () => {
-		if (this.props.match.params.tid) {
-			let res = await commandBackend('getTag', {tid: this.props.match.params.tid}, true);
-			const tagData = { ...res };
-			tagData.tid = this.props.match.params.tid;
-			res = await commandBackend('getTags');
-			this.setState({ tags: res.content, tag: tagData, save: this.saveUpdate, loadTag: true });
-		} else {
+		try {
+			if (this.props.match.params.tid) {
+				let res = await commandBackend('getTag', {tid: this.props.match.params.tid}, true);
+				const tagData = { ...res };
+				tagData.tid = this.props.match.params.tid;
+				res = await commandBackend('getTags');
+				this.setState({ tags: res.content, tag: tagData, save: this.saveUpdate, loadTag: true });
+			} else {
+				this.setState({ save: this.saveNew, loadTag: true });
+			}
+		} catch (e) {
 			this.setState({ save: this.saveNew, loadTag: true });
 		}
 	};

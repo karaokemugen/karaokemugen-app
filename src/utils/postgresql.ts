@@ -3,7 +3,7 @@
 // Node modules
 import execa from 'execa';
 import i18next from 'i18next';
-import deburr from 'lodash.deburr';
+import {tmpdir} from 'os';
 import {resolve} from 'path';
 import {StringDecoder} from 'string_decoder';
 import tasklist from 'tasklist';
@@ -11,7 +11,7 @@ import tasklist from 'tasklist';
 import { errorStep } from '../electron/electronLogger';
 import {getConfig} from '../lib/utils/config';
 // KM Imports
-import {asyncExists, asyncReadFile,asyncUnlink,asyncWriteFile} from '../lib/utils/files';
+import {asyncExists, asyncMkdirp, asyncMove, asyncReadFile,asyncRemove,asyncUnlink,asyncWriteFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import {expectedPGVersion} from './constants';
 import sentry from './sentry';
@@ -153,19 +153,39 @@ export async function restorePG() {
 
 /** Initialize postgreSQL data directory if it doesn't exist */
 export async function initPGData() {
+	const asciiRegex = /^[\u0000-\u007F]+$/u;
 	const conf = getConfig();
 	const state = getState();
 	logger.info('No database present, initializing a new one...', {service: 'DB'});
 	try {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
-		if (deburr(binPath) !== binPath || deburr(conf.System.Path.DB) !== conf.System.Path.DB) throw 'DB path or Postgres path contain non-ASCII characters. Please put Karaoke Mugen in a path with no accent characters or the like and try again.';
-
-		const options = [ 'init','-o', `-U ${conf.System.Database.superuser} -E UTF8`, '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
+		let tempPGPath: string;
+		// We remove the bin part because we might need to use pgPath to move the whole postgres binary directory away.
+		// Postgres pg_init doesn't like having non-ASCII characters in its path
+		// So if it has, we'll move the whole pg distro out of the way in the OS temp directory
+		// This is a bug postgres doesn't intend to fix because it's windows only
+		// /shrug
+		const pgPath = resolve(state.appPath, state.binPath.postgres).replace(/\\bin$/g,'').replace(/\/bin$/, '');
+		if (!asciiRegex.test(binPath)) {
+			logger.warn('Binaries path is in a non-ASCII path, will copy it to the OS\'s temp folder first to init database', {service: 'DB'});
+			// On Windows, tmpdir() returns the user home directory/appData/local/temp so it's pretty useless, we'll try writing to C:\Postgres. If it fails because of permissions, there's not much else we can do, sadly.
+			tempPGPath = state.os === 'win32' ? resolve('C:\\', 'kmtemp') : tmpdir();
+			logger.info(`Moving ${pgPath} to ${tempPGPath}`, {service: 'DB'});
+			await asyncRemove(tempPGPath).catch(() => {}); //izok
+			await asyncMkdirp(tempPGPath);
+			await asyncMove(pgPath, resolve(tempPGPath, 'postgres'));
+			binPath = resolve(tempPGPath, 'postgres', 'bin', state.os === 'win32' ? 'pg_ctl.exe' : 'pg_ctl');
+		}
+		const options = [ 'init', '-o', `-U ${conf.System.Database.superuser} -E UTF8`, '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
-			cwd: resolve(state.appPath, state.binPath.postgres),
+			cwd: tempPGPath ? resolve(tempPGPath, 'postgres', 'bin') : resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit',
 		});
+		if (tempPGPath) {
+			await asyncMove(resolve(tempPGPath, 'postgres'), pgPath);
+			await asyncRemove(tempPGPath).catch(() => {});
+		}
 	} catch(err) {
 		sentry.error(err);
 		logger.error('Failed to initialize database', {service: 'DB', obj: err});

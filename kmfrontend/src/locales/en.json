@@ -31,6 +31,7 @@
 	"VERSION": "Version",
 	"SHUTDOWN": "Shutdown Karaoke Mugen",
 	"SHUTDOWN_POPUP": "Connection with Karaoke Mugen lost",
+	"CHANGE_INTERFACE": "Change interface",
 	"MUTE_UNMUTE": "Mute/unmute",
 	"SHOW_SUBS": "Show lyrics on screen",
 	"HIDE_SUBS": "Hide lyrics on screen",
@@ -172,6 +173,10 @@
 		"SHOW_LYRICS": "Show Lyrics",
 		"SHOW_ALL_LYRICS": "Show All Lyrics",
 		"HIDE_LYRICS": "Hide Lyrics",
+		"LYRICS_EXPL": {
+			"LINES": "The current song lyrics will be displayed here.",
+			"CURRENT": "The yellow highlighted line represents the currently sung line."
+		},
 		"OPEN_POLL": "Vote for the next song",
 		"PUBLIC_SUGGESTIONS": "Public suggestions",
 		"PUBLIC_SUGGESTIONS_SHORT": "Suggestions",
@@ -879,7 +884,9 @@
 		"GENRES_plural": "Genres",
 		"PLATFORMS": "Platform",
 		"PLATFORMS_plural": "Platforms",
-		"SERIES": "Series"
+		"SERIES": "Series",
+		"VERSIONS": "Version",
+		"VERSIONS_plural": "Versions"
 	},
 	"CONFIG": {
 		"PROPERTY": "Property",

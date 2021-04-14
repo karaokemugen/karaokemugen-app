@@ -941,7 +941,7 @@ class Playlist extends Component<IProps, IState> {
 													<this.SortableList
 														{...[this.state.forceUpdate]}
 														pressDelay={0}
-														helperClass="playlist-dragged-item"
+														helperClass={`playlist-dragged-item ${this.props.side > 1 ? 'side2':'side1'}`}
 														useDragHandle={true}
 														ref={registerChild}
 														onRowsRendered={onRowsRendered}

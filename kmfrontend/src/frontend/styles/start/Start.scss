@@ -49,7 +49,7 @@
 				max-width: 100%;
 			}
 
-			@media (max-width: $mugen-breakpoint-small) {
+			@media (max-width: $mugen-breakpoint-large) {
 				text-align: center;
 				img {
 					max-width: 250px;
@@ -79,9 +79,14 @@
 					display: flex;
 					flex-direction: row;
 					justify-content: flex-end;
+					@media (max-width: $mugen-breakpoint-large) {
+						justify-content: center;
+						flex-wrap: wrap;
+					}
 					list-style: none;
 					li {
 						margin-right: 1em;
+						margin-bottom: .5em;
 						border-radius: .75em;
 						padding: .5em;
 						border: .1em solid #BBBCBC;
@@ -127,7 +132,6 @@
 
 		.main {
 			grid-area: main;
-
 			display: flex;
 			height: 100%;
 		}

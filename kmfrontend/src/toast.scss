@@ -8,11 +8,12 @@ $rt-color-error: #7d140b;
 
 .toast-with-img {
 	display: flex;
+	align-items: center;
 	width: 100%;
 	height: auto;
 	> picture {
 		flex: 1 0 30%;
-		padding: .125em;
+		padding: .125em .2em;
 		> img {
 			height: auto;
 			max-width: 100%;

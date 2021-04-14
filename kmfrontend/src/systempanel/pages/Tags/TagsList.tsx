@@ -37,8 +37,12 @@ class TagsList extends Component<unknown, TagsListState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getTags', { filter: this.filter, type: this.state.type });
-		this.setState({ tags: res.content });
+		try {
+			const res = await commandBackend('getTags', { filter: this.filter, type: this.state.type });
+			this.setState({ tags: res.content });
+		} catch (e) {
+			//already display
+		}
 	}
 
 	delete = async (tid) => {
