@@ -1,36 +1,31 @@
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 import {app} from 'electron';
-import {existsSync} from 'fs';
+import {existsSync, readFileSync} from 'fs';
 import {mkdirpSync} from 'fs-extra';
 import i18n from 'i18next';
 import cloneDeep from 'lodash.clonedeep';
-import minimist from 'minimist';
-import {dirname, join, resolve} from 'path';
+import {resolve} from 'path';
 import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
 import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
-import {help} from './help';
-import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathTemp, setConfig} from './lib/utils/config';
-import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncReadFile, asyncRemove} from './lib/utils/files';
+import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathPreviews, resolvedPathSessionExports, resolvedPathTemp, setConfig} from './lib/utils/config';
+import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncRemove} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
-import {logo} from './logo';
-import { migrateOldFoldersToRepo } from './services/repo';
-import { resetSecurityCode } from './services/user';
+import { resetSecurityCode } from './services/auth';
 import {Config} from './types/config';
-import {parseCommandLineArgs} from './utils/args';
+import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
-import {createCircleAvatar} from './utils/imageProcessing';
+import {logo} from './utils/constants';
 import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
-import {version} from './version';
 
 dotenv.config();
-sentry.init(app);
+sentry.init(app, process.argv.includes('--strict'));
 
 let isInitError = false;
 
@@ -75,64 +70,34 @@ on('initError', (err: Error) => {
 	initError(err);
 });
 
-function initError(err: any) {
-	logger.error('Error during launch', {service: 'Launcher', obj: err});
-	console.log(err);
-	sentry.error(err);
-	exit(1);
-}
-
 // Main app begins here.
 // Testing if we're in a packaged version of KM or not.
 // First, this is a test for unpacked electron mode.
-// If we're not using electron, then use __dirname's parent)
-let originalAppPath: string;
-if (process.versions.electron) {
-	//INIT_CWD exists only when electron is launched from yarn (dev)
-	//PORTABLE_EXECUTABLE_DIR exists only when launched from a packaged eletron app (yarn dist) (production)
-	// The last one is when running an unpackaged electron for testing purposes (yarn packer) (dev)
-	originalAppPath = process.env.INIT_CWD || process.env.PORTABLE_EXECUTABLE_DIR || join(__dirname, '../../../');
-	// Because OSX packages are structured differently, we'll modify our path
-	if (process.platform === 'darwin' && app.isPackaged) originalAppPath = resolve(originalAppPath, '../../');
-} else {
-	originalAppPath = process.cwd();
-}
-// On OSX, process.cwd() returns /, which is utter stupidity but let's go along with it.
-// What's funny is that originalAppPath is correct on OSX no matter if you're using Electron or not.
-const appPath = process.platform === 'darwin'
-	? app?.isPackaged
-		? resolve(dirname(process.execPath), '../')
-		: originalAppPath
-// In case it's launched from the explorer, cwd will give us system32
-	: process.cwd() === 'C:\\Windows\\system32'
-		? originalAppPath
-		: process.cwd();
-
-
+let appPath: string;
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
 
-if (process.versions.electron && (existsSync(resolve(appPath, 'resources/')) || existsSync(resolve(originalAppPath, 'resources/')))) {
-	// If launched from electron we check if cwd/resources exists and set it to resourcePath. If not we'll use appPath
-	// CWD = current working directory, so if launched from a dist exe, this is $HOME/AppData/Local/ etc. on Windows, and equivalent path on Unix systems.
-	// It also works from unpackaged electron, if all things are well.
-	// If it doesn't exist, we'll assume the resourcePath is originalAppPath.
-	if (process.platform === 'darwin') {
+if (process.versions.electron) {
+	if (app.isPackaged) {
+		// Starting Electron from the app's executable
+		appPath = process.platform === 'darwin'
+			? resolve(app.getAppPath(), '../../../../')
+			: resolve(app.getAppPath(), '../../');
 		resourcePath = process.resourcesPath;
-	} else if (existsSync(resolve(appPath, 'resources/'))) {
-		resourcePath = resolve(appPath, 'resources/');
-	} else if (existsSync(resolve(originalAppPath, 'resources/'))) {
-		resourcePath = resolve(originalAppPath, 'resources/');
 	} else {
-		resourcePath = originalAppPath;
+		// Starting Electron from source folder
+		appPath = app.getAppPath();
+		resourcePath = appPath;
 	}
 } else {
-	resourcePath = originalAppPath;
+	// No Electron start, so in git mode
+	appPath = process.cwd();
+	resourcePath = appPath;
 }
 
 // DataPath is by default appPath + app. This is default when running from source
-const dataPath = existsSync(resolve(originalAppPath, 'portable'))
-	? resolve(originalAppPath, 'app/')
+const dataPath = existsSync(resolve(appPath, 'portable'))
+	? resolve(appPath, 'app/')
 	// Rewriting dataPath to point to user home directory
 	: app
 		// With Electron we get the handy app.getPath()
@@ -142,9 +107,9 @@ const dataPath = existsSync(resolve(originalAppPath, 'portable'))
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
-if (existsSync(resolve(originalAppPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
+if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
 
-setState({originalAppPath: originalAppPath, appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
+setState({appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
 
 process.env['NODE_ENV'] = 'production'; // Default
 
@@ -155,7 +120,24 @@ const args = app?.isPackaged
 
 setState({ args: args });
 
-const argv = minimist(args);
+// Set SHA
+let sha: string;
+const SHAFile = resolve(resourcePath, 'assets/sha.txt');
+if (existsSync(SHAFile)) {
+	sha = readFileSync(SHAFile, 'utf-8');
+	setState({version: {sha: sha.substr(0, 8)}});
+} else {
+	const branch = getState().version.number.split('-')[1];
+	try {
+		sha = readFileSync(resolve(appPath, '.git/refs/heads/', branch), 'utf-8');
+		setState({version: {sha: sha.substr(0, 8)}});
+	} catch(err) {
+		// Ignore
+	}
+}
+
+// Commander call to get everything setup in argv
+const argv = parseArgs();
 
 if (app) {
 	// Acquiring lock to prevent two KMs to run at the same time.
@@ -180,7 +162,7 @@ if (app) {
 	});
 }
 
-if (app && !argv.cli && !argv.help) {
+if (app && !argv.opts().cli) {
 	startElectron();
 } else {
 	// This is in case we're running with yarn startNoElectron or with --cli or --help
@@ -191,16 +173,15 @@ if (app && !argv.cli && !argv.help) {
 
 export async function preInit() {
 	await configureLocale();
-	await configureLogger(dataPath, argv.debug || (app?.commandLine.hasSwitch('debug')), true);
+	await configureLogger(dataPath, argv.opts().debug || (app?.commandLine.hasSwitch('debug')), true);
 	resetSecurityCode();
-	setState({ os: process.platform, version: version});
+	setState({ os: process.platform });
 	const state = getState();
-	parseCommandLineArgs(argv, app ? app.commandLine : null);
+	setupFromCommandLineArgs(argv, app ? app.commandLine : null);
 	logger.debug(`AppPath : ${appPath}`, {service: 'Launcher'});
 	logger.debug(`DataPath : ${dataPath}`, {service: 'Launcher'});
 	logger.debug(`ResourcePath : ${resourcePath}`, {service: 'Launcher'});
 	logger.debug(`Electron ResourcePath : ${process.resourcesPath}`, {service: 'Launcher'});
-	logger.debug(`OriginalAppPath : ${originalAppPath}`, {service: 'Launcher'});
 	logger.debug(`INIT_CWD : ${process.env.INIT_CWD}`, {service: 'Launcher'});
 	logger.debug(`PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`, {service: 'Launcher'});
 	logger.debug(`app.getAppPath : ${app ? app.getAppPath() : undefined}`, {service: 'Launcher'});
@@ -208,81 +189,54 @@ export async function preInit() {
 	logger.debug(`Locale : ${state.defaultLocale}`, {service: 'Launcher'});
 	logger.debug(`OS : ${state.os}`, {service: 'Launcher'});
 	await initConfig(argv);
+	/**
+	 * Test if network ports are available
+	 */
+	await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 }
 
 export async function main() {
 	initStep(i18n.t('INIT_INIT'));
 	// Set version number
-	let sha: string;
-	const SHAFile = resolve(resourcePath, 'assets/sha.txt');
-	if (await asyncExists(SHAFile)) {
-		sha = await asyncReadFile(SHAFile, 'utf-8');
-		setState({version: {sha: sha.substr(0, 8)}});
-	} else {
-		const branch = getState().version.number.split('-')[1];
-		try {
-			sha = await asyncReadFile(resolve(originalAppPath, '.git/refs/heads/', branch), 'utf-8');
-			setState({version: {sha: sha.substr(0, 8)}});
-		} catch(err) {
-			// Ignore
-		}
-	}
 	const state = getState();
 	console.log(chalk.white(logo));
 	console.log('Karaoke Player & Manager - http://karaokes.moe');
-	console.log(`Version ${chalk.bold.green(state.version.number)} (${chalk.bold.green(state.version.name)})`);
-	if (sha) console.log(`git commit : ${sha.substr(0, 8)}`);
+	console.log(`Version ${chalk.bold.green(state.version.number)} "${chalk.bold.green(state.version.name)}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
 	console.log('================================================================================');
-	if (argv.version) {
-		app
-			? app.exit(0)
-			: process.exit(0);
-	} else if (argv.help) {
-		console.log(help);
-		app
-			? app.exit(0)
-			: process.exit(0);
-	} else {
-		const config = getConfig();
-		const publicConfig = cloneDeep(config);
-		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
-		publicConfig.App.JwtSecret = 'xxxxx';
-		publicConfig.App.InstanceID = 'xxxxx';
-		logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
-		logger.debug('Initial state', {service: 'Launcher', obj: state});
+	const config = getConfig();
+	const publicConfig = cloneDeep(config);
+	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
+	publicConfig.App.JwtSecret = 'xxxxx';
+	publicConfig.App.InstanceID = 'xxxxx';
+	logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
+	logger.debug('Initial state', {service: 'Launcher', obj: state});
 
-		// Checking paths, create them if needed.
-		await checkPaths(getConfig());
-		// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-		const tempInput = resolve(resolvedPathTemp(), 'input.conf');
-		logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
-		await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
+	// Checking paths, create them if needed.
+	await checkPaths(getConfig());
+	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
+	const tempInput = resolve(resolvedPathTemp(), 'input.conf');
+	logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
+	await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
 
-		const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
-		logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
-		await asyncCopy(resolve(resourcePath, `assets/${state.version.image}`), tempBackground);
+	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
+	logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
+	await asyncCopy(resolve(resourcePath, 'assets/backgrounds/default.jpg'), tempBackground);
 
-		// Copy avatar blank.png if it doesn't exist to the avatar path
-		logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
-		await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
-		createCircleAvatar(resolve(resolvedPathAvatars(), 'blank.png'));
+	// Copy avatar blank.png if it doesn't exist to the avatar path
+	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
+	await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
 
-		/**
-		 * Test if network ports are available
-		 */
-		await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
-		/**
-		 * Gentlemen, start your engines.
-		 */
-		try {
-			await initEngine();
-		} catch(err) {
-			logger.error('Karaoke Mugen initialization failed', {service: 'Launcher', obj: err});
-			sentry.error(err);
-			console.log(err);
-			errorStep(i18n.t('ERROR_UNKNOWN'));
-			if (!app || argv.cli) exit(1);
-		}
+	/**
+	 * Gentlemen, start your engines.
+	 */
+	try {
+		await initEngine();
+	} catch(err) {
+		logger.error('Karaoke Mugen initialization failed', {service: 'Launcher', obj: err});
+		sentry.error(err);
+		console.log(err);
+		errorStep(i18n.t('ERROR_UNKNOWN'));
+		if (!app || argv.opts().cli) exit(1);
 	}
 }
 
@@ -290,9 +244,7 @@ export async function main() {
  * Checking if application paths exist.
  */
 async function checkPaths(config: Config) {
-	// Migrate old folder config to new repository one :
 	try {
-		await migrateOldFoldersToRepo();
 		// Emptying temp directory
 		if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
 		// Emptying import directory
@@ -311,6 +263,8 @@ async function checkPaths(config: Config) {
 			}
 		}
 		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
+		checks.push(asyncCheckOrMkdir(resolvedPathSessionExports()));
+		checks.push(asyncCheckOrMkdir(resolvedPathPreviews()));
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', {service: 'Launcher'});
 	} catch(err) {
@@ -338,3 +292,9 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 	}
 }
 
+function initError(err: any) {
+	logger.error('Error during launch', {service: 'Launcher', obj: err});
+	console.log(err);
+	sentry.error(err);
+	exit(1);
+}

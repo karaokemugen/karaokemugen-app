@@ -1,0 +1,56 @@
+.userlist {
+	width: 100%;
+	list-style: none;
+
+	.userLine {
+		display: flex;
+		width: 100%;
+		justify-content: flex-start;
+		align-items: center;
+		height: 3em;
+		padding: 3px;
+		cursor: pointer;
+		user-select: none;
+		&:hover {
+			background-color: #333333;
+		}
+	}
+
+	.list-group-item {
+		display: block;
+		background-color: #2b2b2b;
+		border: 1px solid #565656;
+		border-left: 6px solid #893230;
+		line-height: 2.5em;
+		&.online {
+			border-left-color: #4c8830;
+		}
+	}
+
+	.userDetails {
+		background-color: #212121;
+		text-align: start;
+		padding: 1em;
+		margin-top: .25em;
+		> div > i {
+			padding: 1em;
+			margin-right: 1em;
+		}
+	}
+
+	> li.open > .userDetails {
+		display: block;
+	}
+
+	.userLine > img,
+	.userLine > div {
+		vertical-align: middle;
+		height: 100%;
+	}
+
+	.userLine > img {
+		border-radius: 15%;
+	}
+
+}
+

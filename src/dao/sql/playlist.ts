@@ -20,7 +20,9 @@ export const sqleditPlaylist = `
 UPDATE playlist SET
 	name = :name,
 	modified_at = :modified_at,
-	flag_visible = :flag_visible
+	flag_visible = :flag_visible,
+	flag_current = :flag_current,
+	flag_public = :flag_public
 WHERE pk_id_playlist = :playlist_id;
 `;
 
@@ -112,15 +114,16 @@ SELECT pc.fk_kid AS kid,
 	ak.series AS series,
 	ak.singers AS singer
 FROM playlist_content pc
-INNER JOIN all_karas ak ON pc.fk_kid = ak.kid
+INNER JOIN all_karas ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos, pc.created_at DESC
 `;
 
-export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string) => `
+export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string,
+									   additionalFrom: string) => `
 SELECT
-  ak.kid AS kid,
+  ak.pk_kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
@@ -137,7 +140,9 @@ SELECT
   COALESCE(ak.origins, '[]'::jsonb) AS origins,
   COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
   COALESCE(ak.families, '[]'::jsonb) AS families,
-  COALESCE(ak.genres, '[]'::jsonb) AS genres,  ak.mediafile AS mediafile,
+  COALESCE(ak.genres, '[]'::jsonb) AS genres,
+  COALESCE(ak.versions, '[]'::jsonb) AS versions,
+  ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
   pc.created_at AS created_at,
@@ -156,17 +161,18 @@ SELECT
   pc.nickname AS nickname,
   pc.fk_login AS username,
   u.avatar_file AS avatar_file,
+  u.type AS user_type,
   pc.pos AS pos,
   pc.pk_id_plcontent AS playlistcontent_id,
   (CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_playing,
-  (CASE WHEN wl.fk_kid = ak.kid
+  (CASE WHEN wl.fk_kid = ak.pk_kid
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_whitelisted,
-  (CASE WHEN bl.fk_kid = ak.kid
+  (CASE WHEN bl.fk_kid = ak.pk_kid
 	THEN TRUE
 	ELSE FALSE
   END) AS flag_blacklisted,
@@ -174,40 +180,53 @@ SELECT
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   pc.flag_visible AS flag_visible,
   pc.flag_free AS flag_free,
+  pc.flag_refused AS flag_refused,
+  pc.flag_accepted AS flag_accepted,
   COUNT(pc.pk_id_plcontent) OVER()::integer AS count,
-  ak.repository AS repository
+  ak.repository AS repository,
+  array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
+  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id
 FROM all_karas AS ak
-INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
-LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
-LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
+LEFT OUTER JOIN blacklist AS bl ON ak.pk_kid = bl.fk_kid
+LEFT OUTER JOIN whitelist AS wl ON ak.pk_kid = wl.fk_kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
-LEFT OUTER JOIN favorites f ON f.fk_kid = ak.kid AND f.fk_login = :username
-LEFT OUTER JOIN played AS p ON p.fk_kid = ak.kid
-LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.kid
+LEFT OUTER JOIN favorites f ON f.fk_kid = ak.pk_kid AND f.fk_login = :username
+LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
+LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
+LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_pub.fk_id_playlist = :publicPlaylist_id
+LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
+${additionalFrom}
 WHERE pc.fk_id_playlist = :playlist_id
-  ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+  ${filterClauses.map(clause => 'AND (' + clause + ')').join(' ')}
   ${whereClause}
-GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres, ak.platforms, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes,
+         ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres,
+         ak.platforms, ak.versions, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname,
+         pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
 `;
 
 export const sqlgetPlaylistContentsMini = `
-SELECT ak.kid AS kid,
+SELECT ak.pk_kid AS kid,
     ak.languages AS langs,
 	ak.title AS title,
 	ak.songorder AS songorder,
 	ak.songtypes AS songtypes,
 	ak.series AS series,
 	ak.singers AS singers,
+	ak.versions AS versions,
 	ak.misc AS misc,
     ak.gain AS gain,
+	ak.loudnorm AS loudnorm,
     pc.nickname AS nickname,
 	pc.created_at AS created_at,
 	ak.mediafile AS mediafile,
+    ak.mediasize AS mediasize,
 	ak.subfile AS subfile,
 	pc.pos AS pos,
 	(CASE WHEN pl.fk_id_plcontent_playing = pc.pk_id_plcontent
@@ -217,27 +236,22 @@ SELECT ak.kid AS kid,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	pc.fk_login AS username,
 	pc.flag_free AS flag_free,
+	pc.flag_refused AS flag_refused,
+    pc.flag_accepted AS flag_accepted,
 	pc.flag_visible AS flag_visible,
 	ak.duration AS duration,
-	ak.repository as repository
+	ak.repository as repository,
+	(SELECT COUNT(up.fk_id_plcontent)::integer FROM upvote up WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes
 FROM all_karas AS ak
-INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos;
 `;
 
-export const sqlgetPlaylistPos = `
-SELECT pc.pos AS pos,
-	pc.pk_id_plcontent AS playlistcontent_id
-FROM playlist_content AS pc
-WHERE pc.fk_id_playlist = $1
-ORDER BY pc.pos,pc.created_at DESC;
-`;
-
 export const sqlgetPLCInfo = (forUser: boolean) => `
 SELECT
-  ak.kid AS kid,
+  ak.pk_kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
@@ -255,10 +269,12 @@ SELECT
   COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
   COALESCE(ak.families, '[]'::jsonb) AS families,
   COALESCE(ak.genres, '[]'::jsonb) AS genres,
+  COALESCE(ak.versions, '[]'::jsonb) AS versions,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
   ak.gain AS gain,
+  ak.loudnorm AS loudnorm,
   pc.created_at AS created_at,
   ak.created_at AS kara_created_at,
   ak.modified_at AS kara_modified_at,
@@ -274,6 +290,7 @@ SELECT
   pc.nickname AS nickname,
   pc.fk_login AS username,
   u.avatar_file AS avatar_file,
+  u.type AS user_type,
   pc.pos AS pos,
   pc.pk_id_plcontent AS playlistcontent_id,
   pc.fk_id_playlist as playlist_id,
@@ -287,28 +304,33 @@ SELECT
   (CASE WHEN bl.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
-  (SELECT
+  COALESCE((SELECT
 	SUM(k.duration)
    FROM kara k
-   LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing AND plc_current_playing.fk_id_playlist = pc.fk_id_playlist
-   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (pc.pos - 1) AND plc_before.fk_id_playlist = pc.fk_id_playlist
-   WHERE k.pk_kid = plc_before.fk_kid
-  ) AS time_before_play,
+   LEFT OUTER JOIN playlist_content AS plc ON plc.fk_kid = pc.fk_kid
+   LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing AND plc_current_playing.fk_id_playlist = :currentPlaylist_id
+   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (plc.pos - 1) AND plc_before.fk_id_playlist = :currentPlaylist_id
+   WHERE plc_before.fk_kid = k.pk_kid
+  )::integer, 0) AS time_before_play,
   pc.flag_visible AS flag_visible,
-  ak.repository as repository
+  ak.repository as repository,
+  array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
+  array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id
 FROM playlist_content AS pc
-INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
-INNER JOIN all_karas AS ak ON pc.fk_kid = ak.kid
+INNER JOIN playlist AS pl ON pl.pk_id_playlist = :currentPlaylist_id
+INNER JOIN all_karas AS ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
-LEFT OUTER JOIN played p ON ak.kid = p.fk_kid
+LEFT OUTER JOIN played p ON ak.pk_kid = p.fk_kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
-LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.kid
-LEFT OUTER JOIN blacklist AS bl ON ak.kid = bl.fk_kid
-LEFT OUTER JOIN whitelist AS wl ON ak.kid = wl.fk_kid
-LEFT OUTER JOIN favorites AS f on ak.kid = f.fk_kid AND f.fk_login = :username
+LEFT OUTER JOIN requested rq ON rq.fk_kid = ak.pk_kid
+LEFT OUTER JOIN blacklist AS bl ON ak.pk_kid = bl.fk_kid
+LEFT OUTER JOIN whitelist AS wl ON ak.pk_kid = wl.fk_kid
+LEFT OUTER JOIN favorites AS f on ak.pk_kid = f.fk_kid AND f.fk_login = :username
+LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_pub.fk_id_playlist = :publicPlaylist_id
+LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository
 `;
 
 export const sqlgetPLCInfoMini = `
@@ -327,7 +349,7 @@ SELECT pc.fk_kid AS kid,
 		ELSE FALSE
 	END) AS flag_playing
 FROM all_karas AS ak
-INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.kid
+INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = $1
@@ -351,36 +373,36 @@ WHERE pc.fk_id_playlist = :playlist_id
 `;
 
 export const sqlgetPlaylistInfo = `
-SELECT p.pk_id_playlist AS playlist_id,
-	p.name AS name,
-	p.karacount AS karacount,
-	p.duration AS duration,
-	p.time_left AS time_left,
-	p.created_at AS created_at,
-	p.modified_at AS modified_at,
-	p.flag_visible AS flag_visible,
-	p.flag_current AS flag_current,
-	p.flag_public AS flag_public,
-	p.fk_id_plcontent_playing AS plcontent_id_playing,
-	p.fk_login AS username
-FROM playlist AS p
+SELECT pk_id_playlist AS playlist_id,
+	name,
+	karacount,
+	duration,
+	time_left,
+	created_at,
+	modified_at,
+	flag_visible,
+	flag_current,
+	flag_public,
+	fk_id_plcontent_playing AS plcontent_id_playing,
+	fk_login AS username
+FROM playlist
 WHERE pk_id_playlist = $1
 `;
 
 export const sqlgetPlaylists = `
-SELECT p.pk_id_playlist AS playlist_id,
-	p.name AS name,
-	p.karacount AS karacount,
-	p.duration AS duration,
-	p.time_left AS time_left,
-	p.created_at AS created_at,
-	p.modified_at AS modified_at,
-	p.flag_visible AS flag_visible,
-	COALESCE(p.flag_current, false) AS flag_current,
-	COALESCE(p.flag_public, false) AS flag_public,
-	p.fk_id_plcontent_playing AS plcontent_id_playing,
-	p.fk_login AS username
-FROM playlist AS p
+SELECT pk_id_playlist AS playlist_id,
+	name,
+	karacount,
+	duration,
+	time_left,
+	created_at,
+	modified_at,
+	flag_visible,
+	COALESCE(flag_current, false) AS flag_current,
+	COALESCE(flag_public, false) AS flag_public,
+	fk_id_plcontent_playing AS plcontent_id_playing,
+	fk_login AS username
+FROM playlist
 `;
 
 export const sqltestCurrentPlaylist = `
@@ -407,6 +429,17 @@ SET flag_visible = FALSE
 WHERE pk_id_plcontent = $1;
 `;
 
+export const sqlsetPLCAccepted = `
+UPDATE playlist_content
+SET flag_accepted = $2
+WHERE pk_id_plcontent = $1;
+`;
+
+export const sqlsetPLCRefused = `
+UPDATE playlist_content
+SET flag_refused = $2
+WHERE pk_id_plcontent = $1;
+`;
 
 export const sqlsetPLCFreeBeforePos = `
 UPDATE playlist_content
@@ -432,30 +465,6 @@ export const sqlgetMaxPosInPlaylist = `
 SELECT MAX(pos) AS maxpos
 FROM playlist_content
 WHERE fk_id_playlist = $1;
-`;
-
-export const sqlsetCurrentPlaylist = `
-UPDATE playlist
-SET flag_current = TRUE
-WHERE pk_id_playlist = $1;
-`;
-
-export const sqlsetVisiblePlaylist = `
-UPDATE playlist
-SET flag_visible = TRUE
-WHERE pk_id_playlist = $1;
-`;
-
-export const sqlunsetVisiblePlaylist = `
-UPDATE playlist
-SET flag_visible = TRUE
-WHERE pk_id_playlist = $1;
-`;
-
-export const sqlsetPublicPlaylist = `
-UPDATE playlist
-SET flag_public = TRUE
-WHERE pk_id_playlist = $1;
 `;
 
 export const sqlsetPlaying = `

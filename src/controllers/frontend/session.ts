@@ -1,16 +1,19 @@
-import { Router } from 'express';
 
-import { check } from '../../lib/utils/validators';
+import { Socket } from 'socket.io';
+
+import { APIData } from '../../lib/types/api';
+import { check, isUUID } from '../../lib/utils/validators';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { addSession, editSession, exportSession,findSession, getSessions, mergeSessions, removeSession, setActiveSession } from '../../services/session';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin, requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
+import { runChecklist } from '../middlewares';
 
-export default function sessionController(router: Router) {
-	router.route('/sessions')
+export default function sessionController(router: SocketIOApp) {
+	router.route('getSessions', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /sessions List karaoke sessions (by date)
- * @apiName GetSessions
- * @apiVersion 3.1.0
+ * @api {get} List karaoke sessions (by date)
+ * @apiName getSessions
+ * @apiVersion 5.0.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -39,20 +42,21 @@ export default function sessionController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "SESSION_LIST_ERROR"}
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req, res) => {
-			try {
-				const sessions = await getSessions();
-				res.json(sessions);
-			} catch(err) {
-				const code = 'SESSION_LIST_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req);
+		try {
+			return await getSessions();
+		} catch(err) {
+			const code = 'SESSION_LIST_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('createSession', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /sessions Create karaoke session
- * @apiName CreateSession
- * @apiVersion 3.1.0
+ * @api {post} Create karaoke session
+ * @apiName createSession
+ * @apiVersion 5.0.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -70,31 +74,32 @@ export default function sessionController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 400 Validation error
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
-			//Validate form data
-			const validationErrors = check(req.body, {
-				name: {presence: {allowEmpty: false}}
-			});
-			if (!validationErrors) {
-				// No errors detected
-				try {
-					await addSession(req.body.name, req.body.started_at, req.body.ended_at, req.body.activate, req.body.private);
-					res.status(201).json(APIMessage('SESSION_CREATED'));
-				} catch(err) {
-					const code = 'SESSION_CREATION_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req);
+		//Validate form data
+		const validationErrors = check(req.body, {
+			name: {presence: {allowEmpty: false}}
 		});
+		if (!validationErrors) {
+			// No errors detected
+			try {
+				await addSession(req.body.name, req.body.started_at, req.body.ended_at, req.body.activate, req.body.private);
+				return APIMessage('SESSION_CREATED');
+			} catch(err) {
+				const code = 'SESSION_CREATION_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('mergeSessions', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /sessions/merge Merge karaoke sessions
- * @apiName MergeSessions
- * @apiVersion 3.1.0
+ * @api {post} Merge karaoke sessions
+ * @apiName mergeSessions
+ * @apiVersion 5.0.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -111,32 +116,31 @@ export default function sessionController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 400 Validation error
  */
-	router.route('/sessions/merge')
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const validationErrors = check(req.body, {
-				seid1: {uuidArrayValidator: true},
-				seid2: {uuidArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					const session = await mergeSessions(req.body.seid1, req.body.seid2);
-					res.status(200).json(APIMessage('SESSION_MERGED', {session: session}));
-				} catch(err) {
-					const code = 'SESSION_MERGE_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			seid1: {uuidArrayValidator: true},
+			seid2: {uuidArrayValidator: true}
+		});
+		if (!validationErrors) {
+			try {
+				const session = await mergeSessions(req.body.seid1, req.body.seid2);
+				return APIMessage('SESSION_MERGED', {session: session});
+			} catch(err) {
+				const code = 'SESSION_MERGE_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
-		});
+			throw {code: 400, message: validationErrors};
+		}
+	});
 
-	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
+	router.route('editSession', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /sessions/:seid Edit session
- * @apiName EditSession
+ * @api {put} Edit session
+ * @apiName editSession
  * @apiVersion 4.1.0
  * @apiGroup Sessions
  * @apiPermission admin
@@ -157,38 +161,40 @@ export default function sessionController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "SESSION_EDIT_ERROR"}
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
-			//Validate form data
-			const validationErrors = check(req.body, {
-				name: {presence: {allowEmpty: false}}
-			});
-			if (!validationErrors) {
-				// No errors detected
-				try {
-					await editSession({
-						seid: req.params.seid,
-						name: req.body.name,
-						started_at: req.body.started_at,
-						ended_at: req.body.ended_at,
-						private: req.body.private,
-						active: req.body.active
-					});
-					res.status(200).json(APIMessage('SESSION_EDITED'));
-				} catch(err) {
-					const code = 'SESSION_EDIT_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
+		if (!isUUID(req.body.seid)) throw {code: 400};
+		await runChecklist(socket, req);
+		//Validate form data
+		const validationErrors = check(req.body, {
+			name: {presence: {allowEmpty: false}}
+		});
+		if (!validationErrors) {
+			// No errors detected
+			try {
+				await editSession({
+					seid: req.body.seid,
+					name: req.body.name,
+					started_at: req.body.started_at,
+					ended_at: req.body.ended_at,
+					private: req.body.private,
+					active: req.body.active
+				});
+				return APIMessage('SESSION_EDITED');
+			} catch(err) {
+				const code = 'SESSION_EDIT_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
 			}
-		})
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('activateSession', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /sessions/:seid Activate session
- * @apiName SetSession
- * @apiVersion 3.1.0
+ * @api {post} Activate session
+ * @apiName activateSession
+ * @apiVersion 5.0.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -198,14 +204,17 @@ export default function sessionController(router: Router) {
  * HTTP/1.1 200 OK
  * {code: "SESSION_ACTIVATED"}
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			setActiveSession(await findSession(req.params.seid));
-			res.status(200).json(APIMessage('SESSION_ACTIVATED'));
-		})
+		if (!isUUID(req.body.seid)) throw {code: 400};
+		await runChecklist(socket, req);
+		setActiveSession(await findSession(req.body.seid));
+		return APIMessage('SESSION_ACTIVATED');
+	});
+
+	router.route('deleteSession', async (socket: Socket, req: APIData) => {
 	/**
- * @api {delete} /sessions/:seid Delete session
- * @apiName DeleteSession
- * @apiVersion 3.1.0
+ * @api {delete} Delete session
+ * @apiName deleteSession
+ * @apiVersion 5.0.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -221,42 +230,43 @@ export default function sessionController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 404 Not found
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			try {
-				await removeSession(req.params.seid);
-				res.status(200).json(APIMessage('SESSION_DELETED'));
-			} catch(err) {
-				const code = 'SESSION_DELETE_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/sessions/:seid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/export')
+		if (!isUUID(req.body.seid)) throw {code: 400};
+		await runChecklist(socket, req);
+		try {
+			await removeSession(req.body.seid);
+			return APIMessage('SESSION_DELETED');
+		} catch(err) {
+			const code = 'SESSION_DELETE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('exportSession', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /sessions/:seid/export Export session to CSV file
+ * @api {get} Export session to CSV file
  * @apiName exportSession
- * @apiVersion 3.1.0
+ * @apiVersion 5.0.0
  * @apiGroup Sessions
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} seid Session ID
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- * {code: "SESSION_EXPORTED"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {code: "SESSION_EXPORT_ERROR"}
  * @apiErrorExample Error-Response:
  * HTTP/1.1 404 Not found
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
-			try {
-				await exportSession(req.params.seid);
-				res.status(200).json(APIMessage('SESSION_EXPORTED'));
-			} catch(err) {
-				const code = 'SESSION_EXPORT_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
+		if (!isUUID(req.body.seid)) throw {code: 400};
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await exportSession(req.body.seid);
+		} catch(err) {
+			const code = 'SESSION_EXPORT_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 }

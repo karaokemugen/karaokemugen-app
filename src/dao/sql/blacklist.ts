@@ -26,7 +26,8 @@ WHERE pk_id_blc_set = $1;
 export const sqleditSet = `
 UPDATE blacklist_criteria_set SET
 	name = :name,
-	modified_at = :modified_at
+	modified_at = :modified_at,
+	flag_current = :flag_current
 WHERE pk_id_blc_set = :blc_set_id;
 `;
 
@@ -45,14 +46,9 @@ VALUES(
 ) RETURNING pk_id_blc_set
 `;
 
-export const sqlsetCurrentSet = `
-UPDATE blacklist_criteria_set
-SET flag_current = TRUE
-WHERE pk_id_blc_set = $1;
-`;
 
 export const sqlunsetCurrentSet = `
-UPDATE blacklist_criteria_set SET flag_current = FALSE
+UPDATE blacklist_criteria_set SET flag_current = FALSE WHERE flag_current = TRUE
 `;
 
 export const sqlselectSet = `
@@ -146,7 +142,7 @@ WHERE pk_id_blcriteria = $1
 
 export const sqlgetBlacklistContents = (filterClauses: string[], limitClause: string, offsetClause: string) => `
 SELECT
-  ak.kid AS kid,
+  ak.pk_kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
   COALESCE(ak.singers, '[]'::jsonb) AS singers,
@@ -162,6 +158,7 @@ SELECT
   COALESCE(ak.families, '[]'::jsonb) AS families,
   COALESCE(ak.genres, '[]'::jsonb) AS genres,
   COALESCE(ak.series, '[]'::jsonb) AS series,
+  COALESCE(ak.versions, '[]'::jsonb) AS versions,
   ak.duration AS duration,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
@@ -171,7 +168,7 @@ SELECT
   blc.type AS blc_type,
   count(fk_kid) OVER()::integer AS count
   FROM all_karas AS ak
-  INNER JOIN blacklist AS bl ON bl.fk_kid = ak.kid
+  INNER JOIN blacklist AS bl ON bl.fk_kid = ak.pk_kid
   LEFT JOIN blacklist_criteria AS blc ON blc.pk_id_blcriteria = bl.fk_id_blcriteria
   WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}

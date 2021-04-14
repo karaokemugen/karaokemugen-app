@@ -5,13 +5,14 @@ export interface PLCEditParams {
 	flag_playing?: boolean,
 	flag_free?: boolean,
 	flag_visible?: boolean,
+	flag_accepted?: boolean,
+	flag_refused?: boolean,
 	pos?: number
 }
 
 export interface CurrentSong extends DBPLCBase {
 	avatar?: string,
-	infos?: string,
-	playlistLength?: number
+	infos?: string
 }
 
 export interface PLC {
@@ -24,6 +25,9 @@ export interface PLC {
 	pos?: number,
 	flag_playing?: boolean,
 	flag_visible?: boolean,
+	flag_free?: boolean,
+	flag_refused?: boolean,
+	flag_accepted?: boolean,
 	duration?: number,
 	uniqueSerieSinger?: string,
 	title?: string,
@@ -53,22 +57,15 @@ export interface Pos {
 }
 
 export interface PLCParams extends KaraParams {
-	playlist_id: number
-}
-
-export interface Playlist {
-	id?: number,
-	name: string,
-	modified_at: Date,
-	created_at?: Date,
-	flag_visible?: boolean,
-	flag_current?: boolean,
-	flag_public?: boolean,
-	username?: string
+	playlist_id: number,
+	orderByLikes: boolean,
 }
 
 export interface PlaylistOpts {
 	visible?: boolean,
 	current?: boolean,
-	public?: boolean
+	public?: boolean,
+	autoSortByLike?: boolean
 }
+
+export type ShuffleMethods = 'normal' | 'smart' | 'balance' | 'upvotes';

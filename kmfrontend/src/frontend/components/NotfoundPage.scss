@@ -1,0 +1,42 @@
+.page404-lost {
+	padding: 1em 1em 0 1em;
+	text-align: center;
+	> h1 {
+		font-size: 2em;
+		font-weight: bold;
+	}
+	> h3 {
+		font-size: 1.25em;
+		font-weight: bold;
+	}
+	img {
+		display: block;
+		width: auto;
+		height: 150px;
+		margin: auto;
+	}
+}
+
+.you-are-here {
+	background-color: #404346;
+	padding: .5em;
+	width: max-content;
+	margin: 1em auto;
+	font-family: monospace;
+	font-weight: bold;
+	text-align: inherit;
+}
+
+.page404-btn:visited {
+	color: white;
+}
+
+.page404-btn {
+	display: block;
+	background-color: #e2754a;
+	width: fit-content;
+	padding: 1em;
+	margin: 1em auto;
+	color: white;
+	text-decoration: none;
+}

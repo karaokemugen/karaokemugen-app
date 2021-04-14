@@ -17,6 +17,7 @@
 	"INIT_BASEUPDATE": "Mise à jour des karaokés...",
 	"INIT_USER": "Initialisation des utilisateurs...",
 	"INIT_ONLINEURL": "Connexion à Karaoke Mugen Server...",
+	"INIT_PLAYLIST_AND_PLAYER": "Initialisation du lecteur et des playlists...",
 	"INIT_LAST": "C'est presque fini...",
 	"INIT_DONE": "Démarrage réussi !",
 	"INIT_ERROR": "L'initialisation a échoué !",
@@ -31,15 +32,13 @@
 	"MENU_FILE": "&Fichier",
 	"MENU_FILE_IMPORT": "&Importer un fichier",
 	"MENU_FILE_IMPORT_PLAYLIST": "&Liste de lecture...",
-	"MENU_FILE_IMPORT_BLCSET": "&Paramètres de listre noire...",
+	"MENU_FILE_IMPORT_BLCSET": "&Paramètres de liste noire...",
 	"MENU_FILE_IMPORT_FAVORITES": "&Liste de favoris...",
 	"MENU_FILE_IMPORT_KARABUNDLE": "&Karaoké...",
 	"MENU_FILE_QUIT": "&Quitter",
 	"MENU_FILE_QUIT_OSX": "Quitter Karaoke Mugen",
 	"MENU_FILE_ABOUT": "&À propos de Karaoke Mugen",
 	"MENU_FILE_UPDATE": "&Rechercher une mise à jour...",
-	"MENU_SECURITYCODE": "&Code de sécurité",
-	"MENU_SECURITYCODE_SHOW": "&Obtenir le code...",
 	"MENU_VIEW": "&Affichage",
 	"MENU_VIEW_RELOAD": "&Recharger",
 	"MENU_VIEW_RELOADFORCE": "Recharger (&force)",
@@ -89,8 +88,7 @@
 	"MENU_OPTIONS_SYSTEMCONFIG": "Préférences &système",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Préférences...",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Préférences système...",
-	"SECURITY_CODE_TITLE": "Code de sécurité",
-	"SECURITY_CODE_MESSAGE": "Voici le code de sécurité actuel :",
+	"MENU_OPTIONS_CHIBIPLAYER": "Afficher le Chibi Player",
 	"ERROR": "Erreur",
 	"UNKNOWN": "inconnue",
 	"YES": "Oui",
@@ -111,15 +109,14 @@
 		"TITLE": "Plus de mode de karaoké !",
 		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu, et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists ne jurent maintenant que par le système d'état. Elle peuvent dorénavant avoir à la fois l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités.\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour activer l'ancien mode public, créez deux playlists, l'une avec l'état public qui recevra les demandes et l'autre avec l'état courant.\nPour activer l'ancien mode privé, créez une playlist et attribuez-lui les deux états simultanément."
 	},
-	"COPY_TO_CLIPBOARD": "Copier dans le presse-papiers",
-	"IT_IS_IN_MY_HEAD": "Pas besoin, je l'ai retenu !",
 	"TIPS": {
 		"TITLES": {
 			"NORMAL": "Trucs et astuces avec Nanamin",
 			"ERRORS": "Oh non, ça marche pas !"
 		},
 		"NORMAL": [
-			"N'oubliez pas de mettre votre ceinture de sécurité avant de faire du karaoké. Chantez prudemment et attention aux chutes d'enceintes !",
+			"Vous pouvez utiliser les touches multimédia de votre clavier pour contrôler le karaoké !",
+			"N'oubliez pas de mettre votre ceinture de sécurité avant de faire du karaoké. Chantez prudemment et attention aux chutes d'enceintes !",
 			"N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
 			"Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe, elle s'y trouve peut-être !",
 			"Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
@@ -135,15 +132,20 @@
 			"Les chansons ajoutées avec l'option \"Ajout Mystère\" apparaitront cachées dans la playlist visible par vos invités !",
 			"Hydratez-vous régulièrement !",
 			"Ne dérangez pas les voisins !",
-			"Faites une pause pour aérer la salle de temps en temps !",
+			"Faites une pause pour aérer la salle de temps en temps !",
 			"N'acceptez pas d'argent si quelqu'un veut faire passer sa chanson avant tout le monde. Préférez des boissons fraîches et de la nourriture.",
 			"Pensez à ajouter vos chansons préférées à vos favoris si vous avez un compte en ligne : vous les retrouverez plus facilement dans la liste des favoris ici ou sur un autre Karaoke Mugen !",
-			"Karaoke Mugen a besoin de vous ! Plus d'informations sur http://mugen.karaokes.moe/participate.html !",
+			"Karaoke Mugen a besoin de vous ! Plus d'informations sur http://mugen.karaokes.moe/participate.html !",
 			"Encore une astuce qui finit en point d'exclamation !",
 			"Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
 			"Votre karaoké se termine bientôt ? Passez l'interface en mode restreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
-			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !"
+			"Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !",
+			"Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, la série, les chanteurs, etc.) de vos résultats de recherche.",
+			"Vous pouvez accepter ou refuser des chansons de la liste de suggestions du public. Pour cela, affichez les listes de suggestion et courante côte à côte.",
+			"Accepter une suggestion du public redonne du quota à la personne qui a demandé, et ajoute la chanson dans la liste courante si celle-ci est en face !",
+			"Refuser une suggestion du public redonne du quota à la personne qui a demandé, et garde la chanson dans la liste de suggestion pour éviter qu'elle ne soit redemandée !",
+			"Dans la recherche, vous pouvez taper un groupe de mots entre guillemets pour demander ce groupe de mots à la suite. Tapez donc \"love live\" pour avoir les karaokés de cette série uniquement."
 		],
 		"ERRORS": [
 			"N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
@@ -197,5 +199,6 @@
 	},
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA PLAYLIST !",
-	"NEW_SESSION_NAME": "Karaoké du {{date}}"
+	"NEW_SESSION_NAME": "Karaoké du {{date}}",
+	"FULLSCREEN_TIP": "Appuyez sur F pour sortir du plein écran."
 }

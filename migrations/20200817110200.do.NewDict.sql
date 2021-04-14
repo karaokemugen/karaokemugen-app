@@ -1,4 +1,11 @@
-create text search configuration unaccent_conf ( COPY = simple );
+DO
+$$BEGIN
+   CREATE TEXT SEARCH CONFIGURATION unaccent_conf ( COPY = simple );
+EXCEPTION
+   WHEN unique_violation THEN
+      NULL;  -- ignore error
+END;$$;
+
 alter text search configuration unaccent_conf
     alter mapping for hword, hword_part, word
         with unaccent, simple;

@@ -1,18 +1,20 @@
-import { Router } from 'express';
 
+import { Socket } from 'socket.io';
+
+import { APIData } from '../../lib/types/api';
+import { isUUID } from '../../lib/utils/validators';
+import { SocketIOApp } from '../../lib/utils/ws';
 import { getYears } from '../../services/kara';
 import { addTag, copyTagToRepo, deleteTag, editTag, getDuplicateTags, getTag, getTags, mergeTags } from '../../services/tag';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin,requireAuth, requireValidUser, updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { runChecklist } from '../middlewares';
 
-export default function tagsController(router: Router) {
+export default function tagsController(router: SocketIOApp) {
 
-	router.route('/tags')
+	router.route('getTags', async (socket: Socket, req: APIData) => {
 		/**
-		* @api {get} /tags Get tag list
-		* @apiName GetTags
+		* @api {get} Get tag list
+		* @apiName getTags
 		* @apiVersion 3.0.0
 		* @apiGroup Tags
 		* @apiPermission public
@@ -21,6 +23,7 @@ export default function tagsController(router: Router) {
 		* @apiParam {String} [filter] Tag name to filter results
 		* @apiParam {Number} [from] Where to start listing from
 		* @apiParam {Number} [size] How many records to get.
+		* @apiParam {Boolean} [stripEmpty] Strip tags with 0 karas associated to them (useful for languages)
 		* @apiSuccess {String} name Name of tag
 		* @apiSuccess {Number} tid Tag ID (UUID)
 		* @apiSuccess {Number} types Tag types numbers in an array
@@ -56,25 +59,26 @@ export default function tagsController(router: Router) {
 		* @apiErrorExample Error-Response:
 		* HTTP/1.1 403 Forbidden
 		*/
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				const tags = await getTags({
-					filter: req.query.filter,
-					type: req.query.type,
-					from: +req.query.from,
-					size: +req.query.size
-				});
-				res.json(tags);
-			} catch(err) {
-				const code = 'TAGS_LIST_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return await getTags({
+				filter: req.body?.filter,
+				type: req.body?.type,
+				from: req.body?.from,
+				size: req.body?.size,
+				stripEmpty: req.body?.stripEmpty
+			});
+		} catch(err) {
+			const code = 'TAGS_LIST_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('addTag', async (socket: Socket, req: APIData) => {
 	/**
-	* @api {post} /tags Add tag
+	* @api {post} Add tag
 	* @apiName addTag
-	* @apiVersion 3.1.0
+	* @apiVersion 5.0.0
 	* @apiGroup Tags
 	* @apiPermission admin
 	* @apiHeader authorization Auth token received from logging in
@@ -92,20 +96,22 @@ export default function tagsController(router: Router) {
 	* HTTP/1.1 500 Internal Server Error
 	* {code: "TAG_ADD_ERROR"}
 	*/
-		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				const tag = await addTag(req.body);
-				res.status(201).json(APIMessage('TAG_CREATED', tag));
-			} catch(err) {
-				const code = 'TAG_CREATE_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
-	router.route('/years')
-	/**
-	* @api {get} /years Get year list
-	* @apiName GetYears
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			const tag = await addTag(req.body);
+			return APIMessage('TAG_CREATED', tag);
+		} catch(err) {
+			const code = 'TAG_CREATE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('getYears', async (socket: Socket, req: APIData) => {
+
+		/**
+	* @api {get} Get year list
+	* @apiName getYears
 	* @apiVersion 2.3.0
 	* @apiGroup Tags
 	* @apiPermission public
@@ -128,21 +134,21 @@ export default function tagsController(router: Router) {
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 403 Forbidden
 	*/
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (_req: any, res: any) => {
-			try {
-				const years = await getYears();
-				res.json(years);
-			} catch(err) {
-				const code = 'YEARS_LIST_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
-	router.route('/tags/duplicate')
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return await getYears();
+		} catch(err) {
+			const code = 'YEARS_LIST_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('getDuplicateTags', async (socket: Socket, req: APIData) => {
 	/**
-	* @api {get} /tags/duplicate List tags with same names
-	* @apiName GetDupeTags
-	* @apiVersion 3.1.0
+	* @api {get} List tags with same names
+	* @apiName getDuplicateTags
+	* @apiVersion 5.0.0
 	* @apiGroup Tags
 	* @apiPermission admin
 	* @apiHeader authorization Auth token received from logging in
@@ -158,21 +164,21 @@ export default function tagsController(router: Router) {
 	* HTTP/1.1 500 Internal Server Error
 	* {code: "TAG_DUPLICATE_LIST_ERROR"}
 	*/
-		.get(requireAuth, requireValidUser, requireAdmin, async (_req: any, res: any) => {
-			try {
-				const tags = await getDuplicateTags();
-				res.json(tags);
-			} catch(err) {
-				const code = 'TAG_DUPLICATE_LIST_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		});
-	router.route('/tags/merge/:tid1/:tid2')
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await getDuplicateTags();
+		} catch(err) {
+			const code = 'TAG_DUPLICATE_LIST_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('mergeTags', async (socket: Socket, req: APIData) => {
 	/**
-	* @api {post} /tags/merge/:tid1/:tid2 Merge tags
-	* @apiName MergeTags
-	* @apiVersion 3.1.0
+	* @api {post} Merge tags
+	* @apiName mergeTags
+	* @apiVersion 5.0.0
 	* @apiGroup Tags
 	* @apiPermission admin
 	* @apiHeader authorization Auth token received from logging in
@@ -191,21 +197,23 @@ export default function tagsController(router: Router) {
 	* HTTP/1.1 500 Internal Server Error
 	* {code: "TAGS_MERGE_ERROR"}
 	*/
-		.post(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				const tag = await mergeTags(req.params.tid1, req.params.tid2);
-				res.json(APIMessage('TAGS_MERGED', tag));
-			} catch(err) {
-				const code = 'TAGS_MERGED_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})')
+		if (!isUUID(req.body.tid1) || !isUUID(req.body.tid2)) throw {code: 400};
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			const tag = await mergeTags(req.body.tid1, req.body.tid2);
+			return APIMessage('TAGS_MERGED', tag);
+		} catch(err) {
+			const code = 'TAGS_MERGED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('deleteTag', async (socket: Socket, req: APIData) => {
 	/**
-	* @api {delete} /tags/:tid Delete tag
-	* @apiName DeleteTag
-	* @apiVersion 3.1.0
+	* @api {delete} Delete tag
+	* @apiName deleteTag
+	* @apiVersion 5.0.0
 	* @apiGroup Tags
 	* @apiPermission admin
 	* @apiHeader authorization Auth token received from logging in
@@ -217,20 +225,23 @@ export default function tagsController(router: Router) {
 	* HTTP/1.1 500 Internal Server Error
 	* {code: 'TAG_DELETE_ERROR}
 	*/
-		.delete(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await deleteTag(req.params.tid);
-				res.status(200).json(APIMessage('TAG_DELETED'));
-			} catch(err) {
-				const code = 'TAG_DELETE_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
+		if (!isUUID(req.body.tid)) throw {code: 400};
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await deleteTag(req.body.tid);
+			return APIMessage('TAG_DELETED');
+		} catch(err) {
+			const code = 'TAG_DELETE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('getTag', async (socket: Socket, req: APIData) => {
 	/**
-	* @api {get} /tags/:tid Get single tag
-	* @apiName GetTagSingle
-	* @apiVersion 3.1.0
+	* @api {get} Get single tag
+	* @apiName getTag
+	* @apiVersion 5.0.0
 	* @apiGroup Tags
 	* @apiPermission admin
 	* @apiHeader authorization Auth token received from logging in
@@ -247,21 +258,24 @@ export default function tagsController(router: Router) {
 	* HTTP/1.1 500 Internal Server Error
 	* {code: "TAG_GET_ERROR"}
 	*/
-		.get(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				const tag = await getTag(req.params.tid);
-				if (!tag) res.status(404);
-				res.json(tag);
-			} catch(err) {
-				const code = 'TAG_GET_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		})
+		if (!isUUID(req.body.tid)) throw {code: 400};
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			const tag = await getTag(req.body.tid);
+			if (!tag) throw {code: 404};
+			return tag;
+		} catch(err) {
+			const code = 'TAG_GET_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('editTag', async (socket: Socket, req: APIData) => {
 		/**
-	* @api {put} /tags/:tid Edit tag
+	* @api {put} Edit tag
 	* @apiName editTag
-	* @apiVersion 3.1.0
+	* @apiVersion 5.0.0
 	* @apiGroup Tags
 	* @apiPermission admin
 	* @apiHeader authorization Auth token received from logging in
@@ -279,21 +293,23 @@ export default function tagsController(router: Router) {
 	* HTTP/1.1 500 Internal Server Error
 	* {code: "TAG_EDIT_ERROR"}
 	*/
-		.put(requireAuth, requireValidUser, requireAdmin, async (req: any, res: any) => {
-			try {
-				await editTag(req.params.tid, req.body);
-				res.json(APIMessage('TAG_EDITED'));
-			} catch(err) {
-				const code = 'TAG_EDIT_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/tags/:tid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/copyToRepo')
+		if (!isUUID(req.body.tid)) throw {code: 400};
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await editTag(req.body.tid, req.body);
+			return APIMessage('TAG_EDITED');
+		} catch(err) {
+			const code = 'TAG_EDIT_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('copyTagToRepo', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {post} /tags/:tid/copyToRepo Move song to another repository
-	 * @apiName PostKaraToRepo
-	 * @apiVersion 3.2.0
+	 * @api {post} Move song to another repository
+	 * @apiName copyTagToRepo
+	 * @apiVersion 5.0.0
 	 * @apiGroup Repositories
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -306,14 +322,15 @@ export default function tagsController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * {code: "TAG_COPIED_ERROR"}
 	 */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, requireAdmin, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				await copyTagToRepo(req.params.tid, req.body.repo);
-				res.json(APIMessage('TAG_COPIED'));
-			} catch(err) {
-				const code = 'TAG_COPIED_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
+		if (!isUUID(req.body.tid1) || !isUUID(req.body.tid2)) throw {code: 400};
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await copyTagToRepo(req.body.tid, req.body.repo);
+			return APIMessage('TAG_COPIED');
+		} catch(err) {
+			const code = 'TAG_COPIED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 }

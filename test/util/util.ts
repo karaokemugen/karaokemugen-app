@@ -1,34 +1,45 @@
 import {expect} from 'chai';
 import langs from 'langs';
-import supertest from 'supertest';
+import { io } from 'socket.io-client';
 
 import { DBTag } from '../../src/lib/types/database/tag';
 import { md5Regexp,tagTypes, uuidPlusTypeRegexp,uuidRegexp } from '../../src/lib/utils/constants';
 import {Config} from '../../src/types/config';
 import { testDownloads } from '../../src/utils/constants';
 
-export const request = supertest('http://localhost:1337');
+export const socket = io('http://localhost:1337');
 export const usernameAdmin = 'adminTest';
 export const passwordAdmin = 'ceciestuntest';
 export const allLangs = langs.codes('2B');
+allLangs.push('zxx');
+allLangs.push('und');
 export const allKIDs = testDownloads.map(d => d.kid);
 const tokens = new Map();
 
+export function disconnectSocket() {
+	socket.disconnect();
+}
+
 export async function getToken(username = usernameAdmin): Promise<string> {
 	if (!tokens.has(username)) {
-		const res = await request
-			.post('/api/auth/login')
-			.set('Accept', 'application/json')
-			.send({
-				username: username,
-				password: passwordAdmin
-			})
-			.expect(200);
-		tokens.set(username, res.body.token);
+		const data = await commandBackend(undefined, 'login', {
+			username: username,
+			password: passwordAdmin
+		});
+		tokens.set(username, data.token);
 	}
 	return tokens.get(username);
 }
 
+export function commandBackend(token: string, name: string, body?: any, expectError?:boolean): Promise<any> {
+	return new Promise((resolve, reject) => {
+		socket.emit(name, {authorization: token, body}, ({err, data}:{err: boolean, data: any}) => {
+			(err && !expectError) || (!err && expectError)
+				? reject(data)
+				: resolve(data);
+		});
+	});
+}
 
 let config: Config;
 
@@ -60,7 +71,6 @@ export function testKara(kara: any, details: TestDetails) {
 	expect(kara.flag_dejavu).to.be.a('boolean');
 	expect(kara.flag_favorites).to.be.a('boolean');
 	if (details.plc) expect(kara.flag_free).to.be.a('boolean');
-	if (details.kara) expect(kara.flag_inplaylist).to.be.a('boolean');
 	expect(kara.flag_upvoted).to.be.a('boolean');
 	if (details.plc) expect(kara.flag_visible).to.be.a('boolean');
 	if (details.plc) expect(kara.flag_whitelisted).to.be.a('boolean');
@@ -80,6 +90,10 @@ export function testKara(kara: any, details: TestDetails) {
 		for (const plcid of kara.my_public_plc_id) {
 			expect(plcid).to.satisfy((p:any) => typeof p === 'number' || p === null);
 		}
+		expect(kara.public_plc_id).to.be.an('array');
+		for (const plcid of kara.public_plc_id) {
+			expect(plcid).to.satisfy((p:any) => typeof p === 'number' || p === null);
+		}
 	}
 	if (details.plc) {
 		expect(kara.nickname).to.be.a('string');
@@ -95,10 +109,10 @@ export function testKara(kara: any, details: TestDetails) {
 	if (details.kara) {
 		expect(kara.tid).to.be.an('array');
 		for (const tid of kara.tid) {
-			expect(tid).to.be.a('string').and.match(new RegExp(uuidPlusTypeRegexp));
+			if (tid) expect(tid).to.be.a('string').and.match(new RegExp(uuidPlusTypeRegexp));
 		}
 	}
-	if (details.plcDetail) expect(kara.time_before_play).to.satisfy((s:any) => typeof s === 'number' || s === null);
+	if (details.plcDetail) expect(kara.time_before_play).to.be.a('number');
 	expect(kara.title).to.be.a('string');
 	if (details.plc) expect(kara.upvotes).to.be.a('number').and.at.least(0);
 	if (details.plc) expect(kara.username).to.be.a('string');
@@ -121,10 +135,6 @@ export function testTag(tag: DBTag, type: 'short'|'full'|'tag') {
 		// Langs should be included in all Langs
 		for (const lang of langs) {
 			expect(allLangs).to.include(lang);
-		}
-		expect(tag.types).to.be.an('array');
-		for (const type of tag.types) {
-			expect(type).to.be.a('number').and.at.least(1);
 		}
 	}
 	if (type === 'tag') {

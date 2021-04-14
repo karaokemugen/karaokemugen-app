@@ -1,0 +1,27 @@
+@import '../variables';
+
+.dropdown-menu {
+	background-color: $mugen-select-background;
+	border: $mugen-select-border;
+	position: absolute;
+	list-style: none;
+	padding: 0;
+	z-index: 60;
+}
+
+.dropdown-menu > li > a {
+	display: inline-block;
+	width: 100%;
+	padding: .2rem .5rem;
+	color: #eee;
+	// Ant Design overrides
+	transition: none;
+	text-decoration: none;
+}
+
+.dropdown-menu > li > a i {
+	margin-right: .5em;
+}
+.dropdown-menu > li:hover > a {
+	background-color: $mugen-select-focus;
+}

@@ -17,6 +17,7 @@
 	"INIT_BASEUPDATE": "Updating songs...",
 	"INIT_USER": "Initializing users...",
 	"INIT_ONLINEURL": "Connecting to Karaoke Mugen Server...",
+	"INIT_PLAYLIST": "Initializing player and playlists...",
 	"INIT_LAST": "Almost there...",
 	"INIT_DONE": "All done!",
 	"INIT_ERROR": "Initialization failed!",
@@ -38,8 +39,6 @@
 	"MENU_FILE_QUIT_OSX": "Quit Karaoke Mugen",
 	"MENU_FILE_ABOUT": "&About Karaoke Mugen",
 	"MENU_FILE_UPDATE": "&Search for update...",
-	"MENU_SECURITYCODE": "&Security Code",
-	"MENU_SECURITYCODE_SHOW": "&Show code...",
 	"MENU_VIEW": "&View",
 	"MENU_VIEW_RELOAD": "&Reload",
 	"MENU_VIEW_RELOADFORCE": "&Force reload",
@@ -89,8 +88,7 @@
 	"MENU_OPTIONS_SYSTEMCONFIG": "S&ystem settings",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Preferences...",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System preferences...",
-	"SECURITY_CODE_TITLE": "Security code",
-	"SECURITY_CODE_MESSAGE": "This is the current security code:",
+	"MENU_OPTIONS_CHIBIPLAYER": "Display Chibi Player",
 	"ERROR": "Error",
 	"UNKNOWN": "unknown",
 	"YES": "Yes",
@@ -100,7 +98,7 @@
 	"UPDATE_ERROR": "An error occured when trying to update Karaoke Mugen: ",
 	"UPDATE_NOT_AVAILABLE": "No update available",
 	"CURRENT_VERSION_OK": "You already are using the latest version of Karaoke Mugen!",
-	"UPDATE_DOWNLOADED": "Updated downloaded",
+	"UPDATE_DOWNLOADED": "Update downloaded",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karoake Mugen will restart to install the update...",
 	"ABOUT": {
 		"BUG_REPORT": "Report a bug"
@@ -111,14 +109,13 @@
 		"TITLE": "No more karaoke modes!",
 		"MESSAGE": "New in version 4.0:\n\nThe public/private karaoke modes have disappeared! Shock! Horror! *dramatic music ensues*\n\nPlaylists can now have both public and current flag at the same time.\n\n- The current flag means the playlist is the one used by the player\n- The public flag means the playlist is th eone receiving song suggestions from your users\n\nPut simply, combine both flags on a playlist to emulate the old private mode, and create two playlists, each one with a different flag to emulate the old public mode."
 	},
-	"COPY_TO_CLIPBOARD": "Copy to clipboard",
-	"IT_IS_IN_MY_HEAD": "No need, it's in my head!",
 	"TIPS": {
 		"TITLES": {
 			"NORMAL": "Tips and Tricks with Nanamin",
 			"ERRORS": "Oh no, it doesn't work!"
 		},
 		"NORMAL": [
+			"You can use the multimedia keys on your keyboard to control your karaoke !",
 			"Don't forget to put your safety belt before doing karaoke. Sing safely and be careful of speaker drops !",
 			"Don't forget to sync the base sometimes: you may discover some new karaokes!",
 			"Can't find a song in the database? Don't hesitate to look on https://suggest.karaokes.moe/, it may be there!",
@@ -142,24 +139,36 @@
 			"The Monitor allows you to see the currently playing song if you can't see the screen from where you are.",
 			"Classic Karaoke mode emulates what you find in japanese karaoke booths or during karaoke contests at anime events : a pause is madebetween each song and the next song's title and requester are displayed on screen!",
 			"Does your karaoke session end soon? Switch the interface to restricted mode: users won't be able to add songs anymore but will be able to see what's coming next.",
-			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!"
+			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!",
+			"When you search, you can type \"-word\" to exclude karaokes containing that word (whether it's in the tile, the series, the singers, etc.) from your search results.",
+			"You can accept or refuse songs in the public playlist. To do this, display the public and current playlist side by side.",
+			"Accepting a public suggestion gives back song quota to the user who requested it, and adds the song in the current playlist!",
+			"Refusing a public suggestion gives back song quota to the user who requested it, and keeps the song in the public playlist so it can't be requested again!",
+			"When you search, you can put a word group between double quotes to ask precisely for that text. Type in \"love live\" to have karaokes from Love Live series only."
 		],
 		"ERRORS": [
 			"Come see us on Discord if you need help: https://karaokes.moe/discord",
-			"Please check if a running Karaoke Mugen instance is in background.",
+			"Please check if a running Karaoke Mugen instance runs in the background.",
 			"Take a look at logs, the reason behind the error might be inside!",
 			"Please don't panic, everything's going to be daijokay"
 		]
 	},
 	"DISCORD": {
 		"IDLING": [
-			"prepares playlists"
+			"prepares playlists",
+			"prepares favorites",
+			"sets up everything",
+			"RTFMs (no)",
+			"idles!",
+			"does absolutely nothing",
+			"at a con (in its head)",
+			"watches trains pass"
 		]
 	},
 	"UNKNOWN_ARTIST": "Unknown artist",
 	"UNKNOWN_REPOSITORY_DOWNLOAD": {
 		"TITLE": "Unknown repository",
-		"MESSAGE": "This song's repository is unknown in y our repository list. Do you want to add it? It'll be used for online updates/sync of your song library.\n\nIf you say no, the song will be imported in your \"Local\" repository"
+		"MESSAGE": "This song's repository is unknown in your repository list. Do you want to add it? It'll be used for online updates/sync of your song library.\n\nIf you say no, the song will be imported in your \"Local\" repository"
 	},
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Repository already exists",
@@ -189,5 +198,6 @@
 	},
 	"RESTARTING_PLAYER": "RESTARTING PLAYER...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "ADD A SONG TO THE PLAYLIST!",
-	"NEW_SESSION_NAME": "Karaoke on {{date}}"
+	"NEW_SESSION_NAME": "Karaoke on {{date}}",
+	"FULLSCREEN_TIP": "Press F to exit fullscreen."
 }

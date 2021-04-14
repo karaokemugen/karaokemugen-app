@@ -13,10 +13,10 @@ import {generateAdminPassword} from './user';
 export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
 	const conf = getConfig();
 	const state = getState();
-	let url = `http://localhost:${conf.Frontend.Port}/welcome`;
+	let url = `http://localhost:${state.frontendPort}/welcome`;
 	if (conf.App.FirstRun) {
 		const adminPassword = await generateAdminPassword();
-		url = `${url}?admpwd=${adminPassword}`;
+		url = `http://localhost:${conf.Frontend.Port}/setup?admpwd=${adminPassword}`;
 	}
 	if (!state.opt.noBrowser && !state.isDemo && !state.isTest && !state.electron) open(url);
 	return url;

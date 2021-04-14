@@ -1,21 +1,21 @@
-import { Router } from 'express';
+import { Socket } from 'socket.io';
 
+import { APIData } from '../../lib/types/api';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
-import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyPlaylist, exportPlaylist,findPlaying,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, setCurrentPlaylist, setPublicPlaylist, shufflePlaylist } from '../../services/playlist';
+import { SocketIOApp } from '../../lib/utils/ws';
+import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyPlaylist, exportPlaylist,findPlaying,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, shufflePlaylist } from '../../services/playlist';
 import { vote } from '../../services/upvote';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin, requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { requireWebappLimited, requireWebappOpen } from '../middlewares/webapp_mode';
+import { runChecklist } from '../middlewares';
 
-export default function playlistsController(router: Router) {
-	router.route('/playlists')
+export default function playlistsController(router: SocketIOApp) {
+	router.route('getPlaylists', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /playlists Get list of playlists
- * @apiName GetPlaylists
+ * @api {get} Get list of playlists
+ * @apiName getPlaylists
  * @apiGroup Playlists
- * @apiVersion 4.0.0
+ * @apiVersion 5.0.0
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  *
@@ -35,22 +35,22 @@ export default function playlistsController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
+		await runChecklist(socket, req, 'guest', 'limited');
+		// Get list of playlists
+		try {
+			return await getPlaylists(req.token);
+		} catch(err) {
+			const code = 'PL_LIST_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 
-		.get(getLang, requireAuth, requireValidUser, requireWebappLimited, updateUserLoginTime, async (req: any, res: any) => {
-			// Get list of playlists
-			try {
-				const playlists = await getPlaylists(req.authToken);
-				res.json(playlists);
-			} catch(err) {
-				const code = 'PL_LIST_ERROR';
-				errMessage(code, err);
-				res.status(500).json(APIMessage(code));
-			}
-		})
+	router.route('createPlaylist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /playlists Create a playlist
- * @apiName PostPlaylist
- * @apiVersion 3.1.0
+ * @api {post} Create a playlist
+ * @apiName createPlaylist
+ * @apiVersion 5.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -74,44 +74,42 @@ export default function playlistsController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			// Add playlist
-			const validationErrors = check(req.body, {
-				name: {presence: {allowEmpty: false}},
-				flag_visible: {inclusion: bools},
-				flag_public: {inclusion: bools},
-				flag_current: {inclusion: bools}
-			});
-			if (!validationErrors) {
-				// No errors detected
-				req.body.name = unescape(req.body.name.trim());
-
-				//Now we add playlist
-				try {
-					const new_playlist = await createPlaylist(req.body.name, {
-						visible: req.body.flag_visible,
-						current: req.body.flag_current,
-						public: req.body.flag_public
-					}, req.authToken.username);
-					res.status(201).json(new_playlist);
-				} catch(err) {
-					const code = 'PL_CREATE_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			name: {presence: {allowEmpty: false}},
+			flag_visible: {inclusion: bools},
+			flag_public: {inclusion: bools},
+			flag_current: {inclusion: bools},
 		});
-	router.route('/playlists/:pl_id([0-9]+)')
+		if (!validationErrors) {
+			// No errors detected
+			req.body.name = unescape(req.body.name.trim());
+
+			//Now we add playlist
+			try {
+				return await createPlaylist(req.body.name, {
+					visible: req.body.flag_visible,
+					current: req.body.flag_current,
+					public: req.body.flag_public,
+				}, req.token.username);
+			} catch(err) {
+				const code = 'PL_CREATE_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('getPlaylist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /playlists/:pl_id Get playlist information
- * @apiName GetPlaylist
+ * @api {get} Get playlist information
+ * @apiName getPlaylist
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 4.0.0
+ * @apiVersion 5.0.0
  *
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
@@ -147,30 +145,31 @@ export default function playlistsController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			//Access :pl_id by req.params.pl_id
-			// This get route gets infos from a playlist
-			try {
-				const playlist = await getPlaylistInfo(req.params.pl_id, req.authToken);
-				if (!playlist) res.status(404);
-				res.json(playlist);
-			} catch (err) {
-				const code = 'PL_VIEW_ERROR';
-				errMessage(code, err);
-				res.status(500).send(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			const playlist = await getPlaylistInfo(req.body?.pl_id, req.token);
+			if (!playlist) throw {code: 404};
+			return playlist;
+		} catch (err) {
+			const code = 'PL_VIEW_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('editPlaylist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /playlists/:pl_id Update a playlist's information
- * @apiName PutPlaylist
- * @apiVersion 3.1.0
+ * @api {put} Update a playlist's information
+ * @apiName editPlaylist
+ * @apiVersion 5.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} name Name of playlist to create
- * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
+ * @apiParam {Boolean} flag_visible Is the playlist visible to all users? If `false`, only admins can see it.
+ * @apiParam {Boolean} flag_current Is the playlist current?
+ * @apiParam {Boolean} flag_public Is the playlist public?
  *
  * @apiSuccess {String} code Message to display
  *
@@ -181,36 +180,24 @@ export default function playlistsController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			// Update playlist info
-			const validationErrors = check(req.body, {
-				name: {presence: {allowEmpty: false}},
-				flag_visible: {inclusion: bools},
-			});
-			if (!validationErrors) {
-				// No errors detected
-				req.body.name = unescape(req.body.name.trim());
+		await runChecklist(socket, req);
+		// No errors detected
+		if (req.body.name) req.body.name = unescape(req.body.name?.trim());
 
-				//Now we add playlist
-				try {
-					await editPlaylist(req.params.pl_id,req.body);
-					res.status(200).json();
-				} catch(err) {
-					const code = 'PL_UPDATE_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
-		})
-
+		//Now we add playlist
+		try {
+			return await editPlaylist(req.body?.pl_id,req.body);
+		} catch(err) {
+			const code = 'PL_UPDATE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('deletePlaylist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {delete} /playlists/:pl_id Delete a playlist
- * @apiName DeletePlaylist
- * @apiVersion 3.1.0
+ * @api {delete} Delete a playlist
+ * @apiName deletePlaylist
+ * @apiVersion 5.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -225,21 +212,20 @@ export default function playlistsController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			try {
-				await deletePlaylist(+req.params.pl_id);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'PL_DELETE_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/playlists/:pl_id([0-9]+)/empty')
+		await runChecklist(socket, req);
+		try {
+			return await deletePlaylist(req.body?.pl_id);
+		} catch(err) {
+			const code = 'PL_DELETE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('emptyPlaylist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {put} /playlists/:pl_id/empty Empty a playlist
- * @apiName PutEmptyPlaylist
- * @apiVersion 3.1.0
+ * @api {put} Empty a playlist
+ * @apiName emptyPlaylist
+ * @apiVersion 5.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -255,22 +241,21 @@ export default function playlistsController(router: Router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
+		await runChecklist(socket, req);
 		// Empty playlist
-			try {
-				await emptyPlaylist(+req.params.pl_id);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'PL_EMPTY_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/playlists/:pl_id([0-9]+)/findPlaying')
+		try {
+			return await emptyPlaylist(+req.body?.pl_id);
+		} catch(err) {
+			const code = 'PL_EMPTY_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('findPlayingSongInPlaylist', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {get} /playlists/:pl_id/findPlaying Find current playing song's index
-	 * @apiName GetFindPlaying
-	 * @apiVersion 4.0.10
+	 * @api {get} Find current playing song's index
+	 * @apiName findPlayingSongInPlaylist
+	 * @apiVersion 5.0.0
 	 * @apiGroup Playlists
 	 * @apiDescription Returns the song's flag playing's index. Useful when you don't load the whole playlist so you can jump to the correct page to get the currently playing song
 	 * @apiPermission admin
@@ -286,81 +271,19 @@ export default function playlistsController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			try {
-				const index = await findPlaying(+req.params.pl_id);
-				res.status(200).json({index: index});
-			} catch(err) {
-				res.status(500).json(err);
-			}
-		});
-	router.route('/playlists/:pl_id([0-9]+)/setCurrent')
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			const index = await findPlaying(req.body?.pl_id);
+			return {index: index};
+		} catch(err) {
+			throw {code: 500, message: err};
+		}
+	});
+	router.route('getPlaylistContents', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {put} /playlists/:pl_id/setCurrent Set playlist to current
-	 * @apiName PutSetCurrentPlaylist
-	 * @apiVersion 3.1.0
-	 * @apiGroup Playlists
-	 * @apiPermission admin
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiSuccess {String} args ID of playlist updated
-	 * @apiSuccess {String} code Message to display
-	 * @apiSuccess {Number} data `null`
-	 *
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * @apiError PL_SET_CURRENT_ERROR Unable to set this playlist to current. The playlist is a public one and can't be set to current at the same time. First set another playlist as public so this playlist has no flags anymore and can be set current.
-	 *
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			// set playlist to current
-			try {
-				await setCurrentPlaylist(+req.params.pl_id);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'PL_SET_CURRENT_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/playlists/:pl_id([0-9]+)/setPublic')
-		/**
-	 * @api {put} /playlists/:pl_id/setPublic Set playlist to public
-	 * @apiName PutSetPublicPlaylist
-	 * @apiVersion 3.1.0
-	 * @apiGroup Playlists
-	 * @apiPermission admin
-	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiSuccess {String} args ID of playlist updated
-	 * @apiSuccess {String} code Message to display
-	 * @apiSuccess {Number} data `null`
-	 *
-	 * @apiSuccessExample Success-Response:
-	 * HTTP/1.1 200 OK
-	 * @apiError PL_SET_PUBLIC_ERROR Unable to set this playlist to public. The playlist is a current one and can't be set to public at the same time. First set another playlist as current so this playlist has no flags anymore and can be set public.
-	 *
-	 * @apiErrorExample Error-Response:
-	 * HTTP/1.1 500 Internal Server Error
-	 */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			// Empty playlist
-			try {
-				await setPublicPlaylist(+req.params.pl_id);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'PL_SET_PUBLIC_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/playlists/:pl_id([0-9]+)/karas')
-		/**
-	 * @api {get} /playlists/:pl_id/karas Get list of karaokes in a playlist
-	 * @apiName GetPlaylistKaras
-	 * @apiVersion 3.1.0
+	 * @api {get} Get list of karaokes in a playlist
+	 * @apiName getPlaylistContents
+	 * @apiVersion 5.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -369,6 +292,7 @@ export default function playlistsController(router: Router) {
 	 * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
 	 * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
 	 * @apiParam {Number} [random=0] Return a [random] number of karaokes from that playlist.
+	 * @apiParam {Boolean} [orderByLikes=false] Returns the playlist ordered by number of likes in descending order
 	 *
 	 * @apiSuccess {Object[]} data/content/plc Array of `playlistcontent` objects
 	 * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -399,25 +323,25 @@ export default function playlistsController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.get(getLang, requireAuth, requireValidUser, requireWebappLimited, updateUserLoginTime, async (req: any, res: any) => {
-			try {
-				const playlist = await getPlaylistContents(req.params.pl_id, req.authToken, req.query.filter,req.lang, +req.query.from || 0, +req.query.size || 9999999, +req.query.random || 0);
-				res.json(playlist);
-			} catch(err) {
-				const code = 'PL_VIEW_SONGS_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return await getPlaylistContents(req.body?.pl_id, req.token, req.body?.filter,req.langs, req.body?.from || 0, req.body?.size || 9999999, req.body?.random || 0, req.body?.orderByLikes);
+		} catch(err) {
+			const code = 'PL_VIEW_SONGS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('addKaraToPlaylist', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {post} /playlists/:pl_id/karas Add karaokes to playlist
-	 * @apiName PostPlaylistKaras
-	 * @apiVersion 3.1.0
+	 * @api {post} Add karaokes to playlist
+	 * @apiName addKaraToPlaylist
+	 * @apiVersion 5.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiParam {uuid[]} kid List of `kid`.
+	 * @apiParam {uuid[]} kids List of `kid`.
 	 * @apiParam {Number} [pos] Position in target playlist where to add the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
 	 * @apiSuccess {String} args/kara Karaoke title added
 	 * @apiSuccess {uuid} args/kid Karaoke ID added.
@@ -433,35 +357,35 @@ export default function playlistsController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappOpen, async (req: any, res: any) => {
-			//add a kara to a playlist
-			const validationErrors = check(req.body, {
-				kid: {presence: true, uuidArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await addKaraToPlaylist(req.body.kid, req.authToken.username, req.params.pl_id, +req.body.pos);
-					res.status(201).json();
-				} catch(err) {
-					const code = 'PL_ADD_SONG_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
+		await runChecklist(socket, req, 'guest');
+		//add a kara to a playlist
+		const validationErrors = check(req.body, {
+			kids: {presence: true, uuidArrayValidator: true}
+		});
+		if (!validationErrors) {
+			try {
+				return await addKaraToPlaylist(req.body.kids, req.token.username, req.body.pl_id, req.body.pos);
+			} catch(err) {
+				const code = 'PL_ADD_SONG_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
 			}
-		})
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('copyKaraToPlaylist', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {patch} /playlists/:pl_id/karas Copy karaokes to another playlist
-	 * @apiName PatchPlaylistKaras
-	 * @apiVersion 3.1.0
+	 * @api {patch} Copy karaokes to another playlist
+	 * @apiName copyKaraToPlaylist
+	 * @apiVersion 5.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiParam {Number[]} plc_id List of `playlistcontent_id` in an array
+	 * @apiParam {Number[]} plc_ids List of `playlistcontent_id` in an array
 	 * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist
 	 * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
 	 * @apiSuccess {String} args/playlist_id ID of destinaton playlist
@@ -475,37 +399,35 @@ export default function playlistsController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * {code: "PL_COPY_SONG_ERROR"}
 	 */
-		.patch(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			//add karas from a playlist to another
-			const validationErrors = check(req.body, {
-				plc_id: {presence: true, numbersArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await copyKaraToPlaylist(req.body.plc_id,+req.params.pl_id,+req.body.pos);
-					res.status(201).json();
-				} catch(err) {
-					const code = 'PL_SONG_COPY_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
+		await runChecklist(socket, req);
+		//add karas from a playlist to another
+		const validationErrors = check(req.body, {
+			plc_ids: {presence: true, numbersArrayValidator: true}
+		});
+		if (!validationErrors) {
+			try {
+				return await copyKaraToPlaylist(req.body.plc_ids, req.body.pl_id, req.body.pos);
+			} catch(err) {
+				const code = 'PL_SONG_COPY_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
 			}
-
-		})
-
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('deleteKaraFromPlaylist', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {delete} /playlists/:pl_id/karas Delete karaokes from playlist
-	 * @apiName DeletePlaylistKaras
-	 * @apiVersion 3.1.0
+	 * @api {delete} Delete karaokes from playlist
+	 * @apiName deleteKaraFromPlaylist
+	 * @apiVersion 5.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} pl_id Target playlist ID.
-	 * @apiParam {Number[]} plc_id List of `plc_id` in an array
+	 * @apiParam {Number[]} plc_ids List of `plc_id` in an array
 	 * @apiSuccess {String} args Name of playlist the song was deleted from
 	 * @apiSuccess {String} code Message to display
 	 *
@@ -517,34 +439,30 @@ export default function playlistsController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * {code: "PL_DELETE_SONG_ERROR"}
 	 */
-		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			// Delete kara from playlist
-			// Deletion is through playlist content's ID.
-			// There is actually no need for a playlist number to be used at this moment.
-			const validationErrors = check(req.body, {
-				plc_id: {presence: true, numbersArrayValidator: true}
-			});
-			if (!validationErrors) {
-				try {
-					await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id, req.authToken);
-					res.status(200).json();
-				} catch(err) {
-					const code = 'PL_DELETE_SONG_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req, 'guest');
+		const validationErrors = check(req.body, {
+			plc_ids: {presence: true, numbersArrayValidator: true}
 		});
+		if (!validationErrors) {
+			try {
+				return await deleteKaraFromPlaylist(req.body.plc_ids, req.token);
+			} catch(err) {
+				const code = 'PL_DELETE_SONG_ERROR';
+				errMessage(code, err);
+				throw err?.code ? err:APIMessage(code, err);
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
 
-	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+	router.route('getPLC', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {get} /playlists/:pl_id/karas/:plc_id Get song info from a playlist item
-	 * @apiName GetPlaylistPLC
-	 * @apiVersion 3.1.0
+	 * @api {get} Get song info from a playlist item
+	 * @apiName getPLC
+	 * @apiVersion 5.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -557,6 +475,8 @@ export default function playlistsController(router: Router) {
 	 * @apiSuccess {Boolean} flag_blacklisted Is the song in the blacklist ?
 	 * @apiSuccess {Boolean} flag_whitelisted Is the song in the whitelist ?
 	 * @apiSuccess {Boolean} flag_free Wether the song has been marked as free or not
+	 * @apiSuccess {Boolean} flag_refused Wether the song has been refused by operator or not
+	 * @apiSuccess {Boolean} flag_accepted Wether the song has been refused by operator or not
 	 * @apiSuccess {Number} playlist_id ID of playlist this song belongs to
 	 * @apiSuccess {Number} playlistcontent_ID PLC ID of this song.
 	 * @apiSuccess {Number} pos Position in the playlist. First song has a position of `1`
@@ -570,6 +490,8 @@ export default function playlistsController(router: Router) {
 	 * 	         "created_at": "2019-01-01T10:01:01.000Z"
 	 *           "flag_blacklisted": false,
 	 *           "flag_free": false,
+	 *           "flag_refused": false,
+	 *           "flag_accepted": false,
 	 * 			 "flag_playing": true,
 	 * 			 "flag_visible": true
 	 *           "flag_whitelisted": false,
@@ -588,25 +510,24 @@ export default function playlistsController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * {code: "PL_VIEW_CONTENT_ERROR"}
 	 */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req: any, res: any) => {
-			try {
-				const kara = await getKaraFromPlaylist(req.params.plc_id, req.authToken);
-				res.status(200).json(kara);
-			} catch(err) {
-				const code = 'PL_VIEW_CONTENT_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		})
+		await runChecklist(socket, req, 'guest', 'limited');
+		try {
+			return await getKaraFromPlaylist(req.body?.plc_id, req.token);
+		} catch(err) {
+			const code = 'PL_VIEW_CONTENT_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('editPLC', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {put} /playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
-	 * @apiName PutPlaylistKara
-	 * @apiVersion 3.1.0
+	 * @api {put} Update song in a playlist
+	 * @apiName editPLC
+	 * @apiVersion 5.0.0
 	 * @apiGroup Playlists
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
-	 * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
+	 * @apiParam {Number[]} plc_ids `playlistcontent_id` of the song to update
 	 * @apiParam {Number} [pos] Position in target playlist where to move the song to.
 	 * @apiParam {Boolean} [flag_playing] If set to true, the selected song will become the currently playing song.
 	 * @apiParam {Boolean} [flag_free] If set to true, the selected song will be marked as free. Setting it to false has no effect.
@@ -622,38 +543,42 @@ export default function playlistsController(router: Router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 * {code: "PL_MODIFY_CONTENT_ERROR"}
 	 */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			const validationErrors = check(req.body, {
-				flag_playing: {inclusion: bools},
-				flag_free: {inclusion: bools},
-				flag_visible: {inclusion: bools}
-			});
-			if (!validationErrors) {
-				try {
-					await editPLC(req.params.plc_id,{
-						pos: +req.body.pos,
-						flag_playing: req.body.flag_playing,
-						flag_free: req.body.flag_free,
-						flag_visible: req.body.flag_visible
-					});
-					res.status(200).json();
-				} catch(err) {
-					const code = 'PL_MODIFY_CONTENT_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
-
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			plc_ids: {numbersArrayValidator: true},
+			flag_playing: {inclusion: bools},
+			flag_free: {inclusion: bools},
+			flag_visible: {inclusion: bools},
+			flag_accepted: {inclusion: bools},
+			flag_refused: {inclusion: bools}
 		});
-	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)/vote')
+		if (!validationErrors) {
+			try {
+				return await editPLC(req.body.plc_ids, {
+					pos: +req.body.pos,
+					flag_playing: req.body.flag_playing,
+					flag_free: req.body.flag_free,
+					flag_visible: req.body.flag_visible,
+					flag_accepted: req.body.flag_accepted,
+					flag_refused: req.body.flag_refused
+				});
+			} catch(err) {
+				const code = 'PL_MODIFY_CONTENT_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+
+	});
+	router.route('votePLC', async (socket: Socket, req: APIData) => {
 	/**
-		 * @api {post} /playlists/:pl_id/karas/:plc_id/vote Up/downvote a song in public playlist
-		 * @apiName PostVote
-		 * @apiVersion 3.1.0
+		 * @api {post} Up/downvote a song in public playlist
+		 * @apiName votePLC
+		 * @apiVersion 5.0.0
 		 * @apiGroup Playlists
 		 * @apiPermission public
 		 * @apiHeader authorization Auth token received from logging in
@@ -674,22 +599,21 @@ export default function playlistsController(router: Router) {
 		 * HTTP/1.1 500 Internal Server Error
 		 */
 
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			// Post an upvote
-			try {
-				await vote(req.params.plc_id,req.authToken.username, req.body.downvote);
-				res.status(200).json();
-			} catch(err) {
-				errMessage(err.msg);
-				res.status(err?.code || 500).json(APIMessage(err.msg));
-			}
-		});
-	router.route('/playlists/:pl_id([0-9]+)/export')
+		await runChecklist(socket, req, 'guest', 'limited');
+		// Post an upvote
+		try {
+			return await vote(req.body?.plc_id, req.token.username, req.body?.downvote);
+		} catch(err) {
+			errMessage(err.msg);
+			throw {code: err?.code || 500, message: APIMessage(err.msg)};
+		}
+	});
+	router.route('exportPlaylist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {get} /playlists/:pl_id/export Export a playlist
+ * @api {get} Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
- * @apiName getPlaylistExport
- * @apiVersion 3.1.0
+ * @apiName exportPlaylist
+ * @apiVersion 5.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -732,23 +656,20 @@ export default function playlistsController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "PL_EXPORT_ERROR"}
  */
-		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			// Returns the playlist and its contents in an exportable format (to save on disk)
-			try {
-				const playlist = await exportPlaylist(req.params.pl_id);
-				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
-				res.status(200).json(playlist);
-			} catch(err) {
-				const code = 'PL_EXPORT_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-	router.route('/playlists/import')
+		await runChecklist(socket, req);
+		try {
+			return await exportPlaylist(req.body?.pl_id);
+		} catch(err) {
+			const code = 'PL_EXPORT_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('importPlaylist', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /playlists/import Import a playlist
- * @apiName postPlaylistImport
- * @apiVersion 3.1.0
+ * @api {post} Import a playlist
+ * @apiName importPlaylist
+ * @apiVersion 5.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -772,42 +693,43 @@ export default function playlistsController(router: Router) {
  *   "message": "No header section"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			// Imports a playlist and its contents in an importable format (posted as JSON data)
-			const validationErrors = check(req.body, {
-				playlist: {isJSON: true}
-			});
-			if (!validationErrors) {
-				try {
-					const data = await importPlaylist(JSON.parse(req.body.playlist), req.authToken.username);
-					const response = {
-						playlist_id: data.playlist_id,
-						unknownKaras: data.karasUnknown
-					};
-					res.status(200).json(APIMessage('PL_IMPORTED', response));
-				} catch(err) {
-					const code = 'PL_IMPORT_ERROR';
-					errMessage(code, err);
-					res.status(err?.code || 500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
-
+		await runChecklist(socket, req);
+		// Imports a playlist and its contents in an importable format (posted as JSON data)
+		const validationErrors = check(req.body, {
+			playlist: {isJSON: true}
 		});
-	router.route('/playlists/:pl_id([0-9]+)/shuffle')
-	/**
- * @api {put} /playlists/:pl_id/shuffle Shuffle a playlist
+		if (!validationErrors) {
+			try {
+				const data = await importPlaylist(JSON.parse(req.body.playlist), req.token.username);
+				const response = {
+					playlist_id: data.playlist_id,
+					unknownKaras: data.karasUnknown
+				};
+				return APIMessage('PL_IMPORTED', response);
+			} catch(err) {
+				const code = 'PL_IMPORT_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+
+	});
+	router.route('shufflePlaylist', async (socket: Socket, req: APIData) => {
+
+		/**
+ * @api {put} Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
- * @apiName putPlaylistShuffle
- * @apiVersion 3.1.0
+ * @apiName shufflePlaylist
+ * @apiVersion 5.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID to shuffle
- * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
+ * @apiParam {String} method Parameter to determine the shuffle method to use (normal, smart, balanced etc...)
  * @apiSuccess {String} args ID of playlist shuffled
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of playlist shuffled
@@ -819,15 +741,13 @@ export default function playlistsController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "PL_SHUFFLE_ERROR"}
  */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			try {
-				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
-				res.status(200).json();
-			} catch(err) {
-				const code = 'PL_SHUFFLE_ERROR';
-				errMessage(code, err);
-				res.status(err?.code || 500).json(APIMessage(code));
-			}
-		});
-
+		await runChecklist(socket, req);
+		try {
+			return await shufflePlaylist(req.body?.pl_id, req.body?.method);
+		} catch(err) {
+			const code = 'PL_SHUFFLE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 }

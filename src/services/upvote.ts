@@ -16,6 +16,7 @@ export function vote(plc_id: number, username: string, downvote: boolean) {
 /** Upvotes a song */
 export async function addUpvote(plc_id: number, username: string) {
 	try {
+		username = username.toLowerCase();
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
 		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'UPVOTE_FAILED'};
@@ -30,6 +31,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		if (plc.playlist_id === getState().publicPlaylistID) {
 			emitWS('KIDUpdated', [{kid: plc.kid, flag_upvoted: true, username: username}]);
 		}
+		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
 		emitWS('playlistContentsUpdated', plc.playlist_id);
 	} catch(err) {
 		if (!err.msg) err.msg = 'UPVOTE_FAILED';
@@ -40,6 +42,7 @@ export async function addUpvote(plc_id: number, username: string) {
 /** Downvote a song */
 export async function deleteUpvote(plc_id: number, username: string) {
 	try {
+		username = username.toLowerCase();
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
 		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'DOWNVOTE_FAILED'};
@@ -53,6 +56,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		if (plc.playlist_id === getState().publicPlaylistID) {
 			emitWS('KIDUpdated', [{kid: plc.kid, flag_upvoted: false, username: username}]);
 		}
+		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
 		emitWS('playlistContentsUpdated', plc.playlist_id);
 	} catch(err) {
 		if (!err.msg) err.msg = 'DOWNVOTE_FAILED';
@@ -71,16 +75,5 @@ async function tryToFreeKara(plc_id :number, upvotes: number, username: string, 
 		await freePLC(plc_id);
 		updateSongsLeft(username, playlist_id);
 		logger.debug(`PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`, {service: 'Upvote'});
-	}
-}
-
-/** Add several upvotes at once */
-export async function addUpvotes(plc_id: number[], username: string) {
-	for (const plc of plc_id) {
-		try {
-			await addUpvote(plc, username);
-		} catch(err) {
-			//Non-fatal : already upvoted songs won't be upvoted again anyway
-		}
 	}
 }

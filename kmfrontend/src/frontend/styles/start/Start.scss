@@ -1,0 +1,139 @@
+// Common CSS for green-blue gradient pages (setup, migrations, welcome)
+
+@import '../variables';
+
+.start-page {
+	background: $mugen-welcome-page-background;
+	min-height: 100vh;
+
+	.wrapper {
+		padding: 1em;
+
+		display: grid;
+		grid-template-columns: 200px 1fr 1.4fr;
+		grid-template-rows: 100px auto;
+
+		a {
+			color: inherit;
+			text-decoration: underline;
+		}
+
+		button {
+			margin: 5px;
+			background-color: grey;
+		}
+
+		button.fas,
+		button.far,
+		button.fal,
+		button.fab {
+			cursor: pointer;
+			padding: 0;
+			margin: 0 .2em;
+			background: none;
+			border: none;
+		}
+
+		.title {
+			grid-area: title;
+			font-weight: normal;
+			font-size: 2em;
+		}
+
+		.logo {
+			grid-area: logo;
+
+			img {
+				filter: hue-rotate(427deg) saturate(0) brightness(156%);
+				max-height: 100%;
+				max-width: 100%;
+			}
+
+			@media (max-width: $mugen-breakpoint-large) {
+				text-align: center;
+				img {
+					max-width: 250px;
+					margin-bottom: 1em;
+				}
+			}
+		}
+
+		.welcome-page-tasks-wrapper {
+			grid-area: tasks;
+			@media (max-width: $mugen-breakpoint-large) {
+				position: fixed;
+				z-index: 100;
+				top: 1em;
+				left: .5em;
+			}
+		}
+
+		.aside {
+			grid-area: aside;
+
+			nav {
+				margin-bottom: 1em;
+				ul {
+					padding: 0;
+					margin: 0;
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-end;
+					@media (max-width: $mugen-breakpoint-large) {
+						justify-content: center;
+						flex-wrap: wrap;
+					}
+					list-style: none;
+					li {
+						margin-right: 1em;
+						margin-bottom: .5em;
+						border-radius: .75em;
+						padding: .5em;
+						border: .1em solid #BBBCBC;
+						a {
+							display: flex;
+							text-decoration: none;
+							i {
+								margin-right: 0.5em;
+								margin-top: 0.2em;
+							}
+						}
+					}
+				}
+			}
+
+			.session-setting {
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-end;
+				article {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					margin-right: 0.5em;
+					label {
+						display: block;
+						padding-right: 0.5em;
+					}
+					&:last-child {
+						margin-right: 0;
+					}
+
+					.UI-autocomplete {
+						transform-origin: 80% 80%;
+						width: 15rem;
+						input {
+							text-align: center;
+						}
+					}
+				}
+			}
+		}
+
+		.main {
+			grid-area: main;
+			display: flex;
+			height: 100%;
+		}
+	}
+}

@@ -1,3 +1,6 @@
 [submodule "src/lib"]
 	path = src/lib
 	url = ../lib
+[submodule "assets/guestAvatars"]
+	path = assets/guestAvatars
+	url = ../medias/guest-avatars

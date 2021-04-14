@@ -2,19 +2,25 @@
 // This is used for CI/CD to drop the database contents and start anew.
 // DO NOT DO THIS AT HOME.
 
-import dbConfigFile from '../app/database.json';
+import {readFileSync} from 'fs';
+import {load} from 'js-yaml';
+import merge from 'lodash.merge';
 import {Pool} from 'pg';
 
-const dbConfig = {
-	host: dbConfigFile.prod.host,
-	user: dbConfigFile.prod.user,
-	port: dbConfigFile.prod.port,
-	password: dbConfigFile.prod.password,
-	database: dbConfigFile.prod.database
-};
+import {dbConfig} from '../src/utils/default_settings';
 
 async function main() {
-	const client = new Pool(dbConfig);
+	const configFile = readFileSync('app/config.yml', 'utf-8');
+	const configData: any = load(configFile);
+	const config = merge(dbConfig, configData.System.Database);
+	const databaseConfig = {
+		host: config.host,
+		user: config.username,
+		port: config.port,
+		password: config.password,
+		database: config.database
+	};
+	const client = new Pool(databaseConfig);
 	await client.connect();
 	const res = await client.query(`
 	select 'drop table if exists "' || tablename || '" cascade;' as command

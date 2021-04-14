@@ -1,20 +1,20 @@
 ---
 App:
-  # FirstRun is set to false after user completed the tutorial. Reset it to true to generate a new admin password
+  # FirstRun is set to false after user setup the app.
   FirstRun: true
   # JWT secret used to salt passwords (uuid)
   JwtSecret: Change me
   # Application quick start (like --noBaseCheck)
   QuickStart: false
-  # Instace ID
-  InstanceID: uuid here
+  # Instance ID
+  #InstanceID: uuid here
 Online:
   # Host for your KM Server
   Host: kara.moe
-  # Should your instance sends stats? True/false. Undefined means the app will ask the user a question if it wants to send stats to KM Server.
-  Stats: undefined
-  # Should your instance sends error logs to sentry.io? True/false. Undefined means the app will ask the user a question if it wants to send errors.
-  ErrorTracking: undefined
+  # Should your instance sends stats? True/false. Non-existant means the app will ask the user a question if it wants to send stats to KM Server.
+  #Stats: false
+  # Should your instance sends error logs to sentry.io? True/false. Non-existant means the app will ask the user a question if it wants to send errors.
+  #ErrorTracking: false
   # Should we use KM Server's URL shortener? Turns connection URL into http://kara.moe for example
   URL: true
   # Should we allow users to register/login accounts on kara.moe ?
@@ -30,7 +30,13 @@ Online:
   # Use Discord's rich presence to display your activity on your profile
   Discord:
     DisplayActivity: true
+  # Remote URL xxxx.kara.moe enabled ?
+  Remote: true
+  # Fetch popular songs from remote repos ?
+  FetchPopularSongs: true
 Frontend:
+  # Enable previews (thumbnail) generation. Should be disabled for tests without all medias present
+  GeneratePreviews: true
   # Minutes before users are considered signed out
   AuthExpireTime: 15
   # Webapp mode :
@@ -43,9 +49,6 @@ Frontend:
   Permissions:
     # Permissions for users
     AllowNicknameChange: true
-    AllowViewBlacklist: true
-    AllowViewBlacklistCriterias: true
-    AllowViewWhitelist: true
   # How to display series names
   # 0 : Original name (generally romanji)
   # 1 : Use song language (fallbacks to english then original)
@@ -53,35 +56,15 @@ Frontend:
   # 3 : Use user language (fallbacks to english then original)
   SeriesLanguageMode: 3
   ShowAvatarsOnPlaylist: true
-
-Gitlab:
-  # Enable or not gitlab posting
-  Enable: false
-  # URL to your gitlab instance
-  Host: https://lab.shelter.moe
-  # Access token
-  Token: xxx
-  # Project ID where you want issues posted
-  ProjectID: 1234
-  Template:
-    Suggestion:
-      Description: >
-        # Karaoke suggestion
-
-
-        **Title** : $title
-
-
-        **Serie** : $serie
-
-
-        **Type** : $type
-
-
-        **Link** : $link
-      Title: "[Suggestion] $serie - $title"
-      Labels:
-        - suggestion
+GUI:
+  # Should window shortcuts be opened in electron or in a browser?
+  OpenInElectron: true
+  # Enable or disable cihibi player
+  ChibiPlayer:
+    Enabled: false
+    AlwaysOnTop: true
+    PositionX: 153
+    PositionY: 800
 Karaoke:
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false
@@ -93,8 +76,8 @@ Karaoke:
     PauseDuration: 15
     Twitch:
       Enabled: false
-      OAuth: 'abcdefgh'
-      Channel: 'AxelTerizaki'
+      OAuth: ''
+      Channel: ''
   # Repeat playlist once reaching the end
   Repeat: false
   # In private mode try to insert songs in a smart way.
@@ -108,9 +91,9 @@ Karaoke:
       # Enable display of connection messages
       Enabled: true
       # Additional message prepended to the connection URL
-      Message: null
+      #Message: 'Connect to Wifi xxx'
       # Override host/IP address
-      Host: null
+      Host: '192.168.0.1'
   Poll:
     # Number of choices in poll
     Choices: 4
@@ -145,6 +128,8 @@ Player:
   FullScreen: false
   # Spawn a second monitor window in PIP mode to check what the player is displaying
   Monitor: false
+  # Should the player window have borders ?
+  Borders: true
   # No progress bar
   NoBar: true
   # No HUD
@@ -163,8 +148,6 @@ Player:
     Size: 30
   # Play progress bar in Dock / Taskbar
   ProgressBarDock: true
-  # When playing mp3s, enable/disable visualization effects.
-  VisualizationEffects: false
   # Volume
   Volume: 100
   # Hardware decoding. See mpv manual for more info
@@ -181,8 +164,6 @@ Playlist:
   RandomSongsAfterEndMessage: true
   # Allow duplicates in current playlist
   AllowDuplicates: false
-  # Allow duplicate series or singers in current playlist
-  AllowDuplicateSeries: true
   # Time after which a song is not considered recently played anymore in minutes
   MaxDejaVuTime: 60
   # Enable/Disable Intro Videos
@@ -219,6 +200,15 @@ Playlist:
     - ???
     - Chanson mystère !
 System:
+  Database:
+    bundledPostgresBinary: false
+    database: karaokemugen_app
+    host: localhost
+    password: musubi
+    port: 6559
+    superuser: postgres
+    superuserPassword: musubi
+    username: karaokemugen_app
   Binaries:
     Player:
       Linux: /usr/bin/mpv
@@ -235,6 +225,8 @@ System:
   Repositories:
     - Name: kara.moe
       Online: true
+      Enabled: true
+      SendStats: true
       Path:
         Karas:
           - repos/kara.moe/karaokes
@@ -242,13 +234,12 @@ System:
           - repos/kara.moe/lyrics
         Medias:
           - repos/kara.moe/medias
-        Series:
-          - repos/kara.moe/series
         Tags:
           - repos/kara.moe/tags
     - Name: world.karaokes.moe
       Online: true
       Enabled: false
+      SendStats: true
       Path:
         Karas:
           - repos/world/karaokes
@@ -256,12 +247,12 @@ System:
           - repos/world/lyrics
         Medias:
           - repos/world/medias
-        Series:
-          - repos/world/series
         Tags:
           - repos/world/tags
     - Name: Local
       Online: false
+      Enabled: true
+      SendStats: true
       Path:
         Karas:
           - repos/Local/karaokes
@@ -269,8 +260,6 @@ System:
           - repos/Local/lyrics
         Medias:
           - repos/Local/medias
-        Series:
-          - repos/Local/series
         Tags:
           - repos/Local/tags
   Path:
@@ -291,4 +280,6 @@ System:
     Encores:
       - encores
     Temp: temp
+    Previews: previews
+    SessionExports: sessionExports
     DB: db

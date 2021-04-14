@@ -1,0 +1,27 @@
+@import '../../styles/variables';
+
+.tags-list {
+	height: 100%;
+	div.tags-item {
+		padding: 1em;
+		background-color: $mugen-playlist-odd;
+		transition: background-color 250ms ease;
+		cursor: pointer;
+		&:hover, &:focus {
+			background-color: lighten($mugen-playlist-odd, 5);
+		}
+		&.even {
+			background-color: $mugen-playlist-even;
+			&:hover, &:focus {
+				background-color: lighten($mugen-playlist-even, 5);
+			}
+		}
+		> .title {
+			font-size: 1.5em;
+			font-weight: bold;
+		}
+		> .karacount {
+			font-weight: lighter;
+		}
+	}
+}

@@ -2,8 +2,10 @@
 .idea/
 .npmrc
 .vscode
+.vs
 node_modules
 app/
+app
 
 npm-debug.log*
 yarn-debug.log*
@@ -14,15 +16,11 @@ out/
 doc/
 \.DS_Store
 *.backup
-config\.ini
-config\.ini_old
 config\.yml
-database\.json
 *.bak
 karaokemugen-app-linux
 karaokemugen-app-macos
 dist/
-apidoc/
 bin/
 logs/
 updater/
@@ -30,16 +28,14 @@ mpv.log
 karaokemugen.pgdump
 karaokemugen.sql
 
-# System panel
-systempanel/node_modules
-systempanel/coverage
-systempanel/build
-react_client
-react_systempanel/
-
-# Frontend
+# kmfrontend
+kmfrontend/node_modules
+kmfrontend/coverage
+# Legacy frontends
+/frontend/
+/systempanel/
 .cache/
-frontend/build/
+build/
 
 # sessions export
 *.played.csv
@@ -53,3 +49,4 @@ postgrator.json
 
 # Dev
 .env
+.eslintcache

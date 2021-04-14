@@ -1,4 +1,13 @@
 System:
+  Database:
+    bundledPostgresBinary: false
+    database: karaokemugen_app
+    host: postgres
+    password: musubi
+    port: 5432
+    superuser: karaokemugen_app
+    superuserPassword: musubi
+    username: karaokemugen_app
   Binaries:
     Player:
       Linux: mpv

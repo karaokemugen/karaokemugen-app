@@ -8,9 +8,9 @@ export interface BLC {
 
 export interface BLCSet {
 	blc_set_id?: number,
-	name: string,
-	created_at: Date,
-	modified_at: Date,
+	name?: string,
+	created_at?: Date,
+	modified_at?: Date,
 	flag_current?: boolean
 }
 

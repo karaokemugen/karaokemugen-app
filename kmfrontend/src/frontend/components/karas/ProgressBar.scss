@@ -1,0 +1,90 @@
+@import '../../styles/variables';
+
+@keyframes slide-ltr {
+	0% {
+		transform: translateX(5px);
+	}
+	100% {
+		transform: translateX(var(--offset, 50%));
+	}
+}
+
+#progressBar {
+	width: 100%;
+	height: 2em;
+	position: relative;
+	border-bottom: $mugen-btn-border;
+	border-top: $mugen-btn-border;
+	background-color: #1E2124;
+	cursor: grab;
+
+	&:hover {
+		#progressBarColor {
+			background-color: darken(map-get($mugen-colors, "blue"), 10);
+		}
+	}
+	&:active {
+		cursor: grabbing;
+		#progressBarColor {
+			background-color: darken(map-get($mugen-colors, "blue"), 15);
+		}
+	}
+
+	#progressBarColor {
+		position: absolute;
+		background-color: darken(map-get($mugen-colors, "blue"), 5);
+		border-bottom: solid 1px #595959;
+		z-index: 0;
+		left: 0;
+		top: 0;
+		max-width: 100%;
+		height: 100%;
+		transition: width 300ms linear, background-color 250ms ease;
+	}
+
+	#karaInfo > .karaTitle {
+		justify-content: center;
+		height: 2em;
+		line-height: 2em;
+		overflow: hidden;
+		margin: 0 1em;
+		&.animate {
+			justify-content: flex-start;
+			position: relative;
+			> p {
+				animation: slide-ltr var(--duration, 10s) linear infinite alternate;
+				position: absolute;
+			}
+			&.pause > p {
+				animation-play-state: paused;
+			}
+		}
+	}
+
+	#karaInfo {
+		text-align: center;
+		z-index: 10;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		user-select: none;
+	}
+
+	#karaInfo > .actualTime {
+		justify-content: flex-start;
+		margin-left: 1em;
+		font-weight: bold;
+	}
+
+	#karaInfo > .remainTime {
+		justify-content: end;
+		margin-right: 1em;
+		font-weight: bold;
+	}
+}

@@ -1,0 +1,87 @@
+@import '../../styles/variables';
+
+.playlist-main {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+	.panel {
+		flex: 1;
+		border: .5em solid darken($mugen-background, 20);
+		.playlistContainer {
+			height: calc(100% - 3em);
+		}
+	}
+	@media screen and (max-width: $mugen-breakpoint-large) {
+		.panel {
+			height: 100%;
+		}
+		#panel2 {
+			display: none;
+		}
+	}
+}
+
+.single .infoDiv {
+	order: -1;
+}
+
+.playlistContainer {
+	z-index: 1;
+	height: 100%;
+	-webkit-overflow-scrolling: touch;
+	position: relative;
+	padding: 0;
+	overflow: hidden;
+}
+
+.playlist-main .list-group-item.karaSuggestion {
+	background-color: #5d83778c;
+	font-size: 120%;
+	padding: 1em;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: center;
+
+	div {
+		margin-left: .25em;
+	}
+
+	a {
+		cursor: pointer;
+	}
+}
+
+.playlist-main .list-group-item.liType {
+	background-color: #607e97;
+	padding-left: 1em;
+	font-weight: bold;
+	line-height: 1.5em;
+}
+
+.ReactVirtualized__Grid__innerScrollContainer {
+	margin-bottom: 31px;
+}
+
+@media (max-width: $mugen-breakpoint-small) {
+	.ReactVirtualized__Grid__innerScrollContainer {
+		margin-bottom: 63px;
+	}
+}
+
+.playlist--wrapper {
+	height: 100%;
+}
+
+.playlist-dragged-item {
+	cursor: grabbing;
+	list-style: none;
+	&.side1 .list-group-item:not(.karaSuggestion) {
+		flex-direction: row-reverse;
+	}
+	.list-group-item {
+		background: #333;
+		z-index: 200;
+	}
+}

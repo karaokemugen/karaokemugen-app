@@ -17,7 +17,7 @@ VALUES (
 
 export const sqlgetWhitelistContents = (filterClauses: string[], limitClause: string, offsetClause: string) => `
 SELECT
-  ak.kid AS kid,
+  ak.pk_kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
   COALESCE(ak.series, '[]'::jsonb) AS series,
@@ -33,13 +33,15 @@ SELECT
   COALESCE(ak.origins, '[]'::jsonb) AS origins,
   COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
   COALESCE(ak.families, '[]'::jsonb) AS families,
-  COALESCE(ak.genres, '[]'::jsonb) AS genres,  ak.created_at AS created_at,
+  COALESCE(ak.genres, '[]'::jsonb) AS genres,
+  COALESCE(ak.versions, '[]'::jsonb) AS versions,
+  ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   wl.created_at AS whitelisted_at,
   wl.reason AS reason,
-  count(ak.kid) OVER()::integer AS count
+  count(ak.pk_kid) OVER()::integer AS count
   FROM all_karas AS ak
-  INNER JOIN whitelist AS wl ON wl.fk_kid = ak.kid
+  INNER JOIN whitelist AS wl ON wl.fk_kid = ak.pk_kid
   WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))

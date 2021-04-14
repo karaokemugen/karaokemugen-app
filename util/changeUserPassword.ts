@@ -1,23 +1,24 @@
 // This script changes a user's password
 
-const dbConfigFile = require('../database.json');
 const {Pool} = require('pg');
 const {hash, genSalt} = require('bcrypt');
+const {load} = require('js-yaml');
+const {readFileSync} = require('fs');
 
 async function hashPassword(password: string): Promise<string> {
 	return hash(password, await genSalt(10));
 }
 
-
-const dbConfig = {
-	host: dbConfigFile.prod.host,
-	user: dbConfigFile.prod.user,
-	port: dbConfigFile.prod.port,
-	password: dbConfigFile.prod.password,
-	database: dbConfigFile.prod.database
-};
-
 async function main() {
+	const configFile = readFileSync('app/config.yml', 'utf-8');
+	const config: any = load(configFile);
+	const dbConfig = {
+		host: config.System.Database.host,
+		user: config.System.Database.username,
+		port: config.System.Database.port,
+		password: config.System.Database.password,
+		database: config.System.Database.database
+	};
 	const client = new Pool(dbConfig);
 	const user = process.argv[2];
 	const password = await hashPassword(process.argv[3]);

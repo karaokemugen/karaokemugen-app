@@ -2,15 +2,15 @@ import { dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, removeTagInStore, sortTagsStore } from '../dao/dataStore';
-import {getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini,updateKaraTagsTID, updateTag} from '../dao/tag';
+import { getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini, updateKaraTagsTID, updateTag } from '../dao/tag';
+import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
-import { replaceTagInKaras } from '../lib/dao/karafile';
-import { writeSeriesFile } from '../lib/dao/seriesfile';
-import { refreshKaraTags,refreshTags } from '../lib/dao/tag';
-import { formatTagFile, getDataFromTagFile,removeTagFile, removeTagInKaras, writeTagFile } from '../lib/dao/tagfile';
+import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
+import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
+import {DBKaraTag} from '../lib/types/database/kara';
 import { DBTag } from '../lib/types/database/tag';
-import { IDQueryResult, Kara } from '../lib/types/kara';
+import { IDQueryResult, Kara, KaraList } from '../lib/types/kara';
 import { Tag,TagParams } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
@@ -20,6 +20,7 @@ import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getAllKaras } from './kara';
+import { editKara } from './kara_creation';
 import { getRepo } from './repo';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
@@ -36,7 +37,8 @@ export function formatTagList(tagList: DBTag[], from: number, count: number) {
 export async function getTags(params: TagParams) {
 	profile('getTags');
 	const tags = await getAllTags(params);
-	const ret = formatTagList(tags.slice(params.from || 0, (params.from || 0) + params.size || 999999999), params.from || 0, tags.length);
+	const count = tags.length > 0 ? tags[0].count : 0;
+	const ret = formatTagList(tags, params.from || 0, count);
 	profile('getTags');
 	return ret;
 }
@@ -72,28 +74,16 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		saveSetting('baseChecksum', getStoreChecksum());
 
 		if (opts.refresh) {
-			await refreshTags();
-		}
-		if (tagObj.types.includes(1)) {
-			// Spreading object to keep writeSeriesFile from modifying it
-			await writeSeriesFile({...tagObj}, resolvedPathRepos('Series', tagObj.repository)[0]);
+			await updateTagSearchVector();
+			refreshTags();
 		}
 		return tagObj;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		if (!opts.silent) task.end();
 	}
-}
-
-export async function refreshTagsAfterDBChange() {
-	logger.debug('Refreshing DB after tag change', {service: 'DB'});
-	await refreshTags();
-	refreshKaraTags();
-	refreshKaras();
-	logger.debug('Done refreshing DB after tag change', {service: 'DB'});
 }
 
 export function getTag(tid: string) {
@@ -113,6 +103,14 @@ export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
 	return {id: tagObj.tid, new: true};
 }
 
+export function getTagNameInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string): string {
+	if (tag.i18n) {
+		return tag.i18n[mainLanguage] ? tag.i18n[mainLanguage] :
+			(tag.i18n[fallbackLanguage] ? tag.i18n[fallbackLanguage] : tag.name);
+	} else {
+		return tag.name;
+	}
+}
 
 export async function mergeTags(tid1: string, tid2: string) {
 	const task = new Task({
@@ -150,6 +148,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
 		await addTagToStore(newTagFiles);
 		sortTagsStore();
+		const karas = await getAllKaras();
 		await Promise.all([
 			updateKaraTagsTID(tid1, tagObj.tid),
 			updateKaraTagsTID(tid2, tagObj.tid)
@@ -162,17 +161,18 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid1),
 			removeTagInStore(tid2)
 		]);
-		const karas = await getAllKaras();
-		const modifiedKaras = await replaceTagInKaras(tid1, tid2,tagObj.tid, karas);
+		const modifiedKaras = await replaceTagInKaras(tid1, tid2, tagObj, karas);
 		for (const kara of modifiedKaras) {
 			await editKaraInStore(kara);
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
-		await refreshTagsAfterDBChange();
+		await updateTagSearchVector();
+		await refreshKaras();
+		refreshTags();
 		return tagObj;
 	} catch(err) {
 		logger.error(`Error merging tag ${tid1} and ${tid2}`, {service: 'Tags', obj: err});
-		sentry.error(new Error(err));
+		sentry.error(err);
 		throw err;
 	} finally {
 		task.end();
@@ -224,11 +224,13 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 			await editTagInStore(newTagFiles[0]);
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
-		if (tagObj.types.includes(1)) {
-			await writeSeriesFile(tagObj, resolvedPathRepos('Series', tagObj.repository)[0]);
+		if (opts.refresh) {
+			await updateTagSearchVector();
+			await refreshKaras();
+			refreshTags();
 		}
-		if (opts.refresh) await refreshTagsAfterDBChange();
 	} catch(err) {
+		if (err?.code === 404) throw err;
 		sentry.error(err);
 		throw err;
 	} finally {
@@ -256,10 +258,12 @@ export async function deleteTag(tid: string, opt = {refresh: true}) {
 		removeTagInStore(tid);
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opt.refresh) {
-			await refreshTagsAfterDBChange();
+			await refreshKaras();
+			refreshTags();
 		}
 	} catch(err) {
-		sentry.error(new Error(err));
+		if (err?.code === 404) throw err;
+		sentry.error(err);
 		throw err;
 	} finally {
 		task.end();
@@ -272,13 +276,13 @@ export async function integrateTagFile(file: string): Promise<string> {
 	try {
 		const tagDBData = await getTagMini(tagFileData.tid);
 		if (tagDBData) {
-			if (tagDBData.repository === tagFileData.repository) {
-				// Only edit if repositories are the same.
+			if (tagDBData.repository === tagFileData.repository && tagDBData.modified_at.toISOString() !== tagFileData.modified_at) {
+				// Only edit if repositories are the same and modified_at are different.
 				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true });
 			}
 			return tagFileData.name;
 		} else {
-			await addTag(tagFileData, { silent: true, refresh: false });
+			await addTag(tagFileData, { silent: true, refresh: true });
 			return tagFileData.name;
 		}
 	} catch(err) {
@@ -288,6 +292,7 @@ export async function integrateTagFile(file: string): Promise<string> {
 
 
 export async function consolidateTagsInRepo(kara: Kara) {
+	profile('consolidateTagsInRepo');
 	const copies = [];
 	for (const tagType of Object.keys(tagTypes)) {
 		for (const karaTag of kara[tagType]) {
@@ -311,6 +316,7 @@ export async function consolidateTagsInRepo(kara: Kara) {
 		}
 	}
 	await Promise.all(copies);
+	profile('consolidateTagsInRepo');
 }
 
 export async function copyTagToRepo(tid: string, repoName: string) {
@@ -324,7 +330,27 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 		await writeTagFile(tag, destDir);
 	} catch(err) {
 		if (err?.code === 404) throw err;
-		sentry.error(new Error(err));
+		sentry.error(err);
 		throw err;
 	}
+}
+
+export async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: KaraList): Promise<string[]> {
+	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, {service: 'Kara'});
+	const modifiedKaras: string[] = [];
+	for (const kara of karas.content) {
+		let modifiedKara = false;
+		kara.modified_at = new Date();
+		for (const type of Object.keys(tagTypes)) {
+			if (kara[type]?.find((t: DBTag) => t.tid === oldTID1) || kara[type]?.find((t: DBTag) => t.tid === oldTID2)) {
+				kara[type] = kara[type].filter((t: any) => t.tid !== oldTID1 && t.tid !== oldTID2);
+				kara[type].push(newTag);
+				modifiedKara = true;
+			}
+		}
+		if (modifiedKara) {
+			await editKara(kara, false);
+		}
+	}
+	return modifiedKaras;
 }

@@ -3,15 +3,16 @@ import i18next from 'i18next';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
+import { selectAllKaras } from '../dao/kara';
 import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
-import { getConfig } from '../lib/utils/config';
+import { getConfig, resolvedPathSessionExports } from '../lib/utils/config';
 import { sanitizeFile } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
-import { Session } from '../types/session';
+import { Session, SessionExports } from '../types/session';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
-import { getKaras, getSeriesSingers } from './kara';
+import { getSongSeriesSingers, getSongVersion } from './kara';
 
 export async function getSessions() {
 	const sessions = await selectSessions();
@@ -108,12 +109,13 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 }
 
 export async function initSession() {
+	profile('initSession');
 	// First remove any session with no played AND no requested data
 	await cleanSessions();
 
 	const sessions = await selectSessions();
 	// If last session is still on the same date as today, just set current session to this one
-	if (sessions[0]?.started_at.toDateString() === new Date().toDateString()) {
+	if (sessions[0]?.started_at instanceof Date && sessions[0]?.started_at.toDateString() === new Date().toDateString()) {
 		setActiveSession(sessions[0]);
 	} else {
 		// If no session is found or session is on another day, create a new one
@@ -124,6 +126,7 @@ export async function initSession() {
 	// Check every minute if we should be notifying the end of session to the operator
 	setInterval(checkSessionEnd, 1000 * 60);
 	logger.debug('Sessions initialized', {service: 'Sessions'});
+	profile('initSession');
 }
 
 function checkSessionEnd() {
@@ -140,72 +143,84 @@ function checkSessionEnd() {
 	}
 }
 
-export async function exportSession(seid: string) {
+export async function exportSession(seid: string): Promise<SessionExports> {
 	try {
 		const session = await findSession(seid);
 		if (!session) throw {code: 404, msg: 'Session does not exist'};
 		const [requested, played] = await Promise.all([
-			getKaras({mode: 'sessionRequested', modeValue: seid, token: { role: 'admin', username: 'admin'}}),
-			getKaras({mode: 'sessionPlayed', modeValue: seid, token: { role: 'admin', username: 'admin'}})
+			selectAllKaras({order: 'sessionRequested', q: `seid:${seid}`, admin: true}),
+			selectAllKaras({order: 'sessionPlayed', q: `seid:${seid}`, admin: true})
 		]);
+		const sessionExports: SessionExports = {
+			requested: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requested.csv`),
+			played: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.played.csv`),
+			playedCount: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.playedCount.csv`),
+			requestedCount: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requestedCount.csv`),
+		};
 		const csvRequested = csvWriter({
-			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requested.csv')),
+			path: resolve(resolvedPathSessionExports(), sessionExports.requested),
 			header: [
 				{id: 'requested_at', title: 'REQUESTED AT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
 				{id: 'songtype', title: 'TYPE'},
 				{id: 'order', title: 'ORDER'},
-				{id: 'title', title: 'TITLE'}
+				{id: 'title', title: 'TITLE'},
+				{id: 'version', title: 'VERSION'}
 			],
 			alwaysQuote: true
 		});
 		const csvPlayed = csvWriter({
-			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.played.csv')),
+			path: resolve(resolvedPathSessionExports(), sessionExports.played),
 			header: [
 				{id: 'played_at', title: 'PLAYED AT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
 				{id: 'songtype', title: 'TYPE'},
 				{id: 'order', title: 'ORDER'},
-				{id: 'title', title: 'TITLE'}
+				{id: 'title', title: 'TITLE'},
+				{id: 'version', title: 'VERSION'}
 			],
 			alwaysQuote: true
 		});
 		const csvPlayedCount = csvWriter({
-			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.playedCount.csv')),
+			path: resolve(resolvedPathSessionExports(), sessionExports.playedCount),
 			header: [
 				{id: 'count', title: 'PLAY COUNT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
 				{id: 'songtype', title: 'TYPE'},
 				{id: 'order', title: 'ORDER'},
-				{id: 'title', title: 'TITLE'}
+				{id: 'title', title: 'TITLE'},
+				{id: 'version', title: 'VERSION'}
 			],
 			alwaysQuote: true
 		});
 		const csvRequestedCount = csvWriter({
-			path: resolve(getState().dataPath, sanitizeFile(session.name + '.' + session.started_at.toISOString() + '.requestedCount.csv')),
+			path: resolve(resolvedPathSessionExports(), sessionExports.requestedCount),
 			header: [
 				{id: 'count', title: 'REQUEST COUNT'},
 				{id: 'seriesinger', title: 'SERIES/SINGER'},
 				{id: 'songtype', title: 'TYPE'},
 				{id: 'order', title: 'ORDER'},
-				{id: 'title', title: 'TITLE'}
+				{id: 'title', title: 'TITLE'},
+				{id: 'version', title: 'VERSION'}
 			],
 			alwaysQuote: true
 		});
-		const recordsPlayed = played.content.map(k => {
+		const recordsPlayed = played.map(k => {
 			return {
 				played_at: k.lastplayed_at.toLocaleString(),
-				seriesinger: getSeriesSingers(k),
+				seriesinger: getSongSeriesSingers(k),
+				version: getSongVersion(k),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: k.title,
 				kid: k.kid
 			};
 		});
-		const recordsRequested = requested.content.map(k => {
+		const recordsRequested = requested.map(k => {
 			return {
 				requested_at: k.lastrequested_at.toLocaleString(),
-				seriesinger: getSeriesSingers(k),
+				seriesinger: getSongSeriesSingers(k),
+				version: getSongVersion(k),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: k.title,
@@ -251,6 +266,7 @@ export async function exportSession(seid: string) {
 			csvPlayedCount.writeRecords(recordsPlayedCount),
 			csvRequestedCount.writeRecords(recordsRequestedCount)
 		]);
+		return sessionExports;
 	} catch(err) {
 		sentry.error(err);
 		throw err;

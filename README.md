@@ -49,7 +49,6 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 * **Highly customized experience** to tailor the app to your specific needs (in front of a crowd, between friends, for karaoke contests, etc.)
 * **Display karaoke information** or operator announcements during song playback
 * **Export/import** playlists, favorites, blacklist criterias sets
-* **[REST API](http://mugen.karaokes.moe/apidoc)** so you can create custom clients or web interfaces.
 * And **many other things**! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
 
 ## How it works
@@ -58,7 +57,6 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 * **Launch the app** (see the launch section below). You will be prompted with some questions and you will need to create an account (online or local).
 * Use the **in-app downloader** or place karaoke songs inside the `app/repos` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/). If you don't want to add a full karaoke base for now, Karaoke Mugen will download samples from karaoke repositories in your `app/repos` folder if it's left empty so you can try out the app.
 * Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and **have fun**!
-  * **Your users need to be on the same Wifi/LAN network you are on for this to work.**
 
 In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's over a few hundreds gigabytes big once the videos have been downloaded.
 
@@ -124,8 +122,8 @@ Earlier or later PostgreSQL versions (9.x, 10.x, 12.x...) should work but have n
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
-* **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `app/database.json` file to point to the correct server and database)
-* **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `app/database.json` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
+* **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `config.yml` file to point to the correct server and database)
+* **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `config.yml` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
 
 ### Yarn
 
@@ -145,40 +143,32 @@ git config submodule.recurse true
 
 ### Dependencies
 
-Launch `yarn` to install dependencies and build the React frontend and system control panel.
+Launch `yarn` to install dependencies and build the React frontend
 
 ```sh
 yarn setup
 ```
 
-This runs install on the app, system panel and frontend then builds them.
+This runs install on the app and frontend then builds them.
 
 ### Database setup
 
 Karaoke Mugen needs a PostgreSQL database to work.
 
-Use the supplied `database.sample.json` file and copy it to `database.json` and place it in your data directory (`$HOME/KaraokeMugen` or `app/` in portable configurations). Edit it and fill in the blanks (username, password, port, host and database name of your choosing.) and switch `bundledPostgresBinary` to `false`. Leave `superuser` and `superuserPassword` blank. It should look like this :
+Create a `config.yml` and place it in your data directory (`~/KaraokeMugen` or `app/` in portable configurations). Edit it and add the following, filling in the blanks (username, password, port, host and database name of your choosing.) and switch `bundledPostgresBinary` to `false`. Leave `superuser` and `superuserPassword` blank. It should look like this :
 
-```JSON
-{
-  "sql-file": true,
-  "defaultEnv": "prod",
-  "prod": {
-    "driver": "pg",
-    "user": "karaokemugen_app",
-    "password": "musubi",
-    "host": "localhost",
-    "port": 5432,
-    "database": "karaokemugen_app",
-    "schema": "public",
-    "superuser": null,
-    "superuserPassword": null,
-    "bundledPostgresBinary": false
-  }
-}
+```YAML
+System:
+  Database:
+    bundledPostgresBinary: false
+    database: karaokemugen_app
+    host: localhost
+    password: musubi
+    port: 5432
+    username: karaokemugen_app
 ```
 
-As a superuser on PostgreSQL, you need to create the database properly. Use the `psql` command-line tool to connect to your PostgreSQL cluster and create the needed database and extension. Example with the `database.json` above :
+As a superuser on PostgreSQL, you need to create the database properly. Use the `psql` command-line tool to connect to your PostgreSQL cluster and create the needed database and extension. Example with the `config.yml` above :
 
 ```SQL
 CREATE DATABASE karaokemugen_app ENCODING 'UTF8';
@@ -203,9 +193,9 @@ To launch the app :
 yarn start
 ```
 
-Generating a database ie required on first launch and is done automatically if the database specified in `database.json` is empty. You can trigger it manually later by connecting to the admin panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
+Generating a database ie required on first launch and is done automatically if the database specified in `config.yml` is empty. You can trigger it manually later by connecting to the system panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
-On first run, the app will make you create an admin user and follow a guided tour of the operator/admin panel. You can trigger this tour/admin creation process again by setting `FirstRun` to `true` in your config file. Check the sample config file for example.
+On first run, the app will make you create an admin user and follow a guided tour of the operator panel. You can trigger this tour/admin creation process again by selecting the Tutorial item in the K menu on the app's operator panel.
 
 #### Launch without Electron
 
@@ -239,7 +229,13 @@ Everything's there, and if you have questions, you can come to [our Discord](htt
 ## Special thanks
 
 <img src="https://sentry-brand.storage.googleapis.com/sentry-logo-black.png" alt="Sentry full logo" width="125"/>
-Thanks to the [Sentry error tracking](https://sentry.io/welcome?utm_source=KaraokeMugen) solution, the app is self-reporting its errors to maintainers to help them to fix issues.
+
+Thanks to the [Sentry error tracking](https://sentry.io/welcome?utm_source=KaraokeMugen) solution, the app is self-reporting its errors to maintainers to help them to fix issues.<br/>
+
+
+<img src="https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/dba8fa95d7b4f1fac5e5877c72257f36/image.png" alt="BrowserStack full logo" width="125" />
+
+Thanks to the [BrowserStack testing solution](https://browserstack.com), we can be sure that our interfaces will run just fine on each device.
 
 ## Credits
 

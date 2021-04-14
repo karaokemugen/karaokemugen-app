@@ -1,8 +1,7 @@
-import { DBMedia } from './database/medias';
-
-
-export interface Media extends DBMedia {
-	series?: string
+export interface Media {
+	series?: string,
+	filename: string,
+	type: MediaType
 }
 
 export type MediaType = 'Sponsors' | 'Intros' | 'Outros' | 'Jingles' | 'Encores'

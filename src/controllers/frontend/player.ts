@@ -1,20 +1,20 @@
-import { Router } from 'express';
 
+import { Socket } from 'socket.io';
+
+import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
-import { emitWS } from '../../lib/utils/ws';
+import { emitWS, SocketIOApp } from '../../lib/utils/ws';
 import { initPlayer,isPlayerRunning,playerMessage, playPlayer, sendCommand } from '../../services/player';
 import { getState } from '../../utils/state';
 import { APIMessage,errMessage } from '../common';
-import { requireAdmin, requireAuth, requireValidUser,updateUserLoginTime } from '../middlewares/auth';
-import { getLang } from '../middlewares/lang';
-import { requireWebappLimited } from '../middlewares/webapp_mode';
+import { runChecklist } from '../middlewares';
 
-export default function playerController(router: Router) {
-	router.route('/player/play')
+export default function playerController(router: SocketIOApp) {
+	router.route('play', async (socket: Socket, req: APIData) => {
 	/**
-	 * @api {post} /player/play Start a song (classic mode)
-	 * @apiName PlayPlayer
-	 * @apiVersion 3.1.0
+	 * @api {post} Start a song (classic mode)
+	 * @apiName play
+	 * @apiVersion 5.0.0
 	 * @apiGroup Player
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -28,20 +28,20 @@ export default function playerController(router: Router) {
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
 	 */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req: any, res: any) => {
-			if (req.authToken.username === getState().currentRequester) {
-				await playPlayer(true);
-				res.status(200).json();
-			} else {
-				res.status(403).json(APIMessage('USER_NOT_ALLOWED_TO_SING'));
-			}
-		});
+		await runChecklist(socket, req, 'guest', 'limited');
+		if (req.token.username.toLowerCase() === getState().currentRequester) {
+			await playPlayer(true);
+			return;
+		} else {
+			throw {code: 403, message: APIMessage('USER_NOT_ALLOWED_TO_SING')};
+		}
+	});
 
-	router.route('/player/message')
+	router.route('displayPlayerMessage', async (socket: Socket, req: APIData) => {
 	/**
- * @api {post} /player/message Send a message to screen or user's devices
- * @apiName PostPlayerMessage
- * @apiVersion 3.1.0
+ * @api {post} Send a message to screen or user's devices
+ * @apiName displayPlayerMessage
+ * @apiVersion 5.0.0
  * @apiGroup Player
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -60,36 +60,40 @@ export default function playerController(router: Router) {
  * HTTP/1.1 500 Internal Server Error
  * {code: "MESSAGE_SEND_ERROR"}
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			const validationErrors = check(req.body, {
-				duration: {integerValidator: true},
-				message: {presence: true},
-				destination: {inclusion: ['screen', 'users', 'all']}
-			});
-			if (!validationErrors) {
-				if (req.body.destination === 'users' || req.body.destination === 'all') emitWS('adminMessage', req.body );
-				if (req.body.destination === 'screen' || req.body.destination === 'all') {
-					try {
-						await playerMessage(req.body.message, +req.body.duration, 5);
-					} catch(err) {
-						const code = 'MESSAGE_SEND_ERROR';
-						errMessage(code, err);
-						res.messageFailed = true;
-						res.status(500).json(APIMessage(code));
-					}
-				}
-				if (!res.messageFailed) res.status(200).json(APIMessage('MESSAGE_SENT'));
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
+		await runChecklist(socket, req);
+		const validationErrors = check(req.body, {
+			duration: {integerValidator: true},
+			message: {presence: true},
+			destination: {inclusion: ['screen', 'users', 'all']}
 		});
-	router.route('/player')
+		if (!validationErrors) {
+			const error = null;
+			if (req.body.destination === 'users' || req.body.destination === 'all') emitWS('adminMessage', req.body );
+			if (req.body.destination === 'screen' || req.body.destination === 'all') {
+				try {
+					await playerMessage(req.body.message, +req.body.duration, 5);
+				} catch(err) {
+					error.code = 'MESSAGE_SEND_ERROR';
+					error.err = err;
+				}
+			}
+			if (!error) {
+				return APIMessage('MESSAGE_SENT');
+			} else {
+				errMessage(error.code, error.err);
+				throw {code: 500, message: APIMessage(error.code)};
+			}
+		} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
+			throw {code: 400, message: validationErrors};
+		}
+	});
+	router.route('sendPlayerCommand', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {put} /player Send commands to player
-	 * @apiName PutPlayerCommando
-	 * @apiVersion 3.1.0
+	 * @api {put} Send commands to player
+	 * @apiName sendPlayerCommand
+	 * @apiVersion 5.0.0
 	 * @apiGroup Player
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -105,48 +109,20 @@ export default function playerController(router: Router) {
  	 * HTTP/1.1 500 Internal Server Error
  	 * {code: "COMMAND_SEND_ERROR"}
 	 */
-		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req: any, res: any) => {
-			const validationErrors = check(req.body, {
-				command: {inclusion: [
-					'play',
-					'pause',
-					'stopNow',
-					'stopAfter',
-					'skip',
-					'prev',
-					'toggleFullscreen',
-					'toggleAlwaysOnTop',
-					'setPiPSize',
-					'setHwDec',
-					'seek',
-					'goTo',
-					'mute',
-					'unmute',
-					'setVolume',
-					'showSubs',
-					'hideSubs'
-				]}
-			});
-			if (!validationErrors) {
-				try {
-					const code = await sendCommand(req.body.command, req.body.options);
-					res.status(200).json(code ? {code}:undefined);
-				} catch(err) {
-					const code = 'COMMAND_SEND_ERROR';
-					errMessage(code, err);
-					res.status(500).json(APIMessage(code));
-				}
-			} else {
-				// Errors detected
-				// Sending BAD REQUEST HTTP code and error object.
-				res.status(400).json(validationErrors);
-			}
-		});
-	router.route('/player/start')
+		await runChecklist(socket, req);
+		try {
+			return await sendCommand(req.body.command, req.body.options);
+		} catch(err) {
+			const code = 'COMMAND_SEND_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('startPlayer', async (socket: Socket, req: APIData) => {
 		/**
-	 * @api {post} /player/start Start up video player
-	 * @apiName PostPlayerStart
-	 * @apiVersion 4.0.0
+	 * @api {post} Start up video player
+	 * @apiName startPlayer
+	 * @apiVersion 5.0.0
 	 * @apiGroup Player
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
@@ -157,17 +133,15 @@ export default function playerController(router: Router) {
 	 * @apiErrorExample Error-Response:
  	 * HTTP/1.1 409 Conflict
  	 */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (_req: any, res: any) => {
-			try {
-				if (isPlayerRunning()) {
-					res.status(409);
-				} else {
-					await initPlayer();
-					res.status(200);
-				}
-				res.json();
-			} catch(err) {
-				res.status(500).json();
+	 	await runChecklist(socket, req);
+		try {
+			if (isPlayerRunning()) {
+				throw {code: 409};
+			} else {
+				await initPlayer();
 			}
-		});
+		} catch(err) {
+			throw {code: 500};
+		}
+	});
 }

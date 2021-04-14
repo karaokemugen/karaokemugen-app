@@ -1,39 +1,40 @@
 import openAboutWindow from 'about-window';
-import { clipboard,dialog } from 'electron';
+import { dialog, MenuItem, MenuItemConstructorOptions } from 'electron';
 import {autoUpdater} from 'electron-updater';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
 
-import {exit} from '../components/engine';
+import { exit } from '../components/engine';
 import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
+import { removeNulls } from '../lib/utils/object_helpers';
 import { getState } from '../utils/state';
-import {handleFile,win} from './electron';
+import { handleFile, updateChibiPlayerWindow,win } from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
 
-let menuItems: any;
+let menuItems: Array<(MenuItemConstructorOptions) | (MenuItem)>;
 
 export function getMenu() {
 	return menuItems;
 }
 
 export function initMenu() {
-	const port = getConfig().Frontend.Port;
+	const port = getState().frontendPort;
 	const base = 'http://localhost';
 	const urls = {
 		operatorOptions: `${base}:${port}/admin?config`,
-		systemOptions: `${base}:${port}/system/km/options`,
+		systemOptions: `${base}:${port}/system/options`,
 		home: `${base}:${port}/welcome`,
 		operator: `${base}:${port}/admin`,
-		public: `${base}:${port}/`,
-		system: `${base}:${port}/system`,
-		logs: `${base}:${port}/system/km/log`,
-		download: `${base}:${port}/system/km/karas/download`,
-		karas: `${base}:${port}/system/km/karas`,
-		database: `${base}:${port}/system/km/db`
+		public: `${base}:${port}/public`,
+		system: `${base}:${port}/system/home`,
+		logs: `${base}:${port}/system/log`,
+		download: `${base}:${port}/system/karas/download`,
+		karas: `${base}:${port}/system/karas`,
+		database: `${base}:${port}/system/db`
 	};
 	menuItems = [
 		/**
@@ -46,12 +47,13 @@ export function initMenu() {
 			submenu: [
 				{
 					label: i18next.t('MENU_FILE_ABOUT'),
-					click: displayAbout
+					click: displayAbout,
+					visible: isMac
 				},
-				{ type: 'separator', visible: isMac },
+				isMac ? { type: 'separator', visible: isMac }:null,
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
-					accelerator: 'CmdOrCtrl+F',
+					accelerator: 'CmdOrCtrl+T',
 					visible: isMac,
 					click: () => {
 						openURL(urls.operatorOptions);
@@ -99,21 +101,9 @@ export function initMenu() {
 				{
 					label: isMac ? i18next.t('MENU_FILE_QUIT_OSX') : i18next.t('MENU_FILE_QUIT'),
 					accelerator: 'CmdOrCtrl+Q',
-					click: exit
-				}
-			]
-		},
-		/**
-		*
-		* SECURITY CODE MENU
-		*
-		*/
-		{
-			label: i18next.t('MENU_SECURITYCODE'),
-			submenu: [
-				{
-					label: i18next.t('MENU_SECURITYCODE_SHOW'),
-					click: getSecurityCode
+					click: () => {
+						exit();
+					}
 				}
 			]
 		},
@@ -126,12 +116,12 @@ export function initMenu() {
 			label: i18next.t('MENU_VIEW'),
 			submenu: [
 				{ label: i18next.t('MENU_VIEW_RELOAD'), role: 'reload' },
-				{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forcereload' },
-				{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggledevtools' },
+				{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forceReload' },
+				{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggleDevTools' },
 				{ type: 'separator' },
-				{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetzoom' },
-				{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomin' },
-				{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomout' },
+				{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetZoom' },
+				{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomIn' },
+				{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomOut' },
 				{ type: 'separator' },
 				{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
 			]
@@ -222,14 +212,6 @@ export function initMenu() {
 			visible: !isMac,
 			submenu: [
 				{
-					label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
-					type: 'checkbox',
-					checked: getConfig().GUI.OpenInElectron,
-					click: () => {
-						setConfig({ GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
-					}
-				},
-				{
 					label: i18next.t('MENU_OPTIONS_CHECKFORUPDATES'),
 					type: 'checkbox',
 					checked: getConfig().Online.Updates.App,
@@ -241,7 +223,7 @@ export function initMenu() {
 				{ type: 'separator' },
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
-					accelerator: 'CmdOrCtrl+F',
+					accelerator: 'CmdOrCtrl+T',
 					click: () => {
 						openURL(urls.operatorOptions);
 					}
@@ -264,14 +246,23 @@ export function initMenu() {
 			label: i18next.t('MENU_WINDOW'),
 			submenu: [
 				{ label: i18next.t('MENU_WINDOW_MINIMIZE'), role: 'minimize' },
-				{ type: 'separator', visible: isMac },
+				{ type: 'separator' },
 				{
 					label: i18next.t('MENU_OPTIONS_OPENINELECTRON'),
 					type: 'checkbox',
-					visible: isMac,
 					checked: getConfig().GUI.OpenInElectron,
 					click: () => {
 						setConfig({GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
+					}
+				},
+				{
+					label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
+					type: 'checkbox',
+					accelerator: 'CmdOrCtrl+I',
+					checked: getConfig().GUI.ChibiPlayer.Enabled,
+					click: () => {
+						updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
+						setConfig({GUI: {ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled }}});
 					}
 				}
 			]
@@ -332,7 +323,7 @@ export function initMenu() {
 				{
 					label: i18next.t('MENU_HELP_SEND_KARAOKE'),
 					click: () => {
-						open('https://kara.moe/import/');
+						open('https://kara.moe/base/import');
 					}
 				},
 				{ type: 'separator'},
@@ -341,6 +332,11 @@ export function initMenu() {
 					click: () => {
 						open('https://lab.shelter.moe/karaokemugen/karaokemugen-app/-/issues');
 					}
+				},
+				{
+					label: i18next.t('MENU_FILE_ABOUT'),
+					click: displayAbout,
+					visible: !isMac
 				}
 			]
 		}
@@ -367,13 +363,14 @@ export function initMenu() {
 					{
 						label: i18next.t('MENU_EDIT_SPEECH'),
 						submenu: [
-							{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startspeaking' },
-							{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopspeaking' }
+							{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startSpeaking' },
+							{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopSpeaking' }
 						]
 					}
 				]
 			});
 	}
+	menuItems = removeNulls(menuItems);
 }
 
 function openURL(url: string) {
@@ -385,7 +382,9 @@ function openURL(url: string) {
 async function checkForUpdates() {
 	setManualUpdate(true);
 	logger.info('Checking for updates manually', {service: 'AppUpdate'});
-	await autoUpdater.checkForUpdates();
+	await autoUpdater.checkForUpdates().catch(() => {
+		// Handled in electronAutoUpadte.ts
+	});
 	setManualUpdate(false);
 }
 
@@ -417,18 +416,5 @@ function displayAbout() {
 			use_version_info: true,
 			css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
 		});
-	}
-}
-
-async function getSecurityCode() {
-	const state = getState();
-	const buttons = await dialog.showMessageBox({
-		type: 'none',
-		title: i18next.t('SECURITY_CODE_TITLE'),
-		message: `${i18next.t('SECURITY_CODE_MESSAGE')} ${state.securityCode}`,
-		buttons: [i18next.t('COPY_TO_CLIPBOARD'), i18next.t('IT_IS_IN_MY_HEAD')],
-	});
-	if (buttons.response === 0) {
-		clipboard.writeText(state.securityCode.toString());
 	}
 }

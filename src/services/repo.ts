@@ -1,25 +1,25 @@
 import { basename,resolve } from 'path';
 
-import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
-import { Repository } from '../lib/types/repo';
-import { deleteOldPaths, getConfig, resolvedPathRepos,setConfig } from '../lib/utils/config';
-import { asyncCheckOrMkdir, asyncCopy,asyncExists, asyncMoveAll, asyncReadDir, extractAllFiles, relativePath, resolveFileInDirs } from '../lib/utils/files';
-import { getState } from '../utils/state';
-import cloneDeep = require('lodash.clonedeep');
 import { compareKarasChecksum, generateDB } from '../dao/database';
 import { editKaraInStore } from '../dao/dataStore';
+import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
 import { refreshKaras } from '../lib/dao/kara';
 import { writeKara } from '../lib/dao/karafile';
 import { readAllKaras,readAllTags } from '../lib/services/generation';
 import { Kara,KaraTag } from '../lib/types/kara';
+import { Repository } from '../lib/types/repo';
 import { Tag } from '../lib/types/tag';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
+import { asyncCheckOrMkdir, asyncCopy,asyncExists, asyncMoveAll, asyncReadDir, extractAllFiles, relativePath, resolveFileInDirs } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
 import sentry from '../utils/sentry';
-import { getRemoteKaras } from './download';
-import { editKaraInDB } from './kara';
+import { getState } from '../utils/state';
+import { getRemoteKaras } from './downloadUpdater';
+import { editKaraInDB } from './karaManagement';
+import { sendPayload } from './stats';
 import { getTag } from './tag';
 
 type UUIDSet = Set<string>
@@ -55,7 +55,7 @@ export async function addRepo(repo: Repository) {
 }
 
 /** Edit a repository. Folders will be created if necessary */
-export async function editRepo(name: string, repo: Repository) {
+export async function editRepo(name: string, repo: Repository, refresh?: boolean) {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw {code: 404};
 	if (!oldRepo.Online && repo.Online) {
@@ -65,8 +65,11 @@ export async function editRepo(name: string, repo: Repository) {
 	}
 	updateRepo(repo, name);
 	await checkRepoPaths(repo);
-	if (oldRepo.Enabled !== repo.Enabled) {
+	if (oldRepo.Enabled !== repo.Enabled || refresh) {
 		if (await compareKarasChecksum()) generateDB();
+	}
+	if (!oldRepo.SendStats && repo.SendStats) {
+		sendPayload(repo.Name, repo.Name === getConfig().Online.Host);
 	}
 	logger.info(`Updated ${name}`, {service: 'Repo'});
 }
@@ -103,9 +106,9 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 		});
 		return differentChecksums;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		if (err?.code === 404) throw err;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -136,9 +139,8 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 		}
 		refreshKaras();
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -163,16 +165,13 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 			extractAllFiles('Karas', repo),
 			extractAllFiles('Medias', repo)
 		]);
-		let mediaFilesFiltered: string[];
 		const karas = await (readAllKaras(karaFiles, false, task));
-		karas.forEach(k => {
-			mediaFilesFiltered = mediaFiles.filter(file => basename(file) !== k.mediafile);
-		});
-		return mediaFilesFiltered;
+		const mediasFilesKaras: string[] = karas.map(k => k.mediafile);
+		return mediaFiles.filter(file => !mediasFilesKaras.includes(basename(file)));
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		if (err?.code === 404) throw err;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
 	}
@@ -211,78 +210,11 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		}
 		return tagsToDelete;
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		if (err?.code === 404) throw err;
+		sentry.error(err);
+		throw err;
 	} finally {
 		task.end();
-	}
-}
-
-/** Migrate old data architecture to the new one */
-export async function migrateOldFoldersToRepo() {
-	/* We're assuming that kara.moe is the standard repo everyone has
-	1) This instance is fresh : no dataPath/data should exist, exit immediately
-	2) There is something in config.Path.Karas, Medias, Lyrics, Series and/or Tags : assume we have a customized install
-	3) dataPath/data exists, and there is nothing in config.Path.Karas => this is a standard KM instance, in this case we overwrite the kara.moe paths with these
-	*/
-	const conf = getConfig();
-	const state = getState();
-	// Case 1
-	if (!await asyncExists(resolve(state.dataPath, 'data/')) &&
-		!conf.System.Path.Karas &&
-		!conf.System.Path.Medias &&
-		!conf.System.Path.Lyrics &&
-		!conf.System.Path.Series &&
-		!conf.System.Path.Tags) {
-		logger.info('Initialization - Fresh start configuration', {service: 'Repo'});
-		return;
-	}
-	// Case 2
-	if ((conf.System.Path.Karas && conf.System.Path.Karas.length > 0) ||
-		(conf.System.Path.Lyrics && conf.System.Path.Lyrics.length > 0) ||
-		(conf.System.Path.Medias && conf.System.Path.Medias.length > 0) ||
-		(conf.System.Path.Series && conf.System.Path.Series.length > 0) ||
-		(conf.System.Path.Tags && conf.System.Path.Tags.length > 0)
-	) {
-		logger.info('Initialization - Customized configuration', {service: 'Repo'});
-		const repos = cloneDeep(conf.System.Repositories);
-		repos[0].Path.Karas = [].concat(conf.System.Path.Karas);
-		repos[0].Path.Lyrics = [].concat(conf.System.Path.Lyrics);
-		repos[0].Path.Series = [].concat(conf.System.Path.Series);
-		repos[0].Path.Tags = [].concat(conf.System.Path.Tags);
-		repos[0].Path.Medias = [].concat(conf.System.Path.Medias);
-
-		// Treat all secondary targets as local repository and remove them from first (kara.moe) repository
-		for (const type of Object.keys(repos[0].Path)) {
-			if (repos[0].Path[type].length > 1) {
-				repos[1].Path[type] = repos[0].Path[type].filter((_: any, i: number) => i > 0);
-				repos[0].Path[type] = repos[0].Path[type].filter((_: any, i: number) => i === 0);
-			}
-		}
-		deleteOldPaths();
-		setConfig({
-			System: {
-				Repositories: cloneDeep(repos),
-			}
-		});
-	}
-	// Case 3
-	if (await asyncExists(resolve(state.dataPath, 'data/')) &&
-		!await asyncExists(resolve(state.dataPath, conf.System.Repositories[0].Path.Karas[0]))) {
-		logger.info('Initialization - KM <3.2 configuration', {service: 'Repo'});
-		const repos = cloneDeep(conf.System.Repositories);
-		repos[0].Path.Karas = ['data/karaokes'];
-		repos[0].Path.Lyrics = ['data/lyrics'];
-		repos[0].Path.Series = ['data/series'];
-		repos[0].Path.Tags = ['data/tags'];
-		repos[0].Path.Medias = ['data/medias'];
-		deleteOldPaths();
-		setConfig({
-			System: {
-				Repositories: cloneDeep(repos),
-			}
-		});
 	}
 }
 
@@ -314,9 +246,6 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		for (const dir of repo.Path.Lyrics) {
 			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'lyrics/')));
 		}
-		for (const dir of repo.Path.Series) {
-			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'series/')));
-		}
 		for (const dir of repo.Path.Tags) {
 			moveTasks.push(await asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'tags/')));
 		}
@@ -327,9 +256,8 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		repo.Path.Karas = [relativePath(state.dataPath, resolve(newPath, 'karaokes/'))];
 		repo.Path.Lyrics = [relativePath(state.dataPath, resolve(newPath, 'lyrics/'))];
 		repo.Path.Medias = [relativePath(state.dataPath, resolve(newPath, 'medias/'))];
-		repo.Path.Series = [relativePath(state.dataPath, resolve(newPath, 'series/'))];
 		repo.Path.Tags = [relativePath(state.dataPath, resolve(newPath, 'tags/'))];
-		await editRepo(repoName, repo);
+		await editRepo(repoName, repo, true);
 	} catch(err) {
 		logger.error(`Failed to move repo ${name}`, {service: 'Repo', obj: err});
 		throw err;

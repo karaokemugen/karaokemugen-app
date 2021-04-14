@@ -13,7 +13,6 @@ import {	addBlacklistCriteria as addBLC,
 	getCurrentBLCSet,
 	selectSet,
 	selectSets,
-	setCurrentSet,
 	unsetCurrentSet,
 } from '../dao/blacklist';
 import {KaraList, KaraParams} from '../lib/types/kara';
@@ -30,7 +29,9 @@ import {getTag} from './tag';
 export async function editSet(params: BLCSet) {
 	const blcSet = await selectSet(params.blc_set_id);
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
-	await editBLCSet(params);
+	if (params.flag_current) await unsetCurrentSet();
+	await editBLCSet({...blcSet, ...params});
+	if (params.flag_current) await generateBlacklist();
 	updatedSetModifiedAt(blcSet.blc_set_id);
 	emitWS('BLCSetInfoUpdated', params.blc_set_id);
 	emitWS('BLCSetsUpdated');
@@ -51,15 +52,17 @@ export async function addSet(params: BLCSet) {
 		created_at: new Date(),
 		modified_at: new Date()
 	});
-	if (params.flag_current) setSetCurrent(id);
+	if (params.flag_current) {
+		await unsetCurrentSet();
+		await editBLCSet({name: params.name, blc_set_id: id, flag_current: true});
+		await generateBlacklist();
+	}
 	return id;
 }
 
 export async function importSet(file: BLCSetFile) {
 	const id = await addSet(file.blcSetInfo);
-	for (const blc of file.blcSet) {
-		await addBlacklistCriteria(blc.type, blc.value, id);
-	}
+	await addBlacklistCriteria(file.blcSet, id);
 	emitWS('BLCSetsUpdated');
 	return id;
 }
@@ -82,19 +85,10 @@ export async function exportSet(id: number): Promise<BLCSetFile> {
 	return file;
 }
 
-export async function setSetCurrent(id: number) {
-	const blcSet = await selectSet(id);
-	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
-	await unsetCurrentSet();
-	await setCurrentSet(id);
-	updatedSetModifiedAt(id);
-	emitWS('BLCSetInfoUpdated', id);
-	await generateBlacklist();
-}
-
 export async function removeSet(id: number) {
 	const blcSet = await selectSet(id);
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
+	if (blcSet.flag_current) throw {code: 403, msg: 'Unable to remove a current BLC Set'};
 	await deleteSet(id);
 	emitWS('BLCSetsUpdated');
 }
@@ -135,9 +129,8 @@ export async function getBlacklistCriterias(id: number, lang?: string, noDressin
 		if (noDressingUp) return blcs;
 		return await translateBlacklistCriterias(blcs, lang);
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		profile('getBLC');
 	}
@@ -148,7 +141,9 @@ export function generateBlacklist() {
 }
 
 export async function initBlacklistSystem() {
+	profile('initBL');
 	await testCurrentBLCSet();
+	profile('initBL');
 }
 
 /** Create current blacklist set if it doesn't exist */
@@ -171,54 +166,58 @@ export async function testCurrentBLCSet() {
 export async function emptyBlacklistCriterias(id: number) {
 	logger.debug('Wiping criterias', {service: 'Blacklist'});
 	const blcSet = await selectSet(id);
-	if (!blcSet) throw 'BLC set unknown';
+	if (!blcSet) throw {code: 404, message: 'BLC set unknown'};
 	await emptyBLC(id);
 	if (blcSet.flag_current) await generateBlacklist();
 	updatedSetModifiedAt(id);
 	emitWS('blacklistUpdated');
 }
 
-export async function deleteBlacklistCriteria(blc_id: number, set_id: number) {
+export async function deleteBlacklistCriteria(blc_ids: number[], set_id: number) {
 	profile('delBLC');
-	logger.debug(`Deleting criteria ${blc_id}`, {service: 'Blacklist'});
+	logger.debug(`Deleting criteria ${blc_ids.join(' ')}`, {service: 'Blacklist'});
 	const blcSet = await selectSet(set_id);
 	if (!blcSet) throw {code: 404, msg: 'BLC set unknown'};
-	await deleteBLC(blc_id);
+	const promises: Promise<any>[] = [];
+	for (const blc_id of blc_ids) {
+		promises.push(deleteBLC(blc_id));
+	}
+	await Promise.all(promises);
 	if (blcSet.flag_current) await generateBlacklist();
 	profile('delBLC');
 	updatedSetModifiedAt(set_id);
 	emitWS('blacklistUpdated');
 }
 
-export async function addBlacklistCriteria(type: number, value: any, set_id: number) {
+export async function addBlacklistCriteria(BLCs: BLC[], set_id: number) {
 	profile('addBLC');
-	const blcvalues = typeof value === 'string'
-		? value.split(',')
-		: [value];
-	logger.info(`Adding criteria ${type} = ${blcvalues.toString()}`, {service: 'Blacklist'});
-	const blcList = blcvalues.map((e: string) => {
+	if (!Array.isArray(BLCs)) throw {code: 400};
+	logger.info(`Adding criterias = ${JSON.stringify(BLCs)}`, {service: 'Blacklist'});
+	const blcList = BLCs.map(blc => {
 		return {
-			value: e,
-			type: type,
+			value: blc.value,
+			type: blc.type,
 			blc_set_id: set_id
 		};
 	});
 	try {
 		const blcset = await selectSet(set_id);
 		if (!blcset) throw {code: 404, msg: 'BLC set unknown'};
-		if (type < 0 || type > 1004 || type === 1000) throw {code: 400, msg: `Incorrect BLC type (${type})`};
-		if (type === 1001 || type < 1000) {
-			if (blcList.some((blc: BLC) => !new RegExp(uuidRegexp).test(blc.value))) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${type} must have UUID values`};
+		// Validation
+		for (const blc of blcList) {
+			if (blc.type < 0 || blc.type > 1004 || blc.type === 1000) throw {code: 400, msg: `Incorrect BLC type (${blc.type})`};
+			if (blc.type === 1001 || (blc.type >= 1 && blc.type < 1000)) {
+				if (!new RegExp(uuidRegexp).test(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`};
+			}
+			if ((blc.type === 1002 || blc.type === 1003) && !isNumber(blc.value)) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`};
 		}
-		if ((type === 1002 || type === 1003) && !blcvalues.some(e => isNumber(e))) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${type} must have a numeric value!`};
 		await addBLC(blcList);
 		if (blcset.flag_current) await generateBlacklist();
 		updatedSetModifiedAt(set_id);
 		emitWS('blacklistUpdated');
 	} catch(err) {
 		logger.error('Error adding criteria', {service: 'Blacklist', obj: err});
-		const error = new Error(err);
-		sentry.error(error);
+		if (!err.code || err.code >= 500) sentry.error(err);
 		throw err;
 	} finally {
 		profile('addBLC');

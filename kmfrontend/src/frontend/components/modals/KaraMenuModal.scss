@@ -1,0 +1,17 @@
+.animate-button-container {
+	position: relative;
+}
+
+.dropdown-menu > li > a.animate-button-success {
+	position: absolute;
+	background-color: forestgreen;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	clip-path: inset(0% 50%);
+	transition: clip-path 200ms ease;
+	&.activate {
+		clip-path: inset(0% 0%);
+	}
+}

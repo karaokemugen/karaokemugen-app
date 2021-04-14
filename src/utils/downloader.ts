@@ -98,7 +98,7 @@ export default class Downloader {
 	}
 
 	_fetchFile = (dl: DownloadItem, options: any) => {
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			let size = 0;
 			HTTP.stream.get(dl.url, options)
 				.on('response', (res: Response) => {
@@ -124,3 +124,5 @@ export default class Downloader {
 }
 
 // The crepes are a lie.
+
+// The progress bar as well. It was removed when we switched to Electron and didn't need the console anymore.

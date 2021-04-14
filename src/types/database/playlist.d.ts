@@ -22,12 +22,14 @@ export interface DBPLCBase extends DBKara {
 	flag_playing: boolean,
 	pos: number,
 	flag_free: boolean,
+	flag_accepted: boolean,
+	flag_refused: boolean,
 	flag_visible: boolean,
-	username: string
+	username: string,
+	user_type: number,
 	playlistcontent_id: number,
 	playlist_id: number,
-	count: number,
-	repo: string
+	count: number
 }
 
 export interface DBPLPos {
@@ -40,17 +42,17 @@ export interface DBPLKidUser extends DBPLPos {
 }
 
 export interface DBPL {
-	playlist_id: number,
+	playlist_id?: number,
 	name: string,
-	karacount: number,
-	duration: number,
-	time_left: number,
-	created_at: Date,
-	modified_at: Date,
+	karacount?: number,
+	duration?: number,
+	time_left?: number,
+	created_at?: Date,
+	modified_at?: Date,
 	flag_visible: boolean,
 	flag_current: boolean,
 	flag_public: boolean,
-	plcontent_id_playing: number,
+	plcontent_id_playing?: number,
 	username: string
 }
 export interface DBPLC extends DBPLCBase {

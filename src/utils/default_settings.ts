@@ -3,21 +3,20 @@
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.yml to bypass the default values.
+import { app } from 'electron';
+
 import {bools, hostnameRegexp} from '../lib/utils/constants';
 import {Config} from '../types/config';
 
-const dbConfig = process.platform === 'linux'
+export const dbConfig = process.platform === 'linux'
 	? {
 		bundledPostgresBinary: false,
 		database: 'karaokemugen_app',
-		driver: 'pg',
 		host: 'localhost',
 		password: 'musubi',
 		port: 5432,
-		schema: 'public',
 		superuser: null,
 		superuserPassword: null,
-		user: 'karaokemugen_app',
 		username: 'karaokemugen_app'
 	}
 	: {
@@ -27,10 +26,8 @@ const dbConfig = process.platform === 'linux'
 		host: 'localhost',
 		password: 'musubi',
 		port: 6559,
-		schema: 'public',
 		superuser: 'postgres',
 		superuserPassword: null,
-		user: 'karaokemugen_app',
 		username: 'karaokemugen_app'
 	};
 
@@ -41,13 +38,10 @@ export const defaults: Config = {
 		JwtSecret: 'Change me',
 		QuickStart: false
 	},
-	Database: {
-		prod: dbConfig
-	},
 	Online: {
 		Host: 'kara.moe',
-		MediasHost: undefined,
-		Port: undefined,
+		MediasHost: null,
+		Port: 80,
 		Stats: undefined,
 		ErrorTracking: undefined,
 		URL: true,
@@ -64,53 +58,27 @@ export const defaults: Config = {
 				Sponsors: true
 			},
 			App: true,
-		}
+		},
+		Remote: false,
+		FetchPopularSongs: true
 	},
 	Frontend: {
+		GeneratePreviews: true,
 		AuthExpireTime: 15,
 		Mode: 2,
 		Port: 1337,
 		Permissions: {
-			AllowNicknameChange: true,
-			AllowViewBlacklist: true,
-			AllowViewBlacklistCriterias: true,
-			AllowViewWhitelist: true,
+			AllowNicknameChange: true
 		},
 		SeriesLanguageMode: 3,
 		ShowAvatarsOnPlaylist: true
 	},
-	Gitlab: {
-		Enabled: true,
-		Host: 'https://lab.shelter.moe',
-		ProjectID: 2,
-		// This is a reporter-only access token, nothing of value is here.
-		Token: 'i5WnabG3fvda4oxx-FRb',
-		IssueTemplate: {
-			Suggestion: {
-				Description: `
-# Suggestion de karaoké
-
-
-**Auteur de l'issue** : $username
-
-
-**Titre** : $title
-
-
-**Série** : $serie
-
-
-**Type** : $type
-
-
-**Lien** : $link`,
-				Title: '[Suggestion] $serie - $title',
-				Labels: ['suggestion']
-			}
-		}
-	},
 	GUI: {
-		OpenInElectron: true
+		OpenInElectron: true,
+		ChibiPlayer: {
+			Enabled: false,
+			AlwaysOnTop: true
+		}
 	},
 	Karaoke: {
 		Autoplay: false,
@@ -152,15 +120,14 @@ export const defaults: Config = {
 		Background: '',
 		FullScreen: false,
 		Monitor: false,
+		Borders: true,
 		ExtraCommandLine: '',
 		mpvVideoOutput: '',
 		NoBar: true,
 		NoHud: true,
 		Screen: 0,
 		StayOnTop: true,
-		VisualizationEffects: false,
 		PIP: {
-			Enabled: true,
 			PositionX: 'Right',
 			PositionY: 'Bottom',
 			Size: 30,
@@ -171,7 +138,6 @@ export const defaults: Config = {
 	},
 	Playlist: {
 		AllowDuplicates: false,
-		AllowDuplicateSeries: true,
 		MaxDejaVuTime: 60,
 		Medias: {
 			Sponsors: {
@@ -210,20 +176,27 @@ export const defaults: Config = {
 		RandomSongsAfterEndMessage: true,
 	},
 	System: {
+		Database: dbConfig,
 		Binaries: {
 			Player: {
 				Linux: '/usr/bin/mpv',
-				OSX: 'app/bin/mpv.app/Contents/MacOS/mpv',
+				OSX: app?.isPackaged
+					? 'Karaoke Mugen.app/Contents/app/bin/mpv.app/Contents/MacOS/mpv'
+					: 'app/bin/mpv.app/Contents/MacOS/mpv',
 				Windows: 'app\\bin\\mpv.exe'
 			},
 			ffmpeg: {
 				Linux: '/usr/bin/ffmpeg',
-				OSX: 'app/bin/ffmpeg',
+				OSX: app?.isPackaged
+					? 'Karaoke Mugen.app/Contents/app/bin/ffmpeg'
+					: 'app/bin/ffmpeg',
 				Windows: 'app\\bin\\ffmpeg.exe'
 			},
 			Postgres: {
 				Linux: 'app/bin/postgres/bin/',
-				OSX: 'app/bin/postgres/bin/',
+				OSX: app?.isPackaged
+					? 'Karaoke Mugen.app/Contents/app/bin/postgres/bin/'
+					: 'app/bin/postgres/bin/',
 				Windows: 'app\\bin\\postgres\\bin\\'
 			}
 		},
@@ -232,19 +205,18 @@ export const defaults: Config = {
 				Name: 'kara.moe',
 				Online: true,
 				Enabled: true,
+				SendStats: true,
 				Path: process.platform === 'win32'
 					? {
 						Karas: ['repos\\kara.moe\\karaokes'],
 						Lyrics: ['repos\\kara.moe\\lyrics'],
 						Medias: ['repos\\kara.moe\\medias'],
-						Series: ['repos\\kara.moe\\series'],
 						Tags: ['repos\\kara.moe\\tags']
 					}
 					: {
 						Karas: ['repos/kara.moe/karaokes'],
 						Lyrics: ['repos/kara.moe/lyrics'],
 						Medias: ['repos/kara.moe/medias'],
-						Series: ['repos/kara.moe/series'],
 						Tags: ['repos/kara.moe/tags']
 					}
 			},
@@ -257,14 +229,12 @@ export const defaults: Config = {
 						Karas: ['repos\\Local\\karaokes'],
 						Lyrics: ['repos\\Local\\lyrics'],
 						Medias: ['repos\\Local\\medias'],
-						Series: ['repos\\Local\\series'],
 						Tags: ['repos\\Local\\tags']
 					}
 					: {
 						Karas: ['repos/Local/karaokes'],
 						Lyrics: ['repos/Local/lyrics'],
 						Medias: ['repos/Local/medias'],
-						Series: ['repos/Local/series'],
 						Tags: ['repos/Local/tags']
 					}
 			}
@@ -281,7 +251,8 @@ export const defaults: Config = {
 			Outros: process.platform === 'win32' ? ['outros', 'outros\\KaraokeMugen'] : ['outros', 'outros/KaraokeMugen'],
 			Sponsors: process.platform === 'win32' ? ['sponsors', 'sponsors\\KaraokeMugen'] : ['sponsors', 'sponsors/KaraokeMugen'],
 			Temp: 'temp',
-			Previews: 'previews'
+			Previews: 'previews',
+			SessionExports: 'sessionExports'
 		}
 	}
 };
@@ -299,7 +270,7 @@ export const configConstraints = {
 	'Online.Stats': {boolUndefinedValidator: true},
 	'Online.ErrorTracking': {boolUndefinedValidator: true},
 	'Online.Host': {presence: true, format: hostnameRegexp},
-	'Online.MediasHost': {format: hostnameRegexp},
+	'Online.Port': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
 	'Online.Discord.DisplayActivity': {inclusion: bools},
@@ -309,21 +280,11 @@ export const configConstraints = {
 	'Online.Updates.Medias.Intros': {inclusion : bools},
 	'Online.Updates.App': {inclusion : bools},
 	'Frontend.Permissions.AllowNicknameChange': {inclusion : bools},
-	'Frontend.Permissions.AllowViewBlacklist': {inclusion : bools},
-	'Frontend.Permissions.AllowViewBlacklistCriterias': {inclusion : bools},
-	'Frontend.Permissions.AllowViewWhitelist': {inclusion : bools},
 	'Frontend.AuthExpireTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Frontend.Mode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	'Frontend.Port': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Frontend.SeriesLanguageMode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	'Frontend.ShowAvatarsOnPlaylist': {inclusion: bools},
-	'Gitlab.Enabled': {inclusion: bools},
-	'Gitlab.ProjectID': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	'Gitlab.Host': {presence: true},
-	'Gitlab.Token': {presence: true},
-	'Gitlab.IssueTemplate.Suggestion.Description': {presence: true},
-	'Gitlab.IssueTemplate.Suggestion.Title': {presence: true},
-	'Gitlab.IssueTemplate.Suggestion.Labels': {arrayValidator: true},
 	'GUI.OpenInElectron': {inclusion: bools},
 	'Karaoke.Autoplay': {inclusion : bools},
 	'Karaoke.ClassicMode': {inclusion : bools},
@@ -352,8 +313,6 @@ export const configConstraints = {
 	'Player.NoHud': {inclusion : bools},
 	'Player.StayOnTop': {inclusion : bools},
 	'Player.Screen': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	'Player.VisualizationEffects': {inclusion : bools},
-	'Player.PIP.Enabled': {inclusion : bools},
 	'Player.PIP.PositionX': {inclusion : horizontalPosArray},
 	'Player.PIP.PositionY': {inclusion : verticalPosArray},
 	'Player.PIP.Size': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100}},
@@ -361,7 +320,6 @@ export const configConstraints = {
 	'Player.Volume': {numericality: {greaterThanOrEqualTo: 0, lessThanOrEqualTo: 100}},
 	'Player.HardwareDecoding': {inclusion: hwdecModes},
 	'Playlist.AllowDuplicates': {inclusion : bools},
-	'Playlist.AllowDuplicateSeries': {inclusion : bools},
 	'Playlist.MaxDejaVuTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Playlist.Medias.Intros.Enabled': {inclusion: bools},
 	'Playlist.Medias.Sponsors.Enabled': {inclusion: bools},

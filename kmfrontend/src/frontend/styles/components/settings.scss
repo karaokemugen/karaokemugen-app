@@ -1,0 +1,122 @@
+@import '../variables';
+
+.settings-panel {
+	width: 75vw;
+	margin: 0 auto;
+	overflow-y: scroll;
+}
+
+.settings-nav {
+	width: 75vw;
+	margin: 0 auto;
+}
+
+@media screen and (max-width: $mugen-breakpoint-small) {
+	.settings-panel {
+		width: 100%;
+		margin: 0;
+	}
+	.settings-nav {
+		width: 100%;
+		margin: 0 auto;
+	}
+}
+
+.settings-line {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.75em;
+	background-color: $mugen-playlist-odd;
+
+	> div {
+		display: flex;
+		align-items: center;
+
+		&.mysterySongs {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+		
+			> div {
+				margin: 0.2em;
+				button {
+					margin-left: 0.5em;
+				}
+			}
+		}
+
+		input:not([type="range"]) {
+			background-color: scale-color($mugen-playlist-odd, $lightness: 15%);
+			color: white;
+			border: darkgrey 1px solid;
+			padding: .5em;
+			&:focus {
+				border: white 1px solid;
+			}
+		}
+	}
+}
+
+.settings-line:not(.subCategoryGroupPanel):nth-child(even) {
+	background-color: $mugen-playlist-even;
+	> div input:not([type="range"]) {
+		background-color: scale-color($mugen-playlist-even, $lightness: 15%);
+	}
+}
+
+.blur-hover {
+	filter: blur(5px);
+	transition: filter 1.5s ease;
+	margin-right: .5em;
+}
+
+.blur-hover:hover {
+	filter: unset;
+}
+
+#manage, #manage > .panel  {
+	height: 100%;
+}
+#manage > .panel {
+	overflow: auto;
+	background-color: transparent;
+}
+
+.subCategoryGroupPanel {
+	background-color: scale-color($mugen-background, $lightness: 5%);
+	border: solid scale-color($mugen-background, $lightness: 15%);
+	border-width: 1px 0px;
+	padding: 0.5em;
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.settingsGroupPanel {
+	border-left: 5px solid #ffffff40;
+	min-height: 20px;
+	margin-bottom: 10px;
+}
+
+.systempanel-tooltip {
+	text-align: center;
+	a {
+		color: unset;
+		&:visited {
+			color: unset;
+		}
+	}
+	padding: 1em;
+}
+
+.input-number-options {
+	width: 5em;
+}
+
+.input-options {
+	color: #555;
+}
+
+.label-input-options {
+	margin: 0 .5em;
+}

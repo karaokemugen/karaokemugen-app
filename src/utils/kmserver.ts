@@ -1,26 +1,33 @@
-import io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
-import {getConfig} from '../lib/utils/config';
+import { APIData } from '../lib/types/api';
+import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-// import { APIData } from '../lib/types/api';
-// TODO: reimport this when available on this branch (lib not compatible with master as of 24 oct.)
 
-let socket: SocketIOClient.Socket;
+let socket: Socket;
 
 // Create a connection
 function connectToKMServer() {
+	if (socket) return;
 	return new Promise<void>((resolve, reject) => {
 		const conf = getConfig();
-		const timeout = setTimeout(() => {
+		let timeout = setTimeout(() => {
 			reject(new Error('Connection timed out'));
+			socket.disconnect();
 		}, 5000);
-		socket = io(`https://${conf.Online.Host}`);
-		socket.on('connect', () => {
-			resolve();
-			clearTimeout(timeout);
+		socket = io(`https://${conf.Online.Host}`, {
+			transports: ['websocket']
 		});
-		socket.on('connect_error', () => {
-			reject(new Error('Socket.IO cannot connect'));
+		socket.on('connect', () => {
+			clearTimeout(timeout);
+			timeout = undefined;
+			resolve();
+		});
+		socket.on('connect_error', (err) => {
+			if (timeout) reject(err);
+		});
+		socket.on('disconnect', reason => {
+			logger.warn('Connection lost with server,', {service: 'KMOnline', obj: reason});
 		});
 	});
 }
@@ -40,7 +47,7 @@ export function getKMServerSocket() {
 	return socket;
 }
 
-export function commandKMServer(name: string, data: {body: any}, timeout = 5000): Promise<any> {
+export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout = 5000): Promise<any> {
 	return new Promise((resolve, reject) => {
 		const nodeTimeout = setTimeout(() => {
 			reject(new Error('Request timed out'));

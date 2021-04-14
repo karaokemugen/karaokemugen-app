@@ -1,25 +1,28 @@
 import { QueryResult } from 'pg';
-import {pg as yesql} from 'yesql';
+import { pg as yesql } from 'yesql';
 
-import {buildClauses, db, transaction} from '../lib/dao/database';
-import {getConfig} from '../lib/utils/config';
-import {now} from '../lib/utils/date';
-import { DBPL,DBPLC, DBPLCInfo, DBPLCKID, DBPLPos } from '../types/database/playlist';
-import {Playlist, PLC, PLCParams} from '../types/playlist';
-import {getState} from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser,sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylistPos, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetCurrentPlaylist, sqlsetPlaying, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCVisible, sqlsetPublicPlaylist, sqlsetVisiblePlaylist, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlunsetVisiblePlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { buildClauses, db, transaction } from '../lib/dao/database';
+import { WhereClause } from '../lib/types/database';
+import { getConfig } from '../lib/utils/config';
+import { now } from '../lib/utils/date';
+import { DBPL, DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
+import { PLC, PLCParams} from '../types/playlist';
+import { getState } from '../utils/state';
+import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
-export function editPlaylist(pl: Playlist) {
+export function editPlaylist(pl: DBPL) {
 	return db().query(yesql(sqleditPlaylist)({
-		playlist_id: pl.id,
+		playlist_id: pl.playlist_id,
 		name: pl.name,
 		modified_at: pl.modified_at,
 		flag_visible: pl.flag_visible,
+		flag_current: pl.flag_current,
+		flag_public: pl.flag_public,
 	}));
 }
 
-export async function createPlaylist(pl: Playlist): Promise<number> {
+export async function createPlaylist(pl: DBPL): Promise<number> {
 	const res = await db().query(yesql(sqlcreatePlaylist)({
 		name: pl.name,
 		created_at: pl.created_at,
@@ -27,7 +30,7 @@ export async function createPlaylist(pl: Playlist): Promise<number> {
 		flag_visible: pl.flag_visible || false,
 		flag_current: pl.flag_current || null,
 		flag_public: pl.flag_public || null,
-		username: pl.username
+		username: pl.username.toLowerCase()
 	}));
 	return res.rows[0].pk_id_playlist;
 }
@@ -50,6 +53,14 @@ export function setPLCInvisible(plc_id: number) {
 
 export function setPLCFree(plc_id: number) {
 	return db().query(sqlsetPLCFree, [plc_id]);
+}
+
+export function setPLCAccepted(plc_id: number, flag_accepted: boolean) {
+	return db().query(sqlsetPLCAccepted, [plc_id, flag_accepted]);
+}
+
+export function setPLCRefused(plc_id: number, flag_refused: boolean) {
+	return db().query(sqlsetPLCRefused, [plc_id, flag_refused]);
 }
 
 export function setPLCFreeBeforePos(pos: number, playlist_id: number) {
@@ -120,7 +131,7 @@ export async function getPlaylistContentsMini(id: number): Promise<DBPLC[]> {
 }
 
 export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
-	const filterClauses = params.filter ? buildClauses(params.filter, true) : {sql: [], params: {}};
+	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, true) : {sql: [], params: {}, additionalFrom: []};
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = 'pc.pos';
@@ -136,11 +147,14 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		)`;
 		orderClause = 'RANDOM()';
 	}
-	const query = sqlgetPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause);
+	if (params.orderByLikes) orderClause = '(CASE WHEN pc.flag_accepted = FALSE AND pc.flag_refused = FALSE THEN TRUE ELSE FALSE END) DESC, pc.flag_accepted DESC, pc.flag_refused DESC, upvotes DESC';
+	const query = sqlgetPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause,
+		filterClauses.additionalFrom.join(''));
 	const res = await db().query(yesql(query)({
 		playlist_id: params.playlist_id,
 		username: params.username,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
+		publicPlaylist_id: getState().publicPlaylistID,
 		...filterClauses.params
 	}));
 	return res.rows;
@@ -151,19 +165,15 @@ export async function getPlaylistKaraIDs(id: number): Promise<DBPLCKID[]> {
 	return res.rows;
 }
 
-
-export async function getPlaylistPos(id: number): Promise<DBPLPos[]> {
-	const res = await db().query(sqlgetPlaylistPos, [id]);
-	return res.rows;
-}
-
 export async function getPLCInfo(id: number, forUser: boolean, username: string): Promise<DBPLCInfo> {
 	const query = sqlgetPLCInfo(forUser);
 	const res = await db().query(yesql(query)(
 		{
 			playlistcontent_id: id,
 			dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
-			username: username
+			username: username,
+			publicPlaylist_id: getState().publicPlaylistID,
+			currentPlaylist_id: getState().currentPlaylistID,
 		}));
 	return res.rows[0];
 }
@@ -190,10 +200,10 @@ export async function getPlaylistInfo(id: number): Promise<DBPL> {
 
 export async function getPlaylists(forUser: boolean): Promise<DBPL[]> {
 	const query = sqlgetPlaylists;
-	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';
+	const order = ' ORDER BY flag_current DESC, flag_public DESC, name';
 	let res: QueryResult;
 	if (forUser) {
-		res = await db().query(query + ' WHERE p.flag_visible = TRUE ' + order);
+		res = await db().query(query + ' WHERE flag_visible = TRUE ' + order);
 	} else {
 		res = await db().query(query + order);
 	}
@@ -208,22 +218,6 @@ export async function getCurrentPlaylist(): Promise<DBPL> {
 export async function getPublicPlaylist(): Promise<DBPL> {
 	const res = await db().query(sqltestPublicPlaylist);
 	return res.rows[0];
-}
-
-export function setCurrentPlaylist(id: number) {
-	return db().query(sqlsetCurrentPlaylist, [id]);
-}
-
-export function setPublicPlaylist(id: number) {
-	return db().query(sqlsetPublicPlaylist, [id]);
-}
-
-export function setVisiblePlaylist(id: number) {
-	return db().query(sqlsetVisiblePlaylist, [id]);
-}
-
-export function unsetVisiblePlaylist(id: number) {
-	return db().query(sqlunsetVisiblePlaylist, [id]);
 }
 
 export async function setPlaying(plc_id: number, playlist_id: number) {

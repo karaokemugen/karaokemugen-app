@@ -1,0 +1,255 @@
+@import '../../frontend/styles/variables';
+
+.modal {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	background-color: rgba(10, 10, 10, 0.66);
+	overflow-y: auto;
+	> .modal-dialog {
+		position: relative;
+		top: 10%;
+		margin: auto auto 100px;
+		width: 95vw;
+		max-width: 700px;
+		filter: drop-shadow(0px 4px 4px black);
+	}
+}
+
+.modal .modal-body {
+	overflow-y: auto;
+}
+
+.modal[type=prompt] .modal-body {
+	padding: 0;
+}
+
+.modal .modal-content {
+	color: #eee;
+	background-color:#3a3c45;
+	border-radius: 8px;
+}
+.modal .modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	border: 0;
+	padding: 0.5em;
+	> button {
+		order: 0;
+		margin-left: .25em;
+	}
+	> .modal-help {
+		flex-grow: 1;
+	}
+}
+.modal-header {
+	padding: 1em;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	.modal-title {
+		> picture {
+			display: flex;
+			justify-content: center;
+			> img {
+				width: 75%;
+				// Safari Mac height hack: https://stackoverflow.com/a/61196907
+				object-fit: contain;
+				align-self: flex-start;
+			}
+		}
+		font-size: 2rem;
+		@media screen and (max-width: $mugen-breakpoint-small) {
+			font-size: 1.25rem;
+		}
+		font-weight: bold;
+	}
+	.modal-series {
+		font-size: 1.5rem;
+		@media screen and (max-width: $mugen-breakpoint-small) {
+			font-size: 1rem;
+		}
+		font-weight: normal;
+	}
+	a {
+		color: #a4c7e5;
+	}
+}
+#pollModal .modal-message {
+	max-height: 20vh;
+}
+#pollModal .timer {
+	background-color: #ababab5e;
+	width: 100%;
+	height: 39px; // TODO?
+	position: absolute;
+}
+.modal.modalPage .modal-body > div {
+	padding: .25em;
+	text-align: center;
+}
+.modal.modalPage .modal-body div.text {
+	text-align: left;
+	line-height: 1.6em;
+	margin: 1em;
+}
+.modal.modalPage .modal-body div.text br{
+	line-height: 2.6em;
+}
+.modalPage .modal-message div:not(.selectWithIcon-menu):not(.selectWithIcon-menuItem) {
+	height: 100%;
+	padding: 0;
+	&.selectWithIcon {
+		margin: 0.5em;
+	}
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+	border-top: none;
+	text-decoration: none;
+	background-color: #4b4b4b;
+}
+.modal button.tour {
+	height: 100%;
+	width: 100%;
+	background-color: #5f2768;
+}
+
+.modal-body.flex-direction-btns {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+	margin-bottom: 0.5em;
+
+	> div {
+		width: 25em;
+	}
+
+	button {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		justify-content: center;
+
+		> div {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			width: 20em;
+		}
+	}
+}
+
+#nav-poll.modal-body {
+	padding: 0;
+}
+.modal button.poll {
+	box-shadow: 0 2px 2px 0 #0000002b, 0 1px 5px 0 #00000026, 0 3px 1px -2px #00000038;
+	border-color: #82828226;
+	overflow: hidden;
+}
+
+
+.modal button.confirm {
+	height: 100%;
+	width: 100%;
+	background-color: #0f5f6c;
+}
+.modal button.ok {
+	background-color: #304035;
+}
+
+.modal button.other {
+	background-color: #422f2f;
+}
+
+#modalBox {
+	z-index: 10010;
+}
+
+#import-avatar .modal-body {
+	display: flex;
+	justify-content: center;
+}
+
+.closeModal {
+	background-color: $mugen-btn-background;
+	color: whitesmoke;
+	font-size: 1.75em;
+	width: 1.75em;
+	height: 1.75em;
+	cursor: pointer;
+	z-index: 1;
+	padding: 0.25em;
+	border: $mugen-btn-border;
+}
+.closeModal:hover {
+	color: #e6e6e6fa;
+	background-color: transparent;
+}
+
+.public-modal.modal-header {
+	justify-content: start;
+	.modal-title {
+		margin-left: .25em;
+	}
+}
+
+// Nav from Bootstrap
+#manage .modalPage {
+	padding: 0;
+	.closeModal {
+		background-color: $mugen-nav-background;
+		position: unset;
+		margin: 0;
+		color: #dbdbdbde;
+		padding: 0 0.5em;
+		border-radius: 0;
+		line-height: 1.75em;
+		font-size: 1.25em;
+		border: none;
+		height: unset;
+	}
+}
+.nav.nav-tabs {
+	display: flex;
+	flex-direction: row;
+	flex: 1 1 auto;
+	justify-content: center;
+	align-items: stretch;
+	> li {
+		text-align: center;
+		line-height: 1.75em;
+		font-weight: bolder;
+		font-size: 1.25em;
+		cursor: pointer;
+		flex-grow: 1;
+		&.active {
+			> a {
+				background-color: darken($mugen-nav-background, 10);
+				&:focus, &:active:focus, &:hover {
+					background-color: darken($mugen-nav-background, 10);
+				}
+			}
+		}
+		> a {
+			width: 100%;
+			height: 100%;
+			display: block;
+			border: none;
+			color: white;
+			background-color: $mugen-nav-background;
+			&:hover {
+				background-color: lighten($mugen-nav-background, 5);
+			}
+		}
+	}
+}
+#manage .modalPage .nav-tabs > li > a {
+	border-left: 1px solid #1e212440;
+}

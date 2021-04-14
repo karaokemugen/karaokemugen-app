@@ -1,0 +1,32 @@
+// Minireset
+@import '~minireset.css/minireset';
+@import 'styles/variables';
+
+body {
+	font-family: Lato, "Helvetica Neue", Cantarell, sans-serif;
+	background: $mugen-background;
+	color: white;
+}
+
+// Our stylesheet
+@import 'styles/components/buttons';
+@import 'styles/components/dropdowns';
+@import 'styles/components/decorators';
+@import 'styles/components/settings';
+@import 'styles/components/tags';
+@import 'styles/components/input';
+@import 'styles/components/loader';
+@import 'styles/components/titles';
+
+// React Toastify
+@import '../toast';
+
+// Fonts
+@import 'styles/fonts/Lato/stylesheet';
+
+// FontAwesome
+$fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+

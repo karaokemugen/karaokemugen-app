@@ -1,0 +1,193 @@
+@import '../variables';
+
+.btn-group {
+	> .btn {
+		border-radius: 0;
+		// First button will have a left radius
+		&:first-child {
+			border-bottom-left-radius: $mugen-btn-radius;
+			border-top-left-radius: $mugen-btn-radius;
+		}
+		// Last button will have a right radius
+		&:last-child {
+			border-bottom-right-radius: $mugen-btn-radius;
+			border-top-right-radius: $mugen-btn-radius;
+		}
+	}
+}
+
+div > a, h5 > a {
+	color: #99cdfa;
+}
+
+.btn {
+	border: $mugen-btn-border;
+	background-color: $mugen-btn-background;
+	color: white;
+	display: inline-block;
+	cursor: pointer;
+	border-radius: $mugen-btn-radius;
+	padding: 0.5em;
+}
+
+.btn-default {
+	background-color: $mugen-btn-background;
+	color: #eee;
+}
+.btn-default:hover {
+	background-color: lighten($mugen-btn-background, 5);
+}
+
+.btn-default:active:focus,
+.btn-default:focus {
+	background-color: $mugen-btn-background;
+}
+
+.btn-danger, .btn-danger:focus:active, .btn-danger:focus {
+	background-color: $mugen-btn-danger-background;
+}
+.btn-danger:hover {
+	background-color: lighten($mugen-btn-danger-background, 5);
+}
+
+.btn-danger-low:hover {
+	background-color: #793230;
+	color: white;
+}
+
+.btn-danger-low:active {
+	background-color: #773b3b;
+	color: white;
+}
+
+.btn-primary, .btn-primary:active:focus, .btn-primary:focus {
+	color: white;
+	background-color: $mugen-btn-primary-background;
+}
+
+.btn-primary:hover {
+	background-color: lighten($mugen-btn-primary-background, 5);
+}
+
+.btn-dark, .btn-dark:focus {
+	background-color: #1E2124;
+	border: solid #595959;
+	border-left-width: 1px;
+	color: white;
+}
+.btn-dark:hover {
+	background-color: #292929;
+	color: white;
+}
+.btn-dark:active:focus{
+	background-color: #444;
+	color: white;
+}
+
+.btn-action:hover {
+	background-color: #292929;
+	color: white;
+}
+
+.btn-big {
+	font-size: 4em;
+	padding: 0.25em;
+}
+
+.btn-large-container {
+	margin-left: .5em;
+	.title {
+		font-size: 1.5em;
+		font-weight: bold;
+	}
+}
+
+.volumeButton,
+.subtitleButton,
+.messageButton {
+	order:90;
+}
+
+.klogo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	img {
+		height: 2em;
+		width: 2em;
+	}
+	&:after {
+		content: "";
+		display: inline-block;
+		position: relative;
+		top: .25em;
+		border-color: currentColor transparent transparent;
+		border-width: .25em;
+		border-style: solid;
+	}
+}
+
+.volumeButton {
+	input[type=range] {
+		-webkit-appearance: none;
+		margin: 0;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+	}
+}
+
+.subtitleButton {
+	> .fas, .fa-stack {
+		display: none;
+	}
+	&.hideSubs {
+		> *:first-child { display: inline-block; }
+		&:hover {
+			> *:first-child { display: none; }
+			> *:last-child { display: unset; }
+		}
+		&:active { // This trick seems broken
+			> *:first-child { display: inline-block; }
+			> *:last-child { display: none; }
+		}
+	}
+	&.showSubs {
+		> *:last-child { display: unset; }
+		&:hover {
+			> *:first-child { display: inline-block; }
+			> *:last-child { display: none; }
+		}
+		&:active { // This trick seems broken
+			> *:first-child { display: none; }
+			> *:last-child { display: unset; }
+		}
+	}
+}
+
+.buttonsMobileMenu, .buttonsMobileMenuSmaller {
+	display: none;
+}
+
+@media (max-width:$mugen-breakpoint-small) {
+	.KmAppWrapperDecorator:not(.chibi) {
+		.messageButton, .subtitleButton, .rewindButton {
+			display: none;
+		}
+
+		.buttonsMobileMenu {
+			display: block;
+		}
+	}
+}
+
+@media (max-width:$mugen-breakpoint-smaller) {
+	.stopButton, .volumeButton {
+		display: none;
+	}
+
+	.buttonsMobileMenuSmaller {
+		display: block;
+	}
+}

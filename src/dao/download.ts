@@ -2,7 +2,7 @@ import {db, transaction} from '../lib/dao/database';
 import logger from '../lib/utils/logger';
 import { DBDownload, DBDownloadBLC } from '../types/database/download';
 import { KaraDownload, KaraDownloadBLC } from '../types/download';
-import { sqldeleteDoneFailedDownloads, sqldeleteDownloadBLC, sqlemptyDownload, sqlinsertDownload, sqlinsertDownloadBLC,sqlselectDownload, sqlselectDownloadBLC, sqlselectDownloads, sqlselectPendingDownloads, sqlupdateDownloadStatus, sqlupdateRunningDownloads } from './sql/download';
+import { sqldeleteDoneFailedDownloads, sqldeleteDownloadBLC, sqlemptyDownload, sqlinsertDownload, sqlinsertDownloadBLC, sqlselectDownloadBLC, sqlselectDownloads, sqlselectPendingDownloads, sqlupdateDownloadStatus, sqlupdateRunningDownloads } from './sql/download';
 
 export function insertDownloads(downloads: KaraDownload[] ) {
 	const dls = downloads.map(dl => [
@@ -30,11 +30,6 @@ export async function selectPendingDownloads(): Promise<DBDownload[]> {
 export async function initDownloads() {
 	await db().query(sqlupdateRunningDownloads);
 	await db().query(sqldeleteDoneFailedDownloads);
-}
-
-export async function selectDownload(id: string): Promise<DBDownload> {
-	const dl = await db().query(sqlselectDownload, [id]);
-	return dl.rows[0];
 }
 
 export function updateDownload(uuid: string, status: string) {

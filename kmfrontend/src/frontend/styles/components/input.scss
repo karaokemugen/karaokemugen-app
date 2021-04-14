@@ -1,0 +1,121 @@
+@import '../variables';
+
+select {
+	background-color: $mugen-select-background;
+	color: white;
+	border-radius: 0.5em;
+	border: $mugen-select-border;
+}
+
+/* Range input sliders */
+
+input[type=range]:focus {
+	outline: none;
+}
+
+/* settings slider */
+
+#settings input[type=range] {
+	-webkit-appearance: none;
+	width: 100%;
+}
+
+@mixin track($microsoft: false) {
+	width: 100%;
+	height: 1em;
+	cursor: pointer;
+	@if $microsoft {
+		background: transparent;
+		border-color: transparent;
+		color: transparent;
+	} @else {
+		box-shadow: 1px 1px 1px #00000008, 0 0 1px #0d0d0d08;
+		background: lighten($mugen-background, 10);
+		border-radius: 0;
+		border: 1px solid #0001015c;
+	}
+}
+@mixin slider {
+	box-shadow: 1px 1px 1px black, 0 0 1px #0d0d0d;
+	border: 1px solid #D8D8D8;;
+	height: 1.5em;
+	width: 1.75em;
+	border-radius: 0;
+	background: lighten($mugen-background, 20);
+	cursor: pointer;
+	-webkit-appearance: none;
+	margin-top: -3px;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	@include track;
+}
+input[type=range]::-moz-range-track {
+	@include track;
+}
+input[type=range]::-ms-track {
+	@include track(true);
+}
+input[type=range]::-webkit-slider-thumb {
+	@include slider;
+}
+input[type=range]::-moz-range-thumb {
+	@include slider;
+}
+input[type=range]::-ms-thumb {
+	@include slider;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+	background: lighten($mugen-background, 10);
+}
+input[type=range]::-ms-fill-lower {
+	background: lighten($mugen-background, 15);
+	border: 0.1px solid #0001015c;
+	border-radius: 0;
+	box-shadow: 1px 1px 1px #00000008, 0 0 1px #0d0d0d08;
+}
+input[type=range]::-ms-fill-upper {
+	background: lighten($mugen-background, 10);
+	border: 0.1px solid #0001015c;
+	border-radius: 0;
+	box-shadow: 1px 1px 1px #00000008, 0 0 1px #0d0d0d08;
+}
+input[type=range]:focus::-ms-fill-lower {
+	background: lighten($mugen-background, 10);
+}
+input[type=range]:focus::-ms-fill-upper {
+	background: lighten($mugen-background, 10);
+}
+
+input[type="text"]:not([data-exclude="true"]):not(.ant-input), input[type="password"]:not([data-exclude="true"]):not(.ant-input),
+input[type="number"]:not([data-exclude="true"]):not(.ant-input) {
+	width: 100%;
+	border: 0;
+	box-shadow: none;
+	font-size: 1.5rem;
+	line-height: 1.5rem;
+	background-color: lighten($mugen-background, 10);
+	outline: none;
+	margin: 0;
+	padding: 0 1rem;
+	color: #ccc;
+	&.errorBackground {
+		background-color: map-get($mugen-colors, "red");
+		&:focus {
+			background-color: lighten(map-get($mugen-colors, "red"), 5);
+		}
+	}
+}
+
+input[type="text"]:not([data-exclude="true"]):not(.ant-input):focus, input[type="password"]:not([data-exclude="true"]):not(.ant-input):focus,
+input[type="number"]:not([data-exclude="true"]):not(.ant-input):focus {
+	box-shadow: 0 1px 0 0 #546e7a;
+}
+
+.panel-heading input[type="text"] {
+	height: 100%;
+	font-size: 1.2rem;
+	line-height: 1.8rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}

@@ -18,7 +18,7 @@ export async function addKaraToWhitelist(kids: string[], reason: string): Promis
 		emitWS('whitelistUpdated');
 		return kids;
 	} catch(err) {
-		sentry.error(new Error(err));
+		sentry.error(err);
 		throw err;
 	} finally {
 		profile('addKaraToWL');
@@ -36,17 +36,16 @@ export async function getWhitelistContents(params: KaraParams) {
 }
 
 /** Remove KIDs from the whitelist */
-export async function deleteKaraFromWhitelist(karas: string[]) {
+export async function deleteKaraFromWhitelist(kids: string[]) {
 	try {
 		profile('deleteWLC');
-		logger.info('Deleting karaokes from whitelist', {service: 'Whitelist', obj: karas});
-		await removeKaraFromWhitelist(karas);
+		logger.info('Deleting karaokes from whitelist', {service: 'Whitelist', obj: kids});
+		await removeKaraFromWhitelist(kids);
 		generateBlacklist().then(() => emitWS('blacklistUpdated'));
 		emitWS('whitelistUpdated');
 	} catch(err) {
-		const error = new Error(err);
-		sentry.error(error);
-		throw error;
+		sentry.error(err);
+		throw err;
 	} finally {
 		profile('deleteWLC');
 	}

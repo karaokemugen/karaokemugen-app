@@ -2,14 +2,15 @@ import {basename, dirname, resolve} from 'path';
 
 import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore,sortKaraStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import {generateKara} from '../lib/services/kara_creation';
+import {generateKara, validateNewKara} from '../lib/services/kara_creation';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
 import { asyncCopy, asyncExists, asyncMove,asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
-import {createKaraInDB, editKaraInDB, getKara} from './kara';
+import {getKara} from './kara';
+import { createKaraInDB, editKaraInDB } from './karaManagement';
 import { consolidateTagsInRepo } from './tag';
 
 export async function editKara(kara: Kara, refresh = true) {
@@ -19,7 +20,16 @@ export async function editKara(kara: Kara, refresh = true) {
 	});
 	let newKara: NewKara;
 	let karaFile: string;
+	// Validation here, processing stuff later
+	// No sentry triggered if validation fails
 	try {
+		const validationErrors = validateNewKara(kara);
+		if (validationErrors) throw validationErrors;
+	} catch(err) {
+		throw {code: 400, msg: err};
+	}
+	try {
+		profile('editKaraFile');
 		const oldKara = await getKara(kara.kid, {role: 'admin', username: 'admin'});
 		let mediaFile: string;
 		let mediaDir: string;
@@ -49,6 +59,8 @@ export async function editKara(kara: Kara, refresh = true) {
 				subFile = (await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0];
 				subDir = dirname(subFile);
 			}
+		} else {
+			subDir = resolvedPathRepos('Lyrics', kara.repository)[0];
 		}
 		karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0];
 		const karaDir = dirname(karaFile);
@@ -117,6 +129,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		saveSetting('baseChecksum', getStoreChecksum());
 		newKara.data.karafile = basename(newKara.file);
 		// Update in database
+		profile('editKaraFile');
 		await Promise.all([
 			editKaraInDB(newKara.data, { refresh: refresh }),
 			consolidateTagsInRepo(newKara.data)
@@ -139,6 +152,14 @@ export async function createKara(kara: Kara) {
 		subtext: kara.title
 	});
 	let newKara: NewKara;
+	// Validation here, processing stuff later
+	// No sentry triggered if validation fails
+	try {
+		const validationErrors = validateNewKara(kara);
+		if (validationErrors) throw validationErrors;
+	} catch(err) {
+		throw {code: 400, msg: err};
+	}
 	try {
 		newKara = await generateKara(kara, resolvedPathRepos('Karas', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
 		await addKaraToStore(newKara.file);

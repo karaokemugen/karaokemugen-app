@@ -2,10 +2,12 @@ import execa from 'execa';
 import i18n from 'i18next';
 import debounce from 'lodash.debounce';
 import sample from 'lodash.sample';
+import {Promise as id3} from 'node-id3';
 import retry from 'p-retry';
 import {extname, resolve} from 'path';
 import randomstring from 'randomstring';
 import semver from 'semver';
+import {graphics} from 'systeminformation';
 import {promisify} from 'util';
 import logger from 'winston';
 
@@ -13,21 +15,26 @@ import {setProgressBar} from '../electron/electron';
 import {errorStep} from '../electron/electronLogger';
 import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
+import {getAvatarResolution} from '../lib/utils/ffmpeg';
 import {asyncExists, asyncReadDir, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
+import { playerEnding } from '../services/karaokeEngine';
 import {getSingleMedia} from '../services/medias';
-import {next, playerEnding, prev} from '../services/player';
+import {next, prev} from '../services/player';
 import {notificationNextSong} from '../services/playlist';
 import {endPoll} from '../services/poll';
 import {MediaType} from '../types/medias';
 import {MpvCommand} from '../types/MpvIPC';
-import {MediaData, MpvOptions, PlayerState} from '../types/player';
-import {initializationCatchphrases} from '../utils/constants';
+import { MpvOptions, PlayerState } from '../types/player';
+import {CurrentSong} from '../types/playlist';
+import { initializationCatchphrases, mpvRegex } from '../utils/constants';
 import {setDiscordActivity} from '../utils/discordRPC';
-import {getID3} from '../utils/id3tag';
 import MpvIPC from '../utils/MpvIPC';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
+import Timeout = NodeJS.Timeout;
+import {getSongSeriesSingers} from '../services/kara';
+import {editSetting} from '../utils/config';
 
 const sleep = promisify(setTimeout);
 
@@ -40,17 +47,16 @@ const playerState: PlayerState = {
 	_playing: false, // internal delay flag
 	timeposition: 0,
 	mute: false,
-	'sub-text': null,
 	currentSong: null,
 	mediaType: 'background',
 	showSubs: true,
-	stayontop: false,
+	onTop: false,
 	fullscreen: false,
+	border: false,
 	url: null,
 	monitorEnabled: false,
 	songNearEnd: false,
 	nextSongNotifSent: false,
-	displayingInfo: false,
 	isOperating: false
 };
 
@@ -85,8 +91,99 @@ function needsLock() {
 	};
 }
 
+class MessageManager {
+	messages: Map<string, string>
+	timeouts: Map<string, Timeout>
+	tickFn: () => void
+	cache: string
+
+	constructor(tickFn: () => void) {
+		this.messages = new Map();
+		this.timeouts = new Map();
+		this.tickFn = tickFn;
+		this.cache = '';
+	}
+
+	private tick() {
+		const str = this.getText();
+		if (str !== this.cache) {
+			this.cache = str;
+			this.tickFn();
+		}
+	}
+
+	addMessage(type: string, message: string, duration: number | 'infinite' = 'infinite') {
+		this.messages.set(type, message);
+		if (this.timeouts.has(type)) {
+			clearTimeout(this.timeouts.get(type));
+			this.timeouts.delete(type);
+		}
+		if (duration !== 'infinite') {
+			this.timeouts.set(type, setTimeout(this.messages.delete.bind(this.messages, type), duration).unref());
+		}
+		this.tick();
+	}
+
+	removeMessage(type: string) {
+		this.messages.delete(type);
+		if (this.timeouts.has(type)) {
+			clearTimeout(this.timeouts.get(type));
+			this.timeouts.delete(type);
+		}
+		this.tick();
+	}
+
+	getText() {
+		let txt = '';
+		for (const line of this.messages.values()) {
+			txt += line+'\n';
+		}
+		return txt;
+	}
+
+	clearMessages() {
+		this.messages.clear();
+		for (const timeout of this.timeouts.values()) {
+			clearTimeout(timeout);
+		}
+		this.timeouts.clear();
+		this.tick();
+	}
+}
+
+// Compute a quick diff for state
+function quickDiff() {
+	const oldState = getState().player;
+	const diff: Partial<PlayerState> = {};
+	for (const key of Object.keys(playerState)) {
+		switch (key) {
+		case 'currentSong':
+			if (oldState.currentSong?.kid !== playerState.currentSong?.kid) {
+				diff[key] = playerState[key];
+			}
+			break;
+		case 'currentMedia':
+			if (oldState.currentMedia?.filename !== playerState.currentMedia?.filename) {
+				diff[key] = playerState[key];
+			}
+			break;
+		default:
+			if (oldState[key] !== playerState[key]) {
+				diff[key] = playerState[key];
+			}
+			break;
+		}
+	}
+	return diff;
+}
+
 function emitPlayerState() {
-	setState({player: playerState});
+	setState({player: quickDiff()});
+}
+
+export function switchToPauseScreen() {
+	playerState.mediaType = 'pauseScreen';
+	emitPlayerState();
 }
 
 async function checkMpv() {
@@ -98,7 +195,7 @@ async function checkMpv() {
 	try {
 		const output = await execa(state.binPath.mpv,['--version']);
 		logger.debug(`mpv stdout: ${output.stdout}`, {service: 'Player'});
-		const mpv = semver.valid(output.stdout.split(' ')[1]);
+		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]);
 		mpvVersion = mpv.split('-')[0];
 		logger.debug(`mpv version: ${mpvVersion}`, {service: 'Player'});
 	} catch(err) {
@@ -117,24 +214,26 @@ class Player {
 	mpv: MpvIPC
 	configuration: any
 	options: MpvOptions
-	state: PlayerState
 	control: Players
 
 	constructor(options: MpvOptions, players: Players) {
-		// Generate node mpv options
 		this.options = options;
-		this.configuration = this.genConf(options);
 		this.control = players;
+	}
+
+	async init() {
+		// Generate the configuration
+		this.configuration = await this.genConf(this.options);
 		// Instantiate mpv
 		this.mpv = new MpvIPC(this.configuration[0], this.configuration[1], this.configuration[2]);
 	}
 
-	private genConf(options: MpvOptions) {
+	private async genConf(options: MpvOptions) {
 		const conf = getConfig();
 		const state = getState();
 
 		const NodeMPVArgs = [
-			'--keep-open=yes',
+			'--keep-open=always',
 			'--osd-level=0',
 			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
 			`--hwdec=${conf.Player.HardwareDecoding}`,
@@ -143,7 +242,10 @@ class Player {
 			'--autoload-files=no',
 			`--input-conf=${resolve(resolvedPathTemp(),'input.conf')}`,
 			'--sub-visibility',
-			'--loop-file=no'
+			'--sub-ass-vsfilter-aspect-compat=no',
+			'--loop-file=no',
+			`--title=${options.monitor ? '[MONITOR] ':''}\${force-media-title} - Karaoke Mugen Player`,
+			'--force-media-title=Loading...'
 		];
 
 		if (options.monitor) {
@@ -152,11 +254,9 @@ class Player {
 				'--reset-on-next-file=pause,loop-file,mute',
 				'--ao=null');
 		} else {
-			NodeMPVArgs.push(
-				'--no-border',
-				'--reset-on-next-file=pause,loop-file');
-
-			if (conf.Player.FullScreen && !conf.Player.PIP.Enabled) {
+			NodeMPVArgs.push('--reset-on-next-file=pause,loop-file');
+			if (!conf.Player.Borders) NodeMPVArgs.push('--no-border');
+			if (conf.Player.FullScreen) {
 				NodeMPVArgs.push('--fullscreen');
 			}
 		}
@@ -168,29 +268,33 @@ class Player {
 		}
 
 		if (conf.Player.StayOnTop) {
-			playerState.stayontop = true;
 			NodeMPVArgs.push('--ontop');
 		}
 
-		if (conf.Player.PIP.Enabled) {
-			NodeMPVArgs.push(`--autofit=${conf.Player.PIP.Size}%x${conf.Player.PIP.Size}%`);
-			// By default, center.
-			let positionX = 50;
-			let positionY = 50;
-			if (conf.Player.PIP.PositionX === 'Left') positionX = 1;
-			if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
-			if (conf.Player.PIP.PositionX === 'Right') positionX = 99;
-			if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
-			if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
-			if (conf.Player.PIP.PositionY === 'Bottom') positionY = 99;
-			if (options.monitor) {
-				if (positionX <= 10) positionX += 10;
-				else positionX -= 10;
-				if (positionY <= 10) positionY += 10;
-				else positionY -= 10;
-			}
-			NodeMPVArgs.push(`--geometry=${+positionX}%:${+positionY}%`);
+		// We want a 16/9
+		const screens = await graphics();
+		const screen = (conf.Player.Screen ?
+			(screens.displays[conf.Player.Screen] || screens.displays[0])
+			// Assume 1080p screen if systeminformation can't find the screen
+			: screens.displays[0]) || { currentResX: 1920 };
+		const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
+		const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
+		// By default, center.
+		let positionX = 50;
+		let positionY = 50;
+		if (conf.Player.PIP.PositionX === 'Left') positionX = 5;
+		if (conf.Player.PIP.PositionX === 'Center') positionX = 50;
+		if (conf.Player.PIP.PositionX === 'Right') positionX = -5;
+		if (conf.Player.PIP.PositionY === 'Top') positionY = 5;
+		if (conf.Player.PIP.PositionY === 'Center') positionY = 50;
+		if (conf.Player.PIP.PositionY === 'Bottom') positionY = -5;
+		if (options.monitor) {
+			if (positionX >= 0) positionX += 10;
+			else positionX -= 10;
+			if (positionY >= 0) positionY += 10;
+			else positionY -= 10;
 		}
+		NodeMPVArgs.push(`--geometry=${targetResolution}${positionX > 0 ? `+${positionX}`:positionX}%${positionY > 0 ? `+${positionY}`:positionY}%`);
 
 		if (conf.Player.NoHud) NodeMPVArgs.push('--no-osc');
 		if (conf.Player.NoBar) NodeMPVArgs.push('--no-osd-bar');
@@ -224,12 +328,12 @@ class Player {
 		return [state.binPath.mpv, socket, NodeMPVArgs];
 	}
 
-	private debounceTimePosition(position) {
-		const conf = getConfig();
+	private debounceTimePosition(position: number) {
 		// Returns the position in seconds in the current song
 		playerState.timeposition = position;
 		emitPlayerState();
-		if (playerState?.currentSong?.duration) {
+		const conf = getConfig();
+		if (playerState.mediaType === 'song' && playerState?.currentSong?.duration) {
 			if (conf.Player.ProgressBarDock) {
 				playerState.mediaType === 'song'
 					? setProgressBar(position / playerState.currentSong.duration)
@@ -240,22 +344,20 @@ class Player {
 				playerState.nextSongNotifSent = true;
 				notificationNextSong();
 			}
-			// Display informations if timeposition is 8 seconds before end of song
 			if (position >= (playerState.currentSong.duration - 8) &&
-				!playerState.displayingInfo &&
-				playerState.mediaType === 'song')
+				playerState.mediaType === 'song') {
+				// Display informations if timeposition is 8 seconds before end of song
 				this.control.displaySongInfo(playerState.currentSong.infos);
-			// Display informations if timeposition is 8 seconds after start of song
-			if (position <= 8 &&
-				!playerState.displayingInfo &&
-				playerState.mediaType === 'song')
-				this.control.displaySongInfo(playerState.currentSong.infos, 8000, false, playerState.currentSong.spoiler);
-			// Display KM's banner if position reaches halfpoint in the song
-			if (Math.floor(position) === Math.floor(playerState.currentSong.duration / 2) &&
-				!playerState.displayingInfo &&
+			} else if (position <= 8 && playerState.mediaType === 'song') {
+				// Display informations if timeposition is 8 seconds after start of song
+				this.control.displaySongInfo(playerState.currentSong.infos, -1, false, playerState.currentSong?.misc?.some(t => t.name === 'Spoiler'));
+			} else if (position >= Math.floor(playerState.currentSong.duration / 2)-4 &&
+				position <= Math.floor(playerState.currentSong.duration / 2)+4 &&
 				playerState.mediaType === 'song' && !getState().songPoll) {
-				logger.debug('Middle of song DI', {service: 'Player'});
-				this.control.displayInfo(8000);
+				// Display KM's banner if position reaches halfpoint in the song
+				this.control.displayInfo();
+			} else {
+				this.control.messages.removeMessage('DI');
 			}
 			// Stop poll if position reaches 10 seconds before end of song
 			if (Math.floor(position) >= Math.floor(playerState.currentSong.duration - 10) &&
@@ -268,24 +370,33 @@ class Player {
 		}
 	}
 
-	debouncedTimePosition = debounce(this.debounceTimePosition, 150, {maxWait: 300});
+	debouncedTimePosition = debounce(this.debounceTimePosition, 125, {maxWait: 250, leading: true});
 
 	private bindEvents() {
 		if (!this.options.monitor) {
 			this.mpv.on('property-change', (status) => {
-				if (status.name !== 'playback-time' && status.name !== 'sub-text')
+				if (status.name !== 'playback-time') {
 					logger.debug('mpv status', {service: 'Player', obj: status});
-				playerState[status.name] = status.data;
-				emitPlayerState();
+					playerState[status.name] = status.data;
+				}
+				if (status.name === 'fullscreen') {
+					const FullScreen = !!status.data;
+					editSetting({ Player: { FullScreen } });
+					if (FullScreen) {
+						this.control.messages.addMessage('fsTip', `{\\an7\\i1\\fs20}${i18n.t('FULLSCREEN_TIP')}`, 3000);
+					} else {
+						this.control.messages.removeMessage('fsTip');
+					}
+				}
 				// If we're displaying an image, it means it's the pause inbetween songs
-				if (/*playerState._playing && */!playerState.isOperating && playerState.mediaType !== 'background' &&
+				if (!playerState.isOperating && playerState.mediaType !== 'background' && playerState.mediaType !== 'pauseScreen' &&
 					(
-						/*(status.name === 'playback-time' && status.data > playerState?.currentSong?.duration + 0.9) ||*/
-						(status.name === 'eof-reached' && status.data === true)
+						status.name === 'eof-reached' && status.data === true
 					)
 				) {
 					// Do not trigger 'pause' event from mpv
 					playerState._playing = false;
+					// Load up the next song
 					playerEnding();
 				} else if (status.name === 'playback-time') {
 					this.debouncedTimePosition(status.data);
@@ -295,7 +406,7 @@ class Player {
 		// Handle pause/play via external ways
 		this.mpv.on('property-change', (status) => {
 			if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
-				playerState._playing === status.data || playerState.mediaType === 'background'
+				playerState._playing === status.data || playerState.mediaType === 'background' || playerState.mediaType === 'pauseScreen'
 			)) {
 				logger.debug(`${status.data ? 'Paused':'Resumed'} event triggered on ${this.options.monitor ? 'monitor':'main'}`, {service: 'Player'});
 				playerState._playing = !status.data;
@@ -313,6 +424,8 @@ class Player {
 						await next();
 					} else if (message.args[0] === 'go-back') {
 						await prev();
+					} else if (message.args[0] === 'seek') {
+						await this.control.seek(parseInt(message.args[1]));
 					}
 				} catch(err) {
 					logger.warn('Cannot handle mpv script command', {service: 'mpv'});
@@ -321,8 +434,8 @@ class Player {
 			}
 		});
 		// Handle manually exits/crashes
-		this.mpv.once('shutdown', () => {
-			logger.debug('mpv closed', {service: `mpv${this.options.monitor ? ' monitor':''}`});
+		this.mpv.once('close', () => {
+			logger.debug('mpv closed (?)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
 			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
 			playerState.playing = false;
 			playerState._playing = false;
@@ -331,23 +444,28 @@ class Player {
 			this.recreate();
 			emitPlayerState();
 		});
-		this.mpv.once('crashed', () => {
-			logger.warn('mpv crashed', {service: `mpv${this.options.monitor ? ' monitor':''}`});
-			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
-			playerState.playing = false;
-			playerState._playing = false;
-			playerState.playerStatus = 'stop';
-			this.control.exec({command: ['set_property', 'pause', true]}, null, this.options.monitor ? 'main':'monitor');
-			// In case of a crash, restart immediately
-			this.recreate(null, true);
-			emitPlayerState();
-		});
 	}
 
 	async start() {
+		if (!this.configuration) {
+			await this.init();
+		}
 		this.bindEvents();
 		await retry(async () => {
-			await this.mpv.start().catch(err => {
+			try {
+				await this.mpv.start();
+				const promises = [];
+				promises.push(this.mpv.observeProperty('pause'));
+				if (!this.options.monitor) {
+					promises.push(this.mpv.observeProperty('eof-reached'));
+					promises.push(this.mpv.observeProperty('playback-time'));
+					promises.push(this.mpv.observeProperty('mute'));
+					promises.push(this.mpv.observeProperty('volume'));
+					promises.push(this.mpv.observeProperty('fullscreen'));
+				}
+				await Promise.all(promises);
+				return true;
+			} catch(err) {
 				if (err.message === 'MPV is already running') {
 					// It's already started!
 					logger.warn('A start command was executed, but the player is already running. Not normal.', {service: 'Player'});
@@ -355,16 +473,7 @@ class Player {
 					return;
 				}
 				throw err;
-			});
-			if (!this.options.monitor) {
-				this.mpv.observeProperty('sub-text');
-				this.mpv.observeProperty('eof-reached');
-				this.mpv.observeProperty('playback-time');
-				this.mpv.observeProperty('mute');
-				this.mpv.observeProperty('volume');
 			}
-			this.mpv.observeProperty('pause');
-			return true;
 		}, {
 			retries: 3,
 			onFailedAttempt: error => {
@@ -383,10 +492,8 @@ class Player {
 			if (this.isRunning) await this.destroy();
 			// Set options if supplied
 			if (options) this.options = options;
-			// Regen config
-			this.configuration = this.genConf(this.options);
-			// Recreate mpv
-			this.mpv = new MpvIPC(this.configuration[0], this.configuration[1], this.configuration[2]);
+			// Re-init the player
+			await this.init();
 			if (restart) await this.start();
 		} catch (err) {
 			logger.error('mpvAPI (recreate)', {service: 'Player', obj: err});
@@ -405,7 +512,7 @@ class Player {
 	}
 
 	get isRunning() {
-		return this.mpv.isRunning;
+		return !!this.mpv?.isRunning;
 	}
 }
 
@@ -415,39 +522,34 @@ class Players {
 		monitor?: Player
 	};
 
-	private static fillVisualizationOptions(mediaData: MediaData, withAvatar: boolean): string {
-		const subOptions = [
-			'[aid1]asplit[ao][a]',
-			'[a]showcqt=axis=0[vis]',
-			'[vis]scale=600:400[vecPrep]',
-			`nullsrc=size=1920x1080:duration=${mediaData.duration}[nl]`,
-			'[nl]setsar=1,format=rgba[emp]',
-			'[emp][vecPrep]overlay=main_w-overlay_w:main_h-overlay_h:x=0[visu]',
-			'[vid1]scale=-2:1080[vidInp]',
-			'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
-		];
-		if (withAvatar) {
-			subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[ovrl]');
-			subOptions.push(`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo]`);
-			subOptions.push('[logo][ovrl]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]');
-			subOptions.push(`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`);
-		} else {
-			subOptions.push('[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
-		}
-		return subOptions.join(';');
-	}
+	messages: MessageManager
 
-	private static avatarFilter(mediaData: MediaData) {
-		const subOptions = [
-			`nullsrc=size=1x1:duration=${mediaData.duration}[emp]`,
-			'[vid1]scale=-2:1080[vidInp]',
-			'[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc]',
-			`movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo]`,
-			'[logo][vpoc]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
-			'[base][emp]overlay[ovrl]',
-			`[ovrl][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
-		];
-		return subOptions.join(';');
+	private static async genLavfiComplex(song: CurrentSong): Promise<string> {
+		const shouldDisplayAvatar = song.avatar && getConfig().Karaoke.Display.Avatar;
+		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
+		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
+		let audio: string;
+		if (song.loudnorm) {
+			const [input_i, input_tp, input_lra, input_thresh, target_offset] = song.loudnorm.split(',');
+			audio = `[aid1]loudnorm=measured_i=${input_i}:measured_tp=${input_tp}:measured_lra=${input_lra}:measured_thresh=${input_thresh}:linear=true:offset=${target_offset}:lra=20[ao]`;
+		} else if (song.gain) {
+			audio = `[aid1]volume=${song.gain}dB[ao]`;
+		} else {
+			audio = '';
+		}
+		let avatar = '';
+		if (shouldDisplayAvatar) {
+			// Again, lavfi-complex expert @nah comes to the rescue!
+			avatar = [
+				`movie=\\'${song.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
+				'[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
+				`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${song.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
+			].filter(x => !!x).join(';');
+		}
+		return [
+			audio,
+			avatar || '[vid1]null[vo]'
+		].filter(x => !!x).join(';');
 	}
 
 	private async extractAllBackgroundFiles(): Promise<string[]> {
@@ -518,8 +620,10 @@ class Players {
 			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
 			// ensureRunning isn't needed on non-mpv commands
 			if (mpv && await this.ensureRunning(onlyOn, ignoreLock) === -1) return;
-			logger.debug(`${mpv ? 'mpv ': ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {service: 'Player'});
-			logger.debug(`Running it for players ${JSON.stringify(onlyOn ? onlyOn:Object.keys(this.players))}`, {service: 'Player'});
+			if (!(typeof cmd !== 'string' && cmd?.command[1] === 'osd-overlay')) {
+				logger.debug(`${mpv ? 'mpv ': ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {service: 'Player'});
+				logger.debug(`Running it for players ${JSON.stringify(onlyOn ? onlyOn:Object.keys(this.players))}`, {service: 'Player'});
+			}
 			const loads = [];
 			if (!args) args = [];
 			if (onlyOn) {
@@ -565,10 +669,11 @@ class Players {
 		try {
 			playerState.mediaType = 'background';
 			playerState.playerStatus = 'stop';
+			playerState.currentSong = null;
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
-			await this.exec({command: ['loadfile', backgroundImageFile]});
+			await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {'force-media-title': 'Background'}]});
 		} catch(err) {
 			logger.error('Unable to load background', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -579,6 +684,7 @@ class Players {
 	@needsLock()
 	private async bootstrapPlayers() {
 		await checkMpv();
+		this.messages = new MessageManager(this.tickDisplay.bind(this));
 		this.players = {
 			main: new Player({monitor: false}, this)
 		};
@@ -589,9 +695,9 @@ class Players {
 
 	async initPlayerSystem() {
 		const conf = getConfig();
-		const state = getState();
-		playerState.fullscreen = state.fullscreen;
-		playerState.stayontop = state.ontop;
+		playerState.fullscreen = conf.Player.FullScreen;
+		playerState.onTop = conf.Player.StayOnTop;
+		playerState.border = conf.Player.Borders;
 		playerState.volume = conf.Player.Volume;
 		playerState.monitorEnabled = conf.Player.Monitor;
 		emitPlayerState();
@@ -608,11 +714,15 @@ class Players {
 	}
 
 	@needsLock()
-	quit() {
-		return this.exec('destroy').catch(err => {
-			// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
-			logger.warn('Failed to quit mpv', {service: 'Player', obj: err});
-		});
+	async quit() {
+		if (this.players.main.isRunning || this.players.monitor?.isRunning) {
+			// needed to wait for lock release
+			// eslint-disable-next-line no-return-await
+			return await this.exec('destroy').catch(err => {
+				// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
+				logger.warn('Failed to quit mpv', {service: 'Player', obj: err});
+			});
+		}
 	}
 
 	// Lock
@@ -629,80 +739,81 @@ class Players {
 				this.players.monitor = new Player({monitor: true}, this);
 			} else {
 				// Monitor needs to be destroyed
-				await this.exec('destroy', null, 'monitor');
+				await this.exec('destroy', null, 'monitor', true);
 				delete this.players.monitor;
 			}
 		}
-		await this.exec('recreate', [null, true]).catch(err => {
+		await this.exec('recreate', [null, true], undefined, true).catch(err => {
 			logger.error('Cannot restart mpv', {service: 'Player', obj: err});
 		});
-		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background') {
-			await this.loadBackground();
+		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background' || playerState.mediaType === 'pauseScreen') {
+			setImmediate(this.loadBackground.bind(this));
 		}
 	}
 
-	async play(mediaData: MediaData): Promise<PlayerState> {
+	async play(song: CurrentSong): Promise<PlayerState> {
 		const conf = getConfig();
 		logger.debug('Play event triggered', {service: 'Player'});
 		playerState.playing = true;
-		//Search for media file in the different PathMedias
 		let mediaFile: string;
-		const mediaFiles: string[]|void = await resolveFileInDirs(mediaData.media, resolvedPathRepos('Medias', mediaData.repo))
-			.catch(err => {
-				logger.debug('Error while resolving media path', {service: 'Player', obj: err});
-				logger.warn(`Media NOT FOUND : ${mediaData.media}`, {service: 'Player'});
-				if (conf.Online.MediasHost) {
-					mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(mediaData.media)}`;
-					logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});
-				} else {
-					throw Error(`No media source for ${mediaData.media} (tried in ${resolvedPathRepos('Medias', mediaData.repo).toString()} and HTTP source)`);
-				}
-			});
-		mediaFile = mediaFiles[0];
-		logger.debug(`Audio gain adjustment: ${mediaData.gain}`, {service: 'Player'});
-		logger.debug(`Loading media: ${mediaFile}`, {service: 'Player'});
+		let subFile: string;
 		const options: any = {
-			'replaygain-fallback': typeof mediaData.gain === 'number' ? mediaData.gain.toString() : '0'
+			'force-media-title': song.title
 		};
-		const subFiles = await resolveFileInDirs(mediaData.subfile, resolvedPathRepos('Lyrics', mediaData.repo))
-			.catch(err => {
-				logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
-				logger.warn(`Subs NOT FOUND : ${mediaData.subfile}`, {service: 'Player'});
-			}) || []; // Empty array
-		if (subFiles[0]) {
-			options['sub-file'] = subFiles[0];
-			options['sid'] = '1';
+		let onlineMedia = false;
+		const loadPromises = [
+			Players.genLavfiComplex(song).then(res => options['lavfi-complex'] = res)
+				.catch(err => {
+					logger.error('Cannot compute lavfi-complex filter, disabling avatar display', {service: 'Player', obj: err});
+					// At least, loudnorm
+					options['lavfi-complex'] = '[aid1]loudnorm[ao]';
+				}),
+			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repository))
+				.then(res => subFile = res[0])
+				.catch(err => {
+					logger.debug('Error while resolving subs path', {service: 'Player', obj: err});
+					logger.warn(`Subs NOT FOUND : ${song.subfile}`, {service: 'Player'});
+					subFile = '';
+				}),
+			resolveFileInDirs(song.mediafile, resolvedPathRepos('Medias', song.repository))
+				.then(res => mediaFile = res[0])
+				.catch(err => {
+					logger.debug('Error while resolving media path', {service: 'Player', obj: err});
+					logger.warn(`Media NOT FOUND : ${song.mediafile}`, {service: 'Player'});
+					if (conf.Online.MediasHost) {
+						mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(song.mediafile)}`;
+						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});	onlineMedia = true;
+					} else {
+						mediaFile = '';
+						throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source)`);
+					}
+				})
+		];
+		await Promise.all<Promise<any>>(loadPromises);
+		logger.debug(`Loading media: ${mediaFile}${subFile ? ` with ${subFile}`:''}`, {service: 'Player'});
+		if (subFile) {
+			options['sub-file'] = subFile;
+			options.sid = '1';
 		} else {
 			options['sub-file'] = '';
-			options['sid'] = 'none';
+			options.sid = 'none';
 		}
 		if (mediaFile.endsWith('.mp3')) {
-			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
-			// Courtesy of @nah :)
-			if (conf.Player.VisualizationEffects) {
-				options['lavfi-complex'] = Players.fillVisualizationOptions(mediaData, (mediaData.avatar && conf.Karaoke.Display.Avatar));
-			} else if (mediaData.avatar && conf.Karaoke.Display.Avatar) {
-				options['lavfi-complex'] = Players.avatarFilter(mediaData);
-			}
-
-			const id3tags = await getID3(mediaFile);
-			if (!id3tags.image) {
+			const id3tags = await id3.read(mediaFile);
+			if (!id3tags.image || onlineMedia) {
 				const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
 				options['external-file'] = defaultImageFile.replace(/\\/g,'/');
 				options['force-window'] = 'yes';
 				options['image-display-duration'] = 'inf';
-				options['vid'] = '1';
+				options.vid = '1';
 			}
-		} else {
-			// If video, display avatar if it's defined.
-			// Again, lavfi-complex expert @nah comes to the rescue!
-			if (mediaData.avatar && conf.Karaoke.Display.Avatar) options['lavfi-complex'] = `movie=\\'${mediaData.avatar.replace(/\\/g,'/')}\\'[logo];[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base];[base][logo1]overlay=x='if(between(t,0,8)+between(t,${mediaData.duration - 7},${mediaData.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`;
 		}
-		// Load all thoses files into mpv and let's go!
+		// Load all those files into mpv and let's go!
 		try {
-			playerState.currentSong = mediaData;
+			playerState.currentSong = song;
 			playerState.mediaType = 'song';
 			playerState.currentMedia = null;
+			this.messages.removeMessage('poll');
 			await retry(() => this.exec({command: ['loadfile', mediaFile, 'replace', options]}), {
 				retries: 3,
 				onFailedAttempt: error => {
@@ -720,16 +831,16 @@ class Players {
 			playerState.playing = true;
 			playerState._playing = true;
 			playerState.playerStatus = 'play';
-			this.clearText();
 			emitPlayerState();
 			setDiscordActivity('song', {
-				title: mediaData.currentSong.title,
-				singer: mediaData.currentSong.singers?.map(s => s.name).join(', ') || i18n.t('UNKNOWN_ARTIST')
+				title: song.title,
+				source: getSongSeriesSingers(song)
+					|| i18n.t('UNKNOWN_ARTIST')
 			});
 			return playerState;
 		} catch(err) {
 			logger.error('Unable to load', {service: 'Player', obj: err});
-			sentry.addErrorInfo('mediaData', JSON.stringify(mediaData, null, 2));
+			sentry.addErrorInfo('mediaData', JSON.stringify(song, null, 2));
 			sentry.error(err);
 			throw err;
 		}
@@ -739,10 +850,10 @@ class Players {
 		const conf = getConfig();
 		const media = getSingleMedia(mediaType);
 		if (media) {
-			setState({currentlyPlayingKara: mediaType});
 			logger.debug(`Playing ${mediaType}: ${media.filename}`, {service: 'Player'});
 			const options: any = {
-				'replaygain-fallback': media.audiogain.toString()
+				'force-media-title': mediaType,
+				af: 'loudnorm'
 			};
 			const subFile = replaceExt(media.filename, '.ass');
 			logger.debug(`Searching for ${subFile}`, {service: 'Player'});
@@ -765,12 +876,12 @@ class Players {
 				});
 				playerState.playerStatus = 'play';
 				playerState._playing = true;
-				// Subtitles load is handled by `file-loaded` event on the Player class
-				(mediaType === 'Jingles' || mediaType === 'Sponsors')
+				mediaType === 'Jingles' || mediaType === 'Sponsors'
 					? this.displayInfo()
 					: conf.Playlist.Medias[mediaType].Message
-						? this.message(conf.Playlist.Medias[mediaType].Message, 1000000)
-						: this.clearText();
+						? this.message(conf.Playlist.Medias[mediaType].Message, -1, 5, 'DI')
+						: this.messages.removeMessage('DI');
+				this.messages.removeMessage('poll');
 				emitPlayerState();
 				return playerState;
 			} catch (err) {
@@ -801,10 +912,11 @@ class Players {
 		playerState.playerStatus = 'stop';
 		await this.loadBackground();
 		logger.debug('Stop DI', {service: 'Player'});
-		if (!getState().songPoll) this.displayInfo();
+		this.displayInfo();
 		emitPlayerState();
 		setProgressBar(-1);
 		setDiscordActivity('idle');
+		this.messages.removeMessage('poll');
 		return playerState;
 	}
 
@@ -851,9 +963,14 @@ class Players {
 
 	async seek(delta: number) {
 		try {
+			// Skip the song if we try to seek after the end of the song
+			if (playerState.mediaType === 'song' && playerState.timeposition + delta > playerState.currentSong.duration) {
+				return next();
+			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
-			if (playerState.currentSong.media.endsWith('.mp3') && playerState.currentSong.avatar && getConfig().Karaoke.Display.Avatar) {
-				await this.exec({command: ['set_property', 'lavfi-complex', '[vid1]null[vo]']});
+			if (playerState.currentSong?.mediafile.endsWith('.mp3') &&
+				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar)) {
+				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
 			await this.exec({command: ['seek', delta]});
 		} catch(err) {
@@ -865,9 +982,14 @@ class Players {
 
 	async goTo(pos: number) {
 		try {
+			// Skip the song if we try to go after the end of the song
+			if (playerState.mediaType === 'song' && pos > playerState.currentSong.duration) {
+				return next();
+			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
-			if (playerState.currentSong?.media.endsWith('.mp3') && playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar) {
-				await this.exec({command: ['set_property', 'lavfi-complex', '[vid1]null[vo]']});
+			if (playerState.currentSong?.mediafile.endsWith('.mp3') &&
+				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar)) {
+				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
 			await this.exec({command: ['seek', pos, 'absolute']});
 		} catch(err) {
@@ -912,12 +1034,12 @@ class Players {
 		}
 	}
 
-	async setFullscreen(fsState: boolean): Promise<PlayerState> {
+	async toggleFullscreen(): Promise<boolean> {
 		try {
-			await this.exec({command: ['set_property', 'fullscreen', fsState]});
-			playerState.fullscreen = fsState;
+			await this.exec({command: ['set_property', 'fullscreen', !playerState.fullscreen]});
+			playerState.fullscreen = !playerState.fullscreen;
 			emitPlayerState();
-			return playerState;
+			return playerState.fullscreen;
 		} catch (err) {
 			logger.error('Unable to toggle fullscreen', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -925,12 +1047,12 @@ class Players {
 		}
 	}
 
-	async toggleOnTop(): Promise<boolean> {
+	async toggleBorders(): Promise<boolean> {
 		try {
-			await this.exec({command: ['set_property', 'ontop', !playerState.stayontop]});
-			playerState.stayontop = !playerState.stayontop;
+			await this.exec({command: ['set_property', 'border', !playerState.border]});
+			playerState.border = !playerState.border;
 			emitPlayerState();
-			return playerState.stayontop;
+			return playerState.border;
 		} catch (err) {
 			logger.error('Unable to toggle ontop', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -938,13 +1060,17 @@ class Players {
 		}
 	}
 
-	async setPiPSize(pct: number) {
-		await this.exec({command: ['set_property', 'autofit', `${pct}%x${pct}%`]}).catch(err => {
-			logger.error('Unable to set PiP size', {service: 'Player', obj: err});
+	async toggleOnTop(): Promise<boolean> {
+		try {
+			await this.exec({command: ['set_property', 'ontop', !playerState.onTop]});
+			playerState.onTop = !playerState.onTop;
+			emitPlayerState();
+			return playerState.onTop;
+		} catch (err) {
+			logger.error('Unable to toggle ontop', {service: 'Player', obj: err});
 			sentry.error(err);
 			throw err;
-		});
-		return playerState;
+		}
 	}
 
 	async setHwDec(method: string) {
@@ -956,19 +1082,16 @@ class Players {
 		return playerState;
 	}
 
-	async message(message: string, duration = 10000, alignCode = 5) {
+	tickDisplay() {
+		this.exec({ command: ['expand-properties', 'osd-overlay', 1, 'ass-events', this.messages?.getText() || ''] });
+	}
+
+	async message(message: string, duration = -1, alignCode = 5, forceType = 'admin') {
 		try {
 			const alignCommand = `{\\an${alignCode}}`;
-			const command = {
-				command: [
-					'expand-properties',
-					'show-text',
-					'${osd-ass-cc/0}' + alignCommand + message,
-					duration
-				]
-			};
-			await this.exec(command);
-			if (playerState.playing === false && !getState().songPoll) {
+			this.messages.addMessage(forceType, alignCommand+message,
+				duration === -1 ? 'infinite':duration);
+			if (duration !== -1 && playerState.playing === false && !getState().songPoll) {
 				await sleep(duration);
 				this.displayInfo();
 			}
@@ -979,23 +1102,16 @@ class Players {
 		}
 	}
 
-	async displaySongInfo(infos: string, duration = 8000, nextSong = false, spoilerAlert = false) {
+	async displaySongInfo(infos: string, duration = -1, nextSong = false, spoilerAlert = false) {
 		try {
-			playerState.displayingInfo = true;
 			const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
-			const nextSongString = nextSong ? `{\\u1}${i18n.t('NEXT_SONG')}{\\u0}\\N` : '';
+			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
+			if (nextSong) {
+				playerState.mediaType = 'pauseScreen';
+				emitPlayerState();
+			}
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
-			const command = {
-				command: [
-					'expand-properties',
-					'show-text',
-					'${osd-ass-cc/0}'+position+spoilerString+nextSongString+infos,
-					duration,
-				]
-			};
-			await this.exec(command);
-			await sleep(duration);
-			playerState.displayingInfo = false;
+			this.messages.addMessage('DI', position+spoilerString+nextSongString+infos, duration === -1 ? 'infinite':duration);
 		} catch(err) {
 			logger.error('Unable to display song info', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -1003,9 +1119,8 @@ class Players {
 		}
 	}
 
-	async displayInfo(duration = 10000000) {
+	async displayInfo(duration = -1) {
 		try {
-			playerState.displayingInfo = true;
 			const conf = getConfig();
 			const state = getState();
 			const ci = conf.Karaoke.Display.ConnectionInfo;
@@ -1015,18 +1130,8 @@ class Players {
 				: '';
 			if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${state.osURL} !`; // TODO: internationalize the exclamation mark
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - http://karaokes.moe`;
-			const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
-			const command = {
-				command: [
-					'expand-properties',
-					'show-text',
-					'${osd-ass-cc/0}{\\an1}'+message,
-					duration,
-				]
-			};
-			await this.exec(command);
-			await sleep(duration);
-			playerState.displayingInfo = false;
+			const message = '{\\an1}{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx60}{\\fscy60}{\\i1}'+version+'{\\i0}\\N{\\fscx40}{\\fscy40}'+catchphrase;
+			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite':duration);
 		} catch(err) {
 			logger.error('Unable to display infos', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -1034,34 +1139,16 @@ class Players {
 		}
 	}
 
-	static displayAddASong(thisArg: Players) {
-		if (!playerState.displayingInfo && getState().randomPlaying) thisArg.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'), 1000);
-	}
-
-	clearText() {
-		const command = {
-			command: [
-				'expand-properties',
-				'show-text',
-				'',
-				10,
-			]
-		};
-		return this.exec(command).then(() => {
-			playerState.displayingInfo = false;
-		}).catch(err => {
-			logger.error('Unable to clear text', {service: 'Player', obj: err});
-			sentry.error(err);
-			throw err;
-		});
+	displayAddASong() {
+		if (getState().randomPlaying) this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'),
+			1000, 5, 'addASong');
 	}
 
 	intervalIDAddASong: NodeJS.Timeout;
 
 	/** Initialize start displaying the "Add a song to the list" */
 	initAddASongMessage() {
-		const thisArg = this;
-		if (!this.intervalIDAddASong && getState().randomPlaying) this.intervalIDAddASong = setInterval(Players.displayAddASong, 2000, thisArg);
+		if (!this.intervalIDAddASong) this.intervalIDAddASong = setInterval(this.displayAddASong.bind(this), 2000);
 	}
 
 	/** Stop displaying the Add a song to the list */

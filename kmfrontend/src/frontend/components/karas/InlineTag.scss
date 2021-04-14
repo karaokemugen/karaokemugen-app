@@ -1,0 +1,31 @@
+.inline-tag {
+	display: inline-block;
+	position: relative;
+}
+
+.inline-tag.public span {
+	cursor: zoom-in;
+}
+
+.tag-popup {
+	position: absolute;
+	background-color: black;
+	margin-top: .25em;
+	padding: .5em;
+	width: max-content;
+	z-index: 2;
+	color: white;
+
+	.tag-name {
+		font-weight: bold;
+		font-size: 1.1em;
+	}
+	.tag-stat {
+		font-weight: lighter;
+		font-style: italic;
+	}
+	.tag-action {
+		font-weight: bold;
+		margin-top: .25em;
+	}
+}

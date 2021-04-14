@@ -1,5 +1,5 @@
+import {RemoteFailure, RemoteSuccess} from '../lib/types/remote';
 import { PlayerState } from './player';
-import { CurrentSong } from './playlist';
 
 export interface Version {
 	number?: string,
@@ -17,15 +17,14 @@ export interface State {
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
 	stopping: boolean,
-	currentlyPlayingKara?: string,
-	currentSong: CurrentSong
+	streamerPause: boolean,
 	randomPlaying: boolean,
 	counterToJingle?: number,
 	counterToSponsor?: number,
 	introPlayed?: boolean,
+	introSponsorPlayed?: boolean,
 	encorePlayed?: boolean,
-	fullscreen?: boolean,
-	ontop?: boolean,
+	usersBalance: Set<string>,
 	playlist?: null,
 	timeposition?: 0,
 	songPoll?: boolean,
@@ -36,18 +35,17 @@ export interface State {
 	appPath?: string,
 	dataPath?: string,
 	resourcePath?: string,
-	originalAppPath?: string,
 	osURL?: string,
 	os?: string,
 	osHost?: {
 		v4: string,
 		v6: string
 	},
+	remoteAccess?: RemoteSuccess | RemoteFailure
 	electron?: boolean,
 	defaultLocale?: string,
 	player?: PlayerState,
 	securityCode: number,
-	wsLogNamespace: string,
 	supportedLyrics?: string[],
 	supportedMedias?: string[],
 	forceDisableAppUpdate?: boolean,
@@ -80,6 +78,7 @@ export interface State {
 		dumpDB?: boolean,
 		restoreDB?: boolean,
 		noTestDownloads?: boolean,
+		noAutoTest?: boolean,
 	},
 	args: string[],
 	environment: string,
@@ -95,29 +94,17 @@ export interface PublicState {
 	os?: string,
 	electron: boolean,
 	defaultLocale: string,
-	wsLogNamespace: string,
 	supportedLyrics?: string[],
 	supportedMedias?: string[],
 	environment: string,
-	sentrytest: boolean
+	sentrytest: boolean,
+	url: string
 }
 
-export interface PublicPlayerState {
-	playing: boolean,
-	onTop: boolean,
-	fullscreen: boolean,
-	timePosition: number,
+export interface PublicPlayerState extends PlayerState {
 	stopping: boolean,
-	duration: number,
-	mute: boolean,
-	playerStatus: string,
-	currentlyPlaying: string,
 	currentRequester: string,
 	currentSessionID: string,
-	currentSong: CurrentSong,
-	subText: string,
-	showSubs: boolean,
-	volume: number,
 	defaultLocale: string,
 	songsBeforeJingle: number,
 	songsBeforeSponsor: number

@@ -1,15 +1,15 @@
 import {pg as yesql} from 'yesql';
 
-import {buildClauses, buildTypeClauses, db, transaction} from '../lib/dao/database';
+import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
+import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase,DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
-import {getConfig} from '../lib/utils/config';
-import {now} from '../lib/utils/date';
-import { DBKaraHistory } from '../types/database/kara';
+import { getConfig } from '../lib/utils/config';
+import { now } from '../lib/utils/date';
 import { DBPLCAfterInsert } from '../types/database/playlist';
-import {PLC} from '../types/playlist';
+import { PLC } from '../types/playlist';
 import { getState } from '../utils/state';
-import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraHistory, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
+import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
 
 
 export async function getSongCountForUser(playlist_id: number, username: string): Promise<number> {
@@ -33,8 +33,9 @@ export async function updateKara(kara: Kara) {
 		title: kara.title,
 		year: kara.year,
 		songorder: kara.songorder || null,
-		duration: kara.mediaduration || kara.duration,
-		gain: kara.mediagain || kara.gain,
+		duration: kara.duration,
+		gain: kara.gain,
+		loudnorm: kara.loudnorm,
 		modified_at: kara.modified_at,
 		kid: kara.kid
 	}));
@@ -49,8 +50,9 @@ export async function addKara(kara: Kara) {
 		title: kara.title,
 		year: kara.year,
 		songorder: kara.songorder || null,
-		duration: kara.mediaduration,
-		gain: kara.mediagain,
+		duration: kara.duration,
+		gain: kara.gain,
+		loudnorm: kara.loudnorm,
 		modified_at: kara.modified_at,
 		created_at: kara.created_at,
 		kid: kara.kid,
@@ -72,30 +74,46 @@ export async function deleteKara(kid: string) {
 }
 
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
-	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
-	let typeClauses = params.mode ? buildTypeClauses(params.mode, params.modeValue) : '';
+	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter) : {sql: [], params: {}, additionalFrom: []};
+	let typeClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
 	// Hide blacklisted songs if not admin
-	if (!params.ignoreBlacklist && (!params.admin || params.blacklist)) typeClauses = `${typeClauses} AND ak.kid NOT IN (SELECT fk_kid FROM blacklist)`;
+	if (!params.ignoreBlacklist && (!params.admin || params.blacklist)) typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM blacklist)`;
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
 	let havingClause = '';
 	let groupClause = '';
+	let selectRequested = `COUNT(rq.*)::integer AS requested,
+	MAX(rq.requested_at) AS lastrequested_at,
+	`;
+	const joinClauses = [' LEFT OUTER JOIN requested AS rq ON rq.fk_kid = ak.pk_kid '];
+	// This is normal behaviour without anyone.
+	let groupClauseEnd = '';
 	// Search mode to filter karas played or requested in a particular session
-	if (params.mode === 'sessionPlayed') {
+	if (params.order === 'history') {
+		orderClauses = 'lastplayed_at DESC NULLS LAST, ';
+	}
+	if (params.order === 'sessionPlayed') {
 		orderClauses = groupClause = 'p.played_at, ';
-		typeClauses = `AND p.fk_seid = '${params.modeValue}'`;
 	}
-	if (params.mode === 'sessionRequested') {
+	if (params.order === 'sessionRequested') {
 		orderClauses = groupClause = 'rq.requested_at, ';
-		typeClauses = `AND rq.fk_seid = '${params.modeValue}'`;
 	}
-	if (params.mode === 'recent') orderClauses = 'created_at DESC, ';
-	if (params.mode === 'requested') {
+	if (params.order === 'recent') orderClauses = 'created_at DESC, ';
+	if (params.order === 'requested' && getConfig().Online.FetchPopularSongs) {
+		orderClauses = 'requested DESC, ';
+		groupClauseEnd = ', requested';
+		selectRequested = 'orq.requested AS requested, ';
+		// Emptying joinClauses first before adding something to it.
+		joinClauses.splice(0, joinClauses.length);
+		joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.pk_kid ');
+		typeClauses = ' AND requested > 1';
+	}
+	if (params.order === 'requestedLocal' || (params.order === 'requested' && !getConfig().Online.FetchPopularSongs)) {
 		orderClauses = 'requested DESC, ';
 		havingClause = 'HAVING COUNT(rq.*) > 1';
 	}
-	if (params.mode === 'played') {
+	if (params.order === 'played') {
 		orderClauses = 'played DESC, ';
 		havingClause = 'HAVING COUNT(p.*) > 1';
 	}
@@ -105,13 +123,13 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (params.random > 0) {
 		orderClauses = `RANDOM(), ${orderClauses}`;
 		limitClause = `LIMIT ${params.random}`;
-		typeClauses = `${typeClauses} AND ak.kid NOT IN (
+		typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
 			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}
 		)`;
 	}
-	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause);
+	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom, selectRequested, groupClauseEnd, joinClauses);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaylistID,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
@@ -119,11 +137,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		...filterClauses.params
 	};
 	const res = await db().query(yesql(query)(queryParams));
-	return res.rows;
-}
-
-export async function getKaraHistory(): Promise<DBKaraHistory[]> {
-	const res = await db().query(sqlgetKaraHistory);
 	return res.rows;
 }
 
@@ -168,8 +181,10 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 			kara.kid,
 			kara.created_at,
 			kara.pos,
-			false,
-			kara.flag_visible || true
+			kara.flag_free || false,
+			kara.flag_visible || true,
+			kara.flag_refused || false,
+			kara.flag_accepted || false
 		]));
 		const res = await transaction({params: karas, sql: sqladdKaraToPlaylist});
 		return res;
@@ -183,12 +198,22 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 			kara.created_at,
 			kara.pos,
 			false,
-			kara.flag_visible
+			kara.flag_visible,
+			kara.flag_refused || false,
+			kara.flag_accepted || false
 		]);
 		return res.rows;
 	}
 }
 
-export function removeKaraFromPlaylist(karas: number[], playlist_id: number) {
-	return db().query(sqlremoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')), [playlist_id]);
+export function removeKaraFromPlaylist(karas: number[]) {
+	return db().query(sqlremoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')));
+}
+
+export function emptyOnlineRequested() {
+	return db().query(sqlTruncateOnlineRequested);
+}
+
+export function insertOnlineRequested(requested: string[][]) {
+	return copyFromData('online_requested', requested);
 }

@@ -2,12 +2,11 @@ import { app, BrowserWindow, dialog,ipcMain, Menu,protocol } from 'electron';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
-import { v4 as uuidV4 } from 'uuid';
 
 import { exit } from '../components/engine';
 import { listUsers } from '../dao/user';
 import { main, preInit } from '../index';
-import { getConfig } from '../lib/utils/config';
+import {getConfig, setConfig} from '../lib/utils/config';
 import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { emit,on } from '../lib/utils/pubsub';
@@ -17,9 +16,10 @@ import { importSet } from '../services/blacklist';
 import { addDownloads,integrateDownloadBundle } from '../services/download';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
-import { playSingleSong } from '../services/player';
+import { playSingleSong } from '../services/karaokeEngine';
 import { importPlaylist, playlistImported} from '../services/playlist';
 import { addRepo,getRepo, getRepos } from '../services/repo';
+import { generateAdminPassword } from '../services/user';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { detectKMFileTypes } from '../utils/files';
 import { getState,setState } from '../utils/state';
@@ -29,6 +29,7 @@ import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
+export let chibiPlayerWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
@@ -53,6 +54,9 @@ export function startElectron() {
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
 			if (!getState().forceDisableAppUpdate) initAutoUpdate();
+			if (getConfig().GUI.ChibiPlayer.Enabled) {
+				updateChibiPlayerWindow(true);
+			}
 			initDone = true;
 		});
 		ipcMain.once('initPageReady', async () => {
@@ -62,13 +66,28 @@ export function startElectron() {
 				logger.error('Error during launch', {service: 'Launcher', obj: err});
 			}
 		});
+		ipcMain.on('getSecurityCode', (event, _eventData) => {
+			event.sender.send('getSecurityCodeResponse', getState().securityCode);
+		});
 		ipcMain.on('droppedFiles', async (_event, eventData) => {
 			for (const path of eventData.files) {
-				await handleFile(path, eventData.username);
+				await handleFile(path, eventData.username, eventData.onlineToken);
 			}
 		});
 		ipcMain.on('tip', (_event, _eventData) => {
 			emitIPC('techTip', tip());
+		});
+		ipcMain.on('setChibiPlayerAlwaysOnTop', (_event, _eventData) => {
+			setChibiPlayerAlwaysOnTop(!getConfig().GUI.ChibiPlayer.AlwaysOnTop);
+			setConfig({GUI:{ChibiPlayer:{ AlwaysOnTop: !getConfig().GUI.ChibiPlayer.AlwaysOnTop }}});
+		});
+		ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
+			updateChibiPlayerWindow(false);
+			setConfig({GUI: {ChibiPlayer: { Enabled: false }}});
+			applyMenu();
+		});
+		ipcMain.on('focusMainWindow', (_event, _eventData) => {
+			focusWindow();
 		});
 	});
 
@@ -129,7 +148,6 @@ export async function handleProtocol(args: string[]) {
 						Path: {
 							Karas: [`repos/${repoName}/karaokes`],
 							Lyrics: [`repos/${repoName}/lyrics`],
-							Series: [`repos/${repoName}/series`],
 							Medias: [`repos/${repoName}/medias`],
 							Tags: [`repos/${repoName}/tags`],
 						}
@@ -151,7 +169,7 @@ export async function handleProtocol(args: string[]) {
 	}
 }
 
-export async function handleFile(file: string, username?: string) {
+export async function handleFile(file: string, username?: string, onlineToken?: string) {
 	try {
 		logger.info(`Received file path ${file}`, {service: 'FileHandler'});
 		if (!getState().ready) return;
@@ -177,7 +195,7 @@ export async function handleFile(file: string, username?: string) {
 		case 'Karaoke Mugen Karaoke Bundle File':
 			const repoName = data.kara.data.data.repository;
 			const destRepo = await checkRepositoryExists(repoName);
-			await integrateDownloadBundle(data, uuidV4(), destRepo);
+			await integrateDownloadBundle(data, destRepo);
 			break;
 		case 'Karaoke Mugen BLC Set File':
 			await importSet(data);
@@ -190,7 +208,7 @@ export async function handleFile(file: string, username?: string) {
 			break;
 		case 'Karaoke Mugen Favorites List File':
 			if (!username) throw 'Unable to find a user to import the file to';
-			await importFavorites(data, username);
+			await importFavorites(data, username, onlineToken);
 			if (win && !win.webContents.getURL().includes('/admin')) {
 				win.loadURL(url);
 				win.webContents.on('did-finish-load', () => emitWS('favoritesUpdated', username));
@@ -237,11 +255,11 @@ async function checkRepositoryExists(repoName: string, useLocal = true): Promise
 				Name: repoName,
 				Online: true,
 				Enabled: true,
+				SendStats: getConfig().Online.Stats,
 				Path: {
 					Karas: [`repos/${repoName}/karaokes`],
 					Lyrics: [`repos/${repoName}/lyrics`],
 					Medias: [`repos/${repoName}/medias`],
-					Series: [`repos/${repoName}/series`],
 					Tags: [`repos/${repoName}/tags`],
 				}
 			});
@@ -285,6 +303,7 @@ async function createWindow() {
 		width: 1280,
 		height: 720,
 		backgroundColor: '#36393f',
+		show: false,
 		icon: resolve(state.resourcePath, 'build/icon.png'),
 		webPreferences: {
 			nodeIntegration: true
@@ -297,7 +316,9 @@ async function createWindow() {
 		win.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
 	}
 
-	win.show();
+	win.once('ready-to-show', () => {
+		win.show();
+	});
 	win.webContents.on('new-window', (event, url) => {
 		event.preventDefault();
 		openLink(url);
@@ -310,6 +331,7 @@ async function createWindow() {
 	// What to do when the window is closed.
 	win.on('closed', () => {
 		win = null;
+		if (chibiPlayerWindow) chibiPlayerWindow.destroy();
 	});
 }
 
@@ -328,4 +350,46 @@ export function focusWindow() {
 		if (win.isMinimized()) win.restore();
 		win.focus();
 	}
+}
+
+export async function updateChibiPlayerWindow(show: boolean) {
+	const state = getState();
+	const conf = getConfig();
+	if (show) {
+		chibiPlayerWindow = new BrowserWindow({
+			width: 521,
+			height: 139,
+			x: conf.GUI.ChibiPlayer.PositionX,
+			y: conf.GUI.ChibiPlayer.PositionY,
+			frame: false,
+			resizable: false,
+			show: false,
+			alwaysOnTop: getConfig().GUI.ChibiPlayer.AlwaysOnTop,
+			backgroundColor: '#36393f',
+			webPreferences: {
+				nodeIntegration: true
+			},
+			icon: resolve(state.resourcePath, 'build/icon.png'),
+		});
+		const port = state.frontendPort;
+		chibiPlayerWindow.once('ready-to-show', () => {
+			chibiPlayerWindow.show();
+		});
+		chibiPlayerWindow.on('moved', () => {
+			const pos = chibiPlayerWindow.getPosition();
+			setConfig({ GUI: {
+				ChibiPlayer: {
+					PositionX: pos[0],
+					PositionY: pos[1]
+				}
+			}});
+		});
+		await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
+	} else {
+		chibiPlayerWindow?.destroy();
+	}
+}
+
+export function setChibiPlayerAlwaysOnTop(enabled: boolean) {
+	if (chibiPlayerWindow) chibiPlayerWindow.setAlwaysOnTop(enabled);
 }

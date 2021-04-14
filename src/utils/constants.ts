@@ -1,8 +1,8 @@
-import { version } from '../version';
+// Karaoke Mugen App Constants
+// DO NOT IMPORT ANYTHING FROM THE APP IN THIS FILE
+// or else tests will fail since they import this file and this will result in importint everything from Karaoke Mugen App.
 
 export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806';
-
-export const sentryCSP = 'https://o399537.ingest.sentry.io/api/5256806/security/?sentry_key=464814b9419a4880a2197b1df7e1d0ed';
 
 export const discordClientID = '718211141033263145';
 
@@ -248,9 +248,7 @@ export const initializationCatchphrases = [
 ];
 
 // Default headers for HTTP client
-export const headers = {
-	'user-agent': `KaraokeMugenApp/${version.number}`
-};
+export const userAgent = 'KaraokeMugenApp';
 
 // Prefixes for known ASNs
 // See
@@ -303,3 +301,19 @@ export const testDownloads = [
 		repository: defaultRepo
 	},
 ];
+
+export const webappModes = Object.freeze({
+	closed: 0,
+	limited: 1,
+	open: 2
+});
+
+export const logo = `
+ _  __                  _         __  __
+| |/ /__ _ _ _ __ _ ___| |_____  |  \\/  |_  _ __ _ ___ _ _
+| ' </ _\` | '_/ _\` / _ \\ / / -_) | |\\/| | || / _\` / -_) ' \\
+|_|\\_\\__,_|_| \\__,_\\___/_\\_\\___| |_|  |_|\\_,_\\__, \\___|_||_|
+                                             |___/
+`;
+
+export const mpvRegex = /mpv ([A-Za-z0-9.]+)/;

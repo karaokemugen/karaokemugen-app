@@ -21,11 +21,20 @@ import {asyncCopy, asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/object_helpers';
+import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
+import { getAllKaras } from '../services/kara';
 import {publishURL} from '../services/online';
-import {initAddASongMessage, playerNeedsRestart, prepareClassicPauseScreen,  stopAddASongMessage } from '../services/player';
+import {
+	displayInfo,
+	initAddASongMessage,
+	playerNeedsRestart,
+	prepareClassicPauseScreen,
+	stopAddASongMessage
+} from '../services/player';
 import {setSongPoll} from '../services/poll';
+import {destroyRemote, initRemote} from '../services/remote';
 import {initStats, stopStats} from '../services/stats';
 import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
@@ -42,14 +51,13 @@ export async function editSetting(part: RecursivePartial<Config>) {
 	try {
 		const config = getConfig();
 		const oldConfig = cloneDeep(config);
-		const newConfig = merge(config, part);
-		removeNulls(newConfig);
+		const newConfig = removeNulls(merge(config, part));
 		verifyConfig(newConfig);
 		await mergeConfig(newConfig, oldConfig);
-		emitWS('settingsUpdated', config);
+		emitWS('settingsUpdated', part);
 		return config;
 	} catch(err) {
-		sentry.error(err);
+		sentry.error(err, 'Warning');
 		throw err;
 	}
 }
@@ -59,16 +67,23 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
 	const state = getState();
 	if (!isEqual(oldConfig.Player, newConfig.Player) && !state.isDemo) {
-		//If these two settings haven't been changed, it means another one has, so we're restarting mpv
-		if (oldConfig.Player.FullScreen === newConfig.Player.FullScreen &&
-			oldConfig.Player.StayOnTop === newConfig.Player.StayOnTop &&
-			oldConfig.Player.Volume === newConfig.Player.Volume &&
-			oldConfig.Player.PIP.Size === newConfig.Player.PIP.Size &&
-			oldConfig.Player.VisualizationEffects === newConfig.Player.VisualizationEffects &&
-			oldConfig.Player.HardwareDecoding === newConfig.Player.HardwareDecoding
+		// If these settings have been changed, a restart of mpv is necessary
+		if (
+			oldConfig.Player.mpvVideoOutput !== newConfig.Player.mpvVideoOutput ||
+			oldConfig.Player.ExtraCommandLine !== newConfig.Player.ExtraCommandLine ||
+			oldConfig.Player.Monitor !== newConfig.Player.Monitor
 		) playerNeedsRestart();
 	}
-	if (newConfig.Online.URL !== oldConfig.Online.URL && state.ready && !state.isDemo) publishURL();
+	if (newConfig.Online.URL !== oldConfig.Online.URL && state.ready && !state.isDemo) {
+		if (newConfig.Online.URL) publishURL();
+	}
+	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready && !state.isDemo) {
+		if (newConfig.Online.Remote) {
+			initRemote();
+		} else {
+			destroyRemote();
+		}
+	}
 	// Updating quotas
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
 		const users = await listUsers();
@@ -78,16 +93,17 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
 	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
+	if (!oldConfig.Frontend.GeneratePreviews && newConfig.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
 	// Browse through paths and define if it's relative or absolute
-	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.Windows));
-	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.Linux));
-	if (oldConfig.System.Binaries.Player.OSX !== newConfig.System.Binaries.Player.OSX) newConfig.System.Binaries.Player.OSX = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Player.OSX));
-	if (oldConfig.System.Binaries.ffmpeg.Windows !== newConfig.System.Binaries.ffmpeg.Windows) newConfig.System.Binaries.ffmpeg.Windows = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.ffmpeg.Windows));
-	if (oldConfig.System.Binaries.ffmpeg.Linux !== newConfig.System.Binaries.ffmpeg.Linux) newConfig.System.Binaries.ffmpeg.Linux = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.ffmpeg.Linux));
-	if (oldConfig.System.Binaries.ffmpeg.OSX !== newConfig.System.Binaries.ffmpeg.OSX) newConfig.System.Binaries.ffmpeg.OSX = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.ffmpeg.OSX));
-	if (oldConfig.System.Binaries.Postgres.Windows !== newConfig.System.Binaries.Postgres.Windows)  newConfig.System.Binaries.Postgres.Windows = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Postgres.Windows));
-	if (oldConfig.System.Binaries.Postgres.Linux !== newConfig.System.Binaries.Postgres.Linux) newConfig.System.Binaries.Postgres.Linux = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Postgres.Linux));
-	if (oldConfig.System.Binaries.Postgres.OSX !== newConfig.System.Binaries.Postgres.OSX) newConfig.System.Binaries.Postgres.OSX = relativePath(state.originalAppPath, resolve(state.originalAppPath, newConfig.System.Binaries.Postgres.OSX));
+	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Windows));
+	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Linux));
+	if (oldConfig.System.Binaries.Player.OSX !== newConfig.System.Binaries.Player.OSX) newConfig.System.Binaries.Player.OSX = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.OSX));
+	if (oldConfig.System.Binaries.ffmpeg.Windows !== newConfig.System.Binaries.ffmpeg.Windows) newConfig.System.Binaries.ffmpeg.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.ffmpeg.Windows));
+	if (oldConfig.System.Binaries.ffmpeg.Linux !== newConfig.System.Binaries.ffmpeg.Linux) newConfig.System.Binaries.ffmpeg.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.ffmpeg.Linux));
+	if (oldConfig.System.Binaries.ffmpeg.OSX !== newConfig.System.Binaries.ffmpeg.OSX) newConfig.System.Binaries.ffmpeg.OSX = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.ffmpeg.OSX));
+	if (oldConfig.System.Binaries.Postgres.Windows !== newConfig.System.Binaries.Postgres.Windows)  newConfig.System.Binaries.Postgres.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Postgres.Windows));
+	if (oldConfig.System.Binaries.Postgres.Linux !== newConfig.System.Binaries.Postgres.Linux) newConfig.System.Binaries.Postgres.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Postgres.Linux));
+	if (oldConfig.System.Binaries.Postgres.OSX !== newConfig.System.Binaries.Postgres.OSX) newConfig.System.Binaries.Postgres.OSX = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Postgres.OSX));
 	for (const i in Object.keys(newConfig.System.Repositories)) {
 		for (const path of Object.keys(newConfig.System.Repositories[i].Path)) {
 			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i].Path[path])) {
@@ -143,7 +159,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 export async function initConfig(argv: any) {
 	try {
 		setConfigConstraints(configConstraints);
-		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().originalAppPath);
+		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
 		const binaries = await checkBinaries(getConfig());
 		setState({binPath: binaries});
 		emit('configReady');
@@ -158,19 +174,25 @@ export async function initConfig(argv: any) {
 
 /** Detect and set hostname and local IP */
 export function configureHost() {
+	const state = getState();
 	const config = getConfig();
 	const URLPort = +config.Online.Port === 80
 		? ''
 		: `:${config.Frontend.Port}`;
 	setState({osHost: {v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6')}});
-	if (config.Online.URL) {
-		setState({osURL: `http://${config.Online.Host}`});
+	if (state.remoteAccess && 'host' in state.remoteAccess) {
+		setState({osURL: `https://${state.remoteAccess.host}`});
+	} else if (config.Online.URL) {
+		setState({osURL: `https://${config.Online.Host}`});
 	} else {
 		if (!config.Karaoke.Display.ConnectionInfo.Host) {
 			setState({osURL: `http://${getState().osHost.v4}${URLPort}`}); // v6 is too long to show anyway
 		} else {
 			setState({osURL: `http://${config.Karaoke.Display.ConnectionInfo.Host}${URLPort}`});
 		}
+	}
+	if ((state.player.mediaType === 'background' || state.player.mediaType === 'pauseScreen') && !state.songPoll) {
+		displayInfo();
 	}
 }
 
@@ -238,12 +260,10 @@ export function backupConfig() {
 export function getPublicConfig(removeSystem = true) {
 	const publicSettings = cloneDeep(getConfig());
 	delete publicSettings.App.JwtSecret;
-	delete publicSettings.Database;
+	delete publicSettings.System.Database;
 	if (removeSystem) delete publicSettings.System;
 	else delete publicSettings.System.Binaries;
 	delete publicSettings.Karaoke.StreamerMode.Twitch.OAuth;
-	delete publicSettings.Gitlab.Token;
-	delete publicSettings.Gitlab.Host;
 	delete publicSettings.Frontend.Port;
 	delete publicSettings.Frontend.AuthExpireTime;
 	return publicSettings;
@@ -254,7 +274,7 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	const binariesPath = configuredBinariesForSystem(config);
 	const requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
-	if (config.Database.prod.bundledPostgresBinary) {
+	if (config.System.Database.bundledPostgresBinary) {
 		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
 		if (process.platform === 'win32') {
 			requiredBinariesChecks.push(asyncRequired('C:/Windows/System32/msvcr120.dll'));

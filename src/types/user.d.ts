@@ -1,7 +1,7 @@
 export interface UserOpts {
 	admin?: boolean,
 	createRemote?: boolean,
-	editRemote?: boolean,
+	editRemote?: false | string, // Supply online token
 	renameUser?: boolean,
 	noPasswordCheck?: boolean,
 }

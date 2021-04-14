@@ -27,22 +27,22 @@ export interface Config {
 			}
 			App?: boolean
 		}
-		MediasHost: string
+		MediasHost?: string,
+		Remote?: boolean,
+		FetchPopularSongs?: boolean
 	},
 	Frontend: {
+		GeneratePreviews?: boolean,
 		Port?: number,
 		Mode?: number,
 		SeriesLanguageMode: number,
 		AuthExpireTime?: number,
 		Permissions?: {
-			AllowNicknameChange?: boolean,
-			AllowViewWhitelist?: boolean,
-			AllowViewBlacklist?: boolean,
-			AllowViewBlacklistCriterias?: boolean
+			AllowNicknameChange?: boolean
 		},
 		ShowAvatarsOnPlaylist?: boolean
 	},
-	Gitlab: {
+	Gitlab?: {
 		Enabled?: boolean,
 		Host?: string,
 		Token?: string,
@@ -57,6 +57,12 @@ export interface Config {
 	},
 	GUI: {
 		OpenInElectron?: boolean,
+		ChibiPlayer?: {
+			Enabled?: boolean,
+			AlwaysOnTop?: boolean,
+			PositionX?: number,
+			PositionY?: number,
+		}
 	}
 	Karaoke: {
 		ClassicMode?: boolean,
@@ -72,6 +78,7 @@ export interface Config {
 		MinutesBeforeEndOfSessionWarning?: number,
 		Autoplay?: boolean,
 		SmartInsert?: boolean,
+		AutoBalance?: boolean,
 		JinglesInterval?: number, // Obsolete since 3.1.1, replaced by Playlist.Medias.Jingles.Interval
 		SponsorsInterval?: number, // Obsolete since 3.1.1, replaced by Playlist.Medias.Sponsors.Interval
 		Display: {
@@ -103,25 +110,23 @@ export interface Config {
 		FullScreen?: boolean,
 		Background?: string,
 		Screen?: number,
-		VisualizationEffects?: boolean,
 		Monitor?: boolean,
 		NoHud?: boolean,
 		NoBar?: boolean,
 		mpvVideoOutput?: string,
 		PIP: {
-			Enabled?: boolean,
 			Size?: number,
 			PositionX?: 'Left' | 'Right' | 'Center',
 			PositionY?: 'Top' | 'Bottom' | 'Center'
 		},
 		ProgressBarDock?: boolean,
 		ExtraCommandLine?: string,
+		Borders?: boolean,
 		HardwareDecoding?: 'auto-safe' | 'no' | 'yes'
 		Volume?: number
 	},
 	Playlist: {
 		AllowDuplicates?: boolean,
-		AllowDuplicateSeries?: boolean,
 		MaxDejaVuTime?: number,
 		Medias: {
 			Jingles: {
@@ -158,6 +163,16 @@ export interface Config {
 		RandomSongsAfterEndMessage: boolean
 	},
 	System: {
+		Database: {
+			host?: string,
+			port?: number,
+			username?: string,
+			password?: string,
+			superuser?: string,
+			superuserPassword?: string,
+			database?: string,
+			bundledPostgresBinary?: boolean
+		},
 		Binaries: {
 			Player: {
 				Windows?: string,
@@ -178,11 +193,7 @@ export interface Config {
 		Repositories: Repository[]
 		Path: {
 			Bin?: string,
-			Karas?: string[], // Deprecated in favour of repositories
-			Medias?: string[], // Deprecated in favour of repositories
-			Lyrics?: string[], // Deprecated in favour of repositories
 			DB?: string,
-			Series?: string[], // Deprecated: no unique repo, no series, totally useless
 			Backgrounds?: string[],
 			Jingles?: string[],
 			Intros?: string[],
@@ -191,26 +202,9 @@ export interface Config {
 			Sponsors?: string[],
 			Temp?: string,
 			Previews?: string,
+			SessionExports?: string,
 			Import?: string,
 			Avatars?: string,
-			Tags?: string[] // Deprecated in favour of repositories
-		}
-	},
-	Database: {
-		'sql-file'?: boolean,
-		defaultEnv?: string,
-		prod: {
-			driver?: any,
-			host?: string,
-			port?: number,
-			user?: string,
-			password?: string,
-			superuser?: string,
-			superuserPassword?: string,
-			schema?: string,
-			database?: string,
-			bundledPostgresBinary?: boolean
-			username?: string
 		}
 	}
 }

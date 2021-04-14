@@ -22,12 +22,15 @@ SELECT
 	u.bio AS bio,
 	u.url AS url,
 	u.email AS email,
-	u.fingerprint AS fingerprint,
 	u.last_login_at AS last_login_at,
-	u.flag_online AS flag_online,
+	(CASE WHEN :last_login_time_limit < u.last_login_at
+		THEN TRUE
+		ELSE FALSE
+    END)  AS flag_online,
 	u.series_lang_mode AS series_lang_mode,
 	u.main_series_lang AS main_series_lang,
-	u.fallback_series_lang AS fallback_series_lang
+	u.fallback_series_lang AS fallback_series_lang,
+	u.flag_tutorial_done AS flag_tutorial_done
 FROM users AS u
 WHERE u.pk_login = :username
 `;
@@ -36,7 +39,7 @@ export const sqlselectRandomGuestName = `
 SELECT pk_login AS login
 FROM users
 WHERE type = 2
-	AND flag_online = FALSE
+	AND ($1 > last_login_at)
 ORDER BY RANDOM() LIMIT 1;
 `;
 
@@ -44,8 +47,7 @@ export const sqlselectGuests = `
 SELECT
 	u.nickname AS nickname,
 	u.pk_login AS login,
-	u.avatar_file AS avatar_file,
-	(fingerprint IS NULL) AS available
+	u.avatar_file AS avatar_file
 FROM users AS u
 WHERE u.type = 2;
 `;
@@ -57,9 +59,12 @@ SELECT
 	u.pk_login AS login,
 	u.nickname AS nickname,
 	u.last_login_at AS last_login_at,
-	u.flag_online AS flag_online
+	(CASE WHEN $1 < u.last_login_at
+		THEN TRUE
+		ELSE FALSE
+    END)  AS flag_online
 FROM users AS u
-ORDER BY u.flag_online DESC, u.nickname
+ORDER BY flag_online DESC, u.nickname
 `;
 
 export const sqldeleteUser = `
@@ -73,51 +78,23 @@ INSERT INTO users(
 	pk_login,
 	password,
 	nickname,
-	flag_online,
-	last_login_at
+	last_login_at,
+	flag_tutorial_done
 )
 VALUES (
 	:type,
 	:login,
 	:password,
 	:nickname,
-	:flag_online,
-	:last_login_at
+	:last_login_at,
+	:flag_tutorial_done
 );
-`;
-
-export const sqlupdateExpiredUsers = `
-UPDATE users SET
-	fingerprint = NULL,
-	flag_online = FALSE
-WHERE last_login_at <= $1;
 `;
 
 export const sqlupdateLastLogin = `
 UPDATE users SET
-	last_login_at = :now,
-	flag_online = TRUE
+	last_login_at = :now
 WHERE pk_login = :username;
-`;
-
-export const sqlupdateUserFingerprint = `
-UPDATE users SET
-	fingerprint = :fingerprint,
-	flag_online = TRUE
-WHERE pk_login = :username;
-`;
-
-export const sqlfindFingerprint = `
-SELECT pk_login
-FROM users
-WHERE fingerprint = $1;
-`;
-
-export const sqlresetGuestsPassword = `
-UPDATE users SET
-	password = null
-WHERE flag_online = FALSE
-AND type = 2
 `;
 
 export const sqleditUser = `
@@ -131,7 +108,8 @@ UPDATE users SET
 	type = :type,
 	series_lang_mode = :series_lang_mode,
 	main_series_lang = :main_series_lang,
-	fallback_series_lang = :fallback_series_lang
+	fallback_series_lang = :fallback_series_lang,
+	flag_tutorial_done = :flag_tutorial_done
 WHERE pk_login = :old_login
 `;
 
@@ -140,3 +118,20 @@ UPDATE users SET
 	password = :password
 WHERE pk_login = :username
 `;
+
+export const sqlSelectAllDupeUsers = `
+SELECT *,
+	(select count(*) from favorites f where f.fk_login = ou.pk_login) AS favorites
+FROM users ou
+WHERE (select count(*) from users inr where lower(inr.pk_login) = lower(ou.pk_login)) > 1
+  AND type < 2
+ORDER BY pk_login, favorites DESC, last_login_at DESC
+`;
+
+export const sqlLowercaseAllUsers = 'UPDATE users SET pk_login = lower(pk_login) WHERE type < 2;';
+
+export const sqlMergeUserDataPlaylist = 'UPDATE playlist SET fk_login = $2 WHERE fk_login = $1;';
+
+export const sqlMergeUserDataPlaylistContent = 'UPDATE playlist_content SET fk_login = $2 WHERE fk_login = $1;';
+
+export const sqlMergeUserDataRequested = 'UPDATE requested SET fk_login = $2 WHERE fk_login = $1;';
