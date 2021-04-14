@@ -477,6 +477,10 @@ async function checkUserAvatars() {
 	const users = await listUsers();
 	const defaultAvatar = resolve(resolvedPathAvatars(), 'blank.png');
 	for (const user of users) {
+		if (!user.avatar_file) {
+			logger.warn(`User ${user.login} has no avatar file`, {service: 'User'});
+			continue;
+		}
 		const file = resolve(resolvedPathAvatars(), user.avatar_file);
 		if (!await asyncExists(file)) {
 			await asyncCopy(
