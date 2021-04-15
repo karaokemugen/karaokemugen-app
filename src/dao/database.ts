@@ -148,6 +148,7 @@ async function migrateDB(): Promise<Migration[]> {
 		return migrations;
 	} catch(err) {
 		const error = new Error(`Migrations failed : ${err}`);
+		logger.error('Migrations done prior to error : ', {service: 'DB', obj: err.appliedMigrations});
 		sentry.error(error);
 		throw error;
 	}
