@@ -327,7 +327,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		const kara = this.props.kara;
 		const scope = this.props.scope;
 		const idPlaylist = this.props.idPlaylist;
-		const shouldShowProfile = this.context.globalState.settings.data.config.Frontend.ShowAvatarsOnPlaylist
+		const shouldShowProfile = this.context.globalState.settings.data.config.Frontend?.ShowAvatarsOnPlaylist
 			&& this.props.avatar_file;
 		return (
 			<div key={this.props.key} style={this.props.style}>
