@@ -12,6 +12,8 @@ import { runChecklist } from './middlewares';
 export default function authController(router: SocketIOApp) {
 
 	router.route('login', async (_, req) => {
+		if (req.body.login) req.body.login = unescape(req.body.login.trim());
+		if (req.body.password) req.body.password = unescape(req.body.password);
 		if (!req.body.password) req.body.password = '';
 		try {
 			let token = await checkLogin(req.body.username, req.body.password);
