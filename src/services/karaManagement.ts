@@ -127,6 +127,8 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		));
 		for (const tid of kara.tid) {
 			const tag = await getTag(tid.split('~')[0]);
+			// If for some reason tag couldn't be found, continue.
+			if (!tag) continue;
 			// Modify tag file we just copied to change its repo
 			tag.repository = repoName;
 			tag.modified_at = new Date().toISOString();

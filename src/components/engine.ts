@@ -311,9 +311,9 @@ async function preFlightCheck(): Promise<boolean> {
 		throw err;
 	}
 	const stats = await getStats();
-	logger.info(`Songs        : ${stats.karas} (${duration(+stats.duration)})`, {service: 'DB'});
-	logger.info(`Playlists    : ${stats.playlists}`, {service: 'DB'});
-	logger.info(`Songs played : ${stats.played}`, {service: 'DB'});
+	logger.info(`Songs        : ${stats?.karas} (${duration(+stats?.duration)})`, {service: 'DB'});
+	logger.info(`Playlists    : ${stats?.playlists}`, {service: 'DB'});
+	logger.info(`Songs played : ${stats?.played}`, {service: 'DB'});
 	// Run this in the background
 	vacuum();
 	generateBlacklist();

@@ -14,7 +14,7 @@ import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, 
 
 export async function getSongCountForUser(playlist_id: number, username: string): Promise<number> {
 	const res = await db().query(sqlgetSongCountPerUser, [playlist_id, username]);
-	return res.rows[0].count;
+	return res.rows[0]?.count || 0;
 }
 
 
@@ -66,7 +66,7 @@ export async function getSongTimeSpentForUser(playlist_id: number, username: str
 		playlist_id,
 		username
 	]);
-	return res.rows[0].time_spent;
+	return res.rows[0]?.time_spent || 0;
 }
 
 export async function deleteKara(kid: string) {
@@ -146,7 +146,7 @@ export function updateFreeOrphanedSongs(expireTime: number) {
 
 export async function getKaraMini(kid: string): Promise<DBKaraBase> {
 	const res = await db().query(sqlgetKaraMini, [kid]);
-	return res.rows[0];
+	return res.rows[0] || {};
 }
 
 export function addPlayed(kid: string) {

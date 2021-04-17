@@ -32,7 +32,7 @@ export async function createPlaylist(pl: DBPL): Promise<number> {
 		flag_public: pl.flag_public || null,
 		username: pl.username.toLowerCase()
 	}));
-	return res.rows[0].pk_id_playlist;
+	return res.rows[0]?.pk_id_playlist;
 }
 
 export function emptyPlaylist(id: number) {
@@ -91,7 +91,7 @@ export function shiftPosInPlaylist(id: number, pos: number, shift: number) {
 
 export async function getMaxPosInPlaylist(id: number): Promise<number> {
 	const res = await db().query(sqlgetMaxPosInPlaylist, [id]);
-	return res.rows[0].maxpos;
+	return res.rows[0]?.maxpos;
 }
 
 export function replacePlaylist(playlist: PLC[]) {
@@ -175,7 +175,7 @@ export async function getPLCInfo(id: number, forUser: boolean, username: string)
 			publicPlaylist_id: getState().publicPlaylistID,
 			currentPlaylist_id: getState().currentPlaylistID,
 		}));
-	return res.rows[0];
+	return res.rows[0] || {};
 }
 
 export async function getPLCInfoMini(id: number): Promise<DBPLC> {
@@ -226,7 +226,7 @@ export async function setPlaying(plc_id: number, playlist_id: number) {
 
 export async function countPlaylistUsers(playlist_id: number): Promise<number> {
 	const res = await db().query(sqlcountPlaylistUsers, [playlist_id]);
-	return res.rows[0].NumberOfUsers;
+	return res.rows[0]?.NumberOfUsers;
 }
 
 export async function getMaxPosInPlaylistForUser(playlist_id: number, username: string): Promise<number> {
@@ -234,5 +234,5 @@ export async function getMaxPosInPlaylistForUser(playlist_id: number, username: 
 		playlist_id: playlist_id,
 		username: username
 	}));
-	return res.rows[0].maxpos;
+	return res.rows[0]?.maxpos;
 }
