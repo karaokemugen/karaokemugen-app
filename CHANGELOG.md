@@ -5,6 +5,7 @@
 ### Improvements
 
 - In case of migration errors, migrations already applied are now logged.
+- Display original name between parenthesis when search serie in kara form
 
 ### Fixes
 
