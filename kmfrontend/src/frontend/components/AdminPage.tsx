@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
+import { Route, Switch } from 'react-router';
 
 import { DBYear } from '../../../../src/lib/types/database/kara';
 import { PublicPlayerState } from '../../../../src/types/state';
@@ -25,7 +26,6 @@ interface IProps {
 }
 
 interface IState {
-	options: boolean;
 	idsPlaylist: { left: number, right: number };
 	searchMenuOpen1: boolean;
 	searchMenuOpen2: boolean;
@@ -45,7 +45,6 @@ class AdminPage extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			options: window.location.search.indexOf('config') !== -1,
 			idsPlaylist: { left: 0, right: 0 },
 			searchMenuOpen1: false,
 			searchMenuOpen2: false,
@@ -76,9 +75,9 @@ class AdminPage extends Component<IProps, IState> {
 		getSocket().off('notificationEndOfSessionNear', this.notificationEndOfSessionNear);
 	}
 
-	operatorNotificationInfo = (data:{code: string, data: string}) => displayMessage('info', i18next.t(data.code));
-	operatorNotificationError = (data:{code: string, data: string}) => displayMessage('error', i18next.t(data.code));
-	notificationEndOfSessionNear = (data:string) => displayMessage('warning', i18next.t('NOTIFICATION.OPERATOR.INFO.END_OF_SESSION_NEAR', {data: data}));
+	operatorNotificationInfo = (data: { code: string, data: string }) => displayMessage('info', i18next.t(data.code));
+	operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code));
+	notificationEndOfSessionNear = (data: string) => displayMessage('warning', i18next.t('NOTIFICATION.OPERATOR.INFO.END_OF_SESSION_NEAR', { data: data }));
 
 	majIdsPlaylist = (side: number, value: number) => {
 		const idsPlaylist = this.state.idsPlaylist;
@@ -183,7 +182,7 @@ class AdminPage extends Component<IProps, IState> {
 		this.setState({ playlistList: playlistList });
 	};
 
-	toggleKaraDetail = (kara:KaraElement, idPlaylist: number) => {
+	toggleKaraDetail = (kara: KaraElement, idPlaylist: number) => {
 		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.playlistcontent_id} scope='admin'
 			idPlaylist={idPlaylist} />);
 	};
@@ -193,51 +192,45 @@ class AdminPage extends Component<IProps, IState> {
 			<>
 				<KmAppWrapperDecorator>
 					<AdminHeader
-						setOptionMode={() => {
-							this.setState({options: !this.state.options});
-						}}
 						powerOff={this.props.powerOff}
-						options={this.state.options}
 						adminMessage={this.adminMessage}
 						putPlayerCommando={this.putPlayerCommando}
 						currentSide={this.state.currentSide}
 						idsPlaylist={this.state.idsPlaylist}
 						currentPlaylist={this.state.playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
 					/>
-
-					<ProgressBar/>
+					<ProgressBar />
 					<KmAppBodyDecorator mode="admin" extraClass="fillSpace">
 						{this.state.playlistList.length > 0 ?
-							<React.Fragment>
-								{
-									this.state.options ?
-										<Options close={() => this.setState({ options: false })} />
-										: <PlaylistMainDecorator currentSide={this.state.currentSide}>
-											<Playlist
-												scope='admin'
-												side={1}
-												idPlaylistTo={this.state.idsPlaylist.right}
-												majIdsPlaylist={this.majIdsPlaylist}
-												tags={this.state.tags}
-												toggleSearchMenu={this.toggleSearchMenu1}
-												searchMenuOpen={this.state.searchMenuOpen1}
-												playlistList={this.state.playlistList}
-												toggleKaraDetail={this.toggleKaraDetail}
-											/>
-											<Playlist
-												scope='admin'
-												side={2}
-												idPlaylistTo={this.state.idsPlaylist.left}
-												majIdsPlaylist={this.majIdsPlaylist}
-												tags={this.state.tags}
-												toggleSearchMenu={this.toggleSearchMenu2}
-												searchMenuOpen={this.state.searchMenuOpen2}
-												playlistList={this.state.playlistList}
-												toggleKaraDetail={this.toggleKaraDetail}
-											/>
-										</PlaylistMainDecorator>
-								}
-							</React.Fragment> : null
+							<Switch>
+								<Route path="/admin/options" component={Options} />
+								<Route path="/admin" render={() =>
+									<PlaylistMainDecorator currentSide={this.state.currentSide}>
+										<Playlist
+											scope='admin'
+											side={1}
+											idPlaylistTo={this.state.idsPlaylist.right}
+											majIdsPlaylist={this.majIdsPlaylist}
+											tags={this.state.tags}
+											toggleSearchMenu={this.toggleSearchMenu1}
+											searchMenuOpen={this.state.searchMenuOpen1}
+											playlistList={this.state.playlistList}
+											toggleKaraDetail={this.toggleKaraDetail}
+										/>
+										<Playlist
+											scope='admin'
+											side={2}
+											idPlaylistTo={this.state.idsPlaylist.left}
+											majIdsPlaylist={this.majIdsPlaylist}
+											tags={this.state.tags}
+											toggleSearchMenu={this.toggleSearchMenu2}
+											searchMenuOpen={this.state.searchMenuOpen2}
+											playlistList={this.state.playlistList}
+											toggleKaraDetail={this.toggleKaraDetail}
+										/>
+									</PlaylistMainDecorator>
+								} />
+							</Switch> : null
 						}
 					</KmAppBodyDecorator>
 

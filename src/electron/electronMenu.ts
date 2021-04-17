@@ -25,7 +25,7 @@ export function initMenu() {
 	const port = getState().frontendPort;
 	const base = 'http://localhost';
 	const urls = {
-		operatorOptions: `${base}:${port}/admin?config`,
+		operatorOptions: `${base}:${port}/admin/options`,
 		systemOptions: `${base}:${port}/system/options`,
 		home: `${base}:${port}/welcome`,
 		operator: `${base}:${port}/admin`,
