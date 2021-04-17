@@ -87,7 +87,7 @@ export function initDownloadQueue() {
 	let refreshing = false;
 	dq = new Queue(queueDownload, downloadQueueOptions);
 	iq = new Queue(queueIntegrate, integrationQueueOptions);
-	iq.on('task_finish', () => {
+	iq.on('task_finish', async () => {
 		if (dq.length > 0) logger.info(`${dq.length - 1} items left in queue`, {service: 'Download'});
 		taskCounter++;
 		if (taskCounter >= 100 ) {
@@ -96,8 +96,8 @@ export function initDownloadQueue() {
 			refreshing = true;
 			refreshAll().then(() => {
 				refreshing = false;
-				generateBlacklist();
 			});
+			generateBlacklist();
 			taskCounter = 0;
 		}
 		emitQueueStatus('updated');
@@ -109,16 +109,15 @@ export function initDownloadQueue() {
 	iq.on('empty', () => emitQueueStatus('updated'));
 	iq.on('drain', async () => {
 		logger.info('No tasks left, stopping queue', {service: 'Download'});
-		if (!refreshing) {
-			refreshAll().then(() => {
-				generateBlacklist();
-				vacuum();
-			});
-			await compareKarasChecksum();
-		}
-		taskCounter = 0;
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
+		if (!refreshing) {
+			compareKarasChecksum();
+			await refreshAll()
+			await generateBlacklist();
+			await vacuum();
+		}
+		taskCounter = 0;
 		emit('downloadQueueDrained');
 		if (downloadTask) {
 			downloadTask.end();
