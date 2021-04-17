@@ -107,5 +107,6 @@ export interface PublicPlayerState extends PlayerState {
 	currentSessionID: string,
 	defaultLocale: string,
 	songsBeforeJingle: number,
-	songsBeforeSponsor: number
+	songsBeforeSponsor: number,
+	streamerPause: boolean
 }

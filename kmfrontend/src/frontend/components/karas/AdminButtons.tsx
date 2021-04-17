@@ -18,7 +18,7 @@ class AdminButtons extends Component<IProps, unknown> {
 	render() {
 		return (<>
 			{
-				this.props.statusPlayer?.stopping ?
+				this.props.statusPlayer?.stopping || statusPlayer?.streamerPause ?
 					<button
 						title={i18next.t('STOP_NOW')}
 						id="stopNow"

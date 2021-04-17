@@ -180,7 +180,7 @@ function AdminHeader(props: IProps) {
 			</div>
 			<div className="header-group controls">
 				{
-					statusPlayer?.stopping ?
+					statusPlayer?.stopping || statusPlayer?.streamerPause ?
 						<button
 							title={i18next.t('STOP_NOW')}
 							id="stopNow"
@@ -432,7 +432,7 @@ function AdminHeader(props: IProps) {
 						</li>
 						<li className="buttonsMobileMenuSmaller">
 							{
-								statusPlayer?.stopping ?
+								statusPlayer?.stopping || statusPlayer?.streamerPause ?
 									<a
 										href="#"
 										onClick={(event) => {
