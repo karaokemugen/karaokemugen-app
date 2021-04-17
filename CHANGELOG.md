@@ -8,6 +8,8 @@
 
 ### Fixes
 
+- Fixed stop causing pauseScreen to disappear (#990)
+- Fixed stopAfter toast appearing when trying to stop (pause) the pauseScreen (#990)
 - Fixed command-line processing ignoring the first argument (#986)
 - Fixed some migrations for some people (#988) Don't ask how it happened, we don't even know. Karaoke Mugen is like magic sometimes. Or a child who grew up too quickly :(
 
