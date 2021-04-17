@@ -43,7 +43,7 @@ import sentry from '../utils/sentry';
 import { ASNPrefixes } from './constants';
 import {configConstraints, defaults} from './default_settings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
-import { getKMServerSocket, initKMServerCommunication } from './kmserver';
+import { initKMServerCommunication } from './kmserver';
 import {getState, setState} from './state';
 import { initTwitch, stopTwitch } from './twitch';
 
