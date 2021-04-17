@@ -379,8 +379,12 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	getPlaylistInfo = async () => {
-		const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
-		this.setState({ playlistInfo: response });
+		try {
+			const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
+			this.setState({ playlistInfo: response });
+		} catch (e) {
+			// already display
+		}
 	};
 
 	getPlaylistUrl = (idPlaylistParam?: number) => {

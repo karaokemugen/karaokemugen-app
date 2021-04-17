@@ -80,8 +80,12 @@ class ProgressBar extends Component<IProps, IState> {
 
 	async componentDidMount() {
 		if (this.context.globalState.auth.isAuthenticated) {
-			const result = await commandBackend('getPlayerStatus');
-			this.refreshPlayerInfos(result);
+			try {
+				const result = await commandBackend('getPlayerStatus');
+				this.refreshPlayerInfos(result);
+			} catch (e) {
+				// already display
+			}
 		}
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
 		window.addEventListener('resize', this.resizeCheck, { passive: true });

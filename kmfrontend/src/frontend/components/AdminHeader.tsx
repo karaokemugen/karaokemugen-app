@@ -90,8 +90,12 @@ function AdminHeader(props: IProps) {
 	};
 
 	const getPlayerStatus = async () => {
-		const result = await commandBackend('getPlayerStatus');
-		setStatusPlayer(result);
+		try {
+			const result = await commandBackend('getPlayerStatus');
+			setStatusPlayer(result);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	useEffect(() => {
