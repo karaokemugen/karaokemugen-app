@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import merge from 'lodash.merge';
 import React, { useContext, useEffect, useState } from 'react';
 import { render } from 'react-dom';
+import { RouteComponentProps, withRouter } from 'react-router';
 
 import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
@@ -17,15 +18,13 @@ import ProfilModal from './modals/ProfilModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 
-interface IProps {
-	options: boolean;
+interface IProps extends RouteComponentProps {
 	currentSide: number;
 	idsPlaylist: { left: number, right: number };
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
 	putPlayerCommando: (event: any) => void;
-	setOptionMode: () => void;
 }
 
 function AdminHeader(props: IProps) {
@@ -91,8 +90,12 @@ function AdminHeader(props: IProps) {
 	};
 
 	const getPlayerStatus = async () => {
-		const result = await commandBackend('getPlayerStatus');
-		setStatusPlayer(result);
+		try {
+			const result = await commandBackend('getPlayerStatus');
+			setStatusPlayer(result);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	useEffect(() => {
@@ -110,11 +113,11 @@ function AdminHeader(props: IProps) {
 	const volume: number = (statusPlayer && !isNaN(statusPlayer.volume)) ? statusPlayer.volume : 100;
 	return (
 		<KmAppHeaderDecorator mode="admin">
-			{props.options ?
+			{props.location.pathname.includes('/options') ?
 				<button
 					title={i18next.t('BACK_PLAYLISTS')}
 					className="btn btn-default"
-					onClick={props.setOptionMode}
+					onClick={() => props.history.push('/admin')}
 				>
 					<i className="fas fa-fw fa-long-arrow-alt-left " />
 				</button> : null
@@ -180,7 +183,7 @@ function AdminHeader(props: IProps) {
 			</div>
 			<div className="header-group controls">
 				{
-					statusPlayer?.stopping ?
+					statusPlayer?.stopping || statusPlayer?.streamerPause ?
 						<button
 							title={i18next.t('STOP_NOW')}
 							id="stopNow"
@@ -308,21 +311,20 @@ function AdminHeader(props: IProps) {
 				</button>
 				{dropDownMenu ?
 					<ul className="dropdown-menu">
-						<li id="optionsButton">
+						<li>
 							<a
-								href="#"
 								onClick={() => {
-									props.setOptionMode();
+									props.history.push(`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`);
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								{props.options ?
-									<React.Fragment>
+								{props.location.pathname.includes('/options') ?
+									<>
 										<i className="fas fa-fw fa-list-ul" />&nbsp;{i18next.t('CL_PLAYLISTS')}
-									</React.Fragment> :
-									<React.Fragment>
+									</> :
+									<>
 										<i className="fas fa-fw fa-cog" />&nbsp;{i18next.t('OPTIONS')}
-									</React.Fragment>
+									</>
 								}
 							</a>
 						</li>
@@ -432,7 +434,7 @@ function AdminHeader(props: IProps) {
 						</li>
 						<li className="buttonsMobileMenuSmaller">
 							{
-								statusPlayer?.stopping ?
+								statusPlayer?.stopping || statusPlayer?.streamerPause ?
 									<a
 										href="#"
 										onClick={(event) => {
@@ -465,4 +467,4 @@ function AdminHeader(props: IProps) {
 	);
 }
 
-export default AdminHeader;
+export default withRouter(AdminHeader);

@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router';
 
 import { commandBackend } from '../../../utils/socket';
 import { expand } from '../../../utils/tools';
@@ -7,21 +8,15 @@ import InterfaceOptions from './InterfaceOptions';
 import KaraokeOptions from './KaraokeOptions';
 import PlayerOptions from './PlayerOptions';
 
-interface IProps {
-	close: () => void
-}
-
 interface IState {
 	activeView: number;
 }
 
-class Options extends Component<IProps, IState> {
-	constructor(props: IProps) {
-		super(props);
-		this.state = {
-			activeView: 1
-		};
-	}
+class Options extends Component<RouteComponentProps, IState> {
+
+	state = {
+		activeView: 1
+	};
 
 	saveSettings(e: any) {
 		let value = e.target.type === 'checkbox' ? e.target.checked :
@@ -37,7 +32,7 @@ class Options extends Component<IProps, IState> {
 
 	keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.code === 'Escape') {
-			this.props.close();
+			this.props.history.push('/admin');
 		}
 	}
 
@@ -65,9 +60,7 @@ class Options extends Component<IProps, IState> {
 						</li>
 					</ul>
 				</div>
-				<div
-					className="settings-panel"
-				>
+				<div className="settings-panel">
 					<div>
 						{this.state.activeView === 1 ?
 							<PlayerOptions onChange={this.saveSettings} /> : null
@@ -92,4 +85,4 @@ class Options extends Component<IProps, IState> {
 	}
 }
 
-export default Options;
+export default withRouter(Options);

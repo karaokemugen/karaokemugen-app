@@ -50,31 +50,43 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		await commandBackend('editPLC', {
-			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
-			flag_free: true
-		});
-		this.setState({ effect_free: true });
-		setTimeout(this.props.closeKaraMenu, 350);
+		try {
+			await commandBackend('editPLC', {
+				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				flag_free: true
+			});
+			this.setState({ effect_free: true });
+			setTimeout(this.props.closeKaraMenu, 350);
+		} catch (e) {
+			//already display
+		}
 	};
 
 
 	changeVisibilityKaraOn = () => {
-		commandBackend('editPLC', {
-			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
-			flag_visible: true
-		});
-		this.setState({ effect_visibility: true });
-		setTimeout(this.props.closeKaraMenu, 350);
+		try {
+			commandBackend('editPLC', {
+				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				flag_visible: true
+			});
+			this.setState({ effect_visibility: true });
+			setTimeout(this.props.closeKaraMenu, 350);
+		} catch (e) {
+			//already display
+		}
 	};
 
 	changeVisibilityKaraOff = () => {
-		commandBackend('editPLC', {
-			plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
-			flag_visible: false
-		});
-		this.setState({ effect_visibility: true });
-		setTimeout(this.props.closeKaraMenu, 350);
+		try {
+			commandBackend('editPLC', {
+				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				flag_visible: false
+			});
+			this.setState({ effect_visibility: true });
+			setTimeout(this.props.closeKaraMenu, 350);
+		} catch (e) {
+			//already display
+		}
 	};
 
 	makeFavorite = () => {

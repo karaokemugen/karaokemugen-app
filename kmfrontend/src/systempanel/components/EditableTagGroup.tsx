@@ -108,7 +108,9 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 				let result = (tags.content && tags.content.map(tag => {
 					return {
 						value: tag.tid,
-						text: (this.props.tagType === 1 ? getSerieLanguage(this.context.globalState.settings.data, tag, 'eng') : getTagInLocale(tag)),
+						text: (this.props.tagType === 1 ?
+							`${getSerieLanguage(this.context.globalState.settings.data, tag, 'eng')} (${tag.name})` :
+							getTagInLocale(tag)),
 						name: tag.name
 					};
 				})) || [];

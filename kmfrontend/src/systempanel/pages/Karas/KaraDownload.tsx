@@ -292,19 +292,19 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	// START karas download queue
 	putToDownloadQueueStart() {
-		commandBackend('startDownloadQueue');
+		commandBackend('startDownloadQueue').catch(() => {});
 	}
 
 	// PAUSE karas download queue
 	putToDownloadQueuePause() {
-		commandBackend('pauseDownloads');
+		commandBackend('pauseDownloads').catch(() => {});
 	}
 
 	// POST (add) items to download queue
 	postToDownloadQueue(downloads: KaraDownloadRequest[]) {
 		commandBackend('addDownloads', {
 			downloads
-		});
+		}).catch(() => {});
 	}
 
 	importPlaylist = (event: any) => {

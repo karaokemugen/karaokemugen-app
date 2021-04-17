@@ -76,22 +76,30 @@ class KaraMenuModal extends Component<IProps, IState> {
 	};
 
 	freeKara = () => {
-		commandBackend('editPLC', {
-			plc_ids: [this.state.kara?.playlistcontent_id],
-			flag_free: true
-		});
-		this.setState({ effect_free: true });
-		setTimeout(this.props.closeKaraMenu, 350);
+		try {
+			commandBackend('editPLC', {
+				plc_ids: [this.state.kara?.playlistcontent_id],
+				flag_free: true
+			});
+			this.setState({ effect_free: true });
+			setTimeout(this.props.closeKaraMenu, 350);
+		} catch (e) {
+			// already display
+		}
 	};
 
 
 	changeVisibilityKara = () => {
-		commandBackend('editPLC', {
-			plc_ids: [this.state.kara?.playlistcontent_id],
-			flag_visible: !this.state.kara?.flag_visible
-		});
-		this.setState({ effect_visibility: true });
-		setTimeout(this.props.closeKaraMenu, 350);
+		try {
+			commandBackend('editPLC', {
+				plc_ids: [this.state.kara?.playlistcontent_id],
+				flag_visible: !this.state.kara?.flag_visible
+			});
+			this.setState({ effect_visibility: true });
+			setTimeout(this.props.closeKaraMenu, 350);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	makeFavorite = () => {
@@ -161,11 +169,15 @@ class KaraMenuModal extends Component<IProps, IState> {
 					{this.props.idPlaylist >= 0 && !this.props.kara?.flag_playing ?
 						<li>
 							<a href="#" onClick={() => {
-								commandBackend('editPLC', {
-									pos: -1,
-									plc_ids: [this.props.kara.playlistcontent_id]
-								});
-								this.props.closeKaraMenu();
+								try {
+									commandBackend('editPLC', {
+										pos: -1,
+										plc_ids: [this.props.kara.playlistcontent_id]
+									});
+									this.props.closeKaraMenu();
+								} catch (e) {
+									// already display
+								}
 							}}>
 								<i className="fas fa-fw fa-level-up-alt" />
 								&nbsp;

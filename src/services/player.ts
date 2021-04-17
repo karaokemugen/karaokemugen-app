@@ -146,11 +146,11 @@ export async function playPlayer(now?: boolean) {
 }
 
 export async function stopPlayer(now = true, endOfPlaylist = false) {
-	setState({ streamerPause: false });
-	if (now || getState().stopping) {
+	if (now || getState().stopping || getState().streamerPause) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
-		await mpv.stop();
-		setState({ randomPlaying: false, stopping: false });
+		// No need to stop in streamerPause, we're already stopped, but we'll disable the pause anyway.
+		if (!getState().streamerPause) await mpv.stop();
+		setState({ streamerPause: false, randomPlaying: false, stopping: false });
 		stopAddASongMessage();
 		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode) {
 			await prepareClassicPauseScreen();

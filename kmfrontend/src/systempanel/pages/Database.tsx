@@ -20,23 +20,23 @@ class Database extends Component<unknown, DatabaseState> {
 	}
 
 	dbregen = async () => {
-		commandBackend('generateDatabase', undefined, true, 300000);
+		commandBackend('generateDatabase', undefined, true, 300000).catch(() => {});
 	}
 
 	dbvalidateFiles = async () => {
-		commandBackend('validateDatabase', undefined, true, 300000);
+		commandBackend('validateDatabase', undefined, true, 300000).catch(() => {});
 	}
 
 	dbupdate =  async () => {
-		commandBackend('updateAllMedias', undefined, true, 300000);
+		commandBackend('updateAllMedias', undefined, true, 300000).catch(() => {});
 	}
 
 	dbdump = async () => {
-		commandBackend('dumpDatabase', undefined, true, 300000);
+		commandBackend('dumpDatabase', undefined, true, 300000).catch(() => {});
 	}
 
 	dbrestore = async () => {
-		commandBackend('restoreDatabase', undefined, true, 300000);
+		commandBackend('restoreDatabase', undefined, true, 300000).catch(() => {});
 	}
 
 	render() {

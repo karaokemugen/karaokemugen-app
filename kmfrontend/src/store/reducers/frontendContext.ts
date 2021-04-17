@@ -1,7 +1,7 @@
 import { eventEmitter } from '../../utils/tools';
 import { FrontendContextAction, FrontendContextStore } from '../types/frontendContext';
 
-let timer:NodeJS.Timeout;
+let timer: NodeJS.Timeout;
 
 export default function (state: FrontendContextStore, action): FrontendContextStore {
 	switch (action.type) {
@@ -9,13 +9,18 @@ export default function (state: FrontendContextStore, action): FrontendContextSt
 		return { ...state, currentBlSet: action.payload.currentBlSet };
 	case FrontendContextAction.FILTER_VALUE:
 		clearTimeout(timer);
-		timer = setTimeout(() => {
-			eventEmitter.emitChange('playlistContentsUpdatedFromClient', action.payload.idPlaylist);
-		}, 1000);
-		if (action.payload.side === 1) {
-			return { ...state, filterValue1: action.payload.filterValue };
+		if ((action.payload.side === 1 && action.payload.filterValue !== state.filterValue1) ||
+				(action.payload.side === 2 && action.payload.filterValue !== state.filterValue2)) {
+			timer = setTimeout(() => {
+				eventEmitter.emitChange('playlistContentsUpdatedFromClient', action.payload.idPlaylist);
+			}, 1000);
+			if (action.payload.side === 1) {
+				return { ...state, filterValue1: action.payload.filterValue };
+			} else {
+				return { ...state, filterValue2: action.payload.filterValue };
+			}
 		} else {
-			return { ...state, filterValue2: action.payload.filterValue };
+			return state;
 		}
 	case FrontendContextAction.BG_IMAGE:
 		return { ...state, backgroundImg: action.payload.backgroundImg };

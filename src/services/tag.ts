@@ -297,6 +297,7 @@ export async function consolidateTagsInRepo(kara: Kara) {
 	for (const tagType of Object.keys(tagTypes)) {
 		for (const karaTag of kara[tagType]) {
 			const tag = await getTagMini(karaTag.tid);
+			if (!tag) continue;
 			if (tag.repository !== kara.repository) {
 				// This might need to be copied
 				tag.repository = kara.repository;

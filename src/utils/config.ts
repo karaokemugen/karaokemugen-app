@@ -43,6 +43,7 @@ import sentry from '../utils/sentry';
 import { ASNPrefixes } from './constants';
 import {configConstraints, defaults} from './default_settings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
+import { initKMServerCommunication } from './kmserver';
 import {getState, setState} from './state';
 import { initTwitch, stopTwitch } from './twitch';
 
@@ -79,6 +80,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	}
 	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready && !state.isDemo) {
 		if (newConfig.Online.Remote) {
+			await initKMServerCommunication();
 			initRemote();
 		} else {
 			destroyRemote();

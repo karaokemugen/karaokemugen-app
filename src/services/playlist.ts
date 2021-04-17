@@ -523,7 +523,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			plc: null
 		};
 		ret.plc = await getPLCInfo(PLCsInserted[0].plc_id, true, requester);
-		if (playlist_id !== state.currentPlaylistID) delete ret.plc.time_before_play;
+		if (ret.plc && playlist_id !== state.currentPlaylistID) delete ret.plc.time_before_play;
 		if (+playlist_id === state.publicPlaylistID) {
 			emitWS('KIDUpdated', PLCsInserted.map(plc => {
 				return {
@@ -807,7 +807,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 			// If -1 move the song right after the one playing.
 			if (params.pos === -1) {
 				const playingPLC = await getPLCInfoMini(pl.plcontent_id_playing);
-				params.pos = playingPLC.pos + 1;
+				params.pos = playingPLC?.pos + 1;
 			}
 			songsLeftToUpdate.add({
 				username: plc.username,
@@ -977,7 +977,7 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 		if (playlist.PlaylistContents?.length > 0) await addKaraToPL(playlist.PlaylistContents);
 		if (playingKara?.kid) {
 			const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, playlist_id);
-			await setPlaying(plcPlaying.playlistcontent_id, playlist_id);
+			await setPlaying(plcPlaying?.playlistcontent_id || 0, playlist_id);
 		}
 		let unknownKaras = [];
 		if (unknownKIDs.length > 0) {

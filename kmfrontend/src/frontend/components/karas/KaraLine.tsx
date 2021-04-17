@@ -71,14 +71,14 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		commandBackend('editPLC', {
 			flag_refused: !this.props.kara.flag_refused,
 			plc_ids: [this.props.kara.playlistcontent_id]
-		});
+		}).catch(() => {});
 	};
 
 	acceptKara = () => {
 		commandBackend('editPLC', {
 			flag_accepted: !this.props.kara.flag_accepted,
 			plc_ids: [this.props.kara.playlistcontent_id]
-		});
+		}).catch(() => {});
 	};
 
 	deleteKara = async () => {
@@ -242,7 +242,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		commandBackend('editPLC', {
 			flag_visible: true,
 			plc_ids: [this.props.kara.playlistcontent_id]
-		});
+		}).catch(() => {});
 	};
 
 	karaTags = (() => {
@@ -327,7 +327,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		const kara = this.props.kara;
 		const scope = this.props.scope;
 		const idPlaylist = this.props.idPlaylist;
-		const shouldShowProfile = this.context.globalState.settings.data.config.Frontend.ShowAvatarsOnPlaylist
+		const shouldShowProfile = this.context.globalState.settings.data.config.Frontend?.ShowAvatarsOnPlaylist
 			&& this.props.avatar_file;
 		return (
 			<div key={this.props.key} style={this.props.style}>

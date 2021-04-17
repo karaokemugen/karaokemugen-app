@@ -282,6 +282,9 @@
       "target": [
         "dmg"
       ],
+	  "arch": [
+		"x64"
+	  ],
       "compression": "normal",
       "category": "public.app-category.entertainment"
     },
