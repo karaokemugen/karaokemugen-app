@@ -1203,7 +1203,8 @@
 		"SUBFILE_FORMAT_UNKOWN": "Subfile format unknown",
 		"POLL_VOTE_ERROR": "This song is not in the poll",
 		"USER_ONLINE_NOINTERNET": "You cannot edit your profile for now, your online server isn't working.",
-		"FAVORITES_ONLINE_NOINTERNET": "You cannot edit your favorites for now, your online server isn't working."
+		"FAVORITES_ONLINE_NOINTERNET": "You cannot edit your favorites for now, your online server isn't working.",
+		"FS_DELETE_ERROR": "Error when deleting the file"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",

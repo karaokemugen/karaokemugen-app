@@ -1,4 +1,5 @@
-import { Col, Layout, Radio, Row, Select, Table } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Button, Col, Layout, Radio, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
@@ -53,6 +54,15 @@ class SessionList extends Component<unknown, SessionListState> {
 	changeType = async (value) => {
 		this.setState({ tagType: value });
 	}
+
+	delete = async (file) => {
+		try {
+			await commandBackend('deleteFile', { path: file });
+			this.setState({ unused: this.state.unused.filter(item => item.file !== file) });
+		} catch (err) {
+			// already display
+		}
+	};
 
 	render() {
 		return (
@@ -124,6 +134,13 @@ class SessionList extends Component<unknown, SessionListState> {
 		title: i18next.t('UNUSED_FILES.FILE'),
 		dataIndex: 'file',
 		key: 'file'
+	},
+	{
+		title: i18next.t('ACTION'),
+		render: (text_, record) =>
+			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
+				() => this.delete(record.file)
+			} />
 	}];
 }
 

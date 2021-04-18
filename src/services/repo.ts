@@ -206,10 +206,14 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		// Now tids only has tag IDs which aren't used anywhere
 		const tagsToDelete: Tag[] = [];
 		for (const tid of tids) {
-			tagsToDelete.push(await getTag(tid));
+			const tag = await getTag(tid);
+			if (tag) {
+				tag.tagfile = tagFiles.filter(path => path.includes(tag.tagfile))[0];
+				tagsToDelete.push(tag);
+			}
 		}
-		// Return all valid tags, avoid undefined
-		return tagsToDelete.filter(t => t);
+		// Return all valid tags
+		return tagsToDelete;
 	} catch(err) {
 		if (err?.code === 404) throw err;
 		sentry.error(err);
