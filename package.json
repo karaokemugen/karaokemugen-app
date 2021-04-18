@@ -279,13 +279,13 @@
       }
     },
     "mac": {
-      "target": [
-        "dmg"
-      ],
-	  "arch": [
-		"x64"
-	  ],
-      "compression": "normal",
+      "target": {
+        "target": "dmg",
+		"arch": [
+			"x64"
+		]
+	  },
+	  "compression": "normal",
       "category": "public.app-category.entertainment"
     },
     "linux": {
