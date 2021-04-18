@@ -232,10 +232,13 @@ Everything's there, and if you have questions, you can come to [our Discord](htt
 
 Thanks to the [Sentry error tracking](https://sentry.io/welcome?utm_source=KaraokeMugen) solution, the app is self-reporting its errors to maintainers to help them to fix issues.<br/>
 
-
 <img src="https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/dba8fa95d7b4f1fac5e5877c72257f36/image.png" alt="BrowserStack full logo" width="125" />
 
 Thanks to the [BrowserStack testing solution](https://browserstack.com), we can be sure that our interfaces will run just fine on each device.
+
+<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium full logo" width="125"/>
+
+Thanks to [MacStadium](http://www.macstadium.com), we have a Mac mini M1 to run tests and CI to build Karaoke Mugen for the M1 architecture!
 
 ## Credits
 

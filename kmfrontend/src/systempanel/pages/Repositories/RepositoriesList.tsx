@@ -48,7 +48,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		this.refresh();
 		if (timer) clearTimeout(timer);
 		timer = setTimeout(() => {
-			commandBackend('generateDatabase', undefined, true, 300000);
+			commandBackend('generateDatabase', undefined, true, 300000).catch(() => {});
 		}, 5000);
 	}
 

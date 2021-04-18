@@ -208,7 +208,8 @@ export async function findUnusedTags(repo: string): Promise<Tag[]> {
 		for (const tid of tids) {
 			tagsToDelete.push(await getTag(tid));
 		}
-		return tagsToDelete;
+		// Return all valid tags, avoid undefined
+		return tagsToDelete.filter(t => t);
 	} catch(err) {
 		if (err?.code === 404) throw err;
 		sentry.error(err);

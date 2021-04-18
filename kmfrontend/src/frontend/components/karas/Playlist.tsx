@@ -379,8 +379,12 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	getPlaylistInfo = async () => {
-		const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
-		this.setState({ playlistInfo: response });
+		try {
+			const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
+			this.setState({ playlistInfo: response });
+		} catch (e) {
+			// already display
+		}
 	};
 
 	getPlaylistUrl = (idPlaylistParam?: number) => {
@@ -777,7 +781,7 @@ class Playlist extends Component<IProps, IState> {
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_accepted: true
-		});
+		}).catch(() => {});
 	};
 
 
@@ -792,7 +796,7 @@ class Playlist extends Component<IProps, IState> {
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_refused: true
-		});
+		}).catch(() => {});
 	};
 
 	onChangeTags = (type: number | string, value: string) => {
@@ -828,21 +832,24 @@ class Playlist extends Component<IProps, IState> {
 			let apiIndex = newIndex + 1;
 			if (newIndex > oldIndex)
 				apiIndex = apiIndex + 1;
+			try {
+				commandBackend('editPLC', {
+					pos: apiIndex,
+					plc_ids: [playlistcontent_id]
+				}).finally(() => {
+					this.setState({ stopUpdate: false });
+				});
 
-			commandBackend('editPLC', {
-				pos: apiIndex,
-				plc_ids: [playlistcontent_id]
-			}).finally(() => {
-				this.setState({ stopUpdate: false });
-			});
-
-			const kara = data.content[oldIndex];
-			let karas: Array<KaraElement> = [...data.content];
-			delete karas[oldIndex];
-			karas = karas.filter(kara => !!kara);
-			karas.splice(newIndex, 0, kara);
-			data.content = karas;
-			this.setState({ data, forceUpdate: !this.state.forceUpdate });
+				const kara = data.content[oldIndex];
+				let karas: Array<KaraElement> = [...data.content];
+				delete karas[oldIndex];
+				karas = karas.filter(kara => !!kara);
+				karas.splice(newIndex, 0, kara);
+				data.content = karas;
+				this.setState({ data, forceUpdate: !this.state.forceUpdate });
+			} catch (e) {
+				//already display
+			}
 		}
 	}
 

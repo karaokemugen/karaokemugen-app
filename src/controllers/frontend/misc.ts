@@ -7,7 +7,7 @@ import {getSettings, saveSetting} from '../../lib/dao/database';
 import { generateDatabase } from '../../lib/services/generation';
 import { APIData } from '../../lib/types/api';
 import { getConfig } from '../../lib/utils/config';
-import { browseFs } from '../../lib/utils/files';
+import { asyncUnlink, browseFs } from '../../lib/utils/files';
 import { enableWSLogging, readLog } from '../../lib/utils/logger';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getMigrationsFrontend, setMigrationsFrontend } from '../../services/migrationsFrontend';
@@ -448,6 +448,16 @@ export default function miscController(router: SocketIOApp) {
 			return await browseFs(req.body.path, req.body.onlyMedias);
 		} catch(err) {
 			const code = 'FS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('deleteFile', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await asyncUnlink(req.body.path);
+		} catch(err) {
+			const code = 'FS_DELETE_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}

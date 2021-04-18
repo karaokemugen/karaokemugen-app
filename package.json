@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "5.0.31",
+  "version": "5.0.32",
   "versionName": "Poppy Partagée",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -279,10 +279,13 @@
       }
     },
     "mac": {
-      "target": [
-        "dmg"
-      ],
-      "compression": "normal",
+      "target": {
+        "target": "dmg",
+		"arch": [
+			"x64"
+		]
+	  },
+	  "compression": "normal",
       "category": "public.app-category.entertainment"
     },
     "linux": {

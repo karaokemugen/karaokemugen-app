@@ -20,24 +20,29 @@ async function listRemoteUsers() {
 async function updateUser(login, payload) {
 	const userRemote: DBUser = payload.user;
 	const user: DBUser = await findUserByName(login);
-	const favorites: Favorite[] = payload.favorites;
-	delete user.password;
-	user.bio = userRemote.bio;
-	user.url = userRemote.url;
-	user.fallback_series_lang = userRemote.fallback_series_lang;
-	user.main_series_lang = userRemote.main_series_lang;
-	user.series_lang_mode = userRemote.series_lang_mode;
-	user.nickname = userRemote.nickname;
-	logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
-	Promise.all([
-		editUser(login, user, null, 'admin'),
-		importFavorites({
-			Header: { version: 1, description: 'Karaoke Mugen Favorites List File' },
-			Favorites: favorites
-		}, login, undefined, true, false)
-	]).catch(err => {
-		logger.warn(`Cannot update remote user ${login}`, { service: 'RemoteUser', obj: err });
-	});
+	if (user) {
+		const favorites: Favorite[] = payload.favorites;
+		delete user.password;
+		user.bio = userRemote.bio;
+		user.url = userRemote.url;
+		user.fallback_series_lang = userRemote.fallback_series_lang;
+		user.main_series_lang = userRemote.main_series_lang;
+		user.series_lang_mode = userRemote.series_lang_mode;
+		user.nickname = userRemote.nickname;
+		logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
+		Promise.all([
+			editUser(login, user, null, 'admin'),
+			importFavorites({
+				Header: { version: 1, description: 'Karaoke Mugen Favorites List File' },
+				Favorites: favorites
+			}, login, undefined, true, false)
+		]).catch(err => {
+			logger.warn(`Cannot update remote user ${login}`, { service: 'RemoteUser', obj: err });
+		});
+	} else {
+		const [username, instance] = login.split('@');
+		stopSub(username, instance);
+	}
 }
 
 function userDebounceFactory(user) {

@@ -161,7 +161,7 @@ export async function updateAllBases() {
 			reposTagsUpdated[repo.Name] = await updateBase(repo.Name);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to update properly`, {service: 'Update', obj: err});
-			emitWS('error', APIMessage('BASES_SYNC_ERROR', {repo: repo.Name, err: err}));
+			emitWS('error', APIMessage('BASES_SYNC_ERROR', {repo: repo.Name, err: err.msg ? err.msg : err}));
 		}
 	}
 	// If one repo updated tags, we need to refresh everything.
@@ -279,7 +279,11 @@ export async function downloadKaras(repo: string, local?: KaraList, remote?: Kar
 			if (blc.type === 1006) filterFunction = filterYearYounger;
 			if (!filterFunction) {
 				logger.error(`Unknown BLC type : ${JSON.stringify(blc)}`, {service: 'DownloadBLC'});
-				throw new Error(`Unknown BLC type ${JSON.stringify(blc)}`);
+				sentry.addErrorInfo('BLC', JSON.stringify(blc));
+				sentry.addErrorInfo('allBLCs', JSON.stringify(blcs));
+				const err = new Error(`Unknown BLC type ${JSON.stringify(blc)}`);
+				sentry.error(err, 'Warning');
+				continue;
 			}
 			karasToAdd = karasToAdd.filter(k => filterFunction(k, blc.value, blc.type, tags.content));
 		}

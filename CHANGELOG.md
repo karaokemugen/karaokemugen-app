@@ -1,5 +1,19 @@
 # Versions
 
+## v5.0.32 - xx/04/2021
+
+### Improvements
+
+- In case of migration errors, migrations already applied are now logged.
+- Display original name between parenthesis when search serie in kara form
+
+### Fixes
+
+- Fixed stop causing pauseScreen to disappear (#990)
+- Fixed stopAfter toast appearing when trying to stop (pause) the pauseScreen (#990)
+- Fixed command-line processing ignoring the first argument (#986)
+- Fixed some migrations for some people (#988) Don't ask how it happened, we don't even know. Karaoke Mugen is like magic sometimes. Or a child who grew up too quickly :(
+
 ## v5.0.31 "Poppy Partagée" - 14/04/2021
 
 ### Important notice

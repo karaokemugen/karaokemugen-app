@@ -22,7 +22,7 @@ export async function createBLCSet(blcset: BLCSet): Promise<number> {
 		modified_at: blcset.modified_at,
 		flag_current: blcset.flag_current || false
 	}));
-	return res.rows[0].pk_id_blc_set;
+	return res.rows[0]?.pk_id_blc_set;
 }
 
 export function copyBLCSet(fromID: number, toID: number) {
