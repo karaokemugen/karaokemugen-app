@@ -40,6 +40,7 @@
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.11.0",
+    "i18next-scanner": "^3.0.0",
     "react-scripts": "4.0.3",
     "source-map-explorer": "^2.5.2",
     "typescript": "4.2.4"
@@ -53,7 +54,8 @@
     "start": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts start",
     "build": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts build",
     "test": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts test --env=jsdom",
-    "eject": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts eject"
+    "eject": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts eject",
+	"i18next-scanner": "i18next-scanner --config src/utils/i18next-scanner.config.js"
   },
   "proxy": "http://localhost:1337",
   "browserslist": [
