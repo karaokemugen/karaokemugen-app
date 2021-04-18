@@ -405,8 +405,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										{karaSerieOrSingers}
 									</div>
 									{kara.upvotes && this.props.scope === 'admin' ?
-										<div className="upvoteCount"
-											title={i18next.t('TOOLTIP_FREE')}>
+										<div className="upvoteCount">
 											<i className="fas fa-thumbs-up" />
 											{kara.upvotes}
 										</div> : null
