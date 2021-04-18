@@ -17,7 +17,7 @@
 	"INIT_BASEUPDATE": "Updating songs...",
 	"INIT_USER": "Initializing users...",
 	"INIT_ONLINEURL": "Connecting to Karaoke Mugen Server...",
-	"INIT_PLAYLIST": "Initializing player and playlists...",
+	"INIT_PLAYLIST_AND_PLAYER": "Initializing player and playlists...",
 	"INIT_LAST": "Almost there...",
 	"INIT_DONE": "All done!",
 	"INIT_ERROR": "Initialization failed!",
@@ -90,7 +90,6 @@
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System preferences...",
 	"MENU_OPTIONS_CHIBIPLAYER": "Display Chibi Player",
 	"ERROR": "Error",
-	"UNKNOWN": "unknown",
 	"YES": "Yes",
 	"NO": "No",
 	"UPDATE_FOUND": "Update available",
@@ -186,8 +185,6 @@
 		"TITLE": "Local repository unavailable",
 		"MESSAGE": "No local repository exists in your configuration. Please create one before importing this song again."
 	},
-	"GENERATING_READING": "Step 1/2 - Reading data...",
-	"GENERATING_DATABASE": "Step 2/2 - Updating database...",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "New vote : use !vote x where x is the song number:",
