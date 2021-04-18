@@ -3,13 +3,14 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { commandBackend } from '../../utils/socket';
-import { getTagTypeName } from '../../utils/tagTypes';
+import { getTagTypeName, tagTypes } from '../../utils/tagTypes';
 
 interface SessionListState {
 	unused: Array<any>
 	repositories: Array<string>,
 	repository: string,
-	type: string;
+	type?: 'tags' | 'medias';
+	tagType?: number;
 }
 
 class SessionList extends Component<unknown, SessionListState> {
@@ -18,7 +19,8 @@ class SessionList extends Component<unknown, SessionListState> {
 		unused: [],
 		repositories: [],
 		repository: null,
-		type: ''
+		type: undefined,
+		tagType: undefined
 	};
 
 	componentDidMount() {
@@ -48,6 +50,10 @@ class SessionList extends Component<unknown, SessionListState> {
 		});
 	}
 
+	changeType = async (value) => {
+		this.setState({ tagType: value });
+	}
+
 	render() {
 		return (
 			<>
@@ -56,9 +62,9 @@ class SessionList extends Component<unknown, SessionListState> {
 					<div className='description'>{i18next.t('HEADERS.UNUSED_FILES.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
-					<Row style={{ margin: '0.5em' }}>
+					<Row style={{ marginBottom: '0.5em', marginLeft: '0.5em' }}>
 						{this.state.repositories && this.state.repository ?
-							<Col style={{ paddingRight: '100px' }}>
+							<Col style={{ paddingRight: '5em' }}>
 								<label style={{ paddingRight: '15px' }}>{i18next.t('UNUSED_FILES.REPOSITORY')}</label>
 								<Select style={{ width: 150 }} defaultValue={this.state.repository}>
 									{this.state.repositories.map(repo => {
@@ -69,7 +75,7 @@ class SessionList extends Component<unknown, SessionListState> {
 							</Col> : null
 						}
 						<Col style={{ paddingTop: '5px' }}>
-							<label style={{ paddingRight: '15px' }}>{i18next.t('MENU.UNUSED_FILES')}</label>
+							<label style={{ paddingRight: '1em' }}>{i18next.t('MENU.UNUSED_FILES')}</label>
 							<Radio
 								checked={this.state.type === 'tags'}
 								onChange={async () => this.setState({ type: 'tags' }, this.getTags)}
@@ -83,9 +89,20 @@ class SessionList extends Component<unknown, SessionListState> {
 								{i18next.t('UNUSED_FILES.MEDIAS')}
 							</Radio>
 						</Col>
+						{this.state.type === 'tags' ?
+							<Col>
+								<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
+								<Select allowClear={true} style={{ width: 300 }} onChange={this.changeType} defaultValue={this.state.tagType}>
+									{Object.entries(tagTypes).map(([key, value]) => {
+										return <Select.Option key={value.type} value={value.type}>{i18next.t(`TAG_TYPES.${key}`)}</Select.Option>;
+									})
+									}
+								</Select>
+							</Col> : null
+						}
 					</Row>
 					<Table
-						dataSource={this.state.unused}
+						dataSource={this.state.unused.filter(e => !this.state.tagType || e.types.includes(this.state.tagType))}
 						columns={this.columns}
 						rowKey='file'
 					/>
