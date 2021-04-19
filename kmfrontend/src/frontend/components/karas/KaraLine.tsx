@@ -352,7 +352,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										}} /> : null
 								}
 								<div className="btn-group">
-									{this.props.scope === 'admin' || this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
+									{this.props.scope === 'admin' || this.context?.globalState.settings.data?.config?.Frontend?.Mode === 2 ?
 										<ActionsButtons
 											idPlaylistTo={this.props.idPlaylistTo}
 											idPlaylist={idPlaylist}
