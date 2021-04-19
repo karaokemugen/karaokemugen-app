@@ -91,7 +91,7 @@ describe('Playlists', () => {
 			flag_current: false,
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist);
-		newPlaylistID = +data;
+		newPlaylistID = +data.playlist_id;
 	});
 
 	it('Test findPlaying without any playing song set', async () => {
@@ -107,7 +107,7 @@ describe('Playlists', () => {
 			flag_current: true
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
-		newCurrentPlaylistID = +data;
+		newCurrentPlaylistID = +data.playlist_id;
 	});
 
 	it('Create a PUBLIC playlist', async () => {
@@ -118,7 +118,7 @@ describe('Playlists', () => {
 			flag_current: false
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_public);
-		newPublicPlaylistID = +data;
+		newPublicPlaylistID = +data.playlist_id;
 	});
 
 	it('Create a CURRENT+PUBLIC playlist', async () => {
@@ -129,8 +129,8 @@ describe('Playlists', () => {
 			flag_current: true
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
-		newCurrentPlaylistID = +data;
-		newPublicPlaylistID = +data;
+		newCurrentPlaylistID = +data.playlist_id;
+		newPublicPlaylistID = +data.playlist_id;
 	});
 
 	it('Copy karaokes to another playlist', async () => {
