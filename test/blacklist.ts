@@ -173,7 +173,7 @@ describe('Blacklist', () => {
 
 	it('Import Blacklist Set', async () => {
 		const data = {
-			blcSet: JSON.stringify(BLCSetExport)
+			blcSet: BLCSetExport
 		};
 		await commandBackend(token, 'importBLCSet', data);
 	});

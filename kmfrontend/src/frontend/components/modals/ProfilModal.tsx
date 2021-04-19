@@ -143,10 +143,10 @@ class ProfilModal extends Component<IProps, IState> {
 			fr.onload = () => {
 				callModal(this.context.globalDispatch, 'confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', async (confirm: boolean) => {
 					if (confirm) {
-						const data = { favorites: fr['result'] };
+						const data = { favorites: JSON.parse(fr['result'] as string) };
 						const response = await commandBackend('importFavorites', data);
-						if (response.unknownKaras && response.unknownKaras.length > 0) {
-							const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
+						if (response.message.data.unknownKaras && response.message.data.unknownKaras.length > 0) {
+							const mediasize = response.message.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 							callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
 								<p>
 									{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
@@ -156,10 +156,10 @@ class ProfilModal extends Component<IProps, IState> {
 									<label>&nbsp;{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM_SIZE', { mediasize: prettyBytes(mediasize) })}</label>
 								</div>
 								<br />
-								{response.unknownKaras.map((kara: DBPLC) =>
+								{response.message.data.unknownKaras.map((kara: DBPLC) =>
 									<label key={kara.kid}>{buildKaraTitle(this.context.globalState.settings.data, kara, true)}</label>)}
 							</React.Fragment>), () => commandBackend('addDownloads', {
-								downloads: response.unknownKaras.map((kara: DBPLC) => {
+								downloads: response.message.data.unknownKaras.map((kara: DBPLC) => {
 									return {
 										kid: kara.kid,
 										mediafile: kara.mediafile,

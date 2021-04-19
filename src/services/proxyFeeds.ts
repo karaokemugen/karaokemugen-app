@@ -31,7 +31,9 @@ export async function getFeeds() {
 		throw 'This instance is not connected to the internets';
 	}
 	const feedPromises = [];
-	feeds.forEach(feed => feedPromises.push(fetchFeed(feed.url, feed.name)));
+	for (const feed of feeds) {
+		feedPromises.push(fetchFeed(feed.url, feed.name));
+	}	
 	return Promise.all(feedPromises);
 }
 

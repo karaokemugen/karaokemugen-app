@@ -18,7 +18,7 @@ export async function addUpvote(plc_id: number, username: string) {
 	try {
 		username = username.toLowerCase();
 		const plc = await getPLCInfoMini(plc_id);
-		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
+		if (!plc) throw {code: 404};
 		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'UPVOTE_FAILED'};
 		if (plc.username === username) throw {code: 403, msg: 'UPVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
