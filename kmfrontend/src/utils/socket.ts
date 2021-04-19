@@ -37,7 +37,7 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 			if (loading) eventEmitter.emitChange('loading', false);
 			if (!err && data?.message?.code && typeof data.data !== 'object') {
 				displayMessage('success', i18next.t(`SUCCESS_CODES.${data.message.code}`, {data: data.data}));
-			} else if (!err && data?.code && typeof data.data !== 'object') {
+			} else if (!err && data?.code && typeof data.code !== 'number' && !data?.message?.data && typeof data.data !== 'object') {
 				displayMessage('success', i18next.t(`SUCCESS_CODES.${data.code}`, {data: data.data}));
 			} else if (err && data?.message?.code && typeof data.data !== 'object') {
 				displayMessage('error', i18next.t(`ERROR_CODES.${data.message.code}`, {data: data.data}));
