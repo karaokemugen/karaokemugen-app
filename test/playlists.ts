@@ -143,7 +143,7 @@ describe('Playlists', () => {
 	it('Add karaoke to public playlist', async () => {
 		const data = await commandBackend(token, 'addKaraToPublicPlaylist', { kid: KIDToAdd2 });
 		expect(data.code).to.be.equal('PL_SONG_ADDED');
-		expect(data.data.plc.kid[0]).to.be.equal(KIDToAdd2);
+		expect(data.data.plc.kid).to.be.equal(KIDToAdd2);
 	});
 
 	it('Delete a CURRENT playlist (should fail)', async () => {
