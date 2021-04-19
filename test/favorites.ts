@@ -65,7 +65,7 @@ describe('Favorites', () => {
 
 	it('Import favorites', async () => {
 		const data = {
-			favorites: JSON.stringify(favoritesExport)
+			favorites: favoritesExport
 		};
 		await commandBackend(token, 'importFavorites', data);
 	});

@@ -185,16 +185,8 @@ export default function blacklistController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				const id = await importSet(JSON.parse(req.body.blcSet));
-				const response = {
-					message: 'BLC Set Imported',
-					blc_set_id: id
-				};
-				return {
-					data: response,
-					code: 'BLC_SET_IMPORTED',
-					args: id
-				};
+				const id = await importSet(req.body.blcSet);
+				return {code: 200, message: APIMessage('BLC_SET_IMPORTED', {set_id: id})};
 			} catch(err) {
 				const code = 'BLC_SET_IMPORT_ERROR';
 				errMessage(code, err);

@@ -195,7 +195,7 @@ describe('Playlists', () => {
 
 	it('Import a playlist', async () => {
 		const data = {
-			playlist: JSON.stringify(playlistExport)
+			playlist: playlistExport
 		};
 		const body = await commandBackend(token, 'importPlaylist', data);
 		expect(body.code).to.be.equal('PL_IMPORTED');

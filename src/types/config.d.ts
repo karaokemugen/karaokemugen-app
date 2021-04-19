@@ -1,4 +1,5 @@
 import { Repository } from '../lib/types/repo';
+import { MpvHardwareDecodingOptions } from './MpvIPC';
 
 export interface Config {
 	App: {
@@ -122,7 +123,7 @@ export interface Config {
 		ProgressBarDock?: boolean,
 		ExtraCommandLine?: string,
 		Borders?: boolean,
-		HardwareDecoding?: 'auto-safe' | 'no' | 'yes'
+		HardwareDecoding?: MpvHardwareDecodingOptions
 		Volume?: number
 	},
 	Playlist: {
