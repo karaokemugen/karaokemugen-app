@@ -186,6 +186,8 @@
 		"TITLE": "Dépôt local introuvable",
 		"MESSAGE": "Aucun dépôt local n'existe dans votre configuration. Veuillez en créer un avant de réimporter ce karaoké"
 	},
+	"GENERATING_READING": "Etape 1/2 - Lecture des données...",
+	"GENERATING_DATABASE": "Etape 2/2 - Mise à jour de la base de données...",
 	"TWITCH": {
 		"CHAT": {
 			"VOTE": "Nouveau vote : tapez !vote x où x est le numéro de la chanson.",
