@@ -198,7 +198,7 @@ describe('Playlists', () => {
 			playlist: playlistExport
 		};
 		const body = await commandBackend(token, 'importPlaylist', data);
-		expect(body.code).to.be.equal('PL_IMPORTED');
+		expect(body.message.code).to.be.equal('PL_IMPORTED');
 		expect(body.data.unknownKaras).to.have.lengthOf(0);
 	});
 
