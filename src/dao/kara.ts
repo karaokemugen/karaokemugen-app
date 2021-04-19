@@ -69,8 +69,8 @@ export async function getSongTimeSpentForUser(playlist_id: number, username: str
 	return res.rows[0]?.time_spent || 0;
 }
 
-export async function deleteKara(kid: string) {
-	await db().query(sqldeleteKara, [kid]);
+export async function deleteKara(kids: string[]) {
+	await db().query(sqldeleteKara, [kids]);
 }
 
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {

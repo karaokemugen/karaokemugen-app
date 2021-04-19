@@ -1,7 +1,7 @@
 import { basename, resolve } from 'path';
 
 import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore, sortKaraStore } from '../dao/dataStore';
-import { addKara, deleteKara as deleteKaraDB, getKaraMini, updateKara } from '../dao/kara';
+import { addKara, deleteKara as deleteKaraDB, selectAllKaras, updateKara } from '../dao/kara';
 import { getPlaylistKaraIDs } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
@@ -60,35 +60,41 @@ export async function editKaraInDB(kara: Kara, opts = {
 	profile('editKaraDB');
 }
 
-export async function deleteKara(kid: string, refresh = true) {
-	const kara = await getKaraMini(kid);
-	if (!kara) throw {code: 404, msg: `Unknown kara ID ${kid}`};
-	// Remove files
-	await deleteKaraDB(kid);
-	emitWS('statsRefresh');
-	try {
-		await asyncUnlink((await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]);
-	} catch(err) {
-		logger.warn(`Non fatal : Removing mediafile ${kara.mediafile} failed`, {service: 'Kara', obj: err});
+export async function deleteKara(kids: string[], refresh = true) {
+	const karas = await selectAllKaras({
+		username: 'admin',
+		q: `k:${kids.join(',')}`,
+		admin: true
+	});
+	if (karas.length === 0) throw {code: 404, msg: `Unknown kara IDs in ${kids.join(',')}`};
+	for (const kara of karas) {
+		// Remove files
+		try {
+			await asyncUnlink((await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]);
+		} catch(err) {
+			logger.warn(`Non fatal : Removing mediafile ${kara.mediafile} failed`, {service: 'Kara', obj: err});
+		}
+		try {
+			await asyncUnlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0]);
+		} catch(err) {
+			logger.warn(`Non fatal : Removing karafile ${kara.karafile} failed`, {service: 'Kara', obj: err});
+		}
+		if (kara.subfile) try {
+			await asyncUnlink((await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
+		} catch(err) {
+			logger.warn(`Non fatal : Removing subfile ${kara.subfile} failed`, {service: 'Kara', obj: err});
+		}
+		logger.info(`Song files of ${kara.karafile} removed`, {service: 'Kara'});
 	}
-	try {
-		await asyncUnlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0]);
-	} catch(err) {
-		logger.warn(`Non fatal : Removing karafile ${kara.karafile} failed`, {service: 'Kara', obj: err});
+	for (const kara of karas) {
+		removeKaraInStore(kara.kid);
 	}
-	if (kara.subfile) try {
-		await asyncUnlink((await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
-	} catch(err) {
-		logger.warn(`Non fatal : Removing subfile ${kara.subfile} failed`, {service: 'Kara', obj: err});
-	}
-
-	removeKaraInStore(kara.kid);
 	saveSetting('baseChecksum', getStoreChecksum());
 	// Remove kara from database
-	logger.info(`Song ${kara.karafile} removed`, {service: 'Kara'});
-
+	await deleteKaraDB(karas.map(k => k.kid));
+	emitWS('statsRefresh');
 	if (refresh) {
-		await refreshKarasDelete(kid);
+		await refreshKarasDelete(karas.map(k => k.kid));
 		refreshTags();
 		refreshYears();
 		generateBlacklist();
@@ -206,7 +212,7 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	} else if (action === 'UPDATE') {
 		await refreshKarasUpdate(kid);
 	} else if (action === 'DELETE') {
-		await refreshKarasDelete(kid);
+		await refreshKarasDelete([kid]);
 	} else if (action === 'ALL') {
 		await refreshKaras();
 	}

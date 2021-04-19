@@ -384,7 +384,7 @@ export async function cleanKaras(repo: string, local?: KaraList, remote?: KaraLi
 		// Now we have a list of KIDs to remove
 		logger.info(`Removing ${karasToRemove.length} songs`, {service: 'Update'});
 		const promises = [];
-		karasToRemove.forEach(kid => promises.push(deleteKara(kid, false)));
+		promises.push(deleteKara(karasToRemove, false));
 		await Promise.all(promises);
 		if (karasToRemove.length > 0) {
 			compareKarasChecksum();
