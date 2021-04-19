@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api';
-import { isUUID } from '../../lib/utils/validators';
+import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getKara, getKaraLyrics, getKaras} from '../../services/kara';
 import { createKara, editKara } from '../../services/kara_creation';
@@ -325,15 +325,15 @@ export default function karaController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('deleteKara', async (socket: Socket, req: APIData) => {
+	router.route('deleteKaras', async (socket: Socket, req: APIData) => {
 	/**
  * @api {delete} Delete kara
- * @apiName deleteKara
+ * @apiName deleteKaras
  * @apiVersion 5.0.0
  * @apiGroup Karaokes
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
- * @apiParam {uuid} kid Karaoke ID to delete
+ * @apiParam {uuid} kids Array<Karaoke ID to delete>
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {code: "KARA_DELETED"}
@@ -344,14 +344,18 @@ export default function karaController(router: SocketIOApp) {
  * HTTP/1.1 404 Not found
  */
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
-		if (!isUUID(req.body.kid)) throw {code: 400};
-		try {
-			await deleteKara(req.body.kid);
-			return APIMessage('KARA_DELETED');
-		} catch(err) {
-			const code = 'KARA_DELETED_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
+		const validationErrors = check(req.body, {
+			kids: {uuidArrayValidator: true}
+		});
+		if (!validationErrors) {
+			try {
+				await deleteKara(req.body.kids);
+				return APIMessage('KARA_DELETED');
+			} catch(err) {
+				const code = 'KARA_DELETED_ERROR';
+				errMessage(code, err);
+				throw {code: err?.code || 500, message: APIMessage(code)};
+			}
 		}
 	});
 	router.route('addKaraToPublicPlaylist', async (socket: Socket, req: APIData) => {

@@ -113,7 +113,7 @@ export function initDownloadQueue() {
 		emitQueueStatus('stopped');
 		if (!refreshing) {
 			compareKarasChecksum();
-			await refreshAll()
+			await refreshAll();
 			await generateBlacklist();
 			await vacuum();
 		}
