@@ -813,7 +813,7 @@ class Players {
 			playerState.currentSong = song;
 			playerState.mediaType = 'song';
 			playerState.currentMedia = null;
-			this.messages.removeMessage('poll');
+			if (this.messages) this.messages.removeMessage('poll');
 			await retry(() => this.exec({command: ['loadfile', mediaFile, 'replace', options]}), {
 				retries: 3,
 				onFailedAttempt: error => {
