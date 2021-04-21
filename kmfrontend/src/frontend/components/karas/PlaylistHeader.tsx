@@ -200,22 +200,23 @@ class PlaylistHeader extends Component<IProps, IState> {
 					blcSet?: string | ArrayBuffer | null
 				} = {};
 				let name: string;
+				const json = JSON.parse(fr.result as string);
 				if (file.name.includes('.kmblc')) {
-					data.blcSet = fr.result;
+					data.blcSet = json;
 					url = 'importBLCSet';
-					name = JSON.parse(fr.result as string)?.blcSetInfo?.name;
+					name = json?.blcSetInfo?.name;
 				} else if (file.name.includes('.kmfavorites')) {
-					data.favorites = fr.result;
+					data.favorites = json;
 					url = 'importFavorites';
 					name = 'Favs';
 				} else {
 					url = 'importPlaylist';
-					data.playlist = fr.result;
-					name = JSON.parse(fr.result as string)?.PlaylistInformation?.name;
+					data.playlist = json;
+					name = json?.PlaylistInformation?.name;
 				}
 				const response = await commandBackend(url, data);
-				if (response.data.unknownKaras && response.data.unknownKaras.length > 0) {
-					const mediasize = response.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
+				if (response.message.data.unknownKaras && response.message.data.unknownKaras.length > 0) {
+					const mediasize = response.message.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
 					callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (
 						<React.Fragment>
 							<p>
@@ -226,11 +227,11 @@ class PlaylistHeader extends Component<IProps, IState> {
 								<label>&nbsp;{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM_SIZE', {mediasize: prettyBytes(mediasize)})}</label>
 							</div>
 							<br/>
-							{response.unknownKaras.map((kara: DBPLC) =>
+							{response.message.data.unknownKaras.map((kara: DBPLC) =>
 								<label
 									key={kara.kid}>{buildKaraTitle(this.context.globalState.settings.data, kara, true)}</label>)}
 						</React.Fragment>), () => commandBackend('addDownloads', {
-						downloads: response.unknownKaras.map((kara: DBPLC) => {
+						downloads: response.message.data.unknownKaras.map((kara: DBPLC) => {
 							return {
 								kid: kara.kid,
 								mediafile: kara.mediafile,
@@ -242,9 +243,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 					}));
 				} else {
 					!file.name.includes('.kmfavorites') &&
-					displayMessage('success', i18next.t(`SUCCESS_CODES.${response.code}`, {data: name}));
+					displayMessage('success', i18next.t(`SUCCESS_CODES.${response.message.code}`, {data: name}));
 				}
-				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.data.playlist_id;
+				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.message.data.playlist_id;
 				this.props.changeIdPlaylist(playlist_id);
 			};
 			fr.readAsText(file);

@@ -527,10 +527,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.7.tgz#1cb61fd0c85cb87e728c43107b5fd82b69bc9ef8"
   integrity sha512-gWL8VUkg8VRaCAUgG9WmhefMqHmMblxe2rVpMF86nZY/+ZysU+BkAp+3cz03AixWDSSz0ks5WX59yAhv/cDwFA==
 
-"@types/node@^14.14.37":
-  version "14.14.37"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.37.tgz#a3dd8da4eb84a996c36e331df98d82abd76b516e"
-  integrity sha512-XYmBiy+ohOR4Lh5jE379fV2IU+6Jn4g5qASinhitfyO71b/sCo6MKsMLF5tc7Zf2CE8hViVQyYSobJNke8OvUw==
+"@types/node@^14.14.41":
+  version "14.14.41"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.41.tgz#d0b939d94c1d7bd53d04824af45f1139b8c45615"
+  integrity sha512-dueRKfaJL4RTtSa7bWeTK1M+VH+Gns73oCgzvYfHZywRCoPSd8EkXBL0mZ9unPTveBn+D9phZBaxuzpwjWkW0g==
 
 "@types/pg-copy-streams@^1.2.1":
   version "1.2.1"
@@ -2967,6 +2967,13 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
+js-yaml@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
+  integrity sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==
+  dependencies:
+    argparse "^2.0.1"
+
 json-buffer@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.0.tgz#5b1f397afc75d677bde8bcfc0e47e1f9a3d9a898"
@@ -3612,10 +3619,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-open@^8.0.5:
-  version "8.0.5"
-  resolved "https://registry.yarnpkg.com/open/-/open-8.0.5.tgz#92ee3faafef4ddbe78006f7881572f3e81430b8f"
-  integrity sha512-hkPXCz7gijWp2GoWqsQ4O/5p7F6d5pIQ/+9NyeWG1nABJ4zvLi9kJRv1a44kVf5p13wK0WMoiRA+Xey68yOytA==
+open@^8.0.6:
+  version "8.0.6"
+  resolved "https://registry.yarnpkg.com/open/-/open-8.0.6.tgz#bdf94a80b4ef5685d8c7b58fb0fbbe5729b37204"
+  integrity sha512-vDOC0KwGabMPFtIpCO2QOnQeOz0N2rEkbuCuxICwLMUCrpv+A7NHrrzJ2dQReJmVluHhO4pYRh/Pn6s8t7Op6Q==
   dependencies:
     define-lazy-prop "^2.0.0"
     is-docker "^2.1.1"
@@ -4679,10 +4686,10 @@ through2@^4.0.0:
   dependencies:
     readable-stream "3"
 
-tmi.js@^1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/tmi.js/-/tmi.js-1.8.1.tgz#c124f75f9b8b33530ab42144eba9a72e8291de81"
-  integrity sha512-1z6+3Otg1dqbEFK59DazERsfdO4c35G7mSJNW17MyLqLifblg+8oVnNNzOpn17NjUVV7TGhKP9gneHxHG455ig==
+tmi.js@^1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/tmi.js/-/tmi.js-1.8.3.tgz#1a4e30c845442505e6f673d0da8740bbd39c4ed6"
+  integrity sha512-1YAO3hwnkpAbUfVlpxcqOHP4Nun/+TqxWE/e/ZKMB6p40ZKczhI03oZW2Qx3pppqWjXz5kSjHdT/vTTfi2gCGQ==
   dependencies:
     node-fetch "^2.6.1"
     ws "^7.4.3"

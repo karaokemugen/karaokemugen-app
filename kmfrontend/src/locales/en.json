@@ -742,7 +742,8 @@
 		"AUTHORS_BY": "Karaoke created by",
 		"DELETE_KARA": "Delete karaoke?",
 		"DEJAVU_TOOLTIP": "Recently played song",
-		"PROBLEMATIC_TOOLTIP": "This song contains scenes ({{tags}}) that may be problematic for some viewers."
+		"PROBLEMATIC_TOOLTIP": "This song contains scenes ({{tags}}) that may be problematic for some viewers.",
+		"DELETE_ALL_TOOLTIP": "Remove all displayed karaokes at once "
 	},
 	"MENU": {
 		"HOME": "Home",

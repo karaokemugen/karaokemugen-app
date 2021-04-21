@@ -315,11 +315,11 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			const fr = new FileReader();
 			fr.onload = async () => {
 				const response = await commandBackend('importPlaylist', {
-					buffer : { playlist: fr['result'] }
+					buffer : { playlist: JSON.parse(fr['result'] as string) }
 				});
-				if (response.unknownKaras && response.unknownKaras.length > 0) {
+				if (response.message.data.unknownKaras && response.message.data.unknownKaras.length > 0) {
 					commandBackend('addDownloads', {
-						downloads: response.unknownKaras.map((kara: DBPLC) => {
+						downloads: response.message.data.unknownKaras.map((kara: DBPLC) => {
 							return {
 								kid: kara.kid,
 								mediafile: kara.mediafile,
@@ -330,7 +330,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						})
 					});
 				}
-				commandBackend('deletePlaylist', {pl_id: response.playlist_id});
+				commandBackend('deletePlaylist', {pl_id: response.message.data.playlist_id});
 			};
 			fr.readAsText(file);
 		}

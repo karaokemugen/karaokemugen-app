@@ -1,13 +1,15 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Layout, Modal, Table } from 'antd';
+import { Button, Cascader, Col, Divider, Input, Layout, Modal, Row, Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { DBKara } from '../../../../../src/lib/types/database/kara';
+import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
+import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
-import { getSerieLanguage, getTagInLocaleList, sortTagByPriority } from '../../../utils/kara';
+import { getSerieLanguage, getTagInLocale, getTagInLocaleList, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { tagTypes } from '../../../utils/tagTypes';
 import { is_touch_device } from '../../../utils/tools';
 
 interface KaraListState {
@@ -18,6 +20,9 @@ interface KaraListState {
 	filter: string;
 	i18nTag: any[];
 	totalCount: number;
+	tags: DBTag[];
+	tagOptions: any[];
+	tagFilter: string;
 }
 
 class KaraList extends Component<unknown, KaraListState> {
@@ -33,17 +38,22 @@ class KaraList extends Component<unknown, KaraListState> {
 			currentPageSize: parseInt(localStorage.getItem('karaPageSize')) || 100,
 			filter: localStorage.getItem('karaFilter') || '',
 			i18nTag: [],
-			totalCount: 0
+			totalCount: 0,
+			tags: [],
+			tagOptions: [],
+			tagFilter: ''
 		};
 	}
 
 	componentDidMount() {
 		this.refresh();
+		this.getTags();
 	}
 
 	refresh = async () => {
 		const res = await commandBackend('getKaras', {
 			filter: this.state.filter,
+			q: this.state.tagFilter,
 			from: (this.state.currentPage - 1) * this.state.currentPageSize,
 			size: this.state.currentPageSize
 		}, undefined, 300000);
@@ -63,21 +73,21 @@ class KaraList extends Component<unknown, KaraListState> {
 			cancelText: i18next.t('NO'),
 			onOk: (close) => {
 				close();
-				this.deleteKara(kara);
+				this.deleteKaras([kara.kid]);
 			}
-		  });
+		});
 	}
 
-	deleteKara = async (kara) => {
+	deleteKaras = async (kids: string[]) => {
 		const karasRemoving = this.state.karasRemoving;
-		karasRemoving.push(kara.kid);
+		karasRemoving.push(...kids);
 		this.setState({
 			karasRemoving: karasRemoving
 		});
-		await commandBackend('deleteKara', {kid: kara.kid}, true);
+		await commandBackend('deleteKaras', { kids: kids }, true);
 		this.setState({
-			karasRemoving: this.state.karasRemoving.filter(value => value !== kara.kid),
-			karas: this.state.karas.filter(value => value.kid !== kara.kid)
+			karasRemoving: this.state.karasRemoving.filter(value => !kids.includes(value)),
+			karas: this.state.karas.filter(value => !kids.includes(value.kid))
 		});
 	}
 
@@ -91,6 +101,58 @@ class KaraList extends Component<unknown, KaraListState> {
 		setTimeout(this.refresh, 10);
 	};
 
+	async getTags() {
+		const res = await commandBackend('getTags', undefined, false, 300000);
+		this.setState({ tags: res.content }, () => this.filterTagCascaderOption());
+	}
+
+	filterTagCascaderOption = () => {
+		const options = Object.keys(tagTypes).map(type => {
+			const typeID = tagTypes[type].type;
+
+			const option = {
+				value: typeID,
+				label: i18next.t(`TAG_TYPES.${type}`),
+				children: []
+			};
+			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
+				option.children.push({
+					value: tag.tid,
+					label: getTagInLocale(tag as unknown as DBKaraTag),
+				});
+			}
+			return option;
+		});
+		this.setState({ tagOptions: options });
+	}
+
+	filterTagCascaderFilter = function (inputValue, path) {
+		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+	}
+
+	handleFilterTagSelection = (value) => {
+		let t = '';
+		if (value && value[1])
+			t = 't:' + value[1] + '~' + value[0];
+
+		this.setState({ tagFilter: t, currentPage: 0 }, () => {
+			localStorage.setItem('karaPage', '1');
+			setTimeout(this.refresh, 10);
+		});
+	}
+
+	confirmDeleteAllVisibleKara = () => {
+		Modal.confirm({
+			title: i18next.t('KARA.DELETE_KARA_TITLE', {count: this.state.karas.length}),
+			okText: i18next.t('YES'),
+			cancelText: i18next.t('NO'),
+			onOk: (close) => {
+				close();
+				this.deleteKaras(this.state.karas.map(value => value.kid));
+			}
+		});
+	}
+
 	render() {
 		return (
 			<>
@@ -99,13 +161,22 @@ class KaraList extends Component<unknown, KaraListState> {
 					<div className='description'>{i18next.t('HEADERS.KARAOKE_LIST.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
-					<Input.Search
-						placeholder={i18next.t('SEARCH_FILTER')}
-						value={this.state.filter}
-						onChange={event => this.changeFilter(event)}
-						enterButton={i18next.t('SEARCH')}
-						onSearch={this.refresh}
-					/>
+					<Row>
+						<Col flex={3} style={{ marginRight: '10px' }}>
+							<Input.Search
+								placeholder={i18next.t('SEARCH_FILTER')}
+								value={this.state.filter}
+								onChange={event => this.changeFilter(event)}
+								enterButton={i18next.t('SEARCH')}
+								onSearch={this.refresh}
+							/>
+						</Col>
+						<Col flex={1}>
+							<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
+								showSearch={{ filter: this.filterTagCascaderFilter, matchInputWidth: false }}
+								onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
+						</Col>
+					</Row>
 					<Table
 						onChange={this.handleTableChange}
 						dataSource={this.state.karas}
@@ -158,7 +229,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		dataIndex: 'title',
 		key: 'title'
 	}, {
-		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+		title: i18next.t('TAG_TYPES.VERSIONS', { count: 2 }),
 		dataIndex: 'versions',
 		key: 'versions',
 		render: (versions) => getTagInLocaleList(versions.sort(sortTagByPriority), this.state.i18nTag).join(', ')
@@ -167,13 +238,15 @@ class KaraList extends Component<unknown, KaraListState> {
 		dataIndex: 'repository',
 		key: 'repository'
 	}, {
-		title: i18next.t('ACTION'),
+		title: <span><Button title={i18next.t('KARA.DELETE_ALL_TOOLTIP')} type="default"
+			onClick={this.confirmDeleteAllVisibleKara}><DeleteOutlined /></Button>{i18next.t('ACTION')}
+		</span>,
 		key: 'action',
 		render: (text, record) => (<span>
 			<Link to={`/system/karas/${record.kid}`}>
 				<Button type="primary" icon={<EditOutlined />} />
 			</Link>
-			{!is_touch_device() ? <Divider type="vertical" />:null}
+			{!is_touch_device() ? <Divider type="vertical" /> : null}
 			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
 				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)} />
 		</span>)

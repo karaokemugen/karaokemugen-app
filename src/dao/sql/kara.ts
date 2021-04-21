@@ -133,7 +133,7 @@ WHERE ak.pk_kid = $1
 `;
 
 export const sqldeleteKara = `
-DELETE FROM kara WHERE pk_kid = $1;
+DELETE FROM kara WHERE pk_kid = ANY ($1);
 `;
 
 export const sqlremoveKaraFromPlaylist = `

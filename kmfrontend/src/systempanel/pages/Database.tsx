@@ -24,7 +24,7 @@ class Database extends Component<unknown, DatabaseState> {
 	}
 
 	dbvalidateFiles = async () => {
-		commandBackend('validateDatabase', undefined, true, 300000).catch(() => {});
+		commandBackend('validateFiles', undefined, true, 300000).catch(() => {});
 	}
 
 	dbupdate =  async () => {

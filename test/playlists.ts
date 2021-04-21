@@ -91,7 +91,7 @@ describe('Playlists', () => {
 			flag_current: false,
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist);
-		newPlaylistID = +data;
+		newPlaylistID = +data.playlist_id;
 	});
 
 	it('Test findPlaying without any playing song set', async () => {
@@ -107,7 +107,7 @@ describe('Playlists', () => {
 			flag_current: true
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
-		newCurrentPlaylistID = +data;
+		newCurrentPlaylistID = +data.playlist_id;
 	});
 
 	it('Create a PUBLIC playlist', async () => {
@@ -118,7 +118,7 @@ describe('Playlists', () => {
 			flag_current: false
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_public);
-		newPublicPlaylistID = +data;
+		newPublicPlaylistID = +data.playlist_id;
 	});
 
 	it('Create a CURRENT+PUBLIC playlist', async () => {
@@ -129,8 +129,8 @@ describe('Playlists', () => {
 			flag_current: true
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
-		newCurrentPlaylistID = +data;
-		newPublicPlaylistID = +data;
+		newCurrentPlaylistID = +data.playlist_id;
+		newPublicPlaylistID = +data.playlist_id;
 	});
 
 	it('Copy karaokes to another playlist', async () => {
@@ -143,7 +143,7 @@ describe('Playlists', () => {
 	it('Add karaoke to public playlist', async () => {
 		const data = await commandBackend(token, 'addKaraToPublicPlaylist', { kid: KIDToAdd2 });
 		expect(data.code).to.be.equal('PL_SONG_ADDED');
-		expect(data.data.kid[0]).to.be.equal(KIDToAdd2);
+		expect(data.data.plc.kid).to.be.equal(KIDToAdd2);
 	});
 
 	it('Delete a CURRENT playlist (should fail)', async () => {
@@ -195,11 +195,11 @@ describe('Playlists', () => {
 
 	it('Import a playlist', async () => {
 		const data = {
-			playlist: JSON.stringify(playlistExport)
+			playlist: playlistExport
 		};
 		const body = await commandBackend(token, 'importPlaylist', data);
-		expect(body.code).to.be.equal('PL_IMPORTED');
-		expect(body.data.unknownKaras).to.have.lengthOf(0);
+		expect(body.message.code).to.be.equal('PL_IMPORTED');
+		expect(body.message.data.unknownKaras).to.have.lengthOf(0);
 	});
 
 	it('Import a playlist (failure)', async () => {
