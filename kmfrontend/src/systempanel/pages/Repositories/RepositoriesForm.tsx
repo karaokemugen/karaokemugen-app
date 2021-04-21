@@ -225,7 +225,10 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							label={i18next.t('REPOSITORIES.CONSOLIDATE')}
 							labelCol={{ flex: '0 1 200px' }}
 						>
-							<FoldersElement openDirectory={true} onChange={(value) => this.setState({ consolidatePath: value[0] })} />
+							<FoldersElement
+								openDirectory={true}
+								onChange={(value) => this.setState({ consolidatePath: value })}
+							/>
 						</Form.Item>
 						<Form.Item
 							style={{ textAlign: 'right' }}
