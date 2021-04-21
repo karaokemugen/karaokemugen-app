@@ -27,7 +27,7 @@
     "dist": "yarn build && electron-builder",
     "migrate": "postgrator",
     "dropDatabase": "ts-node util/dropDatabase.ts",
-	"i18next-scanner": "i18next-scanner --config src/utils/i18next-scanner.config.js"
+	"i18next-scanner": "i18next-scanner --config util/i18next-scanner.config.js"
   },
   "homepage": "https://karaokes.moe",
   "repository": {
