@@ -49,7 +49,7 @@ export async function getCurrentBLCSet(): Promise<BLCSet> {
 export async function generateBlacklist() {
 	const blcset = await getCurrentBLCSet();
 	await db().query(sqlemptyBlacklist);
-	return db().query(sqlgenerateBlacklist, [blcset.blc_set_id]);
+	return db().query(sqlgenerateBlacklist, [blcset?.blc_set_id || 0]);
 }
 
 export async function selectSet(id: number): Promise<BLCSet> {
