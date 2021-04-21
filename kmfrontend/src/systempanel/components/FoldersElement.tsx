@@ -1,5 +1,5 @@
-import { DeleteOutlined,PlusOutlined } from '@ant-design/icons';
-import { Button,Input, Modal, Radio } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Input, Modal, Radio } from 'antd';
 import i18next from 'i18next';
 import React from 'react';
 
@@ -44,8 +44,11 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 		if (isElectron()) {
 			this.setState({ itemModal: item, indexModal: index, keyModal: key });
 			const { ipcRenderer: ipc } = window.require('electron');
-			const path = `${this.getPathForFileSystem(Array.isArray(item) ? item[index] : item, key)}${index === -1
-				? '/' : (this.context.globalState.settings.data.state.os === 'win32' ? (Array.isArray(item) ? item[index] : item)?.replace(/\//g, '\\') : (Array.isArray(item) ? item[index] : item))}`;
+			const value = Array.isArray(item) ? item[index] : item;
+			const path = `${this.getPathForFileSystem(value, key)}${index === -1 || !value
+				? '/'
+				: (this.context.globalState.settings.data.state.os === 'win32' ? value?.replace(/\//g, '\\') : value)
+			}`;
 			const options = {
 				defaultPath: path,
 				title: this.getTitleModal(),
@@ -69,9 +72,9 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 		let value = this.state.value;
 		if (this.state.newValueModal) {
 			if (this.state.indexModal === undefined) {
-				value = this.state.newValueModal.replace('\\', '/');
+				value = this.state.newValueModal.replace(/\\/g, '/');
 			} else if (this.state.indexModal === -1) {
-				(value as any[]).push(this.state.newValueModal.replace('\\', '/'));
+				(value as any[]).push(this.state.newValueModal.replace(/\\/g, '/'));
 			} else {
 				(value as any[])[this.state.indexModal] = this.state.newValueModal.replace(/\\/g, '/');
 			}
@@ -80,11 +83,13 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 		}
 	}
 
-	getPathForFileSystem(value: string, key?: string) {
+	getPathForFileSystem(value: string[] | string, key?: string) {
 		const regexp = this.context.globalState.settings.data.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
 		if ((Array.isArray(value) && value[0].match(regexp) === null)
 			|| (value && !Array.isArray(value) && value.match(regexp) === null)) {
-			const path = key?.includes('System.Binaries') ? this.context.globalState.settings.data.state.appPath : this.context.globalState.settings.data.state.dataPath;
+			const path = key?.includes('System.Binaries') ?
+				this.context.globalState.settings.data.state.appPath
+				: this.context.globalState.settings.data.state.dataPath;
 			return `${path}${this.context.globalState.settings.data.state.os === 'win32' ? '\\' : '/'}`;
 		} else {
 			return '';
@@ -106,6 +111,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	}
 
 	render() {
+		const item = Array.isArray(this.state.itemModal) ? this.state.itemModal[this.state.indexModal] : this.state.itemModal;
 		return (
 			<div>
 				{Array.isArray(this.props.value) ?
@@ -141,7 +147,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 							<PlusOutlined />{this.getButtonLabel()}
 						</Button>
 					</React.Fragment> :
-					<Input onClick={() => this.openFileSystemModal(this.props.value, undefined, this.props.keyModal)} value={this.props.value} />
+					<Input onClick={() => this.openFileSystemModal(this.props.value, undefined, this.props.keyModal)} value={this.state.value} />
 				}
 
 				<Modal
@@ -155,12 +161,13 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 					okText={i18next.t('CONFIG.SAVE')}
 					cancelText={i18next.t('NO')}
 				>
-					{this.state.visibleModal ? <FileSystem saveValueModal={(value) => this.setState({ newValueModal: value })}
-						fileRequired={this.state.keyModal?.includes('System.Binaries.ffmpeg')
-							|| this.state.keyModal?.includes('System.Binaries.Player')} os={this.context.globalState.settings.data.state.os}
-						path={`${this.getPathForFileSystem(this.state.itemModal[this.state.indexModal], this.state.keyModal)}${this.state.indexModal === -1
-							? '/' : (Array.isArray(this.state.itemModal) ? this.state.itemModal[this.state.indexModal] : this.state.itemModal)}`
-						} /> : null}
+					{this.state.visibleModal ?
+						<FileSystem saveValueModal={(value) => this.setState({ newValueModal: value })}
+							fileRequired={this.state.keyModal?.includes('System.Binaries.ffmpeg')
+								|| this.state.keyModal?.includes('System.Binaries.Player')} os={this.context.globalState.settings.data.state.os}
+							path={`${this.getPathForFileSystem(item, this.state.keyModal)}${this.state.indexModal === -1 || !item ? '/' : item}`}
+						/> : null
+					}
 				</Modal>
 			</div>
 		);
