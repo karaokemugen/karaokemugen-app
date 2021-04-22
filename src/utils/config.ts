@@ -51,7 +51,7 @@ import { initTwitch, stopTwitch } from './twitch';
 export async function editSetting(part: RecursivePartial<Config>) {
 	try {
 		const config = getConfig();
-		const oldConfig = cloneDeep(config);
+		const oldConfig = removeNulls(cloneDeep(config));
 		const newConfig = removeNulls(merge(config, part));
 		verifyConfig(newConfig);
 		await mergeConfig(newConfig, oldConfig);
