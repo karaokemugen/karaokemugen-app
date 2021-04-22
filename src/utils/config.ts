@@ -46,6 +46,7 @@ import {configConstraints, defaults} from './default_settings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
 import {getState, setState} from './state';
+import {writeStreamFiles} from './stream_files';
 import { initTwitch, stopTwitch } from './twitch';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
@@ -153,6 +154,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Online.Stats && !state.isDemo
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
 		: stopStats();
+	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 	// Toggling progressbar off if needs be
 	if (config.Player.ProgressBarDock && !state.isDemo) setProgressBar(-1);
 	if (!state.isDemo) configureHost();
@@ -197,6 +199,7 @@ export function configureHost() {
 	if ((state.player.mediaType === 'background' || state.player.mediaType === 'pauseScreen') && !state.songPoll) {
 		displayInfo();
 	}
+	writeStreamFiles('km_url');
 }
 
 function getFirstHop(target: string): Promise<string> {

@@ -33,7 +33,7 @@ export async function initTwitch() {
 		};
 		client = tmi.client(opts);
 		await client.connect();
-		listenVoteEvents(client);
+		listenChat(client);
 		logger.debug('Twitch initialized', {service: 'Twitch'});
 	} catch(err) {
 		logger.error('Unable to login to chat', {service: 'Twitch', obj: err});
@@ -54,7 +54,7 @@ export async function sayTwitch(message: string) {
 }
 
 /** Vote Events are listened here and reacted upon */
-function listenVoteEvents(chat: Client) {
+function listenChat(chat: Client) {
 	chat.on('message', async (target: string, context: ChatUserstate, msg: string, self: boolean) => {
 		// If it's something we said, don't do anything
 		if (self) return;

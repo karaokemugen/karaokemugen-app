@@ -9,6 +9,7 @@ import { emitWS } from '../lib/utils/ws';
 import { CurrentSong } from '../types/playlist';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
+import {writeStreamFiles} from '../utils/stream_files';
 import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongVersion } from './kara';
 import {initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer} from './player';
 import { getCurrentSong, getPlaylistContentsMini, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
@@ -56,7 +57,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			infos
 		});
 		await mpv.play(current);
-
+		writeStreamFiles('song_name');
 		setState({singlePlay: !randomPlaying, randomPlaying: randomPlaying});
 	} catch(err) {
 		logger.error('Error during song playback', {service: 'Player', obj: err});
@@ -117,7 +118,9 @@ export async function playCurrentSong(now: boolean) {
 			await Promise.all([
 				setPLCVisible(kara.plcid),
 				updatePlaylistDuration(kara.plaid),
-				updateUserQuotas(kara)
+				updateUserQuotas(kara),
+				writeStreamFiles('time_remaining_in_current_playlist'),
+				writeStreamFiles('song_name')
 			]);
 			emitWS('playlistInfoUpdated', kara.plaid);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();

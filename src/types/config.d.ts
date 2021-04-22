@@ -206,6 +206,7 @@ export interface Config {
 			SessionExports?: string,
 			Import?: string,
 			Avatars?: string,
+			StreamFiles?: string
 		}
 	}
 }

@@ -60,6 +60,7 @@ import { DBPLC } from '../types/database/playlist';
 import { CurrentSong, PlaylistExport, PlaylistOpts, PLC, PLCEditParams, Pos,ShuffleMethods } from '../types/playlist';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
+import {writeStreamFiles} from '../utils/stream_files';
 import {getBlacklist} from './blacklist';
 import { getAllRemoteKaras } from './downloadUpdater';
 import { formatKaraList, getSongSeriesSingers,getSongVersion,isAllKaras} from './kara';
@@ -251,6 +252,8 @@ export async function editPlaylist(playlist_id: number, playlist: DBPL) {
 		setState({currentPlaylistID: playlist_id, introPlayed: false, introSponsorPlayed: false});
 		emitWS('currentPlaylistUpdated', playlist_id);
 		resetAllAcceptedPLCs();
+		writeStreamFiles('current_kara_count');
+		writeStreamFiles('time_remaining_in_current_playlist');
 		logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
 	}
 	if (playlist.flag_public) {
@@ -259,6 +262,7 @@ export async function editPlaylist(playlist_id: number, playlist: DBPL) {
 		emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
 		setState({publicPlaylistID: playlist_id});
 		emitWS('publicPlaylistUpdated', playlist_id);
+		writeStreamFiles('public_kara_count');
 		logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
 	}
 	updatePlaylistLastEditTime(playlist_id);
@@ -279,10 +283,13 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 	});
 	if (+opts.current) {
 		setState({currentPlaylistID: playlist_id});
+		writeStreamFiles('current_kara_count');
+		writeStreamFiles('time_remaining_in_current_playlist');
 		emitWS('currentPlaylistUpdated', playlist_id);
 	}
 	if (+opts.public) {
 		setState({publicPlaylistID: playlist_id});
+		writeStreamFiles('public_kara_count');
 		emitWS('publicPlaylistUpdated', playlist_id);
 	}
 	emitWS('playlistsUpdated');
@@ -494,19 +501,23 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		} else {
 			await updatePlaylistDuration(playlist_id);
 		}
-		if (conf.Karaoke.Autoplay &&
-			+playlist_id === state.currentPlaylistID &&
-			(state.player.playerStatus === 'stop' || state.randomPlaying) ) {
-			setState({ randomPlaying: false });
-			const kara = await nextSong();
-			await setPlaying(kara.plcid, getState().currentPlaylistID);
-			await playPlayer(true);
-		}
+
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
 			updateSongsLeft(user.login, playlist_id)
 		]);
 		const plc = await getPLCInfo(PLCsInserted[0].plc_id, true, requester);
+		if (+playlist_id === state.currentPlaylistID) {
+			writeStreamFiles('current_kara_count');
+			writeStreamFiles('time_remaining_in_current_playlist');
+			if (conf.Karaoke.Autoplay &&
+				(state.player.playerStatus === 'stop' || state.randomPlaying) ) {
+				setState({ randomPlaying: false });
+				const kara = await nextSong();
+				await setPlaying(kara.plcid, getState().currentPlaylistID);
+				await playPlayer(true);
+			}
+		}
 		if (+playlist_id === state.publicPlaylistID) {
 			emitWS('KIDUpdated', PLCsInserted.map(plc => {
 				return {
@@ -515,10 +526,11 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 					plc_id: [plc.plc_id]
 				};
 			}));
+			writeStreamFiles('public_kara_count');
 		}
 		emitWS('playlistContentsUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', playlist_id);
-		return {plc: plc};
+		return {plc};
 	} catch(err) {
 		logger.error('Unable to add karaokes', {service: 'Playlist', obj: err});
 		let plname : string;
@@ -691,6 +703,11 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 				}
 			}
 		}
+		await Promise.all([
+			writeStreamFiles('current_kara_count'),
+			writeStreamFiles('time_remaining_in_current_playlist'),
+			writeStreamFiles('public_kara_count')
+		]);
 	} catch(err) {
 		throw {
 			code: err?.errno,
@@ -803,6 +820,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 			if (currentSong && currentSong.pos <= params.pos && plc.plaid === getState().currentPlaylistID) {
 				setState({player: {currentSong: await getCurrentSong()}});
 			}
+			writeStreamFiles('time_remaining_in_current_playlist');
 		}
 	}
 	if (PLCsToCopyToCurrent.length > 0) {
@@ -946,7 +964,10 @@ export async function importPlaylist(playlist: any, username: string, playlist_i
 		}
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
-			updatePlaylistDuration(playlist_id)
+			updatePlaylistDuration(playlist_id),
+			writeStreamFiles('current_kara_count'),
+			writeStreamFiles('time_remaining_in_current_playlist'),
+			writeStreamFiles('public_kara_count')
 		]);
 		emitWS('playlistsUpdated');
 		return {
