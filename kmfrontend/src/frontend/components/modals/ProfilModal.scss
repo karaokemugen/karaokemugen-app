@@ -74,9 +74,21 @@
 			font-size: 1.25rem;
 			line-height: 1.25rem;
 			padding: .5rem;
-			flex-shrink: 0;
 			min-width: 25%;
 			text-align: start;
+			display: flex;
+			align-items: center;
+            i {
+				flex-shrink: 0;
+			}
+            &.warning {
+                color: goldenrod;
+                div {
+					flex-shrink: 1;
+					margin-left: 0.25em;
+				}
+            }
+
 		}
 		input[type="text"], input[type="password"] {
 			text-align: left;

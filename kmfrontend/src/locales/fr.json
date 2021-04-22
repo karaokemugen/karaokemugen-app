@@ -495,7 +495,8 @@
 			"ONLINE_DELETE": "Désactiver mon compte en ligne",
 			"ONLINE_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte sur le serveur en ligne @{{instance}}. Êtes-vous sûr de vouloir faire ça ?",
 			"LOCAL_DELETE": "Supprimer mon compte localement",
-			"LOCAL_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte localement. Si vous possédez un compte en ligne, ce dernier restera actif. Êtes-vous sûr de vouloir faire ça ?"
+			"LOCAL_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte localement. Si vous possédez un compte en ligne, ce dernier restera actif. Êtes-vous sûr de vouloir faire ça ?",
+			"MISSING_EMAIL": "Attention : sans email vous ne pourrez pas réinitialiser votre mot de passe !"
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Mélanger la liste de lecture",
