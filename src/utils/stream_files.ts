@@ -15,7 +15,7 @@ async function writeCurrentSong() {
 	const song = getState().player.currentSong;
 	const media = getState().player.currentMedia;
 	if (song) {
-		output = `${getSongSeriesSingers(song)}\n${song.songtypes.map(s => s.name).join(' ')} - ${song.title} ${getSongVersion(song)}`;
+		output = `${getSongSeriesSingers(song)}\n${song.songtypes.map(s => s.name).join(' ')}${(!song.songorder || song.songorder === 0) ? '':song.songorder.toString()} - ${song.title} ${getSongVersion(song)}`;
 	} else if (media) {
 		output = getState().player.mediaType;
 	} else {
