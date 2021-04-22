@@ -57,7 +57,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('getPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			const playlist = await getPlaylistInfo(req.body?.pl_id, req.token);
+			const playlist = await getPlaylistInfo(req.body?.plaid, req.token);
 			if (!playlist) throw {code: 404};
 			return playlist;
 		} catch (err) {
@@ -73,7 +73,7 @@ export default function playlistsController(router: SocketIOApp) {
 
 		//Now we add playlist
 		try {
-			return await editPlaylist(req.body?.pl_id,req.body);
+			return await editPlaylist(req.body?.plaid,req.body);
 		} catch(err) {
 			const code = 'PL_UPDATE_ERROR';
 			errMessage(code, err);
@@ -83,7 +83,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('deletePlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
-			return await deletePlaylist(req.body?.pl_id);
+			return await deletePlaylist(req.body?.plaid);
 		} catch(err) {
 			const code = 'PL_DELETE_ERROR';
 			errMessage(code, err);
@@ -94,7 +94,7 @@ export default function playlistsController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		// Empty playlist
 		try {
-			return await emptyPlaylist(+req.body?.pl_id);
+			return await emptyPlaylist(+req.body?.plaid);
 		} catch(err) {
 			const code = 'PL_EMPTY_ERROR';
 			errMessage(code, err);
@@ -104,7 +104,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('findPlayingSongInPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			const index = await findPlaying(req.body?.pl_id);
+			const index = await findPlaying(req.body?.plaid);
 			return {index: index};
 		} catch(err) {
 			errMessage(null, err);
@@ -114,7 +114,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('getPlaylistContents', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await getPlaylistContents(req.body?.pl_id, req.token, req.body?.filter,req.langs, req.body?.from || 0, req.body?.size || 9999999, req.body?.random || 0, req.body?.orderByLikes);
+			return await getPlaylistContents(req.body?.plaid, req.token, req.body?.filter,req.langs, req.body?.from || 0, req.body?.size || 9999999, req.body?.random || 0, req.body?.orderByLikes);
 		} catch(err) {
 			const code = 'PL_VIEW_SONGS_ERROR';
 			errMessage(code, err);
@@ -129,7 +129,7 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await addKaraToPlaylist(req.body.kids, req.token.username, req.body.pl_id, req.body.pos);
+				return await addKaraToPlaylist(req.body.kids, req.token.username, req.body.plaid, req.body.pos);
 			} catch(err) {
 				const code = 'PL_ADD_SONG_ERROR';
 				errMessage(code, err);
@@ -149,7 +149,7 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await copyKaraToPlaylist(req.body.plc_ids, req.body.pl_id, req.body.pos);
+				return await copyKaraToPlaylist(req.body.plc_ids, req.body.plaid, req.body.pos);
 			} catch(err) {
 				const code = 'PL_SONG_COPY_ERROR';
 				errMessage(code, err);
@@ -235,7 +235,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('exportPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
-			return await exportPlaylist(req.body?.pl_id);
+			return await exportPlaylist(req.body?.plaid);
 		} catch(err) {
 			const code = 'PL_EXPORT_ERROR';
 			errMessage(code, err);
@@ -252,7 +252,7 @@ export default function playlistsController(router: SocketIOApp) {
 			try {
 				const data = await importPlaylist(req.body.playlist, req.token.username);
 				const response = {
-					playlist_id: data.playlist_id,
+					plaid: data.plaid,
 					unknownKaras: data.karasUnknown
 				};
 				return {code: 200, message: APIMessage('PL_IMPORTED', response)};
@@ -271,7 +271,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('shufflePlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
-			return await shufflePlaylist(req.body?.pl_id, req.body?.method);
+			return await shufflePlaylist(req.body?.plaid, req.body?.method);
 		} catch(err) {
 			const code = 'PL_SHUFFLE_ERROR';
 			errMessage(code, err);

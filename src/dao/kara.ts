@@ -12,8 +12,8 @@ import { getState } from '../utils/state';
 import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
 
 
-export async function getSongCountForUser(playlist_id: number, username: string): Promise<number> {
-	const res = await db().query(sqlgetSongCountPerUser, [playlist_id, username]);
+export async function getSongCountForUser(plaid: number, username: string): Promise<number> {
+	const res = await db().query(sqlgetSongCountPerUser, [plaid, username]);
 	return res.rows[0]?.count || 0;
 }
 
@@ -61,9 +61,9 @@ export async function addKara(kara: Kara) {
 	}));
 }
 
-export async function getSongTimeSpentForUser(playlist_id: number, username: string): Promise<number> {
+export async function getSongTimeSpentForUser(plaid: number, username: string): Promise<number> {
 	const res = await db().query(sqlgetTimeSpentPerUser,[
-		playlist_id,
+		plaid,
 		username
 	]);
 	return res.rows[0]?.time_spent || 0;

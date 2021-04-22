@@ -141,21 +141,21 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				if (this.props.idPlaylist > 0 && !pos) {
 					url = 'copyKaraToPlaylist';
 					data = {
-						pl_id: this.props.idPlaylistTo,
+						plaid: this.props.idPlaylistTo,
 						plc_ids: [this.props.kara.plcid]
 					};
 				} else {
 					url = 'addKaraToPlaylist';
 					if (pos) {
 						data = {
-							pl_id: this.props.idPlaylistTo,
+							plaid: this.props.idPlaylistTo,
 							requestedby: this.context.globalState.auth.data.username,
 							kids: [this.props.kara.kid],
 							pos: pos
 						};
 					} else {
 						data = {
-							pl_id: this.props.idPlaylistTo,
+							plaid: this.props.idPlaylistTo,
 							requestedby: this.context.globalState.auth.data.username,
 							kids: [this.props.kara.kid]
 						};

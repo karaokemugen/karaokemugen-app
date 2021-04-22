@@ -371,7 +371,7 @@ export default function karaController(router: SocketIOApp) {
  * @apiSuccess {String} args/kara Karaoke title added
  * @apiSuccess {uuid} args/kid Karaoke ID added.
  * @apiSuccess {String} args/playlist Name of playlist the song was added to
- * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
+ * @apiSuccess {Number} args/plaid Playlist ID the song was added to
  * @apiSuccess {String} code Message to display
  *
  * @apiSuccessExample Success-Response:
@@ -381,7 +381,7 @@ export default function karaController(router: SocketIOApp) {
  *       "kara": "Dragon Screamer",
  *       "kid": "kid",
  *       "playlist": "Courante",
- *       "playlist_id": 1
+ *       "plaid": 1
  * 		 "plc": <See Playlist Contents in this doc>
  *   },
  *   "code": "PL_SONG_ADDED",
@@ -389,7 +389,7 @@ export default function karaController(router: SocketIOApp) {
  *       "kara": "Dragon Screamer",
  *       "kid": "kid",
  *       "playlist": "Courante",
- *       "playlist_id": 1,
+ *       "plaid": 1,
  * 		 "plc": <See Playlist Contents in this doc>
  *   }
  * }
@@ -567,7 +567,7 @@ export default function karaController(router: SocketIOApp) {
 	 * @apiGroup Karas
 	 * @apiPermission admin
 	 * @apiHeader authorization Auth token received from logging in
-	 * @apiParam {number} playlist_id Playlist ID to fetch songs from
+	 * @apiParam {number} plaid Playlist ID to fetch songs from
 	 * @apiParam {string} action `add` or `remove`
 	 * @apiParam {string} tid Tag to add or remove
 	 * @apiParam {number} type Tag type in kara to change
@@ -579,7 +579,7 @@ export default function karaController(router: SocketIOApp) {
 	 */
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			batchEditKaras(req.body.playlist_id, req.body.action, req.body.tid, req.body.type);
+			batchEditKaras(req.body.plaid, req.body.action, req.body.tid, req.body.type);
 			return;
 		} catch {
 			throw {code: 500};

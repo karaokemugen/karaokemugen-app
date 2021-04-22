@@ -9,7 +9,7 @@ import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
 interface PlaylistElem {
-	playlist_id: number;
+	plaid: number;
 	name: string;
 	karacount?: number;
 	flag_current?: boolean;
@@ -21,7 +21,7 @@ interface KaraBatchEditState {
 	tags: any,
 	tid?: string,
 	playlists: PlaylistElem[],
-	playlist_id?: number,
+	plaid?: number,
 	action?: 'add' | 'remove',
 	type?: number
 	i18nTag: { [key: string]: { [key: string]: string } };
@@ -30,7 +30,7 @@ interface KaraBatchEditState {
 class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -69,15 +69,15 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	}
 
-	changePlaylist = async (pl_id: number) => {
-		const karas = await commandBackend('getPlaylistContents', {pl_id});
-		this.setState({ playlist_id: pl_id, karas: karas.content, i18nTag: karas.i18n });
+	changePlaylist = async (plaid: number) => {
+		const karas = await commandBackend('getPlaylistContents', {plaid});
+		this.setState({ plaid: plaid, karas: karas.content, i18nTag: karas.i18n });
 	}
 
 	batchEdit = () => {
-		if (this.state.playlist_id && this.state.action && this.state.tid) {
+		if (this.state.plaid && this.state.action && this.state.tid) {
 			commandBackend('editKaras', {
-				playlist_id: this.state.playlist_id,
+				plaid: this.state.plaid,
 				action: this.state.action,
 				tid: this.state.tid,
 				type: this.state.type
@@ -102,7 +102,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 							<Select style={{ maxWidth: '20%', minWidth: '150px' }} onChange={this.changePlaylist}
 								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}>
 								{this.state.playlists.map(playlist => {
-									return <Select.Option key={playlist.playlist_id} value={playlist.playlist_id}>{playlist.name}</Select.Option>;
+									return <Select.Option key={playlist.plaid} value={playlist.plaid}>{playlist.name}</Select.Option>;
 								})
 								}
 							</Select>

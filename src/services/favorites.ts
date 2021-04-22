@@ -210,25 +210,25 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		const favs = await getAllFavorites(params.users);
 		if (favs.length === 0) throw {code: 404, msg: 'AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS'};
 		const autoMixPLName = `AutoMix ${date()}`;
-		const playlist_id = await createPlaylist(autoMixPLName, {
+		const plaid = await createPlaylist(autoMixPLName, {
 			visible: true
 		}, username);
 		// Copy karas from everyone listed
 		for (const user of params.users) {
 			const userFaves = favs.filter(f => f.username === user);
 			if (userFaves.length > 0) {
-				await addKaraToPlaylist(userFaves.map(f => f.kid), user, playlist_id, null, true);
+				await addKaraToPlaylist(userFaves.map(f => f.kid), user, plaid, null, true);
 			}
 		}
 		// Shuffle time. First we shuffle with balanced to make sure everyone gets to have some songs in.
-		await shufflePlaylist(playlist_id, 'balance');
+		await shufflePlaylist(plaid, 'balance');
 		// Cut playlist after duration
-		await trimPlaylist(playlist_id, params.duration);
+		await trimPlaylist(plaid, params.duration);
 		// Let's reshuffle normally now that the playlist is trimmed.
-		await shufflePlaylist(playlist_id, 'normal');
+		await shufflePlaylist(plaid, 'normal');
 		emitWS('playlistsUpdated');
 		return {
-			plaid: playlist_id,
+			plaid: plaid,
 			playlist_name: autoMixPLName
 		};
 	} catch(err) {

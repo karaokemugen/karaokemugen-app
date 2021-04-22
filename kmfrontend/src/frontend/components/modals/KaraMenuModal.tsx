@@ -53,7 +53,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 			if (this.props.idPlaylist && this.props.idPlaylist > 0) {
 				url = 'getPLC';
 				data = {
-					pl_id: this.props.idPlaylist,
+					plaid: this.props.idPlaylist,
 					plc_id: this.props.kara.plcid
 				};
 			} else {

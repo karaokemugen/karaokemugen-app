@@ -150,7 +150,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 	}
 }
 
-export async function batchEditKaras(playlist_id: number, action: 'add' | 'remove', tid: string, type: number) {
+export async function batchEditKaras(plaid: number, action: 'add' | 'remove', tid: string, type: number) {
 	// Checks
 	const task = new Task({
 		text: 'EDITING_KARAS_BATCH_TAGS',
@@ -159,7 +159,7 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 		type = +type;
 		const tagType = getTagTypeName(type);
 		if (!tagType) throw 'Type unknown';
-		const pl = await getPlaylistKaraIDs(playlist_id);
+		const pl = await getPlaylistKaraIDs(plaid);
 		if (pl.length === 0) throw 'Playlist unknown or empty';
 		task.update({
 			value: 0,
@@ -168,7 +168,7 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 		if (action !== 'add' && action !== 'remove') throw 'Unkown action';
 		const tag = await getTag(tid);
 		if (!tag) throw 'Unknown tag';
-		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${playlist_id}`, {service: 'Kara'});
+		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${plaid}`, {service: 'Kara'});
 		for (const plc of pl) {
 			const kara = await getKara(plc.kid, {username: 'admin', role: 'admin'});
 			if (!kara) {

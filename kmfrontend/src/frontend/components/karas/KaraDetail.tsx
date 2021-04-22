@@ -105,7 +105,7 @@ class KaraDetail extends Component<IProps, IState> {
 			let data;
 			if (this.props.idPlaylist && this.props.idPlaylist > 0) {
 				url = 'getPLC';
-				data = { pl_id: this.props.idPlaylist, plc_id: this.props.playlistcontentId };
+				data = { plaid: this.props.idPlaylist, plc_id: this.props.playlistcontentId };
 			} else {
 				url = 'getKara';
 				data = { kid: (kid ? kid : this.props.kid) };

@@ -38,7 +38,7 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 				set_id: this.state.idPlaylistChosen,
 				flag_current: this.props.idPlaylist === -4 ? true : this.props.playlistInfo?.flag_current,
 				flag_public: this.props.playlistInfo?.flag_public,
-				pl_id: this.state.idPlaylistChosen
+				plaid: this.state.idPlaylistChosen
 			});
 			await setSettings(this.props.context.globalDispatch);
 		} if (this.props.idPlaylist === -4) {
@@ -53,7 +53,7 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 					-1 :
 					this.props.context.globalState.settings.data.state.publicPlaylistID));
 			commandBackend('deletePlaylist', {
-				pl_id: this.props.idPlaylist
+				plaid: this.props.idPlaylist
 			});
 		}
 		this.closeModal();

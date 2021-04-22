@@ -17,7 +17,7 @@ class ShuffleModal extends Component<IProps, unknown> {
 
 	shuffle = async (method: string) => {
 		this.props.playlistWillUpdate();
-		await commandBackend('shufflePlaylist', { pl_id: this.props.idPlaylist, method: method });
+		await commandBackend('shufflePlaylist', { plaid: this.props.idPlaylist, method: method });
 		this.props.playlistDidUpdate();
 		this.closeModal();
 	};

@@ -161,7 +161,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	blacklistCheck(kara) {
 		// avoid lots of kara check operation on re-render
 		if (blacklistCache[kara.kid] !== undefined) return blacklistCache[kara.kid];
-		
+
 		blacklistCache[kara.kid] = true;
 		if (this.state.blacklistCriterias.length) {
 			this.state.blacklistCriterias.map(criteria => {
@@ -330,7 +330,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						})
 					});
 				}
-				commandBackend('deletePlaylist', {pl_id: response.message.data.playlist_id});
+				commandBackend('deletePlaylist', {plaid: response.message.data.plaid});
 			};
 			fr.readAsText(file);
 		}

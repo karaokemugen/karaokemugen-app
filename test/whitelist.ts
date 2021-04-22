@@ -24,7 +24,7 @@ describe('Whitelist', () => {
 	});
 
 	it('Get list of karaokes in a playlist and see if flag_whitelisted is true', async () => {
-		const data = await commandBackend(token, 'getPlaylistContents', {pl_id: 1});
+		const data = await commandBackend(token, 'getPlaylistContents', {plaid: 1});
 		expect(data.content.length).to.be.at.least(1);
 		const plc = data.content.find(plc => plc.kid === kid);
 		expect(plc.flag_whitelisted).to.be.true;

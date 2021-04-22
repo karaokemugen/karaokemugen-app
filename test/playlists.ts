@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import sample from 'lodash.sample';
 
+import { DBPL } from '../src/lib/types/database/playlist';
 import { uuidRegexp } from '../src/lib/utils/constants';
-import { DBPL, DBPLC } from '../src/types/database/playlist';
+import { DBPLC } from '../src/types/database/playlist';
 import { PlaylistExport } from '../src/types/playlist';
 import { allKIDs, commandBackend, getToken, testKara } from './util/util';
 
@@ -24,7 +25,7 @@ describe('Playlists', () => {
 		await commandBackend(token, 'addKaraToPlaylist', {
 			kids: allKIDs,
 			requestedby: 'Test',
-			pl_id: playlistID
+			plaid: playlistID
 		});
 	});
 
@@ -33,7 +34,7 @@ describe('Playlists', () => {
 			await commandBackend(token, 'addKaraToPlaylist', {
 				kids: [KIDToAdd],
 				requestedby: 'Test',
-				pl_id: playlistID
+				plaid: playlistID
 			});
 		} catch (err) {
 			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
@@ -45,7 +46,7 @@ describe('Playlists', () => {
 			await commandBackend(token, 'addKaraToPlaylist', {
 				kids: ['c28c8739-da02-49b4-889e-b15d1e9b2132'],
 				requestedby: 'Test',
-				pl_id: playlistID
+				plaid: playlistID
 			}, true);
 		} catch (err) {
 			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
@@ -58,7 +59,7 @@ describe('Playlists', () => {
 			await commandBackend(token, 'addKaraToPlaylist', {
 				kids: [KIDToAdd],
 				requestedby: 'Test',
-				pl_id: 10000
+				plaid: 10000
 			}, true);
 		} catch (err) {
 			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
@@ -67,7 +68,7 @@ describe('Playlists', () => {
 	});
 
 	it('Get list of karaokes in a playlist', async () => {
-		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: playlistID });
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: playlistID });
 		expect(data.content.length).to.be.at.least(1);
 		for (const plc of data.content) {
 			testKara(plc, { tagDetails: 'short', plc: true });
@@ -77,7 +78,7 @@ describe('Playlists', () => {
 
 	it('Get specific karaoke in a playlist', async () => {
 		const data = await commandBackend(token, 'getPLC', {
-			pl_id: playlistID,
+			plaid: playlistID,
 			plc_id: 1
 		});
 		testKara(data, { tagDetails: 'full', plcDetail: true, plc: true });
@@ -91,11 +92,11 @@ describe('Playlists', () => {
 			flag_current: false,
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist);
-		newPlaylistID = +data.playlist_id;
+		newPlaylistID = +data.plaid;
 	});
 
 	it('Test findPlaying without any playing song set', async () => {
-		const data = await commandBackend(token, 'findPlayingSongInPlaylist', { pl_id: newPlaylistID });
+		const data = await commandBackend(token, 'findPlayingSongInPlaylist', { plaid: newPlaylistID });
 		expect(data.index).to.be.equal(-1);
 	});
 
@@ -107,7 +108,7 @@ describe('Playlists', () => {
 			flag_current: true
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
-		newCurrentPlaylistID = +data.playlist_id;
+		newCurrentPlaylistID = +data.plaid;
 	});
 
 	it('Create a PUBLIC playlist', async () => {
@@ -118,7 +119,7 @@ describe('Playlists', () => {
 			flag_current: false
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_public);
-		newPublicPlaylistID = +data.playlist_id;
+		newPublicPlaylistID = +data.plaid;
 	});
 
 	it('Create a CURRENT+PUBLIC playlist', async () => {
@@ -129,14 +130,14 @@ describe('Playlists', () => {
 			flag_current: true
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
-		newCurrentPlaylistID = +data.playlist_id;
-		newPublicPlaylistID = +data.playlist_id;
+		newCurrentPlaylistID = +data.plaid;
+		newPublicPlaylistID = +data.plaid;
 	});
 
 	it('Copy karaokes to another playlist', async () => {
 		await commandBackend(token, 'copyKaraToPlaylist', {
 			plc_ids: [PLCID],
-			pl_id: newPlaylistID
+			plaid: newPlaylistID
 		});
 	});
 
@@ -147,35 +148,35 @@ describe('Playlists', () => {
 	});
 
 	it('Delete a CURRENT playlist (should fail)', async () => {
-		const data = await commandBackend(token, 'deletePlaylist', { pl_id: newCurrentPlaylistID }, true);
+		const data = await commandBackend(token, 'deletePlaylist', { plaid: newCurrentPlaylistID }, true);
 		expect(data.message.code).to.be.equal('PL_DELETE_ERROR');
 	});
 
 	it('Delete a PUBLIC playlist (should fail)', async () => {
-		const data = await commandBackend(token, 'deletePlaylist', { pl_id: newPublicPlaylistID }, true);
+		const data = await commandBackend(token, 'deletePlaylist', { plaid: newPublicPlaylistID }, true);
 		expect(data.message.code).to.be.equal('PL_DELETE_ERROR');
 	});
 
 	it('Delete karaokes from playlist', async () => {
 		const data = {
-			plc_ids: [PLCID]			
+			plc_ids: [PLCID]
 		};
 		await commandBackend(token, 'deleteKaraFromPlaylist', data);
 	});
 
 	it('Shuffle playlist 1', async () => {
 		// First get playlist as is
-		let data = await commandBackend(token, 'getPlaylistContents', { pl_id: 1 });
+		let data = await commandBackend(token, 'getPlaylistContents', { plaid: 1 });
 		const playlist: DBPLC[] = data.content;
-		await commandBackend(token, 'shufflePlaylist', { pl_id: 1, method: 'normal' });
+		await commandBackend(token, 'shufflePlaylist', { plaid: 1, method: 'normal' });
 		// Re-getting playlist to see if order changed
-		data = await commandBackend(token, 'getPlaylistContents', { pl_id: 1 });
+		data = await commandBackend(token, 'getPlaylistContents', { plaid: 1 });
 		const shuffledPlaylist = data.content;
 		expect(JSON.stringify(shuffledPlaylist)).to.not.be.equal(JSON.stringify(playlist));
 	});
 
 	it('Export a playlist', async () => {
-		const data = await commandBackend(token, 'exportPlaylist', { pl_id: 1 });
+		const data = await commandBackend(token, 'exportPlaylist', { plaid: 1 });
 		expect(data.Header.description).to.be.equal('Karaoke Mugen Playlist File');
 		expect(data.PlaylistContents.length).to.be.at.least(1);
 		for (const plc of data.PlaylistContents) {
@@ -214,7 +215,7 @@ describe('Playlists', () => {
 		const data = {
 			name: 'new_playlist',
 			flag_visible: true,
-			pl_id: playlistID
+			plaid: playlistID
 		};
 		await commandBackend(token, 'editPlaylist', data);
 	});
@@ -224,7 +225,7 @@ describe('Playlists', () => {
 		expect(data.length).to.be.at.least(2);
 		const playlist = data.find((pl: DBPL) => pl.flag_current === true);
 		const playlists: DBPL[] = data;
-		currentPlaylistID = playlist.playlist_id;
+		currentPlaylistID = playlist.plaid;
 		for (const pl of playlists) {
 			expect(pl.created_at).to.be.a('string');
 			expect(pl.modified_at).to.be.a('string');
@@ -234,7 +235,7 @@ describe('Playlists', () => {
 			expect(pl.flag_public).to.be.a('boolean');
 			expect(pl.karacount).to.be.a('number').and.at.least(0);
 			expect(pl.name).to.be.a('string');
-			expect(pl.playlist_id).to.be.a('number').and.at.least(0);
+			expect(pl.plaid).to.be.a('number').and.at.least(0);
 			expect(pl.plcontent_id_playing).to.be.a('number').and.at.least(0);
 			expect(pl.time_left).to.be.a('number').and.at.least(0);
 			expect(pl.username).to.be.a('string');
@@ -242,14 +243,14 @@ describe('Playlists', () => {
 	});
 
 	it('Get current playlist information', async () => {
-		const data = await commandBackend(token, 'getPlaylist', { pl_id: currentPlaylistID });
+		const data = await commandBackend(token, 'getPlaylist', { plaid: currentPlaylistID });
 		expect(data.flag_current).to.be.true;
 	});
 
 	let currentPLCID: number;
 
 	it('List contents from public playlist', async () => {
-		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPublicPlaylistID });
 		// We get the PLC_ID of our last karaoke, the one we just added
 		currentPLCID = data.content[data.content.length - 1].plcid;
 		expect(data.content.length).to.be.at.least(1);
@@ -265,7 +266,7 @@ describe('Playlists', () => {
 	});
 
 	it('Test findPlaying after a playing flag is set', async () => {
-		const data = await commandBackend(token, 'findPlayingSongInPlaylist', { pl_id: newPublicPlaylistID });
+		const data = await commandBackend(token, 'findPlayingSongInPlaylist', { plaid: newPublicPlaylistID });
 		expect(data.index).to.be.at.least(0);
 	});
 
@@ -277,20 +278,20 @@ describe('Playlists', () => {
 	});
 
 	it('List contents from public playlist AFTER position change', async () => {
-		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPublicPlaylistID });
 		// Our PLCID should be in first position now
 		expect(data.content[0].plcid).to.be.equal(currentPLCID);
 		expect(data.content[0].flag_playing).to.be.true;
 	});
 
 	it('Get playlist information AFTER new flag_playing', async () => {
-		const data = await commandBackend(token, 'getPlaylist', { pl_id: newPublicPlaylistID });
+		const data = await commandBackend(token, 'getPlaylist', { plaid: newPublicPlaylistID });
 		expect(data.plcontent_id_playing).to.be.equal(currentPLCID);
 	});
 
 	it('Set playlist to current', async () => {
 		const data = {
-			pl_id: playlistID,
+			plaid: playlistID,
 			flag_current: true
 		};
 		try {
@@ -304,7 +305,7 @@ describe('Playlists', () => {
 	it('Set playlist to public', async () => {
 		try {
 			const data = {
-				pl_id: newPublicPlaylistID,
+				plaid: newPublicPlaylistID,
 				flag_public: true
 			};
 			await commandBackend(token, 'editPlaylist', data);
@@ -319,10 +320,10 @@ describe('Playlists', () => {
 		expect(data.length).to.be.at.least(2);
 		const playlist = data.find((pl: DBPL) => pl.flag_current === true);
 		const playlists: DBPL[] = data;
-		currentPlaylistID = playlist.playlist_id;
+		currentPlaylistID = playlist.plaid;
 		for (const pl of playlists) {
-			if (pl.playlist_id === playlistID) expect(pl.flag_current).to.be.true;
-			if (pl.playlist_id === newPublicPlaylistID) expect(pl.flag_public).to.be.true;
+			if (pl.plaid === playlistID) expect(pl.flag_current).to.be.true;
+			if (pl.plaid === newPublicPlaylistID) expect(pl.flag_public).to.be.true;
 		}
 	});
 
@@ -338,7 +339,7 @@ describe('Playlists', () => {
 
 	it('List contents from public playlist AFTER upvote', async () => {
 		const token = await getToken('adminTest2');
-		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPublicPlaylistID });
 		// Our PLCID should be in first position now
 		const plc: DBPLC = data.content.find(plc => plc.plcid === currentPLCID);
 		expect(plc.upvotes).to.be.at.least(1);
@@ -352,7 +353,7 @@ describe('Playlists', () => {
 
 	it('List contents from public playlist AFTER downvote', async () => {
 		const token = await getToken('adminTest2');
-		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPublicPlaylistID });
 		// Our PLCID should be in first position now
 		const plc: DBPLC = data.content.find(plc => plc.plcid === currentPLCID);
 		expect(plc.upvotes).to.be.at.below(1);
@@ -360,21 +361,21 @@ describe('Playlists', () => {
 	});
 
 	it('Empty playlist', async () => {
-		await commandBackend(token, 'emptyPlaylist', { pl_id: newPublicPlaylistID });
+		await commandBackend(token, 'emptyPlaylist', { plaid: newPublicPlaylistID });
 	});
 
 	it('List contents from public playlist AFTER empty', async () => {
-		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPublicPlaylistID });
 		expect(data.content).to.have.lengthOf(0);
 	});
 
 	it('Delete a playlist', async () => {
-		await commandBackend(token, 'deletePlaylist', { pl_id: newPlaylistID });
+		await commandBackend(token, 'deletePlaylist', { plaid: newPlaylistID });
 	});
 
 	it(`Get list of playlists AFTER deleting playlist ${newPlaylistID}`, async () => {
 		const data = await commandBackend(token, 'getPlaylists');
-		const plIDs = data.map(pl => pl.playlist_id);
+		const plIDs = data.map(pl => pl.plaid);
 		expect(plIDs).to.not.include(newPlaylistID);
 	});
 });

@@ -527,21 +527,21 @@ async function cleanupAvatars() {
 }
 
 /** Update song quotas for a user */
-export async function updateSongsLeft(username: string, playlist_id?: number) {
+export async function updateSongsLeft(username: string, plaid?: number) {
 	const conf = getConfig();
 	username = username.toLowerCase();
 	const user = await findUserByName(username);
 	let quotaLeft: number;
-	if (!playlist_id) playlist_id = getState().publicPlaylistID;
+	if (!plaid) plaid = getState().publicPlaylistID;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
 		case 2:
-			const time = await getSongTimeSpentForUser(playlist_id,username);
+			const time = await getSongTimeSpentForUser(plaid,username);
 			quotaLeft = +conf.Karaoke.Quota.Time - time;
 			break;
 		default:
 		case 1:
-			const count = await getSongCountForUser(playlist_id, username);
+			const count = await getSongCountForUser(plaid, username);
 			quotaLeft = +conf.Karaoke.Quota.Songs - count;
 			break;
 		}

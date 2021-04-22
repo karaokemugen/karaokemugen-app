@@ -59,7 +59,7 @@ class PlaylistModal extends Component<IProps, IState> {
 			flag_visible: this.state.flag_visible,
 			flag_current: this.state.flag_current,
 			flag_public: this.state.flag_public,
-			pl_id: this.props.idPlaylist
+			plaid: this.props.idPlaylist
 		});
 		setSettings(this.context.globalDispatch);
 		this.closeModal();

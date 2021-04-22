@@ -380,7 +380,7 @@ class Playlist extends Component<IProps, IState> {
 
 	getPlaylistInfo = async () => {
 		try {
-			const response = await commandBackend('getPlaylist', { pl_id: this.state.idPlaylist });
+			const response = await commandBackend('getPlaylist', { plaid: this.state.idPlaylist });
 			this.setState({ playlistInfo: response });
 		} catch (e) {
 			// already display
@@ -443,7 +443,7 @@ class Playlist extends Component<IProps, IState> {
 		const param: any = {};
 		if (this.state.idPlaylist >= 0) {
 			this.getPlaylistInfo();
-			param.pl_id = this.state.idPlaylist;
+			param.plaid = this.state.idPlaylist;
 			if (orderByLikes || (orderByLikes === undefined && this.state.orderByLikes)) {
 				param.orderByLikes = true;
 			}
@@ -467,7 +467,7 @@ class Playlist extends Component<IProps, IState> {
 		try {
 			const karas: KaraList = await commandBackend(url, param);
 			if (this.state.goToPlaying && this.state.idPlaylist > 0) {
-				const result = await commandBackend('findPlayingSongInPlaylist', { pl_id: this.state.idPlaylist });
+				const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.state.idPlaylist });
 				if (result?.index !== -1) {
 					this.setState({ scrollToIndex: result.index, _goToPlaying: true });
 				}
@@ -544,7 +544,7 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.playing) {
 			this.setState({ scrollToIndex: this.state.playing, goToPlaying: true, _goToPlaying: true });
 		} else {
-			const result = await commandBackend('findPlayingSongInPlaylist', { pl_id: this.state.idPlaylist });
+			const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.state.idPlaylist });
 			if (result?.index !== -1) {
 				this.setState({ scrollToIndex: result.index, goToPlaying: true, _goToPlaying: true });
 			}
@@ -613,7 +613,7 @@ class Playlist extends Component<IProps, IState> {
 		callModal(this.context.globalDispatch, 'prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', async (nbOfRandoms: number) => {
 			const randomKaras = await commandBackend(this.getPlaylistUrl(), {
 				filter: this.getFilterValue(this.props.side),
-				pl_id: this.state.idPlaylist,
+				plaid: this.state.idPlaylist,
 				random: nbOfRandoms,
 				...this.getSearchTagForAddAll()
 			});
@@ -625,7 +625,7 @@ class Playlist extends Component<IProps, IState> {
 					});
 					commandBackend('addKaraToPlaylist', {
 						kids: karaList,
-						pl_id: this.props.idPlaylistTo
+						plaid: this.props.idPlaylistTo
 					}).catch(() => {});
 				}, '');
 			}
@@ -643,7 +643,7 @@ class Playlist extends Component<IProps, IState> {
 		commandBackend('addKaraToPlaylist', {
 			kids: karaList,
 			requestedby: this.context.globalState.auth.data.username,
-			pl_id: this.props.idPlaylistTo
+			plaid: this.props.idPlaylistTo
 		}).catch(() => {});
 	};
 
@@ -663,21 +663,21 @@ class Playlist extends Component<IProps, IState> {
 			if (this.state.idPlaylist > 0 && !pos) {
 				url = 'copyKaraToPlaylist';
 				data = {
-					pl_id: this.props.idPlaylistTo,
+					plaid: this.props.idPlaylistTo,
 					plc_ids: idsKaraPlaylist
 				};
 			} else {
 				url = 'addKaraToPlaylist';
 				if (pos) {
 					data = {
-						pl_id: this.props.idPlaylistTo,
+						plaid: this.props.idPlaylistTo,
 						requestedby: this.context.globalState.auth.data.username,
 						kids: idsKara,
 						pos: pos
 					};
 				} else {
 					data = {
-						pl_id: this.props.idPlaylistTo,
+						plaid: this.props.idPlaylistTo,
 						requestedby: this.context.globalState.auth.data.username,
 						kids: idsKara
 					};

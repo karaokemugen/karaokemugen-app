@@ -165,7 +165,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			url = 'exportFavorites';
 		} else if (this.props.idPlaylist > 0) {
 			url = 'exportPlaylist';
-			data = {pl_id: this.props.idPlaylist};
+			data = {plaid: this.props.idPlaylist};
 		}
 		if (url) {
 			const response = await commandBackend(url, data);
@@ -268,7 +268,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			} else if (this.props.idPlaylist === -3) {
 				commandBackend('emptyWhitelist');
 			} else {
-				commandBackend('emptyPlaylist', {pl_id: this.props.idPlaylist});
+				commandBackend('emptyPlaylist', {plaid: this.props.idPlaylist});
 			}
 		});
 	};

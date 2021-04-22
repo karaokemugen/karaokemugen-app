@@ -116,17 +116,17 @@ export async function getPollResults(): Promise<PollResults> {
 	const winners = poll.filter(c => +c.votes === +maxVotes);
 	const winner = sample(winners);
 	const state = getState();
-	const playlist_id = getState().currentPlaylistID;
+	const plaid = getState().currentPlaylistID;
 	if (state.publicPlaylistID !== state.currentPlaylistID) {
-		await copyKaraToPlaylist([winner.plcid], playlist_id);
+		await copyKaraToPlaylist([winner.plcid], plaid);
 	} else {
 		await editPLC([winner.plcid], {
 			pos: -1
 		});
 	}
 
-	emitWS('playlistInfoUpdated', playlist_id);
-	emitWS('playlistContentsUpdated', playlist_id);
+	emitWS('playlistInfoUpdated', plaid);
+	emitWS('playlistContentsUpdated', plaid);
 
 	const version = getSongVersion(winner);
 	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}${version}`;
