@@ -300,6 +300,14 @@ class ProfilModal extends Component<IProps, IState> {
 									placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="email" />
 							</div>
+							{logInfos?.onlineToken && !this.state.user.email ?
+								<div className="profileLine">
+									<div className="profileLabel warning">
+										<i className="fas fa-fw fa-exclamation-circle" />
+										<div>{i18next.t('MODAL.PROFILE_MODAL.MISSING_EMAIL')}</div>
+									</div>
+								</div> : null
+							}
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-link" />
