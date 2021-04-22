@@ -69,8 +69,8 @@ class ProfilModal extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			user: null,
-			passwordDifferent: 'form-control',
-			nicknameMandatory: 'form-control',
+			passwordDifferent: '',
+			nicknameMandatory: '',
 			cropAvatarModalOpen: false,
 			dangerousActions: false
 		};
@@ -107,7 +107,7 @@ class ProfilModal extends Component<IProps, IState> {
 		if (this.state.user.nickname && ((this.state.user.password
 			&& this.state.user.password === this.state.user.passwordConfirmation)
 			|| !this.state.user.password)) {
-			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
+			this.setState({ passwordDifferent: '', nicknameMandatory: '' });
 			try {
 				const response = await commandBackend('editMyAccount', this.state.user);
 
@@ -118,9 +118,9 @@ class ProfilModal extends Component<IProps, IState> {
 				// already display
 			}
 		} else if (!this.state.user.nickname) {
-			this.setState({ nicknameMandatory: 'form-control redBorders' });
+			this.setState({ nicknameMandatory: 'redBorders' });
 		} else {
-			this.setState({ passwordDifferent: 'form-control redBorders' });
+			this.setState({ passwordDifferent: 'redBorders' });
 		}
 	}
 
@@ -296,7 +296,7 @@ class ProfilModal extends Component<IProps, IState> {
 									<i className="fas fa-fw fa-envelope" />
 									<label htmlFor="nickname">{i18next.t('PROFILE_MAIL')}</label>
 								</div>
-								<input className="form-control" name="email" type="text"
+								<input name="email" type="text"
 									placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="email" />
 							</div>
@@ -305,7 +305,7 @@ class ProfilModal extends Component<IProps, IState> {
 									<i className="fas fa-fw fa-link" />
 									<label htmlFor="nickname">{i18next.t('PROFILE_URL')}</label>
 								</div>
-								<input className="form-control" name="url" type="text"
+								<input name="url" type="text"
 									placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="url" />
 							</div>
@@ -314,7 +314,7 @@ class ProfilModal extends Component<IProps, IState> {
 									<i className="fas fa-fw fa-pen" />
 									<label htmlFor="nickname">{i18next.t('PROFILE_BIO')}</label>
 								</div>
-								<input className="form-control" name="bio" type="text"
+								<input name="bio" type="text"
 									placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
 							</div>

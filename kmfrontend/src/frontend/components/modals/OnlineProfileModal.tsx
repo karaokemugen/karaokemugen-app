@@ -79,7 +79,7 @@ class OnlineProfileModal extends Component<IProps, IState> {
 									</React.Fragment> : null
 								}
 								<label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
-								<input type="password" placeholder={i18next.t('PASSWORD')} className="form-control"
+								<input type="password" placeholder={i18next.t('PASSWORD')}
 									   onChange={e => this.setState({ password: e.target.value })} />
 							</div>
 							<button className="btn btn-default confirm" onClick={this.onClick}>

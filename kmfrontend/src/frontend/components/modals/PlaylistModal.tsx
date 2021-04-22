@@ -107,7 +107,7 @@ class PlaylistModal extends Component<IProps, IState> {
 						<div className="modal-body flex-direction-btns">
 							<div>{i18next.t('MODAL.PLAYLIST_MODAL.NAME')}</div>
 							<div className="form">
-								<input type="text" autoFocus className="modal-input form-control" defaultValue={this.state.name}
+								<input type="text" autoFocus className="modal-input" defaultValue={this.state.name}
 									onChange={(event) => this.setState({ name: event.target.value })} />
 							</div>
 							<div>
