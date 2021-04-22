@@ -209,7 +209,7 @@ export async function generateDB(): Promise<boolean> {
 		await generateDatabase(opts);
 		const pls = await getPlaylists(false);
 		for (const pl of pls) {
-			await reorderPlaylist(pl.playlist_id);
+			await reorderPlaylist(pl.plaid);
 		}
 		await generateBlacklist();
 		if (getConfig().Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
