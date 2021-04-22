@@ -100,7 +100,7 @@ export function testKara(kara: any, details: TestDetails) {
 	}
 	expect(kara.played).to.be.a('number').and.at.least(0);
 	if (details.plcDetail) expect(kara.playlist_id).to.be.a('number').and.at.least(0);
-	if (details.plc) expect(kara.playlistcontent_id).to.be.a('number').and.at.least(0);
+	if (details.plc) expect(kara.plcid).to.be.a('number').and.at.least(0);
 	if (details.plc) expect(kara.pos).to.be.a('number').and.at.least(0);
 	expect(kara.requested).to.be.a('number').and.at.least(0);
 	expect(kara.songorder).to.satisfy((s:any) => typeof s === 'number' || s === null);

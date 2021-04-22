@@ -1,59 +1,24 @@
-import { DBKara, DBKaraTag } from '../../lib/types/database/kara';
+import { DBKaraTag } from '../../lib/types/database/kara';
+import { DBPLCBase } from '../../lib/types/database/playlist';
 
 export interface DBPLCKID {
 	kid: string,
 	login: string,
-	playlistcontent_id: number,
+	plcid: number,
 	flag_playing: boolean
 	pos: number,
-	playlist_id: number,
+	plaid: number,
 	series: DBKaraTag[],
 	singer: DBKaraTag[]
 }
 
-export interface DBPLCAfterInsert {
-	plc_id: number,
-	kid: string,
-	pos: number,
-	username: string
-}
-export interface DBPLCBase extends DBKara {
-	nickname: string,
-	flag_playing: boolean,
-	pos: number,
-	flag_free: boolean,
-	flag_accepted: boolean,
-	flag_refused: boolean,
-	flag_visible: boolean,
-	username: string,
-	user_type: number,
-	playlistcontent_id: number,
-	playlist_id: number,
-	count: number
-}
-
 export interface DBPLPos {
 	pos: number,
-	playlistcontent_id: number
+	plcid: number
 }
 
 export interface DBPLKidUser extends DBPLPos {
 	flag_playing: boolean
-}
-
-export interface DBPL {
-	playlist_id?: number,
-	name: string,
-	karacount?: number,
-	duration?: number,
-	time_left?: number,
-	created_at?: Date,
-	modified_at?: Date,
-	flag_visible: boolean,
-	flag_current: boolean,
-	flag_public: boolean,
-	plcontent_id_playing?: number,
-	username: string
 }
 export interface DBPLC extends DBPLCBase {
 	flag_whitelisted: boolean,

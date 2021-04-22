@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { BLCSet } from '../../../../../src/types/blacklist';
-import { DBPL } from '../../../../../src/types/database/playlist';
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';

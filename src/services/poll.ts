@@ -118,9 +118,9 @@ export async function getPollResults(): Promise<PollResults> {
 	const state = getState();
 	const playlist_id = getState().currentPlaylistID;
 	if (state.publicPlaylistID !== state.currentPlaylistID) {
-		await copyKaraToPlaylist([winner.playlistcontent_id], playlist_id);
+		await copyKaraToPlaylist([winner.plcid], playlist_id);
 	} else {
-		await editPLC([winner.playlistcontent_id], {
+		await editPLC([winner.plcid], {
 			pos: -1
 		});
 	}

@@ -183,7 +183,7 @@ class AdminPage extends Component<IProps, IState> {
 	};
 
 	toggleKaraDetail = (kara: KaraElement, idPlaylist: number) => {
-		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.playlistcontent_id} scope='admin'
+		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope='admin'
 			idPlaylist={idPlaylist} />);
 	};
 

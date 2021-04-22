@@ -3,9 +3,10 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
+import { DBPL } from '../lib/types/database/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
-import { DBPL, DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
+import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { PLC, PLCParams} from '../types/playlist';
 import { getState } from '../utils/state';
 import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
@@ -13,7 +14,7 @@ import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPla
 
 export function editPlaylist(pl: DBPL) {
 	return db().query(yesql(sqleditPlaylist)({
-		playlist_id: pl.playlist_id,
+		playlist_id: pl.plaid,
 		name: pl.name,
 		modified_at: pl.modified_at,
 		flag_visible: pl.flag_visible,
@@ -98,7 +99,7 @@ export function replacePlaylist(playlist: PLC[]) {
 	let newpos = 0;
 	const karaList = playlist.map(kara => ([
 		++newpos,
-		kara.playlistcontent_id
+		kara.plcid
 	]));
 	return transaction({sql: sqlupdatePLCSetPos, params: karaList});
 }
@@ -169,7 +170,7 @@ export async function getPLCInfo(id: number, forUser: boolean, username: string)
 	const query = sqlgetPLCInfo(forUser);
 	const res = await db().query(yesql(query)(
 		{
-			playlistcontent_id: id,
+			plcid: id,
 			dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 			username: username,
 			publicPlaylist_id: getState().publicPlaylistID,

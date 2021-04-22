@@ -7,9 +7,9 @@ import React, { Component } from 'react';
 import { SortableContainer } from 'react-sortable-hoc';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
 
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBBlacklist, DBBLC } from '../../../../../src/types/database/blacklist';
-import { DBPL } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import { setCurrentBlSet } from '../../../store/actions/frontendContext';
 import { setSettings } from '../../../store/actions/settings';
@@ -510,7 +510,7 @@ class Playlist extends Component<IProps, IState> {
 				if (kara?.flag_playing) {
 					kara.flag_playing = false;
 					kara.flag_dejavu = true;
-				} else if (kara?.playlistcontent_id === data.plc_id) {
+				} else if (kara?.plcid === data.plc_id) {
 					kara.flag_playing = true;
 					indexPlaying = index;
 					if (this.state.goToPlaying) this.setState({ scrollToIndex: index, _goToPlaying: true });
@@ -577,7 +577,7 @@ class Playlist extends Component<IProps, IState> {
 		let checkedKaras = this.state.checkedKaras;
 		for (const kara of data.content) {
 			if (this.state.idPlaylist >= 0) {
-				if (kara.playlistcontent_id === id) {
+				if (kara.plcid === id) {
 					kara.checked = !kara.checked;
 					if (kara.checked) {
 						checkedKaras++;
@@ -655,7 +655,7 @@ class Playlist extends Component<IProps, IState> {
 			return;
 		}
 		const idsKara = listKara.map(a => a.kid);
-		const idsKaraPlaylist = listKara.map(a => String(a.playlistcontent_id));
+		const idsKaraPlaylist = listKara.map(a => String(a.plcid));
 		let url = '';
 		let data;
 
@@ -732,7 +732,7 @@ class Playlist extends Component<IProps, IState> {
 			return;
 		}
 		if (this.state.idPlaylist > 0) {
-			const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+			const idsKaraPlaylist = listKara.map(a => a.plcid);
 			url = 'deleteKaraFromPlaylist';
 			data = {
 				plc_ids: idsKaraPlaylist
@@ -777,7 +777,7 @@ class Playlist extends Component<IProps, IState> {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+		const idsKaraPlaylist = listKara.map(a => a.plcid);
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_accepted: true
@@ -792,7 +792,7 @@ class Playlist extends Component<IProps, IState> {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		const idsKaraPlaylist = listKara.map(a => a.playlistcontent_id);
+		const idsKaraPlaylist = listKara.map(a => a.plcid);
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_refused: true
@@ -825,8 +825,8 @@ class Playlist extends Component<IProps, IState> {
 	sortRow = ({ oldIndex, newIndex }: { oldIndex: number, newIndex: number }) => {
 		if (oldIndex !== newIndex) {
 			const data = this.state.data as KaraList;
-			// extract playlistcontent_id based on sorter index
-			const playlistcontent_id = data.content[oldIndex].playlistcontent_id;
+			// extract plcid based on sorter index
+			const plcid = data.content[oldIndex].plcid;
 
 			// fix index to match api behaviour
 			let apiIndex = newIndex + 1;
@@ -835,7 +835,7 @@ class Playlist extends Component<IProps, IState> {
 			try {
 				commandBackend('editPLC', {
 					pos: apiIndex,
-					plc_ids: [playlistcontent_id]
+					plc_ids: [plcid]
 				}).finally(() => {
 					this.setState({ stopUpdate: false });
 				});

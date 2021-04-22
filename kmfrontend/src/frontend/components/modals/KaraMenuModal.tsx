@@ -54,7 +54,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 				url = 'getPLC';
 				data = {
 					pl_id: this.props.idPlaylist,
-					plc_id: this.props.kara.playlistcontent_id
+					plc_id: this.props.kara.plcid
 				};
 			} else {
 				url = 'getKara';
@@ -78,7 +78,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 	freeKara = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: [this.state.kara?.playlistcontent_id],
+				plc_ids: [this.state.kara?.plcid],
 				flag_free: true
 			});
 			this.setState({ effect_free: true });
@@ -92,7 +92,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 	changeVisibilityKara = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: [this.state.kara?.playlistcontent_id],
+				plc_ids: [this.state.kara?.plcid],
 				flag_visible: !this.state.kara?.flag_visible
 			});
 			this.setState({ effect_visibility: true });
@@ -172,7 +172,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 								try {
 									commandBackend('editPLC', {
 										pos: -1,
-										plc_ids: [this.props.kara.playlistcontent_id]
+										plc_ids: [this.props.kara.plcid]
 									});
 									this.props.closeKaraMenu();
 								} catch (e) {

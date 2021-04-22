@@ -1,8 +1,8 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { BLCSet } from '../../../../../src/types/blacklist';
-import { DBPL } from '../../../../../src/types/database/playlist';
 import nanamiShockedPng from '../../../assets/nanami-shocked.png';
 import nanamiShockedWebP from '../../../assets/nanami-shocked.webp';
 import { closeModal } from '../../../store/actions/modal';

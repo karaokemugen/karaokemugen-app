@@ -43,7 +43,7 @@ export async function next() {
 	try {
 		const song = await nextSong();
 		if (song) {
-			await setPlaying(song.playlistcontent_id, getState().currentPlaylistID);
+			await setPlaying(song.plcid, getState().currentPlaylistID);
 			if (conf.Karaoke.ClassicMode) {
 				stopPlayer(true);
 				if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
@@ -87,7 +87,7 @@ export async function next() {
 						on('songPollResult', () => {
 							// We're not at the end of playlist anymore!
 							nextSong()
-								.then(kara => setPlaying(kara.playlistcontent_id, getState().currentPlaylistID))
+								.then(kara => setPlaying(kara.plcid, getState().currentPlaylistID))
 								.catch(() => {});
 						});
 					} catch(err) {

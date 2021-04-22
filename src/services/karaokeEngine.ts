@@ -50,8 +50,8 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			username: 'admin',
 			user_type: 0,
 			repo: kara.repository,
-			playlistcontent_id: -1,
-			playlist_id: -1,
+			plcid: -1,
+			plaid: -1,
 			avatar: null,
 			infos
 		});
@@ -115,11 +115,11 @@ export async function playCurrentSong(now: boolean) {
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
 			await Promise.all([
-				setPLCVisible(kara.playlistcontent_id),
-				updatePlaylistDuration(kara.playlist_id),
+				setPLCVisible(kara.plcid),
+				updatePlaylistDuration(kara.plaid),
 				updateUserQuotas(kara)
 			]);
-			emitWS('playlistInfoUpdated', kara.playlist_id);
+			emitWS('playlistInfoUpdated', kara.plaid);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
 			logger.error('Error during song playback', {service: 'Player', obj: err});
@@ -245,7 +245,7 @@ export async function playerEnding() {
 		}
 		// Testing for position before last to play an encore
 		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
-		logger.debug(`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl?.playlist_id}`, {service: 'Player'});
+		logger.debug(`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl?.plaid}`, {service: 'Player'});
 		if (conf.Playlist.Medias.Encores.Enabled && state.player.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed && !getState().singlePlay) {
 			try {
 				await mpv.playMedia('Encores');

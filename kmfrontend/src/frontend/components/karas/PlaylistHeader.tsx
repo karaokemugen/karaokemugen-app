@@ -4,9 +4,10 @@ import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
 import React, { Component, MouseEvent as MouseEventReact } from 'react';
 
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { User } from '../../../../../src/lib/types/user';
 import { BLCSet } from '../../../../../src/types/blacklist';
-import { DBPL, DBPLC } from '../../../../../src/types/database/playlist';
+import { DBPLC } from '../../../../../src/types/database/playlist';
 import nanamiShockedPng from '../../../assets/nanami-shocked.png';
 import nanamiShockedWebP from '../../../assets/nanami-shocked.webp';
 import { setFilterValue } from '../../../store/actions/frontendContext';

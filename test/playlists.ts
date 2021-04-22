@@ -72,7 +72,7 @@ describe('Playlists', () => {
 		for (const plc of data.content) {
 			testKara(plc, { tagDetails: 'short', plc: true });
 		}
-		PLCID = data.content[0].playlistcontent_id;
+		PLCID = data.content[0].plcid;
 	});
 
 	it('Get specific karaoke in a playlist', async () => {
@@ -251,7 +251,7 @@ describe('Playlists', () => {
 	it('List contents from public playlist', async () => {
 		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
 		// We get the PLC_ID of our last karaoke, the one we just added
-		currentPLCID = data.content[data.content.length - 1].playlistcontent_id;
+		currentPLCID = data.content[data.content.length - 1].plcid;
 		expect(data.content.length).to.be.at.least(1);
 	});
 
@@ -279,7 +279,7 @@ describe('Playlists', () => {
 	it('List contents from public playlist AFTER position change', async () => {
 		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
 		// Our PLCID should be in first position now
-		expect(data.content[0].playlistcontent_id).to.be.equal(currentPLCID);
+		expect(data.content[0].plcid).to.be.equal(currentPLCID);
 		expect(data.content[0].flag_playing).to.be.true;
 	});
 
@@ -340,7 +340,7 @@ describe('Playlists', () => {
 		const token = await getToken('adminTest2');
 		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
 		// Our PLCID should be in first position now
-		const plc: DBPLC = data.content.find(plc => plc.playlistcontent_id === currentPLCID);
+		const plc: DBPLC = data.content.find(plc => plc.plcid === currentPLCID);
 		expect(plc.upvotes).to.be.at.least(1);
 		expect(plc.flag_upvoted).to.be.true;
 	});
@@ -354,7 +354,7 @@ describe('Playlists', () => {
 		const token = await getToken('adminTest2');
 		const data = await commandBackend(token, 'getPlaylistContents', { pl_id: newPublicPlaylistID });
 		// Our PLCID should be in first position now
-		const plc: DBPLC = data.content.find(plc => plc.playlistcontent_id === currentPLCID);
+		const plc: DBPLC = data.content.find(plc => plc.plcid === currentPLCID);
 		expect(plc.upvotes).to.be.at.below(1);
 		expect(plc.flag_upvoted).to.be.false;
 	});

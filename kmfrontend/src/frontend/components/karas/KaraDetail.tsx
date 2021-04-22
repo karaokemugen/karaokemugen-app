@@ -222,16 +222,16 @@ class KaraDetail extends Component<IProps, IState> {
 					<button className="btn" onClick={e => {
 						e.preventDefault();
 						e.stopPropagation();
-						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.plcid]})
 							.then(() => {
-								toast.dismiss(response.data.plc.playlistcontent_id);
+								toast.dismiss(response.data.plc.plcid);
 								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
 							}).catch(() => {
-								toast.dismiss(response.data.plc.playlistcontent_id);
+								toast.dismiss(response.data.plc.plcid);
 							});
 					}}>{i18next.t('CANCEL')}</button>
 				</span>
-			</div>, 10000, 'top-left', response.data.plc.playlistcontent_id);
+			</div>, 10000, 'top-left', response.data.plc.plcid);
 		}
 	}
 

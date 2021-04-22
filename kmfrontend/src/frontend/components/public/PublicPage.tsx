@@ -314,7 +314,7 @@ class PublicPage extends Component<IProps, IState> {
 							} />
 							<Route path="/public/karaoke/:kid" render={({ match }) =>
 								<KaraDetail kid={this.state.kara?.kid || match.params.kid}
-									playlistcontentId={this.state.kara?.playlistcontent_id}
+									playlistcontentId={this.state.kara?.plcid}
 									scope='public'
 									idPlaylist={this.state.idsPlaylist.left}
 									closeOnPublic={() => {

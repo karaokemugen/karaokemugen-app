@@ -6,8 +6,8 @@ import { SortableElement, SortableElementProps, SortableHandle } from 'react-sor
 import { toast } from 'react-toastify';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { DBBlacklist } from '../../../../../src/types/database/blacklist';
-import { DBPL } from '../../../../../src/types/database/playlist';
 import nanamiSingPng from '../../../assets/nanami-sing.png';
 import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { closeModal, showModal } from '../../../store/actions/modal';
@@ -61,7 +61,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	}
 
 	upvoteKara = () => {
-		const plc_id = this.props.kara.playlistcontent_id ? this.props.kara.playlistcontent_id : this.props.kara.public_plc_id[0];
+		const plc_id = this.props.kara.plcid ? this.props.kara.plcid : this.props.kara.public_plc_id[0];
 		const data = this.props.kara.flag_upvoted ? { downvote: 'true', plc_id: plc_id } : { plc_id: plc_id };
 		commandBackend('votePLC', data).catch(() => {});
 	};
@@ -70,21 +70,21 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	refuseKara = () => {
 		commandBackend('editPLC', {
 			flag_refused: !this.props.kara.flag_refused,
-			plc_ids: [this.props.kara.playlistcontent_id]
+			plc_ids: [this.props.kara.plcid]
 		}).catch(() => {});
 	};
 
 	acceptKara = () => {
 		commandBackend('editPLC', {
 			flag_accepted: !this.props.kara.flag_accepted,
-			plc_ids: [this.props.kara.playlistcontent_id]
+			plc_ids: [this.props.kara.plcid]
 		}).catch(() => {});
 	};
 
 	deleteKara = async () => {
 		if (this.props.idPlaylist === -1 || this.props.idPlaylist === -5) {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_ids: this.props.kara?.playlistcontent_id ? [this.props.kara.playlistcontent_id]:this.props.kara.my_public_plc_id
+				plc_ids: this.props.kara?.plcid ? [this.props.kara.plcid]:this.props.kara.my_public_plc_id
 			}).catch(() => {});
 		} else if (this.props.idPlaylist === -2) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
@@ -94,7 +94,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			}).catch(() => {});
 		} else {
 			await commandBackend('deleteKaraFromPlaylist', {
-				plc_ids: [this.props.kara.playlistcontent_id]
+				plc_ids: [this.props.kara.plcid]
 			}).catch(() => {});
 		}
 	};
@@ -118,7 +118,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		} else {
 			commandBackend('editPLC', {
 				flag_playing: true,
-				plc_ids: [this.props.kara.playlistcontent_id]
+				plc_ids: [this.props.kara.plcid]
 			}).catch(() => {});
 		}
 	};
@@ -142,7 +142,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 					url = 'copyKaraToPlaylist';
 					data = {
 						pl_id: this.props.idPlaylistTo,
-						plc_ids: [this.props.kara.playlistcontent_id]
+						plc_ids: [this.props.kara.plcid]
 					};
 				} else {
 					url = 'addKaraToPlaylist';
@@ -212,16 +212,16 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 					<button className="btn" onClick={e => {
 						e.preventDefault();
 						e.stopPropagation();
-						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.plcid]})
 							.then(() => {
-								toast.dismiss(response.data.plc.playlistcontent_id);
+								toast.dismiss(response.data.plc.plcid);
 								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
 							}).catch(() => {
-								toast.dismiss(response.data.plc.playlistcontent_id);
+								toast.dismiss(response.data.plc.plcid);
 							});
 					}}>{i18next.t('CANCEL')}</button>
 				</span>
-			</div>, 10000, 'top-left', response.data.plc.playlistcontent_id);
+			</div>, 10000, 'top-left', response.data.plc.plcid);
 		}
 	};
 
@@ -232,7 +232,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 
 	checkKara = () => {
 		if (this.props.idPlaylist >= 0) {
-			this.props.checkKara(this.props.kara.playlistcontent_id);
+			this.props.checkKara(this.props.kara.plcid);
 		} else {
 			this.props.checkKara(this.props.kara.kid);
 		}
@@ -241,7 +241,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	changeVisibilityKara = () => {
 		commandBackend('editPLC', {
 			flag_visible: true,
-			plc_ids: [this.props.kara.playlistcontent_id]
+			plc_ids: [this.props.kara.plcid]
 		}).catch(() => {});
 	};
 
@@ -412,7 +412,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									}
 									{!is_touch_device() ? <div className="tagConteneur">
 										{this.karaTags}
-										{kara.versions?.sort(sortTagByPriority).map(t => 
+										{kara.versions?.sort(sortTagByPriority).map(t =>
 											<span className="tag white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>
 										)}
 									</div> : null}
@@ -453,7 +453,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							{is_touch_device() ?
 								<div className="tagConteneur mobile">
 									{this.karaTags}
-									{kara.versions?.sort(sortTagByPriority).map(t => 
+									{kara.versions?.sort(sortTagByPriority).map(t =>
 										<span className="tag white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>
 									)}
 									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ?

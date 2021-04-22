@@ -52,7 +52,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 		}
 		try {
 			await commandBackend('editPLC', {
-				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				plc_ids: this.props.checkedKaras.map(a => a.plcid),
 				flag_free: true
 			});
 			this.setState({ effect_free: true });
@@ -66,7 +66,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 	changeVisibilityKaraOn = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				plc_ids: this.props.checkedKaras.map(a => a.plcid),
 				flag_visible: true
 			});
 			this.setState({ effect_visibility: true });
@@ -79,7 +79,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 	changeVisibilityKaraOff = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				plc_ids: this.props.checkedKaras.map(a => a.plcid),
 				flag_visible: false
 			});
 			this.setState({ effect_visibility: true });

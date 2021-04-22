@@ -3,10 +3,10 @@ import {pg as yesql} from 'yesql';
 import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase,DBYear } from '../lib/types/database/kara';
+import { DBPLCAfterInsert } from '../lib/types/database/playlist';
 import { Kara, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
-import { DBPLCAfterInsert } from '../types/database/playlist';
 import { PLC } from '../types/playlist';
 import { getState } from '../utils/state';
 import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
@@ -175,7 +175,7 @@ export async function selectAllKIDs(): Promise<string[]> {
 export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInsert[]> {
 	if (karaList.length > 1) {
 		const karas: any[] = karaList.map(kara => ([
-			kara.playlist_id,
+			kara.plaid,
 			kara.username,
 			kara.nickname,
 			kara.kid,
@@ -191,7 +191,7 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 	} else {
 		const kara = karaList[0];
 		const res = await db().query(sqladdKaraToPlaylist, [
-			kara.playlist_id,
+			kara.plaid,
 			kara.username,
 			kara.nickname,
 			kara.kid,
@@ -207,7 +207,7 @@ export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInse
 }
 
 export function removeKaraFromPlaylist(karas: number[]) {
-	return db().query(sqlremoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karas.join(',')));
+	return db().query(sqlremoveKaraFromPlaylist.replace(/\$plcid/,karas.join(',')));
 }
 
 export function emptyOnlineRequested() {
