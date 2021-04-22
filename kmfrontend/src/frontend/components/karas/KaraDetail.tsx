@@ -147,11 +147,15 @@ class KaraDetail extends Component<IProps, IState> {
 
 	fetchLyrics = async () => {
 		if (this.state.kara) {
-			let response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
-			if (response?.length > 0) {
-				response = formatLyrics(response);
+			try {
+				let response = await commandBackend('getKaraLyrics', { kid: (this.state.kara as DBPLCInfo).kid });
+				if (response?.length > 0) {
+					response = formatLyrics(response);
+				}
+				this.setState({ lyrics: response?.map(value => value.text) || [] });
+			} catch (e) {
+				// already display
 			}
-			this.setState({ lyrics: response?.map(value => value.text) || [] });
 		}
 	};
 

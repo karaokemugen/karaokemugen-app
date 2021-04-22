@@ -79,7 +79,7 @@ class Modal extends Component<IProps, IState> {
 								<div className="modal-message">{this.props.message}</div>
 								{this.props.type === 'prompt' ?
 									<div className="form">
-										<input type="text" autoFocus className="modal-input form-control" defaultValue={this.state.promptText}
+										<input type="text" autoFocus className="modal-input" defaultValue={this.state.promptText}
 											onChange={(event) => this.setState({ promptText: event.target.value })} />
 									</div> : null
 								}

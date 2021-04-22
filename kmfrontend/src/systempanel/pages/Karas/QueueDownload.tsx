@@ -60,8 +60,12 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	async getTags() {
-		const res = await commandBackend('getRemoteTags', undefined, false, 300000);
-		this.setState({ tags: res.content }, this.FilterTagCascaderOption);
+		try {
+			const res = await commandBackend('getRemoteTags', undefined, false, 300000);
+			this.setState({ tags: res.content }, this.FilterTagCascaderOption);
+		} catch (e) {
+			// already display
+		}
 	}
 
 	changeFilter = (event) => {
@@ -222,7 +226,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 						<Button style={{ width: '100px', margin: '0.5em' }} type="primary" key="queuePause"
 							onClick={this.putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
 						<Button style={{ width: '100px', margin: '0.5em' }} type="primary" key="queueDelete"
-							onClick={() => commandBackend('deleteDownloads')}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
+							onClick={() => commandBackend('deleteDownloads').catch(() => {})}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
 					</Row>
 					<Table
 						onChange={this.handleTableChange}

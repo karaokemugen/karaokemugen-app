@@ -42,8 +42,12 @@ class UserEdit extends Component<RouteComponentProps<{userLogin:string}>, UserEd
 
 	loadUser = async () => {
 		if (this.props.match.params.userLogin) {
-			const res = await commandBackend('getUser', {username: this.props.match.params.userLogin});
-			this.setState({user: res, save: this.saveUpdate});
+			try {
+				const res = await commandBackend('getUser', {username: this.props.match.params.userLogin});
+				this.setState({user: res, save: this.saveUpdate});
+			} catch (e) {
+				// already display
+			}
 		} else {
 			this.setState({user: {...newUser}, save: this.saveNew});
 		}

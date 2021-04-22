@@ -37,9 +37,13 @@ class ChibiPage extends Component<unknown, IState> {
 		}
 		if (this.context.globalState.auth.isAuthenticated) {
 			getSocket().on('playerStatus', this.playerUpdate);
-			const result = await commandBackend('getPlayerStatus');
-			this.setState({ statusPlayer: result,
-				onTop: this.context.globalState.settings.data.config.GUI.ChibiPlayer.AlwaysOnTop });
+			try {
+				const result = await commandBackend('getPlayerStatus');
+				this.setState({ statusPlayer: result,
+					onTop: this.context.globalState.settings.data.config.GUI.ChibiPlayer.AlwaysOnTop });
+			} catch (e) {
+				// already display
+			}
 			await this.getPlaylistList();
 		}
 	}

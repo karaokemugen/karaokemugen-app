@@ -98,8 +98,8 @@ class PlaylistModal extends Component<IProps, IState> {
 							<h4 className="modal-title">{this.props.mode === 'edit' ?
 								i18next.t('MODAL.PLAYLIST_MODAL.EDIT_PLAYLIST', { playlist:
 									(this.props.idPlaylist === -4 ?
-										this.props.bLSet.name
-										: this.props.playlistInfo.name)
+										this.props.bLSet?.name
+										: this.props.playlistInfo?.name)
 								}) :
 								i18next.t('MODAL.PLAYLIST_MODAL.CREATE_PLAYLIST')
 							}</h4>
@@ -107,7 +107,7 @@ class PlaylistModal extends Component<IProps, IState> {
 						<div className="modal-body flex-direction-btns">
 							<div>{i18next.t('MODAL.PLAYLIST_MODAL.NAME')}</div>
 							<div className="form">
-								<input type="text" autoFocus className="modal-input form-control" defaultValue={this.state.name}
+								<input type="text" autoFocus className="modal-input" defaultValue={this.state.name}
 									onChange={(event) => this.setState({ name: event.target.value })} />
 							</div>
 							<div>

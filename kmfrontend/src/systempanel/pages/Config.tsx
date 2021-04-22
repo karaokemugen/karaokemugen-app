@@ -68,12 +68,16 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getSettings');
-		this.setState({
-			config: this.configKeyValue(res.config), error: '',
-			appPath: res.state.appPath, dataPath: res.state.dataPath,
-			os: res.state.os
-		});
+		try {
+			const res = await commandBackend('getSettings');
+			this.setState({
+				config: this.configKeyValue(res.config), error: '',
+				appPath: res.state.appPath, dataPath: res.state.dataPath,
+				os: res.state.os
+			});
+		} catch (e) {
+			//already display
+		}
 	}
 
 	saveSetting = async (key: string, value: any) => {

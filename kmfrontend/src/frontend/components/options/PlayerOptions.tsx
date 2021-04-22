@@ -246,7 +246,6 @@ class PlayerOptions extends Component<IProps, IState> {
 								</label>
 								<div className="col-xs-6">
 									<input
-										className="form-control"
 										id="Karaoke.Display.ConnectionInfo.Host"
 										onChange={this.onChange}
 										value={this.state.config['Karaoke.Display.ConnectionInfo.Host']}
@@ -262,7 +261,6 @@ class PlayerOptions extends Component<IProps, IState> {
 								</label>
 								<div className="col-xs-6">
 									<input
-										className="form-control"
 										id="Karaoke.Display.ConnectionInfo.Message"
 										onChange={this.onChange}
 										value={this.state.config['Karaoke.Display.ConnectionInfo.Message']}
