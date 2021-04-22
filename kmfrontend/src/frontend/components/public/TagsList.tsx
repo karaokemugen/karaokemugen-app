@@ -83,36 +83,40 @@ class TagsList extends Component<IProps, IState> {
 	}
 
 	async getTags() {
-		const response = await commandBackend('getTags',
-			{
-				type: this.props.tagType,
-				from: this.state.tags.infos.from,
-				size: chunksize,
-				filter: this.state.filterValue,
-				stripEmpty: true
-			});
-		let data;
-		if (response.infos?.from > 0) {
-			data = this.state.tags;
-			if (response.infos.from < data.content.length) {
-				for (let index = 0; index < response.content.length; index++) {
-					data.content[response.infos.from + index] = response.content[index];
-				}
-			} else {
-				if (response.infos.from > data.content.length) {
-					const nbCellToFill = data.infos.from - data.content.length;
-					for (let index = 0; index < nbCellToFill; index++) {
-						data.content.push(undefined);
+		try {
+			const response = await commandBackend('getTags',
+				{
+					type: this.props.tagType,
+					from: this.state.tags.infos.from,
+					size: chunksize,
+					filter: this.state.filterValue,
+					stripEmpty: true
+				});
+			let data;
+			if (response.infos?.from > 0) {
+				data = this.state.tags;
+				if (response.infos.from < data.content.length) {
+					for (let index = 0; index < response.content.length; index++) {
+						data.content[response.infos.from + index] = response.content[index];
 					}
+				} else {
+					if (response.infos.from > data.content.length) {
+						const nbCellToFill = data.infos.from - data.content.length;
+						for (let index = 0; index < nbCellToFill; index++) {
+							data.content.push(undefined);
+						}
+					}
+					data.content.push(...response.content);
 				}
-				data.content.push(...response.content);
+				data.infos = response.infos;
+			} else {
+				data = response;
 			}
-			data.infos = response.infos;
-		} else {
-			data = response;
+			this.setState({ tags: data, scrollToIndex: -1 });
+			this.tagsListForceRefresh();
+		} catch (e) {
+			// already display
 		}
-		this.setState({ tags: data, scrollToIndex: -1 });
-		this.tagsListForceRefresh();
 	}
 
 	async getYears() {

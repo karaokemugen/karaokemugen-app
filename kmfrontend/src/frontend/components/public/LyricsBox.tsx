@@ -72,11 +72,15 @@ class LyricsBox extends Component<IProps, IState> {
 
 	fetchLyrics = async () => {
 		if (this.props.kid) {
-			let lyrics: ASSLine[] = await commandBackend('getKaraLyrics', {kid: this.props.kid});
-			if (lyrics?.length > 100) {
-				lyrics = formatLyrics(lyrics);
+			try {
+				let lyrics: ASSLine[] = await commandBackend('getKaraLyrics', {kid: this.props.kid});
+				if (lyrics?.length > 100) {
+					lyrics = formatLyrics(lyrics);
+				}
+				this.setState({ lyrics: lyrics || [] });
+			} catch (e) {
+				// already display
 			}
-			this.setState({ lyrics: lyrics || [] });
 		} else {
 			this.setState({ lyrics: [] });
 		}

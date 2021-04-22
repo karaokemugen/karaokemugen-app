@@ -33,11 +33,15 @@ class Tutorial extends Component<unknown, IState> {
 	}
 
 	nextStep = () => {
-		if (this.state.stepIndex === 2) {
-			commandBackend('editMyAccount', { flag_tutorial_done: true });
-			unmountComponentAtNode(document.getElementById('tuto'));
+		try {
+			if (this.state.stepIndex === 2) {
+				commandBackend('editMyAccount', { flag_tutorial_done: true });
+				unmountComponentAtNode(document.getElementById('tuto'));
+			}
+			this.setState({ stepIndex: this.state.stepIndex + 1 });
+		} catch (e) {
+			// already display
 		}
-		this.setState({ stepIndex: this.state.stepIndex + 1 });
 	}
 
 	previousStep = () => {
