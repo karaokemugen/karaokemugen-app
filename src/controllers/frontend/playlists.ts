@@ -37,7 +37,7 @@ export default function playlistsController(router: SocketIOApp) {
 			//Now we add playlist
 			try {
 				return {
-					playlist_id: await createPlaylist(req.body.name, {
+					plaid: await createPlaylist(req.body.name, {
 						visible: req.body.flag_visible,
 						current: req.body.flag_current,
 						public: req.body.flag_public,

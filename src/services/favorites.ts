@@ -228,7 +228,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		await shufflePlaylist(playlist_id, 'normal');
 		emitWS('playlistsUpdated');
 		return {
-			playlist_id: playlist_id,
+			plaid: playlist_id,
 			playlist_name: autoMixPLName
 		};
 	} catch(err) {

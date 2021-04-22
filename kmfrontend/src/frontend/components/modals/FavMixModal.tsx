@@ -35,7 +35,7 @@ class FavMixModal extends Component<IProps, IState> {
 		const userlistStr = this.state.userList.filter(value => value.flag_online).map(value => value.login);
 		const data = { duration: this.state.duration !== 0 ? this.state.duration : 200, users: userlistStr };
 		const res = await commandBackend('createAutomix', data);
-		this.props.changeIdPlaylist(res.playlist_id);
+		this.props.changeIdPlaylist(res.plaid);
 		this.closeModal();
 	};
 

@@ -246,8 +246,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 					!file.name.includes('.kmfavorites') &&
 					displayMessage('success', i18next.t(`SUCCESS_CODES.${response.message.code}`, {data: name}));
 				}
-				const playlist_id = file.name.includes('.kmfavorites') ? -5 : response.message.data.playlist_id;
-				this.props.changeIdPlaylist(playlist_id);
+				const plaid = file.name.includes('.kmfavorites') ? -5 : response.message.data.plaid;
+				this.props.changeIdPlaylist(plaid);
 			};
 			fr.readAsText(file);
 		}
@@ -291,15 +291,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 		// current playlist : play-circle icon
 		if (playlist?.flag_current) return ['fa-play-circle'];
 		// library : book icon
-		if (playlist.playlist_id === -1) return ['fa-book'];
+		if (playlist.plaid === -1) return ['fa-book'];
 		// blacklist : ban icon
-		if (playlist?.playlist_id === -2) return ['fa-ban'];
+		if (playlist?.plaid === -2) return ['fa-ban'];
 		// whitelist : check-circle icon
-		if (playlist?.playlist_id === -3) return ['fa-check-circle'];
+		if (playlist?.plaid === -3) return ['fa-check-circle'];
 		// blacklist criterias : not-equal icon
-		if (playlist?.playlist_id === -4) return ['fa-not-equal'];
+		if (playlist?.plaid === -4) return ['fa-not-equal'];
 		// favorites : star icon
-		if (playlist?.playlist_id === -5) return ['fa-star'];
+		if (playlist?.plaid === -5) return ['fa-star'];
 		// others playlist : list-ol icon
 		return ['fa-list-ol'];
 	}
@@ -307,7 +307,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	getListToSelect = () => {
 		return this.props.playlistList.map(playlist => {
 			return {
-				value: playlist?.playlist_id?.toString(),
+				value: playlist?.plaid?.toString(),
 				label: playlist.name,
 				icons: this.getPlaylistIcon(playlist)
 			};
@@ -653,7 +653,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 						<select value={this.props.idPlaylist}
 							onChange={(e) => this.props.changeIdPlaylist(Number(e.target.value))}>
 							{this.props.playlistList?.map(playlist => {
-								return <option key={playlist.playlist_id} value={playlist.playlist_id}>
+								return <option key={playlist.plaid} value={playlist.plaid}>
 									{playlist.name}{this.getFlagLabel(playlist)}
 								</option>;
 							})}
@@ -662,7 +662,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 						<select value={this.props.idPlaylistTo}
 							onChange={(e) => this.props.changeIdPlaylistSide2(Number(e.target.value))}>
 							{this.props.playlistList?.map(playlist => {
-								return <option key={playlist.playlist_id} value={playlist.playlist_id}>
+								return <option key={playlist.plaid} value={playlist.plaid}>
 									{playlist.name}{this.getFlagLabel(playlist)}
 								</option>;
 							})}

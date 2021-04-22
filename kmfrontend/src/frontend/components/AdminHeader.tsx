@@ -79,8 +79,8 @@ function AdminHeader(props: IProps) {
 
 	const play = (event: any) => {
 		if ((!statusPlayer || statusPlayer?.playerStatus === 'stop')
-			&& props.idsPlaylist.left !== props.currentPlaylist?.playlist_id
-			&& props.idsPlaylist.right !== props.currentPlaylist?.playlist_id
+			&& props.idsPlaylist.left !== props.currentPlaylist?.plaid
+			&& props.idsPlaylist.right !== props.currentPlaylist?.plaid
 			&& (props.idsPlaylist.left > 0 || props.idsPlaylist.right > 0)) {
 			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
 				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {}));

@@ -1,8 +1,8 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
-import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
+import { BLCSet } from '../../../../../src/types/blacklist';
 import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
@@ -48,7 +48,7 @@ class PlaylistModal extends Component<IProps, IState> {
 				flag_public: this.state.flag_public,
 			}
 		);
-		this.props.idPlaylist === -4 ? this.props.changeIdPlaylist(-4, response.set_id) : this.props.changeIdPlaylist(response.playlist_id);
+		this.props.idPlaylist === -4 ? this.props.changeIdPlaylist(-4, response.set_id) : this.props.changeIdPlaylist(response.plaid);
 		this.closeModal();
 	};
 

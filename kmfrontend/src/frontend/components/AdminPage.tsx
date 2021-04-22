@@ -154,28 +154,28 @@ class AdminPage extends Component<IProps, IState> {
 	}
 
 	getPlaylistList = async () => {
-		const playlistList = await commandBackend('getPlaylists');
+		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
 		const kmStats = await commandBackend('getStats');
 		playlistList.push({
-			playlist_id: -2,
+			plaid: -2,
 			name: i18next.t('PLAYLIST_BLACKLIST')
 		});
 
 		playlistList.push({
-			playlist_id: -4,
+			plaid: -4,
 			name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
 		});
 
 		playlistList.push({
-			playlist_id: -3,
+			plaid: -3,
 			name: i18next.t('PLAYLIST_WHITELIST')
 		});
 		playlistList.push({
-			playlist_id: -5,
+			plaid: -5,
 			name: i18next.t('PLAYLIST_FAVORITES')
 		});
 		playlistList.push({
-			playlist_id: -1,
+			plaid: -1,
 			name: i18next.t('PLAYLIST_KARAS'),
 			karacount: kmStats.karas
 		});

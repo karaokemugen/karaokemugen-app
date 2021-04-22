@@ -159,7 +159,7 @@ export async function findPublicPlaylist(): Promise<number> {
 export async function setPlaying(plc_id: number, playlist_id: number) {
 	await setPlayingFlag(plc_id, playlist_id);
 	emitWS('playingUpdated',{
-		playlist_id: playlist_id,
+		plaid: playlist_id,
 		plc_id: plc_id,
 	});
 	updatePlaylistDuration(playlist_id);

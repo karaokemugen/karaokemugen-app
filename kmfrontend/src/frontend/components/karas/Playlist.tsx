@@ -213,7 +213,7 @@ class Playlist extends Component<IProps, IState> {
 		await this.getIdPlaylist();
 		this.setState({ goToPlaying: this.state.idPlaylist > 0 });
 		if (this.props.scope === 'public' || this.props.playlistList
-			.filter(playlist => playlist.playlist_id === this.state.idPlaylist).length !== 0) {
+			.filter(playlist => playlist.plaid === this.state.idPlaylist).length !== 0) {
 			if (this.props.scope === 'admin') await this.loadBLSet();
 			await this.getPlaylist();
 		}
@@ -336,11 +336,11 @@ class Playlist extends Component<IProps, IState> {
 
 			if (this.props.side === 1) {
 				value = plVal1Cookie !== null && !isNaN(Number(plVal1Cookie))
-					&& this.props.playlistList.filter(playlist => playlist.playlist_id === Number(plVal1Cookie)).length > 0 ?
+					&& this.props.playlistList.filter(playlist => playlist.plaid === Number(plVal1Cookie)).length > 0 ?
 					Number(plVal1Cookie) : -1;
 			} else {
 				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie))
-					&& this.props.playlistList.filter(playlist => playlist.playlist_id === Number(plVal1Cookie)).length > 0 ?
+					&& this.props.playlistList.filter(playlist => playlist.plaid === Number(plVal1Cookie)).length > 0 ?
 					Number(plVal2Cookie) : this.context.globalState.settings.data.state.currentPlaylistID;
 			}
 		}
@@ -502,8 +502,8 @@ class Playlist extends Component<IProps, IState> {
 		}
 	};
 
-	playingUpdate = (data: { playlist_id: number, plc_id: number }) => {
-		if (this.state.idPlaylist === data.playlist_id && !this.state.stopUpdate) {
+	playingUpdate = (data: { plaid: number, plc_id: number }) => {
+		if (this.state.idPlaylist === data.plaid && !this.state.stopUpdate) {
 			const playlistData = this.state.data as KaraList;
 			let indexPlaying;
 			playlistData?.content.forEach((kara, index) => {
