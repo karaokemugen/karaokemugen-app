@@ -108,11 +108,15 @@ class ProfilModal extends Component<IProps, IState> {
 			&& this.state.user.password === this.state.user.passwordConfirmation)
 			|| !this.state.user.password)) {
 			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
-			const response = await commandBackend('editMyAccount', this.state.user);
+			try {
+				const response = await commandBackend('editMyAccount', this.state.user);
 
-			const data: IAuthentifactionInformation = this.context.globalState.auth.data;
-			data.onlineToken = response.data.onlineToken;
-			setAuthentifactionInformation(this.context.globalDispatch, data);
+				const data: IAuthentifactionInformation = this.context.globalState.auth.data;
+				data.onlineToken = response.data.onlineToken;
+				setAuthentifactionInformation(this.context.globalDispatch, data);
+			} catch (e) {
+				// already display
+			}
 		} else if (!this.state.user.nickname) {
 			this.setState({ nicknameMandatory: 'form-control redBorders' });
 		} else {

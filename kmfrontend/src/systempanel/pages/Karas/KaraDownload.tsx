@@ -89,8 +89,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	async getTags() {
-		const res = await commandBackend('getRemoteTags', undefined, false, 300000);
-		this.setState({ tags: res.content }, () => this.FilterTagCascaderOption());
+		try {
+			const res = await commandBackend('getRemoteTags', undefined, false, 300000);
+			this.setState({ tags: res.content }, () => this.FilterTagCascaderOption());
+		} catch (e) {
+			// already display
+		}
 	}
 
 	changeFilter = (event) => {
@@ -136,8 +140,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	apiGetLocalKaras = async () => {
-		const res = await commandBackend('getKaras', undefined, false, 300000);
-		this.setState({ karas_local: res.content });
+		try {
+			const res = await commandBackend('getKaras', undefined, false, 300000);
+			this.setState({ karas_local: res.content });
+		} catch (e) {
+			// already display
+		}
 	}
 
 	async apiGetBlacklistCriterias() {
@@ -466,7 +474,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 						</Col>
 						<Col span={4}>
 							<Button style={{ width: '100px' }} type="primary" key="queueDelete"
-								onClick={() => commandBackend('deleteDownloads')}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
+								onClick={() => commandBackend('deleteDownloads').catch(() => {})}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
 						</Col>
 					</Row>
 					<Table

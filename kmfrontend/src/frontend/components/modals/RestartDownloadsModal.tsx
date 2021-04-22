@@ -15,12 +15,12 @@ class RestartDownloadsModal extends Component<unknown, unknown> {
 	}
 
 	deleteQueue = () => {
-		commandBackend('deleteDownloads');
+		commandBackend('deleteDownloads').catch(() => {});
 		this.closeModal();
 	}
 
 	startQueue = () => {
-		commandBackend('startDownloadQueue');
+		commandBackend('startDownloadQueue').catch(() => {});
 		this.closeModal();
 	}
 
