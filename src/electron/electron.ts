@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog,ipcMain, Menu,protocol } from 'electron';
-import { readFile } from 'fs/promises';
+import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
@@ -183,7 +183,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 				logger.warn('Could not find a username, switching to admin by default', {service: 'FileHandler'});
 			}
 		}
-		const rawData = await readFile(resolve(file), 'utf-8');
+		const rawData = await fs.readFile(resolve(file), 'utf-8');
 		if (!testJSON(rawData)) {
 			logger.debug(`File ${file} is not JSON, ignoring`, {service: 'FileHandler'});
 			return;

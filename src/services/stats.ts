@@ -1,4 +1,4 @@
-import { writeFile } from 'fs/promises';
+import { promises as fs } from 'fs';
 import internet from 'internet-available';
 import cloneDeep from 'lodash.clonedeep';
 import {resolve} from 'path';
@@ -71,7 +71,7 @@ export async function sendPayload(host: string, minimal: boolean) {
 
 async function savePayload(payload: any, host: string) {
 	try {
-		await writeFile(resolve(getState().dataPath, `logs/statsPayload-${host}.json`), JSON.stringify(payload, null, 2), 'utf-8');
+		await fs.writeFile(resolve(getState().dataPath, `logs/statsPayload-${host}.json`), JSON.stringify(payload, null, 2), 'utf-8');
 		logger.info('Payload data saved locally to logs/statsPayload.json', {service: 'Stats'});
 	} catch(err) {
 		// Non-fatal

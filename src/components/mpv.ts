@@ -1,5 +1,5 @@
 import execa from 'execa';
-import { readdir } from 'fs/promises';
+import { promises as fs } from 'fs';
 import i18n from 'i18next';
 import debounce from 'lodash.debounce';
 import sample from 'lodash.sample';
@@ -564,7 +564,7 @@ class Players {
 
 	private static async extractBackgroundFiles(backgroundDir: string): Promise<string[]> {
 		const backgroundFiles = [];
-		const dirListing = await readdir(backgroundDir);
+		const dirListing = await fs.readdir(backgroundDir);
 		for (const file of dirListing) {
 			if (isImageFile(file)) backgroundFiles.push(resolve(backgroundDir, file));
 		}
@@ -670,7 +670,8 @@ class Players {
 		try {
 			playerState.mediaType = 'background';
 			playerState.playerStatus = 'stop';
-			playerState.currentSong = null;
+			playerState.currentSong = undefined;
+			playerState.currentMedia = undefined;
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
@@ -831,6 +832,7 @@ class Players {
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
 			playerState._playing = true;
+			playerState.currentMedia = undefined;
 			playerState.playerStatus = 'play';
 			emitPlayerState();
 			setDiscordActivity('song', {
@@ -866,7 +868,7 @@ class Players {
 				logger.debug('No subtitles to load (not found for media)', {service: 'Player'});
 			}
 			try {
-				playerState.currentSong = null;
+				playerState.currentSong = undefined;
 				playerState.mediaType = mediaType;
 				playerState.currentMedia = media;
 				await retry(() => this.exec({command: ['loadfile', media.filename, 'replace', options]}), {

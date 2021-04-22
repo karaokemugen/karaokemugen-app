@@ -2,7 +2,7 @@
 
 // Node modules
 import execa from 'execa';
-import { readFile, unlink, writeFile } from 'fs/promises';
+import { promises as fs } from 'fs';
 import { mkdirp, remove } from 'fs-extra';
 import i18next from 'i18next';
 import {tmpdir} from 'os';
@@ -50,7 +50,7 @@ async function killPG() {
 		}
 		try {
 			const pgPIDFile = resolve(getState().dataPath, conf.System.Path.DB, 'postgres/postmaster.pid');
-			await unlink(pgPIDFile);
+			await fs.unlink(pgPIDFile);
 		} catch(err) {
 			// Non fatal either. NOTHING IS FATAL, THIS FUNCTION IS LETHAL.
 		}
@@ -80,7 +80,7 @@ async function getPGVersion(): Promise<number> {
 	const conf = getConfig();
 	const pgDataDir = resolve(getState().dataPath, conf.System.Path.DB, 'postgres');
 	try {
-		const pgVersion = await readFile(resolve(pgDataDir, 'PG_VERSION'), 'utf-8');
+		const pgVersion = await fs.readFile(resolve(pgDataDir, 'PG_VERSION'), 'utf-8');
 		return +pgVersion.split('\n')[0];
 	} catch(err) {
 		logger.error('Unable to determine PG version', {obj: err, service: 'DB'});
@@ -202,7 +202,7 @@ export async function updatePGConf() {
 	const conf = getConfig();
 	const state = getState();
 	const pgConfFile = resolve(state.dataPath, conf.System.Path.DB, 'postgres/postgresql.conf');
-	let pgConf = await readFile(pgConfFile, 'utf-8');
+	let pgConf = await fs.readFile(pgConfFile, 'utf-8');
 	//Parsing the ini file by hand since it can't be parsed well with ini package
 	pgConf = setConfig(pgConf, 'port', conf.System.Database.port);
 	pgConf = setConfig(pgConf, 'logging_collector', 'on');
@@ -212,7 +212,7 @@ export async function updatePGConf() {
 		? pgConf = setConfig(pgConf, 'log_statement', '\'all\'')
 		: pgConf = setConfig(pgConf, 'log_statement', '\'none\'');
 	pgConf = setConfig(pgConf, 'synchronous_commit', 'off');
-	await writeFile(pgConfFile, pgConf, 'utf-8');
+	await fs.writeFile(pgConfFile, pgConf, 'utf-8');
 }
 
 /** Check if bundled postgreSQL is running or not. It won't launch another one if it's already running, and will instead connect to it. */

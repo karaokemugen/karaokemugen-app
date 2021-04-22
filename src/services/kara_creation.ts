@@ -1,4 +1,4 @@
-import { unlink } from 'fs/promises';
+import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import {basename, dirname, resolve} from 'path';
 
@@ -85,13 +85,13 @@ export async function editKara(kara: Kara, refresh = true) {
 		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
 			logger.info(`Removing ${karaFile}`, {service: 'KaraGen'});
-			await unlink(karaFile);
+			await fs.unlink(karaFile);
 		}
 		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const oldSubFiles = await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository));
 			if (await asyncExists(oldSubFiles[0])) {
 				logger.info(`Removing ${oldSubFiles[0]}`, {service: 'KaraGen'});
-				await unlink(oldSubFiles[0]);
+				await fs.unlink(oldSubFiles[0]);
 			}
 		}
 		if (newKara.data.mediafile.toLowerCase() !== oldKara.mediafile.toLowerCase()) {
@@ -103,7 +103,7 @@ export async function editKara(kara: Kara, refresh = true) {
 					await asyncMove(oldMediaFiles[0], newMediaFile, {overwrite: true});
 				} else {
 					logger.info(`Removing ${oldMediaFiles[0]}`, {service: 'KaraGen'});
-					await unlink(oldMediaFiles[0]);
+					await fs.unlink(oldMediaFiles[0]);
 				}
 			} catch(err) {
 				logger.warn(`Unable to remove/rename old mediafile ${oldKara.mediafile}`, {service: 'KaraGen', obj: err});

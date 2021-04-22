@@ -1,4 +1,4 @@
-import { readdir, stat, unlink } from 'fs/promises';
+import { promises as fs } from 'fs';
 import internet from 'internet-available';
 import merge from 'lodash.merge';
 import sampleSize from 'lodash.samplesize';
@@ -498,7 +498,7 @@ export async function updateKaras(repo: string, local?: KaraList, remote?: KaraL
 			let localMedia: string;
 			try {
 				localMedia = (await resolveFileInDirs(k.mediafile, resolvedPathRepos('Medias', repo)))[0];
-				const localMediaStats = await stat(localMedia);
+				const localMediaStats = await fs.stat(localMedia);
 				if (localMediaStats.size !== rk.mediasize) {
 					karasToUpdate.push(k.kid);
 					continue;
@@ -587,7 +587,7 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], repo: stri
 	}
 	// Remove files to update to start over their download
 	for (const file of updatedFiles) {
-		await unlink(resolve(mediasPath, file.basename));
+		await fs.unlink(resolve(mediasPath, file.basename));
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
@@ -635,12 +635,12 @@ async function downloadMedias(files: File[], mediasPath: string, repo: string): 
 
 async function listLocalMedias(repo: string): Promise<File[]> {
 	profile('listLocalMedias');
-	const mediaFiles = await readdir(resolvedPathRepos('Medias', repo)[0]);
+	const mediaFiles = await fs.readdir(resolvedPathRepos('Medias', repo)[0]);
 	const localMedias = [];
 	for (const file of mediaFiles) {
 		try {
 			const mediaPath = await resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
-			const mediaStats = await stat(mediaPath[0]);
+			const mediaStats = await fs.stat(mediaPath[0]);
 			localMedias.push({
 				basename: file,
 				size: mediaStats.size
@@ -656,7 +656,7 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 
 async function removeFiles(files: string[], dir: string): Promise<void> {
 	for (const file of files) {
-		await unlink(resolve(dir, file));
+		await fs.unlink(resolve(dir, file));
 		logger.info('Removed', {service: 'Update', obj: file});
 	}
 }

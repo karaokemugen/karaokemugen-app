@@ -1,4 +1,4 @@
-import { unlink } from 'fs/promises';
+import { promises as fs } from 'fs';
 import sample from 'lodash.sample';
 import { Socket } from 'socket.io';
 
@@ -214,7 +214,7 @@ export default function miscController(router: SocketIOApp) {
 	router.route('deleteFile', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			return await unlink(req.body.path);
+			return await fs.unlink(req.body.path);
 		} catch(err) {
 			const code = 'FS_DELETE_ERROR';
 			errMessage(code, err);

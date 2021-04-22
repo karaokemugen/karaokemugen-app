@@ -1,5 +1,5 @@
 import Queue from 'better-queue';
-import { stat, writeFile } from 'fs/promises';
+import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import internet from 'internet-available';
 import {resolve} from 'path';
@@ -179,7 +179,7 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, destRepo?:
 		try {
 			const existingMediaFiles = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', destRepo));
 			// Check if file size are different
-			const localMediaStat = await stat(existingMediaFiles[0]);
+			const localMediaStat = await fs.stat(existingMediaFiles[0]);
 			if (localMediaStat.size !== kara.data.medias[0].filesize) throw null;
 			mediaAlreadyExists = true;
 		} catch(err) {
@@ -196,14 +196,14 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, destRepo?:
 		let tempLyrics: string;
 		if (lyrics.file !== null) {
 			tempLyrics = resolve(tempDir, lyrics.file);
-			writes.push(writeFile(tempLyrics, lyrics.data, 'utf-8'));
+			writes.push(fs.writeFile(tempLyrics, lyrics.data, 'utf-8'));
 		}
 		const tempKara = resolve(tempDir, kara.file);
-		writes.push(writeFile(tempKara, JSON.stringify(kara.data, null, 2), 'utf-8'));
+		writes.push(fs.writeFile(tempKara, JSON.stringify(kara.data, null, 2), 'utf-8'));
 
 		for (const tag of tags) {
 			const tempTag = resolve(tempDir, tag.file);
-			writes.push(writeFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
+			writes.push(fs.writeFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
 		}
 
 		await Promise.all(writes);

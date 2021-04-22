@@ -1,6 +1,6 @@
 import {compare, genSalt, hash} from 'bcryptjs';
 import {createHash} from 'crypto';
-import { readdir, stat,unlink } from 'fs/promises';
+import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import {decode,encode} from 'jwt-simple';
 import {has as hasLang} from 'langs';
@@ -169,7 +169,7 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		if (await asyncExists(oldAvatarPath) &&
 			oldImageFile !== 'blank.png') {
 			try {
-				await unlink(oldAvatarPath);
+				await fs.unlink(oldAvatarPath);
 			} catch(err) {
 				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, {service: 'User', obj: err});
 			}
@@ -349,12 +349,12 @@ async function updateGuestAvatar(user: DBGuest) {
 	}
 	let avatarStats: any = {};
 	try {
-		avatarStats = await stat(resolve(resolvedPathAvatars(), user.avatar_file));
+		avatarStats = await fs.stat(resolve(resolvedPathAvatars(), user.avatar_file));
 	} catch(err) {
 		// It means one avatar has disappeared, we'll put a 0 size on it so the replacement is triggered later
 		avatarStats.size = 0;
 	}
-	const bundledAvatarStats = await stat(bundledAvatarPath);
+	const bundledAvatarStats = await fs.stat(bundledAvatarPath);
 	if (avatarStats.size !== bundledAvatarStats.size) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
 		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
@@ -491,7 +491,7 @@ async function checkUserAvatars() {
 				{overwrite: true}
 			);
 		} else {
-			const fstat = await stat(file);
+			const fstat = await fs.stat(file);
 			if (fstat.size === 0) await copy(
 				defaultAvatar,
 				file,
@@ -509,14 +509,14 @@ async function cleanupAvatars() {
 	for (const user of users) {
 		if (!avatars.includes(user.avatar_file)) avatars.push(user.avatar_file);
 	}
-	const avatarFiles = await readdir(resolvedPathAvatars());
+	const avatarFiles = await fs.readdir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
 		const avatar = avatars.find(a => a === file);
 		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPathAvatars(), file);
 			try {
 				logger.debug(`Deleting old file ${fullFile}`, {service: 'Users'});
-				await unlink(fullFile);
+				await fs.unlink(fullFile);
 			} catch(err) {
 				logger.warn(`Failed deleting old file ${fullFile}`, {service: 'Users', obj: err});
 				//Non-fatal

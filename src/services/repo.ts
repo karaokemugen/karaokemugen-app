@@ -1,4 +1,4 @@
-import { readdir } from 'fs/promises';
+import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import { basename,resolve } from 'path';
 
@@ -240,7 +240,7 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		let files = 0;
 		for (const type of Object.keys(repo.Path)) {
 			for (const dir of repo.Path[type]) {
-				const dirFiles = await readdir(resolve(state.dataPath, dir));
+				const dirFiles = await fs.readdir(resolve(state.dataPath, dir));
 				files = files + dirFiles.length;
 			}
 		}

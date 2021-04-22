@@ -253,7 +253,7 @@ async function checkPaths(config: Config) {
 		const checks = [];
 		const paths = config.System.Path;
 		for (const item of Object.keys(paths)) {
-			Array.isArray(paths[item]) && paths[item]
+			paths[item] && Array.isArray(paths[item])
 				? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
 				: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
 		}

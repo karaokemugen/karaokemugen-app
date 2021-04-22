@@ -1,4 +1,4 @@
-import { unlink } from 'fs/promises';
+import { promises as fs } from 'fs';
 import { dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -211,7 +211,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		// If it has been modified (name field modified) we need to remove the old one.
 		if (oldTag.tagfile !== tagObj.tagfile) {
 			try {
-				await unlink(oldTagFiles[0]);
+				await fs.unlink(oldTagFiles[0]);
 			} catch(err) {
 				//Non fatal. Can be triggered if the tag file has already been removed.
 			}

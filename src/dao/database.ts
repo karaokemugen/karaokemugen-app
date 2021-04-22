@@ -1,4 +1,4 @@
-import { unlink } from 'fs/promises';
+import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import Postgrator, { Migration } from 'postgrator';
@@ -119,7 +119,7 @@ async function cleanupOldMigrations(migrationDir: string) {
 	for (const file of files) {
 		if (file.substr(0, 8) < '20201120') {
 			// This means this file belongs to the old JS migration files. We delete it.
-			promises.push(unlink(resolve(migrationDir, file)));
+			promises.push(fs.unlink(resolve(migrationDir, file)));
 		}
 	}
 	await Promise.all(promises);

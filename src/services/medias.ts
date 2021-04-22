@@ -1,4 +1,4 @@
-import { readdir, stat } from 'fs/promises';
+import { promises as fs } from 'fs';
 import { remove } from 'fs-extra';
 import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
@@ -85,10 +85,10 @@ async function listRemoteMedias(type: MediaType): Promise<FileStat[]> {
 }
 
 async function listLocalFiles(dir: string): Promise<FileStat[]> {
-	const localFiles = await readdir(dir);
+	const localFiles = await fs.readdir(dir);
 	const files = [];
 	for (const file of localFiles) {
-		const fstat = await stat(resolve(dir, file));
+		const fstat = await fs.stat(resolve(dir, file));
 		files.push({
 			basename: file,
 			size: fstat.size
@@ -188,7 +188,7 @@ export async function buildMediasList(type: MediaType) {
 	medias[type] = [];
 	for (const resolvedPath of resolveMediaPath(type)) {
 		const files = [];
-		const dirFiles = await readdir(resolvedPath);
+		const dirFiles = await fs.readdir(resolvedPath);
 		for (const file of dirFiles) {
 			const fullFilePath = resolve(resolvedPath, file);
 			if (isMediaFile(file)) {
