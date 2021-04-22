@@ -1,5 +1,7 @@
 import {compare, genSalt, hash} from 'bcryptjs';
 import {createHash} from 'crypto';
+import { readdir, stat,unlink } from 'fs/promises';
+import { copy } from 'fs-extra';
 import {decode,encode} from 'jwt-simple';
 import {has as hasLang} from 'langs';
 import {resolve} from 'path';
@@ -26,7 +28,7 @@ import { addUser as DBAddUser,
 import {User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
-import {asyncCopy, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType} from '../lib/utils/files';
+import {asyncExists, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import { DBGuest } from '../types/database/user';
@@ -167,13 +169,13 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		if (await asyncExists(oldAvatarPath) &&
 			oldImageFile !== 'blank.png') {
 			try {
-				await asyncUnlink(oldAvatarPath);
+				await unlink(oldAvatarPath);
 			} catch(err) {
 				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, {service: 'User', obj: err});
 			}
 		}
 		try {
-			await asyncCopy(avatar.path, newAvatarPath, {overwrite: true});
+			await copy(avatar.path, newAvatarPath, {overwrite: true});
 		} catch(err) {
 			logger.error(`Could not copy new avatar ${avatar.path} to ${newAvatarPath}`, {service: 'User', obj: err});
 		}
@@ -347,17 +349,17 @@ async function updateGuestAvatar(user: DBGuest) {
 	}
 	let avatarStats: any = {};
 	try {
-		avatarStats = await asyncStat(resolve(resolvedPathAvatars(), user.avatar_file));
+		avatarStats = await stat(resolve(resolvedPathAvatars(), user.avatar_file));
 	} catch(err) {
 		// It means one avatar has disappeared, we'll put a 0 size on it so the replacement is triggered later
 		avatarStats.size = 0;
 	}
-	const bundledAvatarStats = await asyncStat(bundledAvatarPath);
+	const bundledAvatarStats = await stat(bundledAvatarPath);
 	if (avatarStats.size !== bundledAvatarStats.size) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
 		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
 		const tempFile = resolve(resolvedPathTemp(), bundledAvatarFile);
-		await asyncCopy(bundledAvatarPath, tempFile);
+		await copy(bundledAvatarPath, tempFile);
 		editUser(user.login, user, {
 			fieldname: null,
 			path: tempFile,
@@ -483,14 +485,14 @@ async function checkUserAvatars() {
 		}
 		const file = resolve(resolvedPathAvatars(), user.avatar_file);
 		if (!await asyncExists(file)) {
-			await asyncCopy(
+			await copy(
 				defaultAvatar,
 				file,
 				{overwrite: true}
 			);
 		} else {
-			const stat = await asyncStat(file);
-			if (stat.size === 0) await asyncCopy(
+			const fstat = await stat(file);
+			if (fstat.size === 0) await copy(
 				defaultAvatar,
 				file,
 				{overwrite: true}
@@ -507,14 +509,14 @@ async function cleanupAvatars() {
 	for (const user of users) {
 		if (!avatars.includes(user.avatar_file)) avatars.push(user.avatar_file);
 	}
-	const avatarFiles = await asyncReadDir(resolvedPathAvatars());
+	const avatarFiles = await readdir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
 		const avatar = avatars.find(a => a === file);
 		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPathAvatars(), file);
 			try {
 				logger.debug(`Deleting old file ${fullFile}`, {service: 'Users'});
-				await asyncUnlink(fullFile);
+				await unlink(fullFile);
 			} catch(err) {
 				logger.warn(`Failed deleting old file ${fullFile}`, {service: 'Users', obj: err});
 				//Non-fatal

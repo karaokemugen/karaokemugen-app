@@ -1,3 +1,4 @@
+import { writeFile } from 'fs/promises';
 import internet from 'internet-available';
 import cloneDeep from 'lodash.clonedeep';
 import {resolve} from 'path';
@@ -8,7 +9,6 @@ import { APIMessage } from '../controllers/common';
 import { exportPlayed, exportRequests } from '../dao/stats';
 import { getInstanceID } from '../lib/dao/database';
 import { getConfig } from '../lib/utils/config';
-import { asyncWriteFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
@@ -71,7 +71,7 @@ export async function sendPayload(host: string, minimal: boolean) {
 
 async function savePayload(payload: any, host: string) {
 	try {
-		await asyncWriteFile(resolve(getState().dataPath, `logs/statsPayload-${host}.json`), JSON.stringify(payload, null, 2), 'utf-8');
+		await writeFile(resolve(getState().dataPath, `logs/statsPayload-${host}.json`), JSON.stringify(payload, null, 2), 'utf-8');
 		logger.info('Payload data saved locally to logs/statsPayload.json', {service: 'Stats'});
 	} catch(err) {
 		// Non-fatal

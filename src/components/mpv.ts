@@ -1,4 +1,5 @@
 import execa from 'execa';
+import { readdir } from 'fs/promises';
 import i18n from 'i18next';
 import debounce from 'lodash.debounce';
 import sample from 'lodash.sample';
@@ -16,7 +17,7 @@ import {errorStep} from '../electron/electronLogger';
 import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
 import {getAvatarResolution} from '../lib/utils/ffmpeg';
-import {asyncExists, asyncReadDir, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
+import {asyncExists, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
 import { playerEnding } from '../services/karaokeEngine';
 import {getSingleMedia} from '../services/medias';
 import {next, prev} from '../services/player';
@@ -563,7 +564,7 @@ class Players {
 
 	private static async extractBackgroundFiles(backgroundDir: string): Promise<string[]> {
 		const backgroundFiles = [];
-		const dirListing = await asyncReadDir(backgroundDir);
+		const dirListing = await readdir(backgroundDir);
 		for (const file of dirListing) {
 			if (isImageFile(file)) backgroundFiles.push(resolve(backgroundDir, file));
 		}

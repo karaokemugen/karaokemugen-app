@@ -1,3 +1,4 @@
+import { unlink } from 'fs/promises';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import Postgrator, { Migration } from 'postgrator';
@@ -9,7 +10,7 @@ import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID }
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
-import { asyncReadDirFilter, asyncUnlink } from '../lib/utils/files';
+import { asyncReadDirFilter } from '../lib/utils/files';
 import { createImagePreviews } from '../lib/utils/previews';
 import { testCurrentBLCSet } from '../services/blacklist';
 import { getAllKaras } from '../services/kara';
@@ -118,7 +119,7 @@ async function cleanupOldMigrations(migrationDir: string) {
 	for (const file of files) {
 		if (file.substr(0, 8) < '20201120') {
 			// This means this file belongs to the old JS migration files. We delete it.
-			promises.push(asyncUnlink(resolve(migrationDir, file)));
+			promises.push(unlink(resolve(migrationDir, file)));
 		}
 	}
 	await Promise.all(promises);

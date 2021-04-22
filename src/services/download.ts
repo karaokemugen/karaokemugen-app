@@ -1,4 +1,6 @@
 import Queue from 'better-queue';
+import { stat, writeFile } from 'fs/promises';
+import { copy } from 'fs-extra';
 import internet from 'internet-available';
 import {resolve} from 'path';
 import { v4 as uuidV4 } from 'uuid';
@@ -9,7 +11,7 @@ import {emptyDownload, initDownloads, insertDownloads, selectDownloads, selectPe
 import { refreshAll, vacuum } from '../lib/dao/database';
 import { DownloadBundle } from '../lib/types/downloads';
 import {resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
-import {asyncCopy, asyncMove, asyncStat, asyncWriteFile,resolveFileInDirs} from '../lib/utils/files';
+import {asyncMove, resolveFileInDirs} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { emit } from '../lib/utils/pubsub';
@@ -177,7 +179,7 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, destRepo?:
 		try {
 			const existingMediaFiles = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', destRepo));
 			// Check if file size are different
-			const localMediaStat = await asyncStat(existingMediaFiles[0]);
+			const localMediaStat = await stat(existingMediaFiles[0]);
 			if (localMediaStat.size !== kara.data.medias[0].filesize) throw null;
 			mediaAlreadyExists = true;
 		} catch(err) {
@@ -194,14 +196,14 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, destRepo?:
 		let tempLyrics: string;
 		if (lyrics.file !== null) {
 			tempLyrics = resolve(tempDir, lyrics.file);
-			writes.push(asyncWriteFile(tempLyrics, lyrics.data, 'utf-8'));
+			writes.push(writeFile(tempLyrics, lyrics.data, 'utf-8'));
 		}
 		const tempKara = resolve(tempDir, kara.file);
-		writes.push(asyncWriteFile(tempKara, JSON.stringify(kara.data, null, 2), 'utf-8'));
+		writes.push(writeFile(tempKara, JSON.stringify(kara.data, null, 2), 'utf-8'));
 
 		for (const tag of tags) {
 			const tempTag = resolve(tempDir, tag.file);
-			writes.push(asyncWriteFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
+			writes.push(writeFile(tempTag, JSON.stringify(tag.data, null, 2), 'utf-8'));
 		}
 
 		await Promise.all(writes);
@@ -225,7 +227,7 @@ export async function integrateDownloadBundle(bundle: DownloadBundle, destRepo?:
 		for (const tag of tags) {
 			try {
 				// Tags are copied, not moved, becaue they can be used by several karas at once now that we use concurrent queue.
-				await asyncCopy(resolve(tempDir, tag.file), resolve(localTagsPath, tag.file), {overwrite: true});
+				await copy(resolve(tempDir, tag.file), resolve(localTagsPath, tag.file), {overwrite: true});
 			} catch(err) {
 				logger.error(`Unable to move ${resolve(tempDir, tag.file)} to ${resolve(localTagsPath, tag.file)}`, {service: 'Debug'});
 			}

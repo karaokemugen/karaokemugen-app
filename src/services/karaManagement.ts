@@ -1,3 +1,5 @@
+import { unlink } from 'fs/promises';
+import { copy } from 'fs-extra';
 import { basename, resolve } from 'path';
 
 import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore, sortKaraStore } from '../dao/dataStore';
@@ -12,7 +14,7 @@ import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
-import { asyncCopy, asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
+import { resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
@@ -70,17 +72,17 @@ export async function deleteKara(kids: string[], refresh = true) {
 	for (const kara of karas) {
 		// Remove files
 		try {
-			await asyncUnlink((await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]);
+			await unlink((await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]);
 		} catch(err) {
 			logger.warn(`Non fatal : Removing mediafile ${kara.mediafile} failed`, {service: 'Kara', obj: err});
 		}
 		try {
-			await asyncUnlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0]);
+			await unlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0]);
 		} catch(err) {
 			logger.warn(`Non fatal : Removing karafile ${kara.karafile} failed`, {service: 'Kara', obj: err});
 		}
 		if (kara.subfile) try {
-			await asyncUnlink((await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
+			await unlink((await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
 		} catch(err) {
 			logger.warn(`Non fatal : Removing subfile ${kara.subfile} failed`, {service: 'Kara', obj: err});
 		}
@@ -120,13 +122,13 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		if (newRepoIndex < oldRepoIndex) tasks.push(editKara(kara));
 		tasks.push(writeKara(resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile), kara));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
-		tasks.push(asyncCopy(
+		tasks.push(copy(
 			mediaFiles[0],
 			resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile),
 			{ overwrite: true }
 		));
 		const lyricsFiles = await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', oldRepoName));
-		tasks.push(asyncCopy(
+		tasks.push(copy(
 			lyricsFiles[0],
 			resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile),
 			{ overwrite: true }
@@ -235,7 +237,7 @@ export async function integrateKaraFile(file: string) {
 		try {
 			const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0];
 			if (karaDB.karafile !== karaData.karafile) {
-				await asyncUnlink(oldKaraFile);
+				await unlink(oldKaraFile);
 				removeKaraInStore(oldKaraFile);
 				addKaraToStore(file);
 			} else {
@@ -245,12 +247,12 @@ export async function integrateKaraFile(file: string) {
 			logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, {service: 'Kara'});
 		}
 		if (karaDB.mediafile !== karaData.mediafile) try {
-			await asyncUnlink((await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository)))[0]);
+			await unlink((await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository)))[0]);
 		} catch(err) {
 			logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, {service: 'Kara'});
 		}
 		if (karaDB.subfile && karaDB.subfile !== karaData.subfile) try {
-			await asyncUnlink((await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository)))[0]);
+			await unlink((await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository)))[0]);
 		} catch(err) {
 			logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, {service: 'Kara'});
 		}

@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import {app} from 'electron';
 import {existsSync, readFileSync} from 'fs';
-import {mkdirpSync} from 'fs-extra';
+import {copy, mkdirpSync, remove} from 'fs-extra';
 import i18n from 'i18next';
 import cloneDeep from 'lodash.clonedeep';
 import {resolve} from 'path';
@@ -13,7 +13,7 @@ import {exit, initEngine} from './components/engine';
 import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathPreviews, resolvedPathSessionExports, resolvedPathTemp, setConfig} from './lib/utils/config';
-import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncRemove} from './lib/utils/files';
+import {asyncCheckOrMkdir, asyncExists} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
@@ -216,15 +216,15 @@ export async function main() {
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	const tempInput = resolve(resolvedPathTemp(), 'input.conf');
 	logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
-	await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
+	await copy(resolve(resourcePath, 'assets/input.conf'), tempInput);
 
 	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
 	logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
-	await asyncCopy(resolve(resourcePath, 'assets/backgrounds/default.jpg'), tempBackground);
+	await copy(resolve(resourcePath, 'assets/backgrounds/default.jpg'), tempBackground);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
-	await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
+	await copy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
 
 	/**
 	 * Gentlemen, start your engines.
@@ -246,9 +246,9 @@ export async function main() {
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
-		if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
+		if (await asyncExists(resolvedPathTemp())) await remove(resolvedPathTemp());
 		// Emptying import directory
-		if (await asyncExists(resolvedPathImport())) await asyncRemove(resolvedPathImport());
+		if (await asyncExists(resolvedPathImport())) await remove(resolvedPathImport());
 		// Checking paths
 		const checks = [];
 		const paths = config.System.Path;

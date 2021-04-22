@@ -2,6 +2,7 @@
 
 // Node modules
 import { dialog } from 'electron';
+import { copy } from 'fs-extra';
 import i18next from 'i18next';
 import {address} from 'ip';
 import { createCIDR } from 'ip6addr';
@@ -17,7 +18,7 @@ import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import {RecursivePartial} from '../lib/types';
 import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
-import {asyncCopy, asyncRequired,relativePath} from '../lib/utils/files';
+import {asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/object_helpers';
@@ -251,7 +252,7 @@ export async function determineV6Prefix(ipv6: string): Promise<string> {
 /** Create a backup of our config file. Just in case. */
 export function backupConfig() {
 	logger.debug('Making a backup of config.yml', {service: 'Config'});
-	return asyncCopy(
+	return copy(
 		resolve(getState().dataPath, 'config.yml'),
 		resolve(getState().dataPath, 'config.backup.yml'),
 		{ overwrite: true }
