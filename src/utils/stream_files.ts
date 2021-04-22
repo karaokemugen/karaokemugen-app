@@ -24,6 +24,10 @@ async function writeCurrentSong() {
 	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'song_name.txt'), output, 'utf-8');
 }
 
+async function writeRequester() {
+	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'requester.txt'), getState().player.currentSong?.nickname || undefined, 'utf-8');
+}
+
 async function writeURL() {
 	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'km_url.txt'), getState().osURL, 'utf-8');
 }
@@ -87,6 +91,7 @@ async function writeTimeRemaining() {
 const debounceSettings: [number, {maxWait: number, leading: boolean}] = [1500, { maxWait: 3000, leading: true }];
 const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 	['song_name', debounce(writeCurrentSong, ...debounceSettings)],
+	['requester', debounce(writeRequester, ...debounceSettings)],
 	['km_url', debounce(writeURL, ...debounceSettings)],
 	['frontend_state', debounce(writeFrontendStatus, ...debounceSettings)],
 	['current_kara_count', debounce(writeKarasInCurrentPL, ...debounceSettings)],

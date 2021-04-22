@@ -58,6 +58,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		});
 		await mpv.play(current);
 		writeStreamFiles('song_name');
+		writeStreamFiles('requester');
 		setState({singlePlay: !randomPlaying, randomPlaying: randomPlaying});
 	} catch(err) {
 		logger.error('Error during song playback', {service: 'Player', obj: err});
@@ -120,7 +121,8 @@ export async function playCurrentSong(now: boolean) {
 				updatePlaylistDuration(kara.plaid),
 				updateUserQuotas(kara),
 				writeStreamFiles('time_remaining_in_current_playlist'),
-				writeStreamFiles('song_name')
+				writeStreamFiles('song_name'),
+				writeStreamFiles('requester')
 			]);
 			emitWS('playlistInfoUpdated', kara.plaid);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();

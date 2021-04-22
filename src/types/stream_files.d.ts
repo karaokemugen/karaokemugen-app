@@ -1,5 +1,6 @@
 export type StreamFileType =
 	'song_name' |
+	'requester' |
 	'km_url' |
 	'frontend_state' |
 	'public_kara_count' |
