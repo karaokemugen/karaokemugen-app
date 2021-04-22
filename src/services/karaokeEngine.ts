@@ -102,7 +102,7 @@ export async function playCurrentSong(now: boolean) {
 
 			if (kara?.pos === 1) {
 				if (conf.Karaoke.AutoBalance) {
-					await shufflePlaylist(getState().currentPlaylistID, 'balance');
+					await shufflePlaylist(getState().currentPlaid, 'balance');
 				}
 				// Testing if intro hasn't been played already and if we have at least one intro available
 				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed) {
@@ -172,7 +172,7 @@ export async function playerEnding() {
 
 		// Handle balance
 		if (state.player.mediaType === 'song' && !state.singlePlay && !state.randomPlaying) {
-			const playlist = await getPlaylistContentsMini(state.currentPlaylistID);
+			const playlist = await getPlaylistContentsMini(state.currentPlaid);
 			const previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
 			if (previousSongIndex >= 0) {
 				const previousSong = playlist[previousSongIndex];
@@ -184,7 +184,7 @@ export async function playerEnding() {
 					if (state.usersBalance.has(nextSong.username)) {
 						state.usersBalance.clear();
 						if (conf.Karaoke.AutoBalance && remainingSongs > 1) {
-							await shufflePlaylist(state.currentPlaylistID, 'balance');
+							await shufflePlaylist(state.currentPlaid, 'balance');
 						}
 					}
 					state.usersBalance.add(nextSong.username);
@@ -249,8 +249,8 @@ export async function playerEnding() {
 			return;
 		}
 		// Testing for position before last to play an encore
-		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
-		logger.debug(`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl?.plaid}`, {service: 'Player'});
+		const pl = await getPlaylistInfo(state.currentPlaid, {username: 'admin', role: 'admin'});
+		logger.debug(`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaid} - Playlist ID: ${pl?.plaid}`, {service: 'Player'});
 		if (conf.Playlist.Medias.Encores.Enabled && state.player.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed && !getState().singlePlay) {
 			try {
 				await mpv.playMedia('Encores');

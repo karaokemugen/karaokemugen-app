@@ -49,9 +49,9 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 		} else {
 			this.props.changeIdPlaylist(this.state.idPlaylistChosen ?
 				this.state.idPlaylistChosen :
-				(this.props.idPlaylistTo === this.props.context.globalState.settings.data.state.publicPlaylistID ?
+				(this.props.idPlaylistTo === this.props.context.globalState.settings.data.state.publicPlaid ?
 					-1 :
-					this.props.context.globalState.settings.data.state.publicPlaylistID));
+					this.props.context.globalState.settings.data.state.publicPlaid));
 			commandBackend('deletePlaylist', {
 				plaid: this.props.idPlaylist
 			});

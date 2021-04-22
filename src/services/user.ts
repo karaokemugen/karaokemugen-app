@@ -532,7 +532,7 @@ export async function updateSongsLeft(username: string, plaid?: number) {
 	username = username.toLowerCase();
 	const user = await findUserByName(username);
 	let quotaLeft: number;
-	if (!plaid) plaid = getState().publicPlaylistID;
+	if (!plaid) plaid = getState().publicPlaid;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
 		case 2:

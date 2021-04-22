@@ -82,7 +82,7 @@ class PublicHomepage extends Component<IProps, IState> {
 									</button> : null
 							}
 							{this.props.publicVisible
-								&& this.context.globalState.settings.data.state.currentPlaylistID !== this.context.globalState.settings.data.state.publicPlaylistID ?
+								&& this.context.globalState.settings.data.state.currentPlaid !== this.context.globalState.settings.data.state.publicPlaid ?
 								<button className="action green" onClick={() => this.props.changeView('publicPlaylist')}>
 									<i className="fas fa-fw fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
 								</button> : null

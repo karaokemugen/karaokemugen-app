@@ -14,11 +14,11 @@ describe('Main', () => {
 		expect(data).to.have.property('state');
 		expect(data).to.have.property('version');
 		expect(data.state.appPath).to.be.a('string');
-		expect(data.state.currentPlaylistID).to.be.a('number');
+		expect(data.state.currentPlaid).to.be.a('number');
 		expect(data.state.dataPath).to.be.a('string');
 		expect(data.state.environment).to.satisfy((e:any) => e === undefined || typeof e === 'string');
 		expect(data.state.os).to.be.a('string');
-		expect(data.state.publicPlaylistID).to.be.a('number');
+		expect(data.state.publicPlaid).to.be.a('number');
 		expect(data.state.sentryTest).to.satisfy((e:any) => e === undefined || typeof e === 'boolean');
 		expect(data.state.supportedLyrics).to.be.a('array');
 		expect(data.state.supportedMedias).to.be.a('array');

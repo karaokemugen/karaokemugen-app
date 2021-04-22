@@ -144,7 +144,7 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		whereClause = ` AND pc.fk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
-			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}
+			WHERE pc.fk_id_playlist = ${getState().publicPlaid}
 		)`;
 		orderClause = 'RANDOM()';
 	}
@@ -155,7 +155,7 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 		plaid: params.plaid,
 		username: params.username,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
-		publicPlaylist_id: getState().publicPlaylistID,
+		public_plaid: getState().publicPlaid,
 		...filterClauses.params
 	}));
 	return res.rows;
@@ -173,8 +173,8 @@ export async function getPLCInfo(id: number, forUser: boolean, username: string)
 			plcid: id,
 			dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 			username: username,
-			publicPlaylist_id: getState().publicPlaylistID,
-			currentPlaylist_id: getState().currentPlaylistID,
+			public_plaid: getState().publicPlaid,
+			current_plaid: getState().currentPlaid,
 		}));
 	return res.rows[0] || {};
 }

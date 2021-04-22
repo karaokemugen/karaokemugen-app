@@ -50,13 +50,13 @@ async function writeFrontendStatus() {
 }
 
 async function writeKarasInPublicPL() {
-	const {karacount} = await getPlaylistInfo(getState().publicPlaylistID);
+	const {karacount} = await getPlaylistInfo(getState().publicPlaid);
 	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'public_kara_count.txt'),
 		karacount.toString(), 'utf-8');
 }
 
 async function writeKarasInCurrentPL() {
-	const {karacount} = await getPlaylistInfo(getState().currentPlaylistID);
+	const {karacount} = await getPlaylistInfo(getState().currentPlaid);
 	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'current_kara_count.txt'),
 		karacount.toString(), 'utf-8');
 }
@@ -83,7 +83,7 @@ function secondsTimeSpanToHMS(s: number, format: string) {
 }
 
 async function writeTimeRemaining() {
-	const {time_left} = await getPlaylistInfo(getState().currentPlaylistID);
+	const {time_left} = await getPlaylistInfo(getState().currentPlaid);
 	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'time_remaining_in_current_playlist.txt'),
 		secondsTimeSpanToHMS(time_left, 'hm'), 'utf-8');
 }

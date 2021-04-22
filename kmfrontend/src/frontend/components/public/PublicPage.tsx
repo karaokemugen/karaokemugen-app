@@ -106,10 +106,10 @@ class PublicPage extends Component<IProps, IState> {
 			idsPlaylist.left = -1;
 			route = '/public/search';
 		} else if (view === 'publicPlaylist') {
-			idsPlaylist.left = this.context.globalState.settings.data.state.publicPlaylistID;
+			idsPlaylist.left = this.context.globalState.settings.data.state.publicPlaid;
 			route = `/public/playlist/${idsPlaylist.left}`;
 		} else if (view === 'currentPlaylist') {
-			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaylistID;
+			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaid;
 			route = `/public/playlist/${idsPlaylist.left}`;
 		}
 		setFilterValue(
@@ -144,9 +144,9 @@ class PublicPage extends Component<IProps, IState> {
 			this.changeView('tag', tagType);
 		} else if (this.props.route.location.pathname.includes('/public/playlist')) {
 			const idPlaylist = Number(this.props.route.location.pathname.substring(this.props.route.location.pathname.lastIndexOf('/') + 1));
-			if (idPlaylist === this.context.globalState.settings.data.state.publicPlaylistID) {
+			if (idPlaylist === this.context.globalState.settings.data.state.publicPlaid) {
 				this.changeView('publicPlaylist');
-			} else if (idPlaylist === this.context.globalState.settings.data.state.currentPlaylistID) {
+			} else if (idPlaylist === this.context.globalState.settings.data.state.currentPlaid) {
 				this.changeView('currentPlaylist');
 			}
 		}
@@ -379,7 +379,7 @@ class PublicPage extends Component<IProps, IState> {
 												scope="public"
 												side={1}
 												idPlaylist={Number((match.params as { plaid: string; }).plaid) || this.state.idsPlaylist.left}
-												idPlaylistTo={this.context.globalState.settings.data.state.publicPlaylistID}
+												idPlaylistTo={this.context.globalState.settings.data.state.publicPlaid}
 												majIdsPlaylist={this.majIdsPlaylist}
 												toggleKaraDetail={this.toggleKaraDetail}
 												searchValue={this.state.searchValue}

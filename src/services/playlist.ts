@@ -80,7 +80,7 @@ export async function testPlaylists() {
 			public: true,
 			autoSortByLike: false,
 		}, 'admin');
-		setState({currentPlaylistID: plaid, publicPlaylistID: plaid});
+		setState({currentPlaid: plaid, publicPlaid: plaid});
 		logger.debug('Initial current playlist created', {service: 'Playlist'});
 	} else {
 		// Testing current/public playlist individually.
@@ -223,7 +223,7 @@ export async function emptyPlaylist(plaid: number): Promise<number> {
 		]);
 		updatePlaylistLastEditTime(plaid);
 		// If our playlist is the public one, the frontend should reset all buttons on the song library so it shows + for everything all over again.
-		if (plaid === getState().publicPlaylistID) emitWS('publicPlaylistEmptied', plaid);
+		if (plaid === getState().publicPlaid) emitWS('publicPlaylistEmptied', plaid);
 		emitWS('playlistContentsUpdated', plaid);
 		return plaid;
 	} catch(err) {
@@ -246,10 +246,10 @@ export async function editPlaylist(plaid: number, playlist: DBPL) {
 		...playlist
 	});
 	if (playlist.flag_current) {
-		const oldCurrentPlaylist_id = getState().currentPlaylistID;
+		const oldCurrentPlaylist_id = getState().currentPlaid;
 		updatePlaylistLastEditTime(oldCurrentPlaylist_id);
 		emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
-		setState({currentPlaylistID: plaid, introPlayed: false, introSponsorPlayed: false});
+		setState({currentPlaid: plaid, introPlayed: false, introSponsorPlayed: false});
 		emitWS('currentPlaylistUpdated', plaid);
 		resetAllAcceptedPLCs();
 		writeStreamFiles('current_kara_count');
@@ -257,10 +257,10 @@ export async function editPlaylist(plaid: number, playlist: DBPL) {
 		logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
 	}
 	if (playlist.flag_public) {
-		const oldPublicPlaylist_id = getState().publicPlaylistID;
+		const oldPublicPlaylist_id = getState().publicPlaid;
 		updatePlaylistLastEditTime(oldPublicPlaylist_id);
 		emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
-		setState({publicPlaylistID: plaid});
+		setState({publicPlaid: plaid});
 		emitWS('publicPlaylistUpdated', plaid);
 		writeStreamFiles('public_kara_count');
 		logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
@@ -282,13 +282,13 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 		username: username
 	});
 	if (+opts.current) {
-		setState({currentPlaylistID: plaid});
+		setState({currentPlaid: plaid});
 		writeStreamFiles('current_kara_count');
 		writeStreamFiles('time_remaining_in_current_playlist');
 		emitWS('currentPlaylistUpdated', plaid);
 	}
 	if (+opts.public) {
-		setState({publicPlaylistID: plaid});
+		setState({publicPlaid: plaid});
 		writeStreamFiles('public_kara_count');
 		emitWS('publicPlaylistUpdated', plaid);
 	}
@@ -378,7 +378,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	const conf = getConfig();
 	const state = getState();
-	if (!plaid) plaid = state.publicPlaylistID;
+	if (!plaid) plaid = state.publicPlaid;
 	const karas: string[] = (typeof kids === 'string') ? kids.split(',') : kids;
 	const [pl, kara] = await Promise.all([
 		getPlaylistInfo(plaid),
@@ -507,18 +507,18 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			updateSongsLeft(user.login, plaid)
 		]);
 		const plc = await getPLCInfo(PLCsInserted[0].plc_id, true, requester);
-		if (+plaid === state.currentPlaylistID) {
+		if (+plaid === state.currentPlaid) {
 			writeStreamFiles('current_kara_count');
 			writeStreamFiles('time_remaining_in_current_playlist');
 			if (conf.Karaoke.Autoplay &&
 				(state.player.playerStatus === 'stop' || state.randomPlaying) ) {
 				setState({ randomPlaying: false });
 				const kara = await nextSong();
-				await setPlaying(kara.plcid, getState().currentPlaylistID);
+				await setPlaying(kara.plcid, getState().currentPlaid);
 				await playPlayer(true);
 			}
 		}
-		if (+plaid === state.publicPlaylistID) {
+		if (+plaid === state.publicPlaid) {
 			emitWS('KIDUpdated', PLCsInserted.map(plc => {
 				return {
 					kid: plc.kid,
@@ -587,7 +587,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: number, pos?:
 			const plcData = await getPLCInfoMini(plcList[index].plcid);
 			if (!plcData) throw {code: 404, msg: `PLC ${plcList[index].plcid} does not exist`};
 			// If source is public playlist and destination current playlist, free up PLCs from the public playlist.
-			if (plcList[index].plaid === getState().publicPlaylistID && plaid === getState().currentPlaylistID) {
+			if (plcList[index].plaid === getState().publicPlaid && plaid === getState().currentPlaid) {
 				PLCsToFree.push(plcList[index].plcid);
 			}
 			plcList[index].kid = plcData.kid;
@@ -623,10 +623,10 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: number, pos?:
 		updatePlaylistLastEditTime(plaid);
 		const state = getState();
 		// If we're adding to the current playlist ID and KM's mode is public, we have to notify users that their song has been added and will be playing in xxx minutes
-		if (plaid === state.currentPlaylistID && plaid !== state.publicPlaylistID) {
+		if (plaid === state.currentPlaid && plaid !== state.publicPlaid) {
 			plcList.forEach(plc => notifyUserOfSongPlayTime(plc.plcid, plc.username));
 		}
-		if (+plaid === state.publicPlaylistID) {
+		if (+plaid === state.publicPlaid) {
 			emitWS('KIDUpdated', plcList.map(plc => {
 				return {
 					kid: plc.kid,
@@ -662,7 +662,7 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 			if (!plcData) throw {errno: 404, msg: 'At least one playlist content is unknown'};
 			if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {errno: 403, msg: 'You cannot delete a song you did not add'};
 			if (token.role !== 'admin' && plcData.upvotes > 0) throw {errno: 403, code: 'PL_DELETE_UPVOTED', msg: 'You cannot delete a song with upvotes'};
-			if (plcData.flag_playing && getState().player.playerStatus === 'play' && plcData.plaid === getState().currentPlaylistID) throw {errno: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
+			if (plcData.flag_playing && getState().player.playerStatus === 'play' && plcData.plaid === getState().currentPlaid) throw {errno: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
 			usersNeedingUpdate.add(plcData.username);
 			playlistsNeedingUpdate.add(plcData.plaid);
 			plcsNeedingDelete.push({
@@ -673,7 +673,7 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 		}
 		logger.debug(`Deleting songs ${plcsNeedingDelete.map(p => p.id).toString()}`, {service: 'Playlist'});
 		await removeKaraFromPlaylist(plcsNeedingDelete.map((p:any) => p.id));
-		const pubPLID = getState().publicPlaylistID;
+		const pubPLID = getState().publicPlaid;
 		const KIDsNeedingUpdate: Set<string> = new Set();
 		for (const plc of plcsNeedingDelete) {
 			if (plc.plaid === pubPLID) {
@@ -720,8 +720,8 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token) {
 
 export async function resetAllAcceptedPLCs() {
 	const [publicPL, currentPL] = await Promise.all([
-		getPlaylistContentsMini(getState().publicPlaylistID),
-		getPlaylistContentsMini(getState().currentPlaylistID),
+		getPlaylistContentsMini(getState().publicPlaid),
+		getPlaylistContentsMini(getState().currentPlaid),
 	]);
 	// Filter public playlist with only songs that are accepted and which are missing from current playlist.
 	const PLCsToResetAccepted = publicPL.filter(pubPLC =>
@@ -817,7 +817,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 			await reorderPlaylist(plc.plaid);
 			const currentSong = getState().player.currentSong;
 			// If our new PLC has a position higher or equal than the current song pos in state, we need to update getCurrentSong's position
-			if (currentSong && currentSong.pos <= params.pos && plc.plaid === getState().currentPlaylistID) {
+			if (currentSong && currentSong.pos <= params.pos && plc.plaid === getState().currentPlaid) {
 				setState({player: {currentSong: await getCurrentSong()}});
 			}
 			writeStreamFiles('time_remaining_in_current_playlist');
@@ -825,7 +825,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 	}
 	if (PLCsToCopyToCurrent.length > 0) {
 		try {
-			await copyKaraToPlaylist(PLCsToCopyToCurrent, getState().currentPlaylistID);
+			await copyKaraToPlaylist(PLCsToCopyToCurrent, getState().currentPlaid);
 		} catch(err) {
 			// This is allowed to fail if the song is already in playlist
 		}
@@ -951,7 +951,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: nu
 		const unknownKIDs = await isAllKaras(playlist.PlaylistContents.map((plc: PLC) => plc.kid));
 		for (const i in playlist.PlaylistContents) {
 			// Do not replace here to not break old exports/imports
-			playlist.PlaylistContents[i].playlist_id = plaid;
+			playlist.PlaylistContents[i].plaid = plaid;
 		}
 		if (playlist.PlaylistContents?.length > 0) await addKaraToPL(playlist.PlaylistContents);
 		if (playingKara?.kid) {
@@ -1164,7 +1164,7 @@ function balancePlaylist(playlist: DBPLC[]) {
 
 /** Move to previous song */
 export async function previousSong() {
-	const plaid = getState().currentPlaylistID;
+	const plaid = getState().currentPlaid;
 	const playlist = await getPlaylistContentsMini(plaid);
 	if (playlist.length === 0) throw 'Playlist is empty!';
 	let readpos = 0;
@@ -1211,7 +1211,7 @@ export async function nextSong(): Promise<DBPLC> {
 /** Get current playlist contents */
 async function getCurrentPlaylistContents(): Promise<DBPLC[]> {
 	// Returns current playlist contents and where we're at.
-	const plaid = getState().currentPlaylistID;
+	const plaid = getState().currentPlaid;
 	const playlist = await getPlaylistContentsMini(plaid);
 	return playlist;
 }
@@ -1243,7 +1243,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		const kara = playlist[currentPos];
 		if (!kara) throw 'No karaoke found in playlist object';
 		// If there's no kara with a playing flag, we set the first one in the playlist
-		const plaid = getState().currentPlaylistID;
+		const plaid = getState().currentPlaid;
 		if (updatePlayingKara) await setPlaying(kara.plcid, plaid);
 		// Let's add details to our object so the player knows what to do with it.
 		kara.plaid = plaid;
@@ -1308,9 +1308,9 @@ export async function initPlaylistSystem() {
 export async function testCurrentPlaylist() {
 	const currentPL_id = await findCurrentPlaylist();
 	if (currentPL_id) {
-		setState({currentPlaylistID: currentPL_id});
+		setState({currentPlaid: currentPL_id});
 	} else {
-		setState({currentPlaylistID: await createPlaylist(i18n.t('CURRENT_PLAYLIST'),{
+		setState({currentPlaid: await createPlaylist(i18n.t('CURRENT_PLAYLIST'),{
 			visible: true,
 			current: true
 		},'admin')
@@ -1323,9 +1323,9 @@ export async function testCurrentPlaylist() {
 export async function testPublicPlaylist() {
 	const publicPL_id = await findPublicPlaylist();
 	if (publicPL_id) {
-		setState({ publicPlaylistID: publicPL_id });
+		setState({ publicPlaid: publicPL_id });
 	} else {
-		setState({ publicPlaylistID: await createPlaylist(i18n.t('PUBLIC_PLAYLIST'),{
+		setState({ publicPlaid: await createPlaylist(i18n.t('PUBLIC_PLAYLIST'),{
 			visible: true,
 			public: true
 		},'admin')
@@ -1342,11 +1342,11 @@ export async function updateUserQuotas(kara: PLC) {
 	// Then we're updating song quotas for all users involved.
 	const state = getState();
 	profile('updateUserQuotas');
-	await freePLCBeforePos(kara.pos, state.currentPlaylistID);
+	await freePLCBeforePos(kara.pos, state.currentPlaid);
 	// For every KID we check if it exists and add the PLC to a list
 	const [publicPlaylist, currentPlaylist] = await Promise.all([
-		getPlaylistContentsMini(state.publicPlaylistID),
-		getPlaylistContentsMini(state.currentPlaylistID)
+		getPlaylistContentsMini(state.publicPlaid),
+		getPlaylistContentsMini(state.currentPlaid)
 	]);
 	const freeTasks = [];
 	const usersNeedingUpdate: Set<string> = new Set();
@@ -1360,7 +1360,7 @@ export async function updateUserQuotas(kara: PLC) {
 	}
 	await Promise.all(freeTasks);
 	for (const username of usersNeedingUpdate.values()) {
-		updateSongsLeft(username, state.publicPlaylistID);
+		updateSongsLeft(username, state.publicPlaid);
 	}
 	profile('updateUserQuotas');
 }

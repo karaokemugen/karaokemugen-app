@@ -92,7 +92,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
 		const users = await listUsers();
 		for (const user of users) {
-			updateSongsLeft(user.login, getState().publicPlaylistID);
+			updateSongsLeft(user.login, getState().publicPlaid);
 		}
 	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});

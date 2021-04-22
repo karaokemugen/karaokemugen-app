@@ -126,12 +126,12 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
-			WHERE pc.fk_id_playlist = ${getState().publicPlaylistID}
+			WHERE pc.fk_id_playlist = ${getState().publicPlaid}
 		)`;
 	}
 	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom, selectRequested, groupClauseEnd, joinClauses);
 	const queryParams = {
-		publicPlaylist_id: getState().publicPlaylistID,
+		publicPlaylist_id: getState().publicPlaid,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 		username: params.username,
 		...filterClauses.params

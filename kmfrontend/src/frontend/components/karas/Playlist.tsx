@@ -156,7 +156,7 @@ class Playlist extends Component<IProps, IState> {
 
 	publicPlaylistUpdated = (idPlaylist: number) => {
 		if (this.props.scope !== 'admin' && this.props.side
-			&& idPlaylist !== this.context.globalState.settings.data.state.publicPlaylistID) {
+			&& idPlaylist !== this.context.globalState.settings.data.state.publicPlaid) {
 			setSettings(this.context.globalDispatch);
 			this.changeIdPlaylist(idPlaylist);
 		}
@@ -341,7 +341,7 @@ class Playlist extends Component<IProps, IState> {
 			} else {
 				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie))
 					&& this.props.playlistList.filter(playlist => playlist.plaid === Number(plVal1Cookie)).length > 0 ?
-					Number(plVal2Cookie) : this.context.globalState.settings.data.state.currentPlaylistID;
+					Number(plVal2Cookie) : this.context.globalState.settings.data.state.currentPlaid;
 			}
 		}
 		this.setState({ idPlaylist: value }, () => this.props.majIdsPlaylist(this.props.side, value));
