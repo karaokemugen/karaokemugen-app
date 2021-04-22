@@ -98,8 +98,8 @@ class PlaylistModal extends Component<IProps, IState> {
 							<h4 className="modal-title">{this.props.mode === 'edit' ?
 								i18next.t('MODAL.PLAYLIST_MODAL.EDIT_PLAYLIST', { playlist:
 									(this.props.idPlaylist === -4 ?
-										this.props.bLSet.name
-										: this.props.playlistInfo.name)
+										this.props.bLSet?.name
+										: this.props.playlistInfo?.name)
 								}) :
 								i18next.t('MODAL.PLAYLIST_MODAL.CREATE_PLAYLIST')
 							}</h4>
