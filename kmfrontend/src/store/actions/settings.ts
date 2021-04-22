@@ -31,6 +31,7 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 				error: error
 			}
 		});
+		throw error;
 	}
 }
 
