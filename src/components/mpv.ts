@@ -26,7 +26,7 @@ import {MediaType} from '../types/medias';
 import {MpvCommand} from '../types/MpvIPC';
 import { MpvOptions, PlayerState } from '../types/player';
 import {CurrentSong} from '../types/playlist';
-import { initializationCatchphrases, mpvRegex } from '../utils/constants';
+import { initializationCatchphrases, mpvRegex, requiredMPVVersion } from '../utils/constants';
 import {setDiscordActivity} from '../utils/discordRPC';
 import MpvIPC from '../utils/MpvIPC';
 import sentry from '../utils/sentry';
@@ -202,8 +202,8 @@ async function checkMpv() {
 		logger.warn('Unable to determine mpv version. Will assume this is a recent one', {service: 'Player', obj: err});
 		return;
 	}
-	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
-		logger.error(`mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`, {service: 'Player'});
+	if (!semver.satisfies(mpvVersion, requiredMPVVersion)) {
+		logger.error(`mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version ${requiredMPVVersion}`, {service: 'Player'});
 		logger.error(`mpv binary: ${state.binPath.mpv}`, {service: 'Player'});
 		logger.error('Exiting due to obsolete mpv version', {service: 'Player'});
 		await exit(1);
