@@ -25,7 +25,7 @@ async function writeCurrentSong() {
 }
 
 async function writeRequester() {
-	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'requester.txt'), getState().player.currentSong?.nickname || undefined, 'utf-8');
+	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'requester.txt'), getState().player.currentSong?.nickname || '', 'utf-8');
 }
 
 async function writeURL() {
