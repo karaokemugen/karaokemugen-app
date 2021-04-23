@@ -125,7 +125,7 @@ export default function whitelistController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
-			kids: {uuidArrayValidator: true}
+			kids: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
@@ -161,7 +161,7 @@ export default function whitelistController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
-			kids: {uuidArrayValidator: true}
+			kids: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {

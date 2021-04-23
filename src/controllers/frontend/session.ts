@@ -118,8 +118,8 @@ export default function sessionController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
-			seid1: {uuidArrayValidator: true},
-			seid2: {uuidArrayValidator: true}
+			seid1: {presence: true, uuidArrayValidator: true},
+			seid2: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {

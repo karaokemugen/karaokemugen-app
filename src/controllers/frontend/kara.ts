@@ -345,7 +345,7 @@ export default function karaController(router: SocketIOApp) {
  */
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		const validationErrors = check(req.body, {
-			kids: {uuidArrayValidator: true}
+			kids: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {

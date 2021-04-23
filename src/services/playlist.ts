@@ -872,7 +872,8 @@ export async function exportPlaylist(plaid: string) {
 			name: pl.name,
 			created_at: pl.created_at,
 			modified_at: pl.modified_at,
-			flag_visible: pl.flag_visible
+			flag_visible: pl.flag_visible,
+			plaid: pl.plaid
 		};
 		const plcFiltered = plContents.map((plc: DBPLC) => {
 			return {

@@ -61,7 +61,7 @@ export default function favoritesController(router: SocketIOApp) {
 	router.route('addFavorites', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'user', 'limited');
 		const validationErrors = check(req.body, {
-			kids: {uuidArrayValidator: true}
+			kids: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
@@ -82,7 +82,7 @@ export default function favoritesController(router: SocketIOApp) {
 		// Delete kara from favorites
 		// Deletion is through kara ID.
 		const validationErrors = check(req.body, {
-			kids: {uuidArrayValidator: true}
+			kids: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
