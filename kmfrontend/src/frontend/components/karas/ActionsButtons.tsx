@@ -4,14 +4,15 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
+import {nonStandardPlaylists} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 
 interface IProps {
 	scope: string;
 	side: number;
 	isHeader?: boolean;
-	idPlaylist: number;
-	idPlaylistTo: number;
+	plaid: string;
+	plaidTo: string;
 	kara?: KaraElement;
 	checkedKaras?: number;
 	flag_public: boolean;
@@ -40,7 +41,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 		return (
 			<>
 				{this.props.scope === 'admin' && this.props.flag_public
-					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaid ?
+					&& this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_REFUSE_SELECT_KARA' : 'TOOLTIP_REFUSE_KARA')}
 						className={`${classValue} ${this.props.kara?.flag_refused ? 'off' : ''}`}
 						onClick={this.props.refuseKara}>
@@ -49,7 +50,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 				}
 
 				{this.props.scope === 'admin' && this.props.flag_public
-					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaid ?
+					&& this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid ?
 					<button
 						title={i18next.t(this.props.isHeader ? 'TOOLTIP_ACCEPT_SELECT_KARA' : 'TOOLTIP_ACCEPT_KARA')}
 						className={`${classValue} ${this.props.kara?.flag_accepted ? 'on' : ''}`}
@@ -58,8 +59,8 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{this.props.idPlaylist !== -5 && ((this.props.scope === 'admin' && this.props.idPlaylist !== -1 && !(this.props.flag_public
-					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaid))
+				{this.props.plaid !== nonStandardPlaylists.favorites && ((this.props.scope === 'admin' && this.props.plaid !== nonStandardPlaylists.library && !(this.props.flag_public
+					&& this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid))
 					|| (this.props.scope !== 'admin' && !this.props.kara?.flag_dejavu && !this.props.kara?.flag_playing
 						&& (this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]
 							|| (this.props.flag_public && this.props.kara.username === this.context.globalState.auth.data.username)))) ?
@@ -70,17 +71,17 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{this.props.idPlaylist === -5 ?
+				{this.props.plaid === nonStandardPlaylists.favorites ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_FAVS' : 'TOOLTIP_DELETE_FAVS')}
 						className={classValue + ' yellow'} onClick={this.props.deleteFavorite}>
 						<i className="fas fa-star" />
 					</button> : null
 				}
 
-				{(this.props.scope === 'admin' && this.props.idPlaylistTo !== -1 && this.props.idPlaylistTo !== -5 && !(this.props.flag_public
-					&& this.props.idPlaylistTo === this.context.globalState.settings.data.state.currentPlaid))
-					|| (this.props.scope === 'public' && this.props.idPlaylist !== this.context.globalState.settings.data.state.publicPlaid
-						&& this.props.idPlaylist !== this.context.globalState.settings.data.state.currentPlaid
+				{(this.props.scope === 'admin' && this.props.plaidTo !== nonStandardPlaylists.library && this.props.plaidTo !== nonStandardPlaylists.favorites && !(this.props.flag_public
+					&& this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid))
+					|| (this.props.scope === 'public' && this.props.plaid !== this.context.globalState.settings.data.state.publicPlaid
+						&& this.props.plaid !== this.context.globalState.settings.data.state.currentPlaid
 						&& (!this.props.kara?.public_plc_id || !this.props.kara?.public_plc_id[0])) ?
 					<button
 						title={this.props.isHeader ? i18next.t('TOOLTIP_ADD_SELECT_KARA') :

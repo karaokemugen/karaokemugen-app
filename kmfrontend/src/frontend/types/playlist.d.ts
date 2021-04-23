@@ -1,6 +1,6 @@
 
 interface PlaylistElem {
-	plaid: number;
+	plaid: string;
 	name: string;
 	karacount?: number;
 	flag_current?: boolean;

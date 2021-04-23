@@ -52,7 +52,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			user_type: 0,
 			repo: kara.repository,
 			plcid: -1,
-			plaid: -1,
+			plaid: '7cf90987-9bf1-48e3-ba16-8ebd92a03f68',
 			avatar: null,
 			infos
 		});

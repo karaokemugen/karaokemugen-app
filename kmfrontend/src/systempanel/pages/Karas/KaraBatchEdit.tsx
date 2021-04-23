@@ -9,7 +9,7 @@ import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
 interface PlaylistElem {
-	plaid: number;
+	plaid: string;
 	name: string;
 	karacount?: number;
 	flag_current?: boolean;
@@ -21,7 +21,7 @@ interface KaraBatchEditState {
 	tags: any,
 	tid?: string,
 	playlists: PlaylistElem[],
-	plaid?: number,
+	plaid?: string,
 	action?: 'add' | 'remove',
 	type?: number
 	i18nTag: { [key: string]: { [key: string]: string } };
@@ -69,7 +69,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	}
 
-	changePlaylist = async (plaid: number) => {
+	changePlaylist = async (plaid: string) => {
 		const karas = await commandBackend('getPlaylistContents', {plaid});
 		this.setState({ plaid: plaid, karas: karas.content, i18nTag: karas.i18n });
 	}

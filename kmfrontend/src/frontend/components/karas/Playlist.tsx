@@ -16,7 +16,14 @@ import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import { callModal, displayMessage, eventEmitter, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import {
+	callModal,
+	displayMessage,
+	eventEmitter,
+	is_touch_device, isNonStandardPlaylist,
+	nonStandardPlaylists,
+	secondsTimeSpanToHMS
+} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
 import BlacklistCriterias from './BlacklistCriterias';
@@ -28,16 +35,16 @@ const _cache = new CellMeasurerCache({ defaultHeight: 44, fixedWidth: true });
 let timer: any;
 
 interface IProps {
-	idPlaylist?: number;
+	plaid?: string;
 	scope: string;
 	side: number;
-	idPlaylistTo: number;
+	plaidTo: string;
 	tags?: Array<Tag> | undefined;
 	searchMenuOpen?: boolean;
 	playlistList?: Array<PlaylistElem>;
 	toggleSearchMenu?: () => void;
-	majIdsPlaylist: (side: number, value: number) => void;
-	toggleKaraDetail: (kara: KaraElement, idPlaylist: number, index?: number) => void;
+	majIdsPlaylist: (side: number, value: string) => void;
+	toggleKaraDetail: (kara: KaraElement, plaid: string, index?: number) => void;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
 	indexKaraDetail?: number;
@@ -55,7 +62,7 @@ interface IState {
 	forceUpdate: boolean;
 	forceUpdateFirst: boolean;
 	scope?: string;
-	idPlaylist: number;
+	plaid: string;
 	bLSet?: BLCSet
 	data: KaraList | Array<DBBLC> | undefined;
 	scrollToIndex?: number;
@@ -91,7 +98,7 @@ class Playlist extends Component<IProps, IState> {
 			stopUpdate: false,
 			forceUpdate: false,
 			forceUpdateFirst: false,
-			idPlaylist: 0,
+			plaid: nonStandardPlaylists.library,
 			bLSet: undefined,
 			data: undefined,
 			bLSetList: [],
@@ -138,23 +145,23 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	whitelistUpdated = () => {
-		if (this.state.idPlaylist === -3) this.getPlaylist();
+		if (this.state.plaid === nonStandardPlaylists.whitelist) this.getPlaylist();
 	}
 
 	blacklistUpdated = () => {
-		if (this.state.idPlaylist === -2 || this.state.idPlaylist === -4)
+		if (this.state.plaid === nonStandardPlaylists.blacklist || this.state.plaid === nonStandardPlaylists.blc)
 			this.getPlaylist();
 	}
 
 	favoritesUpdated = () => {
-		if (this.state.idPlaylist === -5) this.getPlaylist();
+		if (this.state.plaid === nonStandardPlaylists.favorites) this.getPlaylist();
 	}
 
 	playlistInfoUpdated = (idPlaylist: string) => {
-		if (this.state.idPlaylist === Number(idPlaylist)) this.getPlaylistInfo();
+		if (this.state.plaid === idPlaylist) this.getPlaylistInfo();
 	}
 
-	publicPlaylistUpdated = (idPlaylist: number) => {
+	publicPlaylistUpdated = (idPlaylist: string) => {
 		if (this.props.scope !== 'admin' && this.props.side
 			&& idPlaylist !== this.context.globalState.settings.data.state.publicPlaid) {
 			setSettings(this.context.globalDispatch);
@@ -163,7 +170,7 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	publicPlaylistEmptied = () => {
-		if (this.state.idPlaylist === -1) {
+		if (this.state.plaid === nonStandardPlaylists.library) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				if (kara) {
@@ -183,7 +190,7 @@ class Playlist extends Component<IProps, IState> {
 		flag_upvoted: boolean,
 		plc_id: number[]
 	}[]) => {
-		if ((this.state.idPlaylist === -1 || this.state.idPlaylist === -5) && (this.state.data as KaraList)?.content) {
+		if ((this.state.plaid === nonStandardPlaylists.library || this.state.plaid === nonStandardPlaylists.favorites) && (this.state.data as KaraList)?.content) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				for (const karaUpdated of event) {
@@ -211,18 +218,18 @@ class Playlist extends Component<IProps, IState> {
 
 	initCall = async () => {
 		await this.getIdPlaylist();
-		this.setState({ goToPlaying: this.state.idPlaylist > 0 });
+		this.setState({ goToPlaying: !isNonStandardPlaylist(this.state.plaid) });
 		if (this.props.scope === 'public' || this.props.playlistList
-			.filter(playlist => playlist.plaid === this.state.idPlaylist).length !== 0) {
+			.filter(playlist => playlist.plaid === this.state.plaid).length !== 0) {
 			if (this.props.scope === 'admin') await this.loadBLSet();
 			await this.getPlaylist();
 		}
 	}
 
-	playlistContentsUpdatedFromClient = (idPlaylist: number) => {
-		if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) {
+	playlistContentsUpdatedFromClient = (plaid: string) => {
+		if (this.state.plaid === plaid && !this.state.stopUpdate) {
 			const data = this.state.data as KaraList;
-			if (this.state.idPlaylist > 0 && data) data.infos.from = 0;
+			if (!isNonStandardPlaylist(this.state.plaid) && data) data.infos.from = 0;
 			this.setState({ data: data, scrollToIndex: 0 });
 			this.getPlaylist(this.state.searchType);
 		}
@@ -232,7 +239,7 @@ class Playlist extends Component<IProps, IState> {
 		this.playlistForceRefresh(true);
 	}
 
-	changeIdPlaylistFromOtherSide = ({ side, playlist }: { side: number, playlist: number }) => {
+	changeIdPlaylistFromOtherSide = ({ side, playlist }: { side: number, playlist: string }) => {
 		if (this.props.side === side) this.changeIdPlaylist(playlist);
 	}
 
@@ -270,11 +277,11 @@ class Playlist extends Component<IProps, IState> {
 						key={content.kid}
 						kara={content}
 						scope={this.props.scope}
-						idPlaylist={this.state.idPlaylist}
+						plaid={this.state.plaid}
 						playlistInfo={this.state.playlistInfo}
 						i18nTag={(this.state.data as KaraList).i18n}
 						side={this.props.side}
-						idPlaylistTo={this.props.idPlaylistTo}
+						plaidTo={this.props.plaidTo}
 						checkKara={this.checkKara}
 						avatar_file={(this.state.data as KaraList).avatars[content.username]}
 						deleteCriteria={this.deleteCriteria}
@@ -307,7 +314,7 @@ class Playlist extends Component<IProps, IState> {
 
 	noRowsRenderer = () => {
 		return <React.Fragment>
-			{this.state.idPlaylist === -1 && this.props.scope === 'admin' ? (
+			{this.state.plaid === nonStandardPlaylists.library && this.props.scope === 'admin' ? (
 				<div className="list-group-item karaSuggestion">
 					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 					{this.context?.globalState.settings.data.config.System.Repositories
@@ -318,14 +325,14 @@ class Playlist extends Component<IProps, IState> {
 		</React.Fragment>;
 	}
 
-	playlistContentsUpdatedFromServer = (idPlaylist: number) => {
-		if (this.state.idPlaylist === Number(idPlaylist) && !this.state.stopUpdate) this.getPlaylist();
+	playlistContentsUpdatedFromServer = (idPlaylist: string) => {
+		if (this.state.plaid === idPlaylist && !this.state.stopUpdate) this.getPlaylist();
 	};
 
 	getIdPlaylist = async () => {
-		let value: number;
+		let value: string;
 		if (this.props.scope === 'public') {
-			value = this.props.idPlaylist;
+			value = this.props.plaid;
 		} else {
 			let plVal1Cookie = localStorage.getItem('mugenPlVal1');
 			let plVal2Cookie = localStorage.getItem('mugenPlVal2');
@@ -335,16 +342,16 @@ class Playlist extends Component<IProps, IState> {
 			}
 
 			if (this.props.side === 1) {
-				value = plVal1Cookie !== null && !isNaN(Number(plVal1Cookie))
-					&& this.props.playlistList.filter(playlist => playlist.plaid === Number(plVal1Cookie)).length > 0 ?
-					Number(plVal1Cookie) : -1;
+				value = plVal1Cookie !== null && !plVal1Cookie
+					&& this.props.playlistList.filter(playlist => playlist.plaid === plVal1Cookie).length > 0 ?
+					plVal1Cookie : nonStandardPlaylists.library;
 			} else {
-				value = plVal2Cookie !== null && !isNaN(Number(plVal2Cookie))
-					&& this.props.playlistList.filter(playlist => playlist.plaid === Number(plVal1Cookie)).length > 0 ?
-					Number(plVal2Cookie) : this.context.globalState.settings.data.state.currentPlaid;
+				value = plVal2Cookie !== null && !plVal2Cookie
+					&& this.props.playlistList.filter(playlist => playlist.plaid === plVal1Cookie).length > 0 ?
+					plVal2Cookie : this.context.globalState.settings.data.state.currentPlaid;
 			}
 		}
-		this.setState({ idPlaylist: value }, () => this.props.majIdsPlaylist(this.props.side, value));
+		this.setState({ plaid: value }, () => this.props.majIdsPlaylist(this.props.side, value));
 	};
 
 	loadBLSet = async (idBLSet?: number) => {
@@ -353,55 +360,55 @@ class Playlist extends Component<IProps, IState> {
 		this.setState({ bLSetList: bLSetList, bLSet: bLSet }, () => setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id));
 	}
 
-	changeIdPlaylist = async (idPlaylist: number, idBLSet?: number) => {
-		if (idPlaylist === -2 || idPlaylist === -4) {
+	changeIdPlaylist = async (plaid: string, idBLSet?: number) => {
+		if (plaid === nonStandardPlaylists.blacklist || plaid === nonStandardPlaylists.blc) {
 			await this.loadBLSet(idBLSet);
 		}
-		if (this.props.scope === 'admin' && this.state.idPlaylist === -1 && this.props.searchMenuOpen) {
+		if (this.props.scope === 'admin' && this.state.plaid === nonStandardPlaylists.library && this.props.searchMenuOpen) {
 			this.props.toggleSearchMenu && this.props.toggleSearchMenu();
 		}
-		localStorage.setItem(`mugenPlVal${this.props.side}`, idPlaylist.toString());
-		const oldIdPlaylist = this.state.idPlaylist;
-		this.setState({ idPlaylist: Number(idPlaylist), data: undefined, playlistInfo: undefined, goToPlaying: idPlaylist > 0 }, () => {
+		localStorage.setItem(`mugenPlVal${this.props.side}`, plaid);
+		const oldIdPlaylist = this.state.plaid;
+		this.setState({ plaid: plaid, data: undefined, playlistInfo: undefined, goToPlaying: !isNonStandardPlaylist(plaid) }, () => {
 			this.getPlaylist();
-			this.props.majIdsPlaylist(this.props.side, idPlaylist);
-			if (idPlaylist === this.props.idPlaylistTo) {
+			this.props.majIdsPlaylist(this.props.side, plaid);
+			if (plaid === this.props.plaidTo) {
 				eventEmitter.emitChange('changeIdPlaylist', { side: this.props.side === 1 ? 2 : 1, playlist: oldIdPlaylist });
 			}
 		});
 	};
 
-	changeIdPlaylistSide2 = (idPlaylist: number) => {
-		this.props.majIdsPlaylist(2, idPlaylist);
-		if (idPlaylist === this.state.idPlaylist) {
-			this.changeIdPlaylistFromOtherSide({ side: 1, playlist: this.props.idPlaylistTo });
+	changeIdPlaylistSide2 = (plaid: string) => {
+		this.props.majIdsPlaylist(2, plaid);
+		if (plaid === this.state.plaid) {
+			this.changeIdPlaylistFromOtherSide({ side: 1, playlist: this.props.plaidTo });
 		}
 	}
 
 	getPlaylistInfo = async () => {
 		try {
-			const response = await commandBackend('getPlaylist', { plaid: this.state.idPlaylist });
+			const response = await commandBackend('getPlaylist', { plaid: this.state.plaid });
 			this.setState({ playlistInfo: response });
 		} catch (e) {
 			// already display
 		}
 	};
 
-	getPlaylistUrl = (idPlaylistParam?: number) => {
-		const idPlaylist: number = idPlaylistParam ? idPlaylistParam : this.state.idPlaylist;
-		let url = '';
-		if (idPlaylist >= 0) {
-			url = 'getPlaylistContents';
-		} else if (idPlaylist === -1) {
+	getPlaylistUrl = (plaidParam?: string) => {
+		const idPlaylist: string = plaidParam ? plaidParam : this.state.plaid;
+		let url: string;
+		if (idPlaylist === nonStandardPlaylists.library) {
 			url = 'getKaras';
-		} else if (idPlaylist === -2) {
+		} else if (idPlaylist === nonStandardPlaylists.blacklist) {
 			url = 'getBlacklist';
-		} else if (idPlaylist === -3) {
+		} else if (idPlaylist === nonStandardPlaylists.whitelist) {
 			url = 'getWhitelist';
-		} else if (idPlaylist === -4) {
+		} else if (idPlaylist === nonStandardPlaylists.blc) {
 			url = 'getBLCSet';
-		} else if (idPlaylist === -5) {
+		} else if (idPlaylist === nonStandardPlaylists.favorites) {
 			url = 'getFavorites';
+		} else {
+			url = 'getPlaylistContents';
 		}
 		return url;
 	};
@@ -441,9 +448,9 @@ class Playlist extends Component<IProps, IState> {
 		this.setState(state);
 		const url: string = this.getPlaylistUrl();
 		const param: any = {};
-		if (this.state.idPlaylist >= 0) {
+		if (!isNonStandardPlaylist(this.state.plaid)) {
 			this.getPlaylistInfo();
-			param.plaid = this.state.idPlaylist;
+			param.plaid = this.state.plaid;
 			if (orderByLikes || (orderByLikes === undefined && this.state.orderByLikes)) {
 				param.orderByLikes = true;
 			}
@@ -466,8 +473,8 @@ class Playlist extends Component<IProps, IState> {
 		}
 		try {
 			const karas: KaraList = await commandBackend(url, param);
-			if (this.state.goToPlaying && this.state.idPlaylist > 0) {
-				const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.state.idPlaylist });
+			if (this.state.goToPlaying && !isNonStandardPlaylist(this.state.plaid)) {
+				const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.state.plaid });
 				if (result?.index !== -1) {
 					this.setState({ scrollToIndex: result.index, _goToPlaying: true });
 				}
@@ -502,8 +509,8 @@ class Playlist extends Component<IProps, IState> {
 		}
 	};
 
-	playingUpdate = (data: { plaid: number, plc_id: number }) => {
-		if (this.state.idPlaylist === data.plaid && !this.state.stopUpdate) {
+	playingUpdate = (data: { plaid: string, plc_id: number }) => {
+		if (this.state.plaid === data.plaid && !this.state.stopUpdate) {
 			const playlistData = this.state.data as KaraList;
 			let indexPlaying;
 			playlistData?.content.forEach((kara, index) => {
@@ -525,13 +532,13 @@ class Playlist extends Component<IProps, IState> {
 	getPlInfosElement = () => {
 		let plInfos = '';
 		const stateData = this.state.data as KaraList;
-		if (this.state.idPlaylist && stateData && stateData.infos && stateData.infos.count) {
+		if (this.state.plaid && stateData && stateData.infos && stateData.infos.count) {
 			plInfos =
-				(this.state.idPlaylist !== -4
+				(this.state.plaid !== nonStandardPlaylists.blc
 					? stateData.infos.count +
 					' karas'
 					: '') +
-				(this.state.idPlaylist > -1 && this.state.playlistInfo
+				(!isNonStandardPlaylist(this.state.plaid) && this.state.playlistInfo
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS_DURATION')} ` +
 					secondsTimeSpanToHMS(this.state.playlistInfo.duration, 'hm') +
 					` / ${secondsTimeSpanToHMS(this.state.playlistInfo.time_left, 'hm')} ${is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')} `
@@ -544,7 +551,7 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.playing) {
 			this.setState({ scrollToIndex: this.state.playing, goToPlaying: true, _goToPlaying: true });
 		} else {
-			const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.state.idPlaylist });
+			const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.state.plaid });
 			if (result?.index !== -1) {
 				this.setState({ scrollToIndex: result.index, goToPlaying: true, _goToPlaying: true });
 			}
@@ -576,7 +583,7 @@ class Playlist extends Component<IProps, IState> {
 		const data = this.state.data as KaraList;
 		let checkedKaras = this.state.checkedKaras;
 		for (const kara of data.content) {
-			if (this.state.idPlaylist >= 0) {
+			if (!isNonStandardPlaylist(this.state.plaid)) {
 				if (kara.plcid === id) {
 					kara.checked = !kara.checked;
 					if (kara.checked) {
@@ -613,7 +620,7 @@ class Playlist extends Component<IProps, IState> {
 		callModal(this.context.globalDispatch, 'prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', async (nbOfRandoms: number) => {
 			const randomKaras = await commandBackend(this.getPlaylistUrl(), {
 				filter: this.getFilterValue(this.props.side),
-				plaid: this.state.idPlaylist,
+				plaid: this.state.plaid,
 				random: nbOfRandoms,
 				...this.getSearchTagForAddAll()
 			});
@@ -625,7 +632,7 @@ class Playlist extends Component<IProps, IState> {
 					});
 					commandBackend('addKaraToPlaylist', {
 						kids: karaList,
-						plaid: this.props.idPlaylistTo
+						plaid: this.props.plaidTo
 					}).catch(() => {});
 				}, '');
 			}
@@ -643,7 +650,7 @@ class Playlist extends Component<IProps, IState> {
 		commandBackend('addKaraToPlaylist', {
 			kids: karaList,
 			requestedby: this.context.globalState.auth.data.username,
-			plaid: this.props.idPlaylistTo
+			plaid: this.props.plaidTo
 		}).catch(() => {});
 	};
 
@@ -659,31 +666,31 @@ class Playlist extends Component<IProps, IState> {
 		let url = '';
 		let data;
 
-		if (this.props.idPlaylistTo > 0) {
-			if (this.state.idPlaylist > 0 && !pos) {
+		if (!isNonStandardPlaylist(this.props.plaidTo)) {
+			if (!isNonStandardPlaylist(this.state.plaid) && !pos) {
 				url = 'copyKaraToPlaylist';
 				data = {
-					plaid: this.props.idPlaylistTo,
+					plaid: this.props.plaidTo,
 					plc_ids: idsKaraPlaylist
 				};
 			} else {
 				url = 'addKaraToPlaylist';
 				if (pos) {
 					data = {
-						plaid: this.props.idPlaylistTo,
+						plaid: this.props.plaidTo,
 						requestedby: this.context.globalState.auth.data.username,
 						kids: idsKara,
 						pos: pos
 					};
 				} else {
 					data = {
-						plaid: this.props.idPlaylistTo,
+						plaid: this.props.plaidTo,
 						requestedby: this.context.globalState.auth.data.username,
 						kids: idsKara
 					};
 				}
 			}
-		} else if (this.props.idPlaylistTo === -2 || this.props.idPlaylistTo === -4) {
+		} else if (this.props.plaidTo === nonStandardPlaylists.blacklist || this.props.plaidTo === nonStandardPlaylists.blc) {
 			url = 'createBLC';
 			data = {
 				blcs: idsKara.map(kid => {
@@ -691,12 +698,12 @@ class Playlist extends Component<IProps, IState> {
 				}),
 				set_id: this.context.globalState.frontendContext.currentBlSet
 			};
-		} else if (this.props.idPlaylistTo === -3) {
+		} else if (this.props.plaidTo === nonStandardPlaylists.whitelist) {
 			url = 'addKaraToWhitelist';
 			data = {
 				kids: idsKara
 			};
-		} else if (this.props.idPlaylistTo === -5) {
+		} else if (this.props.plaidTo === nonStandardPlaylists.favorites) {
 			url = 'addFavorites';
 			data = {
 				kids: stateData.content.filter(a => a.checked).map(a => a.kid)
@@ -731,18 +738,18 @@ class Playlist extends Component<IProps, IState> {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		if (this.state.idPlaylist > 0) {
+		if (!isNonStandardPlaylist(this.state.plaid)) {
 			const idsKaraPlaylist = listKara.map(a => a.plcid);
 			url = 'deleteKaraFromPlaylist';
 			data = {
 				plc_ids: idsKaraPlaylist
 			};
-		} else if (this.state.idPlaylist === -3) {
+		} else if (this.state.plaid === nonStandardPlaylists.whitelist) {
 			url = 'deleteKaraFromWhitelist';
 			data = {
 				kids: listKara.map(a => a.kid)
 			};
-		} else if (this.state.idPlaylist === -5) {
+		} else if (this.state.plaid === nonStandardPlaylists.favorites) {
 			url = 'deleteFavorites';
 			data = {
 				kids: listKara.map(a => a.kid)
@@ -878,13 +885,13 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	componentDidUpdate(prevProps: IProps) {
-		if (this.props.idPlaylist !== prevProps.idPlaylist) {
+		if (this.props.plaid !== prevProps.plaid) {
 			this.initCall();
 		}
 		if (this.props.searchType !== prevProps.searchType) {
 			this.getPlaylist(this.props.searchType);
 		}
-		if (this.props.idPlaylistTo && this.props.idPlaylistTo !== prevProps.idPlaylistTo) {
+		if (this.props.plaidTo && this.props.plaidTo !== prevProps.plaidTo) {
 			this.playlistForceRefresh(true);
 		}
 		if (this.state.forceUpdateFirst) {
@@ -900,13 +907,13 @@ class Playlist extends Component<IProps, IState> {
 				<PlaylistHeader
 					side={this.props.side}
 					playlistList={this.props.playlistList}
-					idPlaylist={this.state.idPlaylist}
+					plaid={this.state.plaid}
 					bLSet={this.state.bLSet}
 					bLSetList={this.state.bLSetList}
 					changeIdPlaylist={this.changeIdPlaylist}
 					changeIdPlaylistSide2={this.changeIdPlaylistSide2}
 					playlistInfo={this.state.playlistInfo}
-					idPlaylistTo={this.props.idPlaylistTo}
+					plaidTo={this.props.plaidTo}
 					selectAllKaras={this.selectAllKaras}
 					addAllKaras={this.addAllKaras}
 					addCheckedKaras={this.addCheckedKaras}
@@ -936,7 +943,7 @@ class Playlist extends Component<IProps, IState> {
 						&& this.state.getPlaylistInProgress
 						? <div className="loader" />
 						: (
-							this.state.idPlaylist !== -4 && this.state.data
+							this.state.plaid !== nonStandardPlaylists.blc && this.state.data
 								? <InfiniteLoader
 									isRowLoaded={this.isRowLoaded}
 									loadMoreRows={this.loadMoreRows}
@@ -990,7 +997,7 @@ class Playlist extends Component<IProps, IState> {
 					>
 						<i className="fas fa-chevron-up" />
 					</button>
-					{this.state.idPlaylist > 0 ?
+					{!isNonStandardPlaylist(this.state.plaid) ?
 						<button
 							type="button"
 							title={i18next.t('GOTO_PLAYING')}

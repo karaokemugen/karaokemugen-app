@@ -7,7 +7,7 @@ export interface DBPLCKID {
 	plcid: number,
 	flag_playing: boolean
 	pos: number,
-	plaid: number,
+	plaid: string,
 	series: DBKaraTag[],
 	singer: DBKaraTag[]
 }

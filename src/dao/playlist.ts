@@ -23,7 +23,7 @@ export function editPlaylist(pl: DBPL) {
 	}));
 }
 
-export async function createPlaylist(pl: DBPL): Promise<number> {
+export async function createPlaylist(pl: DBPL): Promise<string> {
 	const res = await db().query(yesql(sqlcreatePlaylist)({
 		name: pl.name,
 		created_at: pl.created_at,
@@ -36,11 +36,11 @@ export async function createPlaylist(pl: DBPL): Promise<number> {
 	return res.rows[0]?.pk_id_playlist;
 }
 
-export function emptyPlaylist(id: number) {
+export function emptyPlaylist(id: string) {
 	return db().query(sqlemptyPlaylist, [id]);
 }
 
-export function deletePlaylist(id: number) {
+export function deletePlaylist(id: string) {
 	return db().query(sqldeletePlaylist, [id]);
 }
 
@@ -64,25 +64,25 @@ export function setPLCRefused(plc_id: number, flag_refused: boolean) {
 	return db().query(sqlsetPLCRefused, [plc_id, flag_refused]);
 }
 
-export function setPLCFreeBeforePos(pos: number, plaid: number) {
+export function setPLCFreeBeforePos(pos: number, plaid: string) {
 	return db().query(yesql(sqlsetPLCFreeBeforePos)({
 		pos: pos,
 		plaid: plaid
 	}));
 }
 
-export function updatePlaylistKaraCount(id: number) {
+export function updatePlaylistKaraCount(id: string) {
 	return db().query(sqlupdatePlaylistKaraCount, [id]);
 }
 
-export function updatePlaylistLastEditTime(id: number) {
+export function updatePlaylistLastEditTime(id: string) {
 	return db().query(yesql(sqlupdatePlaylistLastEditTime)({
 		plaid: id,
 		modified_at: new Date()
 	}));
 }
 
-export function shiftPosInPlaylist(id: number, pos: number, shift: number) {
+export function shiftPosInPlaylist(id: string, pos: number, shift: number) {
 	return db().query(yesql(sqlshiftPosInPlaylist)({
 		shift: shift,
 		plaid: id,
@@ -90,7 +90,7 @@ export function shiftPosInPlaylist(id: number, pos: number, shift: number) {
 	}));
 }
 
-export async function getMaxPosInPlaylist(id: number): Promise<number> {
+export async function getMaxPosInPlaylist(id: string): Promise<number> {
 	const res = await db().query(sqlgetMaxPosInPlaylist, [id]);
 	return res.rows[0]?.maxpos;
 }
@@ -104,7 +104,7 @@ export function replacePlaylist(playlist: PLC[]) {
 	return transaction({sql: sqlupdatePLCSetPos, params: karaList});
 }
 
-export function reorderPlaylist(id: number) {
+export function reorderPlaylist(id: string) {
 	return db().query(sqlreorderPlaylist, [id]);
 }
 
@@ -115,18 +115,18 @@ export  function setPos(plc_id: number, pos: number) {
 	]);
 }
 
-export  function updatePlaylistDuration(id: number) {
+export  function updatePlaylistDuration(id: string) {
 	return db().query(sqlupdatePlaylistDuration, [id]);
 }
 
-export  function trimPlaylist(id: number, pos: number) {
+export  function trimPlaylist(id: string, pos: number) {
 	return db().query(yesql(sqltrimPlaylist)({
 		plaid: id,
 		pos: pos
 	}));
 }
 
-export async function getPlaylistContentsMini(id: number): Promise<DBPLC[]> {
+export async function getPlaylistContentsMini(id: string): Promise<DBPLC[]> {
 	const res = await db().query(sqlgetPlaylistContentsMini, [id]);
 	return res.rows;
 }
@@ -161,7 +161,7 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 	return res.rows;
 }
 
-export async function getPlaylistKaraIDs(id: number): Promise<DBPLCKID[]> {
+export async function getPlaylistKaraIDs(id: string): Promise<DBPLCKID[]> {
 	const res = await db().query(sqlgetPlaylistContentsKaraIDs, [id]);
 	return res.rows;
 }
@@ -184,7 +184,7 @@ export async function getPLCInfoMini(id: number): Promise<DBPLC> {
 	return res.rows[0];
 }
 
-export async function getPLCByKIDAndUser(kid: string, username: string, plaid: number): Promise<DBPLC> {
+export async function getPLCByKIDAndUser(kid: string, username: string, plaid: string): Promise<DBPLC> {
 	const res = await db().query(yesql(sqlgetPLCByKIDUser)({
 		kid: kid,
 		plaid: plaid,
@@ -194,7 +194,7 @@ export async function getPLCByKIDAndUser(kid: string, username: string, plaid: n
 	return res.rows[0];
 }
 
-export async function getPlaylistInfo(id: number): Promise<DBPL> {
+export async function getPlaylistInfo(id: string): Promise<DBPL> {
 	const res = await db().query(sqlgetPlaylistInfo, [id]);
 	return res.rows[0];
 }
@@ -221,16 +221,16 @@ export async function getPublicPlaylist(): Promise<DBPL> {
 	return res.rows[0];
 }
 
-export async function setPlaying(plc_id: number, plaid: number) {
+export async function setPlaying(plc_id: number, plaid: string) {
 	await db().query(sqlsetPlaying, [plc_id, plaid]);
 }
 
-export async function countPlaylistUsers(plaid: number): Promise<number> {
+export async function countPlaylistUsers(plaid: string): Promise<number> {
 	const res = await db().query(sqlcountPlaylistUsers, [plaid]);
 	return res.rows[0]?.NumberOfUsers;
 }
 
-export async function getMaxPosInPlaylistForUser(plaid: number, username: string): Promise<number> {
+export async function getMaxPosInPlaylistForUser(plaid: string, username: string): Promise<number> {
 	const res = await db().query(yesql(sqlgetMaxPosInPlaylistForUser)({
 		plaid: plaid,
 		username: username

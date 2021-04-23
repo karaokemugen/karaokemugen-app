@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import sample from 'lodash.sample';
+import {v4} from 'uuid';
 
 import { DBPL } from '../src/lib/types/database/playlist';
 import { uuidRegexp } from '../src/lib/utils/constants';
@@ -9,14 +10,14 @@ import { allKIDs, commandBackend, getToken, testKara } from './util/util';
 
 describe('Playlists', () => {
 	let playlistExport: PlaylistExport;
-	let newPlaylistID: number;
-	let newCurrentPlaylistID: number;
-	let newPublicPlaylistID: number;
-	let currentPlaylistID: number;
+	let newPlaylistID: string;
+	let newCurrentPlaylistID: string;
+	let newPublicPlaylistID: string;
+	let currentPlaylistID: string;
 	let PLCID: number;
 	const KIDToAdd = sample(allKIDs);
 	const KIDToAdd2 = sample(allKIDs.filter((kid: string) => kid !== KIDToAdd));
-	const playlistID = 1;
+	const playlistID = v4();
 	let token: string;
 	before(async () => {
 		token = await getToken();
@@ -59,7 +60,7 @@ describe('Playlists', () => {
 			await commandBackend(token, 'addKaraToPlaylist', {
 				kids: [KIDToAdd],
 				requestedby: 'Test',
-				plaid: 10000
+				plaid: '0f82b7df-efa0-4018-adfd-7bd104f9bd51'
 			}, true);
 		} catch (err) {
 			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
@@ -92,7 +93,7 @@ describe('Playlists', () => {
 			flag_current: false,
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist);
-		newPlaylistID = +data.plaid;
+		newPlaylistID = data.plaid;
 	});
 
 	it('Test findPlaying without any playing song set', async () => {
@@ -108,7 +109,7 @@ describe('Playlists', () => {
 			flag_current: true
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
-		newCurrentPlaylistID = +data.plaid;
+		newCurrentPlaylistID = data.plaid;
 	});
 
 	it('Create a PUBLIC playlist', async () => {
@@ -119,7 +120,7 @@ describe('Playlists', () => {
 			flag_current: false
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_public);
-		newPublicPlaylistID = +data.plaid;
+		newPublicPlaylistID = data.plaid;
 	});
 
 	it('Create a CURRENT+PUBLIC playlist', async () => {
@@ -130,8 +131,8 @@ describe('Playlists', () => {
 			flag_current: true
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
-		newCurrentPlaylistID = +data.plaid;
-		newPublicPlaylistID = +data.plaid;
+		newCurrentPlaylistID = data.plaid;
+		newPublicPlaylistID = data.plaid;
 	});
 
 	it('Copy karaokes to another playlist', async () => {
@@ -164,19 +165,19 @@ describe('Playlists', () => {
 		await commandBackend(token, 'deleteKaraFromPlaylist', data);
 	});
 
-	it('Shuffle playlist 1', async () => {
+	it('Shuffle playlist', async () => {
 		// First get playlist as is
-		let data = await commandBackend(token, 'getPlaylistContents', { plaid: 1 });
+		let data = await commandBackend(token, 'getPlaylistContents', { plaid: playlistID });
 		const playlist: DBPLC[] = data.content;
-		await commandBackend(token, 'shufflePlaylist', { plaid: 1, method: 'normal' });
+		await commandBackend(token, 'shufflePlaylist', { plaid: playlistID, method: 'normal' });
 		// Re-getting playlist to see if order changed
-		data = await commandBackend(token, 'getPlaylistContents', { plaid: 1 });
+		data = await commandBackend(token, 'getPlaylistContents', { plaid: playlistID });
 		const shuffledPlaylist = data.content;
 		expect(JSON.stringify(shuffledPlaylist)).to.not.be.equal(JSON.stringify(playlist));
 	});
 
 	it('Export a playlist', async () => {
-		const data = await commandBackend(token, 'exportPlaylist', { plaid: 1 });
+		const data = await commandBackend(token, 'exportPlaylist', { plaid: playlistID });
 		expect(data.Header.description).to.be.equal('Karaoke Mugen Playlist File');
 		expect(data.PlaylistContents.length).to.be.at.least(1);
 		for (const plc of data.PlaylistContents) {

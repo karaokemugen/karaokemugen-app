@@ -94,7 +94,7 @@ export default function playlistsController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		// Empty playlist
 		try {
-			return await emptyPlaylist(+req.body?.plaid);
+			return await emptyPlaylist(req.body?.plaid);
 		} catch(err) {
 			const code = 'PL_EMPTY_ERROR';
 			errMessage(code, err);

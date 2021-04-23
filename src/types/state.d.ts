@@ -10,10 +10,10 @@ export interface Version {
 
 export interface State {
 	appHasBeenUpdated?: boolean,
-	currentPlaid?: number,
+	currentPlaid?: string,
 	currentSessionID?: string,
 	currentSessionEndsAt?: Date,
-	publicPlaid?: number,
+	publicPlaid?: string,
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
 	stopping: boolean,
@@ -87,8 +87,8 @@ export interface State {
 }
 
 export interface PublicState {
-	currentPlaid: number,
-	publicPlaid: number,
+	currentPlaid: string,
+	publicPlaid: string,
 	appPath?: string,
 	dataPath?: string,
 	os?: string,

@@ -15,14 +15,20 @@ import GlobalContext from '../../../store/context';
 import {formatLyrics, getPreviewLink, sortTagByPriority} from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import {
+	displayMessage,
+	is_touch_device,
+	isNonStandardPlaylist,
+	nonStandardPlaylists,
+	secondsTimeSpanToHMS
+} from '../../../utils/tools';
 import { View } from '../../types/view';
 import InlineTag from './InlineTag';
 
 interface IProps {
 	kid: string | undefined;
 	scope: string;
-	idPlaylist?: number;
+	plaid?: string;
 	playlistcontentId?: number;
 	closeOnPublic?: () => void;
 	changeView?: (
@@ -51,7 +57,7 @@ class KaraDetail extends Component<IProps, IState> {
 			showVideo: false,
 			lyrics: []
 		};
-		if (this.props.kid || this.props.idPlaylist) {
+		if (this.props.kid || this.props.plaid) {
 			this.getKaraDetail();
 		}
 	}
@@ -103,9 +109,9 @@ class KaraDetail extends Component<IProps, IState> {
 		try {
 			let url;
 			let data;
-			if (this.props.idPlaylist && this.props.idPlaylist > 0) {
+			if (this.props.plaid && !isNonStandardPlaylist(this.props.plaid)) {
 				url = 'getPLC';
-				data = { plaid: this.props.idPlaylist, plc_id: this.props.playlistcontentId };
+				data = { plaid: this.props.plaid, plc_id: this.props.playlistcontentId };
 			} else {
 				url = 'getKara';
 				data = { kid: (kid ? kid : this.props.kid) };
@@ -113,7 +119,7 @@ class KaraDetail extends Component<IProps, IState> {
 			const kara = await commandBackend(url, data);
 			this.setState({
 				kara: kara,
-				isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
+				isFavorite: kara.flag_favorites || this.props.plaid === nonStandardPlaylists.favorites
 			}, () => {
 				if (kara.subfile) this.fetchLyrics();
 			});

@@ -8,7 +8,7 @@ import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { getNavigatorLanguageIn3B } from '../../utils/isoLanguages';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { displayMessage } from '../../utils/tools';
+import {displayMessage, nonStandardPlaylists} from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import { Tag } from '../types/tag';
 import AdminHeader from './AdminHeader';
@@ -26,7 +26,7 @@ interface IProps {
 }
 
 interface IState {
-	idsPlaylist: { left: number, right: number };
+	idsPlaylist: { left: string, right: string };
 	searchMenuOpen1: boolean;
 	searchMenuOpen2: boolean;
 	statusPlayer?: PublicPlayerState;
@@ -45,7 +45,7 @@ class AdminPage extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			idsPlaylist: { left: 0, right: 0 },
+			idsPlaylist: { left: nonStandardPlaylists.library, right: nonStandardPlaylists.library },
 			searchMenuOpen1: false,
 			searchMenuOpen2: false,
 			currentSide: 1,
@@ -79,12 +79,12 @@ class AdminPage extends Component<IProps, IState> {
 	operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code));
 	notificationEndOfSessionNear = (data: string) => displayMessage('warning', i18next.t('NOTIFICATION.OPERATOR.INFO.END_OF_SESSION_NEAR', { data: data }));
 
-	majIdsPlaylist = (side: number, value: number) => {
+	majIdsPlaylist = (side: number, value: string) => {
 		const idsPlaylist = this.state.idsPlaylist;
 		if (side === 1) {
-			idsPlaylist.left = Number(value);
+			idsPlaylist.left = value;
 		} else {
-			idsPlaylist.right = Number(value);
+			idsPlaylist.right = value;
 		}
 		this.setState({ idsPlaylist: idsPlaylist });
 	};
@@ -157,34 +157,34 @@ class AdminPage extends Component<IProps, IState> {
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
 		const kmStats = await commandBackend('getStats');
 		playlistList.push({
-			plaid: -2,
+			plaid: '4398bed2-e272-47f5-9dd9-db7240e8557e',
 			name: i18next.t('PLAYLIST_BLACKLIST')
 		});
 
 		playlistList.push({
-			plaid: -4,
+			plaid: '91a9961a-8863-48a5-b9d0-fc4c1372a11a',
 			name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
 		});
 
 		playlistList.push({
-			plaid: -3,
+			plaid: '4c5dbb18-278b-448e-9a1f-8cf5f1e24dc7',
 			name: i18next.t('PLAYLIST_WHITELIST')
 		});
 		playlistList.push({
-			plaid: -5,
+			plaid: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94',
 			name: i18next.t('PLAYLIST_FAVORITES')
 		});
 		playlistList.push({
-			plaid: -1,
+			plaid: '524de79d-10b2-49dc-90b1-597626d0cee8',
 			name: i18next.t('PLAYLIST_KARAS'),
 			karacount: kmStats.karas
 		});
 		this.setState({ playlistList: playlistList });
 	};
 
-	toggleKaraDetail = (kara: KaraElement, idPlaylist: number) => {
+	toggleKaraDetail = (kara: KaraElement, idPlaylist: string) => {
 		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope='admin'
-			idPlaylist={idPlaylist} />);
+			plaid={idPlaylist} />);
 	};
 
 	render() {
@@ -209,7 +209,7 @@ class AdminPage extends Component<IProps, IState> {
 										<Playlist
 											scope='admin'
 											side={1}
-											idPlaylistTo={this.state.idsPlaylist.right}
+											plaidTo={this.state.idsPlaylist.right}
 											majIdsPlaylist={this.majIdsPlaylist}
 											tags={this.state.tags}
 											toggleSearchMenu={this.toggleSearchMenu1}
@@ -220,7 +220,7 @@ class AdminPage extends Component<IProps, IState> {
 										<Playlist
 											scope='admin'
 											side={2}
-											idPlaylistTo={this.state.idsPlaylist.left}
+											plaidTo={this.state.idsPlaylist.left}
 											majIdsPlaylist={this.majIdsPlaylist}
 											tags={this.state.tags}
 											toggleSearchMenu={this.toggleSearchMenu2}

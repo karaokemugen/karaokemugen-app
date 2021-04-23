@@ -6,7 +6,7 @@ import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
-	idPlaylist: number;
+	idPlaylist: string;
 	playlistWillUpdate: () => void;
 	playlistDidUpdate: () => void;
 }

@@ -11,7 +11,7 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext, { GlobalContextInterface } from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import {callModal, displayMessage, expand} from '../../utils/tools';
+import {callModal, displayMessage, expand, isNonStandardPlaylist} from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import ProfilModal from './modals/ProfilModal';
@@ -20,7 +20,7 @@ import UsersModal from './modals/UsersModal';
 
 interface IProps extends RouteComponentProps {
 	currentSide: number;
-	idsPlaylist: { left: number, right: number };
+	idsPlaylist: { left: string, right: string };
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
@@ -81,7 +81,7 @@ function AdminHeader(props: IProps) {
 		if ((!statusPlayer || statusPlayer?.playerStatus === 'stop')
 			&& props.idsPlaylist.left !== props.currentPlaylist?.plaid
 			&& props.idsPlaylist.right !== props.currentPlaylist?.plaid
-			&& (props.idsPlaylist.left > 0 || props.idsPlaylist.right > 0)) {
+			&& (!isNonStandardPlaylist(props.idsPlaylist.left) || !isNonStandardPlaylist(props.idsPlaylist.right))) {
 			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
 				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {}));
 		} else {

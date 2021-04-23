@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import {is_touch_device, nonStandardPlaylists, secondsTimeSpanToHMS} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { View } from '../../types/view';
 import LyricsBox from './LyricsBox';
@@ -19,7 +19,7 @@ interface IProps {
 		searchValue?: string,
 		searchCriteria?: 'year' | 'tag'
 	) => void;
-	toggleKaraDetail: (kara: KaraElement, idPlaylist: number, indexPlaylist: number) => void
+	toggleKaraDetail: (kara: KaraElement, plaid: string, indexPlaylist: number) => void
 	activePoll: boolean;
 	publicVisible: boolean;
 	currentVisible: boolean;
@@ -46,7 +46,7 @@ class PublicHomepage extends Component<IProps, IState> {
 				random: 1
 			});
 			if (response?.content && response.content[0]) {
-				this.props.toggleKaraDetail(response.content[0], -1, 0);
+				this.props.toggleKaraDetail(response.content[0], nonStandardPlaylists.library, 0);
 			}
 		}
 	};

@@ -527,7 +527,7 @@ async function cleanupAvatars() {
 }
 
 /** Update song quotas for a user */
-export async function updateSongsLeft(username: string, plaid?: number) {
+export async function updateSongsLeft(username: string, plaid?: string) {
 	const conf = getConfig();
 	username = username.toLowerCase();
 	const user = await findUserByName(username);

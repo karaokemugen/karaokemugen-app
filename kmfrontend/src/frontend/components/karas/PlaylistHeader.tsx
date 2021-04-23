@@ -15,7 +15,13 @@ import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { callModal, displayMessage, is_touch_device } from '../../../utils/tools';
+import {
+	callModal,
+	displayMessage,
+	is_touch_device,
+	isNonStandardPlaylist,
+	nonStandardPlaylists
+} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
@@ -46,9 +52,9 @@ const tagsTypesList = [
 	'BLCTYPE_14'];
 
 interface IProps {
-	idPlaylist: number;
+	plaid: string;
 	bLSet?: BLCSet;
-	idPlaylistTo: number;
+	plaidTo: string;
 	side: number;
 	playlistInfo: DBPL | undefined;
 	tags: Array<Tag> | undefined;
@@ -56,8 +62,8 @@ interface IProps {
 	searchMenuOpen?: boolean;
 	bLSetList: BLCSet[];
 	checkedKaras: KaraElement[];
-	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void;
-	changeIdPlaylistSide2?: (idPlaylist: number) => void;
+	changeIdPlaylist: (idPlaylist: string, idBLSet?: number) => void;
+	changeIdPlaylistSide2?: (idPlaylist: string) => void;
 	playlistWillUpdate: () => void;
 	playlistDidUpdate: () => void;
 	getPlaylist: (searchType?: 'search' | 'recent' | 'requested', orderByLikes?: boolean) => void;
@@ -113,7 +119,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 		this.togglePlaylistCommands();
 		showModal(this.context.globalDispatch, <PlaylistModal
 			changeIdPlaylist={this.props.changeIdPlaylist}
-			idPlaylist={this.props.idPlaylist}
+			plaid={this.props.plaid}
 			playlistInfo={this.props.playlistInfo}
 			bLSet={this.props.bLSet}
 			mode={mode}
@@ -123,21 +129,21 @@ class PlaylistHeader extends Component<IProps, IState> {
 	deletePlaylist = () => {
 		this.togglePlaylistCommands();
 		const playlistList = this.getListToSelect()
-			.filter(pl => Number(pl.value) > 0
-				&& Number(pl.value) !== this.props.idPlaylist);
+			.filter(pl => !isNonStandardPlaylist(pl.value)
+				&& pl.value !== this.props.plaid);
 		const bLSetList = this.props.bLSetList?.filter(set => set.blc_set_id !== this.props.bLSet.blc_set_id).map(set => {
 			return {value: set.blc_set_id.toString(), label: set.name, icons: []};
 		});
-		if (playlistList.length === 0 || (this.props.idPlaylist === -4 && bLSetList.length === 0))
+		if (playlistList.length === 0 || (this.props.plaid === nonStandardPlaylists.blc && bLSetList.length === 0))
 			displayMessage('error', i18next.t(
-				this.props.idPlaylist === -4 ? 'MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE_BLC'
+				this.props.plaid === nonStandardPlaylists.blc ? 'MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE_BLC'
 					:'MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE'
 			));
 		else
 			showModal(this.context.globalDispatch, <DeletePlaylistModal
 				changeIdPlaylist={this.props.changeIdPlaylist}
-				idPlaylist={this.props.idPlaylist}
-				idPlaylistTo={this.props.idPlaylistTo}
+				plaid={this.props.plaid}
+				plaidTo={this.props.plaidTo}
 				playlistInfo={this.props.playlistInfo}
 				bLSet={this.props.bLSet}
 				playlistList={playlistList}
@@ -158,14 +164,14 @@ class PlaylistHeader extends Component<IProps, IState> {
 		this.togglePlaylistCommands();
 		let url;
 		let data;
-		if (this.props.idPlaylist === -4) {
+		if (this.props.plaid === nonStandardPlaylists.blc) {
 			url = 'exportBLCSet';
 			data = {set_id: this.props.bLSet?.blc_set_id};
-		} else if (this.props.idPlaylist === -5) {
+		} else if (this.props.plaid === nonStandardPlaylists.favorites) {
 			url = 'exportFavorites';
-		} else if (this.props.idPlaylist > 0) {
+		} else if (!isNonStandardPlaylist(this.props.plaid)) {
 			url = 'exportPlaylist';
-			data = {plaid: this.props.idPlaylist};
+			data = {plaid: this.props.plaid};
 		}
 		if (url) {
 			const response = await commandBackend(url, data);
@@ -173,9 +179,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 			const dlAnchorElem = document.getElementById('downloadAnchorElem');
 			if (dlAnchorElem) {
 				dlAnchorElem.setAttribute('href', dataStr);
-				if (this.props.idPlaylist === -4) {
+				if (this.props.plaid === nonStandardPlaylists.blc) {
 					dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.bLSet?.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmblc');
-				} else if (this.props.idPlaylist === -5) {
+				} else if (this.props.plaid === nonStandardPlaylists.favorites) {
 					dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.context.globalState.auth.data.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
 				} else {
 					dlAnchorElem.setAttribute('download', ['KaraMugen', (this.props.playlistInfo as DBPL).name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
@@ -246,7 +252,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 					!file.name.includes('.kmfavorites') &&
 					displayMessage('success', i18next.t(`SUCCESS_CODES.${response.message.code}`, {data: name}));
 				}
-				const plaid = file.name.includes('.kmfavorites') ? -5 : response.message.data.plaid;
+				const plaid = file.name.includes('.kmfavorites') ? nonStandardPlaylists.favorites : response.message.data.plaid;
 				this.props.changeIdPlaylist(plaid);
 			};
 			fr.readAsText(file);
@@ -263,12 +269,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 			</picture>
 			{i18next.t('CL_EMPTY_LIST')}
 		</>, '', () => {
-			if (this.props.idPlaylist === -2 || this.props.idPlaylist === -4) {
+			if (this.props.plaid === nonStandardPlaylists.blacklist || this.props.plaid === nonStandardPlaylists.blc) {
 				commandBackend('emptyBLCSet', {set_id: this.props.bLSet?.blc_set_id});
-			} else if (this.props.idPlaylist === -3) {
+			} else if (this.props.plaid === nonStandardPlaylists.whitelist) {
 				commandBackend('emptyWhitelist');
 			} else {
-				commandBackend('emptyPlaylist', {plaid: this.props.idPlaylist});
+				commandBackend('emptyPlaylist', {plaid: this.props.plaid});
 			}
 		});
 	};
@@ -291,15 +297,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 		// current playlist : play-circle icon
 		if (playlist?.flag_current) return ['fa-play-circle'];
 		// library : book icon
-		if (playlist.plaid === -1) return ['fa-book'];
+		if (playlist.plaid === nonStandardPlaylists.library) return ['fa-book'];
 		// blacklist : ban icon
-		if (playlist?.plaid === -2) return ['fa-ban'];
+		if (playlist?.plaid === nonStandardPlaylists.blacklist) return ['fa-ban'];
 		// whitelist : check-circle icon
-		if (playlist?.plaid === -3) return ['fa-check-circle'];
+		if (playlist?.plaid === nonStandardPlaylists.whitelist) return ['fa-check-circle'];
 		// blacklist criterias : not-equal icon
-		if (playlist?.plaid === -4) return ['fa-not-equal'];
+		if (playlist?.plaid === nonStandardPlaylists.blc) return ['fa-not-equal'];
 		// favorites : star icon
-		if (playlist?.plaid === -5) return ['fa-star'];
+		if (playlist?.plaid === nonStandardPlaylists.favorites) return ['fa-star'];
 		// others playlist : list-ol icon
 		return ['fa-list-ol'];
 	}
@@ -345,7 +351,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	openShuffleModal = () => {
 		this.togglePlaylistCommands();
 		showModal(this.context.globalDispatch, <ShuffleModal
-			idPlaylist={this.props.idPlaylist}
+			idPlaylist={this.props.plaid}
 			playlistWillUpdate={this.props.playlistWillUpdate}
 			playlistDidUpdate={this.props.playlistDidUpdate}
 		/>);
@@ -356,8 +362,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			showModal(this.context.globalDispatch, <CheckedKaraMenuModal
 				checkedKaras={this.props.checkedKaras}
-				idPlaylist={this.props.idPlaylist}
-				idPlaylistTo={this.props.idPlaylistTo}
+				plaid={this.props.plaid}
+				plaidTo={this.props.plaidTo}
 				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
 				topKaraMenu={element.bottom}
 				leftKaraMenu={element.left}
@@ -376,10 +382,10 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 	render() {
 		const plCommandsContainer = (
-			this.props.idPlaylist !== -4 ?
+			this.props.plaid !== nonStandardPlaylists.blc ?
 				<div className="actionDiv">
 					<div className="btn-group">
-						{this.props.idPlaylist !== -4 && this.props.idPlaylist !== -2 ?
+						{this.props.plaid !== nonStandardPlaylists.blc && this.props.plaid !== nonStandardPlaylists.blacklist ?
 							<React.Fragment>
 								<button
 									title={i18next.t('ADVANCED.SELECT_ALL')}
@@ -396,8 +402,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 									}
 								</button>
 								<ActionsButtons
-									idPlaylistTo={this.props.idPlaylistTo}
-									idPlaylist={this.props.idPlaylist}
+									plaidTo={this.props.plaidTo}
+									plaid={this.props.plaid}
 									scope='admin'
 									side={this.props.side}
 									isHeader={true}
@@ -423,7 +429,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 
 		const searchMenu = (this.state.tags.length > 0 ?
 			<div className="searchMenuContainer">
-				{this.props.idPlaylist === -1 ? <div className="filterContainer">
+				{this.props.plaid === nonStandardPlaylists.library ? <div className="filterContainer">
 					<div className="filterButton" onClick={() => {
 						this.setState({activeFilterUUID: ''},
 							() => this.props.onChangeTags(this.state.tagType, ''));
@@ -456,9 +462,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 						 className={'filterElement ' + (this.state.activeFilter === 'search' ? 'filterElementActive' : '')}
 						 onClick={() => this.getKarasList('search')}
 						 onKeyPress={() => this.getKarasList('search')}>
-						<i className={`fas fa-fw ${this.props.idPlaylist >= 0 ? 'fa-list-ol':'fa-sort-alpha-down'}`} /> {i18next.t('VIEW_STANDARD')}
+						<i className={`fas fa-fw ${!isNonStandardPlaylist(this.props.plaid) ? 'fa-list-ol':'fa-sort-alpha-down'}`} /> {i18next.t('VIEW_STANDARD')}
 					</div>
-					{this.props.idPlaylist === -1 ? <>
+					{this.props.plaid === nonStandardPlaylists.library ? <>
 						<div tabIndex={0}
 							 className={'filterElement ' + (this.state.activeFilter === 'recent' ? 'filterElementActive' : '')}
 							 onClick={() => this.getKarasList('recent')}
@@ -472,7 +478,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 							<i className="fas fa-fire"/> {i18next.t('VIEW_POPULAR')}
 						</div>
 					</> : null}
-					{this.props.idPlaylist >= 0 ?
+					{!isNonStandardPlaylist(this.props.plaid) ?
 						<div tabIndex={0}
 						   className={'filterElement ' + (this.state.orderByLikes ? 'filterElementActive' : '')}
 						   onClick={() => this.getKarasList(undefined, true)}
@@ -495,7 +501,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 							</button>
 							{this.state.playlistCommands ?
 								<ul className="dropdown-menu">
-									{this.props.idPlaylist === -4 && this.props.bLSetList.length > 1 ?
+									{this.props.plaid === nonStandardPlaylists.blc && this.props.bLSetList.length > 1 ?
 										<li>
 											<a href="#" onClick={this.copyBlcSet} title={i18next.t('ADVANCED.SHUFFLE')}>
 												<i className="fas fa-fw fa-copy"/>
@@ -503,7 +509,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 											</a>
 										</li> : null
 									}
-									{this.props.idPlaylist >= 0 ?
+									{!isNonStandardPlaylist(this.props.plaid) ?
 										<li>
 											<a href="#" onClick={this.openShuffleModal}>
 												<i className="fas fa-fw fa-random"/>
@@ -511,7 +517,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 											</a>
 										</li> : null
 									}
-									{this.props.idPlaylistTo >= 0 && this.props.idPlaylist !== -4 ?
+									{!isNonStandardPlaylist(this.props.plaidTo) && this.props.plaid !== nonStandardPlaylists.blc ?
 										<React.Fragment>
 											<li>
 												<a href="#" onClick={() => {
@@ -522,7 +528,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 													{i18next.t('ADVANCED.ADD_ALL')}
 												</a>
 											</li>
-											{this.props.idPlaylist >= 0 || this.props.idPlaylist === -1 ?
+											{!isNonStandardPlaylist(this.props.plaid) || this.props.plaid === nonStandardPlaylists.library ?
 												<li>
 													<a href="#" onClick={() => {
 														this.togglePlaylistCommands();
@@ -536,7 +542,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 										</React.Fragment>
 										: null
 									}
-									{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 || this.props.idPlaylist === -3 ?
+									{!isNonStandardPlaylist(this.props.plaid) || this.props.plaid === nonStandardPlaylists.blc || this.props.plaid === nonStandardPlaylists.whitelist ?
 										<li>
 											<a href="#" onClick={this.deleteAllKaras} className="danger-hover">
 												<i className="fas fa-fw fa-eraser"/>
@@ -544,29 +550,29 @@ class PlaylistHeader extends Component<IProps, IState> {
 											</a>
 										</li> : null
 									}
-									{this.props.idPlaylist >= 0 || this.props.idPlaylist === -4 ?
+									{!isNonStandardPlaylist(this.props.plaid) || this.props.plaid === nonStandardPlaylists.blc ?
 										<React.Fragment>
 											<li>
 												<a href="#" onClick={this.deletePlaylist} className="danger-hover">
 													<i className="fas fa-fw fa-trash"/>
-													{i18next.t(this.props.idPlaylist === -4 ? 'BLC.DELETE' : 'ADVANCED.DELETE')}
+													{i18next.t(this.props.plaid === nonStandardPlaylists.blc ? 'BLC.DELETE' : 'ADVANCED.DELETE')}
 												</a>
 											</li>
 											<li>
 												<a href="#" onClick={() => this.addOrEditPlaylist('edit')}>
 													<i className="fas fa-fw fa-pencil-alt"/>
-													{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EDIT' : 'ADVANCED.EDIT')}
+													{i18next.t(this.props.plaid === nonStandardPlaylists.blc ? 'BLC.EDIT' : 'ADVANCED.EDIT')}
 												</a>
 											</li>
 										</React.Fragment> : null
 									}
 									{
-										this.props.idPlaylist !== -1 ?
+										this.props.plaid !== nonStandardPlaylists.library ?
 											<li>
 												<a href="#" onClick={this.exportPlaylist}>
 													<i className="fas fa-fw fa-upload"/>
-													{i18next.t(this.props.idPlaylist === -4 ? 'BLC.EXPORT' :
-														(this.props.idPlaylist === -5 ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'))}
+													{i18next.t(this.props.plaid === nonStandardPlaylists.blc ? 'BLC.EXPORT' :
+														(this.props.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'))}
 												</a>
 											</li> : ''
 									}
@@ -574,10 +580,10 @@ class PlaylistHeader extends Component<IProps, IState> {
 									<li>
 										<a href="#" onClick={() => this.addOrEditPlaylist('create')}>
 											<i className="fas fa-fw fa-plus"/>
-											{i18next.t(this.props.idPlaylist === -4 ? 'BLC.ADD' : 'ADVANCED.ADD')}
+											{i18next.t(this.props.plaid === nonStandardPlaylists.blc ? 'BLC.ADD' : 'ADVANCED.ADD')}
 										</a>
 									</li>
-									{this.props.idPlaylist !== -4 ?
+									{this.props.plaid !== nonStandardPlaylists.blc ?
 										<li>
 											<a href="#" onClick={this.startFavMix}>
 												<i className="fas fa-fw fa-bolt"/>
@@ -589,8 +595,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 										<a href="#">
 											<label className="importFile" htmlFor={'import-file' + this.props.side}>
 												<i className="fas fa-fw fa-download"/>
-												{i18next.t(this.props.idPlaylist === -4 ? 'BLC.IMPORT' :
-													(this.props.idPlaylist === -5 ? 'FAVORITES_IMPORT' : 'ADVANCED.IMPORT'))}
+												{i18next.t(this.props.plaid === nonStandardPlaylists.blc ? 'BLC.IMPORT' :
+													(this.props.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_IMPORT' : 'ADVANCED.IMPORT'))}
 											</label>
 										</a>
 										<input id={'import-file' + this.props.side} className="import-file" type="file"
@@ -600,9 +606,9 @@ class PlaylistHeader extends Component<IProps, IState> {
 								</ul> : null
 							}
 						</div>
-						<SelectWithIcon list={this.getListToSelect()} value={this.props.idPlaylist?.toString()}
-							onChange={(value: any) => this.props.changeIdPlaylist(Number(value))}/>
-						{this.props.idPlaylist === -4 ?
+						<SelectWithIcon list={this.getListToSelect()} value={this.props.plaid?.toString()}
+							onChange={(value: any) => this.props.changeIdPlaylist(value)}/>
+						{this.props.plaid === nonStandardPlaylists.blc ?
 							<SelectWithIcon
 								list={this.props.bLSetList.map(set => {
 									return {
@@ -612,10 +618,10 @@ class PlaylistHeader extends Component<IProps, IState> {
 									};
 								})}
 								value={this.props.bLSet?.blc_set_id.toString()}
-								onChange={(value: any) => this.props.changeIdPlaylist(this.props.idPlaylist, Number(value))}
+								onChange={(value: any) => this.props.changeIdPlaylist(this.props.plaid, Number(value))}
 							/> : null
 						}
-						{this.props.idPlaylist >= -1 ?
+						{this.props.plaid >= nonStandardPlaylists.library ?
 							<div className="searchMenuButtonContainer btn-group">
 								<button type="button" title={i18next.t('FILTERS')}
 									className={'searchMenuButton collapsed btn btn-default karaLineButton'
@@ -642,7 +648,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 								this.context.globalDispatch,
 								e.target.value,
 								this.props.side,
-								this.props.idPlaylist
+								this.props.plaid
 							)}
 						/>
 					</div>
@@ -650,8 +656,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 				</div>
 				{is_touch_device() ?
 					<div className="panel-heading mobile">
-						<select value={this.props.idPlaylist}
-							onChange={(e) => this.props.changeIdPlaylist(Number(e.target.value))}>
+						<select value={this.props.plaid}
+							onChange={(e) => this.props.changeIdPlaylist(e.target.value)}>
 							{this.props.playlistList?.map(playlist => {
 								return <option key={playlist.plaid} value={playlist.plaid}>
 									{playlist.name}{this.getFlagLabel(playlist)}
@@ -659,8 +665,8 @@ class PlaylistHeader extends Component<IProps, IState> {
 							})}
 						</select>
 						<i className="fas fa-arrow-right"/>
-						<select value={this.props.idPlaylistTo}
-							onChange={(e) => this.props.changeIdPlaylistSide2(Number(e.target.value))}>
+						<select value={this.props.plaidTo}
+							onChange={(e) => this.props.changeIdPlaylistSide2(e.target.value)}>
 							{this.props.playlistList?.map(playlist => {
 								return <option key={playlist.plaid} value={playlist.plaid}>
 									{playlist.name}{this.getFlagLabel(playlist)}

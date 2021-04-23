@@ -150,7 +150,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 	}
 }
 
-export async function batchEditKaras(plaid: number, action: 'add' | 'remove', tid: string, type: number) {
+export async function batchEditKaras(plaid: string, action: 'add' | 'remove', tid: string, type: number) {
 	// Checks
 	const task = new Task({
 		text: 'EDITING_KARAS_BATCH_TAGS',

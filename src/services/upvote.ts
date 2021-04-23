@@ -65,7 +65,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 }
 
 /** Free song if it's sufficiently upvoted */
-async function tryToFreeKara(plc_id :number, upvotes: number, username: string, plaid: number) {
+async function tryToFreeKara(plc_id: number, upvotes: number, username: string, plaid: string) {
 	const allUsersList = await listUsers();
 	const onlineUsers = allUsersList.filter(user => user.flag_online);
 	const upvotePercent = (upvotes / onlineUsers.length) * 100;

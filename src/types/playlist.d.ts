@@ -16,7 +16,7 @@ export interface CurrentSong extends DBPLCBase {
 }
 
 export interface PLC {
-	plaid: number,
+	plaid: string,
 	plcid?: number,
 	username?: string,
 	nickname?: string,
@@ -57,7 +57,7 @@ export interface Pos {
 }
 
 export interface PLCParams extends KaraParams {
-	plaid: number,
+	plaid: string,
 	orderByLikes: boolean,
 }
 

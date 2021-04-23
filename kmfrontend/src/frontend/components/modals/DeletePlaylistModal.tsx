@@ -9,12 +9,13 @@ import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import { GlobalContextInterface } from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
+import {nonStandardPlaylists} from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
 
 interface IProps {
-	idPlaylist?: number;
-	idPlaylistTo?: number;
-	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void
+	plaid?: string;
+	plaidTo?: string;
+	changeIdPlaylist: (idPlaylist: string, idBLSet?: number) => void
 	playlistInfo?: DBPL;
 	bLSet?: BLCSet;
 	context: GlobalContextInterface;
@@ -34,26 +35,26 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 
 	deletePlaylist = async () => {
 		if (this.state.idPlaylistChosen) {
-			await commandBackend(this.props.idPlaylist === -4 ? 'editBLCSet' : 'editPlaylist', {
+			await commandBackend(this.props.plaid === nonStandardPlaylists.blc ? 'editBLCSet' : 'editPlaylist', {
 				set_id: this.state.idPlaylistChosen,
-				flag_current: this.props.idPlaylist === -4 ? true : this.props.playlistInfo?.flag_current,
+				flag_current: this.props.plaid === nonStandardPlaylists.blc ? true : this.props.playlistInfo?.flag_current,
 				flag_public: this.props.playlistInfo?.flag_public,
 				plaid: this.state.idPlaylistChosen
 			});
 			await setSettings(this.props.context.globalDispatch);
-		} if (this.props.idPlaylist === -4) {
+		} if (this.props.plaid === nonStandardPlaylists.blc) {
 			commandBackend('deleteBLCSet', {
 				set_id: this.props.bLSet?.blc_set_id
 			});
-			this.props.changeIdPlaylist(-4);
+			this.props.changeIdPlaylist(nonStandardPlaylists.blc);
 		} else {
 			this.props.changeIdPlaylist(this.state.idPlaylistChosen ?
 				this.state.idPlaylistChosen :
-				(this.props.idPlaylistTo === this.props.context.globalState.settings.data.state.publicPlaid ?
+				(this.props.plaidTo === this.props.context.globalState.settings.data.state.publicPlaid ?
 					-1 :
 					this.props.context.globalState.settings.data.state.publicPlaid));
 			commandBackend('deletePlaylist', {
-				plaid: this.props.idPlaylist
+				plaid: this.props.plaid
 			});
 		}
 		this.closeModal();
@@ -64,7 +65,7 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 	}
 
 	render() {
-		const message = (this.props.idPlaylist === -4 && this.props.bLSet?.flag_current) ?
+		const message = (this.props.plaid === nonStandardPlaylists.blc && this.props.bLSet?.flag_current) ?
 			'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT_BLC' :
 			(this.props.playlistInfo?.flag_current && this.props.playlistInfo?.flag_public ?
 				'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT_PUBLIC' :
@@ -88,7 +89,7 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 									<img src={nanamiShockedPng} alt="Nanami is shocked oO" />
 								</picture>
 								{i18next.t('MODAL.DELETE_PLAYLIST_MODAL.TITLE', {
-									playlist: this.props.idPlaylist === -4 ?
+									playlist: this.props.plaid === nonStandardPlaylists.blc ?
 										this.props.bLSet?.name :
 										(this.props.playlistInfo as DBPL).name
 								})}
@@ -99,7 +100,7 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 								<div className="modal-message text">
 									<p>{i18next.t(message)}</p>
 									<SelectWithIcon
-										list={this.props.idPlaylist === -4 ?
+										list={this.props.plaid === nonStandardPlaylists.blc ?
 											this.props.bLSetList :
 											this.props.playlistList}
 										value={this.state.idPlaylistChosen?.toString()}

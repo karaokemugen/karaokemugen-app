@@ -10,7 +10,7 @@ import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
 	userList: Array<User>;
-	changeIdPlaylist: (idPlaylist: number) => void;
+	changeIdPlaylist: (idPlaylist: string) => void;
 }
 
 interface IState {
