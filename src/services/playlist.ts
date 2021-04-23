@@ -74,12 +74,15 @@ export async function testPlaylists() {
 	const publicPL_id = await findPublicPlaylist();
 	if (!currentPL_id && !publicPL_id) {
 		// Initial state here, we create only one playlist
-		const plaid = await createPlaylist(i18n.t('MY_PLAYLIST'),{
-			visible: true,
-			current: true,
-			public: true,
-			autoSortByLike: false,
-		}, 'admin');
+		const plaid = await createPL({
+			name: i18n.t('MY_PLAYLIST'),
+			created_at: new Date(),
+			modified_at: new Date(),
+			flag_visible: true,
+			flag_current: true,
+			flag_public: true,
+			username: 'admin'
+		});
 		setState({currentPlaid: plaid, publicPlaid: plaid});
 		logger.debug('Initial current playlist created', {service: 'Playlist'});
 	} else {
@@ -236,35 +239,42 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 	}
 }
 
+// Actions took when a new current playlist is set
+function currentHook(plaid: string, name: string) {
+	const oldCurrentPlaylist_id = getState().currentPlaid;
+	updatePlaylistLastEditTime(oldCurrentPlaylist_id);
+	emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
+	setState({currentPlaid: plaid, introPlayed: false, introSponsorPlayed: false});
+	emitWS('currentPlaylistUpdated', plaid);
+	resetAllAcceptedPLCs();
+	writeStreamFiles('current_kara_count');
+	writeStreamFiles('time_remaining_in_current_playlist');
+	logger.info(`Playlist ${name} is now current`, {service: 'Playlist'});
+}
+
+// Actions took when a new public playlist is set
+function publicHook(plaid: string, name: string) {
+	const oldPublicPlaylist_id = getState().publicPlaid;
+	updatePlaylistLastEditTime(oldPublicPlaylist_id);
+	emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
+	setState({publicPlaid: plaid});
+	emitWS('publicPlaylistUpdated', plaid);
+	writeStreamFiles('public_kara_count');
+	logger.info(`Playlist ${name} is now public`, {service: 'Playlist'});
+}
+
 /** Edit playlist properties */
 export async function editPlaylist(plaid: string, playlist: DBPL) {
 	const pl = await getPlaylistInfo(plaid);
 	if (!pl) throw {code: 404};
 	logger.debug(`Editing playlist ${plaid}`, {service: 'Playlist', obj: playlist});
-	await editPL({
+	const newPL: DBPL = {
 		...pl,
 		...playlist
-	});
-	if (playlist.flag_current) {
-		const oldCurrentPlaylist_id = getState().currentPlaid;
-		updatePlaylistLastEditTime(oldCurrentPlaylist_id);
-		emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
-		setState({currentPlaid: plaid, introPlayed: false, introSponsorPlayed: false});
-		emitWS('currentPlaylistUpdated', plaid);
-		resetAllAcceptedPLCs();
-		writeStreamFiles('current_kara_count');
-		writeStreamFiles('time_remaining_in_current_playlist');
-		logger.info(`Playlist ${pl.name} is now current`, {service: 'Playlist'});
-	}
-	if (playlist.flag_public) {
-		const oldPublicPlaylist_id = getState().publicPlaid;
-		updatePlaylistLastEditTime(oldPublicPlaylist_id);
-		emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
-		setState({publicPlaid: plaid});
-		emitWS('publicPlaylistUpdated', plaid);
-		writeStreamFiles('public_kara_count');
-		logger.info(`Playlist ${pl.name} is now public`, {service: 'Playlist'});
-	}
+	};
+	await editPL(newPL);
+	if (playlist.flag_current) currentHook(plaid, newPL.name);
+	if (playlist.flag_public) publicHook(plaid, newPL.name);
 	updatePlaylistLastEditTime(plaid);
 	emitWS('playlistInfoUpdated', plaid);
 	emitWS('playlistsUpdated');
@@ -281,17 +291,9 @@ export async function createPlaylist(name: string, opts: PlaylistOpts,username: 
 		flag_public: opts.public || null,
 		username: username
 	});
-	if (+opts.current) {
-		setState({currentPlaid: plaid});
-		writeStreamFiles('current_kara_count');
-		writeStreamFiles('time_remaining_in_current_playlist');
-		emitWS('currentPlaylistUpdated', plaid);
-	}
-	if (+opts.public) {
-		setState({publicPlaid: plaid});
-		writeStreamFiles('public_kara_count');
-		emitWS('publicPlaylistUpdated', plaid);
-	}
+	if (+opts.current) currentHook(plaid, name);
+	if (+opts.public) publicHook(plaid, name);
+	emitWS('playlistInfoUpdated', plaid);
 	emitWS('playlistsUpdated');
 	return plaid;
 }
@@ -638,6 +640,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 		emitWS('playlistContentsUpdated', plaid);
 		emitWS('playlistInfoUpdated', plaid);
 	} catch(err) {
+		logger.error('Cannot copy karaokes to another playlist', {service: 'Playlist', obj: err});
 		throw {
 			code: err?.code,
 			message: err,
@@ -1310,10 +1313,13 @@ export async function testCurrentPlaylist() {
 	if (currentPL_id) {
 		setState({currentPlaid: currentPL_id});
 	} else {
-		setState({currentPlaid: await createPlaylist(i18n.t('CURRENT_PLAYLIST'),{
-			visible: true,
-			current: true
-		},'admin')
+		setState({currentPlaid:
+			await createPL({
+				name: i18n.t('CURRENT_PLAYLST'),
+				flag_visible: true,
+				flag_current: true,
+				username: 'admin'
+			})
 		});
 		logger.debug('Initial current playlist created', {service: 'Playlist'});
 	}
@@ -1325,10 +1331,13 @@ export async function testPublicPlaylist() {
 	if (publicPL_id) {
 		setState({ publicPlaid: publicPL_id });
 	} else {
-		setState({ publicPlaid: await createPlaylist(i18n.t('PUBLIC_PLAYLIST'),{
-			visible: true,
-			public: true
-		},'admin')
+		setState({ publicPlaid:
+			await createPL({
+				name: i18n.t('PUBLIC_PLAYLST'),
+				flag_visible: true,
+				flag_public: true,
+				username: 'admin'
+			})
 		});
 		logger.debug('Initial public playlist created', {service: 'Playlist'});
 	}

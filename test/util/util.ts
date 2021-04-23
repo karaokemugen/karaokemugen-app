@@ -16,6 +16,12 @@ allLangs.push('und');
 export const allKIDs = testDownloads.map(d => d.kid);
 const tokens = new Map();
 
+export let plaid = '';
+
+export function setPlaid(newPlaid: string) {
+	plaid = newPlaid;
+}
+
 export function disconnectSocket() {
 	socket.disconnect();
 }
@@ -99,7 +105,7 @@ export function testKara(kara: any, details: TestDetails) {
 		expect(kara.nickname).to.be.a('string');
 	}
 	expect(kara.played).to.be.a('number').and.at.least(0);
-	if (details.plcDetail) expect(kara.plaid).to.be.a('number').and.at.least(0);
+	if (details.plcDetail) expect(kara.plaid).to.be.a('string').and.match(new RegExp(uuidRegexp));
 	if (details.plc) expect(kara.plcid).to.be.a('number').and.at.least(0);
 	if (details.plc) expect(kara.pos).to.be.a('number').and.at.least(0);
 	expect(kara.requested).to.be.a('number').and.at.least(0);

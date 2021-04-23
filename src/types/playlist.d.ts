@@ -64,8 +64,7 @@ export interface PLCParams extends KaraParams {
 export interface PlaylistOpts {
 	visible?: boolean,
 	current?: boolean,
-	public?: boolean,
-	autoSortByLike?: boolean
+	public?: boolean
 }
 
 export type ShuffleMethods = 'normal' | 'smart' | 'balance' | 'upvotes';
