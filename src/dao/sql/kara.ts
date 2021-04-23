@@ -138,7 +138,7 @@ DELETE FROM kara WHERE pk_kid = ANY ($1);
 
 export const sqlremoveKaraFromPlaylist = `
 DELETE FROM playlist_content
-WHERE pk_id_plcontent IN ($playlistcontent_id)
+WHERE pk_id_plcontent IN ($plcid)
 `;
 
 export const sqlgetSongCountPerUser = `

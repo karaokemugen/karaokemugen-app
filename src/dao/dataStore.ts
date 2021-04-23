@@ -1,6 +1,7 @@
 import parallel from 'async-await-parallel';
+import { promises as fs } from 'fs';
 
-import { asyncStat,checksum, extractAllFiles } from '../lib/utils/files';
+import { checksum, extractAllFiles } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
@@ -11,12 +12,12 @@ const dataStore = {
 };
 
 export async function addKaraToStore(file: string) {
-	const stats = await asyncStat(file);
+	const stats = await fs.stat(file);
 	dataStore.karas.set(file, stats.mtimeMs);
 }
 
 export async function addTagToStore(file: string) {
-	const stats = await asyncStat(file);
+	const stats = await fs.stat(file);
 	dataStore.tags.set(file, stats.mtimeMs);
 }
 
@@ -37,7 +38,7 @@ export function getStoreChecksum() {
 }
 
 export async function editKaraInStore(file: string) {
-	const stats = await asyncStat(file);
+	const stats = await fs.stat(file);
 	dataStore.karas.set(file, stats.mtimeMs);
 }
 
@@ -46,7 +47,7 @@ export function removeKaraInStore(file: string) {
 }
 
 export async function editTagInStore(file: string) {
-	const stats = await asyncStat(file);
+	const stats = await fs.stat(file);
 	dataStore.tags.set(file, stats.mtimeMs);
 }
 

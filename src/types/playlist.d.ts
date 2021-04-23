@@ -1,5 +1,5 @@
+import { DBPLCBase } from '../lib/types/database/playlist';
 import {KaraParams} from '../lib/types/kara';
-import { DBPLCBase } from './database/playlist';
 
 export interface PLCEditParams {
 	flag_playing?: boolean,
@@ -16,8 +16,8 @@ export interface CurrentSong extends DBPLCBase {
 }
 
 export interface PLC {
-	playlist_id: number,
-	playlistcontent_id?: number,
+	plaid: string,
+	plcid?: number,
 	username?: string,
 	nickname?: string,
 	kid?: string,
@@ -57,15 +57,14 @@ export interface Pos {
 }
 
 export interface PLCParams extends KaraParams {
-	playlist_id: number,
+	plaid: string,
 	orderByLikes: boolean,
 }
 
 export interface PlaylistOpts {
 	visible?: boolean,
 	current?: boolean,
-	public?: boolean,
-	autoSortByLike?: boolean
+	public?: boolean
 }
 
 export type ShuffleMethods = 'normal' | 'smart' | 'balance' | 'upvotes';

@@ -152,3 +152,15 @@ export function callModal(dispatch: Dispatch<ShowModal>, type: string, title: an
 			{ type: type, title: title, message: message, callback: callback, placeholder: placeholder, forceSmall: forceSmall })
 	);
 }
+
+export const nonStandardPlaylists = {
+	blacklist: '4398bed2-e272-47f5-9dd9-db7240e8557e', // -2
+	blc: '91a9961a-8863-48a5-b9d0-fc4c1372a11a', // -4
+	whitelist: '4c5dbb18-278b-448e-9a1f-8cf5f1e24dc7', // -3
+	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94', // -5
+	library: '524de79d-10b2-49dc-90b1-597626d0cee8' // -1
+};
+
+export function isNonStandardPlaylist(plaid: string) {
+	return Object.values(nonStandardPlaylists).includes(plaid);
+}

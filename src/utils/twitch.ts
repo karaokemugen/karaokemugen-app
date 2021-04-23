@@ -5,7 +5,10 @@ import tmi, { ChatUserstate,Client } from 'tmi.js';
 import { getConfig } from '../lib/utils/config';
 // KM Imports
 import logger, { profile } from '../lib/utils/logger';
+import { getSongSeriesSingers } from '../services/kara';
+import { getCurrentSong } from '../services/playlist';
 import { addPollVoteIndex } from '../services/poll';
+import { getState } from './state';
 
 // We declare our client here se we can interact with it from different functions.
 let client: Client = null;
@@ -30,7 +33,7 @@ export async function initTwitch() {
 		};
 		client = tmi.client(opts);
 		await client.connect();
-		listenVoteEvents(client);
+		listenChat(client);
 		logger.debug('Twitch initialized', {service: 'Twitch'});
 	} catch(err) {
 		logger.error('Unable to login to chat', {service: 'Twitch', obj: err});
@@ -51,8 +54,8 @@ export async function sayTwitch(message: string) {
 }
 
 /** Vote Events are listened here and reacted upon */
-function listenVoteEvents(chat: Client) {
-	chat.on('message', (target: string, context: ChatUserstate, msg: string, self: boolean) => {
+function listenChat(chat: Client) {
+	chat.on('message', async (target: string, context: ChatUserstate, msg: string, self: boolean) => {
 		// If it's something we said, don't do anything
 		if (self) return;
 		if (msg.startsWith('!vote ')) {
@@ -61,11 +64,15 @@ function listenVoteEvents(chat: Client) {
 				try {
 					addPollVoteIndex(+choice, context.username);
 				} catch (err) {
-					if (err === 'POLL_VOTE_ERROR') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.INVALID_CHOICE')}`);
-					if (err === 'POLL_NOT_ACTIVE') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.NO_ACTIVE_POLL')}`);
-					if (err === 'POLL_USER_ALREADY_VOTED') chat.say(target, `${context.username} : ${i18next.t('TWITCH.CHAT.YOU_ALREADY_VOTED')}`);
+					if (err === 'POLL_VOTE_ERROR') chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.INVALID_CHOICE')}`);
+					if (err === 'POLL_NOT_ACTIVE') chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.NO_ACTIVE_POLL')}`);
+					if (err === 'POLL_USER_ALREADY_VOTED') chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.YOU_ALREADY_VOTED')}`);
 				}
 			}
+		} else if (msg === '!song') {
+			const song = await getCurrentSong();
+			const str = `@${context.username} : ${song.title} - ${getSongSeriesSingers(song)} (${/\./.test(song.repository) ? `https://${song.repository}/base/kara/${song.kid}`:`${getState().osURL}/public/karaoke/${song.kid}`})`;
+			chat.say(target, str);
 		}
 	});
 }

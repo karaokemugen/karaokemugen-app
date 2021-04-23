@@ -252,7 +252,8 @@ export const defaults: Config = {
 			Sponsors: process.platform === 'win32' ? ['sponsors', 'sponsors\\KaraokeMugen'] : ['sponsors', 'sponsors/KaraokeMugen'],
 			Temp: 'temp',
 			Previews: 'previews',
-			SessionExports: 'sessionExports'
+			SessionExports: 'sessionExports',
+			StreamFiles: 'streamFiles'
 		}
 	}
 };

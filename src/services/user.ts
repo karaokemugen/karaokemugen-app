@@ -1,5 +1,7 @@
 import {compare, genSalt, hash} from 'bcryptjs';
 import {createHash} from 'crypto';
+import { promises as fs } from 'fs';
+import { copy } from 'fs-extra';
 import {decode,encode} from 'jwt-simple';
 import {has as hasLang} from 'langs';
 import {resolve} from 'path';
@@ -26,7 +28,7 @@ import { addUser as DBAddUser,
 import {User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
-import {asyncCopy, asyncExists, asyncReadDir, asyncStat, asyncUnlink, detectFileType} from '../lib/utils/files';
+import {asyncExists, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import { DBGuest } from '../types/database/user';
@@ -167,13 +169,13 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		if (await asyncExists(oldAvatarPath) &&
 			oldImageFile !== 'blank.png') {
 			try {
-				await asyncUnlink(oldAvatarPath);
+				await fs.unlink(oldAvatarPath);
 			} catch(err) {
 				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, {service: 'User', obj: err});
 			}
 		}
 		try {
-			await asyncCopy(avatar.path, newAvatarPath, {overwrite: true});
+			await copy(avatar.path, newAvatarPath, {overwrite: true});
 		} catch(err) {
 			logger.error(`Could not copy new avatar ${avatar.path} to ${newAvatarPath}`, {service: 'User', obj: err});
 		}
@@ -347,17 +349,17 @@ async function updateGuestAvatar(user: DBGuest) {
 	}
 	let avatarStats: any = {};
 	try {
-		avatarStats = await asyncStat(resolve(resolvedPathAvatars(), user.avatar_file));
+		avatarStats = await fs.stat(resolve(resolvedPathAvatars(), user.avatar_file));
 	} catch(err) {
 		// It means one avatar has disappeared, we'll put a 0 size on it so the replacement is triggered later
 		avatarStats.size = 0;
 	}
-	const bundledAvatarStats = await asyncStat(bundledAvatarPath);
+	const bundledAvatarStats = await fs.stat(bundledAvatarPath);
 	if (avatarStats.size !== bundledAvatarStats.size) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
 		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
 		const tempFile = resolve(resolvedPathTemp(), bundledAvatarFile);
-		await asyncCopy(bundledAvatarPath, tempFile);
+		await copy(bundledAvatarPath, tempFile);
 		editUser(user.login, user, {
 			fieldname: null,
 			path: tempFile,
@@ -483,14 +485,14 @@ async function checkUserAvatars() {
 		}
 		const file = resolve(resolvedPathAvatars(), user.avatar_file);
 		if (!await asyncExists(file)) {
-			await asyncCopy(
+			await copy(
 				defaultAvatar,
 				file,
 				{overwrite: true}
 			);
 		} else {
-			const stat = await asyncStat(file);
-			if (stat.size === 0) await asyncCopy(
+			const fstat = await fs.stat(file);
+			if (fstat.size === 0) await copy(
 				defaultAvatar,
 				file,
 				{overwrite: true}
@@ -507,14 +509,14 @@ async function cleanupAvatars() {
 	for (const user of users) {
 		if (!avatars.includes(user.avatar_file)) avatars.push(user.avatar_file);
 	}
-	const avatarFiles = await asyncReadDir(resolvedPathAvatars());
+	const avatarFiles = await fs.readdir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
 		const avatar = avatars.find(a => a === file);
 		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPathAvatars(), file);
 			try {
 				logger.debug(`Deleting old file ${fullFile}`, {service: 'Users'});
-				await asyncUnlink(fullFile);
+				await fs.unlink(fullFile);
 			} catch(err) {
 				logger.warn(`Failed deleting old file ${fullFile}`, {service: 'Users', obj: err});
 				//Non-fatal
@@ -525,21 +527,21 @@ async function cleanupAvatars() {
 }
 
 /** Update song quotas for a user */
-export async function updateSongsLeft(username: string, playlist_id?: number) {
+export async function updateSongsLeft(username: string, plaid?: string) {
 	const conf = getConfig();
 	username = username.toLowerCase();
 	const user = await findUserByName(username);
 	let quotaLeft: number;
-	if (!playlist_id) playlist_id = getState().publicPlaylistID;
+	if (!plaid) plaid = getState().publicPlaid;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
 		case 2:
-			const time = await getSongTimeSpentForUser(playlist_id,username);
+			const time = await getSongTimeSpentForUser(plaid,username);
 			quotaLeft = +conf.Karaoke.Quota.Time - time;
 			break;
 		default:
 		case 1:
-			const count = await getSongCountForUser(playlist_id, username);
+			const count = await getSongCountForUser(plaid, username);
 			quotaLeft = +conf.Karaoke.Quota.Songs - count;
 			break;
 		}

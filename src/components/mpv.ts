@@ -1,4 +1,5 @@
 import execa from 'execa';
+import { promises as fs } from 'fs';
 import i18n from 'i18next';
 import debounce from 'lodash.debounce';
 import sample from 'lodash.sample';
@@ -16,7 +17,7 @@ import {errorStep} from '../electron/electronLogger';
 import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {imageFileTypes} from '../lib/utils/constants';
 import {getAvatarResolution} from '../lib/utils/ffmpeg';
-import {asyncExists, asyncReadDir, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
+import {asyncExists, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
 import { playerEnding } from '../services/karaokeEngine';
 import {getSingleMedia} from '../services/medias';
 import {next, prev} from '../services/player';
@@ -563,7 +564,7 @@ class Players {
 
 	private static async extractBackgroundFiles(backgroundDir: string): Promise<string[]> {
 		const backgroundFiles = [];
-		const dirListing = await asyncReadDir(backgroundDir);
+		const dirListing = await fs.readdir(backgroundDir);
 		for (const file of dirListing) {
 			if (isImageFile(file)) backgroundFiles.push(resolve(backgroundDir, file));
 		}
@@ -669,7 +670,8 @@ class Players {
 		try {
 			playerState.mediaType = 'background';
 			playerState.playerStatus = 'stop';
-			playerState.currentSong = null;
+			playerState.currentSong = undefined;
+			playerState.currentMedia = undefined;
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
@@ -830,6 +832,7 @@ class Players {
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
 			playerState._playing = true;
+			playerState.currentMedia = undefined;
 			playerState.playerStatus = 'play';
 			emitPlayerState();
 			setDiscordActivity('song', {
@@ -865,7 +868,7 @@ class Players {
 				logger.debug('No subtitles to load (not found for media)', {service: 'Player'});
 			}
 			try {
-				playerState.currentSong = null;
+				playerState.currentSong = undefined;
 				playerState.mediaType = mediaType;
 				playerState.currentMedia = media;
 				await retry(() => this.exec({command: ['loadfile', media.filename, 'replace', options]}), {

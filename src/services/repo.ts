@@ -1,3 +1,5 @@
+import { promises as fs } from 'fs';
+import { copy } from 'fs-extra';
 import { basename,resolve } from 'path';
 
 import { compareKarasChecksum, generateDB } from '../dao/database';
@@ -11,7 +13,7 @@ import { Repository } from '../lib/types/repo';
 import { Tag } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
-import { asyncCheckOrMkdir, asyncCopy,asyncExists, asyncMoveAll, asyncReadDir, extractAllFiles, relativePath, resolveFileInDirs } from '../lib/utils/files';
+import { asyncCheckOrMkdir, asyncExists, asyncMoveAll, extractAllFiles, relativePath, resolveFileInDirs } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
@@ -131,7 +133,7 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 			writes.push(writeKara(karas.kara2.karafile, karas.kara2));
 			const sourceLyrics = await resolveFileInDirs(karas.kara1.subfile, resolvedPathRepos('Lyrics', karas.kara1.repository));
 			const destLyrics = await resolveFileInDirs(karas.kara2.subfile, resolvedPathRepos('Lyrics', karas.kara2.repository));
-			writes.push(asyncCopy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
+			writes.push(copy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
 			writes.push(editKaraInDB(karas.kara2, { refresh: false }));
 			await Promise.all(writes);
 			editKaraInStore(karas.kara2.karafile);
@@ -238,7 +240,7 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		let files = 0;
 		for (const type of Object.keys(repo.Path)) {
 			for (const dir of repo.Path[type]) {
-				const dirFiles = await asyncReadDir(resolve(state.dataPath, dir));
+				const dirFiles = await fs.readdir(resolve(state.dataPath, dir));
 				files = files + dirFiles.length;
 			}
 		}

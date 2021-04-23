@@ -116,17 +116,17 @@ export async function getPollResults(): Promise<PollResults> {
 	const winners = poll.filter(c => +c.votes === +maxVotes);
 	const winner = sample(winners);
 	const state = getState();
-	const playlist_id = getState().currentPlaylistID;
-	if (state.publicPlaylistID !== state.currentPlaylistID) {
-		await copyKaraToPlaylist([winner.playlistcontent_id], playlist_id);
+	const plaid = getState().currentPlaid;
+	if (state.publicPlaid !== state.currentPlaid) {
+		await copyKaraToPlaylist([winner.plcid], plaid);
 	} else {
-		await editPLC([winner.playlistcontent_id], {
+		await editPLC([winner.plcid], {
 			pos: -1
 		});
 	}
 
-	emitWS('playlistInfoUpdated', playlist_id);
-	emitWS('playlistContentsUpdated', playlist_id);
+	emitWS('playlistInfoUpdated', plaid);
+	emitWS('playlistContentsUpdated', plaid);
 
 	const version = getSongVersion(winner);
 	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}${version}`;
@@ -197,13 +197,13 @@ export async function startPoll(): Promise<boolean> {
 	pollEnding = false;
 	// Create new poll
 	// Get a list of karaokes to add to the poll
-	const publicPlaylistID = getState().publicPlaylistID;
-	const currentPlaylistID = getState().currentPlaylistID;
+	const publicPlaylistID = getState().publicPlaid;
+	const currentPlaylistID = getState().currentPlaid;
 	let availableKaras: DBPLC[];
 	if (publicPlaylistID !== currentPlaylistID) {
 		const [pubpl, curpl] = await Promise.all([
-			getPlaylistContentsMini(getState().publicPlaylistID),
-			getPlaylistContentsMini(getState().currentPlaylistID)
+			getPlaylistContentsMini(getState().publicPlaid),
+			getPlaylistContentsMini(getState().currentPlaid)
 		]);
 		if (pubpl.length === 0) {
 			logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
@@ -212,7 +212,7 @@ export async function startPoll(): Promise<boolean> {
 		}
 		availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
 	} else {
-		const pl = await getPlaylistContentsMini(getState().publicPlaylistID);
+		const pl = await getPlaylistContentsMini(getState().publicPlaid);
 		const currentKara = pl.find(plc => plc.flag_playing === true);
 		availableKaras = pl.filter(plc => plc.pos > currentKara.pos);
 	}

@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import { dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -14,7 +15,7 @@ import { IDQueryResult, Kara, KaraList } from '../lib/types/kara';
 import { Tag,TagParams } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
-import { asyncUnlink,resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
+import { resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -210,7 +211,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		// If it has been modified (name field modified) we need to remove the old one.
 		if (oldTag.tagfile !== tagObj.tagfile) {
 			try {
-				await asyncUnlink(oldTagFiles[0]);
+				await fs.unlink(oldTagFiles[0]);
 			} catch(err) {
 				//Non fatal. Can be triggered if the tag file has already been removed.
 			}

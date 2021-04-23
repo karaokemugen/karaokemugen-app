@@ -2,6 +2,7 @@
 
 // Node modules
 import { dialog } from 'electron';
+import { copy } from 'fs-extra';
 import i18next from 'i18next';
 import {address} from 'ip';
 import { createCIDR } from 'ip6addr';
@@ -17,7 +18,7 @@ import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import {RecursivePartial} from '../lib/types';
 import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
-import {asyncCopy, asyncRequired,relativePath} from '../lib/utils/files';
+import {asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/object_helpers';
@@ -45,6 +46,7 @@ import {configConstraints, defaults} from './default_settings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
 import {getState, setState} from './state';
+import {writeStreamFiles} from './stream_files';
 import { initTwitch, stopTwitch } from './twitch';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
@@ -90,7 +92,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
 		const users = await listUsers();
 		for (const user of users) {
-			updateSongsLeft(user.login, getState().publicPlaylistID);
+			updateSongsLeft(user.login, getState().publicPlaid);
 		}
 	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
@@ -152,6 +154,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Online.Stats && !state.isDemo
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
 		: stopStats();
+	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 	// Toggling progressbar off if needs be
 	if (config.Player.ProgressBarDock && !state.isDemo) setProgressBar(-1);
 	if (!state.isDemo) configureHost();
@@ -196,6 +199,7 @@ export function configureHost() {
 	if ((state.player.mediaType === 'background' || state.player.mediaType === 'pauseScreen') && !state.songPoll) {
 		displayInfo();
 	}
+	writeStreamFiles('km_url');
 }
 
 function getFirstHop(target: string): Promise<string> {
@@ -251,7 +255,7 @@ export async function determineV6Prefix(ipv6: string): Promise<string> {
 /** Create a backup of our config file. Just in case. */
 export function backupConfig() {
 	logger.debug('Making a backup of config.yml', {service: 'Config'});
-	return asyncCopy(
+	return copy(
 		resolve(getState().dataPath, 'config.yml'),
 		resolve(getState().dataPath, 'config.backup.yml'),
 		{ overwrite: true }

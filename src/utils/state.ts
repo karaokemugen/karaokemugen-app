@@ -103,8 +103,8 @@ export function getState() {
 /** Get public state */
 export function getPublicState(admin: boolean): PublicState {
 	return {
-		currentPlaylistID: state.currentPlaylistID,
-		publicPlaylistID: state.publicPlaylistID,
+		currentPlaid: state.currentPlaid,
+		publicPlaid: state.publicPlaid,
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,

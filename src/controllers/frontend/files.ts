@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { promises as fs } from 'fs';
 import multer from 'multer';
 import { resolve } from 'path';
 import { Socket } from 'socket.io';
@@ -6,7 +7,6 @@ import { v4 as uuidV4 } from 'uuid';
 
 import { APIData } from '../../lib/types/api';
 import { resolvedPathTemp } from '../../lib/utils/config';
-import { asyncWriteFile } from '../../lib/utils/files';
 import logger from '../../lib/utils/logger';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { runChecklist } from '../middlewares';
@@ -41,7 +41,7 @@ export function filesSocketController(router: SocketIOApp) {
 			const extension = req.body.extension ? `.${req.body.extension}` : '';
 			const filename = `${uuidV4()}${extension}`;
 			const fullPath = resolve(resolvedPathTemp(), filename);
-			await asyncWriteFile(fullPath, req.body.buffer);
+			await fs.writeFile(fullPath, req.body.buffer);
 			return {
 				filename: fullPath
 			};

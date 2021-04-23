@@ -22,7 +22,7 @@ export async function selectFavorites(params: FavParams): Promise<DBKara[]> {
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	const query = sqlgetFavorites(filterClauses.sql, limitClause, offsetClause, filterClauses.additionalFrom);
 	const res = await db().query(yesql(query)({
-		publicPlaylist_id: getState().publicPlaylistID,
+		publicPlaylist_id: getState().publicPlaid,
 		...filterClauses.params
 	}));
 	return res.rows;

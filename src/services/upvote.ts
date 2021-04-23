@@ -19,7 +19,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		username = username.toLowerCase();
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {code: 404};
-		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'UPVOTE_FAILED'};
+		if (plc.plaid !== getState().publicPlaid) throw {code: 403, msg: 'UPVOTE_FAILED'};
 		if (plc.username === username) throw {code: 403, msg: 'UPVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
 		if (userList.some(u => u.username === username)) throw {code: 403, msg: 'UPVOTE_ALREADY_DONE'};
@@ -27,12 +27,12 @@ export async function addUpvote(plc_id: number, username: string) {
 		await insertUpvote(plc_id, username);
 		plc.upvotes++;
 		if (!getConfig().Karaoke.Quota.FreeUpVotes) return;
-		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().publicPlaylistID);
-		if (plc.playlist_id === getState().publicPlaylistID) {
+		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().publicPlaid);
+		if (plc.plaid === getState().publicPlaid) {
 			emitWS('KIDUpdated', [{kid: plc.kid, flag_upvoted: true, username: username}]);
 		}
 		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
-		emitWS('playlistContentsUpdated', plc.playlist_id);
+		emitWS('playlistContentsUpdated', plc.plaid);
 	} catch(err) {
 		if (!err.msg) err.msg = 'UPVOTE_FAILED';
 		throw err;
@@ -45,7 +45,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		username = username.toLowerCase();
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
-		if (plc.playlist_id !== getState().publicPlaylistID) throw {code: 403, msg: 'DOWNVOTE_FAILED'};
+		if (plc.plaid !== getState().publicPlaid) throw {code: 403, msg: 'DOWNVOTE_FAILED'};
 		if (plc.username === username) throw {code: 403, msg: 'DOWNVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
 		const users = userList.map(u => u.username);
@@ -53,11 +53,11 @@ export async function deleteUpvote(plc_id: number, username: string) {
 		await removeUpvote(plc_id, username);
 		// Karaokes are not 'un-freed' when downvoted.^
 		plc.upvotes--;
-		if (plc.playlist_id === getState().publicPlaylistID) {
+		if (plc.plaid === getState().publicPlaid) {
 			emitWS('KIDUpdated', [{kid: plc.kid, flag_upvoted: false, username: username}]);
 		}
 		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
-		emitWS('playlistContentsUpdated', plc.playlist_id);
+		emitWS('playlistContentsUpdated', plc.plaid);
 	} catch(err) {
 		if (!err.msg) err.msg = 'DOWNVOTE_FAILED';
 		throw err;
@@ -65,7 +65,7 @@ export async function deleteUpvote(plc_id: number, username: string) {
 }
 
 /** Free song if it's sufficiently upvoted */
-async function tryToFreeKara(plc_id :number, upvotes: number, username: string, playlist_id: number) {
+async function tryToFreeKara(plc_id: number, upvotes: number, username: string, plaid: string) {
 	const allUsersList = await listUsers();
 	const onlineUsers = allUsersList.filter(user => user.flag_online);
 	const upvotePercent = (upvotes / onlineUsers.length) * 100;
@@ -73,7 +73,7 @@ async function tryToFreeKara(plc_id :number, upvotes: number, username: string, 
 	if (upvotePercent >= +conf.Karaoke.Quota.FreeUpVotesRequiredPercent &&
 		upvotes >= +conf.Karaoke.Quota.FreeUpVotesRequiredMin) {
 		await freePLC(plc_id);
-		updateSongsLeft(username, playlist_id);
+		updateSongsLeft(username, plaid);
 		logger.debug(`PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`, {service: 'Upvote'});
 	}
 }

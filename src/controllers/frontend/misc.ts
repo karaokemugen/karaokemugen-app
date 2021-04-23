@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import sample from 'lodash.sample';
 import { Socket } from 'socket.io';
 
@@ -7,7 +8,7 @@ import {getSettings, saveSetting} from '../../lib/dao/database';
 import { generateDatabase } from '../../lib/services/generation';
 import { APIData } from '../../lib/types/api';
 import { getConfig } from '../../lib/utils/config';
-import { asyncUnlink, browseFs } from '../../lib/utils/files';
+import { browseFs } from '../../lib/utils/files';
 import { enableWSLogging, readLog } from '../../lib/utils/logger';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getMigrationsFrontend, setMigrationsFrontend } from '../../services/migrationsFrontend';
@@ -63,17 +64,17 @@ export default function miscController(router: SocketIOApp) {
 		} catch (err) {
 			throw { code: 500 };
 		}
-	});	
+	});
 	router.route('shutdown', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			shutdown();			
+			shutdown();
 		} catch(err) {
 			throw {code: 500};
 		}
 	});
 
-	router.route('getSettings', async (socket: Socket, req: APIData) => {	
+	router.route('getSettings', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed', {optionalAuth: true});
 		return {
 			version: getState().version,
@@ -83,7 +84,7 @@ export default function miscController(router: SocketIOApp) {
 			state: getPublicState(req.user?.type === 0)
 		};
 	});
-	router.route('updateSettings', async (socket: Socket, req: APIData) => {	
+	router.route('updateSettings', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
 			return await editSetting(req.body.setting);
@@ -93,12 +94,12 @@ export default function miscController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('getDisplays', async (socket: Socket, req: APIData) => {	
+	router.route('getDisplays', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		return getDisplays();
 	});
 
-	router.route('getStats', async (socket: Socket, req: APIData) => {	
+	router.route('getStats', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
 			return await getKMStats();
@@ -114,12 +115,12 @@ export default function miscController(router: SocketIOApp) {
 		updateSongsLeft(req.token.username);
 	});
 
-	router.route('getPlayerStatus', async (socket: Socket, req: APIData) => {	
+	router.route('getPlayerStatus', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		return getPlayerState();
 	});
 
-	router.route('getNewsFeed', async () => {		
+	router.route('getNewsFeed', async () => {
 		try {
 			return await getFeeds();
 		} catch(err) {
@@ -127,11 +128,11 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getCatchphrase', async (_socket: Socket, _req: APIData) => {	
+	router.route('getCatchphrase', async (_socket: Socket, _req: APIData) => {
 		return sample(initializationCatchphrases);
 	});
 
-	router.route('getLogs', async (socket: Socket, req: APIData) => {	
+	router.route('getLogs', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			// Align socket
@@ -157,7 +158,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('generateDatabase', async (socket: Socket, req: APIData) => {	
+	router.route('generateDatabase', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			await generateDB();
@@ -168,7 +169,7 @@ export default function miscController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('validateFiles', async (socket: Socket, req: APIData) => {		
+	router.route('validateFiles', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			await generateDatabase({
@@ -181,7 +182,7 @@ export default function miscController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('dumpDatabase', async (socket: Socket, req: APIData) => {	
+	router.route('dumpDatabase', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			await dumpPG();
@@ -191,7 +192,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('restoreDatabase', async (socket: Socket, req: APIData) => {	
+	router.route('restoreDatabase', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			await restorePG();
@@ -213,7 +214,7 @@ export default function miscController(router: SocketIOApp) {
 	router.route('deleteFile', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			return await asyncUnlink(req.body.path);
+			return await fs.unlink(req.body.path);
 		} catch(err) {
 			const code = 'FS_DELETE_ERROR';
 			errMessage(code, err);

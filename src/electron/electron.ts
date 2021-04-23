@@ -1,4 +1,5 @@
 import { app, BrowserWindow, dialog,ipcMain, Menu,protocol } from 'electron';
+import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
@@ -7,7 +8,6 @@ import { exit } from '../components/engine';
 import { listUsers } from '../dao/user';
 import { main, preInit } from '../index';
 import {getConfig, setConfig} from '../lib/utils/config';
-import { asyncReadFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { emit,on } from '../lib/utils/pubsub';
 import { testJSON } from '../lib/utils/validators';
@@ -183,7 +183,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 				logger.warn('Could not find a username, switching to admin by default', {service: 'FileHandler'});
 			}
 		}
-		const rawData = await asyncReadFile(resolve(file), 'utf-8');
+		const rawData = await fs.readFile(resolve(file), 'utf-8');
 		if (!testJSON(rawData)) {
 			logger.debug(`File ${file} is not JSON, ignoring`, {service: 'FileHandler'});
 			return;
