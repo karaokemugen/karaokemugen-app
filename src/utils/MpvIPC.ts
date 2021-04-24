@@ -12,6 +12,7 @@ class Mpv extends EventEmitter {
 	isRunning: boolean
 	observedProperties: string[]
 	program: ChildProcess
+	lastCommandId: number
 
 	constructor(binary: string, socket: string, args: string[]) {
 		super();
@@ -21,6 +22,7 @@ class Mpv extends EventEmitter {
 		this.socket = new Socket();
 		this.isRunning = false;
 		this.observedProperties = [];
+		this.lastCommandId = 0;
 		this.setupEvents();
 	}
 
@@ -104,12 +106,17 @@ class Mpv extends EventEmitter {
 		this.socket.unref();
 	}
 
+	private genCommandId() {
+		if (this.lastCommandId > 999) this.lastCommandId = 0;
+		return ++this.lastCommandId;
+	}
+
 	private ishukan(command: MpvCommand) {
 		return new Promise((resolve, reject) => {
 			try {
 				if (!this.socket.writable) reject(new Error('The socket is not writeable'));
 				// LET'S ishukan COMMUNICATION :) (boh si c'est marrant arrête)
-				const req_id = Math.round(Math.random() * 1000);
+				const req_id = this.genCommandId();
 				const command_with_id = {...command, request_id: req_id, async: true};
 				const dataHandler = (data: string) => {
 					data.split('\n').forEach((payload: string) => {
@@ -117,7 +124,7 @@ class Mpv extends EventEmitter {
 							const res = JSON.parse(payload);
 							if (req_id === res.request_id) {
 								this.socket.removeListener('data', dataHandler);
-								resolve(res);
+								res.error === 'success' ? resolve(res):reject(res);
 								this.socket.removeListener('error', reject);
 							}
 						}

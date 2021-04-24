@@ -692,7 +692,7 @@ class Players {
 		};
 		if (playerState.monitorEnabled) this.players.monitor = new Player({monitor: true}, this);
 		logger.debug(`Players: ${JSON.stringify(Object.keys(this.players))}`, {service: 'Player'});
-		return this.exec('start');
+		await this.exec('start');
 	}
 
 	async initPlayerSystem() {
