@@ -2,9 +2,9 @@ import { expect } from 'chai';
 import sample from 'lodash.sample';
 
 import { DBPL } from '../src/lib/types/database/playlist';
+import { PlaylistExport } from '../src/lib/types/playlist';
 import { uuidRegexp } from '../src/lib/utils/constants';
 import { DBPLC } from '../src/types/database/playlist';
-import { PlaylistExport } from '../src/types/playlist';
 import { allKIDs, commandBackend, getToken, setPlaid, testKara } from './util/util';
 
 describe('Playlists', () => {
