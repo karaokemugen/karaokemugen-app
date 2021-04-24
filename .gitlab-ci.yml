@@ -43,7 +43,7 @@ test:
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US
     - node --version
-    - yarn ts-node util/extUnaccent
+    - yarn ts-node util/extUnaccentPgcrypto
     - yarn test --debug
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'

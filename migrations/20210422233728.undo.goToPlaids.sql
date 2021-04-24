@@ -1,7 +1,3 @@
-begin transaction;
-
-drop extension if exists pgcrypto;
-
 alter table playlist_content
     drop constraint playlist_content_fk_id_playlist_fkey;
 
@@ -30,5 +26,3 @@ alter table playlist_content
     add constraint playlist_content_fk_id_playlist_fkey
         foreign key (fk_id_playlist) references playlist
             on delete cascade;
-
-commit;

@@ -49,24 +49,22 @@ export async function initDB() {
 	await connectDB(errorFunction, {superuser: true, db: 'postgres', log: getState().opt.sql});
 	// Testing if database exists. If it does, no need to do the other stuff
 	const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.System.Database.database}'`);
-	if (rows.length > 0) return;
-	try {
+	if (rows.length === 0) {
 		await db().query(`CREATE DATABASE ${conf.System.Database.database} ENCODING 'UTF8'`);
 		logger.debug('Database created', {service: 'DB'});
-	} catch(err) {
-		logger.debug('Database already exists', {service: 'DB'});
-	}
-	try {
-		await db().query(`CREATE USER ${conf.System.Database.username} WITH ENCRYPTED PASSWORD '${conf.System.Database.password}';`);
-		logger.debug('User created', {service: 'DB'});
-	} catch(err) {
-		logger.debug('User already exists', {service: 'DB'});
+		try {
+			await db().query(`CREATE USER ${conf.System.Database.username} WITH ENCRYPTED PASSWORD '${conf.System.Database.password}';`);
+			logger.debug('User created', {service: 'DB'});
+		} catch(err) {
+			logger.debug('User already exists', {service: 'DB'});
+		}
 	}
 	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.System.Database.database} TO ${conf.System.Database.username};`);
 	// We need to reconnect to create the extension on our newly created database
 	await connectDB(errorFunction, {superuser: true, db: conf.System.Database.database, log: getState().opt.sql});
 	try {
-		await db().query('CREATE EXTENSION unaccent;');
+		await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
+		await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 	} catch(err) {
 		logger.debug('Extension unaccent already registered', {service: 'DB'});
 	}
