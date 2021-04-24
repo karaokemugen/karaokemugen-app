@@ -57,7 +57,8 @@ import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import {emitWS} from '../lib/utils/ws';
 import { DBPLC } from '../types/database/playlist';
-import { CurrentSong, PlaylistExport, PlaylistOpts, PLC, PLCEditParams, Pos,ShuffleMethods } from '../types/playlist';
+import { CurrentSong, PlaylistOpts, Pos, ShuffleMethods } from '../types/playlist';
+import { PLC, PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {writeStreamFiles} from '../utils/stream_files';
@@ -873,7 +874,8 @@ export async function exportPlaylist(plaid: string) {
 			created_at: pl.created_at,
 			modified_at: pl.modified_at,
 			flag_visible: pl.flag_visible,
-			plaid: pl.plaid
+			plaid: pl.plaid,
+			username: pl.username
 		};
 		const plcFiltered = plContents.map((plc: DBPLC) => {
 			return {
@@ -886,7 +888,8 @@ export async function exportPlaylist(plaid: string) {
 				flag_free: plc.flag_free,
 				flag_visible: plc.flag_visible,
 				flag_accepted: plc.flag_accepted,
-				flag_refused: plc.flag_refused
+				flag_refused: plc.flag_refused,
+				plaid: plc.plaid
 			};
 		});
 		playlist.Header = {
