@@ -15,6 +15,7 @@ export interface PlayerState {
 	onTop?: boolean,
 	fullscreen?: boolean,
 	border?: boolean,
+	'eof-reached'?: boolean,
 	url?: string,
 	monitorEnabled?: boolean,
 	songNearEnd?: boolean,
