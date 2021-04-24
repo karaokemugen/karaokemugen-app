@@ -5,13 +5,10 @@ import { dialog } from 'electron';
 import { copy } from 'fs-extra';
 import i18next from 'i18next';
 import {address} from 'ip';
-import { createCIDR } from 'ip6addr';
 import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 import merge from 'lodash.merge';
-import Traceroute from 'nodejs-traceroute';
 import {resolve} from 'path';
-import { ip as whoisIP } from 'whoiser';
 
 import { listUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
@@ -26,7 +23,6 @@ import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import { getAllKaras } from '../services/kara';
-import {publishURL} from '../services/online';
 import {
 	displayInfo,
 	initAddASongMessage,
@@ -41,7 +37,6 @@ import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
 import {Config} from '../types/config';
 import sentry from '../utils/sentry';
-import { ASNPrefixes } from './constants';
 import {configConstraints, defaults} from './default_settings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
@@ -76,9 +71,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			oldConfig.Player.ExtraCommandLine !== newConfig.Player.ExtraCommandLine ||
 			oldConfig.Player.Monitor !== newConfig.Player.Monitor
 		) playerNeedsRestart();
-	}
-	if (newConfig.Online.URL !== oldConfig.Online.URL && state.ready && !state.isDemo) {
-		if (newConfig.Online.URL) publishURL();
 	}
 	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready && !state.isDemo) {
 		if (newConfig.Online.Remote) {
@@ -187,8 +179,6 @@ export function configureHost() {
 	setState({osHost: {v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6')}});
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
 		setState({osURL: `https://${state.remoteAccess.host}`});
-	} else if (config.Online.URL) {
-		setState({osURL: `https://${config.Online.Host}`});
 	} else {
 		if (!config.Karaoke.Display.ConnectionInfo.Host) {
 			setState({osURL: `http://${getState().osHost.v4}${URLPort}`}); // v6 is too long to show anyway
@@ -200,56 +190,6 @@ export function configureHost() {
 		displayInfo();
 	}
 	writeStreamFiles('km_url');
-}
-
-function getFirstHop(target: string): Promise<string> {
-	return new Promise((resolve1, reject) => {
-		// Traceroute way
-		try {
-			const tracer = new Traceroute('ipv6');
-			tracer.on('hop', (hop: any) => {
-				resolve1(hop.ip);
-			});
-			tracer.trace(target);
-		} catch (e) {
-			logger.error('Cannot traceroute', {service: 'Network'});
-			reject(e);
-		}
-	});
-}
-
-export async function determineV6Prefix(ipv6: string): Promise<string> {
-	/**
-	 * IPv6 is made to protect privacy by making complex the task of getting the information about prefixes
-	 * This code tries to determine what's the network prefix via different methods
-	 */
-	// TODO: Find more accurate ways to do this
-	// Resolve ASN using whois
-	const asn = await whoisIP(ipv6);
-	if (typeof ASNPrefixes[asn.asn] === 'number') {
-		const subnet = createCIDR(ipv6, ASNPrefixes[asn.asn]);
-		return subnet.toString();
-	} else {
-		// Traceroute way
-		const hop = await getFirstHop('kara.moe');
-		logger.debug(`Determined gateway: ${hop}`, {service: 'Network'});
-		const local = getState().osHost.v6;
-		let found = false;
-		let prefix = 56;
-		let subnet = createCIDR(local, prefix);
-		while (subnet.contains(hop)) {
-			subnet = createCIDR(local, ++prefix);
-			found = true;
-		}
-		if (found) {
-			subnet = createCIDR(local, --prefix);
-			logger.debug(`Determined IPv6 prefix: ${subnet.toString()}`, {service: 'Network'});
-			return subnet.toString();
-		} else {
-			logger.warn('Could not determine IPv6 prefix, disabling IPv6 capability on shortener.', {service: 'Network'});
-			throw new Error('Cannot find CIDR');
-		}
-	}
 }
 
 /** Create a backup of our config file. Just in case. */

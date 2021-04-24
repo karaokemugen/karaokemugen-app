@@ -423,7 +423,6 @@
 	"SERIE_NAME_MODE_USER_FORCE": "Force your own language",
 	"POLLTITLE": "Time to vote!",
 	"POLLENDED": "{{kara}} wins with {{votes}} votes!",
-	"ONLINEURL": "Short URL (kara.moe)",
 	"FETCHPOPULARSONGS": "Fetch popular songs from your online repositories",
 	"REMOTE": "Allow remote access (<code>.kara.moe)",
 	"REMOTE_URL": "Remote access URL",

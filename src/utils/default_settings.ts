@@ -44,7 +44,6 @@ export const defaults: Config = {
 		Port: 80,
 		Stats: undefined,
 		ErrorTracking: undefined,
-		URL: true,
 		Users: true,
 		Discord: {
 			DisplayActivity: true

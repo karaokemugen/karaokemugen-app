@@ -624,16 +624,6 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						<div className="settings-line">
 							<label>
-								{i18next.t('ONLINEURL')}
-							</label>
-							<div>
-								<Switch idInput="Online.URL" handleChange={this.onChange}
-									isChecked={this.state.config['Online.URL']} />
-							</div>
-						</div>
-
-						<div className="settings-line">
-							<label>
 								{i18next.t('REMOTE')}
 							</label>
 							<div>
