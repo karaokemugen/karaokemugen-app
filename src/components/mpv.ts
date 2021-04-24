@@ -5,7 +5,7 @@ import debounce from 'lodash.debounce';
 import sample from 'lodash.sample';
 import {Promise as id3} from 'node-id3';
 import retry from 'p-retry';
-import {extname, resolve} from 'path';
+import {resolve} from 'path';
 import randomstring from 'randomstring';
 import semver from 'semver';
 import {graphics} from 'systeminformation';
@@ -15,9 +15,8 @@ import logger from 'winston';
 import {setProgressBar} from '../electron/electron';
 import {errorStep} from '../electron/electronLogger';
 import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
-import {imageFileTypes} from '../lib/utils/constants';
 import {getAvatarResolution} from '../lib/utils/ffmpeg';
-import {asyncExists, isImageFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
+import {asyncExists, isImageFile, isMediaFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
 import { playerEnding } from '../services/karaokeEngine';
 import {getSingleMedia} from '../services/medias';
 import {next, prev} from '../services/player';
@@ -252,10 +251,10 @@ class Player {
 		if (options.monitor) {
 			NodeMPVArgs.push(
 				'--mute=yes',
-				'--reset-on-next-file=pause,loop-file,mute',
+				'--reset-on-next-file=pause,loop-file,audio-files,aid,sid,mute',
 				'--ao=null');
 		} else {
-			NodeMPVArgs.push('--reset-on-next-file=pause,loop-file');
+			NodeMPVArgs.push('--reset-on-next-file=pause,loop-file,audio-files,aid,sid');
 			if (!conf.Player.Borders) NodeMPVArgs.push('--no-border');
 			if (conf.Player.FullScreen) {
 				NodeMPVArgs.push('--fullscreen');
@@ -331,10 +330,10 @@ class Player {
 
 	private debounceTimePosition(position: number) {
 		// Returns the position in seconds in the current song
-		playerState.timeposition = position;
-		emitPlayerState();
-		const conf = getConfig();
-		if (playerState.mediaType === 'song' && playerState?.currentSong?.duration) {
+		if (playerState.mediaType === 'song' && playerState.currentSong?.duration) {
+			playerState.timeposition = position;
+			emitPlayerState();
+			const conf = getConfig();
 			if (conf.Player.ProgressBarDock) {
 				playerState.mediaType === 'song'
 					? setProgressBar(position / playerState.currentSong.duration)
@@ -553,20 +552,19 @@ class Players {
 		].filter(x => !!x).join(';');
 	}
 
-	private async extractAllBackgroundFiles(): Promise<string[]> {
+	private static async extractAllBackgroundFiles(music = false): Promise<string[]> {
 		let backgroundFiles = [];
 		for (const resolvedPath of resolvedPathBackgrounds()) {
-			backgroundFiles = backgroundFiles.concat(await Players.extractBackgroundFiles(resolvedPath));
+			backgroundFiles = backgroundFiles.concat(await Players.extractBackgroundFiles(resolvedPath, music));
 		}
-		// Return only files which have an extension included in the imageFileTypes array
-		return backgroundFiles.filter(f => imageFileTypes.includes(extname(f).substring(1)));
+		return backgroundFiles;
 	}
 
-	private static async extractBackgroundFiles(backgroundDir: string): Promise<string[]> {
+	private static async extractBackgroundFiles(backgroundDir: string, music: boolean): Promise<string[]> {
 		const backgroundFiles = [];
 		const dirListing = await fs.readdir(backgroundDir);
 		for (const file of dirListing) {
-			if (isImageFile(file)) backgroundFiles.push(resolve(backgroundDir, file));
+			if (music ? isMediaFile(file):isImageFile(file)) backgroundFiles.push(resolve(backgroundDir, file));
 		}
 		return backgroundFiles;
 	}
@@ -643,12 +641,28 @@ class Players {
 		}
 	}
 
+	private startBackgroundMusic(tries = 0): void {
+		if (playerState.mediaType === 'pauseScreen' || tries < 40) {
+			// mpv does return loadfile commands when in reality the file is not yet fully loaded
+			// so this function is called when the audio file or the background hasn't fully loaded
+			// we workaround this by waiting the eof-reached property to be false again
+			if (playerState['eof-reached'] === false) {
+				this.exec({command: ['set_property', 'pause', false]}).catch(() => {});
+			} else {
+				setTimeout(() => {
+					this.startBackgroundMusic(tries + 1);
+				}, 50);
+			}
+		}
+	}
+
 	private async loadBackground() {
 		const conf = getConfig();
-		// Default background
 		let backgroundFiles = [];
+		// Default background
 		const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
 		let backgroundImageFile = defaultImageFile;
+		let backgroundMusicFile = '';
 		if (conf.Player.Background) {
 			backgroundImageFile = resolve(resolvedPathBackgrounds()[0], conf.Player.Background);
 			if (!await asyncExists(backgroundImageFile)) {
@@ -660,13 +674,21 @@ class Players {
 			}
 		} else {
 			// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
-			backgroundFiles = await this.extractAllBackgroundFiles();
+			backgroundFiles = await Players.extractAllBackgroundFiles();
 			// If backgroundFiles is empty, it means no file was found in the directories scanned.
 			// Reverting to original, supplied background :
 			if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
 		}
 		backgroundImageFile = sample(backgroundFiles);
-		logger.debug(`Background selected : ${backgroundImageFile}`, {service: 'Player'});
+		// First, try to find a "neighbour" mp3
+		if (await asyncExists(replaceExt(backgroundImageFile, '.mp3'))) {
+			backgroundMusicFile = replaceExt(backgroundImageFile, '.mp3');
+		} else {
+			// Otherwise, pick a random media file from the background folder
+			const backgroundMusics = await Players.extractAllBackgroundFiles(true);
+			if (backgroundMusics.length > 0) backgroundMusicFile = sample(backgroundMusics);
+		}
+		logger.debug(`Background selected : ${backgroundImageFile}${backgroundMusicFile ? ` (${backgroundMusicFile})`:''}`, {service: 'Player'});
 		try {
 			playerState.mediaType = 'background';
 			playerState.playerStatus = 'stop';
@@ -675,7 +697,18 @@ class Players {
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
-			await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {'force-media-title': 'Background'}]});
+			if (backgroundMusicFile) {
+				await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {
+					'force-media-title': 'Background',
+					'audio-files-set': backgroundMusicFile,
+					af: 'loudnorm',
+					aid: '1',
+					'loop-file': 'inf',
+					pause: 'yes'
+				}]});
+			} else {
+				await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {'force-media-title': 'Background'}]});
+			}
 		} catch(err) {
 			logger.error('Unable to load background', {service: 'Player', obj: err});
 			sentry.error(err);
@@ -827,7 +860,6 @@ class Players {
 			});
 			logger.debug(`File ${mediaFile} loaded`, {service: 'Player'});
 			// Loaded!
-			// Subtitles load is handled by `file-loaded` event on the Player class
 			playerState.songNearEnd = false;
 			playerState.nextSongNotifSent = false;
 			playerState.playing = true;
@@ -912,6 +944,9 @@ class Players {
 		playerState.playing = false;
 		playerState.timeposition = 0;
 		playerState._playing = false;
+		// This will be set to false by mpv, meanwhile the eof-reached event is simulated to trigger correctly other
+		// parts of the code (L645 is the only example for now)
+		playerState['eof-reached'] = true;
 		playerState.playerStatus = 'stop';
 		await this.loadBackground();
 		logger.debug('Stop DI', {service: 'Player'});
@@ -1111,6 +1146,7 @@ class Players {
 			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
 			if (nextSong) {
 				playerState.mediaType = 'pauseScreen';
+				this.startBackgroundMusic();
 				emitPlayerState();
 			}
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
