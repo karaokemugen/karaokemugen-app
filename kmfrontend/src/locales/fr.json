@@ -423,7 +423,6 @@
 	"POLLENDED": "{{kara}} remporte le vote avec {{votes}} voix !",
 	"PLAYERMONITOR": "Seconde fenêtre du lecteur vidéo (moniteur)",
 	"PLAYERMONITOR_TOOLTIP": "Affiche un second lecteur pour l'opérateur s'il ne peut pas voir l'écran principal directement",
-	"ONLINEURL": "Permettre l'URL d'accès courte (kara.moe)",
 	"FETCHPOPULARSONGS": "Récupérer les chansons populaires depuis vos dépôts en ligne",
 	"REMOTE": "Permettre l'accès à distance (<code>.kara.moe)",
 	"REMOTE_URL": "Adresse d'accès à distance",

@@ -12,7 +12,6 @@ export interface Config {
 		Host?: string,
 		Port?: number,
 		Users?: boolean,
-		URL?: boolean,
 		Stats?: boolean,
 		ErrorTracking?: boolean,
 		Discord?: {

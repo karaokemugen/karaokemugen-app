@@ -26,7 +26,6 @@ import {initDownloader, wipeDownloadQueue} from '../services/download';
 import { downloadTestSongs, updateAllBases, updateAllMedias } from '../services/downloadUpdater';
 import { getAllKaras, initFetchPopularSongs } from '../services/kara';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
-import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem} from '../services/playlist';
 import { initRemote } from '../services/remote';
@@ -142,15 +141,15 @@ export async function initEngine() {
 			// Reinit menu since we switched ports.
 			if (app) applyMenu();
 		}
-		if ((conf.Online.URL || conf.Online.Remote) && !state.isDemo && internet) try {
+		if (!state.isDemo && internet) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
 			await initKMServerCommunication();
 			const onlinePromises = [
 				// TODO: add config item for this?
 				subRemoteUsers()
 			];
-			if (conf.Online.URL) onlinePromises.push(initOnlineURLSystem());
 			if (conf.Online.Remote) onlinePromises.push(initRemote());
+			await Promise.all(onlinePromises);
 		} catch(err) {
 			// Non-blocking
 			logger.error('Failed to init online system', {service: 'Engine', obj: err});
