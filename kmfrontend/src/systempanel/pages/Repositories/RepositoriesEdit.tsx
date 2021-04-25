@@ -42,13 +42,21 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 	}
 
 	saveNew = async (repository) => {
-		await commandBackend('addRepo', repository, true);
-		this.props.history.push('/system/repositories');
+		try {
+			await commandBackend('addRepo', repository, true);
+			this.props.history.push('/system/repositories');
+		} catch (e) {
+			// already display
+		}
 	};
 
 	saveUpdate = async (repository) => {
-		await commandBackend('editRepo', repository, true);
-		this.props.history.push('/system/repositories');
+		try {
+			await commandBackend('editRepo', repository, true);
+			this.props.history.push('/system/repositories');
+		} catch (e) {
+			// already display
+		}
 	};
 
 	loadrepository = async () => {

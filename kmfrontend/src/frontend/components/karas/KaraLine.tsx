@@ -352,7 +352,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										}} /> : null
 								}
 								<div className="btn-group">
-									{this.props.scope === 'admin' || this.context?.globalState.settings.data.config?.Frontend.Mode === 2 ?
+									{this.props.scope === 'admin' || this.context?.globalState.settings.data?.config?.Frontend?.Mode === 2 ?
 										<ActionsButtons
 											idPlaylistTo={this.props.idPlaylistTo}
 											idPlaylist={idPlaylist}
@@ -405,8 +405,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										{karaSerieOrSingers}
 									</div>
 									{kara.upvotes && this.props.scope === 'admin' ?
-										<div className="upvoteCount"
-											title={i18next.t('TOOLTIP_FREE')}>
+										<div className="upvoteCount">
 											<i className="fas fa-thumbs-up" />
 											{kara.upvotes}
 										</div> : null

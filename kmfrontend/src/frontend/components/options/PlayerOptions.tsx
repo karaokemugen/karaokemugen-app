@@ -131,7 +131,7 @@ class PlayerOptions extends Component<IProps, IState> {
 					{!this.state.config['Player.FullScreen'] ?
 						<div id="pipSettings" className="settingsGroupPanel">
 							<div className="settings-line">
-								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_SIZE_TOOLTIP')}>
+								<label className="col-xs-4 control-label">
 									{`${i18next.t('VIDEO_SIZE')} (${this.state.config['Player.PIP.Size']}%)`}
 									&nbsp;
 									<i className="far fa-question-circle" />
@@ -147,7 +147,7 @@ class PlayerOptions extends Component<IProps, IState> {
 							</div>
 
 							<div className="settings-line">
-								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_POSITION_X_TOOLTIP')}>
+								<label className="col-xs-4 control-label">
 									{i18next.t('VIDEO_POSITION_X')}
 									&nbsp;
 									<i className="far fa-question-circle" />
@@ -166,7 +166,7 @@ class PlayerOptions extends Component<IProps, IState> {
 							</div>
 
 							<div className="settings-line">
-								<label className="col-xs-4 control-label" title={i18next.t('VIDEO_POSITION_Y_TOOLTIP')}>
+								<label className="col-xs-4 control-label">
 									{i18next.t('VIDEO_POSITION_Y')}
 									&nbsp;
 									<i className="far fa-question-circle" />

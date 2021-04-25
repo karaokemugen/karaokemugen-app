@@ -83,7 +83,7 @@ class RemoteStatus extends Component<unknown, IState> {
 								</label>
 								<div>
 									<span className="blur-hover">{this.state.remoteStatus.token}</span>
-									<button className="btn btn-danger" onClick={this.reset}>
+									<button className="btn btn-danger" onClick={this.reset} title={i18next.t('REMOTE_RESET_TOOLTIP')}>
 										{i18next.t('REMOTE_RESET')}
 									</button>
 								</div>

@@ -62,7 +62,6 @@ class OnlineStatsModal extends Component<unknown, IState> {
 											<li>{i18next.t('ONLINE_STATS.DETAILS.2')}</li>
 											<li>{i18next.t('ONLINE_STATS.DETAILS.3')}</li>
 											<li>{i18next.t('ONLINE_STATS.DETAILS.4')}</li>
-											<li>{i18next.t('ONLINE_STATS.DETAILS.5')}</li>
 										</ul>
 										<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
 										<br />

@@ -1,6 +1,27 @@
 # Versions
 
-## v5.0.32 - xx/04/2021
+## v5.0.33 - 25/04/2021
+
+### Improvements
+
+- There's now a warning if your email's left blank when you update your profile. Without any email, you won't be able to reset your password if you forget it.
+  - You can still ask for a password reset in exchange for 50 000 Karaoke Points(*)
+  - (*) Feature not yet implemented.
+
+### Fixes
+
+- "We have resolved some bugs and improved stability to make your karaoke experience even better."
+  - Seriously though...
+- The "Consolidate repository" feature is now fixed.
+- Some english translations were missing in the app
+- There was a rare case when a minor functionality would prevent mpv from loading up files
+- Blacklist generation will work as intended even if no set is current.
+  - How it did happen is beyond us.
+- Some fixes were made on some success modals
+- We've added more logs to Sentry for frontend-related issues.
+
+
+## v5.0.32 - 16/04/2021
 
 ### Improvements
 
@@ -41,6 +62,7 @@ Stats can now be sent per-repository and are not global anymore. This means you 
 A new type of tag has been introduced in 5.0 : versions.
 
 This will allow you to better filter out (or in) different song versions like "Alternative", "Off Vocal" or "Full".
+
 #### Remote access (#198)
 
 Karaoke Mugen can now expose itself via Karaoke Mugen Server to allow other people on other networks to access your karaoke. Perfect for remote sessions at anime events or over Discord our Twitch.

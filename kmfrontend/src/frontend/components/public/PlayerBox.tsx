@@ -96,8 +96,12 @@ class PlayerBox extends Component<IProps, IState> {
 
 	async componentDidMount() {
 		if (this.context.globalState.auth.isAuthenticated && this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) {
-			const result = await commandBackend('getPlayerStatus');
-			this.refreshPlayerInfos(result);
+			try {
+				const result = await commandBackend('getPlayerStatus');
+				this.refreshPlayerInfos(result);
+			} catch (e) {
+				// already display
+			}
 			if (!this.props.fixed && this.context.globalState.auth.data.role !== 'guest') {
 				this.getFavorites();
 			}

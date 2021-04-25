@@ -108,11 +108,15 @@ class ProfilModal extends Component<IProps, IState> {
 			&& this.state.user.password === this.state.user.passwordConfirmation)
 			|| !this.state.user.password)) {
 			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
-			const response = await commandBackend('editMyAccount', this.state.user);
+			try {
+				const response = await commandBackend('editMyAccount', this.state.user);
 
-			const data: IAuthentifactionInformation = this.context.globalState.auth.data;
-			data.onlineToken = response.data.onlineToken;
-			setAuthentifactionInformation(this.context.globalDispatch, data);
+				const data: IAuthentifactionInformation = this.context.globalState.auth.data;
+				data.onlineToken = response.data.onlineToken;
+				setAuthentifactionInformation(this.context.globalDispatch, data);
+			} catch (e) {
+				// already display
+			}
 		} else if (!this.state.user.nickname) {
 			this.setState({ nicknameMandatory: 'form-control redBorders' });
 		} else {
@@ -296,6 +300,14 @@ class ProfilModal extends Component<IProps, IState> {
 									placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="email" />
 							</div>
+							{logInfos?.onlineToken && !this.state.user.email ?
+								<div className="profileLine">
+									<div className="profileLabel warning">
+										<i className="fas fa-fw fa-exclamation-circle" />
+										<div>{i18next.t('MODAL.PROFILE_MODAL.MISSING_EMAIL')}</div>
+									</div>
+								</div> : null
+							}
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-link" />
