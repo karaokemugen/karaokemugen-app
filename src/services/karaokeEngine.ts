@@ -39,7 +39,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		const versions = getSongVersion(kara);
 
 		// Construct mpv message to display.
-		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}';
+		const infos = '{\\bord2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}';
 		const current: CurrentSong = merge(kara, {
 			nickname: 'Admin',
 			flag_playing: true,

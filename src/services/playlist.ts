@@ -1282,7 +1282,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		const versions = getSongVersion(kara);
 		const currentSong: CurrentSong = {...kara};
 		// Construct mpv message to display.
-		currentSong.infos = '{\\bord1.2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
+		currentSong.infos = '{\\bord2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch(err) {
