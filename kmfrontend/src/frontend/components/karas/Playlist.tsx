@@ -1012,7 +1012,7 @@ class Playlist extends Component<IProps, IState> {
 						type="button"
 						title={i18next.t('GOTO_BOTTOM')}
 						className="btn btn-sm btn-action"
-						onClick={() => this.setState({ scrollToIndex: (this.state.data as KaraList).infos.count - 1, goToPlaying: false, _goToPlaying: false })}
+						onClick={() => this.state.data && this.setState({ scrollToIndex: (this.state.data as KaraList).infos.count - 1, goToPlaying: false, _goToPlaying: false })}
 					>
 						<i className="fas fa-chevron-down" />
 					</button>
