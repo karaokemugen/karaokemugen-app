@@ -5,7 +5,6 @@ import execa from 'execa';
 import { promises as fs } from 'fs';
 import { mkdirp, remove } from 'fs-extra';
 import i18next from 'i18next';
-import {tmpdir} from 'os';
 import {resolve} from 'path';
 import {StringDecoder} from 'string_decoder';
 import tasklist from 'tasklist';
@@ -15,6 +14,7 @@ import {getConfig} from '../lib/utils/config';
 // KM Imports
 import {asyncExists, asyncMove} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
+import { editSetting } from './config';
 import {expectedPGVersion} from './constants';
 import sentry from './sentry';
 import {getState} from './state';
@@ -168,15 +168,16 @@ export async function initPGData() {
 		// This is a bug postgres doesn't intend to fix because it's windows only
 		// /shrug
 		const pgPath = resolve(state.appPath, state.binPath.postgres).replace(/\\bin$/g,'').replace(/\/bin$/, '');
-		if (!asciiRegex.test(binPath)) {
+		if (!asciiRegex.test(binPath) && state.os === 'win32') {
 			logger.warn('Binaries path is in a non-ASCII path, will copy it to the OS\'s temp folder first to init database', {service: 'DB'});
-			// On Windows, tmpdir() returns the user home directory/appData/local/temp so it's pretty useless, we'll try writing to C:\Postgres. If it fails because of permissions, there's not much else we can do, sadly.
-			tempPGPath = state.os === 'win32' ? resolve('C:\\', 'kmtemp') : tmpdir();
+			// On Windows, tmpdir() returns the user home directory/appData/local/temp so it's pretty useless, we'll try writing to C:\KaraokeMugenPostgres. If it fails because of permissions, there's not much else we can do, sadly.
+			tempPGPath = resolve('C:\\', 'KaraokeMugenPostgres');
 			logger.info(`Moving ${pgPath} to ${tempPGPath}`, {service: 'DB'});
 			await remove(tempPGPath).catch(() => {}); //izok
 			await mkdirp(tempPGPath);
 			await asyncMove(pgPath, resolve(tempPGPath, 'postgres'));
-			binPath = resolve(tempPGPath, 'postgres', 'bin', state.os === 'win32' ? 'pg_ctl.exe' : 'pg_ctl');
+			binPath = resolve(tempPGPath, 'postgres', 'bin', 'pg_ctl.exe');
+			logger.debug(`pg binPath: ${binPath}`, {service: 'DB'});
 		}
 		const options = [ 'init', '-o', `-U ${conf.System.Database.superuser} -E UTF8`, '-D', resolve(state.dataPath, conf.System.Path.DB, 'postgres/') ];
 		if (state.os === 'win32') binPath = `"${binPath}"`;
@@ -185,8 +186,15 @@ export async function initPGData() {
 			stdio: 'inherit',
 		});
 		if (tempPGPath) {
-			await asyncMove(resolve(tempPGPath, 'postgres'), pgPath);
-			await remove(tempPGPath).catch(() => {});
+			await editSetting({
+				System: {
+					Binaries: {
+						Postgres: {
+							Windows: resolve(tempPGPath, 'postgres', 'bin')
+						}
+					}
+				}
+			});
 		}
 	} catch(err) {
 		sentry.error(err);
