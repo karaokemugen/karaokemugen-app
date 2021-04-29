@@ -106,7 +106,7 @@ export default function sessionController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		try {
 			await removeSession(req.body.seid);
-			return {code: 200, session: APIMessage('SESSION_DELETED')};
+			return {code: 200, message: APIMessage('SESSION_DELETED')};
 		} catch(err) {
 			const code = 'SESSION_DELETE_ERROR';
 			errMessage(code, err);
