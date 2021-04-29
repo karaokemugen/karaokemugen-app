@@ -45,7 +45,7 @@ export async function next() {
 		if (song) {
 			await setPlaying(song.plcid, getState().currentPlaid);
 			if (conf.Karaoke.ClassicMode) {
-				stopPlayer(true);
+				await stopPlayer(true);
 				if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
 					setState({ streamerPause: true });
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
@@ -57,18 +57,18 @@ export async function next() {
 				setState({currentRequester: null});
 				const kara = await getCurrentSong();
 				await stopPlayer(true);
+				if (conf.Karaoke.StreamerMode.PauseDuration > 0) setState({ streamerPause: true });
 				if (conf.Karaoke.Poll.Enabled) {
 					switchToPauseScreen();
 					const poll = await startPoll();
 					if (!poll) {
 						// False returned means startPoll couldn't start a poll
-						mpv.displaySongInfo(kara.infos, 10000000, true);
+						mpv.displaySongInfo(kara.infos, -1, true);
 					}
 				} else {
-					mpv.displaySongInfo(kara.infos, 10000000, true);
+					mpv.displaySongInfo(kara.infos, -1, true);
 				}
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
-					setState({ streamerPause: true });
 					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
 					if (getState().streamerPause && getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') await playPlayer(true);
 					setState({ streamerPause: false });
@@ -137,7 +137,7 @@ export async function playPlayer(now?: boolean) {
 	profile('Play');
 	const state = getState();
 	if (state.player.playerStatus === 'stop' || now) {
-		setState({singlePlay: false, randomPlaying: false});
+		setState({singlePlay: false, randomPlaying: false, streamerPause: false});
 		await playCurrentSong(now);
 		stopAddASongMessage();
 	} else {
@@ -169,7 +169,7 @@ export async function prepareClassicPauseScreen() {
 		const kara = await getCurrentSong();
 		if (!kara) throw 'No song selected, current playlist must be empty';
 		setState({currentRequester: kara?.username || null});
-		mpv.displaySongInfo(kara.infos, 10000000, true);
+		mpv.displaySongInfo(kara.infos, -1, true);
 	} catch(err) {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
 		mpv.displayInfo();

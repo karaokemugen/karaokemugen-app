@@ -656,6 +656,31 @@ class Players {
 		}
 	}
 
+	progressBarTimeout: NodeJS.Timeout
+
+	private tickProgressBar(nextTick: number, ticked: number, DI: string) {
+		// 10 ticks
+		if (ticked <= 10 && getState().streamerPause) {
+			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
+			let progressBar = '';
+			for (const _nothing of Array(ticked)) {
+				progressBar = progressBar + '■';
+			}
+			for (const _nothing of Array(10 - ticked)) {
+				progressBar = progressBar + '□';
+			}
+			this.messages.addMessage('DI', DI+`\\N\\N{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
+			this.progressBarTimeout = setTimeout(() => {
+				this.tickProgressBar(nextTick, ticked + 1, DI);
+			}, nextTick);
+		}
+	}
+
+	private progressBar(duration: number, DI: string) {
+		// * 1000 / 10
+		this.tickProgressBar(Math.round(duration * 100), 1, DI);
+	}
+
 	private async loadBackground() {
 		const conf = getConfig();
 		let backgroundFiles = [];
@@ -1144,13 +1169,16 @@ class Players {
 		try {
 			const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
 			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
+			const position = nextSong ? '{\\an5}' : '{\\an1}';
+			this.messages.addMessage('DI', position+spoilerString+nextSongString+infos, duration === -1 ? 'infinite':duration);
 			if (nextSong) {
 				playerState.mediaType = 'pauseScreen';
 				this.startBackgroundMusic();
 				emitPlayerState();
+				if (getState().streamerPause && getConfig().Karaoke.StreamerMode.PauseDuration > 0) {
+					this.progressBar(getConfig().Karaoke.StreamerMode.PauseDuration, position+spoilerString+nextSongString+infos);
+				}
 			}
-			const position = nextSong ? '{\\an5}' : '{\\an1}';
-			this.messages.addMessage('DI', position+spoilerString+nextSongString+infos, duration === -1 ? 'infinite':duration);
 		} catch(err) {
 			logger.error('Unable to display song info', {service: 'Player', obj: err});
 			sentry.error(err);
