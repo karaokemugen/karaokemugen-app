@@ -1152,6 +1152,7 @@
 		"SESSION_EDIT_ERROR": "Error editing session",
 		"SESSION_DELETE_ERROR": "Error deleting session",
 		"SESSION_EXPORT_ERROR": "Error exporting session",
+		"SESSION_NOT_FOUND": "Unknown session",
 		"SESSION_END_BEFORE_START_ERROR": "Session end is before its beginning!",
 		"TAGS_LIST_ERROR": "Error fetching tags list",
 		"TAG_CREATE_ERROR": "Error creating tag",

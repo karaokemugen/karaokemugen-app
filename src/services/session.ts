@@ -48,7 +48,7 @@ export function setActiveSession(session: Session) {
 
 export async function editSession(session: Session) {
 	const oldSession = await findSession(session.seid);
-	if (!oldSession) throw {code: 404, msg: 'Session does not exist'};
+	if (!oldSession) throw {code: 404, msg: 'ERROR_CODES.SESSION_NOT_FOUND'};
 	if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime()) throw {code: 409, msg: 'ERROR_CODES.SESSION_END_BEFORE_START_ERROR'};
 	session.started_at
 		? session.started_at = new Date(session.started_at)
@@ -60,9 +60,9 @@ export async function editSession(session: Session) {
 }
 
 export async function removeSession(seid: string) {
-	if (seid === getState().currentSessionID) throw {code: 403, msg: 'Current session cannot be removed, please set another one as current first.'};
+	if (seid === getState().currentSessionID) throw {code: 403};
 	const session = await findSession(seid);
-	if (!session) throw {code: 404, msg: 'Session does not exist'};
+	if (!session) throw {code: 404};
 	return deleteSession(seid);
 }
 
@@ -73,8 +73,10 @@ export async function findSession(seid: string): Promise<Session> {
 
 export async function mergeSessions(seid1: string, seid2: string): Promise<Session> {
 	// Get which session is the earliest starting date
-	const session1 = await findSession(seid1);
-	const session2 = await findSession(seid2);
+	const [session1, session2] = await Promise.all([
+		findSession(seid1),
+		findSession(seid2)
+	]); 	
 	if (!session1 || !session2) throw {code: 404};
 	session1.active = session1.seid === getState().currentSessionID;
 	session2.active = session2.seid === getState().currentSessionID;

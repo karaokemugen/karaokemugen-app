@@ -52,7 +52,10 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 	saveUpdate = async (repository) => {
 		try {
-			await commandBackend('editRepo', repository, true);
+			await commandBackend('editRepo', {
+				name: this.props.match.params.name,
+				newRepo: repository
+			}, true);
 			this.props.history.push('/system/repositories');
 		} catch (e) {
 			// already display
@@ -78,9 +81,10 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 	compareLyrics = async (repo: string) => {
 		if (repo) {
-			const response = await commandBackend('compareLyricsBetweenRepos',
-				{ repo: repo, name: this.props.match.params.name }
-			);
+			const response = await commandBackend('compareLyricsBetweenRepos', {
+				repo1: this.props.match.params.name,
+				repo2: repo
+			});
 			this.setState({ report: response, selectedRepo: repo });
 		}
 	}

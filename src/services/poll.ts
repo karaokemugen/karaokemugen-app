@@ -32,7 +32,7 @@ on('stateUpdated', (state: State) => {
 });
 
 async function displayPoll(winner?: number) {
-	const data = getPoll({role: 'admin', username: 'admin'}, 0, 999999999);
+	const data = getPoll({role: 'admin', username: 'admin'});
 	let maxVotes = 0;
 	data.poll.forEach(s => maxVotes = maxVotes + s.votes);
 	const votes = data.poll.map(kara => {
@@ -163,15 +163,8 @@ export function addPollVote(index: number, token: Token) {
 	if (voters.has(token.username.toLowerCase())) throw {
 		code: 429,
 		msg: 'POLL_USER_ALREADY_VOTED'
-	};
-	const choiceFound = poll.find(choice => +choice.index === +index);
-	if (!choiceFound) {
-		throw {
-			code: 404,
-			message: 'POLL_VOTE_ERROR'
-		};
-	}
-	poll[index].votes++;
+	};	
+	poll[index - 1].votes++;
 	voters.add(token.username.toLowerCase());
 	if (getState().player.mediaType === 'pauseScreen') displayPoll();
 	emitWS('songPollUpdated', poll);
@@ -262,7 +255,7 @@ async function displayPollTwitch() {
 }
 
 /** Get current poll options */
-export function getPoll(token: Token, from: number, size: number) {
+export function getPoll(token: Token) {
 	if (poll.length === 0) throw {
 		code: 425,
 		msg: 'POLL_NOT_ACTIVE'
@@ -270,8 +263,8 @@ export function getPoll(token: Token, from: number, size: number) {
 	return {
 		infos: {
 			count: poll.length,
-			from: +from,
-			to: +from + +size
+			from: 0,
+			to: poll.length
 		},
 		poll: poll,
 		timeLeft: clock.getTimeLeft(),

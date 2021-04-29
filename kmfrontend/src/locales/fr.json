@@ -1152,6 +1152,7 @@
 		"SESSION_CREATION_ERROR": "Erreur lors de la création de la session",
 		"SESSION_MERGE_ERROR": "Erreur lors de la fusion des sessions",
 		"SESSION_EDIT_ERROR": "Erreur lors de l'édition de la session",
+		"SESSION_NOT_FOUND": "Session introuvable",
 		"SESSION_DELETE_ERROR": "Erreur lors de la suppression de la session",
 		"SESSION_EXPORT_ERROR": "Erreur lors de l'export de la session",
 		"SESSION_END_BEFORE_START_ERROR": "La fin de session est avant son début!",
