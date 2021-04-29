@@ -15,13 +15,13 @@ describe('Sessions', () => {
 	it('Add session', async () => {
 		const data = await commandBackend(token, 'createSession',
 			{name: 'My session', date: new Date().toISOString(), private: true});
-		expect(data.code).to.be.equal('SESSION_CREATED');
+		expect(data.message.code).to.be.equal('SESSION_CREATED');
 	});
 
 	it('Add session for merge', async () => {
 		const data = await commandBackend(token, 'createSession',
 			{name: 'My session', date: new Date().toISOString(), private: true});
-		expect(data.code).to.be.equal('SESSION_CREATED');
+		expect(data.message.code).to.be.equal('SESSION_CREATED');
 	});
 
 	it('List sessions', async () => {
@@ -50,12 +50,12 @@ describe('Sessions', () => {
 
 	it('Edit session', async () => {
 		const data = await commandBackend(token, 'editSession', {seid: createdSession.seid, name: newName, ended_at: '2020-08-20 19:30:00'});
-		expect(data.code).to.be.equal('SESSION_EDITED');
+		expect(data.message.code).to.be.equal('SESSION_EDITED');
 	});
 
 	it('Set session as active', async () => {
 		const data = await commandBackend(token, 'activateSession', {seid: createdSession.seid});
-		expect(data.code).to.be.equal('SESSION_ACTIVATED');
+		expect(data.message.code).to.be.equal('SESSION_ACTIVATED');
 	});
 
 	it('List sessions after change', async () => {
@@ -73,7 +73,7 @@ describe('Sessions', () => {
 
 	it('Delete unused session', async () => {
 		const data = await commandBackend(token, 'deleteSession', {seid: initialSession.seid});
-		expect(data.code).to.be.equal('SESSION_DELETED');
+		expect(data.message.code).to.be.equal('SESSION_DELETED');
 	});
 
 	it('List sessions after delete', async () => {
@@ -91,8 +91,8 @@ describe('Sessions', () => {
 
 	it('Merge sessions', async () => {
 		const data = await commandBackend(token, 'mergeSessions', {seid1: createdSession.seid, seid2: toMergeSession.seid});
-		expect(data.code).to.be.equal('SESSION_MERGED');
-		mergedSession = data.data.session;
+		expect(data.message.code).to.be.equal('SESSION_MERGED');
+		mergedSession = data.message.data.session;
 	});
 
 	it('List sessions after merge', async () => {
