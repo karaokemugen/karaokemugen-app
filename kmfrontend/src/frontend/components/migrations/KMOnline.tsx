@@ -19,7 +19,7 @@ export default function KMOnline(props: Props) {
 
 	useEffect(() => {
 		if (remote !== context.globalState.settings.data.config.Online.Remote) {
-			commandBackend('updateSettings', { setting: { Online: { Remote: remote } } });
+			commandBackend('updateSettings', { setting: { Online: { Remote: remote } } }).catch(() => {});
 		}
 	}, [remote]);
 

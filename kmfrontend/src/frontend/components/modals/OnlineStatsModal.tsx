@@ -27,15 +27,19 @@ class OnlineStatsModal extends Component<unknown, IState> {
 
 	onClick = () => {
 		if (this.state.errorTracking !== undefined && this.state.stats !== undefined) {
-			commandBackend('updateSettings', {
-				setting: {
-					Online: {
-						Stats: this.state.stats,
-						ErrorTracking: this.state.errorTracking
+			try {
+				commandBackend('updateSettings', {
+					setting: {
+						Online: {
+							Stats: this.state.stats,
+							ErrorTracking: this.state.errorTracking
+						}
 					}
-				}
-			});
-			closeModal(this.context.globalDispatch);
+				});
+				closeModal(this.context.globalDispatch);
+			} catch (e) {
+				// already display
+			}
 		}
 	};
 

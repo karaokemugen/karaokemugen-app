@@ -83,7 +83,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 	saveSetting = async (key: string, value: any) => {
 		await commandBackend('updateSettings', {
 			setting: expand(key, value)
-		});
+		}).catch(() => {});
 		this.refresh();
 	}
 

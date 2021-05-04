@@ -69,12 +69,12 @@ function AdminHeader(props: IProps) {
 
 	const saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
-		commandBackend('updateSettings', { setting: data });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	const changePublicInterfaceMode = (value: number) => {
 		const data = expand('Frontend.Mode', value);
-		commandBackend('updateSettings', { setting: data });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	const play = (event: any) => {
