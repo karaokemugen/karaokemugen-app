@@ -27,7 +27,7 @@ class Options extends Component<RouteComponentProps, IState> {
 			value = false;
 		}
 		const data = expand(e.target.id, value);
-		commandBackend('updateSettings', { setting: data });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	}
 
 	keyObserverHandler = (e: KeyboardEvent) => {

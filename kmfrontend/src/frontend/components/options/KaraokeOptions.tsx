@@ -77,7 +77,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 	saveMysterySongsLabels = (labels: Array<string>) => {
 		const data = expand('Playlist.MysterySongs.Labels', labels);
-		commandBackend('updateSettings', { setting: data });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	onChange = (e: any) => {

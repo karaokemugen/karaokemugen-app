@@ -42,14 +42,18 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		const secondRepos = repositories[index + change];
 		repositories[index + change] = firstRepos;
 		repositories[index] = secondRepos;
-		await commandBackend('updateSettings', {
-			setting: { System: { Repositories: repositories } }
-		});
-		this.refresh();
-		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => {
-			commandBackend('generateDatabase', undefined, true, 300000).catch(() => {});
-		}, 5000);
+		try {
+			await commandBackend('updateSettings', {
+				setting: { System: { Repositories: repositories } }
+			});
+			this.refresh();
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => {
+				commandBackend('generateDatabase', undefined, true, 300000).catch(() => {});
+			}, 5000);
+		} catch (e) {
+			// already display
+		}
 	}
 
 	render() {
