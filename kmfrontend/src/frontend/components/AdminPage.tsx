@@ -149,8 +149,12 @@ class AdminPage extends Component<IProps, IState> {
 
 
 	addTags = async () => {
-		const [tags, years] = await Promise.all([this.parseTags(), this.parseYears()]);
-		this.setState({ tags: tags.concat(years) });
+		try {
+			const [tags, years] = await Promise.all([this.parseTags(), this.parseYears()]);
+			this.setState({ tags: tags.concat(years) });
+		} catch (e) {
+			// already display
+		}
 	}
 
 	getPlaylistList = async () => {
