@@ -516,8 +516,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			if (conf.Karaoke.Autoplay &&
 				(state.player.playerStatus === 'stop' || state.randomPlaying) ) {
 				setState({ randomPlaying: false });
-				const kara = await nextSong();
-				await setPlaying(kara.plcid, getState().currentPlaid);
+				await setPlaying(PLCsInserted[0].plc_id, getState().currentPlaid);
 				await playPlayer(true);
 			}
 		}
