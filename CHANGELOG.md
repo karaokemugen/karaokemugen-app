@@ -1,5 +1,18 @@
 # Versions
 
+## v5.0.34 - 09/05/2021
+
+### Fixes
+
+- Fixed a weird case when adding a song to a current playlist with autoplay on, and the kara added isn't the last one in the playlist, but the currently playing song is the last one. Yes, complicated and stuff. That's why we have users : to test our app for bugs. (6f9723672)
+- Fixed a few minor web interface errors (5be0121d2 53b4a2bd4)
+- Added more breadcrumbs (logs) to Sentry on the web interface (68f711149)
+- Fixed i18n input field length in tag submission form (45d63c4c)
+
+### Misc
+
+- Upgraded backend dependencies (62dd5c1b)
+
 ## v5.0.33 - 25/04/2021
 
 ### Improvements
