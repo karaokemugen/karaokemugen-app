@@ -48,6 +48,7 @@ import {
 } from '../dao/playlist';
 import {PLImportConstraints} from '../lib/services/playlist';
 import { DBPL } from '../lib/types/database/playlist';
+import { PlaylistExport, PLC, PLCEditParams } from '../lib/types/playlist';
 import {Token, User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars} from '../lib/utils/config';
 import {now} from '../lib/utils/date';
@@ -58,7 +59,6 @@ import { check } from '../lib/utils/validators';
 import {emitWS} from '../lib/utils/ws';
 import { DBPLC } from '../types/database/playlist';
 import { CurrentSong, PlaylistOpts, Pos, ShuffleMethods } from '../types/playlist';
-import { PLC, PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {writeStreamFiles} from '../utils/stream_files';
