@@ -11,3 +11,5 @@ System:
   Binaries:
     Player:
       Linux: mpv
+    ffmpeg:
+		  Linux: ffmpeg
