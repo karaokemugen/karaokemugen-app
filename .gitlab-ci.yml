@@ -103,6 +103,8 @@ deploy_kmremote:
 pkg_linux:
   stage: package
   image: electronuserland/builder:latest
+  tags:
+    - amd64
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -140,7 +142,9 @@ pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
   tags:
+# This must be run on a linux-only host. Weirdly this fails badly on Windows hosts.
     - linux
+    - amd64
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
