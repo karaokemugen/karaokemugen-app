@@ -12,4 +12,4 @@ System:
     Player:
       Linux: mpv
     ffmpeg:
-		  Linux: ffmpeg
+      Linux: ffmpeg
