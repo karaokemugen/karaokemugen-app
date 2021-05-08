@@ -1,4 +1,4 @@
-image: axelterizaki/karaokemugen-ci:node-12
+image: node:12-buster
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -39,6 +39,7 @@ test:
   script:
     - yarn install --check-files --force --cache-folder .yarn
     - touch mpv
+    - touch ffmpeg
     - mkdir app
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US
