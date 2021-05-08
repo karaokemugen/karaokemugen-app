@@ -85,7 +85,7 @@ deploy_kmremote:
   stage: deploy
   interruptible: true
   cache: {}
-  image: minidocks/lftp
+  image: axelterizaki/karaokemugen-ci:transferts
   dependencies:
     - build-react
   needs:
@@ -227,7 +227,7 @@ pkg_mac:
 
 deploy_mac:
   stage: deploy
-  image: minidocks/lftp
+  image: axelterizaki/karaokemugen-ci:transferts
   interruptible: true
   variables:
     GIT_STRATEGY: none
@@ -248,7 +248,7 @@ deploy_mac:
 
 deploy_linux:
   stage: deploy
-  image: minidocks/lftp
+  image: axelterizaki/karaokemugen-ci:transferts
   interruptible: true
   cache: {}
   variables:
@@ -268,7 +268,7 @@ deploy_linux:
 
 deploy_win:
   stage: deploy
-  image: minidocks/lftp
+  image: axelterizaki/karaokemugen-ci:transferts
   interruptible: true
   variables:
     GIT_STRATEGY: none
