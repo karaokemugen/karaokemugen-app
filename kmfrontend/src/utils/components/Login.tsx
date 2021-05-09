@@ -69,17 +69,21 @@ class Login extends Component<IProps, IState> {
 
 
 	login = async (username: string | undefined, password?: string, securityCode?: number) => {
-		if (this.state.forgotPassword) {
-			await this.callForgetPasswordApi();
-		}
+		
 
 		if (this.state.isAdminPath && isElectron()) {
 			const { ipcRenderer: ipc } = window.require('electron');
 			ipc.send('getSecurityCode');
 			ipc.once('getSecurityCodeResponse', async (_event, securityCodeViaElectron) => {
+				if (this.state.forgotPassword) {
+					await this.callForgetPasswordApi(securityCodeViaElectron);
+				}
 				this.loginFinish(username, password, securityCodeViaElectron);
 			});
 		} else {
+			if (this.state.forgotPassword) {
+				await this.callForgetPasswordApi(securityCode);
+			}
 			this.loginFinish(username, password, securityCode);
 		}
 	};
@@ -161,13 +165,13 @@ class Login extends Component<IProps, IState> {
 		this.state.activeView === 'login' ? this.loginUser() : this.signup();
 	};
 
-	callForgetPasswordApi = async () => {
+	callForgetPasswordApi = async (securityCode?: number) => {
 		if (this.state.login) {
 			await commandBackend('resetUserPassword', {
 				username: `${this.state.login}${this.state.onlineSwitch ? `@${this.state.serv}` : ''}`,
-				securityCode: this.state.securityCode,
+				securityCode: securityCode,
 				password: this.state.password
-			});
+			}).catch(() => {});
 		}
 	}
 
