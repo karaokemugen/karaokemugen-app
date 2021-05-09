@@ -43,7 +43,8 @@ class PublicHomepage extends Component<IProps, IState> {
 	getLucky = async () => {
 		if (this.context.globalState.auth.isAuthenticated) {
 			const response = await commandBackend('getKaras', {
-				random: 1
+				random: 1,
+				blacklist: true
 			});
 			if (response?.content && response.content[0]) {
 				this.props.toggleKaraDetail(response.content[0], nonStandardPlaylists.library, 0);

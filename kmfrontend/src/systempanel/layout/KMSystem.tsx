@@ -13,7 +13,6 @@ import Database from '../pages/Database';
 import Home from '../pages/Home';
 import KaraHistory from '../pages/Karas/History';
 import KaraBatchEdit from '../pages/Karas/KaraBatchEdit';
-import KaraBlacklist from '../pages/Karas/KaraBlacklist';
 import KaraDownload from '../pages/Karas/KaraDownload';
 import KaraEdit from '../pages/Karas/KaraEdit';
 import KaraList from '../pages/Karas/KaraList';
@@ -26,6 +25,7 @@ import RepositoriesEdit from '../pages/Repositories/RepositoriesEdit';
 import RepositoriesList from '../pages/Repositories/RepositoriesList';
 import SessionsEdit from '../pages/Sessions/SessionsEdit';
 import SessionsList from '../pages/Sessions/SessionsList';
+import Storage from '../pages/Storage';
 import TagsDuplicate from '../pages/Tags/TagsDuplicate';
 import TagsEdit from '../pages/Tags/TagsEdit';
 import TagsList from '../pages/Tags/TagsList';
@@ -53,6 +53,7 @@ class KMSystem extends Component<unknown, unknown> {
 							<Route path='/system/log' component={Log} />
 							<Route path='/system/options' component={Options} />
 							<Route path='/system/config' component={Config} />
+							<Route path='/system/storage' component={Storage} />
 							<Route path='/system/unused' component={UnusedList} />
 
 							<Route path='/system/sessions/new' component={SessionsEdit} />
@@ -65,7 +66,6 @@ class KMSystem extends Component<unknown, unknown> {
 
 							<Route path='/system/karas/download/queue' component={QueueDownload} />
 							<Route path='/system/karas/download' component={KaraDownload} />
-							<Route path='/system/karas/blacklist' component={KaraBlacklist} />
 							<Route path='/system/karas/create' component={KaraEdit} />
 							<Route path='/system/karas/history' component={KaraHistory} />
 							<Route path='/system/karas/ranking' component={KaraRanking} />

@@ -266,6 +266,9 @@
 	"TOOLTIP_FAV_DEL": "Delete from favorites",
 	"TOOLTIP_SHOWVIDEO": "Show video preview",
 	"TOOLTIP_HIDEVIDEO": "Close video preview",
+	"KARA_DETAIL": {
+		"DOWNLOAD_MEDIA": "Download media"
+	},
 	"TOOLTIP_UPVOTE": "Vote for this song",
 	"WLCM_CONTACT": "Contact us",
 	"WLCM_GETSTARTED": "START TUTORIAL",
@@ -482,11 +485,10 @@
 	"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})",
 	"USER_SONG_PLAYS_IN": "Your song {{kara}} has been added and will airing in {{time}} ({{date}})",
 	"MODAL": {
-		"UNKNOW_KARAS": {
-			"TITLE": "Unknown songs detected",
-			"DESCRIPTION": "This playlist contains songs you do not have yet locally. We found them on your configured online repositories. These songs won't appear in the playlist until they've been downloaded.",
-			"DOWNLOAD_THEM": "Do you want to download them now?",
-			"DOWNLOAD_THEM_SIZE": "(Download size : {{mediasize}})"
+		"UNKNOW_REPOS": {
+			"TITLE": "Unknown repositories detected",
+			"DESCRIPTION": "This playlist contains songs from repositories you do not have yet locally.",
+			"DOWNLOAD_THEM": "Do you want to add them now?"
 		},
 		"PLAY_CURRENT_MODAL": "Warning : the current playlist '{{playlist}}' isn't displayed on screen. That's the playlist going to be played. Are you sure you want to start playing?",
 		"PROFILE_MODAL": {
@@ -557,9 +559,7 @@
 			"KARAOKE_PLAYING": "background means the song is selected for playback.",
 			"CREATE_PLAYLIST_BUTTON": "Create and edit your playlists from the actions menu",
 			"SELECT_PLAYLIST_BUTTON": "Playlists are available in the selector :",
-			"LIBRARY": "The library shows all available karaoke songs on this computer.",
-			"DOWNLOAD": "You can download more in the",
-			"SYSTEM_PANEL": "system panel",
+			"LIBRARY": "The library shows all available karaoke songs.",
 			"PLAYLIST_ATTRIBUTES": "When you create a playlist, ",
 			"THE_PLAYLIST": "The",
 			"CURRENT": "current",
@@ -569,6 +569,8 @@
 			"CURRENT_DESC": "playlist is the one used by the player.",
 			"PUBLIC_DESC": "playlist is where your users' requests are.",
 			"CURRENT_PUBLIC_DESC": "playlist can be the same.",
+			"BLACLIST_CRITERIAS_DESC": "The blacklist criterias allow you to exclude certain songs",
+			"BLACLIST_DESC": "The blacklist contains all excluded songs", 
 			"PLAYER_BAR": "The Karaoke Mugen Player can be controlled from the top bar.",
 			"PLAYER_CURRENT_HINT": "The player will play the selected song in the",
 			"PLAYER_CURRENT_HINT2": "current playlist",
@@ -619,8 +621,7 @@
 		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen has a default karaokes repository, ",
 		"DEFAULT_REPOSITORY_DESC_2": ", where you can download songs.",
 		"DEFAULT_REPOSITORY_QUESTION": "Where do you want to store these downloads? By default they'll be in:",
-		"REPOSITORY_NEED_SPACE": "To download all the content from that repository, you'll need a lot of disk space (up to several hundred gigabytes). You can change this folder at any time.",
-		"DOWNLOAD_RANDOM_SONGS": "Do you want Karaoke Mugen to download 6 songs at random from the default repository ({{instance}})? This will allow you to test the app with a few songs before downloading new ones.",
+		"REPOSITORY_LATER": "You can change this folder at any time.",
 		"MODIFY_DIRECTORY": "Change folder",
 		"CHOOSE_DIRECTORY": "Select a folder",
 		"ADD_DIRECTORY": "Add a folder",
@@ -699,13 +700,7 @@
 		"TAG_FILTER": "Tag filter",
 		"TAG_GROUP_FILTER": "Group filter",
 		"SYNCHRONIZE": "Synchronize",
-		"SYNCHRONIZE_DESC": "Performs all of the actions below.",
-		"DOWNLOAD_ALL": "Download all",
-		"DOWNLOAD_ALL_DESC": "Downloads all available songs.",
-		"UPDATE_ALL": "Update all",
-		"UPDATE_ALL_DESC": "Download only updates to songs already downloaded.",
-		"CLEAN_ALL": "Clean obsolete songs",
-		"CLEAN_ALL_DESC": "Deletes songs that no longer exist on remote repositorie(s).",
+		"SYNCHRONIZE_DESC": "Download all medias",
 		"QUEUE_LABEL": "Download queue",
 		"QUEUE_LABEL_SONGS": "({{numberSongs}} songs):",
 		"VIEW_DOWNLOAD_QUEUE": "View",
@@ -713,18 +708,16 @@
 		"START_DOWNLOAD_QUEUE": "Start",
 		"PAUSE_DOWNLOAD_QUEUE": "Pause",
 		"DOWNLOAD": "Download",
-		"DOWNLOAD_ALL_TOOLTIP": "Download all retrieved songs at once",
+		"DOWNLOAD_ALL_TOOLTIP": "Download all retrieved medias at once",
 		"SHOWING": "Showing {{from}}-{{to}} of {{total}} songs",
-		"IN_BLACKLIST": "In blacklist",
-		"FILTER_SONGS": "Filter songs from server: ",
+		"FILTER_MEDIA_STATUS": "Media status: ",
 		"FILTER_ALL": "All",
-		"FILTER_UPDATED": "Updated",
+		"FILTER_IN_PROGRESS": "Download in progress",
 		"FILTER_NOT_DOWNLOADED": "Not downloaded",
 		"REPOSITORY": "Repository",
 		"COPY_SONG": "Copy song to another repository",
-		"DETAILS": "Details",
+		"VIDEO_PREVIEW": "Video preview",
 		"TOTAL_MEDIA_SIZE": "Total media size:",
-		"IMPORT_PLAYLIST": "Import playlist",
 		"REPOSITORY_REQUIRED": "Repository is mandatory",
 		"BATCH_EDIT": {
 			"ADD_TAG": "Add tag",
@@ -743,7 +736,9 @@
 		"DELETE_KARA": "Delete karaoke?",
 		"DEJAVU_TOOLTIP": "Recently played song",
 		"PROBLEMATIC_TOOLTIP": "This song contains scenes ({{tags}}) that may be problematic for some viewers.",
-		"DELETE_ALL_TOOLTIP": "Remove all displayed karaokes at once "
+		"DELETE_ALL_TOOLTIP": "Remove all displayed karaokes at once ",
+		"MISSING_DOWNLOAD_TOOLTIP": "Not downloaded",
+		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in progress"
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -757,8 +752,7 @@
 		"LIST": "List",
 		"NEW": "New",
 		"DOWNLOAD_QUEUE": "Download queue",
-		"DOWNLOAD": "Download",
-		"BLACKLIST": "Download Blacklist",
+		"DOWNLOAD": "Medias download",
 		"HISTORY": "History",
 		"RANKING": "Most requested",
 		"VIEWCOUNTS": "Most played",
@@ -767,7 +761,8 @@
 		"USERS": "Users",
 		"UNUSED_FILES": "Unused files",
 		"DUPLICATE": "Duplicated",
-		"BATCH_EDIT": "Batch edit song tags"
+		"BATCH_EDIT": "Batch edit song tags",
+		"STORAGE": "Disk storage management"
 	},
 	"UNUSED_FILES": {
 		"NAME": "Name",
@@ -807,16 +802,11 @@
 		"REGENERATE_DB_DESCRIPTION": "<p>Regenerate database. Generation makes Karaoke Mugen aware of all the files you have in your data folders.</p> This is usually done when the app starts, but you may want to do this manually if : <li>You added a repository and put files inside already</li><li>You modified files from outside the app</li>",
 		"VALIDATE_FILES": "Validate files",
 		"VALIDATE_FILES_DESCRIPTION": "Validate all files in all enabled repositories to fix them if necessary. Maintainer use only.",
-		"UPDATE_MEDIA": "Update all medias only",
-		"UPDATE_MEDIA_DESCRIPTION": "If you keep your base updated through git (advanced users) this will download <b>all medias</b> to keep you up to date. <a href='/system/karas/download'><b>You should rather use the download manager</b></a> to get new songs. Maintainer use only.",
 		"DUMP_DATABASE": "Dump database",
 		"DUMP_DATABASE_DESCRIPTION": "Creates a karaokemugen.sql backup file in your data folder. This file can be used to create a restore point or to send your database to the devs if they ask you to do so.",
 		"RESTORE_DATABASE": "Restore database",
 		"RESTORE_DATABASE_DESCRIPTION": "Restores your database from the file karaokemugen.sql if it's present in your data folder. <p><b>**WARNING : This will overwrite ALL non-saved data in your database : playlists, sessions, etc.)</b></p>",
-		"CONFIRM_UPDATE": "Confirm update",
-		"UPDATE_MESSAGE_WARNING": "WARNING: Updating will delete",
-		"UPDATE_MESSAGE_FILES": "any file not in the official Karaoke Mugen repository",
-		"UPDATE_MESSAGE_DELETED": "If you created karaokes but did not upload them, they will be deleted."
+		"CONFIRM_UPDATE": "Confirm update"
 	},
 	"TAGS": {
 		"NAME": "Original name",
@@ -948,15 +938,17 @@
 		"NAME": "Repository name",
 		"ONLINE_NAME": "Repository domain name",
 		"TOOLTIP_NAME": "If it's an online repository, put its domaine name only here. If it's a local repository, name it as you want. For example 'My private little karaokes'",
-		"PATH_KARAS": "Karaokes",
-		"PATH_LYRICS": "Lyrics",
+		"BASE_DIR": "Base directory",
 		"PATH_MEDIAS": "Medias",
-		"PATH_TAGS": "Tags",
 		"NEW_REPOSITORY": "New repository",
 		"ONLINE": "Online",
 		"ENABLED": "Enabled",
 		"SENDSTATS": "Send statistics",
 		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
+		"AUTO_MEDIA_DOWNLOADS": "Automatically download videos",
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you check this so that the videos are downloaded beforehand. It is also recommended for convention use or for streaming to avoid potential errors in the middle middle of a karaoke!",
+		"MAINTAINER_MODE": "Maintainer mode",
+		"MAINTAINER_MODE_TOOLTIP": "To be activated if you participate in the maintenance of the deposit (the update of the repository is managed by you and no longer by Karaoke Mugen)",
 		"FOLDERS_REQUIRED": "A folder of {{name}} is required.",
 		"MOVE": "Define the priority of repositories",
 		"MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
@@ -970,13 +962,16 @@
 		"COMPARE_BUTTON": "Compare",
 		"COMPARE_ABOUT_MESSAGE": "This will allow you to compare then eventually copy lyrics files from one repository to another if they differ between the two same songs. Select a repository to compare lyrics with (it will be the destination repository when comes time to copy lyrics)",
 		"LYRICS_ARE_DIFFERENT": "The lyrics of these songs are different between the {{first}} repository and the {{second}} repository:",
-		"CONFIRM_SURE": "Do you want to synchronize the lyrics of repository {{second}} with those of repository {{first}}?"
+		"CONFIRM_SURE": "Do you want to synchronize the lyrics of repository {{second}} with those of repository {{first}}?",
+		"FREE_SPACE": "Free space",
+		"DELETE_OLD_MEDIAS": "Delete medias unused since 1 month",
+		"DELETE_ALL_MEDIAS": "Delete all medias",
+		"STORAGE_INFO": "There is multiple ways to manage space used by your repositories:",
+		"STORAGE_INFO_DELETE": "Like you've seen earlier, you have the ability to remove the unused medias for a month or all the medias. They will be redonwloaded when needed again but this will allow you to free space if you make a long karaoke night recently for example.",
+		"STORAGE_INFO_MOVE": "You have also the ability, in the repositories management page, to move the files of a repository somewhere else in an external disk, USB key or a network share, allowing you to free space on your main disk.",
+		"NO_FREE_SPACE": "Not enough disk space to download! Make space on your hard drive and restart the queue."
 	},
 	"BLACKLIST": {
-		"TYPE": "Type",
-		"VALUE": "Value",
-		"INVALID_CRITERIA": "Invalid criteria",
-		"SHORTER_THAN_ONE_SECOND": "Duration cannot be sorter than 1s",
 		"BLCTYPE_1001": "Song",
 		"BLCTYPE_1002": "Longer than (sec)",
 		"BLCTYPE_1003": "Shorter than (sec)",
@@ -999,7 +994,7 @@
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
-		"KARAS_DESCRIPTION": "List, edit, download, and create karaoke data files. You can also edit the download blacklist and view most requested, most played, and karaoke history",
+		"KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download medias and view most requested, most played, and karaoke history",
 		"TAGS_DESCRIPTION": "List, create, edit tags (singers, songwriters, creators, song types, etc.)",
 		"USERS_DESCRIPTION": "List, edit, create users, change their password, create new guests accounts",
 		"SYSTEM": {
@@ -1010,11 +1005,11 @@
 			"DATABASE": "Database"
 		},
 		"KARAS": {
-			"DOWNLOAD": "Download karaokes",
+			"DOWNLOAD": "Download medias",
 			"BROWSE": "Browse karaokes",
 			"CREATE": "Create a karaoke",
-			"BLACKLIST": "Manage download blacklist",
-			"HISTORY": "Played karaokes history"
+			"HISTORY": "Played karaokes history",
+			"MOST_PLAYED": "Most played karaokes history"
 		},
 		"TAGS": {
 			"CREATE": "Create a tag",
@@ -1039,18 +1034,22 @@
 		"GENERATING_READING": "Reading data...",
 		"GENERATING_DATABASE": "Updating database...",
 		"GENERATION_DONE": "Generation successful",
-		"DOWNLOADING": "Downloading...",
 		"DOWNLOADING_MEDIAS": "Downloading media files...",
 		"CONSOLIDATING_REPO": "Consolidating repository...",
 		"CLEANING_REPO": "Cleaning up songs removed from repository",
 		"UPDATING_REPO": "Updating songs from repository",
-		"DOWNLOADING_REPO": "Adding songs from repository",
 		"UPDATING_PLMEDIAS": "Updating playlist medias...",
 		"CREATING_TAG_IN_PROGRESS": "Creating tag...",
 		"EDITING_TAG_IN_PROGRESS": "Editing tag...",
 		"DELETING_TAG_IN_PROGRESS": "Deleting tag...",
 		"MERGING_TAGS_IN_PROGRESS": "Merging tags...",
-		"UPDATING_MEDIAS": "Updating medias..."
+		"UPDATING_MEDIAS": "Updating medias...",
+		"UPDATING_WORKDIR": "Updating workdir",
+		"DOWNLOADING": "Downloading...",
+        "RESOLVING_DELTAS" : "Resolving deltas",
+        "DECOMPRESSING": "Compressing objects",
+        "ANALYZING_WORKDIR": "Analyzing workdir",
+		"UPDATING_GIT_REPO": "Updating repository {{data}}"
 	},
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
@@ -1076,11 +1075,6 @@
 		"DOWNLOADS_WIPE_ERROR": "Error wiping downloads from the queue",
 		"DOWNLOADS_PAUSE_ERROR": "Error pausing downloads",
 		"DOWNLOADS_START_ERROR": "Error starting downloads",
-		"DOWNLOADS_BLC_GET_ERROR": "Error getting download blacklist criteria",
-		"DOWNLOADS_BLC_ADDED_ERROR": "Error adding download blacklist criteria",
-		"DOWNLOADS_BLC_REMOVE_ERROR": "Error removing download blacklist criteria",
-		"REMOTE_SONG_LIST_ERROR": "Error loading the online library",
-		"REMOTE_TAGS_ERROR": "Error getting remote tags",
 		"AUTOMIX_ERROR": "Error creating automix playlist",
 		"AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS": "No favorites found for those users",
 		"FAVORITES_VIEW_ERROR": "Error getting favorites",
@@ -1183,10 +1177,6 @@
 		"WL_ADD_SONG_ERROR": "Error adding to whitelist",
 		"WL_DELETE_SONG_ERROR": "Error deleting from whitelist",
 		"USER_RESETPASSWORD_ONLINE_ERROR": "Could not reset your password: contact the the server's administrator your account belongs to.",
-		"BASES_SYNC_ERROR": "Repository {{repo}} failed to update properly: {{err}}",
-		"DOWNLOAD_SONGS_ERROR": "Repository {{repo}} failed to download all songs properly: {{err}}",
-		"CLEAN_SONGS_ERROR": "Repository {{repo}} failed to clean songs properly: {{err}}",
-		"SONGS_UPDATE_ERROR": "Repository {{repo}} failed to update songs properly: {{err}}",
 		"UPDATING_MEDIAS_ERROR": "Repository {{repo}} failed to update medias properly: {{err}}",
 		"USER_UNKNOWN": "User logged in unknown",
 		"ADMIN_PLEASE": "Please use an operator account",
@@ -1206,15 +1196,16 @@
 		"POLL_VOTE_ERROR": "This song is not in the poll",
 		"USER_ONLINE_NOINTERNET": "You cannot edit your profile for now, your online server isn't working.",
 		"FAVORITES_ONLINE_NOINTERNET": "You cannot edit your favorites for now, your online server isn't working.",
-		"FS_DELETE_ERROR": "Error when deleting the file"
+		"FS_DELETE_ERROR": "Error when deleting the file",
+		"BLC_PROBLEMATIC_SET_ERROR": "Error creating blacklist criteria set about problematic tags",
+		"REPO_DELETE_ALL_MEDIAS_ERROR": "Error when deleting all medias from repository",
+		"REPO_DELETE_OLD_MEDIAS_ERROR": "Error when deleting older medias from repository",
+		"REPO_DELETE_MEDIA_ERROR": "Error when deleting media",
+		"REPO_GET_FREE_SPACE_ERROR": "Error when getting free space for repository"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
 		"DOWNLOADS_STARTED": "Downloads starting",
-		"SONGS_UPDATES_IN_PROGRESS": "Songs update in progress",
-		"BASES_SYNC_IN_PROGRESS": "Local and remote library sync in progress",
-		"DOWNLOAD_SONGS_IN_PROGRESS": "Downloading songs in progress",
-		"CLEAN_SONGS_IN_PROGRESS": "Removing all local songs not on remote repositories",
 		"UPDATING_MEDIAS_IN_PROGRESS": "Medias update in progress",
 		"KARA_CREATED": "Karaoke created",
 		"KARA_EDITED": "Karaoke edited",
@@ -1255,7 +1246,10 @@
 		"BLC_SET_IMPORTED": "Blacklist criteria set imported",
 		"BLC_CREATED": "Blacklist criteria created",
 		"BLC_COPIED": "Blacklist criteria copied",
-		"STOP_AFTER": "The karaoke will stop at the end of the current song. To stop now, click on the button again."
+		"STOP_AFTER": "The karaoke will stop at the end of the current song. To stop now, click on the button again.",
+		"REPO_ALL_MEDIAS_DELETED": "All medias from repository deleted",
+		"REPO_OLD_MEDIAS_DELETED": "Older medias from repository deleted",
+		"REPO_MEDIA_DELETED": "Media deleted"
 	},
 	"HEADERS": {
 		"HOME": {
@@ -1319,16 +1313,12 @@
 			"DESCRIPTION": "Karaoke modification form."
 		},
 		"DOWNLOAD_QUEUE": {
-			"TITLE": "Download queue",
+			"TITLE": "Medias download queue",
 			"DESCRIPTION": "See the list of current and pending downloads."
 		},
 		"DOWNLOAD": {
-			"TITLE": "Download manager",
-			"DESCRIPTION": "Find and get karaoke from your configured repositories."
-		},
-		"DOWNLOAD_BLACKLIST": {
-			"TITLE": "Download blacklist",
-			"DESCRIPTION": "Set what you never want to download automatically. You can always download whatever you want manually."
+			"TITLE": "Medias download manager",
+			"DESCRIPTION": "Find and get medias linked to karaoke from your configured repositories."
 		},
 		"HISTORY": {
 			"TITLE": "Reading history",
@@ -1374,6 +1364,10 @@
 		"USER_EDIT": {
 			"TITLE": "Modify a user",
 			"DESCRIPTION": "User modification form"
+		},
+		"STORAGE": {
+			"TITLE": "Disk storage management",
+			"DESCRIPTION": "Medias disk storage management"
 		}
 	},
 	"LOGS": {
@@ -1416,5 +1410,28 @@
 	"ONLINE": {
 		"TITLE": "Karaoke Mugen Online",
 		"P1": "Your Karaoke Mugen App was updated to 5.0, new features are available and some might require your attention. Do you want to enable the remote access for your instance? By clicking yes, a remote token will be generated automatically by the Karaoke Mugen Server. It expires after 10 days of inactivity."
+	},
+	"BULLDOZER_VIDEOS": {
+		"TITLE": "Important changes to medias and repository management",
+		"P1": "Repositories and medias change a lot starting with this Karaoke Mugen version.",
+		"P2": "Repository updates are now managed via git. This means that no matter which songs you had downloaded before, you now have access to the full karaoke database.",
+		"P3": "We are well aware that not everyone could afford to download the whole karaoke database. We made it so that wasn't necessary anymore. Only the songs' metadata are now downloaded at startup.",
+		"T1": "But I can't download all the medias!",
+		"P4": "Don't panic. You now have access to all the songs, but their media aren't downloaded on your computer.",
+		"P5": "Medias will be downloaded as you need them.",
+		"L1": "If you wish to play a song from the library, it'll be streamed from your repository's Karaoke Mugen Server. Your internet connection will be used to play the song directly.",
+		"L2": "If you add a song to a current playlist (used by the video player) the media will be downloaded in the background. If the download hasn't finished by the time you get to that song, it'll be streamed through internet. If it's done, it'll be played straight from your computer's storage.",
+		"T2": "What to do if I'm running out of space?",
+		"P6": "From the system panel, a new item \"Disk space management\" is available. Through it you can:",
+		"L3": "Remove every media from a repository if you need some disk space in an emergency",
+		"L4": "Remove only medias which haven't been played for one month (by default)",
+		"T3": "What if I have to make a karaoke session at some place without internet access?",
+		"P7": "You can still download in advance every media from the download manager.",
+		"T4": "Is there anything I need to do?",
+		"P8": "Actually, none : Karaoke Mugen made sure that your online repositories got converted to make them compatible with the new update system. Your downloaded media will stay there and you'll be able to remove the unused ones at any time if you need to free disk space now.",
+		"P9": "There's also a new option, per repository, which keeps Karaoke Mugen from downloading updated media on startup. For example, if a media is already present on your computer storage, but has been updated on your repository, the new version will be downloaded automatically.",
+		"T5": "What happened to download blacklist criterias?",
+		"P10": "They have been migrated to regular blacklist criterias. This means that you won't see those blacklisted songs in your library, as if you had never downloaded them!",
+		"P11": "You can still modify blacklist criterias at any time."
 	}
 }

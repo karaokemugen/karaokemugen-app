@@ -1,6 +1,6 @@
+import { DownloadedStatus } from '../../lib/types/database/download';
 import { DBKaraTag } from '../../lib/types/database/kara';
 import { DBPLCBase } from '../../lib/types/database/playlist';
-
 export interface DBPLCKID {
 	kid: string,
 	login: string,
@@ -25,7 +25,8 @@ export interface DBPLC extends DBPLCBase {
 	flag_blacklisted: boolean,
 	upvotes: number,
 	flag_upvoted: boolean,
-	flag_visible: boolean
+	flag_visible: boolean,
+	download_status: DownloadedStatus
 }
 
 export interface DBPLCInfo extends DBPLC {

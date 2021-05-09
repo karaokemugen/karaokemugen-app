@@ -45,8 +45,7 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 			filter: null,
 			q: `k:${kid}`,
 			lang: lang,
-			admin: token.role === 'admin',
-			ignoreBlacklist: true
+			blacklist: false
 		});
 		return res[0];
 	} catch(err) {
@@ -105,7 +104,6 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 			q: params.q,
 			from: params.from || 0,
 			size: params.size || 9999999999,
-			admin: params.token?.role === 'admin',
 			random: params.random,
 			blacklist: params.blacklist
 		});

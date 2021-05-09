@@ -10,7 +10,7 @@ import { refreshKaras } from '../lib/dao/kara';
 import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
 import {DBKaraTag} from '../lib/types/database/kara';
-import { DBTag } from '../lib/types/database/tag';
+import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { IDQueryResult, Kara, KaraList } from '../lib/types/kara';
 import { Tag,TagParams } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
@@ -155,8 +155,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 			updateKaraTagsTID(tid2, tagObj.tid)
 		]);
 		await Promise.all([
-			removeTag(tid1),
-			removeTag(tid2),
+			removeTag([tid1, tid2]),
 			removeTagFile(tag1.tagfile, tag1.repository),
 			removeTagFile(tag2.tagfile, tag2.repository),
 			removeTagInStore(tid1),
@@ -239,39 +238,38 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 	}
 }
 
-export async function deleteTag(tid: string, opt = {refresh: true}) {
-	const task = new Task({
-		text: 'DELETING_TAG_IN_PROGRESS'
-	});
-	try {
+export async function deleteTag(tids: string[], opt = {refresh: true, removeTagInKaras: true}) {
+	let karas: KaraList;
+	if (opt.removeTagInKaras) karas = await getAllKaras();
+	const tags: DBTagMini[] = [];
+	for (const tid of tids) {
 		const tag = await getTagMini(tid);
-		if (!tag) throw {code: 404, msg: 'Tag ID unknown'};
-		task.update({
-			subtext: tag.name
-		});
-		await removeTag(tid);
-		emitWS('statsRefresh');
-		const removes = [
-			removeTagFile(tag.tagfile, tag.repository),
-			removeTagInKaras(tid, await getAllKaras())
-		];
-		await Promise.all(removes);
-		removeTagInStore(tid);
-		saveSetting('baseChecksum', getStoreChecksum());
-		if (opt.refresh) {
-			await refreshKaras();
-			refreshTags();
-		}
-	} catch(err) {
-		if (err?.code === 404) throw err;
-		sentry.error(err);
-		throw err;
-	} finally {
-		task.end();
+		if (tag) tags.push(tag);
+	}
+	if (tags.length === 0) throw {code: 404, msg: 'Tag ID unknown'};
+	const removes = [];
+	for (const tag of tags) {
+		removes.push(removeTagFile(tag.tagfile, tag.repository));
+		if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karas));
+	}
+	await Promise.all(removes).catch(err => {
+		logger.warn('Failed to remove tag files / tag from kara', {service: 'Tag', obj: err});
+		sentry.error(err, 'Warning');
+		// Non fatal
+	});
+	for (const tag of tags) {
+		removeTagInStore(tag.tid);
+	}
+	saveSetting('baseChecksum', getStoreChecksum());
+	await removeTag(tags.map(tag => tag.tid));
+	emitWS('statsRefresh');
+	if (opt.refresh) {
+		await refreshKaras();
+		refreshTags();
 	}
 }
 
-export async function integrateTagFile(file: string): Promise<string> {
+export async function integrateTagFile(file: string, refresh = true): Promise<string> {
 	const tagFileData = await getDataFromTagFile(file);
 	if (!tagFileData) return null;
 	try {
@@ -279,11 +277,12 @@ export async function integrateTagFile(file: string): Promise<string> {
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository && tagDBData.modified_at.toISOString() !== tagFileData.modified_at) {
 				// Only edit if repositories are the same and modified_at are different.
+				// Also refresh is always disabled for editing tags.
 				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true });
 			}
 			return tagFileData.name;
 		} else {
-			await addTag(tagFileData, { silent: true, refresh: true });
+			await addTag(tagFileData, { silent: true, refresh: refresh });
 			return tagFileData.name;
 		}
 	} catch(err) {

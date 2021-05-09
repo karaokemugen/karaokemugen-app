@@ -6,7 +6,6 @@ import {resolve} from 'path';
 import { APIMessage } from '../controllers/common';
 import {	addKaraToPlaylist as addKaraToPL,
 	addKaraToRequests,
-	getKaraMini,
 	getSongCountForUser,
 	getSongTimeSpentForUser,
 	removeKaraFromPlaylist,
@@ -63,9 +62,10 @@ import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {writeStreamFiles} from '../utils/stream_files';
 import {getBlacklist} from './blacklist';
-import { getAllRemoteKaras } from './downloadUpdater';
-import { formatKaraList, getSongSeriesSingers,getSongVersion,isAllKaras} from './kara';
+import { checkMediaAndDownload } from './download';
+import { formatKaraList, getKaras, getSongSeriesSingers,getSongVersion} from './kara';
 import {playingUpdated, playPlayer} from './player';
+import { getRepos } from './repo';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
 
@@ -240,6 +240,14 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 	}
 }
 
+/** Download all song media files from a playlist */
+async function downloadMediasInPlaylist(plaid: string) {
+	const plcs = await getPlaylistContentsMini(plaid);
+	for (const plc of plcs) {
+		checkMediaAndDownload(plc.kid, plc.mediafile, plc.repository, plc.mediasize);
+	}
+}
+
 // Actions took when a new current playlist is set
 function currentHook(plaid: string, name: string) {
 	const oldCurrentPlaylist_id = getState().currentPlaid;
@@ -250,6 +258,7 @@ function currentHook(plaid: string, name: string) {
 	resetAllAcceptedPLCs();
 	writeStreamFiles('current_kara_count');
 	writeStreamFiles('time_remaining_in_current_playlist');
+	downloadMediasInPlaylist(plaid);
 	logger.info(`Playlist ${name} is now current`, {service: 'Playlist'});
 }
 
@@ -376,16 +385,17 @@ export function isAllKarasInPlaylist(karas: PLC[], playlist: PLC[]) {
 }
 
 /** Add song to playlist */
-export async function addKaraToPlaylist(kids: string|string[], requester: string, plaid?: string, pos?: number, ignoreQuota?: boolean) {
+export async function addKaraToPlaylist(kids: string[], requester: string, plaid?: string, pos?: number, ignoreQuota?: boolean) {
 	requester = requester.toLowerCase();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	const conf = getConfig();
 	const state = getState();
 	if (!plaid) plaid = state.publicPlaid;
-	const karas: string[] = (typeof kids === 'string') ? kids.split(',') : kids;
-	const [pl, kara] = await Promise.all([
+	const [pl, karas] = await Promise.all([
 		getPlaylistInfo(plaid),
-		getKaraMini(karas[0])
+		getKaras({
+			q: `k:${kids.join(',')}`
+		})
 	]);
 	try {
 		profile('addKaraToPL');
@@ -394,31 +404,31 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		const user: User = await findUserByName(requester);
 		if (!user) throw {code: 404, msg: 'Requester does not exist'};
 
-		const karasUnknown = await isAllKaras(karas);
+		const karasUnknown = kids.filter(kid => !karas.content.map(k => k.kid).includes(kid));
 		if (karasUnknown.length > 0) throw {code: 404, msg: 'One of the karaokes does not exist'};
-		logger.debug(`Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester}...`, {service: 'Playlist'});
+		logger.debug(`Adding ${karas.content.length} song(s) to playlist ${pl.name || 'unknown'} by ${requester}...`, {service: 'Playlist'});
 
 		if (user.type > 0 && !ignoreQuota) {
 			// If user is not admin
 			// Check if karaoke is in blacklist
 			const blacklist = await getBlacklist({});
 			if (blacklist.content.some(blc => {
-				return blc.kid === karas[0];
+				return blc.kid === karas.content[0].kid;
 			})) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED';
 				throw {code: 451};
 			}
 			// Check user quota first
-			if (!await isUserAllowedToAddKara(plaid, user, kara.duration)) {
+			if (!await isUserAllowedToAddKara(plaid, user, karas.content[0].duration)) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
 				throw {code: 429};
 			}
 		}
 		// Everything's daijokay, user is allowed to add a song.
 		const date_add = new Date();
-		let karaList: PLC[] = karas.map(kid => {
+		let karaList: PLC[] = karas.content.map(k => {
 			return {
-				kid: kid,
+				kid: k.kid,
 				username: requester,
 				nickname: user.nickname,
 				plaid: plaid,
@@ -482,7 +492,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		// -1 means the admin right-clicked and the song is to be added after the current playing song
 		if (pos === -1) pos = playingPos + 1;
 		if (pos) {
-			await shiftPosInPlaylist(plaid, pos, karas.length);
+			await shiftPosInPlaylist(plaid, pos, kids.length);
 		} else {
 			pos = playlistMaxPos + 1;
 		}
@@ -511,6 +521,9 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 		]);
 		const plc = await getPLCInfo(PLCsInserted[0].plc_id, true, requester);
 		if (plaid === state.currentPlaid) {
+			for (const kara of karas.content) {
+				checkMediaAndDownload(kara.kid, kara.mediafile, kara.repository, kara.mediasize);
+			}
 			writeStreamFiles('current_kara_count');
 			writeStreamFiles('time_remaining_in_current_playlist');
 			if (conf.Karaoke.Autoplay &&
@@ -600,6 +613,9 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 			plcList[index].flag_visible = plcData.flag_visible;
 			plcList[index].flag_refused = plcData.flag_refused;
 			plcList[index].flag_accepted = plcData.flag_accepted;
+			plcList[index].mediafile = plcData.mediafile;
+			plcList[index].repository = plcData.repository;
+			plcList[index].mediasize = plcData.mediasize;
 		}
 		// Remove karas already in playlist
 		plcList = plcList.filter(plc => !playlist.map(e => e.kid).includes(plc.kid));
@@ -625,8 +641,14 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 		updatePlaylistLastEditTime(plaid);
 		const state = getState();
 		// If we're adding to the current playlist ID and KM's mode is public, we have to notify users that their song has been added and will be playing in xxx minutes
-		if (plaid === state.currentPlaid && plaid !== state.publicPlaid) {
-			plcList.forEach(plc => notifyUserOfSongPlayTime(plc.plcid, plc.username));
+		// Also for current playlist we check if medias are present
+		if (plaid === state.currentPlaid) {
+			for (const plc of plcList) {
+				checkMediaAndDownload(plc.kid, plc.mediafile, plc.repository, plc.mediasize);
+				if (plaid !== state.publicPlaid) {
+					notifyUserOfSongPlayTime(plc.plcid, plc.username);
+				}
+			}
 		}
 		if (plaid === state.publicPlaid) {
 			emitWS('KIDUpdated', plcList.map(plc => {
@@ -954,20 +976,22 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 		} else {
 			await emptyPlaylist(plaid);
 		}
-		const unknownKIDs = await isAllKaras(playlist.PlaylistContents.map((plc: PLC) => plc.kid));
+		const repos = getRepos();
+		const unknownRepos = new Set();
 		for (const i in playlist.PlaylistContents) {
 			// Do not replace here to not break old exports/imports
 			playlist.PlaylistContents[i].plaid = plaid;
+			const repo = playlist.PlaylistContents[i].repository;
+			if (repo && !repos.find(r => r.Name === repo)) {
+				// Repository not found
+				unknownRepos.add(repo);
+			}
 		}
+
 		if (playlist.PlaylistContents?.length > 0) await addKaraToPL(playlist.PlaylistContents);
 		if (playingKara?.kid) {
 			const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, plaid);
 			await setPlaying(plcPlaying?.plcid || 0, plaid);
-		}
-		let unknownKaras = [];
-		if (unknownKIDs.length > 0) {
-			const karas = await getAllRemoteKaras(null, {});
-			unknownKaras = karas.content.filter(k => unknownKIDs.includes(k.kid));
 		}
 		await Promise.all([
 			updatePlaylistKaraCount(plaid),
@@ -979,7 +1003,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 		emitWS('playlistsUpdated');
 		return {
 			plaid: plaid,
-			karasUnknown: unknownKaras
+			reposUnknown: Array.from(unknownRepos)
 		};
 	} catch(err) {
 		logger.error('Import failed', {service: 'Playlist', obj: err});
@@ -1306,6 +1330,7 @@ export async function initPlaylistSystem() {
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.plaid));
 	await testPlaylists();
+	downloadMediasInPlaylist(getState().currentPlaid);
 	logger.debug('Playlists initialized', {service: 'Playlist'});
 	profile('initPL');
 }

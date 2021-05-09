@@ -2,18 +2,15 @@ import './ProfilModal.scss';
 
 import languages from '@cospired/i18n-iso-languages';
 import i18next from 'i18next';
-import prettyBytes from 'pretty-bytes';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
-import { DBPLC } from '../../../../../src/types/database/playlist';
 import { logout, setAuthentifactionInformation } from '../../../store/actions/auth';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
@@ -149,31 +146,6 @@ class ProfilModal extends Component<IProps, IState> {
 					if (confirm) {
 						const data = { favorites: JSON.parse(fr['result'] as string) };
 						const response = await commandBackend('importFavorites', data);
-						if (response.message.data.unknownKaras && response.message.data.unknownKaras.length > 0) {
-							const mediasize = response.message.data.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
-							callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
-								<p>
-									{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
-								</p>
-								<div>
-									{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM')}
-									<label>&nbsp;{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM_SIZE', { mediasize: prettyBytes(mediasize) })}</label>
-								</div>
-								<br />
-								{response.message.data.unknownKaras.map((kara: DBPLC) =>
-									<label key={kara.kid}>{buildKaraTitle(this.context.globalState.settings.data, kara, true)}</label>)}
-							</React.Fragment>), () => commandBackend('addDownloads', {
-								downloads: response.message.data.unknownKaras.map((kara: DBPLC) => {
-									return {
-										kid: kara.kid,
-										mediafile: kara.mediafile,
-										size: kara.mediasize,
-										name: kara.karafile.replace('.kara.json', ''),
-										repository: kara.repository
-									};
-								})
-							}));
-						}
 					}
 				});
 			};

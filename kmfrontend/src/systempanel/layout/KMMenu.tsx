@@ -28,6 +28,7 @@ class KMMenu extends Component<unknown, unknown> {
 					<Menu.Item key='users'><Link to='/system/users'>{i18next.t('MENU.USERS')}</Link></Menu.Item>
 					<Menu.Item key='sessions'><Link to='/system/sessions'>{i18next.t('MENU.SESSIONS')}</Link></Menu.Item>
 					<Menu.Item key='repositories'><Link to='/system/repositories'>{i18next.t('MENU.REPOSITORIES')}</Link></Menu.Item>
+					<Menu.Item key='storage'><Link to='/system/storage'>{i18next.t('MENU.STORAGE')}</Link></Menu.Item>
 					<Menu.Item key='unused'><Link to='/system/unused'>{i18next.t('MENU.UNUSED_FILES')}</Link></Menu.Item>
 					<Menu.Item key='db'><Link to='/system/db'>{i18next.t('MENU.DATABASE')}</Link></Menu.Item>
 				</Menu.SubMenu>
@@ -36,7 +37,6 @@ class KMMenu extends Component<unknown, unknown> {
 					<Menu.Item key='karaimport'><Link to='/system/karas/create'>{i18next.t('MENU.NEW')}</Link></Menu.Item>
 					<Menu.Item key='queuedownload'><Link to='/system/karas/download/queue'>{i18next.t('MENU.DOWNLOAD_QUEUE')}</Link></Menu.Item>
 					<Menu.Item key='karadownload'><Link to='/system/karas/download'>{i18next.t('MENU.DOWNLOAD')}</Link></Menu.Item>
-					<Menu.Item key='karablacklist'><Link to='/system/karas/blacklist'>{i18next.t('MENU.BLACKLIST')}</Link></Menu.Item>
 					<Menu.Item key='karahistory'><Link to='/system/karas/history'>{i18next.t('MENU.HISTORY')}</Link></Menu.Item>
 					<Menu.Item key='kararanking'><Link to='/system/karas/ranking'>{i18next.t('MENU.RANKING')}</Link></Menu.Item>
 					<Menu.Item key='karaviewcounts'><Link to='/system/karas/viewcounts'>{i18next.t('MENU.VIEWCOUNTS')}</Link></Menu.Item>

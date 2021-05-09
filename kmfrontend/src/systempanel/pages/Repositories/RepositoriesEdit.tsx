@@ -20,11 +20,12 @@ const newrepository: Repository = {
 	Online: false,
 	Enabled: true,
 	SendStats: false,
+	AutoMediaDownloads: false,
+	MaintainerMode: false,
+	BaseDir: null,
+	Git: null,
 	Path: {
-		Karas: [],
-		Lyrics: [],
-		Medias: [],
-		Tags: []
+		Medias: []
 	}
 };
 

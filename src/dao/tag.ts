@@ -26,6 +26,7 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 	const orderClause = '';
 	let stripClause = '';
 	let joinClauses = '';
+	let probClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
 	//if (params.filter) orderClause = ', relevance desc';
@@ -38,7 +39,8 @@ export async function getAllTags(params: TagParams): Promise<DBTag[]> {
 		 `;
 		stripClause = ' AND karacounttype::int2 > 0';
 	}
-	const query = sqlgetAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause, orderClause, filterClauses.additionalFrom, joinClauses, stripClause);
+	if (params.problematic) probClause = ' AND t.problematic = TRUE';
+	const query = sqlgetAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause, orderClause, filterClauses.additionalFrom, joinClauses, stripClause, probClause);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
@@ -117,6 +119,6 @@ export function updateTag(tag: Tag) {
 	]);
 }
 
-export async function removeTag(tid: string) {
-	await db().query(sqldeleteTag, [tid]);
+export async function removeTag(tids: string[]) {
+	await db().query(sqldeleteTag, [tids]);
 }

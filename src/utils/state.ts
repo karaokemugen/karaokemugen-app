@@ -108,7 +108,6 @@ export function getPublicState(admin: boolean): PublicState {
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,
-		electron: state.electron,
 		defaultLocale: state.defaultLocale,
 		supportedLyrics: supportedFiles.lyrics,
 		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio),

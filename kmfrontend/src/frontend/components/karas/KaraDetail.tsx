@@ -7,12 +7,13 @@ import {toast} from 'react-toastify';
 
 import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
+import { KaraDownloadRequest } from '../../../../../src/types/download';
 import nanamiSingPng from '../../../assets/nanami-sing.png';
 import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
-import {formatLyrics, getPreviewLink, sortTagByPriority} from '../../../utils/kara';
+import {buildKaraTitle, formatLyrics, getPreviewLink, sortTagByPriority} from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import {
@@ -245,6 +246,17 @@ class KaraDetail extends Component<IProps, IState> {
 		}
 	}
 
+	downloadMedia = () => {
+		const downloadObject: KaraDownloadRequest = {
+			mediafile: this.state.kara.mediafile,
+			kid: this.state.kara.kid,
+			size: this.state.kara.mediasize,
+			name: buildKaraTitle(this.context.globalState.settings.data, this.state.kara, true) as string,
+			repository: this.state.kara.repository
+		};
+		commandBackend('addDownloads', {downloads: [downloadObject]}).catch(() => { });
+	}
+
 	placeHeader = (headerEl: ReactNode) => createPortal(headerEl, document.getElementById('menu-supp-root'));
 
 	render() {
@@ -381,11 +393,22 @@ class KaraDetail extends Component<IProps, IState> {
 			const showVideoButton = (isRemote() && !/\./.test(data.repository)) ? null : (
 				<button
 					type="button"
-					className="showVideo btn btn-action"
+					className="btn btn-action"
 					onClick={() => this.setState({ showVideo: !this.state.showVideo })}
 				>
 					<i className="fas fa-fw fa-video" />
 					<span>{this.state.showVideo ? i18next.t('TOOLTIP_HIDEVIDEO'):i18next.t('TOOLTIP_SHOWVIDEO')}</span>
+				</button>
+			);
+
+			const downloadVideoButton = data.download_status !== 'MISSING' ? null : (
+				<button
+					type="button"
+					className="btn btn-action"
+					onClick={this.downloadMedia}
+				>
+					<i className="fas fa-fw fa-file-download" />
+					<span>{i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}</span>
 				</button>
 			);
 
@@ -454,6 +477,7 @@ class KaraDetail extends Component<IProps, IState> {
 									<div className="centerButtons">
 										{makeFavButton}
 										{showVideoButton}
+										{downloadVideoButton}
 									</div>
 									{video}
 									{details}

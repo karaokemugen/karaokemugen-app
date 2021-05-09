@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepos, removeRepo } from '../../services/repo';
+import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,deleteMedia,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepoFreeSpace, getRepos, removeRepo, updateAllGitRepos } from '../../services/repo';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -112,6 +112,57 @@ export default function repoController(router: SocketIOApp) {
 			const code = 'REPO_COPY_LYRICS_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('deleteAllRepoMedias', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await deleteMedia(null, req.body?.name);
+			return {code: 200, message: APIMessage('REPO_ALL_MEDIAS_DELETED')};
+		} catch(err) {
+			const code = 'REPO_DELETE_ALL_MEDIAS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('deleteOldRepoMedias', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await deleteMedia(null, req.body?.name, true);
+			return {code: 200, message: APIMessage('REPO_OLD_MEDIAS_DELETED')};
+		} catch(err) {
+			const code = 'REPO_DELETE_OLD_MEDIAS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('deleteMedia', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			await deleteMedia(req.body?.kid);
+			return {code: 200, message: APIMessage('REPO_MEDIA_DELETED')};
+		} catch(err) {
+			const code = 'REPO_DELETE_MEDIA_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getRepoFreeSpace', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await getRepoFreeSpace(req.body?.repoName);
+		} catch(err) {
+			const code = 'REPO_GET_FREE_SPACE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('updateAllGitRepos', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			updateAllGitRepos();
+		} catch(err) {
+			errMessage(err);
 		}
 	});
 }

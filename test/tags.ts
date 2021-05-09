@@ -34,7 +34,7 @@ describe('Tags', () => {
 			'fre': 'Mon mega tag',
 			'eng': 'My mega tag can\'t be this cute'
 		},
-		repository: 'kara.moe',
+		repository: 'Local',
 		types: [2]
 	};
 	it('Get tag list', async () => {
@@ -107,8 +107,9 @@ describe('Tags', () => {
 		expect(data.content.length).to.be.greaterThan(1);
 		for (const tag of data.content) {
 			testTag(tag, 'tag');
+			const dupeTag = data.content.find(t => t.tid !== tag.tid && t.name === tag.name);
+			expect(dupeTag.name).to.be.a('string');
 		}
-		expect(data.content[0].name).to.be.equal(data.content[1].name);
 	});
 
 	let tagToDelete: DBTag;
@@ -121,7 +122,7 @@ describe('Tags', () => {
 		tagToDelete = data.data;
 	});
 	it('Delete tag', async () => {
-		const data = await commandBackend(token, 'deleteTag', {tid: tagToDelete.tid});
+		const data = await commandBackend(token, 'deleteTag', {tid: [tagToDelete.tid]});
 		expect(data.code).to.be.equal('TAG_DELETED');
 	});
 });

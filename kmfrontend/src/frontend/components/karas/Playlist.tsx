@@ -460,6 +460,7 @@ class Playlist extends Component<IProps, IState> {
 		param.filter = this.getFilterValue(this.props.side);
 		param.from = (stateData?.infos?.from > 0 ? stateData.infos.from : 0);
 		param.size = chunksize;
+		param.blacklist = true;
 		if (searchType) {
 			param.order = searchType === 'search' ? undefined : searchType;
 		} else if (this.state.searchType && this.state.searchType !== 'search') {

@@ -5,9 +5,10 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { DBTag } from '../../../../../src/lib/types/database/tag';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
-import { is_touch_device } from '../../../utils/tools';
+import { is_touch_device, isMaintainerMode } from '../../../utils/tools';
 
 interface TagsListState {
 	tags: DBTag[],
@@ -17,7 +18,8 @@ interface TagsListState {
 }
 
 class TagsList extends Component<unknown, TagsListState> {
-
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 	filter: string;
 
 	constructor(props) {
@@ -140,15 +142,15 @@ class TagsList extends Component<unknown, TagsListState> {
 		key: 'repository'
 	}, {
 		title: i18next.t('ACTION'),
-		render: (text, record) => (<span>
+		render: (_text, record) => isMaintainerMode(this.context, record.repository) ? (<span>
 			<Link to={`/system/tags/${record.tid}`}>
 				<Button type="primary" icon={<EditOutlined />} />
 			</Link>
-			{!is_touch_device() ? <Divider type="vertical" />:null}
+			{!is_touch_device() ? <Divider type="vertical" /> : null}
 			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
 				() => this.setState({ deleteModal: true, tag: record })
 			} />
-		</span>)
+		</span>) : null
 	}];
 }
 

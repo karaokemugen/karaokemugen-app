@@ -19,7 +19,7 @@ export function parseArgs() {
 		.option('-r, --reset', 'Reset user data (WARNING! Backup your base first!)')
 		.option('-s, --strict', 'Generation/validation only. Strict mode, returns an error if kara files had to be modified.')
 		.option('-t, --test', 'Launches in test mode (for running unit tests)')
-		.option('-m, --updateMedias', 'Update karaoke media files only (no other data files)')
+		.option('-m, --updateMediasAll', 'Update karaoke media files only (no other data files)')
 		.option('-v, --validate', 'Validates kara files and modify them if needed (no generation)')
 		.option('--cli', 'Start in CLI mode, without Electron')
 		.option('--demo', 'Launches in demo mode (no system panel, no password changes)')
@@ -79,9 +79,9 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 		logger.info('Base update requested', {service: 'Launcher'});
 		setState({opt: {baseUpdate: true}});
 	}
-	if (argv.opts().updateMedias) {
-		logger.info('Media update requested', {service: 'Launcher'});
-		setState({opt: {mediaUpdate: true}});
+	if (argv.opts().updateMediasAll) {
+		logger.info('Full media update requested', {service: 'Launcher'});
+		setState({opt: {mediaUpdateAll: true}});
 	}
 	if (argv.opts().test) {
 		logger.info('TEST MODE ENABLED. DO NOT DO THIS AT HOME.', {service: 'Launcher'});

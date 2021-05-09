@@ -76,7 +76,7 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 	const [session1, session2] = await Promise.all([
 		findSession(seid1),
 		findSession(seid2)
-	]); 	
+	]);
 	if (!session1 || !session2) throw {code: 404};
 	session1.active = session1.seid === getState().currentSessionID;
 	session2.active = session2.seid === getState().currentSessionID;
@@ -150,8 +150,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const session = await findSession(seid);
 		if (!session) throw {code: 404, msg: 'Session does not exist'};
 		const [requested, played] = await Promise.all([
-			selectAllKaras({order: 'sessionRequested', q: `seid:${seid}`, admin: true}),
-			selectAllKaras({order: 'sessionPlayed', q: `seid:${seid}`, admin: true})
+			selectAllKaras({order: 'sessionRequested', q: `seid:${seid}`}),
+			selectAllKaras({order: 'sessionPlayed', q: `seid:${seid}`})
 		]);
 		const sessionExports: SessionExports = {
 			requested: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requested.csv`),

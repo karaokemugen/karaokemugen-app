@@ -11,9 +11,7 @@ import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
 import { asyncReadDirFilter } from '../lib/utils/files';
-import { createImagePreviews } from '../lib/utils/previews';
 import { testCurrentBLCSet } from '../services/blacklist';
-import { getAllKaras } from '../services/kara';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG} from '../utils/postgresql';
@@ -210,7 +208,6 @@ export async function generateDB(): Promise<boolean> {
 			await reorderPlaylist(pl.plaid);
 		}
 		await generateBlacklist();
-		if (getConfig().Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
 	} catch(err) {
 		sentry.error(err);
 		throw err;

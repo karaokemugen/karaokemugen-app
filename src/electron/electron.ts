@@ -13,12 +13,11 @@ import { emit,on } from '../lib/utils/pubsub';
 import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { importSet } from '../services/blacklist';
-import { addDownloads,integrateDownloadBundle } from '../services/download';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
 import { playSingleSong } from '../services/karaokeEngine';
 import { importPlaylist, playlistImported} from '../services/playlist';
-import { addRepo,getRepo, getRepos } from '../services/repo';
+import { addRepo,getRepo } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
 import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { detectKMFileTypes } from '../utils/files';
@@ -29,6 +28,7 @@ import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
+export let gitWorker: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
 
 let initDone = false;
@@ -50,6 +50,7 @@ export function startElectron() {
 			const args = req.url.substr(5).split('/');
 			handleProtocol(args);
 		});
+		createGitWorker();
 		await initElectronWindow();
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
@@ -117,19 +118,6 @@ export async function handleProtocol(args: string[]) {
 		logger.info(`Received protocol uri km://${args.join('/')}`, {service: 'ProtocolHandler'});
 		if (!getState().ready) return;
 		switch(args[0]) {
-		case 'download':
-			const domain = args[1];
-			const kid = args[2];
-			const name = await checkRepositoryExists(domain, false);
-			if (name) await addDownloads([
-				{
-					name: 'Karaoke',
-					kid: kid,
-					repository: domain,
-					size: 0
-				}
-			]);
-			break;
 		case 'addRepo':
 			const repoName = args[1];
 			const repo = getRepo(repoName);
@@ -145,11 +133,13 @@ export async function handleProtocol(args: string[]) {
 						Name: repoName,
 						Online: true,
 						Enabled: true,
+						SendStats: false,
+						AutoMediaDownloads: false,
+						MaintainerMode: false,
+						Git: null,
+						BaseDir: `repos/${repoName}`,
 						Path: {
-							Karas: [`repos/${repoName}/karaokes`],
-							Lyrics: [`repos/${repoName}/lyrics`],
-							Medias: [`repos/${repoName}/medias`],
-							Tags: [`repos/${repoName}/tags`],
+							Medias: [`repos/${repoName}/medias`]
 						}
 					});
 				}
@@ -192,11 +182,6 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 		const KMFileType = detectKMFileTypes(data);
 		const url = `http://localhost:${getConfig().Frontend.Port}/admin`;
 		switch(KMFileType) {
-		case 'Karaoke Mugen Karaoke Bundle File':
-			const repoName = data.kara.data.data.repository;
-			const destRepo = await checkRepositoryExists(repoName);
-			await integrateDownloadBundle(data, destRepo);
-			break;
 		case 'Karaoke Mugen BLC Set File':
 			await importSet(data);
 			if (win && !win.webContents.getURL().includes('/admin')) {
@@ -241,50 +226,6 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 	}
 }
 
-async function checkRepositoryExists(repoName: string, useLocal = true): Promise<string> {
-	const repo = getRepo(repoName);
-	if (!repo) {
-		const buttons = await dialog.showMessageBox({
-			type: 'none',
-			title: i18next.t('UNKNOWN_REPOSITORY_DOWNLOAD.TITLE'),
-			message: `${i18next.t('UNKNOWN_REPOSITORY_DOWNLOAD.MESSAGE')}`,
-			buttons: [i18next.t('YES'), i18next.t('NO')],
-		});
-		if (buttons.response === 0) {
-			await addRepo({
-				Name: repoName,
-				Online: true,
-				Enabled: true,
-				SendStats: getConfig().Online.Stats,
-				Path: {
-					Karas: [`repos/${repoName}/karaokes`],
-					Lyrics: [`repos/${repoName}/lyrics`],
-					Medias: [`repos/${repoName}/medias`],
-					Tags: [`repos/${repoName}/tags`],
-				}
-			});
-			return repoName;
-		} else {
-			if (!useLocal) return;
-			// If user says no, we'll use the first local Repo we find
-			const repos = getRepos();
-			const localRepos = repos.filter(r => r.Enabled && !r.Online);
-			if (localRepos.length === 0) {
-				await dialog.showMessageBox({
-					type: 'none',
-					title: i18next.t('UNKNOWN_REPOSITORY_NO_LOCAL.TITLE'),
-					message: `${i18next.t('UNKNOWN_REPOSITORY_NO_LOCAL.MESSAGE')}`
-				});
-				return;
-			} else {
-				return localRepos[0].Name;
-			}
-		}
-	} else {
-		return repoName;
-	}
-}
-
 export function applyMenu() {
 	initMenu();
 	const menu = Menu.buildFromTemplate(getMenu());
@@ -294,6 +235,16 @@ export function applyMenu() {
 async function initElectronWindow() {
 	await createWindow();
 	applyMenu();
+}
+
+export async function createGitWorker() {
+	gitWorker = new BrowserWindow({
+		show: false,
+		webPreferences: {
+			nodeIntegration: true
+		}
+	});
+	gitWorker.loadURL(`file://${resolve(getState().resourcePath, 'gitWorker/index.html')}`);
 }
 
 async function createWindow() {
@@ -332,6 +283,7 @@ async function createWindow() {
 	win.on('closed', () => {
 		win = null;
 		if (chibiPlayerWindow) chibiPlayerWindow.destroy();
+		if (gitWorker) gitWorker.destroy();
 	});
 }
 

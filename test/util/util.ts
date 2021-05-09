@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import { DBTag } from '../../src/lib/types/database/tag';
 import { md5Regexp,tagTypes, uuidPlusTypeRegexp,uuidRegexp } from '../../src/lib/utils/constants';
 import {Config} from '../../src/types/config';
-import { testDownloads } from '../../src/utils/constants';
+import { testSongs } from '../../src/utils/constants';
 
 export const socket = io('http://localhost:1337');
 export const usernameAdmin = 'adminTest';
@@ -13,7 +13,8 @@ export const passwordAdmin = 'ceciestuntest';
 export const allLangs = langs.codes('2B');
 allLangs.push('zxx');
 allLangs.push('und');
-export const allKIDs = testDownloads.map(d => d.kid);
+allLangs.push('mul');
+export const allKIDs = testSongs;
 const tokens = new Map();
 
 export let plaid = '';

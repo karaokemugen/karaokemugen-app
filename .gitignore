@@ -50,3 +50,8 @@ postgrator.json
 # Dev
 .env
 .eslintcache
+
+# Git worker
+
+gitWorker/gitWorker.js
+gitWorker/gitWorker.js.map

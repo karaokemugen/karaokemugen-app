@@ -4,7 +4,7 @@ import { APIData } from '../../lib/types/api';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addBlacklistCriteria, addSet, copySet, deleteBlacklistCriteria, editSet, emptyBlacklistCriterias, exportSet, getAllSets, getBlacklist, getBlacklistCriterias, getSet, importSet,removeSet } from '../../services/blacklist';
+import { addBlacklistCriteria, addSet, copySet, createProblematicBLCSet, deleteBlacklistCriteria, editSet, emptyBlacklistCriterias, exportSet, getAllSets, getBlacklist, getBlacklistCriterias, getSet, importSet,removeSet } from '../../services/blacklist';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -174,6 +174,16 @@ export default function blacklistController(router: SocketIOApp) {
 			return await exportSet(req.body.set_id);
 		} catch(err) {
 			const code = 'BLC_SET_EXPORT_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('createProblematicBLCSet', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		try {
+			return await createProblematicBLCSet();
+		} catch(err) {
+			const code = 'BLC_PROBLEMATIC_SET_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}

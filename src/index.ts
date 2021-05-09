@@ -10,13 +10,14 @@ import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
-import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
+import {createGitWorker, focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathPreviews, resolvedPathSessionExports, resolvedPathTemp, setConfig} from './lib/utils/config';
 import {asyncCheckOrMkdir, asyncExists} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
+import { migrateReposToGit } from './services/repo';
 import {Config} from './types/config';
 import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
@@ -172,6 +173,8 @@ if (app && !argv.opts().cli) {
 	startElectron();
 } else {
 	// This is in case we're running with yarn startNoElectron or with --cli or --help
+	// If we're running under Electron and --cli is used, still create the git Worker once electron is ready.
+	if (app) app.on('ready', createGitWorker);
 	preInit()
 		.then(() => main())
 		.catch(err => initError(err));
@@ -217,6 +220,8 @@ export async function main() {
 	logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
 	logger.debug('Initial state', {service: 'Launcher', obj: state});
 
+	// Migrate repos to git
+	await migrateReposToGit();
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
@@ -264,6 +269,10 @@ async function checkPaths(config: Config) {
 				: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
 		}
 		for (const repo of config.System.Repositories) {
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir)));
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
 			for (const paths of Object.keys(repo.Path)) {
 				repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
 			}

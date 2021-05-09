@@ -11,6 +11,7 @@ import nanamiUmuPng from '../assets/nanami-umu.png';
 import nanamiUmuWebP from '../assets/nanami-umu.webp';
 import Tutorial from '../frontend/components/modals/Tutorial';
 import { showModal } from '../store/actions/modal';
+import { GlobalContextInterface } from '../store/context';
 import { ShowModal } from '../store/types/modal';
 import Modal from './components/Modal';
 
@@ -142,7 +143,7 @@ export function displayMessage(type: TypeOptions, message: any, time = 3500, pos
 		</div>);
 	} else item = message;
 	if (!document.hidden) {
-		toast(item, { type: type, autoClose: time, position, pauseOnFocusLoss: false, toastId: id });
+		toast(item, { type: type, autoClose: time ? time : false, position, pauseOnFocusLoss: false, toastId: id });
 	}
 }
 
@@ -163,4 +164,14 @@ export const nonStandardPlaylists = {
 
 export function isNonStandardPlaylist(plaid: string) {
 	return Object.values(nonStandardPlaylists).includes(plaid);
+}
+
+export function isMaintainerMode(context:GlobalContextInterface, repo:string):boolean {
+	let maintainerMode = false;
+	context.globalState.settings.data.config.System.Repositories.forEach(repository => {
+		if (repository.Name === repo) {
+			maintainerMode = repository.MaintainerMode;
+		}
+	});
+	return maintainerMode;
 }
