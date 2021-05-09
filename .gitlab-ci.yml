@@ -214,8 +214,7 @@ pkg_mac:
     RESTORE_CACHE_ATTEMPTS: 10
   script:
     - rm -Rf release_mac
-    - yarn add --dev electron-builder
-    - yarn install --force
+    - yarn add --dev electron-builder@22.10.5
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-5.x.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
