@@ -1,4 +1,11 @@
-# v5.0.35 - 09/05/2021
+# v5.0.37 - 09/05/2021
+
+## Fixes
+
+- Fixed reset password for local account (a72066a)
+- Change discord link in init page (1c024ad)
+
+# v5.0.36 - 09/05/2021
 
 ## Fixes
 
