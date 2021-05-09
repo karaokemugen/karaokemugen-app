@@ -139,7 +139,7 @@ function panic() {
 		const tiptitle = document.querySelector('.ip--protip > .title');
 		const tipbox = document.querySelector('.ip--protip > .content');
 		tipbox.innerHTML = 'Karaoke Mugen is halting at start, something isn\'t right with the start process. ' +
-			'You can reach us on Discord for help: https://discord.gg/XFXCqzU'.autoLink();
+			'You can reach us on Discord for help: http://karaokes.moe/discord'.autoLink();
 		tiptitle.innerText = 'Weird?';
 	}
 }
