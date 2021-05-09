@@ -195,7 +195,7 @@ pkg_mac:
       - kmfrontend/node_modules/
     policy: pull
   retry:
-    max: 3
+    max: 2
   tags:
     - macos
   interruptible: true
