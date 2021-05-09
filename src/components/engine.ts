@@ -24,7 +24,7 @@ import {emit} from '../lib/utils/pubsub';
 import {initBlacklistSystem} from '../services/blacklist';
 import {initDownloader, wipeDownloadQueue} from '../services/download';
 import { updateAllMedias } from '../services/downloadUpdater';
-import { getAllKaras, initFetchPopularSongs } from '../services/kara';
+import { getKaras, initFetchPopularSongs } from '../services/kara';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem} from '../services/playlist';
@@ -207,7 +207,9 @@ export async function initEngine() {
 			if (!state.isTest && !state.isDemo && !conf.App.FirstRun && internet) {
 				updateAllGitRepos();
 			}
-			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
+			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getKaras({
+				q: 'm:downloaded'
+			}), 'single');
 			// Mark all migrations as done for the first run to avoid the user to have to do all the migrations from start
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
 			initFetchPopularSongs();
