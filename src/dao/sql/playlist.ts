@@ -147,6 +147,7 @@ SELECT
   ak.duration AS duration,
   pc.created_at AS created_at,
   ak.mediasize AS mediasize,
+  ak.download_status AS download_status,
   COUNT(p.played_at)::integer AS played,
   COUNT(rq.requested_at)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
@@ -204,7 +205,7 @@ WHERE pc.fk_id_playlist = :plaid
   ${whereClause}
 GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes,
          ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres,
-         ak.platforms, ak.versions, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname,
+         ak.platforms, ak.versions, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status,
          pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository
 ORDER BY ${orderClause}
 ${limitClause}
@@ -279,6 +280,7 @@ SELECT
   ak.created_at AS kara_created_at,
   ak.modified_at AS kara_modified_at,
   ak.mediasize AS mediasize,
+  ak.download_status AS download_status,
   COUNT(p.played_at)::integer AS played,
   COUNT(rq.requested_at)::integer AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
@@ -330,7 +332,7 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
 WHERE  pc.pk_id_plcontent = :plcid
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.download_status
 `;
 
 export const sqlgetPLCInfoMini = `

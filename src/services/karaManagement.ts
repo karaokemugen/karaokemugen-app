@@ -22,9 +22,10 @@ import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { generateBlacklist } from './blacklist';
+import { checkMediaAndDownload } from './download';
 import {getKara, getKaras} from './kara';
 import { editKara } from './kara_creation';
-import { getRepo, getRepos } from './repo';
+import { checkDownloadStatus, getRepo, getRepos } from './repo';
 import { getTag } from './tag';
 
 export async function updateTags(kara: Kara) {
@@ -46,6 +47,7 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 		await refreshKarasAfterDBChange('ADD', kara.kid, true);
 		generateBlacklist();
 	}
+	checkDownloadStatus([kara.kid]);
 }
 
 export async function editKaraInDB(kara: Kara, opts = {
@@ -59,14 +61,13 @@ export async function editKaraInDB(kara: Kara, opts = {
 		await refreshKarasAfterDBChange('UPDATE', kara.kid, kara.newTags);
 		generateBlacklist();
 	}
+	checkDownloadStatus([kara.kid]);
 	profile('editKaraDB');
 }
 
 export async function deleteKara(kids: string[], refresh = true) {
 	const karas = await selectAllKaras({
-		username: 'admin',
 		q: `k:${kids.join(',')}`,
-		admin: true
 	});
 	if (karas.length === 0) throw {code: 404, msg: `Unknown kara IDs in ${kids.join(',')}`};
 	for (const kara of karas) {
@@ -77,7 +78,7 @@ export async function deleteKara(kids: string[], refresh = true) {
 			logger.warn(`Non fatal : Removing mediafile ${kara.mediafile} failed`, {service: 'Kara', obj: err});
 		}
 		try {
-			await fs.unlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0]);
+			await fs.unlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0]);
 		} catch(err) {
 			logger.warn(`Non fatal : Removing karafile ${kara.karafile} failed`, {service: 'Kara', obj: err});
 		}
@@ -120,7 +121,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
 		// If the new repo has priority, edit kara so the database uses it.
 		if (newRepoIndex < oldRepoIndex) tasks.push(editKara(kara));
-		tasks.push(writeKara(resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile), kara));
+		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), kara));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
 		tasks.push(copy(
 			mediaFiles[0],
@@ -235,7 +236,7 @@ export async function integrateKaraFile(file: string) {
 	if (karaDB) {
 		await editKaraInDB(karaData, { refresh: false });
 		try {
-			const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0];
+			const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karaokes', karaDB.repository)))[0];
 			if (karaDB.karafile !== karaData.karafile) {
 				await fs.unlink(oldKaraFile);
 				removeKaraInStore(oldKaraFile);
@@ -260,8 +261,11 @@ export async function integrateKaraFile(file: string) {
 	} else {
 		await createKaraInDB(karaData, { refresh: false });
 	}
+	if (getRepo(karaData.repository).AutoMediaDownloads) {
+		checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
+	}
 	// Do not create image previews if running this from the command line.
-	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({q: `k=${karaData.kid}`, token: {username: 'admin', role: 'admin'}}), 'single');
+	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({q: `k=${karaData.kid}`}), 'single');
 	saveSetting('baseChecksum', getStoreChecksum());
 }
 

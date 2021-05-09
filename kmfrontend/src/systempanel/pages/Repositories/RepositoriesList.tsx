@@ -15,12 +15,9 @@ interface RepositoryListState {
 let timer: any;
 class RepositoryList extends Component<unknown, RepositoryListState> {
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			repositories: []
-		};
-	}
+	state = {
+		repositories: []
+	};
 
 	componentDidMount() {
 		this.refresh();
@@ -85,48 +82,43 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		dataIndex: 'Name',
 		key: 'name'
 	}, {
-		title: i18next.t('REPOSITORIES.PATH_KARAS'),
-		dataIndex: 'Path.Karas',
-		key: 'path_karas',
-		render: (text, record: Repository) => (record.Path.Karas.map(item => {
-			return <div className="pathFolders" key={item}>{item}</div>;
-		}))
-	}, {
-		title: i18next.t('REPOSITORIES.PATH_LYRICS'),
-		dataIndex: 'Path.Lyrics',
-		key: 'path_lyrics',
-		render: (text, record: Repository) => (record.Path.Lyrics.map(item => {
-			return <div className="pathFolders" key={item}>{item}</div>;
-		}))
+		title: i18next.t('REPOSITORIES.BASE_DIR'),
+		dataIndex: 'BaseDir',
+		key: 'basedir'
 	}, {
 		title: i18next.t('REPOSITORIES.PATH_MEDIAS'),
 		dataIndex: 'Path.Medias',
 		key: 'path_medias',
-		render: (text, record: Repository) => (record.Path.Medias.map(item => {
+		render: (_text, record: Repository) => (record.Path.Medias.map(item => {
 			return <div className="pathFolders" key={item}>{item}</div>;
-		}))
-	}, {
-		title: i18next.t('REPOSITORIES.PATH_TAGS'),
-		dataIndex: 'Path.Tags',
-		key: 'path_tags',
-		render: (text, record: Repository) => (record.Path.Tags.map(item => {
-			return <div key={item}>{item}</div>;
 		}))
 	}, {
 		title: i18next.t('REPOSITORIES.ONLINE'),
 		dataIndex: 'Online',
 		key: 'online',
-		render: (text, record) => (<Checkbox disabled={true} checked={record.Online} />)
+		render: (_text, record) => (<Checkbox disabled={true} checked={record.Online} />)
 	}, {
 		title: i18next.t('REPOSITORIES.ENABLED'),
 		dataIndex: 'Enabled',
 		key: 'enabled',
-		render: (text, record) => (<Checkbox disabled={true} checked={record.Enabled} />)
+		render: (_text, record) => (<Checkbox disabled={true} checked={record.Enabled} />)
 	}, {
 		title: i18next.t('REPOSITORIES.SENDSTATS'),
 		dataIndex: 'SendStats',
 		key: 'sendStats',
-		render: (text, record) => (<Checkbox disabled={true} checked={record.SendStats} />)
+		render: (_text, record) => (<Checkbox disabled={true} checked={record.SendStats} />)
+	}, {
+		title: i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS'),
+		dataIndex: 'AutoMediaDownloads',
+		key: 'autoMediaDownloads',
+		render: (_text, record) => (<Checkbox disabled={true} checked={record.AutoMediaDownloads} />)
+	}, {
+	}, {
+		title: i18next.t('REPOSITORIES.MAINTAINER_MODE'),
+		dataIndex: 'MaintainerMode',
+		key: 'maintainerMode',
+		render: (_text, record) => (<Checkbox disabled={true} checked={record.MaintainerMode} />)
+	}, {
 	}, {
 		title: <span>{i18next.t('REPOSITORIES.MOVE')}&nbsp;
 			<Tooltip title={i18next.t('REPOSITORIES.MOVE_TOOLTIP')}>

@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 import langs from 'langs';
 
 import {	addBlacklistCriteria as addBLC,
@@ -24,7 +25,7 @@ import {BLC, BLCSet, BLCSetFile} from '../types/blacklist';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {formatKaraList, getKara} from './kara';
-import {getTag} from './tag';
+import {getTag, getTags} from './tag';
 
 export async function editSet(params: BLCSet) {
 	const blcSet = await selectSet(params.blc_set_id);
@@ -140,6 +141,24 @@ export function generateBlacklist() {
 	return generateBL();
 }
 
+// Create problematic BLC set. Should be called on first run only
+export async function createProblematicBLCSet() {
+	const tags = await getTags({problematic: true});
+	const blcSetID = await addSet({
+		name: i18n.t('PROBLEMATIC_SONGS')
+	});
+	const blcs: BLC[] = [];
+
+	for (const tag of tags.content) {
+		blcs.push({
+			blc_set_id: blcSetID,
+			type: tag.types[0],
+			value: tag.tid
+		});
+	}
+	await addBlacklistCriteria(blcs, blcSetID);
+}
+
 export async function initBlacklistSystem() {
 	profile('initBL');
 	await testCurrentBLCSet();
@@ -197,7 +216,7 @@ export async function addBlacklistCriteria(BLCs: BLC[], set_id: number) {
 		return {
 			value: blc.value,
 			type: blc.type,
-			blc_set_id: set_id
+			blc_set_id: set_id || blc.blc_set_id
 		};
 	});
 	try {

@@ -327,6 +327,18 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		this.setState({ karaMenu: false });
 	}
 
+	downloadIcon = (() => {
+		// Tags in the header
+		const data = this.props.kara;
+
+		if (data.download_status === 'MISSING' && this.props.scope === 'admin') {
+			return <i className="fas fa-fw fa-cloud" title={i18next.t('KARA.MISSING_DOWNLOAD_TOOLTIP')}/>;
+		} else if (data.download_status === 'DOWNLOADING' && this.props.scope === 'admin') {
+			return <i className="fas fa-fw fa-cloud-download-alt" title={i18next.t('KARA.IN_PROGRESS_DOWNLOAD_TOOLTIP')}/>;
+		}
+		return null;
+	})();
+
 	render() {
 		const karaTitle = buildKaraTitle(this.context.globalState.settings.data, this.props.kara, false, this.props.i18nTag);
 		const karaSerieOrSingers = this.getSerieOrSingers(this.props.kara);
@@ -400,6 +412,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon"
 																					 title={i18next.t('KARA.DEJAVU_TOOLTIP')} /> : null}
 										{kara.title}
+										{this.downloadIcon}
 										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
 												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })}/> : null}
@@ -428,6 +441,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon"
 																					 title={i18next.t('KARA.DEJAVU_TOOLTIP')} /> : null}
 										{karaTitle}
+										{this.downloadIcon}
 										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
 												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })}/> : null}

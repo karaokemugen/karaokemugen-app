@@ -253,7 +253,7 @@ export default function playlistsController(router: SocketIOApp) {
 				const data = await importPlaylist(req.body.playlist, req.token.username);
 				const response = {
 					plaid: data.plaid,
-					unknownKaras: data.karasUnknown
+					unknownRepos: data.reposUnknown
 				};
 				return {code: 200, message: APIMessage('PL_IMPORTED', response)};
 			} catch(err) {

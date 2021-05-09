@@ -65,7 +65,7 @@ export async function baseChecksum(): Promise<string> {
 	profile('baseChecksum');
 	try {
 		const [karaFiles, tagFiles] = await Promise.all([
-			extractAllFiles('Karas'),
+			extractAllFiles('Karaokes'),
 			extractAllFiles('Tags')
 		]);
 		const fileCount = karaFiles.length + tagFiles.length;

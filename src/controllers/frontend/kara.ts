@@ -71,6 +71,7 @@ export default function karaController(router: SocketIOApp) {
 				q: req.body?.q,
 				token: req.token,
 				random: req.body?.random,
+				blacklist: req.body?.blacklist
 			});
 		} catch(err) {
 			const code = 'SONG_LIST_ERROR';

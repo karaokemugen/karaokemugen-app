@@ -34,6 +34,8 @@ Online:
   Remote: true
   # Fetch popular songs from remote repos ?
   FetchPopularSongs: true
+  # Disallow ALL video downloads (default true)
+  #AllowDownloads: false
 Frontend:
   # Enable previews (thumbnail) generation. Should be disabled for tests without all medias present
   GeneratePreviews: true

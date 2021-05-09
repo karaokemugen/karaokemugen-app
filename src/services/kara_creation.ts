@@ -64,7 +64,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		} else {
 			subDir = resolvedPathRepos('Lyrics', kara.repository)[0];
 		}
-		karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0];
+		karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0];
 		const karaDir = dirname(karaFile);
 
 		// Removing useless data
@@ -163,7 +163,7 @@ export async function createKara(kara: Kara) {
 		throw {code: 400, msg: err};
 	}
 	try {
-		newKara = await generateKara(kara, resolvedPathRepos('Karas', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
+		newKara = await generateKara(kara, resolvedPathRepos('Karaokes', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
 		await addKaraToStore(newKara.file);
 		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());

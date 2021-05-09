@@ -33,6 +33,7 @@ import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
 import Timeout = NodeJS.Timeout;
+import HTTP from '../lib/utils/http';
 import {getSongSeriesSingers} from '../services/kara';
 import {editSetting} from '../utils/config';
 
@@ -59,6 +60,26 @@ const playerState: PlayerState = {
 	nextSongNotifSent: false,
 	isOperating: false
 };
+
+async function resolveMediaURL(file: string, repo: string): Promise<string> {
+	const conf = getConfig();
+	let up = false;
+	let mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(file)}`;
+	// We test if the MediasHost allows us to reach a file. If not we try the song's repository.
+	if (conf.Online.MediasHost) {
+		if (await HTTP.head(mediaFile)) up = true;
+	} else {
+		mediaFile = `https://${repo}/downloads/medias/${encodeURIComponent(file)}`;
+		if (await HTTP.head(mediaFile)) up = true;
+	}
+	if (up) {
+		logger.info(`Playing media from external source : ${mediaFile}`, {service: 'Player'});
+		return mediaFile;
+	} else {
+		// If all else fails, throw up
+		throw up;
+	}
+}
 
 async function waitForLockRelease() {
 	if (playerState.isOperating) logger.debug('Waiting for lock...', {service: 'Player'});
@@ -812,7 +833,6 @@ class Players {
 	}
 
 	async play(song: CurrentSong): Promise<PlayerState> {
-		const conf = getConfig();
 		logger.debug('Play event triggered', {service: 'Player'});
 		playerState.playing = true;
 		let mediaFile: string;
@@ -837,16 +857,18 @@ class Players {
 				}),
 			resolveFileInDirs(song.mediafile, resolvedPathRepos('Medias', song.repository))
 				.then(res => mediaFile = res[0])
-				.catch(err => {
+				.catch(async (err) => {
 					logger.debug('Error while resolving media path', {service: 'Player', obj: err});
 					logger.warn(`Media NOT FOUND : ${song.mediafile}`, {service: 'Player'});
-					if (conf.Online.MediasHost) {
-						mediaFile = `${conf.Online.MediasHost}/${encodeURIComponent(song.mediafile)}`;
-						logger.info(`Trying to play media directly from the configured http source : ${conf.Online.MediasHost}`, {service: 'Player'});	onlineMedia = true;
-					} else {
-						mediaFile = '';
-						throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source)`);
-					}
+					await resolveMediaURL(song.mediafile, song.repository)
+						.then(res => {
+							onlineMedia = true;
+							mediaFile = res;
+						})
+						.catch(err => {
+							mediaFile = '';
+							throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source) : ${err}`);
+						});
 				})
 		];
 		await Promise.all<Promise<any>>(loadPromises);

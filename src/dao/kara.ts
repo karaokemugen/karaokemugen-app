@@ -5,9 +5,9 @@ import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase,DBYear } from '../lib/types/database/kara';
 import { DBPLCAfterInsert } from '../lib/types/database/playlist';
 import { Kara, KaraParams } from '../lib/types/kara';
+import { PLC } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
-import { PLC } from '../lib/types/playlist';
 import { getState } from '../utils/state';
 import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
 
@@ -57,7 +57,8 @@ export async function addKara(kara: Kara) {
 		created_at: kara.created_at,
 		kid: kara.kid,
 		repository: kara.repository,
-		mediasize: kara.mediasize
+		mediasize: kara.mediasize,
+		download_status: kara.download_status
 	}));
 }
 
@@ -76,8 +77,8 @@ export async function deleteKara(kids: string[]) {
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter) : {sql: [], params: {}, additionalFrom: []};
 	let typeClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
-	// Hide blacklisted songs if not admin
-	if (!params.ignoreBlacklist && (!params.admin || params.blacklist)) typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM blacklist)`;
+	// Hide blacklisted songs
+	if (params.blacklist) typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM blacklist)`;
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -133,7 +134,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaid,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
-		username: params.username,
+		username: params.username || 'admin',
 		...filterClauses.params
 	};
 	const res = await db().query(yesql(query)(queryParams));

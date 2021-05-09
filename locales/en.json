@@ -78,7 +78,7 @@
 	"MENU_GOTO_SYSTEM": "&System panel",
 	"MENU_TOOLS": "&Tools",
 	"MENU_TOOLS_LOGS": "&Event log",
-	"MENU_TOOLS_DOWNLOADS": "&Download songs",
+	"MENU_TOOLS_DOWNLOADS": "&Download medias",
 	"MENU_TOOLS_KARAOKES": "&Song list",
 	"MENU_TOOLS_DATABASE": "Data&base",
 	"MENU_OPTIONS": "&Options",
@@ -102,8 +102,6 @@
 	"ABOUT": {
 		"BUG_REPORT": "Report a bug"
 	},
-	"BASE_UPDATE_NEEDED": "Your song database needs an update",
-	"BASE_UPDATE_BULLDOZERSERIES": "New in version 4.0:\n\nWe changed the way series are handled. Karaoke Mugen needs to redownload your songs' metadata (not medias). Do you want to continue?\n\nIf you click No, you'll need to redownload songs yourself for them to work, or update your song database manually.\n\nDo not click Yes if you are a karaoke base maintainer.",
 	"NO_KARAOKE_MODE_ANYMORE": {
 		"TITLE": "No more karaoke modes!",
 		"MESSAGE": "New in version 4.0:\n\nThe public/private karaoke modes have disappeared! Shock! Horror! *dramatic music ensues*\n\nPlaylists can now have both public and current flag at the same time.\n\n- The current flag means the playlist is the one used by the player\n- The public flag means the playlist is th eone receiving song suggestions from your users\n\nPut simply, combine both flags on a playlist to emulate the old private mode, and create two playlists, each one with a different flag to emulate the old public mode."
@@ -165,10 +163,6 @@
 		]
 	},
 	"UNKNOWN_ARTIST": "Unknown artist",
-	"UNKNOWN_REPOSITORY_DOWNLOAD": {
-		"TITLE": "Unknown repository",
-		"MESSAGE": "This song's repository is unknown in your repository list. Do you want to add it? It'll be used for online updates/sync of your song library.\n\nIf you say no, the song will be imported in your \"Local\" repository"
-	},
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Repository already exists",
 		"MESSAGE": "The repository you're trying to add already exists in your Karaoke Mugen database."
@@ -180,10 +174,6 @@
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Unknown repository",
 		"MESSAGE": "You're about to add the {{repoName}} repository to Karaoke Mugen. Are you sure?"
-	},
-	"UNKNOWN_REPOSITORY_NO_LOCAL": {
-		"TITLE": "Local repository unavailable",
-		"MESSAGE": "No local repository exists in your configuration. Please create one before importing this song again."
 	},
 	"GENERATING_READING": "Step 1/2 - Reading data...",
 	"GENERATING_DATABASE": "Step 2/2 - Updating database...",
@@ -202,5 +192,6 @@
 	"NO_KARA_PLAYING": "No karaoke is playing",
 	"INTERFACE_OPENED": "Open",
 	"INTERFACE_RESTRICTED": "No suggestions",
-	"INTERFACE_CLOSED": "Closed"
+	"INTERFACE_CLOSED": "Closed",
+	"PROBLEMATIC_SONGS": "Problematic Songs"
 }

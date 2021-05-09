@@ -4,8 +4,6 @@ import { Migration } from 'postgrator';
 
 import {win} from '../electron/electron';
 import logger from '../lib/utils/logger';
-import { initDownloader } from '../services/download';
-import { redownloadSongs } from '../services/downloadUpdater';
 import { generateDB } from './database';
 
 export async function postMigrationTasks(migrations: Migration[], didGeneration: boolean) {
@@ -18,22 +16,6 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 		case 'initial':
 			//Initial migration will likely trigger generation anyway.
 			breakFromLoop = true;
-			break;
-		case 'bulldozerSeries':
-			// Force generation + force download of all songs present
-			if (app) {
-				const buttonIndex = await dialog.showMessageBox(win, {
-					type: 'info',
-					title: i18next.t('BASE_UPDATE_NEEDED'),
-					message: i18next.t('BASE_UPDATE_BULLDOZERSERIES'),
-					buttons: [i18next.t('YES'), i18next.t('NO')],
-					cancelId: 1
-				});
-				if (buttonIndex.response === 0) {
-					await initDownloader();
-					await redownloadSongs();
-				}
-			}
 			break;
 		case 'addPlaylistTriggers':
 			if (app) {

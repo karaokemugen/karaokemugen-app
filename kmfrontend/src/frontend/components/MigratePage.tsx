@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { MigrationsFrontend } from '../../../../src/types/database/migrationsFrontend';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { commandBackend } from '../../utils/socket';
+import BulldozerVideos from './migrations/BulldozerVideos';
 import KMOnline from './migrations/KMOnline';
 import PrivacyPolicy from './migrations/PrivacyPolicy';
 
@@ -15,7 +16,8 @@ export default function MigratePage() {
 
 	const components = {
 		privacyPolicy: PrivacyPolicy,
-		KMOnline
+		KMOnline,
+		BulldozerVideos
 	};
 
 	const history = useHistory();

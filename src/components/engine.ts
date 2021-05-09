@@ -20,15 +20,16 @@ import {getConfig, setConfig} from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
-import {emit, on} from '../lib/utils/pubsub';
+import {emit} from '../lib/utils/pubsub';
 import {initBlacklistSystem} from '../services/blacklist';
 import {initDownloader, wipeDownloadQueue} from '../services/download';
-import { downloadTestSongs, updateAllBases, updateAllMedias } from '../services/downloadUpdater';
+import { updateAllMedias } from '../services/downloadUpdater';
 import { getAllKaras, initFetchPopularSongs } from '../services/kara';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem} from '../services/playlist';
 import { initRemote } from '../services/remote';
+import { checkDownloadStatus, updateAllGitRepos } from '../services/repo';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
@@ -69,7 +70,7 @@ export async function initEngine() {
 			sentry.error(err);
 			await exit(1);
 		}
-	} else if (state.opt.mediaUpdate) {
+	} else if (state.opt.mediaUpdateAll) {
 		try {
 			initStep(i18n.t('INIT_UPDATEMEDIAS'));
 			await updateAllMedias();
@@ -106,7 +107,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_BASEUPDATE'));
-			await updateAllBases();
+			await updateAllGitRepos();
 			logger.info('Done updating karaoke base', {service: 'Engine'});
 			await exit(0);
 		} catch (err) {
@@ -187,23 +188,24 @@ export async function initEngine() {
 					handleProtocol(state.args[0].substr(5).split('/')).catch(() => {});
 				}
 			}
+			// If we are testing, we're awaiting updateAllGitRepos
 			if (state.isTest) {
-				if (state.opt.noTestDownloads && !state.opt.noAutoTest) {
-					runTests();
-				} else {
-					downloadTestSongs();
-					on('downloadQueueStatus', (status: string[]) => {
-						if (status.includes('stopped') && !state.opt.noAutoTest) runTests();
-					});
-				}
+				await updateAllGitRepos();
+			}
+			if (state.isTest && !state.opt.noAutoTest) {
+				runTests();
 			}
 			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
 			if (!state.isTest && !state.isDemo && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			if (!state.isTest && !state.isDemo) {
 				if (internet) {
 					updatePlaylistMedias().then(buildAllMediasList).catch(() => {});
+				} else {
+					buildAllMediasList().catch(() => {});
 				}
-				buildAllMediasList().catch(() => {});
+			}
+			if (!state.isTest && !state.isDemo && !conf.App.FirstRun && internet) {
+				updateAllGitRepos();
 			}
 			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
 			// Mark all migrations as done for the first run to avoid the user to have to do all the migrations from start
@@ -212,6 +214,7 @@ export async function initEngine() {
 			setState({ ready: true });
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
+			checkDownloadStatus();
 			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
@@ -320,7 +323,7 @@ async function preFlightCheck(): Promise<boolean> {
 }
 
 async function runTests() {
-	const options = ['--require', 'ts-node/register', '--require', 'test/util/hooks.ts', '--timeout',  '20000', 'test/*.ts' ];
+	const options = ['--require', 'ts-node/register', '--require', 'test/util/hooks.ts', '--timeout',  '60000', 'test/*.ts' ];
 	try {
 		const ret = await execa('mocha', options, {
 			cwd: getState().appPath
