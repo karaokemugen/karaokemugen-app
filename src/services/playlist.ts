@@ -506,8 +506,7 @@ export async function addKaraToPlaylist(kids: string|string[], requester: string
 			+playlist_id === state.currentPlaylistID &&
 			(state.player.playerStatus === 'stop' || state.randomPlaying) ) {
 			setState({ randomPlaying: false });
-			const kara = await nextSong();
-			await setPlaying(kara.playlistcontent_id, getState().currentPlaylistID);
+			await setPlaying(PLCsInserted[0].plc_id, getState().currentPlaylistID);
 			await playPlayer(true);
 		}
 		await Promise.all([

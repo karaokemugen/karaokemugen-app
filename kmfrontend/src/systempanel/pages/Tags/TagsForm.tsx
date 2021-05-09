@@ -251,7 +251,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				</Form.Item>
 
 				{this.state.i18n.map(langKey => (
-					<Row key={langKey} style={{ maxWidth: '50%', minWidth: '150px' }}>
+					<Row key={langKey} style={{ maxWidth: '65%', minWidth: '150px' }}>
 						<Col style={{ width: '80%' }}>
 							<Form.Item
 								label={getLanguagesInLocaleFromCode(langKey)}

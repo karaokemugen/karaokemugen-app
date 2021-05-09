@@ -28,7 +28,7 @@ export function setAuthorization(authorizationParam: string, onlineAuthorization
 
 export function commandBackend(name: string, body?: any, loading = false, timeout = 10000): Promise<any> {
 	const bodyWithoutpwd = { ...body };
-	bodyWithoutpwd.password = undefined;
+	if (bodyWithoutpwd.password) bodyWithoutpwd.password = undefined;
 	addBreadcrumb({
 		level: Severity.Info,
 		category: 'commandBackend',

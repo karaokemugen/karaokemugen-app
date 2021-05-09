@@ -1,4 +1,4 @@
-image: axelterizaki/karaokemugen-ci:node-12
+image: node:12-buster
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -38,6 +38,7 @@ test:
   script:
     - yarn install --check-files --force --cache-folder .yarn
     - touch mpv
+    - touch ffmpeg
     - mkdir app
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US
@@ -84,7 +85,7 @@ deploy_kmremote:
   stage: deploy
   interruptible: true
   cache: {}
-  image: minidocks/lftp
+  image: axelterizaki/karaokemugen-ci:transferts
   dependencies:
     - build-react
   needs:
@@ -102,6 +103,8 @@ deploy_kmremote:
 pkg_linux:
   stage: package
   image: electronuserland/builder:latest
+  tags:
+    - amd64
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -139,7 +142,9 @@ pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
   tags:
+# This must be run on a linux-only host. Weirdly this fails badly on Windows hosts.
     - linux
+    - amd64
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -209,7 +214,7 @@ pkg_mac:
     RESTORE_CACHE_ATTEMPTS: 10
   script:
     - rm -Rf release_mac
-    - yarn add --dev electron-builder
+    - yarn add --dev electron-builder@22.10.5
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-5.x.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
@@ -226,7 +231,7 @@ pkg_mac:
 
 deploy_mac:
   stage: deploy
-  image: minidocks/lftp
+  image: axelterizaki/karaokemugen-ci:transferts
   interruptible: true
   variables:
     GIT_STRATEGY: none
@@ -247,7 +252,7 @@ deploy_mac:
 
 deploy_linux:
   stage: deploy
-  image: minidocks/lftp
+  image: axelterizaki/karaokemugen-ci:transferts
   interruptible: true
   cache: {}
   variables:
@@ -267,7 +272,7 @@ deploy_linux:
 
 deploy_win:
   stage: deploy
-  image: minidocks/lftp
+  image: axelterizaki/karaokemugen-ci:transferts
   interruptible: true
   variables:
     GIT_STRATEGY: none

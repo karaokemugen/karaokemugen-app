@@ -5,7 +5,7 @@ import {existsSync, readFileSync} from 'fs';
 import {mkdirpSync} from 'fs-extra';
 import i18n from 'i18next';
 import cloneDeep from 'lodash.clonedeep';
-import {resolve} from 'path';
+import {dirname,resolve} from 'path';
 import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
@@ -85,12 +85,18 @@ if (process.versions.electron) {
 			: resolve(app.getAppPath(), '../../');
 		resourcePath = process.resourcesPath;
 	} else {
-		// Starting Electron from source folder
-		appPath = app.getAppPath();
-		resourcePath = appPath;
+		if (app.getAppPath().endsWith('.asar')) {
+			// Starting Electron from an asar directly (electron /path/to/app.asar)
+			appPath = dirname(app.getAppPath());
+			resourcePath = appPath;
+		} else {
+			// Starting Electron from source folder
+			appPath = app.getAppPath();
+			resourcePath = appPath;
+		}
 	}
 } else {
-	// No Electron start, so in git mode
+	// Non-electron environments (ts-node, node)
 	appPath = process.cwd();
 	resourcePath = appPath;
 }
