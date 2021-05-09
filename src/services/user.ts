@@ -87,7 +87,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	try {
 		const currentUser = await findUserByName(username);
 		if (!currentUser) throw {code: 404, msg: 'USER_NOT_EXISTS'};
-		if (currentUser.type === 2 && role !== 'admin') throw {code: 403, msg: 'Guests are not allowed to edit their profiles'};
+		if (currentUser.type === 2 && role !== 'admin') throw {code: 403, msg: 'GUESTS_CANNOT_EDIT'};
 		// If we're renaming a user, user.login is going to be set to something different than username
 		if (!opts.renameUser) user.login = username;
 		user.old_login = username;
@@ -96,14 +96,14 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.email) user.email = null;
 		if (!user.nickname) user.nickname = currentUser.nickname;
 		if (!user.series_lang_mode && user.series_lang_mode !== 0) user.series_lang_mode = -1;
-		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw {code: 400, msg: 'Invalid series_lang_mode'};
-		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw {code: 400, msg: `main_series_lang is not a valid ISO639-2B code (received ${user.main_series_lang})`};
-		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw {code: 400, msg: `fallback_series_lang is not a valid ISO639-2B code (received ${user.fallback_series_lang})`};
-		if (user.type === 0 && role !== 'admin') throw {code: 403, msg: 'Admin flag permission denied'};
+		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw {code: 400};
+		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw {code: 400};
+		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw {code: 400};
+		if (user.type === 0 && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
 		if (user.type !== 0 && !user.type) user.type = currentUser.type;
-		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'Only admins can change a user\'s type'};
+		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
 		// Check if login already exists.
-		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw {code: 409, msg: 'Nickname already exists'};
+		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw {code: 409};
 		// Tutorial done is local only, so it's not transferred from KM Server for online users, so we'll check out with currentUser.
 		if (user.flag_tutorial_done === undefined) user.flag_tutorial_done = currentUser.flag_tutorial_done;
 		if (avatar?.path) {
@@ -241,7 +241,7 @@ export function createAdminUser(user: User, remote: boolean, requester: User) {
 	if (requester.type === 0 || user.securityCode === getState().securityCode) {
 		return createUser(user, { createRemote: remote, admin: true });
 	} else {
-		throw {code: 403, msg: 'Wrong security code'};
+		throw {code: 403, msg: 'UNAUTHORIZED'};
 	}
 }
 
@@ -314,7 +314,7 @@ async function newUserIntegrityChecks(user: User) {
 export async function deleteUser(username: string) {
 	try {
 		if (username === 'admin') throw {code: 406, msg:  'USER_DELETE_ADMIN_DAMEDESU', details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
-		if (!username) throw('No user provided');
+		if (!username) throw {code: 400};
 		username = username.toLowerCase();
 		const user = await findUserByName(username);
 		if (!user) throw {code: 404, msg: 'USER_NOT_EXISTS'};

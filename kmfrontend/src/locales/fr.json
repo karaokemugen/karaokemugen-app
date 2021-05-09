@@ -1203,7 +1203,9 @@
 		"REPO_DELETE_ALL_MEDIAS_ERROR": "Erreur lors de la suppression de tous les médias du dépôt",
 		"REPO_DELETE_OLD_MEDIAS_ERROR": "Erreur lors de la supppression des médias les plus anciens du dépôt",
 		"REPO_DELETE_MEDIA_ERROR": "Erreur lors de la suppression du média",
-		"REPO_GET_FREE_SPACE_ERROR": "Erreur lors de la récupération de l'espace disponible pour le dépôt"
+		"REPO_GET_FREE_SPACE_ERROR": "Erreur lors de la récupération de l'espace disponible pour le dépôt",
+		"USER_CANNOT_CHANGE_TYPE": "Seulement les administrateurs peuvent changer le type d'un utilisateur",
+		"GUESTS_CANNOT_EDIT": "Les invités ne peuvent pas modifier leur compte"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -1251,7 +1253,8 @@
 		"STOP_AFTER": "La lecture sera arrêtée à la fin de la chanson. Cliquez une seconde fois sur le bouton pour arrêter immédiatement.",
 		"REPO_ALL_MEDIAS_DELETED": "Suppression avec succès de tous les médias du dépôt",
 		"REPO_OLD_MEDIAS_DELETED": "Suppression avec succès des médias les plus anciens du dépôt",
-		"REPO_MEDIA_DELETED": "Media supprimé avec succès"
+		"REPO_MEDIA_DELETED": "Media supprimé avec succès",
+		"USER_RESETPASSWORD_SUCCESS": "Mot de passe de l'utilisateur réinitialisé avec succès"
 	},
 	"HEADERS": {
 		"HOME": {

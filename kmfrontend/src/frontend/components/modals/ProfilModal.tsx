@@ -186,7 +186,7 @@ class ProfilModal extends Component<IProps, IState> {
 
 	deleteAccount = () => {
 		callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE'), i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE_WARN'), async () => {
-			await commandBackend('deleteMyUser');
+			await commandBackend('deleteMyAccount');
 			logout(this.context.globalDispatch);
 		});
 	}

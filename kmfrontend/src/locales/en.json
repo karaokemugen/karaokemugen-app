@@ -1201,7 +1201,9 @@
 		"REPO_DELETE_ALL_MEDIAS_ERROR": "Error when deleting all medias from repository",
 		"REPO_DELETE_OLD_MEDIAS_ERROR": "Error when deleting older medias from repository",
 		"REPO_DELETE_MEDIA_ERROR": "Error when deleting media",
-		"REPO_GET_FREE_SPACE_ERROR": "Error when getting free space for repository"
+		"REPO_GET_FREE_SPACE_ERROR": "Error when getting free space for repository",
+		"USER_CANNOT_CHANGE_TYPE": "Only admins can change a user's type",
+		"GUESTS_CANNOT_EDIT": "Guests are not allowed to edit their profiles"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -1249,7 +1251,8 @@
 		"STOP_AFTER": "The karaoke will stop at the end of the current song. To stop now, click on the button again.",
 		"REPO_ALL_MEDIAS_DELETED": "All medias from repository deleted",
 		"REPO_OLD_MEDIAS_DELETED": "Older medias from repository deleted",
-		"REPO_MEDIA_DELETED": "Media deleted"
+		"REPO_MEDIA_DELETED": "Media deleted",
+		"USER_RESETPASSWORD_SUCCESS": "User password successfully Reset"
 	},
 	"HEADERS": {
 		"HOME": {
