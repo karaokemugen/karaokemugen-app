@@ -1,6 +1,5 @@
 import './ProfilModal.scss';
 
-import languages from '@cospired/i18n-iso-languages';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
@@ -11,14 +10,12 @@ import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
+import { getListLanguagesInLocale, listCountries } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
-languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
-languages.registerLocale(require('@cospired/i18n-iso-languages/langs/fr.json'));
-
 interface IProps {
 	scope?: 'public' | 'admin';
 	closeProfileModal?: () => void;
@@ -56,7 +53,8 @@ type typesAttrUser =
 	| 'main_series_lang'
 	| 'fallback_series_lang'
 	| 'securityCode'
-	| 'passwordConfirmation';
+	| 'passwordConfirmation'
+	| 'location';
 
 class ProfilModal extends Component<IProps, IState> {
 	static contextType = GlobalContext;
@@ -93,7 +91,7 @@ class ProfilModal extends Component<IProps, IState> {
 		this.setState({ user: user });
 	};
 
-	changeLanguageFallback = (name: 'main_series_lang' | 'fallback_series_lang', value: string) => {
+	changeAutocomplete = (name: 'main_series_lang' | 'fallback_series_lang' | 'location', value: string) => {
 		const user = this.state.user;
 		user[name] = value;
 		this.setState({ user: user });
@@ -145,7 +143,7 @@ class ProfilModal extends Component<IProps, IState> {
 				callModal(this.context.globalDispatch, 'confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', async (confirm: boolean) => {
 					if (confirm) {
 						const data = { favorites: JSON.parse(fr['result'] as string) };
-						const response = await commandBackend('importFavorites', data);
+						await commandBackend('importFavorites', data);
 					}
 				});
 			};
@@ -211,10 +209,7 @@ class ProfilModal extends Component<IProps, IState> {
 
 	render() {
 		const logInfos = this.context?.globalState.auth.data;
-		const listLangs = [];
-		for (const [key, value] of Object.entries(languages.getNames(i18next.languages[0]))) {
-			listLangs.push({ 'label': value, 'value': languages.alpha2ToAlpha3B(key) });
-		}
+		
 		if (!this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username.includes('@')) {
 			setTimeout(function () {
 				displayMessage('warning', <div><label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br /> {i18next.t('LOG_OFFLINE.MESSAGE')}</div>, 8000);
@@ -298,6 +293,16 @@ class ProfilModal extends Component<IProps, IState> {
 									placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
 							</div>
+							<div className="profileLine row">
+								<label className="col-xs-6 control-label">{i18next.t('MODAL.PROFILE_MODAL.LOCATION')}</label>
+								<div className="col-xs-6">
+									<Autocomplete
+										value={this.state.user.location}
+										options={listCountries()}
+										forceTop={true}
+										onChange={(value) => this.changeAutocomplete('location', value)} />
+								</div>
+							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-lock" />
@@ -305,12 +310,12 @@ class ProfilModal extends Component<IProps, IState> {
 								</div>
 								<div className="dualInput">
 									<input className={this.state.passwordDifferent} name="password" type="password"
-										   placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
-										   onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
+										placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
 									<input className={this.state.passwordDifferent}
-										   name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
-										   defaultValue={this.state.user.passwordConfirmation}
-										   onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
+										name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
+										defaultValue={this.state.user.passwordConfirmation}
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
 								</div>
 							</div>
 							<div className="profileLine">
@@ -344,15 +349,21 @@ class ProfilModal extends Component<IProps, IState> {
 									<div className="profileLine row">
 										<label className="col-xs-6 control-label">{i18next.t('MAIN_SERIES_LANG')}</label>
 										<div className="col-xs-6">
-											<Autocomplete value={this.state.user.main_series_lang} options={listLangs} forceTop={true}
-														  onChange={(value) => this.changeLanguageFallback('main_series_lang', value)} />
+											<Autocomplete
+												value={this.state.user.main_series_lang}
+												options={getListLanguagesInLocale()}
+												forceTop={true}
+												onChange={(value) => this.changeAutocomplete('main_series_lang', value)} />
 										</div>
 									</div>
 									<div className="profileLine row">
 										<label className="col-xs-6 control-label">{i18next.t('FALLBACK_SERIES_LANG')}</label>
 										<div className="col-xs-6">
-											<Autocomplete value={this.state.user.fallback_series_lang} options={listLangs} forceTop={true}
-														  onChange={(value) => this.changeLanguageFallback('fallback_series_lang', value)} />
+											<Autocomplete
+												value={this.state.user.fallback_series_lang}
+												options={getListLanguagesInLocale()}
+												forceTop={true}
+												onChange={(value) => this.changeAutocomplete('fallback_series_lang', value)} />
 										</div>
 									</div>
 								</React.Fragment> : null

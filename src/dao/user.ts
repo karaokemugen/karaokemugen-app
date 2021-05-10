@@ -61,7 +61,8 @@ export function editUser(user: User) {
 		series_lang_mode: user.series_lang_mode,
 		main_series_lang: user.main_series_lang,
 		fallback_series_lang: user.fallback_series_lang,
-		flag_tutorial_done: user.flag_tutorial_done || false
+		flag_tutorial_done: user.flag_tutorial_done || false,
+		location: user.location
 	}));
 }
 
