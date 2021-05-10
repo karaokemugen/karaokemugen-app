@@ -20,8 +20,9 @@ import logger, {profile} from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
-import { getAllKaras } from './kara';
+import { getAllKaras, getKaras } from './kara';
 import { editKara } from './kara_creation';
+import { refreshKarasAfterDBChange } from './karaManagement';
 import { getRepo } from './repo';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
@@ -186,6 +187,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		subtext: tagObj.name
 	});
 	try {
+		profile('editTag');
 		const oldTag = await getTagMini(tid);
 		if (!oldTag) throw {code: 404, msg: 'Tag ID unknown'};
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository) throw {code: 409, msg: 'Tag repository cannot be modified. Use copy function instead'};
@@ -225,8 +227,19 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opts.refresh) {
+			const karaPromises = [];
+			for (const type of oldTag.types) {
+				karaPromises.push(getKaras({
+					q: `t:${tid}~${type}`
+				}));
+			}
+			const karas: KaraList[] = await Promise.all(karaPromises);
+			let karasToUpdate: string[];
+			for (const karaList of karas) {
+				karasToUpdate = [].concat(karasToUpdate, karaList.content.map(k => k.kid));
+			}
 			await updateTagSearchVector();
-			await refreshKaras();
+			await refreshKarasAfterDBChange('UPDATE', karasToUpdate);
 			refreshTags();
 		}
 	} catch(err) {
@@ -234,6 +247,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		sentry.error(err);
 		throw err;
 	} finally {
+		profile('editTag');
 		if (!opts.silent) task.end();
 	}
 }

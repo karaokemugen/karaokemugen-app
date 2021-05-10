@@ -44,7 +44,7 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	emitWS('statsRefresh');
 	await updateTags(kara);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('ADD', kara.kid, true);
+		await refreshKarasAfterDBChange('ADD', [kara.kid], true);
 		generateBlacklist();
 	}
 	checkDownloadStatus([kara.kid]);
@@ -58,7 +58,7 @@ export async function editKaraInDB(kara: Kara, opts = {
 	if (kara.newTags) promises.push(updateTags(kara));
 	await Promise.all(promises);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('UPDATE', kara.kid, kara.newTags);
+		await refreshKarasAfterDBChange('UPDATE', [kara.kid], kara.newTags);
 		generateBlacklist();
 	}
 	checkDownloadStatus([kara.kid]);
@@ -206,16 +206,16 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 	}
 }
 
-export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', kid?: string, newTags?: boolean) {
+export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', kids?: string[], newTags?: boolean) {
 	profile('RefreshAfterDBChange');
 	logger.debug('Refreshing DB after kara change', {service: 'DB'});
-	await updateKaraSearchVector(kid);
+	await updateKaraSearchVector(kids);
 	if (action === 'ADD') {
-		await refreshKarasInsert(kid);
+		await refreshKarasInsert(kids);
 	} else if (action === 'UPDATE') {
-		await refreshKarasUpdate(kid);
+		await refreshKarasUpdate(kids);
 	} else if (action === 'DELETE') {
-		await refreshKarasDelete([kid]);
+		await refreshKarasDelete(kids);
 	} else if (action === 'ALL') {
 		await refreshKaras();
 	}
