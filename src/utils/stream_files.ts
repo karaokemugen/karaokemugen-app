@@ -35,16 +35,16 @@ async function writeURL() {
 async function writeFrontendStatus() {
 	let output: string;
 	switch (getConfig().Frontend.Mode) {
-	case 2:
-		output = 'INTERFACE_OPENED';
-		break;
-	case 1:
-		output = 'INTERFACE_RESTRICTED';
-		break;
-	case 0:
-	default:
-		output = 'INTERFACE_CLOSED';
-		break;
+		case 2:
+			output = 'INTERFACE_OPENED';
+			break;
+		case 1:
+			output = 'INTERFACE_RESTRICTED';
+			break;
+		case 0:
+		default:
+			output = 'INTERFACE_CLOSED';
+			break;
 	}
 	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'frontend_status.txt'), i18next.t(output), 'utf-8');
 }

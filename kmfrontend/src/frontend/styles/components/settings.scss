@@ -37,7 +37,7 @@
 			display: flex;
 			flex-direction: column;
 			align-items: flex-end;
-		
+
 			> div {
 				margin: 0.2em;
 				button {
@@ -100,12 +100,6 @@
 
 .systempanel-tooltip {
 	text-align: center;
-	a {
-		color: unset;
-		&:visited {
-			color: unset;
-		}
-	}
 	padding: 1em;
 }
 

@@ -62,7 +62,7 @@ export default function blacklistController(router: SocketIOApp) {
 			await addBlacklistCriteria(req.body.blcs, req.body.set_id);
 			return {code: 201, message: APIMessage('BLC_CREATED')};
 		} catch(err) {
-			const code = 'BLC_ADD_ERROR';
+			const code = typeof err?.msg === 'object' ? err.msg.code:'BLC_ADD_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}

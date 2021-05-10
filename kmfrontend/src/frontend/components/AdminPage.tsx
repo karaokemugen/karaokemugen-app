@@ -3,12 +3,13 @@ import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
 
 import { DBYear } from '../../../../src/lib/types/database/kara';
+import {DBBlacklist} from '../../../../src/types/database/blacklist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { getNavigatorLanguageIn3B } from '../../utils/isoLanguages';
 import { commandBackend, getSocket } from '../../utils/socket';
-import {displayMessage, nonStandardPlaylists} from '../../utils/tools';
+import {decodeBlacklistingReason, displayMessage, nonStandardPlaylists} from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import { Tag } from '../types/tag';
 import AdminHeader from './AdminHeader';
@@ -164,12 +165,10 @@ class AdminPage extends Component<IProps, IState> {
 			plaid: '4398bed2-e272-47f5-9dd9-db7240e8557e',
 			name: i18next.t('PLAYLIST_BLACKLIST')
 		});
-
 		playlistList.push({
 			plaid: '91a9961a-8863-48a5-b9d0-fc4c1372a11a',
 			name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
 		});
-
 		playlistList.push({
 			plaid: '4c5dbb18-278b-448e-9a1f-8cf5f1e24dc7',
 			name: i18next.t('PLAYLIST_WHITELIST')
@@ -186,9 +185,13 @@ class AdminPage extends Component<IProps, IState> {
 		this.setState({ playlistList: playlistList });
 	};
 
-	toggleKaraDetail = (kara: KaraElement, idPlaylist: string) => {
+	toggleKaraDetail = async (kara: KaraElement, idPlaylist: string) => {
+		let reason;
+		if (Object.keys(kara).includes('reason')) {
+			reason = await decodeBlacklistingReason((kara as unknown as DBBlacklist).reason);
+		}
 		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope='admin'
-			plaid={idPlaylist} />);
+			plaid={idPlaylist} blcLabel={reason} />);
 	};
 
 	render() {

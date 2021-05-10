@@ -5,7 +5,6 @@ import i18n from 'i18next';
 import internetAvailable from 'internet-available';
 import logger from 'winston';
 
-import { generateBlacklist } from '../dao/blacklist';
 import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
@@ -21,7 +20,7 @@ import { duration } from '../lib/utils/date';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import {emit} from '../lib/utils/pubsub';
-import {initBlacklistSystem} from '../services/blacklist';
+import { generateBlacklist, initBlacklistSystem } from '../services/blacklist';
 import {initDownloader, wipeDownloadQueue} from '../services/download';
 import { updateAllMedias } from '../services/downloadUpdater';
 import { getKaras, initFetchPopularSongs } from '../services/kara';

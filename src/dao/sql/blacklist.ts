@@ -72,7 +72,7 @@ FROM blacklist_criteria_set
 
 export const sqlgenerateBlacklist = `
 INSERT INTO blacklist (fk_kid, created_at, reason, fk_id_blcriteria)
-	SELECT kt.fk_kid, now() ,'Blacklisted Tag : ' || t.name || ' (type ' || blc.type || ')', blc.pk_id_blcriteria
+	SELECT kt.fk_kid, now() , 'TAG:' || t.pk_tid || ':' || blc.type, blc.pk_id_blcriteria
 	FROM blacklist_criteria AS blc
 	INNER JOIN tag t ON t.types @> ARRAY[blc.type] AND blc.value = t.pk_tid::varchar
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid AND kt.type = blc.type
@@ -80,40 +80,47 @@ INSERT INTO blacklist (fk_kid, created_at, reason, fk_id_blcriteria)
 		AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
 		AND   fk_id_blc_set = $1
 UNION
-	SELECT kt.fk_kid, now() ,'Blacklisted Tag by name : ' || blc.value, blc.pk_id_blcriteria
+	SELECT k.pk_kid, now() ,'YEAR:' || blc.value, blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
-	INNER JOIN tag t ON unaccent(t.name) LIKE ('%' || blc.value || '%')
-	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
+ 	INNER JOIN kara k ON k.year = blc.value::smallint
 	WHERE blc.type = 0
-	AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
+	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 	AND   fk_id_blc_set = $1
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Song manually', blc.pk_id_blcriteria
+	SELECT k.pk_kid, now() ,'KID', blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN kara k ON k.pk_kid = blc.value::uuid
 	WHERE blc.type = 1001
 	AND   blc.value::uuid NOT IN (select fk_kid from whitelist)
 	AND   fk_id_blc_set = $1
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Song longer than ' || blc.value || ' seconds', blc.pk_id_blcriteria
+	SELECT k.pk_kid, now() ,'LONGER:' || blc.value, blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN kara k on k.duration >= blc.value::integer
 	WHERE blc.type = 1002
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 	AND   fk_id_blc_set = $1
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Song shorter than ' || blc.value || ' seconds', blc.pk_id_blcriteria
+	SELECT k.pk_kid, now() ,'SHORTER:' || blc.value, blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN kara k on k.duration <= blc.value::integer
 	WHERE blc.type = 1003
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 	AND   fk_id_blc_set = $1
 UNION
-	SELECT k.pk_kid, now() ,'Blacklisted Title by name : ' ||  blc.value, blc.pk_id_blcriteria
+	SELECT k.pk_kid, now() ,'TITLE:' || blc.value, blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
 	INNER JOIN kara k ON unaccent(k.title) LIKE ('%' || blc.value || '%')
 	WHERE blc.type = 1004
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
+	AND   fk_id_blc_set = $1
+UNION
+	SELECT kt.fk_kid, now() ,'TAG_NAME:' || blc.value, blc.pk_id_blcriteria
+	FROM blacklist_criteria blc
+	INNER JOIN tag t ON unaccent(t.name) ILIKE ('%' || unaccent(blc.value) || '%')
+	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
+	WHERE blc.type = 1005
+	AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
 	AND   fk_id_blc_set = $1
 ON CONFLICT DO NOTHING;
 `;
@@ -140,7 +147,7 @@ DELETE FROM blacklist_criteria
 WHERE pk_id_blcriteria = $1
 `;
 
-export const sqlgetBlacklistContents = (filterClauses: string[], limitClause: string, offsetClause: string) => `
+export const sqlgetBlacklistContents = (filterClauses: string[], limitClause: string, offsetClause: string, additionalFrom: string[]) => `
 SELECT
   ak.pk_kid AS kid,
   ak.title AS title,
@@ -170,6 +177,7 @@ SELECT
   FROM all_karas AS ak
   INNER JOIN blacklist AS bl ON bl.fk_kid = ak.pk_kid
   LEFT JOIN blacklist_criteria AS blc ON blc.pk_id_blcriteria = bl.fk_id_blcriteria
+  ${additionalFrom.join('')}
   WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))

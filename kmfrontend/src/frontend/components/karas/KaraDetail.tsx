@@ -30,6 +30,7 @@ interface IProps {
 	kid: string | undefined;
 	scope: string;
 	plaid?: string;
+	blcLabel?: string;
 	playlistcontentId?: number;
 	closeOnPublic?: () => void;
 	changeView?: (
@@ -317,6 +318,12 @@ class KaraDetail extends Component<IProps, IState> {
 			const playTime = data.time_before_play > 0 ? new Date(Date.now() + data.time_before_play * 1000): null;
 			const details = (
 				<React.Fragment>
+					{this.props.blcLabel ? <div className="detailsKaraLine">
+						<span>
+							<i className="fas fa-fw fa-ban" />
+							{this.props.blcLabel}
+						</span>
+					</div>:null}
 					<div className="detailsKaraLine timeData">
 						<span>
 							<i className="fas fa-fw fa-clock" />

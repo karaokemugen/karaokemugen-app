@@ -121,24 +121,24 @@ export async function isUserAllowedToAddKara(plaid: string, user: User, duration
 		if (+conf.Karaoke.Quota.Type === 0) return true;
 		let limit: number;
 		switch(+conf.Karaoke.Quota.Type) {
-		case 2:
-			limit = conf.Karaoke.Quota.Time;
-			let time = await getSongTimeSpentForUser(plaid,user.login);
-			if (!time) time = 0;
-			if ((limit - time - duration) < 0) {
-				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`, {service: 'PLC'});
-				return false;
-			}
-			return true;
-		case 1:
-		default:
-			limit = conf.Karaoke.Quota.Songs;
-			const count = await getSongCountForUser(plaid,user.login);
-			if (count >= limit) {
-				logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit})`, {service: 'PLC'});
-				return false;
-			}
-			return true;
+			case 2:
+				limit = conf.Karaoke.Quota.Time;
+				let time = await getSongTimeSpentForUser(plaid,user.login);
+				if (!time) time = 0;
+				if ((limit - time - duration) < 0) {
+					logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`, {service: 'PLC'});
+					return false;
+				}
+				return true;
+			case 1:
+			default:
+				limit = conf.Karaoke.Quota.Songs;
+				const count = await getSongCountForUser(plaid,user.login);
+				if (count >= limit) {
+					logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit})`, {service: 'PLC'});
+					return false;
+				}
+				return true;
 		}
 	} catch(err) {
 		sentry.error(err);

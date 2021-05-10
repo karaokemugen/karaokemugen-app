@@ -8,6 +8,13 @@ body {
 	color: white;
 }
 
+a {
+	color: unset;
+	&:visited {
+		color: unset;
+	}
+}
+
 // Our stylesheet
 @import 'styles/components/buttons';
 @import 'styles/components/dropdowns';

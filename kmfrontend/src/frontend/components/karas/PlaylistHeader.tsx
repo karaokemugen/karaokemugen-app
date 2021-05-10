@@ -2,6 +2,7 @@ import './PlaylistHeader.scss';
 
 import i18next from 'i18next';
 import React, { Component, MouseEvent as MouseEventReact } from 'react';
+import { Trans } from 'react-i18next';
 
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { User } from '../../../../../src/lib/types/user';
@@ -388,7 +389,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 			this.props.plaid !== nonStandardPlaylists.blc ?
 				<div className="actionDiv">
 					<div className="btn-group">
-						{this.props.plaid !== nonStandardPlaylists.blc && this.props.plaid !== nonStandardPlaylists.blacklist ?
+						{this.props.plaid !== nonStandardPlaylists.blc ?
 							<React.Fragment>
 								<button
 									title={i18next.t('ADVANCED.SELECT_ALL')}
@@ -680,6 +681,15 @@ class PlaylistHeader extends Component<IProps, IState> {
 				{this.props.searchMenuOpen ?
 					searchMenu : null
 				}
+				{this.props.plaid === nonStandardPlaylists.blacklist ?
+					<p className="playlist-tooltip">
+						<Trans
+							i18nKey="BLACKLIST.EXPL"
+							components={{1: <a href="#" onClick={() => this.props.changeIdPlaylist(nonStandardPlaylists.blc)}/>}}
+							defaults=""
+						/>
+					</p>
+					:null}
 			</React.Fragment>
 		);
 	}

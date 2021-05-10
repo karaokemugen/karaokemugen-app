@@ -118,41 +118,41 @@ export async function handleProtocol(args: string[]) {
 		logger.info(`Received protocol uri km://${args.join('/')}`, {service: 'ProtocolHandler'});
 		if (!getState().ready) return;
 		switch(args[0]) {
-		case 'addRepo':
-			const repoName = args[1];
-			const repo = getRepo(repoName);
-			if (!repo) {
-				const buttons = await dialog.showMessageBox({
-					type: 'none',
-					title: i18next.t('UNKNOWN_REPOSITORY_ADD.TITLE'),
-					message: `${i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE', {repoName: repoName})}`,
-					buttons: [i18next.t('YES'), i18next.t('NO')],
-				});
-				if (buttons.response === 0) {
-					await addRepo({
-						Name: repoName,
-						Online: true,
-						Enabled: true,
-						SendStats: false,
-						AutoMediaDownloads: false,
-						MaintainerMode: false,
-						Git: null,
-						BaseDir: `repos/${repoName}`,
-						Path: {
-							Medias: [`repos/${repoName}/medias`]
-						}
+			case 'addRepo':
+				const repoName = args[1];
+				const repo = getRepo(repoName);
+				if (!repo) {
+					const buttons = await dialog.showMessageBox({
+						type: 'none',
+						title: i18next.t('UNKNOWN_REPOSITORY_ADD.TITLE'),
+						message: `${i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE', {repoName: repoName})}`,
+						buttons: [i18next.t('YES'), i18next.t('NO')],
+					});
+					if (buttons.response === 0) {
+						await addRepo({
+							Name: repoName,
+							Online: true,
+							Enabled: true,
+							SendStats: false,
+							AutoMediaDownloads: false,
+							MaintainerMode: false,
+							Git: null,
+							BaseDir: `repos/${repoName}`,
+							Path: {
+								Medias: [`repos/${repoName}/medias`]
+							}
+						});
+					}
+				} else {
+					await dialog.showMessageBox({
+						type: 'none',
+						title: i18next.t('REPOSITORY_ALREADY_EXISTS.TITLE'),
+						message: `${i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE', {repoName: repoName})}`
 					});
 				}
-			} else {
-				await dialog.showMessageBox({
-					type: 'none',
-					title: i18next.t('REPOSITORY_ALREADY_EXISTS.TITLE'),
-					message: `${i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE', {repoName: repoName})}`
-				});
-			}
-			break;
-		default:
-			throw 'Unknown protocol';
+				break;
+			default:
+				throw 'Unknown protocol';
 		}
 	} catch(err) {
 		logger.error(`Unknown command : ${args.join('/')}`, {service: 'ProtocolHandler'});
@@ -182,44 +182,44 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 		const KMFileType = detectKMFileTypes(data);
 		const url = `http://localhost:${getConfig().Frontend.Port}/admin`;
 		switch(KMFileType) {
-		case 'Karaoke Mugen BLC Set File':
-			await importSet(data);
-			if (win && !win.webContents.getURL().includes('/admin')) {
-				win.loadURL(url);
-				win.webContents.on('did-finish-load', () => emitWS('BLCSetsUpdated'));
-			} else {
-				emitWS('BLCSetsUpdated');
-			}
-			break;
-		case 'Karaoke Mugen Favorites List File':
-			if (!username) throw 'Unable to find a user to import the file to';
-			await importFavorites(data, username, onlineToken);
-			if (win && !win.webContents.getURL().includes('/admin')) {
-				win.loadURL(url);
-				win.webContents.on('did-finish-load', () => emitWS('favoritesUpdated', username));
-			} else {
-				emitWS('favoritesUpdated', username);
-			}
-			break;
-		case 'Karaoke Mugen Karaoke Data File':
-			const kara = await isAllKaras([data.data.kid]);
-			if (kara.length > 0) throw 'Song unknown in database';
-			await playSingleSong(data.data.kid);
-			if (win && !win.webContents.getURL().includes('/admin')) win.loadURL(url);
-			break;
-		case 'Karaoke Mugen Playlist File':
-			if (!username) throw 'Unable to find a user to import the file to';
-			const res = await importPlaylist(data, username);
-			if (win && !win.webContents.getURL().includes('/admin')) {
-				win.loadURL(url);
-				win.webContents.on('did-finish-load', () => playlistImported(res));
-			} else {
-				playlistImported(res);
-			}
-			break;
-		default:
-			//Unrecognized, ignoring
-			throw 'Filetype not recognized';
+			case 'Karaoke Mugen BLC Set File':
+				await importSet(data);
+				if (win && !win.webContents.getURL().includes('/admin')) {
+					win.loadURL(url);
+					win.webContents.on('did-finish-load', () => emitWS('BLCSetsUpdated'));
+				} else {
+					emitWS('BLCSetsUpdated');
+				}
+				break;
+			case 'Karaoke Mugen Favorites List File':
+				if (!username) throw 'Unable to find a user to import the file to';
+				await importFavorites(data, username, onlineToken);
+				if (win && !win.webContents.getURL().includes('/admin')) {
+					win.loadURL(url);
+					win.webContents.on('did-finish-load', () => emitWS('favoritesUpdated', username));
+				} else {
+					emitWS('favoritesUpdated', username);
+				}
+				break;
+			case 'Karaoke Mugen Karaoke Data File':
+				const kara = await isAllKaras([data.data.kid]);
+				if (kara.length > 0) throw 'Song unknown in database';
+				await playSingleSong(data.data.kid);
+				if (win && !win.webContents.getURL().includes('/admin')) win.loadURL(url);
+				break;
+			case 'Karaoke Mugen Playlist File':
+				if (!username) throw 'Unable to find a user to import the file to';
+				const res = await importPlaylist(data, username);
+				if (win && !win.webContents.getURL().includes('/admin')) {
+					win.loadURL(url);
+					win.webContents.on('did-finish-load', () => playlistImported(res));
+				} else {
+					playlistImported(res);
+				}
+				break;
+			default:
+				//Unrecognized, ignoring
+				throw 'Filetype not recognized';
 		}
 	} catch(err) {
 		logger.error(`Could not handle ${file}`, {service: 'Electron', obj: err});

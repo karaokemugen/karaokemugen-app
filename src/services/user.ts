@@ -535,15 +535,15 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 	if (!plaid) plaid = getState().publicPlaid;
 	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 		switch(+conf.Karaoke.Quota.Type) {
-		case 2:
-			const time = await getSongTimeSpentForUser(plaid,username);
-			quotaLeft = +conf.Karaoke.Quota.Time - time;
-			break;
-		default:
-		case 1:
-			const count = await getSongCountForUser(plaid, username);
-			quotaLeft = +conf.Karaoke.Quota.Songs - count;
-			break;
+			case 2:
+				const time = await getSongTimeSpentForUser(plaid,username);
+				quotaLeft = +conf.Karaoke.Quota.Time - time;
+				break;
+			default:
+			case 1:
+				const count = await getSongCountForUser(plaid, username);
+				quotaLeft = +conf.Karaoke.Quota.Songs - count;
+				break;
 		}
 	} else {
 		quotaLeft = -1;

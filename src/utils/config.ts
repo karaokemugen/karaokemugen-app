@@ -242,33 +242,33 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 /** Return all configured paths for binaries */
 function configuredBinariesForSystem(config: Config): BinariesConfig {
 	switch (process.platform) {
-	case 'win32':
-		return {
-			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Windows),
-			mpv: resolve(getState().appPath, config.System.Binaries.Player.Windows),
-			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Windows),
-			postgres_ctl: 'pg_ctl.exe',
-			postgres_dump: 'pg_dump.exe',
-			postgres_client: 'psql.exe'
-		};
-	case 'darwin':
-		return {
-			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.OSX),
-			mpv: resolve(getState().appPath, config.System.Binaries.Player.OSX),
-			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.OSX),
-			postgres_ctl: 'pg_ctl',
-			postgres_dump: 'pg_dump',
-			postgres_client: 'psql'
-		};
-	default:
-		return {
-			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
-			mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
-			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
-			postgres_ctl: 'pg_ctl',
-			postgres_dump: 'pg_dump',
-			postgres_client: 'psql'
-		};
+		case 'win32':
+			return {
+				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Windows),
+				mpv: resolve(getState().appPath, config.System.Binaries.Player.Windows),
+				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Windows),
+				postgres_ctl: 'pg_ctl.exe',
+				postgres_dump: 'pg_dump.exe',
+				postgres_client: 'psql.exe'
+			};
+		case 'darwin':
+			return {
+				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.OSX),
+				mpv: resolve(getState().appPath, config.System.Binaries.Player.OSX),
+				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.OSX),
+				postgres_ctl: 'pg_ctl',
+				postgres_dump: 'pg_dump',
+				postgres_client: 'psql'
+			};
+		default:
+			return {
+				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
+				mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
+				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
+				postgres_ctl: 'pg_ctl',
+				postgres_dump: 'pg_dump',
+				postgres_client: 'psql'
+			};
 	}
 }
 

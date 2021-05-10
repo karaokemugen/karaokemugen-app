@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
-import {nonStandardPlaylists} from '../../../utils/tools';
+import { nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 
 interface IProps {
@@ -59,11 +59,12 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{this.props.plaid !== nonStandardPlaylists.favorites && ((this.props.scope === 'admin' && this.props.plaid !== nonStandardPlaylists.library && !(this.props.flag_public
-					&& this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid))
-					|| (this.props.scope !== 'admin' && !this.props.kara?.flag_dejavu && !this.props.kara?.flag_playing
-						&& (this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]
-							|| (this.props.flag_public && this.props.kara.username === this.context.globalState.auth.data.username)))) ?
+				{this.props.plaid !== nonStandardPlaylists.favorites
+					&& ((this.props.scope === 'admin' && this.props.plaid !== nonStandardPlaylists.library && !(this.props.isHeader && nonStandardPlaylists.blacklist)
+						&& !(this.props.flag_public && this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid))
+						|| (this.props.scope !== 'admin' && !this.props.kara?.flag_dejavu && !this.props.kara?.flag_playing
+							&& (this.props.kara?.my_public_plc_id && this.props.kara?.my_public_plc_id[0]
+								|| (this.props.flag_public && this.props.kara.username === this.context.globalState.auth.data.username)))) ?
 					<button title={i18next.t(this.props.isHeader ? 'TOOLTIP_DELETE_SELECT_KARA' : 'TOOLTIP_DELETEKARA')}
 						disabled={this.props?.checkedKaras === 0}
 						className={classValue} onClick={this.props.deleteKara}>
@@ -78,8 +79,9 @@ class ActionsButtons extends Component<IProps, unknown> {
 					</button> : null
 				}
 
-				{(this.props.scope === 'admin' && this.props.plaidTo !== nonStandardPlaylists.library && this.props.plaidTo !== nonStandardPlaylists.favorites && !(this.props.flag_public
-					&& this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid))
+				{(this.props.scope === 'admin' && this.props.plaidTo !== nonStandardPlaylists.library
+					&& this.props.plaidTo !== nonStandardPlaylists.favorites
+					&& !(this.props.flag_public && this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid))
 					|| (this.props.scope === 'public' && this.props.plaid !== this.context.globalState.settings.data.state.publicPlaid
 						&& this.props.plaid !== this.context.globalState.settings.data.state.currentPlaid
 						&& (!this.props.kara?.public_plc_id || !this.props.kara?.public_plc_id[0])) ?
