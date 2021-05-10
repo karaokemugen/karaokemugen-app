@@ -484,6 +484,11 @@ class SetupPage extends Component<IProps, IState> {
 																onChange={(event) =>
 																	this.setState({ password: event.target.value })
 																}
+																onKeyUp={(e) => {
+																	if (e.code === 'Enter') {
+																		this.login();
+																	}
+																}}
 															/>
 														</div>
 													</div>
