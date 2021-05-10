@@ -316,7 +316,7 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-star" />
-									<label htmlFor="nickname">Favoris</label>
+									<label htmlFor="nickname">{i18next.t('PLAYLIST_FAVORITES')}</label>
 								</div>
 								<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
 									<i className="fas fa-fw fa-download" /> {i18next.t('FAVORITES_IMPORT')}
@@ -329,7 +329,7 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine row">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-globe" />
-									<label htmlFor="nickname">Affichage des noms de séries</label>
+									<label htmlFor="nickname">{i18next.t('SERIE_NAME_MODE')}</label>
 								</div>
 								<select name="series_lang_mode" onChange={this.onClickSelect}
 									defaultValue={this.state.user.series_lang_mode.toString()}>
@@ -367,8 +367,8 @@ class ProfilModal extends Component<IProps, IState> {
 								</button>
 								<button type="button" className="btn btn-danger profileDelete" onClick={() => this.setState({ dangerousActions: !this.state.dangerousActions })}>
 									<i className="fas fa-fw fa-exclamation-triangle" />
-									Actions dangereuses
-									<i className={`fas fa-fw ${this.state.dangerousActions ? 'fa-chevron-left':'fa-chevron-right'}`} />
+									{i18next.t('MODAL.PROFILE_MODAL.DANGEROUS_ACTIONS')}
+									<i className={`fas fa-fw ${this.state.dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'}`} />
 								</button>
 								{this.state.dangerousActions ? <div>
 									{this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username !== 'admin' ?
