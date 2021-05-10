@@ -74,7 +74,7 @@ export async function migrateReposToGit() {
 	for (const repo of repos) {
 		// Determine basedir by going up one folder
 		const git = new GitInstance({
-			dir: resolve(getState().dataPath, repo.Path.Karas, '..'),
+			dir: resolve(getState().dataPath, repo.Path.Karas[0], '..'),
 			url: null,
 			branch: null,
 			repo: repo.Name
