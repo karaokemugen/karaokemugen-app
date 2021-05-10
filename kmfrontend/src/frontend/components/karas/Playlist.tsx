@@ -74,6 +74,7 @@ interface IState {
 	songsBeforeSponsor?: number;
 	goToPlaying?: boolean;
 	_goToPlaying?: boolean; // Avoid scroll event trigger
+	selectAllKarasChecked: boolean;
 }
 
 interface KaraList {
@@ -106,7 +107,8 @@ class Playlist extends Component<IProps, IState> {
 			orderByLikes: false,
 			checkedKaras: 0,
 			searchCriteria: this.props.searchCriteria,
-			searchValue: this.props.searchValue
+			searchValue: this.props.searchValue,
+			selectAllKarasChecked: false
 		};
 	}
 	async componentDidMount() {
@@ -576,7 +578,7 @@ class Playlist extends Component<IProps, IState> {
 				if (kara.checked) checkedKaras++;
 			}
 		}
-		this.setState({ data, checkedKaras });
+		this.setState({ data, checkedKaras, selectAllKarasChecked: !this.state.selectAllKarasChecked });
 		this.playlistForceRefresh(true);
 	};
 
@@ -718,7 +720,7 @@ class Playlist extends Component<IProps, IState> {
 					kara.checked = false;
 				}
 			}
-			this.setState({ data: karaList });
+			this.setState({ data: karaList, selectAllKarasChecked: false });
 			this.playlistForceRefresh(true);
 		} catch (err) {
 			// error already display
@@ -759,7 +761,7 @@ class Playlist extends Component<IProps, IState> {
 		if (url) {
 			try {
 				await commandBackend(url, data);
-				this.setState({checkedKaras: 0});
+				this.setState({checkedKaras: 0, selectAllKarasChecked: false});
 			} catch (e) {
 				// already display
 			}
@@ -776,6 +778,7 @@ class Playlist extends Component<IProps, IState> {
 		await commandBackend('deleteFavorites', {
 			kids: listKara.map(a => a.kid)
 		});
+		this.setState({selectAllKarasChecked: false});
 	};
 
 	acceptCheckedKara = async () => {
@@ -790,6 +793,7 @@ class Playlist extends Component<IProps, IState> {
 			plc_ids: idsKaraPlaylist,
 			flag_accepted: true
 		}).catch(() => {});
+		this.setState({selectAllKarasChecked: false});
 	};
 
 
@@ -805,6 +809,7 @@ class Playlist extends Component<IProps, IState> {
 			plc_ids: idsKaraPlaylist,
 			flag_refused: true
 		}).catch(() => {});
+		this.setState({selectAllKarasChecked: false});
 	};
 
 	onChangeTags = (type: number | string, value: string) => {
@@ -911,6 +916,7 @@ class Playlist extends Component<IProps, IState> {
 					plaid={this.state.plaid}
 					bLSet={this.state.bLSet}
 					bLSetList={this.state.bLSetList}
+					selectAllKarasChecked={this.state.selectAllKarasChecked}
 					changeIdPlaylist={this.changeIdPlaylist}
 					changeIdPlaylistSide2={this.changeIdPlaylistSide2}
 					playlistInfo={this.state.playlistInfo}

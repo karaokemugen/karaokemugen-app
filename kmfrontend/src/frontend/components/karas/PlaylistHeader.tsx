@@ -59,6 +59,7 @@ interface IProps {
 	searchMenuOpen?: boolean;
 	bLSetList: BLCSet[];
 	checkedKaras: KaraElement[];
+	selectAllKarasChecked: boolean;
 	changeIdPlaylist: (idPlaylist: string, idBLSet?: number) => void;
 	changeIdPlaylistSide2?: (idPlaylist: string) => void;
 	playlistWillUpdate: () => void;
@@ -78,7 +79,6 @@ interface IProps {
 }
 
 interface IState {
-	selectAllKarasChecked: boolean;
 	tagType: number;
 	tags: Tag[];
 	activeFilter: 'search' | 'recent' | 'requested';
@@ -97,7 +97,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 		this.state = {
 			karaMenu: false,
 			playlistCommands: false,
-			selectAllKarasChecked: false,
 			tagType: 2,
 			tags: this.props.tags?.filter(tag => tag.type.includes(2)) || [],
 			activeFilter: 'search',
@@ -394,13 +393,12 @@ class PlaylistHeader extends Component<IProps, IState> {
 								<button
 									title={i18next.t('ADVANCED.SELECT_ALL')}
 									onClick={() => {
-										this.setState({ selectAllKarasChecked: !this.state.selectAllKarasChecked });
 										this.props.selectAllKaras();
 									}}
 									className="btn btn-default karaLineButton"
 								>
 									{
-										this.state.selectAllKarasChecked
+										this.props.selectAllKarasChecked
 											? <i className="far fa-check-square" />
 											: <i className="far fa-square" />
 									}
