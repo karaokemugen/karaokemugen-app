@@ -93,7 +93,8 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		user.old_login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
-		if (!user.email) user.email = null;
+		if (!user.email) user.email = null;		
+		if (!user.location) user.location = null;
 		if (!user.nickname) user.nickname = currentUser.nickname;
 		if (!user.series_lang_mode && user.series_lang_mode !== 0) user.series_lang_mode = -1;
 		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw {code: 400};
@@ -198,6 +199,7 @@ export async function findUserByName(username: string, opt = {
 		if (!userdata.bio || opt.public) userdata.bio = null;
 		if (!userdata.url || opt.public) userdata.url = null;
 		if (!userdata.email || opt.public) userdata.email = null;
+		if (!userdata.location || opt.public) userdata.location = null;
 		if (opt.public) userdata.password = null;
 		return userdata;
 	}
@@ -261,7 +263,8 @@ export async function createUser(user: User, opts: UserOpts = {
 
 	user.bio = user.bio || null;
 	user.url = user.url || null;
-	user.email = user.email || null;
+	user.email = user.email || null;		
+	user.location = user.location || null;
 	if (user.type === 2) user.flag_online = false;
 
 	try {

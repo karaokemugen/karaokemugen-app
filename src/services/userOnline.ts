@@ -134,6 +134,7 @@ export async function editRemoteUser(user: User, token: string) {
 	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(resolvedPathAvatars(), user.avatar_file)), user.avatar_file);
 	form.append('nickname', user.nickname);
 	if (user.bio) form.append('bio', user.bio);
+	if (user.location) form.append('location', user.location);
 	if (user.email) form.append('email', user.email);
 	if (user.url) form.append('url', user.url);
 	if (user.password) form.append('password', user.password);
@@ -225,6 +226,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 					bio: remoteUser.bio,
 					url: remoteUser.url,
 					email: remoteUser.email,
+					location: remoteUser.location,
 					nickname: remoteUser.nickname,
 					password: password,
 					series_lang_mode: remoteUser.series_lang_mode,
