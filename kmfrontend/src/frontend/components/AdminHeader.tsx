@@ -92,7 +92,7 @@ function AdminHeader(props: IProps) {
 	const getPlayerStatus = async () => {
 		try {
 			const result = await commandBackend('getPlayerStatus');
-			setStatusPlayer(result);
+			playerUpdate(result);
 		} catch (e) {
 			// already display
 		}
@@ -110,7 +110,14 @@ function AdminHeader(props: IProps) {
 		};
 	}, []);
 
-	const volume: number = (statusPlayer && !isNaN(statusPlayer.volume)) ? statusPlayer.volume : 100;
+	const setVolume = (event) => {
+		setStatusPlayer(oldState => {
+			const state = {...oldState};
+			state.volume = event.target.value;
+			return state;
+		});
+	};
+
 	return (
 		<KmAppHeaderDecorator mode="admin">
 			{props.location.pathname.includes('/options') ?
@@ -273,17 +280,17 @@ function AdminHeader(props: IProps) {
 				className="btn btn-dark volumeButton"
 			>
 				<div id="mute"
-					data-namecommand={(volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
+					data-namecommand={(statusPlayer?.volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
 					onClick={props.putPlayerCommando}
 				>
 					{
-						volume === 0 || statusPlayer?.mute
+						statusPlayer?.volume === 0 || statusPlayer?.mute
 							? <i className="fas fa-fw fa-volume-mute" />
 							: (
-								volume > 66
+								statusPlayer?.volume > 66
 									? <i className="fas fa-fw fa-volume-up" />
 									: (
-										volume > 33
+										statusPlayer?.volume > 33
 											? <i className="fas fa-fw fa-volume-down" />
 											: <i className="fas fa-fw fa-volume-off" />
 									)
@@ -294,8 +301,9 @@ function AdminHeader(props: IProps) {
 					title={i18next.t('VOLUME_LEVEL')}
 					data-namecommand="setVolume"
 					id="volume"
-					defaultValue={volume}
+					value={statusPlayer?.volume}
 					type="range"
+					onChange={setVolume}
 					onMouseUp={props.putPlayerCommando}
 				/>
 			</button>
@@ -415,16 +423,16 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 								id="mute"
-								data-namecommand={(volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
+								data-namecommand={(statusPlayer?.volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
 							>
 								{
-									volume === 0 || statusPlayer?.mute
+									statusPlayer?.volume === 0 || statusPlayer?.mute
 										? <i className="fas fa-fw fa-volume-mute" />
 										: (
-											volume > 66
+											statusPlayer?.volume > 66
 												? <i className="fas fa-fw fa-volume-up" />
 												: (
-													volume > 33
+													statusPlayer?.volume > 33
 														? <i className="fas fa-fw fa-volume-down" />
 														: <i className="fas fa-fw fa-volume-off" />
 												)

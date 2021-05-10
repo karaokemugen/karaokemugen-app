@@ -1098,6 +1098,8 @@ class Players {
 	async setVolume(volume: number): Promise<PlayerState> {
 		try {
 			await this.exec({command: ['set_property', 'volume', volume]});
+			playerState.volume = volume;
+			emitPlayerState();
 			return playerState;
 		} catch(err) {
 			logger.error('Unable to set volume', {service: 'Player', obj: err});
