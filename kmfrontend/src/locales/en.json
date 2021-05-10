@@ -987,9 +987,9 @@
 		"BLCTYPE_8": "Songwriter",
 		"BLCTYPE_9": "Group",
 		"BLCTYPE_10": "Family",
-		"BLCTYPE_11": "Platform",
+		"BLCTYPE_11": "Origin",
 		"BLCTYPE_12": "Genre",
-		"BLCTYPE_13": "Origin",
+		"BLCTYPE_13": "Platform",
 		"BLCTYPE_14": "Version"
 	},
 	"HOME": {
