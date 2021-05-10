@@ -32,6 +32,11 @@ class UsersModal extends Component<IProps, IState> {
 
 	componentDidMount() {
 		if (this.context?.globalState.auth.data.role === 'admin' || this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) this.getUserList();
+		document.addEventListener('keyup', this.keyObserverHandler);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('keyup', this.keyObserverHandler);
 	}
 
 	async getUserList() {
@@ -57,6 +62,12 @@ class UsersModal extends Component<IProps, IState> {
 			this.props.closeModal();
 		} else {
 			closeModal(this.context.globalDispatch);
+		}
+	}
+
+	keyObserverHandler = (e: KeyboardEvent) => {
+		if (e.code === 'Escape') {
+			this.closeModal();
 		}
 	}
 
