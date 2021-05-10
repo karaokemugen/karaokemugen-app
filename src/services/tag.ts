@@ -6,12 +6,12 @@ import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, remove
 import { getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini, updateKaraTagsTID, updateTag } from '../dao/tag';
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
-import { refreshKaras } from '../lib/dao/kara';
+import { refreshKarasUpdate } from '../lib/dao/kara';
 import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
-import {DBKaraTag} from '../lib/types/database/kara';
+import {DBKara, DBKaraTag} from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
-import { IDQueryResult, Kara, KaraList } from '../lib/types/kara';
+import { IDQueryResult, Kara } from '../lib/types/kara';
 import { Tag,TagParams } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
@@ -20,7 +20,7 @@ import logger, {profile} from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
-import { getAllKaras, getKaras } from './kara';
+import { getKaras } from './kara';
 import { editKara } from './kara_creation';
 import { refreshKarasAfterDBChange } from './karaManagement';
 import { getRepo } from './repo';
@@ -134,23 +134,19 @@ export async function mergeTags(tid1: string, tid2: string) {
 		if (aliases[0] === null) aliases = null;
 		const i18n = {...tag2.i18n, ...tag1.i18n};
 		const tid = uuidV4();
-		const tagObj: Tag = {
+		let tagObj: Tag = {
 			tid: tid,
 			name: tag1.name,
 			types: types,
 			i18n: i18n,
 			short: tag1.short,
 			aliases: aliases,
-			modified_at: new Date().toISOString(),
-			tagfile: `${tag1.name}.${tid.substring(0, 8)}.tag.json`,
 			repository: tag1.repository
 		};
-		await insertTag(tagObj);
-		await writeTagFile(tagObj, resolvedPathRepos('Tags', tagObj.repository)[0]);
+		tagObj = await addTag(tagObj, {silent: true, refresh: false});
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
 		await addTagToStore(newTagFiles);
 		sortTagsStore();
-		const karas = await getAllKaras();
 		await Promise.all([
 			updateKaraTagsTID(tid1, tagObj.tid),
 			updateKaraTagsTID(tid2, tagObj.tid)
@@ -162,13 +158,14 @@ export async function mergeTags(tid1: string, tid2: string) {
 			removeTagInStore(tid1),
 			removeTagInStore(tid2)
 		]);
+		const karas = await getKarasWithTags([tag1, tag2, tagObj as any]);
 		const modifiedKaras = await replaceTagInKaras(tid1, tid2, tagObj, karas);
 		for (const kara of modifiedKaras) {
 			await editKaraInStore(kara);
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
 		await updateTagSearchVector();
-		await refreshKaras();
+		await refreshKarasUpdate(karas.map(k => k.kid));
 		refreshTags();
 		return tagObj;
 	} catch(err) {
@@ -227,19 +224,9 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		}
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opts.refresh) {
-			const karaPromises = [];
-			for (const type of oldTag.types) {
-				karaPromises.push(getKaras({
-					q: `t:${tid}~${type}`
-				}));
-			}
-			const karas: KaraList[] = await Promise.all(karaPromises);
-			let karasToUpdate: string[];
-			for (const karaList of karas) {
-				karasToUpdate = [].concat(karasToUpdate, karaList.content.map(k => k.kid));
-			}
+			const karasToUpdate = await getKarasWithTags([oldTag]);
 			await updateTagSearchVector();
-			await refreshKarasAfterDBChange('UPDATE', karasToUpdate);
+			await refreshKarasAfterDBChange('UPDATE', karasToUpdate.map(k => k.kid));
 			refreshTags();
 		}
 	} catch(err) {
@@ -252,19 +239,38 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 	}
 }
 
+async function getKarasWithTags(tags: DBTagMini[]): Promise<DBKara[]> {
+	let karasToReturn = [];
+	const karaPromises = [];
+	for (const tag of tags) {
+		for (const type of tag.types) {
+			karaPromises.push(getKaras({
+				q: `t:${tag.tid, type}`
+			}));
+		}
+	}
+	const karas = await Promise.all(karaPromises);
+	for (const karaList of karas) {
+		karasToReturn = [].concat(karasToReturn, karaList.content);
+	}
+	return karasToReturn;
+}
+
 export async function deleteTag(tids: string[], opt = {refresh: true, removeTagInKaras: true}) {
-	let karas: KaraList;
-	if (opt.removeTagInKaras) karas = await getAllKaras();
 	const tags: DBTagMini[] = [];
 	for (const tid of tids) {
 		const tag = await getTagMini(tid);
 		if (tag) tags.push(tag);
 	}
+	let karasToRemoveTagIn: DBKara[];
+	if (opt.removeTagInKaras) {
+		karasToRemoveTagIn = await getKarasWithTags(tags);
+	}
 	if (tags.length === 0) throw {code: 404, msg: 'Tag ID unknown'};
 	const removes = [];
 	for (const tag of tags) {
 		removes.push(removeTagFile(tag.tagfile, tag.repository));
-		if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karas));
+		if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karasToRemoveTagIn));
 	}
 	await Promise.all(removes).catch(err => {
 		logger.warn('Failed to remove tag files / tag from kara', {service: 'Tag', obj: err});
@@ -278,7 +284,7 @@ export async function deleteTag(tids: string[], opt = {refresh: true, removeTagI
 	await removeTag(tags.map(tag => tag.tid));
 	emitWS('statsRefresh');
 	if (opt.refresh) {
-		await refreshKaras();
+		if (karasToRemoveTagIn.length > 0) await refreshKarasUpdate(karasToRemoveTagIn.map(k => k.kid));
 		refreshTags();
 	}
 }
@@ -350,22 +356,18 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 	}
 }
 
-export async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: KaraList): Promise<string[]> {
+async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: DBKara[]): Promise<string[]> {
 	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, {service: 'Kara'});
 	const modifiedKaras: string[] = [];
-	for (const kara of karas.content) {
-		let modifiedKara = false;
+	for (const kara of karas) {
 		kara.modified_at = new Date();
 		for (const type of Object.keys(tagTypes)) {
 			if (kara[type]?.find((t: DBTag) => t.tid === oldTID1) || kara[type]?.find((t: DBTag) => t.tid === oldTID2)) {
 				kara[type] = kara[type].filter((t: any) => t.tid !== oldTID1 && t.tid !== oldTID2);
 				kara[type].push(newTag);
-				modifiedKara = true;
 			}
 		}
-		if (modifiedKara) {
-			await editKara(kara, false);
-		}
+		await editKara(kara, false);
 	}
 	return modifiedKaras;
 }
