@@ -993,9 +993,9 @@
 		"BLCTYPE_8": "Compositeur",
 		"BLCTYPE_9": "Groupe",
 		"BLCTYPE_10": "Famille",
-		"BLCTYPE_11": "Plateforme",
+		"BLCTYPE_11": "Origine",
 		"BLCTYPE_12": "Thème",
-		"BLCTYPE_13": "Origine",
+		"BLCTYPE_13": "Plateforme",
 		"BLCTYPE_14": "Version"
 	},
 	"HOME": {
