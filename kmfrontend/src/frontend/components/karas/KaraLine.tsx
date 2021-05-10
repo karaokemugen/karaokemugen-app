@@ -398,7 +398,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								</div>
 								{!is_touch_device() && scope === 'admin' && !isNonStandardPlaylist(plaid) && this.props.sortable ? <DragHandle /> : null}
 							</div>
-							{scope === 'admin' && plaid !== nonStandardPlaylists.blacklist && plaid !== nonStandardPlaylists.blc ?
+							{scope === 'admin' && plaid !== nonStandardPlaylists.blc ?
 								<span className="checkboxKara" onClick={this.checkKara}>
 									{kara.checked ? <i className="far fa-check-square"></i>
 										: <i className="far fa-square"></i>}

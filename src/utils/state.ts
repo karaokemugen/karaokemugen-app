@@ -73,21 +73,21 @@ function emitPlayerState(part: Partial<State>) {
 	const toEmit: Partial<PublicPlayerState> = {...part.player};
 	for (const key of ['currentSessionID', 'currentRequester', 'stopping', 'defaultLocale', 'counterToJingle', 'counterToSponsor']) {
 		switch (key) {
-		case 'counterToJingle':
-		case 'counterToSponsor':
-			const conf = getConfig();
-			const options = map.get(key);
-			if (key in part) {
-				if (conf.Playlist?.Medias[options.conf].Enabled) {
-					toEmit[options.state] = conf.Playlist?.Medias[options.conf].Interval - part[key];
+			case 'counterToJingle':
+			case 'counterToSponsor':
+				const conf = getConfig();
+				const options = map.get(key);
+				if (key in part) {
+					if (conf.Playlist?.Medias[options.conf].Enabled) {
+						toEmit[options.state] = conf.Playlist?.Medias[options.conf].Interval - part[key];
+					}
 				}
-			}
-			break;
-		default:
-			if (key in part) {
-				toEmit[key] = part[key];
-			}
-			break;
+				break;
+			default:
+				if (key in part) {
+					toEmit[key] = part[key];
+				}
+				break;
 		}
 	}
 	if (Object.keys(toEmit).length !== 0) {

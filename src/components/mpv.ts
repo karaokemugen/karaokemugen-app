@@ -178,21 +178,21 @@ function quickDiff() {
 	const diff: Partial<PlayerState> = {};
 	for (const key of Object.keys(playerState)) {
 		switch (key) {
-		case 'currentSong':
-			if (oldState.currentSong?.kid !== playerState.currentSong?.kid) {
-				diff[key] = playerState[key];
-			}
-			break;
-		case 'currentMedia':
-			if (oldState.currentMedia?.filename !== playerState.currentMedia?.filename) {
-				diff[key] = playerState[key];
-			}
-			break;
-		default:
-			if (oldState[key] !== playerState[key]) {
-				diff[key] = playerState[key];
-			}
-			break;
+			case 'currentSong':
+				if (oldState.currentSong?.kid !== playerState.currentSong?.kid) {
+					diff[key] = playerState[key];
+				}
+				break;
+			case 'currentMedia':
+				if (oldState.currentMedia?.filename !== playerState.currentMedia?.filename) {
+					diff[key] = playerState[key];
+				}
+				break;
+			default:
+				if (oldState[key] !== playerState[key]) {
+					diff[key] = playerState[key];
+				}
+				break;
 		}
 	}
 	return diff;

@@ -70,6 +70,11 @@
 	}
 }
 
+.playlist-tooltip {
+	padding: 1em;
+	background-color: lighten($mugen-background, 5);
+}
+
 .playlist--wrapper {
 	height: 100%;
 }

@@ -979,6 +979,7 @@
 		"BLCTYPE_1002": "Plus long que (s)",
 		"BLCTYPE_1003": "Plus court que (s)",
 		"BLCTYPE_1004": "Titre contenant",
+		"BLCTYPE_1005": "Tag contenant",
 		"BLCTYPE_0": "Année",
 		"BLCTYPE_1": "Série",
 		"BLCTYPE_2": "Chanteur",
@@ -993,7 +994,34 @@
 		"BLCTYPE_11": "Origine",
 		"BLCTYPE_12": "Thème",
 		"BLCTYPE_13": "Plateforme",
-		"BLCTYPE_14": "Version"
+		"BLCTYPE_14": "Version",
+		"LABEL": {
+			"TAG": "Les karaokés {{verb}} {{tag}} sont sur liste noire.",
+			"TAG_VERBS": {
+				"1": "de la série",
+				"2": "chantés par",
+				"3": "du type",
+				"4": "créés par",
+				"5": "en",
+				"6": "réalisés par",
+				"7": "",
+				"8": "composés par",
+				"9": "du groupe",
+				"10": "de la famille",
+				"11": "originaires de",
+				"12": "attachés au thème",
+				"13": "attachés à la plateforme",
+				"14": "qui sont une version"
+			},
+			"YEAR": "Les karaokés de l'année {{year}} sont sur liste noire.",
+			"KID": "Ce karaoké est sur liste noire.",
+			"LONGER": "Les karaokés de plus de {{time}} secondes sont sur liste noire.",
+			"SHORTER": "Les karaokés de moins de {{time}} secondes sont sur liste noire.",
+			"TITLE": "Les karaokés contenant {{title}} dans le titre sont sur liste noire.",
+			"TAG_NAME": "Les karaokés avec un tag contenant {{title}} sont sur liste noire.",
+			"UNKNOWN": "Raison inconnue (?)."
+		},
+		"EXPL": "La liste noire est créée à partir des <1>critères de liste noire actifs</1>, vous pouvez également en ajouter manuellement à cette liste."
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
@@ -1062,6 +1090,8 @@
 		"BLC_VIEW_FORBIDDEN": "Les critères de liste noire ne peuvent pas être lus",
 		"BLC_VIEW_ERROR": "La vue des critères de liste noire n'est pas autorisé pour les utilisateurs",
 		"BLC_ADD_ERROR": "Le critère de liste noire ne peut pas être ajouté",
+		"BLC_SHORTER_THAN_CONFLICT": "Vous ne pouvez pas ajouter un critère \"Plus court que\" supérieur au critère \"Plus long que\".",
+		"BLC_LONGER_THAN_CONFLICT": "Vous ne pouvez pas ajouter un critère \"Plus long que\" inférieur au critère \"Plus court que\".",
 		"BLC_DELETE_ERROR": "Erreur lors de la suppression du critère de liste noire",
 		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Mauvais code de sécurité",
 		"PL_DELETE_SONG_ERROR": "Vous ne pouvez pas supprimer ce morceau",

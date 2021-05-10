@@ -344,12 +344,10 @@ class Playlist extends Component<IProps, IState> {
 			}
 
 			if (this.props.side === 1) {
-				value = plVal1Cookie !== null && !plVal1Cookie
-					&& this.props.playlistList.filter(playlist => playlist.plaid === plVal1Cookie).length > 0 ?
+				value = plVal1Cookie !== null && this.props.playlistList.find(playlist => playlist.plaid === plVal1Cookie) ?
 					plVal1Cookie : nonStandardPlaylists.library;
 			} else {
-				value = plVal2Cookie !== null && !plVal2Cookie
-					&& this.props.playlistList.filter(playlist => playlist.plaid === plVal1Cookie).length > 0 ?
+				value = plVal2Cookie !== null && this.props.playlistList.find(playlist => playlist.plaid === plVal2Cookie) ?
 					plVal2Cookie : this.context.globalState.settings.data.state.currentPlaid;
 			}
 		}
@@ -823,7 +821,7 @@ class Playlist extends Component<IProps, IState> {
 			<div style={{ maxHeight: '200px' }}>
 				{((this.state.data as KaraList).content as unknown as DBBlacklist[])
 					.filter((e: DBBlacklist) => e.blc_id === kara.blc_id).map((criteria: DBBlacklist) => {
-						return <label key={kara.kid}>{buildKaraTitle(this.context.globalState.settings.data, criteria as unknown as KaraElement, true)}</label>;
+						return <div key={kara.kid}>{buildKaraTitle(this.context.globalState.settings.data, criteria as unknown as KaraElement, true)}</div>;
 					})}
 			</div>, async (confirm: boolean) => {
 				if (confirm) {

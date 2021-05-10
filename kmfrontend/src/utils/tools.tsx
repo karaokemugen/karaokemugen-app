@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import i18next from 'i18next';
 import React, {Dispatch, ReactNode} from 'react';
 import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
@@ -14,6 +15,8 @@ import { showModal } from '../store/actions/modal';
 import { GlobalContextInterface } from '../store/context';
 import { ShowModal } from '../store/types/modal';
 import Modal from './components/Modal';
+import {getTagInLocale} from './kara';
+import {commandBackend} from './socket';
 
 let is_touch = window.outerWidth <= 1023;
 let is_large = window.outerWidth <= 1860;
@@ -174,4 +177,50 @@ export function isMaintainerMode(context:GlobalContextInterface, repo:string):bo
 		}
 	});
 	return maintainerMode;
+}
+
+export async function decodeBlacklistingReason(reason: string) {
+	const parts = reason.split(':');
+	const args: [string, Record<string, string>] = [parts[0], {}];
+	switch (parts[0]) {
+		case 'TAG':
+			if (parts.length === 3) {
+				const tid = parts[1];
+				const type = parts[2];
+				const tag = await commandBackend('getTag', {tid});
+				args[1] = {
+					tag: getTagInLocale(tag),
+					verb: i18next.t(`BLACKLIST.LABEL.TAG_VERBS.${type}`)
+				};
+			}
+			break;
+		case 'YEAR':
+			if (parts.length === 2) {
+				const year = parts[1];
+				args[1] = { year };
+			}
+			break;
+		case 'KID':
+			break;
+		case 'LONGER':
+		case 'SHORTER':
+			if (parts.length === 2) {
+				const time = parts[1];
+				args[1] = { time };
+			}
+			break;
+		case 'TITLE':
+		case 'TAG_NAME':
+			if (parts.length >= 2) {
+				const [type, ...titleParts] = parts;
+				const title = titleParts.join(':');
+				args[1] = { title };
+			}
+			break;
+		default:
+			args[0] = 'UNKNOWN';
+			args[1] = {};
+	}
+	args[0] = `BLACKLIST.LABEL.${args[0]}`;
+	return i18next.t(...args);
 }
