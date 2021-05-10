@@ -3,7 +3,7 @@ import './Playlist.scss';
 
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import { SortableContainer } from 'react-sortable-hoc';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
 
@@ -75,6 +75,7 @@ interface IState {
 	goToPlaying?: boolean;
 	_goToPlaying?: boolean; // Avoid scroll event trigger
 	selectAllKarasChecked: boolean;
+	height: number;
 }
 
 interface KaraList {
@@ -91,6 +92,7 @@ interface KaraList {
 class Playlist extends Component<IProps, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
+	refContainer = createRef<HTMLDivElement>();
 
 	constructor(props: IProps) {
 		super(props);
@@ -108,7 +110,8 @@ class Playlist extends Component<IProps, IState> {
 			checkedKaras: 0,
 			searchCriteria: this.props.searchCriteria,
 			searchValue: this.props.searchValue,
-			selectAllKarasChecked: false
+			selectAllKarasChecked: false,
+			height: 0
 		};
 	}
 	async componentDidMount() {
@@ -125,7 +128,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().on('publicPlaylistEmptied', this.publicPlaylistEmptied);
 		getSocket().on('KIDUpdated', this.KIDUpdated);
 		getSocket().on('playerStatus', this.updateCounters);
-		window.addEventListener('resize', this.refreshUiOnResize, true);
+		window.addEventListener('resize', this.resizeCheck, { passive: true, capture: true });
 		eventEmitter.addChangeListener('playlistContentsUpdatedFromClient', this.playlistContentsUpdatedFromClient);
 		eventEmitter.addChangeListener('changeIdPlaylist', this.changeIdPlaylistFromOtherSide);
 	}
@@ -141,7 +144,7 @@ class Playlist extends Component<IProps, IState> {
 		getSocket().off('publicPlaylistEmptied', this.publicPlaylistEmptied);
 		getSocket().off('KIDUpdated', this.KIDUpdated);
 		getSocket().off('playerStatus', this.updateCounters);
-		window.removeEventListener('resize', this.refreshUiOnResize, true);
+		window.removeEventListener('resize', this.resizeCheck);
 		eventEmitter.removeChangeListener('playlistContentsUpdatedFromClient', this.playlistContentsUpdatedFromClient);
 		eventEmitter.removeChangeListener('changeIdPlaylist', this.changeIdPlaylistFromOtherSide);
 	}
@@ -220,6 +223,7 @@ class Playlist extends Component<IProps, IState> {
 
 	initCall = async () => {
 		await this.getIdPlaylist();
+		this.resizeCheck();
 		this.setState({ goToPlaying: !isNonStandardPlaylist(this.state.plaid) });
 		if (this.props.scope === 'public' || this.props.playlistList
 			.filter(playlist => playlist.plaid === this.state.plaid).length !== 0) {
@@ -237,8 +241,20 @@ class Playlist extends Component<IProps, IState> {
 		}
 	}
 
-	refreshUiOnResize = () => {
+	resizeCheck = () => {
 		this.playlistForceRefresh(true);
+		// Calculate empty space for fillSpace cheat.
+		// Virtual lists doesn't expand automatically, or more than needed, so the height is forced by JS calculations
+		// using getBoundingClientRect
+		if (this.refContainer) {
+			const wrapper = this.refContainer.current.getBoundingClientRect();
+			this.setState({ height: window.innerHeight - wrapper.top });
+		}
+	}
+
+	toggleSearchMenu = () => {
+		this.props.toggleSearchMenu();
+		setTimeout(this.resizeCheck, 0);
 	}
 
 	changeIdPlaylistFromOtherSide = ({ side, playlist }: { side: number, playlist: string }) => {
@@ -372,6 +388,7 @@ class Playlist extends Component<IProps, IState> {
 		this.setState({ plaid: plaid, data: undefined, playlistInfo: undefined, goToPlaying: !isNonStandardPlaylist(plaid) }, () => {
 			this.getPlaylist();
 			this.props.majIdsPlaylist(this.props.side, plaid);
+			this.resizeCheck();
 			if (plaid === this.props.plaidTo) {
 				eventEmitter.emitChange('changeIdPlaylist', { side: this.props.side === 1 ? 2 : 1, playlist: oldIdPlaylist });
 			}
@@ -930,7 +947,7 @@ class Playlist extends Component<IProps, IState> {
 					tags={this.props.tags}
 					onChangeTags={this.onChangeTags}
 					getPlaylist={this.getPlaylist}
-					toggleSearchMenu={this.props.toggleSearchMenu}
+					toggleSearchMenu={this.toggleSearchMenu}
 					searchMenuOpen={this.props.searchMenuOpen}
 					playlistWillUpdate={this.playlistWillUpdate}
 					playlistDidUpdate={this.playlistDidUpdate}
@@ -941,6 +958,7 @@ class Playlist extends Component<IProps, IState> {
 			<div
 				id={'playlist' + this.props.side}
 				className="playlistContainer"
+				ref={this.refContainer}
 			>
 				{
 					(!this.state.data || (this.state.data && (this.state.data as KaraList).infos
@@ -955,7 +973,7 @@ class Playlist extends Component<IProps, IState> {
 									rowCount={(this.state.data as KaraList).infos.count || 0}>
 									{({ onRowsRendered, registerChild }) => (
 										<AutoSizer>
-											{({ height, width }) => {
+											{({ width }) => {
 												return (
 													<this.SortableList
 														{...[this.state.forceUpdate]}
@@ -968,7 +986,7 @@ class Playlist extends Component<IProps, IState> {
 														rowHeight={_cache.rowHeight}
 														rowRenderer={this.rowRenderer}
 														noRowsRenderer={this.noRowsRenderer}
-														height={height}
+														height={this.state.height}
 														width={width}
 														onSortStart={this.stopUpdate}
 														onSortEnd={this.sortRow}
