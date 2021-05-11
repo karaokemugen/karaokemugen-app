@@ -333,7 +333,7 @@ class PublicPage extends Component<IProps, IState> {
 								<React.Fragment>
 									<KmAppHeaderDecorator mode="public">
 										<button
-											className="btn side2Button"
+											className="btn"
 											type="button"
 											onClick={() => this.changeView((this.state.view === 'search' && this.state.searchCriteria ? 'tag' : 'home'))}>
 											<i className="fas fa-arrow-left" />
