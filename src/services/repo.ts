@@ -120,6 +120,7 @@ export async function updateAllGitRepos() {
 
 export async function checkDownloadStatus(kids?: string[]) {
 	profile('checkDownloadStatus');
+	logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, {service: 'Repo'});
 	const karas = await getKaras({
 		q: kids ? `k:${kids.join(',')}` : undefined
 	});
@@ -129,7 +130,6 @@ export async function checkDownloadStatus(kids?: string[]) {
 		try {
 			await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository));
 			mediasExisting.push(kara.kid);
-
 		} catch(err) {
 			// Not found, switching to missing
 			mediasMissing.push(kara.kid);
@@ -141,6 +141,7 @@ export async function checkDownloadStatus(kids?: string[]) {
 	if (mediasExisting.length > 0) {
 		updateDownloaded(mediasExisting, 'DOWNLOADED');
 	}
+	logger.info('Finished checking downloaded status', {service: 'Repo'});
 	profile('checkDownloadStatus');
 }
 
