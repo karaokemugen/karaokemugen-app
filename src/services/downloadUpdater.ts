@@ -145,7 +145,7 @@ export async function updateAllMedias() {
 			emitWS('error', APIMessage('UPDATING_MEDIAS_ERROR', {repo: repo.Name, err: err}));
 		}
 	}
-	checkDownloadStatus();
+	await checkDownloadStatus();
 }
 
 /** Check local videos and only update those which need it */
