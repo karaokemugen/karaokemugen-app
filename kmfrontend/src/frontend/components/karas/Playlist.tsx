@@ -246,7 +246,7 @@ class Playlist extends Component<IProps, IState> {
 		// Calculate empty space for fillSpace cheat.
 		// Virtual lists doesn't expand automatically, or more than needed, so the height is forced by JS calculations
 		// using getBoundingClientRect
-		if (this.refContainer) {
+		if (this.refContainer.current) {
 			const wrapper = this.refContainer.current.getBoundingClientRect();
 			this.setState({ height: window.innerHeight - wrapper.top });
 		}
