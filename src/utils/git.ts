@@ -134,7 +134,7 @@ export default class GitInstance {
 	}
 
 	async diff(commitA: string, commitB: string, keepEquals = false): Promise<DiffResult[]> {
-		logger.info(`${this.repo}: Making a differential between commits ${commitA} and ${commitB}`, {service: 'Git'});
+		logger.debug(`${this.repo}: Making a differential between commits ${commitA} and ${commitB}`, {service: 'Git'});
 		let res = await this.sendCommand('walk', {
 			dir: this.dir,
 			commitA,
@@ -148,7 +148,7 @@ export default class GitInstance {
 	}
 
 	async checkout(filepaths: string[]) {
-		logger.info(`${this.repo}: Checking out branch`, {service: 'Git'});
+		logger.debug(`${this.repo}: Checking out branch`, {service: 'Git'});
 		await this.sendCommand('checkout', {
 			url: this.url,
 			dir: this.dir,
@@ -161,7 +161,7 @@ export default class GitInstance {
 
 	/* Removes ALL files not in the current commit snapshot. Use with care and love. */
 	async clean() {
-		logger.info(`${this.repo}: Cleaning unneeded files`, {service: 'Git'});
+		logger.debug(`${this.repo}: Cleaning unneeded files`, {service: 'Git'});
 		const commit = await this.status();
 		const [gitFiles, localFiles] = await Promise.all([
 			this.diff(commit.oid, commit.oid, true),
