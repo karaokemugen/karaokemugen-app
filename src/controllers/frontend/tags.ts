@@ -75,10 +75,10 @@ export default function tagsController(router: SocketIOApp) {
 	});
 
 	router.route('deleteTag', async (socket: Socket, req: APIData) => {
-		if (!isUUID(req.body.tid)) throw {code: 400};
+		if (!isUUID(req.body.tids)) throw {code: 400};
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			await deleteTag(req.body.tid);
+			await deleteTag(req.body.tids);
 			return {code: 200, message: APIMessage('TAG_DELETED')};
 		} catch(err) {
 			const code = 'TAG_DELETE_ERROR';

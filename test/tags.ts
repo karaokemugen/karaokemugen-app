@@ -122,7 +122,7 @@ describe('Tags', () => {
 		tagToDelete = data.message.data;
 	});
 	it('Delete tag', async () => {
-		const data = await commandBackend(token, 'deleteTag', {tid: [tagToDelete.tid]});
+		const data = await commandBackend(token, 'deleteTag', {tids: [tagToDelete.tid]});
 		expect(data.code).to.be.equal(200);
 	});
 });

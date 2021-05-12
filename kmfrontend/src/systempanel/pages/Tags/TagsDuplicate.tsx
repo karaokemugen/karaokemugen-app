@@ -46,7 +46,7 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 	delete = async (tid) => {
 		try {
 			this.setState({ deleteModal: false, tag: undefined });
-			await commandBackend('deleteTag', { tid }, true);
+			await commandBackend('deleteTag', { tids: [tid] }, true);
 			this.refresh();
 		} catch (err) {
 			this.setState({ deleteModal: false, tag: undefined });
