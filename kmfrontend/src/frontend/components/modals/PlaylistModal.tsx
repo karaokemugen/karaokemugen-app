@@ -39,17 +39,21 @@ class PlaylistModal extends Component<IProps, IState> {
 	}
 
 	createPlaylist = async () => {
-		const response = await commandBackend(
-			this.props.plaid === nonStandardPlaylists.blc ? 'createBLCSet' : 'createPlaylist',
-			{
-				name: this.state.name,
-				flag_visible: this.state.flag_visible,
-				flag_current: this.state.flag_current,
-				flag_public: this.state.flag_public,
-			}
-		);
-		this.props.plaid === nonStandardPlaylists.blc ? this.props.changeIdPlaylist(nonStandardPlaylists.blc, response.set_id) : this.props.changeIdPlaylist(response.plaid);
-		this.closeModal();
+		try {
+			const response = await commandBackend(
+				this.props.plaid === nonStandardPlaylists.blc ? 'createBLCSet' : 'createPlaylist',
+				{
+					name: this.state.name,
+					flag_visible: this.state.flag_visible,
+					flag_current: this.state.flag_current,
+					flag_public: this.state.flag_public,
+				}
+			);
+			this.props.plaid === nonStandardPlaylists.blc ? this.props.changeIdPlaylist(nonStandardPlaylists.blc, response.set_id) : this.props.changeIdPlaylist(response.plaid);
+			this.closeModal();
+		} catch (e) {
+			// already display
+		}
 	};
 
 	editPlaylist = async () => {
