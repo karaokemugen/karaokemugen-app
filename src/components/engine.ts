@@ -71,6 +71,8 @@ export async function initEngine() {
 		}
 	} else if (state.opt.mediaUpdateAll) {
 		try {
+			initStep(i18n.t('INIT_DB'));
+			await initDBSystem();
 			initStep(i18n.t('INIT_UPDATEMEDIAS'));
 			await updateAllMedias();
 			await exit(0);
