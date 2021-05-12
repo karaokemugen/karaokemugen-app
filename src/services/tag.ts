@@ -245,7 +245,7 @@ async function getKarasWithTags(tags: DBTagMini[]): Promise<DBKara[]> {
 	for (const tag of tags) {
 		for (const type of tag.types) {
 			karaPromises.push(getKaras({
-				q: `t:${tag.tid, type}`
+				q: `t:${tag.tid}~${type}`
 			}));
 		}
 	}
