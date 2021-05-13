@@ -201,7 +201,7 @@ class KaraDetail extends Component<IProps, IState> {
 	addKara = async () => {
 		const response = await commandBackend('addKaraToPublicPlaylist', {
 			requestedby: this.context.globalState.auth.data.username,
-			kid: this.props.kid
+			kids: [this.props.kid]
 		});
 		if (response && response.code && response.data?.plc) {
 			let message;

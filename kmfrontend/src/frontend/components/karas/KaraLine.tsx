@@ -183,7 +183,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			url = 'addKaraToPublicPlaylist';
 			data = {
 				requestedby: this.context.globalState.auth.data.username,
-				kid: this.props.kara.kid
+				kids: [this.props.kara.kid]
 			};
 		}
 		const response = await commandBackend(url, data).catch(() => {});
