@@ -136,6 +136,7 @@ export async function playCurrentSong(now: boolean) {
 					await next();
 				} catch(err) {
 					logger.warn('Skipping failed', {service: 'Player'});
+					throw err;
 				}
 			} else {
 				logger.warn('Stopping karaoke due to error', {service: 'Player'});
@@ -218,6 +219,7 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error('Failed going to next song', {service: 'Player', obj: err});
+					throw err;
 				}
 			} else {
 				stopPlayer(true);
@@ -236,6 +238,7 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error('Failed going to next song', {service: 'Player', obj: err});
+					throw err;
 				}
 			}
 			return;
@@ -245,6 +248,7 @@ export async function playerEnding() {
 				await next();
 			} catch(err) {
 				logger.error('Failed going to next song', {service: 'Player', obj: err});
+				throw err;
 			}
 			return;
 		}
@@ -262,6 +266,7 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error('Failed going to next song', {service: 'Player', obj: err});
+					throw err;
 				}
 			}
 			return;
@@ -303,6 +308,7 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error('Failed going to next song', {service: 'Player', obj: err});
+					throw err;
 				}
 			}
 			return;
@@ -317,6 +323,7 @@ export async function playerEnding() {
 					await next();
 				} catch(err) {
 					logger.error('Failed going to next song', {service: 'Player', obj: err});
+					throw err;
 				}
 			}
 			return;
@@ -334,6 +341,7 @@ export async function playerEnding() {
 					return;
 				} catch(err) {
 					logger.error('Failed going to next song', {service: 'Player', obj: err});
+					throw err;
 				}
 			} else {
 				stopPlayer(true);
