@@ -686,6 +686,8 @@
 		"CREATORS_TOOLTIP": "Entity that created the series. Can be animation studio, movie studio, or game studio",
 		"KARA_AUTHORS_REQUIRED": "Author of the kara is mandatory",
 		"KARA_AUTHORS_TOOLTIP": "You should add yourself here ;)",
+		"COMMENT": "Any comments?",
+		"COMMENT_TOOLTIP": "A commentary field for things like \"To all my fans!\" or \"Don't modify the effects!\" or \"Made with lots of coffee\".",
 		"FAMILIES": "Familie(s)",
 		"PLATFORMS": "Platform(s)",
 		"GENRES": "Genre(s)",

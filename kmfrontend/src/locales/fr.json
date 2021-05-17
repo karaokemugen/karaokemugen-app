@@ -686,6 +686,8 @@
 		"CREATORS_TOOLTIP": "Entité qui a créé la série ou le clip. Peut être un studio d'animation, de cinéma, de jeu vidéo, etc.",
 		"KARA_AUTHORS_REQUIRED": "L'auteur du karaoké est obligatoire",
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
+		"COMMENT": "Un commentaire?",
+		"COMMENT_TOOLTIP": "Un champ pour un commentaire comme \"Spéciale dédicace à ma maman\" ou \"Ne pas toucher aux effets!\" ou \"Fait avec trop de café\".",
 		"FAMILIES": "Famille(s)",
 		"PLATFORMS": "Plateforme(s)",
 		"GENRES": "Thème(s)",

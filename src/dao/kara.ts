@@ -37,7 +37,8 @@ export async function updateKara(kara: Kara) {
 		gain: kara.gain,
 		loudnorm: kara.loudnorm,
 		modified_at: kara.modified_at,
-		kid: kara.kid
+		kid: kara.kid,
+		comment: kara.comment
 	}));
 }
 
@@ -58,7 +59,8 @@ export async function addKara(kara: Kara) {
 		kid: kara.kid,
 		repository: kara.repository,
 		mediasize: kara.mediasize,
-		download_status: kara.download_status
+		download_status: kara.download_status,
+		comment: kara.comment
 	}));
 }
 
