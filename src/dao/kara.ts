@@ -59,7 +59,7 @@ export async function addKara(kara: Kara) {
 		kid: kara.kid,
 		repository: kara.repository,
 		mediasize: kara.mediasize,
-		download_status: kara.download_status,
+		download_status: 'DOWNLOADED',
 		comment: kara.comment
 	}));
 }

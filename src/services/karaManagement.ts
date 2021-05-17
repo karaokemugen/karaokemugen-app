@@ -25,7 +25,7 @@ import { generateBlacklist } from './blacklist';
 import { checkMediaAndDownload } from './download';
 import {getKara, getKaras} from './kara';
 import { editKara } from './kara_creation';
-import { checkDownloadStatus, getRepo, getRepos } from './repo';
+import { getRepo, getRepos } from './repo';
 import { getTag } from './tag';
 
 export async function updateTags(kara: Kara) {
@@ -47,7 +47,6 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 		await refreshKarasAfterDBChange('ADD', [kara.kid], true);
 		generateBlacklist();
 	}
-	checkDownloadStatus([kara.kid]);
 }
 
 export async function editKaraInDB(kara: Kara, opts = {
@@ -61,7 +60,6 @@ export async function editKaraInDB(kara: Kara, opts = {
 		await refreshKarasAfterDBChange('UPDATE', [kara.kid], kara.newTags);
 		generateBlacklist();
 	}
-	checkDownloadStatus([kara.kid]);
 	profile('editKaraDB');
 }
 
