@@ -12,7 +12,7 @@ import nanamiShockedWebP from '../../../assets/nanami-shocked.webp';
 import { setFilterValue } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
-import { commandBackend } from '../../../utils/socket';
+import { commandBackend, getSocket } from '../../../utils/socket';
 import {
 	callModal,
 	displayMessage,
@@ -110,6 +110,11 @@ class PlaylistHeader extends Component<IProps, IState> {
 		if (prevProps.tags?.length !== this.props.tags?.length) {
 			this.setState({ tags: this.props.tags?.filter(tag => tag.type.includes(this.state.tagType)) });
 		}
+		getSocket().on('playlistImported', this.importPlaylistResponse);
+	}
+
+	componentWillUnmount() {
+		getSocket().off('playlistImported', this.importPlaylistResponse);
 	}
 
 	addOrEditPlaylist = (mode: 'create' | 'edit') => {
@@ -188,6 +193,45 @@ class PlaylistHeader extends Component<IProps, IState> {
 		}
 	};
 
+	importPlaylistResponse = (data, file) => {
+		if (data.reposUnknown?.length > 0) {
+			callModal(
+				this.context.globalDispatch,
+				'confirm',
+				i18next.t('MODAL.UNKNOW_REPOS.TITLE'),
+				<React.Fragment>
+					<p>
+						{i18next.t('MODAL.UNKNOW_REPOS.DESCRIPTION')}
+					</p>
+					<div>
+						{i18next.t('MODAL.UNKNOW_REPOS.DOWNLOAD_THEM')}
+					</div>
+					<br />
+					{data.reposUnknown.map((repository: string) =>
+						<label
+							key={repository}>{repository}</label>)}
+				</React.Fragment>,
+				() => data.reposUnknown.map((repoName: string) => {
+					commandBackend('addRepo', {
+						Name: repoName,
+						Online: true,
+						Enabled: true,
+						SendStats: false,
+						AutoMediaDownloads: false,
+						MaintainerMode: false,
+						Git: null,
+						BaseDir: `repos/${repoName}`,
+						Path: {
+							Medias: [`repos/${repoName}/medias`]
+						}
+					});
+				})
+			);
+		}
+		const plaid = file?.name.includes('.kmfavorites') ? nonStandardPlaylists.favorites : data.plaid;
+		this.props.changeIdPlaylist(plaid);
+	}
+
 	importPlaylist = (e: any) => {
 		this.togglePlaylistCommands();
 		let url: string;
@@ -219,45 +263,14 @@ class PlaylistHeader extends Component<IProps, IState> {
 					name = json?.PlaylistInformation?.name;
 				}
 				const response = await commandBackend(url, data);
-				if (response.message.data.reposUnknown && response.message.data.reposUnknown.length > 0) {
-					callModal(
-						this.context.globalDispatch,
-						'confirm',
-						i18next.t('MODAL.UNKNOW_REPOS.TITLE'),
-						<React.Fragment>
-							<p>
-								{i18next.t('MODAL.UNKNOW_REPOS.DESCRIPTION')}
-							</p>
-							<div>
-								{i18next.t('MODAL.UNKNOW_REPOS.DOWNLOAD_THEM')}
-							</div>
-							<br />
-							{response.message.data.reposUnknown.map((repository: string) =>
-								<label
-									key={repository}>{repository}</label>)}
-						</React.Fragment>,
-						() => response.message.data.reposUnknown.map((repoName: string) => {
-							commandBackend('addRepo', {
-								Name: repoName,
-								Online: true,
-								Enabled: true,
-								SendStats: false,
-								AutoMediaDownloads: false,
-								MaintainerMode: false,
-								Git: null,
-								BaseDir: `repos/${repoName}`,
-								Path: {
-									Medias: [`repos/${repoName}/medias`]
-								}
-							});
-						})
-					);
+				if (response.message.data.reposUnknown?.length > 0) {
+					this.importPlaylistResponse(response.message.data, file);
 				} else {
-					!file.name.includes('.kmfavorites') &&
+					!file?.name.includes('.kmfavorites') &&
 						displayMessage('success', i18next.t(`SUCCESS_CODES.${response.message.code}`, { data: name }));
+					const plaid = file?.name.includes('.kmfavorites') ? nonStandardPlaylists.favorites : response.message.data.plaid;
+					this.props.changeIdPlaylist(plaid);
 				}
-				const plaid = file.name.includes('.kmfavorites') ? nonStandardPlaylists.favorites : response.message.data.plaid;
-				this.props.changeIdPlaylist(plaid);
 			};
 			fr.readAsText(file);
 		}
