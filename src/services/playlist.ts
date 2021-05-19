@@ -576,7 +576,7 @@ export function getPLCInfoMini(plc_id: number) {
 }
 
 /** Notify user of song play time */
-export async function notifyUserOfSongPlayTime(plc_id: number, username: string) {
+async function notifyUserOfSongPlayTime(plc_id: number, username: string) {
 	emitWS('userSongPlaysIn', await getPLCInfo(plc_id, true, username));
 }
 
