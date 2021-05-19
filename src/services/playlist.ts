@@ -1403,6 +1403,5 @@ export async function updateUserQuotas(kara: PLC) {
 }
 
 export function playlistImported(res: any) {
-	emitWS('playlistsUpdated');
 	emitWS('playlistImported', res);
 }

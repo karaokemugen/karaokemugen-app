@@ -252,7 +252,7 @@ export async function updateGitRepo(name: string, refresh = true) {
 			karaFiles.length > 0
 		)) await refreshAll();
 		if (getConfig().Online.AllowDownloads) await updateGitMedias(name);
-		await generateBlacklist();
+		await generateBlacklist();		
 	}
 }
 
