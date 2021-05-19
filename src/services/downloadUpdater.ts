@@ -142,7 +142,7 @@ export async function updateAllMedias() {
 			await updateMedias(repo.Name);
 		} catch(err) {
 			logger.warn(`Repository ${repo.Name} failed to update medias properly`, {service: 'Update', obj: err});
-			emitWS('error', APIMessage('UPDATING_MEDIAS_ERROR', {repo: repo.Name, err: err}));
+			emitWS('operatorNotificationError', APIMessage('ERROR_CODES.UPDATING_MEDIAS_ERROR', repo.Name));
 		}
 	}
 	await checkDownloadStatus();

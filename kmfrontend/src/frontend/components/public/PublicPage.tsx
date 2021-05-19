@@ -160,7 +160,7 @@ class PublicPage extends Component<IProps, IState> {
 		this.initView();
 		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
 		getSocket().on('playerStatus', this.displayClassicModeModal);
-		getSocket().on('newSongPoll', this.newSongPoll);
+		getSocket().on('songPollStarted', this.songPollStarted);
 		getSocket().on('songPollEnded', this.songPollEnded);
 		getSocket().on('songPollResult', this.songPollResult);
 		getSocket().on('adminMessage', this.adminMessage);
@@ -173,7 +173,7 @@ class PublicPage extends Component<IProps, IState> {
 
 	componentWillUnmount() {
 		getSocket().off('playerStatus', this.displayClassicModeModal);
-		getSocket().off('newSongPoll', this.newSongPoll);
+		getSocket().off('songPollStarted', this.songPollStarted);
 		getSocket().off('songPollEnded', this.songPollEnded);
 		getSocket().off('songPollResult', this.songPollResult);
 		getSocket().off('adminMessage', this.adminMessage);
@@ -194,7 +194,7 @@ class PublicPage extends Component<IProps, IState> {
 		});
 	}
 
-	newSongPoll = () => {
+	songPollStarted = () => {
 		if (this.context.globalState.auth.isAuthenticated) {
 			this.setState({ isPollActive: true });
 			showModal(this.context.globalDispatch,

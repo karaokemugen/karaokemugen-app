@@ -3,10 +3,13 @@ import '../App.scss';
 import { ConfigProvider, Layout } from 'antd';
 import enUS from 'antd/es/locale/en_US';
 import frFR from 'antd/es/locale/fr_FR';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import TasksEvent from '../../TasksEvent';
+import { getSocket } from '../../utils/socket';
+import { displayMessage } from '../../utils/tools';
 import Loading from '../components/Loading';
 import Config from '../pages/Config';
 import Database from '../pages/Database';
@@ -35,6 +38,23 @@ import UserList from '../pages/Users/UserList';
 import KMMenu from './KMMenu';
 
 class KMSystem extends Component<unknown, unknown> {
+
+	componentDidMount() {
+		getSocket().on('operatorNotificationInfo', this.operatorNotificationInfo);
+		getSocket().on('operatorNotificationError', this.operatorNotificationError);
+		getSocket().on('operatorNotificationWarning', this.operatorNotificationWarning);
+	}
+
+	componentWillUnmount() {
+		getSocket().off('operatorNotificationInfo', this.operatorNotificationInfo);
+		getSocket().off('operatorNotificationError', this.operatorNotificationError);
+		getSocket().off('operatorNotificationWarning', this.operatorNotificationWarning);
+	}
+
+	operatorNotificationInfo = (data: { code: string, data: string }) => displayMessage('info', i18next.t(data.code, { data: data }));
+	operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code, { data: data }));
+	operatorNotificationWarning = (data: { code: string, data: string }) => displayMessage('warning', i18next.t(data.code, { data: data }));
+
 	render() {
 		return (
 			<ConfigProvider locale={navigator.languages[0].includes('fr') ? frFR : enUS}>

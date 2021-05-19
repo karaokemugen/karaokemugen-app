@@ -64,7 +64,7 @@ class AdminPage extends Component<IProps, IState> {
 		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
 		getSocket().on('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().on('operatorNotificationError', this.operatorNotificationError);
-		getSocket().on('notificationEndOfSessionNear', this.notificationEndOfSessionNear);
+		getSocket().on('operatorNotificationWarning', this.operatorNotificationWarning);
 	}
 
 	componentWillUnmount() {
@@ -73,12 +73,12 @@ class AdminPage extends Component<IProps, IState> {
 		getSocket().off('playlistInfoUpdated', this.getPlaylistList);
 		getSocket().off('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().off('operatorNotificationError', this.operatorNotificationError);
-		getSocket().off('notificationEndOfSessionNear', this.notificationEndOfSessionNear);
+		getSocket().off('operatorNotificationWarning', this.operatorNotificationWarning);
 	}
 
-	operatorNotificationInfo = (data: { code: string, data: string }) => displayMessage('info', i18next.t(data.code));
-	operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code));
-	notificationEndOfSessionNear = (data: string) => displayMessage('warning', i18next.t('NOTIFICATION.OPERATOR.INFO.END_OF_SESSION_NEAR', { data: data }));
+	operatorNotificationInfo = (data: { code: string, data: string }) => displayMessage('info', i18next.t(data.code, { data: data }));
+	operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code, { data: data }));
+	operatorNotificationWarning = (data: { code: string, data: string }) => displayMessage('warning', i18next.t(data.code, { data: data }));
 
 	majIdsPlaylist = (side: number, value: string) => {
 		const idsPlaylist = this.state.idsPlaylist;

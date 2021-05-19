@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
+import { APIMessage } from '../controllers/common';
 import { selectAllKaras } from '../dao/kara';
 import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
 import { getConfig, resolvedPathSessionExports } from '../lib/utils/config';
@@ -141,7 +142,7 @@ function checkSessionEnd() {
 	const currentDate = new Date(currentDateInt).toISOString().substring(0, 16);
 	if (currentDate === sessionWarnDate) {
 		logger.info('Notifying operator of end of session being near', {service: 'Sessions'});
-		emitWS('notificationEndOfSessionNear', getConfig().Karaoke.MinutesBeforeEndOfSessionWarning);
+		emitWS('operatorNotificationWarning', APIMessage('NOTIFICATION.OPERATOR.INFO.END_OF_SESSION_NEAR', getConfig().Karaoke.MinutesBeforeEndOfSessionWarning));
 	}
 }
 

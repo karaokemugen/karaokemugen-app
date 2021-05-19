@@ -229,7 +229,7 @@ export async function startPoll(): Promise<boolean> {
 	if (conf.Karaoke.StreamerMode.Twitch.Enabled) {
 		displayPollTwitch();
 	} else {
-		emitWS('newSongPoll',poll);
+		emitWS('songPollStarted',poll);
 	}
 	timerPoll();
 	if (getState().player.mediaType === 'pauseScreen') displayPoll();
