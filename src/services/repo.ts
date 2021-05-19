@@ -23,7 +23,7 @@ import { DifferentChecksumReport } from '../types/repo';
 import GitInstance from '../utils/git';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
-import { createProblematicBLCSet } from './blacklist';
+import { createProblematicBLCSet, generateBlacklist } from './blacklist';
 import { updateGitMedias } from './downloadUpdater';
 import { getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
@@ -252,6 +252,7 @@ export async function updateGitRepo(name: string, refresh = true) {
 			karaFiles.length > 0
 		)) await refreshAll();
 		if (getConfig().Online.AllowDownloads) await updateGitMedias(name);
+		await generateBlacklist();
 	}
 }
 

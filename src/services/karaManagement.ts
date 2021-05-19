@@ -257,7 +257,7 @@ export async function integrateKaraFile(file: string) {
 		}
 		sortKaraStore();
 	} else {
-		await createKaraInDB(karaData, { refresh: false });
+		await createKaraInDB(karaData, { refresh: false });		
 	}
 	if (getRepo(karaData.repository).AutoMediaDownloads) {
 		checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
