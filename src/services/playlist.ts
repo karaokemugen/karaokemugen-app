@@ -977,7 +977,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 			await emptyPlaylist(plaid);
 		}
 		const repos = getRepos();
-		const unknownRepos = new Set();
+		const unknownRepos: Set<string> = new Set();
 		for (const i in playlist.PlaylistContents) {
 			// Do not replace here to not break old exports/imports
 			playlist.PlaylistContents[i].plaid = plaid;
