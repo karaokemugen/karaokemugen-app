@@ -338,6 +338,9 @@ GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.serie
 export const sqlgetPLCInfoMini = `
 SELECT pc.fk_kid AS kid,
 	ak.title AS title,
+	ak.mediafile AS mediafile,
+	ak.mediasize AS mediasize,
+	ak.repository AS repository,
 	COALESCE(ak.series, '[]'::jsonb) AS series,
 	pc.nickname AS nickname,
 	pc.fk_login AS username,
@@ -355,7 +358,7 @@ INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = $1
-GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.title, ak.series, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
+GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.title, ak.mediasize, ak.mediafile, ak.repository, ak.series, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
 `;
 
 
