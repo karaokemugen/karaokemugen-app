@@ -183,15 +183,19 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	getPlaylistList = async () => {
-		const playlistsList = await commandBackend('getPlaylists');
-		playlistsList.forEach(playlist => {
-			if (playlist.flag_public) {
-				this.setState({ publicVisible: playlist.flag_visible });
-			}
-			if (playlist.flag_current) {
-				this.setState({ currentVisible: playlist.flag_visible });
-			}
-		});
+		try {
+			const playlistsList = await commandBackend('getPlaylists');
+			playlistsList.forEach(playlist => {
+				if (playlist.flag_public) {
+					this.setState({ publicVisible: playlist.flag_visible });
+				}
+				if (playlist.flag_current) {
+					this.setState({ currentVisible: playlist.flag_visible });
+				}
+			});
+		} catch (e) {
+			// already display
+		}
 	}
 
 	songPollStarted = () => {
