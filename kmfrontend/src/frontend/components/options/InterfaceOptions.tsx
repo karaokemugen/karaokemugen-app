@@ -68,12 +68,12 @@ class InterfaceOptions extends Component<IProps, IState> {
 			this.state.config ?
 				<React.Fragment>
 					<div className="settings-line">
-						<label className="col-xs-4 control-label" title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
-							{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE')}
-            				&nbsp;
-  							<i className="far fa-question-circle" />
+						<label htmlFor="Frontend.Mode">
+							<span className="title">{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE')}</span>
+							<br/>
+							<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}</span>
 						</label>
-						<div className="col-xs-6">
+						<div>
 							<select
 								id="Frontend.Mode"
 								onChange={this.onChange}
