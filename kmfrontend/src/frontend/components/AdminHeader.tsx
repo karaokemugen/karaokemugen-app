@@ -159,21 +159,21 @@ function AdminHeader(props: IProps) {
 					buttons={[
 						{
 							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend.Mode === 0,
+							active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
 							activeColor: '#880500',
 							onClick: () => changePublicInterfaceMode(0),
 							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')
 						},
 						{
 							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend.Mode === 1,
+							active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
 							activeColor: '#a36700',
 							onClick: () => changePublicInterfaceMode(1),
 							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
 						},
 						{
 							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend.Mode === 2,
+							active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
 							activeColor: '#3c5c00',
 							onClick: () => changePublicInterfaceMode(2),
 							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
