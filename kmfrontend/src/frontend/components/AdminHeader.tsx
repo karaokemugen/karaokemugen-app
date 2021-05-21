@@ -321,7 +321,9 @@ function AdminHeader(props: IProps) {
 					<ul className="dropdown-menu">
 						<li>
 							<a
-								onClick={() => {
+								href={`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`}
+								onClick={e => {
+									e.preventDefault();
 									props.history.push(`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`);
 									setDropDownMenu(!dropDownMenu);
 								}}
