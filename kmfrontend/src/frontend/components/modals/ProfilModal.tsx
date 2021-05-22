@@ -85,6 +85,13 @@ class ProfilModal extends Component<IProps, IState> {
 		}
 	};
 
+	onClickCheckbox = (event: any) => {
+		const user = this.state.user;
+		user.flag_sendstats = event.target.checked;
+		this.setState({ user: user });
+	};
+
+
 	onClickSelect = (event: any) => {
 		const user = this.state.user;
 		(user[event.target.name as typesAttrUser] as number) = parseInt(event.target.value);
@@ -303,6 +310,16 @@ class ProfilModal extends Component<IProps, IState> {
 									options={listCountries()}
 									forceTop={true}
 									onChange={(value) => this.changeAutocomplete('location', value)} />
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={this.state.user.flag_sendstats}
+										onChange={this.onClickCheckbox}
+									/>
+									<label>{i18next.t('MODAL.PROFILE_MODAL.FLAG_SENDSTATS')}</label>
+								</div>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">

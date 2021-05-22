@@ -93,7 +93,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		user.old_login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
-		if (!user.email) user.email = null;		
+		if (!user.email) user.email = null;
 		if (!user.location) user.location = null;
 		if (!user.nickname) user.nickname = currentUser.nickname;
 		if (!user.series_lang_mode && user.series_lang_mode !== 0) user.series_lang_mode = -1;
@@ -107,6 +107,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw {code: 409};
 		// Tutorial done is local only, so it's not transferred from KM Server for online users, so we'll check out with currentUser.
 		if (user.flag_tutorial_done === undefined) user.flag_tutorial_done = currentUser.flag_tutorial_done;
+		if (user.flag_sendstats === undefined) user.flag_sendstats = currentUser.flag_sendstats;
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
@@ -263,7 +264,7 @@ export async function createUser(user: User, opts: UserOpts = {
 
 	user.bio = user.bio || null;
 	user.url = user.url || null;
-	user.email = user.email || null;		
+	user.email = user.email || null;
 	user.location = user.location || null;
 	if (user.type === 2) user.flag_online = false;
 

@@ -499,7 +499,8 @@
 			"LOCAL_DELETE_WARN": "Ceci aura pour effet de supprimer votre compte localement. Si vous possédez un compte en ligne, ce dernier restera actif. Êtes-vous sûr de vouloir faire ça ?",
 			"MISSING_EMAIL": "Attention : sans email vous ne pourrez pas réinitialiser votre mot de passe !",
 			"LOCATION": "Localisation",
-			"DANGEROUS_ACTIONS": "Actions dangereuses"
+			"DANGEROUS_ACTIONS": "Actions dangereuses",
+			"FLAG_SENDSTATS": "Utiliser mes favoris et demandes de chansons pour des statistiques"
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Mélanger la liste de lecture",
@@ -599,6 +600,12 @@
 			"DELETE_PUBLIC": "Cette liste est définie comme étant publique, pour la supprimer, définissez une autre liste publique.",
 			"DELETE_CURRENT": "Cette liste est définie comme étant courante, pour la supprimer, définissez une autre liste courante.",
 			"DELETE_CURRENT_PUBLIC": "Cette liste est définie comme étant courante et publique, pour la supprimer, définissez une autre liste courante et publique."
+		},
+		"STATS_MODAL": {
+			"TITLE": "Utiliser mes favoris et demandes de chansons pour des statistiques",
+			"DESC": "Nous utilisons vos favoris ainsi que les karaokés que vous avez demandé lors d'une session pour faire des statistiques d'utilisation (par exemple, permettre de connaître les karaokés les plus demandés).",
+			"REFUSE_DESC": "Si vous ne voulez pas participer, même si c'est anonyme, à ces statistiques d'utilisation, merci de nous le dire. Si vous refusez, le serveur ignorera vos échantillons de statistiques et les applications Karaoke Mugen n'enverront pas vos données.",
+			"CHANGE": "Vous pouvez changer ceci à tout moment dans votre profil. Acceptez-vous cet usage des statistiques ?"
 		}
 	},
 	"SETUP_PAGE": {

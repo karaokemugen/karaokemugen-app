@@ -13,6 +13,7 @@ interface IProps {
 	message: any;
 	forceSmall: boolean | undefined;
 	callback: (param?: boolean | string) => void;
+	abortCallback?: boolean
 }
 
 interface IState {
@@ -44,6 +45,9 @@ class Modal extends Component<IProps, IState> {
 	};
 
 	abortModal = () => {
+		if (this.props.abortCallback) {
+			this.props.callback(false);
+		}
 		closeModal(this.context.globalDispatch);
 	};
 

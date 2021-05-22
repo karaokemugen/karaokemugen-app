@@ -38,8 +38,8 @@ class OnlineProfileModal extends Component<IProps, IState> {
 				{ password: this.state.password });
 		}
 		const user = this.context.globalState.auth.data;
-		user.token = response.token;
-		user.onlineToken = response.onlineToken;
+		user.token = response.message.data.token;
+		user.onlineToken = response.message.data.onlineToken;
 		setAuthentifactionInformation(this.context.globalDispatch, user);
 		closeModal(this.context.globalDispatch);
 	};

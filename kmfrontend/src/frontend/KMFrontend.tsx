@@ -40,8 +40,30 @@ class KMFrontend extends Component<unknown, IState> {
 			}
 		});
 
+		if (this.context?.globalState.settings.data.user?.flag_sendstats === null) {
+			callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.STATS_MODAL.TITLE'), <>
+				{i18next.t('MODAL.STATS_MODAL.DESC')}
+				<br/>
+				<br/>
+				{i18next.t('MODAL.STATS_MODAL.REFUSE_DESC')}
+				<br/>
+				<br/>
+				{i18next.t('MODAL.STATS_MODAL.CHANGE')}
+			</>, this.updateUser, '', undefined, true);
+		}
+
 		if (!this.context?.globalState.settings.data.user?.flag_tutorial_done && window.location.pathname === '/admin') {
 			startIntro();
+		}
+	}
+
+	updateUser = async (flag_sendstats: boolean) => {
+		const user = this.context?.globalState.settings.data.user;
+		user.flag_sendstats = flag_sendstats;
+		try {
+			await commandBackend('editMyAccount', user);
+		} catch (e) {
+			// already display
 		}
 	}
 
