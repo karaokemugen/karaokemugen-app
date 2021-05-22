@@ -259,18 +259,18 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	if (await findUserByName(username)) throw {code: 409, msg: 'User already exists locally, delete it first.'};
 	// Verify that password matches with online before proceeding
 	const onlineToken = await remoteLogin(token.username, password);
-	await HTTP(`https://${instance}/api/users`, {
-		method: 'DELETE',
-		headers: {
-			authorization: onlineToken
-		}
-	});
 	// Renaming user locally
 	const user = await findUserByName(token.username);
 	user.login = username;
 	await editUser(token.username, user, null, 'admin', {
 		editRemote: false,
 		renameUser: true
+	});
+	await HTTP(`https://${instance}/api/users`, {
+		method: 'DELETE',
+		headers: {
+			authorization: onlineToken
+		}
 	});
 	emitWS('userUpdated', token.username);
 	return {
