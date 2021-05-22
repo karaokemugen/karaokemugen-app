@@ -100,7 +100,7 @@ const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 ]);
 
 export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
-	if (!getConfig().Karaoke.StreamerMode.Enabled) return;
+	if (!getConfig().Karaoke.StreamerMode.Enabled && !getState().ready) return;
 	try {
 		if (only) {
 			await fnMap.get(only)();
