@@ -293,15 +293,16 @@ class ProfilModal extends Component<IProps, IState> {
 									placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
 							</div>
-							<div className="profileLine row">
-								<label className="col-xs-6 control-label">{i18next.t('MODAL.PROFILE_MODAL.LOCATION')}</label>
-								<div className="col-xs-6">
-									<Autocomplete
-										value={this.state.user.location}
-										options={listCountries()}
-										forceTop={true}
-										onChange={(value) => this.changeAutocomplete('location', value)} />
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fas fa-map-marked-alt" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.LOCATION')}</label>
 								</div>
+								<Autocomplete
+									value={this.state.user.location}
+									options={listCountries()}
+									forceTop={true}
+									onChange={(value) => this.changeAutocomplete('location', value)} />
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
