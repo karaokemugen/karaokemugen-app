@@ -499,7 +499,8 @@
 			"LOCAL_DELETE_WARN": "This will remove your account from this local app only. If you have an online account, it won't be disabled. Are you sure you want to do this?",
 			"MISSING_EMAIL": "Warning: without email you will not be able to reset your password!",
 			"LOCATION": "Location",
-			"DANGEROUS_ACTIONS": "Dangerous actions"
+			"DANGEROUS_ACTIONS": "Dangerous actions",
+			"FLAG_SENDSTATS": "Use my favorites and karaokes requests for stats"
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Shuffle playlist",
@@ -599,6 +600,12 @@
 			"DELETE_PUBLIC": "This list is defined as public, change the public playlist for another to delete this one.",
 			"DELETE_CURRENT": "This list is defined as current , change the current playlist for another to delete this one.",
 			"DELETE_CURRENT_PUBLIC": "This list is defined as current and public, change the current and public playlist for another to delete this one."
+		},
+		"STATS_MODAL": {
+			"TITLE": "Use my favorites and karaokes requests for stats",
+			"DESC": "We use your favorites as well as the karaokes that you have requested during a session to make usage statistics (for example, to find out the most requested karaokes).",
+			"REFUSE_DESC": "If you do not want to participate, even if it's anonymous, in these usage statistics, please let us know. If you refuse, your data will be ignored by the server and not sent by the Karaoke Mugen Application.",
+			"CHANGE": "You can change this at any time in your profile. Do you accept the usage of your stats?"
 		}
 	},
 	"SETUP_PAGE": {

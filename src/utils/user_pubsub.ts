@@ -26,6 +26,7 @@ async function updateUser(login, payload) {
 		user.bio = userRemote.bio;
 		user.url = userRemote.url;
 		user.location = userRemote.location;
+		user.flag_sendstats = userRemote.flag_sendstats;
 		user.fallback_series_lang = userRemote.fallback_series_lang;
 		user.main_series_lang = userRemote.main_series_lang;
 		user.series_lang_mode = userRemote.series_lang_mode;

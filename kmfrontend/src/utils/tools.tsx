@@ -150,11 +150,25 @@ export function displayMessage(type: TypeOptions, message: any, time = 3500, pos
 	}
 }
 
-export function callModal(dispatch: Dispatch<ShowModal>, type: string, title: any, message: any, callback?: any, placeholder?: string, forceSmall?: boolean) {
-	showModal(dispatch,
-		React.createElement(Modal,
-			{ type: type, title: title, message: message, callback: callback, placeholder: placeholder, forceSmall: forceSmall })
-	);
+export function callModal(
+	dispatch: Dispatch<ShowModal>,
+	type: string,
+	title: any,
+	message: any,
+	callback?: any,
+	placeholder?: string,
+	forceSmall?: boolean,
+	abortCallback?: boolean
+) {
+	showModal(dispatch, React.createElement(Modal, {
+		type,
+		title,
+		message,
+		callback,
+		placeholder,
+		forceSmall,
+		abortCallback
+	}));
 }
 
 export const nonStandardPlaylists = {
