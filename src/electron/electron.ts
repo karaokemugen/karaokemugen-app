@@ -35,6 +35,9 @@ let initDone = false;
 
 export function startElectron() {
 	setState({electron: app ? true : false });
+	// Fix bug that makes the web views not updating if they're hidden behind other windows.
+	// It's better for streamers who capture the web interface through OBS.
+	app.commandLine.appendSwitch('disable-features','CalculateNativeWinOcclusion');
 	// This is called when Electron finished initializing
 	app.on('ready', async () => {
 		try {
