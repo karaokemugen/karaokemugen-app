@@ -93,6 +93,11 @@ export function startElectron() {
 		ipcMain.on('focusMainWindow', (_event, _eventData) => {
 			focusWindow();
 		});
+		ipcMain.on('openFolder', (_event, eventData) => {
+			if (eventData.type === 'streamFiles') {
+				open(resolve(getState().dataPath, getConfig().System.Path.StreamFiles));
+			}
+		});
 	});
 
 	// macOS only. Yes.

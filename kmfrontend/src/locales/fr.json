@@ -320,6 +320,8 @@
 			"LABELS_MYSTERY_SONGS_ADD": "Ajouter",
 			"LABELS_MYSTERY_SONGS_DELETE": "Supprimer",
 			"SESSION_SETTINGS": "Session de karaoké",
+			"STREAMER_MODE_LABEL": "Karaoke Mugen met à disposition des fichiers texte que vous pouvez utiliser dans votre logiciel de streaming, pour créer un overlay personnalisé.",
+			"OPEN_STREAMER_FILES": "Voir les fichiers.",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Chanson mystère",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Afficher la notification de fin de session X minutes avant la fin",

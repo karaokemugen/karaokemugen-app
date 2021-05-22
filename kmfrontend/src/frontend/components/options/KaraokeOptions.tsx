@@ -3,6 +3,7 @@ import difference from 'lodash.difference';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
+import { isElectron, sendIPC } from '../../../utils/electron';
 import { commandBackend } from '../../../utils/socket';
 import { dotify, expand } from '../../../utils/tools';
 import Switch from '../generic/Switch';
@@ -482,9 +483,13 @@ class KaraokeOptions extends Component<IProps, IState> {
 								className="settingsGroupPanel"
 							>
 								<div className="settings-line">
-									<label>
-										{i18next.t('STREAM_PAUSE_DURATION')}
-									</label>
+									<p>
+										{i18next.t('SETTINGS.KARAOKE.STREAMER_MODE_LABEL')}&nbsp;
+										{isElectron() ? <a href="#" onClick={e => {
+											e.preventDefault();
+											sendIPC('openFolder', {type: 'streamFiles'});
+										}}>{i18next.t('SETTINGS.KARAOKE.OPEN_STREAMER_FILES')}</a> : null}
+									</p>
 								</div>
 								<div className="settings-line">
 									<label>
