@@ -472,10 +472,6 @@ class Playlist extends Component<IProps, IState> {
 					this.setState({ scrollToIndex: result.index, _goToPlaying: true });
 				}
 			}
-			if (this.props.indexKaraDetail) {
-				this.setState({ scrollToIndex: this.props.indexKaraDetail });
-				this.props.clearIndexKaraDetail();
-			}
 			if (karas.infos?.from > 0) {
 				stateData = this.state.data as KaraList;
 				if (karas.infos.from < stateData.content.length) {
@@ -496,7 +492,13 @@ class Playlist extends Component<IProps, IState> {
 			} else {
 				stateData = karas;
 			}
-			this.setState({ data: stateData, getPlaylistInProgress: false }, () => this.playlistForceRefresh(true));
+			this.setState({ data: stateData, getPlaylistInProgress: false }, () => {
+				if (this.props.indexKaraDetail) {
+					this.setState({ scrollToIndex: this.props.indexKaraDetail });
+					this.props.clearIndexKaraDetail();
+				}
+				this.playlistForceRefresh(true);
+			});
 		} catch (e) {
 			// already display
 		}
