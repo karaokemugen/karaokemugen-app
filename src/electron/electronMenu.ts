@@ -412,7 +412,7 @@ function displayAbout() {
 			bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
 			homepage: 'https://mugen.karaokes.moe',
 			description: versionSHA,
-			copyright: 'by Karaoke Mugen Dev Team, under MIT license',
+			copyright: i18next.t('ABOUT.COPYRIGHT'),
 			use_version_info: true,
 			css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
 		});
