@@ -57,7 +57,7 @@ class SessionList extends Component<unknown, SessionListState> {
 
 	delete = async (file) => {
 		try {
-			await commandBackend('deleteFile', { path: file });
+			await commandBackend('deleteMedia', { file: file });
 			this.setState({ unused: this.state.unused.filter(item => item.file !== file) });
 		} catch (err) {
 			// already display
