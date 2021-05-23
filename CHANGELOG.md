@@ -56,7 +56,7 @@ Since we're using git, your repository will be kept up to date when Karaoke Muge
 - Improved sentry reports for frontend errors (#994)
 - The user list in the operator page can now be closed with the ESC key (#1010)
 - The border has been increased to 2 on the player's font for song info (#1011)
-- You can now use the ENTER key to submit the form on the login page (#1018)
+- You can now use the ENTER key to submit the form on the login in setup page (#1018)
 - Tags are a little smaller in the player progress bar (#1021)
 
 ## Fixes
