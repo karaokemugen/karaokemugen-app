@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,deleteMedia,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepoFreeSpace, getRepos, removeRepo, updateAllGitRepos } from '../../services/repo';
+import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,deleteMedias,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepoFreeSpace, getRepos, removeRepo, updateAllGitRepos } from '../../services/repo';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -117,7 +117,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route('deleteAllRepoMedias', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			await deleteMedia(null, req.body?.name);
+			await deleteMedias(null, req.body?.name);
 			return {code: 200, message: APIMessage('REPO_ALL_MEDIAS_DELETED')};
 		} catch(err) {
 			const code = 'REPO_DELETE_ALL_MEDIAS_ERROR';
@@ -128,7 +128,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route('deleteOldRepoMedias', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			await deleteMedia(null, req.body?.name, true);
+			await deleteMedias(null, req.body?.name, true);
 			return {code: 200, message: APIMessage('REPO_OLD_MEDIAS_DELETED')};
 		} catch(err) {
 			const code = 'REPO_DELETE_OLD_MEDIAS_ERROR';
@@ -139,7 +139,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route('deleteMedia', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			await deleteMedia(req.body?.kid);
+			await deleteMedias(req.body?.kid);
 			return {code: 200, message: APIMessage('REPO_MEDIA_DELETED')};
 		} catch(err) {
 			const code = 'REPO_DELETE_MEDIA_ERROR';

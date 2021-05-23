@@ -1,4 +1,3 @@
-import { promises as fs } from 'fs';
 import sample from 'lodash.sample';
 import { Socket } from 'socket.io';
 
@@ -207,16 +206,6 @@ export default function miscController(router: SocketIOApp) {
 			return await browseFs(req.body.path, req.body.onlyMedias);
 		} catch(err) {
 			const code = 'FS_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
-		}
-	});
-	router.route('deleteFile', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
-		try {
-			return await fs.unlink(req.body.path);
-		} catch(err) {
-			const code = 'FS_DELETE_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}

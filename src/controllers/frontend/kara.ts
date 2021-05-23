@@ -5,14 +5,14 @@ import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getKara, getKaraLyrics, getKaras} from '../../services/kara';
 import { createKara, editKara } from '../../services/kara_creation';
-import { batchEditKaras, copyKaraToRepo, deleteKara } from '../../services/karaManagement';
+import { batchEditKaras, copyKaraToRepo, deleteKara, deleteMedia } from '../../services/karaManagement';
 import { playSingleSong } from '../../services/karaokeEngine';
 import { addKaraToPlaylist } from '../../services/playlist';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function karaController(router: SocketIOApp) {
-	router.route('getKaras', async (socket: Socket, req: APIData) => {	
+	router.route('getKaras', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'open');
 		try {
 			return await getKaras({
@@ -32,7 +32,7 @@ export default function karaController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('createKara', async (socket: Socket, req: APIData) => {	
+	router.route('createKara', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			await createKara(req.body);
@@ -43,7 +43,7 @@ export default function karaController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('getKara', async (socket: Socket, req: APIData) => {	
+	router.route('getKara', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			if (!isUUID(req.body.kid)) throw {code: 400};
@@ -54,7 +54,7 @@ export default function karaController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('deleteKaras', async (socket: Socket, req: APIData) => {	
+	router.route('deleteKaras', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		const validationErrors = check(req.body, {
 			kids: {presence: true, uuidArrayValidator: true}
@@ -70,7 +70,7 @@ export default function karaController(router: SocketIOApp) {
 			}
 		}
 	});
-	router.route('addKaraToPublicPlaylist', async (socket: Socket, req: APIData) => {	
+	router.route('addKaraToPublicPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		// Add Kara to the playlist currently used depending on mode
 		if (!isUUID(req.body.kids)) throw {code: 400};
@@ -135,6 +135,16 @@ export default function karaController(router: SocketIOApp) {
 			return;
 		} catch {
 			throw {code: 500};
+		}
+	});
+	router.route('deleteMedia', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await deleteMedia(req.body.file);
+		} catch(err) {
+			const code = 'MEDIA_DELETE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
 }

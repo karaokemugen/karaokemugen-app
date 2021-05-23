@@ -257,7 +257,7 @@ export async function integrateKaraFile(file: string) {
 		}
 		sortKaraStore();
 	} else {
-		await createKaraInDB(karaData, { refresh: false });		
+		await createKaraInDB(karaData, { refresh: false });
 	}
 	if (getRepo(karaData.repository).AutoMediaDownloads) {
 		checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
@@ -267,3 +267,9 @@ export async function integrateKaraFile(file: string) {
 	saveSetting('baseChecksum', getStoreChecksum());
 }
 
+export async function deleteMedia(file: string) {
+	// Just to make sure someone doesn't send a full path file
+	const mediaFile = basename(file);
+	const mediaPaths = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias'));
+	await fs.unlink(mediaPaths[0]);
+}

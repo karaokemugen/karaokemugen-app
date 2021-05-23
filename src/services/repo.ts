@@ -145,7 +145,7 @@ export async function checkDownloadStatus(kids?: string[]) {
 	profile('checkDownloadStatus');
 }
 
-export async function deleteMedia(kids?: string[], repo?: string, cleanRarelyUsed = false) {
+export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUsed = false) {
 	let q: string;
 	if (kids?.length > 0) {
 		q = `k:${kids.join(',')}`;
@@ -252,7 +252,7 @@ export async function updateGitRepo(name: string, refresh = true) {
 			karaFiles.length > 0
 		)) await refreshAll();
 		if (getConfig().Online.AllowDownloads) await updateGitMedias(name);
-		await generateBlacklist();		
+		await generateBlacklist();
 	}
 }
 
