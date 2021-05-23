@@ -51,13 +51,13 @@ export default function MigratePage() {
 						<li>
 							<a href="http://mugen.karaokes.moe/contact.html">
 								<i className="fas fa-pencil-alt" />
-								{i18next.t('WLCM_CONTACT')}
+								{i18next.t('WELCOME_PAGE.CONTACT')}
 							</a>
 						</li>
 						<li>
 							<a href="http://mugen.karaokes.moe/">
 								<i className="fas fa-link" />
-								{i18next.t('WLCM_SITE')}
+								{i18next.t('WELCOME_PAGE.SITE')}
 							</a>
 						</li>
 					</ul>
