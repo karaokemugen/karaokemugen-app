@@ -11,7 +11,7 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext, { GlobalContextInterface } from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import {callModal, displayMessage, expand, isNonStandardPlaylist} from '../../utils/tools';
+import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import ProfilModal from './modals/ProfilModal';
@@ -46,7 +46,7 @@ function AdminHeader(props: IProps) {
 		val = val / base;
 		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
 		setStatusPlayer(oldState => {
-			const state = {...oldState};
+			const state = { ...oldState };
 			return merge(state, data);
 		});
 	};
@@ -69,12 +69,12 @@ function AdminHeader(props: IProps) {
 
 	const saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend('updateSettings', { setting: data }).catch(() => { });
 	};
 
 	const changePublicInterfaceMode = (value: number) => {
 		const data = expand('Frontend.Mode', value);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend('updateSettings', { setting: data }).catch(() => { });
 	};
 
 	const play = (event: any) => {
@@ -83,7 +83,7 @@ function AdminHeader(props: IProps) {
 			&& props.idsPlaylist.right !== props.currentPlaylist?.plaid
 			&& (!isNonStandardPlaylist(props.idsPlaylist.left) || !isNonStandardPlaylist(props.idsPlaylist.right))) {
 			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {}));
+				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => { }));
 		} else {
 			props.putPlayerCommando(event);
 		}
@@ -112,7 +112,7 @@ function AdminHeader(props: IProps) {
 
 	const setVolume = (event) => {
 		setStatusPlayer(oldState => {
-			const state = {...oldState};
+			const state = { ...oldState };
 			state.volume = event.target.value;
 			return state;
 		});
@@ -129,65 +129,69 @@ function AdminHeader(props: IProps) {
 					<i className="fas fa-fw fa-long-arrow-alt-left " />
 				</button> : null
 			}
-			<div className="header-group switchs">
-				<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
-					{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
-              &nbsp;
-  						<i className="far fa-question-circle" />
-				</label>
-				<label title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
-					{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
-            &nbsp;
-  					<i className="far fa-question-circle" />
-				</label>
-			</div>
-			<div id="switchValue" className="header-group switchs">
-				<RadioButton
-					title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}
-					buttons={[
-						{
-							label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
-							active: context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
-							activeColor: '#3c5c00',
-							onClick: () => saveOperatorAdd(true),
-							description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
-						},
-						{
-							label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
-							active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
-							activeColor: '#880500',
-							onClick: () => saveOperatorAdd(false),
-							description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON')
-						}
-					]}
-				/>
-				<RadioButton
-					title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}
-					buttons={[
-						{
-							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
-							activeColor: '#880500',
-							onClick: () => changePublicInterfaceMode(0),
-							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')
-						},
-						{
-							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
-							activeColor: '#a36700',
-							onClick: () => changePublicInterfaceMode(1),
-							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
-						},
-						{
-							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
-							activeColor: '#3c5c00',
-							onClick: () => changePublicInterfaceMode(2),
-							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
-						}
-					]}
-				/>
-			</div>
+			{props.location.pathname.includes('/options') ? null :
+				<>
+					<div className="header-group switchs">
+						<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
+							{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
+							&nbsp;
+							<i className="far fa-question-circle" />
+						</label>
+						<label title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
+							{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
+							&nbsp;
+							<i className="far fa-question-circle" />
+						</label>
+					</div>
+					<div id="switchValue" className="header-group switchs">
+						<RadioButton
+							title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}
+							buttons={[
+								{
+									label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
+									active: context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
+									activeColor: '#3c5c00',
+									onClick: () => saveOperatorAdd(true),
+									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
+								},
+								{
+									label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
+									active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
+									activeColor: '#880500',
+									onClick: () => saveOperatorAdd(false),
+									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON')
+								}
+							]}
+						/>
+						<RadioButton
+							title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}
+							buttons={[
+								{
+									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
+									active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
+									activeColor: '#880500',
+									onClick: () => changePublicInterfaceMode(0),
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')
+								},
+								{
+									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
+									active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
+									activeColor: '#a36700',
+									onClick: () => changePublicInterfaceMode(1),
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
+								},
+								{
+									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
+									active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
+									activeColor: '#3c5c00',
+									onClick: () => changePublicInterfaceMode(2),
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
+								}
+							]}
+						/>
+					</div>
+				</>
+			}
 			<div className="header-group controls">
 				{
 					statusPlayer?.stopping || statusPlayer?.streamerPause ?
