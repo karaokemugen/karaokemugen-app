@@ -118,7 +118,7 @@ class PublicHomepage extends Component<IProps, IState> {
 										}
 									})}
 									<button className="action" onClick={() => this.props.changeView('tag', YEARS.type)}>
-										<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS_YEAR')}
+										<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS.YEAR')}
 									</button>
 									<button className="action" onClick={() => this.setState({ othersMenu: !this.state.othersMenu })}>
 										<i className={this.state.othersMenu ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'} />

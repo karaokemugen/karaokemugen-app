@@ -559,7 +559,7 @@ class Playlist extends Component<IProps, IState> {
 					' karas'
 					: '') +
 				(!isNonStandardPlaylist(this.state.plaid) && this.state.playlistInfo
-					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS_DURATION')} ` +
+					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS.DURATION')} ` +
 					secondsTimeSpanToHMS(this.state.playlistInfo.duration, 'hm') +
 					` / ${secondsTimeSpanToHMS(this.state.playlistInfo.time_left, 'hm')} ${is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')} `
 					: '');

@@ -146,9 +146,9 @@ class KaraDetail extends Component<IProps, IState> {
 					? secondsTimeSpanToHMS(timeAgo, 'hm')
 					: secondsTimeSpanToHMS(timeAgo, 'ms');
 
-			return i18next.t('DETAILS_LAST_PLAYED_2', { time: timeAgoStr });
+			return i18next.t('DETAILS.LAST_PLAYED_2', { time: timeAgoStr });
 		} else if (lastPlayed_at) {
-			return i18next.t('DETAILS_LAST_PLAYED', { date: new Date(lastPlayed_at).toLocaleDateString() });
+			return i18next.t('DETAILS.LAST_PLAYED', { date: new Date(lastPlayed_at).toLocaleDateString() });
 		}
 		return null;
 	};
@@ -331,7 +331,7 @@ class KaraDetail extends Component<IProps, IState> {
 						</span>
 						<span>
 							{playTime
-								? i18next.t('DETAILS_PLAYING_IN', {
+								? i18next.t('DETAILS.PLAYING_IN', {
 									time: secondsTimeSpanToHMS(data.time_before_play, 'hm'),
 									date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2)
 								})
@@ -352,14 +352,14 @@ class KaraDetail extends Component<IProps, IState> {
 					}
 					<div className="detailsKaraLine">
 						<span>
-							{this.props.playlistcontentId ? i18next.t('DETAILS_ADDED'):i18next.t('DETAILS_CREATED')}
+							{this.props.playlistcontentId ? i18next.t('DETAILS.ADDED'):i18next.t('DETAILS.CREATED')}
 							{data.created_at ? <>
-								{i18next.t('DETAILS_ADDED_2')}
+								{i18next.t('DETAILS.ADDED_2')}
 								<span className="boldDetails">{new Date(data.created_at).toLocaleString()}</span>
 							</> : null
 							}
 							{data.nickname ? <>
-								{i18next.t('DETAILS_ADDED_3')}
+								{i18next.t('DETAILS.ADDED_3')}
 								<span className="boldDetails">{data.nickname}</span>
 							</> : null
 							}

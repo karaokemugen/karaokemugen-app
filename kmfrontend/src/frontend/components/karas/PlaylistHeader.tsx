@@ -39,7 +39,7 @@ const tagsTypesList = [
 	'BLCTYPE_4',
 	'BLCTYPE_5',
 	'BLCTYPE_6',
-	'DETAILS_YEAR',
+	'DETAILS.YEAR',
 	'BLCTYPE_8',
 	'BLCTYPE_9',
 	'BLCTYPE_7',
@@ -459,7 +459,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 						})}
 						value={this.state.tagType}>
 						{tagsTypesList.map(val => {
-							if (val === 'DETAILS_YEAR') {
+							if (val === 'DETAILS.YEAR') {
 								return <option key={val} value={0}>{i18next.t(val)}</option>;
 							} else {
 								return <option key={val}
