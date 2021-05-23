@@ -9,12 +9,12 @@ import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
 import { refreshAll } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
 import { writeKara } from '../lib/dao/karafile';
-import { readAllKaras,readAllTags } from '../lib/services/generation';
-import { Kara,KaraFileV4,KaraTag } from '../lib/types/kara';
+import { readAllKaras } from '../lib/services/generation';
+import { DBTag } from '../lib/types/database/tag';
+import { Kara,KaraFileV4 } from '../lib/types/kara';
 import { Repository } from '../lib/types/repo';
-import { Tag, TagFile } from '../lib/types/tag';
+import { TagFile } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { tagTypes } from '../lib/utils/constants';
 import { asyncCheckOrMkdir, asyncMoveAll, extractAllFiles, getFreeSpace, relativePath, resolveFileInDirs } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
@@ -28,9 +28,7 @@ import { updateGitMedias } from './downloadUpdater';
 import { getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { sendPayload } from './stats';
-import { deleteTag, getTag, integrateTagFile } from './tag';
-
-type UUIDSet = Set<string>
+import { deleteTag, getTags, integrateTagFile } from './tag';
 
 /** Get all repositories in database */
 export function getRepos() {
@@ -401,40 +399,14 @@ export async function getRepoMetadata(repo: string): Promise<Repository> {
 }
 
 /** Find any unused tags in a repository */
-export async function findUnusedTags(repo: string): Promise<Tag[]> {
+export async function findUnusedTags(repo: string): Promise<DBTag[]> {
 	if (!getRepo(repo)) throw {code: 404};
 	const task = new Task({
 		text: 'FINDING_UNUSED_TAGS'
 	});
 	try {
-		const [karaFiles, tagFiles] = await Promise.all([
-			extractAllFiles('Karaokes', repo),
-			extractAllFiles('Tags', repo)
-		]);
-		task.update({
-			total: karaFiles.length + tagFiles.length
-		});
-		const karas = await readAllKaras(karaFiles, false, task);
-		const tags = await readAllTags(tagFiles, task);
-		task.update({
-			total: 0
-		});
-		const tids: UUIDSet = new Set();
-		tags.forEach(t => tids.add(t.tid));
-		for (const kara of karas) {
-			for (const tagType of Object.keys(tagTypes)) {
-				if (kara[tagType]) kara[tagType].forEach((t: KaraTag) => tids.delete(t.tid));
-			}
-		}
-		// Now tids only has tag IDs which aren't used anywhere
-		const tagsToDelete: Tag[] = [];
-		for (const tid of tids) {
-			const tag = await getTag(tid);
-			if (tag) {
-				tag.tagfile = tagFiles.filter(path => path.includes(tag.tagfile))[0];
-				tagsToDelete.push(tag);
-			}
-		}
+		const tags = await getTags({});
+		const tagsToDelete = tags.content.filter(t => !t.karacount && t.repository === repo);
 		// Return all valid tags
 		return tagsToDelete;
 	} catch(err) {
