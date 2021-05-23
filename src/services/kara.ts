@@ -176,7 +176,7 @@ export function getSongVersion(kara: DBKara): string {
 			}
 			return `[${ret}]`;
 		});
-		return `${versions.join(' ')}`;
+		return ` ${versions.join(' ')}`;
 	} else {
 		return '';
 	}
