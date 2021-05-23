@@ -1089,7 +1089,6 @@
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics...",
-		"FINDING_UNUSED_TAGS": "Recherche de tags inutilisés...",
 		"FINDING_UNUSED_MEDIAS": "Recherche de médias inutilisés...",
 		"COMPARING_LYRICS_IN_REPOS": "Comparaison des lyrics entre dépôts...",
 		"CREATING_SONG": "Création du karaoké...",

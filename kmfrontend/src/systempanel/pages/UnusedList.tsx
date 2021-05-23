@@ -37,7 +37,7 @@ class SessionList extends Component<unknown, SessionListState> {
 		const res = await commandBackend('getUnusedTags', { name: this.state.repository }, undefined, 60000);
 		this.setState({
 			unused: res ? res.map(value => {
-				return { name: value.name, types: value.types, file: value.tagfile };
+				return { name: value.name, types: value.types, file: value.tagfile, tid: value.tid };
 			}) : []
 		});
 	}
@@ -55,10 +55,19 @@ class SessionList extends Component<unknown, SessionListState> {
 		this.setState({ tagType: value });
 	}
 
-	delete = async (file) => {
+	deleteMedia = async (file) => {
 		try {
 			await commandBackend('deleteMedia', { file: file });
 			this.setState({ unused: this.state.unused.filter(item => item.file !== file) });
+		} catch (err) {
+			// already display
+		}
+	};
+
+	deleteTag = async (tid) => {
+		try {
+			await commandBackend('deleteTag', { tids: [tid] });
+			this.setState({ unused: this.state.unused.filter(item => item.tid !== tid) });
 		} catch (err) {
 			// already display
 		}
@@ -139,7 +148,7 @@ class SessionList extends Component<unknown, SessionListState> {
 		title: i18next.t('ACTION'),
 		render: (text_, record) =>
 			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
-				() => this.delete(record.file)
+				() => this.state.type === 'medias' ? this.deleteMedia(record.file) : this.deleteTag(record.tid)
 			} />
 	}];
 }

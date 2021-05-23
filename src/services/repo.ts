@@ -401,9 +401,6 @@ export async function getRepoMetadata(repo: string): Promise<Repository> {
 /** Find any unused tags in a repository */
 export async function findUnusedTags(repo: string): Promise<DBTag[]> {
 	if (!getRepo(repo)) throw {code: 404};
-	const task = new Task({
-		text: 'FINDING_UNUSED_TAGS'
-	});
 	try {
 		const tags = await getTags({});
 		const tagsToDelete = tags.content.filter(t => !t.karacount && t.repository === repo);
@@ -413,8 +410,6 @@ export async function findUnusedTags(repo: string): Promise<DBTag[]> {
 		if (err?.code === 404) throw err;
 		sentry.error(err);
 		throw err;
-	} finally {
-		task.end();
 	}
 }
 
