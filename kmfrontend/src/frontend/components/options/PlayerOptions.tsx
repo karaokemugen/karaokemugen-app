@@ -70,7 +70,7 @@ class PlayerOptions extends Component<IProps, IState> {
 		commandBackend('sendPlayerCommand', {
 			command: e.target.getAttribute('data-namecommand'),
 			options: value
-		}).catch(() => {});
+		}).catch(() => { });
 		this.props.onChange(e);
 	};
 
@@ -108,9 +108,9 @@ class PlayerOptions extends Component<IProps, IState> {
 					</div>
 					<div className="settings-line">
 						<label htmlFor="Player.StayOnTop">
-							<span className="title">{i18next.t('ALWAYS_ON_TOP')}</span>
-							<br/>
-							<span className="tooltip">{i18next.t('ALWAYS_ON_TOP_TOOLTIP')}</span>
+							<span className="title">{i18next.t('SETTINGS.PLAYER.ALWAYS_ON_TOP')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.ALWAYS_ON_TOP_TOOLTIP')}</span>
 						</label>
 						<div>
 							<Switch idInput="Player.StayOnTop" handleChange={this.putPlayerCommando}
@@ -119,9 +119,9 @@ class PlayerOptions extends Component<IProps, IState> {
 					</div>
 					<div className="settings-line">
 						<label htmlFor="Player.FullScreen">
-							<span className="title">{i18next.t('FULLSCREEN')}</span>
-							<br/>
-							<span className="tooltip">{i18next.t('FULLSCREEN_TOOLTIP')}</span>
+							<span className="title">{i18next.t('SETTINGS.PLAYER.FULLSCREEN')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.FULLSCREEN_TOOLTIP')}</span>
 						</label>
 						<div>
 							<Switch idInput="Player.FullScreen" handleChange={this.putPlayerCommando}
@@ -132,8 +132,8 @@ class PlayerOptions extends Component<IProps, IState> {
 						<div id="pipSettings" className="settingsGroupPanel">
 							<div className="settings-line">
 								<label htmlFor="Player.PIP.Size">
-									<span className="title">{i18next.t('VIDEO_SIZE')}</span>
-									<br/>
+									<span className="title">{i18next.t('SETTINGS.PLAYER.VIDEO_SIZE')}</span>
+									<br />
 									<span className="tooltip">{this.state.config['Player.PIP.Size']}%</span>
 								</label>
 								<div>
@@ -147,8 +147,10 @@ class PlayerOptions extends Component<IProps, IState> {
 							</div>
 
 							<div className="settings-line">
-								<label>
-									{i18next.t('VIDEO_POSITION_X')}
+								<label htmlFor="Player.PIP.PositionX">
+									<span className="title">{i18next.t('SETTINGS.PLAYER.VIDEO_POSITION_X')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('SETTINGS.PLAYER.VIDEO_POSITION_X_TOOLTIP')}</span>
 								</label>
 								<div>
 									<select
@@ -156,16 +158,18 @@ class PlayerOptions extends Component<IProps, IState> {
 										onChange={this.onChange}
 										value={this.state.config['Player.PIP.PositionX']}
 									>
-										<option value="Left"> {i18next.t('LEFT')} </option>
-										<option value="Center">{i18next.t('CENTER')}</option>
-										<option value="Right"> {i18next.t('RIGHT')} </option>
+										<option value="Left"> {i18next.t('SETTINGS.PLAYER.LEFT')} </option>
+										<option value="Center">{i18next.t('SETTINGS.PLAYER.CENTER')}</option>
+										<option value="Right"> {i18next.t('SETTINGS.PLAYER.RIGHT')} </option>
 									</select>
 								</div>
 							</div>
 
 							<div className="settings-line">
-								<label>
-									{i18next.t('VIDEO_POSITION_Y')}
+								<label htmlFor="Player.PIP.PositionY">
+									<span className="title">{i18next.t('SETTINGS.PLAYER.VIDEO_POSITION_Y')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('SETTINGS.PLAYER.VIDEO_POSITION_Y_TOOLTIP')}</span>
 								</label>
 								<div>
 									<select
@@ -173,16 +177,18 @@ class PlayerOptions extends Component<IProps, IState> {
 										onChange={this.onChange}
 										value={this.state.config['Player.PIP.PositionY']}
 									>
-										<option value="Bottom"> {i18next.t('BOTTOM')} </option>
-										<option value="Center">{i18next.t('CENTER')}</option>
-										<option value="Top"> {i18next.t('TOP')} </option>
+										<option value="Bottom"> {i18next.t('SETTINGS.PLAYER.BOTTOM')} </option>
+										<option value="Center">{i18next.t('SETTINGS.PLAYER.CENTER')}</option>
+										<option value="Top"> {i18next.t('SETTINGS.PLAYER.TOP')} </option>
 									</select>
 								</div>
 							</div>
 						</div> : null}
 					<div className="settings-line">
-						<label>
-							{i18next.t('MONITOR_NUMBER')}
+						<label htmlFor="Player.Screen">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.MONITOR_NUMBER')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.MONITOR_NUMBER_TOOLTIP')}</span>
 						</label>
 						<div>
 							<select
@@ -196,9 +202,9 @@ class PlayerOptions extends Component<IProps, IState> {
 					</div>
 					<div className="settings-line">
 						<label htmlFor="Player.Borders">
-							<span className="title">{i18next.t('WINDOWBORDERS')}</span>
-							<br/>
-							<span className="tooltip">{i18next.t('WINDOWBORDERS_TOOLTIP')}</span>
+							<span className="title">{i18next.t('SETTINGS.PLAYER.WINDOWBORDERS')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.WINDOWBORDERS_TOOLTIP')}</span>
 						</label>
 						<div>
 							<Switch idInput="Player.Borders" handleChange={this.putPlayerCommando}
@@ -207,11 +213,11 @@ class PlayerOptions extends Component<IProps, IState> {
 					</div>
 					<div className="settings-line">
 						<label htmlFor="Player.Monitor">
-							<span className="title">{i18next.t('PLAYERMONITOR')}</span>
-							<br/>
-							<span className="tooltip">{i18next.t('PLAYERMONITOR_TOOLTIP')}</span>
+							<span className="title">{i18next.t('SETTINGS.PLAYER.PLAYER_MONITOR')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.PLAYER_MONITOR_TOOLTIP')}</span>
 						</label>
-						<div className="col-xs-6">
+						<div>
 							<Switch idInput="Player.Monitor" handleChange={this.onChange}
 								isChecked={this.state.config['Player.Monitor']} />
 						</div>
@@ -220,10 +226,12 @@ class PlayerOptions extends Component<IProps, IState> {
 						{i18next.t('SETTINGS.PLAYER.DISPLAY_SETTINGS')}
 					</div>
 					<div className="settings-line">
-						<label className="col-xs-4 control-label">
-							{i18next.t('ENGINEDISPLAYCONNECTIONINFO')}
+						<label htmlFor="Karaoke.Display.ConnectionInfo.Enabled">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_TOOLTIP')}</span>
 						</label>
-						<div className="col-xs-6">
+						<div>
 							<Switch idInput="Karaoke.Display.ConnectionInfo.Enabled" handleChange={this.onChange}
 								isChecked={this.state.config['Karaoke.Display.ConnectionInfo.Enabled']} />
 						</div>
@@ -236,11 +244,11 @@ class PlayerOptions extends Component<IProps, IState> {
 						>
 							<div className="settings-line">
 								<label htmlFor="Karaoke.Display.ConnectionInfo.Host">
-									<span className="title">{i18next.t('ENGINEDISPLAYCONNECTIONINFOHOST')}</span>
-									<br/>
-									<span className="tooltip">{i18next.t('ENGINEDISPLAYCONNECTIONINFOHOST_TOOLTIP')}</span>
+									<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_HOST')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_HOST_TOOLTIP')}</span>
 								</label>
-								<div className="col-xs-6">
+								<div>
 									<input
 										id="Karaoke.Display.ConnectionInfo.Host"
 										onChange={this.onChange}
@@ -251,9 +259,9 @@ class PlayerOptions extends Component<IProps, IState> {
 
 							<div className="settings-line">
 								<label htmlFor="Karaoke.Display.ConnectionInfo.Message">
-									<span className="title">{i18next.t('ENGINEDISPLAYCONNECTIONINFOMESSAGE')}</span>
-									<br/>
-									<span className="tooltip">{i18next.t('ENGINEDISPLAYCONNECTIONINFOMESSAGE_TOOLTIP')}</span>
+									<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_MESSAGE')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP')}</span>
 								</label>
 								<div>
 									<input
@@ -268,9 +276,9 @@ class PlayerOptions extends Component<IProps, IState> {
 
 					<div className="settings-line">
 						<label htmlFor="Karaoke.Display.Nickname">
-							<span className="title">{i18next.t('ENGINEDISPLAYNICKNAME')}</span>
-							<br/>
-							<span className="tooltip">{i18next.t('ENGINEDISPLAYNICKNAME_TOOLTIP')}</span>
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME_TOOLTIP')}</span>
 						</label>
 						<div>
 							<Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
@@ -279,10 +287,12 @@ class PlayerOptions extends Component<IProps, IState> {
 					</div>
 
 					<div className="settings-line">
-						<label className="col-xs-4 control-label">
-							{i18next.t('ENGINEDISPLAYAVATAR')}
+						<label htmlFor="Karaoke.Display.Avatar">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR_TOOLTIP')}</span>
 						</label>
-						<div className="col-xs-6">
+						<div>
 							<Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
 								isChecked={this.state.config['Karaoke.Display.Avatar']} />
 						</div>

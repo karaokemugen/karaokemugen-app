@@ -365,8 +365,8 @@ class ProfilModal extends Component<IProps, IState> {
 							{this.state.user.series_lang_mode === 4 ?
 								<React.Fragment>
 									<div className="profileLine row">
-										<label className="col-xs-6 control-label">{i18next.t('MAIN_SERIES_LANG')}</label>
-										<div className="col-xs-6">
+										<label>{i18next.t('MAIN_SERIES_LANG')}</label>
+										<div>
 											<Autocomplete
 												value={this.state.user.main_series_lang}
 												options={getListLanguagesInLocale()}
@@ -375,8 +375,8 @@ class ProfilModal extends Component<IProps, IState> {
 										</div>
 									</div>
 									<div className="profileLine row">
-										<label className="col-xs-6 control-label">{i18next.t('FALLBACK_SERIES_LANG')}</label>
-										<div className="col-xs-6">
+										<label>{i18next.t('FALLBACK_SERIES_LANG')}</label>
+										<div>
 											<Autocomplete
 												value={this.state.user.fallback_series_lang}
 												options={getListLanguagesInLocale()}

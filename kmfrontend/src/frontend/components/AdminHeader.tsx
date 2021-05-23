@@ -130,12 +130,12 @@ function AdminHeader(props: IProps) {
 				</button> : null
 			}
 			<div className="header-group switchs">
-				<label className="control-label" title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
+				<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
 					{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
               &nbsp;
   						<i className="far fa-question-circle" />
 				</label>
-				<label className="control-label" title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
+				<label title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
 					{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
             &nbsp;
   					<i className="far fa-question-circle" />

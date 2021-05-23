@@ -70,7 +70,7 @@ class InterfaceOptions extends Component<IProps, IState> {
 					<div className="settings-line">
 						<label htmlFor="Frontend.Mode">
 							<span className="title">{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE')}</span>
-							<br/>
+							<br />
 							<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}</span>
 						</label>
 						<div>
@@ -87,10 +87,12 @@ class InterfaceOptions extends Component<IProps, IState> {
 					</div>
 
 					<div className="settings-line">
-						<label className="col-xs-4 control-label">
-							{i18next.t('SERIE_NAME_MODE')}
+						<label htmlFor="Frontend.SeriesLanguageMode">
+							<span className="title">{i18next.t('SERIE_NAME_MODE')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SERIE_NAME_MODE_TOOLTIP')}</span>
 						</label>
-						<div className="col-xs-6">
+						<div>
 							<select
 								id="Frontend.SeriesLanguageMode"
 								onChange={this.onChange}
@@ -104,10 +106,12 @@ class InterfaceOptions extends Component<IProps, IState> {
 					</div>
 
 					<div className="settings-line">
-						<label className="col-xs-4 control-label">
-							{i18next.t('SETTINGS.INTERFACE.SHOW_AVATARS_ON_PLAYLIST')}
+						<label htmlFor="Frontend.ShowAvatarsOnPlaylist">
+							<span className="title">{i18next.t('SETTINGS.INTERFACE.SHOW_AVATARS_ON_PLAYLIST')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.SHOW_AVATARS_ON_PLAYLIST_TOOLTIP')}</span>
 						</label>
-						<div className="col-xs-6">
+						<div>
 							<Switch idInput="Frontend.ShowAvatarsOnPlaylist" handleChange={this.onChange}
 								isChecked={this.state.config['Frontend.ShowAvatarsOnPlaylist']} />
 						</div>

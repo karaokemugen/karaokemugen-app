@@ -27,7 +27,7 @@ class Options extends Component<RouteComponentProps, IState> {
 			value = false;
 		}
 		const data = expand(e.target.id, value);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend('updateSettings', { setting: data }).catch(() => { });
 	}
 
 	keyObserverHandler = (e: KeyboardEvent) => {
@@ -73,9 +73,13 @@ class Options extends Component<RouteComponentProps, IState> {
 						}
 
 						<div className="settings-line systempanel-tooltip">
-							{i18next.t('SYSTEMPANEL_TIP.QUESTION')}
+							{i18next.t('SETTINGS.SYSTEMPANEL_TIP.QUESTION')}
 							<strong>
-								{i18next.t('SYSTEMPANEL_TIP.RESPONSE')}<a href="/system/options">{i18next.t('SYSTEMPANEL_TIP.LINK')}</a>{i18next.t('SYSTEMPANEL_TIP.AFTER_LINK')}
+								{i18next.t('SETTINGS.SYSTEMPANEL_TIP.RESPONSE')}
+								<a href="/system/options">
+									{i18next.t('SETTINGS.SYSTEMPANEL_TIP.LINK')}
+								</a>
+								{i18next.t('SETTINGS.SYSTEMPANEL_TIP.AFTER_LINK')}
 							</strong>
 						</div>
 					</div>
