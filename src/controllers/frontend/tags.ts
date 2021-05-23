@@ -115,7 +115,7 @@ export default function tagsController(router: SocketIOApp) {
 	});
 
 	router.route('copyTagToRepo', async (socket: Socket, req: APIData) => {
-		if (!isUUID(req.body.tid1) || !isUUID(req.body.tid2)) throw {code: 400};
+		if (!isUUID(req.body.tid)) throw {code: 400};
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			await copyTagToRepo(req.body.tid, req.body.repo);
