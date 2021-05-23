@@ -58,6 +58,7 @@ Since we're using git, your repository will be kept up to date when Karaoke Muge
 - The border has been increased to 2 on the player's font for song info (#1011)
 - You can now use the ENTER key to submit the form on the login in setup page (#1018)
 - Tags are a little smaller in the player progress bar (#1021)
+- Bulk actions are now available in the blacklist view (#909)
 
 ## Fixes
 
@@ -70,7 +71,6 @@ Since we're using git, your repository will be kept up to date when Karaoke Muge
   - Can't have a "Shorter than" bigger than the "Longer than" criterias anymore
   - The blacklist view explains a bit better how it's created from the current BLC set
   - The reason why a song is blacklisted is now displayed in the karaoke info window
-  - No more bulk actions in the blacklist view
 - When running a packaged version, the first command-line argument is no longer ignored (#986)
 - Some SQL migrations now have a `if exists` clause for drops (#988)
 - Fixed some DB errors during shutdown (#991)
@@ -82,7 +82,7 @@ Since we're using git, your repository will be kept up to date when Karaoke Muge
 ## Other
 
 - For users using Karaoke Mugen from its git/source code, the minimal MPV version required is now 0.33 (#1008)
-- The `https://kara.moe` URL has been disabled since it only worked when on the same network. It's replaced by the Remote system (with codes like `abcd.kara.moe`) which is now stable. Plus it was confusing (#1002)
+- The `https://kara.moe` URL has been disabled since it only worked when on the same network. It's replaced by the Remote system (with codes like `abcd.kara.moe`) which is now stable. Plus it was confusing (#1003)
 - Some playlist specific code has been moved to the KM shared library so we can use it for a new exciting feature on Karaoke Mugen Server (#1005)
 - Dependencies have been updated
 
