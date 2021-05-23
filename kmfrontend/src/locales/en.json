@@ -47,11 +47,13 @@
 	"PASSWORDCONF": "Password confirmation",
 	"NEW_PASSWORD": "New Password",
 	"VOLUME_LEVEL": "Set volume",
-	"PLAYLIST_BLACKLIST": "Blacklist",
-	"PLAYLIST_BLACKLIST_CRITERIAS": "Blacklist criteria",
-	"PLAYLIST_WHITELIST": "Whitelist",
-	"PLAYLIST_KARAS": "Library",
-	"PLAYLIST_FAVORITES": "Favorites",
+	"PLAYLISTS": {
+		"BLACKLIST": "Blacklist",
+		"BLACKLIST_CRITERIAS": "Blacklist criteria",
+		"WHITELIST": "Whitelist",
+		"LIBRARY": "Library",
+		"FAVORITES": "Favorites"
+	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "The interface is closed, please wait.",
 	"INLINE_TAG": {
 		"COUNT": "{{count}} karaoke",

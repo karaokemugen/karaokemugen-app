@@ -339,7 +339,7 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-star" />
-									<label htmlFor="nickname">{i18next.t('PLAYLIST_FAVORITES')}</label>
+									<label htmlFor="nickname">{i18next.t('PLAYLISTS.FAVORITES')}</label>
 								</div>
 								<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
 									<i className="fas fa-fw fa-download" /> {i18next.t('FAVORITES_IMPORT')}

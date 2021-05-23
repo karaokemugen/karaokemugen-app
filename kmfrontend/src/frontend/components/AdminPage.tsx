@@ -163,23 +163,23 @@ class AdminPage extends Component<IProps, IState> {
 		const kmStats = await commandBackend('getStats');
 		playlistList.push({
 			plaid: '4398bed2-e272-47f5-9dd9-db7240e8557e',
-			name: i18next.t('PLAYLIST_BLACKLIST')
+			name: i18next.t('PLAYLISTS.BLACKLIST')
 		});
 		playlistList.push({
 			plaid: '91a9961a-8863-48a5-b9d0-fc4c1372a11a',
-			name: i18next.t('PLAYLIST_BLACKLIST_CRITERIAS')
+			name: i18next.t('PLAYLISTS.BLACKLIST_CRITERIAS')
 		});
 		playlistList.push({
 			plaid: '4c5dbb18-278b-448e-9a1f-8cf5f1e24dc7',
-			name: i18next.t('PLAYLIST_WHITELIST')
+			name: i18next.t('PLAYLISTS.WHITELIST')
 		});
 		playlistList.push({
 			plaid: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94',
-			name: i18next.t('PLAYLIST_FAVORITES')
+			name: i18next.t('PLAYLISTS.FAVORITES')
 		});
 		playlistList.push({
 			plaid: '524de79d-10b2-49dc-90b1-597626d0cee8',
-			name: i18next.t('PLAYLIST_KARAS'),
+			name: i18next.t('PLAYLISTS.LIBRARY'),
 			karacount: kmStats.karas
 		});
 		this.setState({ playlistList: playlistList });

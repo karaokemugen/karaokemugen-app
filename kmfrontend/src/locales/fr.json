@@ -47,11 +47,13 @@
 	"PASSWORDCONF": "Confirmation du mot de passe",
 	"NEW_PASSWORD": "Nouveau mot de passe",
 	"VOLUME_LEVEL": "Changer le volume",
-	"PLAYLIST_BLACKLIST": "Liste noire",
-	"PLAYLIST_BLACKLIST_CRITERIAS": "Critères de liste noire",
-	"PLAYLIST_WHITELIST": "Liste blanche",
-	"PLAYLIST_KARAS": "Bibliothèque",
-	"PLAYLIST_FAVORITES": "Favoris",
+	"PLAYLISTS": {
+		"BLACKLIST": "Liste noire",
+		"BLACKLIST_CRITERIAS": "Critères de liste noire",
+		"WHITELIST": "Liste blanche",
+		"LIBRARY": "Bibliothèque",
+		"FAVORITES": "Favoris"
+	},
 	"WEBAPPMODE_CLOSED_MESSAGE": "L'interface est fermée, merci de patienter.",
 	"INLINE_TAG": {
 		"COUNT": "{{count}} karaoké",
