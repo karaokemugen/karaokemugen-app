@@ -6,10 +6,12 @@
 	"SEARCH": "Rechercher",
 	"SUBMIT": "Sauvegarder",
 	"CANCEL": "Annuler",
-	"404": "Perdu dans Karaoke Mugen ?",
-	"404_2": "Pas de panique, on va vous aider",
-	"404_3": "vous êtes ici",
-	"404_4": "Revenir au début",
+	"NOT_FOUND_PAGE": {
+		"404": "Perdu dans Karaoke Mugen ?",
+		"404_2": "Pas de panique, on va vous aider",
+		"404_3": "vous êtes ici",
+		"404_4": "Revenir au début"
+	},
 	"CHAR_NOT_ALLOWED": "Le caractère '{{char}}' n'est pas autorisé",
 	"LOGIN_MANDATORY": "Le nom d'utilisateur est obligatoire",
 	"PASSWORD_MANDATORY": "Le mot de passe est obligatoire",
