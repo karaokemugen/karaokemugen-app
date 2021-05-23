@@ -250,7 +250,8 @@ class KaraList extends Component<unknown, KaraListState> {
 			{!is_touch_device() ? <Divider type="vertical" /> : null}
 			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
 				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)} />
-		</span>) : null
+		</span>) : <Button type="primary" danger 
+			icon={<DeleteOutlined />} onClick={() => commandBackend('deleteMedia', { kid: record.kid }, true)} />
 	}];
 }
 
