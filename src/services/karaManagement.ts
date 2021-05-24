@@ -238,9 +238,9 @@ export async function integrateKaraFile(file: string) {
 			if (karaDB.karafile !== karaData.karafile) {
 				await fs.unlink(oldKaraFile);
 				removeKaraInStore(oldKaraFile);
-				addKaraToStore(file);
+				await addKaraToStore(file);
 			} else {
-				editKaraInStore(oldKaraFile);
+				await editKaraInStore(oldKaraFile);
 			}
 		} catch(err) {
 			logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, {service: 'Kara'});

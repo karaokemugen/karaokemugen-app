@@ -3,10 +3,10 @@ import { copy, emptyDir } from 'fs-extra';
 import { basename,resolve } from 'path';
 
 import { compareKarasChecksum, generateDB } from '../dao/database';
-import { editKaraInStore } from '../dao/dataStore';
+import { editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
 import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
-import { refreshAll } from '../lib/dao/database';
+import { refreshAll, saveSetting } from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
 import { writeKara } from '../lib/dao/karafile';
 import { readAllKaras } from '../lib/services/generation';
@@ -347,9 +347,11 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 			writes.push(copy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
 			writes.push(editKaraInDB(karas.kara2, { refresh: false }));
 			await Promise.all(writes);
-			editKaraInStore(karas.kara2.karafile);
+			await editKaraInStore(karas.kara2.karafile);
 			task.incr();
 		}
+		sortKaraStore();
+		saveSetting('baseChecksum', getStoreChecksum());
 		refreshKaras();
 	} catch(err) {
 		sentry.error(err);

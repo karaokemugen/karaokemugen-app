@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import { dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
-import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, removeTagInStore, sortTagsStore } from '../dao/dataStore';
+import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, removeTagInStore, sortKaraStore, sortTagsStore } from '../dao/dataStore';
 import { getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini, updateKaraTagsTID, updateTag } from '../dao/tag';
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
@@ -71,7 +71,8 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		const tagData = formatTagFile(tagObj).tag;
 		tagData.tagfile = tagfile;
 		const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
-		addTagToStore(newTagFiles[0]);
+		console.log(newTagFiles);
+		await addTagToStore(newTagFiles[0]);
 		sortTagsStore();
 		saveSetting('baseChecksum', getStoreChecksum());
 
@@ -163,6 +164,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		for (const kara of modifiedKaras) {
 			await editKaraInStore(kara);
 		}
+		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());
 		await updateTagSearchVector();
 		await refreshKarasUpdate(karas.map(k => k.kid));
@@ -218,10 +220,10 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		if (oldTagFiles[0] && oldTagFiles[0] !== newTagFiles[0]) {
 			await addTagToStore(newTagFiles[0]);
 			removeTagInStore(oldTagFiles[0]);
-			sortTagsStore();
 		} else {
 			await editTagInStore(newTagFiles[0]);
 		}
+		sortTagsStore();
 		saveSetting('baseChecksum', getStoreChecksum());
 		if (opts.refresh) {
 			const karasToUpdate = await getKarasWithTags([oldTag]);
