@@ -266,7 +266,10 @@ export async function createUser(user: User, opts: UserOpts = {
 	user.url = user.url || null;
 	user.email = user.email || null;
 	user.location = user.location || null;
-	if (user.type === 2) user.flag_online = false;
+	if (user.type === 2) {
+		user.flag_online = false;
+		user.flag_sendstats = true;
+	}
 
 	try {
 		await newUserIntegrityChecks(user);
