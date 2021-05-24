@@ -14,10 +14,10 @@ import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
 interface IProps {
-	fixed: boolean
+	mode: 'fixed' | 'homepage' | 'playlist'
 	show: boolean
 	currentVisible: boolean
-	goToCurrentPL: () => void
+	goToCurrentPL?: () => void
 	onResize?: (bottom: string) => void
 	onKaraChange?: (kid: string) => void
 }
@@ -102,12 +102,12 @@ class PlayerBox extends Component<IProps, IState> {
 			} catch (e) {
 				// already display
 			}
-			if (!this.props.fixed && this.context.globalState.auth.data.role !== 'guest') {
+			if (this.props.mode === 'homepage' && this.context.globalState.auth.data.role !== 'guest') {
 				this.getFavorites();
 			}
 		}
 		getSocket().on('playerStatus', this.refreshPlayerInfos);
-		if (this.props.fixed) {
+		if (this.props.mode === 'fixed') {
 			this.observer = new ResizeObserver(this.resizeCheck);
 			this.observer.observe(this.state.containerRef.current);
 			this.resizeCheck();
@@ -231,20 +231,20 @@ class PlayerBox extends Component<IProps, IState> {
 	render() {
 		return (
 			<div onClick={this.props.currentVisible ? this.props.goToCurrentPL : undefined}
-				className={`player-box${this.props.fixed ? ' fixed' : ''}`}
+				className={`player-box${this.props.mode === 'fixed' ? ' fixed' : ''}`}
 				style={{ ['--img' as any]: this.state.img, display: this.props.show ? undefined : 'none' }}
 				ref={this.state.containerRef}>
-				{!this.props.fixed ?
+				{this.props.mode !== 'fixed' ?
 					<div className="first">
 						<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
-						{this.props.currentVisible ?
+						{this.props.currentVisible && this.props.goToCurrentPL ?
 							<p className="next" tabIndex={0} onKeyDown={this.props.goToCurrentPL}>
 								{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" />
 							</p> : null
 						}
 					</div> : null
 				}
-				{this.props.fixed ?
+				{this.props.mode === 'fixed' ?
 					<div className="title inline">
 						<div>
 							<h3 className="song">{this.state.title}</h3>
@@ -259,14 +259,14 @@ class PlayerBox extends Component<IProps, IState> {
 						</div>
 						<h4 className="series">{this.state.subtitle}</h4>
 					</div>}
-				{!this.props.fixed && this.state.length !== 0 && this.context.globalState.auth.data.role !== 'guest' ?
+				{this.props.mode === 'homepage' && this.state.length !== 0 && this.context.globalState.auth.data.role !== 'guest' ?
 					<button className="btn favorites" onClick={this.toggleFavorite}>
 						<i className="fas fa-fw fa-star" />
 						{this.state.favorites.has(this.state.kid) ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
 					</button> : null}
 				{this.state.length !== 0 ?
 					<React.Fragment>
-						{!this.props.fixed ?
+						{this.props.mode !== 'fixed' ?
 							<div className="timers">
 								<div>{secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
 								<div>{secondsTimeSpanToHMS(this.state.length, 'mm:ss')}</div>

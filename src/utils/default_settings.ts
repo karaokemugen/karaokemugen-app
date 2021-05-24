@@ -78,6 +78,9 @@ export const defaults: Config = {
 		ChibiPlayer: {
 			Enabled: false,
 			AlwaysOnTop: true
+		},
+		ChibiPlaylist: {
+			Enabled: false
 		}
 	},
 	Karaoke: {

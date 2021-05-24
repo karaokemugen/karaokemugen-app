@@ -295,7 +295,7 @@ class PublicPage extends Component<IProps, IState> {
 						publicVisible={this.state.publicVisible}
 					/>
 					<PlayerBox
-						fixed={true}
+						mode="fixed"
 						show={this.state.view !== 'home'}
 						currentVisible={this.state.currentVisible}
 						goToCurrentPL={() => this.changeView('currentPlaylist')}

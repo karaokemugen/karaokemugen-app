@@ -562,9 +562,11 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 	});
 }
 
+let adminPasswordCache: string;
+
 /** Resets admin's password when appFirstRun is set to true. */
 export async function generateAdminPassword(): Promise<string> {
-	const adminPassword = getState().opt.forceAdminPassword || randomstring.generate(8);
+	const adminPassword = adminPasswordCache || getState().opt.forceAdminPassword || randomstring.generate(8);
 	await editUser('admin',
 		{
 			password: adminPassword,
@@ -573,6 +575,7 @@ export async function generateAdminPassword(): Promise<string> {
 		},
 		null,
 		'admin');
+	adminPasswordCache = adminPassword;
 	return adminPassword;
 }
 

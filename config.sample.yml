@@ -61,8 +61,14 @@ Frontend:
 GUI:
   # Should window shortcuts be opened in electron or in a browser?
   OpenInElectron: true
-  # Enable or disable cihibi player
+  # Enable or disable chibi player
   ChibiPlayer:
+    Enabled: false
+    AlwaysOnTop: true
+    PositionX: 153
+    PositionY: 800
+  # Enable or disable chibi playlist window
+  ChibiPlaylist:
     Enabled: false
     AlwaysOnTop: true
     PositionX: 153

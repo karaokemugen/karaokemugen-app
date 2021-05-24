@@ -68,7 +68,7 @@ class PublicHomepage extends Component<IProps, IState> {
 				<div className="public-homepage">
 					<div className="public-homepage-wrapper">
 						<PlayerBox
-							fixed={false}
+							mode="homepage"
 							show={true}
 							currentVisible={this.props.currentVisible}
 							goToCurrentPL={() => this.props.changeView('currentPlaylist')}

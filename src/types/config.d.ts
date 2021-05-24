@@ -63,6 +63,11 @@ export interface Config {
 			AlwaysOnTop?: boolean,
 			PositionX?: number,
 			PositionY?: number,
+		},
+		ChibiPlaylist?: {
+			Enabled?: boolean,
+			PositionX?: number,
+			PositionY?: number,
 		}
 	}
 	Karaoke: {

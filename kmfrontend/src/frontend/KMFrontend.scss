@@ -6,6 +6,9 @@ body {
 	font-family: Lato, "Helvetica Neue", Cantarell, sans-serif;
 	background: $mugen-background;
 	color: white;
+	&.no-scroll {
+		overflow: hidden;
+	}
 }
 
 a {
