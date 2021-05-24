@@ -30,6 +30,7 @@ import { getMenu,initMenu } from './electronMenu';
 export let win: Electron.BrowserWindow;
 export let gitWorker: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
+export let chibiPlaylistWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
@@ -60,6 +61,9 @@ export function startElectron() {
 			if (!getState().forceDisableAppUpdate) initAutoUpdate();
 			if (getConfig().GUI.ChibiPlayer.Enabled) {
 				updateChibiPlayerWindow(true);
+			}
+			if (getConfig().GUI.ChibiPlaylist.Enabled) {
+				updateChibiPlaylistWindow(true);
 			}
 			initDone = true;
 		});
@@ -119,6 +123,8 @@ export function startElectron() {
 	ipcMain.on('get-file-paths', async (event, options) => {
 		event.sender.send('get-file-paths-response', (await dialog.showOpenDialog(options)).filePaths);
 	});
+
+	Menu.setApplicationMenu(null);
 }
 
 export async function handleProtocol(args: string[]) {
@@ -237,7 +243,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 export function applyMenu() {
 	initMenu();
 	const menu = Menu.buildFromTemplate(getMenu());
-	Menu.setApplicationMenu(menu);
+	win.setMenu(menu);
 }
 
 async function initElectronWindow() {
@@ -352,4 +358,39 @@ export async function updateChibiPlayerWindow(show: boolean) {
 
 export function setChibiPlayerAlwaysOnTop(enabled: boolean) {
 	if (chibiPlayerWindow) chibiPlayerWindow.setAlwaysOnTop(enabled);
+}
+
+export async function updateChibiPlaylistWindow(show: boolean) {
+	const state = getState();
+	const conf = getConfig();
+	if (show) {
+		chibiPlaylistWindow = new BrowserWindow({
+			width: 475,
+			height: 720,
+			x: conf.GUI.ChibiPlaylist.PositionX,
+			y: conf.GUI.ChibiPlaylist.PositionY,
+			show: false,
+			backgroundColor: '#36393f',
+			webPreferences: {
+				nodeIntegration: true
+			},
+			icon: resolve(state.resourcePath, 'build/icon.png'),
+		});
+		const port = state.frontendPort;
+		chibiPlaylistWindow.once('ready-to-show', () => {
+			chibiPlaylistWindow.show();
+		});
+		chibiPlaylistWindow.on('moved', () => {
+			const pos = chibiPlaylistWindow.getPosition();
+			setConfig({ GUI: {
+				ChibiPlaylist: {
+					PositionX: pos[0],
+					PositionY: pos[1]
+				}
+			}});
+		});
+		await chibiPlaylistWindow.loadURL(`http://localhost:${port}/chibiPlaylist?admpwd=${await generateAdminPassword()}`);
+	} else {
+		chibiPlaylistWindow?.destroy();
+	}
 }

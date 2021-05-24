@@ -10,7 +10,7 @@ import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/object_helpers';
 import { getState } from '../utils/state';
-import { handleFile, updateChibiPlayerWindow,win } from './electron';
+import { handleFile, updateChibiPlayerWindow, updateChibiPlaylistWindow, win } from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
@@ -263,6 +263,16 @@ export function initMenu() {
 					click: () => {
 						updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
 						setConfig({GUI: {ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled }}});
+					}
+				},
+				{
+					label: i18next.t('MENU_OPTIONS_CHIBIPLAYLIST'),
+					type: 'checkbox',
+					accelerator: 'CmdOrCtrl+B',
+					checked: getConfig().GUI.ChibiPlaylist.Enabled,
+					click: () => {
+						updateChibiPlaylistWindow(!getConfig().GUI.ChibiPlaylist.Enabled);
+						setConfig({GUI: {ChibiPlaylist: { Enabled: !getConfig().GUI.ChibiPlaylist.Enabled }}});
 					}
 				}
 			]

@@ -13,6 +13,7 @@ import ChibiPage from './components/ChibiPage';
 import MigratePage from './components/MigratePage';
 import ShutdownModal from './components/modals/ShutdownModal';
 import NotFoundPage from './components/NotfoundPage';
+import PlaylistPage from './components/PlaylistPage';
 import PublicPage from './components/public/PublicPage';
 import SetupPage from './components/SetupPage';
 import WelcomePage from './components/WelcomePage';
@@ -87,9 +88,10 @@ class KMFrontend extends Component<unknown, IState> {
 							<Route path="/admin" render={() => <AdminPage
 								powerOff={isElectron() ? undefined : this.powerOff} />} />
 							<Route path="/chibi" exact component={ChibiPage} />
+							<Route path="/chibiPlaylist" exact component={PlaylistPage} />
 							<Route path="/public" render={(route) => <PublicPage route={route} />} />
 							<Route exact path="/">{this.context.globalState.auth.data.role === 'admin' ?
-								<Redirect to="/welcome" /> :<Redirect to="/public" />
+								<Redirect to="/welcome" />:<Redirect to="/public" />
 							}</Route>
 							<Route component={NotFoundPage} />
 						</Switch>

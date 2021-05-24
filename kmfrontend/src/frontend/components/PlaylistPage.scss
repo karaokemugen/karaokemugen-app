@@ -1,0 +1,24 @@
+.chibi-playlist {
+	-webkit-app-region: drag;
+	padding: 1rem;
+
+	.following {
+		font-size: 1.75em;
+		font-weight: bold;
+	}
+
+	.following-li {
+		margin: 1em 0;
+		> .title {
+			display: flex;
+			align-items: center;
+			> .title {
+				font-size: 2em;
+				font-weight: bold;
+			}
+		}
+		.series {
+			font-size: 1.25em;
+		}
+	}
+}
