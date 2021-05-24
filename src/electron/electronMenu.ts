@@ -67,7 +67,7 @@ export function initMenu() {
 						openURL(urls.systemOptions);
 					}
 				},
-				{ type: 'separator', visible: isMac },
+				isMac ? { type: 'separator', visible: isMac }:null,
 				{
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
