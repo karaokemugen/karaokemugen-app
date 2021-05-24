@@ -3100,10 +3100,10 @@ jwt-simple@^0.5.6:
   resolved "https://registry.yarnpkg.com/jwt-simple/-/jwt-simple-0.5.6.tgz#3357adec55b26547114157be66748995b75b333a"
   integrity sha512-40aUybvhH9t2h71ncA1/1SbtTNCVZHgsTsTgqPUxGWDmUDrXyDf2wMNQKEbdBjbf4AI+fQhbECNTV6lWxQKUzg==
 
-kar-to-ass@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/kar-to-ass/-/kar-to-ass-1.0.6.tgz#bf4527c0e21815888b7a5edc1e296d9c21a66e26"
-  integrity sha512-4EVjcXylNK/E57Mn3OYn2KoCwW0a/Opd8zbaUu/FIcqsMfQXeCItROtL6B6KIVownY150uZ/5ohFpTUwwGibpw==
+kar-to-ass@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/kar-to-ass/-/kar-to-ass-1.0.8.tgz#007dbf551d163bb76a8ade01897bb47d25bddefd"
+  integrity sha512-B1TAdmZpmT2vY96BdzhDNi6sNvWHvIt9qWiOfEcD7DANJk+s2NpEdIs292xb+4zk5nx65R21bn78bQ6znNgiSA==
   dependencies:
     ass-stringify "^0.1.3"
     commander "^3.0.2"
