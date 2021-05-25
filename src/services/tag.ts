@@ -71,7 +71,6 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		const tagData = formatTagFile(tagObj).tag;
 		tagData.tagfile = tagfile;
 		const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
-		console.log(newTagFiles);
 		await addTagToStore(newTagFiles[0]);
 		sortTagsStore();
 		saveSetting('baseChecksum', getStoreChecksum());
