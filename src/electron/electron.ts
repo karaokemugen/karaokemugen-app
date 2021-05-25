@@ -148,7 +148,7 @@ export async function handleProtocol(args: string[]) {
 							Online: true,
 							Enabled: true,
 							SendStats: false,
-							AutoMediaDownloads: false,
+							AutoMediaDownloads: 'updateOnly',
 							MaintainerMode: false,
 							Git: null,
 							BaseDir: `repos/${repoName}`,
@@ -253,7 +253,7 @@ async function initElectronWindow() {
 
 export async function createGitWorker() {
 	gitWorker = new BrowserWindow({
-		show: false,
+		show: getState().opt.debug,
 		webPreferences: {
 			nodeIntegration: true
 		}

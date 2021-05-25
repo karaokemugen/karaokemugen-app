@@ -20,7 +20,7 @@ const newrepository: Repository = {
 	Online: false,
 	Enabled: true,
 	SendStats: false,
-	AutoMediaDownloads: false,
+	AutoMediaDownloads: 'updateOnly',
 	MaintainerMode: false,
 	BaseDir: null,
 	Git: null,

@@ -209,7 +209,7 @@ export const defaults: Config = {
 				Online: true,
 				Enabled: true,
 				SendStats: true,
-				AutoMediaDownloads: false,
+				AutoMediaDownloads: 'updateOnly',
 				MaintainerMode: false,
 				BaseDir: process.platform === 'win32' ? 'repos\\kara.moe/git' : 'repos/kara.moe/git',
 				Path: process.platform === 'win32'

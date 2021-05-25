@@ -12,7 +12,6 @@ import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { File } from '../types/download';
 import Downloader from '../utils/downloader';
-import { getKaras } from './kara';
 import { checkDownloadStatus } from './repo';
 
 async function getRemoteMedias(repo: string): Promise<DBKara[]> {
@@ -146,21 +145,6 @@ export async function updateAllMedias() {
 		}
 	}
 	await checkDownloadStatus();
-}
-
-/** Check local videos and only update those which need it */
-export async function updateGitMedias(repo: string) {
-	const [localMedias, karas] = await Promise.all([
-		listLocalMedias(repo),
-		getKaras({
-			q: `r:${repo}`
-		})
-	]);
-	const allMedias = karas.content.map(k => {
-		return { basename: k.mediafile,	size: k.mediasize };
-	});
-	await compareMedias(localMedias, allMedias, repo, true);
-	checkDownloadStatus(karas.content.map(k => k.kid));
 }
 
 async function updateMedias(repo: string): Promise<boolean> {

@@ -231,6 +231,7 @@ export async function integrateKaraFile(file: string) {
 	const karaFile = basename(file);
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData);
 	const karaDB = await getKara(karaData.kid, {role: 'admin', username: 'admin'});
+	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
 	if (karaDB) {
 		await editKaraInDB(karaData, { refresh: false });
 		try {
@@ -255,13 +256,17 @@ export async function integrateKaraFile(file: string) {
 		} catch(err) {
 			logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, {service: 'Kara'});
 		}
-		sortKaraStore();
+		if (mediaDownload !== 'none') {
+			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize, mediaDownload === 'updateOnly');
+		}
 	} else {
 		await createKaraInDB(karaData, { refresh: false });
+		if (mediaDownload === 'all') {
+			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
+		}
+		await addKaraToStore(file);
 	}
-	if (getRepo(karaData.repository).AutoMediaDownloads) {
-		checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
-	}
+	sortKaraStore();
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({q: `k=${karaData.kid}`}), 'single');
 	saveSetting('baseChecksum', getStoreChecksum());

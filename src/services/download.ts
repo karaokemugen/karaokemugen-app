@@ -182,12 +182,14 @@ export function resumeQueue() {
 	return dq.resume();
 }
 
-export async function checkMediaAndDownload(kid: string, mediafile: string, repo: string, mediasize: number) {
+export async function checkMediaAndDownload(kid: string, mediafile: string, repo: string, mediasize: number, updateOnly = false) {
 	let downloadMedia = false;
 	let media: string;
 	try {
 		await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repo));
 	} catch {
+		// We're checking only to update files. If the file was never found, we won't try to download it. Else we do.
+		if (updateOnly) return;
 		downloadMedia = true;
 	}
 	if (media) {

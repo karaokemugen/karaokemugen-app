@@ -24,7 +24,6 @@ import GitInstance from '../utils/git';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { createProblematicBLCSet, generateBlacklist } from './blacklist';
-import { updateGitMedias } from './downloadUpdater';
 import { getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { sendPayload } from './stats';
@@ -114,6 +113,8 @@ export async function updateAllGitRepos() {
 	if (getConfig().App.FirstRun) {
 		createProblematicBLCSet();
 	}
+	// Check all repos that need their videos updated
+
 }
 
 export async function checkDownloadStatus(kids?: string[]) {
@@ -199,14 +200,15 @@ export async function updateGitRepo(name: string, refresh = true) {
 		return true;
 	} else {
 		const commitA = await git.status();
-		await git.checkout(['.']);
-		await git.clean();
 		try {
+			await git.checkout(['.']);
+			await git.clean();
 			await git.pull();
 		} catch(err) {
 			// Let's remove everything if git pull fails and start over
 			await emptyDir(git.dir);
 			await newGitRepo(git, refresh);
+			sentry.error(err, 'Warning');
 			return true;
 		}
 		const commitB = await git.status();
@@ -249,7 +251,6 @@ export async function updateGitRepo(name: string, refresh = true) {
 			tagFiles.length > 0 ||
 			karaFiles.length > 0
 		)) await refreshAll();
-		if (getConfig().Online.AllowDownloads) await updateGitMedias(name);
 		await generateBlacklist();
 	}
 }
