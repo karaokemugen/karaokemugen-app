@@ -171,10 +171,13 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						</span>
 					}
 					labelCol={{ flex: '0 1 300px' }}
-					valuePropName="checked"
 					name="AutoMediaDownloads"
 				>
-					<Checkbox />
+					<Select>
+						<Select.Option value="none">{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_NONE')}</Select.Option>
+						<Select.Option value="updateOnly">{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY')}</Select.Option>
+						<Select.Option value="all">{i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_ALL')}</Select.Option>
+					</Select>
 				</Form.Item>
 				<Form.Item
 					label={

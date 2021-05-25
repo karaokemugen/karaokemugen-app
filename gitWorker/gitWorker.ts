@@ -116,6 +116,7 @@ async function processGitCommand(data: any) {
 		};
 		if (ipcRenderer) {
 			console.log('Sending message');
+			if (error) console.log(error);
 			ipcRenderer.send('gitEnd', message);
 		} else {
 			parentPort.postMessage({

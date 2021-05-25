@@ -34,8 +34,8 @@ Online:
   Remote: true
   # Fetch popular songs from remote repos ?
   FetchPopularSongs: true
-  # Disallow ALL video downloads (default true)
-  #AllowDownloads: false
+  # Disallow ALL video downloads; We'll give you crepes if you keep this to true
+  AllowDownloads: true
 Frontend:
   # Enable previews (thumbnail) generation. Should be disabled for tests without all medias present
   GeneratePreviews: true
@@ -234,42 +234,34 @@ System:
     - Name: kara.moe
       Online: true
       Enabled: true
+      Git: 'http://xxx'
       SendStats: true
+      AutoMediaDownloads: updateOnly
+      # AutoMediaDownloads determines when a song should be downloaded
+      # 'none' = never
+      # 'updateOnly' = only when the song has already been downloaded before and it's an update
+      # 'all' = always
+      BaseDir: 'repos/kara.moe/git'
       Path:
-        Karas:
-          - repos/kara.moe/karaokes
-        Lyrics:
-          - repos/kara.moe/lyrics
         Medias:
           - repos/kara.moe/medias
-        Tags:
-          - repos/kara.moe/tags
     - Name: world.karaokes.moe
       Online: true
       Enabled: false
+      Git: 'http://xxx'
       SendStats: true
+      BaseDir: 'repos/world.karaokes.moe/git'
       Path:
-        Karas:
-          - repos/world/karaokes
-        Lyrics:
-          - repos/world/lyrics
         Medias:
           - repos/world/medias
-        Tags:
-          - repos/world/tags
     - Name: Local
       Online: false
       Enabled: true
       SendStats: true
+      BaseDir: 'repos/Local'
       Path:
-        Karas:
-          - repos/Local/karaokes
-        Lyrics:
-          - repos/Local/lyrics
         Medias:
           - repos/Local/medias
-        Tags:
-          - repos/Local/tags
   Path:
     # Some paths like Background, karas lyrics medias, etc. can have multiple entries.
     Avatars: avatars

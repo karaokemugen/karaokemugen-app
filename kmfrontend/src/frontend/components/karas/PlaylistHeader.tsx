@@ -217,7 +217,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 						Online: true,
 						Enabled: true,
 						SendStats: false,
-						AutoMediaDownloads: false,
+						AutoMediaDownloads: 'updateOnly',
 						MaintainerMode: false,
 						Git: null,
 						BaseDir: `repos/${repoName}`,

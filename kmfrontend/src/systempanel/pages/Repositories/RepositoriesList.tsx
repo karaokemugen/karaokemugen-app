@@ -111,8 +111,15 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		title: i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS'),
 		dataIndex: 'AutoMediaDownloads',
 		key: 'autoMediaDownloads',
-		render: (_text, record) => (<Checkbox disabled={true} checked={record.AutoMediaDownloads} />)
-	}, {
+		render: (_text, record) => {
+			if (record.AutoMediaDownloads === 'all') {
+				return i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_ALL');
+			} else if (record.AutoMediaDownloads === 'updateOnly') {
+				return i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY');
+			} else if (record.AutoMediaDownloads === 'none') {
+				return i18next.t('REPOSITORIES.AUTO_MEDIA_DOWNLOADS_NONE');
+			}
+		}
 	}, {
 		title: i18next.t('REPOSITORIES.MAINTAINER_MODE'),
 		dataIndex: 'MaintainerMode',
