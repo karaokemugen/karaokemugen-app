@@ -1330,7 +1330,6 @@ export async function initPlaylistSystem() {
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.plaid));
 	await testPlaylists();
-	downloadMediasInPlaylist(getState().currentPlaid);
 	logger.debug('Playlists initialized', {service: 'Playlist'});
 	profile('initPL');
 }
