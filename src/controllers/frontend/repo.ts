@@ -139,7 +139,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route('deleteMedias', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			await deleteMedias(req.body?.kid);
+			await deleteMedias(req.body?.kids);
 			return {code: 200, message: APIMessage('REPO_MEDIA_DELETED')};
 		} catch(err) {
 			const code = 'REPO_DELETE_MEDIA_ERROR';

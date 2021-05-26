@@ -251,7 +251,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
 				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)} />
 		</span>) : <Button type="primary" danger 
-			icon={<DeleteOutlined />} onClick={() => commandBackend('deleteMedia', { kid: record.kid }, true)} />
+			icon={<DeleteOutlined />} onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)} />
 	}];
 }
 

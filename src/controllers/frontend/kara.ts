@@ -5,7 +5,7 @@ import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getKara, getKaraLyrics, getKaras} from '../../services/kara';
 import { createKara, editKara } from '../../services/kara_creation';
-import { batchEditKaras, copyKaraToRepo, deleteKara, deleteMedia } from '../../services/karaManagement';
+import { batchEditKaras, copyKaraToRepo, deleteKara, deleteMediaFile } from '../../services/karaManagement';
 import { playSingleSong } from '../../services/karaokeEngine';
 import { addKaraToPlaylist } from '../../services/playlist';
 import { APIMessage,errMessage } from '../common';
@@ -137,10 +137,10 @@ export default function karaController(router: SocketIOApp) {
 			throw {code: 500};
 		}
 	});
-	router.route('deleteMedia', async (socket: Socket, req: APIData) => {
+	router.route('deleteMediaFile', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			return await deleteMedia(req.body.file, req.body.repo);
+			return await deleteMediaFile(req.body.file, req.body.repo);
 		} catch(err) {
 			const code = 'MEDIA_DELETE_ERROR';
 			errMessage(code, err);

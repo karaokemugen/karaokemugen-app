@@ -272,7 +272,7 @@ export async function integrateKaraFile(file: string) {
 	saveSetting('baseChecksum', getStoreChecksum());
 }
 
-export async function deleteMedia(file: string, repo: string) {
+export async function deleteMediaFile(file: string, repo: string) {
 	// Just to make sure someone doesn't send a full path file
 	const mediaFile = basename(file);
 	const mediaPaths = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', repo));

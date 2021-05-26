@@ -55,9 +55,9 @@ class SessionList extends Component<unknown, SessionListState> {
 		this.setState({ tagType: value });
 	}
 
-	deleteMedia = async (file) => {
+	deleteMedia = async (file: string) => {
 		try {
-			await commandBackend('deleteMedia', { file: file });
+			await commandBackend('deleteMediaFile', { file: file, repo: this.state.repository });
 			this.setState({ unused: this.state.unused.filter(item => item.file !== file) });
 		} catch (err) {
 			// already display
