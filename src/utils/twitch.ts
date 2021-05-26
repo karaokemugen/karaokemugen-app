@@ -73,6 +73,11 @@ function listenChat(chat: Client) {
 			const song = await getCurrentSong();
 			const str = `@${context.username} : ${song.title} - ${getSongSeriesSingers(song)} (${/\./.test(song.repository) ? `https://${song.repository}/base/kara/${song.kid}`:`${getState().osURL}/public/karaoke/${song.kid}`})`;
 			chat.say(target, str);
+		} else if (msg === '!kara') {
+			// Only display if remote is on.
+			if (getState().remoteAccess && 'host' in getState().remoteAccess) {
+				chat.say(target, getState().osURL);
+			}
 		}
 	});
 }
