@@ -140,7 +140,7 @@ export default function karaController(router: SocketIOApp) {
 	router.route('deleteMedia', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			return await deleteMedia(req.body.file);
+			return await deleteMedia(req.body.file, req.body.repo);
 		} catch(err) {
 			const code = 'MEDIA_DELETE_ERROR';
 			errMessage(code, err);
