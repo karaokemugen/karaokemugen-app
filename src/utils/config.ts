@@ -125,7 +125,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		}
 	}
 	const config = setConfig(newConfig);
-	setSongPoll(config.Karaoke.Poll.Enabled);
+	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
 	config.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo
 		? initTwitch().catch(err => {
