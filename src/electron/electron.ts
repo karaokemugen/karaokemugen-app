@@ -7,7 +7,7 @@ import { resolve } from 'path';
 import { exit } from '../components/engine';
 import { listUsers } from '../dao/user';
 import { main, preInit } from '../index';
-import {getConfig, setConfig} from '../lib/utils/config';
+import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { emit,on } from '../lib/utils/pubsub';
 import { testJSON } from '../lib/utils/validators';
@@ -99,7 +99,7 @@ export function startElectron() {
 		});
 		ipcMain.on('openFolder', (_event, eventData) => {
 			if (eventData.type === 'streamFiles') {
-				open(resolve(getState().dataPath, getConfig().System.Path.StreamFiles));
+				open(resolve(resolvedPathStreamFiles()));
 			}
 		});
 	});

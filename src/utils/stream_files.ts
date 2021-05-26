@@ -3,11 +3,12 @@ import i18next from 'i18next';
 import debounce from 'lodash.debounce';
 import {resolve} from 'path';
 
-import {getConfig} from '../lib/utils/config';
+import {getConfig, resolvedPathStreamFiles} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import {getSongSeriesSingers, getSongVersion} from '../services/kara';
 import {getPlaylistInfo} from '../services/playlist';
 import {StreamFileType} from '../types/stream_files';
+import sentry from './sentry';
 import {getState} from './state';
 
 async function writeCurrentSong() {
@@ -21,15 +22,15 @@ async function writeCurrentSong() {
 	} else {
 		output = i18next.t('NO_KARA_PLAYING');
 	}
-	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'song_name.txt'), output, 'utf-8');
+	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'song_name.txt'), output, 'utf-8');
 }
 
 async function writeRequester() {
-	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'requester.txt'), getState().player.currentSong?.nickname || '', 'utf-8');
+	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'requester.txt'), getState().player.currentSong?.nickname || '', 'utf-8');
 }
 
 async function writeURL() {
-	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'km_url.txt'), getState().osURL, 'utf-8');
+	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'km_url.txt'), getState().osURL, 'utf-8');
 }
 
 async function writeFrontendStatus() {
@@ -46,18 +47,18 @@ async function writeFrontendStatus() {
 			output = 'INTERFACE_CLOSED';
 			break;
 	}
-	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'frontend_status.txt'), i18next.t(output), 'utf-8');
+	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'frontend_status.txt'), i18next.t(output), 'utf-8');
 }
 
 async function writeKarasInPublicPL() {
 	const {karacount} = await getPlaylistInfo(getState().publicPlaid);
-	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'public_kara_count.txt'),
+	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'public_kara_count.txt'),
 		karacount.toString(), 'utf-8');
 }
 
 async function writeKarasInCurrentPL() {
 	const {karacount} = await getPlaylistInfo(getState().currentPlaid);
-	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'current_kara_count.txt'),
+	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'current_kara_count.txt'),
 		karacount.toString(), 'utf-8');
 }
 
@@ -113,5 +114,6 @@ export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
 		}
 	} catch (err) {
 		logger.warn('Cannot write stream files', {service: 'StreamFiles', obj: err});
+		sentry.error(err, 'Warning');
 	}
 }
