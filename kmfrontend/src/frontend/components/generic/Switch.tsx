@@ -7,6 +7,7 @@ interface IProps {
 	isChecked: boolean | undefined;
 	handleChange: (e:any) => void;
 	idInput?: string;
+	disabled?: boolean
 }
 
 class Switch extends Component<IProps, unknown> {
@@ -28,6 +29,7 @@ class Switch extends Component<IProps, unknown> {
 					data-namecommand={this.props.nameCommand}
 					id={this.props.idInput}
 					ref={this.checkbox}
+					disabled={this.props.disabled}
 				/>
 				<span className="switch-ui--control"><span/></span>
 			</label>

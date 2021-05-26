@@ -473,8 +473,12 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE_TOOLTIP')}</span>
 							</label>
 							<div>
-								<Switch idInput="Karaoke.ClassicMode" handleChange={this.onChange}
-									isChecked={this.state.config['Karaoke.ClassicMode']} />
+								<Switch
+									idInput="Karaoke.ClassicMode"
+									handleChange={this.onChange}
+									isChecked={this.state.config['Karaoke.ClassicMode']}
+									disabled={this.state.config['Karaoke.StreamerMode.Enabled']}
+								/>
 							</div>
 						</div>
 						<div className="settings-line">
@@ -484,8 +488,12 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE_TOOLTIP')}</span>
 							</label>
 							<div>
-								<Switch idInput="Karaoke.StreamerMode.Enabled" handleChange={this.onChange}
-									isChecked={this.state.config['Karaoke.StreamerMode.Enabled']} />
+								<Switch
+									idInput="Karaoke.StreamerMode.Enabled"
+									handleChange={this.onChange}
+									isChecked={this.state.config['Karaoke.StreamerMode.Enabled']}
+									disabled={this.state.config['Karaoke.ClassicMode']}
+								/>
 							</div>
 						</div>
 						{this.state.config['Karaoke.StreamerMode.Enabled'] ?
