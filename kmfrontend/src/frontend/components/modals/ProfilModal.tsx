@@ -1,27 +1,21 @@
 import './ProfilModal.scss';
 
-import languages from '@cospired/i18n-iso-languages';
 import i18next from 'i18next';
-import prettyBytes from 'pretty-bytes';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
-import { DBPLC } from '../../../../../src/types/database/playlist';
 import { logout, setAuthentifactionInformation } from '../../../store/actions/auth';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { buildKaraTitle } from '../../../utils/kara';
+import { getListLanguagesInLocale, listCountries } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
-languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
-languages.registerLocale(require('@cospired/i18n-iso-languages/langs/fr.json'));
-
 interface IProps {
 	scope?: 'public' | 'admin';
 	closeProfileModal?: () => void;
@@ -59,7 +53,8 @@ type typesAttrUser =
 	| 'main_series_lang'
 	| 'fallback_series_lang'
 	| 'securityCode'
-	| 'passwordConfirmation';
+	| 'passwordConfirmation'
+	| 'location';
 
 class ProfilModal extends Component<IProps, IState> {
 	static contextType = GlobalContext;
@@ -69,8 +64,8 @@ class ProfilModal extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			user: null,
-			passwordDifferent: 'form-control',
-			nicknameMandatory: 'form-control',
+			passwordDifferent: '',
+			nicknameMandatory: '',
 			cropAvatarModalOpen: false,
 			dangerousActions: false
 		};
@@ -90,13 +85,20 @@ class ProfilModal extends Component<IProps, IState> {
 		}
 	};
 
+	onClickCheckbox = (event: any) => {
+		const user = this.state.user;
+		user.flag_sendstats = event.target.checked;
+		this.setState({ user: user });
+	};
+
+
 	onClickSelect = (event: any) => {
 		const user = this.state.user;
 		(user[event.target.name as typesAttrUser] as number) = parseInt(event.target.value);
 		this.setState({ user: user });
 	};
 
-	changeLanguageFallback = (name: 'main_series_lang' | 'fallback_series_lang', value: string) => {
+	changeAutocomplete = (name: 'main_series_lang' | 'fallback_series_lang' | 'location', value: string) => {
 		const user = this.state.user;
 		user[name] = value;
 		this.setState({ user: user });
@@ -107,7 +109,7 @@ class ProfilModal extends Component<IProps, IState> {
 		if (this.state.user.nickname && ((this.state.user.password
 			&& this.state.user.password === this.state.user.passwordConfirmation)
 			|| !this.state.user.password)) {
-			this.setState({ passwordDifferent: 'form-control', nicknameMandatory: 'form-control' });
+			this.setState({ passwordDifferent: '', nicknameMandatory: '' });
 			try {
 				const response = await commandBackend('editMyAccount', this.state.user);
 
@@ -118,9 +120,9 @@ class ProfilModal extends Component<IProps, IState> {
 				// already display
 			}
 		} else if (!this.state.user.nickname) {
-			this.setState({ nicknameMandatory: 'form-control redBorders' });
+			this.setState({ nicknameMandatory: 'redBorders' });
 		} else {
-			this.setState({ passwordDifferent: 'form-control redBorders' });
+			this.setState({ passwordDifferent: 'redBorders' });
 		}
 	}
 
@@ -147,33 +149,8 @@ class ProfilModal extends Component<IProps, IState> {
 			fr.onload = () => {
 				callModal(this.context.globalDispatch, 'confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', async (confirm: boolean) => {
 					if (confirm) {
-						const data = { favorites: fr['result'] };
-						const response = await commandBackend('importFavorites', data);
-						if (response.unknownKaras && response.unknownKaras.length > 0) {
-							const mediasize = response.unknownKaras.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
-							callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.UNKNOW_KARAS.TITLE'), (<React.Fragment>
-								<p>
-									{i18next.t('MODAL.UNKNOW_KARAS.DESCRIPTION')}
-								</p>
-								<div>
-									{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM')}
-									<label>&nbsp;{i18next.t('MODAL.UNKNOW_KARAS.DOWNLOAD_THEM_SIZE', { mediasize: prettyBytes(mediasize) })}</label>
-								</div>
-								<br />
-								{response.unknownKaras.map((kara: DBPLC) =>
-									<label key={kara.kid}>{buildKaraTitle(this.context.globalState.settings.data, kara, true)}</label>)}
-							</React.Fragment>), () => commandBackend('addDownloads', {
-								downloads: response.unknownKaras.map((kara: DBPLC) => {
-									return {
-										kid: kara.kid,
-										mediafile: kara.mediafile,
-										size: kara.mediasize,
-										name: kara.karafile.replace('.kara.json', ''),
-										repository: kara.repository
-									};
-								})
-							}));
-						}
+						const data = { favorites: JSON.parse(fr['result'] as string) };
+						await commandBackend('importFavorites', data);
 					}
 				});
 			};
@@ -214,7 +191,7 @@ class ProfilModal extends Component<IProps, IState> {
 
 	deleteAccount = () => {
 		callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE'), i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE_WARN'), async () => {
-			await commandBackend('deleteMyUser');
+			await commandBackend('deleteMyAccount');
 			logout(this.context.globalDispatch);
 		});
 	}
@@ -239,10 +216,7 @@ class ProfilModal extends Component<IProps, IState> {
 
 	render() {
 		const logInfos = this.context?.globalState.auth.data;
-		const listLangs = [];
-		for (const [key, value] of Object.entries(languages.getNames(i18next.languages[0]))) {
-			listLangs.push({ 'label': value, 'value': languages.alpha2ToAlpha3B(key) });
-		}
+
 		if (!this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username.includes('@')) {
 			setTimeout(function () {
 				displayMessage('warning', <div><label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br /> {i18next.t('LOG_OFFLINE.MESSAGE')}</div>, 8000);
@@ -296,7 +270,7 @@ class ProfilModal extends Component<IProps, IState> {
 									<i className="fas fa-fw fa-envelope" />
 									<label htmlFor="nickname">{i18next.t('PROFILE_MAIL')}</label>
 								</div>
-								<input className="form-control" name="email" type="text"
+								<input name="email" type="text"
 									placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="email" />
 							</div>
@@ -313,7 +287,7 @@ class ProfilModal extends Component<IProps, IState> {
 									<i className="fas fa-fw fa-link" />
 									<label htmlFor="nickname">{i18next.t('PROFILE_URL')}</label>
 								</div>
-								<input className="form-control" name="url" type="text"
+								<input name="url" type="text"
 									placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="url" />
 							</div>
@@ -322,9 +296,30 @@ class ProfilModal extends Component<IProps, IState> {
 									<i className="fas fa-fw fa-pen" />
 									<label htmlFor="nickname">{i18next.t('PROFILE_BIO')}</label>
 								</div>
-								<input className="form-control" name="bio" type="text"
+								<input name="bio" type="text"
 									placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
 									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fas fa-map-marked-alt" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.LOCATION')}</label>
+								</div>
+								<Autocomplete
+									value={this.state.user.location}
+									options={listCountries()}
+									forceTop={true}
+									onChange={(value) => this.changeAutocomplete('location', value)} />
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={this.state.user.flag_sendstats}
+										onChange={this.onClickCheckbox}
+									/>
+									<label>{i18next.t('MODAL.PROFILE_MODAL.FLAG_SENDSTATS')}</label>
+								</div>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
@@ -333,18 +328,18 @@ class ProfilModal extends Component<IProps, IState> {
 								</div>
 								<div className="dualInput">
 									<input className={this.state.passwordDifferent} name="password" type="password"
-										   placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
-										   onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
+										placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
 									<input className={this.state.passwordDifferent}
-										   name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
-										   defaultValue={this.state.user.passwordConfirmation}
-										   onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
+										name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
+										defaultValue={this.state.user.passwordConfirmation}
+										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
 								</div>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-star" />
-									<label htmlFor="nickname">Favoris</label>
+									<label htmlFor="nickname">{i18next.t('PLAYLISTS.FAVORITES')}</label>
 								</div>
 								<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
 									<i className="fas fa-fw fa-download" /> {i18next.t('FAVORITES_IMPORT')}
@@ -357,7 +352,7 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine row">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-globe" />
-									<label htmlFor="nickname">Affichage des noms de séries</label>
+									<label htmlFor="nickname">{i18next.t('SERIE_NAME_MODE')}</label>
 								</div>
 								<select name="series_lang_mode" onChange={this.onClickSelect}
 									defaultValue={this.state.user.series_lang_mode.toString()}>
@@ -370,17 +365,23 @@ class ProfilModal extends Component<IProps, IState> {
 							{this.state.user.series_lang_mode === 4 ?
 								<React.Fragment>
 									<div className="profileLine row">
-										<label className="col-xs-6 control-label">{i18next.t('MAIN_SERIES_LANG')}</label>
-										<div className="col-xs-6">
-											<Autocomplete value={this.state.user.main_series_lang} options={listLangs} forceTop={true}
-														  onChange={(value) => this.changeLanguageFallback('main_series_lang', value)} />
+										<label>{i18next.t('MAIN_SERIES_LANG')}</label>
+										<div>
+											<Autocomplete
+												value={this.state.user.main_series_lang}
+												options={getListLanguagesInLocale()}
+												forceTop={true}
+												onChange={(value) => this.changeAutocomplete('main_series_lang', value)} />
 										</div>
 									</div>
 									<div className="profileLine row">
-										<label className="col-xs-6 control-label">{i18next.t('FALLBACK_SERIES_LANG')}</label>
-										<div className="col-xs-6">
-											<Autocomplete value={this.state.user.fallback_series_lang} options={listLangs} forceTop={true}
-														  onChange={(value) => this.changeLanguageFallback('fallback_series_lang', value)} />
+										<label>{i18next.t('FALLBACK_SERIES_LANG')}</label>
+										<div>
+											<Autocomplete
+												value={this.state.user.fallback_series_lang}
+												options={getListLanguagesInLocale()}
+												forceTop={true}
+												onChange={(value) => this.changeAutocomplete('fallback_series_lang', value)} />
 										</div>
 									</div>
 								</React.Fragment> : null
@@ -395,8 +396,8 @@ class ProfilModal extends Component<IProps, IState> {
 								</button>
 								<button type="button" className="btn btn-danger profileDelete" onClick={() => this.setState({ dangerousActions: !this.state.dangerousActions })}>
 									<i className="fas fa-fw fa-exclamation-triangle" />
-									Actions dangereuses
-									<i className={`fas fa-fw ${this.state.dangerousActions ? 'fa-chevron-left':'fa-chevron-right'}`} />
+									{i18next.t('MODAL.PROFILE_MODAL.DANGEROUS_ACTIONS')}
+									<i className={`fas fa-fw ${this.state.dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'}`} />
 								</button>
 								{this.state.dangerousActions ? <div>
 									{this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username !== 'admin' ?

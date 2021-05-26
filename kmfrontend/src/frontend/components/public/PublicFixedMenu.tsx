@@ -32,7 +32,7 @@ class PlayerBox extends Component<IProps, unknown> {
 					</a> : null
 				}
 				{this.props.publicVisible
-					&& this.context.globalState.settings.data.state.currentPlaylistID !== this.context.globalState.settings.data.state.publicPlaylistID ?
+					&& this.context.globalState.settings.data.state.currentPlaid !== this.context.globalState.settings.data.state.publicPlaid ?
 					<a
 						className="orange"
 						onClick={event => {

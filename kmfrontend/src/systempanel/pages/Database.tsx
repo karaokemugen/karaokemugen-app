@@ -1,34 +1,17 @@
-import { Button, Col,Layout, Modal, Row } from 'antd';
+import { Button, Col,Layout, Row } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { commandBackend } from '../../utils/socket';
 
-interface DatabaseState {
-	updateModal: boolean,
-	renameModal: boolean
-}
-
-class Database extends Component<unknown, DatabaseState> {
-
-	constructor(props) {
-		super(props);
-		this.state = {
-			updateModal: false,
-			renameModal: false
-		};
-	}
+class Database extends Component<unknown, unknown> {
 
 	dbregen = async () => {
 		commandBackend('generateDatabase', undefined, true, 300000).catch(() => {});
 	}
 
 	dbvalidateFiles = async () => {
-		commandBackend('validateDatabase', undefined, true, 300000).catch(() => {});
-	}
-
-	dbupdate =  async () => {
-		commandBackend('updateAllMedias', undefined, true, 300000).catch(() => {});
+		commandBackend('validateFiles', undefined, true, 300000).catch(() => {});
 	}
 
 	dbdump = async () => {
@@ -71,20 +54,6 @@ class Database extends Component<unknown, DatabaseState> {
 						<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.VALIDATE_FILES_DESCRIPTION')}}>
 						</Col>
 					</Row>
-					<Row justify="space-between" style={{ marginTop: '20px', flexWrap: 'nowrap' }}>
-						<Col flex="300px">
-							<Button
-								type='primary'
-								onClick={
-									() => this.setState({ updateModal: true })
-								}
-							>
-								{i18next.t('DATABASE.UPDATE_MEDIA')}
-							</Button>
-						</Col>
-						<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.UPDATE_MEDIA_DESCRIPTION')}}>
-						</Col>
-					</Row>
 					<Row justify="space-between" style={{ marginTop: '10px', flexWrap: 'nowrap' }}>
 						<Col flex="300px">
 							<Button
@@ -111,21 +80,6 @@ class Database extends Component<unknown, DatabaseState> {
 						<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.RESTORE_DATABASE_DESCRIPTION')}}>
 						</Col>
 					</Row>
-					<Modal
-						title={i18next.t('DATABASE.CONFIRM_UPDATE')}
-						visible={this.state.updateModal}
-						onOk={() => {
-							this.dbupdate();
-							this.setState({ updateModal: false });
-						}}
-						onCancel={() => this.setState({ updateModal: false })}
-						okText={i18next.t('YES')}
-						cancelText={i18next.t('NO')}
-					>
-						<p>{i18next.t('DATABASE.UPDATE_MESSAGE_WARNING')} <b>{i18next.t('DATABASE.UPDATE_MESSAGE_FILES')}</b>.</p>
-						<p>{i18next.t('DATABASE.UPDATE_MESSAGE_DELETED')}</p>
-						<p>{i18next.t('CONFIRM_SURE')}</p>
-					</Modal>
 				</Layout.Content>
 			</>
 		);

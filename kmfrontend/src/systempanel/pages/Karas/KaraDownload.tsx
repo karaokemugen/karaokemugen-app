@@ -5,76 +5,57 @@ import prettyBytes from 'pretty-bytes';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
+import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { DBDownload } from '../../../../../src/types/database/download';
-import { DBPLC } from '../../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
-import { getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
+import GlobalContext from '../../../store/context';
+import { getSerieLanguage, getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import { getTagTypeName,tagTypes } from '../../../utils/tagTypes';
-import { getCriterasByValue } from './_blc_criterias_types';
-
-let blacklistCache = {};
-
+import { tagTypes } from '../../../utils/tagTypes';
 interface KaraDownloadState {
-	karas_local: any[];
-	karas_online: any[];
+	karas: DBKara[];
 	i18nTag: any;
-	blacklistCriterias: {
-		dlblc_id: number,
-		type: number,
-		value: string,
-		uniquevalue: string,
-		filter?: {
-			value: number|string;
-			mode: string;
-			fields: string[];
-			test: string;
-		}
-	}[];
-	karasOnlineCount: number;
+	karasCount: number;
 	karasQueue: DBDownload[];
-	kara: any;
 	currentPage: number;
 	currentPageSize: number;
 	filter: string;
 	tagFilter: string;
 	tags: DBTag[];
-	compare: string;
+	download_status: 'MISSING' | 'DOWNLOADING' | '';
 	totalMediaSize: string;
 	tagOptions: any[];
+	preview: string;
 }
 
 class KaraDownload extends Component<unknown, KaraDownloadState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			karas_local: [],
-			karas_online: [],
+			karas: [],
 			i18nTag: {},
-			karasOnlineCount: 0,
-			blacklistCriterias: [],
+			karasCount: 0,
 			karasQueue: [],
-			kara: {},
 			currentPage: parseInt(localStorage.getItem('karaDownloadPage')) || 1,
 			currentPageSize: parseInt(localStorage.getItem('karaDownloadPageSize')) || 100,
 			filter: localStorage.getItem('karaDownloadFilter') || '',
 			tagFilter: '',
 			tags: [],
-			compare: '',
+			download_status: 'MISSING',
 			totalMediaSize: '',
-			tagOptions: []
+			tagOptions: [],
+			preview: ''
 		};
 	}
 
 	componentDidMount() {
-		this.api_get_online_karas();
-		this.apiGetBlacklistCriterias();
-		this.blacklistCheckEmptyCache();
-		this.apiReadKaraQueue();
-		this.apiGetLocalKaras();
+		this.getKaras();
+		this.getTotalMediaSize();
+		this.readKaraQueue();
 		this.getTags();
 		getSocket().on('downloadQueueStatus', this.downloadQueueStatus);
 	}
@@ -85,13 +66,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	downloadQueueStatus = (data?: any) => {
 		this.setState({ karasQueue: data });
-		this.apiGetLocalKaras();
 	}
 
 	async getTags() {
 		try {
-			const res = await commandBackend('getRemoteTags', undefined, false, 300000);
-			this.setState({ tags: res.content }, () => this.FilterTagCascaderOption());
+			const res = await commandBackend('getTags', undefined, false, 300000);
+			this.setState({ tags: res.content }, () => this.filterTagCascaderOption());
 		} catch (e) {
 			// already display
 		}
@@ -105,6 +85,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 
 	downloadKara = (kara) => {
 		const downloadObject: KaraDownloadRequest = {
+			mediafile: kara.mediafile,
 			kid: kara.kid,
 			size: kara.mediasize,
 			name: kara.name,
@@ -117,136 +98,70 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		const p = Math.max(0, this.state.currentPage - 1);
 		const psz = this.state.currentPageSize;
 		const pfrom = p * psz;
-		const response = await commandBackend('getRemoteKaras', {
+		const response = await commandBackend('getKaras', {
 			filter: this.state.filter,
-			q: this.state.tagFilter,
+			q: `${this.state.tagFilter}!m:${this.state.download_status}`,
 			from: pfrom,
-			size: psz,
-			compare: this.state.compare
+			size: psz
 		}, false, 300000);
 		const karas = response.content;
 		const karasToDownload: KaraDownloadRequest[] = [];
 		for (const kara of karas) {
-			if (this.blacklistCheck(kara)) {
-				karasToDownload.push({
-					kid: kara.kid,
-					size: kara.mediasize,
-					name: kara.karafile.replace('.kara.json', ''),
-					repository: kara.repository
-				});
-			}
+			karasToDownload.push({
+				mediafile: kara.mediafile,
+				kid: kara.kid,
+				size: kara.mediasize,
+				name: kara.karafile.replace('.kara.json', ''),
+				repository: kara.repository
+			});
 		}
 		this.postToDownloadQueue(karasToDownload);
 	}
 
-	apiGetLocalKaras = async () => {
+	getKaras = async () => {
 		try {
-			const res = await commandBackend('getKaras', undefined, false, 300000);
-			this.setState({ karas_local: res.content });
+			const p = Math.max(0, this.state.currentPage - 1);
+			const psz = this.state.currentPageSize;
+			const pfrom = p * psz;
+			const res = await commandBackend('getKaras', {
+				filter: this.state.filter,
+				q: `${this.state.tagFilter}!m:${this.state.download_status}`,
+				from: pfrom,
+				size: psz
+			}, false, 300000);
+			this.setState({
+				karas: res.content,
+				karasCount: res.infos.count || 0,
+				i18nTag: res.i18n
+			});
 		} catch (e) {
 			// already display
 		}
 	}
 
-	async apiGetBlacklistCriterias() {
-		const res = await commandBackend('getDownloadBLCs', undefined, false, 300000);
-		if (res.length) {
-			const criterias = res.map(function (criteria) {
-				const c = getCriterasByValue(criteria.type);
-				if (c && c.fields && c.fields.length > 0) {
-					criteria.filter = c;
-					criteria.value = criteria.value.toLowerCase();
-				}
-				return criteria;
-			});
-			this.setState({ blacklistCriterias: criterias });
+	getTotalMediaSize = async () => {
+		try {
+			const res = await commandBackend('getKaras', undefined, false, 300000);
+			const totalMediaSize = res.content.reduce((accumulator, currentValue) => accumulator + currentValue.mediasize, 0);
+			this.setState({ totalMediaSize: prettyBytes(totalMediaSize) });
+		} catch (e) {
+			// already display
 		}
 	}
 
-	blacklistCheckEmptyCache() {
-		blacklistCache = {};
-	}
-	blacklistCheck(kara) {
-		// avoid lots of kara check operation on re-render
-		if (blacklistCache[kara.kid] !== undefined) return blacklistCache[kara.kid];
-		
-		blacklistCache[kara.kid] = true;
-		if (this.state.blacklistCriterias.length) {
-			this.state.blacklistCriterias.map(criteria => {
-				if (criteria.filter?.test === 'contain') {
-					criteria.filter?.fields.map(field => {
-						if (typeof (kara[field]) === 'string') {
-							if (kara[field].toLowerCase().match(criteria.value)) {
-								blacklistCache[kara.kid] = false;
-							}
-						} else if (kara[field] && kara[field].length > 0) {
-							kara[field].map(t => {
-								if (t) {
-									if (typeof t === 'string') {
-										if (t.toLowerCase().match(criteria.value as string)) {
-											blacklistCache[kara.kid] = false;
-										}
-									} else if (t.name) {
-										if (t.name.toLowerCase().match(criteria.value)) {
-											blacklistCache[kara.kid] = false;
-										}
-									}
-								}
-								return null;
-							});
-						}
-						return null;
-					});
-				} else {
-					const listTid:string[] = kara[tagTypes[getTagTypeName(criteria.type)].karajson].map(tag => tag.tid);
-					if (listTid.includes(criteria.value)) {
-						blacklistCache[kara.kid] = false;
-					}
-				}
-				return null;
-			});
-		}
-
-		return blacklistCache[kara.kid];
-	}
-
-	api_get_online_karas = async () => {
-		const p = Math.max(0, this.state.currentPage - 1);
-		const psz = this.state.currentPageSize;
-		const pfrom = p * psz;
-		const res = await commandBackend('getRemoteKaras', {
-			filter: this.state.filter,
-			q: this.state.tagFilter,
-			from: pfrom,
-			size: psz,
-			compare: this.state.compare
-		}, false, 300000);
-		let karas = res.content;
-		karas = karas.map((kara) => {
-			kara.name = kara.karafile.replace('.kara.json', '');
-			return kara;
-		});
-		this.setState({
-			karas_online: karas,
-			karasOnlineCount: res.infos.count || 0,
-			i18nTag: res.i18n,
-			totalMediaSize: prettyBytes(res.infos.totalMediaSize)
-		});
-	}
-
-	apiReadKaraQueue = async () => {
+	readKaraQueue = async () => {
 		const res = await commandBackend('getDownloads', undefined, false, 300000);
 		this.setState({ karasQueue: res });
 	}
 
-	handleTableChange = (pagination, filters, sorter) => {
+	handleTableChange = (pagination) => {
 		this.setState({
 			currentPage: pagination.current,
 			currentPageSize: pagination.pageSize,
 		});
 		localStorage.setItem('karaDownloadPage', pagination.current);
 		localStorage.setItem('karaDownloadPageSize', pagination.pageSize);
-		setTimeout(this.api_get_online_karas, 10);
+		setTimeout(this.getKaras, 10);
 	};
 
 	handleFilterTagSelection = (value) => {
@@ -257,11 +172,11 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		this.setState({ tagFilter: t, currentPage: 0 }, () => {
 			localStorage.setItem('karaDownloadPage', '0');
 			localStorage.setItem('karaDownloadtagFilter', this.state.tagFilter);
-			setTimeout(this.api_get_online_karas, 10);
+			setTimeout(this.getKaras, 10);
 		});
 	}
 
-	FilterTagCascaderOption = () => {
+	filterTagCascaderOption = () => {
 		const options = Object.keys(tagTypes).map(type => {
 			const typeID = tagTypes[type].type;
 
@@ -299,51 +214,42 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	}
 
 	// START karas download queue
-	putToDownloadQueueStart() {
-		commandBackend('startDownloadQueue').catch(() => {});
+	putToDownloadQueueStart = () => {
+		commandBackend('startDownloadQueue').catch(() => { });
 	}
 
 	// PAUSE karas download queue
-	putToDownloadQueuePause() {
-		commandBackend('pauseDownloads').catch(() => {});
+	putToDownloadQueuePause = () => {
+		commandBackend('pauseDownloads').catch(() => { });
 	}
 
 	// POST (add) items to download queue
-	postToDownloadQueue(downloads: KaraDownloadRequest[]) {
+	postToDownloadQueue = (downloads: KaraDownloadRequest[]) => {
 		commandBackend('addDownloads', {
 			downloads
-		}).catch(() => {});
+		}).catch(() => { });
 	}
 
-	importPlaylist = (event: any) => {
-		if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
-		const input = event.target;
-		if (input.files && input.files[0]) {
-			const file = input.files[0];
-			const fr = new FileReader();
-			fr.onload = async () => {
-				const response = await commandBackend('importPlaylist', {
-					buffer : { playlist: fr['result'] }
-				});
-				if (response.unknownKaras && response.unknownKaras.length > 0) {
-					commandBackend('addDownloads', {
-						downloads: response.unknownKaras.map((kara: DBPLC) => {
-							return {
-								kid: kara.kid,
-								mediafile: kara.mediafile,
-								size: kara.mediasize,
-								name: kara.karafile.replace('.kara.json', ''),
-								repository: kara.repository
-							};
-						})
-					});
-				}
-				commandBackend('deletePlaylist', {pl_id: response.playlist_id});
-			};
-			fr.readAsText(file);
+	isLocalKara = (kara) => {
+		const karaLocal = this.state.karas.find(item => item.kid === kara.kid);
+		return karaLocal.download_status === 'DOWNLOADED';
+	}
+
+	isQueuedKara = (kara) => {
+		return this.state.karasQueue.find(item => item.name === kara.name);
+	}
+
+	showPreview = (kara) => {
+		this.setState({ preview: `https://${kara.repository}/downloads/medias/${encodeURIComponent(kara.mediafile)}` });
+		document.addEventListener('keyup', this.closeVideo);
+	}
+
+	closeVideo = (e: KeyboardEvent) => {
+		if (e.key === 'Escape') {
+			this.setState({ preview: undefined });
+			document.removeEventListener('keyup', this.closeVideo);
 		}
 	};
-
 
 	render() {
 		return (
@@ -355,37 +261,61 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				<Layout.Content>
 					<Row justify="space-between">
 						<Col flex={3} style={{ marginRight: '10px' }}>
-							<Input.Search
-								placeholder={i18next.t('SEARCH_FILTER')}
-								value={this.state.filter}
-								onChange={event => this.changeFilter(event)}
-								enterButton={i18next.t('SEARCH')}
-								onSearch={this.api_get_online_karas}
-							/>
-						</Col>
-						<Col flex={1} style={{ textAlign: 'center' }}>
-							<label htmlFor="playlistImport" className="ant-btn ant-btn-primary">{i18next.t('KARA.IMPORT_PLAYLIST')}</label>
-							<Input id="playlistImport" type="file" accept=".kmplaylist" style={{ display: 'none' }} onChange={this.importPlaylist} />
-						</Col>
-						<Col flex={2}>
-							<Select allowClear style={{ width: '90%' }} onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])}
-								placeholder={i18next.t('KARA.TAG_GROUP_FILTER')} key={'tid'} options={this.getGroupsTags()} />
-						</Col>
-						<Col flex={2}>
-							<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
-								showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
-								onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
-						</Col>
-					</Row>
-					<Row style={{ margin: '10px' }}>
-						<Col span={11}>
 							<Row>
+								<Input.Search
+									placeholder={i18next.t('SEARCH_FILTER')}
+									value={this.state.filter}
+									onChange={event => this.changeFilter(event)}
+									enterButton={i18next.t('SEARCH')}
+									onSearch={this.getKaras}
+								/>
+							</Row>
+							<Row style={{ margin: '0.5em' }}>
 								<label>{i18next.t('KARA.TOTAL_MEDIA_SIZE')} {this.state.totalMediaSize}</label>
 							</Row>
+							<Row>
+								<Button style={{ width: '230px' }} type="primary" key="synchronize"
+									onClick={() => commandBackend('updateAllMedias').catch(() => { })}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
+								&nbsp;
+								{i18next.t('KARA.SYNCHRONIZE_DESC')}
+							</Row>
+							<Row>
+								<label style={{ margin: '0.5em' }}>{i18next.t('KARA.FILTER_MEDIA_STATUS')}</label>
+								<Radio
+									style={{ margin: '0.5em' }}
+									checked={this.state.download_status === ''}
+									onChange={() => this.setState({ download_status: '', currentPage: 0 }, this.getKaras)}
+								>
+									{i18next.t('KARA.FILTER_ALL')}
+								</Radio>
+								<Radio
+									style={{ margin: '0.5em' }}
+									checked={this.state.download_status === 'DOWNLOADING'}
+									onChange={() => this.setState({ download_status: 'DOWNLOADING', currentPage: 0 }, this.getKaras)}
+								>
+									{i18next.t('KARA.FILTER_IN_PROGRESS')}
+								</Radio>
+								<Radio
+									style={{ margin: '0.5em' }}
+									checked={this.state.download_status === 'MISSING'}
+									onChange={() => this.setState({ download_status: 'MISSING', currentPage: 0 }, this.getKaras)}
+								>
+									{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}
+								</Radio>
+							</Row>
 						</Col>
-						<Col span={9}>
+						<Col flex={2}>
+							<Row>
+								<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
+									showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
+									onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
+							</Row>
+							<Row style={{ marginTop: '1.5em' }}>
+								<Select allowClear style={{ width: '90%' }} onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])}
+									placeholder={i18next.t('KARA.TAG_GROUP_FILTER')} key={'tid'} options={this.getGroupsTags()} />
+							</Row>
 						</Col>
-						<Col span={4}>
+						<Col flex={2}>
 							<Row>
 								<label>{i18next.t('KARA.QUEUE_LABEL')}</label>
 							</Row>
@@ -395,91 +325,34 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 										&& kara.status !== 'DL_FAILED').length
 								})}</label>
 							</Row>
-						</Col>
-					</Row>
-					<Row justify="space-between">
-						<Col span={11}>
-							<Button style={{ width: '230px' }} type="primary" key="synchronize"
-								onClick={() => commandBackend('syncAllBases')}>{i18next.t('KARA.SYNCHRONIZE')}</Button>
-							&nbsp;
-							{i18next.t('KARA.SYNCHRONIZE_DESC')}
-						</Col>
-						<Col span={4}>
-							<label>{i18next.t('KARA.FILTER_SONGS')}</label>
-						</Col>
-						<Col span={4}>
 							<Row>
-								<Link to='/system/karas/download/queue'>
-									<Button style={{ width: '100px' }} type="primary" key="queueView">
-										{i18next.t('KARA.VIEW_DOWNLOAD_QUEUE')}
-									</Button>
-								</Link>
+								<Col style={{ margin: '0.5em' }}>
+									<Link to='/system/karas/download/queue'>
+										<Button style={{ width: '100px' }} type="primary" key="queueView">
+											{i18next.t('KARA.VIEW_DOWNLOAD_QUEUE')}
+										</Button>
+									</Link>
+								</Col>
+								<Col style={{ margin: '0.5em' }}>
+									<Button style={{ width: '100px' }} type="primary" key="queueDelete"
+										onClick={() => commandBackend('deleteDownloads').catch(() => { })}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
+								</Col>
 							</Row>
-						</Col>
-					</Row>
-					<Row style={{ paddingTop: '5px' }} justify="space-between">
-						<Col span={11}>
-							<Button style={{ width: '230px' }} type="primary" key="queueDownloadAll"
-								onClick={() => commandBackend('downloadAllBases')}>{i18next.t('KARA.DOWNLOAD_ALL')}</Button>
-							&nbsp;
-							{i18next.t('KARA.DOWNLOAD_ALL_DESC')}
-						</Col>
-						<Col span={4}>
-							<Radio
-								checked={this.state.compare === ''}
-								onChange={() =>	this.setState({ compare: '', currentPage: 0 }, this.api_get_online_karas)}
-							>
-								{i18next.t('KARA.FILTER_ALL')}
-							</Radio>
-						</Col>
-						<Col span={4}>
-							<Button style={{ width: '100px' }} type="primary" key="queueStart"
-								onClick={this.putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
-						</Col>
-					</Row>
-					<Row style={{ paddingTop: '5px' }} justify="space-between">
-						<Col span={11}>
-							<Button style={{ width: '230px' }} type="primary" key="queueUpdateAll"
-								onClick={() => commandBackend('updateAllBases')}>{i18next.t('KARA.UPDATE_ALL')}</Button>
-							&nbsp;
-							{i18next.t('KARA.UPDATE_ALL_DESC')}
-						</Col>
-						<Col span={4}>
-							<Radio
-								checked={this.state.compare === 'updated'}
-								onChange={() => this.setState({ compare: 'updated', currentPage: 0 }, this.api_get_online_karas)}
-							>
-								{i18next.t('KARA.FILTER_UPDATED')}
-							</Radio>
-						</Col>
-						<Col span={4}>
-							<Button style={{ width: '100px' }} type="primary" key="queuePause"
-								onClick={this.putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
-						</Col>
-					</Row>
-					<Row style={{ paddingTop: '5px' }} justify="space-between">
-						<Col span={11}>
-							<Button style={{ width: '230px' }} type="primary" key="queueCleanAll"
-								onClick={() => commandBackend('cleanAllBases')}>{i18next.t('KARA.CLEAN_ALL')}</Button>
-							&nbsp;
-							{i18next.t('KARA.CLEAN_ALL_DESC')}
-						</Col>
-						<Col span={4}>
-							<Radio
-								checked={this.state.compare === 'missing'}
-								onChange={() => this.setState({ compare: 'missing', currentPage: 0 }, this.api_get_online_karas)}
-							>
-								{i18next.t('KARA.FILTER_NOT_DOWNLOADED')}
-							</Radio>
-						</Col>
-						<Col span={4}>
-							<Button style={{ width: '100px' }} type="primary" key="queueDelete"
-								onClick={() => commandBackend('deleteDownloads').catch(() => {})}>{i18next.t('KARA.WIPE_DOWNLOAD_QUEUE')}</Button>
+							<Row>
+								<Col style={{ margin: '0.5em' }}>
+									<Button style={{ width: '100px' }} type="primary" key="queueStart"
+										onClick={this.putToDownloadQueueStart}>{i18next.t('KARA.START_DOWNLOAD_QUEUE')}</Button>
+								</Col>
+								<Col style={{ margin: '0.5em' }}>
+									<Button style={{ width: '100px' }} type="primary" key="queuePause"
+										onClick={this.putToDownloadQueuePause}>{i18next.t('KARA.PAUSE_DOWNLOAD_QUEUE')}</Button>
+								</Col>
+							</Row>
 						</Col>
 					</Row>
 					<Table
 						onChange={this.handleTableChange}
-						dataSource={this.state.karas_online}
+						dataSource={this.state.karas}
 						columns={this.columns}
 						rowKey='kid'
 						pagination={{
@@ -493,20 +366,21 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								const from = range[0];
 								return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
 							},
-							total: this.state.karasOnlineCount,
+							total: this.state.karasCount,
 							showQuickJumper: true,
 						}}
 					/>
 				</Layout.Content>
+				{this.state.preview ?
+					<div className="overlay" onClick={() => {
+						this.setState({ preview: undefined });
+						document.removeEventListener('keyup', this.closeVideo);
+					}}>
+						<video id="video" autoPlay src={this.state.preview} />
+					</div> : null
+				}
 			</>
 		);
-	}
-
-	isLocalKara(kara) {
-		return this.state.karas_local && this.state.karas_local.find(item => item.kid === kara.kid);
-	}
-	isQueuedKara(kara) {
-		return this.state.karasQueue.find(item => item.name === kara.name);
 	}
 
 	columns = [
@@ -519,10 +393,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			}
 		}, {
 			title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
-			dataIndex: 'serie',
-			key: 'serie',
-			render: (serie, record) => {
-				return serie || getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
+			dataIndex: 'series',
+			key: 'series',
+			render: (series, record) => {
+				return (series && series.length > 0) ?
+					series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ')
+					: getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
 			}
 		}, {
 			title: i18next.t('KARA.SONGTYPES'),
@@ -543,14 +419,11 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'title',
 			key: 'title',
-			render: (title, record) => {
-				if (this.isLocalKara(record.kid))
-					return <strong>{title}</strong>;
+			render: (title) => {
 				return <span>{title}</span>;
-
 			}
 		}, {
-			title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+			title: i18next.t('TAG_TYPES.VERSIONS', { count: 2 }),
 			dataIndex: 'versions',
 			key: 'versions',
 			render: (versions) => getTagInLocaleList(versions, this.state.i18nTag).join(', ')
@@ -559,10 +432,10 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			dataIndex: 'repository',
 			key: 'repository',
 		}, {
-			title: i18next.t('KARA.DETAILS'),
-			key: 'details',
+			title: i18next.t('KARA.VIDEO_PREVIEW'),
+			key: 'preview',
 			render: (_text, record) => {
-				return <Button type="default" href={`https://${record.repository}/base/kara/${record.kid}`}><InfoCircleTwoTone /></Button>;
+				return <Button type="default" onClick={() => this.showPreview(record)}><InfoCircleTwoTone /></Button>;
 			}
 		}, {
 			title: <span><Button title={i18next.t('KARA.DOWNLOAD_ALL_TOOLTIP')} type="default"
@@ -571,7 +444,6 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			key: 'download',
 			render: (_text, record) => {
 				let button = null;
-				const blacklisted = !this.blacklistCheck(record);
 				if (this.isLocalKara(record)) {
 					button = <Button disabled type="default"><CheckCircleTwoTone twoToneColor="#52c41a" /></Button>;
 				} else {
@@ -583,20 +455,16 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 							button = <Button disabled type="default">
 								<ClockCircleTwoTone twoToneColor="#dc4e41" />
 							</Button>;
-						} else if (queue.status === 'DL_DONE') {// done but not in local -> try again dude
-							button = <span><Button type="default" onClick={() => this.downloadKara(record)}><CheckCircleTwoTone twoToneColor="#4989f3" /></Button></span>;
+						} else if (queue.status === 'DL_DONE') {
+							button = <Button disabled type="default"><CheckCircleTwoTone twoToneColor="#52c41a" /></Button>;
 						} else if (queue.status === 'DL_FAILED') {
 							button = <span><Button type="default" onClick={() => this.downloadKara(record)}><WarningTwoTone twoToneColor="#f24848" /></Button></span>;
 						}
 					} else {
-						if (blacklisted) {
-							button = <Button type="primary" danger onClick={() => this.downloadKara(record)}><DownloadOutlined /></Button>;
-						} else {
-							button = <Button type="default" onClick={() => this.downloadKara(record)}><DownloadOutlined /></Button>;
-						}
+						button = <Button type="default" onClick={() => this.downloadKara(record)}><DownloadOutlined /></Button>;
 					}
 				}
-				return <span>{button} {Math.round(record.mediasize / (1024 * 1024))}Mb {blacklisted ? <small style={{ color: '#f5232e' }}>{i18next.t('KARA.IN_BLACKLIST')}</small> : null}</span>;
+				return <span style={{ whiteSpace: 'nowrap' }}>{button} {prettyBytes(Number(record.mediasize))}</span>;
 			}
 		}];
 }

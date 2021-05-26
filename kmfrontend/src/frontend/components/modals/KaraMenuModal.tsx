@@ -5,14 +5,14 @@ import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import { is_touch_device } from '../../../utils/tools';
+import {is_touch_device, isNonStandardPlaylist, nonStandardPlaylists} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 
 interface IProps {
 	kara: KaraElement;
 	side: number;
-	idPlaylist: number;
-	idPlaylistTo: number;
+	plaid: string;
+	plaidTo: string;
 	publicOuCurrent?: boolean | undefined;
 	topKaraMenu: number;
 	leftKaraMenu: number;
@@ -50,15 +50,15 @@ class KaraMenuModal extends Component<IProps, IState> {
 		try {
 			let url;
 			let data;
-			if (this.props.idPlaylist && this.props.idPlaylist > 0) {
-				url = 'getPLC';
-				data = {
-					pl_id: this.props.idPlaylist,
-					plc_id: this.props.kara.playlistcontent_id
-				};
-			} else {
+			if (this.props.plaid && isNonStandardPlaylist(this.props.plaid)) {
 				url = 'getKara';
 				data = { kid: this.props.kara.kid };
+			} else {
+				url = 'getPLC';
+				data = {
+					plaid: this.props.plaid,
+					plc_id: this.props.kara.plcid
+				};
 			}
 			const response = await commandBackend(url, data);
 			this.setState({ kara: response });
@@ -78,7 +78,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 	freeKara = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: [this.state.kara?.playlistcontent_id],
+				plc_ids: [this.state.kara?.plcid],
 				flag_free: true
 			});
 			this.setState({ effect_free: true });
@@ -92,7 +92,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 	changeVisibilityKara = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: [this.state.kara?.playlistcontent_id],
+				plc_ids: [this.state.kara?.plcid],
 				flag_visible: !this.state.kara?.flag_visible
 			});
 			this.setState({ effect_visibility: true });
@@ -154,7 +154,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 						top: window.innerHeight < (this.props.topKaraMenu + 250) ? undefined : this.props.topKaraMenu,
 						left: window.innerWidth < (this.props.leftKaraMenu + 250) ? window.innerWidth - 250 : this.props.leftKaraMenu
 					}}>
-					{this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
+					{!isNonStandardPlaylist(this.props.plaidTo) && !isNonStandardPlaylist(this.props.plaid) ?
 						<li>
 							<a href="#" onContextMenu={this.onRightClickTransfer} onClick={(event) => {
 								this.props.transferKara(event);
@@ -166,13 +166,13 @@ class KaraMenuModal extends Component<IProps, IState> {
 							</a>
 						</li> : null
 					}
-					{this.props.idPlaylist >= 0 && !this.props.kara?.flag_playing ?
+					{!isNonStandardPlaylist(this.props.plaid) && !this.props.kara?.flag_playing ?
 						<li>
 							<a href="#" onClick={() => {
 								try {
 									commandBackend('editPLC', {
 										pos: -1,
-										plc_ids: [this.props.kara.playlistcontent_id]
+										plc_ids: [this.props.kara.plcid]
 									});
 									this.props.closeKaraMenu();
 								} catch (e) {
@@ -185,7 +185,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 							</a>
 						</li> : null
 					}
-					{this.props.idPlaylist !== -5 ?
+					{this.props.plaid !== nonStandardPlaylists.favorites ?
 						<li className="animate-button-container">
 							<a href="#" onClick={this.makeFavorite}>
 								<i className="fas fa-fw fa-star" />
@@ -213,7 +213,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 							</a>
 						</li> : null
 					}
-					{this.props.idPlaylist >= 0 ?
+					{!isNonStandardPlaylist(this.props.plaid) ?
 						<li className="animate-button-container">
 							<a href="#" onClick={this.changeVisibilityKara}
 								title={this.state.kara.flag_visible ? i18next.t('KARA_MENU.VISIBLE_OFF') : i18next.t('KARA_MENU.VISIBLE_ON')}>
@@ -237,7 +237,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 							</a>
 						</li> : null
 					}
-					{this.props.idPlaylist !== -2 && this.props.idPlaylist !== -4 ?
+					{this.props.plaid !== nonStandardPlaylists.blacklist && this.props.plaid !== nonStandardPlaylists.blc ?
 						<li className="animate-button-container">
 							<a href="#" onClick={this.addToBlacklist}>
 								<i className="fas fa-fw fa-ban" />
@@ -251,7 +251,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 							</a>
 						</li> : null
 					}
-					{this.props.idPlaylist !== -3 ?
+					{this.props.plaid !== nonStandardPlaylists.whitelist ?
 						<li className="animate-button-container">
 							<a href="#" onClick={this.addToWhitelist}>
 								<i className="fas fa-fw fa-check-circle" />

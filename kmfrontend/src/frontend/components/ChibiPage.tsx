@@ -39,8 +39,8 @@ class ChibiPage extends Component<unknown, IState> {
 			getSocket().on('playerStatus', this.playerUpdate);
 			try {
 				const result = await commandBackend('getPlayerStatus');
-				this.setState({ statusPlayer: result,
-					onTop: this.context.globalState.settings.data.config.GUI.ChibiPlayer.AlwaysOnTop });
+				this.playerUpdate(result);
+				this.setState({onTop: this.context.globalState.settings.data.config.GUI.ChibiPlayer.AlwaysOnTop });
 			} catch (e) {
 				// already display
 			}
@@ -96,9 +96,13 @@ class ChibiPage extends Component<unknown, IState> {
 		return sendIPC(namecommand);
 	}
 
-	render() {
-		const volume: number = (this.state.statusPlayer && !isNaN(this.state.statusPlayer.volume)) ? this.state.statusPlayer.volume : 100;
+	setVolume = (event) => {
+		const state = {...this.state.statusPlayer};
+		state.volume = event.target.value;
+		this.setState({statusPlayer : state});
+	}
 
+	render() {
 		return (
 			<>
 				<KmAppWrapperDecorator chibi>
@@ -144,17 +148,17 @@ class ChibiPage extends Component<unknown, IState> {
 								className="btn btn-dark volumeButton"
 							>
 								<div id="mute"
-									 data-namecommand={(volume === 0 || this.state.statusPlayer?.mute) ? 'unmute' : 'mute'}
+									 data-namecommand={(this.state.statusPlayer?.volume === 0 || this.state.statusPlayer?.mute) ? 'unmute' : 'mute'}
 									 onClick={this.putPlayerCommando}
 								>
 									{
-										volume === 0 || this.state.statusPlayer?.mute
+										this.state.statusPlayer?.volume === 0 || this.state.statusPlayer?.mute
 											? <i className="fas fa-volume-mute"></i>
 											: (
-												volume > 66
+												this.state.statusPlayer?.volume > 66
 													? <i className="fas fa-volume-up"></i>
 													: (
-														volume > 33
+														this.state.statusPlayer?.volume > 33
 															? <i className="fas fa-volume-down"></i>
 															: <i className="fas fa-volume-off"></i>
 													)
@@ -165,8 +169,9 @@ class ChibiPage extends Component<unknown, IState> {
 									title={i18next.t('VOLUME_LEVEL')}
 									data-namecommand="setVolume"
 									id="volume"
-									defaultValue={volume}
+									value={this.state.statusPlayer?.volume}
 									type="range"
+									onChange={this.setVolume}
 									onMouseUp={this.putPlayerCommando}
 								/>
 							</button>

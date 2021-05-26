@@ -38,7 +38,7 @@ WHERE t.pk_tid = $1
 
 export const sqlselectDuplicateTags = `
 SELECT pk_tid AS tid, name, types, short, aliases, i18n, modified_at, tagfile, repository, problematic, nolivedownload AS "noLiveDownload", priority FROM tag ou
-WHERE (SELECT COUNT(*) FROM tag inr WHERE inr.name = ou.name) > 1
+WHERE name in (select name FROM tag GROUP BY name HAVING COUNT(name) > 1)
 `;
 
 export const sqlgetAllTags = (
@@ -49,7 +49,8 @@ export const sqlgetAllTags = (
 	orderClauses: string,
 	additionnalFrom: string[],
 	joinClauses: string,
-	stripClause: string
+	stripClause: string,
+	probClause: string
 ) => `
 SELECT t.pk_tid AS tid,
 	t.types,
@@ -73,6 +74,7 @@ WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
   ${stripClause}
+  ${probClause}
 ORDER BY name${orderClauses}
 ${limitClause}
 ${offsetClause}
@@ -167,4 +169,4 @@ SET
 WHERE pk_tid = $7;
 `;
 
-export const sqldeleteTag = 'DELETE FROM tag WHERE pk_tid = $1';
+export const sqldeleteTag = 'DELETE FROM tag WHERE pk_tid = ANY ($1)';

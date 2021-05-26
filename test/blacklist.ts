@@ -143,7 +143,7 @@ describe('Blacklist', () => {
 	});
 
 	it('Get list of blacklist criterias AFTER new set is current (should be equal to first set)', async () => {
-		return requestBlacklistCriterias(2);
+		return requestBlacklistCriterias(BLCSetID);
 	});
 
 	it('Get blacklist AFTER new set is current and has criterias', async () => {
@@ -153,7 +153,7 @@ describe('Blacklist', () => {
 	let BLCSetExport: BLCSetFile;
 
 	it('Export blacklist set', async () => {
-		const data  = await commandBackend(token, 'exportBLCSet', {set_id: 2});
+		const data  = await commandBackend(token, 'exportBLCSet', {set_id: BLCSetID});
 		BLCSetExport = data;
 		const setFile = data;
 		expect(setFile.blcSet).to.be.an('array');
@@ -173,7 +173,7 @@ describe('Blacklist', () => {
 
 	it('Import Blacklist Set', async () => {
 		const data = {
-			blcSet: JSON.stringify(BLCSetExport)
+			blcSet: BLCSetExport
 		};
 		await commandBackend(token, 'importBLCSet', data);
 	});

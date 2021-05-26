@@ -26,7 +26,10 @@
         "no-console": 0,
         "indent": [
             "error",
-            "tab"
+            "tab",
+			{
+				"SwitchCase": 1
+			}
         ],
         "quotes": [
             "error",
@@ -47,6 +50,7 @@
 		"require-await": 0,
 		"no-duplicate-imports": 1,
 		"no-var": 2,
+		"no-useless-catch": 0,
 		"prefer-const": 1,
 		"import/order": 0,
 		"no-case-declarations": 0,

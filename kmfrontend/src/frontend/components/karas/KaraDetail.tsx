@@ -7,22 +7,30 @@ import {toast} from 'react-toastify';
 
 import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
+import { KaraDownloadRequest } from '../../../../../src/types/download';
 import nanamiSingPng from '../../../assets/nanami-sing.png';
 import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
-import {formatLyrics, getPreviewLink, sortTagByPriority} from '../../../utils/kara';
+import {buildKaraTitle, formatLyrics, getPreviewLink, sortTagByPriority} from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { displayMessage, is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import {
+	displayMessage,
+	is_touch_device,
+	isNonStandardPlaylist,
+	nonStandardPlaylists,
+	secondsTimeSpanToHMS
+} from '../../../utils/tools';
 import { View } from '../../types/view';
 import InlineTag from './InlineTag';
 
 interface IProps {
 	kid: string | undefined;
 	scope: string;
-	idPlaylist?: number;
+	plaid?: string;
+	blcLabel?: string;
 	playlistcontentId?: number;
 	closeOnPublic?: () => void;
 	changeView?: (
@@ -51,7 +59,7 @@ class KaraDetail extends Component<IProps, IState> {
 			showVideo: false,
 			lyrics: []
 		};
-		if (this.props.kid || this.props.idPlaylist) {
+		if (this.props.kid || this.props.plaid) {
 			this.getKaraDetail();
 		}
 	}
@@ -103,9 +111,9 @@ class KaraDetail extends Component<IProps, IState> {
 		try {
 			let url;
 			let data;
-			if (this.props.idPlaylist && this.props.idPlaylist > 0) {
+			if (this.props.plaid && !isNonStandardPlaylist(this.props.plaid)) {
 				url = 'getPLC';
-				data = { pl_id: this.props.idPlaylist, plc_id: this.props.playlistcontentId };
+				data = { plaid: this.props.plaid, plc_id: this.props.playlistcontentId };
 			} else {
 				url = 'getKara';
 				data = { kid: (kid ? kid : this.props.kid) };
@@ -113,7 +121,7 @@ class KaraDetail extends Component<IProps, IState> {
 			const kara = await commandBackend(url, data);
 			this.setState({
 				kara: kara,
-				isFavorite: kara.flag_favorites || this.props.idPlaylist === -5
+				isFavorite: kara.flag_favorites || this.props.plaid === nonStandardPlaylists.favorites
 			}, () => {
 				if (kara.subfile) this.fetchLyrics();
 			});
@@ -138,9 +146,9 @@ class KaraDetail extends Component<IProps, IState> {
 					? secondsTimeSpanToHMS(timeAgo, 'hm')
 					: secondsTimeSpanToHMS(timeAgo, 'ms');
 
-			return i18next.t('DETAILS_LAST_PLAYED_2', { time: timeAgoStr });
+			return i18next.t('DETAILS.LAST_PLAYED_2', { time: timeAgoStr });
 		} else if (lastPlayed_at) {
-			return i18next.t('DETAILS_LAST_PLAYED', { date: new Date(lastPlayed_at).toLocaleDateString() });
+			return i18next.t('DETAILS.LAST_PLAYED', { date: new Date(lastPlayed_at).toLocaleDateString() });
 		}
 		return null;
 	};
@@ -193,7 +201,7 @@ class KaraDetail extends Component<IProps, IState> {
 	addKara = async () => {
 		const response = await commandBackend('addKaraToPublicPlaylist', {
 			requestedby: this.context.globalState.auth.data.username,
-			kid: this.props.kid
+			kids: [this.props.kid]
 		});
 		if (response && response.code && response.data?.plc) {
 			let message;
@@ -226,17 +234,28 @@ class KaraDetail extends Component<IProps, IState> {
 					<button className="btn" onClick={e => {
 						e.preventDefault();
 						e.stopPropagation();
-						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.playlistcontent_id]})
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.plcid]})
 							.then(() => {
-								toast.dismiss(response.data.plc.playlistcontent_id);
+								toast.dismiss(response.data.plc.plcid);
 								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
 							}).catch(() => {
-								toast.dismiss(response.data.plc.playlistcontent_id);
+								toast.dismiss(response.data.plc.plcid);
 							});
 					}}>{i18next.t('CANCEL')}</button>
 				</span>
-			</div>, 10000, 'top-left', response.data.plc.playlistcontent_id);
+			</div>, 10000, 'top-left', response.data.plc.plcid);
 		}
+	}
+
+	downloadMedia = () => {
+		const downloadObject: KaraDownloadRequest = {
+			mediafile: this.state.kara.mediafile,
+			kid: this.state.kara.kid,
+			size: this.state.kara.mediasize,
+			name: buildKaraTitle(this.context.globalState.settings.data, this.state.kara, true) as string,
+			repository: this.state.kara.repository
+		};
+		commandBackend('addDownloads', {downloads: [downloadObject]}).catch(() => { });
 	}
 
 	placeHeader = (headerEl: ReactNode) => createPortal(headerEl, document.getElementById('menu-supp-root'));
@@ -299,6 +318,12 @@ class KaraDetail extends Component<IProps, IState> {
 			const playTime = data.time_before_play > 0 ? new Date(Date.now() + data.time_before_play * 1000): null;
 			const details = (
 				<React.Fragment>
+					{this.props.blcLabel ? <div className="detailsKaraLine">
+						<span>
+							<i className="fas fa-fw fa-ban" />
+							{this.props.blcLabel}
+						</span>
+					</div>:null}
 					<div className="detailsKaraLine timeData">
 						<span>
 							<i className="fas fa-fw fa-clock" />
@@ -306,7 +331,7 @@ class KaraDetail extends Component<IProps, IState> {
 						</span>
 						<span>
 							{playTime
-								? i18next.t('DETAILS_PLAYING_IN', {
+								? i18next.t('DETAILS.PLAYING_IN', {
 									time: secondsTimeSpanToHMS(data.time_before_play, 'hm'),
 									date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2)
 								})
@@ -327,14 +352,14 @@ class KaraDetail extends Component<IProps, IState> {
 					}
 					<div className="detailsKaraLine">
 						<span>
-							{this.props.playlistcontentId ? i18next.t('DETAILS_ADDED'):i18next.t('DETAILS_CREATED')}
+							{this.props.playlistcontentId ? i18next.t('DETAILS.ADDED'):i18next.t('DETAILS.CREATED')}
 							{data.created_at ? <>
-								{i18next.t('DETAILS_ADDED_2')}
+								{i18next.t('DETAILS.ADDED_2')}
 								<span className="boldDetails">{new Date(data.created_at).toLocaleString()}</span>
 							</> : null
 							}
 							{data.nickname ? <>
-								{i18next.t('DETAILS_ADDED_3')}
+								{i18next.t('DETAILS.ADDED_3')}
 								<span className="boldDetails">{data.nickname}</span>
 							</> : null
 							}
@@ -375,11 +400,22 @@ class KaraDetail extends Component<IProps, IState> {
 			const showVideoButton = (isRemote() && !/\./.test(data.repository)) ? null : (
 				<button
 					type="button"
-					className="showVideo btn btn-action"
+					className="btn btn-action"
 					onClick={() => this.setState({ showVideo: !this.state.showVideo })}
 				>
 					<i className="fas fa-fw fa-video" />
 					<span>{this.state.showVideo ? i18next.t('TOOLTIP_HIDEVIDEO'):i18next.t('TOOLTIP_SHOWVIDEO')}</span>
+				</button>
+			);
+
+			const downloadVideoButton = data.download_status !== 'MISSING' ? null : (
+				<button
+					type="button"
+					className="btn btn-action"
+					onClick={this.downloadMedia}
+				>
+					<i className="fas fa-fw fa-file-download" />
+					<span>{i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}</span>
 				</button>
 			);
 
@@ -448,6 +484,7 @@ class KaraDetail extends Component<IProps, IState> {
 									<div className="centerButtons">
 										{makeFavButton}
 										{showVideoButton}
+										{downloadVideoButton}
 									</div>
 									{video}
 									{details}

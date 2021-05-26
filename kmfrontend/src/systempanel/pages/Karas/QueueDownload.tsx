@@ -1,4 +1,4 @@
-import { CheckCircleTwoTone, ClockCircleTwoTone, InfoCircleTwoTone, SyncOutlined, WarningTwoTone } from '@ant-design/icons';
+import { ClockCircleTwoTone, InfoCircleTwoTone, SyncOutlined, WarningTwoTone } from '@ant-design/icons';
 import { Button, Cascader, Col, Input, Layout, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
@@ -7,12 +7,12 @@ import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { DBDownload } from '../../../../../src/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
-import { getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
+import { getSerieLanguage, getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
 interface KaraDownloadState {
-	karas_online: any[];
+	karas: any[];
 	i18nTag: any;
 	karasQueue: DBDownload[];
 	kara: any;
@@ -21,7 +21,6 @@ interface KaraDownloadState {
 	filter: string;
 	tagFilter: string;
 	tags: DBTag[];
-	compare: string;
 	tagOptions: any[];
 }
 
@@ -30,7 +29,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			karas_online: [],
+			karas: [],
 			i18nTag: {},
 			karasQueue: [],
 			kara: {},
@@ -39,14 +38,13 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			filter: '',
 			tagFilter: '',
 			tags: [],
-			compare: '',
 			tagOptions: []
 		};
 	}
 
 	componentDidMount() {
-		this.api_get_online_karas();
-		this.apiReadKaraQueue();
+		this.getKaras();
+		this.readKaraQueue();
 		this.getTags();
 		getSocket().on('downloadQueueStatus', this.downloadQueueStatus);
 	}
@@ -61,8 +59,8 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 
 	async getTags() {
 		try {
-			const res = await commandBackend('getRemoteTags', undefined, false, 300000);
-			this.setState({ tags: res.content }, this.FilterTagCascaderOption);
+			const res = await commandBackend('getTags', undefined, false, 300000);
+			this.setState({ tags: res.content }, this.filterTagCascaderOption);
 		} catch (e) {
 			// already display
 		}
@@ -74,6 +72,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 
 	downloadKara = (kara) => {
 		const downloadObject: KaraDownloadRequest = {
+			mediafile: kara.mediafile,
 			kid: kara.kid,
 			size: kara.mediasize,
 			name: kara.name,
@@ -82,39 +81,33 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		this.postToDownloadQueue([downloadObject]);
 	}
 
-	api_get_online_karas = async () => {
+	getKaras = async () => {
 		const p = Math.max(0, this.state.currentPage - 1);
 		const psz = this.state.currentPageSize;
 		const pfrom = p * psz;
-		const res = await commandBackend('getRemoteKaras', {
+		const res = await commandBackend('getKaras', {
 			filter: this.state.filter,
 			q: this.state.tagFilter,
 			from: pfrom,
-			size: psz,
-			compare: this.state.compare
+			size: psz
 		}, false, 300000);
-		let karas = res.content;
-		karas = karas.map((kara) => {
-			kara.name = kara.karafile.replace('.kara.json', '');
-			return kara;
-		});
 		this.setState({
-			karas_online: karas,
+			karas: res.content,
 			i18nTag: res.i18n
 		});
 	}
 
-	apiReadKaraQueue = async () => {
+	readKaraQueue = async () => {
 		const res = await commandBackend('getDownloads', undefined, false, 300000);
 		this.setState({ karasQueue: res });
 	}
 
-	handleTableChange = (pagination, filters, sorter) => {
+	handleTableChange = (pagination) => {
 		this.setState({
 			currentPage: pagination.current,
 			currentPageSize: pagination.pageSize,
 		});
-		setTimeout(this.api_get_online_karas, 10);
+		setTimeout(this.getKaras, 10);
 	};
 
 	handleFilterTagSelection = (value) => {
@@ -125,11 +118,11 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		this.setState({ tagFilter: t, currentPage: 0 }, () => {
 			localStorage.setItem('karaDownloadPage', '0');
 			localStorage.setItem('karaDownloadtagFilter', this.state.tagFilter);
-			setTimeout(this.api_get_online_karas, 10);
+			setTimeout(this.getKaras, 10);
 		});
 	}
 
-	FilterTagCascaderOption = () => {
+	filterTagCascaderOption = () => {
 		const options = Object.keys(tagTypes).map(type => {
 			const typeID = tagTypes[type].type;
 
@@ -162,25 +155,25 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		});
 	}
 
-	FilterTagCascaderFilter = function (inputValue, path) {
+	filterTagCascaderFilter = function (inputValue, path) {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	}
 
 	// START karas download queue
 	putToDownloadQueueStart() {
-		commandBackend('startDownloadQueue').catch(() => {});
+		commandBackend('startDownloadQueue').catch(() => { });
 	}
 
 	// PAUSE karas download queue
 	putToDownloadQueuePause() {
-		commandBackend('pauseDownloads').catch(() => {});
+		commandBackend('pauseDownloads').catch(() => { });
 	}
 
 	// POST (add) items to download queue
 	postToDownloadQueue(downloads: KaraDownloadRequest[]) {
 		commandBackend('addDownloads', {
 			downloads
-		}).catch(() => {});
+		}).catch(() => { });
 	}
 
 	render() {
@@ -198,7 +191,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 								value={this.state.filter}
 								onChange={event => this.changeFilter(event)}
 								enterButton={i18next.t('SEARCH')}
-								onSearch={this.api_get_online_karas}
+								onSearch={this.getKaras}
 							/>
 						</Col>
 						<Col flex={1} style={{ textAlign: 'center' }}>
@@ -209,7 +202,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 						</Col>
 						<Col flex={2}>
 							<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
-								showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
+								showSearch={{ filter: this.filterTagCascaderFilter, matchInputWidth: false }}
 								onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
 						</Col>
 					</Row>
@@ -230,7 +223,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 					</Row>
 					<Table
 						onChange={this.handleTableChange}
-						dataSource={this.state.karas_online.filter(kara => this.isQueuedKara(kara))}
+						dataSource={this.state.karas.filter(kara => this.isQueuedKara(kara))}
 						columns={this.columns}
 						rowKey='kid'
 						pagination={{
@@ -244,7 +237,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 								const from = range[0];
 								return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
 							},
-							total: this.state.karas_online.filter(kara => this.isQueuedKara(kara)).length,
+							total: this.state.karas.filter(kara => this.isQueuedKara(kara)).length,
 							showQuickJumper: true,
 						}}
 					/>
@@ -267,10 +260,12 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			}
 		}, {
 			title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
-			dataIndex: 'serie',
-			key: 'serie',
-			render: (serie, record) => {
-				return serie || getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
+			dataIndex: 'series',
+			key: 'series',
+			render: (series, record) => {
+				return (series && series.length > 0) ?
+					series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ')
+					: getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
 			}
 		}, {
 			title: i18next.t('KARA.SONGTYPES'),
@@ -293,7 +288,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			key: 'title',
 			render: (title) => <span>{title}</span>
 		}, {
-			title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+			title: i18next.t('TAG_TYPES.VERSIONS', { count: 2 }),
 			dataIndex: 'versions',
 			key: 'versions',
 			render: (versions) => getTagInLocaleList(versions, this.state.i18nTag).join(', ')
@@ -302,10 +297,15 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			dataIndex: 'repository',
 			key: 'repository',
 		}, {
-			title: i18next.t('KARA.DETAILS'),
-			key: 'details',
+			title: i18next.t('KARA.VIDEO_PREVIEW'),
+			key: 'preview',
 			render: (_text, record) => {
-				return <Button type="default" href={`https://${record.repository}/base/kara/${record.kid}`}><InfoCircleTwoTone /></Button>;
+				return (<div>
+					<Button type="default" href={`https://${record.repository}/base/kara/${record.kid}`}><InfoCircleTwoTone /></Button>
+					<video src={`https://${record.repository}/downloads/medias/${record.mediafile}`}
+						controls={true} autoPlay={true} loop={true} playsInline={true}
+						className='modal-video' />
+				</div>);
 			}
 		}, {
 			title: <span>{i18next.t('KARA.DOWNLOAD')}</span>,

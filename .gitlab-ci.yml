@@ -37,13 +37,14 @@ test:
     POSTGRES_PASSWORD: musubi
   script:
     - yarn install --check-files --force --cache-folder .yarn
+    - yarn buildWorker
     - touch mpv
     - touch ffmpeg
     - mkdir app
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US
     - node --version
-    - yarn ts-node util/extUnaccent
+    - yarn ts-node util/extUnaccentPgcrypto
     - yarn test --debug
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
@@ -67,10 +68,12 @@ build-react:
     paths:
     - kmfrontend/build/
     - dist/
+    - gitWorker/
   script:
     - yarn build
     - yarn installkmfrontend
     - yarn buildkmfrontend
+    - yarn buildWorker
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'

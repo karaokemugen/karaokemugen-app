@@ -17,7 +17,7 @@ describe('Users', () => {
 	});
 	it('Create a new user', async () => {
 		const data = await commandBackend(undefined, 'createUser', testUserData);
-		expect(data.code).to.be.equal('USER_CREATED');
+		expect(data.code).to.be.equal(200);
 	});
 
 	it('Create new user (as admin)', async () => {
@@ -26,12 +26,12 @@ describe('Users', () => {
 			password: 'ilyenapas2',
 			role: 'admin'
 		});
-		expect(data.code).to.be.equal('USER_CREATED');
+		expect(data.code).to.be.equal(200);
 	});
 
 	it('Edit your own account', async () => {
 		const data = await commandBackend(token, 'editMyAccount', {nickname: 'toto', avatar: resolve(__dirname, '../assets/guestAvatars/vegeta.jpg')});
-		expect(data.code).to.be.equal('USER_EDITED');
+		expect(data.code).to.be.equal(200);
 	});
 
 	it('Reset password with wrong security code', async () => {
@@ -77,12 +77,12 @@ describe('Users', () => {
 
 	it('Delete an user', async () => {
 		const data = await commandBackend(token, 'deleteUser', {username: 'BakaToTest'});
-		expect(data.code).to.be.equal('USER_DELETED');
+		expect(data.code).to.be.equal(200);
 	});
 
 	it('Delete another user', async () => {
 		const data = await commandBackend(token, 'deleteUser', {username: 'BakaToTest2'});
-		expect(data.code).to.be.equal('USER_DELETED');
+		expect(data.code).to.be.equal(200);
 	});
 });
 

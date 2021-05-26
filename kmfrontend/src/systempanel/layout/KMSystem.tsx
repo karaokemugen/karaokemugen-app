@@ -3,17 +3,19 @@ import '../App.scss';
 import { ConfigProvider, Layout } from 'antd';
 import enUS from 'antd/es/locale/en_US';
 import frFR from 'antd/es/locale/fr_FR';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import TasksEvent from '../../TasksEvent';
+import { getSocket } from '../../utils/socket';
+import { displayMessage } from '../../utils/tools';
 import Loading from '../components/Loading';
 import Config from '../pages/Config';
 import Database from '../pages/Database';
 import Home from '../pages/Home';
 import KaraHistory from '../pages/Karas/History';
 import KaraBatchEdit from '../pages/Karas/KaraBatchEdit';
-import KaraBlacklist from '../pages/Karas/KaraBlacklist';
 import KaraDownload from '../pages/Karas/KaraDownload';
 import KaraEdit from '../pages/Karas/KaraEdit';
 import KaraList from '../pages/Karas/KaraList';
@@ -26,6 +28,7 @@ import RepositoriesEdit from '../pages/Repositories/RepositoriesEdit';
 import RepositoriesList from '../pages/Repositories/RepositoriesList';
 import SessionsEdit from '../pages/Sessions/SessionsEdit';
 import SessionsList from '../pages/Sessions/SessionsList';
+import Storage from '../pages/Storage';
 import TagsDuplicate from '../pages/Tags/TagsDuplicate';
 import TagsEdit from '../pages/Tags/TagsEdit';
 import TagsList from '../pages/Tags/TagsList';
@@ -35,6 +38,23 @@ import UserList from '../pages/Users/UserList';
 import KMMenu from './KMMenu';
 
 class KMSystem extends Component<unknown, unknown> {
+
+	componentDidMount() {
+		getSocket().on('operatorNotificationInfo', this.operatorNotificationInfo);
+		getSocket().on('operatorNotificationError', this.operatorNotificationError);
+		getSocket().on('operatorNotificationWarning', this.operatorNotificationWarning);
+	}
+
+	componentWillUnmount() {
+		getSocket().off('operatorNotificationInfo', this.operatorNotificationInfo);
+		getSocket().off('operatorNotificationError', this.operatorNotificationError);
+		getSocket().off('operatorNotificationWarning', this.operatorNotificationWarning);
+	}
+
+	operatorNotificationInfo = (data: { code: string, data: string }) => displayMessage('info', i18next.t(data.code, { data: data }));
+	operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code, { data: data }));
+	operatorNotificationWarning = (data: { code: string, data: string }) => displayMessage('warning', i18next.t(data.code, { data: data }));
+
 	render() {
 		return (
 			<ConfigProvider locale={navigator.languages[0].includes('fr') ? frFR : enUS}>
@@ -53,6 +73,7 @@ class KMSystem extends Component<unknown, unknown> {
 							<Route path='/system/log' component={Log} />
 							<Route path='/system/options' component={Options} />
 							<Route path='/system/config' component={Config} />
+							<Route path='/system/storage' component={Storage} />
 							<Route path='/system/unused' component={UnusedList} />
 
 							<Route path='/system/sessions/new' component={SessionsEdit} />
@@ -65,7 +86,6 @@ class KMSystem extends Component<unknown, unknown> {
 
 							<Route path='/system/karas/download/queue' component={QueueDownload} />
 							<Route path='/system/karas/download' component={KaraDownload} />
-							<Route path='/system/karas/blacklist' component={KaraBlacklist} />
 							<Route path='/system/karas/create' component={KaraEdit} />
 							<Route path='/system/karas/history' component={KaraHistory} />
 							<Route path='/system/karas/ranking' component={KaraRanking} />

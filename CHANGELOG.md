@@ -1,3 +1,92 @@
+# v5.1.x - xx/06/2021
+
+This is a minor but major but still minor but well, it's a new version.
+
+## Important notice regarding song management (#969)
+
+Karaoke Mugen changes how it handles songs from version 5.1 and onwards.
+
+We realize people don't wish to download all medias for all songs because it can take up a lot of space (currently ~420Gb) and don't seem to understand they need to donwload songs for them to appear in lists.
+
+As a result, Karaoke Mugen will now download your repositories entirely and keep them updated via git.
+
+Medias will be downloaded separately, as you need them :
+
+- When you add a song to the current playlist, it'll be downloaded in the background.
+- If you play a song from the library directly, and if it hasn't been downloaded, it'll be streamed directly from the repository's server.
+
+There are ways for you now to see how much space a repository takes on your hard drive, and clean up unused songs manually or in bulk.
+
+Since we're using git, your repository will be kept up to date when Karaoke Mugen starts. If medias have been updated for songs you have already downloaded the medias for before, they will be redownloaded.
+## New features
+
+- A blacklist criteria set "Safe for karaoke" is now created automatically the first time you start Karaoke Mugen. It contains all problematic tags like R18, Spoilers and Epilepsy. You can use it or not :) (#1013)
+- You can now have music during pauses in your karaokes sessions. (#938)
+	- Put any audio file in the `backgrounds` folder.
+	- If the audio file has the same name as a particular background image, it'll be played when that background image appears.
+	- If a background image has no audio file associated, it'll select a random music from the folder
+- A new option "Use my favorites and song requests for stats" has been added to user profiles (#950)
+- A new option "Location" has been added to user profiles to define where you are in the world. This is for the KoE (Karaoke On Earth) project (#951)
+- Some improvements have been made for Twitch streamers :
+	- The pause screen now has a progress bar (#967)
+	- The pause screen can now be paused for a longer time if you need to, by hitting the Stop button in the player controls (#990)
+	- The Twitch chat now has a `!song` command to display the current song being played (#996)
+	- A new window containing the currently playing song and the next ones can be opened and captured via OBS to display on your stream layout (#998)
+	- Karaoke Mugen now writes some useful information in text files so you can read them through OBS Studio or similar to get useful information. These are located in the `streamFiles` directory (#997) :
+		- Current song name
+		- URL to access your karaoke session
+		- Interface status (opened/closed/restricted)
+		- Number of songs in the current and public playlists
+		- Time remaining in the current playlist
+- There is a new comment field in karaoke information (maintainers only) (#1012)
+
+## Improvements
+
+- Settings are better explained on the options screen (#1026)
+- More songs are displayed in the public song library on mobile (#1015)
+- Added a warning on user profiles when email is empty (#1002)
+- All API documentation can now be found at http://api.karaokes.moe/app and is made with @nuxt/content. As a result, all old Apidoc comments have been removed from the app's source code. (#805)
+- The "About" window has been fully translated (#857)
+- Song list in system panel can now be filtered by tags (#945)
+- Song list in system panel now has a bulk delete option (#945)
+- Requester is added to stats sent to Karaoke Mugen Server (only if the user has opted in for its requests to be used for stats) (#949)
+- The unused tags/medias list now has a "Delete" button in front of each entry. (#976)
+- Some unused localized strings have been removed (#978)
+- Navigation in the operator panel has been improved (#989)
+- Improved sentry reports for frontend errors (#994)
+- The user list in the operator page can now be closed with the ESC key (#1010)
+- The border has been increased to 2 on the player's font for song info (#1011)
+- You can now use the ENTER key to submit the form on the login in setup page (#1018)
+- Tags are a little smaller in the player progress bar (#1021)
+- Bulk actions are now available in the blacklist view (#909)
+
+## Fixes
+
+- Fixed OBS not capturing the KM window properly if it's hidden behind other windows/minimized
+- Fixed the "Select All" button on operator panel (#1019)
+- Fixed scroll in library (#1014)
+- Fixed volume button state on startup (#1016)
+- Blacklist criterias: Several fixes have been made (#909)
+	- Can't have "Longer than" and "Shorter than" at the same time, or even several of them.
+	- Can't have a "Shorter than" bigger than the "Longer than" criterias anymore
+	- The blacklist view explains a bit better how it's created from the current BLC set
+	- The reason why a song is blacklisted is now displayed in the karaoke info window
+- When running a packaged version, the first command-line argument is no longer ignored (#986)
+- Some SQL migrations now have a `if exists` clause for drops (#988)
+- Fixed some DB errors during shutdown (#991)
+- The remote is now properly reinitialized after some settings changes (#992)
+- Fixed some error popups (#993)
+- Fixed song list position in public interface when you come back from the karaoke detail page
+- Fixed Socket not initialized properly when remote is being enabled (#1006)
+
+## Other
+
+- For users using Karaoke Mugen from its git/source code, the minimal MPV version required is now 0.33 (#1008)
+- The `https://kara.moe` URL has been disabled since it only worked when on the same network. It's replaced by the Remote system (with codes like `abcd.kara.moe`) which is now stable. Plus it was confusing (#1003)
+- Some playlist specific code has been moved to the KM shared library so we can use it for a new exciting feature on Karaoke Mugen Server (#1005)
+- Dependencies have been updated
+
+
 # v5.0.37 - 09/05/2021
 
 ## Fixes

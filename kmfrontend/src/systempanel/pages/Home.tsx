@@ -1,11 +1,11 @@
 import {
 	BlockOutlined,
-	CloseCircleOutlined,
 	DatabaseOutlined,
 	DownloadOutlined,
 	FolderOpenOutlined,
 	HddOutlined,
 	HistoryOutlined,
+	PlayCircleOutlined,
 	PlusOutlined,
 	ScheduleOutlined,
 	SearchOutlined,
@@ -66,11 +66,11 @@ class Home extends Component<unknown, unknown> {
 									<Link to="/system/karas/create">
 										<Button block><PlusOutlined /> {i18next.t('HOME.KARAS.CREATE')}</Button>
 									</Link>
-									<Link to="/system/karas/blacklist">
-										<Button block><CloseCircleOutlined /> {i18next.t('HOME.KARAS.BLACKLIST')}</Button>
-									</Link>
 									<Link to="/system/karas/history">
 										<Button block><HistoryOutlined /> {i18next.t('HOME.KARAS.HISTORY')}</Button>
+									</Link>
+									<Link to="/system/karas/viewcounts">
+										<Button block><PlayCircleOutlined /> {i18next.t('HOME.KARAS.MOST_PLAYED')}</Button>
 									</Link>
 								</div>
 							</Card>

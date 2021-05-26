@@ -4,7 +4,7 @@ import { APIData } from '../../lib/types/api';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addBlacklistCriteria, addSet, copySet, deleteBlacklistCriteria, editSet, emptyBlacklistCriterias, exportSet, getAllSets, getBlacklist, getBlacklistCriterias, getSet, importSet,removeSet } from '../../services/blacklist';
+import { addBlacklistCriteria, addSet, copySet, createProblematicBLCSet, deleteBlacklistCriteria, editSet, emptyBlacklistCriterias, exportSet, getAllSets, getBlacklist, getBlacklistCriterias, getSet, importSet,removeSet } from '../../services/blacklist';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -62,7 +62,7 @@ export default function blacklistController(router: SocketIOApp) {
 			await addBlacklistCriteria(req.body.blcs, req.body.set_id);
 			return {code: 201, message: APIMessage('BLC_CREATED')};
 		} catch(err) {
-			const code = 'BLC_ADD_ERROR';
+			const code = typeof err?.msg === 'object' ? err.msg.code:'BLC_ADD_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
@@ -178,6 +178,16 @@ export default function blacklistController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
+	router.route('createProblematicBLCSet', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		try {
+			return await createProblematicBLCSet();
+		} catch(err) {
+			const code = 'BLC_PROBLEMATIC_SET_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 	router.route('importBLCSet', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		const validationErrors = check(req.body, {
@@ -185,16 +195,8 @@ export default function blacklistController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				const id = await importSet(JSON.parse(req.body.blcSet));
-				const response = {
-					message: 'BLC Set Imported',
-					blc_set_id: id
-				};
-				return {
-					data: response,
-					code: 'BLC_SET_IMPORTED',
-					args: id
-				};
+				const id = await importSet(req.body.blcSet);
+				return {code: 200, message: APIMessage('BLC_SET_IMPORTED', {set_id: id})};
 			} catch(err) {
 				const code = 'BLC_SET_IMPORT_ERROR';
 				errMessage(code, err);

@@ -10,7 +10,7 @@ import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/object_helpers';
 import { getState } from '../utils/state';
-import { handleFile, updateChibiPlayerWindow,win } from './electron';
+import { handleFile, updateChibiPlayerWindow, updateChibiPlaylistWindow, win } from './electron';
 import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
@@ -67,7 +67,7 @@ export function initMenu() {
 						openURL(urls.systemOptions);
 					}
 				},
-				{ type: 'separator', visible: isMac },
+				isMac ? { type: 'separator', visible: isMac }:null,
 				{
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
@@ -264,6 +264,16 @@ export function initMenu() {
 						updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
 						setConfig({GUI: {ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled }}});
 					}
+				},
+				{
+					label: i18next.t('MENU_OPTIONS_CHIBIPLAYLIST'),
+					type: 'checkbox',
+					accelerator: 'CmdOrCtrl+B',
+					checked: getConfig().GUI.ChibiPlaylist.Enabled,
+					click: () => {
+						updateChibiPlaylistWindow(!getConfig().GUI.ChibiPlaylist.Enabled);
+						setConfig({GUI: {ChibiPlaylist: { Enabled: !getConfig().GUI.ChibiPlaylist.Enabled }}});
+					}
 				}
 			]
 		},
@@ -412,7 +422,7 @@ function displayAbout() {
 			bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
 			homepage: 'https://mugen.karaokes.moe',
 			description: versionSHA,
-			copyright: 'by Karaoke Mugen Dev Team, under MIT license',
+			copyright: i18next.t('ABOUT.COPYRIGHT'),
 			use_version_info: true,
 			css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css')
 		});

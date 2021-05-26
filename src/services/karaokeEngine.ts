@@ -9,6 +9,7 @@ import { emitWS } from '../lib/utils/ws';
 import { CurrentSong } from '../types/playlist';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
+import {writeStreamFiles} from '../utils/stream_files';
 import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongVersion } from './kara';
 import {initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer} from './player';
 import { getCurrentSong, getPlaylistContentsMini, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
@@ -38,7 +39,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		const versions = getSongVersion(kara);
 
 		// Construct mpv message to display.
-		const infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}';
+		const infos = '{\\bord2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}';
 		const current: CurrentSong = merge(kara, {
 			nickname: 'Admin',
 			flag_playing: true,
@@ -50,13 +51,14 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			username: 'admin',
 			user_type: 0,
 			repo: kara.repository,
-			playlistcontent_id: -1,
-			playlist_id: -1,
+			plcid: -1,
+			plaid: '7cf90987-9bf1-48e3-ba16-8ebd92a03f68',
 			avatar: null,
 			infos
 		});
 		await mpv.play(current);
-
+		writeStreamFiles('song_name');
+		writeStreamFiles('requester');
 		setState({singlePlay: !randomPlaying, randomPlaying: randomPlaying});
 	} catch(err) {
 		logger.error('Error during song playback', {service: 'Player', obj: err});
@@ -100,7 +102,7 @@ export async function playCurrentSong(now: boolean) {
 
 			if (kara?.pos === 1) {
 				if (conf.Karaoke.AutoBalance) {
-					await shufflePlaylist(getState().currentPlaylistID, 'balance');
+					await shufflePlaylist(getState().currentPlaid, 'balance');
 				}
 				// Testing if intro hasn't been played already and if we have at least one intro available
 				if (conf.Playlist.Medias.Intros.Enabled && !getState().introPlayed) {
@@ -115,11 +117,14 @@ export async function playCurrentSong(now: boolean) {
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
 			await Promise.all([
-				setPLCVisible(kara.playlistcontent_id),
-				updatePlaylistDuration(kara.playlist_id),
-				updateUserQuotas(kara)
+				setPLCVisible(kara.plcid),
+				updatePlaylistDuration(kara.plaid),
+				updateUserQuotas(kara),
+				writeStreamFiles('time_remaining_in_current_playlist'),
+				writeStreamFiles('song_name'),
+				writeStreamFiles('requester')
 			]);
-			emitWS('playlistInfoUpdated', kara.playlist_id);
+			emitWS('playlistInfoUpdated', kara.plaid);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch(err) {
 			logger.error('Error during song playback', {service: 'Player', obj: err});
@@ -168,7 +173,7 @@ export async function playerEnding() {
 
 		// Handle balance
 		if (state.player.mediaType === 'song' && !state.singlePlay && !state.randomPlaying) {
-			const playlist = await getPlaylistContentsMini(state.currentPlaylistID);
+			const playlist = await getPlaylistContentsMini(state.currentPlaid);
 			const previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
 			if (previousSongIndex >= 0) {
 				const previousSong = playlist[previousSongIndex];
@@ -180,7 +185,7 @@ export async function playerEnding() {
 					if (state.usersBalance.has(nextSong.username)) {
 						state.usersBalance.clear();
 						if (conf.Karaoke.AutoBalance && remainingSongs > 1) {
-							await shufflePlaylist(state.currentPlaylistID, 'balance');
+							await shufflePlaylist(state.currentPlaid, 'balance');
 						}
 					}
 					state.usersBalance.add(nextSong.username);
@@ -248,8 +253,8 @@ export async function playerEnding() {
 			return;
 		}
 		// Testing for position before last to play an encore
-		const pl = await getPlaylistInfo(state.currentPlaylistID, {username: 'admin', role: 'admin'});
-		logger.debug(`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaylistID} - Playlist ID: ${pl?.playlist_id}`, {service: 'Player'});
+		const pl = await getPlaylistInfo(state.currentPlaid, {username: 'admin', role: 'admin'});
+		logger.debug(`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaid} - Playlist ID: ${pl?.plaid}`, {service: 'Player'});
 		if (conf.Playlist.Medias.Encores.Enabled && state.player.currentSong?.pos === pl.karacount - 1 && !getState().encorePlayed && !getState().singlePlay) {
 			try {
 				await mpv.playMedia('Encores');

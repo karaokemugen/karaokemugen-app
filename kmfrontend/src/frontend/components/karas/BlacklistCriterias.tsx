@@ -14,6 +14,7 @@ const listTypeBlc = [
 	'BLCTYPE_1002',
 	'BLCTYPE_1003',
 	'BLCTYPE_1004',
+	'BLCTYPE_1005',
 	'BLCTYPE_0',
 	'BLCTYPE_1',
 	'BLCTYPE_2',
@@ -28,14 +29,14 @@ const listTypeBlc = [
 	'BLCTYPE_11',
 	'BLCTYPE_12',
 	'BLCTYPE_13',
-	'BLCTYPE_14'];
+	'BLCTYPE_14'
+];
 
 interface IProps {
 	data: Array<BLC>;
 	tags: Array<Tag> | undefined;
 	blSet: BLCSet;
 }
-
 
 interface IState {
 	bcType: number;
@@ -93,7 +94,6 @@ class BlacklistCriterias extends Component<IProps, IState> {
 						}
 						<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}><i className="fas fa-plus"/></button>
 					</div>
-
 				</div>
 				{types.map((type) => {
 					return <React.Fragment key={type}>

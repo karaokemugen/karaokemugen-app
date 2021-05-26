@@ -1,12 +1,14 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Divider, Layout, Modal, Table,Tag, Tooltip } from 'antd';
+import { Button, Divider, Layout, Modal, Table, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import { DBTag } from '../../../../../src/lib/types/database/tag';
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName } from '../../../utils/tagTypes';
+import { is_touch_device, isMaintainerMode } from '../../../utils/tools';
 
 interface TagsListState {
 	tags: DBTag[],
@@ -15,7 +17,8 @@ interface TagsListState {
 }
 
 class TagsDuplicate extends Component<unknown, TagsListState> {
-
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 	filter: string;
 
 	constructor(props) {
@@ -32,17 +35,21 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getDuplicateTags');
-		this.setState({tags: res.content});
+		try {
+			const res = await commandBackend('getDuplicateTags', undefined, false, 300000);
+			this.setState({ tags: res.content });
+		} catch (error) {
+			// already display
+		}
 	}
 
 	delete = async (tid) => {
 		try {
-			this.setState({deleteModal: false, tag: undefined});
-			await commandBackend('deleteTag', {tid}, true);
+			this.setState({ deleteModal: false, tag: undefined });
+			await commandBackend('deleteTag', { tids: [tid] }, true);
 			this.refresh();
-		} catch(err) {
-			this.setState({deleteModal: false, tag: undefined});
+		} catch (err) {
+			this.setState({ deleteModal: false, tag: undefined });
 		}
 	};
 
@@ -63,7 +70,7 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 						title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
 						visible={this.state.deleteModal}
 						onOk={() => this.delete(this.state.tag.tid)}
-						onCancel={() => this.setState({deleteModal: false, tag: undefined})}
+						onCancel={() => this.setState({ deleteModal: false, tag: undefined })}
 						okText={i18next.t('YES')}
 						cancelText={i18next.t('NO')}
 					>
@@ -94,7 +101,7 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 				const isLongTag = name.length > 40;
 				const i18n_name = `[${lang.toUpperCase()}] ${name}`;
 				const tagElem = (
-					<Tag key={lang} style={{margin: '2px'}}>
+					<Tag key={lang} style={{ margin: '2px' }}>
 						{isLongTag ? `${i18n_name.slice(0, 20)}...` : i18n_name}
 					</Tag>
 				);
@@ -108,13 +115,15 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 		key: 'repository'
 	}, {
 		title: i18next.t('ACTION'),
-		render: (text, record) => (<span>
-			<Link to={`/system/tags/${record.tid}`}><EditOutlined /></Link>
-			<Divider type="vertical"/>
+		render: (_text, record) => isMaintainerMode(this.context, record.repository) ? (<span>
+			<Link to={`/system/tags/${record.tid}`}>
+				<Button type="primary" icon={<EditOutlined />} />
+			</Link>
+			{!is_touch_device() ? <Divider type="vertical" /> : null}
 			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
-				() => this.setState({deleteModal: true, tag: record})
-			}/>
-		</span>)
+				() => this.setState({ deleteModal: true, tag: record })
+			} />
+		</span>) : null
 	}];
 }
 

@@ -44,7 +44,6 @@ export const defaults: Config = {
 		Port: 80,
 		Stats: undefined,
 		ErrorTracking: undefined,
-		URL: true,
 		Users: true,
 		Discord: {
 			DisplayActivity: true
@@ -60,7 +59,8 @@ export const defaults: Config = {
 			App: true,
 		},
 		Remote: false,
-		FetchPopularSongs: true
+		FetchPopularSongs: true,
+		AllowDownloads: true
 	},
 	Frontend: {
 		GeneratePreviews: true,
@@ -78,6 +78,9 @@ export const defaults: Config = {
 		ChibiPlayer: {
 			Enabled: false,
 			AlwaysOnTop: true
+		},
+		ChibiPlaylist: {
+			Enabled: false
 		}
 	},
 	Karaoke: {
@@ -206,36 +209,28 @@ export const defaults: Config = {
 				Online: true,
 				Enabled: true,
 				SendStats: true,
+				AutoMediaDownloads: 'updateOnly',
+				MaintainerMode: false,
+				BaseDir: process.platform === 'win32' ? 'repos\\kara.moe/git' : 'repos/kara.moe/git',
 				Path: process.platform === 'win32'
 					? {
-						Karas: ['repos\\kara.moe\\karaokes'],
-						Lyrics: ['repos\\kara.moe\\lyrics'],
-						Medias: ['repos\\kara.moe\\medias'],
-						Tags: ['repos\\kara.moe\\tags']
+						Medias: ['repos\\kara.moe\\medias']
 					}
 					: {
-						Karas: ['repos/kara.moe/karaokes'],
-						Lyrics: ['repos/kara.moe/lyrics'],
-						Medias: ['repos/kara.moe/medias'],
-						Tags: ['repos/kara.moe/tags']
+						Medias: ['repos/kara.moe/medias']
 					}
 			},
 			{
 				Name: 'Local',
 				Online: false,
 				Enabled: true,
+				BaseDir: process.platform === 'win32' ? 'repos\\Local\\' : 'repos/Local/',
 				Path: process.platform === 'win32'
 					? {
-						Karas: ['repos\\Local\\karaokes'],
-						Lyrics: ['repos\\Local\\lyrics'],
 						Medias: ['repos\\Local\\medias'],
-						Tags: ['repos\\Local\\tags']
 					}
 					: {
-						Karas: ['repos/Local/karaokes'],
-						Lyrics: ['repos/Local/lyrics'],
 						Medias: ['repos/Local/medias'],
-						Tags: ['repos/Local/tags']
 					}
 			}
 		],
@@ -252,7 +247,8 @@ export const defaults: Config = {
 			Sponsors: process.platform === 'win32' ? ['sponsors', 'sponsors\\KaraokeMugen'] : ['sponsors', 'sponsors/KaraokeMugen'],
 			Temp: 'temp',
 			Previews: 'previews',
-			SessionExports: 'sessionExports'
+			SessionExports: 'sessionExports',
+			StreamFiles: 'streamFiles'
 		}
 	}
 };

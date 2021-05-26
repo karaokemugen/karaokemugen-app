@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
+import { APIMessage } from '../controllers/common';
 import { selectAllKaras } from '../dao/kara';
 import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
 import { getConfig, resolvedPathSessionExports } from '../lib/utils/config';
@@ -48,7 +49,7 @@ export function setActiveSession(session: Session) {
 
 export async function editSession(session: Session) {
 	const oldSession = await findSession(session.seid);
-	if (!oldSession) throw {code: 404, msg: 'Session does not exist'};
+	if (!oldSession) throw {code: 404, msg: 'ERROR_CODES.SESSION_NOT_FOUND'};
 	if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime()) throw {code: 409, msg: 'ERROR_CODES.SESSION_END_BEFORE_START_ERROR'};
 	session.started_at
 		? session.started_at = new Date(session.started_at)
@@ -60,9 +61,9 @@ export async function editSession(session: Session) {
 }
 
 export async function removeSession(seid: string) {
-	if (seid === getState().currentSessionID) throw {code: 403, msg: 'Current session cannot be removed, please set another one as current first.'};
+	if (seid === getState().currentSessionID) throw {code: 403};
 	const session = await findSession(seid);
-	if (!session) throw {code: 404, msg: 'Session does not exist'};
+	if (!session) throw {code: 404};
 	return deleteSession(seid);
 }
 
@@ -73,8 +74,10 @@ export async function findSession(seid: string): Promise<Session> {
 
 export async function mergeSessions(seid1: string, seid2: string): Promise<Session> {
 	// Get which session is the earliest starting date
-	const session1 = await findSession(seid1);
-	const session2 = await findSession(seid2);
+	const [session1, session2] = await Promise.all([
+		findSession(seid1),
+		findSession(seid2)
+	]);
 	if (!session1 || !session2) throw {code: 404};
 	session1.active = session1.seid === getState().currentSessionID;
 	session2.active = session2.seid === getState().currentSessionID;
@@ -139,7 +142,7 @@ function checkSessionEnd() {
 	const currentDate = new Date(currentDateInt).toISOString().substring(0, 16);
 	if (currentDate === sessionWarnDate) {
 		logger.info('Notifying operator of end of session being near', {service: 'Sessions'});
-		emitWS('notificationEndOfSessionNear', getConfig().Karaoke.MinutesBeforeEndOfSessionWarning);
+		emitWS('operatorNotificationWarning', APIMessage('NOTIFICATION.OPERATOR.INFO.END_OF_SESSION_NEAR', getConfig().Karaoke.MinutesBeforeEndOfSessionWarning));
 	}
 }
 
@@ -148,8 +151,8 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const session = await findSession(seid);
 		if (!session) throw {code: 404, msg: 'Session does not exist'};
 		const [requested, played] = await Promise.all([
-			selectAllKaras({order: 'sessionRequested', q: `seid:${seid}`, admin: true}),
-			selectAllKaras({order: 'sessionPlayed', q: `seid:${seid}`, admin: true})
+			selectAllKaras({order: 'sessionRequested', q: `seid:${seid}`}),
+			selectAllKaras({order: 'sessionPlayed', q: `seid:${seid}`})
 		]);
 		const sessionExports: SessionExports = {
 			requested: sanitizeFile(`${session.name}.${session.started_at.toISOString()}.requested.csv`),

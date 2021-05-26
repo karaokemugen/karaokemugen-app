@@ -45,8 +45,7 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 			filter: null,
 			q: `k:${kid}`,
 			lang: lang,
-			admin: token.role === 'admin',
-			ignoreBlacklist: true
+			blacklist: false
 		});
 		return res[0];
 	} catch(err) {
@@ -105,7 +104,6 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 			q: params.q,
 			from: params.from || 0,
 			size: params.size || 9999999999,
-			admin: params.token?.role === 'admin',
 			random: params.random,
 			blacklist: params.blacklist
 		});
@@ -161,20 +159,20 @@ export function getSongVersion(kara: DBKara): string {
 		const versions = kara.versions.map(v => {
 			let ret = '';
 			switch(mode) {
-			case 0:
+				case 0:
 				// Original name
-				ret = v.name;
-				break;
-			case 1:
+					ret = v.name;
+					break;
+				case 1:
 				// Name according to song language
-				ret = v.i18n ? v.i18n[kara.langs[0].name] : null || v.i18n?.eng || v.name;
-				break;
-			case 2:
-			case 3:
-			default:
-				const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
-				ret = v.i18n[lang] || v.i18n?.eng || v.name;
-				break;
+					ret = v.i18n ? v.i18n[kara.langs[0].name] : null || v.i18n?.eng || v.name;
+					break;
+				case 2:
+				case 3:
+				default:
+					const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
+					ret = v.i18n[lang] || v.i18n?.eng || v.name;
+					break;
 			}
 			return `[${ret}]`;
 		});

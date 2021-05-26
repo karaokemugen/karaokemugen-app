@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import i18next from 'i18next';
 import React, {Dispatch, ReactNode} from 'react';
 import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
@@ -11,8 +12,11 @@ import nanamiUmuPng from '../assets/nanami-umu.png';
 import nanamiUmuWebP from '../assets/nanami-umu.webp';
 import Tutorial from '../frontend/components/modals/Tutorial';
 import { showModal } from '../store/actions/modal';
+import { GlobalContextInterface } from '../store/context';
 import { ShowModal } from '../store/types/modal';
 import Modal from './components/Modal';
+import {getTagInLocale} from './kara';
+import {commandBackend} from './socket';
 
 let is_touch = window.outerWidth <= 1023;
 let is_large = window.outerWidth <= 1860;
@@ -142,13 +146,95 @@ export function displayMessage(type: TypeOptions, message: any, time = 3500, pos
 		</div>);
 	} else item = message;
 	if (!document.hidden) {
-		toast(item, { type: type, autoClose: time, position, pauseOnFocusLoss: false, toastId: id });
+		toast(item, { type: type, autoClose: time ? time : false, position, pauseOnFocusLoss: false, toastId: id });
 	}
 }
 
-export function callModal(dispatch: Dispatch<ShowModal>, type: string, title: any, message: any, callback?: any, placeholder?: string, forceSmall?: boolean) {
-	showModal(dispatch,
-		React.createElement(Modal,
-			{ type: type, title: title, message: message, callback: callback, placeholder: placeholder, forceSmall: forceSmall })
-	);
+export function callModal(
+	dispatch: Dispatch<ShowModal>,
+	type: string,
+	title: any,
+	message: any,
+	callback?: any,
+	placeholder?: string,
+	forceSmall?: boolean,
+	abortCallback?: boolean
+) {
+	showModal(dispatch, React.createElement(Modal, {
+		type,
+		title,
+		message,
+		callback,
+		placeholder,
+		forceSmall,
+		abortCallback
+	}));
+}
+
+export const nonStandardPlaylists = {
+	blacklist: '4398bed2-e272-47f5-9dd9-db7240e8557e', // -2
+	blc: '91a9961a-8863-48a5-b9d0-fc4c1372a11a', // -4
+	whitelist: '4c5dbb18-278b-448e-9a1f-8cf5f1e24dc7', // -3
+	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94', // -5
+	library: '524de79d-10b2-49dc-90b1-597626d0cee8' // -1
+};
+
+export function isNonStandardPlaylist(plaid: string) {
+	return Object.values(nonStandardPlaylists).includes(plaid);
+}
+
+export function isMaintainerMode(context:GlobalContextInterface, repo:string):boolean {
+	let maintainerMode = false;
+	context.globalState.settings.data.config.System.Repositories.forEach(repository => {
+		if (repository.Name === repo) {
+			maintainerMode = repository.MaintainerMode;
+		}
+	});
+	return maintainerMode;
+}
+
+export async function decodeBlacklistingReason(reason: string) {
+	const parts = reason.split(':');
+	const args: [string, Record<string, string>] = [parts[0], {}];
+	switch (parts[0]) {
+		case 'TAG':
+			if (parts.length === 3) {
+				const tid = parts[1];
+				const type = parts[2];
+				const tag = await commandBackend('getTag', {tid});
+				args[1] = {
+					tag: getTagInLocale(tag),
+					verb: i18next.t(`BLACKLIST.LABEL.TAG_VERBS.${type}`)
+				};
+			}
+			break;
+		case 'YEAR':
+			if (parts.length === 2) {
+				const year = parts[1];
+				args[1] = { year };
+			}
+			break;
+		case 'KID':
+			break;
+		case 'LONGER':
+		case 'SHORTER':
+			if (parts.length === 2) {
+				const time = parts[1];
+				args[1] = { time };
+			}
+			break;
+		case 'TITLE':
+		case 'TAG_NAME':
+			if (parts.length >= 2) {
+				const [type, ...titleParts] = parts;
+				const title = titleParts.join(':');
+				args[1] = { title };
+			}
+			break;
+		default:
+			args[0] = 'UNKNOWN';
+			args[1] = {};
+	}
+	args[0] = `BLACKLIST.LABEL.${args[0]}`;
+	return i18next.t(...args);
 }

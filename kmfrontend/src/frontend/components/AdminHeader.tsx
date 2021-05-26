@@ -11,7 +11,7 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext, { GlobalContextInterface } from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import {callModal, displayMessage, expand} from '../../utils/tools';
+import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
 import RadioButton from './generic/RadioButton';
 import ProfilModal from './modals/ProfilModal';
@@ -20,7 +20,7 @@ import UsersModal from './modals/UsersModal';
 
 interface IProps extends RouteComponentProps {
 	currentSide: number;
-	idsPlaylist: { left: number, right: number };
+	idsPlaylist: { left: string, right: string };
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
@@ -46,7 +46,7 @@ function AdminHeader(props: IProps) {
 		val = val / base;
 		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
 		setStatusPlayer(oldState => {
-			const state = {...oldState};
+			const state = { ...oldState };
 			return merge(state, data);
 		});
 	};
@@ -79,11 +79,11 @@ function AdminHeader(props: IProps) {
 
 	const play = (event: any) => {
 		if ((!statusPlayer || statusPlayer?.playerStatus === 'stop')
-			&& props.idsPlaylist.left !== props.currentPlaylist?.playlist_id
-			&& props.idsPlaylist.right !== props.currentPlaylist?.playlist_id
-			&& (props.idsPlaylist.left > 0 || props.idsPlaylist.right > 0)) {
+			&& props.idsPlaylist.left !== props.currentPlaylist?.plaid
+			&& props.idsPlaylist.right !== props.currentPlaylist?.plaid
+			&& (!isNonStandardPlaylist(props.idsPlaylist.left) || !isNonStandardPlaylist(props.idsPlaylist.right))) {
 			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {}));
+				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => { }));
 		} else {
 			props.putPlayerCommando(event);
 		}
@@ -92,7 +92,7 @@ function AdminHeader(props: IProps) {
 	const getPlayerStatus = async () => {
 		try {
 			const result = await commandBackend('getPlayerStatus');
-			setStatusPlayer(result);
+			playerUpdate(result);
 		} catch (e) {
 			// already display
 		}
@@ -110,7 +110,14 @@ function AdminHeader(props: IProps) {
 		};
 	}, []);
 
-	const volume: number = (statusPlayer && !isNaN(statusPlayer.volume)) ? statusPlayer.volume : 100;
+	const setVolume = (event) => {
+		setStatusPlayer(oldState => {
+			const state = { ...oldState };
+			state.volume = event.target.value;
+			return state;
+		});
+	};
+
 	return (
 		<KmAppHeaderDecorator mode="admin">
 			{props.location.pathname.includes('/options') ?
@@ -122,65 +129,69 @@ function AdminHeader(props: IProps) {
 					<i className="fas fa-fw fa-long-arrow-alt-left " />
 				</button> : null
 			}
-			<div className="header-group switchs">
-				<label className="control-label" title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
-					{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
-              &nbsp;
-  						<i className="far fa-question-circle" />
-				</label>
-				<label className="control-label" title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
-					{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
-            &nbsp;
-  					<i className="far fa-question-circle" />
-				</label>
-			</div>
-			<div id="switchValue" className="header-group switchs">
-				<RadioButton
-					title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}
-					buttons={[
-						{
-							label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
-							active: context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
-							activeColor: '#3c5c00',
-							onClick: () => saveOperatorAdd(true),
-							description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
-						},
-						{
-							label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
-							active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
-							activeColor: '#880500',
-							onClick: () => saveOperatorAdd(false),
-							description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON')
-						}
-					]}
-				/>
-				<RadioButton
-					title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}
-					buttons={[
-						{
-							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
-							activeColor: '#880500',
-							onClick: () => changePublicInterfaceMode(0),
-							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')
-						},
-						{
-							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
-							activeColor: '#a36700',
-							onClick: () => changePublicInterfaceMode(1),
-							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
-						},
-						{
-							label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
-							active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
-							activeColor: '#3c5c00',
-							onClick: () => changePublicInterfaceMode(2),
-							description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
-						}
-					]}
-				/>
-			</div>
+			{props.location.pathname.includes('/options') ? null :
+				<>
+					<div className="header-group switchs">
+						<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
+							{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
+							&nbsp;
+							<i className="far fa-question-circle" />
+						</label>
+						<label title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
+							{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
+							&nbsp;
+							<i className="far fa-question-circle" />
+						</label>
+					</div>
+					<div id="switchValue" className="header-group switchs">
+						<RadioButton
+							title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}
+							buttons={[
+								{
+									label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
+									active: context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
+									activeColor: '#3c5c00',
+									onClick: () => saveOperatorAdd(true),
+									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
+								},
+								{
+									label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
+									active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
+									activeColor: '#880500',
+									onClick: () => saveOperatorAdd(false),
+									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON')
+								}
+							]}
+						/>
+						<RadioButton
+							title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}
+							buttons={[
+								{
+									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
+									active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
+									activeColor: '#880500',
+									onClick: () => changePublicInterfaceMode(0),
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')
+								},
+								{
+									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
+									active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
+									activeColor: '#a36700',
+									onClick: () => changePublicInterfaceMode(1),
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
+								},
+								{
+									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
+									active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
+									activeColor: '#3c5c00',
+									onClick: () => changePublicInterfaceMode(2),
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
+								}
+							]}
+						/>
+					</div>
+				</>
+			}
 			<div className="header-group controls">
 				{
 					statusPlayer?.stopping || statusPlayer?.streamerPause ?
@@ -273,17 +284,17 @@ function AdminHeader(props: IProps) {
 				className="btn btn-dark volumeButton"
 			>
 				<div id="mute"
-					data-namecommand={(volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
+					data-namecommand={(statusPlayer?.volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
 					onClick={props.putPlayerCommando}
 				>
 					{
-						volume === 0 || statusPlayer?.mute
+						statusPlayer?.volume === 0 || statusPlayer?.mute
 							? <i className="fas fa-fw fa-volume-mute" />
 							: (
-								volume > 66
+								statusPlayer?.volume > 66
 									? <i className="fas fa-fw fa-volume-up" />
 									: (
-										volume > 33
+										statusPlayer?.volume > 33
 											? <i className="fas fa-fw fa-volume-down" />
 											: <i className="fas fa-fw fa-volume-off" />
 									)
@@ -294,8 +305,9 @@ function AdminHeader(props: IProps) {
 					title={i18next.t('VOLUME_LEVEL')}
 					data-namecommand="setVolume"
 					id="volume"
-					defaultValue={volume}
+					value={statusPlayer?.volume}
 					type="range"
+					onChange={setVolume}
 					onMouseUp={props.putPlayerCommando}
 				/>
 			</button>
@@ -313,7 +325,9 @@ function AdminHeader(props: IProps) {
 					<ul className="dropdown-menu">
 						<li>
 							<a
-								onClick={() => {
+								href={`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`}
+								onClick={e => {
+									e.preventDefault();
 									props.history.push(`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`);
 									setDropDownMenu(!dropDownMenu);
 								}}
@@ -415,16 +429,16 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 								id="mute"
-								data-namecommand={(volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
+								data-namecommand={(statusPlayer?.volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
 							>
 								{
-									volume === 0 || statusPlayer?.mute
+									statusPlayer?.volume === 0 || statusPlayer?.mute
 										? <i className="fas fa-fw fa-volume-mute" />
 										: (
-											volume > 66
+											statusPlayer?.volume > 66
 												? <i className="fas fa-fw fa-volume-up" />
 												: (
-													volume > 33
+													statusPlayer?.volume > 33
 														? <i className="fas fa-fw fa-volume-down" />
 														: <i className="fas fa-fw fa-volume-off" />
 												)

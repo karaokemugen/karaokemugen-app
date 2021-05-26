@@ -10,10 +10,10 @@ export interface Version {
 
 export interface State {
 	appHasBeenUpdated?: boolean,
-	currentPlaylistID?: number,
+	currentPlaid?: string,
 	currentSessionID?: string,
 	currentSessionEndsAt?: Date,
-	publicPlaylistID?: number,
+	publicPlaid?: string,
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
 	stopping: boolean,
@@ -69,7 +69,7 @@ export interface State {
 		strict?: boolean,
 		noMedia?: boolean,
 		baseUpdate?: boolean,
-		mediaUpdate?: boolean,
+		mediaUpdateAll?: boolean,
 		noBrowser?: boolean,
 		sql?: boolean,
 		validate?: boolean,
@@ -87,12 +87,11 @@ export interface State {
 }
 
 export interface PublicState {
-	currentPlaylistID: number,
-	publicPlaylistID: number,
+	currentPlaid: string,
+	publicPlaid: string,
 	appPath?: string,
 	dataPath?: string,
 	os?: string,
-	electron: boolean,
 	defaultLocale: string,
 	supportedLyrics?: string[],
 	supportedMedias?: string[],

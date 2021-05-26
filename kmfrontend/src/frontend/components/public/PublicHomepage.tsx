@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
+import {is_touch_device, nonStandardPlaylists, secondsTimeSpanToHMS} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { View } from '../../types/view';
 import LyricsBox from './LyricsBox';
@@ -19,7 +19,7 @@ interface IProps {
 		searchValue?: string,
 		searchCriteria?: 'year' | 'tag'
 	) => void;
-	toggleKaraDetail: (kara: KaraElement, idPlaylist: number, indexPlaylist: number) => void
+	toggleKaraDetail: (kara: KaraElement, plaid: string, indexPlaylist: number) => void
 	activePoll: boolean;
 	publicVisible: boolean;
 	currentVisible: boolean;
@@ -43,10 +43,11 @@ class PublicHomepage extends Component<IProps, IState> {
 	getLucky = async () => {
 		if (this.context.globalState.auth.isAuthenticated) {
 			const response = await commandBackend('getKaras', {
-				random: 1
+				random: 1,
+				blacklist: true
 			});
 			if (response?.content && response.content[0]) {
-				this.props.toggleKaraDetail(response.content[0], -1, 0);
+				this.props.toggleKaraDetail(response.content[0], nonStandardPlaylists.library, 0);
 			}
 		}
 	};
@@ -67,7 +68,7 @@ class PublicHomepage extends Component<IProps, IState> {
 				<div className="public-homepage">
 					<div className="public-homepage-wrapper">
 						<PlayerBox
-							fixed={false}
+							mode="homepage"
 							show={true}
 							currentVisible={this.props.currentVisible}
 							goToCurrentPL={() => this.props.changeView('currentPlaylist')}
@@ -82,7 +83,7 @@ class PublicHomepage extends Component<IProps, IState> {
 									</button> : null
 							}
 							{this.props.publicVisible
-								&& this.context.globalState.settings.data.state.currentPlaylistID !== this.context.globalState.settings.data.state.publicPlaylistID ?
+								&& this.context.globalState.settings.data.state.currentPlaid !== this.context.globalState.settings.data.state.publicPlaid ?
 								<button className="action green" onClick={() => this.props.changeView('publicPlaylist')}>
 									<i className="fas fa-fw fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
 								</button> : null
@@ -117,7 +118,7 @@ class PublicHomepage extends Component<IProps, IState> {
 										}
 									})}
 									<button className="action" onClick={() => this.props.changeView('tag', YEARS.type)}>
-										<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS_YEAR')}
+										<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS.YEAR')}
 									</button>
 									<button className="action" onClick={() => this.setState({ othersMenu: !this.state.othersMenu })}>
 										<i className={this.state.othersMenu ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'} />

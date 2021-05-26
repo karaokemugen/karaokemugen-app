@@ -39,12 +39,12 @@ class LyricsBox extends Component<IProps, IState> {
 	static i18nText(actualMode: LyricsStatus) {
 		// eslint-disable-next-line default-case
 		switch (actualMode) {
-		case LyricsStatus.hide:
-			return i18next.t('PUBLIC_HOMEPAGE.SHOW_LYRICS');
-		case LyricsStatus.compact:
-			return i18next.t('PUBLIC_HOMEPAGE.SHOW_ALL_LYRICS');
-		case LyricsStatus.full:
-			return i18next.t('PUBLIC_HOMEPAGE.HIDE_LYRICS');
+			case LyricsStatus.hide:
+				return i18next.t('PUBLIC_HOMEPAGE.SHOW_LYRICS');
+			case LyricsStatus.compact:
+				return i18next.t('PUBLIC_HOMEPAGE.SHOW_ALL_LYRICS');
+			case LyricsStatus.full:
+				return i18next.t('PUBLIC_HOMEPAGE.HIDE_LYRICS');
 		}
 	}
 

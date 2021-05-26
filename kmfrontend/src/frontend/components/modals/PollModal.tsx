@@ -65,7 +65,7 @@ class PollModal extends Component<IProps, IState> {
 						<div id="nav-poll" className="modal-body" style={{ height: 3 * this.state.poll.length + 'em' }}>
 							<div className="modal-message">
 								{this.state.poll.map(kara => {
-									return <button className="btn btn-default tour poll" key={kara.playlistcontent_id} value={kara.index}
+									return <button className="btn btn-default tour poll" key={kara.plcid} value={kara.index}
 										onClick={this.postSong}
 										style={{
 											backgroundColor: 'hsl('

@@ -1,3 +1,4 @@
+import i18n from 'i18next';
 import langs from 'langs';
 
 import {	addBlacklistCriteria as addBLC,
@@ -24,7 +25,7 @@ import {BLC, BLCSet, BLCSetFile} from '../types/blacklist';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {formatKaraList, getKara} from './kara';
-import {getTag} from './tag';
+import {getTag, getTags} from './tag';
 
 export async function editSet(params: BLCSet) {
 	const blcSet = await selectSet(params.blc_set_id);
@@ -140,6 +141,24 @@ export function generateBlacklist() {
 	return generateBL();
 }
 
+// Create problematic BLC set. Should be called on first run only
+export async function createProblematicBLCSet() {
+	const tags = await getTags({problematic: true});
+	const blcSetID = await addSet({
+		name: i18n.t('PROBLEMATIC_SONGS')
+	});
+	const blcs: BLC[] = [];
+
+	for (const tag of tags.content) {
+		blcs.push({
+			blc_set_id: blcSetID,
+			type: tag.types[0],
+			value: tag.tid
+		});
+	}
+	await addBlacklistCriteria(blcs, blcSetID);
+}
+
 export async function initBlacklistSystem() {
 	profile('initBL');
 	await testCurrentBLCSet();
@@ -197,19 +216,43 @@ export async function addBlacklistCriteria(BLCs: BLC[], set_id: number) {
 		return {
 			value: blc.value,
 			type: blc.type,
-			blc_set_id: set_id
+			blc_set_id: set_id || blc.blc_set_id
 		};
 	});
 	try {
 		const blcset = await selectSet(set_id);
+		const blcs = await getBLC(set_id);
 		if (!blcset) throw {code: 404, msg: 'BLC set unknown'};
 		// Validation
+		// BLC 1002 - 1002: 0
+		// BLC 1003 - 1002: 1
+		// Placed to true to check for multiples occurrences of the same type
+		const timeBLC = [false, false];
 		for (const blc of blcList) {
-			if (blc.type < 0 || blc.type > 1004 || blc.type === 1000) throw {code: 400, msg: `Incorrect BLC type (${blc.type})`};
+			if (blc.type < 0 || blc.type > 1005 || blc.type === 1000) throw {code: 400, msg: `Incorrect BLC type (${blc.type})`};
 			if (blc.type === 1001 || (blc.type >= 1 && blc.type < 1000)) {
 				if (!new RegExp(uuidRegexp).test(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`};
 			}
-			if ((blc.type === 1002 || blc.type === 1003) && !isNumber(blc.value)) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`};
+			if (blc.type === 1002 || blc.type === 1003) {
+				if (!isNumber(blc.value)) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`};
+				if (timeBLC[blc.type - 1002]) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} can occur only once in a set.`};
+				const opposing_blc = blcs.find(dbblc => {
+					// Find the BLC type 1003 (shorter than) when we add a 1002 BLC (longer than) and vice versa.
+					return dbblc.type === (blc.type === 1002 ? 1003:1002);
+				});
+				if (opposing_blc) {
+					if (blc.type === 1002 && blc.value <= opposing_blc.value) {
+						throw {code: 409, msg: { code: 'BLC_LONGER_THAN_CONFLICT' }};
+					} else if (blc.type === 1003 && blc.value >= opposing_blc.value) {
+						throw {code: 409, msg: { code: 'BLC_SHORTER_THAN_CONFLICT' }};
+					}
+				}
+				const existing_blc = blcs.find(dbblc => dbblc.type === blc.type);
+				if (existing_blc) { // Replace the one
+					await deleteBLC(existing_blc.blcriteria_id);
+				}
+				timeBLC[blc.type - 1002] = true;
+			}
 		}
 		await addBLC(blcList);
 		if (blcset.flag_current) await generateBlacklist();

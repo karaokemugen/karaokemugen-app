@@ -61,7 +61,7 @@ export default function favoritesController(router: SocketIOApp) {
 	router.route('addFavorites', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'user', 'limited');
 		const validationErrors = check(req.body, {
-			kids: {uuidArrayValidator: true}
+			kids: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
@@ -82,7 +82,7 @@ export default function favoritesController(router: SocketIOApp) {
 		// Delete kara from favorites
 		// Deletion is through kara ID.
 		const validationErrors = check(req.body, {
-			kids: {uuidArrayValidator: true}
+			kids: {presence: true, uuidArrayValidator: true}
 		});
 		if (!validationErrors) {
 			try {
@@ -112,8 +112,8 @@ export default function favoritesController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				await importFavorites(JSON.parse(req.body?.favorites), req.token.username, req.onlineAuthorization);
-				return APIMessage('FAVORITES_IMPORTED');
+				const response = await importFavorites(req.body?.favorites, req.token.username, req.onlineAuthorization);
+				return {code: 200, message: APIMessage('FAVORITES_IMPORTED', response)};
 			} catch(err) {
 				const code = 'FAVORITES_IMPORTED_ERROR';
 				errMessage(code, err);
