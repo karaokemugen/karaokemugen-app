@@ -22,6 +22,8 @@ const gitPhases = {
 	'Analyzing workdir': 'ANALYZING_WORKDIR'
 };
 
+// This is our git client instance.
+// It works either with Electron's IPC or node's worker threads depending on what's running.
 export default class GitInstance {
 	url: string
 	dir: string
@@ -40,11 +42,7 @@ export default class GitInstance {
 			data: this.repo
 		});
 		this.unknownPhases = new Set();
-		if (app) {
-			ipcMain.on('gitProgress', (_event: any, data: any) => {
-				this.gitProgress(data);
-			});
-		} else {
+		if (!app) {
 			this.worker = new Worker(resolve(getState().resourcePath, 'gitWorker/gitWorker.js'));
 		}
 	}
@@ -82,15 +80,20 @@ export default class GitInstance {
 				repo: this.repo
 			}
 		};
-		if (app) {
-			gitWorker.webContents.send('git', data);
-		} else {
-			this.worker.postMessage(data);
-		}
+		app
+			? gitWorker.webContents.send('git', data)
+			: this.worker.postMessage(data);
 
 		return new Promise((resolve, reject) => {
+			let timeout: NodeJS.Timeout;
 			if (app) {
+				ipcMain.on('gitProgress', (_event: any, data: any) => {
+					if (timeout) clearTimeout(timeout);
+					timeout = setTimeout(() => reject(new Error('Timeout')), 10000);
+					this.gitProgress(data);
+				});
 				ipcMain.on('gitEnd', (_event, data) => {
+					if (timeout) clearTimeout(timeout);
 					if (data.repo === this.repo) {
 						this.task.end();
 						if (data.error) {
@@ -104,6 +107,7 @@ export default class GitInstance {
 			} else {
 				this.worker.on('message', data => {
 					if (data.type === 'gitEnd') {
+						if (timeout) clearTimeout(timeout);
 						if (data.message.repo === this.repo) {
 							this.task.end();
 							if (data.message.error) {
@@ -114,6 +118,8 @@ export default class GitInstance {
 							}
 						}
 					} else if (data.type === 'gitProgress') {
+						if (timeout) clearTimeout(timeout);
+						timeout = setTimeout(() => reject(new Error('Timeout')), 10000);
 						this.gitProgress(data.message);
 					}
 				});
