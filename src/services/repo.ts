@@ -3,7 +3,7 @@ import { copy, emptyDir } from 'fs-extra';
 import { basename,resolve } from 'path';
 
 import { compareKarasChecksum, generateDB } from '../dao/database';
-import { editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
+import { editKaraInStore, getStoreChecksum, sortKaraStore, sortTagsStore } from '../dao/dataStore';
 import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
 import { refreshAll, saveSetting } from '../lib/dao/database';
@@ -246,6 +246,10 @@ export async function updateGitRepo(name: string, refresh = true) {
 			deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false}));
 		}
 		await Promise.all(deletePromises);
+		// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
+		sortKaraStore();
+		sortTagsStore();
+		await saveSetting('baseChecksum', getStoreChecksum());
 		if ((KIDsToDelete.length > 0 ||
 			TIDsToDelete.length > 0 ||
 			tagFiles.length > 0 ||
@@ -381,7 +385,7 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 		const [karas, mediaFiles] = await Promise.all([
 			getKaras({}),
 			extractAllFiles('Medias', repo)
-		]);		
+		]);
 		const mediasFilesKaras: string[] = karas.content.map(k => k.mediafile);
 		return mediaFiles.filter(file => !mediasFilesKaras.includes(basename(file)));
 	} catch(err) {
