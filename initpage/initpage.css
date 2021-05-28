@@ -1,3 +1,7 @@
+* {
+	forced-color-adjust: none;
+}
+
 html,body {
 	font-size: 16px;
 	padding: 0;
