@@ -271,7 +271,8 @@ async function createWindow() {
 		show: false,
 		icon: resolve(state.resourcePath, 'build/icon.png'),
 		webPreferences: {
-			nodeIntegration: true
+			nodeIntegration: true,
+			contextIsolation: false,
 		}
 	});
 	// and load the index.html of the app.
