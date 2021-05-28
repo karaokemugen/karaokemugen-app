@@ -24,6 +24,7 @@ import GitInstance from '../utils/git';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { createProblematicBLCSet, generateBlacklist } from './blacklist';
+import { updateMedias } from './downloadUpdater';
 import { getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { sendPayload } from './stats';
@@ -261,6 +262,8 @@ export async function updateGitRepo(name: string, refresh = true) {
 
 async function newGitRepo(git: GitInstance, refresh = true) {
 	await git.clone();
+	const repo = getRepo(git.repo);
+	if (repo.AutoMediaDownloads === 'all') updateMedias(repo.Name);
 	// We refresh only for clones as it's easier. For pulls however items are added individually.
 	if (refresh) await generateDB();
 }
