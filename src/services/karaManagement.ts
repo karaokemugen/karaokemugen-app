@@ -229,7 +229,7 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 export async function integrateKaraFile(file: string) {
 	const karaFileData = await parseKara(file);
 	const karaFile = basename(file);
-	const karaData = await getDataFromKaraFile(karaFile, karaFileData);
+	const karaData = await getDataFromKaraFile(karaFile, karaFileData, true);
 	const karaDB = await getKara(karaData.kid, {role: 'admin', username: 'admin'});
 	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
 	if (karaDB) {
