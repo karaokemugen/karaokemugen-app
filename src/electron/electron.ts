@@ -124,7 +124,7 @@ export function startElectron() {
 		event.sender.send('get-file-paths-response', (await dialog.showOpenDialog(options)).filePaths);
 	});
 
-	Menu.setApplicationMenu(null);
+	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
 }
 
 export async function handleProtocol(args: string[]) {
@@ -243,7 +243,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 export function applyMenu() {
 	initMenu();
 	const menu = Menu.buildFromTemplate(getMenu());
-	win.setMenu(menu);
+	process.platform === 'darwin' ? Menu.setApplicationMenu(menu):win.setMenu(menu);
 }
 
 async function initElectronWindow() {
