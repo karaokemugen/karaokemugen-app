@@ -298,6 +298,7 @@ async function createWindow() {
 	win.on('closed', () => {
 		win = null;
 		if (chibiPlayerWindow) chibiPlayerWindow.destroy();
+		if (chibiPlaylistWindow) chibiPlaylistWindow.destroy();
 		if (gitWorker) gitWorker.destroy();
 	});
 }
