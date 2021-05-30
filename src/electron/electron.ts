@@ -28,7 +28,7 @@ import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
-export let gitWorker: Electron.BrowserWindow;
+export let zipWorker: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
 export let chibiPlaylistWindow: Electron.BrowserWindow;
 
@@ -54,7 +54,7 @@ export function startElectron() {
 			const args = req.url.substr(5).split('/');
 			handleProtocol(args);
 		});
-		createGitWorker();
+		createZipWorker();
 		await initElectronWindow();
 		on('KMReady', async () => {
 			win.loadURL(await welcomeToYoukousoKaraokeMugen());
@@ -150,8 +150,7 @@ export async function handleProtocol(args: string[]) {
 							SendStats: false,
 							AutoMediaDownloads: 'updateOnly',
 							MaintainerMode: false,
-							Git: null,
-							BaseDir: `repos/${repoName}`,
+							BaseDir: `repos/${repoName}/json`,
 							Path: {
 								Medias: [`repos/${repoName}/medias`]
 							}
@@ -251,14 +250,29 @@ async function initElectronWindow() {
 	applyMenu();
 }
 
-export async function createGitWorker() {
-	gitWorker = new BrowserWindow({
+export async function createZipWorker() {
+	zipWorker = new BrowserWindow({
 		show: getState().opt.debug,
 		webPreferences: {
-			nodeIntegration: true
+			nodeIntegration: true,
+			contextIsolation: false
 		}
 	});
-	gitWorker.loadURL(`file://${resolve(getState().resourcePath, 'gitWorker/index.html')}`);
+	zipWorker.loadURL(`file://${resolve(getState().resourcePath, 'zipWorker/index.html')}`);
+	zipWorker.setMenu(Menu.buildFromTemplate([{
+		label: i18next.t('MENU_VIEW'),
+		submenu: [
+			{ label: i18next.t('MENU_VIEW_RELOAD'), role: 'reload' },
+			{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forceReload' },
+			{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggleDevTools' },
+			{ type: 'separator' },
+			{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetZoom' },
+			{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomIn' },
+			{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomOut' },
+			{ type: 'separator' },
+			{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
+		]
+	}]));
 }
 
 async function createWindow() {
@@ -298,7 +312,8 @@ async function createWindow() {
 	win.on('closed', () => {
 		win = null;
 		if (chibiPlayerWindow) chibiPlayerWindow.destroy();
-		if (gitWorker) gitWorker.destroy();
+		if (chibiPlaylistWindow) chibiPlaylistWindow.destroy();
+		if (zipWorker) zipWorker.destroy();
 	});
 }
 

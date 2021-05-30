@@ -285,7 +285,7 @@
 			"DISPLAY_NICKNAME": "Afficher le pseudo du demandeur en début et en fin de chanson",
 			"DISPLAY_NICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
 			"DISPLAY_AVATAR": "Afficher l'avatar du demandeur",
-			"DISPLAY_AVATAR_TOOLTIP": "L'avatar de la personne ayant demandé à karaoké sera affiché au début et à la fin de la chanson, en bas à droite de l'écran"		
+			"DISPLAY_AVATAR_TOOLTIP": "L'avatar de la personne ayant demandé à karaoké sera affiché au début et à la fin de la chanson, en bas à droite de l'écran"
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
@@ -299,9 +299,9 @@
 			"QUOTA_TYPE_2": "Durée",
 			"QUOTA_AVAILABLE": "Vous pouvez de nouveau ajouter des chansons!",
 			"SONGS_BY_USER": "Chansons par utilisateur",
-			"SONGS_BY_USER_TOOLTIP": "Nombre de chansons qu'un utilisateur peut demander simultanément. Une chanson libérée (délivrée) ou qui vient de passer ne compte plus dans le quota",		
+			"SONGS_BY_USER_TOOLTIP": "Nombre de chansons qu'un utilisateur peut demander simultanément. Une chanson libérée (délivrée) ou qui vient de passer ne compte plus dans le quota",
 			"FREE_AUTO_TIME": "Temps avant libération d'une chanson (minutes)",
-			"FREE_AUTO_TIME_TOOLTIP": "Au bout de X minutes, la chanson ne comptera plus dans le quota de l'utilisateur. A régler selon votre nombre de participants",		
+			"FREE_AUTO_TIME_TOOLTIP": "Au bout de X minutes, la chanson ne comptera plus dans le quota de l'utilisateur. A régler selon votre nombre de participants",
 			"FREE_UPVOTES": "Libération des chansons par like",
 			"FREE_UPVOTES_TOOLTIP": "Si suffisament de gens soutiennent une suggestion de chanson, elle ne comptera plus dans le quota de son demandeur",
 			"FREE_UPVOTES_REQUIREDMIN": "Minimum de like requis pour libérer une chanson",
@@ -309,9 +309,9 @@
 			"FREE_UPVOTES_REQUIREDPERCENT": "Pourcentage de votes requis pour libérer une chanson",
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Pourcentage par rapport au nombre d'utilisateurs connectés",
 			"AUTOPLAY": "Lecture automatique sur premier ajout",
-			"AUTOPLAY_TOOLTIP": "La lecture commence dés qu'un ajout est fait à la liste de lecture",		
+			"AUTOPLAY_TOOLTIP": "La lecture commence dés qu'un ajout est fait à la liste de lecture",
 			"ALLOW_DUPLICATES": "Permettre les doublons dans les listes de lecture",
-			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons.",		
+			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons.",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher un message régulier de demande d'ajout de chanson à l'écran en lecture aléatoire",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "Le message sera affiché au milieu de l'écran lorsque Karaoke Mugen jouera des chansons aléatoires, invitant les utilisateurs à ajouter des chansons",
 			"MEDIAS_SETTINGS": "Intermissions",
@@ -330,7 +330,7 @@
 			"WITH": "avec",
 			"MESSAGE": "comme message à l'écran",
 			"CLASSIC_MODE": "Mode Karaoké Classique",
-			"CLASSIC_MODE_TOOLTIP": "Une pause aura lieu entre chaque chanson et le nom de la prochaine chanson ainsi que son demandeur seront affichés à l'écran. Le demandeur de la chanson ou l'opérateur pourront lancer la lecture de la chanson",		
+			"CLASSIC_MODE_TOOLTIP": "Une pause aura lieu entre chaque chanson et le nom de la prochaine chanson ainsi que son demandeur seront affichés à l'écran. Le demandeur de la chanson ou l'opérateur pourront lancer la lecture de la chanson",
 			"ADDED_SONG_VISIBILITY_ADMIN": "Visibilité des ajouts de l'opérateur",
 			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Visibilité des ajouts",
 			"ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP": "Les chansons ajoutées par l'opérateur doivent-elles être visibles pour le public ou considérées comme chansons mystère ?",
@@ -344,7 +344,7 @@
 			"LABELS_MYSTERY_SONGS_DELETE": "Supprimer",
 			"SESSION_SETTINGS": "Session de karaoké",
 			"STREAM_MODE": "Mode Stream",
-			"STREAM_MODE_TOOLTIP": "Une pause (dont vous pouvez choisir la durée) sera faite entre chaque chanson, et vous pouvez activer les votes du sondage par le chat Twitch",		
+			"STREAM_MODE_TOOLTIP": "Une pause (dont vous pouvez choisir la durée) sera faite entre chaque chanson, et vous pouvez activer les votes du sondage par le chat Twitch",
 			"STREAMER_MODE_LABEL": "Karaoke Mugen met à disposition des fichiers texte que vous pouvez utiliser dans votre logiciel de streaming, pour créer un overlay personnalisé.",
 			"OPEN_STREAMER_FILES": "Voir les fichiers.",
 			"STREAM_PAUSE_DURATION": "Durée de la pause",
@@ -377,7 +377,7 @@
 			"FETCH_POPULAR_SONGS": "Récupérer les chansons populaires depuis vos dépôts en ligne",
 			"FETCH_POPULAR_SONGS_TOOLTIP": "Si désactivé, les chansons populaires seront calculées uniquement depuis votre application Karaoke Mugen",
 			"REMOTE": "Permettre l'accès à distance (<code>.kara.moe)",
-			"REMOTE_TOOLTIP": "Activez ceci pour permettre à vos amis de proposer des chansons pour votre karaoké !"		
+			"REMOTE_TOOLTIP": "Activez ceci pour permettre à vos amis de proposer des chansons pour votre karaoké !"
 		},
 		"PLAYLIST": {
 			"PLAYLIST_SETTINGS": "Listes de lecture",
@@ -1130,7 +1130,9 @@
 		"RESOLVING_DELTAS": "Résolution des deltas",
 		"DECOMPRESSING": "Compression d'objets",
 		"ANALYZING_WORKDIR": "Analyse du répertoire de travail",
-		"UPDATING_GIT_REPO": "Mise à jour du dépôt {{data}}"
+		"UPDATING_GIT_REPO": "Mise à jour du dépôt {{data}}",
+		"DOWNLOADING_ZIP": "Téléchargement de la base de données",
+		"EXTRACTING_ZIP": "Extraction de la base de données"
 	},
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "L'API est désactivé pour le moment",

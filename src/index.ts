@@ -10,7 +10,7 @@ import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
-import {createGitWorker, focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
+import {createZipWorker, focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {
 	configureLocale,
@@ -27,7 +27,7 @@ import {asyncCheckOrMkdir, asyncExists} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
-import { migrateReposToGit } from './services/repo';
+import { migrateReposToZip } from './services/repo';
 import {Config} from './types/config';
 import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
@@ -184,7 +184,7 @@ if (app && !argv.opts().cli) {
 } else {
 	// This is in case we're running with yarn startNoElectron or with --cli or --help
 	// If we're running under Electron and --cli is used, still create the git Worker once electron is ready.
-	if (app) app.on('ready', createGitWorker);
+	if (app) app.on('ready', createZipWorker);
 	preInit()
 		.then(() => main())
 		.catch(err => initError(err));
@@ -231,7 +231,7 @@ export async function main() {
 	logger.debug('Initial state', {service: 'Launcher', obj: state});
 
 	// Migrate repos to git
-	await migrateReposToGit();
+	await migrateReposToZip();
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel

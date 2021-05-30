@@ -1,28 +1,35 @@
 import { promises as fs } from 'fs';
-import { copy, emptyDir } from 'fs-extra';
+import { copy } from 'fs-extra';
 import { basename,resolve } from 'path';
 
 import { compareKarasChecksum, generateDB } from '../dao/database';
 import { editKaraInStore, getStoreChecksum, sortKaraStore, sortTagsStore } from '../dao/dataStore';
 import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
-import { refreshAll, saveSetting } from '../lib/dao/database';
+import {getSettings, refreshAll, saveSetting} from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
 import { writeKara } from '../lib/dao/karafile';
 import { readAllKaras } from '../lib/services/generation';
 import { DBTag } from '../lib/types/database/tag';
-import { Kara,KaraFileV4 } from '../lib/types/kara';
-import { Repository } from '../lib/types/repo';
-import { TagFile } from '../lib/types/tag';
-import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import { asyncCheckOrMkdir, asyncMoveAll, extractAllFiles, getFreeSpace, relativePath, resolveFileInDirs } from '../lib/utils/files';
+import { Kara } from '../lib/types/kara';
+import {Repository, RepositoryManifest} from '../lib/types/repo';
+import {getConfig, resolvedPathRepos} from '../lib/utils/config';
+import {
+	asyncCheckOrMkdir,
+	asyncExists,
+	asyncMoveAll,
+	extractAllFiles,
+	getFreeSpace,
+	relativePath,
+	resolveFileInDirs
+} from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
-import GitInstance from '../utils/git';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
+import {applyPatch, downloadAndExtractZip} from '../utils/zip_patch';
 import { createProblematicBLCSet, generateBlacklist } from './blacklist';
 import { updateMedias } from './downloadUpdater';
 import { getKaras } from './kara';
@@ -53,36 +60,30 @@ export async function addRepo(repo: Repository) {
 	if (repo.Online && !repo.MaintainerMode) {
 		// Testing if repository is reachable
 		try {
-			const onlineInfo = await getRepoMetadata(repo.Name);		// This is the only info we need for now.
-			repo.Git = onlineInfo?.Git;
+			await getRepoMetadata(repo.Name);
 		} catch(err) {
-			throw {code: 404, msg: 'Repository unreachable. Did you mispell its name?'};
+			throw {code: 404, msg: 'Repository unreachable. Did you misspell its name?'};
 		}
 	}
 	insertRepo(repo);
 	await checkRepoPaths(repo);
-	// Let's git clone it if it has a git.
-	if (repo.Git) await updateGitRepo(repo.Name);
+	// Let's download zip if it's an online repository
+	if (repo.Online) await updateZipRepo(repo.Name);
 	logger.info(`Added ${repo.Name}`, {service: 'Repo'});
 }
 
-export async function migrateReposToGit() {
+export async function migrateReposToZip() {
 	// Shut up typescript.
 	const repos: any = getRepos().filter((r: any) => r.Path.Karas?.length > 0);
 	for (const repo of repos) {
 		// Determine basedir by going up one folder
-		const git = new GitInstance({
-			dir: resolve(getState().dataPath, repo.Path.Karas[0], '..'),
-			url: null,
-			branch: null,
-			repo: repo.Name
-		});
-		if (await git.isGitRepo()) {
-			//Already a git repo, put maintainer mode on
+		const dir = resolve(getState().dataPath, repo.Path.Karas[0], '..');
+		if (await asyncExists(resolve(dir, '.git'))) {
+			// It's a git repo, put maintainer mode on.
 			repo.MaintainerMode = true;
 		}
 		const extraPath = repo.Online && !repo.MaintainerMode
-			? '../git'
+			? '../json'
 			: '..';
 		repo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, repo.Path.Karas[0], extraPath));
 		delete repo.Path.Karas;
@@ -91,22 +92,21 @@ export async function migrateReposToGit() {
 		delete repo.Path.Series;
 		await editRepo(repo.Name, repo, false)
 			.catch(err => {
-				logger.error(`Unable to migrate repo ${repo.Name} to git : ${err}`, {service: 'Repo', obj: err});
+				logger.error(`Unable to migrate repo ${repo.Name} to zip-based: ${err}`, {service: 'Repo', obj: err});
 			});
 	}
 }
 
-export async function updateAllGitRepos() {
+export async function updateAllZipRepos() {
 	const repos = getRepos().filter(r => r.Online && !r.MaintainerMode);
 	let doGenerate = false;
 	logger.info('Updating all repositories', {service: 'Repo'});
 	for (const repo of repos) {
-		// Try to update metadata by editing the repo with itself
 		try {
-			await editRepo(repo.Name, repo, false);
-			if (await updateGitRepo(repo.Name, false)) doGenerate = true;
+			// updateZipRepo returns true when the function has download the entire base (either because it's new or because an error happened during the patch)
+			if (await updateZipRepo(repo.Name, false)) doGenerate = true;
 		} catch(err) {
-			logger.error(`Failed to update git repository for ${repo.Name}`, {service: 'Repo', object: err});
+			logger.error(`Failed to update zip repository from ${repo.Name}`, {service: 'Repo', object: err});
 		}
 	}
 	logger.info('Finished updating all repositories', {service: 'Repo'});
@@ -114,8 +114,6 @@ export async function updateAllGitRepos() {
 	if (getConfig().App.FirstRun) {
 		createProblematicBLCSet();
 	}
-	// Check all repos that need their videos updated
-
 }
 
 export async function checkDownloadStatus(kids?: string[]) {
@@ -186,86 +184,85 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 	updateDownloaded(karas.content.map(k => k.kid), 'MISSING');
 }
 
-export async function updateGitRepo(name: string, refresh = true) {
+export async function updateZipRepo(name: string, refresh = true) {
 	const repo = getRepo(name);
-	if (!repo.Online || !repo.Git) throw 'Repository is not online/git!';
-	logger.info(`Updating git repository for ${name}`, {service: 'Repo'});
-	const git = new GitInstance({
-		url: repo.Git.split('#')[0],
-		branch: repo.Git.split('#')[1] || 'master',
-		dir: resolve(getState().dataPath, repo.BaseDir),
-		repo: name
-	});
-	if (!await git.isGitRepo()) {
-		await newGitRepo(git, refresh);
+	if (!repo.Online || repo.MaintainerMode) throw 'Repository is not online or is in Maintainer Mode!';
+	logger.info(`Updating repository from ${name}`, {service: 'Repo'});
+	const LocalCommit = await getLocalRepoLastCommit(repo);
+	if (!LocalCommit) {
+		// If local commit doesn't exist, we have to start by retrieving one
+		const LatestCommit = await newZipRepo(repo, refresh);
+		// Once this is done, we store the last commit in settings DB
+		await saveSetting(`commit-${name}`, LatestCommit);
 		return true;
 	} else {
-		const commitA = await git.status();
-		try {
-			await git.checkout(['.']);
-			await git.clean();
-			await git.pull();
-		} catch(err) {
-			// Let's remove everything if git pull fails and start over
-			await emptyDir(git.dir);
-			await newGitRepo(git, refresh);
-			sentry.error(err, 'Warning');
-			return true;
-		}
-		const commitB = await git.status();
-		if (commitA.oid === commitB.oid) return;
-		const diff = await git.diff(commitA.oid, commitB.oid);
-		// Now that we have our diff, let's work with what's changed.
-		const tagFiles = diff.filter(f => f.path.endsWith('.tag.json'));
-		const karaFiles = diff.filter(f => f.path.endsWith('.kara.json'));
-		const TIDsToDelete = [];
-		const tagPromises = [];
-		for (const tagFile of tagFiles) {
-			if (tagFile.type === 'add' || tagFile.type === 'modify') {
-				tagPromises.push(integrateTagFile(resolve(resolvedPathRepos('Tags', name)[0], basename(tagFile.path)), false));
-			} else {
-				// Delete.
-				const tag: TagFile = JSON.parse(tagFile.content);
-				TIDsToDelete.push(tag.tag.tid);
+		// Check if update is necessary by fetching the remote last commit sha
+		const { LatestCommit } = await getRepoMetadata(repo.Name);
+		if (LatestCommit !== LocalCommit) {
+			try {
+				const patch = await HTTP.get(`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(LocalCommit)}`);
+				const changes = await applyPatch(patch.body, repo.BaseDir);
+				const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
+				const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
+				const TIDsToDelete = [];
+				const tagPromises = [];
+				for (const match of tagFiles) {
+					if (match.type === 'new') {
+						tagPromises.push(integrateTagFile(resolve(resolvedPathRepos('Tags', name)[0], basename(match.path)), false));
+					} else {
+						// Delete.
+						TIDsToDelete.push(match.uid);
+					}
+				}
+				await Promise.all(tagPromises);
+				const KIDsToDelete = [];
+				for (const match of karaFiles) {
+					if (match.type === 'new') {
+						await integrateKaraFile(resolve(resolvedPathRepos('Karaokes', name)[0], basename(match.path)));
+					} else {
+						// Delete.
+						KIDsToDelete.push(match.uid);
+					}
+				}
+				const deletePromises = [];
+				if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false));
+				if (TIDsToDelete.length > 0) {
+					// Let's not remove tags in karas : it's already done anyway
+					deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false}));
+				}
+				await Promise.all(deletePromises);
+				// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
+				sortKaraStore();
+				sortTagsStore();
+				await saveSetting('baseChecksum', getStoreChecksum());
+				if ((KIDsToDelete.length > 0 ||
+					TIDsToDelete.length > 0 ||
+					tagFiles.length > 0 ||
+					karaFiles.length > 0
+				)) await refreshAll();
+				await generateBlacklist();
+				return false;
+			} catch (err) {
+				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {service: 'Repo'});
+				await saveSetting(`commit-${repo.Name}`, null);
+				return updateZipRepo(name, refresh);
 			}
 		}
-		await Promise.all(tagPromises);
-		const KIDsToDelete = [];
-		for (const karaFile of karaFiles) {
-			if (karaFile.type === 'add' || karaFile.type === 'modify') {
-				await integrateKaraFile(resolve(resolvedPathRepos('Karaokes', name)[0], basename(karaFile.path)));
-			} else {
-				// Delete.
-				const kara: KaraFileV4 = JSON.parse(karaFile.content);
-				KIDsToDelete.push(kara.data.kid);
-			}
-		}
-		const deletePromises = [];
-		if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false));
-		if (TIDsToDelete.length > 0) {
-			// Let's not remove tags in karas : it's already done anyway
-			deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false}));
-		}
-		await Promise.all(deletePromises);
-		// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
-		sortKaraStore();
-		sortTagsStore();
-		await saveSetting('baseChecksum', getStoreChecksum());
-		if ((KIDsToDelete.length > 0 ||
-			TIDsToDelete.length > 0 ||
-			tagFiles.length > 0 ||
-			karaFiles.length > 0
-		)) await refreshAll();
-		await generateBlacklist();
 	}
 }
 
-async function newGitRepo(git: GitInstance, refresh = true) {
-	await git.clone();
-	const repo = getRepo(git.repo);
+async function getLocalRepoLastCommit(repo: Repository): Promise<string|null> {
+	const settings = getSettings();
+	return settings[`commit-${repo.Name}`] || null;
+}
+
+async function newZipRepo(repo: Repository, refresh = true): Promise<string> {
+	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo.Name);
+	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
 	if (repo.AutoMediaDownloads === 'all') updateMedias(repo.Name);
 	// We refresh only for clones as it's easier. For pulls however items are added individually.
 	if (refresh) await generateDB();
+	return LatestCommit;
 }
 
 /** Edit a repository. Folders will be created if necessary */
@@ -275,13 +272,9 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 	if (repo.Online && !repo.MaintainerMode) {
 		// Testing if repository is reachable
 		try {
-			const onlineInfo = await getRepoMetadata(repo.Name);
-			// This is the only info we need for now.
-			if (!repo.MaintainerMode) {
-				repo.Git = onlineInfo?.Git;
-			}
+			await getRepoMetadata(repo.Name);
 		} catch(err) {
-			throw {code: 404, msg: 'Repository unreachable. Did you mispell its name?'};
+			throw {code: 404, msg: 'Repository unreachable. Did you misspell its name?'};
 		}
 	}
 	updateRepo(repo, name);
@@ -400,10 +393,10 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 	}
 }
 
-/** Get metadata. Returns null if KM Server is not up to date */
-export async function getRepoMetadata(repo: string): Promise<Repository> {
+/** Get metadata. Throws if KM Server is not up to date */
+export async function getRepoMetadata(repo: string): Promise<RepositoryManifest> {
 	const ret = await HTTP.get(`https://${repo}/api/karas/repository`);
-	if (ret.statusCode === 404) return null;
+	if (ret.statusCode === 404) throw false;
 	return JSON.parse(ret.body);
 }
 
@@ -434,16 +427,7 @@ export async function consolidateRepo(repoName: string, newPath: string) {
 		await asyncCheckOrMkdir(newPath);
 		logger.info(`Moving ${repoName} repository to ${newPath}...`, {service: 'Repo'});
 		const moveTasks = [];
-		const git = new GitInstance({
-			url: null,
-			branch: null,
-			repo: null,
-			dir: resolve(state.dataPath, repo.BaseDir)
-		});
-		let newDataPath = newPath;
-		if (await git.isGitRepo()) {
-			newDataPath = resolve(newPath, 'git');
-		}
+		const newDataPath = newPath;
 		moveTasks.push(asyncMoveAll(resolve(state.dataPath, repo.BaseDir), newDataPath));
 		repo.BaseDir = relativePath(state.dataPath, newDataPath);
 		for (const dir of repo.Path.Medias) {

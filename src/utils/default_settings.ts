@@ -201,6 +201,13 @@ export const defaults: Config = {
 					? 'Karaoke Mugen.app/Contents/app/bin/postgres/bin/'
 					: 'app/bin/postgres/bin/',
 				Windows: 'app\\bin\\postgres\\bin\\'
+			},
+			patch: {
+				Linux: '/usr/bin/patch',
+				OSX: app?.isPackaged
+					? 'Karaoke Mugen.app/Contents/app/bin/patch'
+					: 'app/bin/patch',
+				Windows: 'app\\bin\\patch.exe'
 			}
 		},
 		Repositories: [

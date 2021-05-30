@@ -285,7 +285,7 @@
 			"DISPLAY_NICKNAME": "Display nicknames in karaokes",
 			"DISPLAY_NICKNAME_TOOLTIP": "Displays at the bottom of the screen at the start and end of a song",
 			"DISPLAY_AVATAR": "Display avatar in karaokes",
-			"DISPLAY_AVATAR_TOOLTIP": "The song requester's avatar will be displayed at the beginning and the end of the song in the lower right corner of the player's screen."			
+			"DISPLAY_AVATAR_TOOLTIP": "The song requester's avatar will be displayed at the beginning and the end of the song in the lower right corner of the player's screen."
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",
@@ -298,9 +298,9 @@
 			"QUOTA_TYPE_1": "Per song",
 			"QUOTA_TYPE_2": "Duration",
 			"SONGS_BY_USER": "Number of songs per user",
-			"SONGS_BY_USER_TOOLTIP": "Number of songs a user can request simultaneously. A song released or which has just been played no longer counts towards the quota",		
+			"SONGS_BY_USER_TOOLTIP": "Number of songs a user can request simultaneously. A song released or which has just been played no longer counts towards the quota",
 			"FREE_AUTO_TIME": "Songs are freed from quota after (min)",
-			"FREE_AUTO_TIME_TOOLTIP": "After X minutes, the song will no longer count towards the user's quota. Adjust this according to your number of guests participating",		
+			"FREE_AUTO_TIME_TOOLTIP": "After X minutes, the song will no longer count towards the user's quota. Adjust this according to your number of guests participating",
 			"FREE_UPVOTES": "Allow users to upvote songs to free them",
 			"FREE_UPVOTES_TOOLTIP": "If enough people like a song suggestion, it won't count anymore towards the requester's quota",
 			"FREE_UPVOTES_REQUIREDMIN": "Minimum votes required to free a song",
@@ -308,9 +308,9 @@
 			"FREE_UPVOTES_REQUIREDPERCENT": "Percentage of upvotes / online users required to to free a song",
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Percentage of the number of logged in users ",
 			"AUTOPLAY": "Autoplay on next song added",
-			"AUTOPLAY_TOOLTIP": "Autoplay begins as soon as a song is added to the playlist",	
+			"AUTOPLAY_TOOLTIP": "Autoplay begins as soon as a song is added to the playlist",
 			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists",
-			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist.",			
+			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist.",
 			"MEDIAS_SETTINGS": "Medias",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing after playlist end",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "The message will be displayed at the center of the screen when Karaoke Mugen will play random songs, inviting users to add songs to the playlist",
@@ -329,7 +329,7 @@
 			"WITH": "with",
 			"MESSAGE": "displayed on screen",
 			"CLASSIC_MODE": "Classic Karaoke Mode",
-			"CLASSIC_MODE_TOOLTIP": "A pause will take place between each song and the name of the next song as well as its requester will be displayed on the screen. The song requester or operator will be able to start playing the song",		
+			"CLASSIC_MODE_TOOLTIP": "A pause will take place between each song and the name of the next song as well as its requester will be displayed on the screen. The song requester or operator will be able to start playing the song",
 			"ADDED_SONG_VISIBILITY_ADMIN": "Operator song additions visibility",
 			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Song additions visibility",
 			"ADDED_SONG_VISIBILITY_PUBLIC": "Public song requests visibility",
@@ -343,7 +343,7 @@
 			"LABELS_MYSTERY_SONGS_DELETE": "Remove",
 			"SESSION_SETTINGS": "Karaoke session",
 			"STREAM_MODE": "Stream Mode",
-			"STREAM_MODE_TOOLTIP": "A pause (with a configurable duration) will happen between each song, and you can enable poll votes through Twitch chatsera faite entre chaque chanson, et vous pouvez activer les votes du sondage par le chat Twitch",		
+			"STREAM_MODE_TOOLTIP": "A pause (with a configurable duration) will happen between each song, and you can enable poll votes through Twitch chatsera faite entre chaque chanson, et vous pouvez activer les votes du sondage par le chat Twitch",
 			"STREAMER_MODE_LABEL": "Karaoke Mugen is writing text files that you can use in your streaming software, to create a custom overlay.",
 			"OPEN_STREAMER_FILES": "See files.",
 			"STREAM_PAUSE_DURATION": "Pause duration",
@@ -376,7 +376,7 @@
 			"FETCH_POPULAR_SONGS": "Fetch popular songs from your online repositories",
 			"FETCH_POPULAR_SONGS_TOOLTIP": "If disabled, popular songs will be calculated from your Karaoke Mugen app",
 			"REMOTE": "Allow remote access (<code>.kara.moe)",
-			"REMOTE_TOOLTIP": "Enable this to allow your friends to suggest songs on your karaoke session!"		
+			"REMOTE_TOOLTIP": "Enable this to allow your friends to suggest songs on your karaoke session!"
 		},
 		"PLAYLIST": {
 			"PLAYLIST_SETTINGS": "Playlists",
@@ -1128,7 +1128,9 @@
         "RESOLVING_DELTAS" : "Resolving deltas",
         "DECOMPRESSING": "Compressing objects",
         "ANALYZING_WORKDIR": "Analyzing workdir",
-		"UPDATING_GIT_REPO": "Updating repository {{data}}"
+		"UPDATING_GIT_REPO": "Updating repository {{data}}",
+		"DOWNLOADING_ZIP": "Downloading database",
+		"EXTRACTING_ZIP": "Extracting database"
 	},
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",

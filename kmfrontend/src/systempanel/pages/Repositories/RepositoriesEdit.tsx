@@ -23,7 +23,6 @@ const newrepository: Repository = {
 	AutoMediaDownloads: 'updateOnly',
 	MaintainerMode: false,
 	BaseDir: null,
-	Git: null,
 	Path: {
 		Medias: []
 	}

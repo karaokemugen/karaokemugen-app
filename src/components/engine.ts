@@ -28,7 +28,7 @@ import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem} from '../services/playlist';
 import { initRemote } from '../services/remote';
-import { checkDownloadStatus, updateAllGitRepos } from '../services/repo';
+import { checkDownloadStatus, updateAllZipRepos } from '../services/repo';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
@@ -109,7 +109,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_BASEUPDATE'));
-			await updateAllGitRepos();
+			await updateAllZipRepos();
 			logger.info('Done updating karaoke base', {service: 'Engine'});
 			await exit(0);
 		} catch (err) {
@@ -192,7 +192,7 @@ export async function initEngine() {
 			}
 			// If we are testing, we're awaiting updateAllGitRepos
 			if (state.isTest) {
-				await updateAllGitRepos();
+				await updateAllZipRepos();
 			}
 			if (state.isTest && !state.opt.noAutoTest) {
 				runTests();
@@ -207,7 +207,7 @@ export async function initEngine() {
 				}
 			}
 			if (!state.isTest && !state.isDemo && !conf.App.FirstRun && internet) {
-				updateAllGitRepos();
+				updateAllZipRepos();
 			}
 			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getKaras({
 				q: 'm:downloaded'
