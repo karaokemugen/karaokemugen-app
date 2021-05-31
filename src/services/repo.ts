@@ -158,9 +158,8 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 	const deletedFiles: Set<string> = new Set();
 	const deletePromises = [];
 	for (const kara of karas.content) {
-		let fullPath: string;
 		try {
-			fullPath = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
+			const fullPath = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
 			let deleteFile = true;
 			if (cleanRarelyUsed) {
 				const oneMonthAgo = new Date();
@@ -177,7 +176,6 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 			}
 		} catch {
 			// No file, let's continue.
-			continue;
 		}
 	}
 	await Promise.all(deletePromises);
@@ -187,8 +185,8 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 export async function updateZipRepo(name: string, refresh = true) {
 	const repo = getRepo(name);
 	if (!repo.Online || repo.MaintainerMode) throw 'Repository is not online or is in Maintainer Mode!';
-	logger.info(`Updating repository from ${name}`, {service: 'Repo'});
 	const LocalCommit = await getLocalRepoLastCommit(repo);
+	logger.info(`Updating repository from ${name}, our commit is ${LocalCommit}`, {service: 'Repo'});
 	if (!LocalCommit) {
 		// If local commit doesn't exist, we have to start by retrieving one
 		const LatestCommit = await newZipRepo(repo, refresh);
@@ -198,6 +196,7 @@ export async function updateZipRepo(name: string, refresh = true) {
 	} else {
 		// Check if update is necessary by fetching the remote last commit sha
 		const { LatestCommit } = await getRepoMetadata(repo.Name);
+		logger.debug(`Update ${repo.Name}: ours is ${LocalCommit}, theirs is ${LatestCommit}`, {service: 'Repo'});
 		if (LatestCommit !== LocalCommit) {
 			try {
 				const patch = await HTTP.get(`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(LocalCommit)}`);
@@ -216,31 +215,34 @@ export async function updateZipRepo(name: string, refresh = true) {
 				}
 				await Promise.all(tagPromises);
 				const KIDsToDelete = [];
+				const KIDsToUpdate = [];
+				const task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
 				for (const match of karaFiles) {
 					if (match.type === 'new') {
-						await integrateKaraFile(resolve(resolvedPathRepos('Karaokes', name)[0], basename(match.path)));
+						KIDsToUpdate.push(await integrateKaraFile(resolve(resolvedPathRepos('Karaokes', name)[0], basename(match.path))));
 					} else {
 						// Delete.
 						KIDsToDelete.push(match.uid);
 					}
+					task.update({value: task.item.value + 1, subtext: match.path});
 				}
 				const deletePromises = [];
-				if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false));
+				if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false, {media: true, kara: false}));
 				if (TIDsToDelete.length > 0) {
 					// Let's not remove tags in karas : it's already done anyway
 					deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false}));
 				}
 				await Promise.all(deletePromises);
+				task.update({text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0});
 				// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
 				sortKaraStore();
 				sortTagsStore();
 				await saveSetting('baseChecksum', getStoreChecksum());
-				if ((KIDsToDelete.length > 0 ||
-					TIDsToDelete.length > 0 ||
-					tagFiles.length > 0 ||
-					karaFiles.length > 0
-				)) await refreshAll();
+				await saveSetting(`commit-${repo.Name}`, LatestCommit);
+				if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
 				await generateBlacklist();
+				await checkDownloadStatus(KIDsToUpdate);
+				task.end();
 				return false;
 			} catch (err) {
 				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {service: 'Repo'});
@@ -252,7 +254,7 @@ export async function updateZipRepo(name: string, refresh = true) {
 }
 
 async function getLocalRepoLastCommit(repo: Repository): Promise<string|null> {
-	const settings = getSettings();
+	const settings = await getSettings();
 	return settings[`commit-${repo.Name}`] || null;
 }
 

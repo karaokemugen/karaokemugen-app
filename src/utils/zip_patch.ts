@@ -70,31 +70,42 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 	});
 }
 
-const patchRegex = /diff --git a\/.+ b\/(.+)\n(index|new file|similarity index|deleted file)/g;
+const patchRegex = /^a\/.+ b\/(.+)\n(index|new file|deleted file)/m;
 const KTidRegex = /"[kt]id": *"(.+)"/;
 
 function computeFileChanges(patch: string) {
-	let res: RegExpExecArray;
-	const array: { type: 'new' | 'delete', path: string, uid?: string }[] = [];
-	while ((res = patchRegex.exec(patch)) !== null) {
-		array.push({
-			type: res[2] === 'deleted file' ? 'delete':'new',
-			path: res[1],
-			// If the file is deleted, for later processing, we retrieve its uid by finding it with a regular expression
-			uid: res[2] === 'deleted file' ?
-				patch.slice(res.index).match(KTidRegex)[1]:undefined
+	const patches = patch.split('diff --git ')
+		.slice(1)
+		.map<{ type: 'new' | 'delete', path: string, uid?: string }>((v) => {
+			const result = v.match(patchRegex);
+			const uid = v.match(KTidRegex);
+			if (!result) {
+				throw new Error('Cannot find diff header, huh.');
+			}
+			return {
+				type: result[2] === 'deleted file' ? 'delete':'new',
+				path: result[1],
+				uid: uid ? uid[1]:undefined
+			};
 		});
-	}
-	return array;
+	// Remove delete patches that have a corresponding new entry (renames)
+	const newPatches = patches.filter(p => p.type === 'new');
+	return patches.filter(p => !(p.type === 'delete' && newPatches.findIndex(p2 => p.uid === p2.uid) !== -1));
 }
 
 export async function applyPatch(patch: string, dir: string) {
 	try {
-		const process = execa(getState().binPath.patch, ['-p 1', '-N', '-f', `-d ${dir}`, `-r ${resolve(resolvedPathTemp(), 'patch.rej')}`]);
-		process.stdin.write(patch);
-		await process;
+		const patchProcess = execa(getState().binPath.patch, [
+			'-p1', '-N', '-f',
+			`--directory=${resolve(getState().dataPath, dir)}`,
+			`--reject-file=${resolve(resolvedPathTemp(), 'patch.rej')}`
+		], {stdio: 'pipe'});
+		patchProcess.stdin.write(`${patch}\n`);
+		patchProcess.stdin.end();
+		await patchProcess;
 		return computeFileChanges(patch);
 	} catch (err) {
-		logger.warn('Cannot apply patch from server, fallback to zip full download', {service: 'DiffPatch'});
+		logger.warn('Cannot apply patch from server, fallback to zip full download', {service: 'DiffPatch', obj: err});
+		// throw err;
 	}
 }
