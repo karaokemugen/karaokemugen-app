@@ -3,7 +3,7 @@ import { copy } from 'fs-extra';
 import { basename,resolve } from 'path';
 
 import { compareKarasChecksum, generateDB } from '../dao/database';
-import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore, sortTagsStore } from '../dao/dataStore';
+import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
 import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
 import {getSettings, refreshAll, saveSetting} from '../lib/dao/database';
@@ -236,9 +236,7 @@ export async function updateZipRepo(name: string, refresh = true) {
 				await Promise.all(deletePromises);
 				task.update({text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0});
 				// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
-				sortKaraStore();
-				sortTagsStore();
-				await saveSetting('baseChecksum', getStoreChecksum());
+				await saveSetting('baseChecksum', await baseChecksum());
 				await saveSetting(`commit-${repo.Name}`, LatestCommit);
 				if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
 				await generateBlacklist();

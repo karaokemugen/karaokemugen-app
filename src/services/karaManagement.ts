@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import { basename, resolve } from 'path';
 
-import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore, sortKaraStore } from '../dao/dataStore';
+import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
 import { addKara, deleteKara as deleteKaraDB, selectAllKaras, updateKara } from '../dao/kara';
 import { getPlaylistKaraIDs } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
@@ -243,10 +243,6 @@ export async function integrateKaraFile(file: string, deleteOldFiles = true): Pr
 				const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karaokes', karaDB.repository)))[0];
 				if (karaDB.karafile !== karaData.karafile) {
 					await fs.unlink(oldKaraFile);
-					removeKaraInStore(oldKaraFile);
-					await addKaraToStore(file);
-				} else {
-					await editKaraInStore(oldKaraFile);
 				}
 			} catch(err) {
 				logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, {service: 'Kara'});
@@ -270,12 +266,9 @@ export async function integrateKaraFile(file: string, deleteOldFiles = true): Pr
 		if (mediaDownload === 'all') {
 			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
 		}
-		await addKaraToStore(file);
 	}
-	sortKaraStore();
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({q: `k:${karaData.kid}`}), 'single');
-	saveSetting('baseChecksum', getStoreChecksum());
 	return karaData.kid;
 }
 
