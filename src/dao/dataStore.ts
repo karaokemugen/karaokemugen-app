@@ -78,6 +78,8 @@ export async function baseChecksum(): Promise<string> {
 		});
 		const files = [].concat(karaFiles, tagFiles);
 		const promises = [];
+		dataStore.karas.clear();
+		dataStore.tags.clear();
 		files.forEach(f => promises.push(() => processDataFile(f, task)));
 		await parallel(promises, 32);
 		sortKaraStore();
@@ -85,6 +87,14 @@ export async function baseChecksum(): Promise<string> {
 		task.end();
 		const checksum = getStoreChecksum();
 		logger.debug(`Store checksum : ${checksum}`, {service: 'Store'});
+		// Use this only when debugging store
+		/**
+		  	const store = JSON.stringify({
+			karas: [...dataStore.karas.entries()],
+			tags: [...dataStore.tags.entries()]
+		}, null, 2);
+		await fs.writeFile(resolve(getState().dataPath, `store-${Date.now()}.json`), store, 'utf-8');
+		*/
 		return checksum;
 	} catch(err) {
 		logger.warn('Unable to browse through your data files', {service: 'Store', obj: err});
