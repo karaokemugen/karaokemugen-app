@@ -3,7 +3,7 @@ import { copy } from 'fs-extra';
 import { basename,resolve } from 'path';
 
 import { compareKarasChecksum, generateDB } from '../dao/database';
-import { editKaraInStore, getStoreChecksum, sortKaraStore, sortTagsStore } from '../dao/dataStore';
+import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore, sortTagsStore } from '../dao/dataStore';
 import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
 import {getSettings, refreshAll, saveSetting} from '../lib/dao/database';
@@ -192,6 +192,7 @@ export async function updateZipRepo(name: string, refresh = true) {
 		const LatestCommit = await newZipRepo(repo, refresh);
 		// Once this is done, we store the last commit in settings DB
 		await saveSetting(`commit-${name}`, LatestCommit);
+		await saveSetting('baseChecksum', await baseChecksum());
 		return true;
 	} else {
 		// Check if update is necessary by fetching the remote last commit sha
