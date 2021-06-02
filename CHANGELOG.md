@@ -8,7 +8,7 @@ Karaoke Mugen changes how it handles songs from version 5.1 and onwards.
 
 We realize people don't wish to download all medias for all songs because it can take up a lot of space (currently ~420Gb) and don't seem to understand they need to donwload songs for them to appear in lists.
 
-As a result, Karaoke Mugen will now download your repositories entirely and keep them updated via git.
+As a result, Karaoke Mugen will now download your repositories entirely if empty and keep them updated on startup.
 
 Medias will be downloaded separately, as you need them :
 
@@ -17,7 +17,8 @@ Medias will be downloaded separately, as you need them :
 
 There are ways for you now to see how much space a repository takes on your hard drive, and clean up unused songs manually or in bulk.
 
-Since we're using git, your repository will be kept up to date when Karaoke Mugen starts. If medias have been updated for songs you have already downloaded the medias for before, they will be redownloaded.
+Since we're basing this work on git (we have Karaoke Mugen Server create a diff and then apply it to your files), your repository will be kept up to date when Karaoke Mugen starts. If medias have been updated for songs you have already downloaded the medias for before, they will be redownloaded.
+
 ## New features
 
 - A blacklist criteria set "Safe for karaoke" is now created automatically the first time you start Karaoke Mugen. It contains all problematic tags like R18, Spoilers and Epilepsy. You can use it or not :) (#1013)
@@ -34,10 +35,10 @@ Since we're using git, your repository will be kept up to date when Karaoke Muge
   - A new window containing the currently playing song and the next ones can be opened and captured via OBS to display on your stream layout (#998)
   - Karaoke Mugen now writes some useful information in text files so you can read them through OBS Studio or similar to get useful information. These are located in the `streamFiles` directory (#997) :
     - Current song name
-	- URL to access your karaoke session
-	- Interface status (opened/closed/restricted)
-	- Number of songs in the current and public playlists
-	- Time remaining in the current playlist
+	  - URL to access your karaoke session
+	  - Interface status (opened/closed/restricted)
+	  - Number of songs in the current and public playlists
+	  - Time remaining in the current playlist
 - There is a new comment field in karaoke information (maintainers only) (#1012)
 
 ## Improvements
@@ -45,7 +46,7 @@ Since we're using git, your repository will be kept up to date when Karaoke Muge
 - Settings are better explained on the options screen (#1026)
 - More songs are displayed in the public song library on mobile (#1015)
 - Added a warning on user profiles when email is empty (#1002)
-- All API documentation can now be found at http://api.karaokes.moe/app and is made with @nuxt/content. As a result, all old Apidoc comments have been removed from the app's source code. (#805)
+- All API documentation can now be found at [here](http://api.karaokes.moe/app) and is made with @nuxt/content. As a result, all old Apidoc comments have been removed from the app's source code. (#805)
 - The "About" window has been fully translated (#857)
 - Song list in system panel can now be filtered by tags (#945)
 - Song list in system panel now has a bulk delete option (#945)
