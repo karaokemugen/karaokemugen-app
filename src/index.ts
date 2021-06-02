@@ -82,12 +82,12 @@ on('initError', (err: Error) => {
 });
 
 // Main app begins here.
-// Testing if we're in a packaged version of KM or not.
-// First, this is a test for unpacked electron mode.
 let appPath: string;
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
 
+// Testing if we're in a packaged version of KM or not.
+// First, this is a test for unpacked electron mode.
 if (process.versions.electron) {
 	if (app.isPackaged) {
 		// Starting Electron from the app's executable
@@ -126,7 +126,7 @@ if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
 if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
 
-setState({appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
+setState({appPath, dataPath, resourcePath});
 
 process.env['NODE_ENV'] = 'production'; // Default
 
@@ -208,9 +208,7 @@ export async function preInit() {
 	logger.debug(`Locale : ${state.defaultLocale}`, {service: 'Launcher'});
 	logger.debug(`OS : ${state.os}`, {service: 'Launcher'});
 	await initConfig(argv);
-	/**
-	 * Test if network ports are available
-	 */
+	// Test if network ports are available
 	await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 }
 
@@ -219,7 +217,7 @@ export async function main() {
 	// Set version number
 	const state = getState();
 	console.log(chalk.white(logo));
-	console.log('Karaoke Player & Manager - http://karaokes.moe');
+	console.log('Karaoke Player & Manager - https://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} "${chalk.bold.green(state.version.name)}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
 	console.log('================================================================================');
 	const config = getConfig();
@@ -247,9 +245,7 @@ export async function main() {
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
 	await copy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
 
-	/**
-	 * Gentlemen, start your engines.
-	 */
+	// Gentlemen, start your engines.
 	try {
 		await initEngine();
 	} catch(err) {
@@ -261,9 +257,7 @@ export async function main() {
 	}
 }
 
-/**
- * Checking if application paths exist.
- */
+/* Checking if application paths exist. **/
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
