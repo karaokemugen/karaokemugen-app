@@ -114,6 +114,14 @@ mpv 0.25 or later for Windows/Linux, 0.27 or later is required for macOS ([mpv's
 
 ffmpeg 3 or later is required ([ffmpeg's website](http://www.ffmpeg.org))
 
+#### Patch
+
+You'll need a version of the GNU patch utility 2.7 or above so Karaoke Mugen can apply git-patches sent via Karaoke Mugen Server to keep your song lists up to date.
+
+* On Windows, you can download a pre-compiled one [here](https://mugen.karaokes.moe/downloads/patch.exe)
+* On macOS we recommend you use [Homebrew](https://brew.sh)
+* On Linux, make sure your distribution has the latest patch package.
+
 #### PostgreSQL
 
 PostgreSQL 10.6 or later is required ([postgreSQL's website](https://www.postgresql.org/))
