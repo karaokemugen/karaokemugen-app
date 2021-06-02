@@ -265,8 +265,8 @@ async function createWindow() {
 	// Create the browser window
 	const state = getState();
 	win = new BrowserWindow({
-		width: 1280,
-		height: 720,
+		width: 1400,
+		height: 900,
 		backgroundColor: '#36393f',
 		show: false,
 		icon: resolve(state.resourcePath, 'build/icon.png'),
