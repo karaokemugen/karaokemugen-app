@@ -55,10 +55,10 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 
 * See the **[install](#install)** section below
 * **Launch the app** (see the launch section below). You will be prompted with some questions and you will need to create an account (online or local).
-* Use the **in-app downloader** or place karaoke songs inside the `app/repos` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/). If you don't want to add a full karaoke base for now, Karaoke Mugen will download samples from karaoke repositories in your `app/repos` folder if it's left empty so you can try out the app.
+* Karaoke Mugen will update its database on startup with the default karaoke repository. You can alternatively create your own repositories and karaokes. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/). 
 * Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and **have fun**!
 
-In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's over a few hundreds gigabytes big once the videos have been downloaded.
+Medias are downloaded on the go, but you can pre-download everything (beware, it's several hundred gigabytes big!) if you're preparing a karaoke event in a place without reliable Internet for example.
 
 For more information, check out the [documentation site](http://docs.karaokes.moe)!
 
@@ -66,7 +66,7 @@ For more information, check out the [documentation site](http://docs.karaokes.mo
 
 The app is multi-platform and works on Linux/Windows/macOS.
 
-For source installs, it requires nodeJS 12 or above, as well as postgresql, mpv and ffmpeg binaries (see below).
+For source installs, it requires nodeJS 14 or above, as well as postgresql, mpv and ffmpeg binaries (see below).
 
 For binary installs, everything's included.
 
@@ -108,7 +108,7 @@ Linux distributions often package old versions of ffmpeg/mpv, update them first 
 
 #### mpv
 
-mpv 0.25 or later for Windows/Linux, 0.27 or later is required for macOS ([mpv's website](http://mpv.io))
+mpv 0.33 or later is required. ([mpv's website](http://mpv.io))
 
 #### ffmpeg
 
@@ -118,12 +118,12 @@ ffmpeg 3 or later is required ([ffmpeg's website](http://www.ffmpeg.org))
 
 PostgreSQL 10.6 or later is required ([postgreSQL's website](https://www.postgresql.org/))
 
-Earlier or later PostgreSQL versions (9.x, 10.x, 12.x...) should work but have not been tested.
+Later PostgreSQL versions (11+) should work just fine.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
 * **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `config.yml` file to point to the correct server and database)
-* **Bundlded PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `config.yml` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
+* **Bundled PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `config.yml` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
 
 ### Yarn
 
@@ -243,7 +243,7 @@ Thanks to [MacStadium](http://www.macstadium.com), we have a Mac mini M1 to run 
 
 ## Credits
 
-"Nanamin", Karaoke Mugen's mascott as well as Karaoke Mugen's logo are designed by [Sedeto](http://www.sedeto.fr)
+"Nanamin", Karaoke Mugen's mascott as well as Karaoke Mugen's logo are designed by [Sedeto](http://sedeto.fr)
 
 ## License
 
