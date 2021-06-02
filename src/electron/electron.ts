@@ -273,7 +273,7 @@ async function createWindow() {
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false,
-		}
+		},
 	});
 	// and load the index.html of the app.
 	if (initDone) {
@@ -334,7 +334,8 @@ export async function updateChibiPlayerWindow(show: boolean) {
 			alwaysOnTop: getConfig().GUI.ChibiPlayer.AlwaysOnTop,
 			backgroundColor: '#36393f',
 			webPreferences: {
-				nodeIntegration: true
+				nodeIntegration: true,
+				contextIsolation: false
 			},
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
@@ -373,7 +374,8 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 			show: false,
 			backgroundColor: '#36393f',
 			webPreferences: {
-				nodeIntegration: true
+				nodeIntegration: true,
+				contextIsolation: false
 			},
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
