@@ -571,7 +571,8 @@ export async function generateAdminPassword(): Promise<string> {
 		{
 			password: adminPassword,
 			nickname: 'Dummy Plug System',
-			type: 0
+			type: 0,
+			flag_sendstats: false
 		},
 		null,
 		'admin');
