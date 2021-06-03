@@ -218,7 +218,7 @@ export const defaults: Config = {
 				SendStats: true,
 				AutoMediaDownloads: 'updateOnly',
 				MaintainerMode: false,
-				BaseDir: process.platform === 'win32' ? 'repos\\kara.moe/git' : 'repos/kara.moe/git',
+				BaseDir: process.platform === 'win32' ? 'repos\\kara.moe\\json' : 'repos/kara.moe/json',
 				Path: process.platform === 'win32'
 					? {
 						Medias: ['repos\\kara.moe\\medias']
@@ -231,7 +231,7 @@ export const defaults: Config = {
 				Name: 'Local',
 				Online: false,
 				Enabled: true,
-				BaseDir: process.platform === 'win32' ? 'repos\\Local\\' : 'repos/Local/',
+				BaseDir: process.platform === 'win32' ? 'repos\\Local\\json' : 'repos/Local/json',
 				Path: process.platform === 'win32'
 					? {
 						Medias: ['repos\\Local\\medias'],
