@@ -38,6 +38,7 @@ test:
   script:
     - yarn install --check-files --force --cache-folder .yarn
     - yarn buildWorker
+    - sudo apt-get build-dep chromium
     - touch mpv
     - touch ffmpeg
     - mkdir app
