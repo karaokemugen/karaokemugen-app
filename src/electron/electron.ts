@@ -55,15 +55,18 @@ export function startElectron() {
 			handleProtocol(args);
 		});
 		createZipWorker();
-		await initElectronWindow();
+		if (!getState().opt.cli) await initElectronWindow();
 		on('KMReady', async () => {
-			win.loadURL(await welcomeToYoukousoKaraokeMugen());
-			if (!getState().forceDisableAppUpdate) initAutoUpdate();
-			if (getConfig().GUI.ChibiPlayer.Enabled) {
-				updateChibiPlayerWindow(true);
-			}
-			if (getConfig().GUI.ChibiPlaylist.Enabled) {
-				updateChibiPlaylistWindow(true);
+			const state = getState();
+			if (!state.opt.cli) {
+				win.loadURL(await welcomeToYoukousoKaraokeMugen());
+				if (!state.forceDisableAppUpdate) initAutoUpdate();
+				if (getConfig().GUI.ChibiPlayer.Enabled) {
+					updateChibiPlayerWindow(true);
+				}
+				if (getConfig().GUI.ChibiPlaylist.Enabled) {
+					updateChibiPlaylistWindow(true);
+				}
 			}
 			initDone = true;
 		});
@@ -74,6 +77,14 @@ export function startElectron() {
 				logger.error('Error during launch', {service: 'Launcher', obj: err});
 			}
 		});
+		if (getState().opt.cli) {
+			try {
+				await main();
+			} catch(err) {
+				logger.error('Error during launch', {service: 'Launcher', obj: err});
+				throw err;
+			}
+		}
 		ipcMain.on('getSecurityCode', (event, _eventData) => {
 			event.sender.send('getSecurityCodeResponse', getState().securityCode);
 		});

@@ -38,6 +38,10 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 		logger.info('SQL queries will be logged', {service: 'Launcher'});
 		setState({opt: {sql: true}});
 	}
+	if (argv.opts().cli) {
+		logger.info('CLI mode activated', {service: 'Launcher'});
+		setState({opt: {cli: true}});
+	}
 	if (argv.opts().debug) {
 		logger.info('Debug messages enabled on console', {service: 'Launcher'});
 		setState({opt: {debug: true}});

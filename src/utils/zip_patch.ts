@@ -1,8 +1,7 @@
-import { app, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 import execa from 'execa';
 import { move, remove } from 'fs-extra';
 import { resolve } from 'path';
-import { Worker } from 'worker_threads';
 
 import { zipWorker } from '../electron/electron';
 import { resolvedPathTemp } from '../lib/utils/config';
@@ -14,7 +13,6 @@ import { getState } from './state';
 export async function downloadAndExtractZip(zipURL: string, outDir: string, repo: string) {
 	logger.debug(`Downloading ${repo} archive to ${outDir}`, {service: 'Zip'});
 	await remove(outDir);
-	let worker: Worker;
 	const task = new Task({
 		text: 'DOWNLOADING_ZIP',
 		data: repo
@@ -41,32 +39,16 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 				});
 			}
 		};
-		if (app) {
-			ipcMain.on('unzipProgress', (_event, data) => updateTask(data));
-			ipcMain.on('unzipEnd', (_event, data) => {
-				if (data.error) {
-					reject(new Error('Cannot unzip archive, please see zip worker logs.'));
-				} else {
-					task.end();
-					move(resolve(options.outDir, data.outDir), outDir).then(resolvePromise, reject);
-				}
-			});
-			zipWorker.webContents.send('unzip', options);
-		} else {
-			worker = new Worker(resolve(getState().resourcePath, 'zipWorker/zipWorker.js'));
-			worker.on('message', data => {
-				if (data.type === 'unzipProgress') {
-					updateTask(data.message);
-				} else if (data.type === 'unzipEnd') {
-					task.end();
-					move(resolve(options.outDir, data.message), resolve(options.outDir, repo)).then(resolvePromise, reject);
-				} else if (data.type === 'unzipError') {
-					task.end();
-					reject(data.message);
-				}
-			});
-			worker.postMessage({ type: 'unzip', data: options });
-		}
+		ipcMain.on('unzipProgress', (_event, data) => updateTask(data));
+		ipcMain.on('unzipEnd', (_event, data) => {
+			if (data.error) {
+				reject(new Error('Cannot unzip archive, please see zip worker logs.'));
+			} else {
+				task.end();
+				move(resolve(options.outDir, data.outDir), outDir).then(resolvePromise, reject);
+			}
+		});
+		zipWorker.webContents.send('unzip', options);
 	});
 }
 

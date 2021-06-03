@@ -1,4 +1,4 @@
-import { app, dialog } from 'electron';
+import { dialog } from 'electron';
 import i18next from 'i18next';
 import { Migration } from 'postgrator';
 
@@ -18,13 +18,11 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 				breakFromLoop = true;
 				break;
 			case 'addPlaylistTriggers':
-				if (app) {
-					await dialog.showMessageBox(win, {
-						type: 'info',
-						title: i18next.t('NO_KARAOKE_MODE_ANYMORE.TITLE'),
-						message: i18next.t('NO_KARAOKE_MODE_ANYMORE.MESSAGE')
-					});
-				}
+				await dialog.showMessageBox(win, {
+					type: 'info',
+					title: i18next.t('NO_KARAOKE_MODE_ANYMORE.TITLE'),
+					message: i18next.t('NO_KARAOKE_MODE_ANYMORE.MESSAGE')
+				});
 				break;
 			// 5.0 migrations
 			case 'addPriorityToTags':

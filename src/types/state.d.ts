@@ -56,6 +56,7 @@ export interface State {
 	frontendPort?: number,
 	binPath?: Partial<BinariesConfig>,
 	opt?: {
+		cli?: boolean,
 		generateDB?: boolean,
 		reset?: boolean,
 		noBaseCheck?: boolean,

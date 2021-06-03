@@ -18,6 +18,6 @@ export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
 		const adminPassword = await generateAdminPassword();
 		url = `http://localhost:${conf.Frontend.Port}/setup?admpwd=${adminPassword}`;
 	}
-	if (!state.opt.noBrowser && !state.isDemo && !state.isTest && !state.electron) open(url);
+	if (!state.opt.noBrowser && !state.isDemo && !state.isTest && state.opt.cli) open(url);
 	return url;
 }

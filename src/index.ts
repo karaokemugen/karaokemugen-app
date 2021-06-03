@@ -10,7 +10,7 @@ import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
-import {createZipWorker, focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
+import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {
 	configureLocale,
@@ -56,11 +56,11 @@ process.on('unhandledRejection', (error: Error) => {
 });
 
 process.on('SIGINT', () => {
-	exit('SIGINT');
+	exit(0);
 });
 
 process.on('SIGTERM', () => {
-	exit('SIGTERM');
+	exit(0);
 });
 
 // CTRL+C for Windows :
@@ -72,7 +72,7 @@ if (process.platform === 'win32' ) {
 	});
 
 	rl.on('SIGINT', () => {
-		exit('SIGINT');
+		exit(0);
 	});
 }
 
@@ -88,39 +88,30 @@ let resourcePath: string;
 
 // Testing if we're in a packaged version of KM or not.
 // First, this is a test for unpacked electron mode.
-if (process.versions.electron) {
-	if (app.isPackaged) {
-		// Starting Electron from the app's executable
-		appPath = process.platform === 'darwin'
-			? resolve(app.getAppPath(), '../../../../')
-			: resolve(app.getAppPath(), '../../');
-		resourcePath = process.resourcesPath;
-	} else {
-		if (app.getAppPath().endsWith('.asar')) {
-			// Starting Electron from an asar directly (electron /path/to/app.asar)
-			appPath = dirname(app.getAppPath());
-			resourcePath = appPath;
-		} else {
-			// Starting Electron from source folder
-			appPath = app.getAppPath();
-			resourcePath = appPath;
-		}
-	}
+if (app.isPackaged) {
+	// Starting Electron from the app's executable
+	appPath = process.platform === 'darwin'
+		? resolve(app.getAppPath(), '../../../../')
+		: resolve(app.getAppPath(), '../../');
+	resourcePath = process.resourcesPath;
 } else {
-	// Non-electron environments (ts-node, node)
-	appPath = process.cwd();
-	resourcePath = appPath;
+	if (app.getAppPath().endsWith('.asar')) {
+		// Starting Electron from an asar directly (electron /path/to/app.asar)
+		appPath = dirname(app.getAppPath());
+		resourcePath = appPath;
+	} else {
+		// Starting Electron from source folder
+		appPath = app.getAppPath();
+		resourcePath = appPath;
+	}
 }
 
 // DataPath is by default appPath + app. This is default when running from source
 const dataPath = existsSync(resolve(appPath, 'portable'))
 	? resolve(appPath, 'app/')
 	// Rewriting dataPath to point to user home directory
-	: app
-		// With Electron we get the handy app.getPath()
-		? resolve(app.getPath('home'), 'KaraokeMugen')
-		// process.env.HOMEPATH is broken in Windows as it does not reference the drive letter, so if you installed KM on D:\KM, it'll point to D:\Users\your_user\KaraokeMugen. Deal with it.
-		: resolve(process.env.HOME || process.env.HOMEPATH, 'KaraokeMugen');
+	// With Electron we get the handy app.getPath()
+	: resolve(app.getPath('home'), 'KaraokeMugen');
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
@@ -156,39 +147,28 @@ if (existsSync(SHAFile)) {
 // Commander call to get everything setup in argv
 const argv = parseArgs();
 
-if (app) {
-	// Acquiring lock to prevent two KMs to run at the same time.
-	// Also allows to get us the files we need.
-	if (!app.requestSingleInstanceLock()) process.exit();
-	app.on('second-instance', (_event, args) => {
-		if (args[args.length-1] === '--kill') {
-			exit(0);
-		} else {
-			focusWindow();
-			const file = args[args.length-1];
-			if (file && file !== '.' && !file.startsWith('--')) {
-				file.startsWith('km://')
-					? handleProtocol(file.substr(5).split('/'))
-					: handleFile(file);
-			}
-		}
-	});
-	// Redefining quit function
-	app.on('will-quit', () => {
+// Acquiring lock to prevent two KMs to run at the same time.
+// Also allows to get us the files we need.
+if (!app.requestSingleInstanceLock()) process.exit();
+app.on('second-instance', (_event, args) => {
+	if (args[args.length-1] === '--kill') {
 		exit(0);
-	});
-}
+	} else {
+		focusWindow();
+		const file = args[args.length-1];
+		if (file && file !== '.' && !file.startsWith('--')) {
+			file.startsWith('km://')
+				? handleProtocol(file.substr(5).split('/'))
+				: handleFile(file);
+		}
+	}
+});
+// Redefining quit function
+app.on('will-quit', () => {
+	exit(0);
+});
 
-if (app && !argv.opts().cli) {
-	startElectron();
-} else {
-	// This is in case we're running with yarn startNoElectron or with --cli or --help
-	// If we're running under Electron and --cli is used, still create the git Worker once electron is ready.
-	if (app) app.on('ready', createZipWorker);
-	preInit()
-		.then(() => main())
-		.catch(err => initError(err));
-}
+startElectron();
 
 export async function preInit() {
 	await configureLocale();
@@ -253,7 +233,7 @@ export async function main() {
 		sentry.error(err);
 		console.log(err);
 		errorStep(i18n.t('ERROR_UNKNOWN'));
-		if (!app || argv.opts().cli) exit(1);
+		if (argv.opts().cli) exit(1);
 	}
 }
 

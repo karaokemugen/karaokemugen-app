@@ -8,12 +8,10 @@
   },
   "main": "dist/src/index.js",
   "scripts": {
-    "startNoElectron": "ts-node src/index.ts",
     "start": "yarn build && electron .",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "qstart": "electron .",
-    "qstartNoElectron": "node dist/src/index.js",
-    "test": "ts-node src/index.ts --test",
+    "test": "electron . --test",
     "manualTest": "mocha --require ts-node/register --timeout 60000 test/*.ts",
     "build": "npx rimraf \"dist\" && tsc --build",
     "buildWorker": "esbuild zipWorker/zipWorker.ts --bundle --target=node14 --outfile=zipWorker/zipWorker.js --platform=node --external:electron",

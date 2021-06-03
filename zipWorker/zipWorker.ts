@@ -2,7 +2,6 @@
 
 import extract = require('extract-zip');
 const { ipcRenderer } = require('electron');
-const { parentPort } = require('worker_threads');
 
 async function unzip(path: string, outDir: string) {
 	console.log('Request to unzip', path, outDir);
@@ -21,53 +20,21 @@ async function unzip(path: string, outDir: string) {
 					current: zipFile.entriesRead,
 					total: zipFile.entryCount
 				};
-				if (ipcRenderer) {
-					ipcRenderer.send('unzipProgress', message);
-				} else {
-					parentPort.postMessage({
-						type: 'unzipProgress',
-						message: message
-					});
-				}
+				ipcRenderer.send('unzipProgress', message);
 			}
 		});
 	} catch(err) {
 		error = err;
 	} finally {
-		if (ipcRenderer) {
-			console.log('Sending message', firstDir);
-			if (error) console.error(error);
-			ipcRenderer.send('unzipEnd', {
-				error: !!error,
-				outDir: firstDir
-			});
-		} else {
-			if (error) {
-				parentPort.postMessage({
-					type: 'unzipError',
-					message: error
-				});
-			} else {
-				parentPort.postMessage({
-					type: 'unzipEnd',
-					message: firstDir
-				});
-			}
-			process.exit();
-		}
+		console.log('Sending message', firstDir);
+		if (error) console.error(error);
+		ipcRenderer.send('unzipEnd', {
+			error: !!error,
+			outDir: firstDir
+		});
 	}
 }
 
-if (ipcRenderer) {
-	ipcRenderer.on('unzip', async (_event, { path, outDir }) => {
-		await unzip(path, outDir);
-	});
-} else {
-	parentPort.on('message', async ({ type, data }) => {
-		if (type === 'unzip') {
-			await unzip(data.path, data.outDir);
-		} else {
-			process.exit();
-		}
-	});
-}
+ipcRenderer.on('unzip', async (_event, { path, outDir }) => {
+	await unzip(path, outDir);
+});
