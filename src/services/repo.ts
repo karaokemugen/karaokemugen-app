@@ -27,6 +27,7 @@ import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { DifferentChecksumReport } from '../types/repo';
+import {pathIsContainedInAnother} from '../utils/files';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import {applyPatch, downloadAndExtractZip} from '../utils/zip_patch';
@@ -65,8 +66,8 @@ export async function addRepo(repo: Repository) {
 			throw {code: 404, msg: 'Repository unreachable. Did you misspell its name?'};
 		}
 	}
-	insertRepo(repo);
 	await checkRepoPaths(repo);
+	insertRepo(repo);
 	// Let's download zip if it's an online repository
 	if (repo.Online) await updateZipRepo(repo.Name);
 	logger.info(`Added ${repo.Name}`, {service: 'Repo'});
@@ -278,8 +279,8 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 			throw {code: 404, msg: 'Repository unreachable. Did you misspell its name?'};
 		}
 	}
-	updateRepo(repo, name);
 	await checkRepoPaths(repo);
+	updateRepo(repo, name);
 	if (oldRepo.Enabled !== repo.Enabled || refresh) {
 		if (await compareKarasChecksum()) generateDB();
 	}
@@ -364,6 +365,11 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 }
 
 function checkRepoPaths(repo: Repository) {
+	for (const path of repo.Path.Medias) {
+		if (pathIsContainedInAnother(repo.BaseDir, path)) {
+			throw {code: 400, msg: 'Sanity check: A media path is contained in the base directory.'};
+		}
+	}
 	const checks = [];
 	for (const path of Object.keys(repo.Path)) {
 		repo.Path[path].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(getState().dataPath, dir))));
