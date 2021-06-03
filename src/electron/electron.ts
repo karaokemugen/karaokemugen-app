@@ -124,7 +124,7 @@ export function startElectron() {
 		event.sender.send('get-file-paths-response', (await dialog.showOpenDialog(options)).filePaths);
 	});
 
-	Menu.setApplicationMenu(null);
+	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
 }
 
 export async function handleProtocol(args: string[]) {
@@ -242,7 +242,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 export function applyMenu() {
 	initMenu();
 	const menu = Menu.buildFromTemplate(getMenu());
-	win.setMenu(menu);
+	process.platform === 'darwin' ? Menu.setApplicationMenu(menu):win.setMenu(menu);
 }
 
 async function initElectronWindow() {
@@ -279,15 +279,15 @@ async function createWindow() {
 	// Create the browser window
 	const state = getState();
 	win = new BrowserWindow({
-		width: 1280,
-		height: 720,
+		width: 1400,
+		height: 900,
 		backgroundColor: '#36393f',
 		show: false,
 		icon: resolve(state.resourcePath, 'build/icon.png'),
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false,
-		}
+		},
 	});
 	// and load the index.html of the app.
 	if (initDone) {
@@ -349,7 +349,8 @@ export async function updateChibiPlayerWindow(show: boolean) {
 			alwaysOnTop: getConfig().GUI.ChibiPlayer.AlwaysOnTop,
 			backgroundColor: '#36393f',
 			webPreferences: {
-				nodeIntegration: true
+				nodeIntegration: true,
+				contextIsolation: false
 			},
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
@@ -388,7 +389,8 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 			show: false,
 			backgroundColor: '#36393f',
 			webPreferences: {
-				nodeIntegration: true
+				nodeIntegration: true,
+				contextIsolation: false
 			},
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});

@@ -102,7 +102,8 @@
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "L'installation de la mise à jour va démarrer...",
 	"ABOUT": {
 		"BUG_REPORT": "Rapporter un bug",
-		"COPYRIGHT": "Par l'équipe de développement de Karaoke Mugen, sous la licence MIT"
+		"COPYRIGHT": "Par l'équipe de développement de Karaoke Mugen, sous la licence MIT",
+		"TITLE": "À propos de Karaoke Mugen"
 	},
 	"NO_KARAOKE_MODE_ANYMORE": {
 		"TITLE": "Plus de mode de karaoké !",

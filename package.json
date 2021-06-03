@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "5.1.5-next",
+  "version": "5.1.6-next",
   "versionName": "Poppy Percutante",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -66,7 +66,7 @@
     "Pierre CAMILLI <camillipierre@gmail.com> @Shueisha64"
   ],
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "license": "MIT",
   "private": true,
