@@ -70,8 +70,11 @@ class WelcomePage extends Component<unknown, IState> {
 	};
 
 	getDownloadQueue = async () => {
-		const downloadQueue = await commandBackend('getDownloads', undefined, false, 300000);
-		if (downloadQueue.length > 0 && !sessionStorage.getItem('dlQueueRestart')) {
+		const [downloadQueue, downloadQueueStatus] = await Promise.all([
+			commandBackend('getDownloads', undefined, false, 300000),
+			commandBackend('getDownloadQueueStatus', undefined, false, 300000),
+		]);
+		if (downloadQueueStatus === 'stopped' && downloadQueue.length > 0 && !sessionStorage.getItem('dlQueueRestart')) {
 			showModal(this.context.globalDispatch, <RestartDownloadsModal />);
 		}
 	}

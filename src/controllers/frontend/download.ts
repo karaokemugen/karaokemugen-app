@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api';
 import { SocketIOApp } from '../../lib/utils/ws';
-import {addDownloads, getDownloads, pauseQueue, startDownloads, wipeDownloads} from '../../services/download';
+import {addDownloads, getDownloadQueueStatus, getDownloads, pauseQueue, startDownloads, wipeDownloads} from '../../services/download';
 import { updateAllMedias } from '../../services/downloadUpdater';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
@@ -29,6 +29,14 @@ export default function downloadController(router: SocketIOApp) {
 			const code = 'DOWNLOADS_GET_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getDownloadQueueStatus', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return getDownloadQueueStatus();
+		} catch(err) {
+			throw {code: 500, message: err};
 		}
 	});
 	router.route('deleteDownloads', async (socket: Socket, req: APIData) => {
