@@ -288,7 +288,8 @@ class KaraDetail extends Component<IProps, IState> {
 				const tagData = tagTypes[type];
 				if (data[tagData.karajson]) {
 					karaTags.push(...data[tagData.karajson].sort(sortTagByPriority).map(tag => {
-						return <div key={tag.tid} className={`tag ${tagData.color}`} title={tag.short ? tag.short : tag.name}>
+						return <div key={tag.tid} className={`tag ${tagData.color}`}
+							title={tag.short ? tag.short : tag.name}>
 							{this.getInlineTag(tag, tagData.type)}
 						</div>;
 					}));
@@ -301,32 +302,35 @@ class KaraDetail extends Component<IProps, IState> {
 				let key = 0;
 				const tagData = tagTypes[type];
 				if (data[tagData.karajson].length > 0) {
-					karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
-						<i className={`fas fa-fw fa-${tagData.icon}`} />
+					karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`}
+						key={tagData.karajson}>
+						<i className={`fas fa-fw fa-${tagData.icon}`}/>
 						<div>
 							{i18next.t(`KARA.${type}_BY`)}
 							<span key={`${type}${key}`} className="detailsKaraLineContent"> {data[tagData.karajson]
 								.map(e => this.getInlineTag(e, tagData.type)).reduce((acc, x, index, arr): any => acc === null ? [x] : [acc, (index + 1 === arr.length) ?
-									<span key={`${type}${key}`} className={`colored ${tagData.color}`}> {i18next.t('AND')} </span> :
-									<span key={`${type}${key}`} className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
+									<span key={`${type}${key}`}
+										  className={`colored ${tagData.color}`}> {i18next.t('AND')} </span> :
+									<span key={`${type}${key}`}
+										  className={`colored ${tagData.color}`}>, </span>, x], null)}</span>
 						</div>
 					</div>);
 					key++;
 				}
 			}
 
-			const playTime = data.time_before_play > 0 ? new Date(Date.now() + data.time_before_play * 1000): null;
+			const playTime = data.time_before_play > 0 ? new Date(Date.now() + data.time_before_play * 1000) : null;
 			const details = (
 				<React.Fragment>
 					{this.props.blcLabel ? <div className="detailsKaraLine">
 						<span>
-							<i className="fas fa-fw fa-ban" />
+							<i className="fas fa-fw fa-ban"/>
 							{this.props.blcLabel}
 						</span>
-					</div>:null}
+					</div> : null}
 					<div className="detailsKaraLine timeData">
 						<span>
-							<i className="fas fa-fw fa-clock" />
+							<i className="fas fa-fw fa-clock"/>
 							{secondsTimeSpanToHMS(data.duration, 'mm:ss')}
 						</span>
 						<span>
@@ -345,14 +349,14 @@ class KaraDetail extends Component<IProps, IState> {
 						<div className="detailsKaraLine">
 							<span
 								title={i18next.t('UPVOTE_NUMBER')}>
-								<i className="fas fa-thumbs-up" />
+								<i className="fas fa-thumbs-up"/>
 								{data.upvotes}
 							</span>
 						</div> : null
 					}
 					<div className="detailsKaraLine">
 						<span>
-							{this.props.playlistcontentId ? i18next.t('DETAILS.ADDED'):i18next.t('DETAILS.CREATED')}
+							{this.props.playlistcontentId ? i18next.t('DETAILS.ADDED') : i18next.t('DETAILS.CREATED')}
 							{data.created_at ? <>
 								{i18next.t('DETAILS.ADDED_2')}
 								<span className="boldDetails">{new Date(data.created_at).toLocaleString()}</span>
@@ -368,7 +372,7 @@ class KaraDetail extends Component<IProps, IState> {
 					{karaBlockTags}
 					<div className="detailsKaraLine">
 						<span className="boldDetails">
-							<i className={`fas fa-fw fa-${YEARS.icon}`} />
+							<i className={`fas fa-fw fa-${YEARS.icon}`}/>
 							{data.year}
 						</span>
 					</div>
@@ -381,7 +385,7 @@ class KaraDetail extends Component<IProps, IState> {
 					onClick={this.addKara}
 					className="btn btn-action"
 				>
-					<i className="fas fa-fw fa-plus" />
+					<i className="fas fa-fw fa-plus"/>
 					<span>{i18next.t('TOOLTIP_ADDKARA')}</span>
 				</button>
 			);
@@ -392,7 +396,7 @@ class KaraDetail extends Component<IProps, IState> {
 					onClick={this.makeFavorite}
 					className={`makeFav btn btn-action${this.state.isFavorite ? ' currentFav' : ''}`}
 				>
-					<i className="fas fa-fw fa-star" />
+					<i className="fas fa-fw fa-star"/>
 					<span>{this.state.isFavorite ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}</span>
 				</button>
 			);
@@ -401,10 +405,10 @@ class KaraDetail extends Component<IProps, IState> {
 				<button
 					type="button"
 					className="btn btn-action"
-					onClick={() => this.setState({ showVideo: !this.state.showVideo })}
+					onClick={() => this.setState({showVideo: !this.state.showVideo})}
 				>
-					<i className="fas fa-fw fa-video" />
-					<span>{this.state.showVideo ? i18next.t('TOOLTIP_HIDEVIDEO'):i18next.t('TOOLTIP_SHOWVIDEO')}</span>
+					<i className="fas fa-fw fa-video"/>
+					<span>{this.state.showVideo ? i18next.t('TOOLTIP_HIDEVIDEO') : i18next.t('TOOLTIP_SHOWVIDEO')}</span>
 				</button>
 			);
 
@@ -414,57 +418,59 @@ class KaraDetail extends Component<IProps, IState> {
 					className="btn btn-action"
 					onClick={this.downloadMedia}
 				>
-					<i className="fas fa-fw fa-file-download" />
+					<i className="fas fa-fw fa-file-download"/>
 					<span>{i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}</span>
 				</button>
 			);
 
 			const video = this.state.showVideo ? (
-				<video src={isRemote() ?
-					`https://${data.repository}/downloads/medias/${data.mediafile}`:`/medias/${data.mediafile}`}
+				<video src={(isRemote() || data.download_status !== 'DOWNLOADED') ?
+					`https://${data.repository}/downloads/medias/${data.mediafile}` : `/medias/${data.mediafile}`}
 					   controls={true} autoPlay={true} loop={true} playsInline={true}
-					   className={`modal-video${this.props.scope === 'public' ? ' public':''}`} />
+					   onLoadStart={(e) => e.currentTarget.volume = 0.5}
+					   className={`modal-video${this.props.scope === 'public' ? ' public' : ''}`}/>
 			) : null;
 
 			const lyricsKara = data.subfile ? (<div className="lyricsKara detailsKaraLine">
 				{this.state.lyrics?.length > 0 ? <div className="boldDetails">
-					<i className="fas fa-fw fa-closed-captioning" />
+					<i className="fas fa-fw fa-closed-captioning"/>
 					{i18next.t('LYRICS')}
 				</div> : null}
 				{data.subfile && this.state.lyrics?.map((ligne, index) => {
 					return (
 						<React.Fragment key={index}>
 							{ligne}
-							<br />
+							<br/>
 						</React.Fragment>
 					);
 				})}
 			</div>) : null;
 
 			const header = (
-				<div className={`modal-header img-background${this.props.scope === 'public' ? ' fixed' : ''}`} style={{ ['--img' as any]: this.props.scope === 'admin' ? `url('${getPreviewLink(data)}')` : 'none' }}>
+				<div className={`modal-header img-background${this.props.scope === 'public' ? ' fixed' : ''}`}
+					 style={{['--img' as any]: this.props.scope === 'admin' ? `url('${getPreviewLink(data)}')` : 'none'}}>
 					<div className="modal-header-title">
 						{this.props.scope === 'public' ?
 							<button
 								className="transparent-btn"
 								type="button" onClick={this.props.closeOnPublic}>
-								<i className="fas fa-fw fa-arrow-left" />
+								<i className="fas fa-fw fa-arrow-left"/>
 							</button> : null}
 						<div className="modal-title-block">
 							<h4 className="modal-title">{data.title}</h4>
 							<h5 className="modal-series">
 								<InlineTag tag={data.series[0] || data.singers[0]}
-									scope={this.props.scope}
-									changeView={this.props.changeView}
-									karaLang={data.langs[0].name}
-									tagType={data.series[0] ? 1:2} />
+										   scope={this.props.scope}
+										   changeView={this.props.changeView}
+										   karaLang={data.langs[0].name}
+										   tagType={data.series[0] ? 1 : 2}/>
 							</h5>
 						</div>
 						{this.props.scope === 'admin' ?
 							<button
 								className="transparent-btn"
 								type="button" onClick={this.closeModal}>
-								<i className="fas fa-fw fa-times" />
+								<i className="fas fa-fw fa-times"/>
 							</button> : null}
 					</div>
 					<div className="tagConteneur">
