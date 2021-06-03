@@ -170,7 +170,7 @@
     "@types/lodash.transform": "^4.6.6",
     "@types/mocha": "^8.2.2",
     "@types/multer": "^1.4.5",
-    "@types/node": "^15.6.1",
+    "@types/node": "^14",
     "@types/pg": "^8.6.0",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/randomstring": "^1.1.6",
