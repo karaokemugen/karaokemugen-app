@@ -267,6 +267,9 @@ class PublicPage extends Component<IProps, IState> {
 	};
 
 	render() {
+		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 2 && this.props.route.location.pathname.includes('/public/search')) {
+			this.changeView('currentPlaylist');
+		}
 		return this.context?.globalState.settings.data.config.Frontend?.Mode === 0 ?
 			(<div
 				style={{
