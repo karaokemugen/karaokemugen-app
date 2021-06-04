@@ -1,22 +1,22 @@
 import './PlaylistPage.scss';
 
 import i18next from 'i18next';
-import React, { PropsWithoutRef, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import {DBPLC} from '../../../../src/types/database/playlist';
-import GlobalContext, {GlobalContextInterface} from '../../store/context';
-import {getSerieLanguage, getTagInLocale, sortTagByPriority} from '../../utils/kara';
-import {commandBackend, getSocket} from '../../utils/socket';
-import {tagTypes} from '../../utils/tagTypes';
+import { DBPLC } from '../../../../src/types/database/playlist';
+import GlobalContext, { GlobalContextInterface } from '../../store/context';
+import { getSerieLanguage, getTagInLocale, sortTagByPriority } from '../../utils/kara';
+import { commandBackend, getSocket } from '../../utils/socket';
+import { tagTypes } from '../../utils/tagTypes';
 import PlayerBox from './public/PlayerBox';
 
 async function fetchNextSongs(plaid: string) {
-	const {index} = await commandBackend('findPlayingSongInPlaylist', {plaid});
-	const data = await commandBackend('getPlaylistContents', {plaid, from: index+1, size: 15});
+	const { index } = await commandBackend('findPlayingSongInPlaylist', { plaid });
+	const data = await commandBackend('getPlaylistContents', { plaid, from: index + 1, size: 15 });
 	return data.content;
 }
 
-export default function PlaylistPage(props: PropsWithoutRef<any>) {
+export default function PlaylistPage() {
 	const context: GlobalContextInterface = useContext(GlobalContext);
 	const [playlist, setPlaylist] = useState<DBPLC[]>([]);
 	const updatePlaylist = (plaid?: string) => {
@@ -31,6 +31,7 @@ export default function PlaylistPage(props: PropsWithoutRef<any>) {
 		getSocket().on('playlistContentsUpdated', updatePlaylist);
 		getSocket().on('currentPlaylistUpdated', updatePlaylist);
 		document.getElementsByTagName('body')[0].className = 'no-scroll';
+		document.title = 'Chibi Playlist';
 		return () => {
 			getSocket().off('playlistContentsUpdated', updatePlaylist);
 			getSocket().off('currentPlaylistUpdated', updatePlaylist);
