@@ -30,6 +30,7 @@ export function parseArgs() {
 		.option('--noTestDownloads', 'Do not attempt to download songs during unit tests')
 		.option('--noAutoTest', 'Do not attempt to start tests automatically if --test is enabled')
 		.option('--sql', 'Traces SQL query at the debug log level')
+		.allowUnknownOption()
 		.parse();
 }
 
