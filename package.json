@@ -9,9 +9,11 @@
   "main": "dist/src/index.js",
   "scripts": {
     "start": "yarn build && electron .",
+	"startCI": "yarn build && electron --no-sandbox .",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "qstart": "electron .",
     "test": "electron . --test",
+	"testCI": "electron --no-sandbox . --test",
     "manualTest": "mocha --require ts-node/register --timeout 60000 test/*.ts",
     "build": "npx rimraf \"dist\" && tsc --build",
     "buildWorker": "esbuild zipWorker/zipWorker.ts --bundle --target=node14 --outfile=zipWorker/zipWorker.js --platform=node --external:electron",

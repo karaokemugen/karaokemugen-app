@@ -45,7 +45,7 @@ test:
     - export LANG=en_US
     - node --version
     - yarn ts-node util/extUnaccentPgcrypto
-    - yarn test --no-sandbox --debug
+    - yarn testCI --debug
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
       when: never
