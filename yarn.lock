@@ -454,6 +454,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/langs@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/langs/-/langs-2.0.0.tgz#a60ad0667c3266b5c54be1e39e602669dab31398"
+  integrity sha512-rr7tdKIa4l7gCrHcp5rmMx2YUu0Mc2nXt/ZPGPDkAUXobyRC04thW4ci4y8g5BdFR/h3oquQVmxC4aLmDp5ZCw==
+
 "@types/lodash.clonedeep@^4.5.6":
   version "4.5.6"
   resolved "https://registry.yarnpkg.com/@types/lodash.clonedeep/-/lodash.clonedeep-4.5.6.tgz#3b6c40a0affe0799a2ce823b440a6cf33571d32b"
