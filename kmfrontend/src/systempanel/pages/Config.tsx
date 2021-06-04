@@ -183,7 +183,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 								defaultValue={record.value}
 							/> :
 							((record.key.includes('System.Binaries') || record.key.includes('System.Path')) ?
-								(Array.isArray(record.value) ?
+								(Array.isArray(record.value) || record.key.includes('System.Path') ?
 									<FoldersElement keyModal={record.key} value={record.value} openDirectory={true}
 										onChange={(value) => this.saveSetting(record.key, value)} /> :
 									<FoldersElement keyModal={record.key} value={record.value} openFile={true}
