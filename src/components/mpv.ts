@@ -298,7 +298,12 @@ class Player {
 			(screens.displays[conf.Player.Screen] || screens.displays[0])
 			// Assume 1080p screen if systeminformation can't find the screen
 			: screens.displays[0]) || { currentResX: 1920 };
-		const targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
+		let targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
+		if (isNaN(targetResX)) {
+			logger.warn('Cannot get a target res, defaulting to 480 (25% of 1080p display)', {service: 'Player',
+				obj: {screen, PIPSize: [conf.Player.PIP.Size, typeof conf.Player.PIP.Size]}});
+			targetResX = 480;
+		}
 		const targetResolution = `${Math.round(targetResX)}x${Math.round(targetResX * 0.5625)}`;
 		// By default, center.
 		let positionX = 50;

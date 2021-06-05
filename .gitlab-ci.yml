@@ -1,4 +1,4 @@
-image: node:12-buster
+image: axelterizaki/karaokemugen-ci:node-14-phppg-chromium
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -45,7 +45,9 @@ test:
     - export LANG=en_US
     - node --version
     - yarn ts-node util/extUnaccentPgcrypto
-    - yarn test --debug
+    - export DISPLAY=':99.0'
+    - Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+    - yarn testCI --debug
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
       when: never
@@ -68,7 +70,7 @@ build-react:
     paths:
     - kmfrontend/build/
     - dist/
-    - gitWorker/
+    - zipWorker/
   script:
     - yarn build
     - yarn installkmfrontend

@@ -21,7 +21,7 @@ interface RepositoriesFormState {
 	consolidatePath?: string;
 	compareRepo?: string;
 	repositoriesValue: string[];
-	gitUpdateInProgress: boolean
+	zipUpdateInProgress: boolean
 }
 
 class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormState> {
@@ -37,25 +37,25 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 		this.state = {
 			consolidatePath: undefined,
 			repositoriesValue: null,
-			gitUpdateInProgress: false
+			zipUpdateInProgress: false
 		};
 	}
 
 	componentDidMount() {
-		getSocket().on('tasksUpdated', this.isGitUpdateInProgress);
+		getSocket().on('tasksUpdated', this.isZipUpdateInProgress);
 	}
 
 	componentWillUnmount() {
-		getSocket().off('tasksUpdated', this.isGitUpdateInProgress);
+		getSocket().off('tasksUpdated', this.isZipUpdateInProgress);
 	}
 
-	isGitUpdateInProgress = (tasks: Array<TaskItem>) => {
+	isZipUpdateInProgress = (tasks: Array<TaskItem>) => {
 		for (const i in tasks) {
-			if (tasks[i].text === 'UPDATING_GIT_REPO') {
-				this.setState({ gitUpdateInProgress: true });
+			if (['EXTRACTING_ZIP', 'DOWNLOADING_ZIP'].includes(tasks[i].text)) {
+				this.setState({ zipUpdateInProgress: true });
 				clearTimeout(this.timeout);
 				this.timeout = setTimeout(() => {
-					this.setState({ gitUpdateInProgress: false });
+					this.setState({ zipUpdateInProgress: false });
 				}, 5000);
 			}
 		}
@@ -72,7 +72,6 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			Online: values.Online,
 			Enabled: values.Enabled,
 			SendStats: values.SendStats,
-			Git: values.Git,
 			BaseDir: values.BaseDir,
 			AutoMediaDownloads: values.AutoMediaDownloads,
 			MaintainerMode: values.MaintainerMode,
@@ -86,7 +85,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 	setDefaultFolders = (): void => {
 		if (!this.props.repository.Name) {
 			const folders: {PathMedias?: string[], BaseDir?: string } = {};
-			if (this.formRef.current?.getFieldValue('BaseDir')?.length === 0) folders.BaseDir = `repo/${this.formRef.current?.getFieldValue('Name')}/git`;
+			if (this.formRef.current?.getFieldValue('BaseDir')?.length === 0) folders.BaseDir = `repo/${this.formRef.current?.getFieldValue('Name')}/json`;
 			if (this.formRef.current?.getFieldValue('PathMedias')?.length === 0) folders.PathMedias = [`repo/${this.formRef.current?.getFieldValue('Name')}/medias`];
 			this.formRef.current?.setFieldsValue(folders);
 		}
@@ -105,7 +104,6 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					SendStats: this.props.repository?.SendStats,
 					AutoMediaDownloads: this.props.repository?.AutoMediaDownloads,
 					MaintainerMode: this.props.repository?.MaintainerMode,
-					Git: this.props.repository?.Git,
 					BaseDir: this.props.repository?.BaseDir,
 					PathMedias: this.props.repository?.Path.Medias,
 				}}
@@ -219,7 +217,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					<Button
 						type='primary'
 						htmlType='submit'
-						disabled={this.state.gitUpdateInProgress}
+						disabled={this.state.zipUpdateInProgress}
 					>
 						{i18next.t('SUBMIT')}
 					</Button>
@@ -252,7 +250,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 									<div>
 										<Button
 											type='primary'
-											disabled={this.state.gitUpdateInProgress}
+											disabled={this.state.zipUpdateInProgress}
 											onClick={() => this.props.compareLyrics(this.state.compareRepo)}
 										>
 											{i18next.t('REPOSITORIES.COMPARE_BUTTON')}
@@ -279,7 +277,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							<Button
 								type="primary"
 								danger
-								disabled={this.state.gitUpdateInProgress}
+								disabled={this.state.zipUpdateInProgress}
 								onClick={() => this.props.consolidate(this.state.consolidatePath)}
 							>
 								{i18next.t('REPOSITORIES.CONSOLIDATE_BUTTON')}

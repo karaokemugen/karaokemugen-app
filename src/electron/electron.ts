@@ -28,7 +28,7 @@ import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
-export let gitWorker: Electron.BrowserWindow;
+export let zipWorker: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
 export let chibiPlaylistWindow: Electron.BrowserWindow;
 
@@ -54,16 +54,19 @@ export function startElectron() {
 			const args = req.url.substr(5).split('/');
 			handleProtocol(args);
 		});
-		createGitWorker();
-		await initElectronWindow();
+		createZipWorker();
+		if (!getState().opt.cli) await initElectronWindow();
 		on('KMReady', async () => {
-			win.loadURL(await welcomeToYoukousoKaraokeMugen());
-			if (!getState().forceDisableAppUpdate) initAutoUpdate();
-			if (getConfig().GUI.ChibiPlayer.Enabled) {
-				updateChibiPlayerWindow(true);
-			}
-			if (getConfig().GUI.ChibiPlaylist.Enabled) {
-				updateChibiPlaylistWindow(true);
+			const state = getState();
+			if (!state.opt.cli) {
+				win.loadURL(await welcomeToYoukousoKaraokeMugen());
+				if (!state.forceDisableAppUpdate) initAutoUpdate();
+				if (getConfig().GUI.ChibiPlayer.Enabled) {
+					updateChibiPlayerWindow(true);
+				}
+				if (getConfig().GUI.ChibiPlaylist.Enabled) {
+					updateChibiPlaylistWindow(true);
+				}
 			}
 			initDone = true;
 		});
@@ -74,6 +77,14 @@ export function startElectron() {
 				logger.error('Error during launch', {service: 'Launcher', obj: err});
 			}
 		});
+		if (getState().opt.cli) {
+			try {
+				await main();
+			} catch(err) {
+				logger.error('Error during launch', {service: 'Launcher', obj: err});
+				throw err;
+			}
+		}
 		ipcMain.on('getSecurityCode', (event, _eventData) => {
 			event.sender.send('getSecurityCodeResponse', getState().securityCode);
 		});
@@ -124,7 +135,7 @@ export function startElectron() {
 		event.sender.send('get-file-paths-response', (await dialog.showOpenDialog(options)).filePaths);
 	});
 
-	Menu.setApplicationMenu(null);
+	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
 }
 
 export async function handleProtocol(args: string[]) {
@@ -150,8 +161,7 @@ export async function handleProtocol(args: string[]) {
 							SendStats: false,
 							AutoMediaDownloads: 'updateOnly',
 							MaintainerMode: false,
-							Git: null,
-							BaseDir: `repos/${repoName}`,
+							BaseDir: `repos/${repoName}/json`,
 							Path: {
 								Medias: [`repos/${repoName}/medias`]
 							}
@@ -243,7 +253,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 export function applyMenu() {
 	initMenu();
 	const menu = Menu.buildFromTemplate(getMenu());
-	win.setMenu(menu);
+	process.platform === 'darwin' ? Menu.setApplicationMenu(menu):win.setMenu(menu);
 }
 
 async function initElectronWindow() {
@@ -251,28 +261,44 @@ async function initElectronWindow() {
 	applyMenu();
 }
 
-export async function createGitWorker() {
-	gitWorker = new BrowserWindow({
+export async function createZipWorker() {
+	zipWorker = new BrowserWindow({
 		show: getState().opt.debug,
 		webPreferences: {
-			nodeIntegration: true
+			nodeIntegration: true,
+			contextIsolation: false
 		}
 	});
-	gitWorker.loadURL(`file://${resolve(getState().resourcePath, 'gitWorker/index.html')}`);
+	zipWorker.loadURL(`file://${resolve(getState().resourcePath, 'zipWorker/index.html')}`);
+	zipWorker.setMenu(Menu.buildFromTemplate([{
+		label: i18next.t('MENU_VIEW'),
+		submenu: [
+			{ label: i18next.t('MENU_VIEW_RELOAD'), role: 'reload' },
+			{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forceReload' },
+			{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggleDevTools' },
+			{ type: 'separator' },
+			{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetZoom' },
+			{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomIn' },
+			{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomOut' },
+			{ type: 'separator' },
+			{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
+		]
+	}]));
 }
 
 async function createWindow() {
 	// Create the browser window
 	const state = getState();
 	win = new BrowserWindow({
-		width: 1280,
-		height: 720,
+		width: 1400,
+		height: 900,
 		backgroundColor: '#36393f',
 		show: false,
 		icon: resolve(state.resourcePath, 'build/icon.png'),
 		webPreferences: {
-			nodeIntegration: true
-		}
+			nodeIntegration: true,
+			contextIsolation: false,
+		},
 	});
 	// and load the index.html of the app.
 	if (initDone) {
@@ -297,7 +323,8 @@ async function createWindow() {
 	win.on('closed', () => {
 		win = null;
 		if (chibiPlayerWindow) chibiPlayerWindow.destroy();
-		if (gitWorker) gitWorker.destroy();
+		if (chibiPlaylistWindow) chibiPlaylistWindow.destroy();
+		if (zipWorker) zipWorker.destroy();
 	});
 }
 
@@ -333,7 +360,8 @@ export async function updateChibiPlayerWindow(show: boolean) {
 			alwaysOnTop: getConfig().GUI.ChibiPlayer.AlwaysOnTop,
 			backgroundColor: '#36393f',
 			webPreferences: {
-				nodeIntegration: true
+				nodeIntegration: true,
+				contextIsolation: false
 			},
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
@@ -372,7 +400,8 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 			show: false,
 			backgroundColor: '#36393f',
 			webPreferences: {
-				nodeIntegration: true
+				nodeIntegration: true,
+				contextIsolation: false
 			},
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});

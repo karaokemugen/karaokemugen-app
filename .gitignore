@@ -51,7 +51,6 @@ postgrator.json
 .env
 .eslintcache
 
-# Git worker
-
-gitWorker/gitWorker.js
-gitWorker/gitWorker.js.map
+# zip worker
+zipWorker/zipWorker.js
+zipWorker/zipWorker.js.map

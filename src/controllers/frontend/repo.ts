@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,deleteMedias,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepoFreeSpace, getRepos, removeRepo, updateAllGitRepos } from '../../services/repo';
+import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,deleteMedias,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepoFreeSpace, getRepos, removeRepo, updateAllZipRepos } from '../../services/repo';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -160,7 +160,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route('updateAllGitRepos', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			updateAllGitRepos();
+			updateAllZipRepos();
 		} catch(err) {
 			errMessage(err);
 		}

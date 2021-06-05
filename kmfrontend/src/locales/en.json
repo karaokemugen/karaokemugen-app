@@ -1128,7 +1128,9 @@
         "RESOLVING_DELTAS" : "Resolving deltas",
         "DECOMPRESSING": "Compressing objects",
         "ANALYZING_WORKDIR": "Analyzing workdir",
-		"UPDATING_GIT_REPO": "Updating repository {{data}}"
+		"UPDATING_GIT_REPO": "Updating repository {{data}}",
+		"DOWNLOADING_ZIP": "Downloading database",
+		"EXTRACTING_ZIP": "Extracting database"
 	},
 	"ERROR_CODES": {
 		"WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",

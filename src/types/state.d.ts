@@ -1,4 +1,5 @@
 import {RemoteFailure, RemoteSuccess} from '../lib/types/remote';
+import {BinariesConfig} from './binChecker';
 import { PlayerState } from './player';
 
 export interface Version {
@@ -53,15 +54,9 @@ export interface State {
 	singlePlay?: boolean,
 	version?: Version,
 	frontendPort?: number,
-	binPath?: {
-		mpv?: string,
-		ffmpeg?: string,
-		postgres?: string,
-		postgres_ctl?: string,
-		postgres_dump?: string,
-		postgres_client?: string
-	},
+	binPath?: Partial<BinariesConfig>,
 	opt?: {
+		cli?: boolean,
 		generateDB?: boolean,
 		reset?: boolean,
 		noBaseCheck?: boolean,

@@ -10,7 +10,7 @@ import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
-import {createGitWorker, focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
+import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {
 	configureLocale,
@@ -27,7 +27,7 @@ import {asyncCheckOrMkdir, asyncExists} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
-import { migrateReposToGit } from './services/repo';
+import { migrateReposToZip } from './services/repo';
 import {Config} from './types/config';
 import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
@@ -56,11 +56,11 @@ process.on('unhandledRejection', (error: Error) => {
 });
 
 process.on('SIGINT', () => {
-	exit('SIGINT');
+	exit(0);
 });
 
 process.on('SIGTERM', () => {
-	exit('SIGTERM');
+	exit(0);
 });
 
 // CTRL+C for Windows :
@@ -72,7 +72,7 @@ if (process.platform === 'win32' ) {
 	});
 
 	rl.on('SIGINT', () => {
-		exit('SIGINT');
+		exit(0);
 	});
 }
 
@@ -82,51 +82,42 @@ on('initError', (err: Error) => {
 });
 
 // Main app begins here.
-// Testing if we're in a packaged version of KM or not.
-// First, this is a test for unpacked electron mode.
 let appPath: string;
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
 
-if (process.versions.electron) {
-	if (app.isPackaged) {
-		// Starting Electron from the app's executable
-		appPath = process.platform === 'darwin'
-			? resolve(app.getAppPath(), '../../../../')
-			: resolve(app.getAppPath(), '../../');
-		resourcePath = process.resourcesPath;
-	} else {
-		if (app.getAppPath().endsWith('.asar')) {
-			// Starting Electron from an asar directly (electron /path/to/app.asar)
-			appPath = dirname(app.getAppPath());
-			resourcePath = appPath;
-		} else {
-			// Starting Electron from source folder
-			appPath = app.getAppPath();
-			resourcePath = appPath;
-		}
-	}
+// Testing if we're in a packaged version of KM or not.
+// First, this is a test for unpacked electron mode.
+if (app.isPackaged) {
+	// Starting Electron from the app's executable
+	appPath = process.platform === 'darwin'
+		? resolve(app.getAppPath(), '../../../../')
+		: resolve(app.getAppPath(), '../../');
+	resourcePath = process.resourcesPath;
 } else {
-	// Non-electron environments (ts-node, node)
-	appPath = process.cwd();
-	resourcePath = appPath;
+	if (app.getAppPath().endsWith('.asar')) {
+		// Starting Electron from an asar directly (electron /path/to/app.asar)
+		appPath = dirname(app.getAppPath());
+		resourcePath = appPath;
+	} else {
+		// Starting Electron from source folder
+		appPath = app.getAppPath();
+		resourcePath = appPath;
+	}
 }
 
 // DataPath is by default appPath + app. This is default when running from source
 const dataPath = existsSync(resolve(appPath, 'portable'))
 	? resolve(appPath, 'app/')
 	// Rewriting dataPath to point to user home directory
-	: app
-		// With Electron we get the handy app.getPath()
-		? resolve(app.getPath('home'), 'KaraokeMugen')
-		// process.env.HOMEPATH is broken in Windows as it does not reference the drive letter, so if you installed KM on D:\KM, it'll point to D:\Users\your_user\KaraokeMugen. Deal with it.
-		: resolve(process.env.HOME || process.env.HOMEPATH, 'KaraokeMugen');
+	// With Electron we get the handy app.getPath()
+	: resolve(app.getPath('home'), 'KaraokeMugen');
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
 if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
 
-setState({appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
+setState({appPath, dataPath, resourcePath});
 
 process.env['NODE_ENV'] = 'production'; // Default
 
@@ -156,39 +147,28 @@ if (existsSync(SHAFile)) {
 // Commander call to get everything setup in argv
 const argv = parseArgs();
 
-if (app) {
-	// Acquiring lock to prevent two KMs to run at the same time.
-	// Also allows to get us the files we need.
-	if (!app.requestSingleInstanceLock()) process.exit();
-	app.on('second-instance', (_event, args) => {
-		if (args[args.length-1] === '--kill') {
-			exit(0);
-		} else {
-			focusWindow();
-			const file = args[args.length-1];
-			if (file && file !== '.' && !file.startsWith('--')) {
-				file.startsWith('km://')
-					? handleProtocol(file.substr(5).split('/'))
-					: handleFile(file);
-			}
-		}
-	});
-	// Redefining quit function
-	app.on('will-quit', () => {
+// Acquiring lock to prevent two KMs to run at the same time.
+// Also allows to get us the files we need.
+if (!app.requestSingleInstanceLock()) process.exit();
+app.on('second-instance', (_event, args) => {
+	if (args[args.length-1] === '--kill') {
 		exit(0);
-	});
-}
+	} else {
+		focusWindow();
+		const file = args[args.length-1];
+		if (file && file !== '.' && !file.startsWith('--')) {
+			file.startsWith('km://')
+				? handleProtocol(file.substr(5).split('/'))
+				: handleFile(file);
+		}
+	}
+});
+// Redefining quit function
+app.on('will-quit', () => {
+	exit(0);
+});
 
-if (app && !argv.opts().cli) {
-	startElectron();
-} else {
-	// This is in case we're running with yarn startNoElectron or with --cli or --help
-	// If we're running under Electron and --cli is used, still create the git Worker once electron is ready.
-	if (app) app.on('ready', createGitWorker);
-	preInit()
-		.then(() => main())
-		.catch(err => initError(err));
-}
+startElectron();
 
 export async function preInit() {
 	await configureLocale();
@@ -208,9 +188,7 @@ export async function preInit() {
 	logger.debug(`Locale : ${state.defaultLocale}`, {service: 'Launcher'});
 	logger.debug(`OS : ${state.os}`, {service: 'Launcher'});
 	await initConfig(argv);
-	/**
-	 * Test if network ports are available
-	 */
+	// Test if network ports are available
 	await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 }
 
@@ -219,7 +197,7 @@ export async function main() {
 	// Set version number
 	const state = getState();
 	console.log(chalk.white(logo));
-	console.log('Karaoke Player & Manager - http://karaokes.moe');
+	console.log('Karaoke Player & Manager - https://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} "${chalk.bold.green(state.version.name)}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
 	console.log('================================================================================');
 	const config = getConfig();
@@ -231,7 +209,7 @@ export async function main() {
 	logger.debug('Initial state', {service: 'Launcher', obj: state});
 
 	// Migrate repos to git
-	await migrateReposToGit();
+	await migrateReposToZip();
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
@@ -247,9 +225,7 @@ export async function main() {
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
 	await copy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
 
-	/**
-	 * Gentlemen, start your engines.
-	 */
+	// Gentlemen, start your engines.
 	try {
 		await initEngine();
 	} catch(err) {
@@ -257,13 +233,11 @@ export async function main() {
 		sentry.error(err);
 		console.log(err);
 		errorStep(i18n.t('ERROR_UNKNOWN'));
-		if (!app || argv.opts().cli) exit(1);
+		if (argv.opts().cli) exit(1);
 	}
 }
 
-/**
- * Checking if application paths exist.
- */
+/* Checking if application paths exist. **/
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory

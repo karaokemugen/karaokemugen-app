@@ -194,6 +194,11 @@ export interface Config {
 				Windows?: string,
 				OSX?: string,
 				Linux?: string
+			},
+			patch: {
+				Windows?: string,
+				OSX?: string,
+				Linux?: string
 			}
 		},
 		Repositories: Repository[]

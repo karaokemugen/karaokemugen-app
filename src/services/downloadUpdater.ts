@@ -147,7 +147,7 @@ export async function updateAllMedias() {
 	await checkDownloadStatus();
 }
 
-async function updateMedias(repo: string): Promise<boolean> {
+export async function updateMedias(repo: string): Promise<boolean> {
 	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
 	updateRunning = true;
 	const task = new Task({

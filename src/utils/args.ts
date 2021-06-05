@@ -30,6 +30,7 @@ export function parseArgs() {
 		.option('--noTestDownloads', 'Do not attempt to download songs during unit tests')
 		.option('--noAutoTest', 'Do not attempt to start tests automatically if --test is enabled')
 		.option('--sql', 'Traces SQL query at the debug log level')
+		.allowUnknownOption()
 		.parse();
 }
 
@@ -37,6 +38,10 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 	if (argv.opts().sql) {
 		logger.info('SQL queries will be logged', {service: 'Launcher'});
 		setState({opt: {sql: true}});
+	}
+	if (argv.opts().cli) {
+		logger.info('CLI mode activated', {service: 'Launcher'});
+		setState({opt: {cli: true}});
 	}
 	if (argv.opts().debug) {
 		logger.info('Debug messages enabled on console', {service: 'Launcher'});

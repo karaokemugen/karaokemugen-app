@@ -43,14 +43,16 @@ class PlayerBox extends Component<IProps, unknown> {
 						{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
 					</a> : null
 				}
-				<a className="blue"
-					onClick={event => {
-						event.preventDefault();
-						this.props.changeView('search');
-					}}>
-					<i className="fas fa-fw fa-search fa-2x" />
-					{i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH_SHORT')}
-				</a>
+				{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 ?
+					<a className="blue"
+						onClick={event => {
+							event.preventDefault();
+							this.props.changeView('search');
+						}}>
+						<i className="fas fa-fw fa-search fa-2x" />
+						{i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH_SHORT')}
+					</a> : null
+				}
 			</div>
 		);
 	}

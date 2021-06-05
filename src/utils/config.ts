@@ -220,6 +220,7 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	const binariesPath = configuredBinariesForSystem(config);
 	const requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
+	requiredBinariesChecks.push(asyncRequired(binariesPath.patch));
 	if (config.System.Database.bundledPostgresBinary) {
 		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
 		if (process.platform === 'win32') {
@@ -247,6 +248,7 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Windows),
 				mpv: resolve(getState().appPath, config.System.Binaries.Player.Windows),
 				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Windows),
+				patch: resolve(getState().appPath, config.System.Binaries.patch.Windows),
 				postgres_ctl: 'pg_ctl.exe',
 				postgres_dump: 'pg_dump.exe',
 				postgres_client: 'psql.exe'
@@ -256,6 +258,7 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.OSX),
 				mpv: resolve(getState().appPath, config.System.Binaries.Player.OSX),
 				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.OSX),
+				patch: resolve(getState().appPath, config.System.Binaries.patch.OSX),
 				postgres_ctl: 'pg_ctl',
 				postgres_dump: 'pg_dump',
 				postgres_client: 'psql'
@@ -265,6 +268,7 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
 				mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
 				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
+				patch: resolve(getState().appPath, config.System.Binaries.patch.Linux),
 				postgres_ctl: 'pg_ctl',
 				postgres_dump: 'pg_dump',
 				postgres_client: 'psql'
@@ -279,6 +283,7 @@ async function binMissing(binariesPath: any, err: string) {
 	logger.error(`ffmpeg: ${binariesPath.ffmpeg}`, {service: 'BinCheck'});
 	logger.error(`mpv: ${binariesPath.mpv}`, {service: 'BinCheck'});
 	logger.error(`postgres: ${binariesPath.postgres}`, {service: 'BinCheck'});
+	logger.error(`patch: ${binariesPath.patch}`, {service: 'BinCheck'});
 	logger.error('Exiting...', {service: 'BinCheck'});
 	const error = `${i18next.t('MISSING_BINARIES.MESSAGE')}\n\n${err}`;
 	console.log(error);

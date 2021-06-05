@@ -419,7 +419,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									</div>
 									<div className="contentDivMobileSerie">
 										<span className="tag inline green" title={getTagInLocale(kara.songtypes[0], this.props.i18nTag)}>
-											{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}
+											{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name} {kara.songorder}
 										</span>
 										{karaSerieOrSingers}
 									</div>

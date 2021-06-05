@@ -21,6 +21,7 @@ import { getKaras } from './kara';
 import { getRepoFreeSpace } from './repo';
 
 let downloaderReady = false;
+let downloadQueueStatus: QueueStatus = 'stopped';
 
 const downloadQueueOptions = {
 	id: 'uuid',
@@ -31,6 +32,10 @@ const downloadQueueOptions = {
 let dq: any;
 let downloadTask: Task;
 let downloadedKIDs = new Set();
+
+export function getDownloadQueueStatus() {
+	return downloadQueueStatus;
+}
 
 export function getDownloadQueue() {
 	return dq;
@@ -43,7 +48,7 @@ function initTask() {
 }
 
 async function emitQueueStatus(status: QueueStatus) {
-	emit('downloadQueueStatus', status);
+	downloadQueueStatus = status;
 	emitWS('downloadQueueStatus', await getDownloads());
 }
 

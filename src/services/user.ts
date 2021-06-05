@@ -522,10 +522,10 @@ async function cleanupAvatars() {
 		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPathAvatars(), file);
 			try {
-				logger.debug(`Deleting old file ${fullFile}`, {service: 'Users'});
+				logger.debug(`Deleting old file ${fullFile}`, {service: 'User'});
 				await fs.unlink(fullFile);
 			} catch(err) {
-				logger.warn(`Failed deleting old file ${fullFile}`, {service: 'Users', obj: err});
+				logger.warn(`Failed deleting old file ${fullFile}`, {service: 'User', obj: err});
 				//Non-fatal
 			}
 		}
@@ -571,7 +571,8 @@ export async function generateAdminPassword(): Promise<string> {
 		{
 			password: adminPassword,
 			nickname: 'Dummy Plug System',
-			type: 0
+			type: 0,
+			flag_sendstats: false
 		},
 		null,
 		'admin');

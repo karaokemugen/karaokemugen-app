@@ -28,7 +28,7 @@ import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem} from '../services/playlist';
 import { initRemote } from '../services/remote';
-import { checkDownloadStatus, updateAllGitRepos } from '../services/repo';
+import { checkDownloadStatus, updateAllZipRepos } from '../services/repo';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
@@ -109,7 +109,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_BASEUPDATE'));
-			await updateAllGitRepos();
+			await updateAllZipRepos();
 			logger.info('Done updating karaoke base', {service: 'Engine'});
 			await exit(0);
 		} catch (err) {
@@ -142,7 +142,7 @@ export async function initEngine() {
 		if (port !== conf.Frontend.Port) {
 			setConfig({Frontend: {Port: port}});
 			// Reinit menu since we switched ports.
-			if (app) applyMenu();
+			applyMenu();
 		}
 		if (!state.isDemo && internet) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
@@ -159,7 +159,7 @@ export async function initEngine() {
 			sentry.error(err, 'Warning');
 		}
 		try {
-			if (app) registerShortcuts();
+			registerShortcuts();
 			initStep(i18n.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [
 				initBlacklistSystem(),
@@ -177,7 +177,7 @@ export async function initEngine() {
 			const ready = Math.floor(Math.random() * 10) >= 9
 				? 'LADY'
 				: 'READY';
-			if (!state.isTest && !state.electron) await welcomeToYoukousoKaraokeMugen();
+			if (!state.isTest && state.opt.cli) await welcomeToYoukousoKaraokeMugen();
 			// This is done later because it's not important.
 			postMigrationTasks(migrations, didGeneration);
 			if (state.args.length > 0) {
@@ -192,7 +192,7 @@ export async function initEngine() {
 			}
 			// If we are testing, we're awaiting updateAllGitRepos
 			if (state.isTest) {
-				await updateAllGitRepos();
+				await updateAllZipRepos();
 			}
 			if (state.isTest && !state.opt.noAutoTest) {
 				runTests();
@@ -207,7 +207,7 @@ export async function initEngine() {
 				}
 			}
 			if (!state.isTest && !state.isDemo && !conf.App.FirstRun && internet) {
-				updateAllGitRepos();
+				updateAllZipRepos();
 			}
 			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getKaras({
 				q: 'm:downloaded'
@@ -231,7 +231,7 @@ export async function initEngine() {
 	}
 }
 
-export async function exit(rc: string | number = 0) {
+export async function exit(rc = 0) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
@@ -271,14 +271,10 @@ export async function exit(rc: string | number = 0) {
 	}
 }
 
-function mataNe(rc: string | number) {
+function mataNe(rc: number) {
 	console.log('\nMata ne !\n');
-	if (!app) {
-		process.exit(+rc);
-	} else {
-		unregisterShortcuts();
-		app.exit();
-	}
+	unregisterShortcuts();
+	app.exit(rc);
 }
 
 export function shutdown() {

@@ -68,7 +68,7 @@ describe('Tags', () => {
 		tag1.tid = data.message.data.tid;
 		tag1.tagfile = data.message.data.tagfile;
 		// Verify the file exists
-		const tagPath = resolve(repoPath, tag1.repository, 'tags/', tag1.tagfile);
+		const tagPath = resolve(repoPath, tag1.repository, 'json/tags/', tag1.tagfile);
 		const tagFile = readFileSync(tagPath, 'utf-8');
 		const tagData = JSON.parse(tagFile);
 		testTagFile(tagData, tag1);
@@ -80,7 +80,7 @@ describe('Tags', () => {
 		tag2.tid = data.message.data.tid;
 		tag2.tagfile = data.message.data.tagfile;
 		// Verify the file exists
-		const tagFile = readFileSync(resolve(repoPath, tag2.repository, 'tags/', tag2.tagfile), 'utf-8');
+		const tagFile = readFileSync(resolve(repoPath, tag2.repository, 'json/tags/', tag2.tagfile), 'utf-8');
 		const tagData = JSON.parse(tagFile);
 		testTagFile(tagData, tag2);
 	});
