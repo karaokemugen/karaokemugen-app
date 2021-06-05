@@ -20,6 +20,8 @@ import { getState } from '../utils/state';
 import { getKaras } from './kara';
 import { getRepoFreeSpace } from './repo';
 
+export const downloadStatuses = ['MISSING', 'DOWNLOADING', 'DOWNLOADED'];
+
 let downloaderReady = false;
 let downloadQueueStatus: QueueStatus = 'stopped';
 

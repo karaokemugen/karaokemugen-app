@@ -24,6 +24,7 @@ import { emitWS } from '../lib/utils/ws';
 import {BLC, BLCSet, BLCSetFile} from '../types/blacklist';
 import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
+import { downloadStatuses } from './download';
 import {formatKaraList, getKara} from './kara';
 import {getTag, getTags} from './tag';
 
@@ -229,7 +230,10 @@ export async function addBlacklistCriteria(BLCs: BLC[], set_id: number) {
 		// Placed to true to check for multiples occurrences of the same type
 		const timeBLC = [false, false];
 		for (const blc of blcList) {
-			if (blc.type < 0 || blc.type > 1005 || blc.type === 1000) throw {code: 400, msg: `Incorrect BLC type (${blc.type})`};
+			if (blc.type < 0 || blc.type > 1006 || blc.type === 1000) throw {code: 400, msg: `Incorrect BLC type (${blc.type})`};
+			if (blc.type === 1006) {
+				if (!downloadStatuses.includes(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have either of these values : ${downloadStatuses.toString()}`};
+			}
 			if (blc.type === 1001 || (blc.type >= 1 && blc.type < 1000)) {
 				if (!new RegExp(uuidRegexp).test(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`};
 			}

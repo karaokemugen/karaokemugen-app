@@ -122,6 +122,12 @@ UNION
 	WHERE blc.type = 1005
 	AND   kt.fk_kid NOT IN (select fk_kid from whitelist)
 	AND   fk_id_blc_set = $1
+UNION
+	SELECT k.pk_kid, now() ,'DOWNLOAD_STATUS:' || blc.value, blc.pk_id_blcriteria
+	FROM blacklist_criteria blc
+	INNER JOIN kara k ON k.download_status = blc.value
+	WHERE blc.type = 1006
+	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 ON CONFLICT DO NOTHING;
 `;
 
