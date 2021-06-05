@@ -76,7 +76,8 @@
 		"ADD": "Créer une nouvelle liste",
 		"AUTOMIX": "Créer un AutoMix",
 		"IMPORT": "Importer une liste",
-		"SHUFFLE": "Mélanger / Trier..."
+		"SHUFFLE": "Mélanger / Trier...",
+		"DOWNLOAD_ALL": "Télécharger tout"
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Commandes sur une chanson",
@@ -1031,6 +1032,7 @@
 		"BLCTYPE_1003": "Plus court que (s)",
 		"BLCTYPE_1004": "Titre contenant",
 		"BLCTYPE_1005": "Tag contenant",
+		"BLCTYPE_1006": "Cacher les chansons indisponibles hors ligne",
 		"BLCTYPE_0": "Année",
 		"BLCTYPE_1": "Série",
 		"BLCTYPE_2": "Chanteur",

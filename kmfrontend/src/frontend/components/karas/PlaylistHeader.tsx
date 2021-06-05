@@ -77,6 +77,7 @@ interface IProps {
 	acceptCheckedKara: () => void;
 	toggleSearchMenu?: () => void;
 	addRandomKaras: () => void;
+	downloadAllMedias: () => void;
 }
 
 interface IState {
@@ -590,7 +591,19 @@ class PlaylistHeader extends Component<IProps, IState> {
 													{i18next.t(this.props.plaid === nonStandardPlaylists.blc ? 'BLC.EXPORT' :
 														(this.props.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'))}
 												</a>
-											</li> : ''
+											</li> : null
+									}
+									{
+										this.props.plaid !== nonStandardPlaylists.library && this.props.plaid !== nonStandardPlaylists.blc ?
+											<li>
+												<a href="#" onClick={() => {
+													this.togglePlaylistCommands();
+													this.props.downloadAllMedias();
+												}}>
+													<i className="fas fa-fw fa-cloud-download-alt" />
+													{i18next.t('ADVANCED.DOWNLOAD_ALL')}
+												</a>
+											</li> : null
 									}
 									<hr />
 									<li>

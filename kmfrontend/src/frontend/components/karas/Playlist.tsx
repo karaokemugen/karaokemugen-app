@@ -10,6 +10,7 @@ import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, Infinite
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBBlacklist, DBBLC } from '../../../../../src/types/database/blacklist';
+import { KaraDownloadRequest } from '../../../../../src/types/download';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import { setCurrentBlSet } from '../../../store/actions/frontendContext';
 import { setSettings } from '../../../store/actions/settings';
@@ -829,6 +830,22 @@ class Playlist extends Component<IProps, IState> {
 		this.setState({selectAllKarasChecked: false});
 	};
 
+	downloadAllMedias = async () => {
+		const response = await commandBackend(this.getPlaylistUrl(), {plaid: this.state.plaid});
+		const karaList: KaraDownloadRequest[] = response.content
+			.filter(kara => kara.download_status === 'MISSING')
+			.map((kara: KaraElement) => {
+				return {
+					mediafile: kara.mediafile,
+					kid: kara.kid,
+					size: kara.mediasize,
+					name: buildKaraTitle(this.context.globalState.settings.data, kara, true) as string,
+					repository: kara.repository
+				};
+			});
+		if (karaList.length > 0) commandBackend('addDownloads', {downloads: karaList}).catch(() => { });
+	}
+
 	onChangeTags = (type: number | string, value: string) => {
 		const searchCriteria = type === 0 ? 'year' : 'tag';
 		const stringValue = (value && searchCriteria === 'tag') ? `${value}~${type}` : value;
@@ -955,6 +972,7 @@ class Playlist extends Component<IProps, IState> {
 					playlistDidUpdate={this.playlistDidUpdate}
 					checkedKaras={(this.state.data as KaraList)?.content?.filter(a => a?.checked)}
 					addRandomKaras={this.addRandomKaras}
+					downloadAllMedias={this.downloadAllMedias}
 				/> : null
 			}
 			<div

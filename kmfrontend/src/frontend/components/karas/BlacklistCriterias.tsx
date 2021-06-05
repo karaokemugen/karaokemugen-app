@@ -15,6 +15,7 @@ const listTypeBlc = [
 	'BLCTYPE_1003',
 	'BLCTYPE_1004',
 	'BLCTYPE_1005',
+	'BLCTYPE_1006',
 	'BLCTYPE_0',
 	'BLCTYPE_1',
 	'BLCTYPE_2',
@@ -57,7 +58,7 @@ class BlacklistCriterias extends Component<IProps, IState> {
 
 	addBlacklistCriteria = () => {
 		commandBackend('createBLC', {
-			blcs: [{ type: this.state.bcType, value: this.state.bcVal }],
+			blcs: [{ type: this.state.bcType, value: this.state.bcType === 1006 ? 'MISSING' : this.state.bcVal }],
 			set_id: this.props.blSet.blc_set_id
 		});
 	};
@@ -83,14 +84,18 @@ class BlacklistCriterias extends Component<IProps, IState> {
 						}
 					</select>
 					<div className="bcValContainer">
-						{tagsFiltered.length > 0 ?
-							<Autocomplete value={this.state.bcVal}
-								options={tagsFiltered} onChange={value => this.setState({ bcVal: value })} /> :
-							<input type="text" value={this.state.bcVal} placeholder={i18next.t('BLC.ADD_BLC')}
-								className="input-blc" onChange={e => this.setState({ bcVal: e.target.value })}
-								onKeyPress={e => {
-									if (e.key === 'Enter') this.addBlacklistCriteria();
-								}} />
+						{this.state.bcType === 1006 ?
+							<input type="text" placeholder={i18next.t('BLACKLIST.BLCTYPE_1006')}
+								className="input-blc" disabled
+							 /> :
+							tagsFiltered.length > 0 ?
+								<Autocomplete value={this.state.bcVal}
+									options={tagsFiltered} onChange={value => this.setState({ bcVal: value })} /> :
+								<input type="text" value={this.state.bcVal} placeholder={i18next.t('BLC.ADD_BLC')}
+									className="input-blc" onChange={e => this.setState({ bcVal: e.target.value })}
+									onKeyPress={e => {
+										if (e.key === 'Enter') this.addBlacklistCriteria();
+									}} />
 						}
 						<button className="btn btn-default btn-action addBlacklistCriteria" onClick={this.addBlacklistCriteria}><i className="fas fa-plus"/></button>
 					</div>
@@ -107,19 +112,21 @@ class BlacklistCriterias extends Component<IProps, IState> {
 											<i className="fas fa-eraser"></i>
 										</button>
 									</div>
-									<div className="contentDiv">
-										{criteria.type === 1001 ?
-											buildKaraTitle(
-												this.context.globalState.settings.data,
-												Array.isArray(criteria.value) ?
-													criteria.value[0] :
-													criteria.value, true) :
-											(criteria.value_i18n ?
-												criteria.value_i18n :
-												criteria.value
-											)
-										}
-									</div>
+									{criteria.type !== 1006 ?
+										<div className="contentDiv">
+											{criteria.type === 1001 ?
+												buildKaraTitle(
+													this.context.globalState.settings.data,
+													Array.isArray(criteria.value) ?
+														criteria.value[0] :
+														criteria.value, true) :
+												(criteria.value_i18n ?
+													criteria.value_i18n :
+													criteria.value
+												)
+											}
+										</div> : null
+									}
 								</div> : null
 							);
 						})}
