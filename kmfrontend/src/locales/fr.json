@@ -76,7 +76,8 @@
 		"ADD": "Créer une nouvelle liste",
 		"AUTOMIX": "Créer un AutoMix",
 		"IMPORT": "Importer une liste",
-		"SHUFFLE": "Mélanger / Trier..."
+		"SHUFFLE": "Mélanger / Trier...",
+		"DOWNLOAD_ALL": "Télécharger tout"
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Commandes sur une chanson",

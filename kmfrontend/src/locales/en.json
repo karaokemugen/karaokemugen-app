@@ -75,7 +75,8 @@
 		"ADD": "Add new playlist",
 		"AUTOMIX": "Create an automix",
 		"IMPORT": "Import playlist",
-		"SHUFFLE": "Shuffle / Sort..."
+		"SHUFFLE": "Shuffle / Sort...",
+		"DOWNLOAD_ALL": "Download all"
 	},
 	"KARA_MENU": {
 		"KARA_COMMANDS": "Song commands",
