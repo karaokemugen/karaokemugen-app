@@ -4872,10 +4872,10 @@ typical@^5.2.0:
   resolved "https://registry.yarnpkg.com/typical/-/typical-5.2.0.tgz#4daaac4f2b5315460804f0acf6cb69c52bb93066"
   integrity sha512-dvdQgNDNJo+8B2uBQoqdb11eUCE1JQXhvjC/CZtgvZseVd5TYMXnq0+vuUemXbd/Se29cTaUuPX3YIc2xgbvIg==
 
-ultrastar2ass@^1.0.18:
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/ultrastar2ass/-/ultrastar2ass-1.0.18.tgz#b9ae89c934f0cca9c5e6b5365c152eb8abb50782"
-  integrity sha512-B6l8huV9S1/JhkqmQjtfFHRSAAqxS1aFP6WFQzRP4+tnxsLTVd2tnsL2asC0gyCzr81knjR4YcHkb6RPXDxnkg==
+ultrastar2ass@^1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/ultrastar2ass/-/ultrastar2ass-1.0.19.tgz#e710ff1e27d2de7161519af212e489f2f67eb5f3"
+  integrity sha512-MGLaMIf5fgBeAv1bjDEsqnIHCA4VAfNTqHD+HBKkaBw9h2ZDTElMDYgrSJGOigcz7hixDuMl6CnJC57orRxmEA==
   dependencies:
     ass-stringify "^0.1.3"
 
