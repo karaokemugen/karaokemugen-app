@@ -314,7 +314,7 @@
       "assets/**",
       "kmfrontend/build/**",
       "initpage/**",
-      "gitWorker/**",
+      "zipWorker/**",
       "build/icon.png",
       "build/electronAboutWindow.css"
     ],
