@@ -132,7 +132,7 @@ export function formatLyrics(lyrics: ASSLine[]) {
 }
 
 export function getPreviewLink(kara: DBKara) {
-	if (isRemote()) {
+	if (isRemote() || kara.download_status !== 'DOWNLOADED') {
 		return `https://${kara.repository}/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
 	} else {
 		return `/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
