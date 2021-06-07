@@ -64,9 +64,9 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 				if (data.error) {
 					reject(new Error('Cannot unzip archive, please see zip worker logs.'));
 				} else {
-					task.end();
 					move(resolve(options.outDir, data.outDir), outDir).then(resolvePromise, reject);
 				}
+				task.end();
 			});
 			zipWorker.webContents.send('unzip', options);
 		});
