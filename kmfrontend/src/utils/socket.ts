@@ -28,6 +28,9 @@ export function setAuthorization(authorizationParam: string, onlineAuthorization
 
 export function commandBackend(name: string, body?: any, loading = false, timeout = 10000): Promise<any> {
 	const bodyWithoutpwd = { ...body };
+	if (name === 'getFS') {
+		console.trace();
+	}
 	if (bodyWithoutpwd.password) bodyWithoutpwd.password = undefined;
 	addBreadcrumb({
 		level: Severity.Info,
@@ -63,6 +66,9 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 					message: name,
 					data: data?.message?.code || data?.code
 				});
+			}
+			if (name === 'getFS') {
+				console.log(body, data);
 			}
 			if (!err && data?.message?.code && typeof data?.message?.data !== 'object') {
 				displayMessage('success', i18next.t(`SUCCESS_CODES.${data.message.code}`, { data: data.data }));
