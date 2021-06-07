@@ -400,6 +400,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('USERNAME')}</label>
 															<input
+																key="login"
 																className="input-field"
 																type="text"
 																defaultValue={this.state.login}
@@ -412,6 +413,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('INSTANCE_NAME_SHORT')}</label>
 															<input
+																key="instance"
 																className="input-field"
 																type="text"
 																defaultValue={this.context?.globalState.settings.data.config?.Online.Host}
@@ -423,6 +425,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('PASSWORD')}</label>
 															<input
+																key="password"
 																className="input-field"
 																type="password"
 																required
@@ -435,6 +438,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('PASSWORDCONF')}</label>
 															<input
+																key="passwordConfirmation"
 																className="input-field"
 																type="password"
 																required
@@ -454,6 +458,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('USERNAME')}</label>
 															<input
+																key="login"
 																className="input-field"
 																type="text"
 																defaultValue={this.state.login}
@@ -466,6 +471,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('INSTANCE_NAME_SHORT')}</label>
 															<input
+																key="instance"
 																className="input-field"
 																type="text"
 																defaultValue={this.context?.globalState.settings.data.config?.Online.Host}
@@ -477,6 +483,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('PASSWORD')}</label>
 															<input
+																key="password"
 																className="input-field"
 																type="password"
 																required
