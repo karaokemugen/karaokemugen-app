@@ -788,7 +788,7 @@
 		"PROBLEMATIC_TOOLTIP": "Cette chanson comprend des scènes ({{tags}}) pouvant poser problème à certaines personnes.",
 		"DELETE_ALL_TOOLTIP": "Supprimer tout les karaokés affichés en une seule fois",
 		"DELETE_KARA_TITLE": "Vous allez supprimer les {{count}} karaokés affichés, êtes-vous sûr ?",
-		"MISSING_DOWNLOAD_TOOLTIP": "Non téléchargé",
+		"MISSING_DOWNLOAD_TOOLTIP": "Ce karaoké n'est pas téléchargé, il vous faudra Internet pour le jouer. Vous pouvez cliquer sur Télécharger le média pour l'utilisez hors-ligne.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Téléchargement en cours"
 	},
 	"MENU": {

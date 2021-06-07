@@ -787,7 +787,7 @@
 		"DEJAVU_TOOLTIP": "Recently played song",
 		"PROBLEMATIC_TOOLTIP": "This song contains scenes ({{tags}}) that may be problematic for some viewers.",
 		"DELETE_ALL_TOOLTIP": "Remove all displayed karaokes at once ",
-		"MISSING_DOWNLOAD_TOOLTIP": "Not downloaded",
+		"MISSING_DOWNLOAD_TOOLTIP": "This karaoke is not downloaded, ",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in progress"
 	},
 	"MENU": {
