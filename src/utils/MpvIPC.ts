@@ -39,7 +39,6 @@ class Mpv extends EventEmitter {
 			setTimeout(reject, 10000, new Error('Timeout')); // Set timeout to avoid hangs
 			const command = this.genCommand();
 			const program = spawn(command.binary, command.options, {stdio: ['ignore', 'pipe', 'pipe']});
-			program.unref(); // Don't lock event loop
 			program.once('error', err => {
 				reject(err);
 			});
@@ -99,7 +98,7 @@ class Mpv extends EventEmitter {
 			});
 		});
 		// Disconnect hook
-		this.socket.on('end', (err: boolean) => {
+		this.socket.on('close', (err: boolean) => {
 			this.destroyConnection();
 			this.emit('close', err);
 		});
@@ -112,31 +111,34 @@ class Mpv extends EventEmitter {
 	}
 
 	private ishukan(command: MpvCommand) {
+		// LET'S ishukan COMMUNICATION :) (boh si c'est marrant arrête)
 		return new Promise((resolve, reject) => {
+			const req_id = this.genCommandId();
+			const command_with_id = {...command, request_id: req_id, async: true};
+			const dataHandler = (data: Record<string, any>) => {
+				if (req_id === data.request_id) {
+					data.error === 'success' ? resolve(data):reject(data);
+					this.off('output', dataHandler);
+					this.socket.off('error', reject);
+				}
+			};
 			try {
-				if (!this.socket.writable) reject(new Error('The socket is not writeable'));
-				// LET'S ishukan COMMUNICATION :) (boh si c'est marrant arrête)
-				const req_id = this.genCommandId();
-				const command_with_id = {...command, request_id: req_id, async: true};
-				const dataHandler = (data: string) => {
-					data.split('\n').forEach((payload: string) => {
-						if (payload.length > 0) {
-							const res = JSON.parse(payload);
-							if (req_id === res.request_id) {
-								this.socket.removeListener('data', dataHandler);
-								res.error === 'success' ? resolve(res):reject(res);
-								this.socket.removeListener('error', reject);
-							}
-						}
+				if (!this.socket.writable) {
+					// IT SHOULDN'T HAPPEN BUT WHATEVER.
+					this.destroyConnection();
+					this.emit('close', true);
+					reject(new Error('The socket is not writable'));
+				} else {
+					this.on('output', dataHandler);
+					this.socket.once('error', reject);
+					this.socket.write(`${JSON.stringify(command_with_id)}\n`, 'utf8', (err) => {
+						if (err) reject(err);
 					});
-				};
-				this.socket.on('data', dataHandler);
-				this.socket.once('error', reject);
-				this.socket.write(`${JSON.stringify(command_with_id)}\n`, 'utf8', (err) => {
-					if (err) reject(err);
-				});
+				}
 			} catch (err) {
 				reject(err);
+				this.off('output', dataHandler);
+				this.socket.off('error', reject);
 			}
 		});
 	}
@@ -165,7 +167,7 @@ class Mpv extends EventEmitter {
 			// this.destroyConnection();
 		});
 		this.destroyConnection();
-		this.emit('stop');
+		this.emit('stop', false);
 		return true;
 	}
 
