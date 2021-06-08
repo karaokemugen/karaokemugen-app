@@ -157,7 +157,7 @@ export default function repoController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('updateAllGitRepos', async (socket: Socket, req: APIData) => {
+	router.route('updateAllZipRepos', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
 			updateAllZipRepos();

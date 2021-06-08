@@ -167,7 +167,7 @@ async function processDownload(download: KaraDownload) {
 }
 
 export async function downloadFiles(download_id?: string, list?: DownloadItem[], task?: Task) {
-	const downloader = new Downloader({task: task });
+	const downloader = new Downloader({task: task});
 	// Launch downloads
 	const fileErrors = await downloader.download(list);
 	if (fileErrors.length > 0) {
