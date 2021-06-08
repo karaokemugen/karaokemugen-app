@@ -281,8 +281,15 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 	}
 	await checkRepoPaths(repo);
 	updateRepo(repo, name);
+	if (oldRepo.Path.Medias !== repo.Path.Medias) {
+		getKaras({q: `r:${repo.Name}`}).then(karas => {
+			checkDownloadStatus(karas.content.map(k => k.kid));
+		});
+	}
 	if (oldRepo.Enabled !== repo.Enabled || refresh) {
-		if (await compareKarasChecksum()) generateDB();
+		compareKarasChecksum().then(res => {
+			if (res) generateDB();
+		});
 	}
 	if (!oldRepo.SendStats && repo.SendStats) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host);
