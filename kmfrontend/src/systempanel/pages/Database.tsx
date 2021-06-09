@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { commandBackend } from '../../utils/socket';
+import { displayMessage } from '../../utils/tools';
 
 class Database extends Component<unknown, unknown> {
 
@@ -20,6 +21,10 @@ class Database extends Component<unknown, unknown> {
 
 	dbrestore = async () => {
 		commandBackend('restoreDatabase', undefined, true, 300000).catch(() => {});
+	}
+
+	updateRepos = async () => {
+		commandBackend('updateAllZipRepos').then(() => displayMessage('success', i18next.t('DATABASE.UPDATING_REPOS'))).catch(() => {});
 	}
 
 	render() {
@@ -40,6 +45,18 @@ class Database extends Component<unknown, unknown> {
 							</Button>
 						</Col>
 						<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.REGENERATE_DB_DESCRIPTION')}}>
+						</Col>
+					</Row>
+					<Row justify="space-between" style={{ flexWrap: 'nowrap' }}>
+						<Col flex="300px">
+							<Button
+								type='primary'
+								onClick={this.updateRepos}
+							>
+								{i18next.t('DATABASE.UPDATE_REPOS')}
+							</Button>
+						</Col>
+						<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.UPDATE_REPOS_DESCRIPTION')}}>
 						</Col>
 					</Row>
 					<Row justify="space-between" style={{ marginTop: '20px', flexWrap: 'nowrap' }}>
@@ -66,7 +83,6 @@ class Database extends Component<unknown, unknown> {
 						<Col flex="auto" dangerouslySetInnerHTML={{__html: i18next.t('DATABASE.DUMP_DATABASE_DESCRIPTION')}}>
 						</Col>
 					</Row>
-
 					<Row justify="space-between" style={{ marginTop: '20px', flexWrap: 'nowrap' }}>
 						<Col flex="300px">
 
