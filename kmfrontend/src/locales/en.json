@@ -933,6 +933,8 @@
 		"BACKUP_CONFIG_FILE": "Backup config file",
 		"MESSAGE": "To modify a setting, just edit it and press enter. Not all settings are editable and will return an error if you try anyway.",
 		"SAVE": "Save",
+		"SELECT": "Select",
+		"BACK": "[BACK]",
 		"CHOOSE_FILE": "Choose a file",
 		"CHOOSE_DIRECTORY": "Choose a directory",
 		"PRIMARY_DIRECTORY": "Primary directory",
