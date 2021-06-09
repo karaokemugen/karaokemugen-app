@@ -59,7 +59,7 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 			ipcMain.on('unzipProgress', (_event, data) => updateTask(data));
 			ipcMain.on('unzipEnd', (_event, data) => {
 				if (data.error) {
-					reject(new Error('Cannot unzip archive, please see zip worker logs.'));
+					reject(data.error);
 				} else {
 					move(resolve(options.outDir, data.outDir), outDir).then(resolvePromise, reject);
 				}
