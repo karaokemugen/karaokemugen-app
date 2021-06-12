@@ -373,7 +373,7 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 
 function checkRepoPaths(repo: Repository) {
 	for (const path of repo.Path.Medias) {
-		if (pathIsContainedInAnother(repo.BaseDir, path)) {
+		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
 			throw {code: 400, msg: 'Sanity check: A media path is contained in the base directory.'};
 		}
 	}
