@@ -788,8 +788,10 @@
 		"PROBLEMATIC_TOOLTIP": "Cette chanson comprend des scènes ({{tags}}) pouvant poser problème à certaines personnes.",
 		"DELETE_ALL_TOOLTIP": "Supprimer tout les karaokés affichés en une seule fois",
 		"DELETE_KARA_TITLE": "Vous allez supprimer les {{count}} karaokés affichés, êtes-vous sûr ?",
-		"MISSING_DOWNLOAD_TOOLTIP": "Non téléchargé",
-		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Téléchargement en cours"
+		"DELETE_MEDIA_TOOLTIP": "Supprimer le média du karaoké",
+		"MISSING_DOWNLOAD_TOOLTIP": "Ce karaoké n'est pas téléchargé, il vous faudra Internet pour le jouer. Vous pouvez cliquer sur Télécharger le média pour l'utiliser hors-ligne.",
+		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Téléchargement en cours",
+		"ONLINE_REPOSITORIES": "Certains de vos karaokés proviennent de dépôts distants (le serveur kara.moe par exemple), ces karaokés ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des karaokés mais vous serez en mesure de les modifier ou les supprimer."
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -857,6 +859,9 @@
 		"DUMP_DATABASE_DESCRIPTION": "Crée un fichier de sauvegarde karaokemugen.sql dans votre répertoire de données. Ce fichier peut servir de point de restauration ou pour envoyer votre base de données aux développeurs s'ils vous le demande.",
 		"RESTORE_DATABASE": "Restaurer la base de données",
 		"RESTORE_DATABASE_DESCRIPTION": "Restaure votre base de données à partir du fichier karaokemugen.sql dans votre répertoire de données, s'il est présent. <p><b>ATTENTION : cela écrasera toute donnée non sauvegardée dans votre base de données : playlists, sessions, etc.</b></p>",
+		"UPDATE_REPOS": "Mettre à jour les dépôts",
+		"UPDATE_REPOS_DESCRIPTION": "Force une mise à jour des dépôts, cela peut s'avérer utile si un des dépôts est défaillant.",
+		"UPDATING_REPOS": "Mise à jour des dépôts",
 		"CONFIRM_UPDATE": "Confirmer la mise à jour"
 	},
 	"TAGS": {
@@ -930,6 +935,8 @@
 		"BACKUP_CONFIG_FILE": "Créé une copie du fichier de configuration",
 		"MESSAGE": "Pour modifier un paramètre, éditez-le et pressez sur entrée. Tout les paramètres ne sont pas modifiables et retournerons une erreur si vous essayez de les modifier.",
 		"SAVE": "Sauvegarder",
+		"SELECT": "Sélectionner",
+		"BACK": "[Retour en arrière]",
 		"CHOOSE_FILE": "Choisissez un fichier",
 		"CHOOSE_DIRECTORY": "Choisissez un dossier",
 		"PRIMARY_DIRECTORY": "Dossier par défaut",
@@ -1103,7 +1110,10 @@
 		"USERS": {
 			"CREATE": "Créer un utilisateur",
 			"BROWSE": "Parcourir les utilisateurs"
-		}
+		},
+		"EGG_1": "Arrêtez de cliquer sur la version.",
+		"EGG_2": "Mais.",
+		"EGG_3": "Faut cesser par contre. Ça devient gênant."
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics...",

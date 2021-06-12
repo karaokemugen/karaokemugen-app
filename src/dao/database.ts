@@ -22,6 +22,8 @@ import { baseChecksum } from './dataStore';
 import { getPlaylists, reorderPlaylist } from './playlist';
 import { sqlGetStats,sqlResetUserData } from './sql/database';
 
+export let DBReady = false;
+
 export async function compareKarasChecksum(): Promise<boolean> {
 	logger.info('Comparing files and database data', {service: 'Store'});
 	const [settings, currentChecksum] = await Promise.all([
@@ -184,6 +186,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 	if (state.opt.reset) await resetUserData();
 
 	logger.debug('Database Interface is READY', {service: 'DB'});
+	DBReady = true;
 	return migrations;
 }
 

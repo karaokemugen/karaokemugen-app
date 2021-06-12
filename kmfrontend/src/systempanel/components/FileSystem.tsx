@@ -1,13 +1,9 @@
-import { Tree } from 'antd';
-import { DataNode, EventDataNode } from 'antd/lib/tree';
-import { AntTreeNodeProps, TreeNodeNormal } from 'antd/lib/tree/Tree';
-import React, { Component, ReactText } from 'react';
+import { FileOutlined, FolderOutlined, LeftOutlined, UsbOutlined } from '@ant-design/icons';
+import { Button, List } from 'antd';
+import i18next from 'i18next';
+import React, { useEffect, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
-
-interface IState {
-	treeData: Array<TreeNodeNormal>;
-}
 
 interface IProps {
 	path: string;
@@ -17,116 +13,92 @@ interface IProps {
 	saveValueModal: (value) => void;
 }
 
-class FileSystem extends Component<IProps, IState> {
+function mapDrives(drives: { mount: string, label: string }[]) {
+	return {
+		contents: drives.map<ListingElement>(d => {
+			return { name: d.mount, isDirectory: true, drive: d.label };
+		}), fullPath: ''
+	};
+}
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			treeData: []
-		};
+async function getFS(path: string, os: string) {
+	if (!path) path = '/';
+	let computedPath = (path.length > 1 && os === 'win32') ? path.substr(1) : path;
+	let response;
+	try {
+		response = await commandBackend('getFS', { path });
+	} catch (error) {
+		// Folder don't exist fallback to root folder
+		computedPath = '/';
+		response = await commandBackend('getFS', { path: '/' });
 	}
-
-	componentDidMount() {
-		this.getFileSystem(this.props.path);
+	if (os === 'win32' && computedPath === '/') {
+		response = mapDrives(response.drives);
 	}
+	return response;
+}
 
-	getSeparator() {
-		return this.props.os === 'win32' ? '\\' : '/';
-	}
+type ListingElement = { name: string, isDirectory: boolean, back?: boolean, drive?: string }
+type Listing = ListingElement[];
 
-	updateTreeData(list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] {
-		return list.map(node => {
-			if (node.key === key) {
-				return {
-					...node,
-					children,
-				};
-			} else if (node.children) {
-				return {
-					...node,
-					children: this.updateTreeData(node.children, key, children),
-				};
-			}
-			return node;
-		});
-	}
-
-	async getFileSystem(path: string) {
-		let response;
-		try {
-			response = await commandBackend('getFS',
-				{ path: this.props.fileRequired ? path.substr(0, path.lastIndexOf(this.getSeparator())) : path });
-		} catch (error) {
-			// Folder don't exist fallback to root folder
-			response = await commandBackend('getFS', { path: '/' });
-		}
-		const treeData = [];
-		const pathFolders = path.split(this.getSeparator());
-		if (this.props.os === 'win32') {
-			for (const drive of response.drives) {
-				const element: AntTreeNodeProps = { title: drive.label ? `${drive.label} (${drive.mount})` : drive.identifier, key: `${drive.mount}\\` };
-				if (pathFolders[0] === drive.mount) {
-					element.children = await this.getChildrensRecursively('', pathFolders, 0);
-				}
-				treeData.push(element);
-			}
-		} else {
-			treeData.push(await this.getChildrensRecursively('', pathFolders, 0)[0]);
-		}
-		this.setState({ treeData: treeData });
-	}
-
-	async getChildrensRecursively(fullPath: string, pathFolders: Array<string>, index: number) {
-		const childrens = [];
-		const response = await commandBackend('getFS', { path: `${fullPath}${fullPath ? this.getSeparator() : ''}${pathFolders[index]}${this.getSeparator()}` });
-		for (const element of response.contents) {
-			if (element.isDirectory || this.props.seeFiles || this.props.fileRequired) {
-				const folder: AntTreeNodeProps = {
-					title: element.name, isLeaf: !element.isDirectory,
-					selectable: (this.props.fileRequired && !element.isDirectory)
-						|| (!this.props.fileRequired && element.isDirectory),
-					key: `${response.fullPath}${this.getSeparator()}${element.name}`
-				};
-				if (element.name === pathFolders[index + 1] && element.isDirectory) {
-					folder.children = await this.getChildrensRecursively(response.fullPath, pathFolders, index + 1);
-				}
-				childrens.push(folder);
-			}
-		}
-		return childrens;
-	}
-
-	onLoadData = async ({ key, children }:EventDataNode) => {
-		if (children) {
-			return;
-		}
-		const response = await commandBackend('getFS', { path: key });
-		const childrens = [];
-		for (const element of response.contents) {
-			if (element.isDirectory || this.props.seeFiles || this.props.fileRequired) {
-				childrens.push({
-					title: element.name, isLeaf: !element.isDirectory,
-					selectable: (this.props.fileRequired && !element.isDirectory)
-						|| (!this.props.fileRequired && element.isDirectory),
-					key: `${response.fullPath}${this.getSeparator()}${element.name}`
-				});
-			}
-		}
-		this.setState({
-			treeData: this.updateTreeData(this.state.treeData, key, childrens)
-		});
-	}
-
-	onSelect = (selectedKeys: ReactText[]) => {
-		this.props.saveValueModal(selectedKeys.length > 0 ? selectedKeys[0] : null);
-	}
-
-	render() {
-		return this.state.treeData.length > 0 ?
-			<Tree defaultExpandedKeys={[this.props.path]} onSelect={this.onSelect}
-				loadData={this.onLoadData} treeData={this.state.treeData} /> : null;
+function computeListing(listing: Listing, path: string, seeFiles: boolean): Listing {
+	const filteredListing = seeFiles ? listing : listing.filter(el => el.isDirectory);
+	if (path === '/' || path === '') {
+		return filteredListing; // as is
+	} else {
+		return [{ name: i18next.t('CONFIG.BACK'), isDirectory: true, back: true }, ...filteredListing]; // return listing with back button
 	}
 }
 
+export default function FileSystem(props: IProps) {
+	const [listing, setListing] = useState<Listing>([]);
+	const [path, setPath] = useState<string>();
 
-export default FileSystem;
+	const separator = props.os === 'win32' ? '\\' : '/';
+
+	function getFSCallback(res) {
+		setListing(computeListing(res.contents, res.fullPath, props.seeFiles));
+		if (res.fullPath.lastIndexOf(separator) !== res.fullPath.length - 1) res.fullPath = `${res.fullPath}${separator}`;
+		setPath(res.fullPath);
+	}
+
+	function browseInto(item: ListingElement) {
+		if (item.isDirectory) {
+			const newPath = item.back ?
+				path.substr(0,
+					props.os === 'win32' ? (
+						path.substr(0, path.length - 1).lastIndexOf(separator) === 3 ?
+							3 :
+							path.substr(0, path.length - 1).lastIndexOf(separator) + 1
+					) : path.lastIndexOf(separator) === 0 ? 1 : path.lastIndexOf(separator)
+				) :
+				`${path}${item.name}${separator}`;
+			getFS(newPath, props.os).then(getFSCallback);
+			if (!props.fileRequired) props.saveValueModal(props.os === 'win32' ? newPath.substr(1) : newPath);
+		} else if (props.fileRequired) {
+			props.saveValueModal(`${path}${separator}${item.name}`);
+		}
+	}
+
+	useEffect(() => {
+		getFS(props.fileRequired ?
+			path.substr(0, path.lastIndexOf(separator) === 0 ? 1 : path.lastIndexOf(separator)) : props.path, props.os)
+			.then(getFSCallback);
+	}, []);
+
+	return <List
+		header={<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+			{path}
+			{!props.fileRequired ? <Button type="primary">{i18next.t('CONFIG.SELECT')}</Button> : null}
+		</div>}
+		dataSource={listing}
+		renderItem={item => (
+			(!item.isDirectory && !props.seeFiles) ? null : <List.Item>
+				<Button type="text" disabled={(props.fileRequired && item.isDirectory) || (!props.fileRequired && !item.isDirectory)} onClick={() => browseInto(item)}>
+					{item.drive ? <UsbOutlined /> : (item.back ? <LeftOutlined /> : (item.isDirectory ? <FolderOutlined /> : <FileOutlined />))}
+					{item.name} {item.drive ? <span>({item.drive})</span> : null}
+				</Button>
+			</List.Item>
+		)}
+	/>;
+}

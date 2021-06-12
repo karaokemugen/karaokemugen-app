@@ -257,7 +257,9 @@ async function getKarasWithTags(tags: DBTagMini[]): Promise<DBKara[]> {
 	return karasToReturn;
 }
 
-export async function deleteTag(tids: string[], opt = {refresh: true, removeTagInKaras: true}) {
+export async function deleteTag(tids: string[], opt = {
+	refresh: true, removeTagInKaras: true, deleteFile: true
+}) {
 	const tags: DBTagMini[] = [];
 	for (const tid of tids) {
 		const tag = await getTagMini(tid);
@@ -270,7 +272,7 @@ export async function deleteTag(tids: string[], opt = {refresh: true, removeTagI
 	if (tags.length === 0) throw {code: 404, msg: 'Tag ID unknown'};
 	const removes = [];
 	for (const tag of tags) {
-		removes.push(removeTagFile(tag.tagfile, tag.repository));
+		if (opt.deleteFile) removes.push(removeTagFile(tag.tagfile, tag.repository));
 		if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karasToRemoveTagIn));
 	}
 	await Promise.all(removes).catch(err => {

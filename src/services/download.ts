@@ -94,11 +94,13 @@ export function initDownloadQueue() {
 			downloadTask.end();
 			downloadTask = null;
 		}
-		const karas = await getKaras({
-			q: `k:${Array.from(downloadedKIDs).join(',')}`
-		});
-		downloadedKIDs = new Set();
-		createImagePreviews(karas, 'single');
+		if (getConfig().Frontend.GeneratePreviews) {
+			const karas = await getKaras({
+				q: `k:${Array.from(downloadedKIDs).join(',')}`
+			});
+			downloadedKIDs = new Set();
+			createImagePreviews(karas, 'single');
+		}
 	});
 }
 
@@ -167,7 +169,7 @@ async function processDownload(download: KaraDownload) {
 }
 
 export async function downloadFiles(download_id?: string, list?: DownloadItem[], task?: Task) {
-	const downloader = new Downloader({task: task });
+	const downloader = new Downloader({task: task});
 	// Launch downloads
 	const fileErrors = await downloader.download(list);
 	if (fileErrors.length > 0) {

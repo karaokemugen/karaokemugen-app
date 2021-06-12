@@ -25,20 +25,19 @@ export default class Downloader {
 	fileErrors: string[] = [];
 	task: Task;
 	onEnd: (this: void, errors: string[]) => void;
-	queueOptions = {
-		id: 'uuid',
-		cancelIfRunning: true
-	};
-	q: any;
+	q: Queue<DownloadItem, never>;
 
 	constructor(opts: DownloadOpts) {
 		this.opts = opts;
 		this.onEnd = null;
 		this.task = this.opts.task;
-		this.q = new Queue(this._queueDownload, this.queueOptions);
+		this.q = new Queue(this._queueDownload, {
+			id: 'id',
+			cancelIfRunning: true
+		});
 	}
 
-	_queueDownload = (input: DownloadItem, done: any) => {
+	_queueDownload = (input: DownloadItem, done: (error?: any) => void) => {
 		this._download(input)
 			.then(() => done())
 			.catch((err: Error) => done(err));

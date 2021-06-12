@@ -107,7 +107,10 @@ export async function next() {
 		logger.warn('Next song is not available', {service: 'Player', obj: err});
 		// Display KM info banner just to be sure
 		mpv.displayInfo();
-		if (err === 'Playlist is empty!') return;
+		if (err === 'Playlist is empty!') {
+			stopPlayer(true, true);
+			return;
+		}
 		throw err;
 	}
 }

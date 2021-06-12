@@ -8,7 +8,7 @@ import { zipWorker } from '../electron/electron';
 import { resolvedPathTemp } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
-import Downloader from './downloader';
+import { downloadFiles } from '../services/download';
 import { getState } from './state';
 
 // This is only used in cli mode, without a worker available
@@ -26,19 +26,16 @@ async function extractZip(path: string, outDir: string): Promise<string>  {
 }
 
 export async function downloadAndExtractZip(zipURL: string, outDir: string, repo: string) {
-	logger.debug(`Downloading ${repo} archive to ${outDir}`, {service: 'Zip'});
+	logger.debug(`Downloading ${repo} archive`, {service: 'Zip'});
 	await remove(outDir);
 	const task = new Task({
 		text: 'DOWNLOADING_ZIP',
 		data: repo
 	});
-	const downloader = new Downloader({ task });
 	const target = resolve(resolvedPathTemp(), `base-${repo}.zip`);
-	const errors = await downloader.download([{ filename: target, url: zipURL }]);
+	await downloadFiles(null, [{ filename: target, url: zipURL, id: repo }], task);
 	task.end();
-	if (errors.length > 0) {
-		throw new Error('ZIP Download failed');
-	}
+	logger.debug(`Extracting ${repo} archive to ${outDir}`, {service: 'Zip'});
 	if (getState().opt.cli) {
 		const tempDir = resolvedPathTemp();
 		const dir = await extractZip(target, tempDir);
@@ -62,11 +59,11 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 			ipcMain.on('unzipProgress', (_event, data) => updateTask(data));
 			ipcMain.on('unzipEnd', (_event, data) => {
 				if (data.error) {
-					reject(new Error('Cannot unzip archive, please see zip worker logs.'));
+					reject(data.error);
 				} else {
-					task.end();
 					move(resolve(options.outDir, data.outDir), outDir).then(resolvePromise, reject);
 				}
+				task.end();
 			});
 			zipWorker.webContents.send('unzip', options);
 		});

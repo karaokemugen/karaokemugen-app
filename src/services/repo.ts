@@ -232,7 +232,7 @@ export async function updateZipRepo(name: string, refresh = true) {
 				if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false, {media: true, kara: false}));
 				if (TIDsToDelete.length > 0) {
 					// Let's not remove tags in karas : it's already done anyway
-					deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false}));
+					deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false, deleteFile: false}));
 				}
 				await Promise.all(deletePromises);
 				task.update({text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0});
@@ -281,8 +281,15 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 	}
 	await checkRepoPaths(repo);
 	updateRepo(repo, name);
+	if (oldRepo.Path.Medias !== repo.Path.Medias) {
+		getKaras({q: `r:${repo.Name}`}).then(karas => {
+			checkDownloadStatus(karas.content.map(k => k.kid));
+		});
+	}
 	if (oldRepo.Enabled !== repo.Enabled || refresh) {
-		if (await compareKarasChecksum()) generateDB();
+		compareKarasChecksum().then(res => {
+			if (res) generateDB();
+		});
 	}
 	if (!oldRepo.SendStats && repo.SendStats) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host);
@@ -366,7 +373,7 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 
 function checkRepoPaths(repo: Repository) {
 	for (const path of repo.Path.Medias) {
-		if (pathIsContainedInAnother(repo.BaseDir, path)) {
+		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
 			throw {code: 400, msg: 'Sanity check: A media path is contained in the base directory.'};
 		}
 	}

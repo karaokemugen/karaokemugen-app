@@ -29,7 +29,7 @@ async function unzip(path: string, outDir: string) {
 		console.log('Sending message', firstDir);
 		if (error) console.error(error);
 		ipcRenderer.send('unzipEnd', {
-			error: !!error,
+			error,
 			outDir: firstDir
 		});
 	}
