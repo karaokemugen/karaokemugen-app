@@ -17,10 +17,29 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 
 import GlobalContext from '../../store/context';
+import {displayMessage} from '../../utils/tools';
 
 class Home extends Component<unknown, unknown> {
 	static contextType = GlobalContext
 	context: React.ContextType<typeof GlobalContext>
+
+	clickCount = 0
+
+	incrClick = () => {
+		this.clickCount++;
+		if (this.clickCount === 5) {
+			displayMessage('info', i18next.t('HOME.EGG_1'));
+		}
+		if (this.clickCount === 20) {
+			displayMessage('warning', i18next.t('HOME.EGG_2'));
+		}
+		if (this.clickCount === 40) {
+			displayMessage('error', i18next.t('HOME.EGG_3'));
+		}
+		if (this.clickCount === 60) {
+			window.location.assign('https://live.karaokes.moe/?video=5a8f26ed-e387-4169-ad8a-4ce8c31b65d9');
+		}
+	}
 
 	render() {
 		return (
@@ -105,7 +124,7 @@ class Home extends Component<unknown, unknown> {
 							</Card>
 						</Col>
 					</Row>
-					<p style={{marginTop: '1em'}}>
+					<p style={{marginTop: '1em'}} onClick={this.incrClick}>
 						v{this.context?.globalState.settings?.data.version.number} - {this.context?.globalState.settings?.data.version.name} ({this.context?.globalState.settings?.data.version.sha})
 					</p>
 				</Layout.Content>

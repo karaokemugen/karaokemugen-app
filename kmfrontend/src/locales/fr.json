@@ -1108,7 +1108,10 @@
 		"USERS": {
 			"CREATE": "Créer un utilisateur",
 			"BROWSE": "Parcourir les utilisateurs"
-		}
+		},
+		"EGG_1": "Arrêtez de cliquer sur la version.",
+		"EGG_2": "Mais.",
+		"EGG_3": "Faut cesser par contre. Ça devient gênant."
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics...",

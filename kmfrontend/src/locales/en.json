@@ -1106,7 +1106,10 @@
 		"USERS": {
 			"CREATE": "Create an user",
 			"BROWSE": "Browse users"
-		}
+		},
+		"EGG_1": "Stop clicking on the version.",
+		"EGG_2": "Well.",
+		"EGG_3": "Stop that, it's useless."
 	},
 	"TASKS": {
 		"COPYING_LYRICS_IN_REPOS": "Updating lyrics...",
