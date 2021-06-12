@@ -232,7 +232,7 @@ export async function updateZipRepo(name: string, refresh = true) {
 				if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false, {media: true, kara: false}));
 				if (TIDsToDelete.length > 0) {
 					// Let's not remove tags in karas : it's already done anyway
-					deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false}));
+					deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false, deleteFile: false}));
 				}
 				await Promise.all(deletePromises);
 				task.update({text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0});
