@@ -3,16 +3,17 @@ import { Button, Cascader, Col, Input, Layout, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
-import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
+import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { DBDownload } from '../../../../../src/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
-import { getSerieLanguage, getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
+import GlobalContext from '../../../store/context';
+import { buildKaraTitle, getSerieLanguage, getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
 interface KaraDownloadState {
-	karas: any[];
+	karas: DBKara[];
 	i18nTag: any;
 	karasQueue: DBDownload[];
 	kara: any;
@@ -25,6 +26,8 @@ interface KaraDownloadState {
 }
 
 class QueueDownload extends Component<unknown, KaraDownloadState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	constructor(props) {
 		super(props);
@@ -70,12 +73,12 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 		this.setState({ filter: event.target.value, currentPage: 0 });
 	}
 
-	downloadKara = (kara) => {
+	downloadKara = (kara: DBKara) => {
 		const downloadObject: KaraDownloadRequest = {
 			mediafile: kara.mediafile,
 			kid: kara.kid,
 			size: kara.mediasize,
-			name: kara.name,
+			name: buildKaraTitle(this.context.globalState.settings.data, kara, true) as string,
 			repository: kara.repository
 		};
 		this.postToDownloadQueue([downloadObject]);

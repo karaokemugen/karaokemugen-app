@@ -10,7 +10,7 @@ import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { DBDownload } from '../../../../../src/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
-import { getSerieLanguage, getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
+import { buildKaraTitle, getSerieLanguage, getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 interface KaraDownloadState {
@@ -83,12 +83,12 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		});
 	}
 
-	downloadKara = (kara) => {
+	downloadKara = (kara: DBKara) => {
 		const downloadObject: KaraDownloadRequest = {
 			mediafile: kara.mediafile,
 			kid: kara.kid,
 			size: kara.mediasize,
-			name: kara.name,
+			name: buildKaraTitle(this.context.globalState.settings.data, kara, true) as string,
 			repository: kara.repository
 		};
 		this.postToDownloadQueue([downloadObject]);
