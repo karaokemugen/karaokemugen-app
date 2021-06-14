@@ -197,7 +197,7 @@ export function backupConfig() {
 	logger.debug('Making a backup of config.yml', {service: 'Config'});
 	return copy(
 		resolve(getState().dataPath, 'config.yml'),
-		resolve(getState().dataPath, 'config.backup.yml'),
+		resolve(getState().dataPath, `config.backup.${new Date().getTime().toString()}.yml`),
 		{ overwrite: true }
 	);
 }
