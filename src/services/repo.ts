@@ -76,9 +76,12 @@ export async function addRepo(repo: Repository) {
 }
 
 export async function migrateReposToZip() {
-	// Create a config backup, just in case
-	await backupConfig();
+	// Find unmigrated repositories
 	const repos: OldRepository[] = clonedeep((getRepos() as any as OldRepository[]).filter((r) => r.Path.Karas?.length > 0));
+	if (repos.length > 0) {
+		// Create a config backup, just in case
+		await backupConfig();
+	}
 	for (const oldRepo of repos) {
 		// Determine basedir by going up one folder
 		const dir = resolve(getState().dataPath, oldRepo.Path.Karas[0], '..');
