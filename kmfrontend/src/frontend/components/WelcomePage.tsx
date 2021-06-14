@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { Repository } from '../../../../src/lib/types/repo';
+import { Feed } from '../../../../src/types/feeds';
 import { Session } from '../../../../src/types/session';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { logout } from '../../store/actions/auth';
@@ -120,16 +121,16 @@ class WelcomePage extends Component<unknown, IState> {
 
 	getNewsFeed = async () => {
 		try {
-			const res = await commandBackend('getNewsFeed', undefined, undefined, 300000);
-			const data = res;
-			const base = data[0];
-			const appli = data[1];
-			const mast = data[2];
-			let news: Array<News> = [];
-			if (base.body && appli.body) {
+			const data: Feed[] = await commandBackend('getNewsFeed', undefined, undefined, 300000);
+			const base = data.find(d => d.name === 'git_base');
+			const appli = data.find(d => d.name === 'git_app');
+			const mast = data.find(d => d.name === 'mastodon');
+			const system = data.find(d => d.name === 'system');
+			const news: News[] = [];
+			if (base?.body && appli?.body) {
 				base.body = JSON.parse(base.body);
 				appli.body = JSON.parse(appli.body);
-				news = [
+				news.push(
 					{
 						html: base.body.feed.entry[0].content._text,
 						date: base.body.feed.entry[0].updated._text,
@@ -162,10 +163,9 @@ class WelcomePage extends Component<unknown, IState> {
 						link: appli.body.feed.entry[0].link._attributes.href,
 						type: 'app'
 					}
-				];
+				);
 			}
-
-			if (mast.body) {
+			if (mast?.body) {
 				mast.body = JSON.parse(mast.body);
 				const max =
 					mast.body.rss.channel.item.length > 3
@@ -184,12 +184,17 @@ class WelcomePage extends Component<unknown, IState> {
 					});
 				}
 			}
+			if (system?.body) {
+				for (const message of JSON.parse(system.body)) {
+					news.push(message);
+				}
+			}
 			news.sort((a, b) => {
 				const dateA = new Date(a.date);
 				const dateB = new Date(b.date);
 				return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
 			});
-			this.setState({ news: news });
+			this.setState({ news });
 		} catch (err) {
 			// error already display
 		}

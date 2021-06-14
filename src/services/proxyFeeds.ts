@@ -7,6 +7,8 @@ import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 // Types
 import { Feed } from '../types/feeds';
+import { SystemMessage } from '../types/state';
+import { getState, setState } from '../utils/state';
 
 const feeds = [
 	{
@@ -25,16 +27,29 @@ const feeds = [
 
 /** Get Karaoke Mugen main news feeds */
 export async function getFeeds() {
+	const feedPromises = [];
 	try {
 		await internet();
+		for (const feed of feeds) {
+			feedPromises.push(fetchFeed(feed.url, feed.name));
+		}
 	} catch(err) {
-		throw 'This instance is not connected to the internets';
+		logger.warn('This instance is not connected to the internets, cannot get online feeds', {service: 'Feed', obj: err});
 	}
-	const feedPromises = [];
-	for (const feed of feeds) {
-		feedPromises.push(fetchFeed(feed.url, feed.name));
-	}	
+	feedPromises.push(fetchSystemMessages());
 	return Promise.all(feedPromises);
+}
+
+/** Get System Messages **/
+async function fetchSystemMessages(): Promise<Feed> {
+	return {
+		name: 'system',
+		body: JSON.stringify(getState().systemMessages)
+	};
+}
+
+export function addSystemMessage(message: SystemMessage) {
+	setState({systemMessages: [...getState().systemMessages, message]});
 }
 
 /** Fetch and process a RSS feed */

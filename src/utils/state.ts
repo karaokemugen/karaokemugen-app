@@ -45,7 +45,8 @@ let state: State = {
 	version: {
 		number: packageJSON.version,
 		name: packageJSON.versionName
-	}
+	},
+	systemMessages: []
 };
 
 /** Get public state (to send to webapp users) */

@@ -78,7 +78,17 @@ export interface State {
 	args: string[],
 	environment: string,
 	sentrytest: boolean,
-	currentBLCSetID: number
+	currentBLCSetID: number,
+	systemMessages: SystemMessage[]
+}
+
+export interface SystemMessage {
+	html: string,
+	date: string,
+	dateStr: string,
+	title: string,
+	link: string,
+	type: string
 }
 
 export interface PublicState {

@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
+import i18next from 'i18next';
 import clonedeep from 'lodash.clonedeep';
 import { basename,resolve } from 'path';
 
@@ -37,6 +38,7 @@ import { createProblematicBLCSet, generateBlacklist } from './blacklist';
 import { updateMedias } from './downloadUpdater';
 import { getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
+import { addSystemMessage } from './proxyFeeds';
 import { sendPayload } from './stats';
 import { deleteTag, getTags, integrateTagFile } from './tag';
 
@@ -108,6 +110,17 @@ export async function migrateReposToZip() {
 		await editRepo(newRepo.Name, newRepo, false)
 			.catch(err => {
 				logger.error(`Unable to migrate repo ${oldRepo.Name} to zip-based: ${err}`, {service: 'Repo', obj: err});
+				sentry.error(err);
+				addSystemMessage({
+					type: 'system_error',
+					date: new Date().toString(),
+					dateStr: new Date().toLocaleDateString(),
+					link: '#',
+					html: `<p>${i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.BODY', { repo: oldRepo.Name })}</p>`,
+					title: i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.TITLE')
+				});
+				// Disable the repo and bypass stealth checks
+				updateRepo({...oldRepo, Enabled: false} as any, oldRepo.Name);
 			});
 	}
 }
