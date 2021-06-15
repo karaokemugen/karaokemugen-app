@@ -131,7 +131,7 @@
 		"HIDE_LYRICS": "Hide Lyrics",
 		"LYRICS_EXPL": {
 			"LINES": "The current song lyrics will be displayed here.",
-			"CURRENT": "The yellow highlighted line represents the currently sung line."
+			"CURRENT": "The bold line represents the currently sung line."
 		},
 		"OPEN_POLL": "Vote for the next song",
 		"PUBLIC_SUGGESTIONS": "Public suggestions",
