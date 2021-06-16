@@ -17,20 +17,18 @@ async function listRemoteUsers() {
 	return users.filter(u => u.login.includes('@')).map(u => u.login);
 }
 
-async function updateUser(login, payload) {
+async function updateUser(login: string, payload: any) {
 	const userRemote: DBUser = payload.user;
-	const user: DBUser = await findUserByName(login);
+	let user: DBUser = await findUserByName(login);
 	if (user) {
 		const favorites: Favorite[] = payload.favorites;
-		delete user.password;
-		user.bio = userRemote.bio;
-		user.url = userRemote.url;
-		user.location = userRemote.location;
-		user.flag_sendstats = userRemote.flag_sendstats;
-		user.fallback_series_lang = userRemote.fallback_series_lang;
-		user.main_series_lang = userRemote.main_series_lang;
-		user.series_lang_mode = userRemote.series_lang_mode;
-		user.nickname = userRemote.nickname;
+		user = {
+			...userRemote,
+			password: undefined,
+			avatar_file: undefined,
+			login: user.login,
+			type: user.type
+		};
 		logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
 		Promise.all([
 			editUser(login, user, null, 'admin'),
