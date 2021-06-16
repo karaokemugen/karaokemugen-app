@@ -23,12 +23,15 @@ export function parseArgs() {
 		.option('-v, --validate', 'Validates kara files and modify them if needed (no generation)')
 		.option('--cli', 'Start in CLI mode, without Electron')
 		.option('--demo', 'Launches in demo mode (no system panel, no password changes)')
-		.option('--forceAdminPassword [password]', 'Set admin account\'s password').option('--noBaseCheck', 'Disable data file checking on startup')
+		.option('--forceAdminPassword [password]', 'Set admin account\'s password')
+		.option('--noBaseCheck', 'Disable data file checking on startup')
 		.option('--noBrowser', 'Do not open a browser window upon launch')
 		.option('--noMedia', '(generation only) Do not try to fetch data from media files')
 		.option('--noPlayer', 'Do not open player on startup')
 		.option('--noAutoTest', 'Do not attempt to start tests automatically if --test is enabled')
 		.option('--sql', 'Traces SQL query at the debug log level')
+		.option('--dumpDB', 'Dumps database and exits')
+		.option('--restoreDB', 'Restores database and exits')
 		.allowUnknownOption()
 		.parse();
 }
