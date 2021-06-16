@@ -23,7 +23,7 @@ import {
 	resolvedPathTemp,
 	setConfig
 } from './lib/utils/config';
-import {asyncCheckOrMkdir, asyncExists} from './lib/utils/files';
+import {asyncCheckOrMkdir} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
@@ -241,9 +241,9 @@ export async function main() {
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
-		if (await asyncExists(resolvedPathTemp())) await remove(resolvedPathTemp());
+		await remove(resolvedPathTemp()).catch();
 		// Emptying import directory
-		if (await asyncExists(resolvedPathImport())) await remove(resolvedPathImport());
+		await remove(resolvedPathImport()).catch();
 		// Checking paths
 		const checks = [];
 		const paths = config.System.Path;
