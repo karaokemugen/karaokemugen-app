@@ -27,7 +27,6 @@ export function parseArgs() {
 		.option('--noBrowser', 'Do not open a browser window upon launch')
 		.option('--noMedia', '(generation only) Do not try to fetch data from media files')
 		.option('--noPlayer', 'Do not open player on startup')
-		.option('--noTestDownloads', 'Do not attempt to download songs during unit tests')
 		.option('--noAutoTest', 'Do not attempt to start tests automatically if --test is enabled')
 		.option('--sql', 'Traces SQL query at the debug log level')
 		.allowUnknownOption()
@@ -98,7 +97,6 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 		setState({isDemo: true});
 	}
 	if (argv.opts().noBrowser) setState({opt: {noBrowser: true}});
-	if (argv.opts().noTestDownloads) setState({opt: {noTestDownloads: true}});
 	if (argv.opts().noAutoTest) setState({opt: {noAutoTest: true}});
 	if (argv.opts().forceAdminPassword) setState({opt: {forceAdminPassword: argv.opts().forceAdminPassword || cmdline.getSwitchValue('forceAdminPassword')}});
 	if (argv.opts().dumpDB) setState({opt: {dumpDB: true}});
