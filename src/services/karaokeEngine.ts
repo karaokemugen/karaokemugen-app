@@ -9,7 +9,7 @@ import { emitWS } from '../lib/utils/ws';
 import { CurrentSong } from '../types/playlist';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
-import {writeStreamFiles} from '../utils/stream_files';
+import {writeStreamFiles} from '../utils/streamerFiles';
 import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongVersion } from './kara';
 import {initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer} from './player';
 import { getCurrentSong, getPlaylistContentsMini, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';

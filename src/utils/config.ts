@@ -41,7 +41,7 @@ import {configConstraints, defaults} from './defaultSettings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
 import {getState, setState} from './state';
-import {writeStreamFiles} from './stream_files';
+import {writeStreamFiles} from './streamerFiles';
 import { initTwitch, stopTwitch } from './twitch';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */

@@ -38,7 +38,7 @@ import { initKMServerCommunication } from '../utils/kmserver';
 import { checkPG, dumpPG, restorePG,stopPG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
-import { writeStreamFiles } from '../utils/stream_files';
+import { writeStreamFiles } from '../utils/streamerFiles';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
 import { subRemoteUsers } from '../utils/userPubSub';
 import { initFrontend } from './frontend';
