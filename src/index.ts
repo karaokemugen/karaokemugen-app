@@ -241,9 +241,17 @@ export async function main() {
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
-		await remove(resolvedPathTemp()).catch();
+		try {
+			await remove(resolvedPathTemp());
+		} catch(err) {
+			// Non-fatal
+		}
 		// Emptying import directory
-		await remove(resolvedPathImport()).catch();
+		try {
+			await remove(resolvedPathImport());
+		} catch(err) {
+			// Non-fatal
+		}
 		// Checking paths
 		const checks = [];
 		const paths = config.System.Path;
