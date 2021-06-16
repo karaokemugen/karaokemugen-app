@@ -36,7 +36,7 @@ import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
-import { stopSub } from '../utils/user_pubsub';
+import { stopSub } from '../utils/userPubSub';
 import { addToFavorites, getFavorites } from './favorites';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
 

@@ -21,7 +21,7 @@ import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getKaras } from './kara';
-import { editKara } from './kara_creation';
+import { editKara } from './karaCreation';
 import { refreshKarasAfterDBChange } from './karaManagement';
 import { getRepo } from './repo';
 

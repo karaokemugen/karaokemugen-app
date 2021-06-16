@@ -18,7 +18,7 @@ import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraint
 import {asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
-import { removeNulls } from '../lib/utils/object_helpers';
+import { removeNulls } from '../lib/utils/objectHelpers';
 import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
@@ -37,7 +37,7 @@ import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
 import {Config} from '../types/config';
 import sentry from '../utils/sentry';
-import {configConstraints, defaults} from './default_settings';
+import {configConstraints, defaults} from './defaultSettings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
 import {getState, setState} from './state';

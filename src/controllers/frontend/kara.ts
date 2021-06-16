@@ -4,7 +4,7 @@ import { APIData } from '../../lib/types/api';
 import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getKara, getKaraLyrics, getKaras} from '../../services/kara';
-import { createKara, editKara } from '../../services/kara_creation';
+import { createKara, editKara } from '../../services/karaCreation';
 import { batchEditKaras, copyKaraToRepo, deleteKara, deleteMediaFile } from '../../services/karaManagement';
 import { playSingleSong } from '../../services/karaokeEngine';
 import { addKaraToPlaylist } from '../../services/playlist';

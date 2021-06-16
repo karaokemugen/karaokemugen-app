@@ -33,7 +33,7 @@ import {backupConfig} from '../utils/config';
 import {pathIsContainedInAnother} from '../utils/files';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
-import {applyPatch, downloadAndExtractZip} from '../utils/zip_patch';
+import {applyPatch, downloadAndExtractZip} from '../utils/zipPatch';
 import { createProblematicBLCSet, generateBlacklist } from './blacklist';
 import { updateMedias } from './downloadUpdater';
 import { getKaras } from './kara';

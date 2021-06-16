@@ -10,7 +10,7 @@ import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { SingleToken, Tokens } from '../types/user';
 import sentry from '../utils/sentry';
-import { startSub } from '../utils/user_pubsub';
+import { startSub } from '../utils/userPubSub';
 import { convertToRemoteFavorites } from './favorites';
 import { checkPassword, createJwtToken, createUser, editUser, findUserByName } from './user';
 
