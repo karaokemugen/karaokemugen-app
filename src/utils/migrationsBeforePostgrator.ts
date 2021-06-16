@@ -1,3 +1,9 @@
+// Contains migration list from before we switchted from db-migrate to postgrator.
+
+// This is used to seed the database with the right migration data when a user migrates from a version with db-migrate to a version with postgrator.
+
+// Let's try to remove this in KM 7.0
+
 export const migrations = [
 	{
 		version: 20190110101516,

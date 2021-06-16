@@ -13,7 +13,7 @@ interface ActivityData {
 	source: string
 }
 
-// Sanitize text for processing in Discord (128 chars max)
+// Sanitize text for processing in Discord (32-128 chars min-max)
 function sanitizeText(str: string): string {
 	if (str.length > 128) {
 		return `${str.substring(0, 127)}…`;
@@ -76,7 +76,7 @@ function startCheckingDiscordRPC() {
 	if (!intervalIDDiscordRPCSetup) intervalIDDiscordRPCSetup = setInterval(setupDiscordRPC, 15000);
 }
 
-/** Stop displaying the Add a song to the list */
+/** Stop checking if we can setup Discord RPC */
 function stopCheckingDiscordRPC() {
 	if (intervalIDDiscordRPCSetup) clearInterval(intervalIDDiscordRPCSetup);
 	intervalIDDiscordRPCSetup = undefined;

@@ -107,7 +107,7 @@ class Mpv extends EventEmitter {
 	}
 
 	private ishukan(command: MpvCommand) {
-		// LET'S ishukan COMMUNICATION :) (boh si c'est marrant arrête)
+		// LET'S ishukan COMMUNICATION :) (come on it's funny)
 		return new Promise((resolve, reject) => {
 			const req_id = this.genCommandId();
 			const command_with_id = {...command, request_id: req_id, async: true};
