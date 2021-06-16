@@ -1,5 +1,4 @@
 import * as SentryElectron from '@sentry/electron';
-import * as SentryNode from '@sentry/node';
 import Transport from 'winston-transport';
 
 import {getConfig} from '../lib/utils/config';
@@ -15,10 +14,8 @@ class ElectronSentryLogger extends SentryLogger {
     	super(sentry_sdk);
     }
 
-    init(electron?: any, strictMode?: boolean) {
-    	this.Sentry = electron
-    		? SentryElectron
-    		: SentryNode;
+    init(strictMode?: boolean) {
+    	this.Sentry = SentryElectron;
 
     	if (strictMode || process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') {
     		console.log('Strict Mode / CI detected / SENTRY_TEST enabled - Disabling Sentry');
@@ -39,9 +36,7 @@ class ElectronSentryLogger extends SentryLogger {
     			else return event;
     		}
     	};
-    	if (electron) {
-    		options.enableJavaScript = false;
-    	}
+    	options.enableJavaScript = false;
     	this.Sentry.init(options);
     	this.SentryInitialized = true;
     }

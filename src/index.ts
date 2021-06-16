@@ -36,7 +36,7 @@ import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
 
 dotenv.config();
-sentry.init(app, process.argv.includes('--strict'));
+sentry.init(process.argv.includes('--strict'));
 
 let isInitError = false;
 
