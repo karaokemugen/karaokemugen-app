@@ -133,7 +133,7 @@ class UserList extends Component<unknown, UserListState> {
 		title: i18next.t('ACTION'),
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/system/users/${record.login}`}><EditOutlined /></Link>
+			<Link to={`/system/users/${record.login}`}><Button type="primary" icon={<EditOutlined />} /></Link>
 			<Divider type="vertical"/>
 			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
 				() => this.setState({deleteModal: true, user: record})

@@ -118,7 +118,7 @@ class SessionList extends Component<unknown, SessionListState> {
 		title: i18next.t('SESSIONS.ACTIVE'),
 		dataIndex: 'active',
 		key: 'active',
-		render: (text, record) => (<span>
+		render: (_text, record) => (<span>
 			{record.active ?
 				i18next.t('YES') : null
 			}
@@ -127,19 +127,19 @@ class SessionList extends Component<unknown, SessionListState> {
 		title: i18next.t('SESSIONS.PRIVATE'),
 		dataIndex: 'private',
 		key: 'private',
-		render: (text, record) => (<Checkbox checked={record.private} onClick={() => this.majPrivate(record)} />)
+		render: (_text, record) => (<Checkbox checked={record.private} onClick={() => this.majPrivate(record)} />)
 	}, {
 		title: i18next.t('SESSIONS.SESSION_EXPORTED_BUTTON'),
 		key: 'export',
-		render: (text, record) => {
+		render: (_text, record) => {
 			return <Button type="default" icon={<FileExcelOutlined />} onClick={() => this.exportSession(record)}></Button>;
 		}
 	}, {
 		title: i18next.t('ACTION'),
 		key: 'action',
-		render: (text, record) => (
+		render: (_text, record) => (
 			<span>
-				<Link to={`/system/sessions/${record.seid}`}><EditOutlined /></Link>
+				<Link to={`/system/sessions/${record.seid}`}><Button type="primary" icon={<EditOutlined />} /></Link>
 				{record.active ? '' :
 					<React.Fragment>
 						<Divider type="vertical" />
