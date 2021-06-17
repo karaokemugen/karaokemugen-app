@@ -7,6 +7,7 @@ import { User } from '../../../../../src/lib/types/user';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
+import { getCountryName } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
@@ -32,6 +33,11 @@ class UsersModal extends Component<IProps, IState> {
 
 	componentDidMount() {
 		if (this.context?.globalState.auth.data.role === 'admin' || this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) this.getUserList();
+		document.addEventListener('keyup', this.keyObserverHandler);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('keyup', this.keyObserverHandler);
 	}
 
 	async getUserList() {
@@ -57,6 +63,12 @@ class UsersModal extends Component<IProps, IState> {
 			this.props.closeModal();
 		} else {
 			closeModal(this.context.globalDispatch);
+		}
+	}
+
+	keyObserverHandler = (e: KeyboardEvent) => {
+		if (e.code === 'Escape') {
+			this.closeModal();
 		}
 	}
 
@@ -90,6 +102,7 @@ class UsersModal extends Component<IProps, IState> {
 									<div><i className="fas fa-fw fa-link" />{this.state.userDetails?.url ?
 										<a href={this.state.userDetails.url} target="_blank">{this.state.userDetails.url}</a>:null}</div>
 									<div><i className="fas fa-fw fa-leaf" />{this.state.userDetails?.bio || ''}</div>
+									<div><i className="fas fa-fw fa-globe" />{getCountryName(this.state.userDetails?.location) || ''}</div>
 								</div> : null
 							}
 						</li>;

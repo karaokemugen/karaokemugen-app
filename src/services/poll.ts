@@ -32,7 +32,7 @@ on('stateUpdated', (state: State) => {
 });
 
 async function displayPoll(winner?: number) {
-	const data = getPoll({role: 'admin', username: 'admin'}, 0, 999999999);
+	const data = getPoll({role: 'admin', username: 'admin'});
 	let maxVotes = 0;
 	data.poll.forEach(s => maxVotes = maxVotes + s.votes);
 	const votes = data.poll.map(kara => {
@@ -116,17 +116,17 @@ export async function getPollResults(): Promise<PollResults> {
 	const winners = poll.filter(c => +c.votes === +maxVotes);
 	const winner = sample(winners);
 	const state = getState();
-	const playlist_id = getState().currentPlaylistID;
-	if (state.publicPlaylistID !== state.currentPlaylistID) {
-		await copyKaraToPlaylist([winner.playlistcontent_id], playlist_id);
+	const plaid = getState().currentPlaid;
+	if (state.publicPlaid !== state.currentPlaid) {
+		await copyKaraToPlaylist([winner.plcid], plaid);
 	} else {
-		await editPLC([winner.playlistcontent_id], {
+		await editPLC([winner.plcid], {
 			pos: -1
 		});
 	}
 
-	emitWS('playlistInfoUpdated', playlist_id);
-	emitWS('playlistContentsUpdated', playlist_id);
+	emitWS('playlistInfoUpdated', plaid);
+	emitWS('playlistContentsUpdated', plaid);
 
 	const version = getSongVersion(winner);
 	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${winner.title}${version}`;
@@ -163,15 +163,8 @@ export function addPollVote(index: number, token: Token) {
 	if (voters.has(token.username.toLowerCase())) throw {
 		code: 429,
 		msg: 'POLL_USER_ALREADY_VOTED'
-	};
-	const choiceFound = poll.find(choice => +choice.index === +index);
-	if (!choiceFound) {
-		throw {
-			code: 404,
-			message: 'POLL_VOTE_ERROR'
-		};
-	}
-	poll[index].votes++;
+	};	
+	poll[index - 1].votes++;
 	voters.add(token.username.toLowerCase());
 	if (getState().player.mediaType === 'pauseScreen') displayPoll();
 	emitWS('songPollUpdated', poll);
@@ -197,13 +190,13 @@ export async function startPoll(): Promise<boolean> {
 	pollEnding = false;
 	// Create new poll
 	// Get a list of karaokes to add to the poll
-	const publicPlaylistID = getState().publicPlaylistID;
-	const currentPlaylistID = getState().currentPlaylistID;
+	const publicPlaylistID = getState().publicPlaid;
+	const currentPlaylistID = getState().currentPlaid;
 	let availableKaras: DBPLC[];
 	if (publicPlaylistID !== currentPlaylistID) {
 		const [pubpl, curpl] = await Promise.all([
-			getPlaylistContentsMini(getState().publicPlaylistID),
-			getPlaylistContentsMini(getState().currentPlaylistID)
+			getPlaylistContentsMini(getState().publicPlaid),
+			getPlaylistContentsMini(getState().currentPlaid)
 		]);
 		if (pubpl.length === 0) {
 			logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
@@ -212,7 +205,7 @@ export async function startPoll(): Promise<boolean> {
 		}
 		availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
 	} else {
-		const pl = await getPlaylistContentsMini(getState().publicPlaylistID);
+		const pl = await getPlaylistContentsMini(getState().publicPlaid);
 		const currentKara = pl.find(plc => plc.flag_playing === true);
 		availableKaras = pl.filter(plc => plc.pos > currentKara.pos);
 	}
@@ -236,7 +229,7 @@ export async function startPoll(): Promise<boolean> {
 	if (conf.Karaoke.StreamerMode.Twitch.Enabled) {
 		displayPollTwitch();
 	} else {
-		emitWS('newSongPoll',poll);
+		emitWS('songPollStarted',poll);
 	}
 	timerPoll();
 	if (getState().player.mediaType === 'pauseScreen') displayPoll();
@@ -262,7 +255,7 @@ async function displayPollTwitch() {
 }
 
 /** Get current poll options */
-export function getPoll(token: Token, from: number, size: number) {
+export function getPoll(token: Token) {
 	if (poll.length === 0) throw {
 		code: 425,
 		msg: 'POLL_NOT_ACTIVE'
@@ -270,8 +263,8 @@ export function getPoll(token: Token, from: number, size: number) {
 	return {
 		infos: {
 			count: poll.length,
-			from: +from,
-			to: +from + +size
+			from: 0,
+			to: poll.length
 		},
 		poll: poll,
 		timeLeft: clock.getTimeLeft(),

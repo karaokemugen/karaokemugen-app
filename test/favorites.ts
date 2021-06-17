@@ -40,13 +40,13 @@ describe('Favorites', () => {
 			duration: 5
 		};
 		const body = await commandBackend(token, 'createAutomix', data);
-		expect(body.playlist_id).to.not.be.NaN;
+		expect(body.plaid).to.not.be.NaN;
 		expect(body.playlist_name).to.include('AutoMix');
-		automixID = body.playlist_id;
+		automixID = body.plaid;
 	});
 
 	it('Verify automix exists and has one song', async () => {
-		const data = await commandBackend(token, 'getPlaylistContents', {pl_id: automixID});
+		const data = await commandBackend(token, 'getPlaylistContents', {plaid: automixID});
 		expect(data.content).to.have.lengthOf(1);
 		expect(data.infos.count).to.be.equal(1);
 		expect(data.content[0].kid).to.be.equal(favoriteKID);
@@ -65,7 +65,7 @@ describe('Favorites', () => {
 
 	it('Import favorites', async () => {
 		const data = {
-			favorites: JSON.stringify(favoritesExport)
+			favorites: favoritesExport
 		};
 		await commandBackend(token, 'importFavorites', data);
 	});

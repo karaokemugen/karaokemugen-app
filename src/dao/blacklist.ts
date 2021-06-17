@@ -72,12 +72,12 @@ export function deleteBlacklistCriteria(blc_id: number) {
 }
 
 export async function getBlacklistContents(params: KaraParams): Promise<DBBlacklist[]> {
-	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}};
+	const filterClauses = params.filter ? buildClauses(params.filter) : {sql: [], params: {}, additionalFrom: []};
 	let limitClause = '';
 	let offsetClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
-	const query = sqlgetBlacklistContents(filterClauses.sql, limitClause, offsetClause);
+	const query = sqlgetBlacklistContents(filterClauses.sql, limitClause, offsetClause, filterClauses.additionalFrom);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }

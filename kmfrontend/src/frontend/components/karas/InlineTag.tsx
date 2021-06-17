@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
-import GlobalContext from '../../../store/context';
+import GlobalContext, { GlobalContextInterface } from '../../../store/context';
 import { getSerieLanguage, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { View } from '../../types/view';
@@ -63,12 +63,12 @@ export default function InlineTag(props: Props) {
 		getTag();
 	}, []);
 
-	const context = useContext(GlobalContext);
+	const context: GlobalContextInterface = useContext(GlobalContext);
 
 	return (
-		<div className={`inline-tag ${props.scope === 'public' ? 'public' : ''}`} ref={node}>
+		<div className={`inline-tag ${props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? 'public' : ''}`} ref={node}>
 			<span className={props.className} onClick={() => {
-				if (props.scope === 'public') setShowPopup(!showPopup);
+				if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2) setShowPopup(!showPopup);
 			}}>
 				{props.tagType === 1 ? getSerieLanguage(context.globalState.settings.data, props.tag, props.karaLang)
 					:getTagInLocale(props.tag)}

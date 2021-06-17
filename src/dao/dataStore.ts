@@ -1,6 +1,7 @@
 import parallel from 'async-await-parallel';
+import { promises as fs } from 'fs';
 
-import { asyncStat,checksum, extractAllFiles } from '../lib/utils/files';
+import { checksum, extractAllFiles } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
@@ -11,12 +12,12 @@ const dataStore = {
 };
 
 export async function addKaraToStore(file: string) {
-	const stats = await asyncStat(file);
+	const stats = await fs.stat(file);
 	dataStore.karas.set(file, stats.mtimeMs);
 }
 
 export async function addTagToStore(file: string) {
-	const stats = await asyncStat(file);
+	const stats = await fs.stat(file);
 	dataStore.tags.set(file, stats.mtimeMs);
 }
 
@@ -37,7 +38,7 @@ export function getStoreChecksum() {
 }
 
 export async function editKaraInStore(file: string) {
-	const stats = await asyncStat(file);
+	const stats = await fs.stat(file);
 	dataStore.karas.set(file, stats.mtimeMs);
 }
 
@@ -46,7 +47,7 @@ export function removeKaraInStore(file: string) {
 }
 
 export async function editTagInStore(file: string) {
-	const stats = await asyncStat(file);
+	const stats = await fs.stat(file);
 	dataStore.tags.set(file, stats.mtimeMs);
 }
 
@@ -64,7 +65,7 @@ export async function baseChecksum(): Promise<string> {
 	profile('baseChecksum');
 	try {
 		const [karaFiles, tagFiles] = await Promise.all([
-			extractAllFiles('Karas'),
+			extractAllFiles('Karaokes'),
 			extractAllFiles('Tags')
 		]);
 		const fileCount = karaFiles.length + tagFiles.length;
@@ -77,6 +78,8 @@ export async function baseChecksum(): Promise<string> {
 		});
 		const files = [].concat(karaFiles, tagFiles);
 		const promises = [];
+		dataStore.karas.clear();
+		dataStore.tags.clear();
 		files.forEach(f => promises.push(() => processDataFile(f, task)));
 		await parallel(promises, 32);
 		sortKaraStore();
@@ -84,6 +87,14 @@ export async function baseChecksum(): Promise<string> {
 		task.end();
 		const checksum = getStoreChecksum();
 		logger.debug(`Store checksum : ${checksum}`, {service: 'Store'});
+		// Use this only when debugging store
+		/**
+		  	const store = JSON.stringify({
+			karas: [...dataStore.karas.entries()],
+			tags: [...dataStore.tags.entries()]
+		}, null, 2);
+		await fs.writeFile(resolve(getState().dataPath, `store-${Date.now()}.json`), store, 'utf-8');
+		*/
 		return checksum;
 	} catch(err) {
 		logger.warn('Unable to browse through your data files', {service: 'Store', obj: err});

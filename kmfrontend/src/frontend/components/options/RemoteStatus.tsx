@@ -62,7 +62,7 @@ class RemoteStatus extends Component<unknown, IState> {
 					('host' in this.state.remoteStatus.info ?
 						<>
 							<div className="settings-line">
-								<label className="control-label">
+								<label>
 									{i18next.t('REMOTE_STATUS.LABEL')}
 								</label>
 								<div>
@@ -70,7 +70,7 @@ class RemoteStatus extends Component<unknown, IState> {
 								</div>
 							</div>
 							<div className="settings-line">
-								<label className="control-label">
+								<label>
 									{i18next.t('REMOTE_URL')}
 								</label>
 								<div>
@@ -78,8 +78,10 @@ class RemoteStatus extends Component<unknown, IState> {
 								</div>
 							</div>
 							<div className="settings-line">
-								<label className="control-label">
-									{i18next.t('REMOTE_TOKEN')}
+								<label>
+									<span className="title">{i18next.t('REMOTE_TOKEN')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('REMOTE_TOKEN_TOOLTIP')}</span>
 								</label>
 								<div>
 									<span className="blur-hover">{this.state.remoteStatus.token}</span>
@@ -92,7 +94,7 @@ class RemoteStatus extends Component<unknown, IState> {
 						:
 						<>
 							<div className="settings-line">
-								<label className="control-label">
+								<label>
 									{i18next.t('REMOTE_STATUS.LABEL')}
 								</label>
 								<div>
@@ -105,10 +107,10 @@ class RemoteStatus extends Component<unknown, IState> {
 						</>
 					)
 					: <div className="settings-line">
-						<label className="col-xs-4 control-label">
-							{i18next.t('REMOTE_STATUS.LABEL')}
+						<label>
+							<span className="title">{i18next.t('REMOTE_STATUS.LABEL')}</span>
 						</label>
-						<div className="col-xs-6">
+						<div>
 							{i18next.t('REMOTE_STATUS.DISCONNECTED')}
 						</div>
 					</div>}

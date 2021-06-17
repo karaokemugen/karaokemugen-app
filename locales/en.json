@@ -78,7 +78,7 @@
 	"MENU_GOTO_SYSTEM": "&System panel",
 	"MENU_TOOLS": "&Tools",
 	"MENU_TOOLS_LOGS": "&Event log",
-	"MENU_TOOLS_DOWNLOADS": "&Download songs",
+	"MENU_TOOLS_DOWNLOADS": "&Download medias",
 	"MENU_TOOLS_KARAOKES": "&Song list",
 	"MENU_TOOLS_DATABASE": "Data&base",
 	"MENU_OPTIONS": "&Options",
@@ -88,7 +88,8 @@
 	"MENU_OPTIONS_SYSTEMCONFIG": "S&ystem settings",
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Preferences...",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System preferences...",
-	"MENU_OPTIONS_CHIBIPLAYER": "Display Chibi Player",
+	"MENU_OPTIONS_CHIBIPLAYER": "Show Chibi Player",
+	"MENU_OPTIONS_CHIBIPLAYLIST": "Show detached playlist",
 	"ERROR": "Error",
 	"YES": "Yes",
 	"NO": "No",
@@ -100,10 +101,10 @@
 	"UPDATE_DOWNLOADED": "Update downloaded",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karoake Mugen will restart to install the update...",
 	"ABOUT": {
-		"BUG_REPORT": "Report a bug"
+		"BUG_REPORT": "Report a bug",
+		"COPYRIGHT": "by Karaoke Mugen Dev Team, under MIT license",
+		"TITLE": "About Karaoke Mugen"
 	},
-	"BASE_UPDATE_NEEDED": "Your song database needs an update",
-	"BASE_UPDATE_BULLDOZERSERIES": "New in version 4.0:\n\nWe changed the way series are handled. Karaoke Mugen needs to redownload your songs' metadata (not medias). Do you want to continue?\n\nIf you click No, you'll need to redownload songs yourself for them to work, or update your song database manually.\n\nDo not click Yes if you are a karaoke base maintainer.",
 	"NO_KARAOKE_MODE_ANYMORE": {
 		"TITLE": "No more karaoke modes!",
 		"MESSAGE": "New in version 4.0:\n\nThe public/private karaoke modes have disappeared! Shock! Horror! *dramatic music ensues*\n\nPlaylists can now have both public and current flag at the same time.\n\n- The current flag means the playlist is the one used by the player\n- The public flag means the playlist is th eone receiving song suggestions from your users\n\nPut simply, combine both flags on a playlist to emulate the old private mode, and create two playlists, each one with a different flag to emulate the old public mode."
@@ -165,25 +166,17 @@
 		]
 	},
 	"UNKNOWN_ARTIST": "Unknown artist",
-	"UNKNOWN_REPOSITORY_DOWNLOAD": {
-		"TITLE": "Unknown repository",
-		"MESSAGE": "This song's repository is unknown in your repository list. Do you want to add it? It'll be used for online updates/sync of your song library.\n\nIf you say no, the song will be imported in your \"Local\" repository"
-	},
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Repository already exists",
 		"MESSAGE": "The repository you're trying to add already exists in your Karaoke Mugen database."
 	},
 	"MISSING_BINARIES": {
 		"TITLE": "Missing binaries",
-		"MESSAGE": "One or more binaries needed by Karaoke Mugen could not be found.\n\nEdit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres variables correctly for your OS.\n\nYou can download mpv for your OS from http://mpv.io/\n\nYou can download postgreSQL for your OS from http://postgresql.org/\n\nYou can download ffmpeg for your OS from http://ffmpeg.org\n\n(Windows Only) If the missing file is msvcr120.dll or msvcp120.dll, download Microsoft Visual C++ 2013 Redistribuable Package from Microsoft's website.\n\nError details: "
+		"MESSAGE": "One or more binaries needed by Karaoke Mugen could not be found.\n\nEdit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres variables correctly for your OS.\n\nYou can download mpv for your OS from http://mpv.io/\n\nYou can download postgreSQL for your OS from http://postgresql.org/\n\nYou can download ffmpeg for your OS from http://ffmpeg.org\n\nYou can download the patch utility at https://mugen.karaokes.moe/downloads/patch.exe (Windows) or https://mugen.karaokes.moe/downloads/patch (macOS) or GNU Patch 2.7+ package (Linux)\n\n(Windows Only) If the missing file is msvcr120.dll or msvcp120.dll, download Microsoft Visual C++ 2013 Redistribuable Package from Microsoft's website.\n\nError details: "
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Unknown repository",
 		"MESSAGE": "You're about to add the {{repoName}} repository to Karaoke Mugen. Are you sure?"
-	},
-	"UNKNOWN_REPOSITORY_NO_LOCAL": {
-		"TITLE": "Local repository unavailable",
-		"MESSAGE": "No local repository exists in your configuration. Please create one before importing this song again."
 	},
 	"GENERATING_READING": "Step 1/2 - Reading data...",
 	"GENERATING_DATABASE": "Step 2/2 - Updating database...",
@@ -198,5 +191,16 @@
 	"RESTARTING_PLAYER": "RESTARTING PLAYER...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "ADD A SONG TO THE PLAYLIST!",
 	"NEW_SESSION_NAME": "Karaoke on {{date}}",
-	"FULLSCREEN_TIP": "Press F to exit fullscreen."
+	"FULLSCREEN_TIP": "Press F to exit fullscreen.",
+	"NO_KARA_PLAYING": "No karaoke is playing",
+	"INTERFACE_OPENED": "Open",
+	"INTERFACE_RESTRICTED": "No suggestions",
+	"INTERFACE_CLOSED": "Closed",
+	"PROBLEMATIC_SONGS": "Problematic Songs",
+	"SYSTEM_MESSAGES": {
+		"ZIP_MIGRATION_FAILED": {
+			"TITLE": "Migration problem",
+			"BODY": "The {{repo}} repository wasn't able to be migrated to the new repositories management system. The repository was disabled, you can enable it again by going into the system panel and configure it correctly. You can use the Contact us button if you need help."
+		}
+	}
 }

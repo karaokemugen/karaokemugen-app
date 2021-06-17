@@ -3,6 +3,7 @@ import difference from 'lodash.difference';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
+import { isElectron, sendIPC } from '../../../utils/electron';
 import { commandBackend } from '../../../utils/socket';
 import { dotify, expand } from '../../../utils/tools';
 import Switch from '../generic/Switch';
@@ -103,10 +104,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 							{i18next.t('SETTINGS.KARAOKE.QUOTA_SETTINGS')}
 						</div>
 						<div className="settings-line">
-							<label title={i18next.t('QUOTA_TYPE_TOOLTIP')}>
-								{i18next.t('QUOTA_TYPE')}
-								&nbsp;
-								<i className="far fa-question-circle" />
+							<label htmlFor="Karaoke.Quota.Type">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_TOOLTIP')}</span>
 							</label>
 							<div>
 								<select
@@ -114,22 +115,23 @@ class KaraokeOptions extends Component<IProps, IState> {
 									onChange={this.onChange}
 									value={this.state.config['Karaoke.Quota.Type']}
 								>
-									<option value="0"> {i18next.t('QUOTA_TYPE_0')} </option>
-									<option value="1"> {i18next.t('QUOTA_TYPE_1')} </option>
-									<option value="2"> {i18next.t('QUOTA_TYPE_2')} </option>
+									<option value="0"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_0')} </option>
+									<option value="1"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_1')} </option>
+									<option value="2"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_2')} </option>
 								</select>
 							</div>
 						</div>
 						{this.state.config['Karaoke.Quota.Type'] === 2 ?
 							<div className="settings-line">
-								<label>
-									{i18next.t('TIME_BY_USER')}
+								<label htmlFor="Karaoke.Quota.Time">
+									<span className="title">{i18next.t('SETTINGS.KARAOKE.TIME_BY_USER')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.TIME_BY_USER_TOOLTIP')}</span>
 								</label>
 								<div>
 									<input
 										type="number"
 										data-exclude="true"
-										className=""
 										id="Karaoke.Quota.Time"
 										placeholder="1000"
 										onChange={this.onChange}
@@ -140,16 +142,15 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						{this.state.config['Karaoke.Quota.Type'] === 1 ?
 							<div className="settings-line">
-								<label title={i18next.t('SONGS_BY_USER_TOOLTIP')}>
-									{i18next.t('SONGS_BY_USER')}
-									&nbsp;
-									<i className="far fa-question-circle" />
+								<label htmlFor="Karaoke.Quota.Songs">
+									<span className="title">{i18next.t('SETTINGS.KARAOKE.SONGS_BY_USER')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.SONGS_BY_USER_TOOLTIP')}</span>
 								</label>
 								<div>
 									<input
 										type="number"
 										data-exclude="true"
-										className=""
 										id="Karaoke.Quota.Songs"
 										placeholder="1000"
 										onChange={this.onChange}
@@ -160,16 +161,15 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						{this.state.config['Karaoke.Quota.Type'] !== 0 ?
 							<div className="settings-line">
-								<label title={i18next.t('FREE_AUTO_TIME_TOOLTIP')}>
-									{i18next.t('FREE_AUTO_TIME')}
-									&nbsp;
-									<i className="far fa-question-circle" />
+								<label htmlFor="Karaoke.Quota.FreeAutoTime">
+									<span className="title">{i18next.t('SETTINGS.KARAOKE.FREE_AUTO_TIME')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.FREE_AUTO_TIME_TOOLTIP')}</span>
 								</label>
 								<div>
 									<input
 										type="number"
 										data-exclude="true"
-										className=""
 										id="Karaoke.Quota.FreeAutoTime"
 										placeholder="1000"
 										onChange={this.onChange}
@@ -180,8 +180,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						}
 
 						<div className="settings-line">
-							<label>
-								{i18next.t('ENGINEFREEUPVOTES')}
+							<label htmlFor="Karaoke.Quota.FreeUpVote">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.FREE_UPVOTES')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.FREE_UPVOTES_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.Quota.FreeUpVote" handleChange={this.onChange}
@@ -194,12 +196,13 @@ class KaraokeOptions extends Component<IProps, IState> {
 								className="settingsGroupPanel"
 							>
 								<div className="settings-line">
-									<label>
-										{i18next.t('ENGINEFREEUPVOTESREQUIREDMIN')}
+									<label htmlFor="Karaoke.Quota.FreeUpVotesRequiredMin">
+										<span className="title">{i18next.t('SETTINGS.KARAOKE.FREE_UPVOTES_REQUIREDMIN')}</span>
+										<br />
+										<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.FREE_UPVOTES_REQUIREDMIN_TOOLTIP')}</span>
 									</label>
 									<div>
 										<input
-											className=""
 											type="number"
 											data-exclude="true"
 											id="Karaoke.Quota.FreeUpVotesRequiredMin"
@@ -209,14 +212,13 @@ class KaraokeOptions extends Component<IProps, IState> {
 									</div>
 								</div>
 								<div className="settings-line">
-									<label title={i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT_TOOLTIP')}>
-										{i18next.t('ENGINEFREEUPVOTESREQUIREDPERCENT')}
-										&nbsp;
-										<i className="far fa-question-circle" />
+									<label htmlFor="Karaoke.Quota.FreeUpVotesRequiredPercent">
+										<span className="title">{i18next.t('SETTINGS.KARAOKE.FREE_UPVOTES_REQUIREDPERCENT')}</span>
+										<br />
+										<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP')}</span>
 									</label>
 									<div>
 										<input
-											className=""
 											type="number"
 											data-exclude="true"
 											id="Karaoke.Quota.FreeUpVotesRequiredPercent"
@@ -232,10 +234,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}
-								&nbsp;
-								<i className="far fa-question-circle" />
+							<label htmlFor="Karaoke.SmartInsert">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ENABLE_SMARTINSERT_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.SmartInsert" handleChange={this.onChange}
@@ -244,10 +246,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}
-								&nbsp;
-								<i className="far fa-question-circle" />
+							<label htmlFor="Karaoke.AutoBalance">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ENABLE_AUTOBALANCE_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.AutoBalance" handleChange={this.onChange}
@@ -256,10 +258,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('ENGINEAUTOPLAY_TOOLTIP')}>
-								{i18next.t('ENGINEAUTOPLAY')}
-              				&nbsp;
-  						<i className="far fa-question-circle" />
+							<label htmlFor="Karaoke.AutoPlay">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.AUTOPLAY')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.AUTOPLAY_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.Autoplay" handleChange={this.onChange}
@@ -268,10 +270,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.TOOLTIP')}>
-								{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.NAME')}
-								&nbsp;
-								<i className="far fa-question-circle" />
+							<label htmlFor="Playlist.EndOfPlaylistAction">
+								<span className="title">{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.NAME')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.PLAYLIST.ENDOFPLAYLISTACTION.TOOLTIP')}</span>
 							</label>
 							<div>
 								<select
@@ -288,8 +290,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						{this.state.config['Playlist.EndOfPlaylistAction'] === 'random' ?
 							<div className="settings-line">
-								<label>
-									{i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTERENDMESSAGE')}
+								<label htmlFor="Playlist.RandomSongsAfterEndMessage">
+									<span className="title">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTERENDMESSAGE')}</span>
+									<br />
+									<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP')}</span>
 								</label>
 								<div>
 									<Switch idInput="Playlist.RandomSongsAfterEndMessage" handleChange={this.onChange}
@@ -298,8 +302,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 							</div> : null}
 
 						<div className="settings-line">
-							<label>
-								{i18next.t('ENGINEALLOWDUPLICATES')}
+							<label htmlFor="Playlist.AllowDuplicates">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.ALLOW_DUPLICATES')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ALLOW_DUPLICATES_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Playlist.AllowDuplicates" handleChange={this.onChange}
@@ -312,8 +318,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS')}
+							<label htmlFor="Playlist.Medias.Jingles.Enabled">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_JINGLES_VIDEOS_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Jingles.Enabled" handleChange={this.onChange}
@@ -340,8 +348,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 							</div>
 						</div>
 						<div className="settings-line">
-							<label>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS')}
+							<label htmlFor="Playlist.Medias.Sponsors.Enabled">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_SPONSORS_VIDEOS_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Sponsors.Enabled" handleChange={this.onChange}
@@ -370,10 +380,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS')}
-								&nbsp;
-								<i className="far fa-question-circle" />
+							<label htmlFor="Playlist.Medias.Intros.Enabled">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_INTRO_VIDEOS_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Intros.Enabled" handleChange={this.onChange}
@@ -398,10 +408,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS')}
-								&nbsp;
-								<i className="far fa-question-circle" />
+							<label htmlFor="Playlist.Medias.Outros.Enabled">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_OUTRO_VIDEOS_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Outros.Enabled" handleChange={this.onChange}
@@ -425,10 +435,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 							</div>
 						</div>
 						<div className="settings-line">
-							<label title={i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS')}
-								&nbsp;
-  								<i className="far fa-question-circle" />
+							<label htmlFor="Playlist.Medias.Encores.Enabled">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.PLAYLIST_ENCORES_VIDEOS_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Playlist.Medias.Encores.Enabled" handleChange={this.onChange}
@@ -457,23 +467,33 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('CLASSIC_MODE_TOOLTIP')}>
-								{i18next.t('CLASSIC_MODE')}
-              					&nbsp;
-  								<i className="far fa-question-circle" />
+							<label htmlFor="Karaoke.ClassicMode">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.CLASSIC_MODE_TOOLTIP')}</span>
 							</label>
 							<div>
-								<Switch idInput="Karaoke.ClassicMode" handleChange={this.onChange}
-									isChecked={this.state.config['Karaoke.ClassicMode']} />
+								<Switch
+									idInput="Karaoke.ClassicMode"
+									handleChange={this.onChange}
+									isChecked={this.state.config['Karaoke.ClassicMode']}
+									disabled={this.state.config['Karaoke.StreamerMode.Enabled']}
+								/>
 							</div>
 						</div>
 						<div className="settings-line">
-							<label>
-								{i18next.t('STREAM_MODE')}
+							<label htmlFor="Karaoke.StreamerMode.Enabled">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE_TOOLTIP')}</span>
 							</label>
 							<div>
-								<Switch idInput="Karaoke.StreamerMode.Enabled" handleChange={this.onChange}
-									isChecked={this.state.config['Karaoke.StreamerMode.Enabled']} />
+								<Switch
+									idInput="Karaoke.StreamerMode.Enabled"
+									handleChange={this.onChange}
+									isChecked={this.state.config['Karaoke.StreamerMode.Enabled']}
+									disabled={this.state.config['Karaoke.ClassicMode']}
+								/>
 							</div>
 						</div>
 						{this.state.config['Karaoke.StreamerMode.Enabled'] ?
@@ -482,14 +502,24 @@ class KaraokeOptions extends Component<IProps, IState> {
 								className="settingsGroupPanel"
 							>
 								<div className="settings-line">
-									<label>
-										{i18next.t('STREAM_PAUSE_DURATION')}
+									<p>
+										{i18next.t('SETTINGS.KARAOKE.STREAMER_MODE_LABEL')}&nbsp;
+										{isElectron() ? <a href="#" onClick={e => {
+											e.preventDefault();
+											sendIPC('openFolder', { type: 'streamFiles' });
+										}}>{i18next.t('SETTINGS.KARAOKE.OPEN_STREAMER_FILES')}</a> : null}
+									</p>
+								</div>
+								<div className="settings-line">
+									<label htmlFor="Karaoke.StreamerMode.PauseDuration">
+										<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_PAUSE_DURATION')}</span>
+										<br />
+										<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_PAUSE_DURATION_TOOLTIP')}</span>
 									</label>
 									<div>
 										<input
 											type="number"
 											data-exclude="true"
-											className=""
 											id="Karaoke.StreamerMode.PauseDuration"
 											placeholder="20"
 											onChange={this.onChange}
@@ -498,8 +528,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 									</div>
 								</div>
 								<div className="settings-line">
-									<label>
-										{i18next.t('STREAM_TWITCH')}
+									<label htmlFor="Karaoke.StreamerMode.Twitch.Enabled">
+										<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH')}</span>
+										<br />
+										<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_TOOLTIP')}</span>
 									</label>
 									<div>
 										<Switch idInput="Karaoke.StreamerMode.Twitch.Enabled" handleChange={this.onChange}
@@ -512,16 +544,15 @@ class KaraokeOptions extends Component<IProps, IState> {
 										className="settingsGroupPanel"
 									>
 										<div className="settings-line">
-											<a href="https://twitchapps.com/tmi/">{i18next.t('STREAM_TWITCH_OAUTH_TOKEN_GET')}</a>
+											<a href="https://twitchapps.com/tmi/">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN_GET')}</a>
 										</div>
 										<div className="settings-line">
-											<label>
-												{i18next.t('STREAM_TWITCH_OAUTH_TOKEN')}
+											<label htmlFor="Karaoke.StreamerMode.Twitch.OAuth">
+												<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN')}</span>
 											</label>
 											<div>
 												<input type="password"
 													data-exclude="true"
-													className=""
 													id="Karaoke.StreamerMode.Twitch.OAuth"
 													onChange={this.onChange}
 													value={this.state.config['Karaoke.StreamerMode.Twitch.OAuth']}
@@ -529,12 +560,11 @@ class KaraokeOptions extends Component<IProps, IState> {
 											</div>
 										</div>
 										<div className="settings-line">
-											<label>
-												{i18next.t('STREAM_TWITCH_CHANNEL')}
+											<label htmlFor="Karaoke.StreamerMode.Twitch.Channel">
+												<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_CHANNEL')}</span>
 											</label>
 											<div>
 												<input
-													className=""
 													id="Karaoke.StreamerMode.Twitch.Channel"
 													onChange={this.onChange}
 													value={this.state.config['Karaoke.StreamerMode.Twitch.Channel']}
@@ -547,16 +577,15 @@ class KaraokeOptions extends Component<IProps, IState> {
 						}
 
 						<div className="settings-line">
-							<label>
-								{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')}
-								&nbsp;
-								<i className="far fa-question-circle" />
+							<label htmlFor="Karaoke.MinutesBeforeSessionEndsWarning">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP')}</span>
 							</label>
 							<div>
 								<input
 									type="number"
 									data-exclude="true"
-									className=""
 									id="Karaoke.MinutesBeforeSessionEndsWarning"
 									placeholder="15"
 									onChange={this.onChange}
@@ -565,8 +594,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 							</div>
 						</div>
 						<div className="settings-line">
-							<label>
-								{i18next.t('ENGINESONGPOLL')}
+							<label htmlFor="Karaoke.Poll.Enabled">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.SONGPOLL')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.SONGPOLL_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Karaoke.Poll.Enabled" handleChange={this.onChange}
@@ -577,12 +608,13 @@ class KaraokeOptions extends Component<IProps, IState> {
 						{this.state.config['Karaoke.Poll.Enabled'] ?
 							<div id="songPollSettings" className="settingsGroupPanel">
 								<div className="settings-line">
-									<label>
-										{i18next.t('ENGINESONGPOLLCHOICES')}
+									<label htmlFor="Karaoke.Poll.Choices">
+										<span className="title">{i18next.t('SETTINGS.KARAOKE.SONGPOLLCHOICES')}</span>
+										<br />
+										<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.SONGPOLLCHOICES_TOOLTIP')}</span>
 									</label>
 									<div>
 										<input
-											className=""
 											type="number"
 											data-exclude="true"
 											id="Karaoke.Poll.Choices"
@@ -592,12 +624,13 @@ class KaraokeOptions extends Component<IProps, IState> {
 									</div>
 								</div>
 								<div className="settings-line">
-									<label>
-										{i18next.t('ENGINESONGPOLLTIMEOUT')}
+									<label htmlFor="Karaoke.Poll.Choices">
+										<span className="title">{i18next.t('SETTINGS.KARAOKE.SONGPOLLTIMEOUT')}</span>
+										<br />
+										<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.SONGPOLLTIMEOUT_TOOLTIP')}</span>
 									</label>
 									<div>
 										<input
-											className=""
 											type="number"
 											data-exclude="true"
 											id="Karaoke.Poll.Timeout"
@@ -613,8 +646,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label>
-								{i18next.t('FETCHPOPULARSONGS')}
+							<label htmlFor="Online.FetchPopularSongs">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.FETCH_POPULAR_SONGS')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.FETCH_POPULAR_SONGS_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Online.FetchPopularSongs" handleChange={this.onChange}
@@ -623,18 +658,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label>
-								{i18next.t('ONLINEURL')}
-							</label>
-							<div>
-								<Switch idInput="Online.URL" handleChange={this.onChange}
-									isChecked={this.state.config['Online.URL']} />
-							</div>
-						</div>
-
-						<div className="settings-line">
-							<label>
-								{i18next.t('REMOTE')}
+							<label htmlFor="Online.Remote">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.REMOTE')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.REMOTE_TOOLTIP')}</span>
 							</label>
 							<div>
 								<Switch idInput="Online.Remote" handleChange={this.onChange}
@@ -650,8 +677,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label>
-								{i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS')}
+							<label htmlFor="Playlist.MysterySongs.Hide">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.HIDE_INVISIBLE_SONGS_TOOLTIP')}</span>
 							</label>
 							<div>
 								<select
@@ -666,10 +695,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN')}
-              					&nbsp;
-  								<i className="far fa-question-circle" />
+							<label htmlFor="Playlist.MysterySongs.AddedSongVisibilityAdmin">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}</span>
 							</label>
 							<div>
 								<select
@@ -684,10 +713,10 @@ class KaraokeOptions extends Component<IProps, IState> {
 						</div>
 
 						<div className="settings-line">
-							<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP')}>
-								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC')}
-								&nbsp;
-  								<i className="far fa-question-circle" />
+							<label htmlFor="Playlist.MysterySongs.AddedSongVisibilityPublic">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP')}</span>
 							</label>
 							<div>
 								<select
@@ -703,7 +732,9 @@ class KaraokeOptions extends Component<IProps, IState> {
 
 						<div className="settings-line">
 							<label>
-								{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS')}
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_TOOLTIP')}</span>
 							</label>
 							<div className='mysterySongs'>
 								{this.state.config['Playlist.MysterySongs.Labels'].map((value: string) => {

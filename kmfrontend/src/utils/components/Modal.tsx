@@ -13,6 +13,7 @@ interface IProps {
 	message: any;
 	forceSmall: boolean | undefined;
 	callback: (param?: boolean | string) => void;
+	abortCallback?: boolean
 }
 
 interface IState {
@@ -44,6 +45,9 @@ class Modal extends Component<IProps, IState> {
 	};
 
 	abortModal = () => {
+		if (this.props.abortCallback) {
+			this.props.callback(false);
+		}
 		closeModal(this.context.globalDispatch);
 	};
 
@@ -79,7 +83,7 @@ class Modal extends Component<IProps, IState> {
 								<div className="modal-message">{this.props.message}</div>
 								{this.props.type === 'prompt' ?
 									<div className="form">
-										<input type="text" autoFocus className="modal-input form-control" defaultValue={this.state.promptText}
+										<input type="text" autoFocus className="modal-input" defaultValue={this.state.promptText}
 											onChange={(event) => this.setState({ promptText: event.target.value })} />
 									</div> : null
 								}

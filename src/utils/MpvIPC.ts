@@ -12,6 +12,7 @@ class Mpv extends EventEmitter {
 	isRunning: boolean
 	observedProperties: string[]
 	program: ChildProcess
+	lastCommandId: number
 
 	constructor(binary: string, socket: string, args: string[]) {
 		super();
@@ -21,28 +22,25 @@ class Mpv extends EventEmitter {
 		this.socket = new Socket();
 		this.isRunning = false;
 		this.observedProperties = [];
+		this.lastCommandId = 0;
 		this.setupEvents();
 	}
 
-	private genCommand() {
-		// return [this.binary, ['--idle', '--msg-level=all=no,ipc=v', `--input-ipc-server=${this.socketlink}`, ...this.args]];
-		return {
-			binary: this.binary,
-			options: ['--idle', '--msg-level=all=no,ipc=v', `--input-ipc-server=${this.socketlink}`].concat(this.args)
-		};
+	private genCommand(): [string, string[]] {
+		return [this.binary, ['--idle', '--msg-level=all=no,ipc=v', `--input-ipc-server=${this.socketlink}`, ...this.args]];
 	}
 
 	private launchMpv() {
 		return new Promise<void>((resolve, reject) => {
 			setTimeout(reject, 10000, new Error('Timeout')); // Set timeout to avoid hangs
 			const command = this.genCommand();
-			const program = spawn(command.binary, command.options, {stdio: ['ignore', 'pipe', 'pipe']});
-			program.unref(); // Don't lock event loop
+			const program = spawn(...command, {stdio: ['ignore', 'pipe', 'pipe']});
 			program.once('error', err => {
 				reject(err);
 			});
 			program.once('exit', code => {
 				if (code !== 0) reject(new Error(`Mpv process exited with ${code}`));
+				this.destroyConnection(code !== 0);
 			});
 			program.stdout.on('data', data => {
 				const str = data.toString();
@@ -61,7 +59,7 @@ class Mpv extends EventEmitter {
 					program.stderr.removeAllListeners();
 					program.stdout.destroy();
 					program.stderr.destroy();
-					program.kill();
+					program.kill('SIGINT');
 					reject(new Error(str));
 				}
 			});
@@ -97,49 +95,60 @@ class Mpv extends EventEmitter {
 			});
 		});
 		// Disconnect hook
-		this.socket.on('end', (err: boolean) => {
-			this.destroyConnection();
-			this.emit('close', err);
+		this.socket.on('close', (err: boolean) => {
+			this.destroyConnection(err);
 		});
 		this.socket.unref();
 	}
 
+	private genCommandId() {
+		if (this.lastCommandId > 999) this.lastCommandId = 0;
+		return ++this.lastCommandId;
+	}
+
 	private ishukan(command: MpvCommand) {
+		// LET'S ishukan COMMUNICATION :) (come on it's funny)
 		return new Promise((resolve, reject) => {
+			const req_id = this.genCommandId();
+			const command_with_id = {...command, request_id: req_id, async: true};
+			const dataHandler = (data: Record<string, any>) => {
+				if (req_id === data.request_id) {
+					data.error === 'success' ? resolve(data):reject(data);
+					this.off('output', dataHandler);
+					this.socket.off('error', reject);
+				}
+			};
 			try {
-				if (!this.socket.writable) reject(new Error('The socket is not writeable'));
-				// LET'S ishukan COMMUNICATION :) (boh si c'est marrant arrête)
-				const req_id = Math.round(Math.random() * 1000);
-				const command_with_id = {...command, request_id: req_id, async: true};
-				const dataHandler = (data: string) => {
-					data.split('\n').forEach((payload: string) => {
-						if (payload.length > 0) {
-							const res = JSON.parse(payload);
-							if (req_id === res.request_id) {
-								this.socket.removeListener('data', dataHandler);
-								resolve(res);
-								this.socket.removeListener('error', reject);
-							}
-						}
+				if (!this.socket.writable) {
+					// IT SHOULDN'T HAPPEN BUT WHATEVER.
+					this.destroyConnection(true);
+					reject(new Error('The socket is not writable'));
+				} else {
+					this.on('output', dataHandler);
+					this.socket.once('error', reject);
+					this.socket.write(`${JSON.stringify(command_with_id)}\n`, 'utf8', (err) => {
+						if (err) reject(err);
 					});
-				};
-				this.socket.on('data', dataHandler);
-				this.socket.once('error', reject);
-				this.socket.write(`${JSON.stringify(command_with_id)}\n`, 'utf8', (err) => {
-					if (err) reject(err);
-				});
+				}
 			} catch (err) {
 				reject(err);
+				this.off('output', dataHandler);
+				this.socket.off('error', reject);
 			}
 		});
 	}
 
-	private destroyConnection() {
+	private destroyConnection(err: boolean) {
+		if (!this.isRunning) {
+			// If isRunning is false this means this function was already triggered by another node event
+			return;
+		}
 		this.isRunning = false;
 		this.observedProperties = [];
 		this.socket.removeAllListeners();
 		this.socket.destroy();
-		if (!this.program.exitCode) this.program.kill();
+		if (!this.program.exitCode) this.program.kill('SIGINT');
+		this.emit('close', err);
 	}
 
 	async start() {
@@ -155,10 +164,8 @@ class Mpv extends EventEmitter {
 		if (!this.isRunning) throw new Error('MPV is not running');
 		await this.ishukan({command: ['quit']}).catch(_err => {
 			// Ow. mpv is probably already dying, just destroy the connection
-			// this.destroyConnection();
 		});
-		this.destroyConnection();
-		this.emit('stop');
+		this.destroyConnection(false);
 		return true;
 	}
 

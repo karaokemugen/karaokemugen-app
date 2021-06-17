@@ -5,13 +5,13 @@ import React, { Component } from 'react';
 
 import { GlobalContextInterface } from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import { displayMessage, is_touch_device } from '../../../utils/tools';
+import {displayMessage, is_touch_device, isNonStandardPlaylist, nonStandardPlaylists} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 
 interface IProps {
 	checkedKaras: KaraElement[]
-	idPlaylist: number;
-	idPlaylistTo: number;
+	plaid: string;
+	plaidTo: string;
 	publicOuCurrent?: boolean | undefined;
 	topKaraMenu: number;
 	leftKaraMenu: number;
@@ -52,7 +52,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 		}
 		try {
 			await commandBackend('editPLC', {
-				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				plc_ids: this.props.checkedKaras.map(a => a.plcid),
 				flag_free: true
 			});
 			this.setState({ effect_free: true });
@@ -66,7 +66,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 	changeVisibilityKaraOn = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				plc_ids: this.props.checkedKaras.map(a => a.plcid),
 				flag_visible: true
 			});
 			this.setState({ effect_visibility: true });
@@ -79,7 +79,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 	changeVisibilityKaraOff = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: this.props.checkedKaras.map(a => a.playlistcontent_id),
+				plc_ids: this.props.checkedKaras.map(a => a.plcid),
 				flag_visible: false
 			});
 			this.setState({ effect_visibility: true });
@@ -142,7 +142,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 					top: window.innerHeight < (this.props.topKaraMenu + 250) ? undefined : this.props.topKaraMenu,
 					left: window.innerWidth < (this.props.leftKaraMenu + 250) ? window.innerWidth - 250 : this.props.leftKaraMenu
 				}}>
-				{this.props.idPlaylistTo >= 0 && this.props.idPlaylist >= 0 ?
+				{!isNonStandardPlaylist(this.props.plaidTo) && !isNonStandardPlaylist(this.props.plaid) ?
 					<li>
 						<a href="#" onContextMenu={this.onRightClickTransfer} onClick={(event) => {
 							this.props.transferKara(event);
@@ -154,7 +154,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.idPlaylist !== -5 ?
+				{this.props.plaid !== nonStandardPlaylists.favorites ?
 					<li className="animate-button-container">
 						<a href="#" onClick={this.makeFavorite}>
 							<i className="fas fa-star" />
@@ -182,7 +182,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.idPlaylist >= 0 ?
+				{!isNonStandardPlaylist(this.props.plaid) ?
 					<li className="animate-button-container">
 						<a href="#" onClick={this.changeVisibilityKaraOn}
 							title={i18next.t('KARA_MENU.VISIBLE_ON')}>
@@ -197,7 +197,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.idPlaylist >= 0 ?
+				{!isNonStandardPlaylist(this.props.plaid) ?
 					<li className="animate-button-container">
 						<a href="#" onClick={this.changeVisibilityKaraOff}
 							title={i18next.t('KARA_MENU.VISIBLE_OFF')}>
@@ -212,7 +212,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.idPlaylist !== -2 && this.props.idPlaylist !== -4 ?
+				{this.props.plaid !== nonStandardPlaylists.blacklist && this.props.plaid !== nonStandardPlaylists.blc ?
 					<li className="animate-button-container">
 						<a href="#" onClick={this.addToBlacklist}>
 							<i className="fas fa-ban" />
@@ -226,7 +226,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.idPlaylist !== -3 ?
+				{this.props.plaid !== nonStandardPlaylists.whitelist ?
 					<li className="animate-button-container">
 						<a href="#" onClick={this.addToWhitelist}>
 							<i className="fas fa-check-circle" />

@@ -10,7 +10,7 @@ import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { SingleToken, Tokens } from '../types/user';
 import sentry from '../utils/sentry';
-import { startSub } from '../utils/user_pubsub';
+import { startSub } from '../utils/userPubSub';
 import { convertToRemoteFavorites } from './favorites';
 import { checkPassword, createJwtToken, createUser, editUser, findUserByName } from './user';
 
@@ -133,9 +133,11 @@ export async function editRemoteUser(user: User, token: string) {
 	// Create the form data sent as payload to edit remote user
 	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(resolvedPathAvatars(), user.avatar_file)), user.avatar_file);
 	form.append('nickname', user.nickname);
-	if (user.bio) form.append('bio', user.bio);
-	if (user.email) form.append('email', user.email);
-	if (user.url) form.append('url', user.url);
+	form.append('bio', user.bio ? user.bio : '');
+	form.append('location', user.location ? user.location : '');
+	if (typeof user.flag_sendstats === 'boolean') form.append('flag_sendstats', user.flag_sendstats.toString());
+	form.append('email', user.email ? user.email : '');
+	form.append('url', user.url ? user.url : '');
 	if (user.password) form.append('password', user.password);
 	if (user.series_lang_mode) form.append('series_lang_mode', user.series_lang_mode);
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
@@ -225,8 +227,10 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 					bio: remoteUser.bio,
 					url: remoteUser.url,
 					email: remoteUser.email,
+					location: remoteUser.location,
 					nickname: remoteUser.nickname,
 					password: password,
+					flag_sendstats: remoteUser.flag_sendstats,
 					series_lang_mode: remoteUser.series_lang_mode,
 					main_series_lang: remoteUser.main_series_lang,
 					fallback_series_lang: remoteUser.fallback_series_lang
@@ -257,18 +261,18 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	if (await findUserByName(username)) throw {code: 409, msg: 'User already exists locally, delete it first.'};
 	// Verify that password matches with online before proceeding
 	const onlineToken = await remoteLogin(token.username, password);
-	await HTTP(`https://${instance}/api/users`, {
-		method: 'DELETE',
-		headers: {
-			authorization: onlineToken
-		}
-	});
 	// Renaming user locally
 	const user = await findUserByName(token.username);
 	user.login = username;
 	await editUser(token.username, user, null, 'admin', {
 		editRemote: false,
 		renameUser: true
+	});
+	await HTTP(`https://${instance}/api/users`, {
+		method: 'DELETE',
+		headers: {
+			authorization: onlineToken
+		}
 	});
 	emitWS('userUpdated', token.username);
 	return {

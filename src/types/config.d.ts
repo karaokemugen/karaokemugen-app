@@ -1,4 +1,5 @@
 import { Repository } from '../lib/types/repo';
+import { MpvHardwareDecodingOptions } from './MpvIPC';
 
 export interface Config {
 	App: {
@@ -11,7 +12,6 @@ export interface Config {
 		Host?: string,
 		Port?: number,
 		Users?: boolean,
-		URL?: boolean,
 		Stats?: boolean,
 		ErrorTracking?: boolean,
 		Discord?: {
@@ -29,7 +29,8 @@ export interface Config {
 		}
 		MediasHost?: string,
 		Remote?: boolean,
-		FetchPopularSongs?: boolean
+		FetchPopularSongs?: boolean,
+		AllowDownloads?: boolean
 	},
 	Frontend: {
 		GeneratePreviews?: boolean,
@@ -60,6 +61,11 @@ export interface Config {
 		ChibiPlayer?: {
 			Enabled?: boolean,
 			AlwaysOnTop?: boolean,
+			PositionX?: number,
+			PositionY?: number,
+		},
+		ChibiPlaylist?: {
+			Enabled?: boolean,
 			PositionX?: number,
 			PositionY?: number,
 		}
@@ -122,7 +128,7 @@ export interface Config {
 		ProgressBarDock?: boolean,
 		ExtraCommandLine?: string,
 		Borders?: boolean,
-		HardwareDecoding?: 'auto-safe' | 'no' | 'yes'
+		HardwareDecoding?: MpvHardwareDecodingOptions
 		Volume?: number
 	},
 	Playlist: {
@@ -188,6 +194,11 @@ export interface Config {
 				Windows?: string,
 				OSX?: string,
 				Linux?: string
+			},
+			patch: {
+				Windows?: string,
+				OSX?: string,
+				Linux?: string
 			}
 		},
 		Repositories: Repository[]
@@ -205,6 +216,7 @@ export interface Config {
 			SessionExports?: string,
 			Import?: string,
 			Avatars?: string,
+			StreamFiles?: string
 		}
 	}
 }

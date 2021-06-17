@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { Repository } from '../../../../src/lib/types/repo';
+import { Feed } from '../../../../src/types/feeds';
 import { Session } from '../../../../src/types/session';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { logout } from '../../store/actions/auth';
@@ -70,8 +71,11 @@ class WelcomePage extends Component<unknown, IState> {
 	};
 
 	getDownloadQueue = async () => {
-		const downloadQueue = await commandBackend('getDownloads', undefined, false, 300000);
-		if (downloadQueue.length > 0 && !sessionStorage.getItem('dlQueueRestart')) {
+		const [downloadQueue, downloadQueueStatus] = await Promise.all([
+			commandBackend('getDownloads', undefined, false, 300000),
+			commandBackend('getDownloadQueueStatus', undefined, false, 300000),
+		]);
+		if (downloadQueueStatus === 'stopped' && downloadQueue.length > 0 && !sessionStorage.getItem('dlQueueRestart')) {
 			showModal(this.context.globalDispatch, <RestartDownloadsModal />);
 		}
 	}
@@ -117,16 +121,16 @@ class WelcomePage extends Component<unknown, IState> {
 
 	getNewsFeed = async () => {
 		try {
-			const res = await commandBackend('getNewsFeed', undefined, undefined, 300000);
-			const data = res;
-			const base = data[0];
-			const appli = data[1];
-			const mast = data[2];
-			let news: Array<News> = [];
-			if (base.body && appli.body) {
+			const data: Feed[] = await commandBackend('getNewsFeed', undefined, undefined, 300000);
+			const base = data.find(d => d.name === 'git_base');
+			const appli = data.find(d => d.name === 'git_app');
+			const mast = data.find(d => d.name === 'mastodon');
+			const system = data.find(d => d.name === 'system');
+			const news: News[] = [];
+			if (base?.body && appli?.body) {
 				base.body = JSON.parse(base.body);
 				appli.body = JSON.parse(appli.body);
-				news = [
+				news.push(
 					{
 						html: base.body.feed.entry[0].content._text,
 						date: base.body.feed.entry[0].updated._text,
@@ -159,10 +163,9 @@ class WelcomePage extends Component<unknown, IState> {
 						link: appli.body.feed.entry[0].link._attributes.href,
 						type: 'app'
 					}
-				];
+				);
 			}
-
-			if (mast.body) {
+			if (mast?.body) {
 				mast.body = JSON.parse(mast.body);
 				const max =
 					mast.body.rss.channel.item.length > 3
@@ -181,12 +184,17 @@ class WelcomePage extends Component<unknown, IState> {
 					});
 				}
 			}
+			if (system?.body) {
+				for (const message of JSON.parse(system.body)) {
+					news.push(message);
+				}
+			}
 			news.sort((a, b) => {
 				const dateA = new Date(a.date);
 				const dateB = new Date(b.date);
 				return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
 			});
-			this.setState({ news: news });
+			this.setState({ news });
 		} catch (err) {
 			// error already display
 		}
@@ -211,8 +219,8 @@ class WelcomePage extends Component<unknown, IState> {
 					<div className="aside">
 						<nav>
 							<ul>
-								<li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-fw fa-pencil-alt" />{i18next.t('WLCM_CONTACT')}</a></li>
-								<li><a href="http://mugen.karaokes.moe/"><i className="fas fa-fw fa-link" />{i18next.t('WLCM_SITE')}</a></li>
+								<li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-fw fa-pencil-alt" />{i18next.t('WELCOME_PAGE.CONTACT')}</a></li>
+								<li><a href="http://mugen.karaokes.moe/"><i className="fas fa-fw fa-link" />{i18next.t('WELCOME_PAGE.SITE')}</a></li>
 								<li><a href="#" onClick={this.toggleProfileModal}>
 									<i className="fas fa-fw fa-user" /><span>{this.context.globalState.settings.data.user.nickname}</span>
 								</a></li>
@@ -255,56 +263,56 @@ class WelcomePage extends Component<unknown, IState> {
 								this.context?.globalState.settings.data.user?.flag_tutorial_done
 									? <article className="tile-manage">
 										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-											<i className="fas fa-fw fa-list" /><span>{i18next.t('WLCM_KARAMANAGER')}</span>
+											<i className="fas fa-fw fa-list" /><span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
 										</button>
 									</article>
 									: <article className="tile-tutorial">
 										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-											<i className="fas fa-fw fa-hand-point-right" /><span>{i18next.t('WLCM_GETSTARTED')}</span>
+											<i className="fas fa-fw fa-hand-point-right" /><span>{i18next.t('WELCOME_PAGE.GETSTARTED')}</span>
 										</button>
 									</article>
 							}
 							<article className="tile-system">
 								<button type="button" onClick={() => window.location.assign('/system')}>
-									<i className="fas fa-fw fa-cog" /><span>{i18next.t('WLCM_ADMINISTRATION')}</span>
+									<i className="fas fa-fw fa-cog" /><span>{i18next.t('WELCOME_PAGE.ADMINISTRATION')}</span>
 								</button>
 							</article>
 							<article className="tile-system">
 								<button type="button" onClick={() => window.location.assign('/public' + window.location.search)}>
-									<i className="fas fa-fw fa-user" /><span>{i18next.t('WLCM_PUBLIC')}</span>
+									<i className="fas fa-fw fa-user" /><span>{i18next.t('WELCOME_PAGE.PUBLIC')}</span>
 								</button>
 							</article>
 							<article className="tile-help">
 								<button type="button" onClick={() => window.location.assign('https://mugen.karaokes.moe/docs/')}>
-									<i className="fas fa-fw fa-question-circle" /><span>{i18next.t('WLCM_HELP')}</span>
+									<i className="fas fa-fw fa-question-circle" /><span>{i18next.t('WELCOME_PAGE.HELP')}</span>
 								</button>
 							</article>
 							<article className="tile-download">
 								<button type="button" onClick={() => window.location.assign('/system/karas/download')}>
-									<i className="fas fa-fw fa-download" /><span>{i18next.t('WLCM_DOWNLOAD')}</span>
+									<i className="fas fa-fw fa-download" /><span>{i18next.t('WELCOME_PAGE.DOWNLOAD')}</span>
 								</button>
 							</article>
 							<article className="tile-logs">
 								<button type="button" onClick={() => window.location.assign('/system/log')}>
-									<i className="fas fa-fw fa-terminal" /><span>{i18next.t('WLCM_LOGS')}</span>
+									<i className="fas fa-fw fa-terminal" /><span>{i18next.t('WELCOME_PAGE.LOGS')}</span>
 								</button>
 							</article>
 							<article className="tile-stats">
 								<blockquote>
 									<label>
-										<i className="fas fa-fw fa-chart-line" />{i18next.t('WLCM_STATS')}
+										<i className="fas fa-fw fa-chart-line" />{i18next.t('WELCOME_PAGE.STATS')}
 									</label>
 									<ul>
 										<li onClick={() => window.location.assign('/system/karas')}>
-											<strong>{i18next.t('WLCM_STATS_KARAS')}</strong>
+											<strong>{i18next.t('WELCOME_PAGE.STATS_KARAS')}</strong>
 											<span>{this.state.stats?.karas}</span>
 										</li>
 										<li onClick={() => window.location.assign('/system/tags?type=1')}>
-											<strong>{i18next.t('WLCM_STATS_SERIES')}</strong>
+											<strong>{i18next.t('WELCOME_PAGE.STATS_SERIES')}</strong>
 											<span>{this.state.stats?.series}</span>
 										</li>
 										<li onClick={() => window.location.assign('/system/tags')}>
-											<strong>{i18next.t('WLCM_STATS_TAGS')}</strong>
+											<strong>{i18next.t('WELCOME_PAGE.STATS_TAGS')}</strong>
 											<span>{this.state.stats?.tags}</span>
 										</li>
 									</ul>
@@ -313,7 +321,7 @@ class WelcomePage extends Component<unknown, IState> {
 							<article className="tile-repositories">
 								<blockquote>
 									<button type="button" onClick={() => window.location.assign('/system/repositories')}>
-										<i className="fas fa-fw fa-network-wired" />{i18next.t('WLCM_REPOSITORY')}
+										<i className="fas fa-fw fa-network-wired" />{i18next.t('WELCOME_PAGE.REPOSITORY')}
 									</button>
 									<ul>
 										{this.state.repositories.map(repository => {

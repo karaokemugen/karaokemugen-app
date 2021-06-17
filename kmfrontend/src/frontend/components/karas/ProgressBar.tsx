@@ -166,7 +166,7 @@ class ProgressBar extends Component<IProps, IState> {
 				this.setState({ karaInfoText: i18next.t('SPONSOR_TIME'), length: -1, animate: 0 });
 			} else if (data.mediaType === 'pauseScreen') {
 				this.setState({ karaInfoText: i18next.t('PAUSE_TIME'), length: -1, animate: 0 });
-			} else {
+			} else if (data.currentSong) {
 				const kara = data.currentSong;
 				const karaInfo = buildKaraTitle(this.context.globalState.settings.data, kara);
 

@@ -38,13 +38,19 @@ class App extends Component<unknown, AppState> {
 		}
 		this.setState({isInitialized: true});
 		getSocket().on('settingsUpdated', this.setSettings);
+		getSocket().on('noFreeSpace', this.warningNoFreeSpace);
 	}
 
 	componentWillUnmount () {
 		getSocket().off('settingsUpdated', this.setSettings);
+		getSocket().on('noFreeSpace', this.warningNoFreeSpace);
 	}
 
 	setSettings = () => setSettings(this.context.globalDispatch);
+
+	warningNoFreeSpace = () => {
+		displayMessage('warning', i18next.t('REPOSITORIES.NO_FREE_SPACE'), 0);
+	}
 
 	render() {
 		return (

@@ -34,7 +34,7 @@ describe('Tags', () => {
 			'fre': 'Mon mega tag',
 			'eng': 'My mega tag can\'t be this cute'
 		},
-		repository: 'kara.moe',
+		repository: 'Local',
 		types: [2]
 	};
 	it('Get tag list', async () => {
@@ -63,24 +63,24 @@ describe('Tags', () => {
 	});
 	it('Add first tag', async () => {
 		const data = await commandBackend(token, 'addTag', tag1);
-		expect(data.code).to.be.equal('TAG_CREATED');
-		testTag(data.data, 'tag');
-		tag1.tid = data.data.tid;
-		tag1.tagfile = data.data.tagfile;
+		expect(data.code).to.be.equal(200);
+		testTag(data.message.data, 'tag');
+		tag1.tid = data.message.data.tid;
+		tag1.tagfile = data.message.data.tagfile;
 		// Verify the file exists
-		const tagPath = resolve(repoPath, tag1.repository, 'tags/', tag1.tagfile);
+		const tagPath = resolve(repoPath, tag1.repository, 'json/tags/', tag1.tagfile);
 		const tagFile = readFileSync(tagPath, 'utf-8');
 		const tagData = JSON.parse(tagFile);
 		testTagFile(tagData, tag1);
 	});
 	it('Add second tag', async () => {
 		const data = await commandBackend(token, 'addTag', tag2);
-		expect(data.code).to.be.equal('TAG_CREATED');
-		testTag(data.data, 'tag');
-		tag2.tid = data.data.tid;
-		tag2.tagfile = data.data.tagfile;
+		expect(data.code).to.be.equal(200);
+		testTag(data.message.data, 'tag');
+		tag2.tid = data.message.data.tid;
+		tag2.tagfile = data.message.data.tagfile;
 		// Verify the file exists
-		const tagFile = readFileSync(resolve(repoPath, tag2.repository, 'tags/', tag2.tagfile), 'utf-8');
+		const tagFile = readFileSync(resolve(repoPath, tag2.repository, 'json/tags/', tag2.tagfile), 'utf-8');
 		const tagData = JSON.parse(tagFile);
 		testTagFile(tagData, tag2);
 	});
@@ -107,22 +107,23 @@ describe('Tags', () => {
 		expect(data.content.length).to.be.greaterThan(1);
 		for (const tag of data.content) {
 			testTag(tag, 'tag');
+			const dupeTag = data.content.find(t => t.tid !== tag.tid && t.name === tag.name);
+			expect(dupeTag.name).to.be.a('string');
 		}
-		expect(data.content[0].name).to.be.equal(data.content[1].name);
 	});
 
 	let tagToDelete: DBTag;
 
 	it('Merge tags', async () => {
 		const data = await commandBackend(token, 'mergeTags', {tid1: tag1.tid, tid2: tag2.tid});
-		expect(data.code).to.be.equal('TAGS_MERGED');
-		expect(data.data.types).to.include(tag1.types[0]);
-		expect(data.data.types).to.include(tag2.types[0]);
-		tagToDelete = data.data;
+		expect(data.code).to.be.equal(200);
+		expect(data.message.data.types).to.include(tag1.types[0]);
+		expect(data.message.data.types).to.include(tag2.types[0]);
+		tagToDelete = data.message.data;
 	});
 	it('Delete tag', async () => {
-		const data = await commandBackend(token, 'deleteTag', {tid: tagToDelete.tid});
-		expect(data.code).to.be.equal('TAG_DELETED');
+		const data = await commandBackend(token, 'deleteTag', {tids: [tagToDelete.tid]});
+		expect(data.code).to.be.equal(200);
 	});
 });
 

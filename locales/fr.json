@@ -78,7 +78,7 @@
 	"MENU_GOTO_SYSTEM": "Panneau &système",
 	"MENU_TOOLS": "Ou&tils",
 	"MENU_TOOLS_LOGS": "&Journal d'évènements",
-	"MENU_TOOLS_DOWNLOADS": "&Télécharger des chansons",
+	"MENU_TOOLS_DOWNLOADS": "&Télécharger des médias",
 	"MENU_TOOLS_KARAOKES": "&Liste de vos karaokés",
 	"MENU_TOOLS_DATABASE": "&Gestion de la base de données",
 	"MENU_OPTIONS": "&Options",
@@ -89,6 +89,7 @@
 	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Préférences...",
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Préférences système...",
 	"MENU_OPTIONS_CHIBIPLAYER": "Afficher le Chibi Player",
+	"MENU_OPTIONS_CHIBIPLAYLIST": "Afficher la playlist détachée",
 	"ERROR": "Erreur",
 	"YES": "Oui",
 	"NO": "Non",
@@ -100,10 +101,10 @@
 	"UPDATE_DOWNLOADED": "Mise à jour téléchargée",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "L'installation de la mise à jour va démarrer...",
 	"ABOUT": {
-		"BUG_REPORT": "Rapporter un bug"
+		"BUG_REPORT": "Rapporter un bug",
+		"COPYRIGHT": "Par l'équipe de développement de Karaoke Mugen, sous la licence MIT",
+		"TITLE": "À propos de Karaoke Mugen"
 	},
-	"BASE_UPDATE_NEEDED": "Mise à jour de votre base de karaokés nécessaire",
-	"BASE_UPDATE_BULLDOZERSERIES": "Nouveauté 4.0 :\n\nNous avons changé la façon dont les séries sont gérées. Karaoke Mugen doit retélécharger les métadonnées (pas les médias) de vos karaokés. Voulez-vous continuer ?\n\nSi vous cliquez sur Non, vous devrez retélécharger vous-même vos chansons, ou mettre à jour votre base par un moyen externe.\n\nNe cliquez pas sur Oui si vous êtes mainteneur d'une base de karaoké.",
 	"NO_KARAOKE_MODE_ANYMORE": {
 		"TITLE": "Plus de mode de karaoké !",
 		"MESSAGE": "Nouveauté 4.0 :\n\nLe mode public/privé a disparu, et il ne reviendra jamais ! *musique dramatique*\n\nLes playlists ne jurent maintenant que par le système d'état. Elle peuvent dorénavant avoir à la fois l'état publique et courante :\n\n- L'état public fait que la playlist recevra les demandes de chansons de vos invités.\n- L'état courant fait que la playlist sera celle utilisée par le lecteur.\n\nPour activer l'ancien mode public, créez deux playlists, l'une avec l'état public qui recevra les demandes et l'autre avec l'état courant.\nPour activer l'ancien mode privé, créez une playlist et attribuez-lui les deux états simultanément."
@@ -134,7 +135,7 @@
 			"Faites une pause pour aérer la salle de temps en temps !",
 			"N'acceptez pas d'argent si quelqu'un veut faire passer sa chanson avant tout le monde. Préférez des boissons fraîches et de la nourriture.",
 			"Pensez à ajouter vos chansons préférées à vos favoris si vous avez un compte en ligne : vous les retrouverez plus facilement dans la liste des favoris ici ou sur un autre Karaoke Mugen !",
-			"Karaoke Mugen a besoin de vous ! Plus d'informations sur http://mugen.karaokes.moe/participate.html !",
+			"Karaoke Mugen a besoin de vous ! Plus d'informations sur https://mugen.karaokes.moe/participate.html !",
 			"Encore une astuce qui finit en point d'exclamation !",
 			"Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
 			"Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
@@ -166,25 +167,17 @@
 		]
 	},
 	"UNKNOWN_ARTIST": "Artiste inconnu",
-	"UNKNOWN_REPOSITORY_DOWNLOAD": {
-		"TITLE": "Dépôt inconnu",
-		"MESSAGE": "Le dépôt de ce karaoké n'est pas connu de votre liste de dépôts. Voulez-vous l'ajouter ? Il sera pris en compte dnas les futures mises à jour de votre base de karaokés.\n\nSi vous répondez non, le karaoké sera importé dnas le dépôt \"Local\""
-	},
 	"REPOSITORY_ALREADY_EXISTS": {
 		"TITLE": "Dépôt déjà existant",
 		"MESSAGE": "Le dépôt que vous souhaitez ajouter existe déjà dans votre base de données Karaoke Mugen."
 	},
 	"MISSING_BINARIES": {
 		"TITLE": "Binaires manquants",
-		"MESSAGE": "Un ou plusieurs binaires requis par Karaoke Mugen sont manquants. Editez votre fichier config.yml et définissez System.Binaries correctement pour votre OS.\n\nVous pouvez télécharger mpv depuis http://mpv.io/\n\nVous pouvez télécharger postgresql depuis http://postgresql.org/\n\nVous pouvez télécharger ffmpeg depuis http://ffmpeg.org\n\n(Windows uniquement) Si le fichier manquant est msvcr120.dll ou msvcp120.dll, téléchargez Microsoft Visual C++ 2013 Redistribuable Package sur le site de Microsoft.\n\nDétail de l'erreur : "
+		"MESSAGE": "Un ou plusieurs binaires requis par Karaoke Mugen sont manquants. Editez votre fichier config.yml et définissez System.Binaries correctement pour votre OS.\n\nVous pouvez télécharger mpv depuis http://mpv.io/\n\nVous pouvez télécharger postgresql depuis http://postgresql.org/\n\nVous pouvez télécharger ffmpeg depuis http://ffmpeg.org\n\nVous pouvez télécharger l'utilitaire patch depuis https://mugen.karaokes.moe/downloads/patch.exe (Windows) ou https://mugen.karaokes.moe/downloads/patch (macOS) ou un package GNU Patch 2.7+ (Linux)\n\n(Windows uniquement) Si le fichier manquant est msvcr120.dll ou msvcp120.dll, téléchargez Microsoft Visual C++ 2013 Redistribuable Package sur le site de Microsoft.\n\nDétail de l'erreur : "
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Dépôt inconnu",
 		"MESSAGE": "Vous êtes sur le point d'ajouter le dépôt {{repoName}}, êtes-vous sûr ?"
-	},
-	"UNKNOWN_REPOSITORY_NO_LOCAL": {
-		"TITLE": "Dépôt local introuvable",
-		"MESSAGE": "Aucun dépôt local n'existe dans votre configuration. Veuillez en créer un avant de réimporter ce karaoké"
 	},
 	"GENERATING_READING": "Etape 1/2 - Lecture des données...",
 	"GENERATING_DATABASE": "Etape 2/2 - Mise à jour de la base de données...",
@@ -199,5 +192,16 @@
 	"RESTARTING_PLAYER": "REDEMARRAGE DU LECTEUR...",
 	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "AJOUTEZ UNE CHANSON À LA PLAYLIST !",
 	"NEW_SESSION_NAME": "Karaoké du {{date}}",
-	"FULLSCREEN_TIP": "Appuyez sur F pour sortir du plein écran."
+	"FULLSCREEN_TIP": "Appuyez sur F pour sortir du plein écran.",
+	"NO_KARA_PLAYING": "Aucun karaoké en cours de lecture",
+	"INTERFACE_OPENED": "Ouvert",
+	"INTERFACE_RESTRICTED": "Pas de suggestions",
+	"INTERFACE_CLOSED": "Fermée",
+	"PROBLEMATIC_SONGS": "Chansons problématiques",
+	"SYSTEM_MESSAGES": {
+		"ZIP_MIGRATION_FAILED": {
+			"TITLE": "Problème de migration",
+			"BODY": "Le dépôt {{repo}} n'a pas pu être migré vers le nouveau système de gestion des dépôts. Le dépôt a ainsi été désactivé, vous pouvez le restaurer en le configurant correctement dans le panneau système. Vous pouvez nous contacter pour de l'aide avec le bouton en haut."
+		}
+	}
 }

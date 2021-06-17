@@ -1,11 +1,13 @@
+import { promises as fs } from 'fs';
+import { copy } from 'fs-extra';
 import {basename, dirname, resolve} from 'path';
 
 import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore,sortKaraStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import {generateKara, validateNewKara} from '../lib/services/kara_creation';
+import {generateKara, validateNewKara} from '../lib/services/karaCreation';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
-import { asyncCopy, asyncExists, asyncMove,asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
+import { asyncExists, asyncMove, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
@@ -62,7 +64,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		} else {
 			subDir = resolvedPathRepos('Lyrics', kara.repository)[0];
 		}
-		karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0];
+		karaFile = (await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0];
 		const karaDir = dirname(karaFile);
 
 		// Removing useless data
@@ -74,7 +76,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		if (!kara.subfile_orig) {
 			if (kara.subfile) {
 				if (!await asyncExists(subFile)) throw {code: 404, msg: `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`};
-				await asyncCopy(subFile, resolve(resolvedPathTemp(), kara.subfile), {overwrite: true});
+				await copy(subFile, resolve(resolvedPathTemp(), kara.subfile), {overwrite: true});
 			}
 		}
 		// Treat files
@@ -83,13 +85,13 @@ export async function editKara(kara: Kara, refresh = true) {
 		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
 			logger.info(`Removing ${karaFile}`, {service: 'KaraGen'});
-			await asyncUnlink(karaFile);
+			await fs.unlink(karaFile);
 		}
 		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const oldSubFiles = await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository));
 			if (await asyncExists(oldSubFiles[0])) {
 				logger.info(`Removing ${oldSubFiles[0]}`, {service: 'KaraGen'});
-				await asyncUnlink(oldSubFiles[0]);
+				await fs.unlink(oldSubFiles[0]);
 			}
 		}
 		if (newKara.data.mediafile.toLowerCase() !== oldKara.mediafile.toLowerCase()) {
@@ -101,7 +103,7 @@ export async function editKara(kara: Kara, refresh = true) {
 					await asyncMove(oldMediaFiles[0], newMediaFile, {overwrite: true});
 				} else {
 					logger.info(`Removing ${oldMediaFiles[0]}`, {service: 'KaraGen'});
-					await asyncUnlink(oldMediaFiles[0]);
+					await fs.unlink(oldMediaFiles[0]);
 				}
 			} catch(err) {
 				logger.warn(`Unable to remove/rename old mediafile ${oldKara.mediafile}`, {service: 'KaraGen', obj: err});
@@ -161,7 +163,7 @@ export async function createKara(kara: Kara) {
 		throw {code: 400, msg: err};
 	}
 	try {
-		newKara = await generateKara(kara, resolvedPathRepos('Karas', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
+		newKara = await generateKara(kara, resolvedPathRepos('Karaokes', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
 		await addKaraToStore(newKara.file);
 		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());

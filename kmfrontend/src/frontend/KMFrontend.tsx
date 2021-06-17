@@ -13,6 +13,7 @@ import ChibiPage from './components/ChibiPage';
 import MigratePage from './components/MigratePage';
 import ShutdownModal from './components/modals/ShutdownModal';
 import NotFoundPage from './components/NotfoundPage';
+import PlaylistPage from './components/PlaylistPage';
 import PublicPage from './components/public/PublicPage';
 import SetupPage from './components/SetupPage';
 import WelcomePage from './components/WelcomePage';
@@ -40,15 +41,41 @@ class KMFrontend extends Component<unknown, IState> {
 			}
 		});
 
+		if (this.context?.globalState.settings.data.user?.flag_sendstats === null) {
+			callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.STATS_MODAL.TITLE'), <>
+				{i18next.t('MODAL.STATS_MODAL.DESC')}
+				<br/>
+				<br/>
+				{i18next.t('MODAL.STATS_MODAL.REFUSE_DESC')}
+				<br/>
+				<br/>
+				{i18next.t('MODAL.STATS_MODAL.CHANGE')}
+			</>, this.updateUser, '', undefined, true);
+		}
+
 		if (!this.context?.globalState.settings.data.user?.flag_tutorial_done && window.location.pathname === '/admin') {
 			startIntro();
 		}
 	}
 
+	updateUser = async (flag_sendstats: boolean) => {
+		const user = this.context?.globalState.settings.data.user;
+		user.flag_sendstats = flag_sendstats;
+		try {
+			await commandBackend('editMyAccount', user);
+		} catch (e) {
+			// already display
+		}
+	}
+
 	powerOff = () => {
 		callModal(this.context.globalDispatch, 'confirm', `${i18next.t('SHUTDOWN')} ?`, '', async () => {
-			await commandBackend('shutdown');
-			this.setState({ shutdownPopup: true });
+			try {
+				await commandBackend('shutdown');
+				this.setState({ shutdownPopup: true });
+			} catch (e) {
+				// already display
+			}
 		});
 	};
 
@@ -65,9 +92,10 @@ class KMFrontend extends Component<unknown, IState> {
 							<Route path="/admin" render={() => <AdminPage
 								powerOff={isElectron() ? undefined : this.powerOff} />} />
 							<Route path="/chibi" exact component={ChibiPage} />
+							<Route path="/chibiPlaylist" exact component={PlaylistPage} />
 							<Route path="/public" render={(route) => <PublicPage route={route} />} />
 							<Route exact path="/">{this.context.globalState.auth.data.role === 'admin' ?
-								<Redirect to="/welcome" /> :<Redirect to="/public" />
+								<Redirect to="/welcome" />:<Redirect to="/public" />
 							}</Route>
 							<Route component={NotFoundPage} />
 						</Switch>

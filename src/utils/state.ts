@@ -45,7 +45,8 @@ let state: State = {
 	version: {
 		number: packageJSON.version,
 		name: packageJSON.versionName
-	}
+	},
+	systemMessages: []
 };
 
 /** Get public state (to send to webapp users) */
@@ -73,21 +74,21 @@ function emitPlayerState(part: Partial<State>) {
 	const toEmit: Partial<PublicPlayerState> = {...part.player};
 	for (const key of ['currentSessionID', 'currentRequester', 'stopping', 'defaultLocale', 'counterToJingle', 'counterToSponsor']) {
 		switch (key) {
-		case 'counterToJingle':
-		case 'counterToSponsor':
-			const conf = getConfig();
-			const options = map.get(key);
-			if (key in part) {
-				if (conf.Playlist?.Medias[options.conf].Enabled) {
-					toEmit[options.state] = conf.Playlist?.Medias[options.conf].Interval - part[key];
+			case 'counterToJingle':
+			case 'counterToSponsor':
+				const conf = getConfig();
+				const options = map.get(key);
+				if (key in part) {
+					if (conf.Playlist?.Medias[options.conf].Enabled) {
+						toEmit[options.state] = conf.Playlist?.Medias[options.conf].Interval - part[key];
+					}
 				}
-			}
-			break;
-		default:
-			if (key in part) {
-				toEmit[key] = part[key];
-			}
-			break;
+				break;
+			default:
+				if (key in part) {
+					toEmit[key] = part[key];
+				}
+				break;
 		}
 	}
 	if (Object.keys(toEmit).length !== 0) {
@@ -103,12 +104,11 @@ export function getState() {
 /** Get public state */
 export function getPublicState(admin: boolean): PublicState {
 	return {
-		currentPlaylistID: state.currentPlaylistID,
-		publicPlaylistID: state.publicPlaylistID,
+		currentPlaid: state.currentPlaid,
+		publicPlaid: state.publicPlaid,
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,
-		electron: state.electron,
 		defaultLocale: state.defaultLocale,
 		supportedLyrics: supportedFiles.lyrics,
 		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio),

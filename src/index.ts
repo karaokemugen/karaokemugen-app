@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import {app} from 'electron';
 import {existsSync, readFileSync} from 'fs';
-import {mkdirpSync} from 'fs-extra';
+import {copy, mkdirpSync, remove} from 'fs-extra';
 import i18n from 'i18next';
 import cloneDeep from 'lodash.clonedeep';
 import {dirname,resolve} from 'path';
@@ -12,11 +12,22 @@ import {createInterface} from 'readline';
 import {exit, initEngine} from './components/engine';
 import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
-import {configureLocale, getConfig, resolvedPathAvatars, resolvedPathImport, resolvedPathPreviews, resolvedPathSessionExports, resolvedPathTemp, setConfig} from './lib/utils/config';
-import {asyncCheckOrMkdir, asyncCopy, asyncExists, asyncRemove} from './lib/utils/files';
+import {
+	configureLocale,
+	getConfig,
+	resolvedPathAvatars,
+	resolvedPathImport,
+	resolvedPathPreviews,
+	resolvedPathSessionExports,
+	resolvedPathStreamFiles,
+	resolvedPathTemp,
+	setConfig
+} from './lib/utils/config';
+import {asyncCheckOrMkdir} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
+import { migrateReposToZip } from './services/repo';
 import {Config} from './types/config';
 import {parseArgs, setupFromCommandLineArgs} from './utils/args';
 import {initConfig} from './utils/config';
@@ -25,7 +36,7 @@ import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
 
 dotenv.config();
-sentry.init(app, process.argv.includes('--strict'));
+sentry.init(process.argv.includes('--strict'));
 
 let isInitError = false;
 
@@ -45,11 +56,11 @@ process.on('unhandledRejection', (error: Error) => {
 });
 
 process.on('SIGINT', () => {
-	exit('SIGINT');
+	exit(0);
 });
 
 process.on('SIGTERM', () => {
-	exit('SIGTERM');
+	exit(0);
 });
 
 // CTRL+C for Windows :
@@ -61,7 +72,7 @@ if (process.platform === 'win32' ) {
 	});
 
 	rl.on('SIGINT', () => {
-		exit('SIGINT');
+		exit(0);
 	});
 }
 
@@ -71,51 +82,42 @@ on('initError', (err: Error) => {
 });
 
 // Main app begins here.
-// Testing if we're in a packaged version of KM or not.
-// First, this is a test for unpacked electron mode.
 let appPath: string;
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
 
-if (process.versions.electron) {
-	if (app.isPackaged) {
-		// Starting Electron from the app's executable
-		appPath = process.platform === 'darwin'
-			? resolve(app.getAppPath(), '../../../../')
-			: resolve(app.getAppPath(), '../../');
-		resourcePath = process.resourcesPath;
-	} else {
-		if (app.getAppPath().endsWith('.asar')) {
-			// Starting Electron from an asar directly (electron /path/to/app.asar)
-			appPath = dirname(app.getAppPath());
-			resourcePath = appPath;
-		} else {
-			// Starting Electron from source folder
-			appPath = app.getAppPath();
-			resourcePath = appPath;
-		}
-	}
+// Testing if we're in a packaged version of KM or not.
+// First, this is a test for unpacked electron mode.
+if (app.isPackaged) {
+	// Starting Electron from the app's executable
+	appPath = process.platform === 'darwin'
+		? resolve(app.getAppPath(), '../../../../')
+		: resolve(app.getAppPath(), '../../');
+	resourcePath = process.resourcesPath;
 } else {
-	// Non-electron environments (ts-node, node)
-	appPath = process.cwd();
-	resourcePath = appPath;
+	if (app.getAppPath().endsWith('.asar')) {
+		// Starting Electron from an asar directly (electron /path/to/app.asar)
+		appPath = dirname(app.getAppPath());
+		resourcePath = appPath;
+	} else {
+		// Starting Electron from source folder
+		appPath = app.getAppPath();
+		resourcePath = appPath;
+	}
 }
 
 // DataPath is by default appPath + app. This is default when running from source
 const dataPath = existsSync(resolve(appPath, 'portable'))
 	? resolve(appPath, 'app/')
 	// Rewriting dataPath to point to user home directory
-	: app
-		// With Electron we get the handy app.getPath()
-		? resolve(app.getPath('home'), 'KaraokeMugen')
-		// process.env.HOMEPATH is broken in Windows as it does not reference the drive letter, so if you installed KM on D:\KM, it'll point to D:\Users\your_user\KaraokeMugen. Deal with it.
-		: resolve(process.env.HOME || process.env.HOMEPATH, 'KaraokeMugen');
+	// With Electron we get the handy app.getPath()
+	: resolve(app.getPath('home'), 'KaraokeMugen');
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
 if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
 
-setState({appPath: appPath, dataPath: dataPath, resourcePath: resourcePath});
+setState({appPath, dataPath, resourcePath});
 
 process.env['NODE_ENV'] = 'production'; // Default
 
@@ -145,37 +147,28 @@ if (existsSync(SHAFile)) {
 // Commander call to get everything setup in argv
 const argv = parseArgs();
 
-if (app) {
-	// Acquiring lock to prevent two KMs to run at the same time.
-	// Also allows to get us the files we need.
-	if (!app.requestSingleInstanceLock()) process.exit();
-	app.on('second-instance', (_event, args) => {
-		if (args[args.length-1] === '--kill') {
-			exit(0);
-		} else {
-			focusWindow();
-			const file = args[args.length-1];
-			if (file && file !== '.' && !file.startsWith('--')) {
-				file.startsWith('km://')
-					? handleProtocol(file.substr(5).split('/'))
-					: handleFile(file);
-			}
-		}
-	});
-	// Redefining quit function
-	app.on('will-quit', () => {
+// Acquiring lock to prevent two KMs to run at the same time.
+// Also allows to get us the files we need.
+if (!app.requestSingleInstanceLock()) process.exit();
+app.on('second-instance', (_event, args) => {
+	if (args[args.length-1] === '--kill') {
 		exit(0);
-	});
-}
+	} else {
+		focusWindow();
+		const file = args[args.length-1];
+		if (file && file !== '.' && !file.startsWith('--')) {
+			file.startsWith('km://')
+				? handleProtocol(file.substr(5).split('/'))
+				: handleFile(file);
+		}
+	}
+});
+// Redefining quit function
+app.on('will-quit', () => {
+	exit(0);
+});
 
-if (app && !argv.opts().cli) {
-	startElectron();
-} else {
-	// This is in case we're running with yarn startNoElectron or with --cli or --help
-	preInit()
-		.then(() => main())
-		.catch(err => initError(err));
-}
+startElectron();
 
 export async function preInit() {
 	await configureLocale();
@@ -195,9 +188,7 @@ export async function preInit() {
 	logger.debug(`Locale : ${state.defaultLocale}`, {service: 'Launcher'});
 	logger.debug(`OS : ${state.os}`, {service: 'Launcher'});
 	await initConfig(argv);
-	/**
-	 * Test if network ports are available
-	 */
+	// Test if network ports are available
 	await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
 }
 
@@ -206,7 +197,7 @@ export async function main() {
 	// Set version number
 	const state = getState();
 	console.log(chalk.white(logo));
-	console.log('Karaoke Player & Manager - http://karaokes.moe');
+	console.log('Karaoke Player & Manager - https://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} "${chalk.bold.green(state.version.name)}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
 	console.log('================================================================================');
 	const config = getConfig();
@@ -217,24 +208,24 @@ export async function main() {
 	logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
 	logger.debug('Initial state', {service: 'Launcher', obj: state});
 
+	// Migrate repos to git
+	await migrateReposToZip();
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	const tempInput = resolve(resolvedPathTemp(), 'input.conf');
 	logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
-	await asyncCopy(resolve(resourcePath, 'assets/input.conf'), tempInput);
+	await copy(resolve(resourcePath, 'assets/input.conf'), tempInput);
 
 	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
 	logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
-	await asyncCopy(resolve(resourcePath, 'assets/backgrounds/default.jpg'), tempBackground);
+	await copy(resolve(resourcePath, 'assets/backgrounds/default.jpg'), tempBackground);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
-	await asyncCopy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
+	await copy(resolve(resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
 
-	/**
-	 * Gentlemen, start your engines.
-	 */
+	// Gentlemen, start your engines.
 	try {
 		await initEngine();
 	} catch(err) {
@@ -242,28 +233,38 @@ export async function main() {
 		sentry.error(err);
 		console.log(err);
 		errorStep(i18n.t('ERROR_UNKNOWN'));
-		if (!app || argv.opts().cli) exit(1);
+		if (argv.opts().cli) exit(1);
 	}
 }
 
-/**
- * Checking if application paths exist.
- */
+/* Checking if application paths exist. **/
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
-		if (await asyncExists(resolvedPathTemp())) await asyncRemove(resolvedPathTemp());
+		try {
+			await remove(resolvedPathTemp());
+		} catch(err) {
+			// Non-fatal
+		}
 		// Emptying import directory
-		if (await asyncExists(resolvedPathImport())) await asyncRemove(resolvedPathImport());
+		try {
+			await remove(resolvedPathImport());
+		} catch(err) {
+			// Non-fatal
+		}
 		// Checking paths
 		const checks = [];
 		const paths = config.System.Path;
 		for (const item of Object.keys(paths)) {
-			Array.isArray(paths[item]) && paths[item]
+			paths[item] && Array.isArray(paths[item])
 				? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
 				: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
 		}
 		for (const repo of config.System.Repositories) {
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir)));
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
 			for (const paths of Object.keys(repo.Path)) {
 				repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
 			}
@@ -271,6 +272,7 @@ async function checkPaths(config: Config) {
 		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
 		checks.push(asyncCheckOrMkdir(resolvedPathSessionExports()));
 		checks.push(asyncCheckOrMkdir(resolvedPathPreviews()));
+		checks.push(asyncCheckOrMkdir(resolvedPathStreamFiles()));
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', {service: 'Launcher'});
 	} catch(err) {

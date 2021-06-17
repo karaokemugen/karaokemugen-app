@@ -7,7 +7,7 @@ import {load} from 'js-yaml';
 import merge from 'lodash.merge';
 import {Pool} from 'pg';
 
-import {dbConfig} from '../src/utils/default_settings';
+import {dbConfig} from '../src/utils/defaultSettings';
 
 async function main() {
 	const configFile = readFileSync('app/config.yml', 'utf-8');

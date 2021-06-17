@@ -12,8 +12,11 @@ WHERE s.pk_seid = p.fk_seid
 export const sqlexportRequested = `
 SELECT r.fk_kid AS kid,
 	r.fk_seid AS seid,
-	r.requested_at
-FROM requested r, session s
-WHERE s.pk_seid = r.fk_seid
-  AND s.private = FALSE;
+	r.requested_at,
+	r.fk_login AS username
+FROM requested r
+LEFT JOIN session s ON s.pk_seid = r.fk_seid
+LEFT JOIN users u ON u.pk_login = r.fk_login
+WHERE s.private = FALSE
+  AND u.flag_sendstats = TRUE;
 `;

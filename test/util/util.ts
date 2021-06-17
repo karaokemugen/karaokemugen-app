@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import { DBTag } from '../../src/lib/types/database/tag';
 import { md5Regexp,tagTypes, uuidPlusTypeRegexp,uuidRegexp } from '../../src/lib/utils/constants';
 import {Config} from '../../src/types/config';
-import { testDownloads } from '../../src/utils/constants';
+import { testSongs } from '../../src/utils/constants';
 
 export const socket = io('http://localhost:1337');
 export const usernameAdmin = 'adminTest';
@@ -13,8 +13,15 @@ export const passwordAdmin = 'ceciestuntest';
 export const allLangs = langs.codes('2B');
 allLangs.push('zxx');
 allLangs.push('und');
-export const allKIDs = testDownloads.map(d => d.kid);
+allLangs.push('mul');
+export const allKIDs = testSongs;
 const tokens = new Map();
+
+export let plaid = '';
+
+export function setPlaid(newPlaid: string) {
+	plaid = newPlaid;
+}
 
 export function disconnectSocket() {
 	socket.disconnect();
@@ -99,8 +106,8 @@ export function testKara(kara: any, details: TestDetails) {
 		expect(kara.nickname).to.be.a('string');
 	}
 	expect(kara.played).to.be.a('number').and.at.least(0);
-	if (details.plcDetail) expect(kara.playlist_id).to.be.a('number').and.at.least(0);
-	if (details.plc) expect(kara.playlistcontent_id).to.be.a('number').and.at.least(0);
+	if (details.plcDetail) expect(kara.plaid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+	if (details.plc) expect(kara.plcid).to.be.a('number').and.at.least(0);
 	if (details.plc) expect(kara.pos).to.be.a('number').and.at.least(0);
 	expect(kara.requested).to.be.a('number').and.at.least(0);
 	expect(kara.songorder).to.satisfy((s:any) => typeof s === 'number' || s === null);

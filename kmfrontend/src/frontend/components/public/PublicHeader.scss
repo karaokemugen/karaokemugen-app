@@ -7,9 +7,11 @@ header.menu-container {
 	width: 100%;
 	padding: 1em 0;
 	background-color: $mugen-topbar-background;
-	filter: drop-shadow(0px 0px 4px $mugen-topbar-background);
 	z-index: 999;
 	--img: none;
+	@media screen and (max-width: $mugen-breakpoint-large) {
+		padding: .5em 0;
+	}
 	@include blurred-bg;
 	> .menu {
 		display: flex;

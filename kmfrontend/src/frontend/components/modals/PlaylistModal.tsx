@@ -1,17 +1,17 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { BLCSet } from '../../../../../src/types/blacklist';
-import { DBPL } from '../../../../../src/types/database/playlist';
 import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import {displayMessage} from '../../../utils/tools';
+import {displayMessage, isNonStandardPlaylist, nonStandardPlaylists} from '../../../utils/tools';
 
 interface IProps {
-	idPlaylist?: number;
-	changeIdPlaylist: (idPlaylist: number, idBLSet?: number) => void
+	plaid?: string;
+	changeIdPlaylist: (plaid: string, idBLSet?: number) => void
 	mode: 'create' | 'edit';
 	playlistInfo?: DBPL;
 	bLSet?: BLCSet;
@@ -29,37 +29,41 @@ class PlaylistModal extends Component<IProps, IState> {
 	context: React.ContextType<typeof GlobalContext>
 
 	state = {
-		name: this.props.mode === 'edit' && (this.props.idPlaylist === -4 ?
+		name: this.props.mode === 'edit' && (this.props.plaid === nonStandardPlaylists.blc ?
 			this.props.bLSet?.name
 			: this.props.playlistInfo?.name) || undefined,
 		flag_current: this.props.mode === 'edit' ? (this.props.playlistInfo?.flag_current
-		|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current)) : false,
+		|| (this.props.plaid === nonStandardPlaylists.blc && this.props.bLSet.flag_current)) : false,
 		flag_public: this.props.mode === 'edit' ? this.props.playlistInfo?.flag_public : false,
 		flag_visible: this.props.mode === 'edit' ? this.props.playlistInfo?.flag_visible : true,
 	}
 
 	createPlaylist = async () => {
-		const response = await commandBackend(
-			this.props.idPlaylist === -4 ? 'createBLCSet' : 'createPlaylist',
-			{
-				name: this.state.name,
-				flag_visible: this.state.flag_visible,
-				flag_current: this.state.flag_current,
-				flag_public: this.state.flag_public,
-			}
-		);
-		this.props.idPlaylist === -4 ? this.props.changeIdPlaylist(-4, response.set_id) : this.props.changeIdPlaylist(response);
-		this.closeModal();
+		try {
+			const response = await commandBackend(
+				this.props.plaid === nonStandardPlaylists.blc ? 'createBLCSet' : 'createPlaylist',
+				{
+					name: this.state.name,
+					flag_visible: this.state.flag_visible,
+					flag_current: this.state.flag_current,
+					flag_public: this.state.flag_public,
+				}
+			);
+			this.props.plaid === nonStandardPlaylists.blc ? this.props.changeIdPlaylist(nonStandardPlaylists.blc, response.set_id) : this.props.changeIdPlaylist(response.plaid);
+			this.closeModal();
+		} catch (e) {
+			// already display
+		}
 	};
 
 	editPlaylist = async () => {
-		await commandBackend(this.props.idPlaylist === -4 ? 'editBLCSet' : 'editPlaylist', {
+		await commandBackend(this.props.plaid === nonStandardPlaylists.blc ? 'editBLCSet' : 'editPlaylist', {
 			name: this.state.name,
 			set_id: this.props.bLSet?.blc_set_id,
 			flag_visible: this.state.flag_visible,
 			flag_current: this.state.flag_current,
 			flag_public: this.state.flag_public,
-			pl_id: this.props.idPlaylist
+			plaid: this.props.plaid
 		});
 		setSettings(this.context.globalDispatch);
 		this.closeModal();
@@ -67,9 +71,9 @@ class PlaylistModal extends Component<IProps, IState> {
 
 	toggleCurrent = () => {
 		if (this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current
-			|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current))) {
+			|| (this.props.plaid === nonStandardPlaylists.blc && this.props.bLSet.flag_current))) {
 			displayMessage('warning',
-				this.props.idPlaylist === -4 ? i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_CURRENT_BLC')
+				this.props.plaid === nonStandardPlaylists.blc ? i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_CURRENT_BLC')
 					:i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_CURRENT_PLAYLIST'),
 				4500, 'top-center');
 		} else {
@@ -97,7 +101,7 @@ class PlaylistModal extends Component<IProps, IState> {
 						<ul className="modal-header">
 							<h4 className="modal-title">{this.props.mode === 'edit' ?
 								i18next.t('MODAL.PLAYLIST_MODAL.EDIT_PLAYLIST', { playlist:
-									(this.props.idPlaylist === -4 ?
+									(this.props.plaid === nonStandardPlaylists.blc ?
 										this.props.bLSet?.name
 										: this.props.playlistInfo?.name)
 								}) :
@@ -107,7 +111,7 @@ class PlaylistModal extends Component<IProps, IState> {
 						<div className="modal-body flex-direction-btns">
 							<div>{i18next.t('MODAL.PLAYLIST_MODAL.NAME')}</div>
 							<div className="form">
-								<input type="text" autoFocus className="modal-input form-control" defaultValue={this.state.name}
+								<input type="text" autoFocus className="modal-input" defaultValue={this.state.name}
 									onChange={(event) => this.setState({ name: event.target.value })} />
 							</div>
 							<div>
@@ -115,23 +119,23 @@ class PlaylistModal extends Component<IProps, IState> {
 									type="button" onClick={this.toggleCurrent}>
 									<input type="checkbox" checked={this.state.flag_current}
 										disabled={this.props.mode === 'edit' && (this.props.playlistInfo?.flag_current
-										|| (this.props.idPlaylist === -4 && this.props.bLSet.flag_current))}
+										|| (this.props.plaid === nonStandardPlaylists.blc && this.props.bLSet.flag_current))}
 										onChange={this.toggleCurrent} />
 									<div className="btn-large-container">
 										<div className="title">
-											{this.props.idPlaylist === -4 ?
+											{this.props.plaid === nonStandardPlaylists.blc ?
 												i18next.t('MODAL.PLAYLIST_MODAL.ACTIVE')
 												:i18next.t('MODAL.PLAYLIST_MODAL.CURRENT')}
 										</div>
 										<div className="desc">
-											{this.props.idPlaylist === -4 ?
+											{this.props.plaid === nonStandardPlaylists.blc ?
 												i18next.t('MODAL.PLAYLIST_MODAL.ACTIVE_DESC')
 												:i18next.t('MODAL.PLAYLIST_MODAL.CURRENT_DESC')}
 										</div>
 									</div>
 								</button>
 							</div>
-							{this.props.idPlaylist >= 0 ?
+							{!isNonStandardPlaylist(this.props.plaid) ?
 								<>
 									<div>
 										<button className="btn btn-default"

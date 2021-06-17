@@ -5,7 +5,6 @@ import i18n from 'i18next';
 import internetAvailable from 'internet-available';
 import logger from 'winston';
 
-import { generateBlacklist } from '../dao/blacklist';
 import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
@@ -20,16 +19,16 @@ import {getConfig, setConfig} from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
-import {emit, on} from '../lib/utils/pubsub';
-import {initBlacklistSystem} from '../services/blacklist';
+import {emit} from '../lib/utils/pubsub';
+import { generateBlacklist, initBlacklistSystem } from '../services/blacklist';
 import {initDownloader, wipeDownloadQueue} from '../services/download';
-import { downloadTestSongs, updateAllBases, updateAllMedias } from '../services/downloadUpdater';
-import { getAllKaras, initFetchPopularSongs } from '../services/kara';
+import { updateAllMedias } from '../services/downloadUpdater';
+import { getKaras, initFetchPopularSongs } from '../services/kara';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
-import {initOnlineURLSystem} from '../services/online';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem} from '../services/playlist';
 import { initRemote } from '../services/remote';
+import { checkDownloadStatus, updateAllZipRepos } from '../services/repo';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
@@ -39,8 +38,9 @@ import { initKMServerCommunication } from '../utils/kmserver';
 import { checkPG, dumpPG, restorePG,stopPG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
+import { writeStreamFiles } from '../utils/streamerFiles';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
-import { subRemoteUsers } from '../utils/user_pubsub';
+import { subRemoteUsers } from '../utils/userPubSub';
 import { initFrontend } from './frontend';
 
 let shutdownInProgress = false;
@@ -70,8 +70,10 @@ export async function initEngine() {
 			sentry.error(err);
 			await exit(1);
 		}
-	} else if (state.opt.mediaUpdate) {
+	} else if (state.opt.mediaUpdateAll) {
 		try {
+			initStep(i18n.t('INIT_DB'));
+			await initDBSystem();
 			initStep(i18n.t('INIT_UPDATEMEDIAS'));
 			await updateAllMedias();
 			await exit(0);
@@ -107,7 +109,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_BASEUPDATE'));
-			await updateAllBases();
+			await updateAllZipRepos();
 			logger.info('Done updating karaoke base', {service: 'Engine'});
 			await exit(0);
 		} catch (err) {
@@ -140,24 +142,24 @@ export async function initEngine() {
 		if (port !== conf.Frontend.Port) {
 			setConfig({Frontend: {Port: port}});
 			// Reinit menu since we switched ports.
-			if (app) applyMenu();
+			applyMenu();
 		}
-		if ((conf.Online.URL || conf.Online.Remote) && !state.isDemo && internet) try {
+		if (!state.isDemo && internet) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
 			await initKMServerCommunication();
 			const onlinePromises = [
 				// TODO: add config item for this?
 				subRemoteUsers()
 			];
-			if (conf.Online.URL) onlinePromises.push(initOnlineURLSystem());
 			if (conf.Online.Remote) onlinePromises.push(initRemote());
+			await Promise.all(onlinePromises);
 		} catch(err) {
 			// Non-blocking
 			logger.error('Failed to init online system', {service: 'Engine', obj: err});
 			sentry.error(err, 'Warning');
 		}
 		try {
-			if (app) registerShortcuts();
+			registerShortcuts();
 			initStep(i18n.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [
 				initBlacklistSystem(),
@@ -175,7 +177,7 @@ export async function initEngine() {
 			const ready = Math.floor(Math.random() * 10) >= 9
 				? 'LADY'
 				: 'READY';
-			if (!state.isTest && !state.electron) await welcomeToYoukousoKaraokeMugen();
+			if (!state.isTest && state.opt.cli) await welcomeToYoukousoKaraokeMugen();
 			// This is done later because it's not important.
 			postMigrationTasks(migrations, didGeneration);
 			if (state.args.length > 0) {
@@ -188,31 +190,36 @@ export async function initEngine() {
 					handleProtocol(state.args[0].substr(5).split('/')).catch(() => {});
 				}
 			}
+			// If we are testing, we're awaiting updateAllGitRepos
 			if (state.isTest) {
-				if (state.opt.noTestDownloads && !state.opt.noAutoTest) {
-					runTests();
-				} else {
-					downloadTestSongs();
-					on('downloadQueueStatus', (status: string[]) => {
-						if (status.includes('stopped') && !state.opt.noAutoTest) runTests();
-					});
-				}
+				await updateAllZipRepos();
+			}
+			if (state.isTest && !state.opt.noAutoTest) {
+				runTests();
 			}
 			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
 			if (!state.isTest && !state.isDemo && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
 			if (!state.isTest && !state.isDemo) {
 				if (internet) {
 					updatePlaylistMedias().then(buildAllMediasList).catch(() => {});
+				} else {
+					buildAllMediasList().catch(() => {});
 				}
-				buildAllMediasList().catch(() => {});
 			}
-			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
+			if (!state.isTest && !state.isDemo && !conf.App.FirstRun && internet) {
+				updateAllZipRepos();
+			}
+			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getKaras({
+				q: 'm:downloaded'
+			}), 'single');
 			// Mark all migrations as done for the first run to avoid the user to have to do all the migrations from start
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
 			initFetchPopularSongs();
 			setState({ ready: true });
+			writeStreamFiles();
 			initStep(i18n.t('INIT_DONE'), true);
 			emit('KMReady');
+			checkDownloadStatus();
 			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
@@ -224,7 +231,7 @@ export async function initEngine() {
 	}
 }
 
-export async function exit(rc: string | number = 0) {
+export async function exit(rc = 0) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
@@ -264,14 +271,10 @@ export async function exit(rc: string | number = 0) {
 	}
 }
 
-function mataNe(rc: string | number) {
+function mataNe(rc: number) {
 	console.log('\nMata ne !\n');
-	if (!app) {
-		process.exit(+rc);
-	} else {
-		unregisterShortcuts();
-		app.exit();
-	}
+	unregisterShortcuts();
+	app.exit(rc);
 }
 
 export function shutdown() {
@@ -321,7 +324,7 @@ async function preFlightCheck(): Promise<boolean> {
 }
 
 async function runTests() {
-	const options = ['--require', 'ts-node/register', '--require', 'test/util/hooks.ts', '--timeout',  '20000', 'test/*.ts' ];
+	const options = ['--require', 'ts-node/register', '--require', 'test/util/hooks.ts', '--timeout',  '60000', 'test/*.ts' ];
 	try {
 		const ret = await execa('mocha', options, {
 			cwd: getState().appPath

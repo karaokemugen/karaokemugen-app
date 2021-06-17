@@ -5,11 +5,15 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
+import { TaskItem } from '../../../../src/lib/types/taskItem';
 import logo from '../../assets/Logo-final-fond-transparent.png';
+import logoBig from '../../assets/Logo-fond-transp.png';
+import nanamiHeHe from '../../assets/nanami-hehe2.png';
+import nanamiSearching from '../../assets/nanami-searching.gif';
 import { setAuthentifactionInformation } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { isElectron } from '../../utils/electron';
-import { commandBackend } from '../../utils/socket';
+import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 
 interface IProps {
@@ -25,16 +29,18 @@ interface IState {
 	instance?: string;
 	securityCode?: number;
 	repositoryFolder?: string;
-	activeView: 'user' | 'repo' | 'stats';
-	downloadRandomSongs: boolean;
+	activeView: 'user' | 'repo' | 'stats' | 'loading';
 	error?: string;
 	openDetails: boolean;
 	stats?: boolean;
 	errorTracking?: boolean
+	gitUpdateInProgress: boolean
+	tasks: Array<TaskItem>;
 }
 class SetupPage extends Component<IProps, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
+	timeout: NodeJS.Timeout
 
 	constructor(props: IProps) {
 		super(props);
@@ -42,13 +48,14 @@ class SetupPage extends Component<IProps, IState> {
 			accountType: null,
 			onlineAction: null,
 			activeView: 'user',
-			downloadRandomSongs: true,
-			openDetails: false
+			openDetails: false,
+			gitUpdateInProgress: false,
+			tasks: []
 		};
 	}
 
 	componentDidMount() {
-		const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].Path.Karas[0].slice(0, -9);
+		const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].BaseDir;
 		const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
 
 		this.setState({
@@ -56,6 +63,40 @@ class SetupPage extends Component<IProps, IState> {
 			repositoryFolder: path,
 			activeView: this.context?.globalState.settings.data.user.login !== 'admin' ? 'repo' : 'user'
 		});
+		getSocket().on('tasksUpdated', this.isGitUpdateInProgress);
+	}
+
+	componentWillUnmount() {
+		getSocket().off('tasksUpdated', this.isGitUpdateInProgress);
+	}
+
+	isGitUpdateInProgress = (tasks: Array<TaskItem>) => {
+		for (const i in tasks) {
+			if (tasks[i].text === 'UPDATING_GIT_REPO') {
+				this.setState({ tasks });
+				this.setState({ gitUpdateInProgress: true });
+				clearTimeout(this.timeout);
+				this.timeout = setTimeout(async () => {
+					if (this.state.activeView === 'loading') {
+						this.endSetup();
+					}
+				}, 5000);
+			}
+		}
+	}
+
+	endSetup = async () => {
+		await commandBackend('updateSettings', {
+			setting: {
+				App: {
+					FirstRun: false
+				}
+			}
+		}).catch(() => { });
+		await commandBackend('updateAllZipRepos').catch(() => { });
+		await commandBackend('startPlayer').catch(() => { });
+		sessionStorage.setItem('dlQueueRestart', 'true');
+		this.props.route.history.push('/welcome');
 	}
 
 	signup = async () => {
@@ -164,7 +205,7 @@ class SetupPage extends Component<IProps, IState> {
 		if (this.state.repositoryFolder
 			&& this.context?.globalState.settings.data.config?.System.Repositories.length > 0
 			&& this.context?.globalState.settings.data.config?.System.Repositories[0].Name) {
-			const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].Path.Karas[0].slice(0, -9);
+			const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].BaseDir;
 			const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
 			if (this.state.repositoryFolder !== path) {
 				try {
@@ -180,18 +221,6 @@ class SetupPage extends Component<IProps, IState> {
 		}
 	}
 
-	downloadRandomSongs = () => {
-		if (this.state.downloadRandomSongs) {
-			try {
-				commandBackend('addRandomDownloads', undefined, undefined, 300000);
-			} catch (err) {
-				const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
-				this.setState({ error: error });
-			}
-		}
-		this.setState({ activeView: 'stats', error: undefined });
-	}
-
 	updateStats = async () => {
 		if (this.state.errorTracking !== undefined && this.state.stats !== undefined) {
 			await commandBackend('updateSettings', {
@@ -199,19 +228,23 @@ class SetupPage extends Component<IProps, IState> {
 					Online: {
 						Stats: this.state.stats,
 						ErrorTracking: this.state.errorTracking
-					},
-					App: {
-						FirstRun: false
 					}
 				}
 			}).catch(() => {});
-			await commandBackend('startPlayer').catch(() => {});
-			sessionStorage.setItem('dlQueueRestart', 'true');
-			this.props.route.history.push('/welcome');
+			if (this.state.gitUpdateInProgress) {
+				this.setState({ activeView: 'loading', error: undefined });
+			} else {
+				this.endSetup();
+			}
 		}
 	};
 
 	render() {
+		const t = [];
+		let tCount = 0;
+		for (const i in this.state.tasks) {
+			t.push(this.state.tasks[i]);
+		}
 		return (
 			<div className="start-page">
 				<div className="wrapper setup">
@@ -225,13 +258,13 @@ class SetupPage extends Component<IProps, IState> {
 								<li>
 									<a href="http://mugen.karaokes.moe/contact.html">
 										<i className="fas fa-pencil-alt" />
-										{i18next.t('WLCM_CONTACT')}
+										{i18next.t('WELCOME_PAGE.CONTACT')}
 									</a>
 								</li>
 								<li>
 									<a href="http://mugen.karaokes.moe/">
 										<i className="fas fa-link" />
-										{i18next.t('WLCM_SITE')}
+										{i18next.t('WELCOME_PAGE.SITE')}
 									</a>
 								</li>
 							</ul>
@@ -367,6 +400,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('USERNAME')}</label>
 															<input
+																key="login"
 																className="input-field"
 																type="text"
 																defaultValue={this.state.login}
@@ -379,6 +413,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('INSTANCE_NAME_SHORT')}</label>
 															<input
+																key="instance"
 																className="input-field"
 																type="text"
 																defaultValue={this.context?.globalState.settings.data.config?.Online.Host}
@@ -390,6 +425,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('PASSWORD')}</label>
 															<input
+																key="password"
 																className="input-field"
 																type="password"
 																required
@@ -402,6 +438,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('PASSWORDCONF')}</label>
 															<input
+																key="passwordConfirmation"
 																className="input-field"
 																type="password"
 																required
@@ -421,6 +458,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('USERNAME')}</label>
 															<input
+																key="login"
 																className="input-field"
 																type="text"
 																defaultValue={this.state.login}
@@ -433,6 +471,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('INSTANCE_NAME_SHORT')}</label>
 															<input
+																key="instance"
 																className="input-field"
 																type="text"
 																defaultValue={this.context?.globalState.settings.data.config?.Online.Host}
@@ -444,6 +483,7 @@ class SetupPage extends Component<IProps, IState> {
 														<div className="input-control">
 															<label>{i18next.t('PASSWORD')}</label>
 															<input
+																key="password"
 																className="input-field"
 																type="password"
 																required
@@ -451,6 +491,11 @@ class SetupPage extends Component<IProps, IState> {
 																onChange={(event) =>
 																	this.setState({ password: event.target.value })
 																}
+																onKeyUp={(e) => {
+																	if (e.code === 'Enter') {
+																		this.login();
+																	}
+																}}
 															/>
 														</div>
 													</div>
@@ -513,7 +558,7 @@ class SetupPage extends Component<IProps, IState> {
 							<>
 								<section className="step step-repo">
 									<p>{i18next.t('SETUP_PAGE.CONNECTED_MESSAGE', {
-										user: this.state.login,
+										user: this.state.login || this.context?.globalState.settings.data.user.nickname,
 									})}</p>
 									<p>{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_DESC_1')}
 										<strong>{this.context?.globalState.settings.data.config?.System.Repositories[0].Name}</strong>
@@ -531,36 +576,21 @@ class SetupPage extends Component<IProps, IState> {
 												}
 											/>
 											<div className="actions">
-												{this.context.globalState.settings.data.state.electron ?
+												{isElectron() ?
 													<button type="button" onClick={this.onClickRepository}>{i18next.t('SETUP_PAGE.MODIFY_DIRECTORY')}</button> : null
 												}
 												<label className="error">{this.state.error}</label>
 											</div>
 										</div>
 									</div>
-									<p>{i18next.t('SETUP_PAGE.REPOSITORY_NEED_SPACE')}</p>
+									<p>{i18next.t('SETUP_PAGE.REPOSITORY_LATER')}</p>
 								</section>
 								<section className="step step-choice">
-									<div>
-										{i18next.t('SETUP_PAGE.DOWNLOAD_RANDOM_SONGS', {
-											instance: this.context?.globalState.settings.data.config?.System.Repositories[0].Name,
-										})}
-									</div>
-									<div className="input-group">
-										<div className="actions">
-											<button
-												className={this.state.downloadRandomSongs ? 'on' : ''}
-												type="button" onClick={() => this.setState({ downloadRandomSongs: true })}>{i18next.t('YES')}</button>
-											<button
-												className={!this.state.downloadRandomSongs ? 'off' : ''}
-												type="button" onClick={() => this.setState({ downloadRandomSongs: false })}>{i18next.t('NO')}</button>
-										</div>
-									</div>
 									<div className="actions">
 										<label className="error">{this.state.error}</label>
 										<button type="button" onClick={async () => {
 											await this.consolidate();
-											await this.downloadRandomSongs();
+											this.setState({ activeView: 'stats' });
 										}}>{i18next.t('SETUP_PAGE.SAVE_PARAMETER')}</button>
 									</div>
 								</section>
@@ -614,6 +644,40 @@ class SetupPage extends Component<IProps, IState> {
 									<label className="error">{this.state.error}</label>
 									<button type="button" onClick={this.updateStats}>{i18next.t('ONLINE_STATS.CONFIRM')}</button>
 								</div>
+							</section>
+						) : null
+						}
+						{this.state.activeView === 'loading' ? (
+							<section className="step step-choice loading">
+								<div className="ip--top">
+									<img className="ip--logo" src={logoBig} alt="Karaoke Mugen" />
+								</div>
+								{
+									t.map((item: TaskItem) => {
+										if (tCount >= 1) // no more than 3 tasks displayed
+											return null;
+										tCount++;
+
+										return (
+											<>
+												<div className="ip--message">{i18next.t(`TASKS.${item.text}`) !== `TASKS.${item.text}` ? i18next.t(`TASKS.${item.text}`, { data: item.data }) : item.text}</div>
+												{item.percentage < 100 ?
+													<>
+														<div className="ip--progress-bar-container">
+															<div className="ip--progress-bar" style={{ width: `${item.percentage}%` }}></div>
+															<div className="ip--progress-text">{i18next.t(`TASKS.${item.subtext}`) !== `TASKS.${item.subtext}` ? i18next.t(`TASKS.${item.subtext}`) : item.subtext}</div>
+														</div>
+													</> : null
+												}
+												<div className="ip--nanami">
+													{item.percentage < 100 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ?
+														<img src={nanamiSearching} alt="Nanamin" /> :
+														<img src={nanamiHeHe} alt="Nanamin" />
+													}
+												</div>
+											</>);
+									})
+								}
 							</section>
 						) : null
 						}

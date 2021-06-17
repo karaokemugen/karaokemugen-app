@@ -50,3 +50,7 @@ postgrator.json
 # Dev
 .env
 .eslintcache
+
+# zip worker
+zipWorker/zipWorker.js
+zipWorker/zipWorker.js.map

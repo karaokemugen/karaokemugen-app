@@ -11,7 +11,7 @@ import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
+import {displayMessage, nonStandardPlaylists, secondsTimeSpanToHMS} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { View } from '../../types/view';
 import KmAppBodyDecorator from '../decorators/KmAppBodyDecorator';
@@ -33,7 +33,7 @@ interface IProps {
 }
 
 interface IState {
-	idsPlaylist: { left: number, right: number };
+	idsPlaylist: { left: string, right: string };
 	isPollActive: boolean;
 	classicModeModal: boolean;
 	view: View;
@@ -61,7 +61,7 @@ class PublicPage extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			isPollActive: false,
-			idsPlaylist: { left: -1, right: 0 },
+			idsPlaylist: { left: nonStandardPlaylists.library, right: nonStandardPlaylists.blacklist },
 			classicModeModal: false,
 			view: 'home',
 			tagType: undefined,
@@ -92,24 +92,25 @@ class PublicPage extends Component<IProps, IState> {
 		}
 		const idsPlaylist = this.state.idsPlaylist;
 		if (view === 'favorites') {
-			idsPlaylist.left = -5;
+			idsPlaylist.left = nonStandardPlaylists.favorites;
 			route = '/public/favorites';
 		} else if (view === 'requested') {
-			idsPlaylist.left = -1;
+			idsPlaylist.left = nonStandardPlaylists.library;
 			searchType = 'requested';
 			route = '/public/search/requested';
 		} else if (view === 'history') {
-			idsPlaylist.left = -1;
+			idsPlaylist.left = nonStandardPlaylists.library;
 			searchType = 'recent';
 			route = '/public/search/history';
 		} else if (view === 'search') {
-			idsPlaylist.left = -1;
+			idsPlaylist.left = nonStandardPlaylists.library;
+			searchType = 'search';
 			route = '/public/search';
 		} else if (view === 'publicPlaylist') {
-			idsPlaylist.left = this.context.globalState.settings.data.state.publicPlaylistID;
+			idsPlaylist.left = this.context.globalState.settings.data.state.publicPlaid;
 			route = `/public/playlist/${idsPlaylist.left}`;
 		} else if (view === 'currentPlaylist') {
-			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaylistID;
+			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaid;
 			route = `/public/playlist/${idsPlaylist.left}`;
 		}
 		setFilterValue(
@@ -122,10 +123,10 @@ class PublicPage extends Component<IProps, IState> {
 		this.props.route.history.push(route);
 	};
 
-	majIdsPlaylist = (side: number, value: number) => {
+	majIdsPlaylist = (side: number, value: string) => {
 		const idsPlaylist = this.state.idsPlaylist;
 		if (side === 1) {
-			idsPlaylist.left = Number(value);
+			idsPlaylist.left = value;
 		}
 		this.setState({ idsPlaylist: idsPlaylist });
 	};
@@ -143,10 +144,10 @@ class PublicPage extends Component<IProps, IState> {
 			const tagType = Number(this.props.route.location.pathname.substring(this.props.route.location.pathname.lastIndexOf('/') + 1));
 			this.changeView('tag', tagType);
 		} else if (this.props.route.location.pathname.includes('/public/playlist')) {
-			const idPlaylist = Number(this.props.route.location.pathname.substring(this.props.route.location.pathname.lastIndexOf('/') + 1));
-			if (idPlaylist === this.context.globalState.settings.data.state.publicPlaylistID) {
+			const idPlaylist = this.props.route.location.pathname.substring(this.props.route.location.pathname.lastIndexOf('/') + 1);
+			if (idPlaylist === this.context.globalState.settings.data.state.publicPlaid) {
 				this.changeView('publicPlaylist');
-			} else if (idPlaylist === this.context.globalState.settings.data.state.currentPlaylistID) {
+			} else if (idPlaylist === this.context.globalState.settings.data.state.currentPlaid) {
 				this.changeView('currentPlaylist');
 			}
 		}
@@ -159,7 +160,7 @@ class PublicPage extends Component<IProps, IState> {
 		this.initView();
 		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
 		getSocket().on('playerStatus', this.displayClassicModeModal);
-		getSocket().on('newSongPoll', this.newSongPoll);
+		getSocket().on('songPollStarted', this.songPollStarted);
 		getSocket().on('songPollEnded', this.songPollEnded);
 		getSocket().on('songPollResult', this.songPollResult);
 		getSocket().on('adminMessage', this.adminMessage);
@@ -172,7 +173,7 @@ class PublicPage extends Component<IProps, IState> {
 
 	componentWillUnmount() {
 		getSocket().off('playerStatus', this.displayClassicModeModal);
-		getSocket().off('newSongPoll', this.newSongPoll);
+		getSocket().off('songPollStarted', this.songPollStarted);
 		getSocket().off('songPollEnded', this.songPollEnded);
 		getSocket().off('songPollResult', this.songPollResult);
 		getSocket().off('adminMessage', this.adminMessage);
@@ -182,18 +183,22 @@ class PublicPage extends Component<IProps, IState> {
 	}
 
 	getPlaylistList = async () => {
-		const playlistsList = await commandBackend('getPlaylists');
-		playlistsList.forEach(playlist => {
-			if (playlist.flag_public) {
-				this.setState({ publicVisible: playlist.flag_visible });
-			}
-			if (playlist.flag_current) {
-				this.setState({ currentVisible: playlist.flag_visible });
-			}
-		});
+		try {
+			const playlistsList = await commandBackend('getPlaylists');
+			playlistsList.forEach(playlist => {
+				if (playlist.flag_public) {
+					this.setState({ publicVisible: playlist.flag_visible });
+				}
+				if (playlist.flag_current) {
+					this.setState({ currentVisible: playlist.flag_visible });
+				}
+			});
+		} catch (e) {
+			// already display
+		}
 	}
 
-	newSongPoll = () => {
+	songPollStarted = () => {
 		if (this.context.globalState.auth.isAuthenticated) {
 			this.setState({ isPollActive: true });
 			showModal(this.context.globalDispatch,
@@ -254,14 +259,17 @@ class PublicPage extends Component<IProps, IState> {
 		}
 	};
 
-	toggleKaraDetail = (kara: KaraElement, idPlaylist: number, indexKaraDetail: number) => {
+	toggleKaraDetail = (kara: KaraElement, plaid: string, indexKaraDetail: number) => {
 		const idsPlaylist = this.state.idsPlaylist;
-		idsPlaylist.left = idPlaylist;
+		idsPlaylist.left = plaid;
 		this.setState({ kara, indexKaraDetail, idsPlaylist });
 		this.props.route.history.push(`/public/karaoke/${kara.kid}`);
 	};
 
 	render() {
+		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 2 && this.props.route.location.pathname.includes('/public/search')) {
+			this.changeView('currentPlaylist');
+		}
 		return this.context?.globalState.settings.data.config.Frontend?.Mode === 0 ?
 			(<div
 				style={{
@@ -290,7 +298,7 @@ class PublicPage extends Component<IProps, IState> {
 						publicVisible={this.state.publicVisible}
 					/>
 					<PlayerBox
-						fixed={true}
+						mode="fixed"
 						show={this.state.view !== 'home'}
 						currentVisible={this.state.currentVisible}
 						goToCurrentPL={() => this.changeView('currentPlaylist')}
@@ -314,9 +322,9 @@ class PublicPage extends Component<IProps, IState> {
 							} />
 							<Route path="/public/karaoke/:kid" render={({ match }) =>
 								<KaraDetail kid={this.state.kara?.kid || match.params.kid}
-									playlistcontentId={this.state.kara?.playlistcontent_id}
+									playlistcontentId={this.state.kara?.plcid}
 									scope='public'
-									idPlaylist={this.state.idsPlaylist.left}
+									plaid={this.state.idsPlaylist.left}
 									closeOnPublic={() => {
 										this.props.route.history.goBack();
 										this.setState({ kara: undefined });
@@ -325,14 +333,14 @@ class PublicPage extends Component<IProps, IState> {
 							} />
 							<Route path={[
 								'/public/search',
-								'/public/playlist/:pl_id',
+								'/public/playlist/:plaid',
 								'/public/favorites',
 								'/public/tags/:tagType'
 							]} render={({ match }) =>
 								<React.Fragment>
 									<KmAppHeaderDecorator mode="public">
 										<button
-											className="btn side2Button"
+											className="btn"
 											type="button"
 											onClick={() => this.changeView((this.state.view === 'search' && this.state.searchCriteria ? 'tag' : 'home'))}>
 											<i className="fas fa-arrow-left" />
@@ -378,8 +386,8 @@ class PublicPage extends Component<IProps, IState> {
 											<Playlist
 												scope="public"
 												side={1}
-												idPlaylist={Number((match.params as { pl_id: string; }).pl_id) || this.state.idsPlaylist.left}
-												idPlaylistTo={this.context.globalState.settings.data.state.publicPlaylistID}
+												plaid={(match.params as { plaid: string; }).plaid || this.state.idsPlaylist.left}
+												plaidTo={this.context.globalState.settings.data.state.publicPlaid}
 												majIdsPlaylist={this.majIdsPlaylist}
 												toggleKaraDetail={this.toggleKaraDetail}
 												searchValue={this.state.searchValue}

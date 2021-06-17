@@ -1,7 +1,9 @@
+import { promises as fs } from 'fs';
+import { copy } from 'fs-extra';
 import { basename, resolve } from 'path';
 
-import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore, sortKaraStore } from '../dao/dataStore';
-import { addKara, deleteKara as deleteKaraDB, getKaraMini, updateKara } from '../dao/kara';
+import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
+import { addKara, deleteKara as deleteKaraDB, selectAllKaras, updateKara } from '../dao/kara';
 import { getPlaylistKaraIDs } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
@@ -12,7 +14,7 @@ import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
-import { asyncCopy, asyncUnlink, resolveFileInDirs } from '../lib/utils/files';
+import { resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
@@ -20,8 +22,9 @@ import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { generateBlacklist } from './blacklist';
+import { checkMediaAndDownload } from './download';
 import {getKara, getKaras} from './kara';
-import { editKara } from './kara_creation';
+import { editKara } from './karaCreation';
 import { getRepo, getRepos } from './repo';
 import { getTag } from './tag';
 
@@ -41,7 +44,7 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	emitWS('statsRefresh');
 	await updateTags(kara);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('ADD', kara.kid, true);
+		await refreshKarasAfterDBChange('ADD', [kara.kid], true);
 		generateBlacklist();
 	}
 }
@@ -54,41 +57,49 @@ export async function editKaraInDB(kara: Kara, opts = {
 	if (kara.newTags) promises.push(updateTags(kara));
 	await Promise.all(promises);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('UPDATE', kara.kid, kara.newTags);
+		await refreshKarasAfterDBChange('UPDATE', [kara.kid], kara.newTags);
 		generateBlacklist();
 	}
 	profile('editKaraDB');
 }
 
-export async function deleteKara(kid: string, refresh = true) {
-	const kara = await getKaraMini(kid);
-	if (!kara) throw {code: 404, msg: `Unknown kara ID ${kid}`};
-	// Remove files
-	await deleteKaraDB(kid);
-	emitWS('statsRefresh');
-	try {
-		await asyncUnlink((await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]);
-	} catch(err) {
-		logger.warn(`Non fatal : Removing mediafile ${kara.mediafile} failed`, {service: 'Kara', obj: err});
+export async function deleteKara(kids: string[], refresh = true, deleteFiles = {media: true, kara: true}) {
+	const karas = await selectAllKaras({
+		q: `k:${kids.join(',')}`,
+	});
+	if (karas.length === 0) throw {code: 404, msg: `Unknown kara IDs in ${kids.join(',')}`};
+	for (const kara of karas) {
+		// Remove files
+		if (kara.download_status === 'DOWNLOADED' && deleteFiles.media) {
+			try {
+				await fs.unlink((await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0]);
+			} catch(err) {
+				logger.warn(`Non fatal: Removing mediafile ${kara.mediafile} failed`, {service: 'Kara', obj: err});
+			}
+		}
+		if (deleteFiles.kara) {
+			try {
+				await fs.unlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karaokes', kara.repository)))[0]);
+			} catch(err) {
+				logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, {service: 'Kara', obj: err});
+			}
+			if (kara.subfile) try {
+				await fs.unlink((await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
+			} catch(err) {
+				logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, {service: 'Kara', obj: err});
+			}
+		}
+		logger.info(`Song files of ${kara.karafile} removed`, {service: 'Kara'});
 	}
-	try {
-		await asyncUnlink((await resolveFileInDirs(kara.karafile, resolvedPathRepos('Karas', kara.repository)))[0]);
-	} catch(err) {
-		logger.warn(`Non fatal : Removing karafile ${kara.karafile} failed`, {service: 'Kara', obj: err});
+	for (const kara of karas) {
+		removeKaraInStore(kara.kid);
 	}
-	if (kara.subfile) try {
-		await asyncUnlink((await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
-	} catch(err) {
-		logger.warn(`Non fatal : Removing subfile ${kara.subfile} failed`, {service: 'Kara', obj: err});
-	}
-
-	removeKaraInStore(kara.kid);
 	saveSetting('baseChecksum', getStoreChecksum());
 	// Remove kara from database
-	logger.info(`Song ${kara.karafile} removed`, {service: 'Kara'});
-
+	await deleteKaraDB(karas.map(k => k.kid));
+	emitWS('statsRefresh');
 	if (refresh) {
-		await refreshKarasDelete(kid);
+		await refreshKarasDelete(karas.map(k => k.kid));
 		refreshTags();
 		refreshYears();
 		generateBlacklist();
@@ -112,15 +123,15 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
 		// If the new repo has priority, edit kara so the database uses it.
 		if (newRepoIndex < oldRepoIndex) tasks.push(editKara(kara));
-		tasks.push(writeKara(resolve(resolvedPathRepos('Karas', repoName)[0], kara.karafile), kara));
+		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), kara));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
-		tasks.push(asyncCopy(
+		tasks.push(copy(
 			mediaFiles[0],
 			resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile),
 			{ overwrite: true }
 		));
 		const lyricsFiles = await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', oldRepoName));
-		tasks.push(asyncCopy(
+		tasks.push(copy(
 			lyricsFiles[0],
 			resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile),
 			{ overwrite: true }
@@ -142,7 +153,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 	}
 }
 
-export async function batchEditKaras(playlist_id: number, action: 'add' | 'remove', tid: string, type: number) {
+export async function batchEditKaras(plaid: string, action: 'add' | 'remove', tid: string, type: number) {
 	// Checks
 	const task = new Task({
 		text: 'EDITING_KARAS_BATCH_TAGS',
@@ -151,7 +162,7 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 		type = +type;
 		const tagType = getTagTypeName(type);
 		if (!tagType) throw 'Type unknown';
-		const pl = await getPlaylistKaraIDs(playlist_id);
+		const pl = await getPlaylistKaraIDs(plaid);
 		if (pl.length === 0) throw 'Playlist unknown or empty';
 		task.update({
 			value: 0,
@@ -160,7 +171,7 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 		if (action !== 'add' && action !== 'remove') throw 'Unkown action';
 		const tag = await getTag(tid);
 		if (!tag) throw 'Unknown tag';
-		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${playlist_id}`, {service: 'Kara'});
+		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${plaid}`, {service: 'Kara'});
 		for (const plc of pl) {
 			const kara = await getKara(plc.kid, {username: 'admin', role: 'admin'});
 			if (!kara) {
@@ -197,16 +208,16 @@ export async function batchEditKaras(playlist_id: number, action: 'add' | 'remov
 	}
 }
 
-export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', kid?: string, newTags?: boolean) {
+export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', kids?: string[], newTags?: boolean) {
 	profile('RefreshAfterDBChange');
 	logger.debug('Refreshing DB after kara change', {service: 'DB'});
-	await updateKaraSearchVector(kid);
+	await updateKaraSearchVector(kids);
 	if (action === 'ADD') {
-		await refreshKarasInsert(kid);
+		await refreshKarasInsert(kids);
 	} else if (action === 'UPDATE') {
-		await refreshKarasUpdate(kid);
+		await refreshKarasUpdate(kids);
 	} else if (action === 'DELETE') {
-		await refreshKarasDelete(kid);
+		await refreshKarasDelete(kids);
 	} else if (action === 'ALL') {
 		await refreshKaras();
 	}
@@ -219,41 +230,51 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	profile('RefreshAfterDBChange');
 }
 
-export async function integrateKaraFile(file: string) {
+export async function integrateKaraFile(file: string, deleteOldFiles = true): Promise<string> {
 	const karaFileData = await parseKara(file);
 	const karaFile = basename(file);
-	const karaData = await getDataFromKaraFile(karaFile, karaFileData);
+	const karaData = await getDataFromKaraFile(karaFile, karaFileData, {media: true, lyrics: true});
 	const karaDB = await getKara(karaData.kid, {role: 'admin', username: 'admin'});
+	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
 	if (karaDB) {
 		await editKaraInDB(karaData, { refresh: false });
-		try {
-			const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karas', karaDB.repository)))[0];
-			if (karaDB.karafile !== karaData.karafile) {
-				await asyncUnlink(oldKaraFile);
-				removeKaraInStore(oldKaraFile);
-				addKaraToStore(file);
-			} else {
-				editKaraInStore(oldKaraFile);
+		if (deleteOldFiles) {
+			try {
+				const oldKaraFile = (await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karaokes', karaDB.repository)))[0];
+				if (karaDB.karafile !== karaData.karafile) {
+					await fs.unlink(oldKaraFile);
+				}
+			} catch(err) {
+				logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, {service: 'Kara'});
 			}
-		} catch(err) {
-			logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, {service: 'Kara'});
+			if (karaDB.mediafile !== karaData.mediafile && karaDB.download_status === 'DOWNLOADED') try {
+				await fs.unlink((await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository)))[0]);
+			} catch(err) {
+				logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, {service: 'Kara'});
+			}
+			if (karaDB.subfile && karaDB.subfile !== karaData.subfile) try {
+				await fs.unlink((await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository)))[0]);
+			} catch(err) {
+				logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, {service: 'Kara'});
+			}
 		}
-		if (karaDB.mediafile !== karaData.mediafile) try {
-			await asyncUnlink((await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository)))[0]);
-		} catch(err) {
-			logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, {service: 'Kara'});
+		if (mediaDownload !== 'none') {
+			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize, mediaDownload === 'updateOnly');
 		}
-		if (karaDB.subfile && karaDB.subfile !== karaData.subfile) try {
-			await asyncUnlink((await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository)))[0]);
-		} catch(err) {
-			logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, {service: 'Kara'});
-		}
-		sortKaraStore();
 	} else {
 		await createKaraInDB(karaData, { refresh: false });
+		if (mediaDownload === 'all') {
+			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
+		}
 	}
 	// Do not create image previews if running this from the command line.
-	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({q: `k=${karaData.kid}`, token: {username: 'admin', role: 'admin'}}), 'single');
-	saveSetting('baseChecksum', getStoreChecksum());
+	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({q: `k:${karaData.kid}`}), 'single');
+	return karaData.kid;
 }
 
+export async function deleteMediaFile(file: string, repo: string) {
+	// Just to make sure someone doesn't send a full path file
+	const mediaFile = basename(file);
+	const mediaPaths = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', repo));
+	await fs.unlink(mediaPaths[0]);
+}

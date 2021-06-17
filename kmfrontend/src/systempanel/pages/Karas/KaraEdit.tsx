@@ -27,7 +27,7 @@ class KaraEdit extends Component<RouteComponentProps<{ kid: string }>, KaraEditS
 
 	saveNew = async (kara) => {
 		try {
-			await commandBackend('createKara', kara, true, 300000).catch(() => {});
+			await commandBackend('createKara', kara, true, 300000);
 			addListener();
 			this.props.history.push('/system/karas');
 		} catch (e) {
@@ -37,7 +37,7 @@ class KaraEdit extends Component<RouteComponentProps<{ kid: string }>, KaraEditS
 
 	saveUpdate = async (kara) => {
 		try {
-			await commandBackend('editKara', kara, true, 300000).catch(() => {});
+			await commandBackend('editKara', kara, true, 300000);
 			addListener();
 			this.props.history.push('/system/karas');
 		} catch (e) {

@@ -12,26 +12,26 @@ export const initialStateConfig: SettingsStore = {
 
 export default function (state, action: SettingsSuccess | SettingsFailure) {
 	switch (action.type) {
-	case Settings.SETTINGS_SUCCESS:
-		return {
-			...state,
-			data: {
-				...action.payload
-			},
-			error: ''
-		};
-	case Settings.SETTINGS_FAILURE:
-		return {
-			...state,
-			data: {
-				state: {},
-				config: {},
-				user: {},
-				version: {}
-			},
-			error: action.payload.error
-		};
-	default:
-		return state;
+		case Settings.SETTINGS_SUCCESS:
+			return {
+				...state,
+				data: {
+					...action.payload
+				},
+				error: ''
+			};
+		case Settings.SETTINGS_FAILURE:
+			return {
+				...state,
+				data: {
+					state: {},
+					config: {},
+					user: {},
+					version: {}
+				},
+				error: action.payload.error
+			};
+		default:
+			return state;
 	}
 }

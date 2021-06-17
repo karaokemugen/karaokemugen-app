@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import Postgrator, { Migration } from 'postgrator';
@@ -9,10 +10,8 @@ import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID }
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
-import { asyncReadDirFilter, asyncUnlink } from '../lib/utils/files';
-import { createImagePreviews } from '../lib/utils/previews';
+import { asyncReadDirFilter } from '../lib/utils/files';
 import { testCurrentBLCSet } from '../services/blacklist';
-import { getAllKaras } from '../services/kara';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG} from '../utils/postgresql';
@@ -22,6 +21,8 @@ import { generateBlacklist } from './blacklist';
 import { baseChecksum } from './dataStore';
 import { getPlaylists, reorderPlaylist } from './playlist';
 import { sqlGetStats,sqlResetUserData } from './sql/database';
+
+export let DBReady = false;
 
 export async function compareKarasChecksum(): Promise<boolean> {
 	logger.info('Comparing files and database data', {service: 'Store'});
@@ -48,24 +49,22 @@ export async function initDB() {
 	await connectDB(errorFunction, {superuser: true, db: 'postgres', log: getState().opt.sql});
 	// Testing if database exists. If it does, no need to do the other stuff
 	const {rows} = await db().query(`SELECT datname FROM pg_catalog.pg_database WHERE datname = '${conf.System.Database.database}'`);
-	if (rows.length > 0) return;
-	try {
+	if (rows.length === 0) {
 		await db().query(`CREATE DATABASE ${conf.System.Database.database} ENCODING 'UTF8'`);
 		logger.debug('Database created', {service: 'DB'});
-	} catch(err) {
-		logger.debug('Database already exists', {service: 'DB'});
-	}
-	try {
-		await db().query(`CREATE USER ${conf.System.Database.username} WITH ENCRYPTED PASSWORD '${conf.System.Database.password}';`);
-		logger.debug('User created', {service: 'DB'});
-	} catch(err) {
-		logger.debug('User already exists', {service: 'DB'});
+		try {
+			await db().query(`CREATE USER ${conf.System.Database.username} WITH ENCRYPTED PASSWORD '${conf.System.Database.password}';`);
+			logger.debug('User created', {service: 'DB'});
+		} catch(err) {
+			logger.debug('User already exists', {service: 'DB'});
+		}
 	}
 	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.System.Database.database} TO ${conf.System.Database.username};`);
 	// We need to reconnect to create the extension on our newly created database
 	await connectDB(errorFunction, {superuser: true, db: conf.System.Database.database, log: getState().opt.sql});
 	try {
-		await db().query('CREATE EXTENSION unaccent;');
+		await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
+		await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 	} catch(err) {
 		logger.debug('Extension unaccent already registered', {service: 'DB'});
 	}
@@ -118,7 +117,7 @@ async function cleanupOldMigrations(migrationDir: string) {
 	for (const file of files) {
 		if (file.substr(0, 8) < '20201120') {
 			// This means this file belongs to the old JS migration files. We delete it.
-			promises.push(asyncUnlink(resolve(migrationDir, file)));
+			promises.push(fs.unlink(resolve(migrationDir, file)));
 		}
 	}
 	await Promise.all(promises);
@@ -187,6 +186,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 	if (state.opt.reset) await resetUserData();
 
 	logger.debug('Database Interface is READY', {service: 'DB'});
+	DBReady = true;
 	return migrations;
 }
 
@@ -208,10 +208,9 @@ export async function generateDB(): Promise<boolean> {
 		await generateDatabase(opts);
 		const pls = await getPlaylists(false);
 		for (const pl of pls) {
-			await reorderPlaylist(pl.playlist_id);
+			await reorderPlaylist(pl.plaid);
 		}
 		await generateBlacklist();
-		if (getConfig().Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
 	} catch(err) {
 		sentry.error(err);
 		throw err;

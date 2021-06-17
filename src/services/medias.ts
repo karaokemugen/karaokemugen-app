@@ -1,3 +1,5 @@
+import { promises as fs } from 'fs';
+import { remove } from 'fs-extra';
 import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
 import {basename, resolve} from 'path';
@@ -5,7 +7,7 @@ import prettyBytes from 'pretty-bytes';
 import {createClient, FileStat} from 'webdav';
 
 import {getConfig, resolvedPathEncores, resolvedPathIntros, resolvedPathJingles, resolvedPathOutros, resolvedPathSponsors} from '../lib/utils/config';
-import {asyncCheckOrMkdir, asyncReadDir, asyncRemove,asyncStat, isMediaFile} from '../lib/utils/files';
+import {asyncCheckOrMkdir, isMediaFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import {Config} from '../types/config';
@@ -83,13 +85,13 @@ async function listRemoteMedias(type: MediaType): Promise<FileStat[]> {
 }
 
 async function listLocalFiles(dir: string): Promise<FileStat[]> {
-	const localFiles = await asyncReadDir(dir);
+	const localFiles = await fs.readdir(dir);
 	const files = [];
 	for (const file of localFiles) {
-		const stat = await asyncStat(resolve(dir, file));
+		const fstat = await fs.stat(resolve(dir, file));
 		files.push({
 			basename: file,
-			size: stat.size
+			size: fstat.size
 		});
 	}
 	return files;
@@ -97,7 +99,7 @@ async function listLocalFiles(dir: string): Promise<FileStat[]> {
 
 async function removeFiles(files: string[], dir: string) {
 	for (const file of files) {
-		await asyncRemove(resolve(dir, file));
+		await remove(resolve(dir, file));
 		logger.info(`Removed : ${file}`, {service: 'Medias'});
 	}
 }
@@ -140,7 +142,7 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 		}
 		// Remove files to update to start over their download
 		for (const file of updatedFiles) {
-			await asyncRemove(resolve(localDir, file.basename));
+			await remove(resolve(localDir, file.basename));
 		}
 		const filesToDownload = addedFiles.concat(updatedFiles);
 		if (removedFiles.length > 0) await removeFiles(removedFiles.map(f => f.basename), localDir);
@@ -186,7 +188,7 @@ export async function buildMediasList(type: MediaType) {
 	medias[type] = [];
 	for (const resolvedPath of resolveMediaPath(type)) {
 		const files = [];
-		const dirFiles = await asyncReadDir(resolvedPath);
+		const dirFiles = await fs.readdir(resolvedPath);
 		for (const file of dirFiles) {
 			const fullFilePath = resolve(resolvedPath, file);
 			if (isMediaFile(file)) {

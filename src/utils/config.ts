@@ -2,30 +2,27 @@
 
 // Node modules
 import { dialog } from 'electron';
+import { copy } from 'fs-extra';
 import i18next from 'i18next';
 import {address} from 'ip';
-import { createCIDR } from 'ip6addr';
 import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 import merge from 'lodash.merge';
-import Traceroute from 'nodejs-traceroute';
 import {resolve} from 'path';
-import { ip as whoisIP } from 'whoiser';
 
 import { listUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import {RecursivePartial} from '../lib/types';
 import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
-import {asyncCopy, asyncRequired,relativePath} from '../lib/utils/files';
+import {asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
-import { removeNulls } from '../lib/utils/object_helpers';
+import { removeNulls } from '../lib/utils/objectHelpers';
 import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import { getAllKaras } from '../services/kara';
-import {publishURL} from '../services/online';
 import {
 	displayInfo,
 	initAddASongMessage,
@@ -40,11 +37,11 @@ import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
 import {Config} from '../types/config';
 import sentry from '../utils/sentry';
-import { ASNPrefixes } from './constants';
-import {configConstraints, defaults} from './default_settings';
+import {configConstraints, defaults} from './defaultSettings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
 import {getState, setState} from './state';
+import {writeStreamFiles} from './streamerFiles';
 import { initTwitch, stopTwitch } from './twitch';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
@@ -75,9 +72,6 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			oldConfig.Player.Monitor !== newConfig.Player.Monitor
 		) playerNeedsRestart();
 	}
-	if (newConfig.Online.URL !== oldConfig.Online.URL && state.ready && !state.isDemo) {
-		if (newConfig.Online.URL) publishURL();
-	}
 	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready && !state.isDemo) {
 		if (newConfig.Online.Remote) {
 			await initKMServerCommunication();
@@ -87,15 +81,19 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		}
 	}
 	// Updating quotas
-	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
+	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || 
+		newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || 
+		newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time
+	) {
 		const users = await listUsers();
 		for (const user of users) {
-			updateSongsLeft(user.login, getState().publicPlaylistID);
+			updateSongsLeft(user.login, getState().publicPlaid);
 		}
-	}
+	}	
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
 	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
 	if (!oldConfig.Frontend.GeneratePreviews && newConfig.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
+		
 	// Browse through paths and define if it's relative or absolute
 	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Windows));
 	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Linux));
@@ -130,8 +128,12 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			}
 		}
 	}
+
+	// All set, ready to go!
 	const config = setConfig(newConfig);
-	setSongPoll(config.Karaoke.Poll.Enabled);
+	
+	// Toggling poll
+	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
 	config.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo
 		? initTwitch().catch(err => {
@@ -152,8 +154,11 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Online.Stats && !state.isDemo
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
 		: stopStats();
+	// Streamer mode
+	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 	// Toggling progressbar off if needs be
 	if (config.Player.ProgressBarDock && !state.isDemo) setProgressBar(-1);
+	
 	if (!state.isDemo) configureHost();
 }
 
@@ -184,8 +189,6 @@ export function configureHost() {
 	setState({osHost: {v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6')}});
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
 		setState({osURL: `https://${state.remoteAccess.host}`});
-	} else if (config.Online.URL) {
-		setState({osURL: `https://${config.Online.Host}`});
 	} else {
 		if (!config.Karaoke.Display.ConnectionInfo.Host) {
 			setState({osURL: `http://${getState().osHost.v4}${URLPort}`}); // v6 is too long to show anyway
@@ -196,64 +199,15 @@ export function configureHost() {
 	if ((state.player.mediaType === 'background' || state.player.mediaType === 'pauseScreen') && !state.songPoll) {
 		displayInfo();
 	}
-}
-
-function getFirstHop(target: string): Promise<string> {
-	return new Promise((resolve1, reject) => {
-		// Traceroute way
-		try {
-			const tracer = new Traceroute('ipv6');
-			tracer.on('hop', (hop: any) => {
-				resolve1(hop.ip);
-			});
-			tracer.trace(target);
-		} catch (e) {
-			logger.error('Cannot traceroute', {service: 'Network'});
-			reject(e);
-		}
-	});
-}
-
-export async function determineV6Prefix(ipv6: string): Promise<string> {
-	/**
-	 * IPv6 is made to protect privacy by making complex the task of getting the information about prefixes
-	 * This code tries to determine what's the network prefix via different methods
-	 */
-	// TODO: Find more accurate ways to do this
-	// Resolve ASN using whois
-	const asn = await whoisIP(ipv6);
-	if (typeof ASNPrefixes[asn.asn] === 'number') {
-		const subnet = createCIDR(ipv6, ASNPrefixes[asn.asn]);
-		return subnet.toString();
-	} else {
-		// Traceroute way
-		const hop = await getFirstHop('kara.moe');
-		logger.debug(`Determined gateway: ${hop}`, {service: 'Network'});
-		const local = getState().osHost.v6;
-		let found = false;
-		let prefix = 56;
-		let subnet = createCIDR(local, prefix);
-		while (subnet.contains(hop)) {
-			subnet = createCIDR(local, ++prefix);
-			found = true;
-		}
-		if (found) {
-			subnet = createCIDR(local, --prefix);
-			logger.debug(`Determined IPv6 prefix: ${subnet.toString()}`, {service: 'Network'});
-			return subnet.toString();
-		} else {
-			logger.warn('Could not determine IPv6 prefix, disabling IPv6 capability on shortener.', {service: 'Network'});
-			throw new Error('Cannot find CIDR');
-		}
-	}
+	writeStreamFiles('km_url');
 }
 
 /** Create a backup of our config file. Just in case. */
 export function backupConfig() {
 	logger.debug('Making a backup of config.yml', {service: 'Config'});
-	return asyncCopy(
+	return copy(
 		resolve(getState().dataPath, 'config.yml'),
-		resolve(getState().dataPath, 'config.backup.yml'),
+		resolve(getState().dataPath, `config.backup.${new Date().getTime().toString()}.yml`),
 		{ overwrite: true }
 	);
 }
@@ -276,6 +230,7 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	const binariesPath = configuredBinariesForSystem(config);
 	const requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
+	requiredBinariesChecks.push(asyncRequired(binariesPath.patch));
 	if (config.System.Database.bundledPostgresBinary) {
 		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
 		if (process.platform === 'win32') {
@@ -298,33 +253,36 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 /** Return all configured paths for binaries */
 function configuredBinariesForSystem(config: Config): BinariesConfig {
 	switch (process.platform) {
-	case 'win32':
-		return {
-			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Windows),
-			mpv: resolve(getState().appPath, config.System.Binaries.Player.Windows),
-			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Windows),
-			postgres_ctl: 'pg_ctl.exe',
-			postgres_dump: 'pg_dump.exe',
-			postgres_client: 'psql.exe'
-		};
-	case 'darwin':
-		return {
-			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.OSX),
-			mpv: resolve(getState().appPath, config.System.Binaries.Player.OSX),
-			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.OSX),
-			postgres_ctl: 'pg_ctl',
-			postgres_dump: 'pg_dump',
-			postgres_client: 'psql'
-		};
-	default:
-		return {
-			ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
-			mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
-			postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
-			postgres_ctl: 'pg_ctl',
-			postgres_dump: 'pg_dump',
-			postgres_client: 'psql'
-		};
+		case 'win32':
+			return {
+				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Windows),
+				mpv: resolve(getState().appPath, config.System.Binaries.Player.Windows),
+				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Windows),
+				patch: resolve(getState().appPath, config.System.Binaries.patch.Windows),
+				postgres_ctl: 'pg_ctl.exe',
+				postgres_dump: 'pg_dump.exe',
+				postgres_client: 'psql.exe'
+			};
+		case 'darwin':
+			return {
+				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.OSX),
+				mpv: resolve(getState().appPath, config.System.Binaries.Player.OSX),
+				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.OSX),
+				patch: resolve(getState().appPath, config.System.Binaries.patch.OSX),
+				postgres_ctl: 'pg_ctl',
+				postgres_dump: 'pg_dump',
+				postgres_client: 'psql'
+			};
+		default:
+			return {
+				ffmpeg: resolve(getState().appPath, config.System.Binaries.ffmpeg.Linux),
+				mpv: resolve(getState().appPath, config.System.Binaries.Player.Linux),
+				postgres: resolve(getState().appPath, config.System.Binaries.Postgres.Linux),
+				patch: resolve(getState().appPath, config.System.Binaries.patch.Linux),
+				postgres_ctl: 'pg_ctl',
+				postgres_dump: 'pg_dump',
+				postgres_client: 'psql'
+			};
 	}
 }
 
@@ -335,6 +293,7 @@ async function binMissing(binariesPath: any, err: string) {
 	logger.error(`ffmpeg: ${binariesPath.ffmpeg}`, {service: 'BinCheck'});
 	logger.error(`mpv: ${binariesPath.mpv}`, {service: 'BinCheck'});
 	logger.error(`postgres: ${binariesPath.postgres}`, {service: 'BinCheck'});
+	logger.error(`patch: ${binariesPath.patch}`, {service: 'BinCheck'});
 	logger.error('Exiting...', {service: 'BinCheck'});
 	const error = `${i18next.t('MISSING_BINARIES.MESSAGE')}\n\n${err}`;
 	console.log(error);

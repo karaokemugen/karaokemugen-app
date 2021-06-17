@@ -41,6 +41,7 @@ interface KaraFormState {
 	repoToCopySong: string;
 	mediafile_orig: string;
 	subfile_orig: string;
+	comment?: string;
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
@@ -91,7 +92,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			repositoriesValue: null,
 			repoToCopySong: null,
 			mediafile_orig: null,
-			subfile_orig: null
+			subfile_orig: null,
+			comment: kara?.comment ? kara.comment : undefined
 		};
 	}
 
@@ -245,6 +247,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					families: this.state.families, platforms: this.state.platforms,
 					genres: this.state.genres, origins: this.state.origins,
 					misc: this.state.misc, groups: this.state.groups, versions: this.state.versions,
+					comment: this.props.kara?.comment ? this.props.kara.comment : null,
 					repository: this.props.kara?.repository ? this.props.kara.repository : null,
 					created_at: this.state.created_at, modified_at: this.state.modified_at,
 					mediafile: this.props.kara?.mediafile, subfile: this.props.kara?.subfile
@@ -631,6 +634,29 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</Select>
 					</Form.Item> : null
 				}
+				<Form.Item
+					hasFeedback
+					label={
+						<span>{i18next.t('KARA.COMMENT')}&nbsp;
+							<Tooltip title={i18next.t('KARA.COMMENT_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 200px' }}
+					wrapperCol={{ span: 8 }}
+					rules={[{
+						required: false
+					}]}
+					name="comment"
+				>
+					<Input.TextArea
+						allowClear={true}
+						autoSize={true}
+						placeholder={i18next.t('KARA.COMMENT')}
+						onKeyPress={this.submitHandler}
+					/>
+				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.CREATED_AT')}
 					labelCol={{ flex: '0 1 200px' }}

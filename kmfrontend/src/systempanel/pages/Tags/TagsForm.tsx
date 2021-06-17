@@ -137,7 +137,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			aliases: this.props.tag?.aliases,
 			problematic: this.props.tag?.problematic,
 			noLiveDownload: this.props.tag?.noLiveDownload,
-			priority: this.props.tag?.priority
+			priority: this.props.tag?.priority ? this.props.tag?.priority : 10
 		};
 		for (const lang of this.state.i18n) {
 			initialValues['lang_' + lang] = this.props.tag?.i18n[lang];
@@ -289,7 +289,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							onChange={value => this.addLang(value)}>
 							{this.state.languages.map(lang => (
 								<Select.Option key={lang.value} value={lang.value}>
-									{lang.text} ({lang.value.toUpperCase()})
+									{lang.label} ({lang.value.toUpperCase()})
 								</Select.Option>))}
 						</Select> :
 						<Tag
@@ -314,7 +314,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				>
 					<InputNumber
 						required={true}
-						defaultValue={10}
 						min={0}
 						placeholder='Priority'
 						style={{ width: '100%' }}

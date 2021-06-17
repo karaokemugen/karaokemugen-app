@@ -1,4 +1,4 @@
-image: node:12-buster
+image: axelterizaki/karaokemugen-ci:node-14-phppg-chromium
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -37,14 +37,17 @@ test:
     POSTGRES_PASSWORD: musubi
   script:
     - yarn install --check-files --force --cache-folder .yarn
+    - yarn buildWorker
     - touch mpv
     - touch ffmpeg
     - mkdir app
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US
     - node --version
-    - yarn ts-node util/extUnaccent
-    - yarn test --debug
+    - yarn ts-node util/extUnaccentPgcrypto
+    - export DISPLAY=':99.0'
+    - Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+    - yarn testCI --debug
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
       when: never
@@ -67,10 +70,12 @@ build-react:
     paths:
     - kmfrontend/build/
     - dist/
+    - zipWorker/
   script:
     - yarn build
     - yarn installkmfrontend
     - yarn buildkmfrontend
+    - yarn buildWorker
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'

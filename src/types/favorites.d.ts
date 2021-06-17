@@ -21,7 +21,7 @@ export interface FavExport {
 }
 
 export interface AutoMixPlaylistInfo {
-	playlist_id: number,
+	plaid: string,
 	playlist_name: string
 }
 

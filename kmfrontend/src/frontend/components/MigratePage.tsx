@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { MigrationsFrontend } from '../../../../src/types/database/migrationsFrontend';
 import logo from '../../assets/Logo-final-fond-transparent.png';
 import { commandBackend } from '../../utils/socket';
+import BulldozerVideos from './migrations/BulldozerVideos';
 import KMOnline from './migrations/KMOnline';
 import PrivacyPolicy from './migrations/PrivacyPolicy';
 
@@ -15,7 +16,8 @@ export default function MigratePage() {
 
 	const components = {
 		privacyPolicy: PrivacyPolicy,
-		KMOnline
+		KMOnline,
+		BulldozerVideos
 	};
 
 	const history = useHistory();
@@ -49,13 +51,13 @@ export default function MigratePage() {
 						<li>
 							<a href="http://mugen.karaokes.moe/contact.html">
 								<i className="fas fa-pencil-alt" />
-								{i18next.t('WLCM_CONTACT')}
+								{i18next.t('WELCOME_PAGE.CONTACT')}
 							</a>
 						</li>
 						<li>
 							<a href="http://mugen.karaokes.moe/">
 								<i className="fas fa-link" />
-								{i18next.t('WLCM_SITE')}
+								{i18next.t('WELCOME_PAGE.SITE')}
 							</a>
 						</li>
 					</ul>

@@ -1,4 +1,5 @@
 import {RemoteFailure, RemoteSuccess} from '../lib/types/remote';
+import {BinariesConfig} from './binChecker';
 import { PlayerState } from './player';
 
 export interface Version {
@@ -10,10 +11,10 @@ export interface Version {
 
 export interface State {
 	appHasBeenUpdated?: boolean,
-	currentPlaylistID?: number,
+	currentPlaid?: string,
 	currentSessionID?: string,
 	currentSessionEndsAt?: Date,
-	publicPlaylistID?: number,
+	publicPlaid?: string,
 	playerNeedsRestart?: boolean,
 	currentRequester?: string,
 	stopping: boolean,
@@ -53,15 +54,9 @@ export interface State {
 	singlePlay?: boolean,
 	version?: Version,
 	frontendPort?: number,
-	binPath?: {
-		mpv?: string,
-		ffmpeg?: string,
-		postgres?: string,
-		postgres_ctl?: string,
-		postgres_dump?: string,
-		postgres_client?: string
-	},
+	binPath?: Partial<BinariesConfig>,
 	opt?: {
+		cli?: boolean,
 		generateDB?: boolean,
 		reset?: boolean,
 		noBaseCheck?: boolean,
@@ -69,7 +64,7 @@ export interface State {
 		strict?: boolean,
 		noMedia?: boolean,
 		baseUpdate?: boolean,
-		mediaUpdate?: boolean,
+		mediaUpdateAll?: boolean,
 		noBrowser?: boolean,
 		sql?: boolean,
 		validate?: boolean,
@@ -77,22 +72,30 @@ export interface State {
 		forceAdminPassword?: string,
 		dumpDB?: boolean,
 		restoreDB?: boolean,
-		noTestDownloads?: boolean,
 		noAutoTest?: boolean,
 	},
 	args: string[],
 	environment: string,
 	sentrytest: boolean,
-	currentBLCSetID: number
+	currentBLCSetID: number,
+	systemMessages: SystemMessage[]
+}
+
+export interface SystemMessage {
+	html: string,
+	date: string,
+	dateStr: string,
+	title: string,
+	link: string,
+	type: string
 }
 
 export interface PublicState {
-	currentPlaylistID: number,
-	publicPlaylistID: number,
+	currentPlaid: string,
+	publicPlaid: string,
 	appPath?: string,
 	dataPath?: string,
 	os?: string,
-	electron: boolean,
 	defaultLocale: string,
 	supportedLyrics?: string[],
 	supportedMedias?: string[],
