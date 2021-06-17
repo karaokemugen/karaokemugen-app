@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import i18n from 'i18next';
 import debounce from 'lodash.debounce';
 import sample from 'lodash.sample';
-import {Promise as id3} from 'node-id3';
+import {Promise as id3, Tags} from 'node-id3';
 import retry from 'p-retry';
 import {resolve} from 'path';
 import randomstring from 'randomstring';
@@ -532,7 +532,7 @@ class Player {
 			await this.mpv.stop();
 			return true;
 		} catch (err) {
-			logger.error('mpvAPI(quit)', {service: 'Player', obj: err});
+			logger.error('mpvAPI (quit)', {service: 'Player', obj: err});
 			throw err;
 		}
 	}
@@ -872,7 +872,7 @@ class Players {
 						})
 						.catch(err => {
 							mediaFile = '';
-							throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source) : ${err}`);
+							throw new Error(`No media source for ${song.mediafile} (tried in ${resolvedPathRepos('Medias', song.repository).toString()} and HTTP source): ${err}`);
 						});
 				})
 		];
@@ -885,15 +885,16 @@ class Players {
 			options['sub-file'] = '';
 			options.sid = 'none';
 		}
-		if (mediaFile.endsWith('.mp3')) {
-			const id3tags = await id3.read(mediaFile);
-			if (!id3tags.image || onlineMedia) {
-				const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
-				options['external-file'] = defaultImageFile.replace(/\\/g,'/');
-				options['force-window'] = 'yes';
-				options['image-display-duration'] = 'inf';
-				options.vid = '1';
-			}
+		let id3tags: Tags;
+		if (mediaFile.endsWith('.mp3') && !onlineMedia) {
+			id3tags = await id3.read(mediaFile);
+		}
+		if (!id3tags?.image) {
+			const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
+			options['external-file'] = defaultImageFile.replace(/\\/g,'/');
+			options['force-window'] = 'yes';
+			options['image-display-duration'] = 'inf';
+			options.vid = '1';
 		}
 		// Load all those files into mpv and let's go!
 		try {
