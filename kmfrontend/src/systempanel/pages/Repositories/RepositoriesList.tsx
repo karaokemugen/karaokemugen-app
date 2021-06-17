@@ -148,7 +148,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		key: 'action',
 		render: (text, record: Repository) => (
 			<span>
-				<Link to={`/system/repositories/${record.Name}`}><EditOutlined /></Link>
+				<Link to={`/system/repositories/${record.Name}`}><Button type="primary" icon={<EditOutlined />} /></Link>
 				{this.state.repositories.length > 1 ?
 					<React.Fragment>
 						<Divider type="vertical" />

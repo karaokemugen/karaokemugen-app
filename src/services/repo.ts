@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import clonedeep from 'lodash.clonedeep';
 import { basename,resolve } from 'path';
 
-import { compareKarasChecksum, generateDB } from '../dao/database';
+import { compareKarasChecksum, DBReady, generateDB } from '../dao/database';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
 import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
@@ -308,7 +308,8 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 	}
 	await checkRepoPaths(repo);
 	updateRepo(repo, name);
-	if (oldRepo.Path.Medias !== repo.Path.Medias) {
+	//DBReady is needed as this can happen before the database is ready
+	if (oldRepo.Path.Medias !== repo.Path.Medias && DBReady) {
 		getKaras({q: `r:${repo.Name}`}).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
@@ -318,7 +319,7 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 			if (res) generateDB();
 		});
 	}
-	if (!oldRepo.SendStats && repo.SendStats) {
+	if (!oldRepo.SendStats && repo.SendStats && DBReady) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host);
 	}
 	logger.info(`Updated ${name}`, {service: 'Repo'});
