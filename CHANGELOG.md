@@ -1,3 +1,9 @@
+# v5.1.12 - 17/06/2021
+
+## Hotfix
+
+- A migration bug kept KM from being able to update the repositories properly to the new format
+
 # v5.1.11 - 17/06/2021
 
 This is a minor but major but still minor but well, it's a new version.
