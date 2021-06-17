@@ -10,7 +10,6 @@ export function parseArgs() {
 		.command('KaraokeMugen')
 		.description('Starts Karaoke Mugen Desktop App')
 		.version(`${version.number} "${version.name}" (commit ${version.sha})`)
-		.option('-b, --updateBase', 'Update karaoke base files')
 		.option('-c, --config [file]','Specify a config file to use (default is config.yml)')
 		.option('-d, --debug', 'Displays additional debug messages')
 		.option('-g, --generate', 'Generates a new database then quits')
@@ -19,17 +18,20 @@ export function parseArgs() {
 		.option('-r, --reset', 'Reset user data (WARNING! Backup your base first!)')
 		.option('-s, --strict', 'Generation/validation only. Strict mode, returns an error if kara files had to be modified.')
 		.option('-t, --test', 'Launches in test mode (for running unit tests)')
-		.option('-m, --updateMediasAll', 'Update karaoke media files only (no other data files)')
+		.option('-u, --updateBase', 'Update karaoke base files')
 		.option('-v, --validate', 'Validates kara files and modify them if needed (no generation)')
 		.option('--cli', 'Start in CLI mode, without Electron')
 		.option('--demo', 'Launches in demo mode (no system panel, no password changes)')
-		.option('--forceAdminPassword [password]', 'Set admin account\'s password').option('--noBaseCheck', 'Disable data file checking on startup')
+		.option('--dumpDB', 'Dumps database and exits')
+		.option('--forceAdminPassword [password]', 'Set admin account\'s password')
+		.option('--noBaseCheck', 'Disable data file checking on startup')
 		.option('--noBrowser', 'Do not open a browser window upon launch')
 		.option('--noMedia', '(generation only) Do not try to fetch data from media files')
 		.option('--noPlayer', 'Do not open player on startup')
-		.option('--noTestDownloads', 'Do not attempt to download songs during unit tests')
 		.option('--noAutoTest', 'Do not attempt to start tests automatically if --test is enabled')
+		.option('--restoreDB', 'Restores database and exits')
 		.option('--sql', 'Traces SQL query at the debug log level')
+		.option('--updateMediasAll', 'Update karaoke media files only (no other data files)')
 		.allowUnknownOption()
 		.parse();
 }
@@ -98,7 +100,6 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 		setState({isDemo: true});
 	}
 	if (argv.opts().noBrowser) setState({opt: {noBrowser: true}});
-	if (argv.opts().noTestDownloads) setState({opt: {noTestDownloads: true}});
 	if (argv.opts().noAutoTest) setState({opt: {noAutoTest: true}});
 	if (argv.opts().forceAdminPassword) setState({opt: {forceAdminPassword: argv.opts().forceAdminPassword || cmdline.getSwitchValue('forceAdminPassword')}});
 	if (argv.opts().dumpDB) setState({opt: {dumpDB: true}});

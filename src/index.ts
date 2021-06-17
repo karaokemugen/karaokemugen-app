@@ -23,7 +23,7 @@ import {
 	resolvedPathTemp,
 	setConfig
 } from './lib/utils/config';
-import {asyncCheckOrMkdir, asyncExists} from './lib/utils/files';
+import {asyncCheckOrMkdir} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
@@ -36,7 +36,7 @@ import sentry from './utils/sentry';
 import {getState, setState} from './utils/state';
 
 dotenv.config();
-sentry.init(app, process.argv.includes('--strict'));
+sentry.init(process.argv.includes('--strict'));
 
 let isInitError = false;
 
@@ -241,9 +241,17 @@ export async function main() {
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
-		if (await asyncExists(resolvedPathTemp())) await remove(resolvedPathTemp());
+		try {
+			await remove(resolvedPathTemp());
+		} catch(err) {
+			// Non-fatal
+		}
 		// Emptying import directory
-		if (await asyncExists(resolvedPathImport())) await remove(resolvedPathImport());
+		try {
+			await remove(resolvedPathImport());
+		} catch(err) {
+			// Non-fatal
+		}
 		// Checking paths
 		const checks = [];
 		const paths = config.System.Path;

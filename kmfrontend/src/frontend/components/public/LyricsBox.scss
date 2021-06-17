@@ -25,21 +25,29 @@
 		border-radius: 15px;
 		text-align: center;
 		> div {
-			transition: font-size, color, margin ease 200ms,200ms,200ms;
+			transition: font-size,color,margin ease 200ms,200ms,200ms;
+			> span {
+				&.singing {
+					color: scale-color(skyblue, $saturation: 100%, $lightness: -15%);
+				}
+			}
 			&.hidden {
 				font-size: 0;
 			}
 			&.greyed {
-				color: lighten($mugen-background, 75);
+				color: lighten($mugen-background, 65);
 			}
 			&.current {
 				font-size: 1.25em;
 				font-weight: bold;
-				color: gold;
+				color: ghostwhite;
 				margin: 0.25em 0;
+				&.forced {
+					color: goldenrod;
+				}
 			}
 			&.incoming {
-				color: lighten(gold, 10);
+				color: white;
 				margin: 0.1em 0;
 			}
 		}

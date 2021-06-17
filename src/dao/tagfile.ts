@@ -3,7 +3,7 @@ import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { tagTypes } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
-import { editKara } from '../services/kara_creation';
+import { editKara } from '../services/karaCreation';
 
 export async function removeTagInKaras(tag: DBTagMini, karasWithTag: DBKara[]) {
 	if (karasWithTag.length === 0) return;

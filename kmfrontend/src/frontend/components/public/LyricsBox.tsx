@@ -3,7 +3,7 @@ import './LyricsBox.scss';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
-import {ASSLine} from '../../../../../src/lib/types/ass';
+import {ASSEvent, ASSLine} from '../../../../../src/lib/types/ass';
 import {PublicPlayerState} from '../../../../../src/types/state';
 import {formatLyrics} from '../../../utils/kara';
 import {commandBackend, getSocket} from '../../../utils/socket';
@@ -70,13 +70,16 @@ class LyricsBox extends Component<IProps, IState> {
 		}
 	}
 
+	protected genBlockClasses(block: ASSEvent, line: ASSLine) {
+		if (block.tags[0]?.k && (line.start + block.tags[0].k) < (this.state.timePosition + 0.125)) {
+			return 'singing';
+		}
+	}
+
 	fetchLyrics = async () => {
 		if (this.props.kid) {
 			try {
-				let lyrics: ASSLine[] = await commandBackend('getKaraLyrics', {kid: this.props.kid});
-				if (lyrics?.length > 100) {
-					lyrics = formatLyrics(lyrics);
-				}
+				const lyrics: ASSLine[] = formatLyrics(await commandBackend('getKaraLyrics', {kid: this.props.kid}));
 				this.setState({ lyrics: lyrics || [] });
 			} catch (e) {
 				// already display
@@ -122,10 +125,19 @@ class LyricsBox extends Component<IProps, IState> {
 				(this.state.lyrics.length > 0 ? <div className="lyrics">
 					{
 						this.state.lyrics.map((val, index) => {
+							const classes = this.genClasses(val);
 							return <div
-								className={this.genClasses(val)}
+								className={classes}
 								key={index}
-							>{val.text.replace(/\\N/g, ' ')}</div>;
+							>
+								{val.fullText && classes === 'current' ?
+									val.fullText.map((block, index) => (
+										<span key={index} className={this.genBlockClasses(block, val)}>
+											{block.text}
+										</span>
+									))
+									:val.text.replace(/\\N/g, ' ')}
+							</div>;
 						})
 					}
 				</div>:<div className="lyrics">

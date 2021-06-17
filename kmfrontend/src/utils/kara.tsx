@@ -100,35 +100,64 @@ export function buildKaraTitle(settings:SettingsStoreData, data: DBKara, onlyTex
 }
 
 export function formatLyrics(lyrics: ASSLine[]) {
-	// Merge lines with the same text in it to mitigate karaokes with many effects
-	const map = new Map<string, ASSLine[][]>();
-	for (const lyric of lyrics) {
-		if (map.has(lyric.text)) {
-			const val = map.get(lyric.text);
-			const lastLines = val[val.length-1];
-			const lastLine = lastLines[lastLines.length-1];
-			if (lyric.start - lastLine.end < 0.1) {
-				lastLines.push(lyric);
-				val[val.length-1] = lastLines;
+	if (lyrics.length > 100) {
+		// Merge lines with the same text in it to mitigate karaokes with many effects
+		const map = new Map<string, ASSLine[][]>();
+		for (const lyric of lyrics) {
+			if (map.has(lyric.text)) {
+				const val = map.get(lyric.text);
+				const lastLines = val[val.length-1];
+				const lastLine = lastLines[lastLines.length-1];
+				if (lyric.start - lastLine.end < 0.1) {
+					lastLines.push(lyric);
+					val[val.length-1] = lastLines;
+				} else {
+					val.push([lyric]);
+				}
+				map.set(lyric.text, val);
 			} else {
-				val.push([lyric]);
+				map.set(lyric.text, [[lyric]]);
 			}
-			map.set(lyric.text, val);
-		} else {
-			map.set(lyric.text, [[lyric]]);
 		}
-	}
-	// Unwrap and sort
-	const fixedLyrics: ASSLine[] = [];
-	for (const [lyric, lyricGroups] of map.entries()) {
-		for (const lyricGroup of lyricGroups) {
-			fixedLyrics.push({ start: lyricGroup[0].start, text: lyric, end: lyricGroup[lyricGroup.length-1].end });
+		// Unwrap and sort
+		const fixedLyrics: ASSLine[] = [];
+		for (const [lyric, lyricGroups] of map.entries()) {
+			for (const lyricGroup of lyricGroups) {
+				fixedLyrics.push({ start: lyricGroup[0].start, text: lyric, end: lyricGroup[lyricGroup.length-1].end });
+			}
 		}
+		fixedLyrics.sort((el1, el2) => {
+			return el1.start - el2.start;
+		});
+		return fixedLyrics;
+	} else {
+		// Compute karaoke timings for public LyricsBox
+		const mappedLyrics: ASSLine[] = [];
+		for (const lyric of lyrics) {
+			if (lyric.fullText) {
+				const newFullText = lyric.fullText.map(value => {
+					// Crush down tags
+					const tags = value.tags.reduce((acc, tagCollec) => {
+						const newK = (acc.k || 0) + (tagCollec.k || tagCollec.kf || tagCollec.ko || 0);
+						return Object.assign(acc, {...tagCollec, k: newK});
+					}, {});
+					return {...value, tags};
+				}).map((block, i, blocks) => {
+					let KTime = 0;
+					for (let i2 = 0; i2 < i; i2++) {
+						KTime += blocks[i2].tags?.k || 0;
+					}
+					KTime = KTime * 0.01;
+					return {...block, tags: [{...block.tags, k: KTime}]};
+				});
+				mappedLyrics.push({...lyric, fullText: newFullText});
+			} else {
+				// Push as-is, no support
+				mappedLyrics.push({...lyric, fullText: undefined});
+			}
+		}
+		return mappedLyrics;
 	}
-	fixedLyrics.sort((el1, el2) => {
-		return el1.start - el2.start;
-	});
-	return fixedLyrics;
 }
 
 export function getPreviewLink(kara: DBKara) {

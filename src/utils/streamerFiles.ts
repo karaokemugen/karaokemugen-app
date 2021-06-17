@@ -7,7 +7,7 @@ import {getConfig, resolvedPathStreamFiles} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import {getSongSeriesSingers, getSongVersion} from '../services/kara';
 import {getPlaylistInfo} from '../services/playlist';
-import {StreamFileType} from '../types/stream_files';
+import {StreamFileType} from '../types/streamerFiles';
 import sentry from './sentry';
 import {getState} from './state';
 

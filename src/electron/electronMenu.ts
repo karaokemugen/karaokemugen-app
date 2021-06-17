@@ -8,7 +8,7 @@ import { resolve } from 'path';
 import { exit } from '../components/engine';
 import { getConfig, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { removeNulls } from '../lib/utils/object_helpers';
+import { removeNulls } from '../lib/utils/objectHelpers';
 import { getState } from '../utils/state';
 import { handleFile, updateChibiPlayerWindow, updateChibiPlaylistWindow, win } from './electron';
 import { setManualUpdate } from './electronAutoUpdate';

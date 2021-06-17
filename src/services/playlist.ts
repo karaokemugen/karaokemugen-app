@@ -60,7 +60,7 @@ import { DBPLC } from '../types/database/playlist';
 import { CurrentSong, PlaylistOpts, Pos, ShuffleMethods } from '../types/playlist';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
-import {writeStreamFiles} from '../utils/stream_files';
+import {writeStreamFiles} from '../utils/streamerFiles';
 import {getBlacklist} from './blacklist';
 import { checkMediaAndDownload } from './download';
 import { formatKaraList, getKaras, getSongSeriesSingers,getSongVersion} from './kara';

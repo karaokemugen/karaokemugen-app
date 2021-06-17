@@ -4,7 +4,7 @@ import {basename, dirname, resolve} from 'path';
 
 import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore,sortKaraStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import {generateKara, validateNewKara} from '../lib/services/kara_creation';
+import {generateKara, validateNewKara} from '../lib/services/karaCreation';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
 import { asyncExists, asyncMove, resolveFileInDirs } from '../lib/utils/files';

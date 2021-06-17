@@ -24,7 +24,7 @@ import { getState } from '../utils/state';
 import { generateBlacklist } from './blacklist';
 import { checkMediaAndDownload } from './download';
 import {getKara, getKaras} from './kara';
-import { editKara } from './kara_creation';
+import { editKara } from './karaCreation';
 import { getRepo, getRepos } from './repo';
 import { getTag } from './tag';
 

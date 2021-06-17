@@ -18,7 +18,7 @@ import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraint
 import {asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
-import { removeNulls } from '../lib/utils/object_helpers';
+import { removeNulls } from '../lib/utils/objectHelpers';
 import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
@@ -37,11 +37,11 @@ import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
 import {Config} from '../types/config';
 import sentry from '../utils/sentry';
-import {configConstraints, defaults} from './default_settings';
+import {configConstraints, defaults} from './defaultSettings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
 import {getState, setState} from './state';
-import {writeStreamFiles} from './stream_files';
+import {writeStreamFiles} from './streamerFiles';
 import { initTwitch, stopTwitch } from './twitch';
 
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
@@ -81,15 +81,19 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		}
 	}
 	// Updating quotas
-	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time) {
+	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || 
+		newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || 
+		newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time
+	) {
 		const users = await listUsers();
 		for (const user of users) {
 			updateSongsLeft(user.login, getState().publicPlaid);
 		}
-	}
+	}	
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
 	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
 	if (!oldConfig.Frontend.GeneratePreviews && newConfig.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
+		
 	// Browse through paths and define if it's relative or absolute
 	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Windows));
 	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Linux));
@@ -124,7 +128,11 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			}
 		}
 	}
+
+	// All set, ready to go!
 	const config = setConfig(newConfig);
+	
+	// Toggling poll
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
 	config.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo
@@ -146,9 +154,11 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	config.Online.Stats && !state.isDemo
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
 		: stopStats();
+	// Streamer mode
 	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 	// Toggling progressbar off if needs be
 	if (config.Player.ProgressBarDock && !state.isDemo) setProgressBar(-1);
+	
 	if (!state.isDemo) configureHost();
 }
 
@@ -197,7 +207,7 @@ export function backupConfig() {
 	logger.debug('Making a backup of config.yml', {service: 'Config'});
 	return copy(
 		resolve(getState().dataPath, 'config.yml'),
-		resolve(getState().dataPath, 'config.backup.yml'),
+		resolve(getState().dataPath, `config.backup.${new Date().getTime().toString()}.yml`),
 		{ overwrite: true }
 	);
 }

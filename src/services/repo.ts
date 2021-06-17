@@ -1,5 +1,7 @@
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
+import i18next from 'i18next';
+import clonedeep from 'lodash.clonedeep';
 import { basename,resolve } from 'path';
 
 import { compareKarasChecksum, generateDB } from '../dao/database';
@@ -26,15 +28,17 @@ import {
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
-import { DifferentChecksumReport } from '../types/repo';
+import {DifferentChecksumReport, OldRepository} from '../types/repo';
+import {backupConfig} from '../utils/config';
 import {pathIsContainedInAnother} from '../utils/files';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
-import {applyPatch, downloadAndExtractZip} from '../utils/zip_patch';
+import {applyPatch, downloadAndExtractZip} from '../utils/zipPatch';
 import { createProblematicBLCSet, generateBlacklist } from './blacklist';
 import { updateMedias } from './downloadUpdater';
 import { getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
+import { addSystemMessage } from './proxyFeeds';
 import { sendPayload } from './stats';
 import { deleteTag, getTags, integrateTagFile } from './tag';
 
@@ -74,26 +78,49 @@ export async function addRepo(repo: Repository) {
 }
 
 export async function migrateReposToZip() {
-	// Shut up typescript.
-	const repos: any = getRepos().filter((r: any) => r.Path.Karas?.length > 0);
-	for (const repo of repos) {
+	// Find unmigrated repositories
+	const repos: OldRepository[] = clonedeep((getRepos() as any as OldRepository[]).filter((r) => r.Path.Karas?.length > 0));
+	if (repos.length > 0) {
+		// Create a config backup, just in case
+		await backupConfig();
+	}
+	for (const oldRepo of repos) {
 		// Determine basedir by going up one folder
-		const dir = resolve(getState().dataPath, repo.Path.Karas[0], '..');
+		const dir = resolve(getState().dataPath, oldRepo.Path.Karas[0], '..');
+		const newRepo: Repository = {
+			Name: oldRepo.Name,
+			Online: oldRepo.Online,
+			Enabled: oldRepo.Enabled,
+			SendStats: oldRepo.SendStats || true,
+			Path: {
+				Medias: oldRepo.Path.Medias
+			},
+			MaintainerMode: false,
+			AutoMediaDownloads: 'updateOnly',
+			BaseDir: dir
+		};
 		if (await asyncExists(resolve(dir, '.git'))) {
 			// It's a git repo, put maintainer mode on.
-			repo.MaintainerMode = true;
+			newRepo.MaintainerMode = true;
 		}
-		const extraPath = repo.Online && !repo.MaintainerMode
-			? '../json'
-			: '..';
-		repo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, repo.Path.Karas[0], extraPath));
-		delete repo.Path.Karas;
-		delete repo.Path.Lyrics;
-		delete repo.Path.Tags;
-		delete repo.Path.Series;
-		await editRepo(repo.Name, repo, false)
+		const extraPath = newRepo.Online && !newRepo.MaintainerMode
+			? './json'
+			: '';
+		newRepo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, dir, extraPath));
+		await editRepo(newRepo.Name, newRepo, false)
 			.catch(err => {
-				logger.error(`Unable to migrate repo ${repo.Name} to zip-based: ${err}`, {service: 'Repo', obj: err});
+				logger.error(`Unable to migrate repo ${oldRepo.Name} to zip-based: ${err}`, {service: 'Repo', obj: err});
+				sentry.error(err);
+				addSystemMessage({
+					type: 'system_error',
+					date: new Date().toString(),
+					dateStr: new Date().toLocaleDateString(),
+					link: '#',
+					html: `<p>${i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.BODY', { repo: oldRepo.Name })}</p>`,
+					title: i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.TITLE')
+				});
+				// Disable the repo and bypass stealth checks
+				updateRepo({...oldRepo, Enabled: false} as any, oldRepo.Name);
 			});
 	}
 }
@@ -372,9 +399,11 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 }
 
 function checkRepoPaths(repo: Repository) {
-	for (const path of repo.Path.Medias) {
-		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
-			throw {code: 400, msg: 'Sanity check: A media path is contained in the base directory.'};
+	if (repo.Online && !repo.MaintainerMode) {
+		for (const path of repo.Path.Medias) {
+			if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
+				throw {code: 400, msg: 'Sanity check: A media path is contained in the base directory.'};
+			}
 		}
 	}
 	const checks = [];
