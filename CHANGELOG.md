@@ -1,3 +1,9 @@
+# v5.1.13 - 17/06/2021
+
+## Hotfix
+
+- Fix on playing mp3s from http sources
+
 # v5.1.12 - 17/06/2021
 
 ## Hotfix
