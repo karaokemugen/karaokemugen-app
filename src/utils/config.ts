@@ -183,7 +183,7 @@ export async function initConfig(argv: any) {
 export function configureHost() {
 	const state = getState();
 	const config = getConfig();
-	const URLPort = +config.Online.Port === 80
+	const URLPort = +config.Frontend.Port === 80
 		? ''
 		: `:${config.Frontend.Port}`;
 	setState({osHost: {v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6')}});
