@@ -1,3 +1,17 @@
+# v5.1.14 - 20/06/2021
+
+## Fixes
+
+- Fix URL displayed on player screen not having the port
+- Added checks for adding blacklist criterias with wrong numbers as values
+- Fix generation aborting because all folders aren't properly created.
+
+# v5.1.13 - 17/06/2021
+
+## Hotfix
+
+- Fix on playing mp3s from http sources
+
 # v5.1.12 - 17/06/2021
 
 ## Hotfix

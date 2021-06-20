@@ -238,6 +238,7 @@ export async function addBlacklistCriteria(BLCs: BLC[], set_id: number) {
 				if (!new RegExp(uuidRegexp).test(blc.value)) throw {code: 400, msg: `Blacklist criteria value mismatch : type ${blc.type} must have UUID values`};
 			}
 			if (blc.type === 1002 || blc.type === 1003) {
+				blc.value = +blc.value;
 				if (!isNumber(blc.value)) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} must have a numeric value!`};
 				if (timeBLC[blc.type - 1002]) throw {code: 400, msg: `Blacklist criteria type mismatch : type ${blc.type} can occur only once in a set.`};
 				const opposing_blc = blcs.find(dbblc => {
