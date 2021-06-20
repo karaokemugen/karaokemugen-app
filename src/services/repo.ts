@@ -459,26 +459,23 @@ export async function findUnusedTags(repo: string): Promise<DBTag[]> {
 	}
 }
 
-export async function consolidateRepo(repoName: string, newPath: string) {
+export async function movingMediaRepo(repoName: string, newPath: string) {
 	const task = new Task({
-		text: 'CONSOLIDATING_REPO',
+		text: 'MOVING_MEDIAS_REPO',
 		subtext:  repoName
 	});
 	try {
 		const repo = getRepo(repoName);
 		const state = getState();
 		if (!repo) throw 'Unknown repository';
-		await asyncCheckOrMkdir(newPath);
-		logger.info(`Moving ${repoName} repository to ${newPath}...`, {service: 'Repo'});
+		repo.Path.Medias = [relativePath(state.dataPath, newPath)];
+		await checkRepoPaths(repo);
+		logger.info(`Moving ${repoName} medias repository to ${newPath}...`, {service: 'Repo'});
 		const moveTasks = [];
-		const newDataPath = newPath;
-		moveTasks.push(asyncMoveAll(resolve(state.dataPath, repo.BaseDir), newDataPath));
-		repo.BaseDir = relativePath(state.dataPath, newDataPath);
 		for (const dir of repo.Path.Medias) {
 			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/')));
 		}
 		await Promise.all(moveTasks);
-		repo.Path.Medias = [relativePath(state.dataPath, resolve(newPath, 'medias/'))];
 		await editRepo(repoName, repo, true);
 	} catch(err) {
 		logger.error(`Failed to move repo ${repoName}`, {service: 'Repo', obj: err});
