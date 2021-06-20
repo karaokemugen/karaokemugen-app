@@ -12,13 +12,13 @@ import FoldersElement from '../../components/FoldersElement';
 interface RepositoriesFormProps {
 	repository: Repository;
 	save: any;
-	consolidate: (consolidatePath: string) => void;
+	movingMedia: (movingMediaPath: string) => void;
 	compareLyrics: (repo: string) => void;
 	copyLyrics: (report: string) => void;
 }
 
 interface RepositoriesFormState {
-	consolidatePath?: string;
+	movingMediaPath?: string;
 	compareRepo?: string;
 	repositoriesValue: string[];
 	zipUpdateInProgress: boolean
@@ -35,7 +35,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 		}
 
 		this.state = {
-			consolidatePath: undefined,
+			movingMediaPath: undefined,
 			repositoriesValue: null,
 			zipUpdateInProgress: false
 		};
@@ -260,15 +260,15 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							</React.Fragment>
 							: null
 						}
-						<Divider orientation="left">{i18next.t('REPOSITORIES.CONSOLIDATE_PANEL')}</Divider>
+						<Divider orientation="left">{i18next.t('REPOSITORIES.MOVING_MEDIA_PANEL')}</Divider>
 
 						<Form.Item hasFeedback
-							label={i18next.t('REPOSITORIES.CONSOLIDATE')}
+							label={i18next.t('REPOSITORIES.MOVING_MEDIA')}
 							labelCol={{ flex: '0 1 300px' }}
 						>
 							<FoldersElement
 								openDirectory={true}
-								onChange={(value) => this.setState({ consolidatePath: value })}
+								onChange={(value) => this.setState({ movingMediaPath: value })}
 							/>
 						</Form.Item>
 						<Form.Item
@@ -278,13 +278,13 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 								type="primary"
 								danger
 								disabled={this.state.zipUpdateInProgress}
-								onClick={() => this.props.consolidate(this.state.consolidatePath)}
+								onClick={() => this.props.movingMedia(this.state.movingMediaPath)}
 							>
-								{i18next.t('REPOSITORIES.CONSOLIDATE_BUTTON')}
+								{i18next.t('REPOSITORIES.MOVING_MEDIA_BUTTON')}
 							</Button>
 							<Alert style={{ textAlign: 'left', marginTop: '10px' }}
 								message={i18next.t('REPOSITORIES.WARNING')}
-								description={i18next.t('REPOSITORIES.CONSOLIDATE_ABOUT_MESSAGE')}
+								description={i18next.t('REPOSITORIES.MOVING_MEDIA_ABOUT_MESSAGE')}
 								type="warning"
 							/>
 

@@ -1007,8 +1007,10 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 		};
 	} catch(err) {
 		logger.error('Import failed', {service: 'Playlist', obj: err});
-		sentry.addErrorInfo('playlist', JSON.stringify(playlist, null, 2));
-		sentry.error(err);
+		if (err?.code !== 400) {
+			sentry.addErrorInfo('playlist', JSON.stringify(playlist, null, 2));
+			sentry.error(err);
+		}
 		throw err;
 	} finally {
 		task.end();

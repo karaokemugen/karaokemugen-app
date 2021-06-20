@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addRepo, compareLyricsChecksums, consolidateRepo, copyLyricsRepo,deleteMedias,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepoFreeSpace, getRepos, removeRepo, updateAllZipRepos } from '../../services/repo';
+import { addRepo, compareLyricsChecksums, copyLyricsRepo,deleteMedias,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepoFreeSpace, getRepos, movingMediaRepo, removeRepo, updateAllZipRepos } from '../../services/repo';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -84,11 +84,11 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('consolidateRepo', async (socket: Socket, req: APIData) => {
+	router.route('movingMediaRepo', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
 		try {
-			consolidateRepo(req.body.name, req.body.path);
-			return {code: 200, message: APIMessage('REPO_CONSOLIDATING_IN_PROGRESS')};
+			movingMediaRepo(req.body.name, req.body.path);
+			return {code: 200, message: APIMessage('REPO_MOVING_MEDIA_IN_PROGRESS')};
 		} catch(err) {
 			// This is async, check function to know which WS event you get
 		}
