@@ -55,7 +55,7 @@ class SetupPage extends Component<IProps, IState> {
 	}
 
 	componentDidMount() {
-		const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].BaseDir;
+		const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].Path.Medias[0];
 		const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
 
 		this.setState({
@@ -201,7 +201,7 @@ class SetupPage extends Component<IProps, IState> {
 		);
 	}
 
-	consolidate = async () => {
+	movingMedia = async () => {
 		if (this.state.repositoryFolder
 			&& this.context?.globalState.settings.data.config?.System.Repositories.length > 0
 			&& this.context?.globalState.settings.data.config?.System.Repositories[0].Name) {
@@ -209,7 +209,7 @@ class SetupPage extends Component<IProps, IState> {
 			const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
 			if (this.state.repositoryFolder !== path) {
 				try {
-					await commandBackend('consolidateRepo', {
+					await commandBackend('movingMediaRepo', {
 						path: this.state.repositoryFolder,
 						name: this.context?.globalState.settings.data.config?.System.Repositories[0].Name
 					}, undefined, 300000);
@@ -589,7 +589,7 @@ class SetupPage extends Component<IProps, IState> {
 									<div className="actions">
 										<label className="error">{this.state.error}</label>
 										<button type="button" onClick={async () => {
-											await this.consolidate();
+											await this.movingMedia();
 											this.setState({ activeView: 'stats' });
 										}}>{i18next.t('SETUP_PAGE.SAVE_PARAMETER')}</button>
 									</div>

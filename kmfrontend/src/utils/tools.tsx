@@ -183,14 +183,9 @@ export function isNonStandardPlaylist(plaid: string) {
 	return Object.values(nonStandardPlaylists).includes(plaid);
 }
 
-export function isMaintainerMode(context:GlobalContextInterface, repo:string):boolean {
-	let maintainerMode = false;
-	context.globalState.settings.data.config.System.Repositories.forEach(repository => {
-		if (repository.Name === repo) {
-			maintainerMode = repository.MaintainerMode;
-		}
-	});
-	return maintainerMode;
+export function isModifiable(context: GlobalContextInterface, repoName: string): boolean {
+	const repo = context.globalState.settings.data.config.System.Repositories.find(r => r.Name === repoName);
+	return repo.MaintainerMode || !repo.Online;
 }
 
 export async function decodeBlacklistingReason(reason: string) {

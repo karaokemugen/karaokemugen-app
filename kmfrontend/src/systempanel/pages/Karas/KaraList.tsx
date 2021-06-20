@@ -10,7 +10,7 @@ import GlobalContext from '../../../store/context';
 import { getSerieLanguage, getTagInLocale, getTagInLocaleList, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
-import { is_touch_device, isMaintainerMode } from '../../../utils/tools';
+import { is_touch_device, isModifiable } from '../../../utils/tools';
 
 interface KaraListState {
 	karas: DBKara[];
@@ -142,7 +142,7 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	confirmDeleteAllVisibleKara = () => {
-		const karaDeletable = this.state.karas.filter(kara => isMaintainerMode(this.context, kara.repository));
+		const karaDeletable = this.state.karas.filter(kara => isModifiable(this.context, kara.repository));
 		Modal.confirm({
 			title: i18next.t('KARA.DELETE_KARA_TITLE', { count: karaDeletable.length }),
 			okText: i18next.t('YES'),
@@ -246,7 +246,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			onClick={this.confirmDeleteAllVisibleKara}><DeleteOutlined /></Button>{i18next.t('ACTION')}
 		</span>,
 		key: 'action',
-		render: (_text, record) => isMaintainerMode(this.context, record.repository) ? (<span>
+		render: (_text, record) => isModifiable(this.context, record.repository) ? (<span>
 			<Link to={`/system/karas/${record.kid}`}>
 				<Button type="primary" icon={<EditOutlined />} />
 			</Link>

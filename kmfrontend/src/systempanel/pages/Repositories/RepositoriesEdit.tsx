@@ -72,9 +72,9 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 	};
 
 
-	consolidate = async (consolidatePath: string) => {
-		if (consolidatePath && this.props.match.params.name) {
-			await commandBackend('consolidateRepo', { path: consolidatePath, name: this.props.match.params.name }, true, 300000);
+	movingMedia = async (movingMediaPath: string) => {
+		if (movingMediaPath && this.props.match.params.name) {
+			await commandBackend('movingMediaRepo', { path: movingMediaPath, name: this.props.match.params.name }, true, 300000);
 			this.props.history.push('/system/repositories');
 		}
 	}
@@ -110,7 +110,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 				</Layout.Header>
 				<Layout.Content>
 					{this.state.repository && (<RepositoryForm repository={this.state.repository}
-						save={this.state.save} consolidate={this.consolidate}
+						save={this.state.save} movingMedia={this.movingMedia}
 						compareLyrics={this.compareLyrics} copyLyrics={this.copyLyrics} />)}
 					<Modal
 						title={i18next.t('REPOSITORIES.WARNING')}

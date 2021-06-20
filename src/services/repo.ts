@@ -73,7 +73,9 @@ export async function addRepo(repo: Repository) {
 	await checkRepoPaths(repo);
 	insertRepo(repo);
 	// Let's download zip if it's an online repository
-	if (repo.Online) await updateZipRepo(repo.Name);
+	if (repo.Online) {
+		updateZipRepo(repo.Name).then(() => generateDB());
+	}
 	logger.info(`Added ${repo.Name}`, {service: 'Repo'});
 }
 
@@ -131,8 +133,8 @@ export async function updateAllZipRepos() {
 	logger.info('Updating all repositories', {service: 'Repo'});
 	for (const repo of repos) {
 		try {
-			// updateZipRepo returns true when the function has download the entire base (either because it's new or because an error happened during the patch)
-			if (await updateZipRepo(repo.Name, false)) doGenerate = true;
+			// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
+			if (await updateZipRepo(repo.Name)) doGenerate = true;
 		} catch(err) {
 			logger.error(`Failed to update zip repository from ${repo.Name}`, {service: 'Repo', object: err});
 		}
@@ -210,14 +212,14 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 	updateDownloaded(karas.content.map(k => k.kid), 'MISSING');
 }
 
-export async function updateZipRepo(name: string, refresh = true) {
+export async function updateZipRepo(name: string) {
 	const repo = getRepo(name);
 	if (!repo.Online || repo.MaintainerMode) throw 'Repository is not online or is in Maintainer Mode!';
 	const LocalCommit = await getLocalRepoLastCommit(repo);
 	logger.info(`Updating repository from ${name}, our commit is ${LocalCommit}`, {service: 'Repo'});
 	if (!LocalCommit) {
 		// If local commit doesn't exist, we have to start by retrieving one
-		const LatestCommit = await newZipRepo(repo, refresh);
+		const LatestCommit = await newZipRepo(repo);
 		// Once this is done, we store the last commit in settings DB
 		await saveSetting(`commit-${name}`, LatestCommit);
 		await saveSetting('baseChecksum', await baseChecksum());
@@ -274,7 +276,7 @@ export async function updateZipRepo(name: string, refresh = true) {
 			} catch (err) {
 				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {service: 'Repo'});
 				await saveSetting(`commit-${repo.Name}`, null);
-				return updateZipRepo(name, refresh);
+				await updateZipRepo(name);
 			}
 		}
 	}
@@ -285,12 +287,10 @@ async function getLocalRepoLastCommit(repo: Repository): Promise<string|null> {
 	return settings[`commit-${repo.Name}`] || null;
 }
 
-async function newZipRepo(repo: Repository, refresh = true): Promise<string> {
+async function newZipRepo(repo: Repository): Promise<string> {
 	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo.Name);
 	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
 	if (repo.AutoMediaDownloads === 'all') updateMedias(repo.Name);
-	// We refresh only for clones as it's easier. For pulls however items are added individually.
-	if (refresh) await generateDB();
 	return LatestCommit;
 }
 
@@ -459,26 +459,23 @@ export async function findUnusedTags(repo: string): Promise<DBTag[]> {
 	}
 }
 
-export async function consolidateRepo(repoName: string, newPath: string) {
+export async function movingMediaRepo(repoName: string, newPath: string) {
 	const task = new Task({
-		text: 'CONSOLIDATING_REPO',
+		text: 'MOVING_MEDIAS_REPO',
 		subtext:  repoName
 	});
 	try {
 		const repo = getRepo(repoName);
 		const state = getState();
 		if (!repo) throw 'Unknown repository';
-		await asyncCheckOrMkdir(newPath);
-		logger.info(`Moving ${repoName} repository to ${newPath}...`, {service: 'Repo'});
+		repo.Path.Medias = [relativePath(state.dataPath, newPath)];
+		await checkRepoPaths(repo);
+		logger.info(`Moving ${repoName} medias repository to ${newPath}...`, {service: 'Repo'});
 		const moveTasks = [];
-		const newDataPath = newPath;
-		moveTasks.push(asyncMoveAll(resolve(state.dataPath, repo.BaseDir), newDataPath));
-		repo.BaseDir = relativePath(state.dataPath, newDataPath);
 		for (const dir of repo.Path.Medias) {
 			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/')));
 		}
 		await Promise.all(moveTasks);
-		repo.Path.Medias = [relativePath(state.dataPath, resolve(newPath, 'medias/'))];
 		await editRepo(repoName, repo, true);
 	} catch(err) {
 		logger.error(`Failed to move repo ${repoName}`, {service: 'Repo', obj: err});
