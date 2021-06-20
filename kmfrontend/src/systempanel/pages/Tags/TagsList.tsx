@@ -8,7 +8,7 @@ import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
-import { is_touch_device, isMaintainerMode } from '../../../utils/tools';
+import { is_touch_device, isModifiable } from '../../../utils/tools';
 
 interface TagsListState {
 	tags: DBTag[],
@@ -142,7 +142,7 @@ class TagsList extends Component<unknown, TagsListState> {
 		key: 'repository'
 	}, {
 		title: i18next.t('ACTION'),
-		render: (_text, record) => isMaintainerMode(this.context, record.repository) ? (<span>
+		render: (_text, record) => isModifiable(this.context, record.repository) ? (<span>
 			<Link to={`/system/tags/${record.tid}`}>
 				<Button type="primary" icon={<EditOutlined />} />
 			</Link>
