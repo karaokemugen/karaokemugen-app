@@ -34,8 +34,12 @@ class RemoteStatus extends Component<unknown, IState> {
 	timeout: NodeJS.Timeout
 
 	updateRemoteData = async () => {
-		const data: RemoteStatusData = await commandBackend('getRemoteData');
-		this.setState({ remoteStatus: data });
+		try {
+			const data: RemoteStatusData = await commandBackend('getRemoteData');
+			this.setState({ remoteStatus: data });
+		} catch (e) {
+			// already display
+		}
 	}
 
 	reset = (e: any) => {
