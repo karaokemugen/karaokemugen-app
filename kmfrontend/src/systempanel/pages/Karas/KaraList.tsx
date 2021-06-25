@@ -1,5 +1,5 @@
-import {ClearOutlined, DeleteOutlined, EditOutlined} from '@ant-design/icons';
-import {Alert, Button, Cascader, Col, Divider, Input, Layout, Modal, Row, Table} from 'antd';
+import { ClearOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Alert, Button, Cascader, Col, Divider, Input, Layout, Modal, Row, Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
@@ -164,7 +164,7 @@ class KaraList extends Component<unknown, KaraListState> {
 				<Layout.Content>
 					{this.context.globalState.settings.data.config.System.Repositories.findIndex(repo => repo.Online && !repo.MaintainerMode) !== -1 ?
 						<Alert type="info" showIcon style={{ marginBottom: '10px' }}
-							   message={i18next.t('KARA.ONLINE_REPOSITORIES')} />:null}
+							message={i18next.t('KARA.ONLINE_REPOSITORIES')} /> : null}
 					<Row>
 						<Col flex={3} style={{ marginRight: '10px' }}>
 							<Input.Search
@@ -246,15 +246,23 @@ class KaraList extends Component<unknown, KaraListState> {
 			onClick={this.confirmDeleteAllVisibleKara}><DeleteOutlined /></Button>{i18next.t('ACTION')}
 		</span>,
 		key: 'action',
-		render: (_text, record) => isModifiable(this.context, record.repository) ? (<span>
+		render: (_text, record: DBKara) => isModifiable(this.context, record.repository) ? (<span>
 			<Link to={`/system/karas/${record.kid}`}>
 				<Button type="primary" icon={<EditOutlined />} />
 			</Link>
 			{!is_touch_device() ? <Divider type="vertical" /> : null}
 			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
 				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)} />
-		</span>) : <Button type="primary" danger title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
-			icon={<ClearOutlined />} onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)} />
+		</span>) :
+			(record.download_status === 'DOWNLOADED' ?
+				<Button
+					type="primary"
+					danger
+					title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
+					icon={<ClearOutlined />}
+					onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
+				/> : null
+			)
 	}];
 }
 
