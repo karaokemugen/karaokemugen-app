@@ -274,7 +274,6 @@ export const configConstraints = {
 	'Online.ErrorTracking': {boolUndefinedValidator: true},
 	'Online.Host': {presence: true, format: hostnameRegexp},
 	'Online.Port': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	'Online.URL': {inclusion : bools},
 	'Online.Users': {inclusion : bools},
 	'Online.Discord.DisplayActivity': {inclusion: bools},
 	'Online.Updates.Medias.Jingles': {inclusion : bools},

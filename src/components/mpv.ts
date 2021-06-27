@@ -210,7 +210,7 @@ export function switchToPauseScreen() {
 async function checkMpv() {
 	const state = getState();
 
-	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
+	//On all platforms, check if we're using mpv at least the required mpv version or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
 	let mpvVersion: string;
 	try {

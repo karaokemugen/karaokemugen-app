@@ -737,7 +737,7 @@ class KaraokeOptions extends Component<IProps, IState> {
 								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_TOOLTIP')}</span>
 							</label>
 							<div className='mysterySongs'>
-								{this.state.config['Playlist.MysterySongs.Labels'].map((value: string) => {
+								{this.state.config['Playlist.MysterySongs.Labels']?.map((value: string) => {
 									return (
 										<div key={value}>
 											<label>{value}</label>

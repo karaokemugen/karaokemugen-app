@@ -65,7 +65,7 @@
 	"ACTIVE_FILTER": "Active filter",
 	"ADVANCED": {
 		"PLAYLIST_COMMANDS": "Playlist commands",
-		"ADD_ALL": "Add all visible songs",
+		"ADD_ALL": "Add all songs to the other list",
 		"ADD_RANDOM": "Add random songs",
 		"SELECT_ALL": "Select all visible elements",
 		"EMPTY_LIST": "Empty playlist",

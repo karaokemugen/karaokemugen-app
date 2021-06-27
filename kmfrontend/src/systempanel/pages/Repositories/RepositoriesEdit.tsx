@@ -74,8 +74,12 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 
 	movingMedia = async (movingMediaPath: string) => {
 		if (movingMediaPath && this.props.match.params.name) {
-			await commandBackend('movingMediaRepo', { path: movingMediaPath, name: this.props.match.params.name }, true, 300000);
-			this.props.history.push('/system/repositories');
+			try {
+				await commandBackend('movingMediaRepo', { path: movingMediaPath, name: this.props.match.params.name }, true, 300000);
+				this.props.history.push('/system/repositories');
+			} catch (e) {
+				// already display
+			}
 		}
 	}
 

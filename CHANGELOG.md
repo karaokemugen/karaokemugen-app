@@ -5,7 +5,7 @@
 - Allow local repositories to have their songs modified/deleted
 - Stopped sending sentry errors for invalid playlists import
 - Fixed double generation when cloning new repository
-- Conslidate Repository action now becomes Moving Medias in setup and in repository pages because consolidate repositories is now vintage.
+- Consolidate Repository action now becomes Moving Medias in setup and in repository pages because consolidate repositories is now vintage.
 
 # v5.1.14 - 20/06/2021
 

@@ -100,7 +100,6 @@ function getPlayingPos(playlist: PLC[]): Pos {
 		plc_id_pos: playlist[index].pos,
 		index: index
 	};
-	logger.debug('Playlists tested', {service: 'Playlist'});
 	return undefined;
 }
 
