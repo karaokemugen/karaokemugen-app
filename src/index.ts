@@ -4,7 +4,6 @@ import {app} from 'electron';
 import {existsSync, readFileSync} from 'fs';
 import {copy, mkdirpSync, remove} from 'fs-extra';
 import i18n from 'i18next';
-import cloneDeep from 'lodash.clonedeep';
 import {dirname,resolve} from 'path';
 import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
@@ -200,12 +199,6 @@ export async function main() {
 	console.log('Karaoke Player & Manager - https://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(state.version.number)} "${chalk.bold.green(state.version.name)}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
 	console.log('================================================================================');
-	const config = getConfig();
-	const publicConfig = cloneDeep(config);
-	publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
-	publicConfig.App.JwtSecret = 'xxxxx';
-	publicConfig.App.InstanceID = 'xxxxx';
-	logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
 	logger.debug('Initial state', {service: 'Launcher', obj: state});
 
 	// Migrate repos to git
