@@ -194,6 +194,7 @@ export function resumeQueue() {
 export async function checkMediaAndDownload(kid: string, mediafile: string, repo: string, mediasize: number, updateOnly = false) {
 	let downloadMedia = false;
 	let media: string;
+	if (getState().isDemo) return;
 	try {
 		await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repo));
 	} catch {
