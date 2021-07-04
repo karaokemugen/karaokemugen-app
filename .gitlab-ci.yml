@@ -168,7 +168,6 @@ pkg_win:
     - test
   script:
     - rm -Rf release_win
-# Don't mind this comment.
     - yarn add --dev electron-builder@22.11.7
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
