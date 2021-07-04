@@ -81,19 +81,19 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		}
 	}
 	// Updating quotas
-	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type || 
-		newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs || 
+	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type ||
+		newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs ||
 		newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time
 	) {
 		const users = await listUsers();
 		for (const user of users) {
 			updateSongsLeft(user.login, getState().publicPlaid);
 		}
-	}	
+	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
 	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
 	if (!oldConfig.Frontend.GeneratePreviews && newConfig.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
-		
+
 	// Browse through paths and define if it's relative or absolute
 	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Windows));
 	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Linux));
@@ -131,7 +131,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 
 	// All set, ready to go!
 	const config = setConfig(newConfig);
-	
+
 	// Toggling poll
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
@@ -158,7 +158,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 	// Toggling progressbar off if needs be
 	if (config.Player.ProgressBarDock && !state.isDemo) setProgressBar(-1);
-	
+
 	if (!state.isDemo) configureHost();
 }
 
@@ -167,6 +167,11 @@ export async function initConfig(argv: any) {
 	try {
 		setConfigConstraints(configConstraints);
 		await loadConfigFiles(getState().dataPath, argv.config, defaults, getState().appPath);
+		const publicConfig = cloneDeep(getConfig());
+		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
+		publicConfig.App.JwtSecret = 'xxxxx';
+		publicConfig.App.InstanceID = 'xxxxx';
+		logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
 		const binaries = await checkBinaries(getConfig());
 		setState({binPath: binaries});
 		emit('configReady');

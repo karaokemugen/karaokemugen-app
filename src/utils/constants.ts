@@ -177,7 +177,8 @@ export const defaultGuestNames = [
 	'Badeline',
 	'Nezuko',
 	'Boss',
-	'Un Miam'
+	'Un Miam',
+	'Groquik'
 ];
 
 /** Initialization catchphrases. We need more of them. */

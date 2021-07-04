@@ -23,12 +23,14 @@ export default function (state, action: SettingsSuccess | SettingsFailure) {
 		case Settings.SETTINGS_FAILURE:
 			return {
 				...state,
-				data: {
+				/*data: {
 					state: {},
 					config: {},
 					user: {},
 					version: {}
-				},
+				},*/
+				// Let the old data persists, as it will cause trouble with many components that except full objects.
+				// TODO (?): Maybe try to fetch again if it failed.
 				error: action.payload.error
 			};
 		default:

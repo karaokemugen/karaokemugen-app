@@ -1,4 +1,4 @@
-import cli from 'commander';
+import { Command } from 'commander';
 import { CommandLine } from 'electron';
 
 import logger, { enableProfiling } from '../lib/utils/logger';
@@ -6,8 +6,8 @@ import {getState, setState} from './state';
 
 export function parseArgs() {
 	const version = getState().version;
-	return cli
-		.command('KaraokeMugen')
+	const program = new Command();
+	return program
 		.description('Starts Karaoke Mugen Desktop App')
 		.version(`${version.number} "${version.name}" (commit ${version.sha})`)
 		.option('-c, --config [file]','Specify a config file to use (default is config.yml)')

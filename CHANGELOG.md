@@ -1,3 +1,22 @@
+# v5.1.17 - 04/07/2021
+
+## New features
+
+- Added Groquik guest account
+
+## Fixes
+
+- Don't check media presence anymore in demo mode
+- Better logging of configuration before checking for binaries presence
+- Fixed settings store wipe on fetch error when trying to update a repository
+- Fixed songs order when mass adding these to playlists (#1052)
+- Fixed some english translations
+- Fixed display of delete button in media lists in system panel
+- Fixed movingMediaRepo errors
+- Fixed getRemoteData errors
+- Removed some useless logs
+- Fixed addDownloads errors
+
 # v5.1.15 - 21/06/2021
 
 ## Fixes

@@ -631,10 +631,12 @@ class Playlist extends Component<IProps, IState> {
 			'year': 'y',
 			'tag': 't'
 		};
-		return (this.state.searchCriteria && this.state.searchValue) ? {
+		return {
 			q: ((this.state.searchCriteria && criterias[this.state.searchCriteria] && this.state.searchValue) ?
-				`${criterias[this.state.searchCriteria]}:${this.state.searchValue}` : undefined)
-		} : {};
+				`${criterias[this.state.searchCriteria]}:${this.state.searchValue}` : undefined),
+			order: this.state.searchType !== 'search' ? this.state.searchType:undefined,
+			orderByLikes: this.state.orderByLikes || undefined
+		};
 	}
 
 	addRandomKaras = () => {
