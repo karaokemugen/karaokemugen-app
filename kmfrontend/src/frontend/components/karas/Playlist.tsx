@@ -631,10 +631,12 @@ class Playlist extends Component<IProps, IState> {
 			'year': 'y',
 			'tag': 't'
 		};
-		return (this.state.searchCriteria && this.state.searchValue) ? {
+		return {
 			q: ((this.state.searchCriteria && criterias[this.state.searchCriteria] && this.state.searchValue) ?
-				`${criterias[this.state.searchCriteria]}:${this.state.searchValue}` : undefined)
-		} : {};
+				`${criterias[this.state.searchCriteria]}:${this.state.searchValue}` : undefined),
+			order: this.state.searchType !== 'search' ? this.state.searchType:undefined,
+			orderByLikes: this.state.orderByLikes || undefined
+		};
 	}
 
 	addRandomKaras = () => {
@@ -1055,7 +1057,7 @@ class Playlist extends Component<IProps, IState> {
 						type="button"
 						title={i18next.t('GOTO_BOTTOM')}
 						className="btn btn-sm btn-action"
-						onClick={() => this.state.data && this.setState({ scrollToIndex: (this.state.data as KaraList).infos.count - 1, goToPlaying: false, _goToPlaying: false })}
+						onClick={() => this.state.data && this.setState({ scrollToIndex: (this.state.data as KaraList).infos?.count - 1, goToPlaying: false, _goToPlaying: false })}
 					>
 						<i className="fas fa-chevron-down" />
 					</button>
