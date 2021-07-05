@@ -337,7 +337,7 @@ class Playlist extends Component<IProps, IState> {
 				<div className="list-group-item karaSuggestion">
 					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 					{this.context?.globalState.settings.data.config.System.Repositories
-						.filter(value => value.Enabled && value.Online).map(value => <a href={`https://${value.Name}/base`} >{value.Name}</a>)}
+						.filter(value => value.Enabled && value.Online).map(value => <a href={`https://${value.Name}/`} >{value.Name}</a>)}
 					<a href="https://suggest.karaokes.moe" >suggest.karaokes.moe</a>
 				</div>
 			) : null}
