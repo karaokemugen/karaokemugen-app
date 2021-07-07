@@ -5,7 +5,7 @@ import i18n from 'i18next';
 import internetAvailable from 'internet-available';
 import logger from 'winston';
 
-import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/database';
+import {compareKarasChecksum,DBReady,generateDB, getStats, initDBSystem} from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
 import { markAllMigrationsFrontendAsDone } from '../dao/migrationsFrontend';
@@ -246,7 +246,7 @@ export async function exit(rc = 0) {
 		logger.warn('mpv error', {service: 'Engine', obj: err});
 		// Non fatal.
 	}
-	if (getConfig().System.Database.bundledPostgresBinary) await dumpPG();
+	if (DBReady	&& getConfig().System.Database.bundledPostgresBinary) await dumpPG();
 	await closeDB();
 	const c = getConfig();
 	if (getTwitchClient() || (c?.Karaoke?.StreamerMode?.Twitch?.Enabled)) await stopTwitch();
