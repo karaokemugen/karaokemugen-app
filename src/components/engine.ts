@@ -246,6 +246,7 @@ export async function exit(rc = 0) {
 		logger.warn('mpv error', {service: 'Engine', obj: err});
 		// Non fatal.
 	}
+	if (getConfig().System.Database.bundledPostgresBinary) await dumpPG();
 	await closeDB();
 	const c = getConfig();
 	if (getTwitchClient() || (c?.Karaoke?.StreamerMode?.Twitch?.Enabled)) await stopTwitch();
