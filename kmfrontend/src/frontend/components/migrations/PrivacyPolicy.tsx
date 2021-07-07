@@ -22,7 +22,6 @@ export default function PrivacyPolicy(props: Props) {
 		<p>{i18next.t('PRIVACY_POLICY.P4')}</p>
 		<ul>
 			<li>{i18next.t('PRIVACY_POLICY.L1')}</li>
-			<li>{i18next.t('PRIVACY_POLICY.L2')}</li>
 			<li>{i18next.t('PRIVACY_POLICY.L3')}</li>
 			<li>
 				{i18next.t('PRIVACY_POLICY.L4')}&nbsp;
