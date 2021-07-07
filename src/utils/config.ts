@@ -237,11 +237,7 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
 	requiredBinariesChecks.push(asyncRequired(binariesPath.patch));
 	if (config.System.Database.bundledPostgresBinary) {
-		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
-		if (process.platform === 'win32') {
-			requiredBinariesChecks.push(asyncRequired('C:/Windows/System32/msvcr120.dll'));
-			requiredBinariesChecks.push(asyncRequired('C:/Windows/System32/msvcp120.dll'));
-		}
+		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));		
 	}
 	if (!getState().isTest && !getState().isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.mpv));
 
