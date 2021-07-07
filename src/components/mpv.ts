@@ -14,7 +14,7 @@ import logger from 'winston';
 
 import {setProgressBar} from '../electron/electron';
 import {errorStep} from '../electron/electronLogger';
-import {getConfig, resolvedPathBackgrounds, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
+import {getConfig, resolvedPathBackgrounds, resolvedPathBundledBackgrounds, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {getAvatarResolution} from '../lib/utils/ffmpeg';
 import {asyncExists, isImageFile, isMediaFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
 import { playerEnding } from '../services/karaokeEngine';
@@ -578,9 +578,9 @@ class Players {
 		].filter(x => !!x).join(';');
 	}
 
-	private static async extractAllBackgroundFiles(music = false): Promise<string[]> {
+	private static async extractAllBackgroundFiles(dirs: string[], music = false): Promise<string[]> {
 		let backgroundFiles = [];
-		for (const resolvedPath of resolvedPathBackgrounds()) {
+		for (const resolvedPath of dirs) {
 			backgroundFiles = backgroundFiles.concat(await Players.extractBackgroundFiles(resolvedPath, music));
 		}
 		return backgroundFiles;
@@ -710,25 +710,23 @@ class Players {
 	private async loadBackground() {
 		const conf = getConfig();
 		let backgroundFiles = [];
-		// Default background
-		const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
-		let backgroundImageFile = defaultImageFile;
+		// Test if custom background folder is empty. If it is we use the bundled backgrounds.
+		let backgroundImageFile = '';
 		let backgroundMusicFile = '';
 		if (conf.Player.Background) {
 			backgroundImageFile = resolve(resolvedPathBackgrounds()[0], conf.Player.Background);
 			if (!await asyncExists(backgroundImageFile)) {
 				// Background provided in config file doesn't exist, reverting to default one provided.
-				logger.warn(`Unable to find background file ${backgroundImageFile}, reverting to default one`, {service: 'Player'});
-				backgroundFiles.push(defaultImageFile);
+				logger.warn(`Unable to find background file ${backgroundImageFile}, reverting to default one`, {service: 'Player'});				
 			} else {
 				backgroundFiles.push(backgroundImageFile);
 			}
 		} else {
 			// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
-			backgroundFiles = await Players.extractAllBackgroundFiles();
+			backgroundFiles = await Players.extractAllBackgroundFiles(resolvedPathBackgrounds());
 			// If backgroundFiles is empty, it means no file was found in the directories scanned.
 			// Reverting to original, supplied background :
-			if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
+			if (backgroundFiles.length === 0) backgroundFiles = await Players.extractAllBackgroundFiles([resolvedPathBundledBackgrounds()]);
 		}
 		backgroundImageFile = sample(backgroundFiles);
 		// First, try to find a "neighbour" mp3
@@ -736,7 +734,7 @@ class Players {
 			backgroundMusicFile = replaceExt(backgroundImageFile, '.mp3');
 		} else {
 			// Otherwise, pick a random media file from the background folder
-			const backgroundMusics = await Players.extractAllBackgroundFiles(true);
+			const backgroundMusics = await Players.extractAllBackgroundFiles(resolvedPathBackgrounds(), true);
 			if (backgroundMusics.length > 0) backgroundMusicFile = sample(backgroundMusics);
 		}
 		logger.debug(`Background selected : ${backgroundImageFile}${backgroundMusicFile ? ` (${backgroundMusicFile})`:''}`, {service: 'Player'});
