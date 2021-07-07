@@ -9,7 +9,7 @@ import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/da
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
 import { markAllMigrationsFrontendAsDone } from '../dao/migrationsFrontend';
-import { applyMenu, handleFile, handleProtocol } from '../electron/electron';
+import { applyMenu, closeAllWindows, handleFile, handleProtocol } from '../electron/electron';
 import { errorStep,initStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
@@ -235,6 +235,7 @@ export async function exit(rc = 0) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
+	closeAllWindows();
 	wipeDownloadQueue();
 	try {
 		if (getState().player?.playerStatus) {

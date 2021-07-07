@@ -345,6 +345,13 @@ export function focusWindow() {
 	}
 }
 
+export function closeAllWindows() {	
+	// Hide main window since destroying it would force-kill the app.
+	win?.hide();
+	chibiPlayerWindow?.destroy();
+	chibiPlaylistWindow?.destroy();
+}
+
 export async function updateChibiPlayerWindow(show: boolean) {
 	const state = getState();
 	const conf = getConfig();
