@@ -31,7 +31,7 @@ test:
   interruptible: true
   needs: []
   services:
-    - postgres:12
+    - postgres:13
   variables:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
@@ -171,7 +171,7 @@ pkg_win:
     - yarn add --dev electron-builder
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-5.x.tar.gz | tar xz
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-6.x.tar.gz | tar xz
     - wget http://mugen.karaokes.moe/downloads/vcredist_x64.exe -O build/vc.exe
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -w
@@ -220,7 +220,7 @@ pkg_mac:
   script:
     - rm -Rf release_mac
     - yarn add --dev electron-builder@22.10.5
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-5.x.tar.gz | tar xvz
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-6.x.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
     - ls -la packages/
