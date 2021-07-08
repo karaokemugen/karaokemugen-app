@@ -15,6 +15,7 @@ import {
 	configureLocale,
 	getConfig,
 	resolvedPathAvatars,
+	resolvedPathBundledBackgrounds,
 	resolvedPathImport,
 	resolvedPathPreviews,
 	resolvedPathSessionExports,
@@ -22,7 +23,7 @@ import {
 	resolvedPathTemp,
 	setConfig
 } from './lib/utils/config';
-import {asyncCheckOrMkdir} from './lib/utils/files';
+import {asyncCheckOrMkdir, asyncCopyAll} from './lib/utils/files';
 import logger, {configureLogger} from './lib/utils/logger';
 import { on } from './lib/utils/pubsub';
 import { resetSecurityCode } from './services/auth';
@@ -210,9 +211,9 @@ export async function main() {
 	logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
 	await copy(resolve(resourcePath, 'assets/input.conf'), tempInput);
 
-	const tempBackground = resolve(resolvedPathTemp(), 'default.jpg');
-	logger.debug(`Copying default background to ${tempBackground}`, {service: 'Launcher'});
-	await copy(resolve(resourcePath, 'assets/backgrounds/default.jpg'), tempBackground);
+	const bundledBackgrounds = resolvedPathBundledBackgrounds();
+	logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, {service: 'Launcher'});	
+	await asyncCopyAll(resolve(resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
@@ -236,6 +237,12 @@ async function checkPaths(config: Config) {
 		// Emptying temp directory
 		try {
 			await remove(resolvedPathTemp());
+		} catch(err) {
+			// Non-fatal
+		}
+		// Emptying bundled backgrounds directory
+		try {
+			await remove(resolvedPathBundledBackgrounds());
 		} catch(err) {
 			// Non-fatal
 		}
@@ -266,6 +273,7 @@ async function checkPaths(config: Config) {
 		checks.push(asyncCheckOrMkdir(resolvedPathSessionExports()));
 		checks.push(asyncCheckOrMkdir(resolvedPathPreviews()));
 		checks.push(asyncCheckOrMkdir(resolvedPathStreamFiles()));
+		checks.push(asyncCheckOrMkdir(resolvedPathBundledBackgrounds()));
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', {service: 'Launcher'});
 	} catch(err) {
