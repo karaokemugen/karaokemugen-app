@@ -78,6 +78,7 @@ export interface State {
 	environment: string,
 	sentrytest: boolean,
 	currentBLCSetID: number,
+	restoreNeeded: boolean,
 	systemMessages: SystemMessage[]
 }
 

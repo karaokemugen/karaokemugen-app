@@ -14,7 +14,7 @@ import { asyncReadDirFilter } from '../lib/utils/files';
 import { testCurrentBLCSet } from '../services/blacklist';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
-import {initPG,isShutdownPG} from '../utils/postgresql';
+import {initPG,isShutdownPG, restorePG} from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
 import { generateBlacklist } from './blacklist';
@@ -66,7 +66,7 @@ export async function initDB() {
 		await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
 		await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 	} catch(err) {
-		logger.debug('Extension unaccent already registered', {service: 'DB'});
+		logger.debug('Extension unaccent or pgcrypto already registered', {service: 'DB'});
 	}
 }
 
@@ -164,6 +164,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 		if (conf.System.Database.bundledPostgresBinary) {
 			await initPG();
 			await initDB();
+			if (getState().restoreNeeded) await restorePG();			
 		}
 		logger.info('Initializing database connection', {service: 'DB'});
 		await connectDB(errorFunction, {

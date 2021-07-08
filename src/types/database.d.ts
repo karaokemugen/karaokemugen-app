@@ -17,3 +17,8 @@ export interface WhereClause {
 	sql: string[],
 	params: Record<string,unknown>
 }
+
+export interface PGVersion {
+	data: number,
+	bin: number
+}

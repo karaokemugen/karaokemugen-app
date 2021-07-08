@@ -6,7 +6,7 @@ export const discordClientID = '718211141033263145';
 
 export const requiredMPVVersion = '>=0.32.0';
 
-export const expectedPGVersion = 10;
+export const expectedPGVersion = 13;
 
 /** Default guest names used to fill up the database */
 export const defaultGuestNames = [
@@ -277,3 +277,4 @@ export const logo = `
 `;
 
 export const mpvRegex = /mpv ([A-Za-z0-9.]+)/;
+export const pgctlRegex = /pg_ctl \(PostgreSQL\) ([A-Za-z0-9.]+)/;

@@ -14,10 +14,11 @@ import {getConfig} from '../lib/utils/config';
 // KM Imports
 import {asyncExists, asyncMove} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
+import { PGVersion } from '../types/database';
 import { editSetting } from './config';
-import {expectedPGVersion} from './constants';
+import { expectedPGVersion, pgctlRegex } from './constants';
 import sentry from './sentry';
-import {getState} from './state';
+import {getState, setState} from './state';
 
 let shutdownInProgress = false;
 
@@ -76,12 +77,21 @@ export async function stopPG() {
 }
 
 /** Get database PG version */
-async function getPGVersion(): Promise<number> {
+async function getPGVersion(): Promise<PGVersion> {
+	const state = getState();
 	const conf = getConfig();
 	const pgDataDir = resolve(getState().dataPath, conf.System.Path.DB, 'postgres');
 	try {
-		const pgVersion = await fs.readFile(resolve(pgDataDir, 'PG_VERSION'), 'utf-8');
-		return +pgVersion.split('\n')[0];
+		const dataVersionFile = await fs.readFile(resolve(pgDataDir, 'PG_VERSION'), 'utf-8');
+		const dataVersion = dataVersionFile.split('\n')[0];
+		const pgctlPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
+		const output = await execa(pgctlPath, ['--version']);
+		logger.debug(`pg_ctl stdout: ${output.stdout}`, {service: 'DB'});
+		const binVersion = pgctlRegex.exec(output.stdout)[1].split('.')[0];
+		return {
+			bin: +binVersion,
+			data: +dataVersion
+		};
 	} catch(err) {
 		logger.error('Unable to determine PG version', {obj: err, service: 'DB'});
 		throw err;
@@ -251,7 +261,31 @@ export async function initPG(relaunch = true) {
 	const state = getState();
 	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
-	if (!await asyncExists(pgDataDir)) await initPGData();
+	if (!await asyncExists(pgDataDir)) {
+		// Simple, beautiful.
+		await initPGData();
+	} else {
+		// Check data dir version to see if it's the one we expect.
+		const versions = await getPGVersion();
+		if (versions.bin < expectedPGVersion) {
+			// Your PostgreSQL needs an upgrade!
+			logger.warn(`Incorrect PostgreSQL version detected. Expected ${expectedPGVersion}, got ${versions.bin}. `, {service: 'DB'});
+		}
+		if (versions.data !== versions.bin) {
+			logger.warn(`Incorrect PostgreSQL database data version detected. Expected ${versions.bin}, got ${versions.data}. `, {service: 'DB'});
+			logger.info(`Migrating data to PostgreSQL ${versions.bin}... `, {service: 'DB'});
+			// You never know.
+			if (await checkPG()) await stopPG();			
+			// we'll need to move the directory to another name just to make sure, and restore a dump after PG has started.
+			const backupPGDir = resolve(state.dataPath, conf.System.Path.DB, `postgres${versions.data}`);
+			// Remove folder before renaming the old one.
+			await fs.rm(backupPGDir, {recursive: true, force: true}).catch(() => {});
+			await fs.rename(pgDataDir, backupPGDir);
+			await initPGData();
+			// Restore is done once KM is connected to the database.
+			setState({restoreNeeded: true});							
+		}
+	}
 	// Try to check if PG is running by conventionnal means.
 	if (await checkPG()) return true;
 	logger.info('Launching bundled PostgreSQL', {service: 'DB'});
@@ -261,13 +295,6 @@ export async function initPG(relaunch = true) {
 	if (state.os === 'win32') binPath = `"${binPath}"`;
 	// We set all stdios on ignore or inherit since pg_ctl requires a TTY terminal and will hang if we don't do that
 	const pgBinDir = resolve(state.appPath, state.binPath.postgres);
-	try {
-		const pgVersion = await getPGVersion();
-		if (pgVersion !== expectedPGVersion) throw `Incorrect PostgreSQL version detected. Expected ${expectedPGVersion}, got ${pgVersion}`;
-	} catch(err) {
-		errorStep(i18next.t('ERROR_START_PG'));
-		throw err;
-	}
 	try {
 		await execa(binPath, options, {
 			cwd: pgBinDir,
