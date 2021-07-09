@@ -2,6 +2,7 @@ import sample from 'lodash.sample';
 import { Socket } from 'socket.io';
 
 import { getKMStats,shutdown } from '../../components/engine';
+import { getMpvAudioOutputs } from '../../components/mpv';
 import { generateDB } from '../../dao/database';
 import {getSettings, saveSetting} from '../../lib/dao/database';
 import { generateDatabase } from '../../lib/services/generation';
@@ -97,7 +98,10 @@ export default function miscController(router: SocketIOApp) {
 		await runChecklist(socket, req);
 		return getDisplays();
 	});
-
+	router.route('getAudioDevices', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		return getMpvAudioOutputs();
+	});
 	router.route('getStats', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {

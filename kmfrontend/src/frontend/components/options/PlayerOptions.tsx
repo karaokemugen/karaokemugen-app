@@ -14,6 +14,7 @@ interface IProps {
 interface IState {
 	config?: any;
 	displays?: any;
+	audioDevices?: string[][];
 }
 class PlayerOptions extends Component<IProps, IState> {
 	static contextType = GlobalContext;
@@ -27,6 +28,7 @@ class PlayerOptions extends Component<IProps, IState> {
 	componentDidMount() {
 		this.setState({ config: dotify(this.context.globalState.settings.data.config) });
 		this.getDisplays();
+		this.getAudioDevices();
 	}
 
 	componentDidUpdate(_prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
@@ -55,6 +57,11 @@ class PlayerOptions extends Component<IProps, IState> {
 		const res = await commandBackend('getDisplays');
 		this.setState({ displays: res });
 	};
+
+	getAudioDevices = async () => {
+		const res = await commandBackend('getAudioDevices');
+		this.setState({ audioDevices: res });
+	}
 
 	putPlayerCommando = (e: any) => {
 		const config = this.state.config;
@@ -91,6 +98,16 @@ class PlayerOptions extends Component<IProps, IState> {
 	render() {
 		if (this.state.config && this.state.config['Karaoke.Display.ConnectionInfo.Host'] === null)
 			this.state.config['Karaoke.Display.ConnectionInfo.Host'] = '';
+		const listAudio =
+		this.state.audioDevices && this.state.audioDevices.length > 0
+			? this.state.audioDevices.map(device => (
+				// First element is the internal value, second is the correct label
+				<option key={device[0]} value={device[0]} >
+					&nbsp;
+					{device[1]}
+				</option>
+			))
+			: null;
 		const listdisplays =
 			this.state.displays && this.state.displays.length > 0
 				? this.state.displays.map((display: any, index: number) => (
@@ -197,6 +214,23 @@ class PlayerOptions extends Component<IProps, IState> {
 								value={this.state.config['Player.Screen']}
 							>
 								{listdisplays}
+							</select>
+						</div>
+					</div>
+					<div className="settings-line">
+						<label htmlFor="Player.AudioDevice">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.AUDIO_DEVICE')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.AUDIO_DEVICE_TOOLTIP')}</span>
+						</label>
+						<div>
+							<select
+								id="Player.AudioDevice"
+								onChange={this.putPlayerCommando}
+								data-namecommand="setAudioDevice"
+								value={this.state.config['Player.AudioDevice']}
+							>
+								{listAudio}
 							</select>
 						</div>
 					</div>

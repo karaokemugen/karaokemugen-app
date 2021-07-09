@@ -114,6 +114,7 @@ export interface Config {
 		FullScreen?: boolean,
 		Background?: string,
 		Screen?: number,
+		AudioDevice?: string,
 		Monitor?: boolean,
 		NoHud?: boolean,
 		NoBar?: boolean,

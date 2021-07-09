@@ -122,6 +122,7 @@ export const defaults: Config = {
 	Player: {
 		Background: '',
 		FullScreen: false,
+		AudioDevice: 'auto',
 		Monitor: false,
 		Borders: true,
 		ExtraCommandLine: '',
