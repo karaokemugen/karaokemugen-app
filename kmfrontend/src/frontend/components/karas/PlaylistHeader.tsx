@@ -331,7 +331,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	getListToSelect = () => {
 		return this.props.playlistList.map(playlist => {
 			return {
-				value: playlist?.plaid?.toString(),
+				value: playlist?.plaid,
 				label: playlist.name,
 				icons: this.getPlaylistIcon(playlist)
 			};
