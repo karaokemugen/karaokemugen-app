@@ -311,7 +311,7 @@
 			"AUTOPLAY": "Autoplay on next song added",
 			"AUTOPLAY_TOOLTIP": "Autoplay begins as soon as a song is added to the playlist",
 			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists",
-			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist.",
+			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist. The song can be added again only if it has already been played before.",
 			"MEDIAS_SETTINGS": "Medias",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing after playlist end",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "The message will be displayed at the center of the screen when Karaoke Mugen will play random songs, inviting users to add songs to the playlist",

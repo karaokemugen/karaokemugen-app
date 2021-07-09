@@ -312,7 +312,7 @@
 			"AUTOPLAY": "Lecture automatique sur premier ajout",
 			"AUTOPLAY_TOOLTIP": "La lecture commence dés qu'un ajout est fait à la liste de lecture",
 			"ALLOW_DUPLICATES": "Permettre les doublons dans les listes de lecture",
-			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons.",
+			"ALLOW_DUPLICATES_TOOLTIP": "Avec cette option, une liste de lecture peut contenir deux fois (ou plus) la même chanson. Seuls les opérateurs peuvent ajouter des doublons. Un doublon ne peut être ajouté que si la chanson est déjà passée.",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher un message régulier de demande d'ajout de chanson à l'écran en lecture aléatoire",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "Le message sera affiché au milieu de l'écran lorsque Karaoke Mugen jouera des chansons aléatoires, invitant les utilisateurs à ajouter des chansons",
 			"MEDIAS_SETTINGS": "Intermissions",
