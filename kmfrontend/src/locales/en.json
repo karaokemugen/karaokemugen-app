@@ -1254,6 +1254,8 @@
 		"USER_LIST_ERROR": "Error fetching users list",
 		"USER_CREATE_ERROR": "Error creating user",
 		"USER_ALREADY_EXISTS": "User already exists",
+		"USER_ASCII_CHARACTERS_ONLY": "Only alphanumeric characters in your username please (you can change your nickname later to whatever you wish.)",
+		"USER_EMPTY_PASSWORD": "Your password is empty!",
 		"USER_ALREADY_EXISTS_ONLINE": "User already exists online",
 		"USER_GET_ERROR_ONLINE": "Error getting online users",
 		"USER_CREATE_ERROR_ONLINE": "Error creating online user",

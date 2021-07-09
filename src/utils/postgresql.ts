@@ -11,6 +11,7 @@ import tasklist from 'tasklist';
 
 import { errorStep } from '../electron/electronLogger';
 import {getConfig} from '../lib/utils/config';
+import { asciiRegexp } from '../lib/utils/constants';
 // KM Imports
 import {asyncExists, asyncMove} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
@@ -165,7 +166,6 @@ export async function restorePG() {
 
 /** Initialize postgreSQL data directory if it doesn't exist */
 export async function initPGData() {
-	const asciiRegex = /^[\u0000-\u007F]+$/u;
 	const conf = getConfig();
 	const state = getState();
 	logger.info('No database present, initializing a new one...', {service: 'DB'});
@@ -178,7 +178,7 @@ export async function initPGData() {
 		// This is a bug postgres doesn't intend to fix because it's windows only
 		// /shrug
 		const pgPath = resolve(state.appPath, state.binPath.postgres).replace(/\\bin$/g,'').replace(/\/bin$/, '');
-		if (!asciiRegex.test(binPath) && state.os === 'win32') {
+		if (!asciiRegexp.test(binPath) && state.os === 'win32') {
 			logger.warn('Binaries path is in a non-ASCII path, will copy it to the OS\'s temp folder first to init database', {service: 'DB'});
 			// On Windows, tmpdir() returns the user home directory/appData/local/temp so it's pretty useless, we'll try writing to C:\KaraokeMugenPostgres. If it fails because of permissions, there's not much else we can do, sadly.
 			tempPGPath = resolve('C:\\', 'KaraokeMugenPostgres');
@@ -275,7 +275,7 @@ export async function initPG(relaunch = true) {
 			logger.warn(`Incorrect PostgreSQL database data version detected. Expected ${versions.bin}, got ${versions.data}. `, {service: 'DB'});
 			logger.info(`Migrating data to PostgreSQL ${versions.bin}... `, {service: 'DB'});
 			// You never know.
-			if (await checkPG()) await stopPG();			
+			if (await checkPG()) await stopPG();
 			// we'll need to move the directory to another name just to make sure, and restore a dump after PG has started.
 			const backupPGDir = resolve(state.dataPath, conf.System.Path.DB, `postgres${versions.data}`);
 			// Remove folder before renaming the old one.
@@ -283,7 +283,7 @@ export async function initPG(relaunch = true) {
 			await fs.rename(pgDataDir, backupPGDir);
 			await initPGData();
 			// Restore is done once KM is connected to the database.
-			setState({restoreNeeded: true});							
+			setState({restoreNeeded: true});
 		}
 	}
 	// Try to check if PG is running by conventionnal means.

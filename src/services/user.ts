@@ -27,7 +27,7 @@ import { addUser as DBAddUser,
 	updateUserPassword as DBUpdateUserPassword} from '../dao/user';
 import {User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
-import {imageFileTypes} from '../lib/utils/constants';
+import {asciiRegexp, imageFileTypes} from '../lib/utils/constants';
 import {asyncExists, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
@@ -307,6 +307,7 @@ export async function createUser(user: User, opts: UserOpts = {
 
 /** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
+	if (!asciiRegexp.test(user.login)) throw { code: 400, msg: 'USER_ASCII_CHARACTERS_ONLY'};
 	if (user.type < 2 && !user.password) throw { code: 400, msg: 'USER_EMPTY_PASSWORD'};
 	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD'};
 
