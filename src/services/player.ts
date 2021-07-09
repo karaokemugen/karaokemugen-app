@@ -211,6 +211,11 @@ async function setVolumePlayer(volume: number) {
 	setConfig({Player: {Volume: volume}});
 }
 
+async function setAudioDevicePlayer(device: string) {
+	await mpv.setAudioDevice(device);
+	setConfig({Player: {AudioDevice: device}});
+}
+
 async function showSubsPlayer() {
 	await mpv.setSubs(true);
 	logger.info('Showing lyrics on screen', {service: 'Player'});
@@ -301,6 +306,9 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 		} else if (command === 'goTo') {
 			if (isNaN(options)) throw 'Command goTo must have a numeric option value';
 			await goToPlayer(options);
+		} else if (command === 'setAudioDevice') {
+			if (!options) throw 'Command setAudioDevice must have an option value';
+			await setAudioDevicePlayer(options);
 		} else if (command === 'setVolume') {
 			if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 			await setVolumePlayer(options);

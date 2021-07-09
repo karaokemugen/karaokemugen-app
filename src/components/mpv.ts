@@ -14,7 +14,7 @@ import logger from 'winston';
 
 import {setProgressBar} from '../electron/electron';
 import {errorStep} from '../electron/electronLogger';
-import {getConfig, resolvedPathBackgrounds, resolvedPathBundledBackgrounds, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
+import {getConfig, resolvedPathBackgrounds, resolvedPathBundledBackgrounds, resolvedPathRepos, resolvedPathTemp, setConfig} from '../lib/utils/config';
 import {getAvatarResolution} from '../lib/utils/ffmpeg';
 import {asyncExists, isImageFile, isMediaFile, replaceExt, resolveFileInDirs} from '../lib/utils/files';
 import { playerEnding } from '../services/karaokeEngine';
@@ -207,9 +207,21 @@ export function switchToPauseScreen() {
 	emitPlayerState();
 }
 
+/* List mpv audio output devices */
+export async function getMpvAudioOutputs(): Promise<string[][]> {
+	const output = await execa(getState().binPath.mpv, ['--audio-device=help']);
+	const audioRegex = /'([^\n]+)' \(([^\n]+)\)/g;
+	const results = [];
+	let arr: any;
+	while ((arr = audioRegex.exec(output.stdout)) !== null) {
+		results.push([arr[1], arr[2]]);
+	}
+	return results;
+}
+
 async function checkMpv() {
 	const state = getState();
-
+	await getMpvAudioOutputs();
 	//On all platforms, check if we're using mpv at least the required mpv version or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
 	let mpvVersion: string;
@@ -266,7 +278,8 @@ class Player {
 			'--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
 			`--title=${options.monitor ? '[MONITOR] ':''}\${force-media-title} - Karaoke Mugen Player`,
-			'--force-media-title=Loading...'
+			'--force-media-title=Loading...',
+			`--audio-device=${conf.Player.AudioDevice}`
 		];
 
 		if (options.monitor) {
@@ -717,7 +730,7 @@ class Players {
 			backgroundImageFile = resolve(resolvedPathBackgrounds()[0], conf.Player.Background);
 			if (!await asyncExists(backgroundImageFile)) {
 				// Background provided in config file doesn't exist, reverting to default one provided.
-				logger.warn(`Unable to find background file ${backgroundImageFile}, reverting to default one`, {service: 'Player'});				
+				logger.warn(`Unable to find background file ${backgroundImageFile}, reverting to default one`, {service: 'Player'});
 			} else {
 				backgroundFiles.push(backgroundImageFile);
 			}
@@ -784,6 +797,11 @@ class Players {
 		playerState.border = conf.Player.Borders;
 		playerState.volume = conf.Player.Volume;
 		playerState.monitorEnabled = conf.Player.Monitor;
+		const audioDevices = await getMpvAudioOutputs();
+		const audioDevicesList = audioDevices.map(ad => ad[0]);
+		if (!audioDevicesList.includes(getConfig().Player.AudioDevice)) {
+			setConfig({Player: { AudioDevice: 'auto'}});
+		}
 		emitPlayerState();
 		try {
 			await this.bootstrapPlayers();
@@ -1094,6 +1112,16 @@ class Players {
 			return playerState;
 		} catch(err) {
 			logger.error('Unable to toggle mute', {service: 'Player', obj: err});
+			sentry.error(err);
+			throw err;
+		}
+	}
+
+	async setAudioDevice(device: string) {
+		try {
+			await this.exec({command: ['set_property', 'audio-device', device]});
+		} catch(err) {
+			logger.error('Unable to set volume', {service: 'Player', obj: err});
 			sentry.error(err);
 			throw err;
 		}

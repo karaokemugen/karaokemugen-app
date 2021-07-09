@@ -271,6 +271,8 @@
 			"VIDEO_POSITION_Y_TOOLTIP": "Où la fenêtre du lecteur se situe au démarrage de karaoke Mugen",
 			"BOTTOM": "Bas",
 			"TOP": "Haut",
+			"AUDIO_DEVICE": "Sortie audio à utiliser pour le lecteur",
+			"AUDIO_DEVICE_TOOLTIP": "Selectionnez une sortie audio. Si vous ne savez pas, laissez sur \"Autoselect device\" C'est utile si vous souhaitez diffuser l'audio du lecteur sur une sortie audio autre que votre principale.",
 			"MONITOR_NUMBER": "Écran sur lequel afficher le lecteur",
 			"MONITOR_NUMBER_TOOLTIP": "Ecran sur lequel afficher le lecteur au démarrage",
 			"WINDOWBORDERS": "Activer les bordures sur la fenêtre du lecteur",
