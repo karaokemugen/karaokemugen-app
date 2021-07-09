@@ -592,7 +592,7 @@ class Playlist extends Component<IProps, IState> {
 		let checkedKaras = 0;
 		for (const kara of (this.state.data as KaraList)?.content) {
 			if (kara) {
-				kara.checked = !kara.checked;
+				kara.checked = !this.state.selectAllKarasChecked;
 				if (kara.checked) checkedKaras++;
 			}
 		}
