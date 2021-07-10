@@ -268,7 +268,7 @@ export function initMenu() {
 				{
 					label: i18next.t('MENU_OPTIONS_CHIBIPLAYLIST'),
 					type: 'checkbox',
-					accelerator: 'CmdOrCtrl+B',
+					accelerator: 'CmdOrCtrl+Y',
 					checked: getConfig().GUI.ChibiPlaylist.Enabled,
 					click: () => {
 						updateChibiPlaylistWindow(!getConfig().GUI.ChibiPlaylist.Enabled);
