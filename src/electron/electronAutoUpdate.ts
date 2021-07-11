@@ -2,6 +2,7 @@ import { dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import i18next from 'i18next';
 
+import { exit } from '../components/engine';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import sentry from '../utils/sentry';
@@ -58,6 +59,7 @@ export function initAutoUpdate() {
 			message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING')
 		});
 		try {
+			await exit(0, true);
 			autoUpdater.quitAndInstall();
 		} catch(err) {
 			sentry.error(err);
