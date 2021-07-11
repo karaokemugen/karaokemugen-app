@@ -231,7 +231,7 @@ export async function initEngine() {
 	}
 }
 
-export async function exit(rc = 0) {
+export async function exit(rc = 0, update = false) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
@@ -257,19 +257,19 @@ export async function exit(rc = 0) {
 			try {
 				await stopPG();
 				logger.info('PostgreSQL has shutdown', {service: 'Engine'});
-				mataNe(rc);
 			} catch(err) {
 				logger.warn('PostgreSQL could not be stopped!', {service: 'Engine', obj: err});
 				sentry.error(err);
-				mataNe(rc);
+			} finally {
+				if (!update) mataNe(rc);
 			}
 		} else {
-			mataNe(rc);
+			if (!update) mataNe(rc);
 		}
 	} catch(err) {
 		logger.error('Failed to shutdown PostgreSQL', {service: 'Engine', obj: err});
 		sentry.error(err);
-		mataNe(1);
+		if (!update) mataNe(1);
 	}
 }
 
