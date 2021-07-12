@@ -176,7 +176,7 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	publicPlaylistEmptied = () => {
-		if (this.state.plaid === nonStandardPlaylists.library) {
+		if (this.state.plaid === nonStandardPlaylists.library && this.state.data) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				if (kara) {
