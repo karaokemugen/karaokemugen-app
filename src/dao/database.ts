@@ -202,8 +202,16 @@ export async function getStats(): Promise<DBStats> {
 	return res.rows[0];
 }
 
+let generationInProgress = false;
+
 export async function generateDB(): Promise<boolean> {
 	try {
+		if (generationInProgress) {
+			const err = new Error();
+			logger.warn(`Generation already in progress, returning early. Stack: ${err.stack}`, {service: 'DB', obj: err.stack});
+			return true;
+		}
+		generationInProgress = true;
 		const opts = {validateOnly: false, progressBar: true};
 		await generateDatabase(opts);
 		const pls = await getPlaylists(false);
@@ -214,6 +222,8 @@ export async function generateDB(): Promise<boolean> {
 	} catch(err) {
 		sentry.error(err);
 		throw err;
+	} finally {
+		generationInProgress = false;
 	}
 	return true;
 }
