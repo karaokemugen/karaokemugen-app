@@ -42,6 +42,8 @@ import { addSystemMessage } from './proxyFeeds';
 import { sendPayload } from './stats';
 import { deleteTag, getTags, integrateTagFile } from './tag';
 
+const windowsDriveRootRegexp = new RegExp(/^[a-zA-Z]:\\/);
+	
 /** Get all repositories in database */
 export function getRepos() {
 	return selectRepos();
@@ -62,6 +64,7 @@ export function removeRepo(name: string) {
 
 /** Add a repository. Folders will be created if necessary */
 export async function addRepo(repo: Repository) {
+	if (windowsDriveRootRegexp.test(repo.BaseDir)) throw {code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.'};
 	if (repo.Online && !repo.MaintainerMode) {
 		// Testing if repository is reachable
 		try {
@@ -298,6 +301,7 @@ async function newZipRepo(repo: Repository): Promise<string> {
 export async function editRepo(name: string, repo: Repository, refresh?: boolean) {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw {code: 404};
+	if (windowsDriveRootRegexp.test(repo.BaseDir)) throw {code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.'};
 	if (repo.Online && !repo.MaintainerMode) {
 		// Testing if repository is reachable
 		try {
