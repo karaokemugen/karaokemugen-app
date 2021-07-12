@@ -204,7 +204,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 		}
 		const data = JSON.parse(rawData);
 		const KMFileType = detectKMFileTypes(data);
-		const url = `http://localhost:${getConfig().Frontend.Port}/admin`;
+		const url = `http://localhost:${getConfig().System.FrontendPort}/admin`;
 		switch(KMFileType) {
 			case 'Karaoke Mugen BLC Set File':
 				await importSet(data);

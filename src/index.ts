@@ -189,7 +189,7 @@ export async function preInit() {
 	logger.debug(`OS : ${state.os}`, {service: 'Launcher'});
 	await initConfig(argv);
 	// Test if network ports are available
-	await verifyOpenPort(getConfig().Frontend.Port, getConfig().App.FirstRun);
+	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);
 }
 
 export async function main() {
@@ -292,7 +292,7 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 		if (port !== portConfig) {
 			logger.warn(`Port ${portConfig} is already in use. Switching to ${port}`, {service: 'Launcher'});
 			if (firstRun) {
-				setConfig({Frontend: {Port: port}});
+				setConfig({System: {FrontendPort: port}});
 				logger.warn('This is first run, saving port configuration', {service: 'Launcher'});
 			}
 		}

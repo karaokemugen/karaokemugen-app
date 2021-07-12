@@ -19,10 +19,8 @@ import {asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/objectHelpers';
-import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
-import { getAllKaras } from '../services/kara';
 import {
 	displayInfo,
 	initAddASongMessage,
@@ -92,8 +90,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
 	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
-	if (!oldConfig.Frontend.GeneratePreviews && newConfig.Frontend.GeneratePreviews) createImagePreviews(await getAllKaras(), 'single');
-
+	
 	// Browse through paths and define if it's relative or absolute
 	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Windows));
 	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Linux));
@@ -188,17 +185,17 @@ export async function initConfig(argv: any) {
 export function configureHost() {
 	const state = getState();
 	const config = getConfig();
-	const URLPort = +config.Frontend.Port === 80
+	const URLPort = +config.System.FrontendPort === 80
 		? ''
-		: `:${config.Frontend.Port}`;
+		: `:${config.System.FrontendPort}`;
 	setState({osHost: {v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6')}});
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
 		setState({osURL: `https://${state.remoteAccess.host}`});
 	} else {
-		if (!config.Karaoke.Display.ConnectionInfo.Host) {
+		if (!config.Player.Display.ConnectionInfo.Host) {
 			setState({osURL: `http://${getState().osHost.v4}${URLPort}`}); // v6 is too long to show anyway
 		} else {
-			setState({osURL: `http://${config.Karaoke.Display.ConnectionInfo.Host}${URLPort}`});
+			setState({osURL: `http://${config.Player.Display.ConnectionInfo.Host}${URLPort}`});
 		}
 	}
 	if ((state.player.mediaType === 'background' || state.player.mediaType === 'pauseScreen') && !state.songPoll) {
@@ -225,8 +222,6 @@ export function getPublicConfig(removeSystem = true) {
 	if (removeSystem) delete publicSettings.System;
 	else delete publicSettings.System.Binaries;
 	delete publicSettings.Karaoke.StreamerMode.Twitch.OAuth;
-	delete publicSettings.Frontend.Port;
-	delete publicSettings.Frontend.AuthExpireTime;
 	return publicSettings;
 }
 

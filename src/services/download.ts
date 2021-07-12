@@ -94,13 +94,11 @@ export function initDownloadQueue() {
 			downloadTask.end();
 			downloadTask = null;
 		}
-		if (getConfig().Frontend.GeneratePreviews) {
-			const karas = await getKaras({
-				q: `k:${Array.from(downloadedKIDs).join(',')}`
-			});
-			downloadedKIDs = new Set();
-			createImagePreviews(karas, 'single');
-		}
+		const karas = await getKaras({
+			q: `k:${Array.from(downloadedKIDs).join(',')}`
+		});
+		downloadedKIDs = new Set();
+		createImagePreviews(karas, 'single');		
 	});
 }
 

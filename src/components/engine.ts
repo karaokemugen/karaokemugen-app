@@ -139,8 +139,8 @@ export async function initEngine() {
 		initStep(i18n.t('INIT_USER'));
 		await initUserSystem();
 		const port = initFrontend();
-		if (port !== conf.Frontend.Port) {
-			setConfig({Frontend: {Port: port}});
+		if (port !== conf.System.FrontendPort) {
+			setConfig({System: {FrontendPort: port}});
 			// Reinit menu since we switched ports.
 			applyMenu();
 		}
@@ -209,7 +209,7 @@ export async function initEngine() {
 			if (!state.isTest && !state.isDemo && !conf.App.FirstRun && internet) {
 				updateAllZipRepos();
 			}
-			if (conf.Frontend.GeneratePreviews) createImagePreviews(await getKaras({
+			createImagePreviews(await getKaras({
 				q: 'm:downloaded'
 			}), 'single');
 			// Mark all migrations as done for the first run to avoid the user to have to do all the migrations from start

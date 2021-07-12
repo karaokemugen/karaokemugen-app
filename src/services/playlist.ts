@@ -1280,7 +1280,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		kara.plaid = plaid;
 		let requester: string;
 		let avatarfile: string;
-		if (conf.Karaoke.Display.Nickname) {
+		if (conf.Player.Display.Nickname) {
 			// When a kara has been added by admin/import, do not display it on screen.
 			// Escaping {} because it'll be interpreted as ASS tags below.
 			kara.nickname = kara.nickname.replace(/[{}]/g,'');

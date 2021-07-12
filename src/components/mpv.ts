@@ -564,7 +564,7 @@ class Players {
 	messages: MessageManager
 
 	private static async genLavfiComplex(song: CurrentSong): Promise<string> {
-		const shouldDisplayAvatar = song.avatar && getConfig().Karaoke.Display.Avatar;
+		const shouldDisplayAvatar = song.avatar && getConfig().Player.Display.Avatar;
 		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
@@ -1076,7 +1076,7 @@ class Players {
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (playerState.currentSong?.mediafile.endsWith('.mp3') &&
-				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar)) {
+				(playerState.currentSong?.avatar && getConfig().Player.Display.Avatar)) {
 				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
 			await this.exec({command: ['seek', delta]});
@@ -1095,7 +1095,7 @@ class Players {
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (playerState.currentSong?.mediafile.endsWith('.mp3') &&
-				(playerState.currentSong?.avatar && getConfig().Karaoke.Display.Avatar)) {
+				(playerState.currentSong?.avatar && getConfig().Player.Display.Avatar)) {
 				await this.exec({command: ['set_property', 'lavfi-complex', '[aid1]loudnorm[ao];[vid1]null[vo]']});
 			}
 			await this.exec({command: ['seek', pos, 'absolute']});
@@ -1246,7 +1246,7 @@ class Players {
 		try {
 			const conf = getConfig();
 			const state = getState();
-			const ci = conf.Karaoke.Display.ConnectionInfo;
+			const ci = conf.Player.Display.ConnectionInfo;
 			let text = '';
 			const catchphrase = playerState.mediaType !== 'song'
 				? sample(initializationCatchphrases)

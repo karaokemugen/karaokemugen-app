@@ -12,7 +12,7 @@ import { getDataFromKaraFile, parseKara, writeKara } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
-import { getConfig, resolvedPathRepos } from '../lib/utils/config';
+import { resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
@@ -268,7 +268,7 @@ export async function integrateKaraFile(file: string, deleteOldFiles = true): Pr
 		}
 	}
 	// Do not create image previews if running this from the command line.
-	if (!getState().opt.generateDB && getConfig().Frontend.GeneratePreviews) createImagePreviews(await getKaras({q: `k:${karaData.kid}`}), 'single');
+	if (!getState().opt.generateDB) createImagePreviews(await getKaras({q: `k:${karaData.kid}`}), 'single');
 	return karaData.kid;
 }
 

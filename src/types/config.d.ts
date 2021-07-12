@@ -32,12 +32,9 @@ export interface Config {
 		FetchPopularSongs?: boolean,
 		AllowDownloads?: boolean
 	},
-	Frontend: {
-		GeneratePreviews?: boolean,
-		Port?: number,
+	Frontend: {		
 		Mode?: number,
 		SeriesLanguageMode: number,
-		AuthExpireTime?: number,
 		Permissions?: {
 			AllowNicknameChange?: boolean
 		},
@@ -85,15 +82,6 @@ export interface Config {
 		Autoplay?: boolean,
 		SmartInsert?: boolean,
 		AutoBalance?: boolean,
-		Display: {
-			Avatar?: boolean,
-			Nickname?: boolean,
-			ConnectionInfo?: {
-				Enabled?: boolean,
-				Host?: string,
-				Message?: string
-			}
-		},
 		Poll: {
 			Enabled?: boolean,
 			Choices?: number,
@@ -110,6 +98,15 @@ export interface Config {
 		}
 	},
 	Player: {
+		Display: {
+			Avatar?: boolean,
+			Nickname?: boolean,
+			ConnectionInfo?: {
+				Enabled?: boolean,
+				Host?: string,
+				Message?: string
+			}
+		},		
 		StayOnTop?: boolean,
 		FullScreen?: boolean,
 		Background?: string,
@@ -168,6 +165,7 @@ export interface Config {
 		RandomSongsAfterEndMessage: boolean
 	},
 	System: {
+		FrontendPort: number,
 		Database: {
 			host?: string,
 			port?: number,

@@ -63,10 +63,7 @@ export const defaults: Config = {
 		AllowDownloads: true
 	},
 	Frontend: {
-		GeneratePreviews: true,
-		AuthExpireTime: 15,
 		Mode: 2,
-		Port: 1337,
 		Permissions: {
 			AllowNicknameChange: true
 		},
@@ -87,16 +84,7 @@ export const defaults: Config = {
 		Autoplay: false,
 		ClassicMode: false,
 		SmartInsert: false,
-		MinutesBeforeEndOfSessionWarning: 15,
-		Display: {
-			Avatar: true,
-			Nickname: true,
-			ConnectionInfo: {
-				Enabled: true,
-				Host: null,
-				Message: ''
-			}
-		},
+		MinutesBeforeEndOfSessionWarning: 15,		
 		Poll: {
 			Choices: 4,
 			Enabled: false,
@@ -120,6 +108,15 @@ export const defaults: Config = {
 		}
 	},
 	Player: {
+		Display: {
+			Avatar: true,
+			Nickname: true,
+			ConnectionInfo: {
+				Enabled: true,
+				Host: null,
+				Message: ''
+			}
+		},
 		Background: '',
 		FullScreen: false,
 		AudioDevice: 'auto',
@@ -180,6 +177,7 @@ export const defaults: Config = {
 		RandomSongsAfterEndMessage: true,
 	},
 	System: {
+		FrontendPort: 1337,
 		Database: dbConfig,
 		Binaries: {
 			Player: {
@@ -283,9 +281,8 @@ export const configConstraints = {
 	'Online.Updates.Medias.Intros': {inclusion : bools},
 	'Online.Updates.App': {inclusion : bools},
 	'Frontend.Permissions.AllowNicknameChange': {inclusion : bools},
-	'Frontend.AuthExpireTime': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Frontend.Mode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
-	'Frontend.Port': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	'System.FrontendPort': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	'Frontend.SeriesLanguageMode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	'Frontend.ShowAvatarsOnPlaylist': {inclusion: bools},
 	'GUI.OpenInElectron': {inclusion: bools},
@@ -306,10 +303,10 @@ export const configConstraints = {
 	'Karaoke.Quota.FreeUpVotesRequiredPercent': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1, lowerThanOrEqualTo: 100}},
 	'Karaoke.Quota.Songs': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
 	'Karaoke.Quota.Time': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
-	'Karaoke.Display.Avatar': {inclusion : bools},
-	'Karaoke.Display.Nickname': {inclusion : bools},
-	'Karaoke.Display.ConnectionInfo.Enabled': {inclusion : bools},
-	'Karaoke.Display.ConnectionInfo.Message': {presence: {allowEmpty: true}},
+	'Player.Display.Avatar': {inclusion : bools},
+	'Player.Display.Nickname': {inclusion : bools},
+	'Player.Display.ConnectionInfo.Enabled': {inclusion : bools},
+	'Player.Display.ConnectionInfo.Message': {presence: {allowEmpty: true}},
 	'Player.FullScreen': {inclusion : bools},
 	'Player.Monitor': {inclusion : bools},
 	'Player.NoBar': {inclusion : bools},
