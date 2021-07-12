@@ -96,8 +96,8 @@ class PlayerOptions extends Component<IProps, IState> {
 	};
 
 	render() {
-		if (this.state.config && this.state.config['Karaoke.Display.ConnectionInfo.Host'] === null)
-			this.state.config['Karaoke.Display.ConnectionInfo.Host'] = '';
+		if (this.state.config && this.state.config['Player.Display.ConnectionInfo.Host'] === null)
+			this.state.config['Player.Display.ConnectionInfo.Host'] = '';
 		const listAudio =
 		this.state.audioDevices && this.state.audioDevices.length > 0
 			? this.state.audioDevices.map(device => (
@@ -260,48 +260,48 @@ class PlayerOptions extends Component<IProps, IState> {
 						{i18next.t('SETTINGS.PLAYER.DISPLAY_SETTINGS')}
 					</div>
 					<div className="settings-line">
-						<label htmlFor="Karaoke.Display.ConnectionInfo.Enabled">
+						<label htmlFor="Player.Display.ConnectionInfo.Enabled">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO')}</span>
 							<br />
 							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_TOOLTIP')}</span>
 						</label>
 						<div>
-							<Switch idInput="Karaoke.Display.ConnectionInfo.Enabled" handleChange={this.onChange}
-								isChecked={this.state.config['Karaoke.Display.ConnectionInfo.Enabled']} />
+							<Switch idInput="Player.Display.ConnectionInfo.Enabled" handleChange={this.onChange}
+								isChecked={this.state.config['Player.Display.ConnectionInfo.Enabled']} />
 						</div>
 					</div>
 
-					{this.state.config['Karaoke.Display.ConnectionInfo.Enabled'] ? (
+					{this.state.config['Player.Display.ConnectionInfo.Enabled'] ? (
 						<div
 							id="connexionInfoSettings"
 							className="settingsGroupPanel"
 						>
 							<div className="settings-line">
-								<label htmlFor="Karaoke.Display.ConnectionInfo.Host">
+								<label htmlFor="Player.Display.ConnectionInfo.Host">
 									<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_HOST')}</span>
 									<br />
 									<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_HOST_TOOLTIP')}</span>
 								</label>
 								<div>
 									<input
-										id="Karaoke.Display.ConnectionInfo.Host"
+										id="Player.Display.ConnectionInfo.Host"
 										onChange={this.onChange}
-										value={this.state.config['Karaoke.Display.ConnectionInfo.Host']}
+										value={this.state.config['Player.Display.ConnectionInfo.Host']}
 									/>
 								</div>
 							</div>
 
 							<div className="settings-line">
-								<label htmlFor="Karaoke.Display.ConnectionInfo.Message">
+								<label htmlFor="Player.Display.ConnectionInfo.Message">
 									<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_MESSAGE')}</span>
 									<br />
 									<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP')}</span>
 								</label>
 								<div>
 									<input
-										id="Karaoke.Display.ConnectionInfo.Message"
+										id="Player.Display.ConnectionInfo.Message"
 										onChange={this.onChange}
-										value={this.state.config['Karaoke.Display.ConnectionInfo.Message']}
+										value={this.state.config['Player.Display.ConnectionInfo.Message']}
 									/>
 								</div>
 							</div>
@@ -309,26 +309,26 @@ class PlayerOptions extends Component<IProps, IState> {
 					) : null}
 
 					<div className="settings-line">
-						<label htmlFor="Karaoke.Display.Nickname">
+						<label htmlFor="Player.Display.Nickname">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME')}</span>
 							<br />
 							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME_TOOLTIP')}</span>
 						</label>
 						<div>
-							<Switch idInput="Karaoke.Display.Nickname" handleChange={this.onChange}
-								isChecked={this.state.config['Karaoke.Display.Nickname']} />
+							<Switch idInput="Player.Display.Nickname" handleChange={this.onChange}
+								isChecked={this.state.config['Player.Display.Nickname']} />
 						</div>
 					</div>
 
 					<div className="settings-line">
-						<label htmlFor="Karaoke.Display.Avatar">
+						<label htmlFor="Player.Display.Avatar">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR')}</span>
 							<br />
 							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR_TOOLTIP')}</span>
 						</label>
 						<div>
-							<Switch idInput="Karaoke.Display.Avatar" handleChange={this.onChange}
-								isChecked={this.state.config['Karaoke.Display.Avatar']} />
+							<Switch idInput="Player.Display.Avatar" handleChange={this.onChange}
+								isChecked={this.state.config['Player.Display.Avatar']} />
 						</div>
 					</div>
 				</React.Fragment> : null
