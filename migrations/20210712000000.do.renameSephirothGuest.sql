@@ -1,0 +1,11 @@
+UPDATE users SET pk_login = 'sephir0th69' WHERE pk_login = 's€phir0th69';
+UPDATE users SET pk_login = 'hooin kyoma' WHERE pk_login = 'hôôin kyoma';
+UPDATE users SET pk_login = 'blue accordeon' WHERE pk_login = 'blue accordéon';
+UPDATE users SET pk_login = 'une simple reveuse' WHERE pk_login = 'une simple rêveuse';
+UPDATE users SET pk_login = 'kumiko omae' WHERE pk_login = 'kumiko ômae';
+UPDATE users SET pk_login = 'kamel deux baches' WHERE pk_login = 'kamel deux bâches';
+UPDATE users SET pk_login = 'silent mobius dvd' WHERE pk_login = 'silent möbius dvd';
+UPDATE users SET pk_login = 'eren jager' WHERE pk_login = 'eren jäger';
+UPDATE users SET pk_login = 'livai' WHERE pk_login = 'livaï';
+UPDATE users SET pk_login = 'rodeur de la nuit' WHERE pk_login = 'rôdeur de la nuit';
+UPDATE users SET pk_login = 'poi' WHERE pk_login = 'poï';

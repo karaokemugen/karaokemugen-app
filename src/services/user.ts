@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import {decode,encode} from 'jwt-simple';
 import {has as hasLang} from 'langs';
+import deburr from 'lodash.deburr';
 import {resolve} from 'path';
 import randomstring from 'randomstring';
 import slugify from 'slugify';
@@ -401,14 +402,15 @@ async function createDefaultGuests() {
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
-		if (!guests.find(g => g.login === guest.toLowerCase())) guestsToCreate.push(guest);
+		if (!guests.find(g => g.login === deburr(guest.toLowerCase()))) guestsToCreate.push(guest);
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getState().isTest) maxGuests = 1;
 	logger.debug(`Creating ${maxGuests} new guest accounts`, {service: 'User'});
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await createUser({
-			login: guestsToCreate[i],
+			login: deburr(guestsToCreate[i]),
+			nickname: guestsToCreate[i],
 			type: 2
 		});
 	}
