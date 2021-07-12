@@ -27,7 +27,7 @@ export const defaultGuestNames = [
 	'MAMMUTH!',
 	'NinaFMA',
 	'Hokuto de Cuisine',
-	'S€phir0th69',
+	'Sephir0th69',
 	'Brigade SOS',
 	'THE GAME',
 	'Haruhi Suzumiya',
