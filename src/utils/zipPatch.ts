@@ -27,7 +27,6 @@ async function extractZip(path: string, outDir: string): Promise<string>  {
 
 export async function downloadAndExtractZip(zipURL: string, outDir: string, repo: string) {
 	logger.debug(`Downloading ${repo} archive`, {service: 'Zip'});
-	await remove(outDir);
 	const task = new Task({
 		text: 'DOWNLOADING_ZIP',
 		data: repo
@@ -39,6 +38,7 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 	if (getState().opt.cli) {
 		const tempDir = resolvedPathTemp();
 		const dir = await extractZip(target, tempDir);
+		await remove(outDir);
 		await move(resolve(tempDir, dir), outDir);
 	} else {
 		return new Promise<void>((resolvePromise, reject) => {
@@ -61,7 +61,9 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 				if (data.error) {
 					reject(data.error);
 				} else {
-					move(resolve(options.outDir, data.outDir), outDir).then(resolvePromise, reject);
+					remove(outDir).then(() => {
+						move(resolve(options.outDir, data.outDir), outDir).then(resolvePromise, reject);
+					});
 				}
 				task.end();
 			});
