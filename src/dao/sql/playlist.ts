@@ -251,6 +251,15 @@ ORDER BY pc.pos;
 `;
 
 export const sqlgetPLCInfo = (forUser: boolean) => `
+WITH playing_pos AS (
+	SELECT pos FROM playlist_content
+	   INNER JOIN playlist ON playlist.pk_id_playlist = playlist_content.fk_id_playlist
+	   WHERE playlist.pk_id_playlist = :current_plaid
+		 AND playlist.fk_id_plcontent_playing = playlist_content.pk_id_plcontent
+   ), current_pos AS (
+	SELECT pos FROM playlist_content
+	   WHERE playlist_content.pk_id_plcontent = :plcid
+   )
 SELECT
   ak.pk_kid AS kid,
   ak.title AS title,
@@ -307,13 +316,14 @@ SELECT
   (CASE WHEN f.fk_kid IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   COALESCE((SELECT
-	SUM(k.duration)
-   FROM kara k
-   LEFT OUTER JOIN playlist_content AS plc ON plc.fk_kid = pc.fk_kid
-   LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.pk_id_plcontent = pl.fk_id_plcontent_playing AND plc_current_playing.fk_id_playlist = :current_plaid
-   LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND (plc.pos - 1) AND plc_before.fk_id_playlist = :current_plaid
-   WHERE plc_before.fk_kid = k.pk_kid
-  )::integer, 0) AS time_before_play,
+		SUM(kara.duration)
+	FROM kara
+	INNER JOIN current_pos AS cpos ON 1 = 1
+	INNER JOIN playing_pos AS ppos ON 1 = 1
+	INNER JOIN playlist_content AS plc ON plc.fk_kid = kara.pk_kid
+	WHERE plc.fk_id_playlist = :current_plaid
+		AND plc.pos >= ppos.pos AND plc.pos < cpos.pos
+)::integer, 0) AS time_before_play,
   pc.flag_visible AS flag_visible,
   ak.repository as repository,
   array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
