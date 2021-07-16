@@ -15,7 +15,7 @@ VALUES (
 ) ON CONFLICT DO NOTHING;
 `;
 
-export const sqlgetWhitelistContents = (filterClauses: string[], limitClause: string, offsetClause: string) => `
+export const sqlgetWhitelistContents = (filterClauses: string[], limitClause: string, offsetClause: string, additionalFrom: string[]) => `
 SELECT
   ak.pk_kid AS kid,
   ak.title AS title,
@@ -42,6 +42,7 @@ SELECT
   count(ak.pk_kid) OVER()::integer AS count
   FROM all_karas AS ak
   INNER JOIN whitelist AS wl ON wl.fk_kid = ak.pk_kid
+  ${additionalFrom.join('')}
   WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))
