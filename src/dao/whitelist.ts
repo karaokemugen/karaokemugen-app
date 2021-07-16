@@ -1,19 +1,20 @@
 import {pg as yesql} from 'yesql';
 
 import {buildClauses, db,transaction} from '../lib/dao/database';
+import { WhereClause } from '../lib/types/database';
 import { KaraParams } from '../lib/types/kara';
 import { DBWhitelist } from '../types/database/whitelist';
 import { sqladdKaraToWhitelist,sqlemptyWhitelist, sqlgetWhitelistContents, sqlremoveKaraFromWhitelist } from './sql/whitelist';
 
 export async function getWhitelistContents(params: KaraParams): Promise<DBWhitelist[]> {
-	const filterClauses = params.filter
+	const filterClauses: WhereClause = params.filter
 		? buildClauses(params.filter)
-		: {sql: [], params: {}};
+		: {sql: [], params: {}, additionalFrom: []};
 	let limitClause = '';
 	let offsetClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
-	const query = sqlgetWhitelistContents(filterClauses.sql, limitClause, offsetClause);
+	const query = sqlgetWhitelistContents(filterClauses.sql, limitClause, offsetClause, filterClauses.additionalFrom);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
