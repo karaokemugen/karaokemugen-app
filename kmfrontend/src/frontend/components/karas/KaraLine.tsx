@@ -305,6 +305,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	}
 
 	openKaraMenu = (event: MouseEvent) => {
+		document.getElementById('root').click();
 		if (event?.currentTarget) {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			showModal(this.context.globalDispatch, <KaraMenuModal

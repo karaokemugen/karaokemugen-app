@@ -354,6 +354,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	}
 
 	togglePlaylistCommands = () => {
+		if (!this.state.playlistCommands) document.getElementById('root').click();
 		this.state.playlistCommands ?
 			document.getElementById('root').removeEventListener('click', this.handleClick) :
 			document.getElementById('root').addEventListener('click', this.handleClick);
@@ -376,6 +377,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	}
 
 	openKaraMenu(event: MouseEventReact) {
+		document.getElementById('root').click();
 		if (event?.currentTarget) {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			showModal(this.context.globalDispatch, <CheckedKaraMenuModal
