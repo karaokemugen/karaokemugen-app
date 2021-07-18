@@ -430,7 +430,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 									acceptKara={this.props.acceptCheckedKara}
 									deleteFavorite={this.props.deleteCheckedFavorites}
 									checkedKaras={this.props.checkedKaras?.length}
-									flag_public={this.props.playlistInfo?.flag_public}
 								/>
 								<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}
 									onClick={(event) => {
