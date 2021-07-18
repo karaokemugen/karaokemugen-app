@@ -383,7 +383,6 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 											upvoteKara={this.upvoteKara}
 											refuseKara={this.refuseKara}
 											acceptKara={this.acceptKara}
-											flag_public={this.props.playlistInfo?.flag_public}
 										/> : null
 									}
 									{scope === 'admin' ?
