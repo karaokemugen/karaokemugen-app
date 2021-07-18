@@ -74,7 +74,7 @@ export default function FileSystem(props: IProps) {
 				) :
 				`${path}${item.name}${separator}`;
 			getFS(newPath, props.os).then(getFSCallback);
-			if (!props.fileRequired) props.saveValueModal(props.os === 'win32' ? newPath.substr(1) : newPath);
+			if (!props.fileRequired) props.saveValueModal(newPath);
 		} else if (props.fileRequired) {
 			props.saveValueModal(`${path}${separator}${item.name}`);
 		}
