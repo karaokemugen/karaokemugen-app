@@ -666,6 +666,7 @@ class Playlist extends Component<IProps, IState> {
 		const response = await commandBackend(this.getPlaylistUrl(), {
 			filter: this.getFilterValue(this.props.side),
 			set_id: this.state.bLSet?.blc_set_id,
+			plaid: this.state.plaid,
 			...this.getSearchTagForAddAll()
 		});
 		const karaList = response.content.map((a: KaraElement) => a.kid);
