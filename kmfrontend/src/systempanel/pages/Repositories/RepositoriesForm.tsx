@@ -85,8 +85,8 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 	setDefaultFolders = (): void => {
 		if (!this.props.repository.Name) {
 			const folders: {PathMedias?: string[], BaseDir?: string } = {};
-			if (this.formRef.current?.getFieldValue('BaseDir')?.length === 0) folders.BaseDir = `repo/${this.formRef.current?.getFieldValue('Name')}/json`;
-			if (this.formRef.current?.getFieldValue('PathMedias')?.length === 0) folders.PathMedias = [`repo/${this.formRef.current?.getFieldValue('Name')}/medias`];
+			if (this.formRef.current?.getFieldValue('BaseDir') === null) folders.BaseDir = `repos/${this.formRef.current?.getFieldValue('Name')}/json`;
+			if (this.formRef.current?.getFieldValue('PathMedias')?.length === 0) folders.PathMedias = [`repos/${this.formRef.current?.getFieldValue('Name')}/medias`];
 			this.formRef.current?.setFieldsValue(folders);
 		}
 	}
