@@ -1,3 +1,33 @@
+# v5.1.20 - 19/07/2021
+
+## New features
+
+- Add instant play on public playlists (#1034)
+- Database is now dumped on exit as well so we can better upgrade PostgreSQL later in 6.0
+
+## Fixes
+
+- Fix remote not self-destructing correctly in some cases (KM-APP-1NG)
+- Fix file browser on system panel when not using electron (#1059)
+- Fix adding all songs from playlist to playlist (#1060)
+- Menus on the operator panel are now exclusive (only one can be opened at once) (#1061)
+- Fix playlist buttons not being updated after public playlist change (#1062)
+- Fix searches in whitelist
+- Fix "time before song plays" unaccuracy
+- Fix race condition bug when updating repositories
+- Fix guests with non-ASCII characters
+- Prevent users from creating accounts with non-ASCII characters
+- Prevent multiple generations happening at hte same time
+- Prevent users from creating a repository at the root of a windows drive
+- Better quit sequence when auto-updating (to allow later PostgreSQL upgrade)
+- Fix keyboard shortcut conflict in menus
+- Fix delete playlist modal
+- "Select all" buttons no longer just inverts selection
+- Better explanation of what the "allow duplicates" option does
+- Removed mentions of shortener in privacy policy as it's not usable anymore
+- Removed mentions of msvcp/cr120.dll to detect if VC++ redist is installed on windows systems (it wasn't always working)
+- Fixed URLs to kara.moe
+
 # v5.1.17 - 04/07/2021
 
 ## New features
