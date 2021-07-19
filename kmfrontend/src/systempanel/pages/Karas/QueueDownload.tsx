@@ -304,7 +304,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			key: 'preview',
 			render: (_text, record) => {
 				return (<div>
-					<Button type="default" href={`https://${record.repository}/base/kara/${record.kid}`}><InfoCircleTwoTone /></Button>
+					<Button type="default" href={`https://${record.repository}/kara/${record.kid}`}><InfoCircleTwoTone /></Button>
 					<video src={`https://${record.repository}/downloads/medias/${record.mediafile}`}
 						controls={true} autoPlay={true} loop={true} playsInline={true}
 						className='modal-video' />

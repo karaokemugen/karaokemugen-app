@@ -5,11 +5,11 @@ import i18n from 'i18next';
 import internetAvailable from 'internet-available';
 import logger from 'winston';
 
-import {compareKarasChecksum,generateDB, getStats, initDBSystem} from '../dao/database';
+import {compareKarasChecksum,DBReady,generateDB, getStats, initDBSystem} from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
 import { markAllMigrationsFrontendAsDone } from '../dao/migrationsFrontend';
-import { applyMenu, handleFile, handleProtocol } from '../electron/electron';
+import { applyMenu, closeAllWindows, handleFile, handleProtocol } from '../electron/electron';
 import { errorStep,initStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
@@ -231,10 +231,11 @@ export async function initEngine() {
 	}
 }
 
-export async function exit(rc = 0) {
+export async function exit(rc = 0, update = false) {
 	if (shutdownInProgress) return;
 	logger.info('Shutdown in progress', {service: 'Engine'});
 	shutdownInProgress = true;
+	closeAllWindows();
 	wipeDownloadQueue();
 	try {
 		if (getState().player?.playerStatus) {
@@ -245,6 +246,7 @@ export async function exit(rc = 0) {
 		logger.warn('mpv error', {service: 'Engine', obj: err});
 		// Non fatal.
 	}
+	if (DBReady	&& getConfig().System.Database.bundledPostgresBinary) await dumpPG();
 	await closeDB();
 	const c = getConfig();
 	if (getTwitchClient() || (c?.Karaoke?.StreamerMode?.Twitch?.Enabled)) await stopTwitch();
@@ -255,19 +257,19 @@ export async function exit(rc = 0) {
 			try {
 				await stopPG();
 				logger.info('PostgreSQL has shutdown', {service: 'Engine'});
-				mataNe(rc);
 			} catch(err) {
 				logger.warn('PostgreSQL could not be stopped!', {service: 'Engine', obj: err});
 				sentry.error(err);
-				mataNe(rc);
+			} finally {
+				if (!update) mataNe(rc);
 			}
 		} else {
-			mataNe(rc);
+			if (!update) mataNe(rc);
 		}
 	} catch(err) {
 		logger.error('Failed to shutdown PostgreSQL', {service: 'Engine', obj: err});
 		sentry.error(err);
-		mataNe(1);
+		if (!update) mataNe(1);
 	}
 }
 

@@ -331,7 +331,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	getListToSelect = () => {
 		return this.props.playlistList.map(playlist => {
 			return {
-				value: playlist?.plaid?.toString(),
+				value: playlist?.plaid,
 				label: playlist.name,
 				icons: this.getPlaylistIcon(playlist)
 			};
@@ -354,6 +354,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	}
 
 	togglePlaylistCommands = () => {
+		if (!this.state.playlistCommands) document.getElementById('root').click();
 		this.state.playlistCommands ?
 			document.getElementById('root').removeEventListener('click', this.handleClick) :
 			document.getElementById('root').addEventListener('click', this.handleClick);
@@ -376,6 +377,7 @@ class PlaylistHeader extends Component<IProps, IState> {
 	}
 
 	openKaraMenu(event: MouseEventReact) {
+		document.getElementById('root').click();
 		if (event?.currentTarget) {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			showModal(this.context.globalDispatch, <CheckedKaraMenuModal
@@ -430,7 +432,6 @@ class PlaylistHeader extends Component<IProps, IState> {
 									acceptKara={this.props.acceptCheckedKara}
 									deleteFavorite={this.props.deleteCheckedFavorites}
 									checkedKaras={this.props.checkedKaras?.length}
-									flag_public={this.props.playlistInfo?.flag_public}
 								/>
 								<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}
 									onClick={(event) => {

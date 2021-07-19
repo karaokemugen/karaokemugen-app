@@ -176,7 +176,7 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	publicPlaylistEmptied = () => {
-		if (this.state.plaid === nonStandardPlaylists.library) {
+		if (this.state.plaid === nonStandardPlaylists.library && this.state.data) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				if (kara) {
@@ -337,7 +337,7 @@ class Playlist extends Component<IProps, IState> {
 				<div className="list-group-item karaSuggestion">
 					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 					{this.context?.globalState.settings.data.config.System.Repositories
-						.filter(value => value.Enabled && value.Online).map(value => <a href={`https://${value.Name}/base`} >{value.Name}</a>)}
+						.filter(value => value.Enabled && value.Online).map(value => <a href={`https://${value.Name}/`} >{value.Name}</a>)}
 					<a href="https://suggest.karaokes.moe" >suggest.karaokes.moe</a>
 				</div>
 			) : null}
@@ -592,7 +592,7 @@ class Playlist extends Component<IProps, IState> {
 		let checkedKaras = 0;
 		for (const kara of (this.state.data as KaraList)?.content) {
 			if (kara) {
-				kara.checked = !kara.checked;
+				kara.checked = !this.state.selectAllKarasChecked;
 				if (kara.checked) checkedKaras++;
 			}
 		}
@@ -666,6 +666,7 @@ class Playlist extends Component<IProps, IState> {
 		const response = await commandBackend(this.getPlaylistUrl(), {
 			filter: this.getFilterValue(this.props.side),
 			set_id: this.state.bLSet?.blc_set_id,
+			plaid: this.state.plaid,
 			...this.getSearchTagForAddAll()
 		});
 		const karaList = response.content.map((a: KaraElement) => a.kid);

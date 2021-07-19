@@ -173,7 +173,7 @@
 	},
 	"MISSING_BINARIES": {
 		"TITLE": "Binaires manquants",
-		"MESSAGE": "Un ou plusieurs binaires requis par Karaoke Mugen sont manquants. Editez votre fichier config.yml et définissez System.Binaries correctement pour votre OS.\n\nVous pouvez télécharger mpv depuis http://mpv.io/\n\nVous pouvez télécharger postgresql depuis http://postgresql.org/\n\nVous pouvez télécharger ffmpeg depuis http://ffmpeg.org\n\nVous pouvez télécharger l'utilitaire patch depuis https://mugen.karaokes.moe/downloads/patch.exe (Windows) ou https://mugen.karaokes.moe/downloads/patch (macOS) ou un package GNU Patch 2.7+ (Linux)\n\n(Windows uniquement) Si le fichier manquant est msvcr120.dll ou msvcp120.dll, téléchargez Microsoft Visual C++ 2013 Redistribuable Package sur le site de Microsoft.\n\nDétail de l'erreur : "
+		"MESSAGE": "Un ou plusieurs binaires requis par Karaoke Mugen sont manquants. Editez votre fichier config.yml et définissez System.Binaries correctement pour votre OS.\n\nVous pouvez télécharger mpv depuis http://mpv.io/\n\nVous pouvez télécharger postgresql depuis http://postgresql.org/\n\nVous pouvez télécharger ffmpeg depuis http://ffmpeg.org\n\nVous pouvez télécharger l'utilitaire patch depuis https://mugen.karaokes.moe/downloads/patch.exe (Windows) ou https://mugen.karaokes.moe/downloads/patch (macOS) ou un package GNU Patch 2.7+ (Linux)\n\nDétail de l'erreur : "
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Dépôt inconnu",

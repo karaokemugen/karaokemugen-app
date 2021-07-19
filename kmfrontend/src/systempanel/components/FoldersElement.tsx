@@ -9,7 +9,7 @@ import FileSystem from './FileSystem';
 
 interface FoldersElementProps {
 	onChange: any;
-	value?: any[];
+	value?: any[] | string;
 	keyModal?: string;
 	openFile?: boolean;
 	openDirectory?: boolean;
@@ -38,6 +38,10 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 			keyModal: this.props.keyModal,
 			visibleModal: false
 		};
+	}
+
+	componentDidUpdate(prevProps: FoldersElementProps) {
+		if (prevProps.value !== this.props.value) this.setState({value: this.props.value || []});
 	}
 
 	async openFileSystemModal(item, index?: number, key?: string) {

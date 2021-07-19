@@ -9,7 +9,7 @@ import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import { GlobalContextInterface } from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
-import {nonStandardPlaylists} from '../../../utils/tools';
+import { nonStandardPlaylists } from '../../../utils/tools';
 import SelectWithIcon from '../generic/SelectWithIcon';
 
 interface IProps {
@@ -24,22 +24,24 @@ interface IProps {
 }
 
 interface IState {
-	idPlaylistChosen: number;
+	plaidChosen: string;
 }
 
 class DeletePlaylistModal extends Component<IProps, IState> {
 
 	state = {
-		idPlaylistChosen: undefined
+		plaidChosen: undefined
 	}
 
 	deletePlaylist = async () => {
-		if (this.state.idPlaylistChosen) {
+		if (this.state.plaidChosen) {
 			await commandBackend(this.props.plaid === nonStandardPlaylists.blc ? 'editBLCSet' : 'editPlaylist', {
-				set_id: this.state.idPlaylistChosen,
-				flag_current: this.props.plaid === nonStandardPlaylists.blc ? true : this.props.playlistInfo?.flag_current,
-				flag_public: this.props.playlistInfo?.flag_public,
-				plaid: this.state.idPlaylistChosen
+				set_id: this.state.plaidChosen,
+				flag_current: this.props.plaid === nonStandardPlaylists.blc ? true : (this.props.playlistInfo?.flag_current
+					|| this.props.context.globalState.settings.data.state.currentPlaid === this.state.plaidChosen),
+				flag_public: this.props.playlistInfo?.flag_public
+					|| this.props.context.globalState.settings.data.state.publicPlaid === this.state.plaidChosen,
+				plaid: this.state.plaidChosen
 			});
 			await setSettings(this.props.context.globalDispatch);
 		} if (this.props.plaid === nonStandardPlaylists.blc) {
@@ -48,8 +50,8 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 			});
 			this.props.changeIdPlaylist(nonStandardPlaylists.blc);
 		} else {
-			this.props.changeIdPlaylist(this.state.idPlaylistChosen ?
-				this.state.idPlaylistChosen :
+			this.props.changeIdPlaylist(this.state.plaidChosen ?
+				this.state.plaidChosen :
 				(this.props.plaidTo === this.props.context.globalState.settings.data.state.publicPlaid ?
 					-1 :
 					this.props.context.globalState.settings.data.state.publicPlaid));
@@ -103,8 +105,8 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 										list={this.props.plaid === nonStandardPlaylists.blc ?
 											this.props.bLSetList :
 											this.props.playlistList}
-										value={this.state.idPlaylistChosen?.toString()}
-										onChange={(value: any) => this.setState({ idPlaylistChosen: Number(value) })} />
+										value={this.state.plaidChosen}
+										onChange={(value: any) => this.setState({ plaidChosen: value })} />
 								</div>
 							</div> : null
 						}
