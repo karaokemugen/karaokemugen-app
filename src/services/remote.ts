@@ -105,9 +105,11 @@ export async function destroyRemote() {
 		logger.error('Cannot stop remote', {service: 'Remote'});
 	}
 	// Remove all subscriptions
-	getKMServerSocket().offAny(proxy);
-	getKMServerSocket().off('connect', restartRemote);
-	getKMServerSocket().off('disconnect', removeRemote);
+	if (getKMServerSocket()) {
+		getKMServerSocket().offAny(proxy);
+		getKMServerSocket().off('connect', restartRemote);
+		getKMServerSocket().off('disconnect', removeRemote);
+	}
 	getWS().off('broadcast', broadcastForward);
 	logger.info('Remote is STOPPED', {service: 'Remote'});
 	setState({ remoteAccess: null });
