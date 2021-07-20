@@ -3,7 +3,7 @@ import langs from 'langs';
 import { io } from 'socket.io-client';
 
 import { DBTag } from '../../src/lib/types/database/tag';
-import { md5Regexp,tagTypes, uuidPlusTypeRegexp,uuidRegexp } from '../../src/lib/utils/constants';
+import { tagTypes, uuidPlusTypeRegexp,uuidRegexp } from '../../src/lib/utils/constants';
 import {Config} from '../../src/types/config';
 import { testSongs } from '../../src/utils/constants';
 
