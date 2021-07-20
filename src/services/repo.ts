@@ -43,7 +43,7 @@ import { sendPayload } from './stats';
 import { deleteTag, getTags, integrateTagFile } from './tag';
 
 const windowsDriveRootRegexp = new RegExp(/^[a-zA-Z]:\\/);
-	
+
 /** Get all repositories in database */
 export function getRepos() {
 	return selectRepos();
@@ -350,15 +350,22 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 		karas1.forEach(k => karas1Map.set(k.kid, k));
 		karas2.forEach(k => karas2Map.set(k.kid, k));
 		const differentChecksums = [];
-		karas1Map.forEach(kara1 => {
+		for (const kara1 of karas1Map.values()) {
 			const kara2 = karas2Map.get(kara1.kid);
 			if (kara2) {
-				if (kara2.subchecksum !== kara1.subchecksum) differentChecksums.push({
+				// read both lyrics and then decide if they're different
+				const lyricsPath1 = resolve(resolvedPathRepos('Lyrics', kara2.repository)[0], kara1.subfile);
+				const lyricsPath2 = resolve(resolvedPathRepos('Lyrics', kara2.repository)[0], kara2.subfile);
+				const [lyrics1, lyrics2] = await Promise.all([
+					fs.readFile(lyricsPath1, 'utf-8'),
+					fs.readFile(lyricsPath2, 'utf-8')
+				]);
+				if (lyrics1 !== lyrics2) differentChecksums.push({
 					kara1: kara1,
 					kara2: kara2
 				});
 			}
-		});
+		}
 		return differentChecksums;
 	} catch(err) {
 		if (err?.code === 404) throw err;
@@ -380,7 +387,6 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 				subtext: karas.kara2.subfile
 			});
 			// Copying kara1 data to kara2
-			karas.kara2.subchecksum = karas.kara1.subchecksum;
 			karas.kara2.isKaraModified = true;
 			const writes = [];
 			writes.push(writeKara(karas.kara2.karafile, karas.kara2));

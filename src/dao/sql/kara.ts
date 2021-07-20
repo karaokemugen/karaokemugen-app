@@ -82,7 +82,6 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   ak.mediasize AS mediasize,
-  ak.subchecksum AS subchecksum,
   ak.download_status AS download_status,
   ak.comment AS comment,
   COUNT(p.*)::integer AS played,
@@ -114,7 +113,7 @@ ${additionalFrom.join('')}
 WHERE true
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.title, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.versions, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.series, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.subchecksum, ak.download_status ${groupClauseEnd}
+GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.title, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.versions, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.series, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status ${groupClauseEnd}
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.title
 ${limitClause}
@@ -172,7 +171,6 @@ UPDATE kara SET
 	year = :year,
 	songorder = :songorder,
 	mediafile = :mediafile,
-	subchecksum = :subchecksum,
 	mediasize = :mediasize,
 	subfile = :subfile,
 	duration = :duration,
@@ -196,7 +194,6 @@ INSERT INTO kara(
 	loudnorm,
 	modified_at,
 	created_at,
-	subchecksum,
 	karafile,
 	pk_kid,
 	repository,
@@ -215,7 +212,6 @@ VALUES(
 	:loudnorm,
 	:modified_at,
 	:created_at,
-	:subchecksum,
 	:karafile,
 	:kid,
 	:repository,
