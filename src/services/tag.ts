@@ -277,7 +277,6 @@ export async function deleteTag(tids: string[], opt = {
 	}
 	await Promise.all(removes).catch(err => {
 		logger.warn('Failed to remove tag files / tag from kara', {service: 'Tag', obj: err});
-		sentry.error(err, 'Warning');
 		// Non fatal
 	});
 	for (const tag of tags) {
