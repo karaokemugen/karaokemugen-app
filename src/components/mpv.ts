@@ -279,7 +279,9 @@ class Player {
 			'--loop-file=no',
 			`--title=${options.monitor ? '[MONITOR] ':''}\${force-media-title} - Karaoke Mugen Player`,
 			'--force-media-title=Loading...',
-			`--audio-device=${conf.Player.AudioDevice}`
+			`--audio-device=${conf.Player.AudioDevice}`,
+			`--screenshot-directory=${resolve(state.dataPath)}`,
+			'--screenshot-format=png'
 		];
 
 		if (options.monitor) {
