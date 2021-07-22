@@ -21,9 +21,6 @@ async function main() {
 		await client.query(`
         CREATE EXTENSION unaccent;
 		`);
-		await client.query(`
-        CREATE EXTENSION pgcrypto;
-		`);
 	} catch(err) {
 		// Do nothing here.
 	}
