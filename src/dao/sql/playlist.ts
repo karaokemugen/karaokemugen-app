@@ -111,8 +111,8 @@ SELECT pc.fk_kid AS kid,
 	  END) AS flag_playing,
 	pc.pos AS pos,
 	pc.fk_id_playlist AS plaid,
-	ak.series AS series,
-	ak.singers AS singer
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singer
 FROM playlist_content pc
 INNER JOIN all_karas ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist pl ON pl.pk_id_playlist = pc.fk_id_playlist
@@ -127,21 +127,21 @@ SELECT
   ak.title AS title,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
-  COALESCE(ak.series, '[]'::jsonb) AS series,
-  COALESCE(ak.singers, '[]'::jsonb) AS singers,
-  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
-  COALESCE(ak.creators, '[]'::jsonb) AS creators,
-  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 4)') AS creators,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 8)') AS songwriters,
   ak.year AS year,
-  COALESCE(ak.languages, '[]'::jsonb) AS langs,
-  COALESCE(ak.authors, '[]'::jsonb) AS authors,
-  COALESCE(ak.groups, '[]'::jsonb) AS groups,
-  COALESCE(ak.misc, '[]'::jsonb) AS misc,
-  COALESCE(ak.origins, '[]'::jsonb) AS origins,
-  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
-  COALESCE(ak.families, '[]'::jsonb) AS families,
-  COALESCE(ak.genres, '[]'::jsonb) AS genres,
-  COALESCE(ak.versions, '[]'::jsonb) AS versions,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 6)') AS authors,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 9)') AS groups,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 11)') AS origins,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 13)') AS platforms,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 10)') AS families,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 12)') AS genres,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -203,9 +203,7 @@ ${additionalFrom}
 WHERE pc.fk_id_playlist = :plaid
   ${filterClauses.map(clause => 'AND (' + clause + ')').join(' ')}
   ${whereClause}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes,
-         ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.origins, ak.families, ak.genres,
-         ak.platforms, ak.versions, ak.mediafile, ak.groups, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status,
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, 		  ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status,
          pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository
 ORDER BY ${orderClause}
 ${limitClause}
@@ -214,14 +212,14 @@ ${offsetClause}
 
 export const sqlgetPlaylistContentsMini = `
 SELECT ak.pk_kid AS kid,
-    ak.languages AS langs,
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
 	ak.title AS title,
 	ak.songorder AS songorder,
-	ak.songtypes AS songtypes,
-	ak.series AS series,
-	ak.singers AS singers,
-	ak.versions AS versions,
-	ak.misc AS misc,
     ak.gain AS gain,
 	ak.loudnorm AS loudnorm,
     pc.nickname AS nickname,
@@ -265,21 +263,21 @@ SELECT
   ak.title AS title,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
-  COALESCE(ak.series, '[]'::jsonb) AS series,
-  COALESCE(ak.singers, '[]'::jsonb) AS singers,
-  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
-  COALESCE(ak.creators, '[]'::jsonb) AS creators,
-  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 4)') AS creators,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 8)') AS songwriters,
   ak.year AS year,
-  COALESCE(ak.languages, '[]'::jsonb) AS langs,
-  COALESCE(ak.authors, '[]'::jsonb) AS authors,
-  COALESCE(ak.groups, '[]'::jsonb) AS groups,
-  COALESCE(ak.misc, '[]'::jsonb) AS misc,
-  COALESCE(ak.origins, '[]'::jsonb) AS origins,
-  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
-  COALESCE(ak.families, '[]'::jsonb) AS families,
-  COALESCE(ak.genres, '[]'::jsonb) AS genres,
-  COALESCE(ak.versions, '[]'::jsonb) AS versions,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 6)') AS authors,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 9)') AS groups,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 11)') AS origins,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 13)') AS platforms,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 10)') AS families,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 12)') AS genres,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -342,7 +340,7 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
 WHERE  pc.pk_id_plcontent = :plcid
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.series, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.groups, ak.misc, ak.genres, ak.platforms, ak.versions, ak.origins, ak.families, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.download_status
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.download_status
 `;
 
 export const sqlgetPLCInfoMini = `
@@ -351,7 +349,7 @@ SELECT pc.fk_kid AS kid,
 	ak.mediafile AS mediafile,
 	ak.mediasize AS mediasize,
 	ak.repository AS repository,
-	COALESCE(ak.series, '[]'::jsonb) AS series,
+    jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
 	pc.nickname AS nickname,
 	pc.fk_login AS username,
 	pc.pk_id_plcontent AS plcid,
@@ -368,7 +366,7 @@ INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = $1
-GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.title, ak.mediasize, ak.mediafile, ak.repository, ak.series, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
+GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.title, ak.mediasize, ak.mediafile, ak.repository, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist
 `;
 
 

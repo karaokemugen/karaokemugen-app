@@ -5,20 +5,21 @@ SELECT
   ak.pk_kid AS kid,
   ak.title AS title,
   ak.songorder AS songorder,
-  COALESCE(ak.series, '[]'::jsonb) AS series,
-  COALESCE(ak.singers, '[]'::jsonb) AS singers,
-  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
-  COALESCE(ak.creators, '[]'::jsonb) AS creators,
-  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 4)') AS creators,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 8)') AS songwriters,
   ak.year AS year,
-  COALESCE(ak.languages, '[]'::jsonb) AS langs,
-  COALESCE(ak.authors, '[]'::jsonb) AS authors,
-  COALESCE(ak.misc, '[]'::jsonb) AS misc,
-  COALESCE(ak.origins, '[]'::jsonb) AS origins,
-  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
-  COALESCE(ak.families, '[]'::jsonb) AS families,
-  COALESCE(ak.genres, '[]'::jsonb) AS genres,
-  COALESCE(ak.versions, '[]'::jsonb) AS versions,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 6)') AS authors,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 9)') AS groups,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 11)') AS origins,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 13)') AS platforms,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 10)') AS families,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 12)') AS genres,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   ak.duration AS duration,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
@@ -34,7 +35,7 @@ SELECT
   ${additionalFrom.join('')}
   WHERE f.fk_login = :username
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-GROUP BY ak.pk_kid, ak.title, ak.songorder, series, singers, songtypes, creators, songwriters, year, langs, authors, groups, misc, origins, platforms, families, genres, versions, duration, ak.created_at, ak.modified_at, pc.fk_kid, ak.serie_singer_sortable, ak.songtypes_sortable, ak.languages_sortable
+GROUP BY ak.pk_kid, ak.title, ak.songorder, year, ak.tags, duration, ak.created_at, ak.modified_at, pc.fk_kid, ak.serie_singer_sortable, ak.songtypes_sortable, ak.languages_sortable
 ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))
 ${limitClause}
 ${offsetClause}
