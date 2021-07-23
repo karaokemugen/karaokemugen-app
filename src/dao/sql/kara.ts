@@ -59,21 +59,21 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   ak.title AS title,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
-  COALESCE(ak.singers, '[]'::jsonb) AS singers,
-  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
-  COALESCE(ak.creators, '[]'::jsonb) AS creators,
-  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 4)') AS creators,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 8)') AS songwriters,
   ak.year AS year,
-  COALESCE(ak.languages, '[]'::jsonb) AS langs,
-  COALESCE(ak.authors, '[]'::jsonb) AS authors,
-  COALESCE(ak.groups, '[]'::jsonb) AS groups,
-  COALESCE(ak.misc, '[]'::jsonb) AS misc,
-  COALESCE(ak.origins, '[]'::jsonb) AS origins,
-  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
-  COALESCE(ak.families, '[]'::jsonb) AS families,
-  COALESCE(ak.genres, '[]'::jsonb) AS genres,
-  COALESCE(ak.series, '[]'::jsonb) AS series,
-  COALESCE(ak.versions, '[]'::jsonb) AS versions,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 6)') AS authors,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 9)') AS groups,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 11)') AS origins,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 13)') AS platforms,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 10)') AS families,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 12)') AS genres,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -113,7 +113,7 @@ ${additionalFrom.join('')}
 WHERE true
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.title, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.versions, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.series, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status ${groupClauseEnd}
+GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.title, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status ${groupClauseEnd}
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.title
 ${limitClause}
