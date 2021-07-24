@@ -42,7 +42,7 @@ import { addSystemMessage } from './proxyFeeds';
 import { sendPayload } from './stats';
 import { deleteTag, getTags, integrateTagFile } from './tag';
 
-const windowsDriveRootRegexp = new RegExp(/^[a-zA-Z]:\\/);
+const windowsDriveRootRegexp = new RegExp(/^[a-zA-Z]:\\$/);
 
 /** Get all repositories in database */
 export function getRepos() {
