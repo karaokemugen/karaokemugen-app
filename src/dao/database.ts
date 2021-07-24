@@ -64,6 +64,7 @@ export async function initDB() {
 	await connectDB(errorFunction, {superuser: true, db: conf.System.Database.database, log: getState().opt.sql});
 	try {
 		await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
+		await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 	} catch(err) {
 		logger.debug('Extension unaccent or pgcrypto already registered', {service: 'DB'});
 	}
@@ -163,7 +164,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 		if (conf.System.Database.bundledPostgresBinary) {
 			await initPG();
 			await initDB();
-			if (getState().restoreNeeded) await restorePG();
+			if (getState().restoreNeeded) await restorePG();			
 		}
 		logger.info('Initializing database connection', {service: 'DB'});
 		await connectDB(errorFunction, {
