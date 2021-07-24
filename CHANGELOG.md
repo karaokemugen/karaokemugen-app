@@ -1,3 +1,16 @@
+# v5.1.21 - 24/07/2021
+
+## Fixes
+
+- Removed sentry warning when removing non existing tag files
+- Fix missing delete button when wanting to remove several songs at once in operator panel
+- Fix displaying quota time
+- Fix displaying quota message when restricted interface
+- Fix adding songs made possible when restricted interface
+- Removed textArea in karaform for comments
+- Fixed regexp for detecting if path is a Windows drive letter root
+- Fixed KM-APP-1P4
+
 # v5.1.20 - 19/07/2021
 
 ## New features
