@@ -65,7 +65,7 @@ export async function initDB() {
 	try {
 		await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
 	} catch(err) {
-		logger.debug('Extension unaccent or pgcrypto already registered', {service: 'DB'});
+		logger.debug('Extension unaccent already registered', {service: 'DB'});
 	}
 }
 

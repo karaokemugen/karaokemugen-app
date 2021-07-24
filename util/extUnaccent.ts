@@ -1,4 +1,4 @@
-// This script installs the unaccent and pgcryto extension in a database.
+// This script installs the unaccent extension in a database.
 // It requires superuser access.
 
 const {Pool} = require('pg');
@@ -27,7 +27,7 @@ async function main() {
 }
 
 main().then(() => {
-	console.log('unaccent/pgcrypto extension installed');
+	console.log('unaccent extension installed');
 	process.exit(0);
 }).catch(err => {
 	console.log(err);

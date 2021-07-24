@@ -184,7 +184,7 @@ CREATE USER karaokemugen_app WITH ENCRYPTED PASSWORD 'musubi';
 GRANT ALL PRIVILEGES ON DATABASE karaokemugen_app TO karaokemugen_app;
 ```
 
-Switch to the newly created database and enable the `unaccent` and `pgcrypto` extension.
+Switch to the newly created database and enable the `unaccent` extension.
 
 ```SQL
 \c karaokemugen_app
