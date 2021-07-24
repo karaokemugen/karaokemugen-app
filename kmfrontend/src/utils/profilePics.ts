@@ -10,7 +10,7 @@ getSocket().on('userUpdated', (login) => cache.delete(login));
 
 export async function generateProfilePicLink(user: User): Promise<string> {
 	if (isRemote()) {
-		if (user.login.includes('@')) {
+		if (user?.login.includes('@')) {
 			// Retrieve cache entry
 			if (cache.has(user.login)) {
 				return cache.get(user.login);
