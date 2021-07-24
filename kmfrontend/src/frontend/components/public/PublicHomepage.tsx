@@ -58,10 +58,10 @@ class PublicHomepage extends Component<IProps, IState> {
 				<div className="hello-bar">
 					<span>{`${i18next.t('PUBLIC_HOMEPAGE.HELLO')} ${this.context.globalState.settings.data.user.nickname}`}&nbsp;!</span>
 					<div className="warning">{this.context?.globalState.settings.data.config?.Frontend?.Mode === 1 ? i18next.t('PUBLIC_HOMEPAGE.RESTRICTED_DESCRIPTION') : null}</div>
-					<div>{this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 1 ?
+					<div>{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 && this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 1 ?
 						i18next.t('PUBLIC_HOMEPAGE.QUOTA_KARA_DESCRIPTION', { count: this.context.globalState.settings.data.config?.Karaoke?.Quota?.Songs }) : null}
 					</div>
-					<div>{this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 2 ?
+					<div>{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 && this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 2 ?
 						i18next.t('PUBLIC_HOMEPAGE.QUOTA_TIME_DESCRIPTION', { time: secondsTimeSpanToHMS(this.context.globalState.settings.data.config?.Karaoke?.Quota?.Time, 'ms') }) : null}
 					</div>
 				</div>
