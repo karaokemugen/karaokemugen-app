@@ -650,9 +650,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					}]}
 					name="comment"
 				>
-					<Input.TextArea
-						allowClear={true}
-						autoSize={true}
+					<Input
 						placeholder={i18next.t('KARA.COMMENT')}
 						onKeyPress={this.submitHandler}
 					/>

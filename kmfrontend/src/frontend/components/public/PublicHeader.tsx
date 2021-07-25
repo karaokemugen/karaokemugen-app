@@ -9,7 +9,7 @@ import nanamiWebP from '../../../assets/nanami.webp';
 import { logout } from '../../../store/actions/auth';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { commandBackend,getSocket } from '../../../utils/socket';
+import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
 import PublicFixedMenu from './PublicFixedMenu';
@@ -114,9 +114,12 @@ class PublicHeader extends Component<IProps, IState> {
 						publicVisible={this.props.publicVisible}
 						currentVisible={this.props.currentVisible}
 					/>
-					{this.state.quotaType > 0 ? <div className={`quota-bar${this.state.quotaLeft <= 5 ? ' exhaust':''}`}>
-						{this.state.quotaType === 1 ? i18next.t('QUOTA_KARA'):
-							i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;{this.state.quotaLeft === -1 ? '∞':this.state.quotaLeft}
+					{this.state.quotaType > 0 ? <div className={`quota-bar${this.state.quotaLeft <= 5 ? ' exhaust' : ''}`}>
+						{this.state.quotaType === 1 ? i18next.t('QUOTA_KARA') : i18next.t('QUOTA_TIME')
+						}&nbsp;:&nbsp;{
+							this.state.quotaLeft === -1 ? '∞' :
+								(this.state.quotaType === 2 ? secondsTimeSpanToHMS(this.state.quotaLeft, 'ms') : this.state.quotaLeft)
+						}
 					</div> : null}
 					<div className="profile-btn">
 						<div className="dropdown-container">
@@ -130,13 +133,13 @@ class PublicHeader extends Component<IProps, IState> {
 									<div className="info">
 										{i18next.t('QUOTA_KARA')}
 										&nbsp;:&nbsp;
-										<span className="data">{this.state.quotaLeft === -1 ? '∞':this.state.quotaLeft}</span>
+										<span className="data">{this.state.quotaLeft === -1 ? '∞' : this.state.quotaLeft}</span>
 									</div> : null
 								}
 								{this.state.quotaType === 2 ?
 									<div className="info">
 										<div className="title">{i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;</div>
-										<div className="data">{this.state.quotaLeft === -1 ? '∞':secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')}</div>
+										<div className="data">{this.state.quotaLeft === -1 ? '∞' : secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')}</div>
 									</div> : null
 								}
 								{this.context?.globalState.auth.data.role !== 'guest' ?
@@ -154,7 +157,7 @@ class PublicHeader extends Component<IProps, IState> {
 								</a></div>
 								{this.context?.globalState.auth.data.role === 'admin' ? <div className="link"><a href="/welcome">
 									<i className="fas fa-fw fa-home" /> {i18next.t('CHANGE_INTERFACE')}
-								</a></div>:null}
+								</a></div> : null}
 								<div className="link"><a href="/login" onClick={e => {
 									e.preventDefault();
 									logout(this.context.globalDispatch);

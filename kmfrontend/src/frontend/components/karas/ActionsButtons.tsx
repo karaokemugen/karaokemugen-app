@@ -62,7 +62,7 @@ class ActionsButtons extends Component<IProps, unknown> {
 
 				{this.props.plaid !== nonStandardPlaylists.favorites
 					&& ((this.props.scope === 'admin' && this.props.plaid !== nonStandardPlaylists.library
-						&& !(this.props.isHeader && nonStandardPlaylists.blacklist)
+						&& !(this.props.isHeader && this.props.plaid === nonStandardPlaylists.blacklist)
 						&& !(this.props.plaid === this.context.globalState.settings.data.state.publicPlaid
 							&& this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid))
 						|| (this.props.scope !== 'admin' && !this.props.kara?.flag_dejavu && !this.props.kara?.flag_playing
@@ -87,7 +87,9 @@ class ActionsButtons extends Component<IProps, unknown> {
 					&& this.props.plaidTo !== nonStandardPlaylists.favorites
 					&& !(this.props.plaid === this.context.globalState.settings.data.state.publicPlaid
 						&& this.props.plaidTo === this.context.globalState.settings.data.state.currentPlaid))
-					|| (this.props.scope === 'public' && this.props.plaid !== this.context.globalState.settings.data.state.publicPlaid
+					|| (this.props.scope === 'public'
+						&& this.context?.globalState.settings.data.config?.Frontend?.Mode === 2
+						&& this.props.plaid !== this.context.globalState.settings.data.state.publicPlaid
 						&& this.props.plaid !== this.context.globalState.settings.data.state.currentPlaid
 						&& (!this.props.kara?.public_plc_id || !this.props.kara?.public_plc_id[0])) ?
 					<button
