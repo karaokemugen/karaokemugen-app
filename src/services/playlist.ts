@@ -506,6 +506,27 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 		const PLCsInserted = await addKaraToPL(karaList);
 
 		updatePlaylistLastEditTime(plaid);
+
+		// Auto-balance current playlist if user isn't in first pool
+		if (conf.Karaoke.AutoBalance) {
+			let playlist = await getPlaylistContentsMini(plaid);
+			const playingPos = getPlayingPos(playlist);
+			if (playingPos) {
+				playlist = playlist.filter(plc => plc.pos > playingPos.plc_id_pos);
+			}
+
+			let checker = new Set<string>();
+			for (const content of playlist) {
+				if (checker.has(content.username)) {
+					await shufflePlaylist(plaid, 'balance');
+					break;
+				} else if (content.username == user.login) {
+					break;
+				}
+				checker.add(content.username);
+			}
+		}
+
 		// Checking if a flag_playing is present inside the playlist.
 		// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
 		if (!plContents.find((plc: PLC) => plc.flag_playing)) {
