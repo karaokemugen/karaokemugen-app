@@ -345,7 +345,7 @@ export function focusWindow() {
 	}
 }
 
-export function closeAllWindows() {	
+export function closeAllWindows() {
 	// Hide main window since destroying it would force-kill the app.
 	win?.hide();
 	chibiPlayerWindow?.destroy();
@@ -385,7 +385,9 @@ export async function updateChibiPlayerWindow(show: boolean) {
 				}
 			}});
 		});
-		await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
+		// Apparently it can be destroyed even though we just created it, perhaps if KM gets killed early during startup, who knows.
+		// Sometimes I wonder what our users are doing.
+		if (chibiPlayerWindow) await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
 	} else {
 		chibiPlayerWindow?.destroy();
 	}
