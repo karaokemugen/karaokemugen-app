@@ -90,30 +90,42 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 	};
 
 	makeFavorite = () => {
-		commandBackend('addFavorites', {
-			kids: this.props.checkedKaras.map(a => a.kid)
-		});
-		this.setState({ effect_favorite: true });
-		setTimeout(this.props.closeKaraMenu, 350);
+		try {
+			commandBackend('addFavorites', {
+				kids: this.props.checkedKaras.map(a => a.kid)
+			});
+			this.setState({ effect_favorite: true });
+			setTimeout(this.props.closeKaraMenu, 350);
+		} catch (e) {
+			//already display
+		}
 	}
 
 	addToBlacklist = () => {
-		commandBackend('createBLC', {
-			blcs: this.props.checkedKaras.map(a => {
-				return { type: 1001, value: a.kid };
-			}),
-			set_id: this.props.context.globalState.frontendContext.currentBlSet
-		});
-		this.setState({ effect_blacklist: true });
-		setTimeout(this.props.closeKaraMenu, 350);
+		try {
+			commandBackend('createBLC', {
+				blcs: this.props.checkedKaras.map(a => {
+					return { type: 1001, value: a.kid };
+				}),
+				set_id: this.props.context.globalState.frontendContext.currentBlSet
+			});
+			this.setState({ effect_blacklist: true });
+			setTimeout(this.props.closeKaraMenu, 350);
+		} catch (e) {
+			//already display
+		}
 	}
 
 	addToWhitelist = () => {
-		commandBackend('addKaraToWhitelist', {
-			kids: this.props.checkedKaras.map(a => a.kid)
-		});
-		this.setState({ effect_whitelist: true });
-		setTimeout(this.props.closeKaraMenu, 350);
+		try {
+			commandBackend('addKaraToWhitelist', {
+				kids: this.props.checkedKaras.map(a => a.kid)
+			});
+			this.setState({ effect_whitelist: true });
+			setTimeout(this.props.closeKaraMenu, 350);
+		} catch (e) {
+			//already display
+		}
 	}
 
 	handleClick = (e: MouseEvent) => {

@@ -160,7 +160,14 @@ class AdminPage extends Component<IProps, IState> {
 
 	getPlaylistList = async () => {
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
-		const kmStats = await commandBackend('getStats');
+		let kmStats;
+		try {
+			kmStats = await commandBackend('getStats');
+		} catch (e) {
+			kmStats = {
+				karas: 0
+			};
+		}
 		playlistList.push({
 			plaid: '4398bed2-e272-47f5-9dd9-db7240e8557e',
 			name: i18next.t('PLAYLISTS.BLACKLIST')
