@@ -154,9 +154,13 @@ class Login extends Component<IProps, IState> {
 					return;
 				}
 			}
-			await commandBackend('createUser', data);
-			this.setState({ redBorders: '' });
-			this.login(username, password, this.state.securityCode);
+			try {
+				await commandBackend('createUser', data);
+				this.setState({ redBorders: '' });
+				this.login(username, password, this.state.securityCode);
+			} catch (e) {
+				// already display
+			}
 		}
 	};
 

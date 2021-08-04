@@ -372,9 +372,13 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	loadBLSet = async (idBLSet?: number) => {
-		const bLSetList = await commandBackend('getBLCSets');
-		const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
-		this.setState({ bLSetList: bLSetList, bLSet: bLSet }, () => setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id));
+		try {
+			const bLSetList = await commandBackend('getBLCSets');
+			const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
+			this.setState({ bLSetList: bLSetList, bLSet: bLSet }, () => setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id));
+		} catch (e) {
+			// already display
+		}
 	}
 
 	changeIdPlaylist = async (plaid: string, idBLSet?: number) => {
@@ -730,7 +734,7 @@ class Playlist extends Component<IProps, IState> {
 		} else if (this.props.plaidTo === nonStandardPlaylists.favorites) {
 			url = 'addFavorites';
 			data = {
-				kids: stateData.content.filter(a => a.checked).map(a => a.kid)
+				kids: idsKara
 			};
 		}
 		try {
