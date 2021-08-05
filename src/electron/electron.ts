@@ -59,7 +59,7 @@ export function startElectron() {
 		on('KMReady', async () => {
 			const state = getState();
 			if (!state.opt.cli) {
-				win.loadURL(await welcomeToYoukousoKaraokeMugen());
+				win?.loadURL(await welcomeToYoukousoKaraokeMugen());
 				if (!state.forceDisableAppUpdate) initAutoUpdate();
 				if (getConfig().GUI.ChibiPlayer.Enabled) {
 					updateChibiPlayerWindow(true);
