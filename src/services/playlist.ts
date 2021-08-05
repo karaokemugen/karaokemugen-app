@@ -515,12 +515,12 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 				playlist = playlist.filter(plc => plc.pos > playingPos.plc_id_pos);
 			}
 
-			let checker = new Set<string>();
+			const checker = new Set<string>();
 			for (const content of playlist) {
 				if (checker.has(content.username)) {
 					await shufflePlaylist(plaid, 'balance');
 					break;
-				} else if (content.username == user.login) {
+				} else if (content.username === user.login) {
 					break;
 				}
 				checker.add(content.username);
