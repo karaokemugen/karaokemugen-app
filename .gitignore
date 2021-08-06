@@ -1,7 +1,7 @@
 .DS_Store
 .idea/
 .npmrc
-.vscode
+.vscode/settings.json
 .vs
 node_modules
 app/
