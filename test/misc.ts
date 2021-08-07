@@ -73,8 +73,8 @@ describe('Main', () => {
 	it('Put interface in restricted mode and test an API', async () => {
 		await commandBackend(token, 'updateSettings', { setting: { Frontend: { Mode: 1 }}});
 		const publicToken = await getToken();
-		const data = await commandBackend(publicToken, 'getDownloadQueueStatus', undefined, true);
-		expect(data === 'stopped');
+		const data = await commandBackend(publicToken, 'getDownloads', undefined, true);
+		expect(data.code === 503);
 	});
 	it('Put interface in closed mode and test an API', async () => {
 		await commandBackend(token, 'updateSettings', { setting: { Frontend: { Mode: 0 }}});
