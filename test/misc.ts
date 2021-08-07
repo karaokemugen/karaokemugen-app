@@ -74,7 +74,7 @@ describe('Main', () => {
 		await commandBackend(token, 'updateSettings', { setting: { Frontend: { Mode: 1 }}});
 		const publicToken = await getToken();
 		const data = await commandBackend(publicToken, 'getDownloadQueueStatus', undefined, true);
-		expect(data.code === 503);
+		expect(data === 'stopped');
 	});
 	it('Put interface in closed mode and test an API', async () => {
 		await commandBackend(token, 'updateSettings', { setting: { Frontend: { Mode: 0 }}});
