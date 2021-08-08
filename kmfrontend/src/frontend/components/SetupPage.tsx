@@ -205,7 +205,7 @@ class SetupPage extends Component<IProps, IState> {
 		if (this.state.repositoryFolder
 			&& this.context?.globalState.settings.data.config?.System.Repositories.length > 0
 			&& this.context?.globalState.settings.data.config?.System.Repositories[0].Name) {
-			const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].BaseDir;
+			const repository = this.context?.globalState.settings.data.config?.System.Repositories[0].Path.Medias[0];
 			const path = `${this.getPathForFileSystem(repository)}${this.context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
 			if (this.state.repositoryFolder !== path) {
 				try {
