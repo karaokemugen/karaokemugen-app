@@ -167,6 +167,8 @@ pkg_win:
     - build-react
     - test
   script:
+    - ls -la ~/.cache
+    - rm -Rf ~/.cache
     - rm -Rf release_win
     - yarn add --dev electron-builder
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
