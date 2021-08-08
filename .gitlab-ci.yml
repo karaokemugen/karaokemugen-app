@@ -167,9 +167,6 @@ pkg_win:
     - build-react
     - test
   script:
-    - apt-get -y install xvfb
-    - export DISPLAY=':99.0'
-    - Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
     - rm -Rf release_win
     - yarn add --dev electron-builder
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
