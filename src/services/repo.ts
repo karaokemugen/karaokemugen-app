@@ -477,7 +477,7 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 		logger.info(`Moving ${repoName} medias repository to ${newPath}...`, {service: 'Repo'});
 		const moveTasks = [];
 		for (const dir of repo.Path.Medias) {
-			if (resolve(state.dataPath, dir) === resolve(newPath, 'medias/')) return;
+			if (resolve(state.dataPath, dir) === resolve(newPath, 'medias')) return;
 			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/')));
 		}
 		await Promise.all(moveTasks);
