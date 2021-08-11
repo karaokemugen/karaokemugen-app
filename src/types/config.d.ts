@@ -126,7 +126,8 @@ export interface Config {
 		ProgressBarDock?: boolean,
 		ExtraCommandLine?: string,
 		Borders?: boolean,
-		HardwareDecoding?: MpvHardwareDecodingOptions
+		HardwareDecoding?: MpvHardwareDecodingOptions,
+		KeyboardMediaShortcuts?: boolean,
 		Volume?: number
 	},
 	Playlist: {

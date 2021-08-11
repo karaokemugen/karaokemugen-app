@@ -137,6 +137,7 @@ export const defaults: Config = {
 		},
 		ProgressBarDock: true,
 		HardwareDecoding: 'auto-safe',
+		KeyboardMediaShortcuts: true,
 		Volume: 100
 	},
 	Playlist: {
