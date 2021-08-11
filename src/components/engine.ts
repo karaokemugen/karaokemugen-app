@@ -159,7 +159,7 @@ export async function initEngine() {
 			sentry.error(err, 'Warning');
 		}
 		try {
-			registerShortcuts();
+			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
 			initStep(i18n.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [
 				initBlacklistSystem(),

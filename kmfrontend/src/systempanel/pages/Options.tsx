@@ -10,6 +10,7 @@ const propertiesToDisplay = [
 	'Online.ErrorTracking',
 	'Player.HardwareDecoding',
 	'Player.ProgressBarDock',
+	'Player.KeyboardMediaShortcuts',
 	'Online.Updates.Medias.Jingles',
 	'Online.Updates.Medias.Sponsors',
 	'Online.Updates.Medias.Intros',
