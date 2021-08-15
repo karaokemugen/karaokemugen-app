@@ -148,7 +148,7 @@ export async function updateAllMedias() {
 }
 
 export async function updateMedias(repo: string): Promise<boolean> {
-	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
+	if (updateRunning) throw {code: 409, msg: 'An update is already running, please wait for it to finish.'};
 	updateRunning = true;
 	const task = new Task({
 		text: 'UPDATING_MEDIAS',
