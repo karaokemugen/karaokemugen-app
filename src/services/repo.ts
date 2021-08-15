@@ -293,7 +293,13 @@ async function getLocalRepoLastCommit(repo: Repository): Promise<string|null> {
 async function newZipRepo(repo: Repository): Promise<string> {
 	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo.Name);
 	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
-	if (repo.AutoMediaDownloads === 'all') updateMedias(repo.Name);
+	if (repo.AutoMediaDownloads === 'all') updateMedias(repo.Name).catch(e => {
+		if (e?.code === 409) {
+			// Do nothing. It's okay.
+		} else {
+			throw e;
+		}
+	});
 	return LatestCommit;
 }
 
