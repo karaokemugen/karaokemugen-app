@@ -317,23 +317,25 @@ export async function consolidateTagsInRepo(kara: Kara) {
 	profile('consolidateTagsInRepo');
 	const copies = [];
 	for (const tagType of Object.keys(tagTypes)) {
-		for (const karaTag of kara[tagType]) {
-			const tag = await getTagMini(karaTag.tid);
-			if (!tag) continue;
-			if (tag.repository !== kara.repository) {
-				// This might need to be copied
-				tag.repository = kara.repository;
-				const tagObj: Tag = {
-					...tag,
-					modified_at: tag.modified_at.toISOString()
-				};
-				const destPath = resolvedPathRepos('Tags', tag.repository);
-				const tagFile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
-				try {
-					await resolveFileInDirs(tagFile, destPath);
-				} catch {
-					// File doe snot exist, let's write it.
-					copies.push(writeTagFile(tagObj, destPath[0]));
+		if (kara[tagType]) {
+			for (const karaTag of kara[tagType]) {
+				const tag = await getTagMini(karaTag.tid);
+				if (!tag) continue;
+				if (tag.repository !== kara.repository) {
+					// This might need to be copied
+					tag.repository = kara.repository;
+					const tagObj: Tag = {
+						...tag,
+						modified_at: tag.modified_at.toISOString()
+					};
+					const destPath = resolvedPathRepos('Tags', tag.repository);
+					const tagFile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
+					try {
+						await resolveFileInDirs(tagFile, destPath);
+					} catch {
+						// File doe snot exist, let's write it.
+						copies.push(writeTagFile(tagObj, destPath[0]));
+					}
 				}
 			}
 		}

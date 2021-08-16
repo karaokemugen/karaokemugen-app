@@ -128,7 +128,7 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 					<Input disabled={this.props.user.login && this.props.user.login.includes('@')} />
 				</Form.Item>
 				<Form.Item>
-					<Button type='primary' htmlType='submit' className='login-form-button'>{i18next.t('SUBMIT')}</Button>
+					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 			</Form>
 		);

@@ -8,7 +8,7 @@ import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { getLanguagesInLocaleFromCode, getListLanguagesInLocale } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
-import EditableTagGroup from '../../components/EditableTagGroup';
+import EditableTagGroupAlias from '../../components/EditableTagGroupAlias';
 
 interface TagsFormProps {
 	tags: Array<DBTag>,
@@ -137,7 +137,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			aliases: this.props.tag?.aliases,
 			problematic: this.props.tag?.problematic,
 			noLiveDownload: this.props.tag?.noLiveDownload,
-			priority: this.props.tag?.priority ? this.props.tag?.priority : 10
+			priority: this.props.tag?.priority ? this.props.tag?.priority : 10,
+			karaFileTag: this.props.tag?.karaFileTag,
 		};
 		for (const lang of this.state.i18n) {
 			initialValues['lang_' + lang] = this.props.tag?.i18n[lang];
@@ -181,6 +182,21 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				>
 					<Input style={{ maxWidth: '40%', minWidth: '150px' }}
 						placeholder={i18next.t('TAGS.SHORT_NAME')}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>{i18next.t('TAGS.KARAFILETAG')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.KARAFILETAG_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ flex: '0 1 300px' }}
+					name="karafileTag"
+				>
+					<Input style={{ maxWidth: '40%', minWidth: '150px' }}
+						placeholder={i18next.t('TAGS.KARAFILETAG')}
 					/>
 				</Form.Item>
 				<Form.Item
@@ -235,8 +251,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					labelCol={{ flex: '0 1 300px' }}
 					name="aliases"
 				>
-					<EditableTagGroup
-						search={'aliases'}
+					<EditableTagGroupAlias
 						onChange={(tags) => this.formRef.current?.setFieldsValue({ aliases: tags })}
 					/>
 				</Form.Item>

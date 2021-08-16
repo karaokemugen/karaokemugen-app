@@ -265,6 +265,7 @@ async function checkPaths(config: Config) {
 			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
 			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
 			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
+			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
 			for (const paths of Object.keys(repo.Path)) {
 				repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
 			}

@@ -84,6 +84,7 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   ak.mediasize AS mediasize,
   ak.download_status AS download_status,
   ak.comment AS comment,
+  ak.ignore_hooks AS ignoreHooks,
   COUNT(p.*)::integer AS played,
   ${selectRequested}
   (CASE WHEN :dejavu_time < MAX(p.played_at)
@@ -113,7 +114,7 @@ ${additionalFrom.join('')}
 WHERE true
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.title, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status ${groupClauseEnd}
+GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.title, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks ${groupClauseEnd}
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.title
 ${limitClause}
@@ -178,7 +179,8 @@ UPDATE kara SET
 	loudnorm = :loudnorm,
 	modified_at = :modified_at,
 	karafile = :karafile,
-	comment = :comment
+	comment = :comment,
+	ignore_hooks = :ignoreHooks
 WHERE pk_kid = :kid
 `;
 
@@ -199,7 +201,8 @@ INSERT INTO kara(
 	repository,
 	mediasize,
 	download_status,
-	comment
+	comment,
+	ignore_hooks
 )
 VALUES(
 	:title,
@@ -217,7 +220,8 @@ VALUES(
 	:repository,
 	:mediasize,
 	:download_status,
-	:comment
+	:comment,
+	:ignoreHooks
 );
 `;
 
