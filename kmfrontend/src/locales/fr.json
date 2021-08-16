@@ -736,6 +736,10 @@
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
 		"COMMENT": "Un commentaire?",
 		"COMMENT_TOOLTIP": "Un champ pour un commentaire comme \"Spéciale dédicace à ma maman\" ou \"Ne pas toucher aux effets!\" ou \"Fait avec trop de café\".",
+		"IGNOREHOOKS": "Ignorer les tags automatiques",
+		"IGNOREHOOKS_TOOLTIP": "Certains tags pourront être ajoutés automatiquement à ce karaoké s'il remplit certaines conditions.",
+		"PREVIEW_HOOKS": "Prévisualiser les tags ajoutés automatiquement",
+		"PREVIEW_HOOKS_MODAL": "Ces tags vont être ajoutés automatiquement",
 		"FAMILIES": "Famille(s)",
 		"PLATFORMS": "Plateforme(s)",
 		"GENRES": "Thème(s)",
@@ -872,6 +876,8 @@
 		"NAME_TOOLTIP": "Ceci est le nom interne utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
 		"SHORT_NAME": "Nom court",
 		"SHORT_NAME_TOOLTIP": "Ceci est le nom court utilisé pour référencer les tags dans la base de données de Karaoke Mugen",
+		"KARAFILETAG": "Etiquette optionelle du fichier karaoké",
+		"KARAFILETAG_TOOLTIP": "Ceci sera ajouté à la section type des noms de fichiers des chansons",
 		"TYPES": "Types du tag",
 		"TYPES_TOOLTIP": "Ceci est le type du tag dans la base de données de Karaoke Mugen",
 		"ALIASES": "Alias",
@@ -1306,7 +1312,8 @@
 		"REPO_DELETE_MEDIA_ERROR": "Erreur lors de la suppression du média",
 		"REPO_GET_FREE_SPACE_ERROR": "Erreur lors de la récupération de l'espace disponible pour le dépôt",
 		"USER_CANNOT_CHANGE_TYPE": "Seulement les administrateurs peuvent changer le type d'un utilisateur",
-		"GUESTS_CANNOT_EDIT": "Les invités ne peuvent pas modifier leur compte"
+		"GUESTS_CANNOT_EDIT": "Les invités ne peuvent pas modifier leur compte",
+		"PREVIEW_HOOKS_ERROR": "Erreur lors de la prévisialisation des hooks"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",

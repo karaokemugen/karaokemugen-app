@@ -1,14 +1,14 @@
 import { QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Divider, Form, Input, InputNumber, message, Select, Tooltip, Upload } from 'antd';
+import { Button, Checkbox, Divider, Form, Input, InputNumber, message, Modal, Select, Tooltip, Upload } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
-import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { Kara } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { getTagTypeName } from '../../../utils/tagTypes';
 import EditableTagGroup from '../../components/EditableTagGroup';
 
 interface KaraFormProps {
@@ -21,20 +21,6 @@ interface KaraFormState {
 	serieSingersRequired: boolean;
 	subfile: any[];
 	mediafile: any[];
-	singers: DBTag[];
-	authors: DBTag[];
-	misc: DBTag[];
-	series: DBTag[];
-	creators: DBTag[];
-	songwriters: DBTag[];
-	groups: DBTag[];
-	songtypes: DBTag[];
-	langs: DBTag[];
-	families?: DBTag[];
-	genres?: DBTag[];
-	platforms?: DBTag[];
-	origins?: DBTag[];
-	versions?: DBTag[];
 	created_at?: Date;
 	modified_at?: Date;
 	repositoriesValue: string[];
@@ -73,20 +59,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					}
 				]
 				: [],
-			singers: this.getTagArray(kara?.singers),
-			authors: this.getTagArray(kara?.authors),
-			misc: this.getTagArray(kara?.misc),
-			series: this.getTagArray(kara?.series),
-			creators: this.getTagArray(kara?.creators),
-			songwriters: this.getTagArray(kara?.songwriters),
-			groups: this.getTagArray(kara?.groups),
-			songtypes: this.getTagArray(kara?.songtypes),
-			langs: this.getTagArray(kara?.langs),
-			families: this.getTagArray(kara?.families),
-			platforms: this.getTagArray(kara?.platforms),
-			genres: this.getTagArray(kara?.genres),
-			origins: this.getTagArray(kara?.origins),
-			versions: this.getTagArray(kara?.versions),
 			created_at: kara?.created_at ? kara.created_at : new Date(),
 			modified_at: kara?.modified_at ? kara.modified_at : new Date(),
 			repositoriesValue: null,
@@ -99,34 +71,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	componentDidMount() {
 		this.formRef.current.validateFields();
-		this.onChangeSingersSeries(this.state.series, 'singers');
-		this.onChangeSingersSeries(this.state.singers, 'series');
-	}
-
-	getTagArray(value) {
-		if (value) {
-			return value.map(element => {
-				return [element.tid, getTagInLocale(element), element.name];
-			});
-		} else {
-			return [];
-		}
-	}
-
-	getTagObject(value) {
-		if (value) {
-			return value.map(element => {
-				if (element.length === 3) {
-					return { tid: element[0], name: element[2] };
-				} else if (element.length === 2) {
-					return { tid: element[0], name: element[1] };
-				} else {
-					return null;
-				}
-			});
-		} else {
-			return [];
-		}
 	}
 
 	getRepositories = async () => {
@@ -139,27 +83,28 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		);
 	};
 
+	previewHooks = async () => {
+		const kara: Kara = this.formRef.current.getFieldsValue();
+		kara.karafile = this.props.kara?.karafile;
+		kara.kid = this.props.kara?.kid;
+		kara.mediafile_orig = this.state.mediafile_orig;
+		kara.subfile_orig = this.state.subfile_orig;
+		const data = await commandBackend('previewHooks', kara);
+		console.log(data);
+		Modal.info({
+			title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
+			content: <ul>{data?.map(tag => <li key={tag.tid} title={tag.tagfile}>
+				{getTagInLocale(tag)} ({i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}`)})
+			</li>)}</ul>
+		});
+	}
+
 	handleSubmit = (values) => {
 		const kara: Kara = values;
 		kara.karafile = this.props.kara?.karafile;
 		kara.kid = this.props.kara?.kid;
 		kara.mediafile_orig = this.state.mediafile_orig;
 		kara.subfile_orig = this.state.subfile_orig;
-		kara.series = this.getTagObject(kara.series);
-		kara.singers = this.getTagObject(kara.singers);
-		kara.authors = this.getTagObject(kara.authors);
-		kara.misc = this.getTagObject(kara.misc);
-		kara.creators = this.getTagObject(kara.creators);
-		kara.songwriters = this.getTagObject(kara.songwriters);
-		kara.groups = this.getTagObject(kara.groups);
-		kara.langs = this.getTagObject(kara.langs);
-		kara.families = this.getTagObject(kara.families);
-		kara.platforms = this.getTagObject(kara.platforms);
-		kara.genres = this.getTagObject(kara.genres);
-		kara.origins = this.getTagObject(kara.origins);
-		kara.songtypes = this.getTagObject(kara.songtypes);
-		kara.versions = this.getTagObject(kara.versions);
-
 		this.props.save(kara);
 	};
 
@@ -224,8 +169,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		}
 	};
 
-	onChangeSingersSeries = (tags, type) => {
-		this.setState({ serieSingersRequired: (!tags || tags.length === 0) && this.formRef.current.getFieldValue(type).length === 0 }, () => {
+	onChangeSingersSeries = () => {
+		this.setState({
+			serieSingersRequired: this.formRef.current.getFieldValue('singers').length === 0
+				&& this.formRef.current.getFieldValue('series').length === 0
+		}, () => {
 			this.formRef.current.validateFields(['series']);
 			this.formRef.current.validateFields(['singers']);
 		});
@@ -239,15 +187,16 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		return (
 			<Form ref={this.formRef} onFinish={this.handleSubmit} className="kara-form"
 				initialValues={{
-					title: this.props.kara?.title, series: this.state.series,
-					songtypes: this.state.songtypes, songorder: this.props.kara?.songorder,
-					langs: this.state.langs, year: this.props.kara?.year || 2010,
-					singers: this.state.singers, songwriters: this.state.songwriters,
-					creators: this.state.creators, authors: this.state.authors,
-					families: this.state.families, platforms: this.state.platforms,
-					genres: this.state.genres, origins: this.state.origins,
-					misc: this.state.misc, groups: this.state.groups, versions: this.state.versions,
+					title: this.props.kara?.title, series: this.props.kara?.series,
+					songtypes: this.props.kara?.songtypes, songorder: this.props.kara?.songorder,
+					langs: this.props.kara?.langs, year: this.props.kara?.year || 2010,
+					singers: this.props.kara?.singers, songwriters: this.props.kara?.songwriters,
+					creators: this.props.kara?.creators, authors: this.props.kara?.authors,
+					families: this.props.kara?.families, platforms: this.props.kara?.platforms,
+					genres: this.props.kara?.genres, origins: this.props.kara?.origins,
+					misc: this.props.kara?.misc, groups: this.props.kara?.groups, versions: this.props.kara?.versions,
 					comment: this.props.kara?.comment ? this.props.kara.comment : null,
+					ignoreHooks: this.props.kara?.ignoreHooks ? this.props.kara.ignoreHooks : false,
 					repository: this.props.kara?.repository ? this.props.kara.repository : null,
 					created_at: this.state.created_at, modified_at: this.state.modified_at,
 					mediafile: this.props.kara?.mediafile, subfile: this.props.kara?.subfile
@@ -352,7 +301,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableTagGroup
 						tagType={14}
 						checkboxes={true}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ versions: tags })}
 					/>
 				</Form.Item>
@@ -374,10 +322,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<EditableTagGroup
 						tagType={1}
-						search={'tag'}
 						onChange={tags => {
 							this.formRef.current.setFieldsValue({ series: tags });
-							this.onChangeSingersSeries(tags, 'singers');
+							this.onChangeSingersSeries();
 						}
 						}
 					/>
@@ -395,7 +342,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableTagGroup
 						tagType={3}
 						checkboxes={true}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ songtypes: tags })}
 					/>
 				</Form.Item>
@@ -430,7 +376,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<EditableTagGroup
 						tagType={5}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ langs: tags })}
 					/>
 				</Form.Item>
@@ -465,10 +410,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<EditableTagGroup
 						tagType={2}
-						search={'tag'}
 						onChange={(tags) => {
 							this.formRef.current.setFieldsValue({ singer: tags });
-							this.onChangeSingersSeries(tags, 'series');
+							this.onChangeSingersSeries();
 						}
 						}
 					/>
@@ -487,7 +431,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<EditableTagGroup
 						tagType={8}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ songwriters: tags })}
 					/>
 				</Form.Item>
@@ -505,7 +448,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<EditableTagGroup
 						tagType={4}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ creators: tags })}
 					/>
 				</Form.Item>
@@ -527,7 +469,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<EditableTagGroup
 						tagType={6}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ author: tags })}
 					/>
 				</Form.Item>
@@ -540,7 +481,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableTagGroup
 						tagType={10}
 						checkboxes={true}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ families: tags })}
 					/>
 				</Form.Item>
@@ -553,7 +493,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableTagGroup
 						tagType={13}
 						checkboxes={true}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ platforms: tags })}
 					/>
 				</Form.Item>
@@ -566,7 +505,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableTagGroup
 						tagType={12}
 						checkboxes={true}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ genres: tags })}
 					/>
 				</Form.Item>
@@ -579,7 +517,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableTagGroup
 						tagType={11}
 						checkboxes={true}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ origins: tags })}
 					/>
 				</Form.Item>
@@ -592,7 +529,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableTagGroup
 						tagType={7}
 						checkboxes={true}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ misc: tags })}
 					/>
 				</Form.Item>
@@ -611,7 +547,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<EditableTagGroup
 						tagType={9}
 						checkboxes={true}
-						search={'tag'}
 						onChange={(tags) => this.formRef.current.setFieldsValue({ groups: tags })}
 					/>
 				</Form.Item>
@@ -656,6 +591,24 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
+					label={
+						<span>{i18next.t('KARA.IGNOREHOOKS')}&nbsp;
+							<Tooltip title={i18next.t('KARA.IGNOREHOOKS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					valuePropName="checked"
+					labelCol={{ flex: '0 1 210px' }}
+					wrapperCol={{ span: 8 }}
+					rules={[{
+						required: false
+					}]}
+					name="ignoreHooks"
+				>
+					<Checkbox />
+				</Form.Item>
+				<Form.Item
 					label={i18next.t('KARA.CREATED_AT')}
 					labelCol={{ flex: '0 1 200px' }}
 					wrapperCol={{ span: 8 }}
@@ -671,10 +624,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				>
 					<label>{this.props.kara?.modified_at ? new Date(this.props.kara.modified_at).toLocaleString() : null}</label>
 				</Form.Item>
-				<Form.Item
-					wrapperCol={{ span: 8, offset: 5 }}
-				>
-					<Button type='primary' htmlType='submit' className='login-form-button'>{i18next.t('SUBMIT')}</Button>
+				<Form.Item>
+					<Button style={{ marginLeft: '14em', marginRight: '9em' }} onClick={this.previewHooks}>
+						{i18next.t('KARA.PREVIEW_HOOKS')}
+					</Button>
+					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 				<Divider />
 				{this.state.repositoriesValue && this.props.kara?.repository ?

@@ -12,7 +12,8 @@ SELECT pk_tid AS tid,
 	modified_at,
 	problematic,
 	nolivedownload AS "noLiveDownload",
-	priority
+	priority,
+	karafile_tag
 FROM tag
 WHERE pk_tid = $1
 `;
@@ -30,6 +31,7 @@ SELECT t.pk_tid AS tid,
 	t.problematic,
 	t.nolivedownload AS "noLiveDownload",
 	t.priority,
+	t.karafile_tag,
 	at.karacount
 FROM tag t
 LEFT JOIN all_tags at ON at.pk_tid = $1
@@ -37,7 +39,7 @@ WHERE t.pk_tid = $1
 `;
 
 export const sqlselectDuplicateTags = `
-SELECT pk_tid AS tid, name, types, short, aliases, i18n, modified_at, tagfile, repository, problematic, nolivedownload AS "noLiveDownload", priority FROM tag ou
+SELECT pk_tid AS tid, name, types, short, aliases, i18n, modified_at, tagfile, repository, problematic, nolivedownload, karafile_tag AS "noLiveDownload", priority FROM tag ou
 WHERE name in (select name FROM tag GROUP BY name HAVING COUNT(name) > 1)
 `;
 
@@ -65,6 +67,7 @@ SELECT t.pk_tid AS tid,
 	t.problematic,
 	t.nolivedownload AS "noLiveDownload",
 	t.priority,
+	t.karafile_tag,
 	count(t.pk_tid) OVER()::integer AS count
 FROM tag t
 LEFT JOIN all_tags at ON at.pk_tid = t.pk_tid
@@ -93,7 +96,8 @@ INSERT INTO tag(
 	modified_at,
 	problematic,
 	nolivedownload,
-	priority
+	priority,
+	karafile_tag
 )
 VALUES(
 	$1,
@@ -107,7 +111,8 @@ VALUES(
 	$9,
 	$10,
 	$11,
-	$12
+	$12,
+	$13
 )
 ON CONFLICT (pk_tid) DO UPDATE SET
 	types = $3,
@@ -120,7 +125,8 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 	modified_at = $9,
 	problematic = $10,
 	nolivedownload = $11,
-	priority = $12
+	priority = $12,
+	karafile_tag = $13
 `;
 
 export const sqlupdateKaraTagsTID = `
@@ -165,7 +171,8 @@ SET
 	modified_at = $9,
 	problematic = $10,
 	nolivedownload = $11,
-	priority = $12
+	priority = $12,
+	karafile_tag = $13
 WHERE pk_tid = $7;
 `;
 

@@ -736,6 +736,10 @@
 		"KARA_AUTHORS_TOOLTIP": "You should add yourself here ;)",
 		"COMMENT": "Any comments?",
 		"COMMENT_TOOLTIP": "A commentary field for things like \"To all my fans!\" or \"Don't modify the effects!\" or \"Made with lots of coffee\".",
+		"IGNOREHOOKS": "Ignore automatic tags",
+		"IGNOREHOOKS_TOOLTIP": "Some tags can be added automatically to this song if it meets some conditions.",
+		"PREVIEW_HOOKS": "Preview tags added automatically",
+		"PREVIEW_HOOKS_MODAL": "These tags will be added automatically",
 		"FAMILIES": "Familie(s)",
 		"PLATFORMS": "Platform(s)",
 		"GENRES": "Genre(s)",
@@ -871,6 +875,8 @@
 		"NAME_TOOLTIP": "This is the internal name used to reference the tags in Karaoke Mugen's database",
 		"SHORT_NAME": "Short name",
 		"SHORT_NAME_TOOLTIP": "This is the short name used in the operator interface when displaying karaoke titles",
+		"KARAFILETAG": "Karaoke file name optional tag",
+		"KARAFILETAG_TOOLTIP": "This will be added in the types section of karaoke file names",
 		"TYPES": "Tag types",
 		"TYPES_TOOLTIP": "This is the tag type, so it can be properly searched for by users",
 		"ALIASES": "Aliases",
@@ -1302,7 +1308,8 @@
 		"REPO_DELETE_MEDIA_ERROR": "Error when deleting media",
 		"REPO_GET_FREE_SPACE_ERROR": "Error when getting free space for repository",
 		"USER_CANNOT_CHANGE_TYPE": "Only admins can change a user's type",
-		"GUESTS_CANNOT_EDIT": "Guests are not allowed to edit their profiles"
+		"GUESTS_CANNOT_EDIT": "Guests are not allowed to edit their profiles",
+		"PREVIEW_HOOKS_ERROR": "Error preview hooks"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",

@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 
+import { previewHooks } from '../../lib/services/karaCreation';
 import { APIData } from '../../lib/types/api';
 import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
@@ -39,6 +40,16 @@ export default function karaController(router: SocketIOApp) {
 			return {code: 200, message: APIMessage('KARA_CREATED')};
 		} catch(err) {
 			const code = 'KARA_CREATED_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('previewHooks', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		try {
+			return await previewHooks(req.body);
+		} catch(err) {
+			const code = 'PREVIEW_HOOKS_ERROR';
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
