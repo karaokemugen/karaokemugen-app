@@ -1,4 +1,3 @@
-import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import Postgrator, { Migration } from 'postgrator';
@@ -10,7 +9,6 @@ import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID }
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
-import { asyncReadDirFilter } from '../lib/utils/files';
 import { testCurrentBLCSet } from '../services/blacklist';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
@@ -108,27 +106,12 @@ async function migrateFromDBMigrate() {
 	await db().query('DROP TABLE migrations;');
 }
 
-/** Wipes old JS migrations if any are found from dbMigrate. That can happen for people updating from installs or zips since we're not deleting old migrations in the resources dir. Oversight on our part. */
-async function cleanupOldMigrations(migrationDir: string) {
-	// TODO: Remove this function once 6.0 or 7.0 hits.
-	const files = await asyncReadDirFilter(migrationDir, '.js');
-	const promises = [];
-	for (const file of files) {
-		if (file.substr(0, 8) < '20201120') {
-			// This means this file belongs to the old JS migration files. We delete it.
-			promises.push(fs.unlink(resolve(migrationDir, file)));
-		}
-	}
-	await Promise.all(promises);
-}
-
 async function migrateDB(): Promise<Migration[]> {
 	logger.info('Running migrations if needed', {service: 'DB'});
 	// First check if database still has db-migrate and determine at which we're at.
 	await migrateFromDBMigrate();
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
-	await cleanupOldMigrations(migrationDir);
 	const migrator = new Postgrator({
 		migrationDirectory: migrationDir,
 		host: conf.System.Database.host,
