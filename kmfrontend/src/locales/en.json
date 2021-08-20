@@ -279,6 +279,7 @@
 			"WINDOWBORDERS_TOOLTIP": "Disabling them won't disable them for the monitor, where they're always enabled.",
 			"PLAYER_MONITOR": "Second window (monitor)",
 			"PLAYER_MONITOR_TOOLTIP": "Displays a second window for the operator if he cannot see the main screen directly ",
+			"PLAYER_LANGUAGE": "Messages and player language",
 			"DISPLAY_CONNECTION_INFO_HOST": "Force hostname or IP",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "If your IP address is incorrectly detected by Karaoke Mugen, you can force it here.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Message displayed before URL",
@@ -537,7 +538,8 @@
 			"MISSING_EMAIL": "Warning: without email you will not be able to reset your password!",
 			"LOCATION": "Location",
 			"DANGEROUS_ACTIONS": "Dangerous actions",
-			"FLAG_SENDSTATS": "Use my favorites and karaokes requests for stats"
+			"FLAG_SENDSTATS": "Use my favorites and karaokes requests for stats",
+			"INTERFACE_LANGUAGE": "Interface language"
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Shuffle playlist",

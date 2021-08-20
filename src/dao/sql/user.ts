@@ -32,7 +32,8 @@ SELECT
 	u.fallback_series_lang AS fallback_series_lang,
 	u.flag_tutorial_done AS flag_tutorial_done,
 	u.flag_sendstats AS flag_sendstats,
-	u.location AS location
+	u.location AS location,
+	u.language AS language
 FROM users AS u
 WHERE u.pk_login = :username
 `;
@@ -82,7 +83,8 @@ INSERT INTO users(
 	nickname,
 	last_login_at,
 	flag_tutorial_done,
-	flag_sendstats
+	flag_sendstats,
+	language
 )
 VALUES (
 	:type,
@@ -91,7 +93,8 @@ VALUES (
 	:nickname,
 	:last_login_at,
 	:flag_tutorial_done,
-	:flag_sendstats
+	:flag_sendstats,
+	:language
 );
 `;
 
@@ -115,7 +118,8 @@ UPDATE users SET
 	fallback_series_lang = :fallback_series_lang,
 	flag_tutorial_done = :flag_tutorial_done,
 	location = :location,
-	flag_sendstats = :flag_sendstats
+	flag_sendstats = :flag_sendstats,
+	language = :language
 WHERE pk_login = :old_login
 `;
 

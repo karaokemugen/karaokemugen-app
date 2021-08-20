@@ -13,6 +13,7 @@ import nanamiSearching from '../../assets/nanami-searching.gif';
 import { setAuthentifactionInformation } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 import { isElectron } from '../../utils/electron';
+import { langSupport } from '../../utils/isoLanguages';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 
@@ -120,7 +121,8 @@ class SetupPage extends Component<IProps, IState> {
 			await commandBackend('createUser', {
 				login: username,
 				password: this.state.password,
-				role: 'admin'
+				role: 'admin',
+				language: langSupport
 			});
 			this.setState({ error: undefined });
 			this.login();

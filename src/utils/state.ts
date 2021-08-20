@@ -59,7 +59,7 @@ export function getPlayerState(): PublicPlayerState {
 		currentRequester: state.currentRequester,
 		stopping: state.stopping,
 		streamerPause: state.streamerPause,
-		defaultLocale: state.defaultLocale,
+		defaultLocale: conf.App.Language,
 		songsBeforeJingle: conf.Playlist?.Medias.Jingles.Enabled ? conf.Playlist?.Medias.Jingles.Interval - state.counterToJingle:undefined,
 		songsBeforeSponsor: conf.Playlist?.Medias.Sponsors.Enabled ? conf.Playlist?.Medias.Sponsors.Interval - state.counterToSponsor:undefined
 	};

@@ -20,7 +20,6 @@ import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, {profile} from '../lib/utils/logger';
 import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
 import { getTagNameInLanguage } from './tag';
 
 let popularKaraFetchIntervalID: any;
@@ -145,7 +144,7 @@ export function getSongSeriesSingers(kara: DBKara): string {
 		} else if (mode === 1) { // Based on song language
 			return getTagNameInLanguage(kara.series[0], kara.langs[0].name, 'eng');
 		} else { // All other cases, based on application defaultLocale or English if unavailable
-			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
+			const lang = convert1LangTo2B(getConfig().App.Language) || 'eng';
 			return getTagNameInLanguage(kara.series[0], lang, 'eng');
 		}
 	} else {
@@ -170,7 +169,7 @@ export function getSongVersion(kara: DBKara): string {
 				case 2:
 				case 3:
 				default:
-					const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
+					const lang = convert1LangTo2B(getConfig().App.Language) || 'eng';
 					ret = v.i18n[lang] || v.i18n?.eng || v.name;
 					break;
 			}

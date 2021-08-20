@@ -43,7 +43,8 @@ export function addUser(user: User) {
 		nickname: user.nickname,
 		last_login_at: user.last_login_at,
 		flag_tutorial_done: user.flag_tutorial_done || false,
-		flag_sendstats: user.flag_sendstats || null
+		flag_sendstats: user.flag_sendstats || null,
+		language: user.language,
 	}));
 }
 
@@ -63,7 +64,8 @@ export function editUser(user: User) {
 		fallback_series_lang: user.fallback_series_lang,
 		flag_tutorial_done: user.flag_tutorial_done || false,
 		flag_sendstats: user.flag_sendstats,
-		location: user.location
+		location: user.location,
+		language: user.language
 	}));
 }
 

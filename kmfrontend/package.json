@@ -7,7 +7,6 @@
     "@sentry/react": "^6.11.0",
     "antd": "4.16.12",
     "i18next": "^20.4.0",
-    "i18next-browser-languagedetector": "^6.1.2",
     "iso-countries-languages": "^0.3.0",
     "lodash.debounce": "^4.0.8",
     "lodash.difference": "^4.5.0",

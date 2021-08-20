@@ -3,7 +3,7 @@ import { createReadStream } from 'fs-extra';
 import { resolve } from 'path';
 
 import { Token, User } from '../lib/types/user';
-import { resolvedPathAvatars, resolvedPathTemp } from '../lib/utils/config';
+import { getConfig, resolvedPathAvatars, resolvedPathTemp } from '../lib/utils/config';
 import { writeStreamToFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
@@ -138,6 +138,7 @@ export async function editRemoteUser(user: User, token: string) {
 	if (typeof user.flag_sendstats === 'boolean') form.append('flag_sendstats', user.flag_sendstats.toString());
 	form.append('email', user.email ? user.email : '');
 	form.append('url', user.url ? user.url : '');
+	form.append('language', user.language ? user.language : getConfig().App.Language);
 	if (user.password) form.append('password', user.password);
 	if (user.series_lang_mode) form.append('series_lang_mode', user.series_lang_mode);
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
@@ -233,7 +234,8 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 					flag_sendstats: remoteUser.flag_sendstats,
 					series_lang_mode: remoteUser.series_lang_mode,
 					main_series_lang: remoteUser.main_series_lang,
-					fallback_series_lang: remoteUser.fallback_series_lang
+					fallback_series_lang: remoteUser.fallback_series_lang,
+					language: remoteUser.language
 				},
 				avatar_file,
 				'admin',

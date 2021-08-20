@@ -97,6 +97,7 @@ function testUser(u: User, full?: boolean) {
 		expect(u.bio).to.satisfy((e:any) => typeof e === 'string' || e === null);
 		expect(u.email).to.satisfy((e:any) => typeof e === 'string' || e === null);
 		expect(u.fallback_series_lang).to.satisfy((e:any) => typeof e === 'string' || e === null);
+		expect(u.language).to.satisfy((e:any) => typeof e === 'string' || e === null);
 		if (u.fallback_series_lang) {
 			expect(allLangs).to.include(u.fallback_series_lang);
 		}

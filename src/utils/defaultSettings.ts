@@ -84,7 +84,7 @@ export const defaults: Config = {
 		Autoplay: false,
 		ClassicMode: false,
 		SmartInsert: false,
-		MinutesBeforeEndOfSessionWarning: 15,		
+		MinutesBeforeEndOfSessionWarning: 15,
 		Poll: {
 			Choices: 4,
 			Enabled: false,

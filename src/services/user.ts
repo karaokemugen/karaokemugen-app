@@ -96,6 +96,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
 		if (!user.location) user.location = null;
+		if (!user.language) user.language = getConfig().App.Language;
 		if (!user.nickname) user.nickname = currentUser.nickname;
 		if (!user.series_lang_mode && user.series_lang_mode !== 0) user.series_lang_mode = -1;
 		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw {code: 400};
@@ -202,6 +203,7 @@ export async function findUserByName(username: string, opt = {
 		if (!userdata.url || opt.public) userdata.url = null;
 		if (!userdata.email || opt.public) userdata.email = null;
 		if (!userdata.location || opt.public) userdata.location = null;
+		if (!userdata.language || opt.public) userdata.language = null;
 		if (opt.public) userdata.password = null;
 		return userdata;
 	}
@@ -262,7 +264,7 @@ export async function createUser(user: User, opts: UserOpts = {
 	user.last_login_at = new Date(0);
 	user.avatar_file = user.avatar_file || 'blank.png';
 	user.flag_online = user.flag_online || false;
-
+	user.language = user.language || getConfig().App.Language;
 	user.bio = user.bio || null;
 	user.url = user.url || null;
 	user.email = user.email || null;
