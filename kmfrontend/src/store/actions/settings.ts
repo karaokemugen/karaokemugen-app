@@ -1,18 +1,20 @@
 import * as Sentry from '@sentry/react';
+import i18next from 'i18next';
 import { Dispatch } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
 import { Config } from '../../../../src/types/config';
 import { Version } from '../../../../src/types/state';
+import { langSupport } from '../../utils/isoLanguages';
 import { commandBackend } from '../../utils/socket';
-import { Settings,SettingsFailure, SettingsSuccess } from '../types/settings';
+import { Settings, SettingsFailure, SettingsSuccess } from '../types/settings';
 
-export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsFailure>, withoutProfile?:boolean): Promise<void> {
+export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsFailure>, withoutProfile?: boolean): Promise<void> {
 	try {
 		const res = await commandBackend('getSettings');
 		if (!withoutProfile) {
-			const user = await commandBackend('getMyAccount');
-
+			const user: User = await commandBackend('getMyAccount');
+			i18next.changeLanguage(user.language ? user.language : langSupport);
 			if (!res.state.sentrytest) setSentry(res.state.environment, res.version, res.config, user);
 			dispatch({
 				type: Settings.SETTINGS_SUCCESS,

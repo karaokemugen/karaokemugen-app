@@ -15,7 +15,7 @@ import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {RecursivePartial} from '../lib/types';
-import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
+import {changeLanguage, configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
 import {asyncRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
@@ -36,6 +36,7 @@ import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
 import {Config} from '../types/config';
 import sentry from '../utils/sentry';
+import { supportedLanguages } from './constants';
 import {configConstraints, defaults} from './defaultSettings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
@@ -79,6 +80,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			destroyRemote();
 		}
 	}
+	// Change language
+	if (newConfig.App.Language !== oldConfig.App.Language) {
+		changeLanguage(newConfig.App.Language);
+	}
 	// Updating quotas
 	if (newConfig.Karaoke.Quota.Type !== oldConfig.Karaoke.Quota.Type ||
 		newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs ||
@@ -91,7 +96,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	}
 	if (!newConfig.Karaoke.ClassicMode) setState({currentRequester: null});
 	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
-	
+
 	// Browse through paths and define if it's relative or absolute
 	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) newConfig.System.Binaries.Player.Windows = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Windows));
 	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) newConfig.System.Binaries.Player.Linux = relativePath(state.appPath, resolve(state.appPath, newConfig.System.Binaries.Player.Linux));
@@ -178,6 +183,16 @@ export async function initConfig(argv: any) {
 		emit('configReady');
 		configureHost();
 		configureIDs();
+		if (!getConfig().App.Language)
+		{
+			// First time, let's find out if our locale is in supported languages. If not, set to english
+			if (!supportedLanguages.includes(getState().defaultLocale)) {
+				setConfig({App: {Language: 'en'}});
+			} else {
+				setConfig({App: {Language: getState().defaultLocale}});
+			}
+		}
+		changeLanguage(getConfig().App.Language);
 		return getConfig();
 	} catch(err) {
 		logger.error('InitConfig failed', {service: 'Launcher', obj: err});

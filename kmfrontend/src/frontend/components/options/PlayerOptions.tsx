@@ -3,6 +3,7 @@ import difference from 'lodash.difference';
 import React, { Component } from 'react';
 
 import GlobalContext from '../../../store/context';
+import { getLanguagesInLangFromCode, languagesSupport } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { dotify } from '../../../utils/tools';
 import Switch from '../generic/Switch';
@@ -258,6 +259,20 @@ class PlayerOptions extends Component<IProps, IState> {
 					</div>
 					<div className="settings-line subCategoryGroupPanel">
 						{i18next.t('SETTINGS.PLAYER.DISPLAY_SETTINGS')}
+					</div>
+					<div className="settings-line">
+						<label htmlFor="App.Language">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.PLAYER_LANGUAGE')}</span>
+						</label>
+						<div>
+							<select
+								id="App.Language"
+								onChange={this.onChange} defaultValue={this.state.config['App.Language']}>
+								{languagesSupport.map(lang => {
+									return <option key={lang} value={lang}>{getLanguagesInLangFromCode(lang)}</option>;
+								})}
+							</select>
+						</div>
 					</div>
 					<div className="settings-line">
 						<label htmlFor="Player.Display.ConnectionInfo.Enabled">

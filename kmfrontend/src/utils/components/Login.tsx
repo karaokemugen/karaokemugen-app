@@ -4,11 +4,13 @@ import i18next from 'i18next';
 import React, { Component, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
+import { User } from '../../../../src/lib/types/user';
 import logo from '../../assets/Logo-fond-transp.png';
 import Switch from '../../frontend/components/generic/Switch';
 import { login, logout } from '../../store/actions/auth';
 import { GlobalContextInterface } from '../../store/context';
 import { isElectron } from '../electron';
+import { langSupport } from '../isoLanguages';
 import { commandBackend } from '../socket';
 import { callModal, displayMessage, lastLocation } from '../tools';
 
@@ -30,6 +32,10 @@ interface IState {
 	passwordConfirmation?: string;
 	securityCode?: number;
 	isAdminPath: boolean;
+}
+
+interface UserApi extends User {
+	role: 'admin' | 'user'
 }
 
 class Login extends Component<IProps, IState> {
@@ -146,8 +152,12 @@ class Login extends Component<IProps, IState> {
 		if (password !== this.state.passwordConfirmation) {
 			this.setState({ redBorders: 'redBorders' });
 		} else {
-			const data: { login: string, password: string, securityCode?: number, role: string }
-				= { login: username, password: password, role: this.state.isAdminPath ? 'admin' : 'user' };
+			const data: UserApi = {
+				login: username,
+				password: password,
+				role: this.state.isAdminPath ? 'admin' : 'user',
+				language: langSupport
+			};
 			if (this.state.isAdminPath && !isElectron()) {
 				if (!this.state.securityCode) {
 					displayMessage('error', i18next.t('SECURITY_CODE_MANDATORY'));

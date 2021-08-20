@@ -6,7 +6,8 @@ export interface Config {
 		JwtSecret?: string,
 		InstanceID?: string,
 		FirstRun?: boolean,
-		QuickStart?: boolean
+		QuickStart?: boolean,
+		Language?: string
 	},
 	Online: {
 		Host?: string,
@@ -32,7 +33,7 @@ export interface Config {
 		FetchPopularSongs?: boolean,
 		AllowDownloads?: boolean
 	},
-	Frontend: {		
+	Frontend: {
 		Mode?: number,
 		SeriesLanguageMode: number,
 		Permissions?: {
@@ -106,7 +107,7 @@ export interface Config {
 				Host?: string,
 				Message?: string
 			}
-		},		
+		},
 		StayOnTop?: boolean,
 		FullScreen?: boolean,
 		Background?: string,

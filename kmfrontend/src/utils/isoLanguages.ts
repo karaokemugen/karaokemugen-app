@@ -5,9 +5,9 @@ import isoCountriesLanguages from 'iso-countries-languages';
 languages.registerLocale(require('@karaokemugen/i18n-iso-languages/langs/fr.json'));
 languages.registerLocale(require('@karaokemugen/i18n-iso-languages/langs/en.json'));
 
-const languagesSupport = ['en', 'fr'];
+export const languagesSupport = ['en', 'fr'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
-const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'eng';
+export const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 
 export function getListLanguagesInLocale(): Array<{ value: string, text: string }> {
 	const result = [];
@@ -20,6 +20,10 @@ export function getListLanguagesInLocale(): Array<{ value: string, text: string 
 
 export function getLanguagesInLocaleFromCode(code: string) {
 	return languages.getName(code, langSupport);
+}
+
+export function getLanguagesInLangFromCode(code: string) {
+	return languages.getName(code, code);
 }
 
 export function getNavigatorLanguageIn3B() {

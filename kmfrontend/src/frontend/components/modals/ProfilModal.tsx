@@ -10,7 +10,7 @@ import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { getListLanguagesInLocale, listCountries } from '../../../utils/isoLanguages';
+import { getLanguagesInLangFromCode, getListLanguagesInLocale, languagesSupport, listCountries } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
@@ -54,7 +54,8 @@ type typesAttrUser =
 	| 'fallback_series_lang'
 	| 'securityCode'
 	| 'passwordConfirmation'
-	| 'location';
+	| 'location'
+	| 'language';
 
 class ProfilModal extends Component<IProps, IState> {
 	static contextType = GlobalContext;
@@ -76,13 +77,10 @@ class ProfilModal extends Component<IProps, IState> {
 		if (this.props.scope !== 'public') document.addEventListener('keyup', this.keyObserverHandler);
 	}
 
-	onKeyPress = (event: any) => {
+	onChange = (event: any) => {
 		const user = this.state.user;
 		user[event.target.name] = event.target.value;
 		this.setState({ user: user });
-		if (event.keyCode === 13) {
-			this.updateUser();
-		}
 	};
 
 	onClickCheckbox = (event: any) => {
@@ -102,7 +100,11 @@ class ProfilModal extends Component<IProps, IState> {
 		const user = this.state.user;
 		user[name] = value;
 		this.setState({ user: user });
-		this.updateUser();
+	}
+
+	changeLanguage = (event:any) => {
+		this.onChange(event);
+		i18next.changeLanguage(event.target.value);
 	}
 
 	updateUser = async () => {
@@ -263,16 +265,16 @@ class ProfilModal extends Component<IProps, IState> {
 								</div>
 								<input className={this.state.nicknameMandatory} name="nickname" id="nickname" type="text"
 									placeholder={i18next.t('PROFILE_USERNAME')} defaultValue={this.state.user.nickname}
-									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
+									onKeyUp={this.onChange} onChange={this.onChange} autoComplete="off" />
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-envelope" />
-									<label htmlFor="nickname">{i18next.t('PROFILE_MAIL')}</label>
+									<label htmlFor="mail">{i18next.t('PROFILE_MAIL')}</label>
 								</div>
 								<input name="email" type="text"
 									placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
-									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="email" />
+									onKeyUp={this.onChange} onChange={this.onChange} autoComplete="email" />
 							</div>
 							{logInfos?.onlineToken && !this.state.user.email ?
 								<div className="profileLine">
@@ -285,20 +287,20 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-link" />
-									<label htmlFor="nickname">{i18next.t('PROFILE_URL')}</label>
+									<label htmlFor="url">{i18next.t('PROFILE_URL')}</label>
 								</div>
 								<input name="url" type="text"
 									placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url}
-									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="url" />
+									onKeyUp={this.onChange} onChange={this.onChange} autoComplete="url" />
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-pen" />
-									<label htmlFor="nickname">{i18next.t('PROFILE_BIO')}</label>
+									<label htmlFor="bio">{i18next.t('PROFILE_BIO')}</label>
 								</div>
 								<input name="bio" type="text"
 									placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
-									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
+									onKeyUp={this.onChange} onChange={this.onChange} autoComplete="off" />
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
@@ -324,22 +326,22 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-lock" />
-									<label htmlFor="nickname">{i18next.t('PROFILE_PASSWORD')}</label>
+									<label htmlFor="password">{i18next.t('PROFILE_PASSWORD')}</label>
 								</div>
 								<div className="dualInput">
 									<input className={this.state.passwordDifferent} name="password" type="password"
 										placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
+										onKeyUp={this.onChange} onChange={this.onChange} autoComplete="new-password" />
 									<input className={this.state.passwordDifferent}
 										name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
 										defaultValue={this.state.user.passwordConfirmation}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
+										onKeyUp={this.onChange} onChange={this.onChange} autoComplete="new-password" />
 								</div>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-star" />
-									<label htmlFor="nickname">{i18next.t('PLAYLISTS.FAVORITES')}</label>
+									<label htmlFor="favorites">{i18next.t('PLAYLISTS.FAVORITES')}</label>
 								</div>
 								<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
 									<i className="fas fa-fw fa-download" /> {i18next.t('FAVORITES_IMPORT')}
@@ -351,8 +353,19 @@ class ProfilModal extends Component<IProps, IState> {
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
+									<i className="fas fa-fw fa-language" />
+									<label htmlFor="language">{i18next.t('MODAL.PROFILE_MODAL.INTERFACE_LANGUAGE')}</label>
+								</div>
+								<select name="language" onChange={this.changeLanguage} defaultValue={this.state.user.language}>
+									{languagesSupport.map(lang => {
+										return <option key={lang} value={lang}>{getLanguagesInLangFromCode(lang)}</option>;
+									})}
+								</select>
+							</div>
+							<div className="profileLine row">
+								<div className="profileLabel">
 									<i className="fas fa-fw fa-globe" />
-									<label htmlFor="nickname">{i18next.t('SERIE_NAME_MODE')}</label>
+									<label htmlFor="series_lang_mode">{i18next.t('SERIE_NAME_MODE')}</label>
 								</div>
 								<select name="series_lang_mode" onChange={this.onClickSelect}
 									defaultValue={this.state.user.series_lang_mode.toString()}>
