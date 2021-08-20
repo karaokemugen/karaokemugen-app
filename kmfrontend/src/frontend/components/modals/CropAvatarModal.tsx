@@ -3,7 +3,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import ReactCrop from 'react-image-crop';
+import ReactCrop, { Crop } from 'react-image-crop';
 
 import { commandBackend, isRemote } from '../../../utils/socket';
 
@@ -15,7 +15,7 @@ interface IProps {
 interface IState {
 	imageRef?: any;
 	imageSource: any;
-	crop: any;
+	crop: Crop;
 
 }
 
@@ -23,10 +23,12 @@ class CropAvatarModal extends Component<IProps, IState> {
 
 	state = {
 		crop: {
-			unit: '%',
+			unit: '%' as const,
 			width: 100,
 			height: undefined,
 			aspect: 1,
+			x: 0,
+			y: 0
 		},
 		imageRef: undefined,
 		imageSource: undefined
