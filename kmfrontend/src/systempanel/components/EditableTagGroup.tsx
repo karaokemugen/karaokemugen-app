@@ -79,14 +79,12 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	};
 
 	search = (val?: any) => {
-		if (val) {
-			if (timer[this.props.tagType]) clearTimeout(timer[this.props.tagType]);
-			timer[this.props.tagType] = setTimeout(() => {
-				this.getTags(val, this.props.tagType).then(tags => {
-					this.setState({ tags: this.sortByProp(tags, 'text') });
-				});
-			}, 1000);
-		}
+		if (timer[this.props.tagType]) clearTimeout(timer[this.props.tagType]);
+		timer[this.props.tagType] = setTimeout(() => {
+			this.getTags(val, this.props.tagType).then(tags => {
+				this.setState({ tags: this.sortByProp(tags, 'text') });
+			});
+		}, 1000);
 	};
 
 	onCheck = (val) => {
@@ -100,14 +98,33 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	};
 
 	sortByProp = (array, val) => {
-		return array.sort((a, b) => {
-			return (a[val] > b[val]) ? 1 : (a[val] < b[val]) ? -1 : 0;
-		});
+		if (Array.isArray(array)) {
+			return array.sort((a, b) => {
+				return (a[val] > b[val]) ? 1 : (a[val] < b[val]) ? -1 : 0;
+			});
+		} else {
+			return [];
+		}
 	}
 
 	onKeyEnter = (e) => {
 		if (e.keyCode === 13)
 			this.handleInputConfirm(this.state.currentVal);
+	}
+
+	getCurrentValue = () => {
+		const tags = this.state.tags.filter(tag => tag.tid === this.state.currentVal);
+		if (tags.length > 0 && tags[0].tid) {
+			return this.getTagLabel(tags[0]);
+		} else {
+			return this.state.currentVal;
+		}
+	}
+
+	getTagLabel = (tag) => {
+		const labelI18n = getTagInLocale(this.context?.globalState.settings.data, tag);
+		return `${labelI18n} ${labelI18n !== tag.name ? `(${tag.name})` : ''}`;
+
 	}
 
 	render() {
@@ -133,8 +150,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 			return (
 				<div>
 					{this.state.value.map((tag) => <Tag style={{ marginBottom: '8px' }} key={tag.tid} closable={true}
-						onClose={() => this.handleClose(tag)}>{
-							`${getTagInLocale(this.context?.globalState.settings.data, tag)} (${tag.name})`}</Tag>)}
+						onClose={() => this.handleClose(tag)}>{this.getTagLabel(tag)}</Tag>)}
 					{this.state.inputVisible && (
 						<Form.Item
 							wrapperCol={{ span: 14 }}
@@ -145,15 +161,11 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 								onChange={val => this.setState({ currentVal: val })}
 								options={this.state.tags.map(tag => {
 									return {
-										value: tag.tid, label: `${getTagInLocale(this.context?.globalState.settings.data, tag)} (${tag.name})`
+										value: tag.tid, label: this.getTagLabel(tag)
 									};
 								})}
 								onInputKeyDown={this.onKeyEnter}
-								value={this.state.tags.filter(tag => tag.tid === this.state.currentVal).length > 0 &&
-									this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0].tid ?
-									`${getTagInLocale(this.context?.globalState.settings.data,
-										this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0])} (${this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0].name})`
-									: this.state.currentVal}
+								value={this.getCurrentValue()}
 							/>
 							<Button
 								style={{ marginTop: '10px' }}
