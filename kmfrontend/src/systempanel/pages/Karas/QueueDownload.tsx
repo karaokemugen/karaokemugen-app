@@ -8,7 +8,7 @@ import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { DBDownload } from '../../../../../src/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
-import { buildKaraTitle, getTagInLocale,getTagInLocaleList } from '../../../utils/kara';
+import { buildKaraTitle, getTagInLocale,getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
@@ -287,9 +287,9 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			}
 		}, {
 			title: i18next.t('KARA.TITLE'),
-			dataIndex: 'title',
-			key: 'title',
-			render: (title) => <span>{title}</span>
+			dataIndex: 'titles',
+			key: 'titles',
+			render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles)
 		}, {
 			title: i18next.t('TAG_TYPES.VERSIONS', { count: 2 }),
 			dataIndex: 'versions',

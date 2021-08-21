@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getTagInLocale,getTagInLocaleList } from '../../../utils/kara';
+import { getTagInLocale,getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
@@ -172,8 +172,9 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		}
 	}, {
 		title: i18next.t('KARA.TITLE'),
-		dataIndex: 'title',
-		key: 'title'
+		dataIndex: 'titles',
+		key: 'titles',
+		render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles)
 	}, {
 		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
 		dataIndex: 'versions',

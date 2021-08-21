@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
-import { getTagInLocale, getTagInLocaleList, sortTagByPriority } from '../../../utils/kara';
+import { getTagInLocale, getTagInLocaleList, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { is_touch_device, isModifiable } from '../../../utils/tools';
@@ -230,8 +230,9 @@ class KaraList extends Component<unknown, KaraListState> {
 		render: (families) => getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.TITLE'),
-		dataIndex: 'title',
-		key: 'title'
+		dataIndex: 'titles',
+		key: 'titles',
+		render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles)
 	}, {
 		title: i18next.t('TAG_TYPES.VERSIONS', { count: 2 }),
 		dataIndex: 'versions',

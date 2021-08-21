@@ -235,15 +235,15 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	columns = [{
 		title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
 		dataIndex: 'lastplayed_at',
-		render: (text, kara) => text ? new Date(text).toLocaleString() : null
+		render: (text) => text ? new Date(text).toLocaleString() : null
 	}, {
 		title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
 		dataIndex: 'lastrequested_at',
-		render: (text, kara) => text ? new Date(text).toLocaleString() : null
+		render: (text) => text ? new Date(text).toLocaleString() : null
 	}, {
 		title: i18next.t('SESSIONS.TITLE'),
 		dataIndex: 'title',
-		render: (text, kara) => buildKaraTitle(this.context.globalState.settings.data, kara, true)
+		render: (text_, kara) => buildKaraTitle(this.context.globalState.settings.data, kara, true)
 	}];
 
 }
