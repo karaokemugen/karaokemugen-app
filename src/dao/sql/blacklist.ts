@@ -110,7 +110,8 @@ UNION
 UNION
 	SELECT k.pk_kid, now() ,'TITLE:' || blc.value, blc.pk_id_blcriteria
 	FROM blacklist_criteria blc
-	INNER JOIN kara k ON unaccent(k.title) LIKE ('%' || blc.value || '%')
+--This is not going to work, but I don't want to handle it properly
+	INNER JOIN kara k ON unaccent(k.titles::text) LIKE ('%' || blc.value || '%')
 	WHERE blc.type = 1004
 	AND   k.pk_kid NOT IN (select fk_kid from whitelist)
 	AND   fk_id_blc_set = $1
@@ -156,7 +157,7 @@ WHERE pk_id_blcriteria = $1
 export const sqlgetBlacklistContents = (filterClauses: string[], limitClause: string, offsetClause: string, additionalFrom: string[]) => `
 SELECT
   ak.pk_kid AS kid,
-  ak.title AS title,
+  ak.titles AS titles,
   ak.songorder AS songorder,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
@@ -187,7 +188,7 @@ SELECT
   ${additionalFrom.join('')}
   WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))
+ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
 ${limitClause}
 ${offsetClause}
 `;

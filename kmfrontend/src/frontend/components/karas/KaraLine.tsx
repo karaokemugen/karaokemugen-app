@@ -13,7 +13,7 @@ import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { buildKaraTitle, getSerieLanguage, getTagInLocale, sortTagByPriority } from '../../../utils/kara';
+import { buildKaraTitle, getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import {
@@ -194,7 +194,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+						song: getTitleInLocale(this.context.globalState.settings.data, this.props.kara.titles)
+					})}
 					<br />
 					{i18next.t('TIME_BEFORE_PLAY', {
 						time: beforePlayTime,
@@ -203,7 +205,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				</>);
 			} else {
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.props.kara.title })}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+						song: getTitleInLocale(this.context.globalState.settings.data, this.props.kara.titles)
+					})}
 				</>);
 			}
 			displayMessage('success', <div className="toast-with-img">
@@ -259,19 +263,27 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		if (data.langs && (this.props.scope === 'public' || is_touch_device())) {
 			const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 			isMulti ? karaTags.push(<div key={isMulti.tid} className="tag">
-				{getTagInLocale(isMulti)}
+				{getTagInLocale(this.context?.globalState.settings.data, isMulti)}
 			</div>) : karaTags.push(...data.langs.sort(sortTagByPriority).map((tag, i) => {
 				if (i === 0) return undefined;
-				return <div key={tag.tid} className="tag green" title={getTagInLocale(tag, this.props.i18nTag)}>
-					{getTagInLocale(tag, this.props.i18nTag)}
+				return <div
+					key={tag.tid}
+					className="tag green"
+					title={getTagInLocale(this.context?.globalState.settings.data, tag, this.props.i18nTag)}
+				>
+					{getTagInLocale(this.context?.globalState.settings.data, tag, this.props.i18nTag)}
 				</div>;
 			}));
 		}
 		if (data.songtypes && (this.props.scope === 'public' || is_touch_device())) {
 			karaTags.push(...data.songtypes.sort(sortTagByPriority).map((tag, i) => {
 				if (i === 0) return undefined;
-				return <div key={tag.tid} className="tag green" title={getTagInLocale(tag, this.props.i18nTag)}>
-					{getTagInLocale(tag, this.props.i18nTag)}
+				return <div
+					key={tag.tid}
+					className="tag green"
+					title={getTagInLocale(this.context?.globalState.settings.data, tag, this.props.i18nTag)}
+				>
+					{getTagInLocale(this.context?.globalState.settings.data, tag, this.props.i18nTag)}
 					{data.songorder > 0 ? ' ' + data.songorder : ''}
 				</div>;
 			}));
@@ -280,8 +292,12 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(...data[typeData.karajson].sort(sortTagByPriority).map(tag => {
-					return <div key={tag.tid} className={`tag ${typeData.color}${tag.problematic ? ' problematicTag' : ''}`} title={getTagInLocale(tag, this.props.i18nTag)}>
-						{this.props.scope === 'admin' && !is_touch_device() ? (tag.short ? tag.short : tag.name) : getTagInLocale(tag, this.props.i18nTag)}
+					return <div
+						key={tag.tid}
+						className={`tag ${typeData.color}${tag.problematic ? ' problematicTag' : ''}`}
+						title={getTagInLocale(this.context?.globalState.settings.data, tag, this.props.i18nTag)}
+					>
+						{this.props.scope === 'admin' && !is_touch_device() ? (tag.short ? tag.short : tag.name) : getTagInLocale(this.context?.globalState.settings.data, tag, this.props.i18nTag)}
 					</div>;
 				}));
 			}
@@ -300,8 +316,8 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	}
 
 	getSerieOrSingers = (data: KaraElement) => {
-		return (data.series && data.series.length > 0) ? data.series.map(e => getSerieLanguage(this.context.globalState.settings.data, e, data.langs[0].name, this.props.i18nTag)).join(', ')
-			: data.singers.map(e => getTagInLocale(e, this.props.i18nTag)).join(', ');
+		return (data.series && data.series.length > 0) ? data.series.map(e => getTagInLocale(this.context?.globalState.settings.data, e, this.props.i18nTag)).join(', ')
+			: data.singers.map(e => getTagInLocale(this.context?.globalState.settings.data, e, this.props.i18nTag)).join(', ');
 	}
 
 	openKaraMenu = (event: MouseEvent) => {
@@ -406,19 +422,29 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							{is_touch_device() || this.props.scope === 'public' ?
 								<div className="contentDiv contentDivMobile" onClick={() => this.props.toggleKaraDetail(kara, plaid)} tabIndex={1}>
 									<div className="contentDivMobileTitle">
-										<span className="tag inline green" title={getTagInLocale(kara.langs[0], this.props.i18nTag)}>
+										<span
+											className="tag inline green"
+											title={getTagInLocale(this.context?.globalState.settings.data, kara.langs[0], this.props.i18nTag)}
+										>
 											{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
 										</span>
 										{kara.flag_dejavu && !kara.flag_playing ? <i className="fas fa-fw fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')} /> : null}
-										{kara.title}
+										{getTitleInLocale(this.context.globalState.settings.data, kara.titles)}
 										{this.downloadIcon()}
 										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
-												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })} /> : null}
+												{
+													tags: this.state.problematic.map(t =>
+														getTagInLocale(this.context?.globalState.settings.data, t, this.props.i18nTag)
+													).join(', ')
+												})} /> : null}
 									</div>
 									<div className="contentDivMobileSerie">
-										<span className="tag inline green" title={getTagInLocale(kara.songtypes[0], this.props.i18nTag)}>
+										<span
+											className="tag inline green"
+											title={getTagInLocale(this.context?.globalState.settings.data, kara.songtypes[0], this.props.i18nTag)}
+										>
 											{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name} {kara.songorder}
 										</span>
 										{karaSerieOrSingers}
@@ -432,7 +458,11 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									{!is_touch_device() ? <div className="tagConteneur">
 										{this.karaTags}
 										{kara.versions?.sort(sortTagByPriority).map(t =>
-											<span className="tag white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>
+											<span
+												className="tag white"
+												key={t.tid}>
+												{getTagInLocale(this.context?.globalState.settings.data, t, this.props.i18nTag)}
+											</span>
 										)}
 									</div> : null}
 								</div> :
@@ -444,7 +474,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 										{this.downloadIcon()}
 										{this.state.problematic.length > 0 ? <i className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP',
-												{ tags: this.state.problematic.map(t => getTagInLocale(t, this.props.i18nTag)).join(', ') })} /> : null}
+												{ tags: this.state.problematic.map(t =>
+													getTagInLocale(this.context?.globalState.settings.data, t, this.props.i18nTag)
+												).join(', ') })} /> : null}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"
 												title={i18next.t('UPVOTE_NUMBER')}>
@@ -485,7 +517,12 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								<div className="tagConteneur mobile">
 									{this.karaTags}
 									{kara.versions?.sort(sortTagByPriority).map(t =>
-										<span className="tag white" key={t.tid}>{getTagInLocale(t, this.props.i18nTag)}</span>
+										<span
+											className="tag white"
+											key={t.tid}
+										>
+											{getTagInLocale(this.context?.globalState.settings.data, t, this.props.i18nTag)}
+										</span>
 									)}
 									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ?
 										<div className="img-container">

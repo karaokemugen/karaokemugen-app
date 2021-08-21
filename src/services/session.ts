@@ -6,6 +6,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { APIMessage } from '../controllers/common';
 import { selectAllKaras } from '../dao/kara';
 import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
+import { getSongTitle } from '../lib/services/kara';
 import { getConfig, resolvedPathSessionExports } from '../lib/utils/config';
 import { sanitizeFile } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
@@ -215,7 +216,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 				version: getSongVersion(k),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
-				title: k.title,
+				title: getSongTitle(k),
 				kid: k.kid
 			};
 		});
@@ -226,7 +227,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 				version: getSongVersion(k),
 				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
-				title: k.title,
+				title: getSongTitle(k),
 				kid: k.kid
 			};
 		});

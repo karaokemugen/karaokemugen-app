@@ -20,6 +20,7 @@ import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, {profile} from '../lib/utils/logger';
 import sentry from '../utils/sentry';
+import { getState } from '../utils/state';
 import { getTagNameInLanguage } from './tag';
 
 let popularKaraFetchIntervalID: any;
@@ -137,43 +138,19 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 
 /** Returns a string with series or singers with their correct i18n.*/
 export function getSongSeriesSingers(kara: DBKara): string {
+	const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
 	if (kara.series?.length > 0) {
-		const mode = getConfig().Frontend.SeriesLanguageMode;
-		if (mode === 0) { // Original name
-			return kara.series[0]?.name;
-		} else if (mode === 1) { // Based on song language
-			return getTagNameInLanguage(kara.series[0], kara.langs[0].name, 'eng');
-		} else { // All other cases, based on application defaultLocale or English if unavailable
-			const lang = convert1LangTo2B(getConfig().App.Language) || 'eng';
-			return getTagNameInLanguage(kara.series[0], lang, 'eng');
-		}
+		return getTagNameInLanguage(kara.series[0], lang, 'eng');
 	} else {
-		return kara.singers.map(s => s.name).join(', ');
+		return kara.singers.map(s => s.i18n[lang] || s.i18n['eng'] || s.i18n['qjr']).join(', ');
 	}
 }
 
 export function getSongVersion(kara: DBKara): string {
 	if (kara.versions?.length > 0) {
-		const mode = getConfig().Frontend.SeriesLanguageMode;
 		const versions = kara.versions.map(v => {
-			let ret = '';
-			switch(mode) {
-				case 0:
-				// Original name
-					ret = v.name;
-					break;
-				case 1:
-				// Name according to song language
-					ret = v.i18n ? v.i18n[kara.langs[0].name] : null || v.i18n?.eng || v.name;
-					break;
-				case 2:
-				case 3:
-				default:
-					const lang = convert1LangTo2B(getConfig().App.Language) || 'eng';
-					ret = v.i18n[lang] || v.i18n?.eng || v.name;
-					break;
-			}
-			return `[${ret}]`;
+			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
+			return `[${v.i18n[lang] || v.i18n?.eng || v.i18n?.qjr }]`;
 		});
 		return ` ${versions.join(' ')}`;
 	} else {

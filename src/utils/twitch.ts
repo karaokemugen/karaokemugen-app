@@ -2,6 +2,7 @@
 import i18next from 'i18next';
 import tmi, { ChatUserstate,Client } from 'tmi.js';
 
+import { getSongTitle } from '../lib/services/kara';
 import { getConfig } from '../lib/utils/config';
 // KM Imports
 import logger, { profile } from '../lib/utils/logger';
@@ -71,7 +72,7 @@ function listenChat(chat: Client) {
 			}
 		} else if (msg === '!song') {
 			const song = await getCurrentSong();
-			const str = `@${context.username} : ${song.title} - ${getSongSeriesSingers(song)} (${/\./.test(song.repository) ? `https://${song.repository}/base/kara/${song.kid}`:`${getState().osURL}/public/karaoke/${song.kid}`})`;
+			const str = `@${context.username} : ${getSongTitle(song)} - ${getSongSeriesSingers(song)} (${/\./.test(song.repository) ? `https://${song.repository}/base/kara/${song.kid}`:`${getState().osURL}/public/karaoke/${song.kid}`})`;
 			chat.say(target, str);
 		}
 	});

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import i18next from 'i18next';
-import React, {Dispatch, ReactNode} from 'react';
+import React, { Dispatch, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
 
@@ -14,13 +14,14 @@ import Tutorial from '../frontend/components/modals/Tutorial';
 import { showModal } from '../store/actions/modal';
 import { GlobalContextInterface } from '../store/context';
 import { ShowModal } from '../store/types/modal';
+import { SettingsStoreData } from '../store/types/settings';
 import Modal from './components/Modal';
-import {getTagInLocale} from './kara';
-import {commandBackend} from './socket';
+import { getTagInLocale } from './kara';
+import { commandBackend } from './socket';
 
 let is_touch = window.outerWidth <= 1023;
 let is_large = window.outerWidth <= 1860;
-let tuto:any;
+let tuto: any;
 export let lastLocation = '';
 
 export function setLastLocation(location) {
@@ -28,15 +29,15 @@ export function setLastLocation(location) {
 }
 
 class Event extends EventEmitter {
-	emitChange(event:any, data?:any) {
+	emitChange(event: any, data?: any) {
 		this.emit(event, data);
 	}
 
-	addChangeListener(event:any, callback:any) {
+	addChangeListener(event: any, callback: any) {
 		this.on(event, callback);
 	}
 
-	removeChangeListener(event:any, callback:any) {
+	removeChangeListener(event: any, callback: any) {
 		this.removeListener(event, callback);
 	}
 }
@@ -137,11 +138,11 @@ const chibis = new Map<TypeOptions, ReactNode>([
 	]
 ]);
 
-export function displayMessage(type: TypeOptions, message: any, time = 3500, position: ToastPosition = 'top-left', id?: string|number) {
+export function displayMessage(type: TypeOptions, message: any, time = 3500, position: ToastPosition = 'top-left', id?: string | number) {
 	let item;
 	if (typeof message === 'string') {
 		item = (<div className="toast-with-img">
-			{chibis.has(type) ? chibis.get(type):null}
+			{chibis.has(type) ? chibis.get(type) : null}
 			<span>{message}</span>
 		</div>);
 	} else item = message;
@@ -188,7 +189,7 @@ export function isModifiable(context: GlobalContextInterface, repoName: string):
 	return repo.MaintainerMode || !repo.Online;
 }
 
-export async function decodeBlacklistingReason(reason: string) {
+export async function decodeBlacklistingReason(settings: SettingsStoreData, reason: string) {
 	const parts = reason.split(':');
 	const args: [string, Record<string, string>] = [parts[0], {}];
 	switch (parts[0]) {
@@ -196,9 +197,9 @@ export async function decodeBlacklistingReason(reason: string) {
 			if (parts.length === 3) {
 				const tid = parts[1];
 				const type = parts[2];
-				const tag = await commandBackend('getTag', {tid});
+				const tag = await commandBackend('getTag', { tid });
 				args[1] = {
-					tag: getTagInLocale(tag),
+					tag: getTagInLocale(settings, tag),
 					verb: i18next.t(`BLACKLIST.LABEL.TAG_VERBS.${type}`)
 				};
 			}

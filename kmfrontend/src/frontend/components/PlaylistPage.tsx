@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { DBPLC } from '../../../../src/types/database/playlist';
 import GlobalContext, { GlobalContextInterface } from '../../store/context';
-import { getSerieLanguage, getTagInLocale, sortTagByPriority } from '../../utils/kara';
+import { getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
 import PlayerBox from './public/PlayerBox';
@@ -50,7 +50,7 @@ export default function PlaylistPage() {
 			<ul>
 				{playlist.map(kara => {
 					const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => 
-						getSerieLanguage(context.globalState.settings.data, e, kara.langs[0].name, i18n)).join(', ')
+						getTagInLocale(context.globalState.settings.data, e, i18n)).join(', ')
 						+ (kara.series.length > 3 ? '...' : '')
 						: (kara.singers ? kara.singers.slice(0, 3).map(e => e.name).join(', ') + (kara.singers.length > 3 ? '...' : '') : '');
 					const songtypeText = [...kara.songtypes].sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
@@ -60,8 +60,11 @@ export default function PlaylistPage() {
 						const typeData = tagTypes['VERSIONS'];
 						if (kara.versions) {
 							return kara[typeData.karajson].sort(sortTagByPriority).map(tag => {
-								return <div key={tag.tid} className={`tag inline ${typeData.color}`} title={getTagInLocale(tag)}>
-									{getTagInLocale(tag)}
+								return <div
+									key={tag.tid}
+									className={`tag inline ${typeData.color}`}
+									title={getTagInLocale(context.globalState.settings.data, tag)}>
+									{getTagInLocale(context.globalState.settings.data, tag)}
 								</div>;
 							});
 						} else {
@@ -69,7 +72,10 @@ export default function PlaylistPage() {
 						}
 					})();
 					return <li className="following-li" key={kara.kid}>
-						<div className="title"><span className="title">{kara.title}</span> {karaVersions}</div>
+						<div className="title">
+							<span className="title">
+								{getTitleInLocale(context.globalState.settings.data, kara.titles)}
+							</span> {karaVersions}</div>
 						<div className="series">{`${serieText} - ${songtypeText}${songorderText}`}</div>
 					</li>;
 				})}

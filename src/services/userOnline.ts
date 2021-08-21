@@ -140,7 +140,6 @@ export async function editRemoteUser(user: User, token: string) {
 	form.append('url', user.url ? user.url : '');
 	form.append('language', user.language ? user.language : getConfig().App.Language);
 	if (user.password) form.append('password', user.password);
-	if (user.series_lang_mode) form.append('series_lang_mode', user.series_lang_mode);
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
 	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
 	try {
@@ -232,7 +231,6 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 					nickname: remoteUser.nickname,
 					password: password,
 					flag_sendstats: remoteUser.flag_sendstats,
-					series_lang_mode: remoteUser.series_lang_mode,
 					main_series_lang: remoteUser.main_series_lang,
 					fallback_series_lang: remoteUser.fallback_series_lang,
 					language: remoteUser.language

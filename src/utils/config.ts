@@ -183,8 +183,7 @@ export async function initConfig(argv: any) {
 		emit('configReady');
 		configureHost();
 		configureIDs();
-		if (!getConfig().App.Language)
-		{
+		if (!getConfig().App.Language) {
 			// First time, let's find out if our locale is in supported languages. If not, set to english
 			if (!supportedLanguages.includes(getState().defaultLocale)) {
 				setConfig({App: {Language: 'en'}});

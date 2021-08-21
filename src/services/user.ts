@@ -98,8 +98,6 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.location) user.location = null;
 		if (!user.language) user.language = getConfig().App.Language;
 		if (!user.nickname) user.nickname = currentUser.nickname;
-		if (!user.series_lang_mode && user.series_lang_mode !== 0) user.series_lang_mode = -1;
-		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw {code: 400};
 		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw {code: 400};
 		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw {code: 400};
 		if (user.type === 0 && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};

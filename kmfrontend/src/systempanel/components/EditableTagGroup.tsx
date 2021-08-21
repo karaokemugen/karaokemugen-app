@@ -5,7 +5,7 @@ import React from 'react';
 
 import { DBTag } from '../../../../src/lib/types/database/tag';
 import GlobalContext from '../../store/context';
-import { getSerieLanguage, getTagInLocale } from '../../utils/kara';
+import { getTagInLocale } from '../../utils/kara';
 import { commandBackend } from '../../utils/socket';
 interface EditableTagGroupProps {
 	onChange: any,
@@ -118,7 +118,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 							this.state.tags.map((tag) => {
 								return (
 									<Col span={8} key={tag.tid}>
-										<Checkbox value={tag.tid}>{getTagInLocale(tag)}
+										<Checkbox value={tag.tid}>{getTagInLocale(this.context?.globalState.settings.data, tag)}
 										</Checkbox>
 									</Col>
 								);
@@ -131,9 +131,8 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 			return (
 				<div>
 					{this.state.value.map((tag) => <Tag style={{ marginBottom: '8px' }} key={tag.tid} closable={true}
-						onClose={() => this.handleClose(tag)}>{this.props.tagType === 1 ?
-							`${getSerieLanguage(this.context.globalState.settings.data, tag, 'eng')} (${tag.name})` :
-							getTagInLocale(tag)}</Tag>)}
+						onClose={() => this.handleClose(tag)}>{
+							`${getTagInLocale(this.context?.globalState.settings.data, tag)} (${tag.name})`}</Tag>)}
 					{this.state.inputVisible && (
 						<Form.Item
 							wrapperCol={{ span: 10 }}
@@ -144,18 +143,14 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 								onChange={val => this.setState({ currentVal: val })}
 								options={this.state.tags.map(tag => {
 									return {
-										value: tag.tid, label: this.props.tagType === 1 ?
-											`${getSerieLanguage(this.context.globalState.settings.data, tag, 'eng')} (${tag.name})` :
-											getTagInLocale(tag)
+										value: tag.tid, label: `${getTagInLocale(this.context?.globalState.settings.data, tag)} (${tag.name})`
 									};
 								})}
 								onInputKeyDown={this.onKeyEnter}
 								value={this.state.tags.filter(tag => tag.tid === this.state.currentVal).length > 0 &&
 									this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0].tid ?
-									(this.props.tagType === 1 ?
-										`${getSerieLanguage(this.context.globalState.settings.data,
-											this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0], 'eng')} (${this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0].name})` :
-										getTagInLocale(this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0]))
+									`${getTagInLocale(this.context?.globalState.settings.data,
+										this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0])} (${this.state.tags.filter(tag => tag.tid === this.state.currentVal)[0].name})`
 									: this.state.currentVal}
 							/>
 							<Button

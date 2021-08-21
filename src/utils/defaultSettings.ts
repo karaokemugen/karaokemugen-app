@@ -67,7 +67,6 @@ export const defaults: Config = {
 		Permissions: {
 			AllowNicknameChange: true
 		},
-		SeriesLanguageMode: 3,
 		ShowAvatarsOnPlaylist: true
 	},
 	GUI: {
@@ -284,7 +283,6 @@ export const configConstraints = {
 	'Frontend.Permissions.AllowNicknameChange': {inclusion : bools},
 	'Frontend.Mode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	'System.FrontendPort': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	'Frontend.SeriesLanguageMode': {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	'Frontend.ShowAvatarsOnPlaylist': {inclusion: bools},
 	'GUI.OpenInElectron': {inclusion: bools},
 	'Karaoke.Autoplay': {inclusion : bools},

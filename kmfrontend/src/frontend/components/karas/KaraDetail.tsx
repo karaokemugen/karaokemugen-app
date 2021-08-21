@@ -13,7 +13,7 @@ import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
-import {buildKaraTitle, formatLyrics, getPreviewLink, sortTagByPriority} from '../../../utils/kara';
+import {buildKaraTitle, formatLyrics, getPreviewLink, getTagInLocale, getTitleInLocale, sortTagByPriority} from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import {
@@ -210,7 +210,9 @@ class KaraDetail extends Component<IProps, IState> {
 				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.state.kara.title })}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+						song: getTitleInLocale(this.context.globalState.settings.data, this.state.kara.titles)
+					})}
 					<br />
 					{i18next.t('TIME_BEFORE_PLAY', {
 						time: beforePlayTime,
@@ -219,7 +221,9 @@ class KaraDetail extends Component<IProps, IState> {
 				</>);
 			} else {
 				message = (<>
-					{i18next.t(`SUCCESS_CODES.${response.code}`, { song: this.state.kara.title })}
+					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+						song: getTitleInLocale(this.context.globalState.settings.data, this.state.kara.titles)
+					})}
 				</>);
 			}
 			displayMessage('success', <div className="toast-with-img">
@@ -457,12 +461,11 @@ class KaraDetail extends Component<IProps, IState> {
 								<i className="fas fa-fw fa-arrow-left"/>
 							</button> : null}
 						<div className="modal-title-block">
-							<h4 className="modal-title">{data.title}</h4>
+							<h4 className="modal-title">{getTitleInLocale(this.context.globalState.settings.data, data.titles)}</h4>
 							<h5 className="modal-series">
 								<InlineTag tag={data.series[0] || data.singers[0]}
 										   scope={this.props.scope}
 										   changeView={this.props.changeView}
-										   karaLang={data.langs[0].name}
 										   tagType={data.series[0] ? 1 : 2}/>
 							</h5>
 						</div>

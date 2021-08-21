@@ -195,7 +195,7 @@ class AdminPage extends Component<IProps, IState> {
 	toggleKaraDetail = async (kara: KaraElement, idPlaylist: string) => {
 		let reason;
 		if (Object.keys(kara).includes('reason')) {
-			reason = await decodeBlacklistingReason((kara as unknown as DBBlacklist).reason);
+			reason = await decodeBlacklistingReason(this.context.globalState.settings.data, (kara as unknown as DBBlacklist).reason);
 		}
 		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope='admin'
 			plaid={idPlaylist} blcLabel={reason} />);

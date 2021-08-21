@@ -8,7 +8,7 @@ import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { DBDownload } from '../../../../../src/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
-import { buildKaraTitle, getSerieLanguage, getTagInLocale, getTagInLocaleList } from '../../../utils/kara';
+import { buildKaraTitle, getTagInLocale,getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
@@ -137,7 +137,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
 				option.children.push({
 					value: tag.tid,
-					label: getTagInLocale(tag as unknown as DBKaraTag),
+					label: getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag),
 				});
 			}
 			return option;
@@ -259,7 +259,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			dataIndex: 'langs',
 			key: 'langs',
 			render: langs => {
-				return getTagInLocaleList(langs, this.state.i18nTag).join(', ');
+				return getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ');
 			}
 		}, {
 			title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
@@ -267,8 +267,8 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			key: 'series',
 			render: (series, record) => {
 				return (series && series.length > 0) ?
-					series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ')
-					: getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
+					series.map(serie => getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)).join(', ')
+					: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(', ');
 			}
 		}, {
 			title: i18next.t('KARA.SONGTYPES'),
@@ -276,14 +276,14 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			key: 'songtypes',
 			render: (songtypes, record) => {
 				const songorder = record.songorder || '';
-				return getTagInLocaleList(songtypes, this.state.i18nTag).sort().join(', ') + ' ' + songorder || '';
+				return getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18nTag).sort().join(', ') + ' ' + songorder || '';
 			}
 		}, {
 			title: i18next.t('KARA.FAMILIES'),
 			dataIndex: 'families',
 			key: 'families',
 			render: (families) => {
-				return getTagInLocaleList(families, this.state.i18nTag).join(', ');
+				return getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(', ');
 			}
 		}, {
 			title: i18next.t('KARA.TITLE'),
@@ -294,7 +294,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			title: i18next.t('TAG_TYPES.VERSIONS', { count: 2 }),
 			dataIndex: 'versions',
 			key: 'versions',
-			render: (versions) => getTagInLocaleList(versions, this.state.i18nTag).join(', ')
+			render: (versions) => getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18nTag).join(', ')
 		}, {
 			title: i18next.t('KARA.REPOSITORY'),
 			dataIndex: 'repository',

@@ -5,7 +5,7 @@ import React, {Component} from 'react';
 
 import {DBKara} from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import {getSerieLanguage,getTagInLocaleList} from '../../../utils/kara';
+import {getTagInLocale,getTagInLocaleList} from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 
 interface ViewcountsState {
@@ -61,19 +61,19 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 		title: i18next.t('KARA.LANGUAGES'),
 		dataIndex: 'langs',
 		key: 'langs',
-		render: langs => getTagInLocaleList(langs, this.state.i18n).join(', ')
+		render: langs => getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18n).join(', ')
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record) => (series && series.length > 0) ?
-			series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18n)).join(', ')
-			: getTagInLocaleList(record.singers, this.state.i18n).join(', ')
+			series.map(serie => getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n)).join(', ')
+			: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18n).join(', ')
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
-		render: (songtypes, record) => getTagInLocaleList(songtypes, this.state.i18n).sort().join(', ') + ' ' + (record.songorder || '')
+		render: (songtypes, record) => getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18n).sort().join(', ') + ' ' + (record.songorder || '')
 	}, {
 		title: i18next.t('KARA.TITLE'),
 		dataIndex: 'title',
@@ -82,7 +82,7 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
 		dataIndex: 'versions',
 		key: 'versions',
-		render: (versions) => getTagInLocaleList(versions, this.state.i18n).join(', ')
+		render: (versions) => getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18n).join(', ')
 	}, {
 		title: i18next.t('KARA.PLAYED'),
 		dataIndex: 'played',
