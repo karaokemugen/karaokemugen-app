@@ -12,7 +12,7 @@ export function getTagInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackL
 	const i18n = (i18nParam && i18nParam[tag.tid]) ? i18nParam[tag.tid] : tag.i18n;
 	if (i18n) {
 		return i18n[mainLanguage] ? i18n[mainLanguage] :
-			(i18n[fallbackLanguage] ? i18n[fallbackLanguage] : tag.name);
+			(i18n[fallbackLanguage] ? i18n[fallbackLanguage] : (i18n.eng ? i18n.eng : tag.name));
 	} else {
 		return tag.name;
 	}
