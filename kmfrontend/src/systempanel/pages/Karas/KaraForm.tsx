@@ -10,6 +10,7 @@ import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName } from '../../../utils/tagTypes';
 import EditableTagGroup from '../../components/EditableTagGroup';
+import LanguagesList from '../../components/LanguagesList';
 
 interface KaraFormProps {
 	kara: Kara;
@@ -18,6 +19,7 @@ interface KaraFormProps {
 }
 
 interface KaraFormState {
+	titles: Record<string, string>;
 	serieSingersRequired: boolean;
 	subfile: any[];
 	mediafile: any[];
@@ -40,6 +42,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const kara = this.props.kara;
 		this.getRepositories();
 		this.state = {
+			titles: kara?.titles ? kara.titles : {},
 			serieSingersRequired: false,
 			subfile: kara?.subfile
 				? [
@@ -90,22 +93,28 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		kara.mediafile_orig = this.state.mediafile_orig;
 		kara.subfile_orig = this.state.subfile_orig;
 		const data = await commandBackend('previewHooks', kara);
-		console.log(data);
 		Modal.info({
 			title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
 			content: <ul>{data?.map(tag => <li key={tag.tid} title={tag.tagfile}>
-				{getTagInLocale(tag)} ({i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}`)})
+				{getTagInLocale(this.context?.globalState.settings.data, tag)} ({i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}`)})
 			</li>)}</ul>
 		});
 	}
 
 	handleSubmit = (values) => {
-		const kara: Kara = values;
-		kara.karafile = this.props.kara?.karafile;
-		kara.kid = this.props.kara?.kid;
-		kara.mediafile_orig = this.state.mediafile_orig;
-		kara.subfile_orig = this.state.subfile_orig;
-		this.props.save(kara);
+		if (!this.state.titles || Object.keys(this.state.titles).length === 0) {
+			message.error(i18next.t('KARA.TITLE_REQUIRED'));
+		} else if (!this.state.titles.eng) {
+			message.error(i18next.t('KARA.TITLE_ENG_REQUIRED'));
+		} else {
+			const kara: Kara = values;
+			kara.karafile = this.props.kara?.karafile;
+			kara.kid = this.props.kara?.kid;
+			kara.mediafile_orig = this.state.mediafile_orig;
+			kara.subfile_orig = this.state.subfile_orig;
+			kara.titles = this.state.titles;
+			this.props.save(kara);
+		}
 	};
 
 	isMediaFile = (filename: string): boolean => {
@@ -187,7 +196,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		return (
 			<Form ref={this.formRef} onFinish={this.handleSubmit} className="kara-form"
 				initialValues={{
-					title: this.props.kara?.title, series: this.props.kara?.series,
+					series: this.props.kara?.series,
 					songtypes: this.props.kara?.songtypes, songorder: this.props.kara?.songorder,
 					langs: this.props.kara?.langs, year: this.props.kara?.year || 2010,
 					singers: this.props.kara?.singers, songwriters: this.props.kara?.songwriters,
@@ -274,18 +283,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 8 }}
-					rules={[{
-						required: true,
-						message: i18next.t('KARA.TITLE_REQUIRED')
-					}]}
-					name="title"
 				>
-					<Input
-						placeholder={i18next.t('KARA.TITLE')}
-						onKeyPress={this.submitHandler}
-					/>
 				</Form.Item>
+				<LanguagesList
+					value={this.state.titles}
+					onChange={(titles) => this.setState({ titles })}
+				/>
 				<Form.Item
 					label={(
 						<span>{i18next.t('TAG_TYPES.VERSIONS', { count: 2 })}&nbsp;

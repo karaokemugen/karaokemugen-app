@@ -56,7 +56,7 @@ VALUES(
 
 export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string, additionalFrom: string[], selectRequested: string, groupClauseEnd: string, joinClauses: string[]) => `SELECT
   ak.pk_kid AS kid,
-  ak.title AS title,
+  ak.titles AS titles,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
@@ -114,9 +114,9 @@ ${additionalFrom.join('')}
 WHERE true
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
-GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.title, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks ${groupClauseEnd}
+GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable ${groupClauseEnd}
 ${havingClause}
-ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.title
+ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
 ${limitClause}
 ${offsetClause}
 `;
@@ -124,7 +124,7 @@ ${offsetClause}
 export const sqlgetKaraMini = `
 SELECT
 	ak.pk_kid AS kid,
-	ak.title AS title,
+	ak.titles AS titles,
 	ak.mediafile AS mediafile,
 	ak.karafile AS karafile,
 	ak.subfile AS subfile,
@@ -168,7 +168,7 @@ WHERE created_at <= $1;
 
 export const sqlupdateKara = `
 UPDATE kara SET
-	title = :title,
+	titles = :titles,
 	year = :year,
 	songorder = :songorder,
 	mediafile = :mediafile,
@@ -186,7 +186,7 @@ WHERE pk_kid = :kid
 
 export const sqlinsertKara = `
 INSERT INTO kara(
-	title,
+	titles,
 	year,
 	songorder,
 	mediafile,
@@ -205,7 +205,7 @@ INSERT INTO kara(
 	ignore_hooks
 )
 VALUES(
-	:title,
+	:titles,
 	:year,
 	:songorder,
 	:mediafile,

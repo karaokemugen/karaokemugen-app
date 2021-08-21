@@ -35,7 +35,6 @@ export interface Config {
 	},
 	Frontend: {
 		Mode?: number,
-		SeriesLanguageMode: number,
 		Permissions?: {
 			AllowNicknameChange?: boolean
 		},

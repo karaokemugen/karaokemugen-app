@@ -119,7 +119,7 @@ export function testKara(kara: any, details: TestDetails) {
 		}
 	}
 	if (details.plcDetail) expect(kara.time_before_play).to.be.a('number');
-	expect(kara.title).to.be.a('string');
+	expect(kara.titles).to.be.an('object');
 	if (details.plc) expect(kara.upvotes).to.be.a('number').and.at.least(0);
 	if (details.plc) expect(kara.username).to.be.a('string');
 	expect(kara.year).to.be.a('number');

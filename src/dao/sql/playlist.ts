@@ -124,7 +124,7 @@ export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: str
 									   additionalFrom: string) => `
 SELECT
   ak.pk_kid AS kid,
-  ak.title AS title,
+  ak.titles AS titles,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
@@ -203,7 +203,7 @@ ${additionalFrom}
 WHERE pc.fk_id_playlist = :plaid
   ${filterClauses.map(clause => 'AND (' + clause + ')').join(' ')}
   ${whereClause}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, 		  ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status,
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, 		  ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status,
          pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository
 ORDER BY ${orderClause}
 ${limitClause}
@@ -218,7 +218,7 @@ SELECT ak.pk_kid AS kid,
 	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
 	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
 	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
-	ak.title AS title,
+	ak.titles AS titles,
 	ak.songorder AS songorder,
     ak.gain AS gain,
 	ak.loudnorm AS loudnorm,
@@ -260,7 +260,7 @@ WITH playing_pos AS (
    )
 SELECT
   ak.pk_kid AS kid,
-  ak.title AS title,
+  ak.titles AS titles,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
@@ -340,12 +340,12 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
 WHERE  pc.pk_id_plcontent = :plcid
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.title, ak.songorder, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.download_status
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.songorder, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.download_status
 `;
 
 export const sqlgetPLCInfoMini = `
 SELECT pc.fk_kid AS kid,
-	ak.title AS title,
+	ak.titles AS titles,
 	ak.mediafile AS mediafile,
 	ak.mediasize AS mediasize,
 	ak.repository AS repository,
@@ -366,7 +366,7 @@ INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = $1
-GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.title, ak.mediasize, ak.mediafile, ak.repository, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist, ak.tags
+GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.titles, ak.mediasize, ak.mediafile, ak.repository, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist, ak.tags
 `;
 
 

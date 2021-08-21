@@ -33,6 +33,7 @@ import sentry from '../utils/sentry';
 import {getState, setState} from '../utils/state';
 import {exit} from './engine';
 import Timeout = NodeJS.Timeout;
+import { getSongTitle } from '../lib/services/kara';
 import HTTP from '../lib/utils/http';
 import {getSongSeriesSingers} from '../services/kara';
 import {editSetting} from '../utils/config';
@@ -860,7 +861,7 @@ class Players {
 		let mediaFile: string;
 		let subFile: string;
 		const options: any = {
-			'force-media-title': song.title
+			'force-media-title': getSongTitle(song)
 		};
 		let onlineMedia = false;
 		const loadPromises = [
@@ -938,7 +939,7 @@ class Players {
 			playerState.playerStatus = 'play';
 			emitPlayerState();
 			setDiscordActivity('song', {
-				title: song.title,
+				title: getSongTitle(song),
 				source: getSongSeriesSingers(song)
 					|| i18n.t('UNKNOWN_ARTIST')
 			});

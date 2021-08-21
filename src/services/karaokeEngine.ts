@@ -3,6 +3,7 @@ import merge from 'lodash.merge';
 
 import { APIMessage } from '../controllers/common';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
+import { getSongTitle } from '../lib/services/kara';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
@@ -39,7 +40,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		const versions = getSongVersion(kara);
 
 		// Construct mpv message to display.
-		const infos = '{\\bord2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+kara.title+versions+'{\\i0}';
+		const infos = '{\\bord2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+getSongTitle(kara)+versions+'{\\i0}';
 		const current: CurrentSong = merge(kara, {
 			nickname: 'Admin',
 			flag_playing: true,

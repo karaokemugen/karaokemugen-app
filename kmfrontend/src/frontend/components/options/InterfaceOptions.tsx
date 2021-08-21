@@ -87,25 +87,6 @@ class InterfaceOptions extends Component<IProps, IState> {
 					</div>
 
 					<div className="settings-line">
-						<label htmlFor="Frontend.SeriesLanguageMode">
-							<span className="title">{i18next.t('SERIE_NAME_MODE')}</span>
-							<br />
-							<span className="tooltip">{i18next.t('SERIE_NAME_MODE_TOOLTIP')}</span>
-						</label>
-						<div>
-							<select
-								id="Frontend.SeriesLanguageMode"
-								onChange={this.onChange}
-								value={this.state.config['Frontend.SeriesLanguageMode']}
-							>
-								<option value="0">{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-								<option value="2">{i18next.t('SERIE_NAME_MODE_ADMIN')}</option>
-								<option value="3">{i18next.t('SERIE_NAME_MODE_USER')}</option>
-							</select>
-						</div>
-					</div>
-
-					<div className="settings-line">
 						<label htmlFor="Frontend.ShowAvatarsOnPlaylist">
 							<span className="title">{i18next.t('SETTINGS.INTERFACE.SHOW_AVATARS_ON_PLAYLIST')}</span>
 							<br />

@@ -7,9 +7,9 @@ import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, Infinite
 import { DBKaraTag, DBYear } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
-import { getSerieLanguage, getTagInLocale } from '../../../utils/kara';
+import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { tagTypes, YEARS } from '../../../utils/tagTypes';
+import { YEARS } from '../../../utils/tagTypes';
 import { eventEmitter } from '../../../utils/tools';
 import { View } from '../../types/view';
 
@@ -163,9 +163,7 @@ class TagsList extends Component<IProps, IState> {
 						<div className="title">{
 							this.props.tagType === YEARS.type ?
 								tag.name :
-								(this.props.tagType === tagTypes.SERIES.type ?
-									getSerieLanguage(this.context.globalState.settings.data, tag as unknown as DBKaraTag, 'eng') :
-									getTagInLocale(tag as unknown as DBKaraTag))
+								getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag)
 						}</div>
 						<div className="karacount">
 							<em>

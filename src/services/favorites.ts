@@ -137,7 +137,7 @@ export async function exportFavorites(username: string) {
 		// Only the kid property is mandatory, the rest is just decoration so the person can know which song is which in the file
 			return {
 				kid: k.kid,
-				title: k.title,
+				titles: k.titles,
 				songorder: k.songorder,
 				serie: k.series.map(s => s.name).join(' '),
 				songtype: k.songtypes.map(s => s.name).join(' '),

@@ -3,7 +3,7 @@ import React from 'react';
 import {ASSLine} from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
 import { SettingsStoreData } from '../store/types/settings';
-import { getLanguageIn3B, getNavigatorLanguageIn3B } from './isoLanguages';
+import { getNavigatorLanguageIn3B } from './isoLanguages';
 import { isRemote } from './socket';
 
 const navigatorLanguage: string = getNavigatorLanguageIn3B();
@@ -18,41 +18,31 @@ export function getTagInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackL
 	}
 }
 
-export function getTagInLocale(tag: DBKaraTag, i18nParam?: any): string {
-	return getTagInLanguage(tag, navigatorLanguage, 'eng', i18nParam);
-}
-
-export function getTagInLocaleList(list: Array<DBKaraTag>, i18n?: any): string[] {
+export function getTagInLocaleList(settings:SettingsStoreData, list: Array<DBKaraTag>, i18n?: any): string[] {
 	if (list) {
-		return list.map((tag: DBKaraTag) => getTagInLanguage(tag, navigatorLanguage, 'eng', i18n));
+		return list.map((tag: DBKaraTag) => getTagInLocale(settings, tag, i18n));
 	} else {
 		return [];
 	}
 }
 
-export function getSerieLanguage(settings:SettingsStoreData, tag: DBKaraTag, karaLanguage: string, i18nParam?: any): any {
-	const user = settings.user;
-	let mode: number | undefined = user && user.series_lang_mode;
-	if (!user || user.series_lang_mode === -1) {
-		mode = settings.config.Frontend.SeriesLanguageMode;
-	}
-
-	if (mode === 0) {
-		return tag.name;
-	} else if (mode === 1) {
-		return getTagInLanguage(tag, karaLanguage, 'eng', i18nParam);
-	} else if (mode === 2) {
-		return getTagInLanguage(tag, getLanguageIn3B(settings.state.defaultLocale), 'eng', i18nParam);
-	} else if (mode === 3) {
+export function getTagInLocale(settings:SettingsStoreData, tag: DBKaraTag, i18nParam?: any): any {
+	const user = settings?.user;
+	if (user?.main_series_lang && user?.fallback_series_lang) {
+		return getTagInLanguage(tag, user.main_series_lang, user.fallback_series_lang, i18nParam);
+	} else {
 		return getTagInLanguage(tag, navigatorLanguage, 'eng', i18nParam);
-	} else if (mode === 4) {
-		if (user && user.main_series_lang && user.fallback_series_lang) {
-			return getTagInLanguage(tag, user.main_series_lang, user.fallback_series_lang, i18nParam);
-		} else {
-			return getTagInLanguage(tag, navigatorLanguage, 'eng', i18nParam);
-		}
 	}
-	return tag.name;
+}
+
+export function getTitleInLocale(settings:SettingsStoreData, titles: any): any {
+	const user = settings?.user;
+	if (user?.main_series_lang && user?.fallback_series_lang) {
+		return titles[user.main_series_lang] ? titles[user.main_series_lang] :
+			(titles[user.fallback_series_lang] ? titles[user.fallback_series_lang] : titles['eng']);
+	} else {
+		return titles[navigatorLanguage] ? titles[navigatorLanguage] : titles['eng'];
+	}
 }
 
 export function sortTagByPriority(a: any, b: any) {
@@ -70,20 +60,22 @@ export function buildKaraTitle(settings:SettingsStoreData, data: DBKara, onlyTex
 	if (data?.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	const serieText = data?.series?.length > 0 ? data.series.map(e => getSerieLanguage(settings, e, data.langs[0].name, i18nParam)).join(', ')
+	const serieText = data?.series?.length > 0 ? data.series.map(e => getTagInLocale(settings, e, i18nParam)).join(', ')
 		+ (data.series.length > 3 ? '...' : '')
 		: (data?.singers ? data.singers.slice(0, 3).map(e => e.name).join(', ') + (data.singers.length > 3 ? '...' : '') : '');
 	const langsText = data?.langs.map(e => e.name).join(', ').toUpperCase();
 	const songtypeText = data?.songtypes.sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
 	const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
 	if (onlyText) {
-		const versions = data?.versions?.sort(sortTagByPriority).map(t => `[${getTagInLocale(t, i18nParam)}]`);
+		const versions = data?.versions?.sort(sortTagByPriority).map(t => `[${getTagInLocale(settings, t, i18nParam)}]`);
 		const version = versions?.length > 0
 			? ` ${versions.join(' ')}`
 			: '';
-		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${data.title} ${version}`;
+		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${getTitleInLocale(settings, data.titles)} ${version}`;
 	} else {
-		const versions = data?.versions?.sort(sortTagByPriority).map(t => <span className="tag inline white" key={t.tid}>{getTagInLocale(t, i18nParam)}</span>);
+		const versions = data?.versions?.sort(sortTagByPriority).map(t =>
+			<span className="tag inline white" key={t.tid}>{getTagInLocale(settings, t, i18nParam)}</span>
+		);
 		return (
 			<React.Fragment>
 				<span>{langsText}</span>
@@ -92,7 +84,7 @@ export function buildKaraTitle(settings:SettingsStoreData, data: DBKara, onlyTex
 				<span>&nbsp;-&nbsp;</span>
 				<span>{`${songtypeText} ${songorderText}`}</span>
 				<span>&nbsp;-&nbsp;</span>
-				<span className="karaTitleTitle">{data.title}</span>
+				<span className="karaTitleTitle">{getTitleInLocale(settings, data.titles)}</span>
 				{versions}
 			</React.Fragment>
 		);

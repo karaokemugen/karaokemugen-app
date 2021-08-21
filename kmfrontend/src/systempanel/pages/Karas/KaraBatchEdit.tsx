@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getSerieLanguage,getTagInLocaleList } from '../../../utils/kara';
+import { getTagInLocale,getTagInLocaleList } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
@@ -145,15 +145,15 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => {
-			return getTagInLocaleList(langs, this.state.i18nTag).join(', ');
+			return getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record: DBKara) => {
-			return series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ')
-				|| getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
+			return series.map(serie => getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)).join(', ')
+				|| getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.SONGTYPES'),
@@ -161,14 +161,14 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		key: 'songtypes',
 		render: (songtypes, record) => {
 			const songorder = record.songorder || '';
-			return getTagInLocaleList(songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
+			return getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
 		}
 	}, {
 		title: i18next.t('KARA.FAMILIES'),
 		dataIndex: 'families',
 		key: 'families',
 		render: (families) => {
-			return getTagInLocaleList(families, this.state.i18nTag).join(', ');
+			return getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(', ');
 		}
 	}, {
 		title: i18next.t('KARA.TITLE'),
@@ -178,7 +178,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
 		dataIndex: 'versions',
 		key: 'versions',
-		render: (versions) => getTagInLocaleList(versions, this.state.i18nTag).join(', ')
+		render: (versions) => getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18nTag).join(', ')
 	}, {
 		title: i18next.t('KARA.REPOSITORY'),
 		dataIndex: 'repository',

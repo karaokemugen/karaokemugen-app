@@ -29,6 +29,11 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 				if (!didGeneration) doGenerate = true;
 				logger.info('Migration adding priority to tags detected, forcing generation', {service: 'DB'});
 				break;
+			// 6.0 migrations
+			case 'addTitlesToKara':
+				if (!didGeneration) doGenerate = true;
+				logger.info('Migration adding titles to karas detected, forcing generation', {service: 'DB'});
+				break;
 			default:
 		}
 		if (breakFromLoop) break;

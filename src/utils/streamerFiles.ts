@@ -2,8 +2,9 @@ import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
 import {resolve} from 'path';
-import { DBReady } from '../dao/database';
 
+import { DBReady } from '../dao/database';
+import { getSongTitle } from '../lib/services/kara';
 import {getConfig, resolvedPathStreamFiles} from '../lib/utils/config';
 import { asyncCheckOrMkdir } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
@@ -18,7 +19,7 @@ async function writeCurrentSong() {
 	const song = getState().player.currentSong;
 	const media = getState().player.currentMedia;
 	if (song) {
-		output = `${getSongSeriesSingers(song)}\n${song.songtypes.map(s => s.name).join(' ')}${(!song.songorder || song.songorder === 0) ? '':song.songorder.toString()} - ${song.title} ${getSongVersion(song)}`;
+		output = `${getSongSeriesSingers(song)}\n${song.songtypes.map(s => s.name).join(' ')}${(!song.songorder || song.songorder === 0) ? '':song.songorder.toString()} - ${getSongTitle(song)} ${getSongVersion(song)}`;
 	} else if (media) {
 		output = getState().player.mediaType;
 	} else {

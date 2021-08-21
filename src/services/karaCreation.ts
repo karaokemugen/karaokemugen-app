@@ -160,7 +160,7 @@ export async function editKara(kara: Kara, refresh = true) {
 export async function createKara(kara: Kara) {
 	const task = new Task({
 		text: 'CREATING_SONG',
-		subtext: kara.title
+		subtext: kara.titles['eng']
 	});
 	let newKara: NewKara;
 	// Validation here, processing stuff later

@@ -9,7 +9,7 @@ export const languagesSupport = ['en', 'fr'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
 export const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 
-export function getListLanguagesInLocale(): Array<{ value: string, text: string }> {
+export function getListLanguagesInLocale(): Array<{ value: string, label: string }> {
 	const result = [];
 	const langs = Object.values(languages.getNames(langSupport));
 	for (const langInLocale of langs) {

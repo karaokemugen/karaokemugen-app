@@ -8,7 +8,7 @@ import ResizeObserver from 'resize-observer-polyfill';
 import { ASSLine } from '../../../../../src/lib/types/ass';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
-import { getPreviewLink, getSerieLanguage, getTagInLocale, sortTagByPriority } from '../../../utils/kara';
+import { getPreviewLink, getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -183,7 +183,7 @@ class PlayerBox extends Component<IProps, IState> {
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.currentSong) {
 				const kara = data.currentSong;
-				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getSerieLanguage(this.context.globalState.settings.data, e, kara.langs[0].name)).join(', ')
+				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getTagInLocale(this.context?.globalState.settings.data, e)).join(', ')
 					+ (kara.series.length > 3 ? '...' : '')
 					: (kara.singers ? kara.singers.slice(0, 3).map(e => e.name).join(', ') + (kara.singers.length > 3 ? '...' : '') : '');
 				const songtypeText = [...kara.songtypes].sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
@@ -193,8 +193,12 @@ class PlayerBox extends Component<IProps, IState> {
 					const typeData = tagTypes['VERSIONS'];
 					if (kara.versions) {
 						return kara[typeData.karajson].sort(sortTagByPriority).map(tag => {
-							return <div key={tag.tid} className={`tag inline ${typeData.color}`} title={getTagInLocale(tag)}>
-								{getTagInLocale(tag)}
+							return <div
+								key={tag.tid}
+								className={`tag inline ${typeData.color}`}
+								title={getTagInLocale(this.context?.globalState.settings.data, tag)}
+							>
+								{getTagInLocale(this.context?.globalState.settings.data, tag)}
 							</div>;
 						});
 					} else {
@@ -205,7 +209,7 @@ class PlayerBox extends Component<IProps, IState> {
 				if (this.props.onKaraChange) this.props.onKaraChange(kara.kid);
 				this.setState({
 					...PlayerBox.resetBox,
-					title: kara.title,
+					title: getTitleInLocale(this.context.globalState.settings.data, kara.titles),
 					subtitle: `${serieText} - ${songtypeText}${songorderText}`,
 					length: kara.duration,
 					kid: kara.kid,

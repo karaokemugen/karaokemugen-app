@@ -49,7 +49,6 @@ type typesAttrUser =
 	| 'last_login_at'
 	| 'flag_online'
 	| 'onlineToken'
-	| 'series_lang_mode'
 	| 'main_series_lang'
 	| 'fallback_series_lang'
 	| 'securityCode'
@@ -365,40 +364,29 @@ class ProfilModal extends Component<IProps, IState> {
 							<div className="profileLine row">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-globe" />
-									<label htmlFor="series_lang_mode">{i18next.t('SERIE_NAME_MODE')}</label>
+									<label>{i18next.t('MODAL.PROFILE_MODAL.MAIN_SONG_NAME_LANG')}</label>
 								</div>
-								<select name="series_lang_mode" onChange={this.onClickSelect}
-									defaultValue={this.state.user.series_lang_mode.toString()}>
-									<option value={'-1'}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
-									<option value={'0'}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-									<option value={'3'}>{i18next.t('SERIE_NAME_MODE_USER_PROFILE')}</option>
-									<option value={'4'}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
-								</select>
+								<div>
+									<Autocomplete
+										value={this.state.user.main_series_lang}
+										options={getListLanguagesInLocale()}
+										forceTop={true}
+										onChange={(value) => this.changeAutocomplete('main_series_lang', value)} />
+								</div>
 							</div>
-							{this.state.user.series_lang_mode === 4 ?
-								<React.Fragment>
-									<div className="profileLine row">
-										<label>{i18next.t('MAIN_SERIES_LANG')}</label>
-										<div>
-											<Autocomplete
-												value={this.state.user.main_series_lang}
-												options={getListLanguagesInLocale()}
-												forceTop={true}
-												onChange={(value) => this.changeAutocomplete('main_series_lang', value)} />
-										</div>
-									</div>
-									<div className="profileLine row">
-										<label>{i18next.t('FALLBACK_SERIES_LANG')}</label>
-										<div>
-											<Autocomplete
-												value={this.state.user.fallback_series_lang}
-												options={getListLanguagesInLocale()}
-												forceTop={true}
-												onChange={(value) => this.changeAutocomplete('fallback_series_lang', value)} />
-										</div>
-									</div>
-								</React.Fragment> : null
-							}
+							<div className="profileLine row">
+								<div className="profileLabel">
+									<i className="fas fa-fw fa-globe" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.FALLBACK_SONG_NAME_LANG')}</label>
+								</div>
+								<div>
+									<Autocomplete
+										value={this.state.user.fallback_series_lang}
+										options={getListLanguagesInLocale()}
+										forceTop={true}
+										onChange={(value) => this.changeAutocomplete('fallback_series_lang', value)} />
+								</div>
+							</div>
 							<div className="profileButtonLine">
 								<button type="button" className="btn btn-action btn-save"
 									onClick={async () => {

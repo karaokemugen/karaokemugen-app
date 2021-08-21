@@ -18,7 +18,7 @@ VALUES (
 export const sqlgetWhitelistContents = (filterClauses: string[], limitClause: string, offsetClause: string, additionalFrom: string[]) => `
 SELECT
   ak.pk_kid AS kid,
-  ak.title AS title,
+  ak.titles AS titles,
   ak.songorder AS songorder,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
@@ -45,7 +45,7 @@ SELECT
   ${additionalFrom.join('')}
   WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, lower(unaccent(ak.title))
+ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
 ${limitClause}
 ${offsetClause}
 `;

@@ -59,7 +59,6 @@ export function editUser(user: User) {
 		email: user.email,
 		type: user.type,
 		old_login: user.old_login,
-		series_lang_mode: user.series_lang_mode,
 		main_series_lang: user.main_series_lang,
 		fallback_series_lang: user.fallback_series_lang,
 		flag_tutorial_done: user.flag_tutorial_done || false,

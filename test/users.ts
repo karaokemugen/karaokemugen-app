@@ -105,7 +105,6 @@ function testUser(u: User, full?: boolean) {
 		if (u.main_series_lang) {
 			expect(allLangs).to.include(u.main_series_lang);
 		}
-		expect(u.series_lang_mode).to.be.a('number').and.at.least(-1).and.at.most(3);
 		expect(u.url).to.satisfy((e:any) => typeof e === 'string' || e === null);
 	}
 }

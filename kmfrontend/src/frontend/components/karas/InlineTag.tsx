@@ -5,14 +5,13 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import GlobalContext, { GlobalContextInterface } from '../../../store/context';
-import { getSerieLanguage, getTagInLocale } from '../../../utils/kara';
+import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { View } from '../../types/view';
 
 interface Props {
 	tag: DBKaraTag;
 	className?: string;
-	karaLang?: string;
 	scope: string;
 	tagType: number;
 	changeView: (
@@ -66,19 +65,22 @@ export default function InlineTag(props: Props) {
 	const context: GlobalContextInterface = useContext(GlobalContext);
 
 	return (
-		<div className={`inline-tag ${props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? 'public' : ''}`} ref={node}>
+		<div
+			className={`inline-tag ${props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? 'public' : ''}`}
+			ref={node}
+		>
 			<span className={props.className} onClick={() => {
 				if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2) setShowPopup(!showPopup);
 			}}>
-				{props.tagType === 1 ? getSerieLanguage(context.globalState.settings.data, props.tag, props.karaLang)
-					:getTagInLocale(props.tag)}
+				{getTagInLocale(context.globalState.settings.data, props.tag)}
 			</span>
 			{showPopup ? <div className="tag-popup">
-				<p className="tag-name">{getTagInLocale(props.tag)}</p>
+				<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag)}</p>
 				<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', {count: count})}</p>
 				<p className="tag-action">
 					<button className="btn" onClick={goToTagSearch}>
-						<i className="fas fa-fw fa-search" />{i18next.t('INLINE_TAG.SEARCH', {tag: getTagInLocale(props.tag)})}
+						<i className="fas fa-fw fa-search" />
+						{i18next.t('INLINE_TAG.SEARCH', {tag: getTagInLocale(context.globalState.settings.data, props.tag)})}
 					</button>
 				</p>
 			</div> : null}

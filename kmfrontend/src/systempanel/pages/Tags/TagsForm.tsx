@@ -1,14 +1,14 @@
-import { MinusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Alert, Button, Cascader, Checkbox, Col, Divider, Form, Input, InputNumber,message, Row, Select, Tag, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Alert, Button, Cascader, Checkbox, Divider, Form, Input, InputNumber, message, Select, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { DBTag } from '../../../../../src/lib/types/database/tag';
-import { getLanguagesInLocaleFromCode, getListLanguagesInLocale } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import EditableTagGroupAlias from '../../components/EditableTagGroupAlias';
+import LanguagesList from '../../components/LanguagesList';
 
 interface TagsFormProps {
 	tags: Array<DBTag>,
@@ -19,8 +19,7 @@ interface TagsFormProps {
 }
 
 interface TagsFormState {
-	i18n: any[];
-	languages: any[];
+	i18n: Record<string, string>;
 	selectVisible: boolean;
 	mergeSelection: string;
 	repositoriesValue: string[];
@@ -29,15 +28,13 @@ interface TagsFormState {
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {
 	formRef = React.createRef<FormInstance>();
-	select: any;
 
 	constructor(props) {
 		super(props);
 		this.getRepositories();
 
 		this.state = {
-			i18n: this.props.tag?.i18n ? Object.keys(this.props.tag.i18n) : [],
-			languages: getListLanguagesInLocale(),
+			i18n: this.props.tag?.i18n ? this.props.tag.i18n : {},
 			selectVisible: false,
 			mergeSelection: '',
 			repositoriesValue: null,
@@ -55,18 +52,9 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		);
 	};
 
-	showSelect = () => {
-		this.setState({ selectVisible: true }, () => this.select.focus());
-	};
-
 	handleSubmit = (values) => {
-		if (this.state.i18n.length > 0) {
-			const i18nField = {};
-			for (const lang of this.state.i18n) {
-				i18nField[lang] = values[`lang_${lang}`];
-				delete values[`lang_${lang}`];
-			}
-			values.i18n = i18nField;
+		if (Object.keys(this.state.i18n).length > 0) {
+			values.i18n = this.state.i18n;
 			values.tid = this.props.tag?.tid;
 			this.props.save(values);
 		} else {
@@ -81,24 +69,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	handleTagMerge = (e) => {
 		this.props.mergeAction(this.props.tag.tid, this.state.mergeSelection);
 	}
-
-	// i18n dynamic management
-	addLang = (lang) => {
-		if (!this.state.i18n.includes(lang)) {
-			const newI18n = this.state.i18n.concat([lang]);
-			this.setState({ i18n: newI18n });
-		}
-		this.setState({
-			selectVisible: false
-		});
-	};
-
-	removeLang = (lang) => {
-		if (this.state.i18n.includes(lang)) {
-			const newI18n = this.state.i18n.filter(e => e !== lang);
-			this.setState({ i18n: newI18n });
-		}
-	};
 
 	mergeCascaderOption = () => {
 		const options = Object.keys(tagTypes).map(type => {
@@ -128,27 +98,23 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	}
 
 	render() {
-		const initialValues = {
-			name: this.props.tag?.name,
-			short: this.props.tag?.short,
-			types: this.props.tag?.types ? this.props.tag.types : [],
-			repository: this.props.tag?.repository ? this.props.tag.repository :
-				(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
-			aliases: this.props.tag?.aliases,
-			problematic: this.props.tag?.problematic,
-			noLiveDownload: this.props.tag?.noLiveDownload,
-			priority: this.props.tag?.priority ? this.props.tag?.priority : 10,
-			karaFileTag: this.props.tag?.karaFileTag,
-		};
-		for (const lang of this.state.i18n) {
-			initialValues['lang_' + lang] = this.props.tag?.i18n[lang];
-		}
 		return (
 			<Form
 				ref={this.formRef}
 				onFinish={this.handleSubmit}
 				className='tag-form'
-				initialValues={initialValues}
+				initialValues={{
+					name: this.props.tag?.name,
+					short: this.props.tag?.short,
+					types: this.props.tag?.types ? this.props.tag.types : [],
+					repository: this.props.tag?.repository ? this.props.tag.repository :
+						(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
+					aliases: this.props.tag?.aliases,
+					problematic: this.props.tag?.problematic,
+					noLiveDownload: this.props.tag?.noLiveDownload,
+					priority: this.props.tag?.priority ? this.props.tag?.priority : 10,
+					karaFileTag: this.props.tag?.karaFileTag
+				}}
 			>
 				<Form.Item
 					label={(
@@ -256,65 +222,18 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					labelCol={{ flex: '150px' }}
+					labelCol={{ flex: '0 1 300px' }}
 					label={(<span>{i18next.t('TAGS.I18N')}&nbsp;
 						<Tooltip title={i18next.t('TAGS.I18N_TOOLTIP')}>
 							<QuestionCircleOutlined />
 						</Tooltip>
 					</span>)}
 				>
-				</Form.Item>
-
-				{this.state.i18n.map(langKey => (
-					<Row key={langKey} style={{ maxWidth: '65%', minWidth: '150px' }}>
-						<Col style={{ width: '80%' }}>
-							<Form.Item
-								label={getLanguagesInLocaleFromCode(langKey)}
-								labelCol={{ flex: '0 1 300px' }}
-								name={`lang_${langKey}`}
-								rules={[{
-									required: true,
-									message: i18next.t('TAGS.I18N_ERROR')
-								}]}
-							>
-								<Input placeholder={i18next.t('TAGS.I18N_NAME')} />
-							</Form.Item>
-						</Col>
-						<Col style={{ marginLeft: '10px' }}>
-							{Object.keys(this.state.i18n).length > 1 ? (
-								<Tooltip title={i18next.t('TAGS.I18N_DELETE')}>
-									<MinusCircleOutlined
-										className="dynamic-delete-button"
-										onClick={() => this.removeLang(langKey)}
-									/>
-								</Tooltip>
-							) : null}
-						</Col>
-					</Row>
-				))}
-				<Form.Item
-					label={i18next.t('TAGS.I18N_SELECT')}
-					labelCol={{ flex: '0 1 300px' }}
-				>
-					{this.state.selectVisible ?
-						<Select style={{ maxWidth: '40%', minWidth: '150px' }}
-							showSearch
-							optionFilterProp="children"
-							ref={select => this.select = select}
-							onChange={value => this.addLang(value)}>
-							{this.state.languages.map(lang => (
-								<Select.Option key={lang.value} value={lang.value}>
-									{lang.label} ({lang.value.toUpperCase()})
-								</Select.Option>))}
-						</Select> :
-						<Tag
-							onClick={this.showSelect}
-							style={{ borderStyle: 'dashed' }}
-						>
-							<PlusOutlined />{i18next.t('ADD')}
-						</Tag>
-					}
-				</Form.Item>
+				</Form.Item>	
+				<LanguagesList
+					value={this.state.i18n}
+					onChange={(i18n) => this.setState({i18n})}
+				/>
 				<Form.Item hasFeedback
 					label={(
 						<span>{i18next.t('TAGS.PRIORITY')}&nbsp;
