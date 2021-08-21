@@ -135,7 +135,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 							`${getTagInLocale(this.context?.globalState.settings.data, tag)} (${tag.name})`}</Tag>)}
 					{this.state.inputVisible && (
 						<Form.Item
-							wrapperCol={{ span: 10 }}
+							wrapperCol={{ span: 14 }}
 						>
 							<AutoComplete
 								ref={input => this.input = input}
