@@ -148,6 +148,7 @@ pkg_win:
   image: electronuserland/builder:wine-mono
   tags:
 # This must be run on a linux-only host. Weirdly this fails badly on Windows hosts.
+# Let's try this again sometime
     - linux
     - amd64
   cache:
@@ -168,7 +169,7 @@ pkg_win:
     - test
   script:
     - rm -Rf release_win
-    - yarn add --dev electron-builder
+    - yarn add --dev electron-builder@22.11.11
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-5.x.tar.gz | tar xz

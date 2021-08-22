@@ -25,14 +25,18 @@ export default function MigratePage() {
 	const [migrations, setMigrations] = useState<MigrationsFrontend[]>([]);
 
 	const getMigrations = () => {
-		commandBackend('getMigrationsFrontend').then(res => {
-			const migrationsToDo: MigrationsFrontend[] = res.filter(el => !el.flag_done);
-			if (migrationsToDo.length === 0) {
-				history.push('/welcome');
-			} else {
-				setMigrations(migrationsToDo);
-			}
-		});
+		try {
+			commandBackend('getMigrationsFrontend').then(res => {
+				const migrationsToDo: MigrationsFrontend[] = res.filter(el => !el.flag_done);
+				if (migrationsToDo.length === 0) {
+					history.push('/welcome');
+				} else {
+					setMigrations(migrationsToDo);
+				}
+			});
+		} catch (e) {
+			history.push('/welcome');
+		}
 	};
 
 	useEffect(getMigrations, []);

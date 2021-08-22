@@ -42,7 +42,13 @@ class WelcomePage extends Component<unknown, IState> {
 	}
 
 	async componentDidMount() {
-		if ((await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0) {
+		let migrationsToDo;
+		try {
+			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0;
+		} catch (e) {
+			migrationsToDo = false;
+		}
+		if (migrationsToDo) {
 			window.location.assign('/migrate');
 		} else if (this.context?.globalState.settings.data.config?.Online.Stats === undefined
 			|| this.context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {

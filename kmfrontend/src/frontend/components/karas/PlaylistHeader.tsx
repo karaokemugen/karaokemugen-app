@@ -177,19 +177,23 @@ class PlaylistHeader extends Component<IProps, IState> {
 			data = { plaid: this.props.plaid };
 		}
 		if (url) {
-			const response = await commandBackend(url, data);
-			const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response, null, 4));
-			const dlAnchorElem = document.getElementById('downloadAnchorElem');
-			if (dlAnchorElem) {
-				dlAnchorElem.setAttribute('href', dataStr);
-				if (this.props.plaid === nonStandardPlaylists.blc) {
-					dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.bLSet?.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmblc');
-				} else if (this.props.plaid === nonStandardPlaylists.favorites) {
-					dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.context.globalState.auth.data.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
-				} else {
-					dlAnchorElem.setAttribute('download', ['KaraMugen', (this.props.playlistInfo as DBPL).name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+			try {
+				const response = await commandBackend(url, data);
+				const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(response, null, 4));
+				const dlAnchorElem = document.getElementById('downloadAnchorElem');
+				if (dlAnchorElem) {
+					dlAnchorElem.setAttribute('href', dataStr);
+					if (this.props.plaid === nonStandardPlaylists.blc) {
+						dlAnchorElem.setAttribute('download', ['KaraMugen', this.props.bLSet?.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmblc');
+					} else if (this.props.plaid === nonStandardPlaylists.favorites) {
+						dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.context.globalState.auth.data.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
+					} else {
+						dlAnchorElem.setAttribute('download', ['KaraMugen', (this.props.playlistInfo as DBPL).name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+					}
+					dlAnchorElem.click();
 				}
-				dlAnchorElem.click();
+			} catch (e) {
+				// already display
 			}
 		}
 	};

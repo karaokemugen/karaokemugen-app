@@ -7,6 +7,7 @@ import React, { Component, createRef } from 'react';
 import { SortableContainer } from 'react-sortable-hoc';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
 
+import { DownloadedStatus } from '../../../../../src/lib/types/database/download';
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { BLCSet } from '../../../../../src/types/blacklist';
 import { DBBlacklist, DBBLC } from '../../../../../src/types/database/blacklist';
@@ -194,9 +195,13 @@ class Playlist extends Component<IProps, IState> {
 		username: string,
 		requester: string,
 		flag_upvoted: boolean,
-		plc_id: number[]
+		plc_id: number[],
+		download_status: DownloadedStatus
 	}[]) => {
-		if ((this.state.plaid === nonStandardPlaylists.library || this.state.plaid === nonStandardPlaylists.favorites) && (this.state.data as KaraList)?.content) {
+		if ((this.state.plaid === nonStandardPlaylists.library
+			|| this.state.plaid === nonStandardPlaylists.favorites
+			|| (event.length > 0 && event[0].download_status))
+			&& (this.state.data as KaraList)?.content) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				for (const karaUpdated of event) {
@@ -207,13 +212,15 @@ class Playlist extends Component<IProps, IState> {
 								kara.my_public_plc_id = [];
 							}
 						}
-						if (karaUpdated.username === this.context.globalState.auth.data.username) {
-							if (karaUpdated.flag_upvoted === false || karaUpdated.flag_upvoted === true) {
-								kara.flag_upvoted = karaUpdated.flag_upvoted;
-							}
+						if (karaUpdated.username === this.context.globalState.auth.data.username
+							&& karaUpdated.flag_upvoted === false || karaUpdated.flag_upvoted === true) {
+							kara.flag_upvoted = karaUpdated.flag_upvoted;
 						}
 						if (karaUpdated.requester === this.context.globalState.auth.data.username) {
 							kara.my_public_plc_id = karaUpdated.plc_id;
+						}
+						if (karaUpdated.download_status) {
+							kara.download_status = karaUpdated.download_status;
 						}
 					}
 				}
@@ -313,10 +320,10 @@ class Playlist extends Component<IProps, IState> {
 							this.props.toggleKaraDetail(kara, idPlaylist, index);
 						}}
 						sortable={this.state.searchType !== 'recent'
-						&& this.state.searchType !== 'requested'
-						&& !this.state.searchValue
-						&& !this.state.orderByLikes
-						&& !this.getFilterValue(this.props.side)}
+							&& this.state.searchType !== 'requested'
+							&& !this.state.searchValue
+							&& !this.state.orderByLikes
+							&& !this.getFilterValue(this.props.side)}
 					/>
 				</CellMeasurer>
 			);
@@ -372,9 +379,13 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	loadBLSet = async (idBLSet?: number) => {
-		const bLSetList = await commandBackend('getBLCSets');
-		const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
-		this.setState({ bLSetList: bLSetList, bLSet: bLSet }, () => setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id));
+		try {
+			const bLSetList = await commandBackend('getBLCSets');
+			const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
+			this.setState({ bLSetList: bLSetList, bLSet: bLSet }, () => setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id));
+		} catch (e) {
+			// already display
+		}
 	}
 
 	changeIdPlaylist = async (plaid: string, idBLSet?: number) => {
@@ -634,7 +645,7 @@ class Playlist extends Component<IProps, IState> {
 		return {
 			q: ((this.state.searchCriteria && criterias[this.state.searchCriteria] && this.state.searchValue) ?
 				`${criterias[this.state.searchCriteria]}:${this.state.searchValue}` : undefined),
-			order: this.state.searchType !== 'search' ? this.state.searchType:undefined,
+			order: this.state.searchType !== 'search' ? this.state.searchType : undefined,
 			orderByLikes: this.state.orderByLikes || undefined
 		};
 	}
@@ -656,7 +667,7 @@ class Playlist extends Component<IProps, IState> {
 					commandBackend('addKaraToPlaylist', {
 						kids: karaList,
 						plaid: this.props.plaidTo
-					}).catch(() => {});
+					}).catch(() => { });
 				}, '');
 			}
 		}, '1');
@@ -675,7 +686,7 @@ class Playlist extends Component<IProps, IState> {
 			kids: karaList,
 			requestedby: this.context.globalState.auth.data.username,
 			plaid: this.props.plaidTo
-		}).catch(() => {});
+		}).catch(() => { });
 	};
 
 	addCheckedKaras = async (_event?: any, pos?: number) => {
@@ -730,7 +741,7 @@ class Playlist extends Component<IProps, IState> {
 		} else if (this.props.plaidTo === nonStandardPlaylists.favorites) {
 			url = 'addFavorites';
 			data = {
-				kids: stateData.content.filter(a => a.checked).map(a => a.kid)
+				kids: idsKara
 			};
 		}
 		try {
@@ -782,7 +793,7 @@ class Playlist extends Component<IProps, IState> {
 		if (url) {
 			try {
 				await commandBackend(url, data);
-				this.setState({checkedKaras: 0, selectAllKarasChecked: false});
+				this.setState({ checkedKaras: 0, selectAllKarasChecked: false });
 			} catch (e) {
 				// already display
 			}
@@ -799,7 +810,7 @@ class Playlist extends Component<IProps, IState> {
 		await commandBackend('deleteFavorites', {
 			kids: listKara.map(a => a.kid)
 		});
-		this.setState({selectAllKarasChecked: false});
+		this.setState({ selectAllKarasChecked: false });
 	};
 
 	acceptCheckedKara = async () => {
@@ -813,8 +824,8 @@ class Playlist extends Component<IProps, IState> {
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_accepted: true
-		}).catch(() => {});
-		this.setState({selectAllKarasChecked: false});
+		}).catch(() => { });
+		this.setState({ selectAllKarasChecked: false });
 	};
 
 
@@ -829,12 +840,12 @@ class Playlist extends Component<IProps, IState> {
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_refused: true
-		}).catch(() => {});
-		this.setState({selectAllKarasChecked: false});
+		}).catch(() => { });
+		this.setState({ selectAllKarasChecked: false });
 	};
 
 	downloadAllMedias = async () => {
-		const response = await commandBackend(this.getPlaylistUrl(), {plaid: this.state.plaid});
+		const response = await commandBackend(this.getPlaylistUrl(), { plaid: this.state.plaid });
 		const karaList: KaraDownloadRequest[] = response.content
 			.filter(kara => kara.download_status === 'MISSING')
 			.map((kara: KaraElement) => {
@@ -846,7 +857,7 @@ class Playlist extends Component<IProps, IState> {
 					repository: kara.repository
 				};
 			});
-		if (karaList.length > 0) commandBackend('addDownloads', {downloads: karaList}).catch(() => { });
+		if (karaList.length > 0) commandBackend('addDownloads', { downloads: karaList }).catch(() => { });
 	}
 
 	onChangeTags = (type: number | string, value: string) => {
@@ -1001,7 +1012,7 @@ class Playlist extends Component<IProps, IState> {
 													<this.SortableList
 														{...[this.state.forceUpdate]}
 														pressDelay={0}
-														helperClass={`playlist-dragged-item ${this.props.side > 1 ? 'side2':'side1'}`}
+														helperClass={`playlist-dragged-item ${this.props.side > 1 ? 'side2' : 'side1'}`}
 														useDragHandle={true}
 														ref={registerChild}
 														onRowsRendered={onRowsRendered}

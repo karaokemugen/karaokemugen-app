@@ -146,6 +146,8 @@ Player:
   Screen: 0
   # Stay on top
   StayOnTop: true
+  # Enable/Disable media keys on your keyboard
+  KeyboardMediaShortcuts: true
   PIP:
     # Picture In Picture, like a windowed mode
     Enabled: true

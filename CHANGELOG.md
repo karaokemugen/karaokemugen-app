@@ -1,3 +1,30 @@
+# v5.1.23 - 22/08/2021
+
+## New features
+
+- Media keys usage can now be enabled/disabled in the system panel's system preferences.
+- Added Japanese Romaji language for tags
+- Stopped using loudnorm on pause/intermission music provided by the user.
+
+## Fixes
+
+- Prevent streamer files writing from being executed when app isn't ready yet
+- Fixed "Change interface" button in system panel not displaying properly
+- Fixed downloaded status icon update in operator panel.
+- Removed sentry error report if updateMedias is already running
+- Fixed moving media folder in repositories
+- Fixed ssetup always running repository move even if not asked to
+- getKaras API can now be used with restricted interface mode
+- Caught some frontend errors
+- Fixed streamer files not able to write themselves because folders weren't created properly sometimes
+- Fixed some edge cases where windows weren't properly closed on app exit.
+- Fixed cases for weird characters in filenames (thanks Japan)
+- Fixed database dump fail log
+
+## Other
+
+- Removed i18n tag validator and lang validator in preparation for 6.x
+
 # v5.1.21 - 24/07/2021
 
 ## Fixes

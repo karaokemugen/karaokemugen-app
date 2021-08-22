@@ -34,32 +34,36 @@ class DeletePlaylistModal extends Component<IProps, IState> {
 	}
 
 	deletePlaylist = async () => {
-		if (this.state.plaidChosen) {
-			await commandBackend(this.props.plaid === nonStandardPlaylists.blc ? 'editBLCSet' : 'editPlaylist', {
-				set_id: this.state.plaidChosen,
-				flag_current: this.props.plaid === nonStandardPlaylists.blc ? true : (this.props.playlistInfo?.flag_current
-					|| this.props.context.globalState.settings.data.state.currentPlaid === this.state.plaidChosen),
-				flag_public: this.props.playlistInfo?.flag_public
-					|| this.props.context.globalState.settings.data.state.publicPlaid === this.state.plaidChosen,
-				plaid: this.state.plaidChosen
-			});
-			await setSettings(this.props.context.globalDispatch);
-		} if (this.props.plaid === nonStandardPlaylists.blc) {
-			commandBackend('deleteBLCSet', {
-				set_id: this.props.bLSet?.blc_set_id
-			});
-			this.props.changeIdPlaylist(nonStandardPlaylists.blc);
-		} else {
-			this.props.changeIdPlaylist(this.state.plaidChosen ?
-				this.state.plaidChosen :
-				(this.props.plaidTo === this.props.context.globalState.settings.data.state.publicPlaid ?
-					-1 :
-					this.props.context.globalState.settings.data.state.publicPlaid));
-			commandBackend('deletePlaylist', {
-				plaid: this.props.plaid
-			});
+		try {
+			if (this.state.plaidChosen) {
+				await commandBackend(this.props.plaid === nonStandardPlaylists.blc ? 'editBLCSet' : 'editPlaylist', {
+					set_id: this.state.plaidChosen,
+					flag_current: this.props.plaid === nonStandardPlaylists.blc ? true : (this.props.playlistInfo?.flag_current
+						|| this.props.context.globalState.settings.data.state.currentPlaid === this.state.plaidChosen),
+					flag_public: this.props.playlistInfo?.flag_public
+						|| this.props.context.globalState.settings.data.state.publicPlaid === this.state.plaidChosen,
+					plaid: this.state.plaidChosen
+				});
+				await setSettings(this.props.context.globalDispatch);
+			} if (this.props.plaid === nonStandardPlaylists.blc) {
+				commandBackend('deleteBLCSet', {
+					set_id: this.props.bLSet?.blc_set_id
+				});
+				this.props.changeIdPlaylist(nonStandardPlaylists.blc);
+			} else {
+				this.props.changeIdPlaylist(this.state.plaidChosen ?
+					this.state.plaidChosen :
+					(this.props.plaidTo === this.props.context.globalState.settings.data.state.publicPlaid ?
+						-1 :
+						this.props.context.globalState.settings.data.state.publicPlaid));
+				commandBackend('deletePlaylist', {
+					plaid: this.props.plaid
+				});
+			}
+			this.closeModal();
+		} catch (e) {
+			// already display
 		}
-		this.closeModal();
 	};
 
 	closeModal = () => {

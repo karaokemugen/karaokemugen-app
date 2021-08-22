@@ -752,7 +752,6 @@ class Players {
 				await this.exec({command: ['loadfile', backgroundImageFile, 'replace', {
 					'force-media-title': 'Background',
 					'audio-files-set': backgroundMusicFile,
-					af: 'loudnorm',
 					aid: '1',
 					'loop-file': 'inf',
 					pause: 'yes'

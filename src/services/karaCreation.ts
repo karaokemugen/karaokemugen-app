@@ -35,10 +35,15 @@ export async function editKara(kara: Kara, refresh = true) {
 		const oldKara = await getKara(kara.kid, {role: 'admin', username: 'admin'});
 		let mediaFile: string;
 		let mediaDir: string;
+		// If mediafile_orig is present, our user has uploaded a new song
 		if (kara.mediafile_orig) {
 			mediaFile = resolve(resolvedPathTemp(), kara.mediafile);
-			const mediaPaths = (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
-			mediaDir = dirname(mediaPaths);
+			try {
+				mediaFile = (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
+			} catch(err) {
+				// File probably doesn't exist.
+				logger.warn(`Media file ${oldKara.mediafile} does not exist, ignoring.`, {service: 'KaraGen'});
+			}
 		} else {
 			try {
 				mediaFile = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
@@ -47,6 +52,9 @@ export async function editKara(kara: Kara, refresh = true) {
 				mediaDir = resolvedPathRepos('Medias', kara.repository)[0];
 			}
 		}
+		mediaFile
+			? mediaDir = dirname(mediaFile)
+			: mediaDir = resolvedPathRepos('Medias', kara.repository)[0];
 		let subFile = kara.subfile;
 		let subDir: string;
 		if (kara.subfile) {
@@ -94,7 +102,8 @@ export async function editKara(kara: Kara, refresh = true) {
 				await fs.unlink(oldSubFiles[0]);
 			}
 		}
-		if (newKara.data.mediafile.toLowerCase() !== oldKara.mediafile.toLowerCase()) {
+		// Testing if we managed to get a mediaFile earlier, like, if the old mediaFile existed on disk.
+		if (mediaFile && newKara.data.mediafile.toLowerCase() !== oldKara.mediafile.toLowerCase()) {
 			try {
 				const oldMediaFiles = await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository));
 				if (kara.noNewVideo) {

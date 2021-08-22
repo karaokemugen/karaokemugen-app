@@ -122,7 +122,7 @@ export async function dumpPG() {
 		});
 		logger.info('Database dumped to file', {service: 'DB'});
 	} catch(err) {
-		logger.error('Database restoration failed', {service: 'DB', obj: err});
+		logger.error('Database dump failed', {service: 'DB', obj: err});
 		sentry.error(err);
 		throw `Dump failed : ${err}`;
 	}

@@ -13,6 +13,7 @@ import {resolve} from 'path';
 import { listUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
+import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {RecursivePartial} from '../lib/types';
 import {configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
 import {asyncRequired,relativePath} from '../lib/utils/files';
@@ -132,6 +133,9 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// All set, ready to go!
 	const config = setConfig(newConfig);
 
+	// Toggling media shortcuts
+	if (!oldConfig.Player.KeyboardMediaShortcuts && config.Player.KeyboardMediaShortcuts) registerShortcuts();
+	if (oldConfig.Player.KeyboardMediaShortcuts && !config.Player.KeyboardMediaShortcuts) unregisterShortcuts();
 	// Toggling poll
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch

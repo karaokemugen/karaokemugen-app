@@ -13,7 +13,7 @@ import { runChecklist } from '../middlewares';
 
 export default function karaController(router: SocketIOApp) {
 	router.route('getKaras', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'guest', 'open');
+		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			return await getKaras({
 				filter: req.body?.filter,

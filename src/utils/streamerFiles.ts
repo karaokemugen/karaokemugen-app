@@ -2,8 +2,10 @@ import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
 import {resolve} from 'path';
+import { DBReady } from '../dao/database';
 
 import {getConfig, resolvedPathStreamFiles} from '../lib/utils/config';
+import { asyncCheckOrMkdir } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import {getSongSeriesSingers, getSongVersion} from '../services/kara';
 import {getPlaylistInfo} from '../services/playlist';
@@ -101,8 +103,9 @@ const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 ]);
 
 export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
-	if (!getConfig().Karaoke.StreamerMode.Enabled && !getState().ready) return;
+	if (!getConfig().Karaoke.StreamerMode.Enabled || !getState().ready || !DBReady) return;
 	try {
+		await asyncCheckOrMkdir(resolvedPathStreamFiles());
 		if (only) {
 			await fnMap.get(only)();
 		} else {
