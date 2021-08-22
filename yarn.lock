@@ -449,13 +449,6 @@
   dependencies:
     i18next "^19.7.0"
 
-"@types/i18next-node-fs-backend@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@types/i18next-node-fs-backend/-/i18next-node-fs-backend-2.1.1.tgz#56141c99f55b8e6dee27bec77a4b2711dd9c1d49"
-  integrity sha512-ESvH90OICQkKU3yuuRzF6YfHt5KACE55FOiUM59mMGnC+h03lHGdEYo3z3THbwS5FdMskLyIs2O7f6Oaz8P9sw==
-  dependencies:
-    i18next ">=17.0.11"
-
 "@types/ignore-walk@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@types/ignore-walk/-/ignore-walk-3.0.2.tgz#f8f28fd6deced08fd5e4be883ee4a10bf5d0848b"
@@ -2714,7 +2707,7 @@ i18next-scanner@^3.0.0:
     vinyl "^2.2.0"
     vinyl-fs "^3.0.1"
 
-i18next@*, i18next@>=17.0.11, i18next@^20.4.0:
+i18next@*, i18next@^20.4.0:
   version "20.4.0"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-20.4.0.tgz#6897229a7898e23f3c4885f10315c978b594d3b9"
   integrity sha512-89iWWJudmaHJwzIdJ/1eu98GtsJnwBhOUWwlAre70itPMuTE/NTPtgVeaS1CGaB8Q3XrYBGpEqlq4jsScDx9kg==
