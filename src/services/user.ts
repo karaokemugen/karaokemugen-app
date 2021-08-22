@@ -3,7 +3,6 @@ import {createHash} from 'crypto';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import {decode,encode} from 'jwt-simple';
-import {has as hasLang} from 'langs';
 import deburr from 'lodash.deburr';
 import {resolve} from 'path';
 import randomstring from 'randomstring';
@@ -98,8 +97,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.location) user.location = null;
 		if (!user.language) user.language = getConfig().App.Language;
 		if (!user.nickname) user.nickname = currentUser.nickname;
-		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw {code: 400};
-		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw {code: 400};
+		console.log(user);
 		if (user.type === 0 && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
 		if (user.type !== 0 && !user.type) user.type = currentUser.type;
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
