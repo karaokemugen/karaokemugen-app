@@ -220,7 +220,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 12 }}
 					name="mediafile"
 					rules={[{
@@ -254,7 +254,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 12 }}
 					name="subfile"
 				>
@@ -282,7 +282,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 				>
 				</Form.Item>
 				<LanguagesList
@@ -297,7 +297,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="versions"
 				>
@@ -315,7 +315,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 14 }}
 					rules={[{
 						required: this.state.serieSingersRequired,
@@ -334,7 +334,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.SONGTYPES')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10, offset: 0 }}
 					name="songtypes"
 					rules={[{
@@ -357,7 +357,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 1 }}
 					name="songorder"
 				>
@@ -369,7 +369,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.LANGUAGES')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
 					rules={[{
 						required: true,
@@ -390,7 +390,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 2 }}
 					name="year"
 				>
@@ -403,7 +403,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.SINGERS_BY')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
 					rules={[{
 						required: this.state.serieSingersRequired,
@@ -428,7 +428,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
 					name="songwriters"
 				>
@@ -445,7 +445,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
 					name="creators"
 				>
@@ -462,7 +462,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
 					rules={[{
 						required: true,
@@ -477,7 +477,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.FAMILIES')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="families"
 				>
@@ -489,7 +489,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.PLATFORMS')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="platforms"
 				>
@@ -501,7 +501,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.GENRES')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="genres"
 				>
@@ -513,7 +513,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.ORIGINS')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="origins"
 				>
@@ -525,7 +525,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.MISC')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="misc"
 				>
@@ -543,7 +543,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					)}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="groups"
 				>
@@ -556,7 +556,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				{this.state.repositoriesValue ?
 					<Form.Item
 						label={i18next.t('KARA.REPOSITORY')}
-						labelCol={{ flex: '0 1 200px' }}
+						labelCol={{ flex: '0 1 220px' }}
 						wrapperCol={{ span: 3 }}
 						rules={[{
 							required: true,
@@ -581,7 +581,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 8 }}
 					rules={[{
 						required: false
@@ -602,7 +602,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					valuePropName="checked"
-					labelCol={{ flex: '0 1 210px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 8 }}
 					rules={[{
 						required: false
@@ -613,7 +613,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.CREATED_AT')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 8 }}
 					name="created_at"
 				>
@@ -621,7 +621,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.MODIFIED_AT')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 8 }}
 					name="modified_at"
 				>
@@ -638,7 +638,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<React.Fragment>
 						<Form.Item hasFeedback
 							label={i18next.t('KARA.REPOSITORY')}
-							labelCol={{ flex: '0 1 200px' }}
+							labelCol={{ flex: '0 1 220px' }}
 							wrapperCol={{ span: 8 }}
 						>
 							<Select placeholder={i18next.t('KARA.REPOSITORY')} onChange={(value: string) => this.setState({ repoToCopySong: value })}>
