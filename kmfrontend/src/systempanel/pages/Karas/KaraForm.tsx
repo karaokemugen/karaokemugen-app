@@ -180,8 +180,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	onChangeSingersSeries = () => {
 		this.setState({
-			serieSingersRequired: this.formRef.current.getFieldValue('singers').length === 0
-				&& this.formRef.current.getFieldValue('series').length === 0
+			serieSingersRequired: this.formRef.current.getFieldValue('singers')?.length === 0
+				&& this.formRef.current.getFieldValue('series')?.length === 0
 		}, () => {
 			this.formRef.current.validateFields(['series']);
 			this.formRef.current.validateFields(['singers']);
