@@ -123,7 +123,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 
 	getTagLabel = (tag) => {
 		const labelI18n = getTagInLocale(this.context?.globalState.settings.data, tag);
-		return `${labelI18n} ${labelI18n !== tag.name ? `(${tag.name})` : ''}`;
+		return `${labelI18n}${labelI18n !== tag.name ? ` (${tag.name})` : ''}`;
 
 	}
 
