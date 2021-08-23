@@ -97,7 +97,6 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (!user.location) user.location = null;
 		if (!user.language) user.language = getConfig().App.Language;
 		if (!user.nickname) user.nickname = currentUser.nickname;
-		console.log(user);
 		if (user.type === 0 && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
 		if (user.type !== 0 && !user.type) user.type = currentUser.type;
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
