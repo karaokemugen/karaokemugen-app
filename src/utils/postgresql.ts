@@ -177,6 +177,7 @@ export async function initPGData() {
 		// So if it has, we'll move the whole pg distro out of the way in the OS temp directory
 		// This is a bug postgres doesn't intend to fix because it's windows only
 		// /shrug
+		//		
 		const pgPath = resolve(state.appPath, state.binPath.postgres).replace(/\\bin$/g,'').replace(/\/bin$/, '');
 		if (!asciiRegexp.test(binPath) && state.os === 'win32') {
 			logger.warn('Binaries path is in a non-ASCII path, will copy it to the OS\'s temp folder first to init database', {service: 'DB'});
@@ -224,8 +225,6 @@ export async function updatePGConf() {
 	//Parsing the ini file by hand since it can't be parsed well with ini package
 	pgConf = setConfig(pgConf, 'port', conf.System.Database.port);
 	pgConf = setConfig(pgConf, 'logging_collector', 'on');
-	pgConf = setConfig(pgConf, 'log_directory', `'${resolve(state.dataPath, 'logs/').replace(/\\/g,'/')}'`);
-	pgConf = setConfig(pgConf, 'log_filename', '\'postgresql-%Y-%m-%d.log\'');
 	state.opt.sql
 		? pgConf = setConfig(pgConf, 'log_statement', '\'all\'')
 		: pgConf = setConfig(pgConf, 'log_statement', '\'none\'');
