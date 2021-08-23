@@ -13,12 +13,11 @@ interface IProps {
 export default function LanguagesList(props: IProps) {
 	const [selectVisible, setSelectVisible] = useState<boolean>(false);
 	const [i18n, setI18n] = useState<Record<string, string>>(props.value);
-	const [selectElem, setSelectElem] = useState<any>();
+	const [inputToFocus, setInputToFocus] = useState<string>();
 	const languages = getListLanguagesInLocale();
 
 	function showSelect() {
 		setSelectVisible(true);
-		selectElem?.focus();
 	}
 
 	function addLang(lang) {
@@ -26,6 +25,7 @@ export default function LanguagesList(props: IProps) {
 		newI18n[lang] = '';
 		setI18n(newI18n);
 		setSelectVisible(false);
+		setInputToFocus(lang);
 	}
 
 	function removeLang(lang) {
@@ -54,6 +54,7 @@ export default function LanguagesList(props: IProps) {
 						}]}
 					>
 						<Input
+							autoFocus={inputToFocus === langKey}
 							value={i18n[langKey]}
 							placeholder={i18next.t('TAGS.I18N_NAME')}
 							onChange={(event) => setValueLanguage(event.target.value, langKey)}
@@ -80,7 +81,7 @@ export default function LanguagesList(props: IProps) {
 				<Select style={{ maxWidth: '40%', minWidth: '150px' }}
 					showSearch
 					optionFilterProp="children"
-					ref={select => setSelectElem(select)}
+					autoFocus={selectVisible}
 					onChange={value => addLang(value)}>
 					{languages.map(lang => (
 						<Select.Option key={lang.value} value={lang.value}>
