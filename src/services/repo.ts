@@ -280,6 +280,8 @@ export async function updateZipRepo(name: string) {
 				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {service: 'Repo'});
 				await saveSetting(`commit-${repo.Name}`, null);
 				await updateZipRepo(name);
+				sentry.addErrorInfo('initialCommit', LocalCommit);
+				sentry.error(err);
 			}
 		}
 	}
