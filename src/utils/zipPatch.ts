@@ -107,7 +107,7 @@ export async function applyPatch(patch: string, dir: string) {
 		await patchProcess;
 		return computeFileChanges(patch);
 	} catch (err) {
-		logger.warn('Cannot apply patch from server, fallback to zip full download', {service: 'DiffPatch', obj: err});
-		// throw err;
+		logger.warn('Cannot apply patch from server, fallback to zip full 	download', {service: 'DiffPatch', obj: err});
+		throw err;
 	}
 }
