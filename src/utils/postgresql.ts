@@ -158,13 +158,15 @@ export async function restorePG() {
 		});
 		logger.info('Database restored from file', {service: 'DB'});
 	} catch(err) {
+		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
+		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
 		sentry.error(err);
 		logger.error('Database restoration failed', {service: 'DB', obj: err});
 		throw `Restore failed : ${err}`;
 	}
 }
 
-/** Initialize postgreSQL data directory if it doesn't exist */
+/** 	ialize postgreSQL data directory if it doesn't exist */
 export async function initPGData() {
 	const conf = getConfig();
 	const state = getState();
@@ -177,7 +179,7 @@ export async function initPGData() {
 		// So if it has, we'll move the whole pg distro out of the way in the OS temp directory
 		// This is a bug postgres doesn't intend to fix because it's windows only
 		// /shrug
-		//		
+		//
 		const pgPath = resolve(state.appPath, state.binPath.postgres).replace(/\\bin$/g,'').replace(/\/bin$/, '');
 		if (!asciiRegexp.test(binPath) && state.os === 'win32') {
 			logger.warn('Binaries path is in a non-ASCII path, will copy it to the OS\'s temp folder first to init database', {service: 'DB'});
@@ -208,8 +210,12 @@ export async function initPGData() {
 			});
 		}
 	} catch(err) {
+		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
+		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
 		sentry.error(err);
 		logger.error('Failed to initialize database', {service: 'DB', obj: err});
+		const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
+		logger.error('PostgreSQL error', {service: 'DB', obj: decoder.write(err.stderr)});
 		errorStep(i18next.t('ERROR_INIT_PG_DATA'));
 		throw `Init failed : ${err}`;
 	}
