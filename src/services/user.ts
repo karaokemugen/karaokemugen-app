@@ -407,11 +407,15 @@ async function createDefaultGuests() {
 	if (getState().isTest) maxGuests = 1;
 	logger.debug(`Creating ${maxGuests} new guest accounts`, {service: 'User'});
 	for (let i = 0; i < maxGuests; i++) {
-		if (!await findUserByName(guestsToCreate[i])) await createUser({
-			login: deburr(guestsToCreate[i]),
-			nickname: guestsToCreate[i],
-			type: 2
-		});
+		if (!await findUserByName(guestsToCreate[i])) try {
+			await createUser({
+				login: deburr(guestsToCreate[i]),
+				nickname: guestsToCreate[i],
+				type: 2
+			});
+		} catch(err) {
+			// Not a big problem, it probably means the guest account exists already for some reason.
+		}
 	}
 	logger.debug('Default guest accounts created', {service: 'User'});
 }
