@@ -275,6 +275,17 @@ class PlayerOptions extends Component<IProps, IState> {
 						</div>
 					</div>
 					<div className="settings-line">
+						<label htmlFor="Player.Display.RandomQuotes">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_RANDOMQUOTES')}</span>
+							<br />
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_RANDOMQUOTES_TOOLTIP')}</span>
+						</label>
+						<div>
+							<Switch idInput="Player.Display.RandomQuotes" handleChange={this.onChange}
+								isChecked={this.state.config['Player.Display.RandomQuotes']} />
+						</div>
+					</div>
+					<div className="settings-line">
 						<label htmlFor="Player.Display.ConnectionInfo.Enabled">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_CONNECTION_INFO')}</span>
 							<br />

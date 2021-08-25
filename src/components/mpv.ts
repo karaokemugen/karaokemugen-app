@@ -1250,7 +1250,7 @@ class Players {
 			const state = getState();
 			const ci = conf.Player.Display.ConnectionInfo;
 			let text = '';
-			const catchphrase = playerState.mediaType !== 'song'
+			const catchphrase = playerState.mediaType !== 'song' && conf.Player.Display.RandomQuotes
 				? sample(initializationCatchphrases)
 				: '';
 			if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${state.osURL} !`; // TODO: internationalize the exclamation mark

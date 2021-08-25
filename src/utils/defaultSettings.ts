@@ -114,7 +114,8 @@ export const defaults: Config = {
 				Enabled: true,
 				Host: null,
 				Message: ''
-			}
+			},
+			RandomQuotes: true
 		},
 		Background: '',
 		FullScreen: false,

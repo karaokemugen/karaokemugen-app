@@ -113,6 +113,8 @@ Karaoke:
     Type: 0
 Player:
   Display:
+    # Show random quotes on pause screens
+    RandomQuotes: true
     # Show nickname of the person who requested a song
     Nickname: true
     ConnectionInfo:

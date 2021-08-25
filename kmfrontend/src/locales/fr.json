@@ -280,6 +280,8 @@
 			"PLAYER_MONITOR": "Seconde fenêtre du lecteur vidéo (moniteur)",
 			"PLAYER_MONITOR_TOOLTIP": "Affiche un second lecteur pour l'opérateur s'il ne peut pas voir l'écran principal directement",
 			"PLAYER_LANGUAGE": "Langue des messages et du lecteur vidéo",
+			"DISPLAY_RANDOMQUOTES": "Afficher les citations aléatoires",
+			"DISPLAY_RANDOMQUOTES_TOOLTIP": "Des citations aléatoires sont affichées en bas de l'écran quand le lecteur est arrêté",
 			"DISPLAY_CONNECTION_INFO_HOST": "Forcer le nom d'hôte/Adresse IP",
 			"DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "Si votre adresse IP est mal détectée par Karaoke Mugen, vous pouvez la forcer ici.",
 			"DISPLAY_CONNECTION_INFO_MESSAGE": "Message à afficher à l'écran avant l'URL",

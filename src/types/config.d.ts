@@ -105,7 +105,8 @@ export interface Config {
 				Enabled?: boolean,
 				Host?: string,
 				Message?: string
-			}
+			},
+			RandomQuotes?: boolean
 		},
 		StayOnTop?: boolean,
 		FullScreen?: boolean,
