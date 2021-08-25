@@ -21,6 +21,7 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 				payload: { state: res.state, config: res.config, user: user, version: res.version }
 			});
 		} else {
+			i18next.changeLanguage(langSupport);
 			dispatch({
 				type: Settings.SETTINGS_SUCCESS,
 				payload: { state: res.state, config: res.config, user: {}, version: res.version }
