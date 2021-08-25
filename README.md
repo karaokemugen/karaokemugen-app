@@ -32,7 +32,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 * **Playlist management**: Reorder, shuffle, copy and move songs around between playlists
   * Playlists can be _current_ (used by the video player) and/or _public_ (where users can send songs to)
   * Playlists can be _hidden_ from public interface.
-  * Some songs in the playlist can be "mystery added", these songs will be displayed as "???" to keep the surprise.
+  * Some songs in the playlist can be _hidden_, these songs will be displayed as "???" to keep the surprise to public users.
 * **Blacklist and whitelist system**: Create criterias to ban songs on.
 * **Complete metadata structure for songs**: Singers, songwriters, creators, authors, languages, categorization tags...
   * Complete **filter system** and **search engine** based on the aforementionned metadata.
@@ -44,9 +44,9 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 * **User profiles** with access rights, favorites list, and other info
 * **Web interface** for smartphone/tablet/PC ~~IE6 compatible~~
   * Public interface is for public and can be set to _restricted mode_ to prevent adding songs or in _closed mode_ to prevent access while you prepare your karaoke.
-  * Users can **add the songs** they want from the library.
+  * Users can **add songs** they want from the library.
   * Operators can **organize playlists** and control the player through the operator interface.
-* **Highly customized experience** to tailor the app to your specific needs (in front of a crowd, between friends, for karaoke contests, etc.)
+* **Highly customized experience** to tailor the app to your specific needs (for twitch streams, in front of a crowd, between friends, for karaoke contests, etc.)
 * **Display karaoke information** or operator announcements during song playback
 * **Export/import** playlists, favorites, blacklist criterias sets
 * And **many other things**! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
@@ -54,7 +54,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 ## How it works
 
 * See the **[install](#install)** section below
-* **Launch the app** (see the launch section below). You will be prompted with some questions and you will need to create an account (online or local).
+* **Launch the app** (see the **[launch](#launch)** section below). You will be prompted with some questions and you will need to create an account (online or local).
 * Karaoke Mugen will update its database on startup with the default karaoke repository. You can alternatively create your own repositories and karaokes. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/).
 * Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and **have fun**!
 
@@ -66,7 +66,7 @@ For more information, check out the [documentation site](http://docs.karaokes.mo
 
 The app is multi-platform and works on Linux/Windows/macOS.
 
-For source installs, it requires nodeJS 14 or above, as well as postgresql, mpv and ffmpeg binaries (see below).
+For source installs, it requires nodeJS 14 or above, as well as postgresql, GNU patch, mpv and ffmpeg binaries (see below).
 
 For binary installs, everything's included.
 
@@ -88,23 +88,25 @@ Portable mode is useful if you're storing Karaoke Mugen on a removeable media or
 
 ### Required binaries
 
-mpv (video player), ffmpeg (video/audio processing) and postgreSQL (database) are required by Karaoke Mugen.
+mpv (video player), ffmpeg (video/audio processing), GNU Patch (data updates), and postgreSQL (database) are required by Karaoke Mugen.
 
 #### Depending on your system
+
+You can also paths where to find those binaries in your `config.yml` file if you have them already installed elsewhere on your system and wish to use them. See `config.sample.yml` for examples.
+
+Here are the default places where Karaoke Mugen will look for these binaries below :
 
 ##### Windows / macOS
 
 Binaries must be placed in the `app/bin` folder (create it if it doesn't exist already).
 
-You can also specify paths where to find those binaries in your `config.yml` file if you have them already installed elsewhere on your system and wish to use them. See `config.sample.yml` for examples.
-
 ##### Linux
 
 Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.yml`.
 
-Make sure postgres is launched and ready for use.
+Make sure postgres is launched, [configured](#PostgreSQL) and ready for use.
 
-Linux distributions often package old versions of ffmpeg/mpv, update them first via their own websites' instructions.
+Linux distributions often package old versions of ffmpeg/mpv/postgresql, update them first via their own websites' instructions.
 
 #### mpv
 
@@ -124,9 +126,11 @@ You'll need a version of the GNU patch utility 2.7 or above so Karaoke Mugen can
 
 #### PostgreSQL
 
-PostgreSQL 10.6 or later is required ([postgreSQL's website](https://www.postgresql.org/))
+PostgreSQL 13.x or later is required ([postgreSQL's website](https://www.postgresql.org/))
 
-Later PostgreSQL versions (11+) should work just fine.
+Version 12.x can work but we're bundling 13 with the binary distribution of Karaoke Mugen, so we'll base any feature decision later on version 13.
+
+Later PostgreSQL versions should work just fine.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
@@ -204,14 +208,6 @@ yarn start
 Generating a database ie required on first launch and is done automatically if the database specified in `config.yml` is empty. You can trigger it manually later by connecting to the system panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
 On first run, the app will make you create an admin user and follow a guided tour of the operator panel. You can trigger this tour/admin creation process again by selecting the Tutorial item in the K menu on the app's operator panel.
-
-#### Launch without Electron
-
-If you need to launch the app without Electron (like, for a Raspberry Pi system), use
-
-```sh
-yarn startNoElectron
-```
 
 ## Translations
 
