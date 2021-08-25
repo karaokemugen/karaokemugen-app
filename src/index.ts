@@ -9,7 +9,7 @@ import {getPortPromise} from 'portfinder';
 import {createInterface} from 'readline';
 
 import {exit, initEngine} from './components/engine';
-import {focusWindow, handleFile,handleProtocol,startElectron} from './electron/electron';
+import {startElectron} from './electron/electron';
 import {errorStep, initStep} from './electron/electronLogger';
 import {
 	configureLocale,
@@ -122,13 +122,13 @@ setState({appPath, dataPath, resourcePath});
 process.env['NODE_ENV'] = 'production'; // Default
 
 // Electron packaged app does not need a slice(2) but a (1) since it has no script argument
-const args = app?.isPackaged
+const args = app.isPackaged
 	? process.argv.slice(1)
 	: process.argv.slice(2);
 
 setState({ args: args });
 
-// Set SHA
+// Set SHA commit hash. This is to display precise version number.
 let sha: string;
 const SHAFile = resolve(resourcePath, 'assets/sha.txt');
 if (existsSync(SHAFile)) {
@@ -147,29 +147,11 @@ if (existsSync(SHAFile)) {
 // Commander call to get everything setup in argv
 const argv = parseArgs();
 
-// Acquiring lock to prevent two KMs to run at the same time.
-// Also allows to get us the files we need.
-if (!app.requestSingleInstanceLock()) process.exit();
-app.on('second-instance', (_event, args) => {
-	if (args[args.length-1] === '--kill') {
-		exit(0);
-	} else {
-		focusWindow();
-		const file = args[args.length-1];
-		if (file && file !== '.' && !file.startsWith('--')) {
-			file.startsWith('km://')
-				? handleProtocol(file.substr(5).split('/'))
-				: handleFile(file);
-		}
-	}
-});
-// Redefining quit function
-app.on('will-quit', () => {
-	exit(0);
-});
-
+// Let's go! This calls the functions below.
+// Start Electron -> Pre Init -> Main Init -> Engine Init -> Post Init
 startElectron();
 
+/** First step of init : locale, config, logger, state... */
 export async function preInit() {
 	await configureLocale();
 	await configureLogger(dataPath, argv.opts().debug || (app?.commandLine.hasSwitch('debug')), true);
@@ -192,6 +174,7 @@ export async function preInit() {
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);
 }
 
+/** Initialize folders, paths and start the engine */
 export async function main() {
 	initStep(i18n.t('INIT_INIT'));
 	// Set version number
@@ -302,6 +285,7 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 	}
 }
 
+/** This is called only if we have an init error during preInit */
 function initError(err: any) {
 	logger.error('Error during launch', {service: 'Launcher', obj: err});
 	console.log(err);
