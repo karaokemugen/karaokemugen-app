@@ -9,7 +9,7 @@ import {compareKarasChecksum,DBReady,generateDB, getStats, initDBSystem} from '.
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
 import { markAllMigrationsFrontendAsDone } from '../dao/migrationsFrontend';
-import { applyMenu, closeAllWindows, handleFile, handleProtocol } from '../electron/electron';
+import { applyMenu, closeAllWindows, handleFile, handleProtocol, postInit } from '../electron/electron';
 import { errorStep,initStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
@@ -19,7 +19,6 @@ import {getConfig, setConfig} from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
-import {emit} from '../lib/utils/pubsub';
 import { generateBlacklist, initBlacklistSystem } from '../services/blacklist';
 import {initDownloader, wipeDownloadQueue} from '../services/download';
 import { updateAllMedias } from '../services/downloadUpdater';
@@ -218,7 +217,7 @@ export async function initEngine() {
 			setState({ ready: true });
 			writeStreamFiles();
 			initStep(i18n.t('INIT_DONE'), true);
-			emit('KMReady');
+			postInit();
 			checkDownloadStatus();
 			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
 		} catch(err) {
