@@ -8,7 +8,7 @@ import {getConfig, setConfig} from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
 import { on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
-import { MpvHardwareDecodingOptions } from '../types/MpvIPC';
+import { MpvHardwareDecodingOptions } from '../types/mpvIPC';
 import {getState,setState} from '../utils/state';
 import { playCurrentSong } from './karaokeEngine';
 import {getCurrentSong, nextSong, previousSong, setPlaying} from './playlist';
