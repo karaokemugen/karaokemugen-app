@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { CommandLine } from 'electron';
+import { app, CommandLine } from 'electron';
 
 import logger, { enableProfiling } from '../lib/utils/logger';
 import {getState, setState} from './state';
@@ -90,7 +90,7 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 		logger.info('Full media update requested', {service: 'Launcher'});
 		setState({opt: {mediaUpdateAll: true}});
 	}
-	if (argv.opts().test) {
+	if (argv.opts().test && !app.isPackaged) {
 		logger.info('TEST MODE ENABLED. DO NOT DO THIS AT HOME.', {service: 'Launcher'});
 		if (argv.opts().noAutoTest) setState({noAutoTest: true});
 		setState({isTest: true});
