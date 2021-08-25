@@ -2,7 +2,7 @@ import { ChildProcess, spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { Socket } from 'net';
 
-import { MpvCommand } from '../types/MpvIPC';
+import { MpvCommand } from '../types/mpvIPC';
 
 class Mpv extends EventEmitter {
 	binary: string
