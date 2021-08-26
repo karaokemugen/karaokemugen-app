@@ -42,7 +42,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const kara = this.props.kara;
 		this.getRepositories();
 		this.state = {
-			titles: kara?.titles ? kara.titles : {'eng':''},
+			titles: kara?.titles ? kara.titles : { 'eng': '' },
 			serieSingersRequired: false,
 			subfile: kara?.subfile
 				? [
@@ -87,12 +87,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	previewHooks = async () => {
-		const kara: Kara = this.formRef.current.getFieldsValue();
-		kara.karafile = this.props.kara?.karafile;
-		kara.kid = this.props.kara?.kid;
-		kara.mediafile_orig = this.state.mediafile_orig;
-		kara.subfile_orig = this.state.subfile_orig;
-		const data = await commandBackend('previewHooks', kara);
+		const data = await commandBackend('previewHooks', this.getKaraToSend(this.formRef.current.getFieldsValue()));
 		Modal.info({
 			title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
 			content: <ul>{data?.map(tag => <li key={tag.tid} title={tag.tagfile}>
@@ -107,14 +102,18 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		} else if (!this.state.titles.eng) {
 			message.error(i18next.t('KARA.TITLE_ENG_REQUIRED'));
 		} else {
-			const kara: Kara = values;
-			kara.karafile = this.props.kara?.karafile;
-			kara.kid = this.props.kara?.kid;
-			kara.mediafile_orig = this.state.mediafile_orig;
-			kara.subfile_orig = this.state.subfile_orig;
-			kara.titles = this.state.titles;
-			this.props.save(kara);
+			this.props.save(this.getKaraToSend(values));
 		}
+	};
+
+	getKaraToSend = (values) => {
+		const kara: Kara = values;
+		kara.karafile = this.props.kara?.karafile;
+		kara.kid = this.props.kara?.kid;
+		kara.mediafile_orig = this.state.mediafile_orig;
+		kara.subfile_orig = this.state.subfile_orig;
+		kara.titles = this.state.titles;
+		return kara;
 	};
 
 	isMediaFile = (filename: string): boolean => {
