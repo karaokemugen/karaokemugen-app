@@ -339,9 +339,9 @@ async function createWindow() {
 	});
 	// and load the index.html of the app.
 	if (initDone) {
-		win.loadURL(await welcomeToYoukousoKaraokeMugen());
+		win?.loadURL(await welcomeToYoukousoKaraokeMugen());
 	} else {
-		win.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
+		win?.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
 	}
 
 	win.once('ready-to-show', () => {
@@ -367,7 +367,7 @@ async function createWindow() {
 
 function openLink(url: string) {
 	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') !== -1
-		? win.loadURL(url)
+		? win?.loadURL(url)
 		: open(url);
 }
 

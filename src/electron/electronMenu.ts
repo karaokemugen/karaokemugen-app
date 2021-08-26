@@ -385,7 +385,7 @@ export function initMenu() {
 
 function openURL(url: string) {
 	getConfig().GUI.OpenInElectron
-		? win.loadURL(url)
+		? win?.loadURL(url)
 		: open(url);
 }
 
