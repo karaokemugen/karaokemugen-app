@@ -34,7 +34,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		this.getRepositories();
 
 		this.state = {
-			i18n: this.props.tag?.i18n ? this.props.tag.i18n : {},
+			i18n: this.props.tag?.i18n ? this.props.tag.i18n : {'eng': ''},
 			selectVisible: false,
 			mergeSelection: '',
 			repositoriesValue: null,

@@ -42,7 +42,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const kara = this.props.kara;
 		this.getRepositories();
 		this.state = {
-			titles: kara?.titles ? kara.titles : {},
+			titles: kara?.titles ? kara.titles : {'eng':''},
 			serieSingersRequired: false,
 			subfile: kara?.subfile
 				? [
