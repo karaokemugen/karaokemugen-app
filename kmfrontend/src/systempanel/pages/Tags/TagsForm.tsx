@@ -113,7 +113,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					problematic: this.props.tag?.problematic,
 					noLiveDownload: this.props.tag?.noLiveDownload,
 					priority: this.props.tag?.priority ? this.props.tag?.priority : 10,
-					karaFileTag: this.props.tag?.karaFileTag
+					karafile_tag: this.props.tag?.karafile_tag
 				}}
 			>
 				<Form.Item
@@ -159,7 +159,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					)}
 					labelCol={{ flex: '0 1 300px' }}
-					name="karafileTag"
+					name="karafile_tag"
 				>
 					<Input style={{ maxWidth: '40%', minWidth: '150px' }}
 						placeholder={i18next.t('TAGS.KARAFILETAG')}
@@ -229,7 +229,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</Tooltip>
 					</span>)}
 				>
-				</Form.Item>	
+				</Form.Item>
 				<LanguagesList
 					value={this.state.i18n}
 					onChange={(i18n) => this.setState({i18n})}
