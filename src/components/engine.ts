@@ -13,7 +13,7 @@ import { applyMenu, closeAllWindows, handleFile, handleProtocol, postInit } from
 import { errorStep,initStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {closeDB, getSettings, saveSetting,vacuum} from '../lib/dao/database';
-import { refreshHooks } from '../lib/dao/hook';
+import { initHooks } from '../lib/dao/hook';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation';
 //Utils
 import {getConfig, setConfig} from '../lib/utils/config';
@@ -220,7 +220,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DONE'), true);
 			postInit();
 			checkDownloadStatus();
-			refreshHooks();
+			initHooks();
 			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
 		} catch(err) {
 			logger.error('Karaoke Mugen IS NOT READY', {service: 'Engine', obj: err});
