@@ -21,7 +21,6 @@ export function parseArgs() {
 		.option('-u, --updateBase', 'Update karaoke base files')
 		.option('-v, --validate', 'Validates kara files and modify them if needed (no generation)')
 		.option('--cli', 'Start in CLI mode, without Electron')
-		.option('--demo', 'Launches in demo mode (no system panel, no password changes)')
 		.option('--dumpDB', 'Dumps database and exits')
 		.option('--forceAdminPassword [password]', 'Set admin account\'s password')
 		.option('--noBaseCheck', 'Disable data file checking on startup')
@@ -94,10 +93,6 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 		logger.info('TEST MODE ENABLED. DO NOT DO THIS AT HOME.', {service: 'Launcher'});
 		if (argv.opts().noAutoTest) setState({noAutoTest: true});
 		setState({isTest: true});
-	}
-	if (argv.opts().demo) {
-		logger.info('Demo mode enabled', {service: 'Launcher'});
-		setState({isDemo: true});
 	}
 	if (argv.opts().noBrowser) setState({opt: {noBrowser: true}});
 	if (argv.opts().noAutoTest) setState({opt: {noAutoTest: true}});

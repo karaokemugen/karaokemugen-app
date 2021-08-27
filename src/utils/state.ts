@@ -28,7 +28,6 @@ let state: State = {
 	ready: false,
 	forceDisableAppUpdate: false,
 	currentSessionID: null,
-	isDemo: false,
 	isTest: false,
 	defaultLocale: 'en',
 	securityCode: null,

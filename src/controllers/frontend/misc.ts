@@ -25,7 +25,7 @@ import { runChecklist } from '../middlewares';
 
 export default function miscController(router: SocketIOApp) {
 	router.route('getMigrationsFrontend', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return getMigrationsFrontend();
 		} catch (err) {
@@ -33,7 +33,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 	router.route('setMigrationsFrontend', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await setMigrationsFrontend(req.body.mig);
 		} catch(err) {
@@ -42,7 +42,7 @@ export default function miscController(router: SocketIOApp) {
 	});
 
 	router.route('getRemoteData', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const state = getState();
 			if (state.remoteAccess) {
@@ -56,7 +56,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 	router.route('resetRemoteToken', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', { allowInDemo: false, optionalAuth: false });
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await destroyRemote();
 			await saveSetting('remoteToken', '');
@@ -66,7 +66,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 	router.route('shutdown', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			shutdown();
 		} catch(err) {
@@ -136,7 +136,7 @@ export default function miscController(router: SocketIOApp) {
 	});
 
 	router.route('getLogs', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			// Align socket
 			enableWSLogging(req.body.level);
@@ -162,7 +162,7 @@ export default function miscController(router: SocketIOApp) {
 	});
 
 	router.route('generateDatabase', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await generateDB();
 			return {code: 200, message: APIMessage('DATABASE_GENERATED')};
@@ -173,7 +173,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 	router.route('validateFiles', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await generateDatabase({
 				validateOnly: true
@@ -186,7 +186,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 	router.route('dumpDatabase', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await dumpPG();
 			return {code: 200, message: APIMessage('DATABASE_DUMPED')};
@@ -196,7 +196,7 @@ export default function miscController(router: SocketIOApp) {
 	});
 
 	router.route('restoreDatabase', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await restorePG();
 			return APIMessage('DATABASE_RESTORED');
@@ -205,7 +205,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 	router.route('getFS', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await browseFs(req.body.path, req.body.onlyMedias);
 		} catch(err) {

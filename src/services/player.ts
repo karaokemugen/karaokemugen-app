@@ -229,7 +229,7 @@ async function hideSubsPlayer() {
 
 export async function playerNeedsRestart() {
 	const state = getState();
-	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isDemo && !state.isTest) {
+	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isTest) {
 		setState({ playerNeedsRestart: true });
 		logger.info('Player will restart in 5 seconds', {service: 'Player'});
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
@@ -265,7 +265,7 @@ export function displayInfo() {
 export async function sendCommand(command: string, options: any): Promise<APIMessageType> {
 	// Resetting singlePlay to false everytime we use a command.
 	const state = getState();
-	if (state.isDemo || state.isTest) throw 'Player management is disabled in demo or test modes';
+	if (state.isTest) throw 'Player management is disabled in test mode';
 	try {
 		if (command === 'play') {
 			await playPlayer();

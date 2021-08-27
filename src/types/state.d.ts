@@ -31,7 +31,6 @@ export interface State {
 	songPoll?: boolean,
 	ready?: boolean,
 	sessionStart?: Date,
-	isDemo?: boolean,
 	isTest?: boolean,
 	appPath?: string,
 	dataPath?: string,

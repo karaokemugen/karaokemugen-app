@@ -116,7 +116,7 @@ export default function sessionController(router: SocketIOApp) {
 
 	router.route('exportSession', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.seid)) throw {code: 400};
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await exportSession(req.body.seid);
 		} catch(err) {

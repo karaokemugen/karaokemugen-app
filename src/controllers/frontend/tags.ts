@@ -28,7 +28,7 @@ export default function tagsController(router: SocketIOApp) {
 		}
 	});
 	router.route('addTag', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const tag = await addTag(req.body);
 			return {code: 200, message: APIMessage('TAG_CREATED', tag)};
@@ -51,7 +51,7 @@ export default function tagsController(router: SocketIOApp) {
 	});
 
 	router.route('getDuplicateTags', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await getDuplicateTags();
 		} catch(err) {
@@ -63,7 +63,7 @@ export default function tagsController(router: SocketIOApp) {
 
 	router.route('mergeTags', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.tid1) || !isUUID(req.body.tid2)) throw {code: 400};
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const tag = await mergeTags(req.body.tid1, req.body.tid2);
 			return {code: 200, message: APIMessage('TAGS_MERGED', tag)};
@@ -76,7 +76,7 @@ export default function tagsController(router: SocketIOApp) {
 
 	router.route('deleteTag', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.tids)) throw {code: 400};
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await deleteTag(req.body.tids);
 			return {code: 200, message: APIMessage('TAG_DELETED')};
@@ -103,7 +103,7 @@ export default function tagsController(router: SocketIOApp) {
 
 	router.route('editTag', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.tid)) throw {code: 400};
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await editTag(req.body.tid, req.body);
 			return {code: 200, message: APIMessage('TAG_EDITED')};
@@ -116,7 +116,7 @@ export default function tagsController(router: SocketIOApp) {
 
 	router.route('copyTagToRepo', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.tid)) throw {code: 400};
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await copyTagToRepo(req.body.tid, req.body.repo);
 			return {code: 200, message: APIMessage('TAG_COPIED')};

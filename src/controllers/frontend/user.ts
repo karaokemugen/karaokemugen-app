@@ -24,7 +24,7 @@ export default function userController(router: SocketIOApp) {
 		}
 	});
 	router.route('createUser', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'guest', 'limited', {allowInDemo: true, optionalAuth: true});
+		await runChecklist(socket, req, 'guest', 'limited', {optionalAuth: true});
 		//Validate form data
 		const validationErrors = check(req.body, {
 			login: {presence: {allowEmpty: false}},
@@ -97,7 +97,7 @@ export default function userController(router: SocketIOApp) {
 	});
 
 	router.route('resetUserPassword', async (socket: Socket, req: APIData) => {
-	 	await runChecklist(socket, req, 'guest', 'closed', {allowInDemo: false, optionalAuth: true});
+	 	await runChecklist(socket, req, 'guest', 'closed', {optionalAuth: true});
 		if (!req.body.username.includes('@')) {
 			if (+req.body.securityCode === getState().securityCode) {
 				try {

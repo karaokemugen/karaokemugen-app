@@ -144,7 +144,7 @@ export async function initEngine() {
 			// Reinit menu since we switched ports.
 			applyMenu();
 		}
-		if (!state.isDemo && internet) try {
+		if (internet) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
 			await initKMServerCommunication();
 			const onlinePromises = [
@@ -167,8 +167,8 @@ export async function initEngine() {
 				initDownloader(),
 				initSession()
 			];
-			if (conf.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo) initPromises.push(initTwitch());
-			if (!conf.App.FirstRun && !state.isDemo && !state.isTest && !state.opt.noPlayer) initPromises.push(initPlayer());
+			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initPromises.push(initTwitch());
+			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) initPromises.push(initPlayer());
 			await Promise.all(initPromises);
 			if (conf.Online.Stats === true) initStats(false);
 			initStep(i18n.t('INIT_LAST'), true);
@@ -198,15 +198,15 @@ export async function initEngine() {
 				runTests();
 			}
 			if (conf.System.Database.bundledPostgresBinary) dumpPG().catch(() => {});
-			if (!state.isTest && !state.isDemo && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
-			if (!state.isTest && !state.isDemo) {
+			if (!state.isTest && getConfig().Online.Discord.DisplayActivity) initDiscordRPC();
+			if (!state.isTest) {
 				if (internet) {
 					updatePlaylistMedias().then(buildAllMediasList).catch(() => {});
 				} else {
 					buildAllMediasList().catch(() => {});
 				}
 			}
-			if (!state.isTest && !state.isDemo && !conf.App.FirstRun && internet) {
+			if (!state.isTest && !conf.App.FirstRun && internet) {
 				updateAllZipRepos();
 			}
 			createImagePreviews(await getKaras({

@@ -9,7 +9,7 @@ import { runChecklist } from '../middlewares';
 
 export default function repoController(router: SocketIOApp) {
 	router.route('getRepos', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'guest', 'closed', {allowInDemo: false, optionalAuth: true});
+		await runChecklist(socket, req, 'guest', 'closed', {optionalAuth: true});
 		try {
 			return getRepos();
 		} catch(err) {
@@ -19,7 +19,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('addRepo', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await addRepo(req.body);
 			return {code: 200, message: APIMessage('REPO_CREATED')};
@@ -30,7 +30,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('getRepo', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const repo = getRepo(req.body.name);
 			if (!repo) throw {code: 404};
@@ -42,7 +42,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('deleteRepo', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			removeRepo(req.body.name);
 			return {code: 200, message: APIMessage('REPO_DELETED')};
@@ -53,7 +53,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('editRepo', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await editRepo(req.body.name, req.body.newRepo);
 			return APIMessage('REPO_EDITED');
@@ -64,7 +64,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('getUnusedTags', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await findUnusedTags(req.body.name);
 		} catch(err) {
@@ -74,7 +74,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('getUnusedMedias', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await findUnusedMedias(req.body.name);
 		} catch(err) {
@@ -85,7 +85,7 @@ export default function repoController(router: SocketIOApp) {
 	});
 
 	router.route('movingMediaRepo', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			movingMediaRepo(req.body.name, req.body.path);
 			return {code: 200, message: APIMessage('REPO_MOVING_MEDIA_IN_PROGRESS')};
@@ -94,7 +94,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('compareLyricsBetweenRepos', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await compareLyricsChecksums(req.body.repo1, req.body.repo2);
 		} catch(err) {
@@ -104,7 +104,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('copyLyricsBetweenRepos', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await copyLyricsRepo(req.body.report);
 			return {code: 200, message: APIMessage('REPO_LYRICS_COPIED')};
@@ -115,7 +115,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('deleteAllRepoMedias', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await deleteMedias(null, req.body?.name);
 			return {code: 200, message: APIMessage('REPO_ALL_MEDIAS_DELETED')};
@@ -126,7 +126,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('deleteOldRepoMedias', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await deleteMedias(null, req.body?.name, true);
 			return {code: 200, message: APIMessage('REPO_OLD_MEDIAS_DELETED')};
@@ -137,7 +137,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('deleteMedias', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await deleteMedias(req.body?.kids);
 			return {code: 200, message: APIMessage('REPO_MEDIA_DELETED')};
@@ -148,7 +148,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('getRepoFreeSpace', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await getRepoFreeSpace(req.body?.repoName);
 		} catch(err) {
@@ -158,7 +158,7 @@ export default function repoController(router: SocketIOApp) {
 		}
 	});
 	router.route('updateAllZipRepos', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			updateAllZipRepos();
 		} catch(err) {

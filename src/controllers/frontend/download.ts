@@ -10,7 +10,7 @@ import { runChecklist } from '../middlewares';
 export default function downloadController(router: SocketIOApp) {
 
 	router.route('addDownloads', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const numberOfDLs = await addDownloads(req.body.downloads);
 			return APIMessage('DOWNLOADS_QUEUED', numberOfDLs);
@@ -21,7 +21,7 @@ export default function downloadController(router: SocketIOApp) {
 		}
 	});
 	router.route('getDownloads', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			const downloads = await getDownloads();
 			return downloads;
@@ -32,7 +32,7 @@ export default function downloadController(router: SocketIOApp) {
 		}
 	});
 	router.route('getDownloadQueueStatus', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return getDownloadQueueStatus();
 		} catch(err) {
@@ -40,7 +40,7 @@ export default function downloadController(router: SocketIOApp) {
 		}
 	});
 	router.route('deleteDownloads', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await wipeDownloads();
 		} catch(err) {
@@ -51,7 +51,7 @@ export default function downloadController(router: SocketIOApp) {
 	});
 	router.route('pauseDownloads', async (socket: Socket, req: APIData) => {
 
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await pauseQueue();
 		} catch(err) {
@@ -61,7 +61,7 @@ export default function downloadController(router: SocketIOApp) {
 		}
 	});
 	router.route('startDownloadQueue', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await startDownloads();
 			return APIMessage('DOWNLOADS_STARTED');
@@ -73,7 +73,7 @@ export default function downloadController(router: SocketIOApp) {
 	});
 	router.route('updateAllMedias', async (socket: Socket, req: APIData) => {
 
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			updateAllMedias();
 			return APIMessage('UPDATING_MEDIAS_IN_PROGRESS');

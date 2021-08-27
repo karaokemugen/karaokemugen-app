@@ -127,8 +127,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 			logger.warn('', {service: 'RemoteUser', obj: err});
 			throw {code: 500};
 		}
-		// Modifying passwords is not allowed in demo mode
-		if (user.password && !getState().isDemo) {
+		if (user.password) {
 			if (!opts.noPasswordCheck && user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
 			user.password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(user.login,user.password);

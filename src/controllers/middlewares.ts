@@ -9,17 +9,15 @@ import logger from '../lib/utils/logger';
 import { decodeJwtToken, findUserByName, updateLastLoginName } from '../services/user';
 import { WebappModes } from '../types/frontend';
 import { webappModes } from '../utils/constants';
-import { getState } from '../utils/state';
 import { APIMessage } from './common';
 
 interface APIChecklistOptions {
-	allowInDemo?: boolean
 	optionalAuth?: boolean
 }
 
 export async function runChecklist(socket: Socket, data: APIData, roleNeeded: Role = 'admin', webappModeNeeded: WebappModes = 'open', options?: APIChecklistOptions) {
 	// Default role needed is admin and webapp open, this should be the case for a majority of routes.
-	const defaultOptions = { allowInDemo: true, optionalAuth: false };
+	const defaultOptions = { optionalAuth: false };
 
 	// Protecc against bad boys who'd like to force token and stuff
 	delete data.token;
@@ -32,7 +30,6 @@ export async function runChecklist(socket: Socket, data: APIData, roleNeeded: Ro
 		const langs = socket.handshake.headers['accept-languages'] as string;
 		data.langs = langs.split(',')[0].substring(0,2);
 	}
-	if (!options.allowInDemo && getState().isDemo) throw {code: 503, message: 'Not allowed in demo mode'};
 	if (options.optionalAuth && !data.authorization) {
 		checkWebAppMode(data, webappModeNeeded);
 		return;

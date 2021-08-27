@@ -64,7 +64,7 @@ export async function editSetting(part: RecursivePartial<Config>) {
 export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
 	const state = getState();
-	if (!isEqual(oldConfig.Player, newConfig.Player) && !state.isDemo) {
+	if (!isEqual(oldConfig.Player, newConfig.Player)) {
 		// If these settings have been changed, a restart of mpv is necessary
 		if (
 			oldConfig.Player.mpvVideoOutput !== newConfig.Player.mpvVideoOutput ||
@@ -72,7 +72,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			oldConfig.Player.Monitor !== newConfig.Player.Monitor
 		) playerNeedsRestart();
 	}
-	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready && !state.isDemo) {
+	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready) {
 		if (newConfig.Online.Remote) {
 			await initKMServerCommunication();
 			initRemote();
@@ -141,7 +141,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Toggling poll
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
-	config.Karaoke.StreamerMode.Twitch.Enabled && !state.isDemo
+	config.Karaoke.StreamerMode.Twitch.Enabled
 		? initTwitch().catch(err => {
 			logger.warn('Could not start Twitch chat bot', {service: 'Config', obj: err});
 		})
@@ -149,23 +149,23 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			logger.warn('Could not stop Twitch chat bot', {service: 'Config', obj: err});
 		});
 	// Toggling random song after end message
-	config.Playlist.RandomSongsAfterEndMessage && !state.isDemo
+	config.Playlist.RandomSongsAfterEndMessage
 		? initAddASongMessage()
 		: stopAddASongMessage();
 	// Toggling Discord RPC
-	config.Online.Discord.DisplayActivity && !state.isDemo
+	config.Online.Discord.DisplayActivity
 		? initDiscordRPC()
 		: stopDiscordRPC();
 	// Toggling stats
-	config.Online.Stats && !state.isDemo
+	config.Online.Stats
 		? initStats(newConfig.Online.Stats === oldConfig.Online.Stats)
 		: stopStats();
 	// Streamer mode
 	if (config.Karaoke.StreamerMode.Enabled) writeStreamFiles();
 	// Toggling progressbar off if needs be
-	if (config.Player.ProgressBarDock && !state.isDemo) setProgressBar(-1);
+	if (config.Player.ProgressBarDock) setProgressBar(-1);
 
-	if (!state.isDemo) configureHost();
+	configureHost();
 }
 
 /** Initializing configuration */
@@ -252,7 +252,7 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	if (config.System.Database.bundledPostgresBinary) {
 		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
 	}
-	if (!getState().isTest && !getState().isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.mpv));
+	if (!getState().isTest) requiredBinariesChecks.push(asyncRequired(binariesPath.mpv));
 
 	try {
 		await Promise.all(requiredBinariesChecks);

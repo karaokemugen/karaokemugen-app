@@ -34,7 +34,7 @@ export default function karaController(router: SocketIOApp) {
 		}
 	});
 	router.route('createKara', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await createKara(req.body);
 			return {code: 200, message: APIMessage('KARA_CREATED')};
@@ -45,7 +45,7 @@ export default function karaController(router: SocketIOApp) {
 		}
 	});
 	router.route('previewHooks', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await previewHooks(req.body);
 		} catch(err) {
@@ -66,7 +66,7 @@ export default function karaController(router: SocketIOApp) {
 		}
 	});
 	router.route('deleteKaras', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		const validationErrors = check(req.body, {
 			kids: {presence: true, uuidArrayValidator: true}
 		});
@@ -96,7 +96,7 @@ export default function karaController(router: SocketIOApp) {
 		}
 	});
 	router.route('editKara', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			await editKara(req.body);
 			return {code: 200, message: APIMessage('KARA_EDITED')};
@@ -118,7 +118,7 @@ export default function karaController(router: SocketIOApp) {
 		}
 	});
 	router.route('copyKaraToRepo', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		if (!isUUID(req.body.kid)) throw {code: 400};
 		try {
 			await copyKaraToRepo(req.body.kid, req.body.repo);
@@ -140,7 +140,7 @@ export default function karaController(router: SocketIOApp) {
 		}
 	});
 	router.route('editKaras', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			batchEditKaras(req.body.plaid, req.body.action, req.body.tid, req.body.type);
 			return;
@@ -149,7 +149,7 @@ export default function karaController(router: SocketIOApp) {
 		}
 	});
 	router.route('deleteMediaFile', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open', {allowInDemo: false, optionalAuth: false});
+		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await deleteMediaFile(req.body.file, req.body.repo);
 		} catch(err) {
