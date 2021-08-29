@@ -171,10 +171,12 @@ pkg_win:
     - rm -Rf release_win
     - yarn add --dev electron-builder@22.11.11
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
-    - apt-get update -qq && apt-get install -y -qq zip
+    - apt-get update -qq && apt-get install -y -qq zip xvfb
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-5.x.tar.gz | tar xz
     - wget http://mugen.karaokes.moe/downloads/vcredist_x64.exe -O build/vc.exe
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
+    - export DISPLAY=':99.0'
+    - Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
     - bash util/electronBuilder.sh -w
     - ls -la packages/
     - mkdir release_win
