@@ -599,16 +599,18 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	selectAllKaras = () => {
-		const data = this.state.data;
-		let checkedKaras = 0;
-		for (const kara of (this.state.data as KaraList)?.content) {
-			if (kara) {
-				kara.checked = !this.state.selectAllKarasChecked;
-				if (kara.checked) checkedKaras++;
+		const data = this.state.data as KaraList;
+		if (data?.content) {
+			let checkedKaras = 0;
+			for (const kara of data.content) {
+				if (kara) {
+					kara.checked = !this.state.selectAllKarasChecked;
+					if (kara.checked) checkedKaras++;
+				}
 			}
+			this.setState({ data, checkedKaras, selectAllKarasChecked: !this.state.selectAllKarasChecked });
+			this.playlistForceRefresh(true);
 		}
-		this.setState({ data, checkedKaras, selectAllKarasChecked: !this.state.selectAllKarasChecked });
-		this.playlistForceRefresh(true);
 	};
 
 	checkKara = (id: string | number) => {
