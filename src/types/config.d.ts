@@ -68,6 +68,8 @@ export interface Config {
 			Enabled?: boolean,
 			PositionX?: number,
 			PositionY?: number,
+			Width?: number,
+			Height?: number,
 		}
 	}
 	Karaoke: {
