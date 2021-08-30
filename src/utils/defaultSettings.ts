@@ -76,7 +76,9 @@ export const defaults: Config = {
 			AlwaysOnTop: true
 		},
 		ChibiPlaylist: {
-			Enabled: false
+			Enabled: false,
+			Width: 475,
+			Height: 720
 		}
 	},
 	Karaoke: {

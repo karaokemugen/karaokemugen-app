@@ -359,9 +359,9 @@ async function createWindow() {
 	// What to do when the window is closed.
 	win.on('closed', () => {
 		win = null;
-		if (chibiPlayerWindow) chibiPlayerWindow.destroy();
-		if (chibiPlaylistWindow) chibiPlaylistWindow.destroy();
-		if (zipWorker) zipWorker.destroy();
+		chibiPlayerWindow?.destroy();
+		chibiPlaylistWindow?.destroy();
+		zipWorker?.destroy();
 	});
 }
 
@@ -439,8 +439,8 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 	const conf = getConfig();
 	if (show) {
 		chibiPlaylistWindow = new BrowserWindow({
-			width: 475,
-			height: 720,
+			width: conf.GUI.ChibiPlaylist.Height,
+			height: conf.GUI.ChibiPlaylist.Width,
 			x: conf.GUI.ChibiPlaylist.PositionX,
 			y: conf.GUI.ChibiPlaylist.PositionY,
 			show: false,
@@ -449,11 +449,21 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 				nodeIntegration: true,
 				contextIsolation: false
 			},
+			resizable: true,
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
 		const port = state.frontendPort;
 		chibiPlaylistWindow.once('ready-to-show', () => {
 			chibiPlaylistWindow.show();
+		});
+		chibiPlaylistWindow.on('resized', () => {
+			const size = chibiPlaylistWindow.getSize();
+			setConfig({ GUI: {
+				ChibiPlaylist: {
+					Width: size[0],
+					Height: size[1]
+				}
+			}});
 		});
 		chibiPlaylistWindow.on('moved', () => {
 			const pos = chibiPlaylistWindow.getPosition();
