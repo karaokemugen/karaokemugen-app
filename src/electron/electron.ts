@@ -5,8 +5,8 @@ import open from 'open';
 import { resolve } from 'path';
 
 import { exit } from '../components/engine';
+import { init, preInit } from '../components/init';
 import { listUsers } from '../dao/user';
-import { main, preInit } from '../index';
 import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { emit } from '../lib/utils/pubsub';
@@ -132,7 +132,7 @@ function registerKMProtocol() {
 
 async function initMain() {
 	try {
-		await main();
+		await init();
 	} catch(err) {
 		logger.error('Error during launch', {service: 'Launcher', obj: err});
 		// We only throw if in cli mode. In UI mode throwing would exit the app immediately without allowing users to read the error message
