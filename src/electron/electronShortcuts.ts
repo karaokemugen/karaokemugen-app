@@ -1,9 +1,10 @@
-import {globalShortcut} from 'electron';
+import {globalShortcut, systemPreferences} from 'electron';
 
 import { next, pausePlayer, playPlayer, prev, stopPlayer } from '../services/player';
 import { getState,setState } from '../utils/state';
 
 export function registerShortcuts() {
+	if (process.platform === 'darwin') systemPreferences.isTrustedAccessibilityClient(true);
 	globalShortcut.register('MediaPlayPause', () => {
 		getState().player.playerStatus === 'play'
 			? pausePlayer()
