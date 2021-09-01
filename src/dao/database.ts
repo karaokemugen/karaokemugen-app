@@ -60,11 +60,8 @@ export async function initDB() {
 	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.System.Database.database} TO ${conf.System.Database.username};`);
 	// We need to reconnect to create the extension on our newly created database
 	await connectDB(errorFunction, {superuser: true, db: conf.System.Database.database, log: getState().opt.sql});
-	try {
-		await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
-	} catch(err) {
-		logger.debug('Extension unaccent already registered', {service: 'DB'});
-	}
+	await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
+	await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 }
 
 async function migrateFromDBMigrate() {
