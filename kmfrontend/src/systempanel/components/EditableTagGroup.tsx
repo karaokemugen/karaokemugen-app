@@ -2,8 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { AutoComplete, Button, Checkbox, Col, Form, Row, Tag } from 'antd';
 import i18next from 'i18next';
 import React from 'react';
-
-import { DBTag } from '../../../../src/lib/types/database/tag';
+import { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import GlobalContext from '../../store/context';
 import { getTagInLocale } from '../../utils/kara';
 import { commandBackend } from '../../utils/socket';
@@ -15,7 +14,7 @@ interface EditableTagGroupProps {
 }
 
 interface EditableTagGroupState {
-	tags: DBTag[],
+	tags: DBKaraTag[],
 	value: string[],
 	inputVisible: boolean,
 	currentVal: any
@@ -134,9 +133,9 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 				<Checkbox.Group value={tids} style={{ width: '100%' }} onChange={this.onCheck}>
 					<Row>
 						{
-							this.state.tags.map((tag) => {
+							this.state.tags.map((tag: DBKaraTag) => {
 								return (
-									<Col span={8} key={tag.tid}>
+									<Col span={8} key={tag.tid} title={tag.aliases.join(', ')}>
 										<Checkbox value={tag.tid}>{getTagInLocale(this.context?.globalState.settings.data, tag)}
 										</Checkbox>
 									</Col>
@@ -149,8 +148,13 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 		} else {
 			return (
 				<div>
-					{this.state.value.map((tag) => <Tag style={{ marginBottom: '8px' }} key={tag.tid} closable={true}
-						onClose={() => this.handleClose(tag)}>{this.getTagLabel(tag)}</Tag>)}
+					{this.state.value.map((tag: DBKaraTag) => <Tag
+						style={{ marginBottom: '8px' }}
+						key={tag.tid}
+						closable={true}
+						title={tag.aliases.join(', ')}
+						onClose={() => this.handleClose(tag)}>{this.getTagLabel(tag)}</Tag>
+					)}
 					{this.state.inputVisible && (
 						<Form.Item
 							wrapperCol={{ span: 14 }}
