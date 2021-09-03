@@ -10,6 +10,7 @@ html,body {
 	height: 100%;
 	position: relative;
 	font-family: sans-serif;
+	background-color: #36393f;
 }
 
 body {
@@ -45,9 +46,6 @@ body {
 .ip--logo {
 	margin: 1em;
 	height: 35vh;
-}
-
-.ip--message {
 }
 
 .ip--top {
