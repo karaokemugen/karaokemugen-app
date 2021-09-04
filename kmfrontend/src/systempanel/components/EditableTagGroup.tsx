@@ -44,7 +44,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 	};
 
 	handleClose = (removedTag) => {
-		const tags = this.state.value.filter(tag => tag.tid !== removedTag.tid);
+		const tags = this.state.value.filter(tag => tag.tid !== removedTag.tid || tag.name !== removedTag.name);
 		this.setState({ value: tags });
 		this.props.onChange && this.props.onChange(tags);
 	};
@@ -151,7 +151,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 				<div>
 					{this.state.value.map((tag: DBKaraTag) => <Tag
 						style={{ marginBottom: '8px' }}
-						key={tag.tid}
+						key={tag.tid || tag.name}
 						closable={true}
 						title={tag.aliases?.join(', ')}
 						onClose={() => this.handleClose(tag)}>{this.getTagLabel(tag)}</Tag>
