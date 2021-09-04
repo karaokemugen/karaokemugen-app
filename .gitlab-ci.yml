@@ -4,12 +4,6 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: .cache/electron
 
-workflow:
-  rules:
-    - if: $CI_COMMIT_TAG
-    - if: '$CI_COMMIT_BRANCH == "master"'
-    - if: '$CI_COMMIT_BRANCH == "next"'
-
 cache:
   key: km-app-${CI_COMMIT_REF_SLUG}
   paths:
@@ -55,7 +49,7 @@ test:
     - if: $CI_COMMIT_TAG
     - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH == "next"'
-    - when: never
+    - when: manual
 
 build-react:
   stage: build
@@ -84,7 +78,7 @@ build-react:
     - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH == "next"'
     - if: $CI_COMMIT_TAG
-    - when: never
+    - when: manual
 
 deploy_kmremote:
   stage: deploy
