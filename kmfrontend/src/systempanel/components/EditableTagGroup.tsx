@@ -2,6 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { AutoComplete, Button, Checkbox, Col, Form, Row, Tag } from 'antd';
 import i18next from 'i18next';
 import React from 'react';
+
 import { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import GlobalContext from '../../store/context';
 import { getTagInLocale } from '../../utils/kara';
