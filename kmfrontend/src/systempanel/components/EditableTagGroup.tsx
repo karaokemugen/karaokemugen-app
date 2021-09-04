@@ -136,7 +136,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 						{
 							this.state.tags.map((tag: DBKaraTag) => {
 								return (
-									<Col span={8} key={tag.tid} title={tag.aliases.join(', ')}>
+									<Col span={8} key={tag.tid || tag.name} title={tag.aliases?.join(', ')}>
 										<Checkbox value={tag.tid}>{getTagInLocale(this.context?.globalState.settings.data, tag)}
 										</Checkbox>
 									</Col>
@@ -153,7 +153,7 @@ export default class EditableTagGroup extends React.Component<EditableTagGroupPr
 						style={{ marginBottom: '8px' }}
 						key={tag.tid}
 						closable={true}
-						title={tag.aliases.join(', ')}
+						title={tag.aliases?.join(', ')}
 						onClose={() => this.handleClose(tag)}>{this.getTagLabel(tag)}</Tag>
 					)}
 					{this.state.inputVisible && (
