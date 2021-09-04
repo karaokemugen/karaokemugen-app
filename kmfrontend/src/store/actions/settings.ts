@@ -27,7 +27,7 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 				payload: { state: res.state, config: res.config, user: {}, version: res.version }
 			});
 		}
-	} catch (error) {
+	} catch (error: any) {
 		dispatch({
 			type: Settings.SETTINGS_FAILURE,
 			payload: {

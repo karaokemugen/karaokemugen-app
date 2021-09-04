@@ -126,8 +126,8 @@ class SetupPage extends Component<IProps, IState> {
 			});
 			this.setState({ error: undefined });
 			this.login();
-		} catch (err) {
-			const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
+		} catch (err: any) {
+			const error = err?.message ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
 		}
 	};
@@ -168,7 +168,7 @@ class SetupPage extends Component<IProps, IState> {
 			});
 			setAuthentifactionInformation(this.context.globalDispatch, infos);
 			this.setState({ activeView: 'repo', error: undefined });
-		} catch (err) {
+		} catch (err: any) {
 			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			this.setState({ error: error });
 		}
@@ -215,8 +215,8 @@ class SetupPage extends Component<IProps, IState> {
 						path: this.state.repositoryFolder,
 						name: this.context?.globalState.settings.data.config?.System.Repositories[0].Name
 					}, undefined, 300000);
-				} catch (err) {
-					const error = err?.response ? i18next.t(`ERROR_CODES.${err.response.code}`) : JSON.stringify(err);
+				} catch (err: any) {
+					const error = err?.message ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 					this.setState({ error: error });
 				}
 			}

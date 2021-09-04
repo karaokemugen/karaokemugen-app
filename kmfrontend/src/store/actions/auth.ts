@@ -32,7 +32,7 @@ export async function login(
 		});
 		await setSettings(dispatch);
 		return info.role;
-	} catch (error) {
+	} catch (error: any) {
 		dispatch({
 			type: AuthAction.LOGIN_FAILURE,
 			payload: {
@@ -90,7 +90,7 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
 				}
 			});
 			await setSettings(dispatch);
-		} catch (error) {
+		} catch (error: any) {
 			logout(dispatch);
 			dispatch({
 				type: AuthAction.LOGIN_FAILURE,
