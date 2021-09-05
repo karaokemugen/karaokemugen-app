@@ -57,7 +57,7 @@ import logger, {profile} from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import {emitWS} from '../lib/utils/ws';
-import { DBPLC } from '../types/database/playlist';
+import { DBPLC, DBPLCKID } from '../types/database/playlist';
 import { CurrentSong, PlaylistOpts, Pos, ShuffleMethods } from '../types/playlist';
 import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
@@ -1236,28 +1236,36 @@ export async function previousSong() {
 /** Move to next song */
 export async function nextSong(): Promise<DBPLC> {
 	const conf = getConfig();
-	let playlist: DBPLC[];
+	profile('NextSong');
+	let playlist: DBPLCKID[];
 	try {
-		playlist = await getCurrentPlaylistContents();
+		playlist = await getPlaylistKaraIDs(getState().currentPlaid);
 	} catch(err) {
 		sentry.error(err);
+		profile('NextSong');
 		throw err;
 	}
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
-	if (playlist.length === 0) throw 'Playlist is empty!';
-	let currentPos = playlist.findIndex(plc => plc.flag_playing);
-	if (currentPos + 1 >= playlist.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
-		logger.debug('End of playlist', {service: 'PLC'});
-		// Current position is last song, not quite an error.
-		return null;
-	} else {
-		// If we're here, it means either we're beyond the length of the playlist
-		// OR that RepeatPlaylist is set.
-		// We test again if we're at the end of the playlist. If so we go back to first song.
-		if (conf.Playlist.EndOfPlaylistAction === 'repeat' && currentPos + 1 >= playlist.length) currentPos = -1;
-		const kara = playlist[currentPos + 1];
-		if (!kara) throw 'Karaoke received is empty!';
-		return kara;
+	try {
+		if (playlist.length === 0) throw 'Playlist is empty!';
+		let currentPos = playlist.findIndex(plc => plc.flag_playing);
+		if (currentPos + 1 >= playlist.length && conf.Playlist.EndOfPlaylistAction !== 'repeat') {
+			logger.debug('End of playlist', {service: 'PLC'});
+			// Current position is last song, not quite an error.
+			return null;
+		} else {
+			// If we're here, it means either we're beyond the length of the playlist
+			// OR that RepeatPlaylist is set.
+			// We test again if we're at the end of the playlist. If so we go back to first song.
+			if (conf.Playlist.EndOfPlaylistAction === 'repeat' && currentPos + 1 >= playlist.length) currentPos = -1;
+			const kara = playlist[currentPos + 1];
+			if (!kara) throw 'Karaoke received is empty!';
+			return await getPLCInfo(kara.plcid, false, 'admin');
+		}
+	} catch(err) {
+		throw err;
+	} finally {
+		profile('NextSong');
 	}
 }
 

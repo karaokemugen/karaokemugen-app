@@ -39,6 +39,7 @@ export async function prev() {
 
 export async function next() {
 	logger.debug('Going to next song', {service: 'Player'});
+	profile('Next');
 	const conf = getConfig();
 	try {
 		const song = await nextSong();
@@ -112,6 +113,8 @@ export async function next() {
 			return;
 		}
 		throw err;
+	} finally {
+		profile('Next');
 	}
 }
 
