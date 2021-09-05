@@ -9,14 +9,14 @@ import { commandBackend } from '../../../utils/socket';
 import KaraForm from './KaraForm';
 
 interface KaraEditState {
-	kara: DBKara,
+	kara: DBKara | Record<string, never>,
 	save: any,
 	loadKara: boolean
 }
 class KaraEdit extends Component<RouteComponentProps<{ kid: string }>, KaraEditState> {
 
 	state = {
-		kara: undefined,
+		kara: {},
 		save: () => { },
 		loadKara: false
 	};

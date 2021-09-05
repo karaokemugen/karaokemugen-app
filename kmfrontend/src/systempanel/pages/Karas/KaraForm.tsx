@@ -14,7 +14,7 @@ import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 
 interface KaraFormProps {
-	kara: Kara;
+	kara: Kara | Record<string, never>;
 	save: any;
 	handleCopy: (kid, repo) => void;
 }
