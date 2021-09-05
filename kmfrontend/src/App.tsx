@@ -67,7 +67,7 @@ class App extends Component<unknown, AppState> {
 									<PrivateRoute component={KMFrontend} />
 								</Switch>
 							</Suspense>
-							<ToastContainer />
+							<ToastContainer icon={false} theme={'colored'}/>
 						</Router> : <Loading />}
 				</div>
 				<div id="modal">{this.context.globalState.modal.modal}</div>
