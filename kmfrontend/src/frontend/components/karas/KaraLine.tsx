@@ -92,6 +92,9 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			await commandBackend('deleteKaraFromPlaylist', {
 				plc_ids: this.props.kara?.plcid ? [this.props.kara.plcid] : this.props.kara.my_public_plc_id
 			}).catch(() => { });
+			if (!this.props.kara?.plcid) {
+				toast.dismiss(this.props.kara.my_public_plc_id[0]);
+			}
 		} else if (this.props.plaid === nonStandardPlaylists.blacklist) {
 			this.props.deleteCriteria(this.props.kara as unknown as DBBlacklist);
 		} else if (this.props.plaid === nonStandardPlaylists.whitelist) {
