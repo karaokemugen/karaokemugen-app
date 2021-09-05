@@ -113,12 +113,14 @@ class PublicPage extends Component<IProps, IState> {
 			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaid;
 			route = `/public/playlist/${idsPlaylist.left}`;
 		}
-		setFilterValue(
-			this.context.globalDispatch,
-			'',
-			1,
-			this.state.idsPlaylist.left
-		);
+		if (this.state.indexKaraDetail === undefined) {
+			setFilterValue(
+				this.context.globalDispatch,
+				'',
+				1,
+				this.state.idsPlaylist.left
+			);
+		}
 		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, searchType, kara: undefined });
 		this.props.route.history.push(route);
 	};
@@ -167,7 +169,9 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().on('userSongPlaysIn', this.userSongPlaysIn);
 		getSocket().on('nextSong', this.nextSong);
 		this.historyCallback = this.props.route.history.listen(() => {
-			setFilterValue(this.context.globalDispatch, '', 1, this.state.idsPlaylist.left);
+			if (this.state.indexKaraDetail === undefined) {
+				setFilterValue(this.context.globalDispatch, '', 1, this.state.idsPlaylist.left);
+			}
 		});
 	}
 
@@ -262,8 +266,7 @@ class PublicPage extends Component<IProps, IState> {
 	toggleKaraDetail = (kara: KaraElement, plaid: string, indexKaraDetail: number) => {
 		const idsPlaylist = this.state.idsPlaylist;
 		idsPlaylist.left = plaid;
-		this.setState({ kara, indexKaraDetail, idsPlaylist });
-		this.props.route.history.push(`/public/karaoke/${kara.kid}`);
+		this.setState({ kara, indexKaraDetail, idsPlaylist }, () => this.props.route.history.push(`/public/karaoke/${kara.kid}`));
 	};
 
 	render() {
