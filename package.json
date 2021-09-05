@@ -63,7 +63,8 @@
     "Rinchama (@Rinchama)",
     "zeograd <zeograd@gmail.com>",
     "leonekmi <git+km@leonekmi.fr>",
-    "Pierre CAMILLI <camillipierre@gmail.com> @Shueisha64"
+    "Pierre CAMILLI <camillipierre@gmail.com> @Shueisha64",
+    "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)"
   ],
   "engines": {
     "node": ">=14.0.0"

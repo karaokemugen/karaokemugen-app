@@ -716,6 +716,7 @@
 		"MEDIA_REQUIRED": "Media file is mandatory",
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
+		"LYRICS_FILE_OPEN": "Open file",
 		"ADD_FILE_SUCCESS": "{{name}} file added successfully",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} is not a media file",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} is not a subtitle file",
@@ -1314,7 +1315,8 @@
 		"REPO_GET_FREE_SPACE_ERROR": "Error when getting free space for repository",
 		"USER_CANNOT_CHANGE_TYPE": "Only admins can change a user's type",
 		"GUESTS_CANNOT_EDIT": "Guests are not allowed to edit their profiles",
-		"PREVIEW_HOOKS_ERROR": "Error preview hooks"
+		"PREVIEW_HOOKS_ERROR": "Error preview hooks",
+		"LYRICS_FILE_OPEN_ERROR": "Error opening the file"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
