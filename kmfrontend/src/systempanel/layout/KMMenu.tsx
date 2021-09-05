@@ -50,7 +50,7 @@ class KMMenu extends Component<unknown, unknown> {
 				<Menu.Item className="menuItemInactive" key='user'>
 					<span><UserOutlined /> {this.context.globalState.auth.data.username}</span>
 				</Menu.Item>
-				<Menu.Item key="change" style={{minWidth: '100vh'}}>
+				<Menu.Item key="change" style={{display: 'block'}}>
 					{/* The <Button href="..."> component has broken CSS */}
 					<Button icon={<HomeOutlined />} onClick={() => window.location.assign('/welcome')}>{i18next.t('CHANGE_INTERFACE')}</Button>
 				</Menu.Item>

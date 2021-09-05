@@ -176,9 +176,16 @@ class KaraList extends Component<unknown, KaraListState> {
 							/>
 						</Col>
 						<Col flex={1}>
-							<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
-								showSearch={{ filter: this.filterTagCascaderFilter, matchInputWidth: false }}
-								onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
+							<Cascader
+								style={{ width: '90%' }}
+								options={this.state.tagOptions}
+								showSearch={{
+									filter: this.filterTagCascaderFilter,
+									matchInputWidth: false
+								}}
+								onChange={this.handleFilterTagSelection}
+								placeholder={i18next.t('KARA.TAG_FILTER')}
+							/>
 						</Col>
 					</Row>
 					<Table
@@ -243,27 +250,42 @@ class KaraList extends Component<unknown, KaraListState> {
 		dataIndex: 'repository',
 		key: 'repository'
 	}, {
-		title: <span><Button title={i18next.t('KARA.DELETE_ALL_TOOLTIP')} type="default"
-			onClick={this.confirmDeleteAllVisibleKara}><DeleteOutlined /></Button>{i18next.t('ACTION')}
+		title: <span>
+			<Button
+				title={i18next.t('KARA.DELETE_ALL_TOOLTIP')}
+				type="default"
+				onClick={this.confirmDeleteAllVisibleKara}
+			>
+				<DeleteOutlined />
+			</Button>{i18next.t('ACTION')}
 		</span>,
 		key: 'action',
-		render: (_text, record: DBKara) => isModifiable(this.context, record.repository) ? (<span>
-			<Link to={`/system/karas/${record.kid}`}>
-				<Button type="primary" icon={<EditOutlined />} />
-			</Link>
-			{!is_touch_device() ? <Divider type="vertical" /> : null}
-			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
-				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)} />
-		</span>) :
-			(record.download_status === 'DOWNLOADED' ?
-				<Button
+		render: (_text, record: DBKara) => {
+			if (isModifiable(this.context, record.repository)) {
+				const editLink: JSX.Element = <Link to={`/system/karas/${record.kid}`}>
+					<Button type="primary" icon={<EditOutlined />} />
+				</Link>;
+				const divider = !is_touch_device() ? <Divider type="vertical" /> : null;
+				const deleteButton: JSX.Element = <Button
+					type="primary"
+					danger
+					loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
+					icon={<DeleteOutlined />}
+					onClick={() => this.confirmDeleteKara(record)}
+				/>;
+				return <span>{editLink}{divider}{deleteButton}</span>;
+			} else if (record.download_status === 'DOWNLOADED') {
+				return <Button
 					type="primary"
 					danger
 					title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
 					icon={<ClearOutlined />}
 					onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
-				/> : null
-			)
+				/>;
+			} else {
+				return null;
+			}
+		}
 	}];
 }
 

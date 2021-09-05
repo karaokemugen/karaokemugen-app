@@ -716,6 +716,7 @@
 		"MEDIA_REQUIRED": "Le fichier média est obligatoire",
 		"LYRICS_FILE": "Fichier de sous-titres",
 		"LYRICS_FILE_TOOLTIP": "Format de fichier accepté : {{formats}}",
+		"LYRICS_FILE_OPEN": "Ouvrir le fichier",
 		"ADD_FILE_SUCCESS": "Le fichier {{name}} a été ajouté avec succès",
 		"ADD_FILE_MEDIA_ERROR": "{{name}} n'est pas un média",
 		"ADD_FILE_LYRICS_ERROR": "{{name}} n'est pas un fichier de sous-titres",
@@ -1317,7 +1318,8 @@
 		"REPO_GET_FREE_SPACE_ERROR": "Erreur lors de la récupération de l'espace disponible pour le dépôt",
 		"USER_CANNOT_CHANGE_TYPE": "Seulement les administrateurs peuvent changer le type d'un utilisateur",
 		"GUESTS_CANNOT_EDIT": "Les invités ne peuvent pas modifier leur compte",
-		"PREVIEW_HOOKS_ERROR": "Erreur lors de la prévisialisation des hooks"
+		"PREVIEW_HOOKS_ERROR": "Erreur lors de la prévisialisation des hooks",
+		"LYRICS_FILE_OPEN_ERROR": "Erreur lors de l'ouverture du fichier"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",

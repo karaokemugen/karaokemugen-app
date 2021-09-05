@@ -88,12 +88,12 @@ class CropAvatarModal extends Component<IProps, IState> {
 			const croppedImageUrl = await this.getCroppedImg(this.state.imageRef, this.state.crop);
 			if (croppedImageUrl) {
 				if (isRemote()) {
-					const response = await commandBackend('importfile', {extension: 'jpg', buffer: croppedImageUrl});
+					const response = await commandBackend('importFile', {extension: 'jpg', buffer: croppedImageUrl});
 					this.props.saveAvatar({path: response.filename});
 				} else {
 					const formData = new FormData();
-					formData.append('file', croppedImageUrl as any);	
-					const response = await fetch('/api/importfile', {
+					formData.append('file', croppedImageUrl as any);
+					const response = await fetch('/api/importFile', {
 						method: 'POST',
 						body: formData,
 						headers: {
