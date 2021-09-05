@@ -144,7 +144,7 @@ class WelcomePage extends Component<unknown, IState> {
 							base.body.feed.entry[0].updated._text
 						).toLocaleDateString(),
 						title:
-							i18next.t('BASE_UPDATE') +
+							i18next.t('WELCOME_PAGE.BASE_UPDATE') +
 							' : ' +
 							base.body.feed.title._text +
 							(base.body.feed.entry[0].summary._text
@@ -160,7 +160,7 @@ class WelcomePage extends Component<unknown, IState> {
 							appli.body.feed.entry[0].updated._text
 						).toLocaleDateString(),
 						title:
-							i18next.t('APP_UPDATE') +
+							i18next.t('WELCOME_PAGE.APP_UPDATE') +
 							' : ' +
 							appli.body.feed.entry[0].title._text +
 							(appli.body.feed.entry[0].summary._text
@@ -184,7 +184,7 @@ class WelcomePage extends Component<unknown, IState> {
 						dateStr: new Date(
 							mast.body.rss.channel.item[i].pubDate._text
 						).toLocaleDateString(),
-						title: i18next.t('MASTODON_UPDATE'),
+						title: i18next.t('WELCOME_PAGE.MASTODON_UPDATE'),
 						link: mast.body.rss.channel.item[i].link._text,
 						type: 'mast'
 					});
@@ -244,7 +244,7 @@ class WelcomePage extends Component<unknown, IState> {
 							{sessions.length > 0 ? (
 								<React.Fragment>
 									<article>
-										<label>{i18next.t('ACTIVE_SESSION')}</label>
+										<label>{i18next.t('WELCOME_PAGE.ACTIVE_SESSION')}</label>
 										<Autocomplete
 											value={this.state.activeSession?.name}
 											options={sessions}
@@ -253,7 +253,7 @@ class WelcomePage extends Component<unknown, IState> {
 										/>
 									</article>
 									<article>
-										<a href={`/system/sessions/${this.state.activeSession?.seid}`} title={i18next.t('EDIT_SESSION')} >
+										<a href={`/system/sessions/${this.state.activeSession?.seid}`} title={i18next.t('WELCOME_PAGE.EDIT_SESSION')} >
 											<i className="fas fa-fw fa-edit" />
 										</a>
 									</article>

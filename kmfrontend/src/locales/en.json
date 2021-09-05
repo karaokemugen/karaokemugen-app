@@ -18,13 +18,6 @@
 	"SECURITY_CODE_MANDATORY": "Security code is mandatory for create an operator account",
 	"PASSWORD_DIFFERENT": "Passwords do not match",
 	"DETAILS": {
-		"CREATED": "Karaoke created ",
-		"ADDED": "Added ",
-		"ADDED_2": "on ",
-		"ADDED_3": " by ",
-		"PLAYING_IN": "Playing in {{time}} ({{date}})",
-		"LAST_PLAYED": "Last played on {{date}}",
-		"LAST_PLAYED_2": "Last played {{time}} ago",
 		"DURATION": "Duration",
 		"YEAR": "Year"
 	},
@@ -189,11 +182,14 @@
 	"USERLIST": "Users",
 	"LOGIN_SLOGAN": "Please login to suggest songs.",
 	"LOGIN_SLOGAN_ADMIN": "Please login.",
-	"FUCK_GO_BACK": "Back",
-	"LOGIN": "Login",
+	"LOGIN": {
+		"GO_BACK": "Back",
+		"BUTTON_LOGIN": "Login",
+		"NEW_ACCOUNT": "New account",
+		"GUEST_CONTINUE": "Continue as guest",
+		"ONLINE_ACCOUNT": "Online account?"
+	},
 	"USERNAME": "Username",
-	"NEW_ACCOUNT": "New account",
-	"GUEST_CONTINUE": "Continue as guest",
 	"LOG_IN": "Log in",
 	"SIGN_UP": "Sign up",
 	"PROFILE": "Profile",
@@ -220,10 +216,17 @@
 	"TOOLTIP_CLOSEPARENT": "Close",
 	"TOOLTIP_FAV": "Add to favorites",
 	"TOOLTIP_FAV_DEL": "Delete from favorites",
-	"TOOLTIP_SHOWVIDEO": "Show video preview",
-	"TOOLTIP_HIDEVIDEO": "Close video preview",
 	"KARA_DETAIL": {
-		"DOWNLOAD_MEDIA": "Download media"
+		"CREATED": "Karaoke created ",
+		"ADDED": "Added ",
+		"ADDED_2": "on ",
+		"ADDED_3": " by ",
+		"PLAYING_IN": "Playing in {{time}} ({{date}})",
+		"LAST_PLAYED": "Last played on {{date}}",
+		"LAST_PLAYED_2": "Last played {{time}} ago",
+		"DOWNLOAD_MEDIA": "Download media",
+		"SHOW_VIDEO": "Show video preview",
+		"HIDE_VIDEO": "Close video preview"
 	},
 	"TOOLTIP_UPVOTE": "Vote for this song",
 	"WELCOME_PAGE": {
@@ -240,7 +243,12 @@
 		"STATS": "STATUS",
 		"STATS_KARAS": "Karaokes",
 		"STATS_SERIES": "Series",
-		"STATS_TAGS": "Tags"
+		"STATS_TAGS": "Tags",
+		"BASE_UPDATE": "Database update",
+		"MASTODON_UPDATE": "Karaoke Mugen News",
+		"APP_UPDATE": "New version",
+		"ACTIVE_SESSION": "Active Session: ",
+		"EDIT_SESSION": "Edit session"
 	},
 	"CHECKED": "Selected:",
 	"LOGOUT": "Logout",
@@ -485,9 +493,6 @@
 	"VIEW_LIKES": "Likes",
 	"VIEW_LIKES_TOOLTIP": "The song with the most likes will be showed first, this does not impact the real playlist order.",
 	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song?  Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
-	"BASE_UPDATE": "Database update",
-	"MASTODON_UPDATE": "Karaoke Mugen News",
-	"APP_UPDATE": "New version",
 	"ONLINE_STATS": {
 		"TITLE": "Stats",
 		"INTRO": "Karaoke Mugen can send anonymous information about your instance to Karaoke Mugen Server to create usage statistics.",
@@ -507,11 +512,8 @@
 	},
 	"INSTANCE_NAME": "Server name",
 	"INSTANCE_NAME_SHORT": "Server",
-	"ACTIVE_SESSION": "Active Session: ",
-	"EDIT_SESSION": "Edit session",
 	"SELECT_KARAS_REQUIRED": "You have to select at least one song",
 	"PL_MULTIPLE_ADDED": "Add {{count}} songs",
-	"ONLINE_ACCOUNT": "Online account",
 	"SECURITY_CODE": "Security code",
 	"FORGOT_PASSWORD": "Forgot password?",
 	"MAKE_ACCOUNT_ADMIN": "Transform account to operator",
@@ -538,7 +540,7 @@
 			"FLAG_SENDSTATS": "Use my favorites and karaokes requests for stats",
 			"INTERFACE_LANGUAGE": "Interface language",
 			"MAIN_SONG_NAME_LANG": "Song name display preference ",
-			"FALLBACK_SONG_NAME_LANG": "Fallback song name display preference "		
+			"FALLBACK_SONG_NAME_LANG": "Fallback song name display preference "
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Shuffle playlist",
@@ -1148,9 +1150,9 @@
 		"UPDATING_MEDIAS": "Updating medias...",
 		"UPDATING_WORKDIR": "Updating workdir",
 		"DOWNLOADING": "Downloading...",
-        "RESOLVING_DELTAS" : "Resolving deltas",
-        "DECOMPRESSING": "Compressing objects",
-        "ANALYZING_WORKDIR": "Analyzing workdir",
+		"RESOLVING_DELTAS": "Resolving deltas",
+		"DECOMPRESSING": "Compressing objects",
+		"ANALYZING_WORKDIR": "Analyzing workdir",
 		"UPDATING_GIT_REPO": "Updating repository {{data}}",
 		"DOWNLOADING_ZIP": "Downloading database",
 		"EXTRACTING_ZIP": "Extracting database"

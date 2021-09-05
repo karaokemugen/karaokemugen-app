@@ -18,13 +18,6 @@
 	"SECURITY_CODE_MANDATORY": "Le code de sécurité est obligatoire pour créer un compte opérateur",
 	"PASSWORD_DIFFERENT": "Les mots de passe ne sont pas identiques",
 	"DETAILS": {
-		"CREATED": "Karaoké créé ",
-		"ADDED": "Ajouté ",
-		"ADDED_2": "le ",
-		"ADDED_3": " par ",
-		"PLAYING_IN": "Lecture dans {{time}} ({{date}})",
-		"LAST_PLAYED": "Joué le {{date}}",
-		"LAST_PLAYED_2": "Joué il y a {{time}}",
 		"DURATION": "Durée",
 		"YEAR": "Année"
 	},
@@ -189,11 +182,14 @@
 	"USERLIST": "Participants",
 	"LOGIN_SLOGAN": "Identifiez-vous avec un compte pour suggérer des chansons.",
 	"LOGIN_SLOGAN_ADMIN": "Identifiez-vous avec un compte pour accéder à Karaoke Mugen.",
-	"FUCK_GO_BACK": "Retour",
-	"LOGIN": "Connexion",
+	"LOGIN": {
+		"GO_BACK": "Retour",
+		"BUTTON_LOGIN": "Connexion",
+		"NEW_ACCOUNT": "Nouveau compte",
+		"GUEST_CONTINUE": "Continuer comme invité",
+		"ONLINE_ACCOUNT": "Compte en ligne ?"
+	},
 	"USERNAME": "Nom d'utilisateur",
-	"NEW_ACCOUNT": "Nouveau compte",
-	"GUEST_CONTINUE": "Continuer comme invité",
 	"LOG_IN": "Se connecter",
 	"SIGN_UP": "S'inscrire",
 	"PROFILE": "Paramètres",
@@ -218,10 +214,17 @@
 	"TOOLTIP_CLOSEPARENT": "Fermer",
 	"TOOLTIP_FAV": "Ajouter aux favoris",
 	"TOOLTIP_FAV_DEL": "Retirer des favoris",
-	"TOOLTIP_SHOWVIDEO": "Afficher un aperçu vidéo",
-	"TOOLTIP_HIDEVIDEO": "Fermer l'aperçu vidéo",
 	"KARA_DETAIL": {
-		"DOWNLOAD_MEDIA": "Télécharger le média"
+		"CREATED": "Karaoké créé ",
+		"ADDED": "Ajouté ",
+		"ADDED_2": "le ",
+		"ADDED_3": " par ",
+		"PLAYING_IN": "Lecture dans {{time}} ({{date}})",
+		"LAST_PLAYED": "Joué le {{date}}",
+		"LAST_PLAYED_2": "Joué il y a {{time}}",
+		"DOWNLOAD_MEDIA": "Télécharger le média",
+		"SHOW_VIDEO": "Afficher un aperçu vidéo",
+		"HIDE_VIDEO": "Fermer l'aperçu vidéo"
 	},
 	"TOOLTIP_UPVOTE": "Voter pour cette chanson",
 	"UPVOTE_NUMBER": "Soutiens",
@@ -240,7 +243,12 @@
 		"STATS": "ÉTAT",
 		"STATS_KARAS": "Chansons",
 		"STATS_SERIES": "Séries",
-		"STATS_TAGS": "Tags"
+		"STATS_TAGS": "Tags",
+		"BASE_UPDATE": "Nouvelles de la base",
+		"APP_UPDATE": "Nouvelle version de l'application",
+		"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
+		"ACTIVE_SESSION": "Session Active : ",
+		"EDIT_SESSION": "Éditer la session"
 	},
 	"CHECKED": "Sélectionnés :",
 	"LOGOUT": "Se déconnecter",
@@ -485,9 +493,6 @@
 	"VIEW_LIKES": "Likes",
 	"VIEW_LIKES_TOOLTIP": "Les chansons avec le plus de likes sont affichées en premier, cela n'impacte pas l'ordonnancement de la playlist.",
 	"KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ? Vérifiez sur vos dépôts en ligne configurés ainsi que sur le site de suggestions si votre souhait n'est pas déjà exaucé :",
-	"BASE_UPDATE": "Nouvelles de la base",
-	"APP_UPDATE": "Nouvelle version de l'application",
-	"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
 	"ONLINE_STATS": {
 		"TITLE": "Statistiques",
 		"INTRO": "Karaoke Mugen peut envoyer des informations anonymisées sur votre instance à Karaoke Mugen Server afin d'établir des statistiques d'utilisation.",
@@ -507,11 +512,8 @@
 	},
 	"INSTANCE_NAME": "Nom du serveur",
 	"INSTANCE_NAME_SHORT": "Serveur",
-	"ACTIVE_SESSION": "Session Active : ",
-	"EDIT_SESSION": "Éditer la session",
 	"SELECT_KARAS_REQUIRED": "Vous devez sélectionner au moins une chanson",
 	"PL_MULTIPLE_ADDED": "Ajout de {{count}} chansons",
-	"ONLINE_ACCOUNT": "Compte en ligne ?",
 	"SECURITY_CODE": "Code de sécurité",
 	"FORGOT_PASSWORD": "Mot de passe oublié ?",
 	"MAKE_ACCOUNT_ADMIN": "Transformez le compte en opérateur",
@@ -538,7 +540,7 @@
 			"FLAG_SENDSTATS": "Utiliser mes favoris et demandes de chansons pour des statistiques",
 			"INTERFACE_LANGUAGE": "Langue de l'interface",
 			"MAIN_SONG_NAME_LANG": "Préférence d'affichage du nom des chansons",
-			"FALLBACK_SONG_NAME_LANG": "Préférence alternative d'affichage du nom des chansons"		
+			"FALLBACK_SONG_NAME_LANG": "Préférence alternative d'affichage du nom des chansons"
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Mélanger la liste de lecture",

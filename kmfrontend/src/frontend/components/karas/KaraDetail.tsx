@@ -146,9 +146,9 @@ class KaraDetail extends Component<IProps, IState> {
 					? secondsTimeSpanToHMS(timeAgo, 'hm')
 					: secondsTimeSpanToHMS(timeAgo, 'ms');
 
-			return i18next.t('DETAILS.LAST_PLAYED_2', { time: timeAgoStr });
+			return i18next.t('KARA_DETAIL.LAST_PLAYED_2', { time: timeAgoStr });
 		} else if (lastPlayed_at) {
-			return i18next.t('DETAILS.LAST_PLAYED', { date: new Date(lastPlayed_at).toLocaleDateString() });
+			return i18next.t('KARA_DETAIL.LAST_PLAYED', { date: new Date(lastPlayed_at).toLocaleDateString() });
 		}
 		return null;
 	};
@@ -339,7 +339,7 @@ class KaraDetail extends Component<IProps, IState> {
 						</span>
 						<span>
 							{playTime
-								? i18next.t('DETAILS.PLAYING_IN', {
+								? i18next.t('KARA_DETAIL.PLAYING_IN', {
 									time: secondsTimeSpanToHMS(data.time_before_play, 'hm'),
 									date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2)
 								})
@@ -360,14 +360,14 @@ class KaraDetail extends Component<IProps, IState> {
 					}
 					<div className="detailsKaraLine">
 						<span>
-							{this.props.playlistcontentId ? i18next.t('DETAILS.ADDED') : i18next.t('DETAILS.CREATED')}
+							{this.props.playlistcontentId ? i18next.t('KARA_DETAIL.ADDED') : i18next.t('KARA_DETAIL.CREATED')}
 							{data.created_at ? <>
-								{i18next.t('DETAILS.ADDED_2')}
+								{i18next.t('KARA_DETAIL.ADDED_2')}
 								<span className="boldDetails">{new Date(data.created_at).toLocaleString()}</span>
 							</> : null
 							}
 							{data.nickname ? <>
-								{i18next.t('DETAILS.ADDED_3')}
+								{i18next.t('KARA_DETAIL.ADDED_3')}
 								<span className="boldDetails">{data.nickname}</span>
 							</> : null
 							}
@@ -412,7 +412,7 @@ class KaraDetail extends Component<IProps, IState> {
 					onClick={() => this.setState({showVideo: !this.state.showVideo})}
 				>
 					<i className="fas fa-fw fa-video"/>
-					<span>{this.state.showVideo ? i18next.t('TOOLTIP_HIDEVIDEO') : i18next.t('TOOLTIP_SHOWVIDEO')}</span>
+					<span>{this.state.showVideo ? i18next.t('KARA_DETAIL.HIDE_VIDEO') : i18next.t('KARA_DETAIL.SHOW_VIDEO')}</span>
 				</button>
 			);
 

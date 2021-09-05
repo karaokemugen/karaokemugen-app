@@ -75,7 +75,7 @@ class Login extends Component<IProps, IState> {
 
 
 	login = async (username: string | undefined, password?: string, securityCode?: number) => {
-		
+
 
 		if (this.state.isAdminPath && isElectron()) {
 			const { ipcRenderer: ipc } = window.require('electron');
@@ -124,7 +124,7 @@ class Login extends Component<IProps, IState> {
 	}
 
 	loginGuest = async () => {
-		this.login(undefined).catch(() => {});
+		this.login(undefined).catch(() => { });
 	};
 
 	loginUser = () => {
@@ -185,7 +185,7 @@ class Login extends Component<IProps, IState> {
 				username: `${this.state.login}${this.state.onlineSwitch ? `@${this.state.serv}` : ''}`,
 				securityCode: securityCode,
 				password: this.state.password
-			}).catch(() => {});
+			}).catch(() => { });
 		}
 	}
 
@@ -215,26 +215,26 @@ class Login extends Component<IProps, IState> {
 					{this.state.activeView === 'welcome' ? <>
 						{!this.state.isAdminPath ?
 							<button className="btn largeButton guestButton" onClick={this.loginGuest}>
-								{i18next.t('GUEST_CONTINUE')}
+								{i18next.t('LOGIN.GUEST_CONTINUE')}
 							</button> : null
 						}
 						<button type="button" className="btn largeButton loginButton"
 							onClick={() => this.setState({ activeView: 'login' })}>
-							{i18next.t('LOGIN')}
+							{i18next.t('LOGIN.BUTTON_LOGIN')}
 						</button>
 						<button type="button" className="btn largeButton signupButton"
 							onClick={() => this.setState({ activeView: 'signup' })}>
-							{i18next.t('NEW_ACCOUNT')}
+							{i18next.t('LOGIN.NEW_ACCOUNT')}
 						</button>
 					</> : null}
 					{this.state.activeView !== 'welcome' ? <>
 						<button type="button" className="btn largeButton"
 							onClick={() => this.setState({ activeView: 'welcome' })}>
-							{i18next.t('FUCK_GO_BACK')}
+							{i18next.t('LOGIN.GO_BACK')}
 						</button>
 						<form onSubmit={this.onSubmit}>
 							<div className="spacedSwitch">
-								<label className="loginLabel">{i18next.t('ONLINE_ACCOUNT')}</label>
+								<label className="loginLabel">{i18next.t('LOGIN.ONLINE_ACCOUNT')}</label>
 								<Switch handleChange={() => this.setState({ onlineSwitch: !this.state.onlineSwitch })}
 									isChecked={this.state.onlineSwitch} />
 							</div>
