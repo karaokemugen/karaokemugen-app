@@ -4,7 +4,7 @@ import { basename, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
 import { addKara, deleteKara as deleteKaraDB, selectAllKaras, updateKara } from '../dao/kara';
-import { getPlaylistKaraIDs } from '../dao/playlist';
+import { selectPlaylistContentsMicro } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKaras, refreshKarasDelete, refreshKarasInsert, refreshKarasUpdate, refreshYears, updateKaraSearchVector } from '../lib/dao/kara';
@@ -162,7 +162,7 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 		type = +type;
 		const tagType = getTagTypeName(type);
 		if (!tagType) throw 'Type unknown';
-		const pl = await getPlaylistKaraIDs(plaid);
+		const pl = await selectPlaylistContentsMicro(plaid);
 		if (pl.length === 0) throw 'Playlist unknown or empty';
 		task.update({
 			value: 0,

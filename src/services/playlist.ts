@@ -17,20 +17,18 @@ import {
 	deletePlaylist as deletePL,
 	editPlaylist as editPL,
 	emptyPlaylist as emptyPL,
-	getCurrentPlaylist,
 	getMaxPosInPlaylist,
 	getMaxPosInPlaylistForUser,
 	getPlaylistContents as getPLContents,
 	getPlaylistContentsMini as getPLContentsMini,
 	getPlaylistInfo as getPLInfo,
-	getPlaylistKaraIDs,
 	getPlaylists as getPLs,
 	getPLCByKIDAndUser,
 	getPLCInfo as getPLCInfoDB,
 	getPLCInfoMini as getPLCInfoMiniDB,
-	getPublicPlaylist,
 	reorderPlaylist as reorderPL,
 	replacePlaylist,
+	selectPlaylistContentsMicro,
 	setPlaying as setPlayingFlag,
 	setPLCAccepted,
 	setPLCFree,
@@ -72,9 +70,10 @@ import {findUserByName,updateSongsLeft} from './user';
 
 /** Test if basic playlists exist */
 export async function testPlaylists() {
-	const currentPL_id = await findCurrentPlaylist();
-	const publicPL_id = await findPublicPlaylist();
-	if (!currentPL_id && !publicPL_id) {
+	const pls = await getPlaylists({role: 'admin', username: 'admin'});
+	const currentPL = pls.find(pl => pl.flag_current);
+	const publicPL = pls.find(pl => pl.flag_public);
+	if (!currentPL || !publicPL) {
 		// Initial state here, we create only one playlist
 		const plaid = await createPL({
 			name: i18n.t('MY_PLAYLIST'),
@@ -88,9 +87,7 @@ export async function testPlaylists() {
 		setState({currentPlaid: plaid, publicPlaid: plaid});
 		logger.debug('Initial current playlist created', {service: 'Playlist'});
 	} else {
-		// Testing current/public playlist individually.
-		await testCurrentPlaylist();
-		await testPublicPlaylist();
+		setState({currentPlaid: currentPL.plaid, publicPlaid: publicPL.plaid});
 	}
 }
 
@@ -144,20 +141,6 @@ export async function isUserAllowedToAddKara(plaid: string, user: User, duration
 		sentry.error(err);
 		throw err;
 	}
-}
-
-/** Find out which ID is the Current Playlist */
-export async function findCurrentPlaylist(): Promise<string> {
-	const res = await getCurrentPlaylist();
-	if (res) return res.plaid;
-	return undefined;
-}
-
-/** Find out which ID is the Public Playlist */
-export async function findPublicPlaylist(): Promise<string> {
-	const res = await getPublicPlaylist();
-	if (res) return res.plaid;
-	return undefined;
 }
 
 /** Set a PLC flag_playing to enabled */
@@ -365,10 +348,8 @@ export async function getPlaylistContents(plaid: string, token: Token, filter: s
 
 /** Get song information from a particular PLC */
 export async function getKaraFromPlaylist(plc_id: number, token: Token) {
-	profile('getPLCInfo');
 	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username.toLowerCase());
 	if (!kara) throw {code: 404, msg: 'PLCID unknown'};
-	profile('getPLCInfo');
 	return kara;
 }
 
@@ -441,7 +422,7 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 			countPlaylistUsers(plaid),
 			getMaxPosInPlaylist(plaid),
 		]);
-		const plContents = await getPlaylistKaraIDs(plaid);
+		const plContents = await selectPlaylistContentsMicro(plaid);
 		// Making a unique ID depending on if we're in public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
 		// A person cannot add a song a second time if it's already pending. However, if it's been already played, it won't count
@@ -588,7 +569,14 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 
 /** Get PLC information from database */
 function getPLCInfo(plc_id: number, forUser: boolean, username: string) {
-	return getPLCInfoDB(plc_id, forUser, username);
+	try {
+		profile('getPLCInfo');
+		return getPLCInfoDB(plc_id, forUser, username);
+	} catch(err) {
+		throw err;
+	} finally {
+		profile('getPLCInfo');
+	}
 }
 
 /** Get a small amount of data from a PLC */
@@ -608,7 +596,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 	logger.info(`Copying ${plc_ids.length} karaokes to playlist ${pl.name}`, {service: 'Playlist'});
 	try {
 		profile('copyKaraToPL');
-		const playlist = await getPlaylistKaraIDs(plaid);
+		const playlist = await selectPlaylistContentsMicro(plaid);
 		// plcs is an array of plc_ids.
 		const date_add = new Date();
 		let plcList: PLC[] = plc_ids.map(p => {
@@ -792,11 +780,11 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 	const songsLeftToUpdate: Set<any> = new Set();
 	const PLCsToCopyToCurrent: number[] = [];
 	const PLCsToDeleteFromCurrent: number[] = [];
-	let currentPlaylist: DBPLC[] = [];
+	let currentPlaylist: DBPLCKID[] = [];
 	if (params.flag_accepted === false || params.flag_refused === true) {
 		//If we are cancelling flag_accepted, we'll need to remove songs from the current playlist
 		// Then we need to fetch the current playlist somehow
-		currentPlaylist = await getCurrentPlaylistContents();
+		currentPlaylist = await selectPlaylistContentsMicro(getState().currentPlaid);
 	}
 	for (const plc of plcData) {
 		pls.add(plc.plaid);
@@ -1040,7 +1028,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 
 /** Find flag_playing index in a playlist */
 export async function findPlaying(plaid: string): Promise<number> {
-	const pl = await getPlaylistKaraIDs(plaid);
+	const pl = await selectPlaylistContentsMicro(plaid);
 	return pl.findIndex(plc => plc.flag_playing);
 }
 
@@ -1239,7 +1227,7 @@ export async function nextSong(): Promise<DBPLC> {
 	profile('NextSong');
 	let playlist: DBPLCKID[];
 	try {
-		playlist = await getPlaylistKaraIDs(getState().currentPlaid);
+		playlist = await selectPlaylistContentsMicro(getState().currentPlaid);
 	} catch(err) {
 		sentry.error(err);
 		profile('NextSong');
@@ -1269,14 +1257,6 @@ export async function nextSong(): Promise<DBPLC> {
 	}
 }
 
-/** Get current playlist contents */
-async function getCurrentPlaylistContents(): Promise<DBPLC[]> {
-	// Returns current playlist contents and where we're at.
-	const plaid = getState().currentPlaid;
-	const playlist = await getPlaylistContentsMini(plaid);
-	return playlist;
-}
-
 export async function notificationNextSong(): Promise<void> {
 	try {
 		const kara = await nextSong();
@@ -1292,8 +1272,9 @@ export async function notificationNextSong(): Promise<void> {
 /** Get currently playing song's data */
 export async function getCurrentSong(): Promise<CurrentSong> {
 	try {
+		profile('getCurrentSong');
 		const conf = getConfig();
-		const playlist = await getCurrentPlaylistContents();
+		const playlist = await selectPlaylistContentsMicro(getState().currentPlaid);
 		// Search for currently playing song
 		let updatePlayingKara = false;
 		let currentPos = playlist.findIndex(plc => plc.flag_playing);
@@ -1301,7 +1282,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			currentPos = 0;
 			updatePlayingKara = true;
 		}
-		const kara = playlist[currentPos];
+		const kara = await getPLCInfo(playlist[currentPos].plcid, false, 'admin');
 		if (!kara) throw 'No karaoke found in playlist object';
 		// If there's no kara with a playing flag, we set the first one in the playlist
 		const plaid = getState().currentPlaid;
@@ -1341,6 +1322,8 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		return currentSong;
 	} catch(err) {
 		logger.error('Error selecting current song to play', {service: 'Playlist', obj: err});
+	} finally {
+		profile('getCurrentSong');
 	}
 }
 
@@ -1363,42 +1346,6 @@ export async function initPlaylistSystem() {
 	await testPlaylists();
 	logger.debug('Playlists initialized', {service: 'Playlist'});
 	profile('initPL');
-}
-
-/** Create current playlist if it doesn't exist */
-export async function testCurrentPlaylist() {
-	const currentPL_id = await findCurrentPlaylist();
-	if (currentPL_id) {
-		setState({currentPlaid: currentPL_id});
-	} else {
-		setState({currentPlaid:
-			await createPL({
-				name: i18n.t('CURRENT_PLAYLST'),
-				flag_visible: true,
-				flag_current: true,
-				username: 'admin'
-			})
-		});
-		logger.debug('Initial current playlist created', {service: 'Playlist'});
-	}
-}
-
-/** Create public playlist if it doesn't exist */
-export async function testPublicPlaylist() {
-	const publicPL_id = await findPublicPlaylist();
-	if (publicPL_id) {
-		setState({ publicPlaid: publicPL_id });
-	} else {
-		setState({ publicPlaid:
-			await createPL({
-				name: i18n.t('PUBLIC_PLAYLST'),
-				flag_visible: true,
-				flag_public: true,
-				username: 'admin'
-			})
-		});
-		logger.debug('Initial public playlist created', {service: 'Playlist'});
-	}
 }
 
 /** Update all user quotas affected by a PLC getting freed/played */

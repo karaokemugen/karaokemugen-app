@@ -35,6 +35,7 @@ import {exit} from './engine';
 import Timeout = NodeJS.Timeout;
 import { getSongTitle } from '../lib/services/kara';
 import HTTP from '../lib/utils/http';
+import { profile } from '../lib/utils/logger';
 import {getSongSeriesSingers} from '../services/kara';
 import {editSetting} from '../utils/config';
 
@@ -858,6 +859,7 @@ class Players {
 	async play(song: CurrentSong): Promise<PlayerState> {
 		logger.debug('Play event triggered', {service: 'Player'});
 		playerState.playing = true;
+		profile('mpvPlay');
 		let mediaFile: string;
 		let subFile: string;
 		const options: any = {
@@ -949,6 +951,8 @@ class Players {
 			sentry.addErrorInfo('mediaData', JSON.stringify(song, null, 2));
 			sentry.error(err);
 			throw err;
+		} finally {
+			profile('mpvPlay');
 		}
 	}
 

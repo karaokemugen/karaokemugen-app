@@ -7,9 +7,10 @@ import { DBPL } from '../lib/types/database/playlist';
 import { PLC, PLCParams } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
+import { profile } from '../lib/utils/logger';
 import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { getState } from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsKaraIDs, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltestCurrentPlaylist, sqltestPublicPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
 export function editPlaylist(pl: DBPL) {
@@ -161,9 +162,17 @@ export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 	return res.rows;
 }
 
-export async function getPlaylistKaraIDs(id: string): Promise<DBPLCKID[]> {
-	const res = await db().query(sqlgetPlaylistContentsKaraIDs, [id]);
-	return res.rows;
+export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCKID[]> {
+	try {
+		profile('selectPlaylistContentsMicro');
+		const res = await db().query(sqlgetPlaylistContentsMicro, [id]);
+		return res.rows;
+	} catch(err) {
+		throw err;
+	} finally {
+		profile('selectPlaylistContentsMicro');
+	}
+
 }
 
 export async function getPLCInfo(id: number, forUser: boolean, username: string): Promise<DBPLCInfo> {
@@ -209,16 +218,6 @@ export async function getPlaylists(forUser: boolean): Promise<DBPL[]> {
 		res = await db().query(query + order);
 	}
 	return res.rows;
-}
-
-export async function getCurrentPlaylist(): Promise<DBPL> {
-	const res = await db().query(sqltestCurrentPlaylist);
-	return res.rows[0];
-}
-
-export async function getPublicPlaylist(): Promise<DBPL> {
-	const res = await db().query(sqltestPublicPlaylist);
-	return res.rows[0];
 }
 
 export async function setPlaying(plc_id: number, plaid: string) {

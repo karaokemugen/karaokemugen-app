@@ -9,7 +9,8 @@ export interface DBPLCKID {
 	pos: number,
 	plaid: string,
 	series: DBKaraTag[],
-	singer: DBKaraTag[]
+	singer: DBKaraTag[],
+	username: string
 }
 
 export interface DBPLPos {

@@ -101,7 +101,7 @@ UPDATE playlist SET time_left = (
 WHERE pk_id_playlist = $1;
 `;
 
-export const sqlgetPlaylistContentsKaraIDs = `
+export const sqlgetPlaylistContentsMicro = `
 SELECT pc.fk_kid AS kid,
 	pc.fk_login AS login,
 	pc.pk_id_plcontent AS plcid,
@@ -112,7 +112,8 @@ SELECT pc.fk_kid AS kid,
 	pc.pos AS pos,
 	pc.fk_id_playlist AS plaid,
 	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
-	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singer
+	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singer,
+	pc.fk_login AS username
 FROM playlist_content pc
 INNER JOIN all_karas ak ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist pl ON pl.pk_id_playlist = pc.fk_id_playlist
@@ -418,12 +419,6 @@ SELECT pk_id_playlist AS plaid,
 FROM playlist
 `;
 
-export const sqltestCurrentPlaylist = `
-SELECT pk_id_playlist AS plaid
-FROM playlist
-WHERE flag_current = TRUE;
-`;
-
 export const sqlsetPLCFree = `
 UPDATE playlist_content
 SET flag_free = TRUE
@@ -459,12 +454,6 @@ UPDATE playlist_content
 SET flag_free = TRUE
 WHERE fk_id_playlist = :plaid
 	AND pos <= :pos;
-`;
-
-export const sqltestPublicPlaylist = `
-SELECT pk_id_playlist AS plaid
-FROM playlist
-WHERE flag_public = TRUE;
 `;
 
 export const sqlshiftPosInPlaylist = `
