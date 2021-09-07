@@ -3,7 +3,7 @@ import { DownloadedStatus } from '../lib/types/database/download';
 import logger from '../lib/utils/logger';
 import { DBDownload } from '../types/database/download';
 import { KaraDownload } from '../types/download';
-import { sqldeleteDoneFailedDownloads, sqlemptyDownload, sqlinsertDownload, sqlselectDownloads, sqlselectPendingDownloads, sqlsetDownloaded, sqlsetDownloadedAK, sqlupdateDownloadStatus, sqlupdateRunningDownloads } from './sql/download';
+import { sqldeleteDoneFailedDownloads, sqlemptyDownload, sqlinsertDownload, sqlselectDownloads, sqlsetDownloaded, sqlsetDownloadedAK, sqlupdateDownloadStatus, sqlupdateRunningDownloads } from './sql/download';
 
 export async function updateDownloaded(kids: string[], value: DownloadedStatus) {
 	let query = sqlsetDownloaded;
@@ -34,13 +34,8 @@ export function insertDownloads(downloads: KaraDownload[] ) {
 	return transaction({sql: sqlinsertDownload, params: dls});
 }
 
-export async function selectDownloads(): Promise<DBDownload[]> {
-	const dls = await db().query(sqlselectDownloads);
-	return dls.rows;
-}
-
-export async function selectPendingDownloads(): Promise<DBDownload[]> {
-	const dls = await db().query(sqlselectPendingDownloads);
+export async function selectDownloads(pending?: boolean): Promise<DBDownload[]> {
+	const dls = await db().query(sqlselectDownloads(pending));
 	return dls.rows;
 }
 

@@ -5,7 +5,7 @@ import {resolve} from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import { APIMessage } from '../controllers/common';
-import {emptyDownload, initDownloads, insertDownloads, selectDownloads, selectPendingDownloads, updateDownload, updateDownloaded} from '../dao/download';
+import {emptyDownload, initDownloads, insertDownloads, selectDownloads, updateDownload, updateDownloaded} from '../dao/download';
 import {getConfig, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {asyncMove, resolveFileInDirs} from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
@@ -105,7 +105,7 @@ export function initDownloadQueue() {
 export async function startDownloads() {
 	if (dq) resumeQueue();
 	if (dq?.length === 0) {
-		const downloads = await selectPendingDownloads();
+		const downloads = await selectDownloads(true);
 		try {
 			await internet();
 			downloads.forEach(dl => dq.push(dl));
