@@ -5,7 +5,6 @@ import {copy, remove} from 'fs-extra';
 import i18next from 'i18next';
 import {resolve} from 'path';
 import { getPortPromise } from 'portfinder';
-import { resourcesPath } from 'process';
 
 import { errorStep, initStep } from '../electron/electronLogger';
 import { configureLocale, getConfig, resolvedPathAvatars, resolvedPathBundledBackgrounds, resolvedPathImport, resolvedPathPreviews, resolvedPathSessionExports, resolvedPathStreamFiles, resolvedPathTemp, setConfig } from '../lib/utils/config';
@@ -89,7 +88,7 @@ export async function init() {
 
 	const bundledBackgrounds = resolvedPathBundledBackgrounds();
 	logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, {service: 'Launcher'});	
-	await asyncCopyAll(resolve(resourcesPath, 'assets/backgrounds'), `${bundledBackgrounds}/`);
+	await asyncCopyAll(resolve(state.resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
