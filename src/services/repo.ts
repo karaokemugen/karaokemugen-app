@@ -319,7 +319,6 @@ async function newZipRepo(repo: Repository): Promise<string> {
 export async function editRepo(name: string, repo: Repository, refresh?: boolean) {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw {code: 404};
-	if (windowsDriveRootRegexp.test(repo.BaseDir)) throw {code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.'};
 	if (repo.Online && !repo.MaintainerMode) {
 		// Testing if repository is reachable
 		try {
@@ -422,8 +421,13 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 }
 
 function checkRepoPaths(repo: Repository) {
+	if (windowsDriveRootRegexp.test(repo.BaseDir)) throw {code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.'};	
 	if (repo.Online && !repo.MaintainerMode) {
 		for (const path of repo.Path.Medias) {
+			// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
+			if (getState().appPath === resolve(getState().dataPath, path)) {
+				throw {code: 400, msg: 'Sanity check: A media path is KM\'s executable directory.'};
+			}
 			if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
 				throw {code: 400, msg: 'Sanity check: A media path is contained in the base directory.'};
 			}
