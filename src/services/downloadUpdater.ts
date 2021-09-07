@@ -5,6 +5,7 @@ import prettyBytes from 'pretty-bytes';
 import { APIMessage } from '../lib/services/frontend';
 import { DBKara } from '../lib/types/database/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
+import { mediaFileRegexp } from '../lib/utils/constants';
 import { resolveFileInDirs } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
@@ -112,6 +113,7 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 	const localMedias = [];
 	for (const file of mediaFiles) {
 		try {
+			if (!file.match(mediaFileRegexp)) continue;
 			const mediaPath = await resolveFileInDirs(file, resolvedPathRepos('Medias', repo));
 			const mediaStats = await fs.stat(mediaPath[0]);
 			localMedias.push({
