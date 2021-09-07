@@ -130,12 +130,14 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile),
 			{ overwrite: true }
 		));
-		const lyricsFiles = await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', oldRepoName));
-		tasks.push(copy(
-			lyricsFiles[0],
-			resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile),
-			{ overwrite: true }
-		));
+		if (kara.subfile) {
+			const lyricsFiles = await resolveFileInDirs(kara.subfile, resolvedPathRepos('Lyrics', oldRepoName));
+			tasks.push(copy(
+				lyricsFiles[0],
+				resolve(resolvedPathRepos('Lyrics', repoName)[0], kara.subfile),
+				{ overwrite: true }
+			));
+		}
 		for (const tid of kara.tid) {
 			const tag = await getTag(tid.split('~')[0]);
 			// If for some reason tag couldn't be found, continue.
