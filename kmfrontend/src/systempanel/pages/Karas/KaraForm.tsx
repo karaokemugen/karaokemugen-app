@@ -88,7 +88,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	previewHooks = async () => {
-		const data = await commandBackend('previewHooks', this.getKaraToSend(this.formRef.current.getFieldsValue()));
+		const data = await commandBackend('previewHooks', this.getKaraToSend(this.formRef.current.getFieldsValue()), false, 300000);
 		Modal.info({
 			title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
 			content: <ul>{data?.map(tag => <li key={tag.tid} title={tag.tagfile}>
