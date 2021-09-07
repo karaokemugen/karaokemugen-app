@@ -3,13 +3,11 @@ import {pg as yesql} from 'yesql';
 import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase,DBYear } from '../lib/types/database/kara';
-import { DBPLCAfterInsert } from '../lib/types/database/playlist';
 import { Kara, KaraParams } from '../lib/types/kara';
-import { PLC } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { getState } from '../utils/state';
-import { sqladdKaraToPlaylist, sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlgetYears, sqlinsertKara, sqlremoveKaraFromPlaylist,sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateFreeOrphanedSongs, sqlupdateKara } from './sql/kara';
+import { sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetYears, sqlinsertKara, sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateKara } from './sql/kara';
 
 
 export async function getSongCountForUser(plaid: string, username: string): Promise<number> {
@@ -62,14 +60,6 @@ export async function addKara(kara: Kara) {
 		comment: kara.comment,
 		ignoreHooks: kara.ignoreHooks || false
 	}));
-}
-
-export async function getSongTimeSpentForUser(plaid: string, username: string): Promise<number> {
-	const res = await db().query(sqlgetTimeSpentPerUser,[
-		plaid,
-		username
-	]);
-	return res.rows[0]?.time_spent || 0;
 }
 
 export async function deleteKara(kids: string[]) {
@@ -143,10 +133,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	return res.rows;
 }
 
-export function updateFreeOrphanedSongs(expireTime: number) {
-	return db().query(sqlupdateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
-}
-
 export async function getKaraMini(kid: string): Promise<DBKaraBase> {
 	const res = await db().query(sqlgetKaraMini, [kid]);
 	return res.rows[0] || {};
@@ -173,44 +159,6 @@ export function addKaraToRequests(username: string, karaList: string[]) {
 export async function selectAllKIDs(): Promise<string[]> {
 	const res = await db().query(sqlselectAllKIDs);
 	return res.rows.map((k: Kara) => k.kid);
-}
-
-export async function addKaraToPlaylist(karaList: PLC[]): Promise<DBPLCAfterInsert[]> {
-	if (karaList.length > 1) {
-		const karas: any[] = karaList.map(kara => ([
-			kara.plaid,
-			kara.username,
-			kara.nickname,
-			kara.kid,
-			kara.created_at,
-			kara.pos,
-			kara.flag_free || false,
-			kara.flag_visible || true,
-			kara.flag_refused || false,
-			kara.flag_accepted || false
-		]));
-		const res = await transaction({params: karas, sql: sqladdKaraToPlaylist});
-		return res;
-	} else {
-		const kara = karaList[0];
-		const res = await db().query(sqladdKaraToPlaylist, [
-			kara.plaid,
-			kara.username,
-			kara.nickname,
-			kara.kid,
-			kara.created_at,
-			kara.pos,
-			false,
-			kara.flag_visible,
-			kara.flag_refused || false,
-			kara.flag_accepted || false
-		]);
-		return res.rows;
-	}
-}
-
-export function removeKaraFromPlaylist(karas: number[]) {
-	return db().query(sqlremoveKaraFromPlaylist.replace(/\$plcid/,karas.join(',')));
 }
 
 export function emptyOnlineRequested() {

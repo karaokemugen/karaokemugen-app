@@ -10,7 +10,8 @@ import slugify from 'slugify';
 import { v4 as uuidV4 } from 'uuid';
 import logger from 'winston';
 
-import {getSongCountForUser, getSongTimeSpentForUser} from '../dao/kara';
+import {getSongCountForUser} from '../dao/kara';
+import { getSongTimeSpentForUser } from '../dao/playlist';
 import { addUser as DBAddUser,
 	checkNicknameExists as DBCheckNicknameExists,
 	deleteUser as DBDeleteUser,

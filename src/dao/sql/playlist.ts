@@ -494,3 +494,49 @@ DELETE FROM playlist_content
 WHERE fk_id_playlist = :plaid
 	AND pos > :pos;
 `;
+
+export const sqlremoveKaraFromPlaylist = `
+DELETE FROM playlist_content
+WHERE pk_id_plcontent IN ($plcid)
+`;
+
+export const sqladdKaraToPlaylist = `
+INSERT INTO playlist_content(
+	fk_id_playlist,
+	fk_login,
+	nickname,
+	fk_kid,
+	created_at,
+	pos,
+	flag_free,
+	flag_visible,
+	flag_refused,
+	flag_accepted
+) VALUES(
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10
+) RETURNING pk_id_plcontent AS plc_id, fk_kid AS kid, pos, fk_login AS username
+`;
+
+export const sqlgetTimeSpentPerUser = `
+SELECT COALESCE(SUM(k.duration),0)::integer AS time_spent
+FROM kara AS k
+INNER JOIN playlist_content AS pc ON pc.fk_kid = k.pk_kid
+WHERE pc.fk_login = $2
+	AND pc.fk_id_playlist = $1
+	AND pc.flag_free = FALSE
+`;
+
+export const sqlupdateFreeOrphanedSongs = `
+UPDATE playlist_content SET
+	flag_free = TRUE
+WHERE created_at <= $1;
+`;

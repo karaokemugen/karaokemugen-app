@@ -4,12 +4,10 @@ import shuffle from 'lodash.shuffle';
 import {resolve} from 'path';
 
 import { APIMessage } from '../controllers/common';
-import {	addKaraToPlaylist as addKaraToPL,
+import { 
 	addKaraToRequests,
 	getSongCountForUser,
-	getSongTimeSpentForUser,
-	removeKaraFromPlaylist,
-	updateFreeOrphanedSongs as updateFreeOrphanedSongsDB} from '../dao/kara';
+} from '../dao/kara';
 //DAO
 import {
 	countPlaylistUsers,
@@ -26,6 +24,9 @@ import {
 	getPLCByKIDAndUser,
 	getPLCInfo as getPLCInfoDB,
 	getPLCInfoMini as getPLCInfoMiniDB,
+	getSongTimeSpentForUser,
+	insertKaraIntoPlaylist,
+	removeKaraFromPlaylist,
 	reorderPlaylist as reorderPL,
 	replacePlaylist,
 	selectPlaylistContentsMicro,
@@ -39,6 +40,7 @@ import {
 	setPos,
 	shiftPosInPlaylist,
 	trimPlaylist as trimPL,
+	updateFreeOrphanedSongs,
 	updatePlaylistDuration,
 	updatePlaylistKaraCount,
 	updatePlaylistLastEditTime,
@@ -485,7 +487,7 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 		}
 
 		// Adding song to playlist at long last!
-		const PLCsInserted = await addKaraToPL(karaList);
+		const PLCsInserted = await insertKaraIntoPlaylist(karaList);
 
 		updatePlaylistLastEditTime(plaid);
 
@@ -641,7 +643,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 				plcList[i].pos = startpos + +i;
 			}
 		}
-		await addKaraToPL(plcList);
+		await insertKaraIntoPlaylist(plcList);
 		await Promise.all([
 			editPLC(PLCsToFree, {flag_free: true}),
 			updatePlaylistDuration(plaid),
@@ -997,7 +999,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 			}
 		}
 
-		if (playlist.PlaylistContents?.length > 0) await addKaraToPL(playlist.PlaylistContents);
+		if (playlist.PlaylistContents?.length > 0) await insertKaraIntoPlaylist(playlist.PlaylistContents);
 		if (playingKara?.kid) {
 			const plcPlaying = await getPLCByKIDUser(playingKara.kid, playingKara.username, plaid);
 			await setPlaying(plcPlaying?.plcid || 0, plaid);
@@ -1328,9 +1330,9 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 }
 
 /** Flag songs as free if they are older than X minutes */
-async function updateFreeOrphanedSongs() {
+async function freeOrphanedSongs() {
 	try {
-		await updateFreeOrphanedSongsDB(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
+		await updateFreeOrphanedSongs(now(true) - (getConfig().Karaoke.Quota.FreeAutoTime * 60));
 	} catch(err) {
 		logger.error('Failed to free orphaned songs (will try again)', {service: 'Playlist', obj: err});
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYLIST_FREE_ORPHANED_SONGS', err));
@@ -1340,7 +1342,7 @@ async function updateFreeOrphanedSongs() {
 /** Initialize playlist tasks */
 export async function initPlaylistSystem() {
 	profile('initPL');
-	setInterval(updateFreeOrphanedSongs, 60 * 1000);
+	setInterval(freeOrphanedSongs, 60 * 1000);
 	const pls = await getPLs(false);
 	pls.forEach(pl => reorderPlaylist(pl.plaid));
 	await testPlaylists();

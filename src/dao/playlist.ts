@@ -3,14 +3,14 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import { DBPL } from '../lib/types/database/playlist';
+import { DBPL, DBPLCAfterInsert } from '../lib/types/database/playlist';
 import { PLC, PLCParams } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { profile } from '../lib/utils/logger';
 import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { getState } from '../utils/state';
-import { sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCSetPos } from './sql/playlist';
 
 
 export function editPlaylist(pl: DBPL) {
@@ -235,4 +235,54 @@ export async function getMaxPosInPlaylistForUser(plaid: string, username: string
 		username: username
 	}));
 	return res.rows[0]?.maxpos;
+}
+
+export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfterInsert[]> {
+	if (karaList.length > 1) {
+		const karas: any[] = karaList.map(kara => ([
+			kara.plaid,
+			kara.username,
+			kara.nickname,
+			kara.kid,
+			kara.created_at,
+			kara.pos,
+			kara.flag_free || false,
+			kara.flag_visible || true,
+			kara.flag_refused || false,
+			kara.flag_accepted || false
+		]));
+		const res = await transaction({params: karas, sql: sqladdKaraToPlaylist});
+		return res;
+	} else {
+		const kara = karaList[0];
+		const res = await db().query(sqladdKaraToPlaylist, [
+			kara.plaid,
+			kara.username,
+			kara.nickname,
+			kara.kid,
+			kara.created_at,
+			kara.pos,
+			false,
+			kara.flag_visible,
+			kara.flag_refused || false,
+			kara.flag_accepted || false
+		]);
+		return res.rows;
+	}
+}
+
+export function removeKaraFromPlaylist(karas: number[]) {
+	return db().query(sqlremoveKaraFromPlaylist.replace(/\$plcid/,karas.join(',')));
+}
+
+export function updateFreeOrphanedSongs(expireTime: number) {
+	return db().query(sqlupdateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
+}
+
+export async function getSongTimeSpentForUser(plaid: string, username: string): Promise<number> {
+	const res = await db().query(sqlgetTimeSpentPerUser, [
+		plaid,
+		username
+	]);
+	return res.rows[0]?.time_spent || 0;
 }
