@@ -11,7 +11,7 @@ import { emitWS } from '../lib/utils/ws';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC';
 import {getState,setState} from '../utils/state';
 import { playCurrentSong } from './karaokeEngine';
-import {getCurrentSong, nextSong, previousSong, setPlaying} from './playlist';
+import {getCurrentSong, getNextSong, getPreviousSong, setPlaying} from './playlist';
 import {startPoll} from './poll';
 
 const sleep = promisify(setTimeout);
@@ -21,15 +21,11 @@ export function playerMessage(msg: string, duration: number, align = 4, type = '
 	return mpv.message(msg, duration, align, type);
 }
 
-/* Current playing song has been changed, stopping playing now and hitting play again to get the new song. */
-export function playingUpdated() {
-	if (getState().player.playerStatus !== 'stop') playPlayer(true);
-}
-
 export async function prev() {
 	logger.debug('Going to previous song', {service: 'Player'});
 	try {
-		await previousSong();
+		const kara = await getPreviousSong();
+		await setPlaying(kara.plcid, getState().currentPlaid);
 	} catch(err) {
 		logger.warn('Previous song is not available', {service: 'Player', obj: err});
 	} finally {
@@ -42,7 +38,7 @@ export async function next() {
 	profile('Next');
 	const conf = getConfig();
 	try {
-		const song = await nextSong();
+		const song = await getNextSong();
 		if (song) {
 			await setPlaying(song.plcid, getState().currentPlaid);
 			if (conf.Karaoke.ClassicMode) {
@@ -87,7 +83,7 @@ export async function next() {
 						await startPoll();
 						on('songPollResult', () => {
 							// We're not at the end of playlist anymore!
-							nextSong()
+							getNextSong()
 								.then(kara => setPlaying(kara.plcid, getState().currentPlaid))
 								.catch(() => {});
 						});

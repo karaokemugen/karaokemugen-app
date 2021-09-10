@@ -4,7 +4,7 @@ import shuffle from 'lodash.shuffle';
 import {resolve} from 'path';
 
 import { APIMessage } from '../controllers/common';
-import { 
+import {
 	addKaraToRequests,
 	getSongCountForUser,
 } from '../dao/kara';
@@ -65,7 +65,7 @@ import {writeStreamFiles} from '../utils/streamerFiles';
 import {getBlacklist} from './blacklist';
 import { checkMediaAndDownload } from './download';
 import { formatKaraList, getKaras, getSongSeriesSingers,getSongVersion} from './kara';
-import {playingUpdated, playPlayer} from './player';
+import { playPlayer } from './player';
 import { getRepos } from './repo';
 //KM Modules
 import {findUserByName,updateSongsLeft} from './user';
@@ -798,7 +798,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams) {
 		if (params.flag_playing === true) {
 			await setPlaying(plc.plcid, plc.plaid);
 			// This only occurs to one playlist anyway
-			if (pl.flag_current) playingUpdated();
+			if (pl.flag_current && getState().player.playerStatus !== 'stop') playPlayer(true);
 		}
 		if (params.flag_accepted === true) {
 			params.flag_free = true;
@@ -1205,26 +1205,20 @@ function balancePlaylist(playlist: DBPLC[]) {
 	return newPlaylist;
 }
 
-/** Move to previous song */
-export async function previousSong() {
+/** Get previous song */
+export async function getPreviousSong() {
 	const plaid = getState().currentPlaid;
-	const playlist = await getPlaylistContentsMini(plaid);
+	const playlist = await selectPlaylistContentsMicro(plaid);
 	if (playlist.length === 0) throw 'Playlist is empty!';
-	let readpos = 0;
-	const reachedPlaying = playlist.some((plc, index) => {
-		readpos = index - 1;
-		return plc.flag_playing;
-	});
-	// If readpos ends up being -1 then we're at the beginning of the playlist and can't go to the previous song
-	if (!reachedPlaying) throw 'No playing kara in current playlist';
-	if (readpos < 0) throw 'Current position is first song!';
-	const kara = playlist[readpos];
-	if (!kara) throw 'Karaoke received is empty!';
-	await setPlaying(kara.plcid, plaid);
+	const index = playlist.findIndex(plc => plc.flag_playing);
+	// If index ends up being -1 then we're at the beginning of the playlist and can't go to the previous song
+	if (index < 0) throw 'No playing kara in current playlist';
+	if (index === 0) throw 'Current position is first song!';
+	return playlist[index - 1];
 }
 
 /** Move to next song */
-export async function nextSong(): Promise<DBPLC> {
+export async function getNextSong(): Promise<DBPLC> {
 	const conf = getConfig();
 	profile('NextSong');
 	let playlist: DBPLCKID[];
@@ -1261,7 +1255,7 @@ export async function nextSong(): Promise<DBPLC> {
 
 export async function notificationNextSong(): Promise<void> {
 	try {
-		const kara = await nextSong();
+		const kara = await getNextSong();
 		if (kara?.flag_visible) {
 			const pl = await getPlaylistInfo(kara.plaid);
 			if (pl.flag_visible) emitWS('nextSong', kara);
