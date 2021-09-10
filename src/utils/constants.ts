@@ -253,8 +253,6 @@ export const initializationCatchphrases = [
 // Default headers for HTTP client
 export const userAgent = 'KaraokeMugenApp';
 
-export const defaultRepo = 'kara.moe';
-
 export const testSongs = [
 	'5737c5b2-7ea4-414f-8c92-143838a402f6',
 	'a6108863-0ae9-48ad-adb5-cb703651f6bf',
