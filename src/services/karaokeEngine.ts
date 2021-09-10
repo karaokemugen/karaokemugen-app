@@ -1,7 +1,5 @@
-import merge from 'lodash.merge';
-
 import { APIMessage } from '../controllers/common';
-import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
+import { selectPlaylistContentsMicro, setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import { getSongTitle } from '../lib/services/kara';
 import { getConfig } from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
@@ -12,9 +10,10 @@ import { getState, setState } from '../utils/state';
 import {writeStreamFiles} from '../utils/streamerFiles';
 import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongVersion } from './kara';
 import {initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer} from './player';
-import { getCurrentSong, getPlaylistContentsMini, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
+import { getCurrentSong, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';
 
+/** Play a song from the library, different from when playing the current song in the playlist */
 export async function playSingleSong(kid?: string, randomPlaying = false) {
 	try {
 		const kara = await getKara(kid, {username: 'admin', role: 'admin'});
@@ -26,7 +25,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			initAddASongMessage();
 		}
 		logger.debug('Karaoke selected', {service: 'Player', obj: kara});
-		logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, {service: 'Player'});
+		logger.info(`Playing ${kara.mediafile}`, {service: 'Player'});
 
 		// If series is empty, pick singer information instead
 		const series = getSongSeriesSingers(kara);
@@ -40,8 +39,9 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 
 		// Construct mpv message to display.
 		const infos = '{\\bord2}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}' +kara.songtypes.map(s => s.name).join(' ')+songorder+' - '+getSongTitle(kara)+versions+'{\\i0}';
-		const current: CurrentSong = merge(kara, {
-			nickname: 'Admin',
+		const current: CurrentSong = {
+			...kara,
+			nickname: 'Dummy Plug System',
 			flag_playing: true,
 			pos: 1,
 			flag_free: false,
@@ -50,12 +50,11 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			flag_visible: false,
 			username: 'admin',
 			user_type: 0,
-			repo: kara.repository,
 			plcid: -1,
-			plaid: '7cf90987-9bf1-48e3-ba16-8ebd92a03f68',
+			plaid: null,
 			avatar: null,
 			infos
-		});
+		};
 		await mpv.play(current);
 		writeStreamFiles('song_name');
 		writeStreamFiles('requester');
@@ -100,7 +99,7 @@ export async function playCurrentSong(now: boolean) {
 			// No song to play, silently return
 			if (!kara) return;
 
-			if (kara?.pos === 1) {
+			if (kara.pos === 1) {
 				if (conf.Karaoke.AutoBalance) {
 					await shufflePlaylist(getState().currentPlaid, 'balance');
 				}
@@ -173,7 +172,7 @@ export async function playerEnding() {
 
 		// Handle balance
 		if (state.player.mediaType === 'song' && !state.singlePlay && !state.randomPlaying) {
-			const playlist = await getPlaylistContentsMini(state.currentPlaid);
+			const playlist = await selectPlaylistContentsMicro(state.currentPlaid);
 			const previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
 			if (previousSongIndex >= 0) {
 				const previousSong = playlist[previousSongIndex];
