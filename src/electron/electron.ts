@@ -5,7 +5,7 @@ import open from 'open';
 import { resolve } from 'path';
 
 import { exit } from '../components/engine';
-import { init, preInit } from '../components/init';
+import { init, preInit, welcomeToYoukousoKaraokeMugen } from '../components/init';
 import { listUsers } from '../dao/user';
 import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
@@ -19,7 +19,6 @@ import { playSingleSong } from '../services/karaokeEngine';
 import { importPlaylist, playlistImported} from '../services/playlist';
 import { addRepo,getRepo } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
-import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { detectKMFileTypes } from '../utils/files';
 import { getState,setState } from '../utils/state';
 import { tip } from '../utils/tips';
@@ -56,13 +55,13 @@ export function startElectron() {
 		// Create electron window with init screen
 		if (!getState().opt.cli) await initElectronWindow();
 		// Once init page is ready, or if we're in cli mode we start running init operations
-		// 
+		//
 		if (getState().opt.cli) {
-			await initMain();		
+			await initMain();
 		} else {
-			ipcMain.once('initPageReady', initMain);		
+			ipcMain.once('initPageReady', initMain);
 		}
-		registerIPCEvents();		
+		registerIPCEvents();
 	});
 
 	// macOS only. Yes.
@@ -76,7 +75,7 @@ export function startElectron() {
 	});
 
 	// Recreate the window if the app is clicked on in the dock(for macOS)
-	app.on('activate', async () => {		
+	app.on('activate', async () => {
 		if (win === null) {
 			await initElectronWindow();
 		}
@@ -103,7 +102,7 @@ export function startElectron() {
 	app.on('will-quit', () => {
 		exit(0);
 	});
-	
+
 	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
 }
 

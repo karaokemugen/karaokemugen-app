@@ -32,7 +32,6 @@ import { checkDownloadStatus, updateAllZipRepos } from '../services/repo';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
-import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
 import { initDiscordRPC } from '../utils/discordRPC';
 import { initKMServerCommunication } from '../utils/kmserver';
 import { checkPG, dumpPG, restorePG,stopPG } from '../utils/postgresql';
@@ -42,6 +41,7 @@ import { writeStreamFiles } from '../utils/streamerFiles';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
 import { subRemoteUsers } from '../utils/userPubSub';
 import { initFrontend } from './frontend';
+import { welcomeToYoukousoKaraokeMugen } from './init';
 
 let shutdownInProgress = false;
 
