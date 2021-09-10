@@ -5,8 +5,8 @@ import packageJSON from '../../package.json';
 // KM Imports
 import {getConfig} from '../lib/utils/config';
 import { supportedFiles } from '../lib/utils/constants';
+import {emit} from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
-import { stopPoll } from '../services/poll';
 // Types
 import { PublicPlayerState, PublicState, State} from '../types/state';
 
@@ -125,7 +125,7 @@ export function setState(part: Partial<State>) {
 		state.player.currentSong = null;
 	}
 	state = merge(state, part);
-	if (!state.songPoll) stopPoll();
+	emit('stateUpdated', state);
 	emitPlayerState(part);
 	return getState();
 }

@@ -10,10 +10,11 @@ import { Token } from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import {timer} from '../lib/utils/date';
 import logger from '../lib/utils/logger';
-import { emit } from '../lib/utils/pubsub';
+import { emit,on } from '../lib/utils/pubsub';
 import {emitWS} from '../lib/utils/ws';
 import { DBPLC } from '../types/database/playlist';
 import { PollItem,PollResults } from '../types/poll';
+import { State } from '../types/state';
 import {getState, setState} from '../utils/state';
 import { sayTwitch } from '../utils/twitch';
 import { getSongSeriesSingers, getSongVersion } from './kara';
@@ -27,12 +28,16 @@ let pollDate: Date;
 let pollEnding = false;
 let clock: any;
 
+on('stateUpdated', (state: State) => {
+	if (!state.songPoll === false && poll.length > 0) stopPoll();
+});
+
 async function displayPoll(winner?: number) {
 	const data = getPoll({role: 'admin', username: 'admin'});
 	let maxVotes = 0;
 	data.poll.forEach(s => maxVotes = maxVotes + s.votes);
 	const votes = data.poll.map(kara => {
-		let percentage = ((kara.votes) / maxVotes) * 100;
+		let percentage = (kara.votes / maxVotes) * 100;
 		let boldWinnerOpen = '';
 		let boldWinnerClose = '';
 		if (kara.index === winner) {
@@ -97,8 +102,6 @@ export async function endPoll() {
 
 /** Stop polls completely */
 export function stopPoll() {
-	// No need to stop something that doesn't exist
-	if (poll.length === 0) return;
 	logger.debug('Stopping poll', {service: 'Poll'});
 	poll = [];
 	voters = new Set();
@@ -114,7 +117,7 @@ export async function getPollResults(): Promise<PollResults> {
 	const winners = poll.filter(c => +c.votes === +maxVotes);
 	const winner = sample(winners);
 	const state = getState();
-	const plaid = state.currentPlaid;
+	const plaid = getState().currentPlaid;
 	if (state.publicPlaid !== state.currentPlaid) {
 		await copyKaraToPlaylist([winner.plcid], plaid);
 	} else {
@@ -123,9 +126,11 @@ export async function getPollResults(): Promise<PollResults> {
 		});
 	}
 
+	emitWS('playlistInfoUpdated', plaid);
+	emitWS('playlistContentsUpdated', plaid);
+
 	const version = getSongVersion(winner);
-	const seriesSinger = getSongSeriesSingers(winner);
-	const kara = `${seriesSinger} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${getSongTitle(winner)}${version}`;
+	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${getSongTitle(winner)}${version}`;
 	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, {service: 'Poll'});
 	return {
 		votes: maxVotes,
@@ -186,13 +191,13 @@ export async function startPoll(): Promise<boolean> {
 	pollEnding = false;
 	// Create new poll
 	// Get a list of karaokes to add to the poll
-	const publicPlaid = getState().publicPlaid;
-	const currentPlaid = getState().currentPlaid;
+	const publicPlaylistID = getState().publicPlaid;
+	const currentPlaylistID = getState().currentPlaid;
 	let availableKaras: DBPLC[];
-	if (publicPlaid !== currentPlaid) {
+	if (publicPlaylistID !== currentPlaylistID) {
 		const [pubpl, curpl] = await Promise.all([
-			getPlaylistContentsMini(publicPlaid),
-			getPlaylistContentsMini(currentPlaid)
+			getPlaylistContentsMini(getState().publicPlaid),
+			getPlaylistContentsMini(getState().currentPlaid)
 		]);
 		if (pubpl.length === 0) {
 			logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
