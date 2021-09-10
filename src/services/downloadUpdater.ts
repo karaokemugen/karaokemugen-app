@@ -15,12 +15,12 @@ import { File } from '../types/download';
 import Downloader from '../utils/downloader';
 import { checkDownloadStatus } from './repo';
 
+let updateRunning = false;
+
 async function getRemoteMedias(repo: string): Promise<DBKara[]> {
 	const res = await HTTP.get(`https://${repo}/api/karas/medias`);
 	return JSON.parse(res.body);
 }
-
-let updateRunning = false;
 
 async function listRemoteMedias(repo: string): Promise<File[]> {
 	logger.info('Fetching current media list', {service: 'Update'});
@@ -136,6 +136,7 @@ async function removeFiles(files: string[], dir: string): Promise<void> {
 	}
 }
 
+/** Updates medias for all repositories */
 export async function updateAllMedias() {
 	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
@@ -149,6 +150,7 @@ export async function updateAllMedias() {
 	await checkDownloadStatus();
 }
 
+/** Update medias for one repository */
 export async function updateMedias(repo: string): Promise<boolean> {
 	if (updateRunning) throw {code: 409, msg: 'An update is already running, please wait for it to finish.'};
 	updateRunning = true;

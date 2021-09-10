@@ -74,7 +74,6 @@ export async function initDownloader() {
 
 
 export function initDownloadQueue() {
-	// We'll compare data dir checksum and execute refresh every 5 downloads and everytime the queue is drained
 	dq = new Queue(queueDownload, downloadQueueOptions);
 	dq.on('task_finish', async () => {
 		if (dq.length > 0) logger.info(`${dq.length - 1} items left in queue`, {service: 'Download'});
