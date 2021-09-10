@@ -1,11 +1,10 @@
-import { profile } from 'console';
 import merge from 'lodash.merge';
 
 import { APIMessage } from '../controllers/common';
 import { setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
 import { getSongTitle } from '../lib/services/kara';
 import { getConfig } from '../lib/utils/config';
-import logger from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { CurrentSong } from '../types/playlist';
 import sentry from '../utils/sentry';
