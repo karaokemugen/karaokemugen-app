@@ -14,11 +14,11 @@ import { resetSecurityCode } from '../services/auth';
 import { migrateReposToZip } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
 import { Config } from '../types/config';
-import { parseArgs, setupFromCommandLineArgs } from '../utils/args';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
+import { parseArgs, setupFromCommandLineArgs } from './args';
 import { exit, initEngine } from './engine';
 
 // Commander call to get everything setup in argv

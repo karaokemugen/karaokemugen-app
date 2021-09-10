@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { app, CommandLine } from 'electron';
 
 import logger, { enableProfiling } from '../lib/utils/logger';
-import {getState, setState} from './state';
+import {getState, setState} from '../utils/state';
 
 export function parseArgs() {
 	const version = getState().version;
