@@ -193,14 +193,16 @@ export function resumeQueue() {
 
 export async function checkMediaAndDownload(kid: string, mediafile: string, repo: string, mediasize: number, updateOnly = false) {
 	let downloadMedia = false;
+	let mediaPath: string;
 	try {
-		await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repo));
+		mediaPath = (await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repo)))[0];
 	} catch {
 		// We're checking only to update files. If the file was never found, we won't try to download it. Else we do.
 		if (updateOnly) return;
 		downloadMedia = true;
 	}
-	if (mediafile) {
+	if (mediaPath) {
+		// File exists so we're checking for its stats to check if we need to redownload it or not (different sizes)
 		const mediaStats = await fs.stat(mediafile);
 		downloadMedia = mediaStats.size !== mediasize;
 	}
