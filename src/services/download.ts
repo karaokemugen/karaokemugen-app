@@ -193,8 +193,6 @@ export function resumeQueue() {
 
 export async function checkMediaAndDownload(kid: string, mediafile: string, repo: string, mediasize: number, updateOnly = false) {
 	let downloadMedia = false;
-	let media: string;
-	if (getState().isDemo) return;
 	try {
 		await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repo));
 	} catch {
@@ -202,8 +200,8 @@ export async function checkMediaAndDownload(kid: string, mediafile: string, repo
 		if (updateOnly) return;
 		downloadMedia = true;
 	}
-	if (media) {
-		const mediaStats = await fs.stat(media[0]);
+	if (mediafile) {
+		const mediaStats = await fs.stat(mediafile);
 		downloadMedia = mediaStats.size !== mediasize;
 	}
 	if (downloadMedia && getConfig().Online.AllowDownloads && !getState().isTest) {
