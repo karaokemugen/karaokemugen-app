@@ -1,4 +1,4 @@
-import { ClearOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { ClearOutlined, DeleteOutlined, EditOutlined, FontColorsOutlined } from '@ant-design/icons';
 import { Alert, Button, Cascader, Col, Divider, Input, Layout, Modal, Row, Table } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
@@ -251,19 +251,25 @@ class KaraList extends Component<unknown, KaraListState> {
 		key: 'repository'
 	}, {
 		title: <span>
+			{i18next.t('ACTION')}
 			<Button
 				title={i18next.t('KARA.DELETE_ALL_TOOLTIP')}
 				type="default"
 				onClick={this.confirmDeleteAllVisibleKara}
+				style={{ marginLeft: '1em' }}
 			>
 				<DeleteOutlined />
-			</Button>{i18next.t('ACTION')}
+			</Button>
 		</span>,
 		key: 'action',
 		render: (_text, record: DBKara) => {
 			if (isModifiable(this.context, record.repository)) {
 				const editLink: JSX.Element = <Link to={`/system/karas/${record.kid}`}>
-					<Button type="primary" icon={<EditOutlined />} />
+					<Button
+						type="primary"
+						icon={<EditOutlined />}
+						title={i18next.t('KARA.EDIT_KARA')}
+					/>
 				</Link>;
 				const divider = !is_touch_device() ? <Divider type="vertical" /> : null;
 				const deleteButton: JSX.Element = <Button
@@ -271,9 +277,16 @@ class KaraList extends Component<unknown, KaraListState> {
 					danger
 					loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
 					icon={<DeleteOutlined />}
+					title={i18next.t('KARA.DELETE_KARA')}
 					onClick={() => this.confirmDeleteKara(record)}
 				/>;
-				return <span>{editLink}{divider}{deleteButton}</span>;
+				const LyricsButton: JSX.Element = <Button
+					type="primary"
+					icon={<FontColorsOutlined />}
+					title={i18next.t('KARA.LYRICS_FILE')}
+					onClick={async () => commandBackend('openLyricsFile', { kid: record.kid })}
+				/>;
+				return <span>{editLink}{divider}{deleteButton}{divider}{LyricsButton}</span>;
 			} else if (record.download_status === 'DOWNLOADED') {
 				return <Button
 					type="primary"
