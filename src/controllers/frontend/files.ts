@@ -17,7 +17,7 @@ import { runChecklist } from '../middlewares';
 import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP';
 
 export default function filesController(router: Router) {
-	const upload = multer({ dest: resolvedPathTemp()});
+	const upload = multer({ dest: resolvedPathTemp() });
 	router.route('/importFile')
 		.post(requireHTTPAuth, requireValidUser, upload.single('file'), (req, res: any) => {
 			res.status(200).send(JSON.stringify(req.file));
@@ -35,8 +35,8 @@ export function filesSocketController(router: SocketIOApp) {
 			return {
 				filename: fullPath
 			};
-		} catch(err) {
-			logger.error('Unable to write received file', {service: 'API', obj: err});
+		} catch (err) {
+			logger.error('Unable to write received file', { service: 'API', obj: err });
 			return { code: 500 };
 		}
 	});
@@ -47,26 +47,28 @@ export function filesSocketController(router: SocketIOApp) {
 			const { subfile, repository, mediafile } = await getKara(req.body.kid, req.token);
 			const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
 			if (extname(lyricsPath) === '.ass' && mediafile) {
-				const mediaPath = resolve(resolvedPathRepos('Medias', repository)[0], mediafile);
-				if (await asyncExists(mediaPath, true)) {
-					const garbageContent = `
+				for (const repo of resolvedPathRepos('Medias', repository)) {
+					const mediaPath = resolve(repo, mediafile);
+					if (await asyncExists(mediaPath, true)) {
+						const garbageContent = `
 [Aegisub Project Garbage]
 Audio File: ${mediaPath}
 Video File: ${mediaPath}`;
 
-					const garbageTagRegexp = /\n?^\[Aegisub Project Garbage\](.|\n[^\n])*/g;
-					let content: string = await fs.readFile(lyricsPath, {encoding: 'utf8'});
-					// remove the maybe existing garbage and add the new one
-					content = (content.replace(garbageTagRegexp, '') + garbageContent);
-					await fs.writeFile(lyricsPath, content);
+						const garbageTagRegexp = /\n?^\[Aegisub Project Garbage\](.|\n[^\n])*/g;
+						let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
+						// remove the maybe existing garbage and add the new one
+						content = (content.replace(garbageTagRegexp, '') + garbageContent);
+						await fs.writeFile(lyricsPath, content);
+					}
 				}
 			}
 			await open(lyricsPath);
 			return { code: 204 };
-		} catch(err) {
+		} catch (err) {
 			const code = 'LYRICS_FILE_OPEN_ERROR';
 			errMessage(code, err);
-			throw {code: 500, message: APIMessage(code)};
+			throw { code: 500, message: APIMessage(code) };
 		}
 	});
 }
