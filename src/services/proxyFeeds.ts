@@ -13,7 +13,7 @@ import { getState, setState } from '../utils/state';
 const feeds = [
 	{
 		name: 'git_base',
-		url: 'https://lab.shelter.moe/karaokemugen/karaokebase/tags?feed_token=dCGJUCzzHWNTqCp1FraN&format=atom'
+		url: 'https://lab.shelter.moe/karaokemugen/bases/karaokebase/tags?feed_token=dCGJUCzzHWNTqCp1FraN&format=atom'
 	},
 	{
 		name: 'git_app',

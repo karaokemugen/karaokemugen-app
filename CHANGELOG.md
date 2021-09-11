@@ -1460,7 +1460,7 @@ This version requires your attention on the following points :
 
 - `PathMedias` setting for storing media files replaces `PathVideos`
 - Videos will be stored in a `medias` folder, not `videos` anymore starting July 1st 2018
-- .kara format is going to be version 3 from now on, which means older versions of Karaoke Mugen won't be able to import the [Karaoke Base](http://lab.shelter.moe/karaokemugen/karaokebase) beyond July 1st 2018
+- .kara format is going to be version 3 from now on, which means older versions of Karaoke Mugen won't be able to import the [Karaoke Base](https://lab.shelter.moe/karaokemugen/bases/karaokebase) beyond July 1st 2018
 
 ## New Shiny Features
 
