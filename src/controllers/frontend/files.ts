@@ -50,15 +50,20 @@ export function filesSocketController(router: SocketIOApp) {
 				for (const repo of resolvedPathRepos('Medias', repository)) {
 					const mediaPath = resolve(repo, mediafile);
 					if (await asyncExists(mediaPath, true)) {
-						const garbageContent = `
-[Aegisub Project Garbage]
+						const garbageBlock = `[Aegisub Project Garbage]
 Audio File: ${mediaPath}
 Video File: ${mediaPath}`;
-
-						const garbageTagRegexp = /\n?^\[Aegisub Project Garbage\](.|\n[^\n])*/g;
 						let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
-						// remove the maybe existing garbage and add the new one
-						content = (content.replace(garbageTagRegexp, '') + garbageContent);
+						const blocks = content.split(/\n{2,}/);
+						const garbageIndex = blocks.findIndex(block => block.startsWith('[Aegisub Project Garbage]'));
+						if (garbageIndex >= 0) {
+							// replace the existing garbage
+							blocks[garbageIndex] = garbageBlock;
+						} else {
+							// add the garbage at the second position (default behavior)
+							blocks.splice(1, 0, garbageBlock);
+						}
+						content = blocks.join('\n\n');
 						await fs.writeFile(lyricsPath, content);
 					}
 				}
