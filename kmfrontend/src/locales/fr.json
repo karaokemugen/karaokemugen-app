@@ -795,6 +795,7 @@
 		"CREATORS_BY": "Créé par",
 		"AUTHORS_BY": "Karaoké créé par",
 		"DELETE_KARA": "Supprimer le karaoké ?",
+		"EDIT_KARA": "Editer le karaoké",
 		"DEJAVU_TOOLTIP": "Chanson déjà passée",
 		"PROBLEMATIC_TOOLTIP": "Cette chanson comprend des scènes ({{tags}}) pouvant poser problème à certaines personnes.",
 		"DELETE_ALL_TOOLTIP": "Supprimer tout les karaokés affichés en une seule fois",

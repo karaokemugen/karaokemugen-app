@@ -188,7 +188,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		e.key === 'Enter' && e.preventDefault();
 	}
 
-	mapRepoToSelectOption = (repo: string) => <Select.Option key ={repo} value={repo}>{repo}</Select.Option>
+	mapRepoToSelectOption = (repo: string) => <Select.Option key={repo} value={repo}>{repo}</Select.Option>
 
 	render() {
 		return (
@@ -289,7 +289,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							<UploadOutlined />{i18next.t('KARA.LYRICS_FILE')}
 						</Button>
 					</Upload>
-					<OpenLyricsFileButton kara={this.props.kara} />
+					<div style={{marginTop: '1em'}}>
+						<OpenLyricsFileButton kara={this.props.kara} />
+					</div>
 				</Form.Item>
 				<Form.Item
 					hasFeedback
