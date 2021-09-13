@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
-import { basename, resolve } from 'path';
+import open from 'open';
+import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
 import { addKara, deleteKara as deleteKaraDB, selectAllKaras, updateKara } from '../dao/kara';
@@ -14,7 +15,7 @@ import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { getTagTypeName, tagTypes } from '../lib/utils/constants';
-import { resolveFileInDirs } from '../lib/utils/files';
+import { asyncExists, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
@@ -105,7 +106,6 @@ export async function deleteKara(kids: string[], refresh = true, deleteFiles = {
 		generateBlacklist();
 	}
 }
-
 
 export async function copyKaraToRepo(kid: string, repoName: string) {
 	try {
@@ -279,4 +279,38 @@ export async function deleteMediaFile(file: string, repo: string) {
 	const mediaFile = basename(file);
 	const mediaPaths = await resolveFileInDirs(mediaFile, resolvedPathRepos('Medias', repo));
 	await fs.unlink(mediaPaths[0]);
+}
+
+export async function openLyricsFile(kid: string) {
+	try {
+		const { subfile, repository, mediafile } = await getKara(kid, {role: 'admin', username: 'admin'});
+		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
+		if (extname(lyricsPath) === '.ass' && mediafile) {
+			for (const repo of resolvedPathRepos('Medias', repository)) {
+				const mediaPath = resolve(repo, mediafile);
+				if (await asyncExists(mediaPath, true)) {
+					const garbageBlock = `[Aegisub Project Garbage]
+Audio File: ${mediaPath}
+Video File: ${mediaPath}
+`;
+
+					let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
+					const blocks = content.split(/(?:\n)(?=^\[)/gm);
+					const index = blocks.findIndex(block => block.startsWith('[Aegisub Project Garbage]'));
+					if (index >= 0) {
+						// replace the existing garbage
+						blocks[index] = garbageBlock;
+					} else {
+						// add the garbage at the second position (default behavior)
+						blocks.splice(1, 0, garbageBlock);
+					}
+					content = blocks.join('\n');
+					await fs.writeFile(lyricsPath, content);
+				}
+			}
+		}
+		await open(lyricsPath);
+	} catch (err) {
+		throw err;
+	}
 }
