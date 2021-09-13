@@ -264,14 +264,16 @@ class KaraList extends Component<unknown, KaraListState> {
 		key: 'action',
 		render: (_text, record: DBKara) => {
 			if (isModifiable(this.context, record.repository)) {
-				const editLink: JSX.Element = <Link to={`/system/karas/${record.kid}`}>
+				const editLink: JSX.Element = <Link
+					to={`/system/karas/${record.kid}`}
+					style={{marginRight: '0.75em'}}
+				>
 					<Button
 						type="primary"
 						icon={<EditOutlined />}
 						title={i18next.t('KARA.EDIT_KARA')}
 					/>
 				</Link>;
-				const divider = !is_touch_device() ? <Divider type="vertical" /> : null;
 				const deleteButton: JSX.Element = <Button
 					type="primary"
 					danger
@@ -279,6 +281,7 @@ class KaraList extends Component<unknown, KaraListState> {
 					icon={<DeleteOutlined />}
 					title={i18next.t('KARA.DELETE_KARA')}
 					onClick={() => this.confirmDeleteKara(record)}
+					style={{marginRight: '0.75em'}}
 				/>;
 				const LyricsButton: JSX.Element = <Button
 					type="primary"
@@ -286,7 +289,7 @@ class KaraList extends Component<unknown, KaraListState> {
 					title={i18next.t('KARA.LYRICS_FILE')}
 					onClick={async () => commandBackend('openLyricsFile', { kid: record.kid })}
 				/>;
-				return <span>{editLink}{divider}{deleteButton}{divider}{LyricsButton}</span>;
+				return <div style={{display: 'flex'}}>{editLink}{deleteButton}{LyricsButton}</div>;
 			} else if (record.download_status === 'DOWNLOADED') {
 				return <Button
 					type="primary"
