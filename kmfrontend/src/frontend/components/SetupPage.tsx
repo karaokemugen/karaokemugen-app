@@ -94,7 +94,6 @@ class SetupPage extends Component<IProps, IState> {
 				}
 			}
 		}).catch(() => { });
-		await commandBackend('updateAllZipRepos').catch(() => { });
 		await commandBackend('startPlayer').catch(() => { });
 		sessionStorage.setItem('dlQueueRestart', 'true');
 		this.props.route.history.push('/welcome');
