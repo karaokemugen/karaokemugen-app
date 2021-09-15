@@ -79,7 +79,8 @@ export async function addRepo(repo: Repository) {
 	insertRepo(repo);
 	// Let's download zip if it's an online repository
 	if (repo.Online) {
-		updateZipRepo(repo.Name).then(() => generateDB());
+		if (!repo.MaintainerMode) await updateZipRepo(repo.Name);
+		generateDB();
 	}
 	logger.info(`Added ${repo.Name}`, {service: 'Repo'});
 }
