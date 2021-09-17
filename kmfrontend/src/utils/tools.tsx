@@ -4,6 +4,7 @@ import React, { Dispatch, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
 
+import { Criteria } from '../../../src/lib/types/playlist';
 import nanamiCryPNG from '../assets/nanami-cry.png';
 import nanamiCryWebP from '../assets/nanami-cry.webp';
 import nanamiThinkPng from '../assets/nanami-think.png';
@@ -173,9 +174,6 @@ export function callModal(
 }
 
 export const nonStandardPlaylists = {
-	blacklist: '4398bed2-e272-47f5-9dd9-db7240e8557e', // -2
-	blc: '91a9961a-8863-48a5-b9d0-fc4c1372a11a', // -4
-	whitelist: '4c5dbb18-278b-448e-9a1f-8cf5f1e24dc7', // -3
 	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94', // -5
 	library: '524de79d-10b2-49dc-90b1-597626d0cee8' // -1
 };
@@ -189,48 +187,40 @@ export function isModifiable(context: GlobalContextInterface, repoName: string):
 	return repo.MaintainerMode || !repo.Online;
 }
 
-export async function decodeBlacklistingReason(settings: SettingsStoreData, reason: string) {
-	const parts = reason.split(':');
-	const args: [string, Record<string, string>] = [parts[0], {}];
-	switch (parts[0]) {
-		case 'TAG':
-			if (parts.length === 3) {
-				const tid = parts[1];
-				const type = parts[2];
-				const tag = await commandBackend('getTag', { tid });
-				args[1] = {
-					tag: getTagInLocale(settings, tag),
-					verb: i18next.t(`BLACKLIST.LABEL.TAG_VERBS.${type}`)
-				};
-			}
+export async function decodeCriteriaReason(settings: SettingsStoreData, criteria: Criteria) {
+	const args: [string, Record<string, string>] = ['', {}];
+	switch (criteria.type) {
+		case 0:
+			args[0] = 'YEAR';
+			args[1] = { year: criteria.value };
 			break;
-		case 'YEAR':
-			if (parts.length === 2) {
-				const year = parts[1];
-				args[1] = { year };
-			}
+		case 1001:
+			args[0] = 'KID';
 			break;
-		case 'KID':
+		case 1002:
+			args[0] = 'LONGER';
+			args[1] = { time: criteria.value };
 			break;
-		case 'LONGER':
-		case 'SHORTER':
-			if (parts.length === 2) {
-				const time = parts[1];
-				args[1] = { time };
-			}
+		case 1003:
+			args[0] = 'SHORTER';
+			args[1] = { time: criteria.value };
 			break;
-		case 'TITLE':
-		case 'TAG_NAME':
-			if (parts.length >= 2) {
-				const [type, ...titleParts] = parts;
-				const title = titleParts.join(':');
-				args[1] = { title };
-			}
+		case 1004:
+			args[0] = 'TITLE';
+			args[1] = { title: criteria.value.join(':') };
+			break;
+		case 1005:
+			args[0] = 'TAG_NAME';
+			args[1] = { title: criteria.value.join(':') };
 			break;
 		default:
-			args[0] = 'UNKNOWN';
-			args[1] = {};
+			const tag = await commandBackend('getTag', { tid: criteria.value });
+			args[1] = {
+				tag: getTagInLocale(settings, tag),
+				verb: i18next.t(`CRITERIA.LABEL.TAG_VERBS.${criteria.type}`)
+			};
+			break;
 	}
-	args[0] = `BLACKLIST.LABEL.${args[0]}`;
+	args[0] = `CRITERIA.LABEL.${args[0]}`;
 	return i18next.t(...args);
 }

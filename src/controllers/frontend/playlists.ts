@@ -4,12 +4,62 @@ import { APIData } from '../../lib/types/api';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyPlaylist, exportPlaylist,findPlaying,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, shufflePlaylist } from '../../services/playlist';
+import { addCriteria, addKaraToPlaylist, copyKaraToPlaylist, createPlaylist, createProblematicSmartPlaylist, deleteKaraFromPlaylist, deletePlaylist, editPlaylist, editPLC, emptyCriterias, emptyPlaylist, exportPlaylist,findPlaying,getCriterias,getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, removeCriteria, shufflePlaylist } from '../../services/playlist';
 import { vote } from '../../services/upvote';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function playlistsController(router: SocketIOApp) {
+	router.route('createProblematicSmartPlaylist', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req);
+		try {
+			return await createProblematicSmartPlaylist();
+		} catch(err) {
+			const code = 'PROBLEMATIC_SMART_PLAYLIST_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getCriterias', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin');
+		try {
+			return await getCriterias(req.body.plaid, req.langs);
+		} catch(err) {
+			const code = 'CRITERIAS_GET_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('emptyCriterias', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin');
+		try {
+			return await emptyCriterias(req.body.plaid);
+		} catch(err) {
+			const code = 'CRITERIAS_EMPTY_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('removeCriterias', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin');
+		try {
+			return await removeCriteria(req.body.criterias);
+		} catch(err) {
+			const code = 'CRITERIAS_REMOVE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('addCriterias', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin');
+		try {
+			return await addCriteria(req.body.criterias);
+		} catch(err) {
+			const code = 'CRITERIAS_ADD_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
 	router.route('getPlaylists', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		// Get list of playlists
@@ -29,6 +79,9 @@ export default function playlistsController(router: SocketIOApp) {
 			flag_visible: {inclusion: bools},
 			flag_public: {inclusion: bools},
 			flag_current: {inclusion: bools},
+			flag_smart: {inclusion: bools},
+			flag_whitelist: {inclusion: bools},
+			flag_blacklist: {inclusion: bools},
 		});
 		if (!validationErrors) {
 			// No errors detected
@@ -37,11 +90,7 @@ export default function playlistsController(router: SocketIOApp) {
 			//Now we add playlist
 			try {
 				return {
-					plaid: await createPlaylist(req.body.name, {
-						visible: req.body.flag_visible,
-						current: req.body.flag_current,
-						public: req.body.flag_public,
-					}, req.token.username)
+					plaid: await createPlaylist(req.body, req.token.username)
 				};
 			} catch(err) {
 				const code = 'PL_CREATE_ERROR';

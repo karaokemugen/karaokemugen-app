@@ -31,7 +31,6 @@ describe('Main', () => {
 		const data = await commandBackend(token, 'getStats');
 		const stats: DBStats = data;
 		expect(stats.authors).to.be.a('number').and.at.least(0);
-		expect(stats.blacklist).to.be.a('number').and.at.least(0);
 		expect(stats.creators).to.be.a('number').and.at.least(0);
 		expect(stats.duration).to.be.a('number').and.at.least(0);
 		expect(stats.karas).to.be.a('number').and.at.least(0);
@@ -42,8 +41,7 @@ describe('Main', () => {
 		expect(stats.series).to.be.a('number').and.at.least(0);
 		expect(stats.singers).to.be.a('number').and.at.least(0);
 		expect(stats.songwriters).to.be.a('number').and.at.least(0);
-		expect(stats.tags).to.be.a('number').and.at.least(0);
-		expect(stats.whitelist).to.be.a('number').and.at.least(0);
+		expect(stats.tags).to.be.a('number').and.at.least(0);		
 	});
 
 	it('Test catchphrases', async () => {

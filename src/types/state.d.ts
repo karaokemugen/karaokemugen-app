@@ -12,6 +12,8 @@ export interface Version {
 export interface State {
 	appHasBeenUpdated?: boolean,
 	currentPlaid?: string,
+	blacklistPlaid?: string,
+	whitelistPlaid?: string,
 	currentSessionID?: string,
 	currentSessionEndsAt?: Date,
 	publicPlaid?: string,
@@ -76,7 +78,6 @@ export interface State {
 	args: string[],
 	environment: string,
 	sentrytest: boolean,
-	currentBLCSetID: number,
 	restoreNeeded: boolean,
 	systemMessages: SystemMessage[]
 }
@@ -93,6 +94,8 @@ export interface SystemMessage {
 export interface PublicState {
 	currentPlaid: string,
 	publicPlaid: string,
+	blacklistPlaid: string,
+	whitelistPlaid: string,
 	appPath?: string,
 	dataPath?: string,
 	os?: string,

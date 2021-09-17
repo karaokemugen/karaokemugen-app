@@ -2,16 +2,18 @@ import i18next from 'i18next';
 import React, { Component } from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { DBPLC, DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiSingingPng from '../../../assets/nanami-sing.png';
 import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
 import { setFilterValue } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
+import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import {displayMessage, nonStandardPlaylists, secondsTimeSpanToHMS} from '../../../utils/tools';
+import {displayMessage, isNonStandardPlaylist, nonStandardPlaylists, secondsTimeSpanToHMS} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { View } from '../../types/view';
 import KmAppBodyDecorator from '../decorators/KmAppBodyDecorator';
@@ -33,7 +35,7 @@ interface IProps {
 }
 
 interface IState {
-	idsPlaylist: { left: string, right: string };
+	idsPlaylist: { left: DBPL, right: DBPL };
 	isPollActive: boolean;
 	classicModeModal: boolean;
 	view: View;
@@ -61,7 +63,10 @@ class PublicPage extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			isPollActive: false,
-			idsPlaylist: { left: nonStandardPlaylists.library, right: nonStandardPlaylists.blacklist },
+			idsPlaylist: {
+				left: { plaid: nonStandardPlaylists.library, name: '', flag_visible: true },
+				right: { plaid: nonStandardPlaylists.library, name: '', flag_visible: true },
+			},
 			classicModeModal: false,
 			view: 'home',
 			tagType: undefined,
@@ -92,45 +97,60 @@ class PublicPage extends Component<IProps, IState> {
 		}
 		const idsPlaylist = this.state.idsPlaylist;
 		if (view === 'favorites') {
-			idsPlaylist.left = nonStandardPlaylists.favorites;
+			idsPlaylist.left = { plaid: nonStandardPlaylists.favorites, name: '', flag_visible: true };
 			route = '/public/favorites';
 		} else if (view === 'requested') {
-			idsPlaylist.left = nonStandardPlaylists.library;
+			idsPlaylist.left = { plaid: nonStandardPlaylists.library, name: '', flag_visible: true };
 			searchType = 'requested';
 			route = '/public/search/requested';
 		} else if (view === 'history') {
-			idsPlaylist.left = nonStandardPlaylists.library;
+			idsPlaylist.left = { plaid: nonStandardPlaylists.library, name: '', flag_visible: true };
 			searchType = 'recent';
 			route = '/public/search/history';
 		} else if (view === 'search') {
-			idsPlaylist.left = nonStandardPlaylists.library;
+			idsPlaylist.left = { plaid: nonStandardPlaylists.library, name: '', flag_visible: true };
 			searchType = 'search';
 			route = '/public/search';
 		} else if (view === 'publicPlaylist') {
-			idsPlaylist.left = this.context.globalState.settings.data.state.publicPlaid;
+			idsPlaylist.left = await this.getPlaylistInfo(this.context.globalState.settings.data.state.publicPlaid);
+			this.context.globalState.settings.data.state.publicPlaid;
 			route = `/public/playlist/${idsPlaylist.left}`;
 		} else if (view === 'currentPlaylist') {
-			idsPlaylist.left = this.context.globalState.settings.data.state.currentPlaid;
+			idsPlaylist.left = await this.getPlaylistInfo(this.context.globalState.settings.data.state.currentPlaid);
 			route = `/public/playlist/${idsPlaylist.left}`;
 		}
 		if (this.state.indexKaraDetail === undefined) {
 			setFilterValue(
 				this.context.globalDispatch,
 				'',
-				1,
-				this.state.idsPlaylist.left
+				'left',
+				this.state.idsPlaylist.left.plaid
 			);
 		}
 		this.setState({ view, tagType, idsPlaylist, searchValue, searchCriteria, searchType, kara: undefined });
 		this.props.route.history.push(route);
 	};
 
-	majIdsPlaylist = (side: number, value: string) => {
+	majIdsPlaylist = async (side: 'left' | 'right', plaid: string) => {
 		const idsPlaylist = this.state.idsPlaylist;
-		if (side === 1) {
-			idsPlaylist.left = value;
+		let playlistInfo;
+		if (!isNonStandardPlaylist(plaid)) {
+			playlistInfo = await this.getPlaylistInfo(plaid);
+		} else {
+			playlistInfo = { plaid, name: '', flag_visible: true };
+		}
+		if (side === 'left') {
+			idsPlaylist.left = playlistInfo;
 		}
 		this.setState({ idsPlaylist: idsPlaylist });
+	};
+
+	getPlaylistInfo = async (plaid: string): Promise<DBPL> => {
+		try {
+			return await commandBackend('getPlaylist', { plaid });
+		} catch (e) {
+			// already display
+		}
 	};
 
 	initView() {
@@ -159,8 +179,10 @@ class PublicPage extends Component<IProps, IState> {
 
 	async componentDidMount() {
 		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) await this.getPlaylistList();
+		this.majIdsPlaylist('right', this.context.globalState.settings.data.state.publicPlaid);
 		this.initView();
-		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
+		getSocket().on('publicPlaylistUpdated', this.publicPlaylistUpdated);
+		getSocket().on('playlistInfoUpdated', this.playlistInfoUpdated);
 		getSocket().on('playerStatus', this.displayClassicModeModal);
 		getSocket().on('songPollStarted', this.songPollStarted);
 		getSocket().on('songPollEnded', this.songPollEnded);
@@ -170,12 +192,14 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().on('nextSong', this.nextSong);
 		this.historyCallback = this.props.route.history.listen(() => {
 			if (this.state.indexKaraDetail === undefined) {
-				setFilterValue(this.context.globalDispatch, '', 1, this.state.idsPlaylist.left);
+				setFilterValue(this.context.globalDispatch, '', 'left', this.state.idsPlaylist.left.plaid);
 			}
 		});
 	}
 
 	componentWillUnmount() {
+		getSocket().off('publicPlaylistUpdated', this.publicPlaylistUpdated);
+		getSocket().off('playlistInfoUpdated', this.playlistInfoUpdated);
 		getSocket().off('playerStatus', this.displayClassicModeModal);
 		getSocket().off('songPollStarted', this.songPollStarted);
 		getSocket().off('songPollEnded', this.songPollEnded);
@@ -184,6 +208,20 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().off('userSongPlaysIn', this.userSongPlaysIn);
 		getSocket().off('nextSong', this.nextSong);
 		this.historyCallback();
+	}
+
+	publicPlaylistUpdated = async (idPlaylist: string) => {
+		if (idPlaylist !== this.context.globalState.settings.data.state.publicPlaid) {
+			await this.getPlaylistList();
+			setSettings(this.context.globalDispatch);
+			this.majIdsPlaylist('right', idPlaylist);
+		}
+	}
+
+	playlistInfoUpdated = (plaid: string) => {
+		this.getPlaylistList();
+		if (this.state.idsPlaylist.left.plaid === plaid) this.majIdsPlaylist('left', plaid);
+		if (this.state.idsPlaylist.right.plaid === plaid) this.majIdsPlaylist('right', plaid);
 	}
 
 	getPlaylistList = async () => {
@@ -264,9 +302,10 @@ class PublicPage extends Component<IProps, IState> {
 	};
 
 	toggleKaraDetail = (kara: KaraElement, plaid: string, indexKaraDetail: number) => {
-		const idsPlaylist = this.state.idsPlaylist;
-		idsPlaylist.left = plaid;
-		this.setState({ kara, indexKaraDetail, idsPlaylist }, () => this.props.route.history.push(`/public/karaoke/${kara.kid}`));
+		this.setState({ kara, indexKaraDetail }, () => {
+			this.majIdsPlaylist('left', plaid);
+			this.props.route.history.push(`/public/karaoke/${kara.kid}`);
+		});
 	};
 
 	render() {
@@ -327,7 +366,7 @@ class PublicPage extends Component<IProps, IState> {
 								<KaraDetail kid={this.state.kara?.kid || match.params.kid}
 									playlistcontentId={this.state.kara?.plcid}
 									scope='public'
-									plaid={this.state.idsPlaylist.left}
+									plaid={this.state.idsPlaylist.left.plaid}
 									closeOnPublic={() => {
 										this.props.route.history.goBack();
 										this.setState({ kara: undefined });
@@ -359,8 +398,8 @@ class PublicPage extends Component<IProps, IState> {
 													setFilterValue(
 														this.context.globalDispatch,
 														e.target.value,
-														1,
-														this.state.idsPlaylist.left
+														'left',
+														this.state.idsPlaylist.left.plaid
 													)
 												}
 											/>
@@ -388,9 +427,9 @@ class PublicPage extends Component<IProps, IState> {
 											/> :
 											<Playlist
 												scope="public"
-												side={1}
-												plaid={(match.params as { plaid: string; }).plaid || this.state.idsPlaylist.left}
-												plaidTo={this.context.globalState.settings.data.state.publicPlaid}
+												side={'left'}
+												playlist={this.state.idsPlaylist.right}
+												oppositePlaylist={this.state.idsPlaylist.left}	
 												majIdsPlaylist={this.majIdsPlaylist}
 												toggleKaraDetail={this.toggleKaraDetail}
 												searchValue={this.state.searchValue}

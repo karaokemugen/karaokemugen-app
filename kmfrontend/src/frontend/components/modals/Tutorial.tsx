@@ -95,8 +95,8 @@ class Tutorial extends Component<unknown, IState> {
 								<li><i className="fas fa-fw fa-pencil-alt" /> {i18next.t('MODAL.TUTORIAL.PLAYLIST_ATTRIBUTES')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.OR')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong>.</li>
 								<li><i className="fas fa-fw fa-play-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_DESC')}</li>
 								<li><i className="fas fa-fw fa-globe" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.PUBLIC_DESC')}</li>
-								<li><i className="fas fa-fw fa-info-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.AND')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_PUBLIC_DESC')}</li><li><i className="fas fa-fw fa-not-equal" /> {i18next.t('MODAL.TUTORIAL.BLACLIST_CRITERIAS_DESC')}</li>
-								<li><i className="fas fa-fw fa-ban" /> {i18next.t('MODAL.TUTORIAL.BLACLIST_DESC')}</li>
+								<li><i className="fas fa-fw fa-info-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.AND')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_PUBLIC_DESC')}</li>
+								<li><i className="fas fa-fw fa-ban" /> {i18next.t('MODAL.TUTORIAL.BLACKLIST_DESC')}</li>
 							</ul>
 						</li>
 					</ul>

@@ -9,8 +9,6 @@ SELECT
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[6])::integer AS authors,
 (SELECT COUNT(pk_kid) FROM kara)::integer AS karas,
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[5])::integer AS languages,
-(SELECT COUNT(fk_kid) FROM whitelist)::integer AS whitelist,
-(SELECT COUNT(fk_kid) FROM blacklist)::integer AS blacklist,
 (SELECT COUNT(pk_tid) FROM tag WHERE types @> ARRAY[1])::integer AS series,
 (SELECT COUNT(*) FROM played)::integer AS played,
 (SELECT COUNT(pk_id_playlist) FROM playlist)::integer AS playlists,
@@ -18,10 +16,8 @@ SELECT
 `;
 
 export const sqlResetUserData = `
-TRUNCATE blacklist RESTART IDENTITY CASCADE;
-TRUNCATE blacklist_criteria RESTART IDENTITY CASCADE;
-TRUNCATE blacklist_criteria_set RESTART IDENTITY CASCADE;
 TRUNCATE upvote RESTART IDENTITY CASCADE;
+TRUNCATE playlist_criteria RESTART IDENTITY CASCADE;
 TRUNCATE playlist_content RESTART IDENTITY CASCADE;
 TRUNCATE playlist RESTART IDENTITY CASCADE;
 TRUNCATE users RESTART IDENTITY CASCADE;

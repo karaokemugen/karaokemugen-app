@@ -3,7 +3,7 @@ import './KaraMenuModal.scss';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
-import { GlobalContextInterface } from '../../../store/context';
+import GlobalContext, { GlobalContextInterface } from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import {displayMessage, is_touch_device, isNonStandardPlaylist, nonStandardPlaylists} from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
@@ -16,7 +16,6 @@ interface IProps {
 	topKaraMenu: number;
 	leftKaraMenu: number;
 	closeKaraMenu: () => void;
-	context: GlobalContextInterface;
 	transferKara: (event: any, pos?: number) => void;
 }
 
@@ -29,6 +28,8 @@ interface IState {
 }
 
 class CheckedKaraMenuModal extends Component<IProps, IState> {
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>
 
 	state = {
 		effect_favorite: false,
@@ -103,11 +104,10 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 
 	addToBlacklist = () => {
 		try {
-			commandBackend('createBLC', {
-				blcs: this.props.checkedKaras.map(a => {
-					return { type: 1001, value: a.kid };
-				}),
-				set_id: this.props.context.globalState.frontendContext.currentBlSet
+			commandBackend('addCriterias', {
+				criterias: this.props.checkedKaras.map(a => {
+					return { type: 1001, value: a.kid, plaid: this.props.plaid };
+				})
 			});
 			this.setState({ effect_blacklist: true });
 			setTimeout(this.props.closeKaraMenu, 350);
@@ -118,8 +118,10 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 
 	addToWhitelist = () => {
 		try {
-			commandBackend('addKaraToWhitelist', {
-				kids: this.props.checkedKaras.map(a => a.kid)
+			commandBackend('addCriterias', {
+				criterias: this.props.checkedKaras.map(a => {
+					return { type: 1001, value: a.kid, plaid: this.props.plaid };
+				})
 			});
 			this.setState({ effect_whitelist: true });
 			setTimeout(this.props.closeKaraMenu, 350);
@@ -224,7 +226,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.plaid !== nonStandardPlaylists.blacklist && this.props.plaid !== nonStandardPlaylists.blc ?
+				{this.props.plaid !== this.context.globalState.settings.data.state.blacklistPlaid ?
 					<li className="animate-button-container">
 						<a href="#" onClick={this.addToBlacklist}>
 							<i className="fas fa-ban" />
@@ -238,7 +240,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						</a>
 					</li> : null
 				}
-				{this.props.plaid !== nonStandardPlaylists.whitelist ?
+				{this.props.plaid !== this.context.globalState.settings.data.state.whitelistPlaid ?
 					<li className="animate-button-container">
 						<a href="#" onClick={this.addToWhitelist}>
 							<i className="fas fa-check-circle" />

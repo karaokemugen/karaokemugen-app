@@ -20,7 +20,6 @@ import {getConfig, setConfig} from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
-import { generateBlacklist, initBlacklistSystem } from '../services/blacklist';
 import {initDownloader, wipeDownloadQueue} from '../services/download';
 import { updateAllMedias } from '../services/downloadUpdater';
 import { getKaras, initFetchPopularSongs } from '../services/kara';
@@ -162,7 +161,6 @@ export async function initEngine() {
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
 			initStep(i18n.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [
-				initBlacklistSystem(),
 				initPlaylistSystem(),
 				initDownloader(),
 				initSession()
@@ -322,7 +320,6 @@ async function preFlightCheck(): Promise<boolean> {
 	logger.info(`Songs played : ${stats?.played}`, {service: 'DB'});
 	// Run this in the background
 	vacuum();
-	generateBlacklist();
 	return doGenerate;
 }
 

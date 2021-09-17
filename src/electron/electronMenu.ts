@@ -91,10 +91,6 @@ export function initMenu() {
 							label: i18next.t('MENU_FILE_IMPORT_KARABUNDLE'),
 							click: importFile
 						},
-						{
-							label: i18next.t('MENU_FILE_IMPORT_BLCSET'),
-							click: importFile
-						},
 					]
 				},
 				{ type: 'separator'},

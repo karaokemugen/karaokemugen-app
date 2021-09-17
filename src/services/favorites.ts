@@ -210,8 +210,10 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		const favs = await getAllFavorites(params.users);
 		if (favs.length === 0) throw {code: 404, msg: 'AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS'};
 		const autoMixPLName = `AutoMix ${date()}`;
-		const plaid = await createPlaylist(autoMixPLName, {
-			visible: true
+		const plaid = await createPlaylist({
+			name: autoMixPLName,
+			flag_visible: true,
+			username: username
 		}, username);
 		// Copy karas from everyone listed
 		for (const user of params.users) {

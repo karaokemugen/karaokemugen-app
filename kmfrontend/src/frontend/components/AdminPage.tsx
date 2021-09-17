@@ -3,13 +3,14 @@ import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
 
 import { DBYear } from '../../../../src/lib/types/database/kara';
-import {DBBlacklist} from '../../../../src/types/database/blacklist';
+import { DBPL } from '../../../../src/lib/types/database/playlist';
+import { Criteria } from '../../../../src/lib/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { getNavigatorLanguageIn3B } from '../../utils/isoLanguages';
 import { commandBackend, getSocket } from '../../utils/socket';
-import {decodeBlacklistingReason, displayMessage, nonStandardPlaylists} from '../../utils/tools';
+import { decodeCriteriaReason, displayMessage, isNonStandardPlaylist, nonStandardPlaylists } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import { Tag } from '../types/tag';
 import AdminHeader from './AdminHeader';
@@ -27,11 +28,11 @@ interface IProps {
 }
 
 interface IState {
-	idsPlaylist: { left: string, right: string };
+	idsPlaylist: { left: DBPL, right: DBPL };
 	searchMenuOpen1: boolean;
 	searchMenuOpen2: boolean;
 	statusPlayer?: PublicPlayerState;
-	currentSide: number;
+	currentSide: 'left' | 'right';
 	playlistList: Array<PlaylistElem>;
 	// Workaround for Safari (forcedHeight on <Playlist> and onResize on <PlaylistMainDecorator>)
 	// See PublicPage.tsx
@@ -46,31 +47,33 @@ class AdminPage extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			idsPlaylist: { left: nonStandardPlaylists.library, right: nonStandardPlaylists.library },
+			idsPlaylist: {
+				left: { plaid: nonStandardPlaylists.library, name: '', flag_visible: true },
+				right: { plaid: null, name: '', flag_visible: true }
+			},
 			searchMenuOpen1: false,
 			searchMenuOpen2: false,
-			currentSide: 1,
+			currentSide: 'left',
 			playlistList: []
 		};
 	}
 
 	async componentDidMount() {
-		this.addTags();
 		if (this.context.globalState.auth.isAuthenticated) {
 			await this.getPlaylistList();
+			this.getIdPlaylist();
 		}
-		getSocket().on('publicPlaylistUpdated', this.getPlaylistList);
+		this.addTags();
 		getSocket().on('playlistsUpdated', this.getPlaylistList);
-		getSocket().on('playlistInfoUpdated', this.getPlaylistList);
+		getSocket().on('playlistInfoUpdated', this.playlistInfoUpdated);
 		getSocket().on('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().on('operatorNotificationError', this.operatorNotificationError);
 		getSocket().on('operatorNotificationWarning', this.operatorNotificationWarning);
 	}
 
 	componentWillUnmount() {
-		getSocket().off('publicPlaylistUpdated', this.getPlaylistList);
 		getSocket().off('playlistsUpdated', this.getPlaylistList);
-		getSocket().off('playlistInfoUpdated', this.getPlaylistList);
+		getSocket().off('playlistInfoUpdated', this.playlistInfoUpdated);
 		getSocket().off('operatorNotificationInfo', this.operatorNotificationInfo);
 		getSocket().off('operatorNotificationError', this.operatorNotificationError);
 		getSocket().off('operatorNotificationWarning', this.operatorNotificationWarning);
@@ -80,14 +83,68 @@ class AdminPage extends Component<IProps, IState> {
 	operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code, { data: data }));
 	operatorNotificationWarning = (data: { code: string, data: string }) => displayMessage('warning', i18next.t(data.code, { data: data }));
 
-	majIdsPlaylist = (side: number, value: string) => {
+	getIdPlaylist = async () => {
 		const idsPlaylist = this.state.idsPlaylist;
-		if (side === 1) {
-			idsPlaylist.left = value;
+		let plVal1Cookie = localStorage.getItem('mugenPlVal1');
+		let plVal2Cookie = localStorage.getItem('mugenPlVal2');
+		if (plVal1Cookie === plVal2Cookie) {
+			plVal2Cookie = null;
+			plVal1Cookie = null;
+		}
+
+		const idPlaylistLeft = plVal1Cookie !== null
+			&& this.state.playlistList.find(playlist => playlist.plaid === plVal1Cookie) ?
+			plVal1Cookie : nonStandardPlaylists.library;
+		if (!isNonStandardPlaylist(idPlaylistLeft)) {
+			this.state.idsPlaylist.left = await this.getPlaylistInfo(idPlaylistLeft);
 		} else {
-			idsPlaylist.right = value;
+			this.state.idsPlaylist.left = { plaid: idPlaylistLeft, name: '', flag_visible: true };
+		}
+		const idPlaylistRight = plVal2Cookie !== null
+			&& this.state.playlistList.find(playlist => playlist.plaid === plVal2Cookie) ?
+			plVal2Cookie : this.context.globalState.settings.data.state.currentPlaid;
+		if (!isNonStandardPlaylist(idPlaylistRight)) {
+			this.state.idsPlaylist.right = await this.getPlaylistInfo(idPlaylistRight);
+		} else {
+			this.state.idsPlaylist.right = { plaid: idPlaylistRight, name: '', flag_visible: true };
 		}
 		this.setState({ idsPlaylist: idsPlaylist });
+	};
+
+	playlistInfoUpdated = async (plaid: string) => {
+		await this.getPlaylistList();
+		if (this.state.idsPlaylist.left.plaid === plaid) this.majIdsPlaylist('left', plaid);
+		if (this.state.idsPlaylist.right.plaid === plaid) this.majIdsPlaylist('right', plaid);
+	}
+
+	majIdsPlaylist = async (side: 'left' | 'right', plaid: string) => {
+		if (this.state.playlistList
+			.filter(playlist => playlist.plaid === plaid).length === 0) {
+			await this.getPlaylistList();
+		}
+		const idsPlaylist = this.state.idsPlaylist;
+		let playlistInfo;
+		if (!isNonStandardPlaylist(plaid)) {
+			playlistInfo = await this.getPlaylistInfo(plaid);
+		} else {
+			playlistInfo = { plaid, name: '', flag_visible: true };
+		}
+		if (side === 'left') {
+			localStorage.setItem('mugenPlVal1', plaid);
+			idsPlaylist.left = playlistInfo;
+		} else {
+			idsPlaylist.right = playlistInfo;
+			localStorage.setItem('mugenPlVal2', plaid);
+		}
+		this.setState({ idsPlaylist: idsPlaylist });
+	};
+
+	getPlaylistInfo = async (plaid: string): Promise<DBPL> => {
+		try {
+			return await commandBackend('getPlaylist', { plaid });
+		} catch (e) {
+			// already display
+		}
 	};
 
 	toggleSearchMenu1 = () => {
@@ -125,7 +182,7 @@ class AdminPage extends Component<IProps, IState> {
 				command: namecommand
 			};
 		}
-		commandBackend('sendPlayerCommand', data).catch(() => {});
+		commandBackend('sendPlayerCommand', data).catch(() => { });
 	}
 
 	async parseTags() {
@@ -169,18 +226,6 @@ class AdminPage extends Component<IProps, IState> {
 			};
 		}
 		playlistList.push({
-			plaid: '4398bed2-e272-47f5-9dd9-db7240e8557e',
-			name: i18next.t('PLAYLISTS.BLACKLIST')
-		});
-		playlistList.push({
-			plaid: '91a9961a-8863-48a5-b9d0-fc4c1372a11a',
-			name: i18next.t('PLAYLISTS.BLACKLIST_CRITERIAS')
-		});
-		playlistList.push({
-			plaid: '4c5dbb18-278b-448e-9a1f-8cf5f1e24dc7',
-			name: i18next.t('PLAYLISTS.WHITELIST')
-		});
-		playlistList.push({
 			plaid: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94',
 			name: i18next.t('PLAYLISTS.FAVORITES')
 		});
@@ -193,12 +238,12 @@ class AdminPage extends Component<IProps, IState> {
 	};
 
 	toggleKaraDetail = async (kara: KaraElement, idPlaylist: string) => {
-		let reason;
-		if (Object.keys(kara).includes('reason')) {
-			reason = await decodeBlacklistingReason(this.context.globalState.settings.data, (kara as unknown as DBBlacklist).reason);
+		const reason = [];
+		if (kara.criterias) {
+			kara.criterias.map(async criteria => reason.push(await decodeCriteriaReason(this.context.globalState.settings.data, criteria)));
 		}
 		showModal(this.context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope='admin'
-			plaid={idPlaylist} blcLabel={reason} />);
+			plaid={idPlaylist} criteriaLabel={reason.join(', ')} />);
 	};
 
 	render() {
@@ -219,11 +264,12 @@ class AdminPage extends Component<IProps, IState> {
 							<Switch>
 								<Route path="/admin/options" component={Options} />
 								<Route path="/admin" render={() =>
-									<PlaylistMainDecorator currentSide={this.state.currentSide}>
+									<PlaylistMainDecorator>
 										<Playlist
 											scope='admin'
-											side={1}
-											plaidTo={this.state.idsPlaylist.right}
+											side={'left'}
+											playlist={this.state.idsPlaylist.left}
+											oppositePlaylist={this.state.idsPlaylist.right}
 											majIdsPlaylist={this.majIdsPlaylist}
 											tags={this.state.tags}
 											toggleSearchMenu={this.toggleSearchMenu1}
@@ -233,8 +279,9 @@ class AdminPage extends Component<IProps, IState> {
 										/>
 										<Playlist
 											scope='admin'
-											side={2}
-											plaidTo={this.state.idsPlaylist.left}
+											side={'right'}
+											playlist={this.state.idsPlaylist.right}
+											oppositePlaylist={this.state.idsPlaylist.left}
 											majIdsPlaylist={this.majIdsPlaylist}
 											tags={this.state.tags}
 											toggleSearchMenu={this.toggleSearchMenu2}

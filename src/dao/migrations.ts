@@ -5,6 +5,7 @@ import { Migration } from 'postgrator';
 import {win} from '../electron/electron';
 import logger from '../lib/utils/logger';
 import { generateDB } from './database';
+import { migrateBLWLToSmartPLs } from './playlist';
 
 export async function postMigrationTasks(migrations: Migration[], didGeneration: boolean) {
 	let doGenerate = false;
@@ -33,6 +34,10 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 			case 'addTitlesToKara':
 				if (!didGeneration) doGenerate = true;
 				logger.info('Migration adding titles to karas detected, forcing generation', {service: 'DB'});
+				break;
+			case 'smartPlaylistsAndBLWLRework':
+				logger.info('Migrating blacklist and whitelist to smart playlists', {service: 'DB'});
+				await migrateBLWLToSmartPLs();
 				break;
 			default:
 		}

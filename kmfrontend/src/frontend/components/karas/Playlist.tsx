@@ -9,12 +9,9 @@ import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, Infinite
 
 import { DownloadedStatus } from '../../../../../src/lib/types/database/download';
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
-import { BLCSet } from '../../../../../src/types/blacklist';
-import { DBBlacklist, DBBLC } from '../../../../../src/types/database/blacklist';
+import { Criteria } from '../../../../../src/lib/types/playlist';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import { PublicPlayerState } from '../../../../../src/types/state';
-import { setCurrentBlSet } from '../../../store/actions/frontendContext';
-import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
@@ -28,7 +25,7 @@ import {
 } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { Tag } from '../../types/tag';
-import BlacklistCriterias from './BlacklistCriterias';
+import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 
@@ -37,15 +34,15 @@ const _cache = new CellMeasurerCache({ defaultHeight: 44, fixedWidth: true });
 let timer: any;
 
 interface IProps {
-	plaid?: string;
+	playlist: DBPL;
+	oppositePlaylist: DBPL;
 	scope: string;
-	side: number;
-	plaidTo: string;
+	side: 'left' | 'right';
 	tags?: Array<Tag> | undefined;
 	searchMenuOpen?: boolean;
 	playlistList?: Array<PlaylistElem>;
 	toggleSearchMenu?: () => void;
-	majIdsPlaylist: (side: number, value: string) => void;
+	majIdsPlaylist: (side: 'left' | 'right', value: string) => void;
 	toggleKaraDetail: (kara: KaraElement, plaid: string, index?: number) => void;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
@@ -64,12 +61,8 @@ interface IState {
 	forceUpdate: boolean;
 	forceUpdateFirst: boolean;
 	scope?: string;
-	plaid: string;
-	bLSet?: BLCSet
-	data: KaraList | Array<DBBLC> | undefined;
+	data: KaraList | undefined;
 	scrollToIndex?: number;
-	playlistInfo?: DBPL;
-	bLSetList: BLCSet[];
 	checkedKaras: number;
 	playing?: number;
 	songsBeforeJingle?: number;
@@ -78,6 +71,7 @@ interface IState {
 	_goToPlaying?: boolean; // Avoid scroll event trigger
 	selectAllKarasChecked: boolean;
 	height: number;
+	criteriasOpen: boolean;
 }
 
 interface KaraList {
@@ -103,17 +97,15 @@ class Playlist extends Component<IProps, IState> {
 			stopUpdate: false,
 			forceUpdate: false,
 			forceUpdateFirst: false,
-			plaid: nonStandardPlaylists.library,
-			bLSet: undefined,
 			data: undefined,
-			bLSetList: [],
 			searchType: this.props.searchType ? this.props.searchType : 'search',
 			orderByLikes: false,
 			checkedKaras: 0,
 			searchCriteria: this.props.searchCriteria,
 			searchValue: this.props.searchValue,
 			selectAllKarasChecked: false,
-			height: 0
+			height: 0,
+			criteriasOpen: false
 		};
 	}
 	async componentDidMount() {
@@ -121,12 +113,8 @@ class Playlist extends Component<IProps, IState> {
 			await this.initCall();
 		}
 		getSocket().on('playingUpdated', this.playingUpdate);
-		getSocket().on('whitelistUpdated', this.whitelistUpdated);
-		getSocket().on('blacklistUpdated', this.blacklistUpdated);
 		getSocket().on('favoritesUpdated', this.favoritesUpdated);
 		getSocket().on('playlistContentsUpdated', this.playlistContentsUpdatedFromServer);
-		getSocket().on('playlistInfoUpdated', this.playlistInfoUpdated);
-		getSocket().on('publicPlaylistUpdated', this.publicPlaylistUpdated);
 		getSocket().on('publicPlaylistEmptied', this.publicPlaylistEmptied);
 		getSocket().on('KIDUpdated', this.KIDUpdated);
 		getSocket().on('playerStatus', this.updateCounters);
@@ -137,12 +125,8 @@ class Playlist extends Component<IProps, IState> {
 
 	componentWillUnmount() {
 		getSocket().off('playingUpdated', this.playingUpdate);
-		getSocket().off('whitelistUpdated', this.whitelistUpdated);
-		getSocket().off('blacklistUpdated', this.blacklistUpdated);
 		getSocket().off('favoritesUpdated', this.favoritesUpdated);
 		getSocket().off('playlistContentsUpdated', this.playlistContentsUpdatedFromServer);
-		getSocket().off('playlistInfoUpdated', this.playlistInfoUpdated);
-		getSocket().off('publicPlaylistUpdated', this.publicPlaylistUpdated);
 		getSocket().off('publicPlaylistEmptied', this.publicPlaylistEmptied);
 		getSocket().off('KIDUpdated', this.KIDUpdated);
 		getSocket().off('playerStatus', this.updateCounters);
@@ -151,33 +135,12 @@ class Playlist extends Component<IProps, IState> {
 		eventEmitter.removeChangeListener('changeIdPlaylist', this.changeIdPlaylistFromOtherSide);
 	}
 
-	whitelistUpdated = () => {
-		if (this.state.plaid === nonStandardPlaylists.whitelist) this.getPlaylist();
-	}
-
-	blacklistUpdated = () => {
-		if (this.state.plaid === nonStandardPlaylists.blacklist || this.state.plaid === nonStandardPlaylists.blc)
-			this.getPlaylist();
-	}
-
 	favoritesUpdated = () => {
-		if (this.state.plaid === nonStandardPlaylists.favorites) this.getPlaylist();
-	}
-
-	playlistInfoUpdated = (idPlaylist: string) => {
-		if (this.state.plaid === idPlaylist) this.getPlaylistInfo();
-	}
-
-	publicPlaylistUpdated = (idPlaylist: string) => {
-		if (this.props.scope !== 'admin' && this.props.side
-			&& idPlaylist !== this.context.globalState.settings.data.state.publicPlaid) {
-			setSettings(this.context.globalDispatch);
-			this.changeIdPlaylist(idPlaylist);
-		}
+		if (this.props.playlist.plaid === nonStandardPlaylists.favorites) this.getPlaylist();
 	}
 
 	publicPlaylistEmptied = () => {
-		if (this.state.plaid === nonStandardPlaylists.library && this.state.data) {
+		if (this.props.playlist.plaid === nonStandardPlaylists.library && this.state.data) {
 			const data = this.state.data as KaraList;
 			for (const kara of data.content) {
 				if (kara) {
@@ -198,8 +161,8 @@ class Playlist extends Component<IProps, IState> {
 		plc_id: number[],
 		download_status: DownloadedStatus
 	}[]) => {
-		if ((this.state.plaid === nonStandardPlaylists.library
-			|| this.state.plaid === nonStandardPlaylists.favorites
+		if ((this.props.playlist.plaid === nonStandardPlaylists.library
+			|| this.props.playlist.plaid === nonStandardPlaylists.favorites
 			|| (event.length > 0 && event[0].download_status))
 			&& (this.state.data as KaraList)?.content) {
 			const data = this.state.data as KaraList;
@@ -230,20 +193,18 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	initCall = async () => {
-		await this.getIdPlaylist();
 		this.resizeCheck();
-		this.setState({ goToPlaying: !isNonStandardPlaylist(this.state.plaid) });
+		this.setState({ goToPlaying: !isNonStandardPlaylist(this.props.playlist.plaid), criteriasOpen: false });
 		if (this.props.scope === 'public' || this.props.playlistList
-			.filter(playlist => playlist.plaid === this.state.plaid).length !== 0) {
-			if (this.props.scope === 'admin') await this.loadBLSet();
+			.filter(playlist => playlist.plaid === this.props.playlist.plaid).length !== 0) {
 			await this.getPlaylist();
 		}
 	}
 
 	playlistContentsUpdatedFromClient = (plaid: string) => {
-		if (this.state.plaid === plaid && !this.state.stopUpdate) {
+		if (this.props.playlist.plaid === plaid && !this.state.stopUpdate) {
 			const data = this.state.data as KaraList;
-			if (!isNonStandardPlaylist(this.state.plaid) && data) data.infos.from = 0;
+			if (!isNonStandardPlaylist(this.props.playlist.plaid) && data) data.infos.from = 0;
 			this.setState({ data: data, scrollToIndex: 0 });
 			this.getPlaylist(this.state.searchType);
 		}
@@ -265,7 +226,7 @@ class Playlist extends Component<IProps, IState> {
 		setTimeout(this.resizeCheck, 0);
 	}
 
-	changeIdPlaylistFromOtherSide = ({ side, playlist }: { side: number, playlist: string }) => {
+	changeIdPlaylistFromOtherSide = ({ side, playlist }: { side: 'left' | 'right', playlist: string }) => {
 		if (this.props.side === side) this.changeIdPlaylist(playlist);
 	}
 
@@ -303,11 +264,10 @@ class Playlist extends Component<IProps, IState> {
 						key={content.kid}
 						kara={content}
 						scope={this.props.scope}
-						plaid={this.state.plaid}
-						playlistInfo={this.state.playlistInfo}
+						playlistInfo={this.props.playlist}
 						i18nTag={(this.state.data as KaraList).i18n}
 						side={this.props.side}
-						plaidTo={this.props.plaidTo}
+						plaidTo={this.props.oppositePlaylist}
 						checkKara={this.checkKara}
 						avatar_file={(this.state.data as KaraList).avatars[content.username]}
 						deleteCriteria={this.deleteCriteria}
@@ -340,7 +300,7 @@ class Playlist extends Component<IProps, IState> {
 
 	noRowsRenderer = () => {
 		return <React.Fragment>
-			{this.state.plaid === nonStandardPlaylists.library && this.props.scope === 'admin' ? (
+			{this.props.playlist.plaid === nonStandardPlaylists.library && this.props.scope === 'admin' ? (
 				<div className="list-group-item karaSuggestion">
 					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 					{this.context?.globalState.settings.data.config.System.Repositories
@@ -352,88 +312,32 @@ class Playlist extends Component<IProps, IState> {
 	}
 
 	playlistContentsUpdatedFromServer = (idPlaylist: string) => {
-		if (this.state.plaid === idPlaylist && !this.state.stopUpdate) this.getPlaylist();
+		if (this.props.playlist.plaid === idPlaylist && !this.state.stopUpdate) this.getPlaylist();
 	};
 
-	getIdPlaylist = async () => {
-		let value: string;
-		if (this.props.scope === 'public') {
-			value = this.props.plaid;
-		} else {
-			let plVal1Cookie = localStorage.getItem('mugenPlVal1');
-			let plVal2Cookie = localStorage.getItem('mugenPlVal2');
-			if (plVal1Cookie === plVal2Cookie) {
-				plVal2Cookie = null;
-				plVal1Cookie = null;
-			}
-
-			if (this.props.side === 1) {
-				value = plVal1Cookie !== null && this.props.playlistList.find(playlist => playlist.plaid === plVal1Cookie) ?
-					plVal1Cookie : nonStandardPlaylists.library;
-			} else {
-				value = plVal2Cookie !== null && this.props.playlistList.find(playlist => playlist.plaid === plVal2Cookie) ?
-					plVal2Cookie : this.context.globalState.settings.data.state.currentPlaid;
-			}
-		}
-		this.setState({ plaid: value }, () => this.props.majIdsPlaylist(this.props.side, value));
-	};
-
-	loadBLSet = async (idBLSet?: number) => {
-		try {
-			const bLSetList = await commandBackend('getBLCSets');
-			const bLSet = bLSetList.filter((set: BLCSet) => idBLSet ? set.blc_set_id === idBLSet : set.flag_current)[0];
-			this.setState({ bLSetList: bLSetList, bLSet: bLSet }, () => setCurrentBlSet(this.context.globalDispatch, bLSet?.blc_set_id));
-		} catch (e) {
-			// already display
-		}
-	}
-
-	changeIdPlaylist = async (plaid: string, idBLSet?: number) => {
-		if (plaid === nonStandardPlaylists.blacklist || plaid === nonStandardPlaylists.blc) {
-			await this.loadBLSet(idBLSet);
-		}
-		if (this.props.scope === 'admin' && this.state.plaid === nonStandardPlaylists.library && this.props.searchMenuOpen) {
+	changeIdPlaylist = async (plaid: string) => {
+		if (this.props.scope === 'admin' && this.props.playlist.plaid === nonStandardPlaylists.library && this.props.searchMenuOpen) {
 			this.props.toggleSearchMenu && this.props.toggleSearchMenu();
 		}
-		localStorage.setItem(`mugenPlVal${this.props.side}`, plaid);
-		const oldIdPlaylist = this.state.plaid;
-		this.setState({ plaid: plaid, data: undefined, playlistInfo: undefined, goToPlaying: !isNonStandardPlaylist(plaid) }, () => {
-			this.getPlaylist();
-			this.props.majIdsPlaylist(this.props.side, plaid);
-			this.resizeCheck();
-			if (plaid === this.props.plaidTo) {
-				eventEmitter.emitChange('changeIdPlaylist', { side: this.props.side === 1 ? 2 : 1, playlist: oldIdPlaylist });
-			}
-		});
+		const oldIdPlaylist = this.props.playlist.plaid;
+		await this.props.majIdsPlaylist(this.props.side, plaid);
+		if (plaid === this.props.oppositePlaylist.plaid) {
+			eventEmitter.emitChange('changeIdPlaylist', { side: this.props.side === 'left' ? 'right' : 'left', playlist: oldIdPlaylist });
+		}
 	};
 
-	changeIdPlaylistSide2 = (plaid: string) => {
-		this.props.majIdsPlaylist(2, plaid);
-		if (plaid === this.state.plaid) {
-			this.changeIdPlaylistFromOtherSide({ side: 1, playlist: this.props.plaidTo });
+	changeIdPlaylistSideRight = async (plaid: string) => {
+		await this.props.majIdsPlaylist('right', plaid);
+		if (plaid === this.props.playlist.plaid) {
+			await this.changeIdPlaylistFromOtherSide({ side: 'left', playlist: this.props.oppositePlaylist.plaid });
 		}
 	}
 
-	getPlaylistInfo = async () => {
-		try {
-			const response = await commandBackend('getPlaylist', { plaid: this.state.plaid });
-			this.setState({ playlistInfo: response });
-		} catch (e) {
-			// already display
-		}
-	};
-
 	getPlaylistUrl = (plaidParam?: string) => {
-		const idPlaylist: string = plaidParam ? plaidParam : this.state.plaid;
+		const idPlaylist: string = plaidParam ? plaidParam : this.props.playlist.plaid;
 		let url: string;
 		if (idPlaylist === nonStandardPlaylists.library) {
 			url = 'getKaras';
-		} else if (idPlaylist === nonStandardPlaylists.blacklist) {
-			url = 'getBlacklist';
-		} else if (idPlaylist === nonStandardPlaylists.whitelist) {
-			url = 'getWhitelist';
-		} else if (idPlaylist === nonStandardPlaylists.blc) {
-			url = 'getBLCSet';
 		} else if (idPlaylist === nonStandardPlaylists.favorites) {
 			url = 'getFavorites';
 		} else {
@@ -451,8 +355,8 @@ class Playlist extends Component<IProps, IState> {
 		this.scrollToPlaying();
 	}
 
-	getFilterValue(side: number) {
-		return side === 1 ?
+	getFilterValue(side: 'left' | 'right') {
+		return side === 'left' ?
 			this.context.globalState.frontendContext.filterValue1 || '' :
 			this.context.globalState.frontendContext.filterValue2 || '';
 	}
@@ -477,14 +381,12 @@ class Playlist extends Component<IProps, IState> {
 		this.setState(state);
 		const url: string = this.getPlaylistUrl();
 		const param: any = {};
-		if (!isNonStandardPlaylist(this.state.plaid)) {
-			this.getPlaylistInfo();
-			param.plaid = this.state.plaid;
+		if (!isNonStandardPlaylist(this.props.playlist.plaid)) {
+			param.plaid = this.props.playlist.plaid;
 			if (orderByLikes || (orderByLikes === undefined && this.state.orderByLikes)) {
 				param.orderByLikes = true;
 			}
 		}
-		if (url === 'getBLCSet') param.set_id = this.state.bLSet?.blc_set_id;
 
 		param.filter = this.getFilterValue(this.props.side);
 		param.from = (stateData?.infos?.from > 0 ? stateData.infos.from : 0);
@@ -503,8 +405,8 @@ class Playlist extends Component<IProps, IState> {
 		}
 		try {
 			const karas: KaraList = await commandBackend(url, param);
-			if (this.state.goToPlaying && !isNonStandardPlaylist(this.state.plaid)) {
-				const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.state.plaid });
+			if (this.state.goToPlaying && !isNonStandardPlaylist(this.props.playlist.plaid)) {
+				const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.props.playlist.plaid });
 				if (result?.index !== -1) {
 					this.setState({ scrollToIndex: result.index, _goToPlaying: true });
 				}
@@ -542,7 +444,7 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	playingUpdate = (data: { plaid: string, plc_id: number }) => {
-		if (this.state.plaid === data.plaid && !this.state.stopUpdate) {
+		if (this.props.playlist.plaid === data.plaid && !this.state.stopUpdate) {
 			const playlistData = this.state.data as KaraList;
 			let indexPlaying;
 			playlistData?.content.forEach((kara, index) => {
@@ -564,16 +466,14 @@ class Playlist extends Component<IProps, IState> {
 	getPlInfosElement = () => {
 		let plInfos = '';
 		const stateData = this.state.data as KaraList;
-		if (this.state.plaid && stateData && stateData.infos && stateData.infos.count) {
+		if (this.props.playlist.plaid && stateData && stateData.infos && stateData.infos.count) {
 			plInfos =
-				(this.state.plaid !== nonStandardPlaylists.blc
-					? stateData.infos.count +
-					' karas'
-					: '') +
-				(!isNonStandardPlaylist(this.state.plaid) && this.state.playlistInfo
+				(stateData.infos.count +
+					' karas') +
+				(!isNonStandardPlaylist(this.props.playlist.plaid) && this.props.playlist.duration
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS.DURATION')} ` +
-					secondsTimeSpanToHMS(this.state.playlistInfo.duration, 'hm') +
-					` / ${secondsTimeSpanToHMS(this.state.playlistInfo.time_left, 'hm')} ${is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')} `
+					secondsTimeSpanToHMS(this.props.playlist.duration, 'hm') +
+					` / ${secondsTimeSpanToHMS(this.props.playlist.time_left, 'hm')} ${is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')} `
 					: '');
 		}
 		return plInfos;
@@ -583,7 +483,7 @@ class Playlist extends Component<IProps, IState> {
 		if (this.state.playing) {
 			this.setState({ scrollToIndex: this.state.playing, goToPlaying: true, _goToPlaying: true });
 		} else {
-			const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.state.plaid });
+			const result = await commandBackend('findPlayingSongInPlaylist', { plaid: this.props.playlist.plaid });
 			if (result?.index !== -1) {
 				this.setState({ scrollToIndex: result.index, goToPlaying: true, _goToPlaying: true });
 			}
@@ -591,7 +491,7 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	updateCounters = (event: PublicPlayerState) => {
-		if (this.state.playlistInfo && this.state.playlistInfo.flag_current) {
+		if (this.props.playlist.flag_current) {
 			this.setState({ songsBeforeJingle: event.songsBeforeJingle, songsBeforeSponsor: event.songsBeforeSponsor });
 		} else {
 			this.setState({ songsBeforeJingle: undefined, songsBeforeSponsor: undefined });
@@ -617,7 +517,7 @@ class Playlist extends Component<IProps, IState> {
 		const data = this.state.data as KaraList;
 		let checkedKaras = this.state.checkedKaras;
 		for (const kara of data.content) {
-			if (!isNonStandardPlaylist(this.state.plaid)) {
+			if (!isNonStandardPlaylist(this.props.playlist.plaid)) {
 				if (kara.plcid === id) {
 					kara.checked = !kara.checked;
 					if (kara.checked) {
@@ -656,7 +556,7 @@ class Playlist extends Component<IProps, IState> {
 		callModal(this.context.globalDispatch, 'prompt', i18next.t('CL_ADD_RANDOM_TITLE'), '', async (nbOfRandoms: number) => {
 			const randomKaras = await commandBackend(this.getPlaylistUrl(), {
 				filter: this.getFilterValue(this.props.side),
-				plaid: this.state.plaid,
+				plaid: this.props.playlist.plaid,
 				random: nbOfRandoms,
 				...this.getSearchTagForAddAll()
 			});
@@ -668,7 +568,7 @@ class Playlist extends Component<IProps, IState> {
 					});
 					commandBackend('addKaraToPlaylist', {
 						kids: karaList,
-						plaid: this.props.plaidTo
+						plaid: this.props.oppositePlaylist.plaid
 					}).catch(() => { });
 				}, '');
 			}
@@ -678,8 +578,7 @@ class Playlist extends Component<IProps, IState> {
 	addAllKaras = async () => {
 		const response = await commandBackend(this.getPlaylistUrl(), {
 			filter: this.getFilterValue(this.props.side),
-			set_id: this.state.bLSet?.blc_set_id,
-			plaid: this.state.plaid,
+			plaid: this.props.playlist.plaid,
 			...this.getSearchTagForAddAll()
 		});
 		const karaList = response.content.map((a: KaraElement) => a.kid);
@@ -687,7 +586,7 @@ class Playlist extends Component<IProps, IState> {
 		commandBackend('addKaraToPlaylist', {
 			kids: karaList,
 			requestedby: this.context.globalState.auth.data.username,
-			plaid: this.props.plaidTo
+			plaid: this.props.oppositePlaylist.plaid
 		}).catch(() => { });
 	};
 
@@ -703,44 +602,38 @@ class Playlist extends Component<IProps, IState> {
 		let url = '';
 		let data;
 
-		if (!isNonStandardPlaylist(this.props.plaidTo)) {
-			if (!isNonStandardPlaylist(this.state.plaid) && !pos) {
+		if (!this.props.oppositePlaylist.flag_smart) {
+			if (!isNonStandardPlaylist(this.props.playlist.plaid) && !pos) {
 				url = 'copyKaraToPlaylist';
 				data = {
-					plaid: this.props.plaidTo,
+					plaid: this.props.oppositePlaylist.plaid,
 					plc_ids: idsKaraPlaylist
 				};
 			} else {
 				url = 'addKaraToPlaylist';
 				if (pos) {
 					data = {
-						plaid: this.props.plaidTo,
+						plaid: this.props.oppositePlaylist.plaid,
 						requestedby: this.context.globalState.auth.data.username,
 						kids: idsKara,
 						pos: pos
 					};
 				} else {
 					data = {
-						plaid: this.props.plaidTo,
+						plaid: this.props.oppositePlaylist.plaid,
 						requestedby: this.context.globalState.auth.data.username,
 						kids: idsKara
 					};
 				}
 			}
-		} else if (this.props.plaidTo === nonStandardPlaylists.blacklist || this.props.plaidTo === nonStandardPlaylists.blc) {
-			url = 'createBLC';
+		} else if (this.props.oppositePlaylist.flag_smart) {
+			url = 'addCriterias';
 			data = {
-				blcs: idsKara.map(kid => {
-					return { type: 1001, value: kid };
-				}),
-				set_id: this.context.globalState.frontendContext.currentBlSet
+				criterias: idsKara.map(kid => {
+					return { type: 1001, value: kid, plaid: this.props.oppositePlaylist.plaid };
+				})
 			};
-		} else if (this.props.plaidTo === nonStandardPlaylists.whitelist) {
-			url = 'addKaraToWhitelist';
-			data = {
-				kids: idsKara
-			};
-		} else if (this.props.plaidTo === nonStandardPlaylists.favorites) {
+		} else if (this.props.oppositePlaylist.plaid === nonStandardPlaylists.favorites) {
 			url = 'addFavorites';
 			data = {
 				kids: idsKara
@@ -775,21 +668,16 @@ class Playlist extends Component<IProps, IState> {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		if (!isNonStandardPlaylist(this.state.plaid)) {
+		if (this.props.playlist.plaid === nonStandardPlaylists.favorites) {
+			url = 'deleteFavorites';
+			data = {
+				kids: listKara.map(a => a.kid)
+			};
+		} else if (!this.props.playlist.flag_smart) {
 			const idsKaraPlaylist = listKara.map(a => a.plcid);
 			url = 'deleteKaraFromPlaylist';
 			data = {
 				plc_ids: idsKaraPlaylist
-			};
-		} else if (this.state.plaid === nonStandardPlaylists.whitelist) {
-			url = 'deleteKaraFromWhitelist';
-			data = {
-				kids: listKara.map(a => a.kid)
-			};
-		} else if (this.state.plaid === nonStandardPlaylists.favorites) {
-			url = 'deleteFavorites';
-			data = {
-				kids: listKara.map(a => a.kid)
 			};
 		}
 		if (url) {
@@ -847,7 +735,7 @@ class Playlist extends Component<IProps, IState> {
 	};
 
 	downloadAllMedias = async () => {
-		const response = await commandBackend(this.getPlaylistUrl(), { plaid: this.state.plaid });
+		const response = await commandBackend(this.getPlaylistUrl(), { plaid: this.props.playlist.plaid });
 		const karaList: KaraDownloadRequest[] = response.content
 			.filter(kara => kara.download_status === 'MISSING')
 			.map((kara: KaraElement) => {
@@ -868,19 +756,29 @@ class Playlist extends Component<IProps, IState> {
 		this.setState({ searchCriteria: searchCriteria, searchValue: stringValue }, () => this.getPlaylist('search'));
 	};
 
-	deleteCriteria = (kara: DBBlacklist) => {
-		callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`BLACKLIST.BLCTYPE_${kara.blc_type}`) }),
+	deleteCriteria = (kara: KaraElement) => {
+		console.log(kara);
+		callModal(this.context.globalDispatch, 'confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`CRITERIA.CRITERIA_TYPE_${kara.criterias[0].type}`) }),
 			<div style={{ maxHeight: '200px' }}>
-				{((this.state.data as KaraList).content as unknown as DBBlacklist[])
-					.filter((e: DBBlacklist) => e.blc_id === kara.blc_id).map((criteria: DBBlacklist) => {
-						return <div key={kara.kid}>{buildKaraTitle(this.context.globalState.settings.data, criteria as unknown as KaraElement, true)}</div>;
-					})}
+				{(this.state.data as KaraList).content
+					.filter((e) => e.criterias[0].value === kara.criterias[0].value && e.criterias[0].type === kara.criterias[0].type)
+					.map((criteria) => {
+						return <div key={kara.kid}>
+							{buildKaraTitle(this.context.globalState.settings.data, criteria as unknown as KaraElement, true)}
+						</div>;
+					})
+				}
 			</div>, async (confirm: boolean) => {
 				if (confirm) {
-					await commandBackend('deleteBLC', {
-						blc_id: kara.blc_id,
-						set_id: this.context.globalState.frontendContext.currentBlSet
-					});
+					await commandBackend('removeCriterias', {criterias: [{
+						plaid: this.props.playlist.plaid,
+						type: kara.criterias[0].type,
+						value: kara.criterias[0].value
+					}]});
+					if (kara.criterias.length > 1) {
+						kara.criterias = kara.criterias.slice(1);
+						this.deleteCriteria(kara);
+					}
 				}
 			});
 	};
@@ -940,14 +838,18 @@ class Playlist extends Component<IProps, IState> {
 		_cache.clearAll();
 	}
 
+	openCloseCriterias = () => {
+		this.setState({criteriasOpen: !this.state.criteriasOpen});
+	}
+
 	componentDidUpdate(prevProps: IProps) {
-		if (this.props.plaid !== prevProps.plaid) {
+		if (this.props.playlist.plaid !== prevProps.playlist.plaid) {
 			this.initCall();
 		}
 		if (this.props.searchType !== prevProps.searchType) {
 			this.getPlaylist(this.props.searchType);
 		}
-		if (this.props.plaidTo && this.props.plaidTo !== prevProps.plaidTo) {
+		if (this.props.oppositePlaylist.plaid !== prevProps.oppositePlaylist.plaid) {
 			this.playlistForceRefresh(true);
 		}
 		if (this.state.forceUpdateFirst) {
@@ -963,14 +865,11 @@ class Playlist extends Component<IProps, IState> {
 				<PlaylistHeader
 					side={this.props.side}
 					playlistList={this.props.playlistList}
-					plaid={this.state.plaid}
-					bLSet={this.state.bLSet}
-					bLSetList={this.state.bLSetList}
 					selectAllKarasChecked={this.state.selectAllKarasChecked}
 					changeIdPlaylist={this.changeIdPlaylist}
-					changeIdPlaylistSide2={this.changeIdPlaylistSide2}
-					playlistInfo={this.state.playlistInfo}
-					plaidTo={this.props.plaidTo}
+					changeIdPlaylistSideRight={this.changeIdPlaylistSideRight}
+					playlistInfo={this.props.playlist}
+					plaidTo={this.props.oppositePlaylist.plaid}
 					selectAllKaras={this.selectAllKaras}
 					addAllKaras={this.addAllKaras}
 					addCheckedKaras={this.addCheckedKaras}
@@ -989,6 +888,8 @@ class Playlist extends Component<IProps, IState> {
 					checkedKaras={(this.state.data as KaraList)?.content?.filter(a => a?.checked)}
 					addRandomKaras={this.addRandomKaras}
 					downloadAllMedias={this.downloadAllMedias}
+					criteriasOpen={this.state.criteriasOpen}
+					openCloseCriterias={this.openCloseCriterias}
 				/> : null
 			}
 			<div
@@ -1002,7 +903,7 @@ class Playlist extends Component<IProps, IState> {
 						&& this.state.getPlaylistInProgress
 						? <div className="loader" />
 						: (
-							this.state.plaid !== nonStandardPlaylists.blc && this.state.data
+							this.state.data && !this.state.criteriasOpen
 								? <InfiniteLoader
 									isRowLoaded={this.isRowLoaded}
 									loadMoreRows={this.loadMoreRows}
@@ -1014,7 +915,7 @@ class Playlist extends Component<IProps, IState> {
 													<this.SortableList
 														{...[this.state.forceUpdate]}
 														pressDelay={0}
-														helperClass={`playlist-dragged-item ${this.props.side > 1 ? 'side2' : 'side1'}`}
+														helperClass={`playlist-dragged-item ${this.props.side === 'right' ? 'side-right' : 'side-left'}`}
 														useDragHandle={true}
 														ref={registerChild}
 														onRowsRendered={onRowsRendered}
@@ -1034,14 +935,10 @@ class Playlist extends Component<IProps, IState> {
 										</AutoSizer>
 									)}
 								</InfiniteLoader>
-								: (
-									this.state.data &&
-									<BlacklistCriterias
-										data={this.state.data as DBBLC[]}
-										tags={this.props.tags}
-										blSet={this.state.bLSet as BLCSet}
-									/>
-								)
+								: this.props.playlist.flag_smart && this.state.criteriasOpen ? <CriteriasList
+									tags={this.props.tags}
+									plaid={this.props.playlist.plaid}
+								/> : null
 						)
 				}
 			</div>
@@ -1056,7 +953,7 @@ class Playlist extends Component<IProps, IState> {
 					>
 						<i className="fas fa-chevron-up" />
 					</button>
-					{!isNonStandardPlaylist(this.state.plaid) ?
+					{!isNonStandardPlaylist(this.props.playlist.plaid) ?
 						<button
 							type="button"
 							title={i18next.t('GOTO_PLAYING')}
