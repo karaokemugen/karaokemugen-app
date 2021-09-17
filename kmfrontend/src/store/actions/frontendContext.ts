@@ -1,15 +1,8 @@
-import {Dispatch} from 'react';
+import { Dispatch } from 'react';
 
-import {BackgroundImage, CurrentBlSet, FilterValue, FrontendContextAction} from '../types/frontendContext';
+import { BackgroundImage, FilterValue, FrontendContextAction } from '../types/frontendContext';
 
-export function setCurrentBlSet(dispatch: Dispatch<CurrentBlSet>, currentBlSet) {
-	dispatch({
-		type: FrontendContextAction.CURRENT_BL_SET,
-		payload: { currentBlSet }
-	});
-}
-
-export function setFilterValue(dispatch: Dispatch<FilterValue>, filterValue, side, idPlaylist) {
+export function setFilterValue(dispatch: Dispatch<FilterValue>, filterValue: string, side: 'left' | 'right', idPlaylist: string) {
 	dispatch({
 		type: FrontendContextAction.FILTER_VALUE,
 		payload: { filterValue, side, idPlaylist }

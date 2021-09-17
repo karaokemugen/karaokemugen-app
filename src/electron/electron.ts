@@ -12,7 +12,6 @@ import logger from '../lib/utils/logger';
 import { emit } from '../lib/utils/pubsub';
 import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
-import { importSet } from '../services/blacklist';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
 import { playSingleSong } from '../services/karaokeEngine';
@@ -242,15 +241,6 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 		const KMFileType = detectKMFileTypes(data);
 		const url = `http://localhost:${getConfig().System.FrontendPort}/admin`;
 		switch(KMFileType) {
-			case 'Karaoke Mugen BLC Set File':
-				await importSet(data);
-				if (win && !win.webContents.getURL().includes('/admin')) {
-					win.loadURL(url);
-					win.webContents.on('did-finish-load', () => emitWS('BLCSetsUpdated'));
-				} else {
-					emitWS('BLCSetsUpdated');
-				}
-				break;
 			case 'Karaoke Mugen Favorites List File':
 				if (!username) throw 'Unable to find a user to import the file to';
 				await importFavorites(data, username, onlineToken);

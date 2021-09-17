@@ -70,7 +70,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter) : {sql: [], params: {}, additionalFrom: []};
 	let typeClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
 	// Hide blacklisted songs
-	if (params.blacklist) typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM blacklist)`;
+	if (params.blacklist) typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${getState().blacklistPlaid}')`;
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';

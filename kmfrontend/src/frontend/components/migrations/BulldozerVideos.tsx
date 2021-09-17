@@ -11,7 +11,7 @@ interface Props {
 export default function BulldozerVideos(props: Props) {
 
 	const end = async () => {
-		await commandBackend('createProblematicBLCSet');
+		await commandBackend('createProblematicSmartPlaylist');
 		props.onEnd();
 	};
 

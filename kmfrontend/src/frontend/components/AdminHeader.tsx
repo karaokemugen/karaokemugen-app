@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { RouteComponentProps, withRouter } from 'react-router';
 
+import { DBPL } from '../../../../src/lib/types/database/playlist';
 import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import KLogo from '../../assets/Klogo.png';
@@ -19,8 +20,8 @@ import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 
 interface IProps extends RouteComponentProps {
-	currentSide: number;
-	idsPlaylist: { left: string, right: string };
+	currentSide: 'left' | 'right';
+	idsPlaylist: { left: DBPL, right: DBPL };
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
@@ -79,9 +80,9 @@ function AdminHeader(props: IProps) {
 
 	const play = (event: any) => {
 		if ((!statusPlayer || statusPlayer?.playerStatus === 'stop')
-			&& props.idsPlaylist.left !== props.currentPlaylist?.plaid
-			&& props.idsPlaylist.right !== props.currentPlaylist?.plaid
-			&& (!isNonStandardPlaylist(props.idsPlaylist.left) || !isNonStandardPlaylist(props.idsPlaylist.right))) {
+			&& props.idsPlaylist.left.plaid !== props.currentPlaylist?.plaid
+			&& props.idsPlaylist.right.plaid !== props.currentPlaylist?.plaid
+			&& (!isNonStandardPlaylist(props.idsPlaylist.left.plaid) || !isNonStandardPlaylist(props.idsPlaylist.right.plaid))) {
 			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
 				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => { }));
 		} else {

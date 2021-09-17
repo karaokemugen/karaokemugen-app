@@ -9,13 +9,12 @@ import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID }
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
-import { testCurrentBLCSet } from '../services/blacklist';
+import { updateAllSmartPlaylists } from '../services/playlist';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG, restorePG} from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
-import { generateBlacklist } from './blacklist';
 import { baseChecksum } from './dataStore';
 import { getPlaylists, reorderPlaylist } from './playlist';
 import { sqlGetStats,sqlResetUserData } from './sql/database';
@@ -172,8 +171,6 @@ export async function initDBSystem(): Promise<Migration[]> {
 
 export async function resetUserData() {
 	await db().query(sqlResetUserData);
-	// Recreate initial blacklist criteria set since we'll need it for database generation right after
-	await testCurrentBLCSet();
 	logger.warn('User data has been reset!', {service: 'DB'});
 }
 
@@ -198,7 +195,7 @@ export async function generateDB(): Promise<boolean> {
 		for (const pl of pls) {
 			await reorderPlaylist(pl.plaid);
 		}
-		await generateBlacklist();
+		await updateAllSmartPlaylists();
 	} catch(err) {
 		sentry.error(err);
 		throw err;

@@ -40,7 +40,6 @@ let state: State = {
 	args: [],
 	environment: process.env.SENTRY_ENVIRONMENT,
 	sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
-	currentBLCSetID: 1,
 	version: {
 		number: packageJSON.version,
 		name: packageJSON.versionName
@@ -106,6 +105,8 @@ export function getPublicState(admin: boolean): PublicState {
 	return {
 		currentPlaid: state.currentPlaid,
 		publicPlaid: state.publicPlaid,
+		blacklistPlaid: state.blacklistPlaid,
+		whitelistPlaid: state.whitelistPlaid,
 		appPath: admin ? state.appPath : undefined,
 		dataPath: admin ? state.dataPath : undefined,
 		os: admin ? state.os : undefined,

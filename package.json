@@ -109,6 +109,7 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.deburr": "^4.1.0",
+    "lodash.intersectionwith": "^4.4.0",
     "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "lodash.sample": "^4.2.1",
@@ -165,6 +166,7 @@
     "@types/lodash.clonedeep": "^4.5.6",
     "@types/lodash.debounce": "^4.0.6",
     "@types/lodash.deburr": "^4.1.6",
+    "@types/lodash.intersectionwith": "^4.4.6",
     "@types/lodash.isequal": "^4.5.5",
     "@types/lodash.merge": "^4.6.6",
     "@types/lodash.sample": "^4.2.6",
@@ -225,12 +227,6 @@
         "name": "Karaoke Mugen Karaoke File",
         "description": "Karaoke Mugen Karaoke File",
         "role": "Viewer"
-      },
-      {
-        "ext": "kmblcset",
-        "name": "Karaoke Mugen Playlist",
-        "description": "Karaoke Mugen Playlist",
-        "role": "Editor"
       }
     ],
     "nsis": {

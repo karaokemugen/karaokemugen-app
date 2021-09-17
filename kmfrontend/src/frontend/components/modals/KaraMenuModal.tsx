@@ -10,7 +10,6 @@ import { KaraElement } from '../../types/kara';
 
 interface IProps {
 	kara: KaraElement;
-	side: number;
 	plaid: string;
 	plaidTo: string;
 	publicOuCurrent?: boolean | undefined;
@@ -115,17 +114,24 @@ class KaraMenuModal extends Component<IProps, IState> {
 	};
 
 	addToBlacklist = () => {
-		commandBackend('createBLC', {
-			blcs: [{ type: 1001, value: this.state.kara?.kid }],
-			set_id: this.context.globalState.frontendContext.currentBlSet
+		commandBackend('addCriterias', {
+			criterias: [{
+				type: 1001,
+				value: this.state.kara?.kid,
+				plaid: this.context.globalState.settings.data.state.blacklistPlaid
+			}]
 		});
 		this.setState({ effect_blacklist: true });
 		setTimeout(this.props.closeKaraMenu, 350);
 	}
 
 	addToWhitelist = () => {
-		commandBackend('addKaraToWhitelist', {
-			kids: [this.state.kara?.kid]
+		commandBackend('addCriterias', {
+			criterias: [{
+				type: 1001,
+				value: this.state.kara?.kid,
+				plaid: this.context.globalState.settings.data.state.whitelistPlaid
+			}]
 		});
 		this.setState({ effect_whitelist: true });
 		setTimeout(this.props.closeKaraMenu, 350);
@@ -237,7 +243,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 							</a>
 						</li> : null
 					}
-					{this.props.plaid !== nonStandardPlaylists.blacklist && this.props.plaid !== nonStandardPlaylists.blc ?
+					{this.props.plaid !== this.context.globalState.settings.data.state.blacklistPlaid ?
 						<li className="animate-button-container">
 							<a href="#" onClick={this.addToBlacklist}>
 								<i className="fas fa-fw fa-ban" />
@@ -251,7 +257,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 							</a>
 						</li> : null
 					}
-					{this.props.plaid !== nonStandardPlaylists.whitelist ?
+					{this.props.plaid !== this.context.globalState.settings.data.state.whitelistPlaid ?
 						<li className="animate-button-container">
 							<a href="#" onClick={this.addToWhitelist}>
 								<i className="fas fa-fw fa-check-circle" />

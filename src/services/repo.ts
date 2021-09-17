@@ -34,10 +34,10 @@ import {pathIsContainedInAnother} from '../utils/files';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import {applyPatch, downloadAndExtractZip} from '../utils/zipPatch';
-import { createProblematicBLCSet, generateBlacklist } from './blacklist';
 import { updateMedias } from './downloadUpdater';
 import { getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
+import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './playlist';
 import { addSystemMessage } from './proxyFeeds';
 import { sendPayload } from './stats';
 import { deleteTag, getTags, integrateTagFile } from './tag';
@@ -148,7 +148,7 @@ export async function updateAllZipRepos() {
 	logger.info('Finished updating all repositories', {service: 'Repo'});
 	if (doGenerate) await generateDB();
 	if (getConfig().App.FirstRun) {
-		createProblematicBLCSet();
+		createProblematicSmartPlaylist();
 	}
 }
 
@@ -281,8 +281,10 @@ export async function updateZipRepo(name: string) {
 				await saveSetting('baseChecksum', await baseChecksum());
 				await saveSetting(`commit-${repo.Name}`, LatestCommit);
 				if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
-				await generateBlacklist();
-				await checkDownloadStatus(KIDsToUpdate);
+				await Promise.all([
+					updateAllSmartPlaylists(),
+					checkDownloadStatus(KIDsToUpdate)
+				]);
 				task.end();
 				updateRunning = false;
 				return false;

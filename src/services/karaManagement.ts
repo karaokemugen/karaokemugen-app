@@ -22,10 +22,10 @@ import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
-import { generateBlacklist } from './blacklist';
 import { checkMediaAndDownload } from './download';
 import {getKara, getKaras} from './kara';
 import { editKara } from './karaCreation';
+import { updateAllSmartPlaylists } from './playlist';
 import { getRepo, getRepos } from './repo';
 import { getTag } from './tag';
 
@@ -46,7 +46,7 @@ export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await updateTags(kara);
 	if (opts.refresh) {
 		await refreshKarasAfterDBChange('ADD', [kara.kid], true);
-		generateBlacklist();
+		updateAllSmartPlaylists();
 	}
 }
 
@@ -59,7 +59,7 @@ export async function editKaraInDB(kara: Kara, opts = {
 	await Promise.all(promises);
 	if (opts.refresh) {
 		await refreshKarasAfterDBChange('UPDATE', [kara.kid], kara.newTags);
-		generateBlacklist();
+		updateAllSmartPlaylists();
 	}
 	profile('editKaraDB');
 }
@@ -103,7 +103,7 @@ export async function deleteKara(kids: string[], refresh = true, deleteFiles = {
 		await refreshKarasDelete(karas.map(k => k.kid));
 		refreshTags();
 		refreshYears();
-		generateBlacklist();
+		updateAllSmartPlaylists();
 	}
 }
 

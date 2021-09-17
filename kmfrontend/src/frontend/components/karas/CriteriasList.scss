@@ -1,6 +1,6 @@
 @import '../../styles/variables';
 
-.blcContainer {
+.criteriasContainer {
 	height: 100%;
 	overflow-y: scroll;
 	> *:last-child {
@@ -13,7 +13,7 @@
 	font-weight: bold;
 }
 
-.blacklist-criterias-input {
+.criterias-input {
 	margin: 1em;
 
 	select {
