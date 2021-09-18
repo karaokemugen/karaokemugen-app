@@ -18,11 +18,11 @@ export function editPLCCriterias(plc: number, criterias: Criteria[]) {
 	return db().query(sqlupdatePLCCriterias, [plc, criterias]);
 }
 
-export function editPlaylist(pl: DBPL) {
+export function updatePlaylist(pl: DBPL) {
 	return db().query(yesql(sqleditPlaylist)(pl));
 }
 
-export async function createPlaylist(pl: DBPL): Promise<string> {
+export async function insertPlaylist(pl: DBPL): Promise<string> {
 	const res = await db().query(yesql(sqlcreatePlaylist)({
 		name: pl.name,
 		created_at: pl.created_at,
@@ -38,7 +38,7 @@ export async function createPlaylist(pl: DBPL): Promise<string> {
 	return res.rows[0]?.pk_id_playlist;
 }
 
-export function emptyPlaylist(id: string) {
+export function truncatePlaylist(id: string) {
 	return db().query(sqlemptyPlaylist, [id]);
 }
 
@@ -128,12 +128,12 @@ export  function trimPlaylist(id: string, pos: number) {
 	}));
 }
 
-export async function getPlaylistContentsMini(id: string): Promise<DBPLC[]> {
+export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
 	const res = await db().query(sqlgetPlaylistContentsMini, [id]);
 	return res.rows;
 }
 
-export async function getPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
+export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
 	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, true) : {sql: [], params: {}, additionalFrom: []};
 	let limitClause = '';
 	let offsetClause = '';
@@ -178,7 +178,7 @@ export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCKID[
 
 }
 
-export async function getPLCInfo(id: number, forUser: boolean, username: string): Promise<DBPLCInfo> {
+export async function selectPLCInfo(id: number, forUser: boolean, username: string): Promise<DBPLCInfo> {
 	const query = sqlgetPLCInfo(forUser);
 	const res = await db().query(yesql(query)(
 		{
@@ -193,12 +193,12 @@ export async function getPLCInfo(id: number, forUser: boolean, username: string)
 	return res.rows[0] || {};
 }
 
-export async function getPLCInfoMini(id: number): Promise<DBPLC> {
+export async function selectPLCInfoMini(id: number): Promise<DBPLC> {
 	const res = await db().query(sqlgetPLCInfoMini, [id]);
 	return res.rows[0];
 }
 
-export async function getPLCByKIDAndUser(kid: string, username: string, plaid: string): Promise<DBPLC> {
+export async function selectPLCByKIDAndUser(kid: string, username: string, plaid: string): Promise<DBPLC> {
 	const res = await db().query(yesql(sqlgetPLCByKIDUser)({
 		kid: kid,
 		plaid: plaid,
@@ -208,12 +208,12 @@ export async function getPLCByKIDAndUser(kid: string, username: string, plaid: s
 	return res.rows[0];
 }
 
-export async function getPlaylistInfo(id: string): Promise<DBPL> {
+export async function selectPlaylistInfo(id: string): Promise<DBPL> {
 	const res = await db().query(sqlgetPlaylistInfo, [id]);
 	return res.rows[0];
 }
 
-export async function getPlaylists(forUser: boolean): Promise<DBPL[]> {
+export async function selectPlaylists(forUser: boolean): Promise<DBPL[]> {
 	const query = sqlgetPlaylists;
 	const order = ' ORDER BY flag_current DESC, flag_public DESC, name';
 	let res: QueryResult;
@@ -264,7 +264,7 @@ export function truncateCriterias(plaid: string) {
 	return db().query(sqldeleteCriteriaForPlaylist, [plaid]);
 }
 
-export async function getKarasFromCriterias(plaid: string): Promise<UnaggregatedCriteria[]> {
+export async function selectKarasFromCriterias(plaid: string): Promise<UnaggregatedCriteria[]> {
 	// How that works:
 	// When getting a kara list from criterias, we ignore songs from the whitelist when making :
 	// - the whitelist itself,  or it would be unable to list songs already in there, causing the songs to be deleted from the whitelist since we're comparing this list to what's already in there
@@ -288,7 +288,7 @@ export async function migrateBLWLToSmartPLs() {
 	]);
 	// Convert whitelist, that's the easiest part.
 	if (WL.rows.length > 0) {
-		const plaid = await createPlaylist({
+		const plaid = await insertPlaylist({
 			name: i18next.t('WHITELIST'),
 			flag_whitelist: true,
 			flag_visible: true,
@@ -316,7 +316,7 @@ export async function migrateBLWLToSmartPLs() {
 		const blc = BLCs.rows.filter(e => e.fk_id_blc_set === set.pk_id_blc_set);
 		// No need to import an empty BLC set.
 		if (blc.length === 0) continue;
-		const plaid = await createPlaylist({
+		const plaid = await insertPlaylist({
 			...set,
 			flag_current: false,
 			flag_visible: true,

@@ -16,7 +16,7 @@ import {initPG,isShutdownPG, restorePG} from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
 import { baseChecksum } from './dataStore';
-import { getPlaylists, reorderPlaylist } from './playlist';
+import { selectPlaylists, reorderPlaylist } from './playlist';
 import { sqlGetStats,sqlResetUserData } from './sql/database';
 
 export let DBReady = false;
@@ -191,7 +191,7 @@ export async function generateDB(): Promise<boolean> {
 		generationInProgress = true;
 		const opts = {validateOnly: false, progressBar: true};
 		await generateDatabase(opts);
-		const pls = await getPlaylists(false);
+		const pls = await selectPlaylists(false);
 		for (const pl of pls) {
 			await reorderPlaylist(pl.plaid);
 		}

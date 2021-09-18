@@ -2,7 +2,7 @@ import i18next from "i18next";
 import langs from "langs";
 import intersectionWith from "lodash.intersectionwith";
 import isEqual from 'lodash.isequal';
-import { createPlaylist, deleteCriteria, getKarasFromCriterias, insertCriteria, selectCriterias, truncateCriterias, updatePlaylistLastEditTime } from "../dao/playlist";
+import { insertPlaylist, deleteCriteria, selectKarasFromCriterias, insertCriteria, selectCriterias, truncateCriterias, updatePlaylistLastEditTime } from "../dao/playlist";
 import { Criteria } from "../lib/types/playlist";
 import { uuidRegexp } from "../lib/utils/constants";
 import logger, { profile } from "../lib/utils/logger";
@@ -66,7 +66,7 @@ export async function updateSmartPlaylist(plaid: string) {
 	const [pl, plc, list] = await Promise.all([
 		getPlaylistInfo(plaid),
 		getPlaylistContentsMini(plaid),
-		getKarasFromCriterias(plaid)
+		selectKarasFromCriterias(plaid)
 	]);
 	if (!pl.flag_smart) {
 		// Playlist is not smart! We're not throwing, simply returning.
@@ -251,7 +251,7 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 
 export async function createProblematicSmartPlaylist() {
 	const tags = await getTags({problematic: true});
-	const plaid = await createPlaylist({
+	const plaid = await insertPlaylist({
 		name: i18next.t('PROBLEMATIC_SONGS'),
 		created_at: new Date(),
 		modified_at: new Date(),

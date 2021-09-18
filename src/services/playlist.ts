@@ -11,20 +11,20 @@ import {
 //DAO
 import {
 	countPlaylistUsers,
-	createPlaylist as createPL,
-	deletePlaylist as deletePL,
-	editPlaylist as editPL,
+	insertPlaylist,
+	deletePlaylist,
+	updatePlaylist,
 	editPLCCriterias,
-	emptyPlaylist as emptyPL,
+	truncatePlaylist,
 	getMaxPosInPlaylist,
 	getMaxPosInPlaylistForUser,
-	getPlaylistContents as getPLContents,
-	getPlaylistContentsMini as getPLContentsMini,
-	getPlaylistInfo as getPLInfo,
-	getPlaylists as getPLs,
-	getPLCByKIDAndUser,
-	getPLCInfo as getPLCInfoDB,
-	getPLCInfoMini as getPLCInfoMiniDB,
+	selectPlaylistContents,
+	selectPlaylistContentsMini,
+	selectPlaylistInfo,
+	selectPlaylists,
+	selectPLCByKIDAndUser,
+	selectPLCInfo,
+	selectPLCInfoMini,
 	getSongTimeSpentForUser,
 	insertKaraIntoPlaylist,
 	removeKaraFromPlaylist,
@@ -80,7 +80,7 @@ export async function testPlaylists() {
 	const blackPL = pls.find(pl => pl.flag_blacklist);
 	if (!currentPL && !publicPL) {
 		// Initial state here, or someone did something REALLY wrong. we create only one playlist
-		const plaid = await createPL({
+		const plaid = await insertPlaylist({
 			name: i18n.t('MY_PLAYLIST'),
 			created_at: new Date(),
 			modified_at: new Date(),
@@ -97,7 +97,7 @@ export async function testPlaylists() {
 			setState({currentPlaid: currentPL.plaid});
 		} else {
 			setState({currentPlaid:
-				await createPL({
+				await insertPlaylist({
 					name: i18n.t('CURRENT_PLAYLST'),
 					flag_visible: true,
 					flag_current: true,
@@ -110,7 +110,7 @@ export async function testPlaylists() {
 			setState({publicPlaid: publicPL.plaid});
 		} else {
 			setState({publicPlaid:
-				await createPL({
+				await insertPlaylist({
 					name: i18n.t('PUBLIC_PLAYLST'),
 					flag_visible: true,
 					flag_public: true,
@@ -125,7 +125,7 @@ export async function testPlaylists() {
 		setState({whitelistPlaid: whitePL.plaid});
 	} else {
 		setState({whitelistPlaid:
-			await createPL({
+			await insertPlaylist({
 				name: i18n.t('WHITELIST'),
 				created_at: new Date(),
 				modified_at: new Date(),
@@ -141,7 +141,7 @@ export async function testPlaylists() {
 		setState({blacklistPlaid: blackPL.plaid});
 	} else {
 		setState({blacklistPlaid:
-			await createPL({
+			await insertPlaylist({
 				name: i18n.t('BLACKLIST'),
 				created_at: new Date(),
 				modified_at: new Date(),
@@ -239,7 +239,7 @@ export async function trimPlaylist(plaid: string, duration: number) {
 }
 
 /** Remove playlist entirely */
-export async function deletePlaylist(plaid: string) {
+export async function removePlaylist(plaid: string) {
 	const pl = await getPlaylistInfo(plaid);
 	if (!pl) throw {code: 404};
 	try {
@@ -249,7 +249,7 @@ export async function deletePlaylist(plaid: string) {
 		if (pl.flag_blacklist) throw {code: 409, msg: `Playlist ${plaid} is a blacklist. Unable to delete it. Make another playlist into a blacklist first.`};
 		if (pl.flag_whitelist) throw {code: 409, msg: `Playlist ${plaid} is a whitelist. Unable to delete it. Make another playlist into a whitelist first.`};
 		logger.info(`Deleting playlist ${pl.name}`, {service: 'Playlist'});
-		await deletePL(plaid);
+		await deletePlaylist(plaid);
 		emitWS('playlistsUpdated');
 
 	} catch(err) {
@@ -269,7 +269,7 @@ export async function emptyPlaylist(plaid: string): Promise<string> {
 	try {
 		profile('emptyPL');
 		logger.debug(`Emptying playlist ${pl.name}`, {service: 'Playlist'});
-		await emptyPL(plaid);
+		await truncatePlaylist(plaid);
 		await Promise.all([
 			updatePlaylistKaraCount(plaid),
 			updatePlaylistDuration(plaid)
@@ -331,7 +331,7 @@ export async function editPlaylist(plaid: string, playlist: DBPL) {
 		...pl,
 		...playlist
 	};
-	await editPL(newPL);
+	await updatePlaylist(newPL);
 	if (playlist.flag_current) currentHook(plaid, newPL.name);
 	if (playlist.flag_public) publicHook(plaid, newPL.name);
 	if (playlist.flag_whitelist) whitelistHook(plaid);
@@ -343,7 +343,7 @@ export async function editPlaylist(plaid: string, playlist: DBPL) {
 
 /** Create new playlist */
 export async function createPlaylist(pl: DBPL, username: string): Promise<string> {
-	const plaid = await createPL({
+	const plaid = await insertPlaylist({
 		name: pl.name,
 		created_at: new Date(),
 		modified_at: new Date(),
@@ -366,7 +366,7 @@ export async function createPlaylist(pl: DBPL, username: string): Promise<string
 
 /** Get playlist properties */
 export async function getPlaylistInfo(plaid: string, token?: Token) {
-	const pl = await getPLInfo(plaid);
+	const pl = await selectPlaylistInfo(plaid);
 	if (token) {
 		if (token.role === 'admin' || pl.flag_visible) return pl;
 		return null;
@@ -377,14 +377,14 @@ export async function getPlaylistInfo(plaid: string, token?: Token) {
 /** Get all playlists properties */
 export async function getPlaylists(token: Token) {
 	profile('getPlaylists');
-	const ret = await getPLs(token.role !== 'admin');
+	const ret = await selectPlaylists(token.role !== 'admin');
 	profile('getPlaylists');
 	return ret;
 }
 
 /** Get playlist contents in a smaller format to speed up fetching data for internal use */
 export function getPlaylistContentsMini(plaid: string) {
-	return getPLContentsMini(plaid);
+	return selectPlaylistContentsMini(plaid);
 }
 
 /** Get playlist contents */
@@ -393,7 +393,7 @@ export async function getPlaylistContents(plaid: string, token: Token, filter: s
 	const plInfo = await getPlaylistInfo(plaid, token);
 	if (!plInfo) throw {code: 404};
 	try {
-		const pl = await getPLContents({
+		const pl = await selectPlaylistContents({
 			plaid: plaid,
 			username: token.username.toLowerCase(),
 			filter: filter,
@@ -428,7 +428,7 @@ export async function getKaraFromPlaylist(plc_id: number, token: Token) {
 
 /** Get PLC by KID and Username */
 function getPLCByKIDUser(kid: string, username: string, plaid: string) {
-	return getPLCByKIDAndUser(kid, username, plaid);
+	return selectPLCByKIDAndUser(kid, username, plaid);
 }
 
 /** Return all songs not present in specified playlist */
@@ -650,7 +650,7 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 function getPLCInfo(plc_id: number, forUser: boolean, username: string) {
 	try {
 		profile('getPLCInfo');
-		return getPLCInfoDB(plc_id, forUser, username);
+		return selectPLCInfo(plc_id, forUser, username);
 	} catch(err) {
 		throw err;
 	} finally {
@@ -660,7 +660,7 @@ function getPLCInfo(plc_id: number, forUser: boolean, username: string) {
 
 /** Get a small amount of data from a PLC */
 export function getPLCInfoMini(plc_id: number) {
-	return getPLCInfoMiniDB(plc_id);
+	return selectPLCInfoMini(plc_id);
 }
 
 /** Notify user of song play time */
@@ -1417,7 +1417,7 @@ async function freeOrphanedSongs() {
 export async function initPlaylistSystem() {
 	profile('initPL');
 	setInterval(freeOrphanedSongs, 60 * 1000);
-	const pls = await getPLs(false);
+	const pls = await selectPlaylists(false);
 	pls.forEach(pl => reorderPlaylist(pl.plaid));
 	await testPlaylists();
 	updateAllSmartPlaylists();
