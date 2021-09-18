@@ -193,14 +193,14 @@ export async function checkMediaAndDownload(kid: string, mediafile: string, repo
 	let mediaPath: string;
 	try {
 		mediaPath = (await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repo)))[0];
-	} catch {
+	} catch {		
 		// We're checking only to update files. If the file was never found, we won't try to download it. Else we do.
 		if (updateOnly) return;
 		downloadMedia = true;
 	}
 	if (mediaPath) {
 		// File exists so we're checking for its stats to check if we need to redownload it or not (different sizes)
-		const mediaStats = await fs.stat(mediafile);
+		const mediaStats = await fs.stat(mediaPath);
 		downloadMedia = mediaStats.size !== mediasize;
 	}
 	if (downloadMedia && getConfig().Online.AllowDownloads && !getState().isTest) {
