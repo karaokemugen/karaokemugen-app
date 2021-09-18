@@ -428,8 +428,8 @@ class PublicPage extends Component<IProps, IState> {
 											<Playlist
 												scope="public"
 												side={'left'}
-												playlist={this.state.idsPlaylist.right}
-												oppositePlaylist={this.state.idsPlaylist.left}	
+												playlist={this.state.idsPlaylist.left}
+												oppositePlaylist={this.state.idsPlaylist.right}	
 												majIdsPlaylist={this.majIdsPlaylist}
 												toggleKaraDetail={this.toggleKaraDetail}
 												searchValue={this.state.searchValue}
