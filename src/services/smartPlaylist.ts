@@ -111,7 +111,7 @@ export async function updateSmartPlaylist(plaid: string) {
 	});
 
 	// Removed songs, that's simple.
-	if (removedSongs.length > 0) await deleteKaraFromPlaylist(removedSongs.map(s => s.plcid), {role: 'admin', username: 'admin'}, false);
+	if (removedSongs.length > 0) await deleteKaraFromPlaylist(removedSongs.map(s => s.plcid), {role: 'admin', username: 'admin'}, false, true);
 	if (addedSongs.length > 0) await addKaraToPlaylist(addedSongs.map(s => s.kid), pl.username, plaid, undefined, true, false, newArray);
 	for (const song of modifiedSongs) {
 		await editPLC([song.plcid], {

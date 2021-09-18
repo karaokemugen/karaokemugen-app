@@ -756,7 +756,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 }
 
 /** Remove song from a playlist */
-export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token, refresh = true) {
+export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token, refresh = true, ignorePlaying = false) {
 	profile('deleteKara');
 	// If we get a single song, it's a user deleting it (most probably)
 	try {
@@ -769,7 +769,7 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token, re
 			if (!plcData) throw {errno: 404, msg: 'At least one playlist content is unknown'};
 			if (token.role !== 'admin' && plcData.username !== token.username.toLowerCase()) throw {errno: 403, msg: 'You cannot delete a song you did not add'};
 			if (token.role !== 'admin' && plcData.upvotes > 0) throw {errno: 403, code: 'PL_DELETE_UPVOTED', msg: 'You cannot delete a song with upvotes'};
-			if (plcData.flag_playing && getState().player.playerStatus === 'play' && plcData.plaid === getState().currentPlaid) throw {errno: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
+			if (plcData.flag_playing && getState().player.playerStatus === 'play' && plcData.plaid === getState().currentPlaid && !ignorePlaying) throw {errno: 403, msg: 'You cannot delete a song being currently played. Stop playback first.'};
 			usersNeedingUpdate.add(plcData.username);
 			playlistsNeedingUpdate.add(plcData.plaid);
 			plcsNeedingDelete.push({
