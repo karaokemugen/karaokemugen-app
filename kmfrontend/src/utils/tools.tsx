@@ -107,6 +107,19 @@ export function secondsTimeSpanToHMS(s: number, format: string) {
 	return result;
 }
 
+export function hmsToSecondsOnly(str: string) {
+	const p = str.split(':');
+	let s = 0;
+	let m = 1;
+
+	while (p.length > 0) {
+		s += m * parseInt(p.pop(), 10);
+		m *= 60;
+	}
+
+	return s;
+}
+
 export function startIntro() {
 	tuto = ReactDOM.render(React.createElement(Tutorial), document.getElementById('tuto'));
 	return tuto;

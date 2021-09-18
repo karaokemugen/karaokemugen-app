@@ -7,6 +7,7 @@ import { Criteria } from '../../../../../src/lib/types/playlist';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 
@@ -40,8 +41,8 @@ interface IProps {
 
 interface IState {
 	criterias: Criteria[]
-	bcType: number;
-	bcVal: string;
+	criteriaType: number;
+	criteriaVal: string | number;
 }
 
 class CriteriasList extends Component<IProps, IState> {
@@ -51,8 +52,8 @@ class CriteriasList extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			bcType: 1002,
-			bcVal: '',
+			criteriaType: 1002,
+			criteriaVal: '',
 			criterias: []
 		};
 	}
@@ -72,10 +73,16 @@ class CriteriasList extends Component<IProps, IState> {
 
 
 	addCriteria = async () => {
+		let value = this.state.criteriaVal;
+		if (this.state.criteriaType === 1006) {
+			value = 'MISSING';
+		} else if ([1002, 1003].includes(this.state.criteriaType) && typeof this.state.criteriaVal === 'string') {
+			value = hmsToSecondsOnly(this.state.criteriaVal);
+		}
 		await commandBackend('addCriterias', {
 			criterias: [{
-				type: this.state.bcType,
-				value: this.state.bcType === 1006 ? 'MISSING' : this.state.bcVal,
+				type: this.state.criteriaType,
+				value: value,
 				plaid: this.props.plaid
 			}]
 		});
@@ -92,27 +99,28 @@ class CriteriasList extends Component<IProps, IState> {
 		this.state.criterias.forEach(element => {
 			if (!types.includes(element.type)) types.push(element.type);
 		});
-		const tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.bcType)) : [];
+		const tagsFiltered = this.props.tags ? this.props.tags.filter(obj => obj.type.includes(this.state.criteriaType)) : [];
 		return (
 			<div className="criteriasContainer">
-				<div className="bcDescription">{i18next.t('CRITERIA.CRITERIA_DESC')}</div>
+				<div className="criteriasDescription">{i18next.t('CRITERIA.CRITERIA_DESC')}</div>
 				<div className="criterias-input">
-					<select onChange={e => this.setState({ bcType: Number(e.target.value), bcVal: '' })}>
+					<select onChange={e => this.setState({ criteriaType: Number(e.target.value), criteriaVal: '' })}>
 						{listTypeCriteria.map((value) => {
 							return <option key={value} value={value.replace('CRITERIA_TYPE_', '')}>{i18next.t(`CRITERIA.${value}`)}</option>;
 						})
 						}
 					</select>
-					<div className="bcValContainer">
-						{this.state.bcType === 1006 ?
+					<div className="criteriasValContainer">
+						{this.state.criteriaType === 1006 ?
 							<input type="text" placeholder={i18next.t('CRITERIA.CRITERIA_TYPE_1006')}
 								className="input-blc" disabled
 							/> :
 							tagsFiltered.length > 0 ?
-								<Autocomplete value={this.state.bcVal}
-									options={tagsFiltered} onChange={value => this.setState({ bcVal: value })} /> :
-								<input type="text" value={this.state.bcVal} placeholder={i18next.t('CRITERIA.ADD')}
-									className="input-blc" onChange={e => this.setState({ bcVal: e.target.value })}
+								<Autocomplete value={this.state.criteriaVal}
+									options={tagsFiltered} onChange={value => this.setState({ criteriaVal: value })} /> :
+								<input type="text" value={this.state.criteriaVal}
+									placeholder={`${i18next.t('CRITERIA.ADD')} ${[1002, 1003].includes(this.state.criteriaType) ? 'mm:ss' : ''}`}
+									className="input-blc" onChange={e => this.setState({ criteriaVal: e.target.value })}
 									onKeyPress={e => {
 										if (e.key === 'Enter') this.addCriteria();
 									}} />
@@ -142,7 +150,10 @@ class CriteriasList extends Component<IProps, IState> {
 														criteria.value, true) :
 												(criteria.value_i18n ?
 													criteria.value_i18n :
-													criteria.value
+													([1002, 1003].includes(criteria.type) ?
+														secondsTimeSpanToHMS(criteria.value, 'mm:ss')
+														: criteria.value
+													)
 												)
 											}
 										</div> : null
