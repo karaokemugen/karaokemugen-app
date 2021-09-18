@@ -81,7 +81,6 @@ class PlaylistModal extends Component<IProps, IState> {
 		} else {
 			this.setState({
 				flag_current: !this.state.flag_current,
-				flag_smart: false,
 				flag_whitelist: false,
 				flag_blacklist: false
 			});
@@ -94,7 +93,6 @@ class PlaylistModal extends Component<IProps, IState> {
 		} else {
 			this.setState({
 				flag_public: !this.state.flag_public,
-				flag_smart: false,
 				flag_whitelist: false,
 				flag_blacklist: false
 			});
@@ -102,12 +100,10 @@ class PlaylistModal extends Component<IProps, IState> {
 	}
 
 	toggleSmart = () => {
-		if (this.props.mode === 'edit' || this.state.flag_current || this.state.flag_public) {
+		if (this.props.mode === 'edit') {
 			displayMessage('warning', i18next.t('MODAL.PLAYLIST_MODAL.CANNOT_SMART'), 4500, 'top-center');
 		} else {
 			this.setState({
-				flag_public: false,
-				flag_current: false,
 				flag_smart: !this.state.flag_smart,
 				flag_whitelist: false,
 				flag_blacklist: false
@@ -198,7 +194,7 @@ class PlaylistModal extends Component<IProps, IState> {
 								<button className="btn btn-default"
 									type="button" onClick={this.toggleSmart}>
 									<input type="checkbox" checked={this.state.flag_smart}
-										disabled={this.props.mode === 'edit' || this.state.flag_current || this.state.flag_public}
+										disabled={this.props.mode === 'edit'}
 										onChange={this.toggleSmart} />
 									<div className="btn-large-container">
 										<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.SMART')}</div>
