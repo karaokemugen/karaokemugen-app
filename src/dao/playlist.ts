@@ -313,6 +313,9 @@ export async function migrateBLWLToSmartPLs() {
 	}
 	// Blacklist(s)
 	for (const set of BLCSets.rows) {
+		const blc = BLCs.rows.filter(e => e.fk_id_blc_set === set.pk_id_blc_set);
+		// No need to import an empty BLC set.
+		if (blc.length === 0) continue;
 		const plaid = await createPlaylist({
 			...set,
 			flag_current: false,
@@ -321,7 +324,6 @@ export async function migrateBLWLToSmartPLs() {
 			flag_smart: true,
 			username: 'admin'
 		});
-		const blc = BLCs.rows.filter(e => e.fk_id_blc_set === set.pk_id_blc_set);
 		await insertCriteria(blc.map(e => {
 			return {
 				plaid: plaid,
