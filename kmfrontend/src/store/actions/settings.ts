@@ -7,19 +7,25 @@ import { Config } from '../../../../src/types/config';
 import { Version } from '../../../../src/types/state';
 import { langSupport } from '../../utils/isoLanguages';
 import { commandBackend } from '../../utils/socket';
+import { LogoutUser } from '../types/auth';
 import { Settings, SettingsFailure, SettingsSuccess } from '../types/settings';
+import { logout } from './auth';
 
 export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsFailure>, withoutProfile?: boolean): Promise<void> {
 	try {
 		const res = await commandBackend('getSettings');
 		if (!withoutProfile) {
-			const user: User = await commandBackend('getMyAccount');
-			i18next.changeLanguage(user.language ? user.language : langSupport);
-			if (!res.state.sentrytest) setSentry(res.state.environment, res.version, res.config, user);
-			dispatch({
-				type: Settings.SETTINGS_SUCCESS,
-				payload: { state: res.state, config: res.config, user: user, version: res.version }
-			});
+			try {
+				const user: User = await commandBackend('getMyAccount');
+				i18next.changeLanguage(user.language ? user.language : langSupport);
+				if (!res.state.sentrytest) setSentry(res.state.environment, res.version, res.config, user);
+				dispatch({
+					type: Settings.SETTINGS_SUCCESS,
+					payload: { state: res.state, config: res.config, user: user, version: res.version }
+				});
+			} catch (e) {
+				logout(dispatch as unknown as Dispatch<LogoutUser>);
+			}
 		} else {
 			i18next.changeLanguage(langSupport);
 			dispatch({
