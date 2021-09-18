@@ -246,6 +246,8 @@ export async function deletePlaylist(plaid: string) {
 		profile('deletePlaylist');
 		if (pl.flag_current) throw {code: 409, msg: `Playlist ${plaid} is current. Unable to delete it. Make another playlist current first.`};
 		if (pl.flag_public) throw {code: 409, msg: `Playlist ${plaid} is public. Unable to delete it. Make another playlist public first.`};
+		if (pl.flag_blacklist) throw {code: 409, msg: `Playlist ${plaid} is a blacklist. Unable to delete it. Make another playlist into a blacklist first.`};
+		if (pl.flag_whitelist) throw {code: 409, msg: `Playlist ${plaid} is a whitelist. Unable to delete it. Make another playlist into a whitelist first.`};
 		logger.info(`Deleting playlist ${pl.name}`, {service: 'Playlist'});
 		await deletePL(plaid);
 		emitWS('playlistsUpdated');
