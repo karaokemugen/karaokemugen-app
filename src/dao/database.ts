@@ -9,7 +9,7 @@ import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID }
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
-import { updateAllSmartPlaylists } from '../services/playlist';
+import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
 import { migrations } from '../utils/migrationsBeforePostgrator';
 import {initPG,isShutdownPG, restorePG} from '../utils/postgresql';

@@ -9,7 +9,7 @@ import { Criteria, PLC, PLCParams, UnaggregatedCriteria } from '../lib/types/pla
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { profile } from '../lib/utils/logger';
-import { updateAllSmartPlaylists } from '../services/playlist';
+import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { getState } from '../utils/state';
 import { sqladdCriteria, sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeleteCriteria, sqldeleteCriteriaForPlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetCriterias, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlselectKarasFromCriterias, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCCriterias, sqlupdatePLCSetPos } from './sql/playlist';
@@ -334,6 +334,7 @@ export async function migrateBLWLToSmartPLs() {
 	/**
 	 If it all works out :
 	 (uncomment this after the feature is confirmed to work fine)
+	 Like, a few weeks after 6.0 hits.
 	 try {
 		await db().query('DROP TABLE whitelist');
 	 	await db().query('DROP TABLE blacklist_criteria');

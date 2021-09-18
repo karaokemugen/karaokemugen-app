@@ -37,8 +37,8 @@ import {applyPatch, downloadAndExtractZip} from '../utils/zipPatch';
 import { updateMedias } from './downloadUpdater';
 import { getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
-import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './playlist';
 import { addSystemMessage } from './proxyFeeds';
+import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
 import { sendPayload } from './stats';
 import { deleteTag, getTags, integrateTagFile } from './tag';
 

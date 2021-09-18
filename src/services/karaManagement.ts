@@ -25,7 +25,7 @@ import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
 import {getKara, getKaras} from './kara';
 import { editKara } from './karaCreation';
-import { updateAllSmartPlaylists } from './playlist';
+import { updateAllSmartPlaylists } from './smartPlaylist';
 import { getRepo, getRepos } from './repo';
 import { getTag } from './tag';
 

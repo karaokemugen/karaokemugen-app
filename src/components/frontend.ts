@@ -18,6 +18,7 @@ import playlistsController from '../controllers/frontend/playlists';
 import pollController from '../controllers/frontend/poll';
 import repoController from '../controllers/frontend/repo';
 import sessionController from '../controllers/frontend/session';
+import smartPlaylistsController from '../controllers/frontend/smartPlaylists';
 import tagsController from '../controllers/frontend/tags';
 import testController from '../controllers/frontend/test';
 import userController from '../controllers/frontend/user';
@@ -50,6 +51,7 @@ function apiRouter(ws: SocketIOApp) {
 	tagsController(ws);
 	pollController(ws);
 	repoController(ws);
+	smartPlaylistsController(ws);
 	if (getState().isTest) testController(ws);
 }
 
