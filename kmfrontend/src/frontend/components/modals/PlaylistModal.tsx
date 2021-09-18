@@ -166,7 +166,7 @@ class PlaylistModal extends Component<IProps, IState> {
 								<button className="btn btn-default"
 									type="button" onClick={this.toggleCurrent}>
 									<input type="checkbox" checked={this.state.flag_current}
-										disabled={(this.props.mode === 'edit' && this.props.playlistInfo?.flag_current) || this.state.flag_smart}
+										disabled={(this.props.mode === 'edit' && this.props.playlistInfo?.flag_current)}
 										onChange={this.toggleCurrent} />
 									<div className="btn-large-container">
 										<div className="title">
@@ -182,7 +182,7 @@ class PlaylistModal extends Component<IProps, IState> {
 								<button className="btn btn-default"
 									type="button" onClick={this.togglePublic}>
 									<input type="checkbox" checked={this.state.flag_public}
-										disabled={(this.props.mode === 'edit' && this.props.playlistInfo?.flag_public) || this.state.flag_smart}
+										disabled={(this.props.mode === 'edit' && this.props.playlistInfo?.flag_public)}
 										onChange={this.togglePublic} />
 									<div className="btn-large-container">
 										<div className="title">{i18next.t('MODAL.PLAYLIST_MODAL.PUBLIC')}</div>
