@@ -166,7 +166,7 @@ export async function restorePG() {
 	}
 }
 
-/** 	ialize postgreSQL data directory if it doesn't exist */
+/** Initialize postgreSQL data directory if it doesn't exist */
 export async function initPGData() {
 	const conf = getConfig();
 	const state = getState();
