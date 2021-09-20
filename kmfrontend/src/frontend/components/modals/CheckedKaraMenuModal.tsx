@@ -164,7 +164,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						}}>
 							<i className="fas fa-fw fa-exchange-alt" />
 							&nbsp;
-							{i18next.t('TOOLTIP_TRANSFER_SELECT_KARA')}
+							{i18next.t('KARA_MENU.TRANSFER_SELECT_KARA')}
 						</a>
 					</li> : null
 				}
@@ -173,7 +173,7 @@ class CheckedKaraMenuModal extends Component<IProps, IState> {
 						<a href="#" onClick={this.makeFavorite}>
 							<i className="fas fa-star" />
 							&nbsp;
-							{i18next.t('TOOLTIP_FAV')}
+							{i18next.t('KARA_MENU.FAV')}
 						</a>
 						<a href="#" className={`animate-button-success${this.state.effect_favorite ? ' activate':''}`}>
 							<i className="fas fa-fw fa-check-square" />

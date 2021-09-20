@@ -196,7 +196,7 @@ class KaraMenuModal extends Component<IProps, IState> {
 							<a href="#" onClick={this.makeFavorite}>
 								<i className="fas fa-fw fa-star" />
 								&nbsp;
-								{this.state.kara.flag_favorites ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
+								{this.state.kara.flag_favorites ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}
 							</a>
 							<a href="#" className={`animate-button-success${this.state.effect_favorite ? ' activate' : ''}`}>
 								<i className="fas fa-fw fa-check-square" />

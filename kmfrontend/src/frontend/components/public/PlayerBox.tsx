@@ -266,7 +266,7 @@ class PlayerBox extends Component<IProps, IState> {
 				{this.props.mode === 'homepage' && this.state.length !== 0 && this.context.globalState.auth.data.role !== 'guest' ?
 					<button className="btn favorites" onClick={this.toggleFavorite}>
 						<i className="fas fa-fw fa-star" />
-						{this.state.favorites.has(this.state.kid) ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}
+						{this.state.favorites.has(this.state.kid) ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}
 					</button> : null}
 				{this.state.length !== 0 ?
 					<React.Fragment>

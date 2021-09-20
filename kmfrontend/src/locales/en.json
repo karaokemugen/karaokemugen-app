@@ -72,6 +72,9 @@
 		"DOWNLOAD_ALL": "Download all"
 	},
 	"KARA_MENU": {
+		"TRANSFER_SELECT_KARA": "Transfer selected songs - right click to transfer it after the currently playing song",
+		"FAV": "Add to favorites",
+		"FAV_DEL": "Delete from favorites",	
 		"KARA_COMMANDS": "Song commands",
 		"PLAY": "Set as 'currently playing'",
 		"PLAY_LIBRARY": "Play now",
@@ -194,7 +197,6 @@
 		"MIX": "Create AutoMix",
 		"EMPTY": "Select users and a duration"
 	},
-	"LYRICS": "Lyrics",
 	"KARAOKE": "{{count}} karaoke",
 	"KARAOKE_plural": "{{count}} karaokes",
 	"CL_CONGRATS": "Congratulations",
@@ -239,7 +241,6 @@
 	"PROFILE_PASSWORD": "Password",
 	"PROFILE_PASSWORD_AGAIN": "Type your password",
 	"PROFILE_PASSWORDCONF": "Confirm",
-	"UPVOTE_NUMBER": "Upvotes",
 	"TOOLTIP_ADDKARA": "Add this song to the playlist",
 	"TOOLTIP_ADDKARA_ADMIN": "right click to append it after the currently playing song",
 	"TOOLTIP_ADD_SELECT_KARA": "Add selected songs to the playlist - right click to append it after the currently playing song",
@@ -247,14 +248,11 @@
 	"TOOLTIP_DELETE_FAVS": "Remove song from favorites",
 	"TOOLTIP_DELETE_SELECT_FAVS": "Remove selected songs from favorites",
 	"TOOLTIP_DELETE_SELECT_KARA": "Delete selected songs",
-	"TOOLTIP_TRANSFER_SELECT_KARA": "Transfer selected songs - right click to transfer it after the currently playing song",
 	"TOOLTIP_REFUSE_KARA": "Refuse song (free the song)",
 	"TOOLTIP_ACCEPT_KARA": "Accept song (free the song and copy to current list)",
 	"TOOLTIP_REFUSE_SELECT_KARA": "Refuse songs (free songs)",
 	"TOOLTIP_ACCEPT_SELECT_KARA": "Accept songs (free songs and copy to current list)",
 	"TOOLTIP_CLOSEPARENT": "Close",
-	"TOOLTIP_FAV": "Add to favorites",
-	"TOOLTIP_FAV_DEL": "Delete from favorites",
 	"KARA_DETAIL": {
 		"CREATED": "Karaoke created ",
 		"ADDED": "Added ",
@@ -265,7 +263,13 @@
 		"LAST_PLAYED_2": "Last played {{time}} ago",
 		"DOWNLOAD_MEDIA": "Download media",
 		"SHOW_VIDEO": "Show video preview",
-		"HIDE_VIDEO": "Close video preview"
+		"HIDE_VIDEO": "Close video preview",
+		"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})",
+		"LYRICS": "Lyrics",
+		"UPVOTE_NUMBER": "Upvotes",
+		"SPONSOR": "Sponsors",
+		"JINGLE_SPONSOR": "Jingle & Sponsors",
+		"JINGLE": "Jingle"
 	},
 	"TOOLTIP_UPVOTE": "Vote for this song",
 	"WELCOME_PAGE": {
@@ -467,7 +471,6 @@
 		"Preparations are ongoing!"
 	],
 	"JINGLE_TIME": "Jingle time!",
-	"JINGLE": "Jingle",
 	"JINGLE_TAGLINES": [
 		"We'll be right back!"
 	],
@@ -501,8 +504,6 @@
 		"Time to drink!",
 		"We'll be right back!"
 	],
-	"SPONSOR": "Sponsors",
-	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"QUOTA_AVAILABLE": "You can add songs again now!",
 	"SERIE_NAME_MODE": "Series language mode",
 	"SERIE_NAME_MODE_TOOLTIP": "Changes the way series names are displayed on the song list. Might be ignored by user preferences",
@@ -558,7 +559,6 @@
 	"MAKE_ACCOUNT_ADMIN": "Transform account to operator",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "If you want to make your account an operator account, write the 6 numbers security code and validate.",
 	"NEXT_SONG_MESSAGE": "Coming up next :",
-	"TIME_BEFORE_PLAY": "Airing in {{time}} ({{date}})",
 	"USER_SONG_PLAYS_IN": "Your song {{kara}} has been added and will airing in {{time}} ({{date}})",
 	"MODAL": {
 		"UNKNOW_REPOS": {

@@ -172,7 +172,7 @@ export default function KaraDetail(props: IProps) {
 						song: getTitleInLocale(context.globalState.settings.data, kara.titles)
 					})}
 					<br />
-					{i18next.t('TIME_BEFORE_PLAY', {
+					{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
 						time: beforePlayTime,
 						date: playTimeDate
 					})}
@@ -327,7 +327,7 @@ export default function KaraDetail(props: IProps) {
 				{kara.upvotes && props.scope === 'admin' ?
 					<div className="detailsKaraLine">
 						<span
-							title={i18next.t('UPVOTE_NUMBER')}>
+							title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
 							<i className="fas fa-thumbs-up" />
 							{kara.upvotes}
 						</span>
@@ -376,7 +376,7 @@ export default function KaraDetail(props: IProps) {
 				className={`makeFav btn btn-action${isFavorite ? ' currentFav' : ''}`}
 			>
 				<i className="fas fa-fw fa-star" />
-				<span>{isFavorite ? i18next.t('TOOLTIP_FAV_DEL') : i18next.t('TOOLTIP_FAV')}</span>
+				<span>{isFavorite ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}</span>
 			</button>
 		);
 
@@ -414,7 +414,7 @@ export default function KaraDetail(props: IProps) {
 		const lyricsKara = kara.subfile ? (<div className="lyricsKara detailsKaraLine">
 			{lyrics?.length > 0 ? <div className="boldDetails">
 				<i className="fas fa-fw fa-closed-captioning" />
-				{i18next.t('LYRICS')}
+				{i18next.t('KARA_DETAIL.LYRICS')}
 			</div> : null}
 			{kara.subfile && lyrics?.map((ligne, index) => {
 				return (

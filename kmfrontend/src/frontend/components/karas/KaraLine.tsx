@@ -189,7 +189,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						song: getTitleInLocale(this.context.globalState.settings.data, this.props.kara.titles)
 					})}
 					<br />
-					{i18next.t('TIME_BEFORE_PLAY', {
+					{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
 						time: beforePlayTime,
 						date: playTimeDate
 					})}
@@ -468,7 +468,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 												).join(', ') })} /> : null}
 										{kara.upvotes && this.props.scope === 'admin' ?
 											<div className="upvoteCount"
-												title={i18next.t('UPVOTE_NUMBER')}>
+												title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
 												<i className="fas fa-thumbs-up" />
 												{kara.upvotes}
 											</div> : null
@@ -528,11 +528,11 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 					}
 				</div>
 				{(this.props.sponsor && this.props.jingle && scope === 'admin') ? <div className="marker-label green">
-					{i18next.t('JINGLE_SPONSOR')}
+					{i18next.t('KARA_DETAIL.JINGLE_SPONSOR')}
 				</div> : this.props.jingle && scope === 'admin' ? <div className="marker-label">
-					{i18next.t('JINGLE')}
+					{i18next.t('KARA_DETAIL.JINGLE')}
 				</div> : this.props.sponsor && scope === 'admin' ? <div className="marker-label green">
-					{i18next.t('SPONSOR')}
+					{i18next.t('KARA_DETAIL.SPONSOR')}
 				</div> : ''}
 			</div>
 		);

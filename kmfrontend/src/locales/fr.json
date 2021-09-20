@@ -73,6 +73,9 @@
 		"DOWNLOAD_ALL": "Télécharger tout"
 	},
 	"KARA_MENU": {
+		"TRANSFER_SELECT_KARA": "Transférer les chansons sélectionnées - clic droit les transfére après la chanson en cours",
+		"FAV": "Ajouter aux favoris",
+		"FAV_DEL": "Retirer des favoris",	
 		"KARA_COMMANDS": "Commandes sur une chanson",
 		"PLAY": "Placer le curseur de lecture ici",
 		"PLAY_LIBRARY": "Jouer maintenant",
@@ -203,7 +206,6 @@
 		"EMPTY": "Choisissez un utilisateur et spécifiez une durée"
 	},
 	"CONFIRM_FAV_IMPORT": "Écraser vos favoris avec cet import ?",
-	"LYRICS": "Paroles",
 	"KARAOKE": "{{count}} karaoké",
 	"KARAOKE_plural": "{{count}} karaokés",
 	"CL_CONGRATS": "Félicitations",
@@ -246,14 +248,11 @@
 	"TOOLTIP_DELETE_FAVS": "Supprimer cette chanson des favoris",
 	"TOOLTIP_DELETE_SELECT_FAVS": "Supprimer les chansons sélectionnées des favoris",
 	"TOOLTIP_DELETE_SELECT_KARA": "Supprimer les chansons sélectionnées",
-	"TOOLTIP_TRANSFER_SELECT_KARA": "Transférer les chansons sélectionnées - clic droit les transfére après la chanson en cours",
 	"TOOLTIP_REFUSE_KARA": "Refuser la chanson (libère la chanson)",
 	"TOOLTIP_ACCEPT_KARA": "Accepter la chanson (copie dans la liste courante)",
 	"TOOLTIP_REFUSE_SELECT_KARA": "Refuser les chansons (libère les chansons)",
 	"TOOLTIP_ACCEPT_SELECT_KARA": "Accepter les chansons (copie dans la liste courante)",
 	"TOOLTIP_CLOSEPARENT": "Fermer",
-	"TOOLTIP_FAV": "Ajouter aux favoris",
-	"TOOLTIP_FAV_DEL": "Retirer des favoris",
 	"KARA_DETAIL": {
 		"CREATED": "Karaoké créé ",
 		"ADDED": "Ajouté ",
@@ -264,10 +263,15 @@
 		"LAST_PLAYED_2": "Joué il y a {{time}}",
 		"DOWNLOAD_MEDIA": "Télécharger le média",
 		"SHOW_VIDEO": "Afficher un aperçu vidéo",
-		"HIDE_VIDEO": "Fermer l'aperçu vidéo"
+		"HIDE_VIDEO": "Fermer l'aperçu vidéo",
+		"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})",
+		"LYRICS": "Paroles",
+		"UPVOTE_NUMBER": "Soutiens",
+		"SPONSOR": "Sponsors",
+		"JINGLE_SPONSOR": "Jingle & Sponsors",
+		"JINGLE": "Jingle"
 	},
 	"TOOLTIP_UPVOTE": "Voter pour cette chanson",
-	"UPVOTE_NUMBER": "Soutiens",
 	"PROFILE_PASSWORDCONF": "Confirmer",
 	"WELCOME_PAGE": {
 		"CONTACT": "Contactez-nous",
@@ -472,7 +476,6 @@
 	"JINGLE_TAGLINES": [
 		"On revient !"
 	],
-	"JINGLE": "Jingle",
 	"INTRO_TIME": "Introduction",
 	"INTRO_TAGLINES": [
 		"C'est parti !",
@@ -503,8 +506,6 @@
 		"Buvez un coup !",
 		"On revient tout de suite !"
 	],
-	"SPONSOR": "Sponsors",
-	"JINGLE_SPONSOR": "Jingle & Sponsors",
 	"SERIE_NAME_MODE": "Affichage des noms des séries",
 	"SERIE_NAME_MODE_TOOLTIP": "Change la façon dont les noms de séries sont affichés dans la liste des chansons. Peut être ignoré par les préférences d'un utilisateur",
 	"SERIE_NAME_MODE_ORIGINAL": "Nom original / interne",
@@ -559,7 +560,6 @@
 	"MAKE_ACCOUNT_ADMIN": "Transformez le compte en opérateur",
 	"MAKE_ACCOUNT_ADMIN_MESSAGE": "Si vous souhaitez faire de votre compte un compte opérateur, écrivez le code de sécurité à 6 chiffres et validez.",
 	"NEXT_SONG_MESSAGE": "La suite avec :",
-	"TIME_BEFORE_PLAY": "Diffusion dans {{time}} ({{date}})",
 	"USER_SONG_PLAYS_IN": "Votre chanson {{kara}} a été ajoutée et sera diffusée dans {{time}} ({{date}})",
 	"MODAL": {
 		"UNKNOW_REPOS": {
