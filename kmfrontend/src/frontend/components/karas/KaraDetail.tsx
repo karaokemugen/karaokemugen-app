@@ -116,16 +116,14 @@ export default function KaraDetail(props: IProps) {
 	};
 
 	const fetchLyrics = async () => {
-		if (kara) {
-			try {
-				let response = await commandBackend('getKaraLyrics', { kid: (kara as DBPLCInfo).kid });
-				if (response?.length > 0) {
-					response = formatLyrics(response);
-				}
-				setLyrics(response?.map(value => value.text) || []);
-			} catch (e) {
-				// already display
+		try {
+			let response = await commandBackend('getKaraLyrics', { kid: props.kid });
+			if (response?.length > 0) {
+				response = formatLyrics(response);
 			}
+			setLyrics(response?.map(value => value.text) || []);
+		} catch (e) {
+			// already display
 		}
 	};
 
