@@ -3,6 +3,7 @@ import { app } from 'electron';
 import {promises as fs} from 'fs';
 import {copy, remove} from 'fs-extra';
 import i18next from 'i18next';
+import open from 'open';
 import {resolve} from 'path';
 import { getPortPromise } from 'portfinder';
 
