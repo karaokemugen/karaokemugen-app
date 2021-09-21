@@ -368,46 +368,29 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 							</div>
 						</div> :
 						<React.Fragment>
-							<div className="actionDiv">
-								{!is_touch_device() && shouldShowProfile ?
-									<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-										alt="User Pic" user={{
-											login: this.props.kara.username, avatar_file: this.props.avatar_file,
-											nickname: this.props.kara.nickname, type: this.props.kara.user_type
-										}} /> : null
+							<div className="infoDiv">
+								{scope === 'admin' && (isNonStandardPlaylist(plaid)
+									|| (this.props.playlistInfo?.flag_public && !this.props.playlistInfo?.flag_current)) ?
+									<button
+										title={i18next.t('KARA_MENU.PLAY_LIBRARY')}
+										className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
+										<i className='fas fa-play' />
+									</button> : null
 								}
-								<div className="btn-group">
-									{this.props.scope === 'admin' || this.context?.globalState.settings.data?.config?.Frontend?.Mode === 2 ?
-										<ActionsButtons
-											plaidTo={this.props.plaidTo.plaid}
-											playlistInfo={this.props.playlistInfo}
-											scope={this.props.scope}
-											kara={kara}
-											addKara={this.addKara}
-											deleteKara={this.deleteKara}
-											deleteFavorite={this.deleteFavorite}
-											upvoteKara={this.upvoteKara}
-											refuseKara={this.refuseKara}
-											acceptKara={this.acceptKara}
-										/> : null
-									}
-									{scope === 'admin' ?
-										<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}
-											onClick={(event) => {
-												this.state.karaMenu ? this.closeKaraMenu() : this.openKaraMenu(event);
-											}}
-											className={'btn btn-sm showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
-											<i className="fas fa-wrench" />
-										</button> : null
-									}
-								</div>
-								{!is_touch_device() && scope === 'admin' && !isNonStandardPlaylist(plaid) && this.props.sortable ? <DragHandle /> : null}
+								{scope === 'admin' && !isNonStandardPlaylist(plaid)
+								&& !(this.props.playlistInfo?.flag_public && !this.props.playlistInfo?.flag_current) ?
+									<button
+										title={i18next.t('KARA_MENU.PLAY')}
+										className="btn btn-sm btn-action playKara karaLineButton" onClick={this.editPlayingFlag}>
+										<i className='fas fa-play-circle' />
+									</button> : null
+								}
+								{scope === 'admin' && !isNonStandardPlaylist(plaid) && !kara.flag_visible ?
+									<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>
+										<i className="fas fa-eye-slash"></i>
+									</button> : null
+								}
 							</div>
-							{scope === 'admin' ?
-								<span className="checkboxKara" onClick={this.checkKara}>
-									{kara.checked ? <i className="far fa-check-square"></i>
-										: <i className="far fa-square"></i>}
-								</span> : null}
 							{is_touch_device() || this.props.scope === 'public' ?
 								<div className="contentDiv contentDivMobile" onClick={() => this.props.toggleKaraDetail(kara, plaid)} tabIndex={1}>
 									<div className="contentDivMobileTitle">
@@ -479,28 +462,45 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 									</div>
 								</div>
 							}
-							<div className="infoDiv">
-								{scope === 'admin' && (isNonStandardPlaylist(plaid)
-									|| (this.props.playlistInfo?.flag_public && !this.props.playlistInfo?.flag_current)) ?
-									<button
-										title={i18next.t('KARA_MENU.PLAY_LIBRARY')}
-										className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
-										<i className='fas fa-play' />
-									</button> : null
+							{scope === 'admin' ?
+								<span className="checkboxKara" onClick={this.checkKara}>
+									{kara.checked ? <i className="far fa-check-square"></i>
+										: <i className="far fa-square"></i>}
+								</span> : null}
+							<div className="actionDiv">
+								{!is_touch_device() && shouldShowProfile ?
+									<ProfilePicture className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
+										alt="User Pic" user={{
+											login: this.props.kara.username, avatar_file: this.props.avatar_file,
+											nickname: this.props.kara.nickname, type: this.props.kara.user_type
+										}} /> : null
 								}
-								{scope === 'admin' && !isNonStandardPlaylist(plaid)
-									&& !(this.props.playlistInfo?.flag_public && !this.props.playlistInfo?.flag_current) ?
-									<button
-										title={i18next.t('KARA_MENU.PLAY')}
-										className="btn btn-sm btn-action playKara karaLineButton" onClick={this.editPlayingFlag}>
-										<i className='fas fa-play-circle' />
-									</button> : null
-								}
-								{scope === 'admin' && !isNonStandardPlaylist(plaid) && !kara.flag_visible ?
-									<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>
-										<i className="fas fa-eye-slash"></i>
-									</button> : null
-								}
+								<div className="btn-group">
+									{this.props.scope === 'admin' || this.context?.globalState.settings.data?.config?.Frontend?.Mode === 2 ?
+										<ActionsButtons
+											plaidTo={this.props.plaidTo.plaid}
+											playlistInfo={this.props.playlistInfo}
+											scope={this.props.scope}
+											kara={kara}
+											addKara={this.addKara}
+											deleteKara={this.deleteKara}
+											deleteFavorite={this.deleteFavorite}
+											upvoteKara={this.upvoteKara}
+											refuseKara={this.refuseKara}
+											acceptKara={this.acceptKara}
+										/> : null
+									}
+									{scope === 'admin' ?
+										<button title={i18next.t('KARA_MENU.KARA_COMMANDS')}
+											onClick={(event) => {
+												this.state.karaMenu ? this.closeKaraMenu() : this.openKaraMenu(event);
+											}}
+											className={'btn btn-sm showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
+											<i className="fas fa-wrench" />
+										</button> : null
+									}
+								</div>
+								{!is_touch_device() && scope === 'admin' && !isNonStandardPlaylist(plaid) && this.props.sortable ? <DragHandle /> : null}
 							</div>
 							{is_touch_device() ?
 								<div className="tagConteneur mobile">

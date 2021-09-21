@@ -55,9 +55,7 @@ body:not(.touch) {
 	transition: background-color 250ms ease;
 	display: flex;
 	flex-wrap: nowrap;
-	#playlist1 &:not(.karaSuggestion) {
-		flex-direction: row-reverse;
-	}
+	flex-direction: row;
 	@media screen and (max-width: $mugen-breakpoint-large) {
 		flex-wrap: wrap;
 	}
@@ -196,6 +194,7 @@ body:not(.touch) {
 	// Axial symmetry
 
 	&.side-right {
+		flex-direction: row-reverse;
 		.actionDiv {
 			float: left;
 			flex-direction: row-reverse;
