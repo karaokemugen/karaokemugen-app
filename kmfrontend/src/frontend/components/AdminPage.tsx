@@ -48,7 +48,7 @@ class AdminPage extends Component<IProps, IState> {
 		super(props);
 		this.state = {
 			idsPlaylist: {
-				left: { plaid: nonStandardPlaylists.library, name: '', flag_visible: true },
+				left: { plaid: null, name: '', flag_visible: true },
 				right: { plaid: null, name: '', flag_visible: true }
 			},
 			searchMenuOpen1: false,
@@ -98,7 +98,7 @@ class AdminPage extends Component<IProps, IState> {
 		if (!isNonStandardPlaylist(idPlaylistLeft)) {
 			this.state.idsPlaylist.left = await this.getPlaylistInfo(idPlaylistLeft);
 		} else {
-			this.state.idsPlaylist.left = { plaid: idPlaylistLeft, name: '', flag_visible: true };
+			this.state.idsPlaylist.left = { plaid: nonStandardPlaylists.library, name: '', flag_visible: true };
 		}
 		const idPlaylistRight = plVal2Cookie !== null
 			&& this.state.playlistList.find(playlist => playlist.plaid === plVal2Cookie) ?
@@ -106,7 +106,7 @@ class AdminPage extends Component<IProps, IState> {
 		if (!isNonStandardPlaylist(idPlaylistRight)) {
 			this.state.idsPlaylist.right = await this.getPlaylistInfo(idPlaylistRight);
 		} else {
-			this.state.idsPlaylist.right = { plaid: idPlaylistRight, name: '', flag_visible: true };
+			this.state.idsPlaylist.right = { plaid: null, name: '', flag_visible: true };
 		}
 		this.setState({ idsPlaylist: idsPlaylist });
 	};
