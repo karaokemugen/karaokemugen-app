@@ -3,8 +3,8 @@ import {createHash} from 'crypto';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
 import {decode,encode} from 'jwt-simple';
-import {has as hasLang} from 'langs';
 import deburr from 'lodash.deburr';
+import merge from 'lodash.merge';
 import {resolve} from 'path';
 import randomstring from 'randomstring';
 import slugify from 'slugify';
@@ -84,63 +84,51 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	renameUser: false,
 	noPasswordCheck: false
 }) {
-	username = username.toLowerCase();
 	try {
+		if (!username) throw {code: 401, msg: 'USER_NOT_PROVIDED'};
+		username = username.toLowerCase();
 		const currentUser = await findUserByName(username);
 		if (!currentUser) throw {code: 404, msg: 'USER_NOT_EXISTS'};
 		if (currentUser.type === 2 && role !== 'admin') throw {code: 403, msg: 'GUESTS_CANNOT_EDIT'};
-		// If we're renaming a user, user.login is going to be set to something different than username
-		if (!opts.renameUser) user.login = username;
-		user.old_login = username;
-		if (!user.bio) user.bio = null;
-		if (!user.url) user.url = null;
-		if (!user.email) user.email = null;
-		if (!user.location) user.location = null;
-		if (!user.nickname) user.nickname = currentUser.nickname;
-		if (!user.series_lang_mode && user.series_lang_mode !== 0) user.series_lang_mode = -1;
-		if (user.series_lang_mode < -1 || user.series_lang_mode > 4) throw {code: 400};
-		if (user.main_series_lang && !hasLang('2B', user.main_series_lang)) throw {code: 400};
-		if (user.fallback_series_lang && !hasLang('2B', user.fallback_series_lang)) throw {code: 400};
-		if (user.type === 0 && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
-		if (user.type !== 0 && !user.type) user.type = currentUser.type;
+		const mergedUser = merge(currentUser, user);
+		delete mergedUser.password;
+		if (user.password && !getState().isDemo) {
+			if (!opts.noPasswordCheck && user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
+			const password = await hashPasswordbcrypt(user.password);
+			await DBUpdateUserPassword(username, password);
+		}
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
+		// If we're renaming a user, user.login is going to be set to something different than username
+		user.old_login = username;
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw {code: 409};
-		// Tutorial done is local only, so it's not transferred from KM Server for online users, so we'll check out with currentUser.
-		if (user.flag_tutorial_done === undefined) user.flag_tutorial_done = currentUser.flag_tutorial_done;
-		if (user.flag_sendstats === undefined) user.flag_sendstats = currentUser.flag_sendstats;
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			try {
-				user.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
+				mergedUser.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
 			} catch(err) {
 				//Non-fatal
-				logger.warn('', {service: 'User', obj: err});
+				logger.warn('Cannot replace avatar', {service: 'User', obj: err});
 			}
 		} else {
-			user.avatar_file = currentUser.avatar_file;
+			mergedUser.avatar_file = currentUser.avatar_file;
 		}
-		await DBEditUser(user);
-		logger.debug(`${username} (${user.nickname}) profile updated`, {service: 'User'});
+		const updatedUser = await DBEditUser(mergedUser);
+		delete updatedUser.password;
 		let KMServerResponse: any;
 		try {
-			if (user.login.includes('@') && opts.editRemote && +getConfig().Online.Users) KMServerResponse = await editRemoteUser(user, opts.editRemote);
+			if (updatedUser.login.includes('@') && opts.editRemote && +getConfig().Online.Users)
+				KMServerResponse = await editRemoteUser({...updatedUser, password: user.password || undefined}, opts.editRemote);
 		} catch(err) {
-			logger.warn('', {service: 'RemoteUser', obj: err});
+			logger.warn('Cannot push user changes to remote', {service: 'RemoteUser', obj: err});
 			throw {code: 500};
 		}
-		// Modifying passwords is not allowed in demo mode
-		if (user.password && !getState().isDemo) {
-			if (!opts.noPasswordCheck && user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
-			user.password = await hashPasswordbcrypt(user.password);
-			await DBUpdateUserPassword(user.login,user.password);
-			delete user.password;
-		}
 		emitWS('userUpdated', username);
+		logger.debug(`${username} (${mergedUser.nickname}) profile updated`, {service: 'User'});
 		return {
-			user,
+			user: updatedUser,
 			onlineToken: KMServerResponse?.token
 		};
 	} catch (err) {
@@ -249,48 +237,50 @@ export function createAdminUser(user: User, remote: boolean, requester: User) {
 	}
 }
 
+function getDefaultUser(): User {
+	return {
+		last_login_at: new Date(0),
+		avatar_file: 'blank.png',
+		flag_online: false,
+		flag_sendstats: null,
+		flag_tutorial_done: false,
+		type: 1
+	};
+}
+
 /** Create new user (either local or online. Defaults to online) */
 export async function createUser(user: User, opts: UserOpts = {
 	admin: false,
 	createRemote: true,
 	noPasswordCheck: false
 }) {
-	user.type = user.type || 1;
-	if (opts.admin) user.type = 0;
-	user.nickname = user.nickname || user.login;
 	user.login = user.login.toLowerCase();
-	user.last_login_at = new Date(0);
-	user.avatar_file = user.avatar_file || 'blank.png';
-	user.flag_online = user.flag_online || false;
-
-	user.bio = user.bio || null;
-	user.url = user.url || null;
-	user.email = user.email || null;
-	user.location = user.location || null;
+	// If nickname is not supplied, guess one
+	user.nickname ||= user.login.includes('@') ? user.login.split('@')[0]:user.login;
+	user = merge(getDefaultUser(), user);
+	if (opts.admin) user.type = 0;
 	if (user.type === 2) {
 		user.flag_online = false;
 		user.flag_sendstats = true;
 	}
 
 	try {
-		await newUserIntegrityChecks(user);
-		if (user.login.includes('@')) {
-			user.nickname = user.login.split('@')[0];
-			// Retry integrity checks
-			try {
-				await newUserIntegrityChecks(user);
-			} catch(err) {
-				// If nickname isn't allowed, append something random to it
-				user.nickname = `${user.nickname} ${randomstring.generate({
+		await newUserIntegrityChecks(user).catch(async err => {
+			if (user.login.includes('@')) {
+				// If nickname isn't allowed, append something random to it and retry integrity checks
+				user.nickname = `${user.nickname}${randomstring.generate({
 					length: 3,
 					charset: 'numeric'
 				})}`;
 				logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'});
+				await newUserIntegrityChecks(user);
+				if (user.login.split('@')[0] === 'admin') throw { code: 403, msg: 'USER_CREATE_ERROR', details: 'Admin accounts are not allowed to be created online' };
+				if (!+getConfig().Online.Users) throw { code: 403, msg : 'USER_CREATE_ERROR', details: 'Creating online accounts is not allowed on this instance'};
+				if (opts.createRemote) await createRemoteUser(user);
+			} else {
+				throw err;
 			}
-			if (user.login.split('@')[0] === 'admin') throw { code: 403, msg: 'USER_CREATE_ERROR', details: 'Admin accounts are not allowed to be created online' };
-			if (!+getConfig().Online.Users) throw { code: 403, msg : 'USER_CREATE_ERROR', details: 'Creating online accounts is not allowed on this instance'};
-			if (opts.createRemote) await createRemoteUser(user);
-		}
+		});
 		if (user.password) {
 			if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length};
 			user.password = await hashPasswordbcrypt(user.password);
