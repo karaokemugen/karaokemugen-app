@@ -119,6 +119,7 @@ UPDATE users SET
 	flag_sendstats = :flag_sendstats,
 	language = :language
 WHERE pk_login = :old_login
+RETURNING pk_login as login, *;
 `;
 
 export const sqleditUserPassword = `

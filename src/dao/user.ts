@@ -48,9 +48,9 @@ export function addUser(user: User) {
 	}));
 }
 
-export function editUser(user: User) {
+export async function editUser(user: User): Promise<User> {
 	if (!user.old_login) user.old_login = user.login;
-	return db().query(yesql(sqleditUser)({
+	const ret = (await db().query(yesql(sqleditUser)({
 		nickname: user.nickname,
 		avatar_file: user.avatar_file || 'blank.png',
 		login: user.login,
@@ -65,7 +65,12 @@ export function editUser(user: User) {
 		flag_sendstats: user.flag_sendstats,
 		location: user.location,
 		language: user.language
-	}));
+	}))).rows[0];
+	if (!ret) {
+		throw new Error('PostgreSQL did not return updated user, the where condition failed.');
+	} else {
+		return ret;
+	}
 }
 
 export function reassignToUser(oldUsername: string, username: string) {
