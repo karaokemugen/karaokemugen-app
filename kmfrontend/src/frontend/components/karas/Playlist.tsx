@@ -166,7 +166,7 @@ function Playlist(props: IProps) {
 		setTimeout(resizeCheck, 0);
 	};
 
-	const SortableList = SortableContainer(List, { withRef: true });
+	const SortableList = SortableContainer(List);
 
 	const isRowLoaded = ({ index }: Index) => {
 		return Boolean(data?.content[index]);
@@ -840,7 +840,7 @@ function Playlist(props: IProps) {
 								loadMoreRows={loadMoreRows}
 								rowCount={data.infos.count || 0}>
 								{({ onRowsRendered, registerChild }) => (
-									<AutoSizer>
+									<AutoSizer disableHeight>
 										{({ width }) => {
 											return (
 												<SortableList
