@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { RouteComponentProps, withRouter } from 'react-router';
 
-import { DBPL } from '../../../../src/lib/types/database/playlist';
 import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
 import KLogo from '../../assets/Klogo.png';
@@ -20,7 +19,6 @@ import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 
 interface IProps extends RouteComponentProps {
-	currentSide: 'left' | 'right';
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;

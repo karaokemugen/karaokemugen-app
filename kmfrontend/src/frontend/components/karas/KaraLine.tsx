@@ -521,4 +521,4 @@ function KaraLine(props: IProps) {
 	);
 }
 
-export default SortableElement(KaraLine, { withRef: true });
+export default SortableElement(KaraLine);

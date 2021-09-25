@@ -136,7 +136,7 @@ function Playlist(props: IProps) {
 
 	const initCall = async () => {
 		resizeCheck();
-		setGotToPlaying( !isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid));
+		setGotToPlaying(!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid));
 		setCriteriasOpen(false);
 		await getPlaylist();
 	};
@@ -387,13 +387,13 @@ function Playlist(props: IProps) {
 
 	const scrollToPlaying = async () => {
 		if (playing) {
-			setScrollToIndex(playing),
+			setScrollToIndex(playing);
 			setGotToPlaying(true);
 			setGotToPlayingAvoidScroll(true);
 		} else {
 			const result = await commandBackend('findPlayingSongInPlaylist', { plaid: getPlaylistInfo(props.side, context)?.plaid });
 			if (result?.index !== -1) {
-				setScrollToIndex(result.index),
+				setScrollToIndex(result.index);
 				setGotToPlaying(true);
 				setGotToPlayingAvoidScroll(true);
 			}
