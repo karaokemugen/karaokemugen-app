@@ -3,7 +3,7 @@ import './Playlist.scss';
 
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
-import React, { createRef, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { SortableContainer } from 'react-sortable-hoc';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
 
@@ -58,7 +58,7 @@ interface KaraList {
 
 function Playlist(props: IProps) {
 	const context = useContext(GlobalContext);
-	const refContainer = createRef<HTMLDivElement>();
+	const refContainer = useRef<HTMLDivElement>();
 	const [searchValue, setSearchValue] = useState(props.searchValue);
 	const [searchCriteria, setSearchCriteria] = useState<'year' | 'tag'>(props.searchCriteria);
 	const [searchType, setSearchType] = useState<'search' | 'recent' | 'requested'>(props.searchType ? props.searchType : 'search');

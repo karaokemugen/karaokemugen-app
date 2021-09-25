@@ -1,8 +1,9 @@
-import React, { Component, createRef, RefObject } from 'react';
+import React, { ReactNode, ReactNodeArray, useEffect, useRef, useState } from 'react';
 
 import { View } from '../../types/view';
 
 interface IProps {
+	children?: ReactNodeArray | ReactNode;
 	single?: boolean
 	chibi?: boolean
 	top?: string
@@ -11,59 +12,48 @@ interface IProps {
 	hmagrin?: boolean
 }
 
-interface IState {
-	height: string
-	ref: RefObject<HTMLDivElement>
-}
+function KmAppWrapperDecorator(props: IProps) {
+	const [height, setHeight] = useState('0');
+	const ref = useRef<HTMLDivElement>();
 
-class KmAppWrapperDecorator extends Component<IProps, IState> {
-	constructor(props) {
-		super(props);
-		this.state = {
-			height: '0',
-			ref: createRef()
-		};
-	}
-
-	resizeCheck = () => {
+	const resizeCheck = () => {
 		// Calculate empty space for fillSpace cheat.
 		// Virtual lists doesn't expand automatically, or more than needed, so the height is forced by JS calculations
 		// using getBoundingClientRect
-		this.setState({height: '0px'}, () => {
-			const wrapper = this.state.ref.current.getBoundingClientRect();
-			this.setState({ height: `${window.innerHeight - wrapper.bottom}px` });
-		});
-	}
-
-	componentDidMount() {
-		this.resizeCheck();
-		window.addEventListener('resize', this.resizeCheck);
-	}
-
-	componentDidUpdate(prevProps: Readonly<IProps>) {
-		if (prevProps.bottom !== this.props.bottom || prevProps.top !== this.props.top) {
-			this.resizeCheck();
+		if (ref?.current) {
+			setHeight('0px');
+			const wrapper = ref?.current?.getBoundingClientRect();
+			setHeight(`${window.innerHeight - wrapper.bottom}px`);
 		}
-		if (prevProps.view !== this.props.view) {
-			setTimeout(this.resizeCheck, 0);
-		}
-	}
+	};
 
-	componentWillUnmount() {
-		window.removeEventListener('resize', this.resizeCheck);
-		document.getElementsByTagName('body')[0].setAttribute('class', '');
-	}
+	useEffect(() => {
+		resizeCheck();
+	}, [props.bottom, props.top]);
 
-	render() {
-		return (
-			<div className={`KmAppWrapperDecorator${this.props.single ? ' single':''}${this.props.hmagrin !== false ? ' hmargin':''}
-			${this.props.chibi ? ' chibi':''}`}
-				 style={{['--top' as any]: this.props.top, ['--bottom' as any]: this.props.bottom, ['--height' as any]: this.state.height}}
-				 ref={this.state.ref}>
-				{this.props.children}
-			</div>
-		);
-	}
+	useEffect(() => {
+		setTimeout(resizeCheck, 0);
+	}, [props.view]);
+
+
+	useEffect(() => {
+		resizeCheck();
+		window.addEventListener('resize', resizeCheck);
+		return () => {
+			window.removeEventListener('resize', resizeCheck);
+			document.getElementsByTagName('body')[0].setAttribute('class', '');
+		};
+	}, []);
+
+	return (
+		<div
+			className={`KmAppWrapperDecorator${props.single ? ' single' : ''}${props.hmagrin !== false ? ' hmargin' : ''}${props.chibi ? ' chibi' : ''}`}
+			style={{ ['--top' as any]: props.top, ['--bottom' as any]: props.bottom, ['--height' as any]: height }}
+			ref={ref}
+		>
+			{props.children}
+		</div>
+	);
 }
 
 export default KmAppWrapperDecorator;

@@ -1,5 +1,4 @@
-import { ReactNodeArray } from 'prop-types';
-import React from 'react';
+import React, { ReactNodeArray } from 'react';
 
 interface IProps {
 	children: ReactNodeArray;
