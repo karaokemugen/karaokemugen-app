@@ -366,7 +366,6 @@ function Playlist(props: IProps) {
 					setPlaying(indexPlaying);
 				}
 			});
-			setData(data);
 		}
 	};
 
