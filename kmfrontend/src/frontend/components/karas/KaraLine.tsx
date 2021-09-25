@@ -33,7 +33,7 @@ interface IProps {
 	side: 'left' | 'right';
 	plaidTo: DBPL;
 	playlistInfo: DBPL | undefined;
-	scope: string;
+	scope: 'admin' | 'public';
 	i18nTag: { [key: string]: { [key: string]: string } };
 	avatar_file: string;
 	indexInPL: number;

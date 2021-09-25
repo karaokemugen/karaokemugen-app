@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { DBPLC } from '../../../../src/types/database/playlist';
-import GlobalContext, { GlobalContextInterface } from '../../store/context';
+import GlobalContext from '../../store/context';
 import { getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
@@ -16,7 +16,7 @@ async function fetchNextSongs(plaid: string) {
 }
 
 export default function PlaylistPage() {
-	const context: GlobalContextInterface = useContext(GlobalContext);
+	const context = useContext(GlobalContext);
 	const [playlist, setPlaylist] = useState<DBPLC[]>([]);
 	const [i18n, seti18n] = useState<any>([]);
 	const updatePlaylist = (plaid?: string) => {

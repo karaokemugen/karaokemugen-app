@@ -12,7 +12,7 @@ import nanamiSingPng from '../../../assets/nanami-sing.png';
 import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
-import GlobalContext, { GlobalContextInterface } from '../../../store/context';
+import GlobalContext from '../../../store/context';
 import { buildKaraTitle, formatLyrics, getPreviewLink, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
@@ -28,7 +28,7 @@ import InlineTag from './InlineTag';
 
 interface IProps {
 	kid: string | undefined;
-	scope: string;
+	scope: 'admin' | 'public';
 	plaid?: string;
 	criteriaLabel?: string;
 	playlistcontentId?: number;
@@ -42,7 +42,7 @@ interface IProps {
 }
 
 export default function KaraDetail(props: IProps) {
-	const context: GlobalContextInterface = useContext(GlobalContext);
+	const context = useContext(GlobalContext);
 	const [kara, setKara] = useState<DBPLCInfo>();
 	const [isFavorite, setFavorite] = useState(false);
 	const [showVideo, setShowVideo] = useState(false);

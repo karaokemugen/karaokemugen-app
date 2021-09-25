@@ -9,7 +9,7 @@ import { nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 
 interface IProps {
-	scope: string;
+	scope: 'admin' | 'public';
 	isHeader?: boolean;
 	playlistInfo: DBPL | undefined;
 	plaidTo: string;

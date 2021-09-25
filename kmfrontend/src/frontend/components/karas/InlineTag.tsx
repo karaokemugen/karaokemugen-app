@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
-import GlobalContext, { GlobalContextInterface } from '../../../store/context';
+import GlobalContext from '../../../store/context';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { View } from '../../types/view';
@@ -12,7 +12,7 @@ import { View } from '../../types/view';
 interface Props {
 	tag: DBKaraTag;
 	className?: string;
-	scope: string;
+	scope: 'admin' | 'public';
 	tagType: number;
 	changeView: (
 		view: View,
@@ -62,7 +62,7 @@ export default function InlineTag(props: Props) {
 		getTag();
 	}, []);
 
-	const context: GlobalContextInterface = useContext(GlobalContext);
+	const context = useContext(GlobalContext);
 
 	return (
 		<div

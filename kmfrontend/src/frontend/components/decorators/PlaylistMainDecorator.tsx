@@ -8,7 +8,7 @@ interface IProps {
 export default function PlaylistMainDecorator(props: IProps) {
 	return (
 		<div className="PlaylistMainDecorator">
-			<div className="playlist-main" id="playlist">
+			<div className="playlist-main">
 				{props.children.map ? props.children.map((node: any, index: number) => {
 					const i = index + 1;
 					return <div key={index} className="panel" id={'panel' + i}>{node}</div>;

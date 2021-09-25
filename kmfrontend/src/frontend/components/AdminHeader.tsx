@@ -10,7 +10,7 @@ import { PublicPlayerState } from '../../../../src/types/state';
 import KLogo from '../../assets/Klogo.png';
 import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
-import GlobalContext, { GlobalContextInterface } from '../../store/context';
+import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { callModal, displayMessage, expand, isNonStandardPlaylist } from '../../utils/tools';
 import KmAppHeaderDecorator from './decorators/KmAppHeaderDecorator';
@@ -30,7 +30,7 @@ interface IProps extends RouteComponentProps {
 
 function AdminHeader(props: IProps) {
 
-	const context: GlobalContextInterface = useContext(GlobalContext);
+	const context = useContext(GlobalContext);
 	const [dropDownMenu, setDropDownMenu] = useState(false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
 
