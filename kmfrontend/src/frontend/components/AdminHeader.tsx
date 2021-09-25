@@ -21,7 +21,6 @@ import UsersModal from './modals/UsersModal';
 
 interface IProps extends RouteComponentProps {
 	currentSide: 'left' | 'right';
-	idsPlaylist: { left: DBPL, right: DBPL };
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
@@ -80,9 +79,10 @@ function AdminHeader(props: IProps) {
 
 	const play = (event: any) => {
 		if ((!statusPlayer || statusPlayer?.playerStatus === 'stop')
-			&& props.idsPlaylist.left.plaid !== props.currentPlaylist?.plaid
-			&& props.idsPlaylist.right.plaid !== props.currentPlaylist?.plaid
-			&& (!isNonStandardPlaylist(props.idsPlaylist.left.plaid) || !isNonStandardPlaylist(props.idsPlaylist.right.plaid))) {
+			&& context.globalState.frontendContext.playlistInfoLeft.plaid !== props.currentPlaylist?.plaid
+			&& context.globalState.frontendContext.playlistInfoRight.plaid !== props.currentPlaylist?.plaid
+			&& (!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoLeft.plaid)
+				|| !isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid))) {
 			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
 				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => { }));
 		} else {

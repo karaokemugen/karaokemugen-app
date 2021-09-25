@@ -3,14 +3,13 @@ import React, { Component } from 'react';
 import { Route, Switch } from 'react-router';
 
 import { DBYear } from '../../../../src/lib/types/database/kara';
-import { DBPL } from '../../../../src/lib/types/database/playlist';
-import { Criteria } from '../../../../src/lib/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
+import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../store/actions/frontendContext';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { getNavigatorLanguageIn3B } from '../../utils/isoLanguages';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { decodeCriteriaReason, displayMessage, isNonStandardPlaylist, nonStandardPlaylists } from '../../utils/tools';
+import { decodeCriteriaReason, displayMessage } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import { Tag } from '../types/tag';
 import AdminHeader from './AdminHeader';
@@ -28,7 +27,6 @@ interface IProps {
 }
 
 interface IState {
-	idsPlaylist: { left: DBPL, right: DBPL };
 	searchMenuOpen1: boolean;
 	searchMenuOpen2: boolean;
 	statusPlayer?: PublicPlayerState;
@@ -37,7 +35,7 @@ interface IState {
 	// Workaround for Safari (forcedHeight on <Playlist> and onResize on <PlaylistMainDecorator>)
 	// See PublicPage.tsx
 	plHeight?: number;
-	tags?: Array<Tag>;
+	tags: Tag[];
 }
 
 class AdminPage extends Component<IProps, IState> {
@@ -47,21 +45,17 @@ class AdminPage extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			idsPlaylist: {
-				left: { plaid: null, name: '', flag_visible: true },
-				right: { plaid: null, name: '', flag_visible: true }
-			},
 			searchMenuOpen1: false,
 			searchMenuOpen2: false,
 			currentSide: 'left',
-			playlistList: []
+			playlistList: [],
+			tags: []
 		};
 	}
 
 	async componentDidMount() {
 		if (this.context.globalState.auth.isAuthenticated) {
 			await this.getPlaylistList();
-			this.getIdPlaylist();
 		}
 		this.addTags();
 		getSocket().on('playlistsUpdated', this.getPlaylistList);
@@ -83,69 +77,11 @@ class AdminPage extends Component<IProps, IState> {
 	operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code, { data: data }));
 	operatorNotificationWarning = (data: { code: string, data: string }) => displayMessage('warning', i18next.t(data.code, { data: data }));
 
-	getIdPlaylist = async () => {
-		const idsPlaylist = this.state.idsPlaylist;
-		let plVal1Cookie = localStorage.getItem('mugenPlVal1');
-		let plVal2Cookie = localStorage.getItem('mugenPlVal2');
-		if (plVal1Cookie === plVal2Cookie) {
-			plVal2Cookie = null;
-			plVal1Cookie = null;
-		}
-
-		const idPlaylistLeft = plVal1Cookie !== null
-			&& this.state.playlistList.find(playlist => playlist.plaid === plVal1Cookie) ?
-			plVal1Cookie : nonStandardPlaylists.library;
-		if (!isNonStandardPlaylist(idPlaylistLeft)) {
-			this.state.idsPlaylist.left = await this.getPlaylistInfo(idPlaylistLeft);
-		} else {
-			this.state.idsPlaylist.left = { plaid: nonStandardPlaylists.library, name: '', flag_visible: true };
-		}
-		const idPlaylistRight = plVal2Cookie !== null
-			&& this.state.playlistList.find(playlist => playlist.plaid === plVal2Cookie) ?
-			plVal2Cookie : this.context.globalState.settings.data.state.currentPlaid;
-		if (!isNonStandardPlaylist(idPlaylistRight)) {
-			this.state.idsPlaylist.right = await this.getPlaylistInfo(idPlaylistRight);
-		} else {
-			this.state.idsPlaylist.right = { plaid: null, name: '', flag_visible: true };
-		}
-		this.setState({ idsPlaylist: idsPlaylist });
-	};
-
 	playlistInfoUpdated = async (plaid: string) => {
 		await this.getPlaylistList();
-		if (this.state.idsPlaylist.left.plaid === plaid) this.majIdsPlaylist('left', plaid);
-		if (this.state.idsPlaylist.right.plaid === plaid) this.majIdsPlaylist('right', plaid);
+		if (this.context.globalState.frontendContext.playlistInfoLeft.plaid === plaid) setPlaylistInfoLeft(this.context.globalDispatch, plaid);
+		if (this.context.globalState.frontendContext.playlistInfoRight.plaid === plaid) setPlaylistInfoRight(this.context.globalDispatch, plaid);
 	}
-
-	majIdsPlaylist = async (side: 'left' | 'right', plaid: string) => {
-		if (this.state.playlistList
-			.filter(playlist => playlist.plaid === plaid).length === 0) {
-			await this.getPlaylistList();
-		}
-		const idsPlaylist = this.state.idsPlaylist;
-		let playlistInfo;
-		if (!isNonStandardPlaylist(plaid)) {
-			playlistInfo = await this.getPlaylistInfo(plaid);
-		} else {
-			playlistInfo = { plaid, name: '', flag_visible: true };
-		}
-		if (side === 'left') {
-			localStorage.setItem('mugenPlVal1', plaid);
-			idsPlaylist.left = playlistInfo;
-		} else {
-			idsPlaylist.right = playlistInfo;
-			localStorage.setItem('mugenPlVal2', plaid);
-		}
-		this.setState({ idsPlaylist: idsPlaylist });
-	};
-
-	getPlaylistInfo = async (plaid: string): Promise<DBPL> => {
-		try {
-			return await commandBackend('getPlaylist', { plaid });
-		} catch (e) {
-			// already display
-		}
-	};
 
 	toggleSearchMenu1 = () => {
 		this.setState({ searchMenuOpen1: !this.state.searchMenuOpen1 });
@@ -255,7 +191,6 @@ class AdminPage extends Component<IProps, IState> {
 						adminMessage={this.adminMessage}
 						putPlayerCommando={this.putPlayerCommando}
 						currentSide={this.state.currentSide}
-						idsPlaylist={this.state.idsPlaylist}
 						currentPlaylist={this.state.playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
 					/>
 					<ProgressBar />
@@ -268,9 +203,6 @@ class AdminPage extends Component<IProps, IState> {
 										<Playlist
 											scope='admin'
 											side={'left'}
-											playlist={this.state.idsPlaylist.left}
-											oppositePlaylist={this.state.idsPlaylist.right}
-											majIdsPlaylist={this.majIdsPlaylist}
 											tags={this.state.tags}
 											toggleSearchMenu={this.toggleSearchMenu1}
 											searchMenuOpen={this.state.searchMenuOpen1}
@@ -280,9 +212,6 @@ class AdminPage extends Component<IProps, IState> {
 										<Playlist
 											scope='admin'
 											side={'right'}
-											playlist={this.state.idsPlaylist.right}
-											oppositePlaylist={this.state.idsPlaylist.left}
-											majIdsPlaylist={this.majIdsPlaylist}
 											tags={this.state.tags}
 											toggleSearchMenu={this.toggleSearchMenu2}
 											searchMenuOpen={this.state.searchMenuOpen2}

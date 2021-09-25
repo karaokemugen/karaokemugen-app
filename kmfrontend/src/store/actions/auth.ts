@@ -5,13 +5,15 @@ import { Token } from '../../../../src/lib/types/user';
 import { commandBackend, setAuthorization } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import { AuthAction, IAuthentifactionInformation, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
+import { PlaylistInfo } from '../types/frontendContext';
 import { SettingsFailure, SettingsSuccess } from '../types/settings';
+import { setPlaylistInfoLeft, setPlaylistInfoRight } from './frontendContext';
 import { setSettings } from './settings';
 
 export async function login(
 	username: string,
 	password: string,
-	dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure>,
+	dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | PlaylistInfo>,
 	securityCode?: number
 ): Promise<string> {
 	try {
@@ -26,6 +28,8 @@ export async function login(
 		localStorage.setItem('kmOnlineToken', info.onlineToken);
 		setAuthorization(info.token, info.onlineToken);
 		displayMessage('info', i18next.t('LOG_SUCCESS', { name: info.username }));
+		setPlaylistInfoLeft(dispatch);
+		setPlaylistInfoRight(dispatch);
 		dispatch({
 			type: AuthAction.LOGIN_SUCCESS,
 			payload: info
@@ -71,7 +75,7 @@ export function setAuthentifactionInformation(dispatch: Dispatch<LoginSuccess | 
 	setSettings(dispatch);
 }
 
-export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | LogoutUser>) {
+export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | LogoutUser | PlaylistInfo>) {
 	const kmToken = localStorage.getItem('kmToken');
 	const kmOnlineToken = localStorage.getItem('kmOnlineToken');
 	setAuthorization(kmToken, kmOnlineToken);
@@ -79,6 +83,8 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
 	if (kmToken) {
 		try {
 			const verification: Token = await commandBackend('checkAuth', undefined, false, 30000);
+			setPlaylistInfoLeft(dispatch);
+			setPlaylistInfoRight(dispatch);
 			dispatch({
 				type: AuthAction.LOGIN_SUCCESS,
 				payload: {

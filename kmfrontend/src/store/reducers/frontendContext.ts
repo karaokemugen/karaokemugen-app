@@ -22,6 +22,10 @@ export default function (state: FrontendContextStore, action): FrontendContextSt
 			}
 		case FrontendContextAction.BG_IMAGE:
 			return { ...state, backgroundImg: action.payload.backgroundImg };
+		case FrontendContextAction.PLAYLIST_INFO_LEFT:
+			return { ...state, playlistInfoLeft: action.payload.playlist };
+		case FrontendContextAction.PLAYLIST_INFO_RIGHT:
+			return { ...state, playlistInfoRight: action.payload.playlist };
 		default:
 			return state;
 	}

@@ -6,13 +6,12 @@ import { SortableElement, SortableElementProps, SortableHandle } from 'react-sor
 import { toast } from 'react-toastify';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
-import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import nanamiSingPng from '../../../assets/nanami-sing.png';
 import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { buildKaraTitle, getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
+import { buildKaraTitle, getOppositePlaylistInfo, getPlaylistInfo, getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import {
@@ -31,8 +30,6 @@ const DragHandle = SortableHandle(() => <span className="dragHandle"><i classNam
 interface IProps {
 	kara: KaraElement;
 	side: 'left' | 'right';
-	plaidTo: DBPL;
-	playlistInfo: DBPL | undefined;
 	scope: 'admin' | 'public';
 	i18nTag: { [key: string]: { [key: string]: string } };
 	avatar_file: string;
@@ -86,7 +83,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	};
 
 	deleteKara = async () => {
-		if (this.props.playlistInfo.flag_smart) {
+		if (getPlaylistInfo(this.props.side, this.context).flag_smart) {
 			this.props.deleteCriteria(this.props.kara);
 		} else {
 			await commandBackend('deleteKaraFromPlaylist', {
@@ -125,7 +122,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	addKara = async (_event?: any, pos?: number) => {
 		let url = '';
 		let data;
-		if (this.props.plaidTo.plaid === nonStandardPlaylists.favorites) {
+		if (getOppositePlaylistInfo(this.props.side, this.context).plaid === nonStandardPlaylists.favorites) {
 			if (this.context.globalState.auth.data.onlineAvailable !== false) {
 				url = 'addFavorites';
 				data = {
@@ -136,25 +133,25 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 				return;
 			}
 		} else if (this.props.scope === 'admin') {
-			if (!this.props.plaidTo.flag_smart) {
-				if (!isNonStandardPlaylist(this.props.playlistInfo.plaid) && !pos) {
+			if (!getOppositePlaylistInfo(this.props.side, this.context).flag_smart) {
+				if (!isNonStandardPlaylist(getPlaylistInfo(this.props.side, this.context).plaid) && !pos) {
 					url = 'copyKaraToPlaylist';
 					data = {
-						plaid: this.props.plaidTo.plaid,
+						plaid: getOppositePlaylistInfo(this.props.side, this.context).plaid,
 						plc_ids: [this.props.kara.plcid]
 					};
 				} else {
 					url = 'addKaraToPlaylist';
 					if (pos) {
 						data = {
-							plaid: this.props.plaidTo.plaid,
+							plaid: getOppositePlaylistInfo(this.props.side, this.context).plaid,
 							requestedby: this.context.globalState.auth.data.username,
 							kids: [this.props.kara.kid],
 							pos: pos
 						};
 					} else {
 						data = {
-							plaid: this.props.plaidTo.plaid,
+							plaid: getOppositePlaylistInfo(this.props.side, this.context).plaid,
 							requestedby: this.context.globalState.auth.data.username,
 							kids: [this.props.kara.kid]
 						};
@@ -166,7 +163,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 					criterias: [{
 						type: 1001,
 						value: this.props.kara.kid,
-						plaid: this.props.plaidTo.plaid
+						plaid: getOppositePlaylistInfo(this.props.side, this.context).plaid
 					}]
 				};
 			}
@@ -232,7 +229,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 	};
 
 	checkKara = () => {
-		if (!isNonStandardPlaylist(this.props.playlistInfo.plaid)) {
+		if (!isNonStandardPlaylist(getPlaylistInfo(this.props.side, this.context).plaid)) {
 			this.props.checkKara(this.props.kara.plcid);
 		} else {
 			this.props.checkKara(this.props.kara.kid);
@@ -317,9 +314,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 			const element = (event.currentTarget as Element).getBoundingClientRect();
 			showModal(this.context.globalDispatch, <KaraMenuModal
 				kara={this.props.kara}
-				plaid={this.props.playlistInfo.plaid}
-				plaidTo={this.props.plaidTo.plaid}
-				publicOuCurrent={this.props.playlistInfo && (this.props.playlistInfo.flag_current || this.props.playlistInfo.flag_public)}
+				side={this.props.side}
 				topKaraMenu={element.bottom}
 				leftKaraMenu={element.left}
 				transferKara={this.transferKara}
@@ -351,7 +346,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 		const karaSerieOrSingers = this.getSerieOrSingers(this.props.kara);
 		const kara = this.props.kara;
 		const scope = this.props.scope;
-		const plaid = this.props.playlistInfo.plaid;
+		const plaid = getPlaylistInfo(this.props.side, this.context).plaid;
 		const shouldShowProfile = this.context.globalState.settings.data.config.Frontend?.ShowAvatarsOnPlaylist
 			&& this.props.avatar_file;
 		return (
@@ -370,23 +365,23 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 						<React.Fragment>
 							<div className="infoDiv">
 								{scope === 'admin' && (isNonStandardPlaylist(plaid)
-									|| (this.props.playlistInfo?.flag_public && !this.props.playlistInfo?.flag_current)) ?
+									|| (getPlaylistInfo(this.props.side, this.context)?.flag_public && !getPlaylistInfo(this.props.side, this.context)?.flag_current)) ?
 									<button
 										title={i18next.t('KARA_MENU.PLAY_LIBRARY')}
-										className="btn btn-sm btn-action playKara karaLineButton" onClick={this.playKara}>
+										className="btn btn-action playKara karaLineButton" onClick={this.playKara}>
 										<i className='fas fa-play' />
 									</button> : null
 								}
 								{scope === 'admin' && !isNonStandardPlaylist(plaid)
-								&& !(this.props.playlistInfo?.flag_public && !this.props.playlistInfo?.flag_current) ?
+								&& !(getPlaylistInfo(this.props.side, this.context)?.flag_public && !getPlaylistInfo(this.props.side, this.context)?.flag_current) ?
 									<button
 										title={i18next.t('KARA_MENU.PLAY')}
-										className="btn btn-sm btn-action playKara karaLineButton" onClick={this.editPlayingFlag}>
+										className="btn btn-action playKara karaLineButton" onClick={this.editPlayingFlag}>
 										<i className='fas fa-play-circle' />
 									</button> : null
 								}
 								{scope === 'admin' && !isNonStandardPlaylist(plaid) && !kara.flag_visible ?
-									<button type="button" className={'btn btn-sm btn-action btn-primary'} onClick={this.changeVisibilityKara}>
+									<button type="button" className={'btn btn-action btn-primary'} onClick={this.changeVisibilityKara}>
 										<i className="fas fa-eye-slash"></i>
 									</button> : null
 								}
@@ -478,8 +473,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 								<div className="btn-group">
 									{this.props.scope === 'admin' || this.context?.globalState.settings.data?.config?.Frontend?.Mode === 2 ?
 										<ActionsButtons
-											plaidTo={this.props.plaidTo.plaid}
-											playlistInfo={this.props.playlistInfo}
+											side={this.props.side}
 											scope={this.props.scope}
 											kara={kara}
 											addKara={this.addKara}
@@ -495,7 +489,7 @@ class KaraLine extends Component<IProps & SortableElementProps, IState> {
 											onClick={(event) => {
 												this.state.karaMenu ? this.closeKaraMenu() : this.openKaraMenu(event);
 											}}
-											className={'btn btn-sm showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
+											className={'btn showPlaylistCommands karaLineButton' + (this.state.karaMenu ? ' btn-primary' : '')}>
 											<i className="fas fa-wrench" />
 										</button> : null
 									}
