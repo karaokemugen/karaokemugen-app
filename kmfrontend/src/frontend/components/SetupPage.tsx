@@ -36,7 +36,7 @@ interface IState {
 	stats?: boolean;
 	errorTracking?: boolean
 	gitUpdateInProgress: boolean
-	tasks: Array<TaskItem>;
+	tasks: TaskItem[];
 }
 class SetupPage extends Component<IProps, IState> {
 	static contextType = GlobalContext;
@@ -71,7 +71,7 @@ class SetupPage extends Component<IProps, IState> {
 		getSocket().off('tasksUpdated', this.isGitUpdateInProgress);
 	}
 
-	isGitUpdateInProgress = (tasks: Array<TaskItem>) => {
+	isGitUpdateInProgress = (tasks: TaskItem[]) => {
 		for (const i in tasks) {
 			if (tasks[i].text === 'UPDATING_GIT_REPO') {
 				this.setState({ tasks });
@@ -194,7 +194,7 @@ class SetupPage extends Component<IProps, IState> {
 		ipc.send('get-file-paths', options);
 		ipc.once(
 			'get-file-paths-response',
-			async (_event: any, filepaths: Array<string>) => {
+			async (_event: any, filepaths: string[]) => {
 				if (filepaths.length > 0) {
 					this.setState({ repositoryFolder: filepaths[0] });
 				}

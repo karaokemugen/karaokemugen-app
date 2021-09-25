@@ -168,9 +168,9 @@ class TagsList extends Component<IProps, IState> {
 						<div className="karacount">
 							<em>
 								{i18next.t('KARAOKE', {
-									count: (tag?.karacount as unknown as Array<{ count: number, type: number }>)
+									count: (tag?.karacount as unknown as { count: number, type: number }[])
 										?.filter(value => value.type === this.props.tagType).length > 0 ?
-										(tag.karacount as unknown as Array<{ count: number, type: number }>)
+										(tag.karacount as unknown as { count: number, type: number }[])
 											?.filter(value => value.type === this.props.tagType)[0].count
 										: 0
 								})}

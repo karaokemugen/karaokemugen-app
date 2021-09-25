@@ -49,7 +49,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 		getSocket().off('tasksUpdated', this.isZipUpdateInProgress);
 	}
 
-	isZipUpdateInProgress = (tasks: Array<TaskItem>) => {
+	isZipUpdateInProgress = (tasks: TaskItem[]) => {
 		for (const i in tasks) {
 			if (['EXTRACTING_ZIP', 'DOWNLOADING_ZIP'].includes(tasks[i].text)) {
 				this.setState({ zipUpdateInProgress: true });

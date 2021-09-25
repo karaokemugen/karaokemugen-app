@@ -9,7 +9,7 @@ import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { commandBackend } from '../../../utils/socket';
 
 interface UserListState {
-	users: Array<User>,
+	users: User[],
 	deleteModal: boolean,
 	user: User,
 }

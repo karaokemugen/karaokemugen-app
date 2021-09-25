@@ -20,9 +20,9 @@ interface ConfigState {
 	os: string,
 	recordModal?: Record,
 	indexModal?: number,
-	newValueModal?: string | Array<string>,
+	newValueModal?: string | string[],
 	visibleModal: boolean,
-	files: Array<string>,
+	files: string[],
 	filter: string,
 }
 

@@ -7,8 +7,8 @@ import { commandBackend } from '../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../utils/tagTypes';
 
 interface SessionListState {
-	unused: Array<any>
-	repositories: Array<string>,
+	unused: any[]
+	repositories: string[],
 	repository: string,
 	type?: 'tags' | 'medias';
 	tagType?: number;

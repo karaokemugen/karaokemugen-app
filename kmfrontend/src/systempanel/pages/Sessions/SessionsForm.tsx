@@ -12,7 +12,7 @@ import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 
 interface SessionsFormProps extends FormProps {
-	sessions: Array<Session>;
+	sessions: Session[];
 	session: Session;
 	save: any;
 	mergeAction: (seid1: string, seid2: string) => void;
@@ -20,8 +20,8 @@ interface SessionsFormProps extends FormProps {
 
 interface SessionsFormState {
 	mergeSelection: string;
-	sessionPlayed: Array<DBKara>;
-	sessionRequested: Array<DBKara>;
+	sessionPlayed: DBKara[];
+	sessionRequested: DBKara[];
 	started_at: Date;
 	ended_at:Date;
 }

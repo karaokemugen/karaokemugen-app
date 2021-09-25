@@ -14,7 +14,7 @@ interface IProps {
 interface IState {
 	width: string;
 	timeLeft?: string;
-	poll: Array<PollItem>
+	poll: PollItem[]
 }
 class PollModal extends Component<IProps, IState> {
 	static contextType = GlobalContext;

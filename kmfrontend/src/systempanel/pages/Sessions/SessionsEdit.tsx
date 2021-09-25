@@ -9,7 +9,7 @@ import SessionForm from './SessionsForm';
 
 interface SessionEditState {
 	session: Session,
-	sessions: Array<Session>,
+	sessions: Session[],
 	save: (session:Session) => void,
 	loadSession: boolean
 }

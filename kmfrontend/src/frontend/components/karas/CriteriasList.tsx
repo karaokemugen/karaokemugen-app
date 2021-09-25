@@ -35,7 +35,7 @@ const listTypeCriteria = [
 ];
 
 interface IProps {
-	tags: Array<Tag> | undefined;
+	tags: Tag[] | undefined;
 	plaid: string;
 }
 
@@ -95,7 +95,7 @@ class CriteriasList extends Component<IProps, IState> {
 	};
 
 	render() {
-		const types: Array<number> = [];
+		const types: number[] = [];
 		this.state.criterias.forEach(element => {
 			if (!types.includes(element.type)) types.push(element.type);
 		});

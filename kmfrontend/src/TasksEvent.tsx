@@ -12,7 +12,7 @@ interface IProps {
 }
 
 interface IState {
-  tasks: Array<TaskItem>;
+  tasks: TaskItem[];
   i: number;
 }
 
@@ -34,7 +34,7 @@ class TasksEvent extends Component<IProps, IState> {
 		getSocket().off('tasksUpdated', this.updateTasks);
 	}
 
-	updateTasks = (tasks: Array<TaskItem>) => {
+	updateTasks = (tasks: TaskItem[]) => {
 		const t = this.state.tasks;
 		for (const i in tasks) {
 			t[i] = tasks[i];

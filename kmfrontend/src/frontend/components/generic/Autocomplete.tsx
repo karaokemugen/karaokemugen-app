@@ -9,7 +9,7 @@ import './Autocomplete.scss';
 import React, { useEffect, useRef, useState } from 'react';
 
 interface IProps {
-	options?: Array<any>;
+	options?: any[];
 	placeholder?: string;
 	value: any;
 	acceptNewValues?: boolean;
@@ -25,7 +25,7 @@ function Autocomplete(props: IProps) {
 	const [placeholder, setPlaceholder] = useState(props.placeholder || undefined);
 	const [selectedValue, setSelectedValue] = useState(props.value || '');
 
-	let temp: string | Array<any> = '';
+	let temp: string | any[] = '';
 	if (selectedValue) {
 		temp = options.filter((o) => o.value === selectedValue);
 		if (temp.length)

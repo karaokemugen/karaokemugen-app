@@ -21,11 +21,11 @@ import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
 
 interface IState {
-	news: Array<News>;
-	sessions: Array<Session>;
+	news: News[];
+	sessions: Session[];
 	activeSession?: Session;
 	catchphrase?: string;
-	repositories: Array<Repository>;
+	repositories: Repository[];
 	stats?: any;
 }
 class WelcomePage extends Component<unknown, IState> {
@@ -101,7 +101,7 @@ class WelcomePage extends Component<unknown, IState> {
 	};
 
 	setActiveSession = async (value: string) => {
-		const sessions: Array<Session> = this.state.sessions.filter(
+		const sessions: Session[] = this.state.sessions.filter(
 			session => session.name === value
 		);
 		let sessionId;

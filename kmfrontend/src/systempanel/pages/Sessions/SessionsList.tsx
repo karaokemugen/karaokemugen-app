@@ -8,7 +8,7 @@ import { Session, SessionExports } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
 
 interface SessionListState {
-	sessions: Array<Session>,
+	sessions: Session[],
 	session?: Session
 }
 

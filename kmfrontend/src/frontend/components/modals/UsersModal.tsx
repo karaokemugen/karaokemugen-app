@@ -16,7 +16,7 @@ interface IProps {
 }
 
 interface IState {
-	users: Array<User>;
+	users: User[];
 	userDetails?: User;
 }
 

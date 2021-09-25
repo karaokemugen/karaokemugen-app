@@ -33,7 +33,7 @@ interface IState {
 	searchMenuOpen2: boolean;
 	statusPlayer?: PublicPlayerState;
 	currentSide: 'left' | 'right';
-	playlistList: Array<PlaylistElem>;
+	playlistList: PlaylistElem[];
 	// Workaround for Safari (forcedHeight on <Playlist> and onResize on <PlaylistMainDecorator>)
 	// See PublicPage.tsx
 	plHeight?: number;

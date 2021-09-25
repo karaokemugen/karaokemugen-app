@@ -8,7 +8,7 @@ import { Repository } from '../../../../../src/lib/types/repo';
 import { commandBackend } from '../../../utils/socket';
 
 interface RepositoryListState {
-	repositories: Array<Repository>,
+	repositories: Repository[],
 	repository?: Repository
 }
 

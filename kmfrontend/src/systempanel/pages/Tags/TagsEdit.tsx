@@ -9,7 +9,7 @@ import TagsForm from './TagsForm';
 
 interface TagEditState {
 	tag: DBTag,
-	tags: Array<DBTag>,
+	tags: DBTag[],
 	save?: (tag: DBTag) => void,
 	loadTag: boolean
 }

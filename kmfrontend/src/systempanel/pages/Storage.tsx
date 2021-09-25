@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { commandBackend } from '../../utils/socket';
 
 interface StorageState {
-	repositories: Array<{ name: string, freeSpace: number }>
+	repositories: { name: string, freeSpace: number }[]
 }
 
 class Storage extends Component<unknown, StorageState> {
@@ -22,7 +22,7 @@ class Storage extends Component<unknown, StorageState> {
 
 	getRepos = async () => {
 		const res = await commandBackend('getRepos');
-		const repositories: Array<{ name: string, freeSpace: number }> = await Promise.all(
+		const repositories: { name: string, freeSpace: number }[] = await Promise.all(
 			res.filter(repo => repo.Online).map(async repo => {
 				const freeSpace = await commandBackend('getRepoFreeSpace', { repoName: repo.Name });
 				return { name: repo.Name, freeSpace: prettyBytes(freeSpace) };

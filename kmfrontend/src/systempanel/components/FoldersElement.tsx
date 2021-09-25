@@ -20,7 +20,7 @@ interface FoldersElementState {
 	visibleModal: boolean;
 	indexModal?: number;
 	keyModal?: string;
-	itemModal?: Array<string>;
+	itemModal?: string[];
 	newValueModal?: string;
 }
 
@@ -126,8 +126,8 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 									<React.Fragment>
 										<Radio style={{ width: '150px' }} checked={this.props.value[0] === element}
 											onChange={() => {
-												const value = (this.state.value as Array<string>).filter(val => val === element)
-													.concat((this.state.value as Array<string>).filter(val => val !== element));
+												const value = (this.state.value as string[]).filter(val => val === element)
+													.concat((this.state.value as string[]).filter(val => val !== element));
 												this.setState({ value: value });
 												this.props.onChange && this.props.onChange(value);
 											}}>

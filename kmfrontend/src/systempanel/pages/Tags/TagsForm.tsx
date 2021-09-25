@@ -11,7 +11,7 @@ import EditableTagGroupAlias from '../../components/EditableTagGroupAlias';
 import LanguagesList from '../../components/LanguagesList';
 
 interface TagsFormProps {
-	tags: Array<DBTag>,
+	tags: DBTag[],
 	tag: DBTag,
 	save: (tag: DBTag) => void,
 	handleCopy: (tid, repo) => void;
