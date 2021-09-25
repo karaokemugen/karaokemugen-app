@@ -66,7 +66,6 @@ function Playlist(props: IProps) {
 	const [isPlaylistInProgress, setPlaylistInProgress] = useState(false);
 	const [stopUpdate, setStopUpdate] = useState(false);
 	const [forceUpdate, setForceUpdate] = useState(false);
-	const [forceUpdateFirst, setForceUpdateFirst] = useState(false);
 	const [data, setData] = useState<KaraList>();
 	const [scrollToIndex, setScrollToIndex] = useState<number>();
 	const [checkedKaras, setCheckedKaras] = useState(0);
@@ -152,7 +151,7 @@ function Playlist(props: IProps) {
 	};
 
 	const resizeCheck = () => {
-		playlistForceRefresh(true);
+		playlistForceRefresh();
 		// Calculate empty space for fillSpace cheat.
 		// Virtual lists doesn't expand automatically, or more than needed, so the height is forced by JS calculations
 		// using getBoundingClientRect
@@ -736,20 +735,13 @@ function Playlist(props: IProps) {
 		}
 	};
 
-	const playlistForceRefresh = (forceUpdateFirstParam: boolean) => {
+	const playlistForceRefresh = () => {
 		setForceUpdate(!forceUpdate);
-		setForceUpdateFirst(forceUpdateFirstParam);
 		_cache.clearAll();
 	};
 
 	useEffect(() => {
-		setTimeout(() => {
-			playlistForceRefresh(false);
-		}, 50);
-	}, [forceUpdateFirst]);
-
-	useEffect(() => {
-		playlistForceRefresh(true);
+		playlistForceRefresh();
 	}, [getOppositePlaylistInfo(props.side, context)?.plaid]);
 
 
@@ -771,7 +763,7 @@ function Playlist(props: IProps) {
 	}, [searchValue]);
 
 	useEffect(() => {
-		playlistForceRefresh(true);
+		playlistForceRefresh();
 		if (props.indexKaraDetail) {
 			setScrollToIndex(props.indexKaraDetail);
 			props.clearIndexKaraDetail();
