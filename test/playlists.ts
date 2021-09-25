@@ -5,7 +5,7 @@ import { DBPL } from '../src/lib/types/database/playlist';
 import { PlaylistExport } from '../src/lib/types/playlist';
 import { uuidRegexp } from '../src/lib/utils/constants';
 import { DBPLC } from '../src/types/database/playlist';
-import { allKIDs, commandBackend, getToken, setPlaid, testKara, socket } from './util/util';
+import { allKIDs, commandBackend, getToken, setPlaid, socket,testKara } from './util/util';
 
 describe('Playlists', () => {
 	let playlistExport: PlaylistExport;	
@@ -494,7 +494,6 @@ describe('Playlists', () => {
 	});
 
 	it('Get blacklist', async () => {
-		console.log('GetBlackList');
 		await requestBlacklist();
 	});
 

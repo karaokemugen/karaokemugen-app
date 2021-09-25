@@ -665,7 +665,6 @@ function Playlist(props: IProps) {
 	};
 
 	const deleteCriteria = (kara: KaraElement) => {
-		console.log(kara);
 		callModal(context.globalDispatch, 'confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`CRITERIA.CRITERIA_TYPE_${kara.criterias[0].type}`) }),
 			<div style={{ maxHeight: '200px' }}>
 				{data.content
