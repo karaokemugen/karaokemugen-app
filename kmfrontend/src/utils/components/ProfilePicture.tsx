@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { memo,useEffect,useState } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
 import blankAvatar from '../../assets/blank.png';
@@ -30,4 +30,4 @@ function ProfilePicture(props: IProps) {
 	return (<img src={url} alt={props.user?.nickname} title={props.user?.nickname} {...htmlProps} />);
 }
 
-export default ProfilePicture;
+export default memo(ProfilePicture);
