@@ -67,7 +67,7 @@
     "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)"
   ],
   "engines": {
-    "node": ">=16.5.0"
+    "node": ">=14"
   },
   "license": "MIT",
   "private": true,
