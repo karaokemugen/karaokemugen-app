@@ -115,9 +115,9 @@ class KaraokeOptions extends Component<IProps, IState> {
 									onChange={this.onChange}
 									value={this.state.config['Karaoke.Quota.Type']}
 								>
-									<option value="0"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_0')} </option>
-									<option value="1"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_1')} </option>
-									<option value="2"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_2')} </option>
+									<option value="0"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_ZERO')} </option>
+									<option value="1"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_ONE')} </option>
+									<option value="2"> {i18next.t('SETTINGS.KARAOKE.QUOTA_TYPE_TWO')} </option>
 								</select>
 							</div>
 						</div>
