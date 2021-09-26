@@ -1,3 +1,23 @@
+# v5.1.27 - 26/09/2021
+
+## Improvements
+
+- Chibi playlist can now be resized
+- Toast is dismissed when deleting a song from a playlist
+- Filter isn't cleared anymore when going back from a song's detail page to the song list
+- Upgraded various backend dependencies
+- `--test` argument is now iignored for packaged apps
+
+## Fixes
+
+- Fixed double guest errors when creating them
+- Added logs when initPGData fails.
+- (Hopefully) fix for PostgreSQL start up/init issues on paths with non ASCII characters
+- (Hopefully) fix for online accounts profile information being reset sometimes
+- (Hopefully) fix for multiple updates run during setup causing the repository update mechanism to hiccup
+- Fix media check-and-download when the media already exists
+- Prevent media updater from trying to delete non-media file
+
 # v5.1.23 - 22/08/2021
 
 ## New features
