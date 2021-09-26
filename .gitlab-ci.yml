@@ -128,7 +128,7 @@ pkg_linux:
     - test
   script:
     - rm -Rf release_linux
-    - yarn add --dev electron-builder
+    - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -l
     - ls -la packages/
@@ -168,7 +168,7 @@ pkg_win:
     - test
   script:
     - rm -Rf release_win
-    - yarn add --dev electron-builder@22.11.11
+    - npm install -g electron-builder
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-6.x.tar.gz | tar xz
@@ -219,7 +219,7 @@ pkg_mac:
     RESTORE_CACHE_ATTEMPTS: 10
   script:
     - rm -Rf release_mac
-    - yarn add --dev electron-builder@22.10.5
+    - npm install -g electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-6.x.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
