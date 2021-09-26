@@ -300,15 +300,17 @@ function AdminHeader(props: IProps) {
 							)
 					}
 				</div>
-				<input
-					title={i18next.t('VOLUME_LEVEL')}
-					data-namecommand="setVolume"
-					id="volume"
-					value={statusPlayer?.volume}
-					type="range"
-					onChange={setVolume}
-					onMouseUp={props.putPlayerCommando}
-				/>
+				{statusPlayer ?
+					<input
+						title={i18next.t('VOLUME_LEVEL')}
+						data-namecommand="setVolume"
+						id="volume"
+						value={statusPlayer.volume}
+						type="range"
+						onChange={setVolume}
+						onMouseUp={props.putPlayerCommando}
+					/> : null
+				}
 			</button>
 			<div
 				className="dropdown"
