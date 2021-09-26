@@ -1,6 +1,6 @@
 import './Switch.scss';
 
-import React, { Component } from 'react';
+import React from 'react';
 
 interface IProps {
 	nameCommand?: string;
@@ -10,31 +10,29 @@ interface IProps {
 	disabled?: boolean
 }
 
-class Switch extends Component<IProps, unknown> {
+function Switch(props:IProps) {
 
-	private checkbox = React.createRef<HTMLInputElement>();
+	const checkbox = React.createRef<HTMLInputElement>();
 
-	onKeyPress = (e) => {
+	const onKeyPress = (e) => {
 		e.preventDefault();
-		this.checkbox.current.click();
-	}
+		checkbox.current.click();
+	};
 
-	render() {
-		return (
-			<label className="switch-ui" tabIndex={0} onKeyPress={this.onKeyPress}>
-				<input
-					checked={this.props.isChecked}
-					onChange={this.props.handleChange}
-					type="checkbox"
-					data-namecommand={this.props.nameCommand}
-					id={this.props.idInput}
-					ref={this.checkbox}
-					disabled={this.props.disabled}
-				/>
-				<span className="switch-ui--control"><span/></span>
-			</label>
-		);
-	}
+	return (
+		<label className="switch-ui" tabIndex={0} onKeyPress={onKeyPress}>
+			<input
+				checked={props.isChecked}
+				onChange={props.handleChange}
+				type="checkbox"
+				data-namecommand={props.nameCommand}
+				id={props.idInput}
+				ref={checkbox}
+				disabled={props.disabled}
+			/>
+			<span className="switch-ui--control"><span/></span>
+		</label>
+	);
 }
 
 export default Switch;
