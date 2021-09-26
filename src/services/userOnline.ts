@@ -195,10 +195,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		// Check if user exists. If it does not, create it.
 		let user = await findUserByName(username);
 		if (!user) {
-			await createUser({
-				login: username,
-				password: password
-			}, {
+			await createUser({...remoteUser, password, login: username}, {
 				createRemote: false,
 				noPasswordCheck: true
 			});
@@ -224,16 +221,10 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			const response = await editUser(
 				username,
 				{
-					bio: remoteUser.bio,
-					url: remoteUser.url,
-					email: remoteUser.email,
-					location: remoteUser.location,
-					nickname: remoteUser.nickname,
+					...remoteUser,
 					password: password,
-					flag_sendstats: remoteUser.flag_sendstats,
-					series_lang_mode: remoteUser.series_lang_mode,
-					main_series_lang: remoteUser.main_series_lang,
-					fallback_series_lang: remoteUser.fallback_series_lang
+					login: username,
+					type: undefined
 				},
 				avatar_file,
 				'admin',

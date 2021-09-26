@@ -9,7 +9,7 @@ import { listUsers } from '../dao/user';
 import { main, preInit } from '../index';
 import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { emit,on } from '../lib/utils/pubsub';
+import { emit } from '../lib/utils/pubsub';
 import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { importSet } from '../services/blacklist';
@@ -50,69 +50,19 @@ export function startElectron() {
 			return;
 		}
 		// Register km:// protocol for internal use only.
-		protocol.registerStringProtocol('km', req => {
-			const args = req.url.substr(5).split('/');
-			handleProtocol(args);
-		});
+		registerKMProtocol();
+		// Create zip decompression worker to avoid blocking the main event loop.
 		createZipWorker();
+		// Create electron window with init screen
 		if (!getState().opt.cli) await initElectronWindow();
-		on('KMReady', async () => {
-			const state = getState();
-			if (!state.opt.cli) {
-				win?.loadURL(await welcomeToYoukousoKaraokeMugen());
-				if (!state.forceDisableAppUpdate) initAutoUpdate();
-				if (getConfig().GUI.ChibiPlayer.Enabled) {
-					updateChibiPlayerWindow(true);
-				}
-				if (getConfig().GUI.ChibiPlaylist.Enabled) {
-					updateChibiPlaylistWindow(true);
-				}
-			}
-			initDone = true;
-		});
-		ipcMain.once('initPageReady', async () => {
-			try {
-				await main();
-			} catch(err) {
-				logger.error('Error during launch', {service: 'Launcher', obj: err});
-			}
-		});
+		// Once init page is ready, or if we're in cli mode we start running init operations
+		// 
 		if (getState().opt.cli) {
-			try {
-				await main();
-			} catch(err) {
-				logger.error('Error during launch', {service: 'Launcher', obj: err});
-				throw err;
-			}
+			await initMain();		
+		} else {
+			ipcMain.once('initPageReady', initMain);		
 		}
-		ipcMain.on('getSecurityCode', (event, _eventData) => {
-			event.sender.send('getSecurityCodeResponse', getState().securityCode);
-		});
-		ipcMain.on('droppedFiles', async (_event, eventData) => {
-			for (const path of eventData.files) {
-				await handleFile(path, eventData.username, eventData.onlineToken);
-			}
-		});
-		ipcMain.on('tip', (_event, _eventData) => {
-			emitIPC('techTip', tip());
-		});
-		ipcMain.on('setChibiPlayerAlwaysOnTop', (_event, _eventData) => {
-			setChibiPlayerAlwaysOnTop(!getConfig().GUI.ChibiPlayer.AlwaysOnTop);
-			setConfig({GUI:{ChibiPlayer:{ AlwaysOnTop: !getConfig().GUI.ChibiPlayer.AlwaysOnTop }}});
-		});
-		ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
-			updateChibiPlayerWindow(false);
-			setConfig({GUI: {ChibiPlayer: { Enabled: false }}});
-			applyMenu();
-		});
-		ipcMain.on('focusMainWindow', (_event, _eventData) => {
-			focusWindow();
-		});
-		ipcMain.on('openFolder', (_event, eventData) => {
-			if (eventData.type === 'streamFiles') {
-				open(resolve(resolvedPathStreamFiles()));
-			}
-		});
+		registerIPCEvents();		
 	});
 
 	// macOS only. Yes.
@@ -120,22 +70,109 @@ export function startElectron() {
 		handleProtocol(url.substr(5).split('/'));
 	});
 
+	// Windows all closed should quit the app, even on macOS.
 	app.on('window-all-closed', async () => {
 		await exit(0);
 	});
 
-	app.on('activate', async () => {
-		// Recreate the window if the app is clicked on in the dock(for macOS)
+	// Recreate the window if the app is clicked on in the dock(for macOS)
+	app.on('activate', async () => {		
 		if (win === null) {
 			await initElectronWindow();
 		}
 	});
 
+	// Acquiring lock to prevent two KMs to run at the same time.
+	// Also allows to get us the files we need.
+	if (!app.requestSingleInstanceLock()) process.exit();
+	app.on('second-instance', (_event, args) => {
+		if (args[args.length-1] === '--kill') {
+			exit(0);
+		} else {
+			focusWindow();
+			const file = args[args.length-1];
+			if (file && file !== '.' && !file.startsWith('--')) {
+				file.startsWith('km://')
+					? handleProtocol(file.substr(5).split('/'))
+					: handleFile(file);
+			}
+		}
+	});
+
+	// Redefining quit function
+	app.on('will-quit', () => {
+		exit(0);
+	});
+	
+	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
+}
+
+/** This is called once KM Engine fully started so we can open the right windows */
+export async function postInit() {
+	const state = getState();
+	if (!state.opt.cli) {
+		win?.loadURL(await welcomeToYoukousoKaraokeMugen());
+		if (!state.forceDisableAppUpdate) initAutoUpdate();
+		if (getConfig().GUI.ChibiPlayer.Enabled) {
+			updateChibiPlayerWindow(true);
+		}
+		if (getConfig().GUI.ChibiPlaylist.Enabled) {
+			updateChibiPlaylistWindow(true);
+		}
+	}
+	initDone = true;
+}
+
+function registerKMProtocol() {
+	protocol.registerStringProtocol('km', req => {
+		const args = req.url.substr(5).split('/');
+		handleProtocol(args);
+	});
+}
+
+async function initMain() {
+	try {
+		await main();
+	} catch(err) {
+		logger.error('Error during launch', {service: 'Launcher', obj: err});
+		// We only throw if in cli mode. In UI mode throwing would exit the app immediately without allowing users to read the error message
+		if (getState().opt.cli) throw err;
+	}
+}
+
+/** Register IPC events the backend listens to. The frontend sends these. */
+async function registerIPCEvents() {
 	ipcMain.on('get-file-paths', async (event, options) => {
 		event.sender.send('get-file-paths-response', (await dialog.showOpenDialog(options)).filePaths);
 	});
-
-	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
+	ipcMain.on('getSecurityCode', (event, _eventData) => {
+		event.sender.send('getSecurityCodeResponse', getState().securityCode);
+	});
+	ipcMain.on('droppedFiles', async (_event, eventData) => {
+		for (const path of eventData.files) {
+			await handleFile(path, eventData.username, eventData.onlineToken);
+		}
+	});
+	ipcMain.on('tip', (_event, _eventData) => {
+		emitIPC('techTip', tip());
+	});
+	ipcMain.on('setChibiPlayerAlwaysOnTop', (_event, _eventData) => {
+		setChibiPlayerAlwaysOnTop(!getConfig().GUI.ChibiPlayer.AlwaysOnTop);
+		setConfig({GUI:{ChibiPlayer:{ AlwaysOnTop: !getConfig().GUI.ChibiPlayer.AlwaysOnTop }}});
+	});
+	ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
+		updateChibiPlayerWindow(false);
+		setConfig({GUI: {ChibiPlayer: { Enabled: false }}});
+		applyMenu();
+	});
+	ipcMain.on('focusMainWindow', (_event, _eventData) => {
+		focusWindow();
+	});
+	ipcMain.on('openFolder', (_event, eventData) => {
+		if (eventData.type === 'streamFiles') {
+			open(resolve(resolvedPathStreamFiles()));
+		}
+	});
 }
 
 export async function handleProtocol(args: string[]) {
@@ -322,9 +359,9 @@ async function createWindow() {
 	// What to do when the window is closed.
 	win.on('closed', () => {
 		win = null;
-		if (chibiPlayerWindow) chibiPlayerWindow.destroy();
-		if (chibiPlaylistWindow) chibiPlaylistWindow.destroy();
-		if (zipWorker) zipWorker.destroy();
+		chibiPlayerWindow?.destroy();
+		chibiPlaylistWindow?.destroy();
+		zipWorker?.destroy();
 	});
 }
 
@@ -402,8 +439,8 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 	const conf = getConfig();
 	if (show) {
 		chibiPlaylistWindow = new BrowserWindow({
-			width: 475,
-			height: 720,
+			width: conf.GUI.ChibiPlaylist.Height,
+			height: conf.GUI.ChibiPlaylist.Width,
 			x: conf.GUI.ChibiPlaylist.PositionX,
 			y: conf.GUI.ChibiPlaylist.PositionY,
 			show: false,
@@ -412,11 +449,21 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 				nodeIntegration: true,
 				contextIsolation: false
 			},
+			resizable: true,
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
 		const port = state.frontendPort;
 		chibiPlaylistWindow.once('ready-to-show', () => {
 			chibiPlaylistWindow.show();
+		});
+		chibiPlaylistWindow.on('resized', () => {
+			const size = chibiPlaylistWindow.getSize();
+			setConfig({ GUI: {
+				ChibiPlaylist: {
+					Width: size[0],
+					Height: size[1]
+				}
+			}});
 		});
 		chibiPlaylistWindow.on('moved', () => {
 			const pos = chibiPlaylistWindow.getPosition();

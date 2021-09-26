@@ -1,5 +1,5 @@
 import { Repository } from '../lib/types/repo';
-import { MpvHardwareDecodingOptions } from './MpvIPC';
+import { MpvHardwareDecodingOptions } from './mpvIPC';
 
 export interface Config {
 	App: {
@@ -68,6 +68,8 @@ export interface Config {
 			Enabled?: boolean,
 			PositionX?: number,
 			PositionY?: number,
+			Width?: number,
+			Height?: number,
 		}
 	}
 	Karaoke: {

@@ -117,6 +117,7 @@ UPDATE users SET
 	location = :location,
 	flag_sendstats = :flag_sendstats
 WHERE pk_login = :old_login
+RETURNING pk_login as login, *;
 `;
 
 export const sqleditUserPassword = `

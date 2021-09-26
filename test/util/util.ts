@@ -14,6 +14,7 @@ export const allLangs = langs.codes('2B');
 allLangs.push('zxx');
 allLangs.push('und');
 allLangs.push('mul');
+allLangs.push('qjr');
 export const allKIDs = testSongs;
 const tokens = new Map();
 

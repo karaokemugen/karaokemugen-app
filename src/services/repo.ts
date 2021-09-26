@@ -44,6 +44,8 @@ import { deleteTag, getTags, integrateTagFile } from './tag';
 
 const windowsDriveRootRegexp = new RegExp(/^[a-zA-Z]:\\$/);
 
+let updateRunning = false;
+
 /** Get all repositories in database */
 export function getRepos() {
 	return selectRepos();
@@ -216,8 +218,13 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 }
 
 export async function updateZipRepo(name: string) {
+	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
+	updateRunning = true;
 	const repo = getRepo(name);
-	if (!repo.Online || repo.MaintainerMode) throw 'Repository is not online or is in Maintainer Mode!';
+	if (!repo.Online || repo.MaintainerMode) {
+		updateRunning = false;
+		throw 'Repository is not online or is in Maintainer Mode!';
+	}
 	const LocalCommit = await getLocalRepoLastCommit(repo);
 	logger.info(`Updating repository from ${name}, our commit is ${LocalCommit}`, {service: 'Repo'});
 	if (!LocalCommit) {
@@ -226,6 +233,7 @@ export async function updateZipRepo(name: string) {
 		// Once this is done, we store the last commit in settings DB
 		await saveSetting(`commit-${name}`, LatestCommit);
 		await saveSetting('baseChecksum', await baseChecksum());
+		updateRunning = false;
 		return true;
 	} else {
 		// Check if update is necessary by fetching the remote last commit sha
@@ -275,11 +283,15 @@ export async function updateZipRepo(name: string) {
 				await generateBlacklist();
 				await checkDownloadStatus(KIDsToUpdate);
 				task.end();
+				updateRunning = false;
 				return false;
 			} catch (err) {
 				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {service: 'Repo'});
 				await saveSetting(`commit-${repo.Name}`, null);
+				updateRunning = false;
 				await updateZipRepo(name);
+				sentry.addErrorInfo('initialCommit', LocalCommit);
+				sentry.error(err);
 			}
 		}
 	}
@@ -307,7 +319,6 @@ async function newZipRepo(repo: Repository): Promise<string> {
 export async function editRepo(name: string, repo: Repository, refresh?: boolean) {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw {code: 404};
-	if (windowsDriveRootRegexp.test(repo.BaseDir)) throw {code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.'};
 	if (repo.Online && !repo.MaintainerMode) {
 		// Testing if repository is reachable
 		try {
@@ -410,8 +421,13 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 }
 
 function checkRepoPaths(repo: Repository) {
+	if (windowsDriveRootRegexp.test(repo.BaseDir)) throw {code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.'};	
 	if (repo.Online && !repo.MaintainerMode) {
 		for (const path of repo.Path.Medias) {
+			// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
+			if (getState().appPath === resolve(getState().dataPath, path)) {
+				throw {code: 400, msg: 'Sanity check: A media path is KM\'s executable directory.'};
+			}
 			if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
 				throw {code: 400, msg: 'Sanity check: A media path is contained in the base directory.'};
 			}
