@@ -135,7 +135,7 @@
                 "4": "créés par",
                 "5": "en",
                 "6": "réalisés par",
-                "7": "",
+                "7": "qui sont",
                 "8": "composés par",
                 "9": "du groupe",
                 "10": "de la famille",
@@ -182,7 +182,7 @@
         "SONG_SEARCH_SHORT": "Rechercher",
         "EXPLORE": "Explorer",
         "OTHERS": "Autres...",
-        "GET_LUCKY": "J'ai de la chance !",
+        "GET_LUCKY": "J'ai de la chance",
         "REQUESTED_KARAOKES": "Karaokés populaires",
         "NEW_KARAOKES": "Nouveaux karaokés"
     },
@@ -537,7 +537,7 @@
         "DETAILS": {
             "1": "Quels karaokés ont été joués",
             "2": "Quels karaokés ont été demandés (mais pas par qui)",
-            "3": "Des informations sur la machine (CPU, RAM disponible, nom et version de l'OS...)",
+            "3": "Des informations sur la machine (processeur, mémoire vive disponible, nom et version du système d'exploitation…)",
             "4": "Votre configuration de l'application (sans aucun élément secret, type mot de passe)",
             "TITLE": "Détails des informations envoyées",
             "OUTRO": "Cet envoi a lieu à chaque démarrage puis à chaque heure d'utilisation. Vous pouvez consulter les informations envoyées dans le dossier log de Karaoke Mugen."
@@ -1004,7 +1004,6 @@
             "APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
             "ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
             "ONLINE_STATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
-            "PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Désactivez si vous voulez que ces touches contrôlent une autre application (iTunes, foobar, etc.)",
             "PLAYER_HARDWAREDECODING": "Décodage matériel des vidéos",
             "PLAYER_HARDWAREDECODING_TOOLTIP": "Force ou non le décodage matériel du lecteur vidéo. Attention : sur certaines configurations, il se peut que cela pose des problèmes de lecture vidéo. En cas de soucis, passez l'option à \"Désactivé\". Le réglage \"Automatique\" est le plus sûr et \"Forcer\" pas du tout recommandé.",
             "PLAYER_HARDWAREDECODING_OPTIONS": {
@@ -1124,24 +1123,24 @@
     },
     "TASKS": {
         "COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics...",
-        "FINDING_UNUSED_MEDIAS": "Recherche de médias inutilisés...",
+        "FINDING_UNUSED_MEDIAS": "Recherche de médias inutilisés…",
         "COMPARING_LYRICS_IN_REPOS": "Comparaison des lyrics entre dépôts...",
         "CREATING_SONG": "Création du karaoké...",
         "EDITING_SONG": "Modification du karaoké...",
-        "EDITING_KARAS_BATCH_TAGS": "Modification des tags...",
+        "EDITING_KARAS_BATCH_TAGS": "Modification des tags…",
         "DATASTORE_UPDATE": "Mise à jour des données locales...",
         "GENERATING": "Génération de la base de données...",
         "GENERATING_READING": "Lecture des données...",
         "GENERATING_DATABASE": "Création de la base de données...",
         "GENERATION_DONE": "Génération terminée",
-        "DOWNLOADING_MEDIAS": "Téléchargement de médias...",
-        "MOVING_MEDIAS_REPO": "Déplacement des médias du dépôt...",
+        "DOWNLOADING_MEDIAS": "Téléchargement de médias…",
+        "MOVING_MEDIAS_REPO": "Déplacement des médias du dépôt…",
         "CLEANING_REPO": "Nettoyage des chansons supprimées du dépôt",
         "UPDATING_REPO": "Mise à jour des chansons du dépôt",
-        "UPDATING_PLMEDIAS": "Mise à jour des médias de liste de lecture...",
-        "CREATING_TAG_IN_PROGRESS": "Création de tag en cours...",
-        "EDITING_TAG_IN_PROGRESS": "Edition de tag en cours...",
-        "DELETING_TAG_IN_PROGRESS": "Suppression de tag en cours...",
+        "UPDATING_PLMEDIAS": "Mise à jour des médias de liste de lecture…",
+        "CREATING_TAG_IN_PROGRESS": "Création du tag en cours…",
+        "EDITING_TAG_IN_PROGRESS": "Modification du tag en cours…",
+        "DELETING_TAG_IN_PROGRESS": "Suppression du tag en cours…",
         "MERGING_TAGS_IN_PROGRESS": "Fusion de tags en cours...",
         "UPDATING_MEDIAS": "Mise à jour des médias...",
         "UPDATING_WORKDIR": "Mise à jour du répertoire de travail",
@@ -1524,5 +1523,6 @@
         "T5": "Qu'est-il arrivé à mes critères de liste noire de téléchargement ?",
         "P10": "Ils ont été migrés vers des critères de liste noire classique. Cela veut dire que vous ne verrez plus ces chansons blacklistées dans la bibliothèque, comme si vous ne les aviez jamais téléchargées !",
         "P11": "Vous pouvez toujours modifier les critères de liste noire à tout moment."
-    }
+    },
+    "QUOTA_AVAILABLE": "Vous pouvez ajouter des chansons maintenant !"
 }
