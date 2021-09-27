@@ -6,7 +6,7 @@
     "GO_TO": "Allez sur",
     "VOTE_MESSAGE_SCREEN": "Votez pour la prochaine chanson !",
     "VOTE_MESSAGE_SCREEN_WINNER": "Nous avons un gagnant !",
-    "NEXT_SONG": "Prochaine chanson",
+    "NEXT_SONG": "Chanson suivante",
     "INIT_INIT": "Démarrage...",
     "INIT_DUMPDB": "Sauvegarde de la base de données...",
     "INIT_RESTOREDB": "Restauration de la base de données...",
@@ -100,8 +100,8 @@
     "UPDATE_DOWNLOADED": "Mise à jour téléchargée",
     "UPDATE_READY_TO_INSTALL_RESTARTING": "L'installation de la mise à jour va démarrer...",
     "ABOUT": {
-        "BUG_REPORT": "Rapporter un bug",
-        "COPYRIGHT": "Par l'équipe de développement de Karaoke Mugen, sous la licence MIT",
+        "BUG_REPORT": "Signaler une erreur",
+        "COPYRIGHT": "Par l'équipe de développement de Karaoke Mugen, sous licence MIT",
         "TITLE": "À propos de Karaoke Mugen"
     },
     "NO_KARAOKE_MODE_ANYMORE": {
@@ -119,37 +119,37 @@
             "N'oubliez pas de synchroniser la base de temps en temps : vous découvrirez peut-être de nouveaux karaokés !",
             "Vous ne trouvez pas une chanson dans la base ? N'hésitez pas à regarder sur https://suggest.karaokes.moe, elle s'y trouve peut-être !",
             "Karaoke Mugen est un projet 100% open source et collaboratif, tout le monde peut apporter sa pierre à l'édifice !",
-            "Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement (playlists, favoris, etc.)",
+            "Vous pouvez glisser-déposer des fichiers dans cette fenêtre, utiliser le menu Fichier -> Importer, ou associer le programme Karaoke Mugen à ceux-ci pour les intégrer directement : listes de lecture, favoris, etc.",
             "Ajoutez le dépôt world.karaokes.moe à votre liste de dépôts pour encore plus de karaokés du monde !",
             "Je suis Nanamin, mascotte de Karaoke Mugen crée par la talentueuse Sedeto ! http://www.sedeto.fr",
             "Les sessions sont des moments de karaoké individuels. Pensez à les nommer correctement !",
-            "Une session contient la liste des karaokés demandés et lus lors d'un évènement précis.",
+            "Les sessions sont des évènements karaoké individuels. Il vous permet de regrouper les chansons demandées et jouées pour vous rappeler ce qui a été joué lors d'un anniversaire, d'un mariage ou d'un évènement !",
             "Il y a plein de façons de configurer un karaoké ! Prenez le temps de regarder les options avant de vous lancer.",
-            "La liste noire permet de cacher des karaokés à vos utilisateurs selon les situations.",
+            "Les AutoMixes sont des listes de lecture créées à partir des listes de favoris de vos invités. Parfait pour lancer rapidement des sessions de karaoké !",
             "Les AutoMix sont des playlists crées uniquement avec les favoris de vos invités. Idéal pour se faire une soirée karaoké rapidement !",
             "Vous ne savez pas quoi ajouter dans votre playlist ? Le bouton aléatoire vous réservera quelques surprises !",
             "Les chansons ajoutées avec l'option \"Ajout Mystère\" apparaitront cachées dans la playlist visible par vos invités !",
             "Hydratez-vous régulièrement !",
             "Ne dérangez pas les voisins !",
             "Faites une pause pour aérer la salle de temps en temps !",
-            "N'acceptez pas d'argent si quelqu'un veut faire passer sa chanson avant tout le monde. Préférez des boissons fraîches et de la nourriture.",
+            "N'oubliez pas d'ajouter vos chansons préférées à votre liste de favoris si vous avez un compte en ligne : vous pourrez les retrouver plus facilement dans la liste de favoris ici ou sur une autre application Karaoke Mugen !",
             "Pensez à ajouter vos chansons préférées à vos favoris si vous avez un compte en ligne : vous les retrouverez plus facilement dans la liste des favoris ici ou sur un autre Karaoke Mugen !",
             "Karaoke Mugen a besoin de vous ! Plus d'informations sur https://mugen.karaokes.moe/participate.html !",
-            "Encore une astuce qui finit en point d'exclamation !",
-            "Le Moniteur vous permet de voir la chanson en cours de diffusion si vous ne pouvez pas voir l'écran de là où vous êtes.",
+            "Le moniteur vous permet de voir la chanson en cours de lecture si vous ne pouvez pas voir l'écran d'où vous êtes.",
+            "Le mode Karaoké classique reproduit ce que l'on trouve dans les kiosques de karaoké japonais ou lors des concours de karaoké dans les évènements d'anime : une pause est faite entre chaque chanson et le titre et le demandeur de la prochaine chanson sont affichés à l'écran !",
             "Le mode Karaoké Classique permet de simuler un box karaoké japonais ou un concours de karaoké en convention : une pause avec affichage de la piste suivante aura lieu entre chaque chanson.",
-            "Votre karaoké se termine bientôt ? Passez l'interface en mode restreint : les utilisateurs ne pourront plus ajouter de chansons mais pourront consulter la liste de lecture.",
-            "Besoin de passer un message à votre public ? L'option message affichera un texte sur les périphériques mobiles de vos utilisateurs et/ou sur l'écran !",
+            "Vous avez besoin d'envoyer un message à votre public ? L'option message permettra d'afficher un texte sur leurs appareils mobiles ou sur l'écran du karaoké !",
+            "Lorsque vous effectuez une recherche, vous pouvez taper « -mot » pour exclure de vos résultats les karaokés contenant ce mot (qu'il soit dans la tuile, la série, les chanteurs, etc.).",
             "Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, la série, les chanteurs, etc.) de vos résultats de recherche.",
-            "Vous pouvez accepter ou refuser des chansons de la liste de suggestions du public. Pour cela, affichez les listes de suggestion et courante côte à côte.",
+            "Accepter une suggestion publique redonne le quota de chanson à l'utilisateur qui l'a demandée, et ajoute la chanson dans la liste de lecture actuelle !",
             "Accepter une suggestion du public redonne du quota à la personne qui a demandé, et ajoute la chanson dans la liste courante si celle-ci est en face !",
-            "Refuser une suggestion du public redonne du quota à la personne qui a demandé, et garde la chanson dans la liste de suggestion pour éviter qu'elle ne soit redemandée !"
+            "Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez « amour direct » pour obtenir uniquement les karaokés de la série Amour direct."
         ],
         "ERRORS": [
             "N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
             "Vérifiez que vous n'avez pas une autre instance de Karaoke Mugen en tâche de fond.",
             "Consultez les logs, la raison de l'erreur peut s'y trouver !",
-            "Surtout, ne paniquez pas. Tout va très bien se passer."
+            "Ne paniquez pas, tout va bien se passer"
         ]
     },
     "DISCORD": {
@@ -158,7 +158,7 @@
             "prépare ses favoris",
             "configure le tout",
             "lit la doc (non)",
-            "écoute ses cheveux pousser",
+            "écoute ses cheveux pousser !",
             "se tourne les pouces",
             "en convention (dans sa tête)",
             "regarde les trains passer"
@@ -171,7 +171,7 @@
     },
     "MISSING_BINARIES": {
         "TITLE": "Binaires manquants",
-        "MESSAGE": "Un ou plusieurs binaires requis par Karaoke Mugen sont manquants. Editez votre fichier config.yml et définissez System.Binaries correctement pour votre OS.\n\nVous pouvez télécharger mpv depuis http://mpv.io/\n\nVous pouvez télécharger postgresql depuis http://postgresql.org/\n\nVous pouvez télécharger ffmpeg depuis http://ffmpeg.org\n\nVous pouvez télécharger l'utilitaire patch depuis https://mugen.karaokes.moe/downloads/patch.exe (Windows) ou https://mugen.karaokes.moe/downloads/patch (macOS) ou un package GNU Patch 2.7+ (Linux)\n\nDétail de l'erreur : "
+        "MESSAGE": "Un ou plusieurs binaires nécessaires au Karaoke Mugen n'ont pu être trouvés.\n\nModifiez votre config.yml et définissez les variables System.Binaries.ffmpeg, System.Binaries.Player et System.Binaries.Postgres correctement pour votre OS.\n\nVous pouvez télécharger mpv pour votre OS à partir de http://mpv.io/.\n\nVous pouvez télécharger postgreSQL pour votre système d'exploitation à partir de http://postgresql.org/.\n\nVous pouvez télécharger ffmpeg pour votre système d'exploitation à partir de http://ffmpeg.org.\n\nVous pouvez télécharger l'utilitaire de correction à l'adresse https://mugen.karaokes.moe/downloads/patch.exe (Windows) ou https://mugen.karaokes.moe/downloads/patch (macOS) ou le paquet GNU Patch 2.7+ (Linux).\n\nDétails de l'erreur : "
     },
     "UNKNOWN_REPOSITORY_ADD": {
         "TITLE": "Dépôt inconnu",
@@ -181,7 +181,7 @@
     "GENERATING_DATABASE": "Etape 2/2 - Mise à jour de la base de données...",
     "TWITCH": {
         "CHAT": {
-            "VOTE": "Nouveau vote : tapez !vote x où x est le numéro de la chanson.",
+            "VOTE": "Nouveau vote : utilisez !vote x où x est le numéro de la chanson :",
             "YOU_ALREADY_VOTED": "Sorrymasen mais vous avez déjà voté.",
             "NO_ACTIVE_POLL": "Aucun vote en cours.",
             "INVALID_CHOICE": "Choix invalide"
