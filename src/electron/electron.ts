@@ -9,7 +9,6 @@ import { init, preInit, welcomeToYoukousoKaraokeMugen } from '../components/init
 import { listUsers } from '../dao/user';
 import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { emit } from '../lib/utils/pubsub';
 import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { importFavorites } from '../services/favorites';
@@ -44,13 +43,18 @@ export function startElectron() {
 		} catch(err) {
 			console.log(err);
 			// This is usually very much fatal.
-			emit('initError', err);
-			return;
+			throw err;
 		}
 		// Register km:// protocol for internal use only.
-		registerKMProtocol();
+		try {
+			registerKMProtocol();
+		} catch(err) {
+			logger.warn('KM protocol could not be registered!', {obj: err, service: 'Electron'});
+		}
 		// Create zip decompression worker to avoid blocking the main event loop.
-		createZipWorker();
+		createZipWorker().catch(err => {
+			throw err;
+		});
 		// Create electron window with init screen
 		if (!getState().opt.cli) await initElectronWindow();
 		// Once init page is ready, or if we're in cli mode we start running init operations

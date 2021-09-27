@@ -8,22 +8,16 @@ import {createInterface} from 'readline';
 import {exit} from './components/engine';
 import {startElectron} from './electron/electron';
 import logger from './lib/utils/logger';
-import { on } from './lib/utils/pubsub';
 import sentry from './utils/sentry';
 import {setState} from './utils/state';
 
 dotenv.config();
 sentry.init(process.argv.includes('--strict'));
 
-let isInitError = false;
-
 process.on('uncaughtException', (exception: any) => {
-	// Silence when an error has been triggered during init, because objects get destroyed and electron doesn't like that much, poor boy.
-	if (!isInitError) {
-		console.log('Uncaught exception:', exception);
-		if (logger) logger.error('', {service: 'UncaughtException', obj: exception});
-		sentry.error(exception);
-	}
+	console.log('Uncaught exception:', exception);
+	if (logger) logger.error('', {service: 'UncaughtException', obj: exception});
+	sentry.error(exception);
 });
 
 process.on('unhandledRejection', (error: Error) => {
@@ -54,15 +48,6 @@ if (process.platform === 'win32' ) {
 		exit(0);
 	});
 }
-
-// Event called when we have an error during pre init
-on('initError', (err: Error) => {
-	isInitError = true;
-	logger.error('Error during launch', {service: 'Launcher', obj: err});
-	console.log(err);
-	sentry.error(err);
-	exit(1);
-});
 
 // Main app begins here.
 let appPath: string;
@@ -113,4 +98,11 @@ setState({ args: args });
 
 // Let's go! This calls the functions below.
 // Start Electron -> Pre Init -> Main Init -> Engine Init -> Post Init
-startElectron();
+try {
+	startElectron();
+} catch(err) {
+	if (logger) logger.error('Error during launch', {service: 'Launcher', obj: err});
+	console.log(err);
+	sentry.error(err);
+	exit(1);
+}
