@@ -30,6 +30,8 @@ process.on('unhandledRejection', (error: Error) => {
 	console.log('Unhandled Rejection at:', error);
 	if (logger) logger.error('', {service: 'UnhandledRejection', obj: error});
 	sentry.error(error);
+	// Try to exit properly now that Electron is under node 16 and the app crashes on those events
+	exit(2);
 });
 
 process.on('SIGINT', () => {
