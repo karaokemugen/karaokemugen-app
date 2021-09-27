@@ -948,7 +948,6 @@
 		"DELETE_TAG_CONFIRM": "Delete tag",
 		"DELETE_TAG_MESSAGE": "This will remove the tag as well as in any song in your database!",
 		"LANG_ERROR": "A tag must have at least one translated name",
-		"LANG_ENG_ERROR": "A tag must have at least english name",
 		"REPOSITORY": "Repository",
 		"REPOSITORY_REQUIRED": "Repository is mandatory",
 		"PROBLEMATIC": "Problematic",
