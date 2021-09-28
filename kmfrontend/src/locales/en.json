@@ -68,7 +68,7 @@
   "ADD": "Add new playlist",
   "AUTOMIX": "Create an automix",
   "IMPORT": "Import playlist",
-  "SHUFFLE": "Shuffle / Sort...",
+  "SHUFFLE": "Shuffle / Sort…",
   "DOWNLOAD_ALL": "Download all"
  },
  "KARA_MENU": {
@@ -175,7 +175,7 @@
   "SONG_SEARCH": "Search song",
   "SONG_SEARCH_SHORT": "Search",
   "EXPLORE": "Explore",
-  "OTHERS": "Others...",
+  "OTHERS": "Others…",
   "GET_LUCKY": "Get lucky",
   "REQUESTED_KARAOKES": "Requested songs",
   "NEW_KARAOKES": "New songs"
@@ -464,10 +464,10 @@
  },
  "KARA_PAUSED_WAITING": "No song playing yet",
  "KARA_PAUSED_TAGLINES": [
-  "...but it shouldn't last for long!",
+  "…but it shouldn't last for long!",
   "We will follow up on your call.",
   "Your waiting time is estimated to some minutes.",
-  "Too calm, I don't like this...",
+  "Too calm, I don't like this…",
   "Preparations are ongoing!"
  ],
  "JINGLE_TIME": "Jingle time!",
@@ -477,8 +477,8 @@
  "INTRO_TIME": "Playlist intro",
  "INTRO_TAGLINES": [
   "Let's go!",
-  "Starting...",
-  "Initialization...",
+  "Starting…",
+  "Initialization…",
   "Prepare your mic!",
   "*clears throat*"
  ],
@@ -489,13 +489,13 @@
  ],
  "ENCORES_TIME": "Encore! Encore!",
  "ENCORES_TAGLINES": [
-  "Well, it's not because I like you or anything...",
+  "Well, it's not because I like you or anything…",
   "Last one?",
   "Last song, let's give it our all!"
  ],
  "SPONSOR_TIME": "COMMERCIAL TIME!",
  "SPONSOR_TAGLINES": [
-  "Kono bangumi wa...",
+  "Kono bangumi wa…",
   "And thanks for the money."
  ],
  "PAUSE_TIME": "Pause",
@@ -539,7 +539,7 @@
   "DETAILS": {
    "1": "Which karaokes got played",
    "2": "Which karaokes got requested (but not by whom)",
-   "3": "Information about the computer (CPU, available RAM, OS name and version ...)",
+   "3": "Information about the computer (CPU, available RAM, OS name and version …)",
    "4": "Application settings (excluding any private info like password)",
    "TITLE": "Sent information details",
    "OUTRO": "Stats are sent at each startup, then at each hour of use. You can read the information sent in the Karaoke Mugen log directory."
@@ -739,20 +739,20 @@
     "POLL_NOT_ENOUGH_SONGS": "Unable to start poll: not enough songs available"
    },
    "INFO": {
-    "PLAYER_RESTARTING": "Restarting media player...",
+    "PLAYER_RESTARTING": "Restarting media player…",
     "POLL_WINNER": "People voted for a new song!",
     "POLL_STARTING": "Starting poll",
     "END_OF_SESSION_NEAR": "The karaoke session should end in {{data}} minutes."
    }
   }
  },
- "LOADING": "Loading...",
+ "LOADING": "Loading…",
  "LOADING_SUBTITLE": "It shouldn't take too long, try to clear your cache or update your browser if you get stuck here.",
  "LOADING_SUBTITLE_ELECTRON": "It shouldn't take too long, try to restart Karaoke Mugen or update it if you get stuck here.",
  "ADD": "Add",
  "SEARCH_FILTER": "Search filter",
  "REFRESH": "Refresh",
- "REFRESHING_DATA": "Refreshing data...",
+ "REFRESHING_DATA": "Refreshing data…",
  "CONFIRM_SURE": "Are you sure?",
  "ACTION": "Action",
  "KARA": {
@@ -1072,7 +1072,7 @@
   "MOVE": "Define the priority of repositories",
   "MOVE_TOOLTIP": "This allows you to define which repositories take priority when creating your database: the highest repositories will be taken into account first if two repositories have the same karaoke",
   "MOVING_MEDIA": "Repository operations",
-  "MOVING_MEDIA_BUTTON": "Move medias...",
+  "MOVING_MEDIA_BUTTON": "Move medias…",
   "MOVING_MEDIA_PANEL": "Move medias",
   "WARNING": "Warning!",
   "MOVING_MEDIA_ABOUT_MESSAGE": "All repository media files will be moved to the new folder. If your repository has several media folders, all filles of all folders will be moved into the same target folder. If there are duplicate files, they'll be savagely overwritten.",
@@ -1123,29 +1123,29 @@
   "EGG_3": "Stop that, it's useless."
  },
  "TASKS": {
-  "COPYING_LYRICS_IN_REPOS": "Updating lyrics...",
-  "FINDING_UNUSED_MEDIAS": "Searching unused medias...",
-  "COMPARING_LYRICS_IN_REPOS": "Comparing lyrics between repositories...",
-  "CREATING_SONG": "Creating karaoke...",
-  "EDITING_SONG": "Editing karaoke...",
-  "EDITING_KARAS_BATCH_TAGS": "Editing tags in songs...",
-  "DATASTORE_UPDATE": "Updating local data store...",
-  "GENERATING": "Generating database...",
-  "GENERATING_READING": "Reading data...",
-  "GENERATING_DATABASE": "Updating database...",
+  "COPYING_LYRICS_IN_REPOS": "Updating lyrics…",
+  "FINDING_UNUSED_MEDIAS": "Searching unused medias…",
+  "COMPARING_LYRICS_IN_REPOS": "Comparing lyrics between repositories…",
+  "CREATING_SONG": "Creating karaoke…",
+  "EDITING_SONG": "Editing karaoke…",
+  "EDITING_KARAS_BATCH_TAGS": "Editing tags in songs…",
+  "DATASTORE_UPDATE": "Updating local data store…",
+  "GENERATING": "Generating database…",
+  "GENERATING_READING": "Reading data…",
+  "GENERATING_DATABASE": "Updating database…",
   "GENERATION_DONE": "Generation successful",
-  "DOWNLOADING_MEDIAS": "Downloading media files...",
-  "MOVING_MEDIAS_REPO": "Moving medias for repository...",
+  "DOWNLOADING_MEDIAS": "Downloading media files…",
+  "MOVING_MEDIAS_REPO": "Moving medias for repository…",
   "CLEANING_REPO": "Cleaning up songs removed from repository",
   "UPDATING_REPO": "Updating songs from repository",
-  "UPDATING_PLMEDIAS": "Updating playlist medias...",
-  "CREATING_TAG_IN_PROGRESS": "Creating tag...",
-  "EDITING_TAG_IN_PROGRESS": "Editing tag...",
-  "DELETING_TAG_IN_PROGRESS": "Deleting tag...",
-  "MERGING_TAGS_IN_PROGRESS": "Merging tags...",
-  "UPDATING_MEDIAS": "Updating medias...",
+  "UPDATING_PLMEDIAS": "Updating playlist medias…",
+  "CREATING_TAG_IN_PROGRESS": "Creating tag…",
+  "EDITING_TAG_IN_PROGRESS": "Editing tag…",
+  "DELETING_TAG_IN_PROGRESS": "Deleting tag…",
+  "MERGING_TAGS_IN_PROGRESS": "Merging tags…",
+  "UPDATING_MEDIAS": "Updating medias…",
   "UPDATING_WORKDIR": "Updating workdir",
-  "DOWNLOADING": "Downloading...",
+  "DOWNLOADING": "Downloading…",
   "RESOLVING_DELTAS": "Resolving deltas",
   "DECOMPRESSING": "Compressing objects",
   "ANALYZING_WORKDIR": "Analyzing workdir",
