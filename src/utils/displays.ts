@@ -10,7 +10,7 @@ export async function getDisplays() {
 	return data.displays
 		.filter(d => d.resolutionX > 0)
 		.map(d => {
-			d.model = d.model.replace(/�/g, 'e');
+			d.model = d.model.replaceAll('�', 'e');
 			return d;
 		});
 }

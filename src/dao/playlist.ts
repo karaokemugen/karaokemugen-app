@@ -364,7 +364,7 @@ export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfte
 }
 
 export function removeKaraFromPlaylist(karas: number[]) {
-	return db().query(sqlremoveKaraFromPlaylist.replace(/\$plcid/,karas.join(',')));
+	return db().query(sqlremoveKaraFromPlaylist.replaceAll('$plcid', karas.join(',')));
 }
 
 export function updateFreeOrphanedSongs(expireTime: number) {

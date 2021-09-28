@@ -584,7 +584,7 @@ class Players {
 		if (shouldDisplayAvatar) {
 			// Again, lavfi-complex expert @nah comes to the rescue!
 			avatar = [
-				`movie=\\'${song.avatar.replace(/\\/g,'/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
+				`movie=\\'${song.avatar.replaceAll('\\','/')}\\',format=yuva420p,geq=lum='p(X,Y)':a='if(gt(abs(W/2-X),W/2-${cropRatio})*gt(abs(H/2-Y),H/2-${cropRatio}),if(lte(hypot(${cropRatio}-(W/2-abs(W/2-X)),${cropRatio}-(H/2-abs(H/2-Y))),${cropRatio}),255,0),255)'[logo]`,
 				'[logo][vid1]scale2ref=w=(ih*.128):h=(ih*.128)[logo1][base]',
 				`[base][logo1]overlay=x='if(between(t,0,8)+between(t,${song.duration - 8},${song.duration}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`
 			].filter(x => !!x).join(';');
@@ -911,7 +911,7 @@ class Players {
 		}
 		if (!id3tags?.image) {
 			const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
-			options['external-file'] = defaultImageFile.replace(/\\/g,'/');
+			options['external-file'] = defaultImageFile.replaceAll('\\','/');
 			options['force-window'] = 'yes';
 			options['image-display-duration'] = 'inf';
 			options.vid = '1';

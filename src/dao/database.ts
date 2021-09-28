@@ -16,7 +16,7 @@ import {initPG,isShutdownPG, restorePG} from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
 import { baseChecksum } from './dataStore';
-import { selectPlaylists, reorderPlaylist } from './playlist';
+import { reorderPlaylist,selectPlaylists } from './playlist';
 import { sqlGetStats,sqlResetUserData } from './sql/database';
 
 export let DBReady = false;
@@ -76,7 +76,7 @@ async function migrateFromDBMigrate() {
 			await db().query('DROP TABLE migrations;');
 			return;
 		}
-		const id = lastMigration.rows[0].name.replace('/', '').split('-')[0];
+		const id = lastMigration.rows[0].name.replaceAll('/', '').split('-')[0];
 		migrationsDone = migrations.filter(m => m.version <= id);
 	} catch(err) {
 		logger.error('Error preparing migrations', {service: 'DB', obj: err});
