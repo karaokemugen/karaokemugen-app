@@ -151,7 +151,8 @@
             "TITLE": "Les karaokés contenant {{title}} dans le titre sont dans la liste.",
             "TAG_NAME": "Les karaokés avec un tag contenant {{title}} sont dans la liste."
         },
-        "EXPL": "La liste intelligente est créée à partir des <1>critères</1>, vous pouvez également en ajouter manuellement à cette liste."
+        "EXPL": "La liste intelligente est créée à partir des <1>critères</1>, vous pouvez également en ajouter manuellement à cette liste.",
+        "CRITERIA_TYPE_1001": "Chanson"
     },
     "MESSAGE": "Passer un message au public",
     "LOG_SUCCESS": "Connecté en tant que {{name}}",
