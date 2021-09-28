@@ -69,7 +69,7 @@
         "ADD": "Créer une nouvelle liste",
         "AUTOMIX": "Créer un AutoMix",
         "IMPORT": "Importer une liste",
-        "SHUFFLE": "Mélanger / Trier...",
+        "SHUFFLE": "Mélanger / Trier…",
         "DOWNLOAD_ALL": "Télécharger tout"
     },
     "KARA_MENU": {
@@ -181,7 +181,7 @@
         "SONG_SEARCH": "Rechercher une chanson",
         "SONG_SEARCH_SHORT": "Rechercher",
         "EXPLORE": "Explorer",
-        "OTHERS": "Autres...",
+        "OTHERS": "Autres…",
         "GET_LUCKY": "J'ai de la chance",
         "REQUESTED_KARAOKES": "Karaokés populaires",
         "NEW_KARAOKES": "Nouveaux karaokés"
@@ -310,7 +310,7 @@
             "ALWAYS_ON_TOP": "Toujours au dessus",
             "ALWAYS_ON_TOP_TOOLTIP": "Si coché, la fenêtre du lecteur sera toujours au dessus des autres à l'écran",
             "FULLSCREEN": "Plein écran",
-            "FULLSCREEN_TOOLTIP": "Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré",
+            "FULLSCREEN_TOOLTIP": "Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré.",
             "VIDEO_SIZE": "Taille du lecteur",
             "VIDEO_POSITION_X": "Alignement horizontal de la fenêtre",
             "VIDEO_POSITION_X_TOOLTIP": "Où la fenêtre du lecteur se situe au démarrage de karaoke Mugen",
@@ -326,7 +326,7 @@
             "MONITOR_NUMBER": "Écran sur lequel afficher le lecteur",
             "MONITOR_NUMBER_TOOLTIP": "Ecran sur lequel afficher le lecteur au démarrage",
             "WINDOWBORDERS": "Activer les bordures sur la fenêtre du lecteur",
-            "WINDOWBORDERS_TOOLTIP": "Les désactiver n'affecte pas la fenêtre du moniteur, où elles seront toujours activées",
+            "WINDOWBORDERS_TOOLTIP": "Les désactiver n'affecte pas la fenêtre du moniteur, où elles seront toujours activées.",
             "PLAYER_MONITOR": "Seconde fenêtre du lecteur vidéo (moniteur)",
             "PLAYER_MONITOR_TOOLTIP": "Affiche un second lecteur pour l'opérateur s'il ne peut pas voir l'écran principal directement",
             "PLAYER_LANGUAGE": "Langue des messages et du lecteur vidéo",
@@ -341,7 +341,7 @@
             "DISPLAY_NICKNAME": "Afficher le pseudo du demandeur en début et en fin de chanson",
             "DISPLAY_NICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
             "DISPLAY_AVATAR": "Afficher l'avatar du demandeur",
-            "DISPLAY_AVATAR_TOOLTIP": "L'avatar de la personne ayant demandé à karaoké sera affiché au début et à la fin de la chanson, en bas à droite de l'écran"
+            "DISPLAY_AVATAR_TOOLTIP": "L'avatar de la personne ayant demandé à karaoké sera affiché au début et à la fin de la chanson, en bas à droite de l'écran."
         },
         "KARAOKE": {
             "LABEL": "Karaoké",
@@ -375,7 +375,7 @@
             "PLAYLIST_OUTRO_VIDEOS": "Vidéo d'outro de liste de lecture",
             "PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Les outro vidéo sont jouées après la dernière chanson d'une liste de lecture.",
             "PLAYLIST_ENCORES_VIDEOS": "Vidéo d'encores de liste de lecture",
-            "PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Cette vidéo sera jouée avant la dernière chanson de la liste de lecture courante",
+            "PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Cette vidéo sera jouée avant la dernière chanson de la liste de lecture courante.",
             "PLAYLIST_SPONSORS_VIDEOS": "Vidéo de sponsors de liste de lecture",
             "PLAYLIST_SPONSORS_VIDEOS_TOOLTIP": "Les sponsors sont joués toutes les X chansons, ainsi qu'après la vidéo d'introduction si activée",
             "PLAYLIST_JINGLES_VIDEOS": "Vidéo de jingles de liste de lecture",
@@ -420,7 +420,7 @@
             "ONLINE_SETTINGS": "En ligne",
             "MYSTERY_SONG_SETTINGS": "Chanson mystère",
             "HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
-            "HIDE_INVISIBLE_SONGS_TOOLTIP": "La façon dont les chansons mystère sont affichées au public. Pour faire des surprises!",
+            "HIDE_INVISIBLE_SONGS_TOOLTIP": "La façon dont les chansons mystère sont affichées au public. Pour faire des surprises !",
             "HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Ne pas afficher",
             "HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Libellés mystère",
             "SONGPOLL": "Laisser le public choisir les chansons par sondage",
@@ -463,10 +463,10 @@
     },
     "KARA_PAUSED_WAITING": "Pas de lecture en cours",
     "KARA_PAUSED_TAGLINES": [
-        "...mais ça ne saurait tarder !",
+        "…mais ça ne saurait tarder !",
         "Nous allons donner suite à votre kara.",
         "Votre temps d'attente est estimé à quelques minutes.",
-        "C'est trop calme, j'aime pas trop beaucoup ça...",
+        "C'est trop calme, j'aime pas trop beaucoup ça…",
         "Les préparatifs sont en cours !"
     ],
     "JINGLE_TIME": "Instant jingle !",
@@ -476,8 +476,8 @@
     "INTRO_TIME": "Introduction",
     "INTRO_TAGLINES": [
         "C'est parti !",
-        "Démarrage en cours...",
-        "Initialisation...",
+        "Démarrage en cours…",
+        "Initialisation…",
         "Préparez votre micro !",
         "*se racle la gorge*"
     ],
@@ -486,15 +486,15 @@
         "C'est fini :(",
         "Merci à tous !"
     ],
-    "ENCORES_TIME": "Encore! Encore!",
+    "ENCORES_TIME": "Encore ! Encore !",
     "ENCORES_TAGLINES": [
-        "Bon, c'est bien parce que c'est vous...",
+        "Bon, c'est bien parce que c'est vous…",
         "P'tite dèr ?",
         "Dernière chanson, on donne tout !"
     ],
     "SPONSOR_TIME": "LA PUB !",
     "SPONSOR_TAGLINES": [
-        "Kono bangumi wa...",
+        "Kono bangumi wa…",
         "Et merci pour l'argent."
     ],
     "PAUSE_TIME": "Pause",
@@ -519,7 +519,7 @@
         "CONNECTED": "Connecté"
     },
     "REMOTE_TOKEN": "Jeton d'accès distant",
-    "REMOTE_TOKEN_TOOLTIP": "A communiquer uniquement aux administrateurs du serveur!",
+    "REMOTE_TOKEN_TOOLTIP": "(A communiquer uniquement aux administrateurs du serveur)",
     "REMOTE_RESET": "Réinitialiser le jeton",
     "REMOTE_RESET_TOOLTIP": "Générer un nouveau jeton : ceci va réintialiser votre code de salle personnalisé.",
     "REMOTE_RESET_CONFIRM": "Votre ancien code personnalisé sera libre à nouveau et un nouveau code sera généré, êtes-vous sûr ?",
@@ -562,7 +562,7 @@
         "UNKNOW_REPOS": {
             "TITLE": "Dépôts inconnus détectés",
             "DESCRIPTION": "Cette liste de lecture contient des chansons depuis des dépôts que vous n'avez pas encore.",
-            "DOWNLOAD_THEM": "Voulez-vous les ajouter?"
+            "DOWNLOAD_THEM": "Voulez-vous les ajouter ?"
         },
         "PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?",
         "PROFILE_MODAL": {
@@ -628,7 +628,7 @@
             "PLAYLIST": "L'écran affiche 2 liste de lecture. Vous pouvez ajouter une chanson de la liste de lecture de gauche vers la liste de lecture de droite et vice-versa juste en appuyant sur le ",
             "TITLE_CLICK": "Cliquez sur le titre du karaoké pour obtenir plus d'informations",
             "TITLE_CLICK_DESC": "(chanteurs, compositeurs, etc.)",
-            "THE_BUTTON": "Le bouton",
+            "THE_BUTTON": "Le bouton ",
             "PLAY_BUTTON": "joue la chanson immédiatement",
             "CURSOR_BUTTON": "déplace le curseur de lecture",
             "CHECK_CASE": "Cochez la case",
@@ -643,10 +643,10 @@
             "BLUE": "bleu",
             "KARAOKE_PLAYED": "indique que le karaoké est passé à l'écran il y a peu.",
             "KARAOKE_PLAYING": "indique le karaoké sélectionné pour la lecture.",
-            "CREATE_PLAYLIST_BUTTON": "Créez et modifiez vos listes de lecture depuis le menu d'actions.",
+            "CREATE_PLAYLIST_BUTTON": "Créez et modifiez vos listes de lecture depuis le menu d'actions",
             "SELECT_PLAYLIST_BUTTON": "Les listes de lecture sont disponibles dans le sélecteur :",
             "LIBRARY": "La bibliothèque contient tous les karaokés disponibles.",
-            "PLAYLIST_ATTRIBUTES": "Lorsque vous créez vos listes de lecture, vous pouvez la définir comme",
+            "PLAYLIST_ATTRIBUTES": "Lorsque vous créez vos listes de lecture, vous pouvez la définir comme ",
             "THE_PLAYLIST": "La liste de lecture",
             "CURRENT": "courante",
             "PUBLIC": "publique",
@@ -702,7 +702,7 @@
         "LOCAL_ACCOUNT": "Compte local",
         "ONLINE_ACCOUNT": "Compte en ligne",
         "ONLINE_ACCOUNT_DESC": "Le compte en ligne permet de :",
-        "ONLINE_ACCOUNT_SAVE_INFOS": "Enregistrer vos favoris, avatar et informations de profil pour les retrouver d'un ordinateur à l'autre",
+        "ONLINE_ACCOUNT_SAVE_INFOS": "Enregistrer vos favoris, avatar et informations de profil pour les retrouver d'un ordinateur à l'autre.",
         "ONLINE_ACCOUNT_LOST_PASSWORD": "Si vous indiquez votre email, vous pourrez retrouver votre mot de passe perdu.",
         "LOCAL_ACCOUNT_DESC": "Vous avez choisi un compte local. Indiquez un nom de compte et un mot de passe ci-dessous :",
         "ONLINE_ACCOUNT_INSTANCE": "Votre compte en ligne sera hébergé sur l'instance {{instance}}",
@@ -737,20 +737,20 @@
                 "POLL_NOT_ENOUGH_SONGS": "Impossible de démarrer un sondage : pas assez de chansons disponibles"
             },
             "INFO": {
-                "PLAYER_RESTARTING": "Redémarrage du lecteur vidéo...",
+                "PLAYER_RESTARTING": "Redémarrage du lecteur vidéo…",
                 "POLL_WINNER": "Le peuple a voté pour une nouvelle chanson !",
                 "POLL_STARTING": "Démarrage du sondage",
                 "END_OF_SESSION_NEAR": "La session de karaoké doit se terminer dans {{data}} minutes."
             }
         }
     },
-    "LOADING": "Chargement...",
+    "LOADING": "Chargement…",
     "LOADING_SUBTITLE": "Cela ne devrait pas durer trop longtemps, essayez de vider votre cache ou de mettre à jour votre navigateur si vous restez coincés ici.",
     "LOADING_SUBTITLE_ELECTRON": "Cela ne devrait pas durer trop longtemps, essayez de redémarrer Karaoke Mugen ou de le mettre à jour si vous restez coincés ici.",
     "ADD": "Ajout",
     "SEARCH_FILTER": "Filtre de recherche",
     "REFRESH": "Actualiser",
-    "REFRESHING_DATA": "Rafraichissement des données...",
+    "REFRESHING_DATA": "Rafraichissement des données…",
     "CONFIRM_SURE": "Êtes-vous sûr ?",
     "ACTION": "Action",
     "KARA": {
@@ -778,11 +778,11 @@
         "YEAR": "Année de diffusion",
         "YEAR_TOOLTIP": "Année de la diffusion de la série ou de la vidéo",
         "SERIES_SINGERS_REQUIRED": "Les champs Séries et Chanté par ne peuvent être vide en même temps.",
-        "SONGWRITERS_TOOLTIP": "Compositeurs et paroliers",
+        "SONGWRITERS_TOOLTIP": "Compositeurs et paroliers.",
         "CREATORS_TOOLTIP": "Entité qui a créé la série ou le clip. Peut être un studio d'animation, de cinéma, de jeu vidéo, etc.",
         "KARA_AUTHORS_REQUIRED": "L'auteur du karaoké est obligatoire",
         "KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
-        "COMMENT": "Un commentaire?",
+        "COMMENT": "Un commentaire ?",
         "COMMENT_TOOLTIP": "Un champ pour un commentaire comme \"Spéciale dédicace à ma maman\" ou \"Ne pas toucher aux effets!\" ou \"Fait avec trop de café\".",
         "IGNOREHOOKS": "Ignorer les tags automatiques",
         "IGNOREHOOKS_TOOLTIP": "Certains tags pourront être ajoutés automatiquement à ce karaoké s'il remplit certaines conditions.",
@@ -949,11 +949,11 @@
         "REPOSITORY": "Dépôt",
         "REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
         "PROBLEMATIC": "Problématique",
-        "PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique? Est-ce un tag qu'on voudra probablement bannir? Cela permet de marquer plus facilement les chansons à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Épilepsie",
+        "PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique ? Est-ce un tag qu'on voudra probablement bannir ? Cela permet de marquer plus facilement les chansons à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Épilepsie",
         "NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
         "NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
         "PRIORITY": "Priorité à l'affichage",
-        "PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10",
+        "PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10.",
         "COPY_TAG": "Copier le tag vers un autre dépôt"
     },
     "TAG_TYPES": {
@@ -1054,7 +1054,7 @@
         "ONLINE_NAME": "Nom de domaine du dépôt",
         "TOOLTIP_NAME": "Si c'est un dépôt en ligne, indiquez son nom de domaine uniquement. S'il s'agit d'un dépôt local, mettez le nom que vous voulez. Par exemple 'Mon trésor de guerre'",
         "BASE_DIR": "Chemin du dépôt",
-        "PATH_MEDIAS": "Medias",
+        "PATH_MEDIAS": "Médias",
         "NEW_REPOSITORY": "Nouveau dépôt",
         "ONLINE": "En ligne",
         "ENABLED": "Actif",
@@ -1071,7 +1071,7 @@
         "MOVE": "Définir la priorité des dépôts",
         "MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont le même karaoké",
         "MOVING_MEDIA": "Opérations sur le dépôt",
-        "MOVING_MEDIA_BUTTON": "Déplacer les médias...",
+        "MOVING_MEDIA_BUTTON": "Déplacer les médias…",
         "MOVING_MEDIA_PANEL": "Déplacement des médias du dépôt",
         "WARNING": "Attention !",
         "MOVING_MEDIA_ABOUT_MESSAGE": "Tous les fichiers médias du dépôt seront déplacés vers le nouveau dossier. Si vous avez plusieurs dossiers de médias, tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement.",
@@ -1122,16 +1122,16 @@
         "EGG_3": "Faut cesser par contre. Ça devient gênant."
     },
     "TASKS": {
-        "COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics...",
+        "COPYING_LYRICS_IN_REPOS": "Mise à jour des lyrics…",
         "FINDING_UNUSED_MEDIAS": "Recherche de médias inutilisés…",
-        "COMPARING_LYRICS_IN_REPOS": "Comparaison des lyrics entre dépôts...",
-        "CREATING_SONG": "Création du karaoké...",
-        "EDITING_SONG": "Modification du karaoké...",
+        "COMPARING_LYRICS_IN_REPOS": "Comparaison des lyrics entre dépôts…",
+        "CREATING_SONG": "Création du karaoké…",
+        "EDITING_SONG": "Modification du karaoké…",
         "EDITING_KARAS_BATCH_TAGS": "Modification des tags…",
-        "DATASTORE_UPDATE": "Mise à jour des données locales...",
-        "GENERATING": "Génération de la base de données...",
-        "GENERATING_READING": "Lecture des données...",
-        "GENERATING_DATABASE": "Création de la base de données...",
+        "DATASTORE_UPDATE": "Mise à jour des données locales…",
+        "GENERATING": "Génération de la base de données…",
+        "GENERATING_READING": "Lecture des données…",
+        "GENERATING_DATABASE": "Création de la base de données…",
         "GENERATION_DONE": "Génération terminée",
         "DOWNLOADING_MEDIAS": "Téléchargement de médias…",
         "MOVING_MEDIAS_REPO": "Déplacement des médias du dépôt…",
@@ -1141,10 +1141,10 @@
         "CREATING_TAG_IN_PROGRESS": "Création du tag en cours…",
         "EDITING_TAG_IN_PROGRESS": "Modification du tag en cours…",
         "DELETING_TAG_IN_PROGRESS": "Suppression du tag en cours…",
-        "MERGING_TAGS_IN_PROGRESS": "Fusion de tags en cours...",
-        "UPDATING_MEDIAS": "Mise à jour des médias...",
+        "MERGING_TAGS_IN_PROGRESS": "Fusion de tags en cours…",
+        "UPDATING_MEDIAS": "Mise à jour des médias…",
         "UPDATING_WORKDIR": "Mise à jour du répertoire de travail",
-        "DOWNLOADING": "Téléchargement...",
+        "DOWNLOADING": "Téléchargement…",
         "RESOLVING_DELTAS": "Résolution des deltas",
         "DECOMPRESSING": "Compression d'objets",
         "ANALYZING_WORKDIR": "Analyse du répertoire de travail",
@@ -1206,7 +1206,7 @@
         "DATABASE_RESTORED_ERROR": "Erreur lors de la restauration de la base de données",
         "FS_ERROR": "Erreur lors de la recherche dans l'explorateur de fichiers",
         "USER_NOT_EXISTS": "Cet utilisateur n'existe pas",
-        "USER_DELETE_ADMIN_DAMEDESU": "Vous ne pouvez pas supprimer le compte admin!",
+        "USER_DELETE_ADMIN_DAMEDESU": "Vous ne pouvez pas supprimer le compte admin !",
         "USER_NOT_ALLOWED_TO_SING": "Cet utilisateur ne peut pas démarrer la chanson",
         "MESSAGE_SEND_ERROR": "Le message n'a pas pu être envoyé",
         "COMMAND_SEND_ERROR": "Erreur lors de l'envoi de la commande au lecteur",
@@ -1247,7 +1247,7 @@
         "SESSION_NOT_FOUND": "Session introuvable",
         "SESSION_DELETE_ERROR": "Erreur lors de la suppression de la session",
         "SESSION_EXPORT_ERROR": "Erreur lors de l'export de la session",
-        "SESSION_END_BEFORE_START_ERROR": "La fin de session est avant son début!",
+        "SESSION_END_BEFORE_START_ERROR": "La fin de session est avant son début !",
         "TAGS_LIST_ERROR": "Erreur lors de la récupération de la liste des tags",
         "TAG_CREATE_ERROR": "Erreur lors de la création du tag",
         "YEARS_LIST_ERROR": "Erreur lors de la récupération de la liste des années",
@@ -1274,7 +1274,7 @@
         "PASSWORD_TOO_SHORT": "Mot de passe trop court (8 caractères minimum)",
         "PASSWORD_CONVERT_ERROR": "Mot de passe erroné",
         "USER_DELETE_ERROR_ONLINE": "Erreur lors de la suppression du compte en ligne",
-        "USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez",
+        "USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez.",
         "UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
         "USER_UNKNOWN": "Utilisateur connecté inconnu",
         "ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
@@ -1393,7 +1393,7 @@
         },
         "KARAOKE_LIST": {
             "TITLE": "Liste des karaokés",
-            "DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés"
+            "DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés."
         },
         "KARAOKE_NEW": {
             "TITLE": "Ajouter un karaoké",
@@ -1446,7 +1446,7 @@
         },
         "USER_LIST": {
             "TITLE": "Gestion des utilisateurs",
-            "DESCRIPTION": "D'ici vous pouvez créer, supprimer, modifier des utilisateurs mais aussi réinitialiser leur mot de passe ou changer leurs droits"
+            "DESCRIPTION": "D'ici vous pouvez créer, supprimer, modifier des utilisateurs mais aussi réinitialiser leur mot de passe ou changer leurs droits."
         },
         "USER_NEW": {
             "TITLE": "Créer un utilisateur",
@@ -1488,7 +1488,7 @@
         "MORE": "Détails",
         "P4": "Pas du tout, les données que nous récupérerons sont anonymes ou rattachés à votre pseudo, pas plus. Résumons :",
         "L1": "Si vous utilisez les profils en ligne, les données de votre profil (adresse e-mail, biographie, site internet, etc.) ainsi que vos favoris sont transmis en temps réel au serveur contenant votre profil (par défaut il s'agit de kara.moe, notre serveur, vous pouvez en configurer un autre)",
-        "L3": "Si vous utilisez la fonction d'accès à distance (https://<code>.kara.moe), votre code généré est stocké en mémoire sur le serveur et sur votre application, celui-ci expire au bout de 10 jours sans utilisation. (pour vous permettre de conserver le même code d'une session à l'autre)",
+        "L3": "Si vous utilisez la fonction d'accès à distance (https://<code>.kara.moe), votre code généré est stocké en mémoire sur le serveur et sur votre application, celui-ci expire au bout de 10 jours sans utilisation (pour vous permettre de conserver le même code d'une session à l'autre).",
         "L4": "Si vous avez décidé d'activer les statistiques, l'application Karaoke Mugen envoie de façon périodique des statistiques sur les chansons qui sont jouées, demandées, et votre liste de sessions de karaoké. Ces données ne sont à aucun moment associés à votre nom ou pseudo, en revanche un identifiant unique et aléatoire est associé à votre application afin qu'on puisse regrouper les statistiques envoyées.",
         "L4_DETAILS": "Ces statistiques comprennent également des données sur le matériel de votre ordinateur (mémoire RAM, écrans, processeur, système d'exploitation). Les karaokés joués et demandés sont envoyés sans que nous puissions savoir qui est à l'origine de ces ajouts. Cela nous sert à alimenter nos listes de karaokés populaires sur votre interface publique mais aussi sur notre explorateur de karaokés.",
         "L5": "Si vous avez décidé d'activer les rapports Sentry, alors les rapports d'erreur créées par l'application seront envoyées automatiquement à Sentry.io, un service tiers de gestion des erreurs, cela nous permet d'obtenir les informations nécessaires pour qu'on puisse réparer les dysfonctionnements que vous pouvez rencontrer. Le service enverra un extrait des journaux de l'application, qui peuvent contenir des données nominatives (pseudos de ceux qui se sont connectés par exemple), ces données sont réduites au minimum.",
