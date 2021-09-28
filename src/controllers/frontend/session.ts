@@ -97,8 +97,13 @@ export default function sessionController(router: SocketIOApp) {
 	router.route('activateSession', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.seid)) throw {code: 400};
 		await runChecklist(socket, req);
-		setActiveSession(await findSession(req.body.seid));
-		return {code: 200, message: APIMessage('SESSION_ACTIVATED')};
+		try {
+			const session = await findSession(req.body.seid);
+			setActiveSession(session);
+			return {code: 200, message: APIMessage('SESSION_ACTIVATED')};
+		} catch(err) {
+			return {code: 500, message: APIMessage('SESSION_ACTIVATED_ERROR')};
+		}
 	});
 
 	router.route('deleteSession', async (socket: Socket, req: APIData) => {

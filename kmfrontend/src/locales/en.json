@@ -1324,6 +1324,7 @@
 		"SESSION_EDITED": "Session successfully edited",
 		"SESSION_MERGED": "Sessions successfully merged",
 		"SESSION_ACTIVATED": "Session successfully activated",
+		"SESSION_ACTIVATED_ERROR": "Session activation error",
 		"SESSION_DELETED": "Session successfully deleted",
 		"TAG_CREATED": "Tag successfully created",
 		"TAG_EDITED": "Tag successfully edited",

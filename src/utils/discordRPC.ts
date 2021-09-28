@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import sample from 'lodash.sample';
 
 import { getConfig } from '../lib/utils/config';
+import logger from '../lib/utils/logger';
 import { discordClientID } from './constants';
 import { getState } from './state';
 
@@ -84,16 +85,20 @@ function stopCheckingDiscordRPC() {
 
 
 export function setupDiscordRPC() {
-	if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
-	rpc = new discordRPC.Client({ transport: 'ipc' });
+	try {
+		if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
+		rpc = new discordRPC.Client({ transport: 'ipc' });
 
-	rpc.on('ready', () => {
-		setDiscordActivity('idle');
-		stopCheckingDiscordRPC();
-		// activity can only be set every 15 seconds
-	});
-	rpc.login({ clientId: discordClientID }).catch(() => {
-		stopDiscordRPC();
-		if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
-	});
+		rpc.on('ready', () => {
+			setDiscordActivity('idle');
+			stopCheckingDiscordRPC();
+			// activity can only be set every 15 seconds
+		});
+		rpc.login({ clientId: discordClientID }).catch(() => {
+			stopDiscordRPC();
+			if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
+		});
+	} catch(err) {
+		logger.error('Failed to setup Discord Rich Presence', {service: 'Discord', obj: err});
+	}
 }

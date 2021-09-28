@@ -535,31 +535,37 @@ async function cleanupAvatars() {
 
 /** Update song quotas for a user */
 export async function updateSongsLeft(username: string, plaid?: string) {
-	const conf = getConfig();
-	username = username.toLowerCase();
-	const user = await findUserByName(username);
-	let quotaLeft: number;
-	if (!plaid) plaid = getState().publicPlaid;
-	if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
-		switch(+conf.Karaoke.Quota.Type) {
-			case 2:
-				const time = await getSongTimeSpentForUser(plaid,username);
-				quotaLeft = +conf.Karaoke.Quota.Time - time;
-				break;
-			default:
-			case 1:
-				const count = await getSongCountForUser(plaid, username);
-				quotaLeft = +conf.Karaoke.Quota.Songs - count;
-				break;
+	try {
+		const conf = getConfig();
+		username = username.toLowerCase();
+		const user = await findUserByName(username);
+		let quotaLeft: number;
+		if (!plaid) plaid = getState().publicPlaid;
+		if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
+			switch(+conf.Karaoke.Quota.Type) {
+				case 2:
+					const time = await getSongTimeSpentForUser(plaid,username);
+					quotaLeft = +conf.Karaoke.Quota.Time - time;
+					break;
+				default:
+				case 1:
+					const count = await getSongCountForUser(plaid, username);
+					quotaLeft = +conf.Karaoke.Quota.Songs - count;
+					break;
+			}
+		} else {
+			quotaLeft = -1;
 		}
-	} else {
-		quotaLeft = -1;
+		emitWS('quotaAvailableUpdated', {
+			username: user.login,
+			quotaLeft: quotaLeft,
+			quotaType: +conf.Karaoke.Quota.Type
+		});
+	} catch(err) {
+		logger.error(`Unable to update songs left for user ${username}`, {service: 'User', obj: err});
+		sentry.error(err);
+		// Non-fatal
 	}
-	emitWS('quotaAvailableUpdated', {
-		username: user.login,
-		quotaLeft: quotaLeft,
-		quotaType: +conf.Karaoke.Quota.Type
-	});
 }
 
 let adminPasswordCache: string;

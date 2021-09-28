@@ -74,11 +74,7 @@ export default function downloadController(router: SocketIOApp) {
 	router.route('updateAllMedias', async (socket: Socket, req: APIData) => {
 
 		await runChecklist(socket, req, 'admin', 'open');
-		try {
-			updateAllMedias();
-			return APIMessage('UPDATING_MEDIAS_IN_PROGRESS');
-		} catch(err) {
-			// This is async, blabla.
-		}
+		updateAllMedias().catch(() => {});
+		return APIMessage('UPDATING_MEDIAS_IN_PROGRESS');		
 	});
 }

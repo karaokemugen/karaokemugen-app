@@ -58,9 +58,10 @@ export function getRepo(name: string) {
 }
 
 /** Remove a repository */
-export function removeRepo(name: string) {
+export async function removeRepo(name: string) {
 	if (!getRepo(name)) throw {code: 404};
 	deleteRepo(name);
+	await generateDB();
 	logger.info(`Removed ${name}`, {service: 'Repo'});
 }
 

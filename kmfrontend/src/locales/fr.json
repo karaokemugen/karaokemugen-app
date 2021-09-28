@@ -1329,6 +1329,7 @@
 		"SESSION_EDITED": "Session éditée avec succès",
 		"SESSION_MERGED": "Sessions fusionnées avec succès",
 		"SESSION_ACTIVATED": "Session activée avec succès",
+		"SESSION_ACTIVATED_ERROR": "Erreur d'activation de session",
 		"SESSION_DELETED": "Session supprimée avec succès",
 		"TAG_CREATED": "Tag créé avec succès",
 		"TAG_EDITED": "Tag édité avec succès",

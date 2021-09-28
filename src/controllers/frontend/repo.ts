@@ -44,7 +44,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route('deleteRepo', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			removeRepo(req.body.name);
+			await removeRepo(req.body.name);
 			return {code: 200, message: APIMessage('REPO_DELETED')};
 		} catch(err) {
 			const code = 'REPO_DELETE_ERROR';
@@ -87,7 +87,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route('movingMediaRepo', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			movingMediaRepo(req.body.name, req.body.path);
+			movingMediaRepo(req.body.name, req.body.path).catch(() => {});
 			return {code: 200, message: APIMessage('REPO_MOVING_MEDIA_IN_PROGRESS')};
 		} catch(err) {
 			// This is async, check function to know which WS event you get
@@ -159,10 +159,8 @@ export default function repoController(router: SocketIOApp) {
 	});
 	router.route('updateAllZipRepos', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
-		try {
-			updateAllZipRepos();
-		} catch(err) {
+		updateAllZipRepos().catch(err => {
 			errMessage(err);
-		}
+		});		
 	});
 }

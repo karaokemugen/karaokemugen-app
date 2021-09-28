@@ -142,7 +142,7 @@ export default function karaController(router: SocketIOApp) {
 	router.route('editKaras', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			batchEditKaras(req.body.plaid, req.body.action, req.body.tid, req.body.type);
+			batchEditKaras(req.body.plaid, req.body.action, req.body.tid, req.body.type).catch(() => {});
 			return;
 		} catch {
 			throw {code: 500};
