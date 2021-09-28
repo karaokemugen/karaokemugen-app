@@ -150,7 +150,8 @@
             "TITLE": "The karaoke containing {{title}} in the title are on the list.",
             "TAG_NAME": "The karaoke with a tag containing {{title}} are on the list."
         },
-        "EXPL": "The smart playlist is created from <1>the criteria</1>, you can also add manually karaokes to this list."
+        "EXPL": "The smart playlist is created from <1>the criteria</1>, you can also add manually karaokes to this list.",
+        "CRITERIA_TYPE_1001": "Song"
     },
     "PUBLIC_HOMEPAGE": {
         "RESTRICTED_DESCRIPTION": "Karaoke is in restricted mode, you can't add songs.",
