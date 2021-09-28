@@ -2,7 +2,7 @@
 import i18n from 'i18next';
 import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
-import {promisify} from 'util';
+import {setTimeout as sleep} from 'timers/promises';
 
 import { APIMessage } from '../controllers/common';
 import { getSongTitle } from '../lib/services/kara';
@@ -20,7 +20,6 @@ import { sayTwitch } from '../utils/twitch';
 import { getSongSeriesSingers, getSongVersion } from './kara';
 import { displayInfo,playerMessage } from './player';
 import {copyKaraToPlaylist, editPLC,getPlaylistContentsMini} from './playlist';
-const sleep = promisify(setTimeout);
 
 let poll: PollItem[] = [];
 let voters = new Set();

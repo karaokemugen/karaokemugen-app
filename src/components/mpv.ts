@@ -9,7 +9,7 @@ import {resolve} from 'path';
 import randomstring from 'randomstring';
 import semver from 'semver';
 import {graphics} from 'systeminformation';
-import {promisify} from 'util';
+import {setTimeout as sleep} from 'timers/promises';
 import logger from 'winston';
 
 import {setProgressBar} from '../electron/electron';
@@ -38,8 +38,6 @@ import HTTP from '../lib/utils/http';
 import { profile } from '../lib/utils/logger';
 import {getSongSeriesSingers} from '../services/kara';
 import {editSetting} from '../utils/config';
-
-const sleep = promisify(setTimeout);
 
 type PlayerType = 'main' | 'monitor';
 

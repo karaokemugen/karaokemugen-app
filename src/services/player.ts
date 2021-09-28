@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import {promisify} from 'util';
+import {setTimeout as sleep} from 'timers/promises';
 
 import Players, { switchToPauseScreen } from '../components/mpv';
 import { APIMessage } from '../controllers/common';
@@ -14,7 +14,6 @@ import { playCurrentSong } from './karaokeEngine';
 import {getCurrentSong, getNextSong, getPreviousSong, setPlaying} from './playlist';
 import {startPoll} from './poll';
 
-const sleep = promisify(setTimeout);
 export const mpv = new Players();
 
 export function playerMessage(msg: string, duration: number, align = 4, type = 'admin') {
