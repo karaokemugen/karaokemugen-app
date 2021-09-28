@@ -12,7 +12,7 @@ import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, setPlaylistInfo } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
-import {displayMessage, nonStandardPlaylists, secondsTimeSpanToHMS} from '../../../utils/tools';
+import { displayMessage, nonStandardPlaylists, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import { View } from '../../types/view';
 import KmAppBodyDecorator from '../decorators/KmAppBodyDecorator';
@@ -52,6 +52,7 @@ interface IState {
 }
 
 let timer: any;
+let timerFilter: any;
 
 class PublicPage extends Component<IProps, IState> {
 	static contextType = GlobalContext;
@@ -276,6 +277,17 @@ class PublicPage extends Component<IProps, IState> {
 		});
 	};
 
+	changeFilterValue = (e) => {
+		if (timerFilter) clearTimeout(timerFilter);
+		timerFilter = setTimeout(() =>
+			setFilterValue(
+				this.context.globalDispatch,
+				e.target.value,
+				'left',
+				this.context.globalState.frontendContext.playlistInfoLeft.plaid
+			), 1000);
+	};
+
 	render() {
 		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 2 && this.props.route.location.pathname.includes('/public/search')) {
 			this.changeView('currentPlaylist');
@@ -298,7 +310,7 @@ class PublicPage extends Component<IProps, IState> {
 				<div style={{ fontSize: '30px', padding: '10px' }}>
 					{i18next.t('WEBAPPMODE_CLOSED_MESSAGE')}
 				</div>
-			</div>):(
+			</div>) : (
 				<>
 					<PublicHeader
 						openModal={(type: string) => this.props.route.history.push(`/public/${type}`)}
@@ -361,15 +373,8 @@ class PublicPage extends Component<IProps, IState> {
 											<input
 												placeholder={`\uF002 ${i18next.t('SEARCH')}`}
 												type="text"
-												value={this.context.globalState.frontendContext.filterValue1}
-												onChange={e =>
-													setFilterValue(
-														this.context.globalDispatch,
-														e.target.value,
-														'left',
-														this.context.globalState.frontendContext.playlistInfoLeft.plaid
-													)
-												}
+												defaultValue={this.context.globalState.frontendContext.filterValue1}
+												onChange={this.changeFilterValue}
 											/>
 										</div>
 										{this.state.isPollActive ? (

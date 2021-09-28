@@ -1,8 +1,8 @@
 import './TagsList.scss';
 
 import i18next from 'i18next';
-import React, { Component } from 'react';
-import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
+import React, { PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
+import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
 
 import { DBKaraTag, DBYear } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
@@ -10,7 +10,6 @@ import GlobalContext from '../../../store/context';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
-import { eventEmitter } from '../../../utils/tools';
 import { View } from '../../types/view';
 
 interface IProps {
@@ -23,78 +22,34 @@ interface IProps {
 	) => void;
 }
 
-interface IState {
-	tags: TagsElem;
-	forceUpdate: boolean;
-	filterValue: string;
-	scrollToIndex: number;
-}
-
-interface TagsElem {
-	content: DBTag[];
-	infos: {
-		count: number,
-		from: number,
-		to: number
-	}
-}
-
-const _cache = new CellMeasurerCache({ defaultHeight: 80, fixedWidth: true });
 const chunksize = 100;
 let timer: any;
 
-class TagsList extends Component<IProps, IState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+function TagsList(props: IProps) {
+	const context = useContext(GlobalContext);
+	const [forceUpdate, setForceUpdate] = useState(false);
+	const [tags, setTags] = useState({
+		content: [],
+		infos: {
+			count: 0,
+			from: 0,
+			to: 0
+		}
+	});
 
-	state = {
-		tags: {
-			content: [],
-			infos: {
-				count: 0,
-				from: 0,
-				to: 0
-			}
-		},
-		forceUpdate: false,
-		filterValue: '',
-		scrollToIndex: -1
-	};
-
-	componentDidMount() {
-		this.props.tagType === YEARS.type ? this.getYears() : this.getTags();
-		eventEmitter.addChangeListener('playlistContentsUpdatedFromClient', this.playlistContentsUpdatedFromClient);
-	}
-
-	componentWillUnmount() {
-		eventEmitter.removeChangeListener('playlistContentsUpdatedFromClient', this.playlistContentsUpdatedFromClient);
-	}
-
-	playlistContentsUpdatedFromClient = async () => {
-		const tags = this.state.tags;
-		tags.infos.from = 0;
-		this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1, tags, scrollToIndex: 0 });
-		this.props.tagType === YEARS.type ? this.getYears() : this.getTags();
-	}
-
-	tagsListForceRefresh = () => {
-		this.setState({ forceUpdate: !this.state.forceUpdate });
-		_cache.clearAll();
-	}
-
-	async getTags() {
+	const getTags = async () => {
 		try {
 			const response = await commandBackend('getTags',
 				{
-					type: this.props.tagType,
-					from: this.state.tags.infos.from,
+					type: props.tagType,
+					from: tags.infos.from,
 					size: chunksize,
-					filter: this.state.filterValue,
+					filter: context.globalState.frontendContext.filterValue1,
 					stripEmpty: true
 				});
 			let data;
 			if (response.infos?.from > 0) {
-				data = this.state.tags;
+				data = tags;
 				if (response.infos.from < data.content.length) {
 					for (let index = 0; index < response.content.length; index++) {
 						data.content[response.infos.from + index] = response.content[index];
@@ -112,109 +67,104 @@ class TagsList extends Component<IProps, IState> {
 			} else {
 				data = response;
 			}
-			this.setState({ tags: data, scrollToIndex: -1 });
-			this.tagsListForceRefresh();
+			setTags(data);
+			setForceUpdate(!forceUpdate);
 		} catch (e) {
 			// already display
 		}
-	}
+	};
 
-	async getYears() {
+	const getYears = async () => {
 		const response = await commandBackend('getYears');
 		response.content = response.content.map((val: DBYear) => {
 			return { tid: val.year, name: val.year, type: [0], karacount: [{ type: 0, count: val.karacount }] };
 		});
-		this.setState({ tags: response, scrollToIndex: -1 });
-	}
+		setTags(response);
+	};
 
 
-	isRowLoaded = ({ index }: Index) => {
-		return Boolean(this.state.tags.content[index]);
-	}
+	const isRowLoaded = (index) => {
+		return !!tags?.content[index];
+	};
 
-	loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
-		const data = this.state.tags;
-		data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
-		this.setState({ tags: data });
+	const loadMoreRows = async ({ endIndex }: ListRange) => {
+		if (isRowLoaded(endIndex)) return;
+		tags.infos.from = Math.floor(endIndex / chunksize) * chunksize;
+		setTags(tags);
 		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => this.props.tagType === YEARS.type ? this.getYears() : this.getTags(), 1000);
-	}
+		timer = setTimeout(() => props.tagType === YEARS.type ? getYears() : getTags(), 1000);
+	};
 
-	openSearch = (tid: string) => {
+	const openSearch = (tid: string) => {
 		let searchValue = tid;
-		if (this.props.tagType !== YEARS.type) searchValue = `${searchValue}~${this.props.tagType}`;
-		this.props.changeView('search', this.props.tagType, searchValue, this.props.tagType === YEARS.type ? 'year' : 'tag');
-	}
+		if (props.tagType !== YEARS.type) searchValue = `${searchValue}~${props.tagType}`;
+		props.changeView('search', props.tagType, searchValue, props.tagType === YEARS.type ? 'year' : 'tag');
+	};
 
-	rowRenderer = ({ index, isScrolling, key, parent, style }: ListRowProps) => {
+	const Item = useCallback(({ index }: { index: number }) => {
 		let tag: DBTag;
-		if (this.state.tags?.content[index]) {
-			tag = this.state.tags.content[index];
+		if (tags?.content[index]) {
+			tag = tags.content[index];
 			return (
-				<CellMeasurer
-					cache={_cache}
-					columnIndex={0}
-					key={key}
-					parent={parent}
-					rowIndex={index}
-				>
-					<div className={`tags-item${index % 2 === 0 ? ' even' : ''}`} tabIndex={0}
-						key={tag.tid} style={style} onClick={() => this.openSearch(tag.tid)}>
-						<div className="title">{
-							this.props.tagType === YEARS.type ?
-								tag.name :
-								getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag)
-						}</div>
-						<div className="karacount">
-							<em>
-								{i18next.t('KARAOKE', {
-									count: (tag?.karacount as unknown as { count: number, type: number }[])
-										?.filter(value => value.type === this.props.tagType).length > 0 ?
-										(tag.karacount as unknown as { count: number, type: number }[])
-											?.filter(value => value.type === this.props.tagType)[0].count
-										: 0
-								})}
-							</em>
-						</div>
+				<div className={`tags-item${index % 2 === 0 ? ' even' : ''}`} tabIndex={0}
+					key={tag.tid} onClick={() => openSearch(tag.tid)}>
+					<div className="title">{
+						props.tagType === YEARS.type ?
+							tag.name :
+							getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag)
+					}</div>
+					<div className="karacount">
+						<em>
+							{i18next.t('KARAOKE', {
+								count: (tag?.karacount as unknown as { count: number, type: number }[])
+									?.filter(value => value.type === props.tagType).length > 0 ?
+									(tag.karacount as unknown as { count: number, type: number }[])
+										?.filter(value => value.type === props.tagType)[0].count
+									: 0
+							})}
+						</em>
 					</div>
-				</CellMeasurer>
+				</div>
 			);
 		} else {
-			return <div className="tags-item" key={key} style={style}>
+			return <div className="tags-item" key={index}>
 				{i18next.t('LOADING')}
 			</div>;
 		}
-	}
+	}, [tags?.infos.to]);
 
-	render() {
+	const HeightPreservingItem = useCallback(({ children, ...props }: PropsWithChildren<ItemProps>) => {
 		return (
-			<div className="tags-list">
-				<InfiniteLoader
-					isRowLoaded={this.isRowLoaded}
-					loadMoreRows={this.loadMoreRows}
-					rowCount={this.state.tags.infos.count}>
-					{({ onRowsRendered, registerChild }) => (
-						<AutoSizer>
-							{({ height, width }) => {
-								return (
-									<List
-										{...[this.state.forceUpdate]}
-										ref={registerChild}
-										onRowsRendered={onRowsRendered}
-										rowCount={this.state.tags.infos.count}
-										rowHeight={_cache.rowHeight}
-										rowRenderer={this.rowRenderer}
-										height={height}
-										width={width}
-										scrollToIndex={this.state.scrollToIndex}
-									/>);
-							}}
-						</AutoSizer>
-					)}
-				</InfiniteLoader>
+			// the height is necessary to prevent the item container from collapsing, which confuses Virtuoso measurements
+			<div {...props} style={{ minHeight: props['data-known-size'] || undefined }}>
+				{children}
 			</div>
 		);
-	}
+	}, []);
+
+	useEffect(() => {
+		tags.infos.from = 0;
+		setTags(tags);
+		props.tagType === YEARS.type ? getYears() : getTags();
+	}, [context.globalState.frontendContext.filterValue1]);
+
+	useEffect(() => {
+		props.tagType === YEARS.type ? getYears() : getTags();
+	}, []);
+
+	return (
+		<div className="tags-list">
+			<Virtuoso
+				components={{
+					Item: HeightPreservingItem
+				}}
+				itemContent={(index) => (<Item index={index} />)}
+				totalCount={tags.infos.count}
+				rangeChanged={loadMoreRows}
+
+			/>
+		</div>
+	);
 }
 
 export default TagsList;

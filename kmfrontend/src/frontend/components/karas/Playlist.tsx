@@ -1,11 +1,10 @@
-import 'react-virtualized/styles.css';
 import './Playlist.scss';
 
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { SortableContainer } from 'react-sortable-hoc';
-import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
+import React, { PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { DragDropContext, Draggable, DraggableProvided, Droppable, DropResult } from 'react-beautiful-dnd';
+import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
 
 import { DownloadedStatus } from '../../../../../src/lib/types/database/download';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
@@ -16,7 +15,6 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 import {
 	callModal,
 	displayMessage,
-	eventEmitter,
 	is_touch_device, isNonStandardPlaylist,
 	nonStandardPlaylists,
 	secondsTimeSpanToHMS
@@ -28,7 +26,6 @@ import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
 
 const chunksize = 400;
-const _cache = new CellMeasurerCache({ defaultHeight: 44, fixedWidth: true });
 let timer: any;
 
 interface IProps {
@@ -65,9 +62,7 @@ function Playlist(props: IProps) {
 	const [orderByLikes, setOrderByLikes] = useState(false);
 	const [isPlaylistInProgress, setPlaylistInProgress] = useState(false);
 	const [stopUpdate, setStopUpdate] = useState(false);
-	const [forceUpdate, setForceUpdate] = useState(false);
 	const [data, setData] = useState<KaraList>();
-	const [scrollToIndex, setScrollToIndex] = useState<number>();
 	const [checkedKaras, setCheckedKaras] = useState(0);
 	const [playing, setPlaying] = useState<number>();
 	const [songsBeforeJingle, setSongsBeforeJingle] = useState<number>();
@@ -78,21 +73,24 @@ function Playlist(props: IProps) {
 	const [selectAllKarasChecked, setSelectAllKarasChecked] = useState(false);
 	const [height, setHeight] = useState(0);
 	const [criteriasOpen, setCriteriasOpen] = useState(false);
+	const virtuoso = useRef<any>(null);
 
 	const favoritesUpdated = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites) getPlaylist();
 	};
 
 	const publicPlaylistEmptied = () => {
-		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library && data) {
-			for (const kara of data.content) {
-				if (kara) {
-					kara.my_public_plc_id = [];
-					kara.public_plc_id = [];
-					kara.flag_upvoted = false;
+		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) {
+			setData(oldData => {
+				for (const kara of oldData.content) {
+					if (kara) {
+						kara.my_public_plc_id = [];
+						kara.public_plc_id = [];
+						kara.flag_upvoted = false;
+					}
 				}
-			}
-			setData(data);
+				return oldData;
+			});
 		}
 	};
 
@@ -106,32 +104,47 @@ function Playlist(props: IProps) {
 	}[]) => {
 		if ((getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library
 			|| getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites
-			|| (event.length > 0 && event[0].download_status))
-			&& data?.content) {
-			for (const kara of data.content) {
-				for (const karaUpdated of event) {
-					if (kara?.kid === karaUpdated.kid) {
-						if (karaUpdated.plc_id) {
-							kara.public_plc_id = karaUpdated.plc_id;
-							if (!karaUpdated.plc_id[0]) {
-								kara.my_public_plc_id = [];
+			|| (event.length > 0 && event[0].download_status))) {
+			setData(oldData => {
+				for (const kara of oldData.content) {
+					for (const karaUpdated of event) {
+						if (kara?.kid === karaUpdated.kid) {
+							if (karaUpdated.plc_id) {
+								kara.public_plc_id = karaUpdated.plc_id;
+								if (!karaUpdated.plc_id[0]) {
+									kara.my_public_plc_id = [];
+								}
 							}
-						}
-						if (karaUpdated.username === context.globalState.auth.data.username
-							&& karaUpdated.flag_upvoted === false || karaUpdated.flag_upvoted === true) {
-							kara.flag_upvoted = karaUpdated.flag_upvoted;
-						}
-						if (karaUpdated.requester === context.globalState.auth.data.username) {
-							kara.my_public_plc_id = karaUpdated.plc_id;
-						}
-						if (karaUpdated.download_status) {
-							kara.download_status = karaUpdated.download_status;
+							if (karaUpdated.username === context.globalState.auth.data.username
+								&& karaUpdated.flag_upvoted === false || karaUpdated.flag_upvoted === true) {
+								kara.flag_upvoted = karaUpdated.flag_upvoted;
+							}
+							if (karaUpdated.requester === context.globalState.auth.data.username) {
+								kara.my_public_plc_id = karaUpdated.plc_id;
+							}
+							if (karaUpdated.download_status) {
+								kara.download_status = karaUpdated.download_status;
+							}
 						}
 					}
 				}
-			}
-			setData(data);
+				return oldData;
+			});
 		}
+	};
+
+	const scrollToIndex = useCallback((index) => {
+		virtuoso.current?.scrollToIndex({
+			index,
+			align: 'start',
+			behavior: 'smooth'
+		});
+	}, [virtuoso]);
+
+	const getFilterValue = (side: 'left' | 'right') => {
+		return side === 'left' ?
+			context.globalState.frontendContext.filterValue1 || '' :
+			context.globalState.frontendContext.filterValue2 || '';
 	};
 
 	const initCall = async () => {
@@ -141,17 +154,7 @@ function Playlist(props: IProps) {
 		await getPlaylist();
 	};
 
-	const playlistContentsUpdatedFromClient = (plaid: string) => {
-		if (getPlaylistInfo(props.side, context)?.plaid === plaid && !stopUpdate) {
-			if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) data.infos.from = 0;
-			setData(data);
-			setScrollToIndex(0);
-			getPlaylist(searchType);
-		}
-	};
-
 	const resizeCheck = () => {
-		playlistForceRefresh();
 		// Calculate empty space for fillSpace cheat.
 		// Virtual lists doesn't expand automatically, or more than needed, so the height is forced by JS calculations
 		// using getBoundingClientRect
@@ -166,62 +169,81 @@ function Playlist(props: IProps) {
 		setTimeout(resizeCheck, 0);
 	};
 
-	const SortableList = SortableContainer(List);
+	const debounceClear = useCallback(
+		debounce(() => setGotToPlayingAvoidScroll(false), 500, { maxWait: 1000 }), []);
 
-	const isRowLoaded = ({ index }: Index) => {
-		return Boolean(data?.content[index]);
+	const clearScrollToIndex = () => {
+		if (goToPlayingAvoidScroll) {
+			debounceClear();
+		} else {
+			setGotToPlaying(false);
+			setGotToPlayingAvoidScroll(false);
+		}
 	};
 
-	const loadMoreRows = async ({ stopIndex }: IndexRange) => {
-		if (!isPlaylistInProgress) {
-			data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
+	const isRowLoaded = (index) => {
+		return !!data?.content[index];
+	};
+
+	const scrollHandler = async ({ endIndex }: ListRange) => {
+		clearScrollToIndex();
+		if (isRowLoaded(endIndex)) return;
+		else if (!isPlaylistInProgress) {
+			data.infos.from = Math.floor(endIndex / chunksize) * chunksize;
 			setData(data);
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(getPlaylist, 1000);
 		}
 	};
 
-	const rowRenderer = ({ index, key, parent, style }: ListRowProps) => {
+	const HeightPreservingItem = useCallback(({ children, ...props }: PropsWithChildren<ItemProps>) => {
+		return (
+			// the height is necessary to prevent the item container from collapsing, which confuses Virtuoso measurements
+			<div {...props} style={{ minHeight: 1 }}>
+				{children}
+			</div>
+		);
+	}, []);
+
+	const sortable = useMemo(() => {
+		return !is_touch_device()
+			&& props.scope === 'admin'
+			&& !isNonStandardPlaylist(getPlaylistInfo(props.side, context).plaid)
+			&& searchType !== 'recent'
+			&& searchType !== 'requested'
+			&& !searchValue
+			&& !orderByLikes
+			&& !getFilterValue(props.side);
+	}, [searchType, searchValue, orderByLikes, getFilterValue(props.side), is_touch_device(), getPlaylistInfo(props.side, context).plaid]);
+
+	const Item = useCallback(({ provided, index, isDragging }: { provided: DraggableProvided, index: number, isDragging: boolean }) => {
 		let content: KaraElement;
 		if (data?.content[index]) {
 			content = data.content[index];
 			return (
-				<CellMeasurer
-					cache={_cache}
-					columnIndex={0}
-					key={key}
-					parent={parent}
-					rowIndex={index}
-				>
-					<KaraLine
-						index={index}
-						indexInPL={index}
-						key={content.kid}
-						kara={content}
-						scope={props.scope}
-						i18nTag={data.i18n}
-						side={props.side}
-						checkKara={checkKara}
-						avatar_file={data.avatars[content.username]}
-						deleteCriteria={deleteCriteria}
-						jingle={typeof songsBeforeJingle === 'number' && (index === playing +
-							songsBeforeJingle)}
-						sponsor={typeof songsBeforeSponsor === 'number' && (index === playing +
-							songsBeforeSponsor)}
-						style={style}
-						toggleKaraDetail={(kara, idPlaylist) => {
-							props.toggleKaraDetail(kara, idPlaylist, index);
-						}}
-						sortable={searchType !== 'recent'
-							&& searchType !== 'requested'
-							&& !searchValue
-							&& !orderByLikes
-							&& !getFilterValue(props.side)}
-					/>
-				</CellMeasurer>
+				<KaraLine
+					indexInPL={index}
+					key={`${props.side}-${content.plcid ? content.plcid + '-' : ''}${content.kid}`}
+					kara={content}
+					scope={props.scope}
+					i18nTag={data.i18n}
+					side={props.side}
+					checkKara={checkKara}
+					avatar_file={data.avatars[content.username]}
+					deleteCriteria={deleteCriteria}
+					jingle={typeof songsBeforeJingle === 'number' && (index === playing +
+						songsBeforeJingle)}
+					sponsor={typeof songsBeforeSponsor === 'number' && (index === playing +
+						songsBeforeSponsor)}
+					toggleKaraDetail={(kara, idPlaylist) => {
+						props.toggleKaraDetail(kara, idPlaylist, index);
+					}}
+					sortable={sortable}
+					draggable={provided}
+				/>
 			);
 		} else {
-			return <div key={key} style={style}>
+			return <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
 				<div className="list-group-item">
 					<div className="actionDiv" />
 					<div className="infoDiv" />
@@ -229,20 +251,20 @@ function Playlist(props: IProps) {
 				</div>
 			</div>;
 		}
-	};
+	}, [sortable, playing, data]);
 
-	const noRowsRenderer = () => {
+	const noRowsRenderer = useCallback(() => {
 		return <React.Fragment>
 			{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library && props.scope === 'admin' ? (
 				<div className="list-group-item karaSuggestion">
 					<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 					{context?.globalState.settings.data.config.System.Repositories
-						.filter(value => value.Enabled && value.Online).map(value => <a href={`https://${value.Name}/`} >{value.Name}</a>)}
+						.filter(value => value.Enabled && value.Online).map(value => <a key={value.Name} href={`https://${value.Name}/`} >{value.Name}</a>)}
 					<a href="https://suggest.karaokes.moe" >suggest.karaokes.moe</a>
 				</div>
 			) : null}
 		</React.Fragment>;
-	};
+	}, [getPlaylistInfo(props.side, context)?.plaid]);
 
 	const playlistContentsUpdatedFromServer = (idPlaylist: string) => {
 		if (getPlaylistInfo(props.side, context)?.plaid === idPlaylist && !stopUpdate) getPlaylist();
@@ -269,12 +291,6 @@ function Playlist(props: IProps) {
 	const playlistDidUpdate = async () => {
 		await getPlaylist();
 		scrollToPlaying();
-	};
-
-	const getFilterValue = (side: 'left' | 'right') => {
-		return side === 'left' ?
-			context.globalState.frontendContext.filterValue1 || '' :
-			context.globalState.frontendContext.filterValue2 || '';
 	};
 
 	const getPlaylist = async (searchTypeParam?: 'search' | 'recent' | 'requested', orderByLikes?: boolean) => {
@@ -319,7 +335,7 @@ function Playlist(props: IProps) {
 			if (goToPlaying && !isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
 				const result = await commandBackend('findPlayingSongInPlaylist', { plaid: getPlaylistInfo(props.side, context)?.plaid });
 				if (result?.index !== -1) {
-					setScrollToIndex(result.index);
+					scrollToIndex(result.index);
 					setGotToPlayingAvoidScroll(true);
 				}
 			}
@@ -351,20 +367,24 @@ function Playlist(props: IProps) {
 
 	const playingUpdate = (dataUpdate: { plaid: string, plc_id: number }) => {
 		if (getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid && !stopUpdate) {
-			let indexPlaying;
-			data?.content.forEach((kara, index) => {
-				if (kara?.flag_playing) {
-					kara.flag_playing = false;
-					kara.flag_dejavu = true;
-				} else if (kara?.plcid === dataUpdate.plc_id) {
-					kara.flag_playing = true;
-					indexPlaying = index;
-					if (goToPlaying) {
-						setScrollToIndex(index);
-						setGotToPlayingAvoidScroll(true);
+			setData(oldData => {
+				let indexPlaying;
+				for (let index = 0; index < oldData.content.length; index++) {
+					const kara = oldData.content[index];
+					if (kara?.plcid === dataUpdate.plc_id) {
+						kara.flag_playing = true;
+						indexPlaying = index;
+						if (goToPlaying) {
+							scrollToIndex(index);
+							setGotToPlayingAvoidScroll(true);
+						}
+						setPlaying(indexPlaying);
+					} else if (kara?.flag_playing) {
+						kara.flag_playing = false;
+						kara.flag_dejavu = true;
 					}
-					setPlaying(indexPlaying);
 				}
+				return oldData;
 			});
 		}
 	};
@@ -386,13 +406,13 @@ function Playlist(props: IProps) {
 
 	const scrollToPlaying = async () => {
 		if (playing) {
-			setScrollToIndex(playing);
+			scrollToIndex(playing);
 			setGotToPlaying(true);
 			setGotToPlayingAvoidScroll(true);
 		} else {
 			const result = await commandBackend('findPlayingSongInPlaylist', { plaid: getPlaylistInfo(props.side, context)?.plaid });
 			if (result?.index !== -1) {
-				setScrollToIndex(result.index);
+				scrollToIndex(result.index);
 				setGotToPlaying(true);
 				setGotToPlayingAvoidScroll(true);
 			}
@@ -657,7 +677,7 @@ function Playlist(props: IProps) {
 
 	const onChangeTags = (type: number | string, value: string) => {
 		const newSearchCriteria = type === 0 ? 'year' : 'tag';
-		const newStringValue = (value && searchCriteria === 'tag') ? `${value}~${type}` : value;
+		const newStringValue = (value && newSearchCriteria === 'tag') ? `${value}~${type}` : value;
 		setSearchCriteria(newSearchCriteria);
 		setSearchValue(newStringValue);
 	};
@@ -690,59 +710,64 @@ function Playlist(props: IProps) {
 			});
 	};
 
-	const sortRow = ({ oldIndex, newIndex }: { oldIndex: number, newIndex: number }) => {
-		if (oldIndex !== newIndex) {
-			// extract plcid based on sorter index
-			const plcid = data.content[oldIndex].plcid;
-
-			// fix index to match api behaviour
-			let apiIndex = newIndex + 1;
-			if (newIndex > oldIndex)
-				apiIndex = apiIndex + 1;
-			try {
-				commandBackend('editPLC', {
-					pos: apiIndex,
-					plc_ids: [plcid]
-				}).finally(() => {
-					setStopUpdate(false);
-				});
-
-				const kara = data.content[oldIndex];
-				let karas: KaraElement[] = [...data.content];
-				delete karas[oldIndex];
-				karas = karas.filter(kara => !!kara);
-				karas.splice(newIndex, 0, kara);
-				data.content = karas;
-				setData(data);
-				setForceUpdate(!forceUpdate);
-			} catch (e) {
-				//already display
+	const sortRow = React.useCallback(
+		(result: DropResult) => {
+			if (!result.destination) {
+				return;
 			}
+			if (result.source.index === result.destination.index) {
+				return;
+			}
+			const oldIndex = result.source.index;
+			const newIndex = result.destination.index;
+			if (oldIndex !== newIndex) {
+				setData(data => {
+					// extract plcid based on sorter index
+					const plcid = data.content[oldIndex].plcid;
+
+					// fix index to match api behaviour
+					let apiIndex = newIndex + 1;
+					if (newIndex > oldIndex)
+						apiIndex = apiIndex + 1;
+					try {
+						commandBackend('editPLC', {
+							pos: apiIndex,
+							plc_ids: [plcid]
+						}).finally(() => {
+							setStopUpdate(false);
+						});
+
+						const result = Array.from(data.content);
+						const [removed] = result.splice(oldIndex, 1);
+						result.splice(newIndex, 0, removed);
+						data.content = result;
+					} catch (e) {
+						//already display
+					}
+
+					return data;
+				});
+			}
+		},
+		[setData]
+	);
+
+	const avoidErrorInDnd = (e) => {
+		if (
+			e.message === 'ResizeObserver loop completed with undelivered notifications.' ||
+			e.message === 'ResizeObserver loop limit exceeded'
+		) {
+			e.stopImmediatePropagation();
 		}
-	};
-
-	const debounceClear = () => setGotToPlayingAvoidScroll(false);
-	const debouncedClear = debounce(debounceClear, 500, { maxWait: 1000 });
-
-	const clearScrollToIndex = () => {
-		if (goToPlayingAvoidScroll) {
-			debouncedClear();
-		} else {
-			setScrollToIndex(-1);
-			setGotToPlaying(false);
-			setGotToPlayingAvoidScroll(false);
-		}
-	};
-
-	const playlistForceRefresh = () => {
-		setForceUpdate(!forceUpdate);
-		_cache.clearAll();
 	};
 
 	useEffect(() => {
-		playlistForceRefresh();
-	}, [getOppositePlaylistInfo(props.side, context)?.plaid]);
-
+		if (!stopUpdate) {
+			if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) && data) data.infos.from = 0;
+			scrollToIndex(0);
+			getPlaylist(searchType);
+		}
+	}, [getFilterValue(props.side)]);
 
 	useEffect(() => {
 		getPlaylist(props.searchType);
@@ -762,9 +787,8 @@ function Playlist(props: IProps) {
 	}, [searchValue]);
 
 	useEffect(() => {
-		playlistForceRefresh();
 		if (props.indexKaraDetail) {
-			setScrollToIndex(props.indexKaraDetail);
+			scrollToIndex(props.indexKaraDetail);
 			props.clearIndexKaraDetail();
 		}
 	}, [data]);
@@ -780,7 +804,7 @@ function Playlist(props: IProps) {
 		getSocket().on('KIDUpdated', KIDUpdated);
 		getSocket().on('playerStatus', updateCounters);
 		window.addEventListener('resize', resizeCheck, { passive: true, capture: true });
-		eventEmitter.addChangeListener('playlistContentsUpdatedFromClient', playlistContentsUpdatedFromClient);
+		window.addEventListener('error', avoidErrorInDnd);
 		return () => {
 			getSocket().off('playingUpdated', playingUpdate);
 			getSocket().off('favoritesUpdated', favoritesUpdated);
@@ -789,7 +813,7 @@ function Playlist(props: IProps) {
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
 			window.removeEventListener('resize', resizeCheck);
-			eventEmitter.removeChangeListener('playlistContentsUpdatedFromClient', playlistContentsUpdatedFromClient);
+			window.removeEventListener('error', avoidErrorInDnd);
 		};
 	}, []);
 
@@ -834,37 +858,41 @@ function Playlist(props: IProps) {
 					? <div className="loader" />
 					: (
 						data && !criteriasOpen
-							? <InfiniteLoader
-								isRowLoaded={isRowLoaded}
-								loadMoreRows={loadMoreRows}
-								rowCount={data.infos.count || 0}>
-								{({ onRowsRendered, registerChild }) => (
-									<AutoSizer disableHeight>
-										{({ width }) => {
-											return (
-												<SortableList
-													{...[forceUpdate]}
-													pressDelay={0}
-													helperClass={`playlist-dragged-item ${props.side === 'right' ? 'side-right' : 'side-left'}`}
-													useDragHandle={true}
-													ref={registerChild}
-													onRowsRendered={onRowsRendered}
-													rowCount={(data.infos.count) || 0}
-													rowHeight={_cache.rowHeight}
-													rowRenderer={rowRenderer}
-													noRowsRenderer={noRowsRenderer}
-													height={height}
-													width={width}
-													onSortStart={() => setStopUpdate(true)}
-													onSortEnd={sortRow}
-													onScroll={clearScrollToIndex}
-													scrollToIndex={scrollToIndex}
-													scrollToAlignment="start"
-												/>);
-										}}
-									</AutoSizer>
-								)}
-							</InfiniteLoader>
+							? <DragDropContext onDragEnd={sortRow}>
+								<Droppable
+									droppableId={'droppable' + props.side}
+									mode="virtual"
+									renderClone={(provided, snapshot, rubric) => (
+										<Item provided={provided} isDragging={snapshot.isDragging} index={rubric.source.index} />
+									)}
+								>
+									{provided => (
+										<Virtuoso
+											components={{
+												Item: HeightPreservingItem,
+												EmptyPlaceholder: noRowsRenderer,
+												Footer: () => (<div style={{ height: '2.25rem' }} />)
+											}}
+											// @ts-ignore
+											scrollerRef={provided.innerRef}
+											style={{ height }}
+											itemContent={(index) => (
+												<Draggable
+													isDragDisabled={!sortable}
+													draggableId={`${props.side}-${index}`}
+													index={index}
+													key={`${props.side}-${index}`}
+												>
+													{provided => (<Item provided={provided} index={index} isDragging={false} />)}
+												</Draggable>
+											)}
+											totalCount={data.infos.count}
+											rangeChanged={scrollHandler}
+											ref={virtuoso}
+										/>
+									)}
+								</Droppable>
+							</DragDropContext>
 							: playlist?.flag_smart && criteriasOpen ? <CriteriasList
 								tags={props.tags}
 								plaid={playlist?.plaid}
@@ -880,7 +908,7 @@ function Playlist(props: IProps) {
 					title={i18next.t('GOTO_TOP')}
 					className="btn btn-action"
 					onClick={() => {
-						setScrollToIndex(0);
+						scrollToIndex(0);
 						setGotToPlaying(false);
 						setGotToPlayingAvoidScroll(false);
 					}}
@@ -903,7 +931,7 @@ function Playlist(props: IProps) {
 					title={i18next.t('GOTO_BOTTOM')}
 					className="btn btn-action"
 					onClick={() => {
-						setScrollToIndex(data.infos?.count - 1);
+						scrollToIndex(data.infos?.count - 1);
 						setGotToPlaying(false);
 						setGotToPlayingAvoidScroll(false);
 					}}
