@@ -30,4 +30,6 @@ function ProfilePicture(props: IProps) {
 	return (<img src={url} alt={props.user?.nickname} title={props.user?.nickname} {...htmlProps} />);
 }
 
-export default memo(ProfilePicture);
+export default memo(ProfilePicture,
+	(prev, next) =>
+		prev.user.avatar_file === next.user.avatar_file);

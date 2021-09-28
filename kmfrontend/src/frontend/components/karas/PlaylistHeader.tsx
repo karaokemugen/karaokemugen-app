@@ -170,6 +170,18 @@ function PlaylistHeader(props: IProps) {
 		setKaraMenu(false);
 	};
 
+	let timer;
+	const changeFilterValue = (e) => {
+		if (timer) clearTimeout(timer);
+		timer = setTimeout(() =>
+			setFilterValue(
+				context.globalDispatch,
+				e.target.value,
+				props.side,
+				playlist?.plaid
+			), 1000);
+	};
+
 	useEffect(() => {
 		setTags(props.tags?.filter(tag => tag.type.includes(tagType)));
 	}, [props.tags.length]);
@@ -329,12 +341,7 @@ function PlaylistHeader(props: IProps) {
 						defaultValue={props.side === 'left' ?
 							context.globalState.frontendContext.filterValue1 :
 							context.globalState.frontendContext.filterValue2}
-						onChange={e => setFilterValue(
-							context.globalDispatch,
-							e.target.value,
-							props.side,
-							playlist?.plaid
-						)}
+						onChange={changeFilterValue}
 					/>
 				</div>
 				{plCommandsContainer}

@@ -1,8 +1,8 @@
 import './KaraLine.scss';
 
 import i18next from 'i18next';
-import React, { CSSProperties, Key, MouseEvent,useContext,useState } from 'react';
-import { SortableElement, SortableElementProps, SortableHandle } from 'react-sortable-hoc';
+import React, {CSSProperties, Key, MouseEvent, Ref, useContext, useState} from 'react';
+import {DraggableProvided} from 'react-beautiful-dnd';
 import { toast } from 'react-toastify';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
@@ -25,9 +25,9 @@ import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
 import ActionsButtons from './ActionsButtons';
 
-const DragHandle = SortableHandle(() => <span className="dragHandle"><i className="fas fa-ellipsis-v" /></span>);
+const DragHandle = ({ dragHandleProps }) => <span {...dragHandleProps} className="dragHandle"><i className="fas fa-ellipsis-v" /></span>;
 
-interface IProps extends SortableElementProps {
+interface IProps {
 	kara: KaraElement;
 	side: 'left' | 'right';
 	scope: 'admin' | 'public';
@@ -38,10 +38,10 @@ interface IProps extends SortableElementProps {
 	deleteCriteria: (kara: KaraElement) => void;
 	jingle: boolean;
 	sponsor: boolean;
-	style: CSSProperties;
 	key: Key;
 	toggleKaraDetail: (kara: KaraElement, plaid: string) => void;
 	sortable: boolean;
+	draggable: DraggableProvided;
 }
 
 function KaraLine(props: IProps) {
@@ -337,7 +337,7 @@ function KaraLine(props: IProps) {
 	const shouldShowProfile = context.globalState.settings.data.config.Frontend?.ShowAvatarsOnPlaylist
 		&& props.avatar_file;
 	return (
-		<div key={props.key} style={props.style}>
+		<div {...props.draggable.draggableProps} ref={props.draggable.innerRef}>
 			<div className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${kara.flag_dejavu ? ' dejavu' : ''}
 				${props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${(props.jingle || props.sponsor) && scope === 'admin' ? ' marker' : ''}
 				${props.sponsor && scope === 'admin' ? ' green' : ''}${props.side === 'right' ? ' side-right' : ''}`}>
@@ -483,7 +483,8 @@ function KaraLine(props: IProps) {
 									</button> : null
 								}
 							</div>
-							{!is_touch_device() && scope === 'admin' && !isNonStandardPlaylist(plaid) && props.sortable ? <DragHandle /> : null}
+							{props.sortable ?
+								<DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
 						</div>
 						{is_touch_device() ?
 							<div className="tagConteneur mobile">
@@ -521,4 +522,4 @@ function KaraLine(props: IProps) {
 	);
 }
 
-export default SortableElement(KaraLine);
+export default KaraLine;
