@@ -211,7 +211,13 @@ On first run, the app will make you create an admin user and follow a guided tou
 
 ## Translations
 
-[![Translation status](https://hosted.weblate.org/widgets/karaoke-mugen/-/multi-auto.svg)](https://hosted.weblate.org/engage/karaoke-mugen/)
+### Frontend
+
+[![Translation status frontend](https://hosted.weblate.org/widgets/karaoke-mugen/-/karaoke-mugen-app-frontend/multi-auto.svg)](https://hosted.weblate.org/engage/karaoke-mugen/)
+
+### Backend
+
+[![Translation status backend](https://hosted.weblate.org/widgets/karaoke-mugen/-/karaoke-mugen-app-backend/multi-auto.svg)](https://hosted.weblate.org/engage/karaoke-mugen/)
 
 ## Contact
 
@@ -247,6 +253,7 @@ Thanks to [MacStadium](http://www.macstadium.com), we have a Mac mini M1 to run 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Weblate_logo.svg/1024px-Weblate_logo.svg.png" alts="Weblate logo" width="125"/>
 
 Thanks to [Weblate](https://weblate.org) we can allow people to more easily contribute to translating the app in many languages!
+
 ## Credits
 
 "Nanamin", Karaoke Mugen's mascott as well as Karaoke Mugen's logo are designed by [Sedeto](http://sedeto.fr)
