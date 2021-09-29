@@ -8,7 +8,7 @@
     "CANCEL": "Annuler",
     "NOT_FOUND_PAGE": {
         "404": "Perdu dans Karaoke Mugen ?",
-        "404_2": "Pas de panique, on va vous aider",
+        "404_2": "Pas de panique, on va vous aider.",
         "404_3": "vous êtes ici",
         "404_4": "Revenir au début"
     },
@@ -103,7 +103,7 @@
         "CURRENT_PUBLIC": "Courante et publique"
     },
     "CRITERIA": {
-        "CRITERIA_DESC": "Sélectionnez et ajoutez des critères pour automatiquement inclure certaines chansons",
+        "CRITERIA_DESC": "Sélectionnez et ajoutez des critères pour automatiquement inclure certaines chansons.",
         "ADD": "Ajouter une valeur au critère",
         "DELETE": "Supprimer ce critère",
         "CRITERIA_TYPE_0": "Année",
@@ -290,8 +290,8 @@
         "BASE_UPDATE": "Nouvelles de la base",
         "APP_UPDATE": "Nouvelle version de l'application",
         "MASTODON_UPDATE": "Actualités de Karaoke Mugen",
-        "ACTIVE_SESSION": "Session active : ",
-        "EDIT_SESSION": "Modifier la session"
+        "ACTIVE_SESSION": "Session Active : ",
+        "EDIT_SESSION": "Éditer la session"
     },
     "CHECKED": "Sélectionnés :",
     "LOGOUT": "Se déconnecter",
@@ -299,7 +299,7 @@
     "QUOTA_KARA": "Karaokés restants",
     "SETTINGS": {
         "SYSTEMPANEL_TIP": {
-            "QUESTION": "Vous ne trouvez pas ce que vous cherchez ? ",
+            "QUESTION": "Vous ne trouvez pas ce que vous cherchez ?",
             "RESPONSE": "Certaines options se trouvent dans le ",
             "LINK": "panneau système",
             "AFTER_LINK": "."
@@ -311,7 +311,7 @@
             "ALWAYS_ON_TOP": "Toujours au dessus",
             "ALWAYS_ON_TOP_TOOLTIP": "Si coché, la fenêtre du lecteur sera toujours au dessus des autres à l'écran",
             "FULLSCREEN": "Plein écran",
-            "FULLSCREEN_TOOLTIP": "Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré",
+            "FULLSCREEN_TOOLTIP": "Appuyez sur F une fois le lecteur en plein écran pour le remettre en fenêtré.",
             "VIDEO_SIZE": "Taille du lecteur",
             "VIDEO_POSITION_X": "Alignement horizontal de la fenêtre",
             "VIDEO_POSITION_X_TOOLTIP": "Où la fenêtre du lecteur se situe au démarrage de karaoke Mugen",
@@ -421,7 +421,7 @@
             "ONLINE_SETTINGS": "En ligne",
             "MYSTERY_SONG_SETTINGS": "Chanson mystère",
             "HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
-            "HIDE_INVISIBLE_SONGS_TOOLTIP": "La façon dont les chansons mystère sont affichées au public. Pour faire des surprises!",
+            "HIDE_INVISIBLE_SONGS_TOOLTIP": "La façon dont les chansons mystère sont affichées au public. Pour faire des surprises !",
             "HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Ne pas afficher",
             "HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Libellés mystère",
             "SONGPOLL": "Laisser le public choisir les chansons par sondage",
@@ -487,7 +487,7 @@
         "C'est fini :(",
         "Merci à tous !"
     ],
-    "ENCORES_TIME": "Encore! Encore!",
+    "ENCORES_TIME": "Encore ! Encore !",
     "ENCORES_TAGLINES": [
         "Bon, c'est bien parce que c'est vous…",
         "P'tite dèr ?",
@@ -521,7 +521,7 @@
         "CONNECTED": "Connecté"
     },
     "REMOTE_TOKEN": "Jeton d'accès distant",
-    "REMOTE_TOKEN_TOOLTIP": "A communiquer uniquement aux administrateurs du serveur!",
+    "REMOTE_TOKEN_TOOLTIP": "(A communiquer uniquement aux administrateurs du serveur)",
     "REMOTE_RESET": "Réinitialiser le jeton",
     "REMOTE_RESET_TOOLTIP": "Générer un nouveau jeton : ceci va réintialiser votre code de salle personnalisé.",
     "REMOTE_RESET_CONFIRM": "Votre ancien code personnalisé sera libre à nouveau et un nouveau code sera généré, êtes-vous sûr ?",
@@ -539,7 +539,7 @@
         "DETAILS": {
             "1": "Quels karaokés ont été joués",
             "2": "Quels karaokés ont été demandés (mais pas par qui)",
-            "3": "Des informations sur la machine (CPU, RAM disponible, nom et version de l'OS…)",
+            "3": "Des informations sur la machine (processeur, mémoire vive disponible, nom et version du système d'exploitation…)",
             "4": "Votre configuration de l'application (sans aucun élément secret, type mot de passe)",
             "TITLE": "Détails des informations envoyées",
             "OUTRO": "Cet envoi a lieu à chaque démarrage puis à chaque heure d'utilisation. Vous pouvez consulter les informations envoyées dans le dossier log de Karaoke Mugen."
@@ -564,7 +564,7 @@
         "UNKNOW_REPOS": {
             "TITLE": "Dépôts inconnus détectés",
             "DESCRIPTION": "Cette liste de lecture contient des chansons depuis des dépôts que vous n'avez pas encore.",
-            "DOWNLOAD_THEM": "Voulez-vous les ajouter?"
+            "DOWNLOAD_THEM": "Voulez-vous les ajouter ?"
         },
         "PLAY_CURRENT_MODAL": "Attention, la liste de lecture courante '{{playlist}}' n'est pas affichée à l'écran. C'est cette dernière qui sera jouée. Êtes-vous sûr de vouloir lancer la lecture ?",
         "PROFILE_MODAL": {
@@ -704,8 +704,8 @@
         "LOCAL_ACCOUNT": "Compte local",
         "ONLINE_ACCOUNT": "Compte en ligne",
         "ONLINE_ACCOUNT_DESC": "Le compte en ligne permet de :",
-        "ONLINE_ACCOUNT_SAVE_INFOS": "Enregistrer vos favoris, avatar et informations de profil pour les retrouver d'un ordinateur à l'autre",
-        "ONLINE_ACCOUNT_LOST_PASSWORD": "Si vous indiquez votre courriel, vous pourrez retrouver votre mot de passe perdu.",
+        "ONLINE_ACCOUNT_SAVE_INFOS": "Enregistrer vos favoris, avatar et informations de profil pour les retrouver d'un ordinateur à l'autre.",
+        "ONLINE_ACCOUNT_LOST_PASSWORD": "Si vous indiquez votre email, vous pourrez retrouver votre mot de passe perdu.",
         "LOCAL_ACCOUNT_DESC": "Vous avez choisi un compte local. Indiquez un nom de compte et un mot de passe ci-dessous :",
         "ONLINE_ACCOUNT_INSTANCE": "Votre compte en ligne sera hébergé sur l'instance {{instance}}",
         "ONLINE_ACCOUNT_INSTANCE_DESC": "Une instance est un service en ligne proposant de nombreux services à Karaoke Mugen. Si vous n'êtes pas sûr de vous, laissez l'instance à {{instance}}. Sinon changez-le pour l'instance de votre choix.",
@@ -780,11 +780,11 @@
         "YEAR": "Année de diffusion",
         "YEAR_TOOLTIP": "Année de la diffusion de la série ou de la vidéo",
         "SERIES_SINGERS_REQUIRED": "Les champs Séries et Chanté par ne peuvent être vide en même temps.",
-        "SONGWRITERS_TOOLTIP": "Compositeurs et paroliers",
+        "SONGWRITERS_TOOLTIP": "Compositeurs et paroliers.",
         "CREATORS_TOOLTIP": "Entité qui a créé la série ou le clip. Peut être un studio d'animation, de cinéma, de jeu vidéo, etc.",
         "KARA_AUTHORS_REQUIRED": "L'auteur du karaoké est obligatoire",
         "KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",
-        "COMMENT": "Un commentaire?",
+        "COMMENT": "Un commentaire ?",
         "COMMENT_TOOLTIP": "Un champ pour un commentaire comme \"Spéciale dédicace à ma maman\" ou \"Ne pas toucher aux effets!\" ou \"Fait avec trop de café\".",
         "IGNOREHOOKS": "Ignorer les tags automatiques",
         "IGNOREHOOKS_TOOLTIP": "Certains tags pourront être ajoutés automatiquement à ce karaoké s'il remplit certaines conditions.",
@@ -952,11 +952,11 @@
         "REPOSITORY": "Dépôt",
         "REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
         "PROBLEMATIC": "Problématique",
-        "PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique? Est-ce un tag qu'on voudra probablement bannir? Cela permet de marquer plus facilement les chansons à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Épilepsie",
+        "PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique ? Est-ce un tag qu'on voudra probablement bannir ? Cela permet de marquer plus facilement les chansons à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Épilepsie",
         "NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
         "NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
         "PRIORITY": "Priorité à l'affichage",
-        "PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10",
+        "PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10.",
         "COPY_TAG": "Copier le tag vers un autre dépôt"
     },
     "TAG_TYPES": {
@@ -1007,6 +1007,7 @@
             "APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
             "ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
             "ONLINE_STATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
+            "PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Désactivez si vous voulez que ces touches contrôlent une autre application (iTunes, foobar, etc.)",
             "PLAYER_HARDWAREDECODING": "Décodage matériel des vidéos",
             "PLAYER_HARDWAREDECODING_TOOLTIP": "Force ou non le décodage matériel du lecteur vidéo. Attention : sur certaines configurations, il se peut que cela pose des problèmes de lecture vidéo. En cas de soucis, passez l'option à \"Désactivé\". Le réglage \"Automatique\" est le plus sûr et \"Forcer\" pas du tout recommandé.",
             "PLAYER_HARDWAREDECODING_OPTIONS": {
@@ -1057,7 +1058,7 @@
         "ONLINE_NAME": "Nom de domaine du dépôt",
         "TOOLTIP_NAME": "Si c'est un dépôt en ligne, indiquez son nom de domaine uniquement. S'il s'agit d'un dépôt local, mettez le nom que vous voulez. Par exemple 'Mon trésor de guerre'",
         "BASE_DIR": "Chemin du dépôt",
-        "PATH_MEDIAS": "Medias",
+        "PATH_MEDIAS": "Médias",
         "NEW_REPOSITORY": "Nouveau dépôt",
         "ONLINE": "En ligne",
         "ENABLED": "Actif",
@@ -1074,7 +1075,7 @@
         "MOVE": "Définir la priorité des dépôts",
         "MOVE_TOOLTIP": "Cela vous permet de définir quels dépôts ont priorité lors de la création de votre base de données : les dépôts le plus en haut seront pris en compte d'abord si jamais deux dépôts ont le même karaoké",
         "MOVING_MEDIA": "Opérations sur le dépôt",
-        "MOVING_MEDIA_BUTTON": "Déplacer les médias le dépôt…",
+        "MOVING_MEDIA_BUTTON": "Déplacer les médias…",
         "MOVING_MEDIA_PANEL": "Déplacement des médias du dépôt",
         "WARNING": "Attention !",
         "MOVING_MEDIA_ABOUT_MESSAGE": "Tous les fichiers médias du dépôt seront déplacés vers le nouveau dossier. Si vous avez plusieurs dossiers de médias, tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement.",
@@ -1209,7 +1210,7 @@
         "DATABASE_RESTORED_ERROR": "Erreur lors de la restauration de la base de données",
         "FS_ERROR": "Erreur lors de la recherche dans l'explorateur de fichiers",
         "USER_NOT_EXISTS": "Cet utilisateur n'existe pas",
-        "USER_DELETE_ADMIN_DAMEDESU": "Vous ne pouvez pas supprimer le compte admin!",
+        "USER_DELETE_ADMIN_DAMEDESU": "Vous ne pouvez pas supprimer le compte admin !",
         "USER_NOT_ALLOWED_TO_SING": "Cet utilisateur ne peut pas démarrer la chanson",
         "MESSAGE_SEND_ERROR": "Le message n'a pas pu être envoyé",
         "COMMAND_SEND_ERROR": "Erreur lors de l'envoi de la commande au lecteur",
@@ -1250,7 +1251,7 @@
         "SESSION_NOT_FOUND": "Session introuvable",
         "SESSION_DELETE_ERROR": "Erreur lors de la suppression de la session",
         "SESSION_EXPORT_ERROR": "Erreur lors de l'export de la session",
-        "SESSION_END_BEFORE_START_ERROR": "La fin de session est avant son début!",
+        "SESSION_END_BEFORE_START_ERROR": "La fin de session est avant son début !",
         "TAGS_LIST_ERROR": "Erreur lors de la récupération de la liste des tags",
         "TAG_CREATE_ERROR": "Erreur lors de la création du tag",
         "YEARS_LIST_ERROR": "Erreur lors de la récupération de la liste des années",
@@ -1277,7 +1278,7 @@
         "PASSWORD_TOO_SHORT": "Mot de passe trop court (8 caractères minimum)",
         "PASSWORD_CONVERT_ERROR": "Mot de passe erroné",
         "USER_DELETE_ERROR_ONLINE": "Erreur lors de la suppression du compte en ligne",
-        "USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un courriel de réinitialisation : contactez l'administrateur du serveur dont vous dépendez",
+        "USER_RESETPASSWORD_ONLINE_ERROR": "Impossible de vous envoyer un email de réinitialisation : contactez l'administrateur du serveur dont vous dépendez.",
         "UPDATING_MEDIAS_ERROR": "Le dépôt {{repo}} n'a pas mis à jour les medias correctement : {{err}}",
         "USER_UNKNOWN": "Utilisateur connecté inconnu",
         "ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
@@ -1397,7 +1398,7 @@
         },
         "KARAOKE_LIST": {
             "TITLE": "Liste des karaokés",
-            "DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés"
+            "DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés."
         },
         "KARAOKE_NEW": {
             "TITLE": "Ajouter un karaoké",
@@ -1450,7 +1451,7 @@
         },
         "USER_LIST": {
             "TITLE": "Gestion des utilisateurs",
-            "DESCRIPTION": "D'ici vous pouvez créer, supprimer, modifier des utilisateurs mais aussi réinitialiser leur mot de passe ou changer leurs droits"
+            "DESCRIPTION": "D'ici vous pouvez créer, supprimer, modifier des utilisateurs mais aussi réinitialiser leur mot de passe ou changer leurs droits."
         },
         "USER_NEW": {
             "TITLE": "Créer un utilisateur",
