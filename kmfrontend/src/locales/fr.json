@@ -151,8 +151,7 @@
             "TITLE": "Les karaokés contenant {{title}} dans le titre sont dans la liste.",
             "TAG_NAME": "Les karaokés avec un tag contenant {{title}} sont dans la liste."
         },
-        "EXPL": "La liste intelligente est créée à partir des <1>critères</1>, vous pouvez également en ajouter manuellement à cette liste.",
-        "CRITERIA_TYPE_1001": "Chanson"
+        "EXPL": "La liste intelligente est créée à partir des <1>critères</1>, vous pouvez également en ajouter manuellement à cette liste."
     },
     "MESSAGE": "Passer un message au public",
     "LOG_SUCCESS": "Connecté en tant que {{name}}",
@@ -183,7 +182,7 @@
         "SONG_SEARCH_SHORT": "Rechercher",
         "EXPLORE": "Explorer",
         "OTHERS": "Autres…",
-        "GET_LUCKY": "J'ai de la chance",
+        "GET_LUCKY": "J'ai de la chance !",
         "REQUESTED_KARAOKES": "Karaokés populaires",
         "NEW_KARAOKES": "Nouveaux karaokés"
     },
@@ -629,7 +628,7 @@
             "PLAYLIST": "L'écran affiche 2 liste de lecture. Vous pouvez ajouter une chanson de la liste de lecture de gauche vers la liste de lecture de droite et vice-versa juste en appuyant sur le ",
             "TITLE_CLICK": "Cliquez sur le titre du karaoké pour obtenir plus d'informations",
             "TITLE_CLICK_DESC": "(chanteurs, compositeurs, etc.)",
-            "THE_BUTTON": "Le bouton ",
+            "THE_BUTTON": "Le bouton",
             "PLAY_BUTTON": "joue la chanson immédiatement",
             "CURSOR_BUTTON": "déplace le curseur de lecture",
             "CHECK_CASE": "Cochez la case",
@@ -644,10 +643,10 @@
             "BLUE": "bleu",
             "KARAOKE_PLAYED": "indique que le karaoké est passé à l'écran il y a peu.",
             "KARAOKE_PLAYING": "indique le karaoké sélectionné pour la lecture.",
-            "CREATE_PLAYLIST_BUTTON": "Créez et modifiez vos listes de lecture depuis le menu d'actions",
+            "CREATE_PLAYLIST_BUTTON": "Créez et modifiez vos listes de lecture depuis le menu d'actions.",
             "SELECT_PLAYLIST_BUTTON": "Les listes de lecture sont disponibles dans le sélecteur :",
             "LIBRARY": "La bibliothèque contient tous les karaokés disponibles.",
-            "PLAYLIST_ATTRIBUTES": "Lorsque vous créez vos listes de lecture, vous pouvez la définir comme ",
+            "PLAYLIST_ATTRIBUTES": "Lorsque vous créez vos listes de lecture, vous pouvez la définir comme",
             "THE_PLAYLIST": "La liste de lecture",
             "CURRENT": "courante",
             "PUBLIC": "publique",
@@ -1005,6 +1004,7 @@
             "APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
             "ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
             "ONLINE_STATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
+            "PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Désactivez si vous voulez que ces touches contrôlent une autre application (iTunes, foobar, etc.)",
             "PLAYER_HARDWAREDECODING": "Décodage matériel des vidéos",
             "PLAYER_HARDWAREDECODING_TOOLTIP": "Force ou non le décodage matériel du lecteur vidéo. Attention : sur certaines configurations, il se peut que cela pose des problèmes de lecture vidéo. En cas de soucis, passez l'option à \"Désactivé\". Le réglage \"Automatique\" est le plus sûr et \"Forcer\" pas du tout recommandé.",
             "PLAYER_HARDWAREDECODING_OPTIONS": {
@@ -1324,6 +1324,7 @@
         "SESSION_EDITED": "Session éditée avec succès",
         "SESSION_MERGED": "Sessions fusionnées avec succès",
         "SESSION_ACTIVATED": "Session activée avec succès",
+        "SESSION_ACTIVATED_ERROR": "Erreur d'activation de session",
         "SESSION_DELETED": "Session supprimée avec succès",
         "TAG_CREATED": "Tag créé avec succès",
         "TAG_EDITED": "Tag édité avec succès",
