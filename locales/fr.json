@@ -143,7 +143,7 @@
             "Dans la recherche, vous pouvez taper \"-mot\" pour exclure les karaokés contenant ce mot (que ce soit dans le titre, la série, les chanteurs, etc.) de vos résultats de recherche.",
             "Accepter une suggestion publique redonne le quota de chanson à l'utilisateur qui l'a demandée, et ajoute la chanson dans la liste de lecture actuelle !",
             "Accepter une suggestion du public redonne du quota à la personne qui a demandé, et ajoute la chanson dans la liste courante si celle-ci est en face !",
-            "Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez « amour direct » pour obtenir uniquement les karaokés de la série Amour direct."
+            "Lorsque vous effectuez une recherche, vous pouvez mettre un groupe de mots entre guillemets pour demander précisément ce texte. Tapez « love live » pour obtenir uniquement les karaokés de la série Love Live."
         ],
         "ERRORS": [
             "N'hésitez pas à venir nous voir sur Discord si vous avez besoin d'aide : https://karaokes.moe/discord",
