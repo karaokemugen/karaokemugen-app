@@ -336,7 +336,7 @@
             "DISPLAY_CONNECTION_INFO_HOST": "Force hostname or IP",
             "DISPLAY_CONNECTION_INFO_HOST_TOOLTIP": "If your IP address is incorrectly detected by Karaoke Mugen, you can force it here.",
             "DISPLAY_CONNECTION_INFO_MESSAGE": "Message displayed before URL",
-            "DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "For example the wifi network on which your guests must connect",
+            "DISPLAY_CONNECTION_INFO_MESSAGE_TOOLTIP": "Personalize the message just before the access URL, to encourage your audience or give them more direction.",
             "DISPLAY_CONNECTION_INFO": "Show connection information",
             "DISPLAY_CONNECTION_INFO_TOOLTIP": "It's the \"Go to http://xxx !\"",
             "DISPLAY_NICKNAME": "Display nicknames in karaokes",
