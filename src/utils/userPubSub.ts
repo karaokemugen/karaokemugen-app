@@ -6,7 +6,6 @@ import logger from '../lib/utils/logger';
 import {importFavorites} from '../services/favorites';
 import { deleteUser, editUser, findUserByName, listUsers } from '../services/user';
 import { Favorite } from '../types/stats';
-import {ISRGAppendedCAs} from './letsEncryptHotFix';
 
 // Map io connections
 const ioMap: Map<string, Socket> = new Map();
@@ -54,10 +53,7 @@ function userDebounceFactory(user) {
 }
 
 function setupUserWatch(server: string) {
-	const socket = io(`https://${server}`, {
-		multiplex: true,
-		ca: ISRGAppendedCAs
-	});
+	const socket = io(`https://${server}`, { multiplex: true });
 	ioMap.set(server, socket);
 	socket.on('user updated', async (payload) => {
 		const login = `${payload.user.login}@${server}`;
