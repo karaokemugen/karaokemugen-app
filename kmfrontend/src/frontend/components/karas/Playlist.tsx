@@ -875,7 +875,7 @@ function Playlist(props: IProps) {
 											}}
 											// @ts-ignore
 											scrollerRef={provided.innerRef}
-											style={{ height }}
+											style={{ height: `calc(${height}px - var(--bottom))` }}
 											itemContent={(index) => (
 												<Draggable
 													isDragDisabled={!sortable}
