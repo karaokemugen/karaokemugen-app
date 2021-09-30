@@ -34,6 +34,8 @@ process.on('SIGTERM', () => {
 	exit(0);
 });
 
+
+
 // CTRL+C for Windows :
 
 if (process.platform === 'win32' ) {
