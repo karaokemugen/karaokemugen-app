@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { APIData } from '../lib/types/api';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
+import {ISRGAppendedCAs} from './letsEncryptHotFix';
 
 let socket: Socket;
 
@@ -16,7 +17,8 @@ function connectToKMServer() {
 			socket.disconnect();
 		}, 5000);
 		socket = io(`https://${conf.Online.Host}`, {
-			transports: ['websocket']
+			transports: ['websocket'],
+			ca: ISRGAppendedCAs
 		});
 		socket.on('connect', () => {
 			clearTimeout(timeout);
