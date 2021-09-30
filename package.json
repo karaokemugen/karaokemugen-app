@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "5.1.28-master",
+  "version": "5.1.27-master",
   "versionName": "Poppy Percutante",
   "description": "Karaoke playlist manager / player",
   "bin": {
