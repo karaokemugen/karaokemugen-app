@@ -10,12 +10,13 @@ import {StringDecoder} from 'string_decoder';
 import tasklist from 'tasklist';
 
 import { errorStep } from '../electron/electronLogger';
-import {getConfig} from '../lib/utils/config';
+import {getConfig, resolvedPathTemp} from '../lib/utils/config';
 // KM Imports
 import {asyncExists, asyncMove} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { editSetting } from './config';
-import {expectedPGVersion} from './constants';
+import { expectedPGVersion } from './constants';
+import Downloader from './downloader';
 import sentry from './sentry';
 import {getState} from './state';
 
@@ -254,6 +255,7 @@ export async function checkPG(): Promise<boolean> {
 export async function initPG(relaunch = true) {
 	const conf = getConfig();
 	const state = getState();
+	if (state.os === 'win32') await checkAndInstallVCRedist();
 	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
 	if (!await asyncExists(pgDataDir)) await initPGData();
@@ -312,3 +314,27 @@ export async function initPG(relaunch = true) {
 	}
 }
 
+/** Check Windows' VCRedist presence since we need it for postgresql */
+export async function checkAndInstallVCRedist() {
+	try {
+		if (await asyncExists(resolve('C:/Windows/System32/VCRUNTIME140.DLL'))) return;
+		// Let's download VC Redist and install it yo.
+		logger.warn('Visual C++ Redistribuable 2015 not found, downloading and installing.', {service: 'Postgres'});
+		const downloader = new Downloader({task: null});
+		// Launch downloads
+		const vcRedistPath = resolve(resolvedPathTemp(), 'vcredist2015.exe');
+		const fileErrors = await downloader.download([
+			{
+				url: 'https://mugen.karaokes.moe/downloads/vcredist2015_x64.exe',
+				filename: vcRedistPath
+			}
+		]);
+		if (fileErrors.length > 0) throw fileErrors;
+		await execa(vcRedistPath, null, {
+			windowsHide: false
+		});
+	} catch(err) {
+		logger.error('Installation of Visual C++ Redistribuable 2015 failed', {service: 'Postgres', obj: err});
+		throw err;
+	}
+}
