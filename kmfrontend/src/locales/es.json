@@ -1,1 +1,23 @@
-{}
+{
+    "PREVIOUS_SONG": "Canción anterior",
+    "OPTIONS": "Opciones",
+    "SHUTDOWN_POPUP": "Conexión perdida con Karaoke Mugen",
+    "VERSION": "Versión",
+    "DETAILS": {
+        "YEAR": "Año",
+        "DURATION": "Duración"
+    },
+    "PASSWORD_DIFFERENT": "Las contraseñas no coinciden",
+    "NOT_FOUND_PAGE": {
+        "404_3": "Estás aquí",
+        "404_2": "Sin pánico, nosotros podemos ayudarte.",
+        "404": "Perdid@ en Karaoke Mugen?"
+    },
+    "CANCEL": "Cancelar",
+    "SUBMIT": "Guardar",
+    "SEARCH": "Buscar",
+    "AND": "y",
+    "NO": "No",
+    "YES": "Sí",
+    "SELECT_PLACEHOLDER": "Escoger una playlist"
+}
