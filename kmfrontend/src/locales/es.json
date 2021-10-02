@@ -11,7 +11,8 @@
     "NOT_FOUND_PAGE": {
         "404_3": "Estás aquí",
         "404_2": "Sin pánico, nosotros podemos ayudarte.",
-        "404": "Perdid@ en Karaoke Mugen?"
+        "404": "Perdid@ en Karaoke Mugen?",
+        "404_4": "Volver a Inicio"
     },
     "CANCEL": "Cancelar",
     "SUBMIT": "Guardar",
