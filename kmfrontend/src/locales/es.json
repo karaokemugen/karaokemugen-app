@@ -20,5 +20,6 @@
     "AND": "y",
     "NO": "No",
     "YES": "Sí",
-    "SELECT_PLACEHOLDER": "Escoger una playlist"
+    "SELECT_PLACEHOLDER": "Escoger una playlist",
+    "LOGIN_MANDATORY": "Debes iniciar sesión"
 }
