@@ -12,6 +12,7 @@ import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
+import { getTagTypeName } from '../../../utils/tagTypes';
 import {
 	callModal,
 	displayMessage,
@@ -683,7 +684,16 @@ function Playlist(props: IProps) {
 	};
 
 	const deleteCriteria = (kara: KaraElement) => {
-		callModal(context.globalDispatch, 'confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: i18next.t(`CRITERIA.CRITERIA_TYPE_${kara.criterias[0].type}`) }),
+		const criteria = kara.criterias[0];
+		let typeLabel;
+		if (criteria.type === 0) {
+			typeLabel = i18next.t('DETAILS.YEAR');
+		} else if (criteria.type > 1000) {
+			typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${criteria.type}`);
+		} else {
+			typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type)}`, { count: 2 });
+		}
+		callModal(context.globalDispatch, 'confirm', i18next.t('CL_DELETE_CRITERIAS_PLAYLIST', { type: typeLabel }),
 			<div style={{ maxHeight: '200px' }}>
 				{data.content
 					.filter((e) => e.criterias[0].value === kara.criterias[0].value && e.criterias[0].type === kara.criterias[0].type)

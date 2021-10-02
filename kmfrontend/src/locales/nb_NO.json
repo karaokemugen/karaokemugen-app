@@ -1,7 +1,5 @@
 {
     "CRITERIA": {
-        "CRITERIA_TYPE": "",
-        "CRITERIA_TYPE_plural": "",
         "DELETE": "Slett dette kriteriet",
         "ADD": "Legg til verdi for kriterium"
     },

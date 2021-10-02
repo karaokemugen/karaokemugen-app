@@ -7,31 +7,17 @@ import { Criteria } from '../../../../../src/lib/types/playlist';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 
 const listTypeCriteria = [
-	'CRITERIA_TYPE_1002',
-	'CRITERIA_TYPE_1003',
-	'CRITERIA_TYPE_1004',
-	'CRITERIA_TYPE_1005',
-	'CRITERIA_TYPE_1006',
-	'CRITERIA_TYPE_0',
-	'CRITERIA_TYPE_1',
-	'CRITERIA_TYPE_2',
-	'CRITERIA_TYPE_3',
-	'CRITERIA_TYPE_4',
-	'CRITERIA_TYPE_5',
-	'CRITERIA_TYPE_6',
-	'CRITERIA_TYPE_8',
-	'CRITERIA_TYPE_9',
-	'CRITERIA_TYPE_7',
-	'CRITERIA_TYPE_10',
-	'CRITERIA_TYPE_11',
-	'CRITERIA_TYPE_12',
-	'CRITERIA_TYPE_13',
-	'CRITERIA_TYPE_14'
+	1002,
+	1003,
+	1004,
+	1005,
+	1006
 ];
 
 interface IProps {
@@ -106,9 +92,13 @@ class CriteriasList extends Component<IProps, IState> {
 				<div className="criterias-input">
 					<select onChange={e => this.setState({ criteriaType: Number(e.target.value), criteriaVal: '' })}>
 						{listTypeCriteria.map((value) => {
-							return <option key={value} value={value.replace('CRITERIA_TYPE_', '')}>{i18next.t(`CRITERIA.${value}`)}</option>;
+							return <option key={value} value={value}>{i18next.t(`CRITERIA.CRITERIA_TYPE_${value}`)}</option>;
 						})
 						}
+						{Object.entries(tagTypes).map(([key, value]) => <option key={value.type}
+							value={value.type}>{i18next.t(`TAG_TYPES.${key}`, { count: 2 })}</option>
+						)}
+						<option key={YEARS.type} value={YEARS.type}>{i18next.t('DETAILS.YEAR')}</option>
 					</select>
 					<div className="criteriasValContainer">
 						{this.state.criteriaType === 1006 ?
@@ -129,8 +119,16 @@ class CriteriasList extends Component<IProps, IState> {
 					</div>
 				</div>
 				{types.map((type) => {
+					let typeLabel;
+					if (type === 0) {
+						typeLabel = i18next.t('DETAILS.YEAR');
+					} else if (type > 1000) {
+						typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${type}`);
+					} else {
+						typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}`, { count: 2 });
+					}
 					return <React.Fragment key={type}>
-						<div className="list-group-item liType">{i18next.t('CRITERIA.CRITERIA_TYPE_' + type)}</div>
+						<div className="list-group-item liType">{typeLabel}</div>
 						{this.state.criterias.map(criteria => {
 							return (criteria.type === type ?
 								<div key={criteria.value} className="list-group-item liTag">
