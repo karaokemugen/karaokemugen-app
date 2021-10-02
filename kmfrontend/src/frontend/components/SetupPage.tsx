@@ -101,7 +101,7 @@ class SetupPage extends Component<IProps, IState> {
 
 	signup = async () => {
 		if (this.state.login && this.state.login.includes('@')) {
-			const error = i18next.t('CHAR_NOT_ALLOWED', { char: '@' });
+			const error = i18next.t('USERS.CHAR_NOT_ALLOWED', { char: '@' });
 			displayMessage('warning', error);
 			this.setState({ error: error });
 			return;

@@ -84,7 +84,9 @@
     "SECURITY_CODE_MANDATORY": "Sikkerhetskope kreves for å opprette en operatørkonto",
     "PASSWORD_MANDATORY": "Passord kreves",
     "LOGIN_MANDATORY": "Innlogging er påkrevd",
-    "CHAR_NOT_ALLOWED": "Tegnet «{{char}}» støttes ikke",
+    "USERS": {
+        "CHAR_NOT_ALLOWED": "Tegnet «{{char}}» støttes ikke"
+    },
     "NOT_FOUND_PAGE": {
         "404_4": "Hjem",
         "404_3": "Du er her",

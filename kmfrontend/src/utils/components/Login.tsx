@@ -130,7 +130,7 @@ class Login extends Component<IProps, IState> {
 	loginUser = () => {
 		if (this.state.login.includes('@')) {
 			this.setState({ errorBackground: 'errorBackground' });
-			displayMessage('warning', i18next.t('CHAR_NOT_ALLOWED', { char: '@' }));
+			displayMessage('warning', i18next.t('USERS.CHAR_NOT_ALLOWED', { char: '@' }));
 			return;
 		} else {
 			this.setState({ errorBackground: '' });
@@ -142,7 +142,7 @@ class Login extends Component<IProps, IState> {
 	signup = async () => {
 		if (this.state.login.includes('@')) {
 			this.setState({ errorBackground: 'errorBackground' });
-			displayMessage('warning', i18next.t('CHAR_NOT_ALLOWED', { char: '@' }));
+			displayMessage('warning', i18next.t('USERS.CHAR_NOT_ALLOWED', { char: '@' }));
 			return;
 		} else {
 			this.setState({ errorBackground: '' });

@@ -12,7 +12,6 @@
         "404_3": "You are here",
         "404_4": "Go to home"
     },
-    "CHAR_NOT_ALLOWED": "The character '{{char}}' is not allowed",
     "LOGIN_MANDATORY": "Login is mandatory",
     "PASSWORD_MANDATORY": "Password is mandatory",
     "SECURITY_CODE_MANDATORY": "Security code is mandatory for create an operator account",
