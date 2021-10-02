@@ -52,8 +52,6 @@
             },
             "TAG": "{{verb}} {{tag}} de esta canción está en la lista negra."
         },
-        "CRITERIA_TYPE_13": "Plataforma",
-        "CRITERIA_TYPE_11": "Origen",
         "CRITERIA_TYPE_1006": "Ocultar canciones no disponibles offline",
         "CRITERIA_TYPE_1005": "Etiqueta contiene",
         "CRITERIA_TYPE_1004": "Título contiene",
