@@ -21,5 +21,81 @@
     "NO": "No",
     "YES": "Sí",
     "SELECT_PLACEHOLDER": "Escoger una playlist",
-    "LOGIN_MANDATORY": "Debes iniciar sesión"
+    "LOGIN_MANDATORY": "Debes iniciar sesión",
+    "CRITERIA": {
+        "DELETE": "Borrar este criterio",
+        "ADD": "Añadir un valor a criterios",
+        "CRITERIA_DESC": "Seleccionar y añadir criterios para incluir canciones específicas automáticamente."
+    },
+    "FLAGS": {
+        "CURRENT_PUBLIC": "Actual y público",
+        "CURRENT": "Actual",
+        "PUBLIC": "Público"
+    },
+    "KARA_MENU": {
+        "MOVE_KARA": "Reproducir después de la canción actual",
+        "TRANSFER_KARA": "Transferir esta canción - Click derecho para transferir después de la canción actual",
+        "ADD_BLACKLIST": "Añadir a lista negra",
+        "SHOWN": "Visible!",
+        "HIDDEN": "Ocultada!",
+        "VISIBLE_OFF_SHORT": "Ocultar",
+        "VISIBLE_OFF": "Ocultar en playlist",
+        "VISIBLE_ON_SHORT": "Mostrar",
+        "VISIBLE_ON": "Mostrar en playlist",
+        "FREED": "Liberada!",
+        "FREE_SHORT": "Liberar",
+        "FAVORITES_REMOVED": "Eliminado de favoritos",
+        "FAVORITES_ADDED": "Añadido a favoritos",
+        "PLAY_LIBRARY": "Reproducir ahora",
+        "PLAY": "Marcar como 'reproduciendo ahora'",
+        "KARA_COMMANDS": "Comandos de canción",
+        "FAV_DEL": "Borrar de favoritos",
+        "FAV": "Añadir a favoritos",
+        "TRANSFER_SELECT_KARA": "Transferir canciones seleccionadas - click derecho para transferir después de la canción actual"
+    },
+    "ADVANCED": {
+        "DOWNLOAD_ALL": "Descargar todos",
+        "SHUFFLE": "Mezclar / Ordenar…",
+        "IMPORT": "Importar playlist",
+        "AUTOMIX": "Crear una automezcla",
+        "ADD": "Añadir nueva playlist",
+        "EXPORT": "Exportar playlist",
+        "EDIT": "Editar playlist",
+        "DELETE": "Borrar playlist",
+        "EMPTY_LIST": "Playlist vacía",
+        "SELECT_ALL": "Seleccionar todos los elementos visibles",
+        "ADD_RANDOM": "Añadir canciones aleatorias",
+        "ADD_ALL": "Añadir todas las canciones a la otra lista",
+        "PLAYLIST_COMMANDS": "Comandos de playlist"
+    },
+    "PLAYLIST_HEADER": {
+        "EDIT_CRITERIAS": "Editar criterios",
+        "ACTIVE_FILTER": "Filtro activo",
+        "FILTERS": "Filtros"
+    },
+    "MESSAGE": "Mensaje",
+    "INLINE_TAG": {
+        "SEARCH": "Karaokes con {{tag}}"
+    },
+    "WEBAPPMODE_CLOSED_MESSAGE": "La interfaz está cerrada, por favor espera.",
+    "PLAYLISTS": {
+        "FAVORITES": "Favoritos",
+        "LIBRARY": "Librería"
+    },
+    "VOLUME_LEVEL": "Establecer volumen",
+    "NEW_PASSWORD": "Contraseña nueva",
+    "PASSWORDCONF": "Confirmar contraseña",
+    "PASSWORD": "Contraseña (mínimo 8 caracteres)",
+    "NEXT_SONG": "Siguiente canción",
+    "PLAY_PAUSE": "Reproducir/Pausar",
+    "REWIND": "Rebobinar cinta",
+    "STOP_NOW": "Detente AHORA (Eso es peligroso!)",
+    "STOP_AFTER": "Detener después de canción actual",
+    "HIDE_SUBS": "Esconder letra en pantalla",
+    "SHOW_SUBS": "Mostrar letra en pantalla",
+    "CHANGE_INTERFACE": "Cambiar interfaz",
+    "SHUTDOWN": "Apagar Karaoke Mugen",
+    "DURATION_REMAINING": "Tiempo restante",
+    "SECURITY_CODE_MANDATORY": "Código de seguridad obligatorio para crear cuenta de operador",
+    "PASSWORD_MANDATORY": "Introduce una contraseña"
 }
