@@ -141,14 +141,14 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 	}
 
 	columns = [{
-		title: i18next.t('KARA.LANGUAGES'),
+		title: i18next.t('TAG_TYPES.LANGS', { count: 2 }),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => {
 			return getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ');
 		}
 	}, {
-		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
+		title: `${i18next.t('TAG_TYPES.SERIES', { count: 2 })} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record: DBKara) => {
@@ -156,7 +156,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 				|| getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(', ');
 		}
 	}, {
-		title: i18next.t('KARA.SONGTYPES'),
+		title: i18next.t('TAG_TYPES.SONGTYPES', { count: 2 }),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => {
@@ -164,7 +164,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			return getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
 		}
 	}, {
-		title: i18next.t('KARA.FAMILIES'),
+		title: i18next.t('TAG_TYPES.FAMILIES', { count: 2 }),
 		dataIndex: 'families',
 		key: 'families',
 		render: (families) => {

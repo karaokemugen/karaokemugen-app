@@ -214,24 +214,24 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	columns = [{
-		title: i18next.t('KARA.LANGUAGES'),
+		title: i18next.t('TAG_TYPES.LANGS', { count: 2 }),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ')
 	}, {
-		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
+		title: `${i18next.t('TAG_TYPES.SERIES', { count: 2 })} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record: DBKara) => (series && series.length > 0) ?
 			series.map(serie => getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)).join(', ')
 			: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(', ')
 	}, {
-		title: i18next.t('KARA.SONGTYPES'),
+		title: i18next.t('TAG_TYPES.SONGTYPES', { count: 2 }),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => getTagInLocaleList(this.context.globalState.settings.data, songtypes.sort(sortTagByPriority), this.state.i18nTag).join(', ') + ' ' + (record.songorder || '')
 	}, {
-		title: i18next.t('KARA.FAMILIES'),
+		title: i18next.t('TAG_TYPES.FAMILIES', { count: 2 }),
 		dataIndex: 'families',
 		key: 'families',
 		render: (families) => getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(', ')

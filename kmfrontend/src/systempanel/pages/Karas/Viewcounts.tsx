@@ -58,19 +58,19 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 		key: 'kid',
 		render: null
 	}, {
-		title: i18next.t('KARA.LANGUAGES'),
+		title: i18next.t('TAG_TYPES.LANGS', { count: 2 }),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18n).join(', ')
 	}, {
-		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
+		title: `${i18next.t('TAG_TYPES.SERIES', { count: 2 })} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record) => (series && series.length > 0) ?
 			series.map(serie => getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n)).join(', ')
 			: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18n).join(', ')
 	}, {
-		title: i18next.t('KARA.SONGTYPES'),
+		title: i18next.t('TAG_TYPES.SONGTYPES', { count: 2 }),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18n).sort().join(', ') + ' ' + (record.songorder || '')
