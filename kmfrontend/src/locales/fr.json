@@ -530,7 +530,7 @@
     "VIEW_RECENT": "Nouveau",
     "VIEW_POPULAR": "Populaire",
     "VIEW_LIKES": "J'aime",
-    "VIEW_LIKES_TOOLTIP": "Les chansons avec le plus de J'aime sont affichées en premier, cela n'impacte pas l'ordonnancement de la liste de lecture.",
+    "VIEW_LIKES_TOOLTIP": "Les chansons avec le plus de J'aime sont affichées en premier, ceci n'a pas d'effet sur l'ordonnancement de la liste de lecture.",
     "KARA_SUGGESTION_NOT_FOUND": "Vous ne trouvez pas votre bonheur ? Vérifiez sur vos dépôts en ligne configurés ainsi que sur le site de suggestions si votre souhait n'est pas déjà exaucé :",
     "ONLINE_STATS": {
         "TITLE": "Statistiques",
