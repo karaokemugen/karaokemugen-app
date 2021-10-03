@@ -3,6 +3,7 @@ import './Tutorial.scss';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 import { unmountComponentAtNode } from 'react-dom';
+import { Trans } from 'react-i18next';
 
 import KLogo from '../../../assets/Klogo.png';
 import TutoKaraLine from '../../../assets/tuto_karaline.png';
@@ -29,7 +30,7 @@ class Tutorial extends Component<unknown, IState> {
 	}
 
 	resize = () => {
-		this.setState({isLargeDevice: is_large_device()});
+		this.setState({ isLargeDevice: is_large_device() });
 	}
 
 	nextStep = () => {
@@ -57,30 +58,66 @@ class Tutorial extends Component<unknown, IState> {
 				slide = <>
 					<p className="title">{i18next.t('MODAL.TUTORIAL.WELCOME')}</p>
 					<div className="playlists">
-						{i18next.t('MODAL.TUTORIAL.PLAYLIST')} <i className="fas fa-fw fa-plus" />.
+						<Trans
+							i18nKey="MODAL.TUTORIAL.PLAYLIST"
+							components={{ 2: <i className="fas fa-fw fa-plus" /> }}
+						/>
 						<br /><br />
 						<div className="kara-line-image">
 							<img src={TutoKaraLine} alt="KaraLine" />
 							<p className="caption-left">
-								{i18next.t('MODAL.TUTORIAL.TITLE_CLICK')}
-								{!this.state.isLargeDevice ?
-									<>
-										&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE_CLICK_DESC')}
-									</> : null}.<br />
-								{i18next.t('MODAL.TUTORIAL.THE_BUTTON')} <i className="fas fa-fw fa-play" title="Lecture" /> {i18next.t('MODAL.TUTORIAL.PLAY_BUTTON')}
-								{!this.state.isLargeDevice ?
-									<>
-										&nbsp;({i18next.t('MODAL.TUTORIAL.THE_BUTTON')} <i className="fas fa-fw fa-play-circle" /> {i18next.t('MODAL.TUTORIAL.CURSOR_BUTTON')})
-									</> : null}.
+								<Trans
+									i18nKey="MODAL.TUTORIAL.TITLE_CLICK"
+									components={{ 1: !this.state.isLargeDevice ? <span /> : null }}
+								/>
+								<br />
+								<Trans
+									i18nKey="MODAL.TUTORIAL.PLAY_BUTTONS"
+									components={{
+										1: <i className="fas fa-fw fa-play" />,
+										3: !this.state.isLargeDevice ? <span /> : null,
+										5: <i className="fas fa-fw fa-play-circle" />
+									}}
+								/>
 							</p>
 							<p className="caption-right">
-								{i18next.t('MODAL.TUTORIAL.CHECK_CASE')} <i className="far fa-fw fa-square" title="Case à cocher" /> {i18next.t('MODAL.TUTORIAL.CHECK_CASE_ADD')} <em>{i18next.t('MODAL.TUTORIAL.CHECK_CASE_MORE')}</em>.<br />
-								{i18next.t('MODAL.TUTORIAL.THE_BUTTON')} <i className="fas fa-fw fa-plus" title="Ajout" /> {i18next.t('MODAL.TUTORIAL.ADD_TO_OTHER_PLAYLIST')}<br />
-								{i18next.t('MODAL.TUTORIAL.WRENCH_BUTTON')} <i className="fas fa-fw fa-wrench" /> {i18next.t('MODAL.TUTORIAL.WRENCH_BUTTON_DESC')}
+								<Trans
+									i18nKey="MODAL.TUTORIAL.CHECK_CASE"
+									components={{
+										1: <i className="far fa-fw fa-square" />,
+										3: <em />,
+									}}
+								/>
+								<br />
+								<Trans
+									i18nKey="MODAL.TUTORIAL.ADD_TO_OTHER_PLAYLIST"
+									components={{
+										1: <i className="fas fa-fw fa-plus" />
+									}}
+								/>
+								<br />
+								<Trans
+									i18nKey="MODAL.TUTORIAL.WRENCH_BUTTON"
+									components={{
+										1: <i className="fas fa-fw fa-wrench" />
+									}}
+								/>
 							</p>
 						</div>
-						{i18next.t('MODAL.TUTORIAL.LINES_WITH')} <span className="orange"><i className="fas fa-fw fa-history" /> {i18next.t('MODAL.TUTORIAL.ORANGE')}</span> {i18next.t('MODAL.TUTORIAL.KARAOKE_PLAYED')}<br />
-						{i18next.t('MODAL.TUTORIAL.LINE_WITH')} <span className="blue">{i18next.t('MODAL.TUTORIAL.BLUE')}</span> {i18next.t('MODAL.TUTORIAL.KARAOKE_PLAYING')}
+						<Trans
+							i18nKey="MODAL.TUTORIAL.KARAOKE_PLAYED"
+							components={{
+								1: <span className="orange" />,
+								2: <i className="fas fa-fw fa-history" />
+							}}
+						/>
+						<br />
+						<Trans
+							i18nKey="MODAL.TUTORIAL.KARAOKE_PLAYING"
+							components={{
+								1: <span className="blue" />
+							}}
+						/>
 					</div>
 				</>;
 				break;
@@ -92,10 +129,28 @@ class Tutorial extends Component<unknown, IState> {
 							<i className="fas fa-fw fa-list-ol" /> {i18next.t('MODAL.TUTORIAL.SELECT_PLAYLIST_BUTTON')}
 							<ul className="ul-l1">
 								<li><i className="fas fa-fw fa-book" /> {i18next.t('MODAL.TUTORIAL.LIBRARY')}</li>
-								<li><i className="fas fa-fw fa-pencil-alt" /> {i18next.t('MODAL.TUTORIAL.PLAYLIST_ATTRIBUTES')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.OR')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong>.</li>
-								<li><i className="fas fa-fw fa-play-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_DESC')}</li>
-								<li><i className="fas fa-fw fa-globe" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.PUBLIC_DESC')}</li>
-								<li><i className="fas fa-fw fa-info-circle" /> {i18next.t('MODAL.TUTORIAL.THE_PLAYLIST')} <strong>{i18next.t('MODAL.TUTORIAL.CURRENT')}</strong> {i18next.t('MODAL.TUTORIAL.AND')} <strong>{i18next.t('MODAL.TUTORIAL.PUBLIC')}</strong> {i18next.t('MODAL.TUTORIAL.CURRENT_PUBLIC_DESC')}</li>
+								<li><i className="fas fa-fw fa-pencil-alt" /> <Trans
+									i18nKey="MODAL.TUTORIAL.PLAYLIST_ATTRIBUTES"
+									components={{
+										1: <strong />,
+										3: <strong />
+									}}
+								/></li>
+								<li><i className="fas fa-fw fa-play-circle" /> <Trans
+									i18nKey="MODAL.TUTORIAL.CURRENT_DESC"
+									components={{ 1: <strong /> }}
+								/></li>
+								<li><i className="fas fa-fw fa-globe" /> <Trans
+									i18nKey="MODAL.TUTORIAL.PUBLIC_DESC"
+									components={{ 1: <strong /> }}
+								/></li>
+								<li><i className="fas fa-fw fa-info-circle" /> <Trans
+									i18nKey="MODAL.TUTORIAL.CURRENT_PUBLIC_DESC"
+									components={{
+										1: <strong />,
+										3: <strong />
+									}}
+								/></li>
 								<li><i className="fas fa-fw fa-ban" /> {i18next.t('MODAL.TUTORIAL.BLACKLIST_DESC')}</li>
 							</ul>
 						</li>
@@ -107,26 +162,22 @@ class Tutorial extends Component<unknown, IState> {
 					<p>{i18next.t('MODAL.TUTORIAL.PLAYER_BAR')}</p>
 					<ul>
 						<li><i className="fas fa-fw fa-play-circle" />
-							{i18next.t('MODAL.TUTORIAL.PLAYER_CURRENT_HINT')}&nbsp;
-							<strong>
-								{i18next.t('MODAL.TUTORIAL.PLAYER_CURRENT_HINT2')}
-							</strong>
-						.
+							<Trans
+								i18nKey="MODAL.TUTORIAL.PLAYER_CURRENT_HINT"
+								components={{ 1: <strong /> }}
+							/>
 						</li>
 						<li><i className="fas fa-fw fa-undo-alt" />
-							{i18next.t('MODAL.TUTORIAL.PLAYER_GO_BACK')}&nbsp;
-							<strong>
-								{i18next.t('MODAL.TUTORIAL.PLAYER_GOING_BACK')}&nbsp;
-							</strong>
-							{i18next.t('MODAL.TUTORIAL.PLAYER_GO_BACK_2')}
-						.
+							<Trans
+								i18nKey="MODAL.TUTORIAL.PLAYER_GO_BACK"
+								components={{ 1: <strong /> }}
+							/>
 						</li>
 						<li><i className="fas fa-fw fa-stop" />
-							{i18next.t('MODAL.TUTORIAL.PLAYER_STOP')}&nbsp;
-							<strong>
-								{i18next.t('MODAL.TUTORIAL.NOW')}
-							</strong>
-						.
+							<Trans
+								i18nKey="MODAL.TUTORIAL.PLAYER_STOP"
+								components={{ 1: <strong /> }}
+							/>
 						</li>
 						<li><i className="fas fa-fw fa-comment" />
 							{i18next.t('MODAL.TUTORIAL.MESSAGE')}
@@ -147,15 +198,15 @@ class Tutorial extends Component<unknown, IState> {
 				break;
 		}
 		return (<div className="tutorial">
-			<div className={`dimmer${this.state.stepIndex > 0 ? ' transparent':''}${this.state.stepIndex === 2 ? ' player-bar':''}`} />
+			<div className={`dimmer${this.state.stepIndex > 0 ? ' transparent' : ''}${this.state.stepIndex === 2 ? ' player-bar' : ''}`} />
 			{slide}
 			<div className="steps">
 				{this.state.stepIndex > 0 ? <button onClick={this.previousStep} className="step back">
 					<i className="fas fa-arrow-left" /> {i18next.t('MODAL.TUTORIAL.BACK')}
-				</button>:null}
+				</button> : null}
 				{this.state.stepIndex < 2 ? <button onClick={this.nextStep} className="step next">
 					{i18next.t('MODAL.TUTORIAL.NEXT')} <i className="fas fa-arrow-right" />
-				</button>:null}
+				</button> : null}
 			</div>
 		</div>);
 	}
