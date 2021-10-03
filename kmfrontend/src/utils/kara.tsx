@@ -5,10 +5,8 @@ import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../store/actions/frontendContext';
 import { GlobalContextInterface } from '../store/context';
 import { SettingsStoreData } from '../store/types/settings';
-import { getNavigatorLanguageIn3B } from './isoLanguages';
+import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
-
-const navigatorLanguage: string = getNavigatorLanguageIn3B();
 
 export function getTagInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string, i18nParam?: any): string {
 	const i18n = (i18nParam && i18nParam[tag.tid]) ? i18nParam[tag.tid] : tag.i18n;
@@ -33,7 +31,7 @@ export function getTagInLocale(settings: SettingsStoreData, tag: DBKaraTag, i18n
 	if (user?.main_series_lang && user?.fallback_series_lang) {
 		return getTagInLanguage(tag, user.main_series_lang, user.fallback_series_lang, i18nParam);
 	} else {
-		return getTagInLanguage(tag, navigatorLanguage, 'eng', i18nParam);
+		return getTagInLanguage(tag, getLanguageIn3B(langSupport), 'eng', i18nParam);
 	}
 }
 
@@ -43,7 +41,7 @@ export function getTitleInLocale(settings: SettingsStoreData, titles: any): any 
 		return titles[user.main_series_lang] ? titles[user.main_series_lang] :
 			(titles[user.fallback_series_lang] ? titles[user.fallback_series_lang] : titles['eng']);
 	} else {
-		return titles[navigatorLanguage] ? titles[navigatorLanguage] : titles['eng'];
+		return titles[getLanguageIn3B(langSupport)] ? titles[getLanguageIn3B(langSupport)] : titles['eng'];
 	}
 }
 

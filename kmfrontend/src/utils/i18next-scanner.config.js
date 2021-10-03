@@ -10,7 +10,7 @@ module.exports = {
 			list: ['i18next.t', 'i18n.t'],
 			extensions: ['.ts', '.tsx']
 		},
-		lngs: ['en','fr'],
+		lngs: ['en', 'fr', 'es'],
 		defaultLng: 'en',
 		defaultValue: '__STRING_NOT_TRANSLATED__',
 		resource: {

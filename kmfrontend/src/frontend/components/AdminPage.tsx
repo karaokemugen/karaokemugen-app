@@ -2,11 +2,12 @@ import i18next from 'i18next';
 import React, { useContext, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router';
 
-import { DBYear } from '../../../../src/lib/types/database/kara';
+import { DBKaraTag, DBYear } from '../../../../src/lib/types/database/kara';
+import { DBTag } from '../../../../src/lib/types/database/tag';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../store/actions/frontendContext';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
-import { getNavigatorLanguageIn3B } from '../../utils/isoLanguages';
+import { getTagInLocale } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { decodeCriteriaReason, displayMessage } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
@@ -84,10 +85,14 @@ function AdminPage(props: IProps) {
 	const parseTags = async () => {
 		try {
 			const response = await commandBackend('getTags');
-			return response.content.filter((val: Tag) => val.karacount !== null)
-				.map((val: { i18n: { [key: string]: string }, tid: string, name: string, types: Array<number | string>, karacount: string }) => {
-					const trad = val?.i18n && val.i18n[getNavigatorLanguageIn3B() as string];
-					return { value: val.tid, label: trad ? trad : (val.i18n['eng'] ? val.i18n['eng'] : val.name), type: val.types, karacount: val.karacount };
+			return response.content.filter((val: DBTag) => val.karacount !== null)
+				.map((val: DBTag) => {
+					return {
+						value: val.tid,
+						label: getTagInLocale(context.globalState.settings.data, val as unknown as DBKaraTag),
+						type: val.types,
+						karacount: val.karacount
+					};
 				});
 		} catch (e) {
 			//already display
