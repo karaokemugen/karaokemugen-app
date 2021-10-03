@@ -1,1 +1,10 @@
-{}
+{
+    "YES": "Sì",
+    "NO": "No",
+    "AND": "e",
+    "CANCEL": "Cancellare",
+    "DETAILS": {
+        "YEAR": "Anno"
+    },
+    "VERSION": "Versione"
+}
