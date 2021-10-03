@@ -156,7 +156,8 @@
             "ALWAYS_ON_TOP": "Mantenerse encima",
             "DISPLAY_SETTINGS": "Pantalla",
             "WINDOW_SETTINGS": "Ventana",
-            "LABEL": "Reproductor"
+            "LABEL": "Reproductor",
+            "DISPLAY_RANDOMQUOTES_TOOLTIP": "Las citas aleatorias aparecen en la parte inferior de la pantalla del reproductor cuando está detenido"
         },
         "SYSTEMPANEL_TIP": {
             "AFTER_LINK": ".",
