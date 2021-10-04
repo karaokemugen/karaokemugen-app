@@ -129,6 +129,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		});
 		let types = [].concat(tag1.types, tag2.types);
 		let aliases = [].concat(tag1.aliases, tag2.aliases);
+		//Remove duplicates after we concatenated everything.
 		types = types.filter((e, pos) => types.indexOf(e) === pos);
 		aliases = aliases.filter((e, pos) => aliases.indexOf(e) === pos);
 		if (aliases[0] === null) aliases = null;
@@ -141,7 +142,11 @@ export async function mergeTags(tid1: string, tid2: string) {
 			i18n: i18n,
 			short: tag1.short,
 			aliases: aliases,
-			repository: tag1.repository
+			repository: tag1.repository,
+			problematic: tag1.problematic || tag2.problematic,
+			noLiveDownload: tag1.noLiveDownload || tag2.noLiveDownload,
+			karafile_tag: tag1.karafile_tag || tag2.karafile_tag,
+			priority: tag1.priority
 		};
 		tagObj = await addTag(tagObj, {silent: true, refresh: false});
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
