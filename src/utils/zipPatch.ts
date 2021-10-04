@@ -9,6 +9,7 @@ import { resolvedPathTemp } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { downloadFiles } from '../services/download';
+import Sentry from './sentry';
 import { getState } from './state';
 
 // This is only used in cli mode, without a worker available
@@ -108,6 +109,8 @@ export async function applyPatch(patch: string, dir: string) {
 		return computeFileChanges(patch);
 	} catch (err) {
 		logger.warn('Cannot apply patch from server, fallback to zip full 	download', {service: 'DiffPatch', obj: err});
+		Sentry.addErrorInfo('patch', patch);
+		Sentry.error(err, 'Warning');
 		throw err;
 	}
 }
