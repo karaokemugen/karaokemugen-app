@@ -152,10 +152,13 @@ export async function mergeTags(tid1: string, tid2: string) {
 		const newTagFiles = resolve(resolvedPathRepos('Tags', tagObj.repository)[0], tagObj.tagfile);
 		await addTagToStore(newTagFiles);
 		sortTagsStore();
-		await Promise.all([
-			updateKaraTagsTID(tid1, tagObj.tid),
-			updateKaraTagsTID(tid2, tagObj.tid)
-		]);
+		await updateKaraTagsTID(tid1, tagObj.tid);
+		// We're not asyncing these because after the first one passes, if the new TID already has the same songs registered in the kara_tag table, it'll break the unique constraint on the table and destroy the universe.
+		// So we don't do that.
+		// The query updates only rows where KIDs aren't already listed as belonging to the new TID.
+		// The remaining rows will disappear thanks to the removal of the old TIDs just after, thanks to ON DELETE CASCADE.
+		await updateKaraTagsTID(tid1, tagObj.tid);
+		await updateKaraTagsTID(tid2, tagObj.tid);
 		await Promise.all([
 			removeTag([tid1, tid2]),
 			removeTagFile(tag1.tagfile, tag1.repository),

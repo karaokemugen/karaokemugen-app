@@ -130,7 +130,9 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 `;
 
 export const sqlupdateKaraTagsTID = `
-UPDATE kara_tag SET fk_tid = $2 WHERE fk_tid = $1;
+UPDATE kara_tag SET fk_tid = $2 WHERE fk_tid = $1 AND fk_kid NOT IN (
+	SELECT fk_kid FROM kara_tag WHERE fk_tid = $2
+);
 `;
 
 export const sqldeleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_kid = $1';
