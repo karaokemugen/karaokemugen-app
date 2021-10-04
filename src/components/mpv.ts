@@ -209,20 +209,24 @@ export function switchToPauseScreen() {
 
 /* List mpv audio output devices */
 export async function getMpvAudioOutputs(): Promise<string[][]> {
-	const output = await execa(getState().binPath.mpv, ['--audio-device=help']);
-	const audioRegex = /'([^\n]+)' \(([^\n]+)\)/g;
-	const results = [];
-	let arr: any;
-	while ((arr = audioRegex.exec(output.stdout)) !== null) {
-		results.push([arr[1], arr[2]]);
+	try {
+		const output = await execa(getState().binPath.mpv, ['--audio-device=help']);
+		const audioRegex = /'([^\n]+)' \(([^\n]+)\)/g;
+		const results = [];
+		let arr: any;
+		while ((arr = audioRegex.exec(output.stdout)) !== null) {
+			results.push([arr[1], arr[2]]);
+		}
+		return results;
+	} catch(err) {
+		logger.error('Unable to get sound devices from mpv', {service: 'Player', obj: err});
+		return [[]];
 	}
-	return results;
 }
 
 async function checkMpv() {
 	const state = getState();
-	await getMpvAudioOutputs();
-	//On all platforms, check if we're using mpv at least the required mpv version or abort saying the mpv provided is too old.
+	//On all platforms, check if we're using at least the required mpv version or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
 	let mpvVersion: string;
 	try {
@@ -240,7 +244,7 @@ async function checkMpv() {
 		logger.error(`mpv binary: ${state.binPath.mpv}`, {service: 'Player'});
 		logger.error('Exiting due to obsolete mpv version', {service: 'Player'});
 		await exit(1);
-	}
+	}	
 }
 
 class Player {
@@ -265,7 +269,7 @@ class Player {
 		const conf = getConfig();
 		const state = getState();
 
-		const NodeMPVArgs = [
+		const mpvArgs = [
 			'--keep-open=always',
 			'--osd-level=0',
 			`--log-file=${resolve(state.dataPath, 'logs/', 'mpv.log')}`,
@@ -285,34 +289,35 @@ class Player {
 		];
 
 		if (options.monitor) {
-			NodeMPVArgs.push(
+			mpvArgs.push(
 				'--mute=yes',
 				'--reset-on-next-file=pause,loop-file,audio-files,aid,sid,mute',
 				'--ao=null');
 		} else {
-			NodeMPVArgs.push('--reset-on-next-file=pause,loop-file,audio-files,aid,sid');
-			if (!conf.Player.Borders) NodeMPVArgs.push('--no-border');
+			mpvArgs.push('--reset-on-next-file=pause,loop-file,audio-files,aid,sid');
+			if (!conf.Player.Borders) mpvArgs.push('--no-border');
 			if (conf.Player.FullScreen) {
-				NodeMPVArgs.push('--fullscreen');
+				mpvArgs.push('--fullscreen');
 			}
 		}
 
 		if (conf.Player.Screen) {
-			NodeMPVArgs.push(
+			mpvArgs.push(
 				`--screen=${conf.Player.Screen}`,
 				`--fs-screen=${conf.Player.Screen}`);
 		}
 
 		if (conf.Player.StayOnTop) {
-			NodeMPVArgs.push('--ontop');
+			mpvArgs.push('--ontop');
 		}
 
 		// We want a 16/9
 		const screens = await graphics();
-		const screen = (conf.Player.Screen ?
-			(screens.displays[conf.Player.Screen] || screens.displays[0])
+		const screen = (conf.Player.Screen 
+			? (screens.displays[conf.Player.Screen] || screens.displays[0])
 			// Assume 1080p screen if systeminformation can't find the screen
-			: screens.displays[0]) || { currentResX: 1920 };
+			: screens.displays[0]) 
+		|| { currentResX: 1920 };
 		let targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
 		if (isNaN(targetResX)) {
 			logger.warn('Cannot get a target res, defaulting to 480 (25% of 1080p display)', {service: 'Player',
@@ -335,18 +340,18 @@ class Player {
 			if (positionY >= 0) positionY += 10;
 			else positionY -= 10;
 		}
-		NodeMPVArgs.push(`--geometry=${targetResolution}${positionX > 0 ? `+${positionX}`:positionX}%${positionY > 0 ? `+${positionY}`:positionY}%`);
+		mpvArgs.push(`--geometry=${targetResolution}${positionX > 0 ? `+${positionX}`:positionX}%${positionY > 0 ? `+${positionY}`:positionY}%`);
 
-		if (conf.Player.NoHud) NodeMPVArgs.push('--no-osc');
-		if (conf.Player.NoBar) NodeMPVArgs.push('--no-osd-bar');
+		if (conf.Player.NoHud) mpvArgs.push('--no-osc');
+		if (conf.Player.NoBar) mpvArgs.push('--no-osd-bar');
 
 		if (conf.Player.mpvVideoOutput) {
-			NodeMPVArgs.push(`--vo=${conf.Player.mpvVideoOutput}`);
+			mpvArgs.push(`--vo=${conf.Player.mpvVideoOutput}`);
 		}
 
 		// Testing if string exists or is not empty
 		if (conf.Player.ExtraCommandLine?.length > 0) {
-			conf.Player.ExtraCommandLine.split(' ').forEach(e => NodeMPVArgs.push(e));
+			conf.Player.ExtraCommandLine.split(' ').forEach(e => mpvArgs.push(e));
 		}
 
 		let socket: string;
@@ -359,14 +364,14 @@ class Player {
 			? socket = '\\\\.\\pipe\\mpvsocket' + random
 			: socket = '/tmp/km-node-mpvsocket' + random;
 
-		const NodeMPVOptions = {
+		const mpvOptions = {
 			binary: state.binPath.mpv,
 			socket: socket
 		};
 
-		logger.debug(`mpv${this.options.monitor ? ' monitor':''} options:`, {obj: [NodeMPVOptions, NodeMPVArgs], service: 'Player'});
+		logger.debug(`mpv${this.options.monitor ? ' monitor':''} options:`, {obj: [mpvOptions, mpvArgs], service: 'Player'});
 
-		return [state.binPath.mpv, socket, NodeMPVArgs];
+		return [state.binPath.mpv, socket, mpvArgs];
 	}
 
 	private debounceTimePosition(position: number) {
@@ -385,17 +390,17 @@ class Player {
 				playerState.nextSongNotifSent = true;
 				notificationNextSong();
 			}
+			// Display informations if timeposition is 8 seconds before end of song				
 			if (position >= (playerState.currentSong.duration - 8) &&
 				playerState.mediaType === 'song') {
-				// Display informations if timeposition is 8 seconds before end of song
 				this.control.displaySongInfo(playerState.currentSong.infos);
 			} else if (position <= 8 && playerState.mediaType === 'song') {
 				// Display informations if timeposition is 8 seconds after start of song
 				this.control.displaySongInfo(playerState.currentSong.infos, -1, false, playerState.currentSong?.misc?.some(t => t.name === 'Spoiler'));
 			} else if (position >= Math.floor(playerState.currentSong.duration / 2)-4 &&
+				// Display KM's banner if position reaches halfpoint in the song				
 				position <= Math.floor(playerState.currentSong.duration / 2)+4 &&
 				playerState.mediaType === 'song' && !getState().songPoll) {
-				// Display KM's banner if position reaches halfpoint in the song
 				this.control.displayInfo();
 			} else {
 				this.control.messages.removeMessage('DI');
@@ -411,6 +416,7 @@ class Player {
 		}
 	}
 
+	// Time position happens very often so we don't update it as often, hence the debouncing.
 	debouncedTimePosition = debounce(this.debounceTimePosition, 125, {maxWait: 250, leading: true});
 
 	private bindEvents() {
@@ -477,7 +483,7 @@ class Player {
 		// Handle manually exits/crashes
 		this.mpv.once('close', () => {
 			logger.debug('mpv closed (?)', {service: `mpv${this.options.monitor ? ' monitor':''}`});
-			// We set the state here to prevent the 'paused' event to trigger (because it will restart mpv in the same time)
+			// We set the state here to prevent the 'paused' event from triggering (because it will restart mpv at the same time)
 			playerState.playing = false;
 			playerState._playing = false;
 			playerState.playerStatus = 'stop';
@@ -518,7 +524,7 @@ class Player {
 		}, {
 			retries: 3,
 			onFailedAttempt: error => {
-				logger.warn(`Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`, {service: 'Player', obj: error});
+				logger.warn(`Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} more times...`, {service: 'Player', obj: error});
 			}
 		}).catch(err => {
 			logger.error('Cannot start MPV', {service: 'Player', obj: err});
@@ -530,7 +536,11 @@ class Player {
 
 	async recreate(options?: MpvOptions, restart = false) {
 		try {
-			if (this.isRunning) await this.destroy();
+			if (this.isRunning) try {
+				await this.destroy();
+			} catch(err) {
+				// Non-fatal, should be already destroyed. Probably.
+			}
 			// Set options if supplied
 			if (options) this.options = options;
 			// Re-init the player
@@ -565,9 +575,8 @@ class Players {
 
 	messages: MessageManager
 
+	/** Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex. */
 	private static async genLavfiComplex(song: CurrentSong): Promise<string> {
-		const shouldDisplayAvatar = song.avatar && getConfig().Player.Display.Avatar;
-		const cropRatio = shouldDisplayAvatar ? Math.floor(await getAvatarResolution(song.avatar)*0.5):0;
 		// Loudnorm normalization scheme: https://ffmpeg.org/ffmpeg-filters.html#loudnorm
 		let audio: string;
 		if (song.loudnorm) {
@@ -578,6 +587,12 @@ class Players {
 		} else {
 			audio = '';
 		}
+
+		// Avatar
+		const shouldDisplayAvatar = song.avatar && getConfig().Player.Display.Avatar;
+		const cropRatio = shouldDisplayAvatar 
+			? Math.floor(await getAvatarResolution(song.avatar)*0.5)
+			: 0;		
 		let avatar = '';
 		if (shouldDisplayAvatar) {
 			// Again, lavfi-complex expert @nah comes to the rescue!
@@ -603,7 +618,10 @@ class Players {
 
 	private static async extractBackgroundFiles(backgroundDir: string, music: boolean): Promise<string[]> {
 		const backgroundFiles = [];
-		const dirListing = await fs.readdir(backgroundDir);
+		const dirListing = await fs.readdir(backgroundDir).catch(err => {
+			logger.error(`Unable to read background folder ${backgroundDir}`, {service: 'mpv', obj: err});
+			throw err;
+		});
 		for (const file of dirListing) {
 			if (music ? isMediaFile(file):isImageFile(file)) backgroundFiles.push(resolve(backgroundDir, file));
 		}
@@ -699,6 +717,7 @@ class Players {
 
 	progressBarTimeout: NodeJS.Timeout
 
+	/** Progress bar on pause screens inbetween songs */
 	private tickProgressBar(nextTick: number, ticked: number, DI: string) {
 		// 10 ticks
 		if (ticked <= 10 && getState().streamerPause) {
@@ -1018,7 +1037,7 @@ class Players {
 		playerState.timeposition = 0;
 		playerState._playing = false;
 		// This will be set to false by mpv, meanwhile the eof-reached event is simulated to trigger correctly other
-		// parts of the code (L645 is the only example for now)
+		// parts of the code
 		playerState['eof-reached'] = true;
 		playerState.playerStatus = 'stop';
 		await this.loadBackground();
@@ -1267,8 +1286,13 @@ class Players {
 	}
 
 	displayAddASong() {
-		if (getState().randomPlaying) this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'),
-			1000, 5, 'addASong');
+		if (getState().randomPlaying) try {
+			this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'),
+				1000, 5, 'addASong');
+		} catch(err) {
+			logger.warn('Unable to display Add A Song message', {service: 'Player', obj: err});
+			// Non fatal
+		}
 	}
 
 	intervalIDAddASong: NodeJS.Timeout;
