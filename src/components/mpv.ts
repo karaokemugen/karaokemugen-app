@@ -861,7 +861,9 @@ class Players {
 				this.players.monitor = new Player({monitor: true}, this);
 			} else {
 				// Monitor needs to be destroyed
-				await this.exec('destroy', null, 'monitor', true);
+				await this.exec('destroy', null, 'monitor', true).catch(() => {
+					//Non-fatal, it probably means it's destroyed.
+				});
 				delete this.players.monitor;
 			}
 		}
@@ -1225,7 +1227,10 @@ class Players {
 	}
 
 	tickDisplay() {
-		this.exec({ command: ['expand-properties', 'osd-overlay', 1, 'ass-events', this.messages?.getText() || ''] });
+		this.exec({ command: ['expand-properties', 'osd-overlay', 1, 'ass-events', this.messages?.getText() || ''] }).catch(err => {
+			//Non-fatal. Maybe. Don't sue me.
+			logger.warn('Unable to tick display', {service: 'Player', obj: err});
+		});
 	}
 
 	async message(message: string, duration = -1, alignCode = 5, forceType = 'admin') {
@@ -1252,7 +1257,12 @@ class Players {
 			this.messages.addMessage('DI', position+spoilerString+nextSongString+infos, duration === -1 ? 'infinite':duration);
 			if (nextSong) {
 				playerState.mediaType = 'pauseScreen';
-				this.startBackgroundMusic();
+				try {
+					this.startBackgroundMusic();
+				} catch(err) {
+					logger.warn('Unable to start background music during a pause', {service: 'Player', obj: err});
+					//Non fatal.
+				}
 				emitPlayerState();
 				if (getState().streamerPause && getConfig().Karaoke.StreamerMode.PauseDuration > 0) {
 					this.progressBar(getConfig().Karaoke.StreamerMode.PauseDuration, position+spoilerString+nextSongString+infos);
