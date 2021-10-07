@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { RemoteFailure, RemoteSuccess } from '../../../../../src/lib/types/remote';
 import GlobalContext from '../../../store/context';
@@ -18,109 +18,95 @@ interface RemoteStatusActive {
 
 type RemoteStatusData = RemoteStatusInactive | RemoteStatusActive;
 
-interface IState {
-	remoteStatus?: RemoteStatusData
-}
+function RemoteStatus() {
+	const context = useContext(GlobalContext);
+	const [remoteStatus, setRemoteStatus] = useState<RemoteStatusData>();
+	let timeout: NodeJS.Timeout;
 
-class RemoteStatus extends Component<unknown, IState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
-
-	constructor(props) {
-		super(props);
-		this.state = {};
-	}
-
-	timeout: NodeJS.Timeout
-
-	updateRemoteData = async () => {
+	const updateRemoteData = async () => {
 		try {
 			const data: RemoteStatusData = await commandBackend('getRemoteData');
-			this.setState({ remoteStatus: data });
+			setRemoteStatus(data);
 		} catch (e) {
 			// already display
 		}
-	}
+	};
 
-	reset = (e: any) => {
+	const reset = (e: any) => {
 		e.preventDefault();
-		callModal(this.context.globalDispatch, 'confirm', i18next.t('REMOTE_RESET'), i18next.t('REMOTE_RESET_CONFIRM'), () => {
+		callModal(context.globalDispatch, 'confirm', i18next.t('REMOTE_RESET'), i18next.t('REMOTE_RESET_CONFIRM'), () => {
 			commandBackend('resetRemoteToken');
 		});
-	}
+	};
 
-	componentDidMount() {
-		this.updateRemoteData();
-		this.timeout = setInterval(this.updateRemoteData, 500);
-	}
+	useEffect(() => {
+		updateRemoteData();
+		timeout = setInterval(updateRemoteData, 500);
+		return () => {
+			clearInterval(timeout);
+		};
+	}, []);
 
-	componentWillUnmount() {
-		clearInterval(this.timeout);
-	}
-
-	render() {
-		return (
-			<div id="remoteInfoSettings"
-					 className="settingsGroupPanel">
-				{this.state.remoteStatus?.active ?
-					('host' in this.state.remoteStatus.info ?
-						<>
-							<div className="settings-line">
-								<label>
-									{i18next.t('REMOTE_STATUS.LABEL')}
-								</label>
-								<div>
-									{i18next.t('REMOTE_STATUS.CONNECTED')}
-								</div>
+	return (
+		<div className="settingsGroupPanel">
+			{remoteStatus?.active ?
+				('host' in remoteStatus.info ?
+					<>
+						<div className="settings-line">
+							<label>
+								{i18next.t('REMOTE_STATUS.LABEL')}
+							</label>
+							<div>
+								{i18next.t('REMOTE_STATUS.CONNECTED')}
 							</div>
-							<div className="settings-line">
-								<label>
-									{i18next.t('REMOTE_URL')}
-								</label>
-								<div>
-									{this.state.remoteStatus.info.host}
-								</div>
-							</div>
-							<div className="settings-line">
-								<label>
-									<span className="title">{i18next.t('REMOTE_TOKEN')}</span>
-									<br />
-									<span className="tooltip">{i18next.t('REMOTE_TOKEN_TOOLTIP')}</span>
-								</label>
-								<div>
-									<span className="blur-hover">{this.state.remoteStatus.token}</span>
-									<button className="btn btn-danger" onClick={this.reset} title={i18next.t('REMOTE_RESET_TOOLTIP')}>
-										{i18next.t('REMOTE_RESET')}
-									</button>
-								</div>
-							</div>
-						</>
-						:
-						<>
-							<div className="settings-line">
-								<label>
-									{i18next.t('REMOTE_STATUS.LABEL')}
-								</label>
-								<div>
-									{this.state.remoteStatus.info.reason === 'OUTDATED_CLIENT' ? i18next.t('REMOTE_STATUS.OUTDATED_CLIENT'):null}
-									{this.state.remoteStatus.info.reason === 'UNKNOWN_COMMAND' ? i18next.t('REMOTE_STATUS.OUTDATED'):null}
-									{!['OUTDATED_CLIENT', 'UNKNOWN_COMMAND'].includes(this.state.remoteStatus.info.reason) ?
-										<span>{i18next.t('REMOTE_STATUS.DISCONNECTED')} {this.state.remoteStatus.info.reason}</span>:null}
-								</div>
-							</div>
-						</>
-					)
-					: <div className="settings-line">
-						<label>
-							<span className="title">{i18next.t('REMOTE_STATUS.LABEL')}</span>
-						</label>
-						<div>
-							{i18next.t('REMOTE_STATUS.DISCONNECTED')}
 						</div>
-					</div>}
-			</div>
-		);
-	}
+						<div className="settings-line">
+							<label>
+								{i18next.t('REMOTE_URL')}
+							</label>
+							<div>
+								{remoteStatus.info.host}
+							</div>
+						</div>
+						<div className="settings-line">
+							<label>
+								<span className="title">{i18next.t('REMOTE_TOKEN')}</span>
+								<br />
+								<span className="tooltip">{i18next.t('REMOTE_TOKEN_TOOLTIP')}</span>
+							</label>
+							<div>
+								<span className="blur-hover">{remoteStatus.token}</span>
+								<button className="btn btn-danger" onClick={reset} title={i18next.t('REMOTE_RESET_TOOLTIP')}>
+									{i18next.t('REMOTE_RESET')}
+								</button>
+							</div>
+						</div>
+					</>
+					:
+					<>
+						<div className="settings-line">
+							<label>
+								{i18next.t('REMOTE_STATUS.LABEL')}
+							</label>
+							<div>
+								{remoteStatus.info.reason === 'OUTDATED_CLIENT' ? i18next.t('REMOTE_STATUS.OUTDATED_CLIENT') : null}
+								{remoteStatus.info.reason === 'UNKNOWN_COMMAND' ? i18next.t('REMOTE_STATUS.OUTDATED') : null}
+								{!['OUTDATED_CLIENT', 'UNKNOWN_COMMAND'].includes(remoteStatus.info.reason) ?
+									<span>{i18next.t('REMOTE_STATUS.DISCONNECTED')} {remoteStatus.info.reason}</span> : null}
+							</div>
+						</div>
+					</>
+				)
+				: <div className="settings-line">
+					<label>
+						<span className="title">{i18next.t('REMOTE_STATUS.LABEL')}</span>
+					</label>
+					<div>
+						{i18next.t('REMOTE_STATUS.DISCONNECTED')}
+					</div>
+				</div>}
+		</div>
+	);
 }
 
 export default RemoteStatus;
