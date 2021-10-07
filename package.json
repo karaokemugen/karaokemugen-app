@@ -27,7 +27,8 @@
     "dist": "yarn build && electron-builder",
     "migrate": "postgrator",
     "dropDatabase": "ts-node util/dropDatabase.ts",
-    "i18next-scanner": "i18next-scanner --config util/i18next-scanner.config.js"
+    "i18next-scanner": "i18next-scanner --config util/i18next-scanner.config.js",
+    "prepare": "husky install"
   },
   "homepage": "https://karaokes.moe",
   "repository": {
@@ -187,13 +188,17 @@
     "chai": "^4.3.4",
     "electron": "^15.1.1",
     "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0",
+    "husky": "^7.0.2",
     "i18next-scanner": "^3.0.0",
+    "lint-staged": "^11.2.0",
     "mocha": "^9.1.2",
     "postgrator-cli": "^4.0.0",
+    "prettier": "2.4.1",
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3"
@@ -334,5 +339,8 @@
         ]
       }
     ]
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
