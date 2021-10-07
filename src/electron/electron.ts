@@ -25,7 +25,6 @@ import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
-export let zipWorker: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
 export let chibiPlaylistWindow: Electron.BrowserWindow;
 
@@ -51,10 +50,6 @@ export function startElectron() {
 		} catch(err) {
 			logger.warn('KM protocol could not be registered!', {obj: err, service: 'Electron'});
 		}
-		// Create zip decompression worker to avoid blocking the main event loop.
-		createZipWorker().catch(err => {
-			throw err;
-		});
 		// Create electron window with init screen
 		if (!getState().opt.cli) await initElectronWindow();
 		// Once init page is ready, or if we're in cli mode we start running init operations
@@ -291,31 +286,6 @@ async function initElectronWindow() {
 	applyMenu();
 }
 
-export async function createZipWorker() {
-	zipWorker = new BrowserWindow({
-		show: getState().opt.debug,
-		webPreferences: {
-			nodeIntegration: true,
-			contextIsolation: false
-		}
-	});
-	zipWorker.loadURL(`file://${resolve(getState().resourcePath, 'zipWorker/index.html')}`);
-	zipWorker.setMenu(Menu.buildFromTemplate([{
-		label: i18next.t('MENU_VIEW'),
-		submenu: [
-			{ label: i18next.t('MENU_VIEW_RELOAD'), role: 'reload' },
-			{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forceReload' },
-			{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggleDevTools' },
-			{ type: 'separator' },
-			{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetZoom' },
-			{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomIn' },
-			{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomOut' },
-			{ type: 'separator' },
-			{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
-		]
-	}]));
-}
-
 async function createWindow() {
 	// Create the browser window
 	const state = getState();
@@ -354,7 +324,6 @@ async function createWindow() {
 		win = null;
 		chibiPlayerWindow?.destroy();
 		chibiPlaylistWindow?.destroy();
-		zipWorker?.destroy();
 	});
 }
 

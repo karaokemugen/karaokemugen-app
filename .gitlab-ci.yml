@@ -37,7 +37,6 @@ test:
     POSTGRES_PASSWORD: musubi
   script:
     - yarn install --check-files --force --cache-folder .yarn
-    - yarn buildWorker
     - touch mpv
     - touch ffmpeg
     - mkdir app
@@ -75,7 +74,6 @@ build-react:
     - yarn build
     - yarn installkmfrontend
     - yarn buildkmfrontend
-    - yarn buildWorker
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
