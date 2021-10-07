@@ -1,6 +1,6 @@
-# R�sum�
+# Résumé
 
-(d�crivez de fa�on concise le bug rencontr�)
+(décrivez de façon concise le bug rencontré)
 
 # Quelle version de Karaoke Mugen ?
 
@@ -20,10 +20,10 @@
 
 (Racontez-nous tout)
 
-# Qu'est-ce qu'il devrait plut�t se passer si tout marchait bien ?
+# Qu'est-ce qu'il devrait plutôt se passer si tout marchait bien ?
 
-(Ce � quoi vous vous attendiez)
+(Ce à quoi vous vous attendiez)
 
-# Logs et/ou captures d'�crans
+# Logs et/ou captures d'écrans
 
-(Joignez votre karaokemugen.log et/ou une capture d'�cran du bug rencontr�)
+(Joignez votre karaokemugen.log et/ou une capture d'écran du bug rencontré)
