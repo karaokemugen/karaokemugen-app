@@ -1,4 +1,4 @@
-import React, { ReactNode,ReactNodeArray } from 'react';
+import React, { ReactNode, ReactNodeArray } from 'react';
 
 interface IProps {
 	children?: ReactNodeArray | ReactNode;
@@ -6,9 +6,8 @@ interface IProps {
 }
 
 function KmAppHeaderDecorator(props: IProps) {
-
 	return (
-		<div className="KmAppHeaderDecorator" data-mode={props.mode} >
+		<div className="KmAppHeaderDecorator" data-mode={props.mode}>
 			{props.children}
 		</div>
 	);

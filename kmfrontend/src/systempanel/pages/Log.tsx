@@ -1,5 +1,5 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { Collapse, Layout, Select,Timeline } from 'antd';
+import { Collapse, Layout, Select, Timeline } from 'antd';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
@@ -8,22 +8,22 @@ import i18n from '../../utils/i18n';
 import { commandBackend, getSocket, isRemote } from '../../utils/socket';
 
 interface LogState {
-	log: { level: string, message: string, timestamp: string, service: string, obj?: any }[],
-	error: string,
-	level: string
+	log: { level: string; message: string; timestamp: string; service: string; obj?: any }[];
+	error: string;
+	level: string;
 }
 
 class Log extends Component<unknown, LogState> {
-	static contextType = GlobalContext
-	context: React.ContextType<typeof GlobalContext>
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>;
 
 	state = {
 		log: [],
 		error: '',
-		level: 'info'
+		level: 'info',
 	};
 
-	interval: NodeJS.Timeout
+	interval: NodeJS.Timeout;
 
 	componentDidMount() {
 		this.refresh().then(() => {
@@ -49,51 +49,52 @@ class Log extends Component<unknown, LogState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getLogs', {level: this.state.level});
+		const res = await commandBackend('getLogs', { level: this.state.level });
 		if (res) this.setState({ log: res });
-	}
+	};
 
 	setLevel = (level) => {
 		this.setState({ level, log: [] }, this.refresh);
-	}
+	};
 
 	render() {
 		return (
 			<>
 				<Layout.Header>
-					<div className='title'>{i18next.t('HEADERS.LOGS.TITLE')}</div>
-					<div className='description'>{i18next.t('HEADERS.LOGS.DESCRIPTION')}</div>
+					<div className="title">{i18next.t('HEADERS.LOGS.TITLE')}</div>
+					<div className="description">{i18next.t('HEADERS.LOGS.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
-					<Select defaultValue="info" onChange={this.setLevel} style={{marginBottom: '1em'}}>
+					<Select defaultValue="info" onChange={this.setLevel} style={{ marginBottom: '1em' }}>
 						<Select.Option value="error">{i18next.t('LOGS.LEVELS.ERROR')}</Select.Option>
 						<Select.Option value="warn">{i18next.t('LOGS.LEVELS.WARNING')}</Select.Option>
 						<Select.Option value="info">{i18next.t('LOGS.LEVELS.INFO')}</Select.Option>
 						<Select.Option value="debug">{i18next.t('LOGS.LEVELS.DEBUG')}</Select.Option>
 					</Select>
 					<Timeline reverse={true}>
-						{
-							this.state.log.map((line, i) => {
-								let color = '#a6e22d'; // green
-								if (line.level === 'warn') color = '#e6db74'; // yellow
-								if (line.level === 'error') color = '#f9265d'; // red
-								if (line.level === 'debug') color = '#999999'; // grey
-								return (
-									<Timeline.Item key={i} style={{ color: color }}>
-										<strong>{new Date(line.timestamp).toLocaleString()}</strong> - <strong>{line.service}</strong>
-										<ArrowRightOutlined style={{ margin: '0 0.5em' }} />
-										<code style={{ whiteSpace: 'pre-wrap' }}>{line.message}</code>
-										{line.obj !== undefined ?
-											<Collapse>
-												<Collapse.Panel header={i18n.t('LOGS.SHOW_DETAILS')} key="1">
-													<pre>{JSON.stringify(line.obj, null, 2)}</pre>
-												</Collapse.Panel>
-											</Collapse>
-											: ''}
-									</Timeline.Item>
-								);
-							})
-						}
+						{this.state.log.map((line, i) => {
+							let color = '#a6e22d'; // green
+							if (line.level === 'warn') color = '#e6db74'; // yellow
+							if (line.level === 'error') color = '#f9265d'; // red
+							if (line.level === 'debug') color = '#999999'; // grey
+							return (
+								<Timeline.Item key={i} style={{ color: color }}>
+									<strong>{new Date(line.timestamp).toLocaleString()}</strong> -{' '}
+									<strong>{line.service}</strong>
+									<ArrowRightOutlined style={{ margin: '0 0.5em' }} />
+									<code style={{ whiteSpace: 'pre-wrap' }}>{line.message}</code>
+									{line.obj !== undefined ? (
+										<Collapse>
+											<Collapse.Panel header={i18n.t('LOGS.SHOW_DETAILS')} key="1">
+												<pre>{JSON.stringify(line.obj, null, 2)}</pre>
+											</Collapse.Panel>
+										</Collapse>
+									) : (
+										''
+									)}
+								</Timeline.Item>
+							);
+						})}
 					</Timeline>
 				</Layout.Content>
 			</>

@@ -10,7 +10,7 @@ import { displayMessage, is_touch_device, isNonStandardPlaylist, nonStandardPlay
 import { KaraElement } from '../../types/kara';
 
 interface IProps {
-	checkedKaras: KaraElement[]
+	checkedKaras: KaraElement[];
 	side: 'left' | 'right';
 	topKaraMenu: number;
 	leftKaraMenu: number;
@@ -40,8 +40,8 @@ function CheckedKaraMenuModal(props: IProps) {
 		}
 		try {
 			await commandBackend('editPLC', {
-				plc_ids: props.checkedKaras.map(a => a.plcid),
-				flag_free: true
+				plc_ids: props.checkedKaras.map((a) => a.plcid),
+				flag_free: true,
 			});
 			setEffectFree(true);
 			setTimeout(props.closeKaraMenu, 350);
@@ -50,12 +50,11 @@ function CheckedKaraMenuModal(props: IProps) {
 		}
 	};
 
-
 	const changeVisibilityKaraOn = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: props.checkedKaras.map(a => a.plcid),
-				flag_visible: true
+				plc_ids: props.checkedKaras.map((a) => a.plcid),
+				flag_visible: true,
 			});
 			setEffectVisibility(true);
 			setTimeout(props.closeKaraMenu, 350);
@@ -67,8 +66,8 @@ function CheckedKaraMenuModal(props: IProps) {
 	const changeVisibilityKaraOff = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: props.checkedKaras.map(a => a.plcid),
-				flag_visible: false
+				plc_ids: props.checkedKaras.map((a) => a.plcid),
+				flag_visible: false,
 			});
 			setEffectVisibility(true);
 			setTimeout(props.closeKaraMenu, 350);
@@ -80,7 +79,7 @@ function CheckedKaraMenuModal(props: IProps) {
 	const makeFavorite = () => {
 		try {
 			commandBackend('addFavorites', {
-				kids: props.checkedKaras.map(a => a.kid)
+				kids: props.checkedKaras.map((a) => a.kid),
 			});
 			setEffectFavorite(true);
 			setTimeout(props.closeKaraMenu, 350);
@@ -93,9 +92,9 @@ function CheckedKaraMenuModal(props: IProps) {
 		const playlist = getPlaylistInfo(props.side, context);
 		try {
 			commandBackend('addCriterias', {
-				criterias: props.checkedKaras.map(a => {
+				criterias: props.checkedKaras.map((a) => {
 					return { type: 1001, value: a.kid, plaid: playlist.plaid };
-				})
+				}),
 			});
 			setEffectBlacklist(true);
 			setTimeout(props.closeKaraMenu, 350);
@@ -108,9 +107,9 @@ function CheckedKaraMenuModal(props: IProps) {
 		const playlist = getPlaylistInfo(props.side, context);
 		try {
 			commandBackend('addCriterias', {
-				criterias: props.checkedKaras.map(a => {
+				criterias: props.checkedKaras.map((a) => {
 					return { type: 1001, value: a.kid, plaid: playlist.plaid };
-				})
+				}),
 			});
 			setEffectWhitelist(true);
 			setTimeout(props.closeKaraMenu, 350);
@@ -141,23 +140,31 @@ function CheckedKaraMenuModal(props: IProps) {
 			style={{
 				position: 'absolute',
 				zIndex: 9998,
-				bottom: window.innerHeight < (props.topKaraMenu + 250) ? (window.innerHeight - props.topKaraMenu) + (is_touch_device() ? 65 : 35) : undefined,
-				top: window.innerHeight < (props.topKaraMenu + 250) ? undefined : props.topKaraMenu,
-				left: window.innerWidth < (props.leftKaraMenu + 250) ? window.innerWidth - 250 : props.leftKaraMenu
-			}}>
-			{!isNonStandardPlaylist(oppositePlaylist.plaid) && !isNonStandardPlaylist(playlist.plaid) ?
+				bottom:
+					window.innerHeight < props.topKaraMenu + 250
+						? window.innerHeight - props.topKaraMenu + (is_touch_device() ? 65 : 35)
+						: undefined,
+				top: window.innerHeight < props.topKaraMenu + 250 ? undefined : props.topKaraMenu,
+				left: window.innerWidth < props.leftKaraMenu + 250 ? window.innerWidth - 250 : props.leftKaraMenu,
+			}}
+		>
+			{!isNonStandardPlaylist(oppositePlaylist.plaid) && !isNonStandardPlaylist(playlist.plaid) ? (
 				<li>
-					<a href="#" onContextMenu={onRightClickTransfer} onClick={(event) => {
-						props.transferKara(event);
-						props.closeKaraMenu();
-					}}>
+					<a
+						href="#"
+						onContextMenu={onRightClickTransfer}
+						onClick={(event) => {
+							props.transferKara(event);
+							props.closeKaraMenu();
+						}}
+					>
 						<i className="fas fa-fw fa-exchange-alt" />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_SELECT_KARA')}
 					</a>
-				</li> : null
-			}
-			{playlist.plaid !== nonStandardPlaylists.favorites ?
+				</li>
+			) : null}
+			{playlist.plaid !== nonStandardPlaylists.favorites ? (
 				<li className="animate-button-container">
 					<a href="#" onClick={makeFavorite}>
 						<i className="fas fa-star" />
@@ -169,9 +176,9 @@ function CheckedKaraMenuModal(props: IProps) {
 						&nbsp;
 						{i18next.t('KARA_MENU.FAVORITES_ADDED')}
 					</a>
-				</li> : null
-			}
-			{playlist.flag_current || playlist.flag_public ?
+				</li>
+			) : null}
+			{playlist.flag_current || playlist.flag_public ? (
 				<li className="animate-button-container">
 					<a href="#" onClick={freeKara} title={i18next.t('KARA_MENU.FREE')}>
 						<i className="fas fa-gift" />
@@ -183,12 +190,11 @@ function CheckedKaraMenuModal(props: IProps) {
 						&nbsp;
 						{i18next.t('KARA_MENU.FREED')}
 					</a>
-				</li> : null
-			}
-			{!isNonStandardPlaylist(playlist.plaid) ?
+				</li>
+			) : null}
+			{!isNonStandardPlaylist(playlist.plaid) ? (
 				<li className="animate-button-container">
-					<a href="#" onClick={changeVisibilityKaraOn}
-						title={i18next.t('KARA_MENU.VISIBLE_ON')}>
+					<a href="#" onClick={changeVisibilityKaraOn} title={i18next.t('KARA_MENU.VISIBLE_ON')}>
 						<i className="fas fa-eye" />
 						&nbsp;
 						{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
@@ -198,12 +204,11 @@ function CheckedKaraMenuModal(props: IProps) {
 						&nbsp;
 						{i18next.t('KARA_MENU.SHOWN')}
 					</a>
-				</li> : null
-			}
-			{!isNonStandardPlaylist(playlist.plaid) ?
+				</li>
+			) : null}
+			{!isNonStandardPlaylist(playlist.plaid) ? (
 				<li className="animate-button-container">
-					<a href="#" onClick={changeVisibilityKaraOff}
-						title={i18next.t('KARA_MENU.VISIBLE_OFF')}>
+					<a href="#" onClick={changeVisibilityKaraOff} title={i18next.t('KARA_MENU.VISIBLE_OFF')}>
 						<i className="fas fa-eye-slash" />
 						&nbsp;
 						{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
@@ -213,9 +218,9 @@ function CheckedKaraMenuModal(props: IProps) {
 						&nbsp;
 						{i18next.t('KARA_MENU.HIDDEN')}
 					</a>
-				</li> : null
-			}
-			{!playlist.flag_blacklist ?
+				</li>
+			) : null}
+			{!playlist.flag_blacklist ? (
 				<li className="animate-button-container">
 					<a href="#" onClick={addToBlacklist}>
 						<i className="fas fa-ban" />
@@ -227,9 +232,9 @@ function CheckedKaraMenuModal(props: IProps) {
 						&nbsp;
 						{i18next.t('KARA_MENU.BLACKLISTED')}
 					</a>
-				</li> : null
-			}
-			{!playlist.flag_whitelist ?
+				</li>
+			) : null}
+			{!playlist.flag_whitelist ? (
 				<li className="animate-button-container">
 					<a href="#" onClick={addToWhitelist}>
 						<i className="fas fa-check-circle" />
@@ -241,8 +246,8 @@ function CheckedKaraMenuModal(props: IProps) {
 						&nbsp;
 						{i18next.t('KARA_MENU.WHITELISTED')}
 					</a>
-				</li> : null
-			}
+				</li>
+			) : null}
 		</ul>
 	);
 }

@@ -10,7 +10,8 @@ export const sqlreassignPlaylistToUser = 'UPDATE playlist SET fk_login = :userna
 
 export const sqlreassignRequestedToUser = 'UPDATE requested SET fk_login = :username WHERE fk_login = :old_username;';
 
-export const sqlreassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
+export const sqlreassignPlaylistContentToUser =
+	'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
 
 export const sqlselectUserByName = `
 SELECT

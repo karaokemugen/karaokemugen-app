@@ -3,11 +3,11 @@ import './RadioButton.scss';
 import React from 'react';
 
 interface Button {
-	activeColor: string,
-	active: boolean,
-	onClick: () => void,
-	label: string,
-	description?: string
+	activeColor: string;
+	active: boolean;
+	onClick: () => void;
+	label: string;
+	description?: string;
 }
 
 interface IProps {
@@ -16,28 +16,25 @@ interface IProps {
 	title: string;
 }
 
-function RadioButton(props:IProps) {
+function RadioButton(props: IProps) {
 	return (
 		<div className="radiobutton-ui" data-orientation={props.orientation || 'horizontal'}>
-			{
-				props.buttons.map((item:Button,i:number) => {
-					const style:any = {};
-					if(item.active && item.activeColor)
-						style.backgroundColor = item.activeColor;
-					return (
-						<button
-							title={item.description}
-							key={i}
-							type="button"
-							className={item.active ? 'active':''}
-							style={style}
-							onClick={item.onClick}
-						>
-							{item.label}
-						</button>
-					);
-				})
-			}
+			{props.buttons.map((item: Button, i: number) => {
+				const style: any = {};
+				if (item.active && item.activeColor) style.backgroundColor = item.activeColor;
+				return (
+					<button
+						title={item.description}
+						key={i}
+						type="button"
+						className={item.active ? 'active' : ''}
+						style={style}
+						onClick={item.onClick}
+					>
+						{item.label}
+					</button>
+				);
+			})}
 		</div>
 	);
 }

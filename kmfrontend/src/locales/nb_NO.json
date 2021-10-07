@@ -1,101 +1,101 @@
 {
-    "CRITERIA": {
-        "DELETE": "Slett dette kriteriet",
-        "ADD": "Legg til verdi for kriterium"
-    },
-    "FLAGS": {
-        "CURRENT_PUBLIC": "Nåværende og offentlig",
-        "CURRENT": "Nåværende",
-        "PUBLIC": "Offentlig"
-    },
-    "KARA_MENU": {
-        "WHITELISTED": "Hvitlistet.",
-        "ADD_WHITELIST": "Legg til på hvitliste",
-        "BLACKLISTED": "Svartelistet.",
-        "ADD_BLACKLIST": "Legg til på svarteliste",
-        "SHOWN": "Synlig.",
-        "HIDDEN": "Skjult.",
-        "VISIBLE_OFF_SHORT": "Skjul",
-        "VISIBLE_OFF": "Skjul i spilleliste",
-        "VISIBLE_ON_SHORT": "Vis",
-        "VISIBLE_ON": "Vis i spilleliste",
-        "FAVORITES_REMOVED": "Fjernet fra favoritter",
-        "FAVORITES_ADDED": "Legt til som favoritt",
-        "PLAY": "Sett som «Spilles nå»",
-        "PLAY_LIBRARY": "Spill nå",
-        "KARA_COMMANDS": "Sporkommandoer",
-        "FAV_DEL": "Slett fra favoritter",
-        "FAV": "Legg til som favoritt"
-    },
-    "ADVANCED": {
-        "DOWNLOAD_ALL": "Last ned alle",
-        "IMPORT": "Importer spilleliste",
-        "ADD": "Legg til ny spilleliste",
-        "EXPORT": "Eksporter spilleliste",
-        "EDIT": "Rediger spilleliste",
-        "DELETE": "Slett spilleliste",
-        "EMPTY_LIST": "Tøm spilleliste",
-        "SELECT_ALL": "Velg alle synlige elementer",
-        "ADD_RANDOM": "Legg til tilfeldige spor",
-        "ADD_ALL": "Legg til alle spor på den andre listen",
-        "PLAYLIST_COMMANDS": "Spillelistekommandoer"
-    },
-    "PLAYLIST_HEADER": {
-        "EDIT_CRITERIAS": "Rediger kriterium",
-        "ACTIVE_FILTER": "Aktivt filter",
-        "FILTERS": "Filtre"
-    },
-    "MESSAGE": "Melding",
-    "INLINE_TAG": {
-        "SEARCH": "Karaoke med {{tag}}",
-        "COUNT": "{{count}} karaoke",
-        "COUNT_plural": "{{count}} karaoker"
-    },
-    "WEBAPPMODE_CLOSED_MESSAGE": "Grensesnittet er lukket. Vent.",
-    "PLAYLISTS": {
-        "FAVORITES": "Favoritter",
-        "LIBRARY": "Bibliotek"
-    },
-    "VOLUME_LEVEL": "Sett lydstyrke",
-    "NEW_PASSWORD": "Nytt passord",
-    "PASSWORDCONF": "Passordbekreftelse",
-    "PASSWORD": "Passord (minst 8 tegn)",
-    "NEXT_SONG": "Neste spor",
-    "PLAY_PAUSE": "Spill av/pause",
-    "PREVIOUS_SONG": "Forrige spor",
-    "REWIND": "Spol tilbake bånd",
-    "STOP_NOW": "Stopp NÅ (dette er farlig!)",
-    "STOP_AFTER": "Stopp etter nåværende spor",
-    "OPTIONS": "Innstillinger",
-    "HIDE_SUBS": "Skjul sangtekster på skjermen",
-    "SHOW_SUBS": "Vis sangtekster på skjermen",
-    "CHANGE_INTERFACE": "Endre grensesnitt",
-    "SHUTDOWN_POPUP": "Mistet tilkoblingen til Karaoke Mugen",
-    "SHUTDOWN": "Slå av Karaoke Mugen",
-    "VERSION": "Versjon",
-    "DURATION_REMAINING": "gjenstår",
-    "DETAILS": {
-        "YEAR": "År",
-        "DURATION": "Varighet"
-    },
-    "PASSWORD_DIFFERENT": "Passordene samsvarer ikke",
-    "SECURITY_CODE_MANDATORY": "Sikkerhetskope kreves for å opprette en operatørkonto",
-    "PASSWORD_MANDATORY": "Passord kreves",
-    "LOGIN_MANDATORY": "Innlogging er påkrevd",
-    "USERS": {
-        "CHAR_NOT_ALLOWED": "Tegnet «{{char}}» støttes ikke"
-    },
-    "NOT_FOUND_PAGE": {
-        "404_4": "Hjem",
-        "404_3": "Du er her",
-        "404_2": "Frykt ikke, vi kan hjelpe deg.",
-        "404": "Gått deg vill i Karaoke Mugen?"
-    },
-    "CANCEL": "Avbryt",
-    "SUBMIT": "Lagre",
-    "SEARCH": "Søk",
-    "AND": "og",
-    "NO": "Nei",
-    "YES": "Ja",
-    "SELECT_PLACEHOLDER": "Velg en spilleliste"
+	"CRITERIA": {
+		"DELETE": "Slett dette kriteriet",
+		"ADD": "Legg til verdi for kriterium"
+	},
+	"FLAGS": {
+		"CURRENT_PUBLIC": "Nåværende og offentlig",
+		"CURRENT": "Nåværende",
+		"PUBLIC": "Offentlig"
+	},
+	"KARA_MENU": {
+		"WHITELISTED": "Hvitlistet.",
+		"ADD_WHITELIST": "Legg til på hvitliste",
+		"BLACKLISTED": "Svartelistet.",
+		"ADD_BLACKLIST": "Legg til på svarteliste",
+		"SHOWN": "Synlig.",
+		"HIDDEN": "Skjult.",
+		"VISIBLE_OFF_SHORT": "Skjul",
+		"VISIBLE_OFF": "Skjul i spilleliste",
+		"VISIBLE_ON_SHORT": "Vis",
+		"VISIBLE_ON": "Vis i spilleliste",
+		"FAVORITES_REMOVED": "Fjernet fra favoritter",
+		"FAVORITES_ADDED": "Legt til som favoritt",
+		"PLAY": "Sett som «Spilles nå»",
+		"PLAY_LIBRARY": "Spill nå",
+		"KARA_COMMANDS": "Sporkommandoer",
+		"FAV_DEL": "Slett fra favoritter",
+		"FAV": "Legg til som favoritt"
+	},
+	"ADVANCED": {
+		"DOWNLOAD_ALL": "Last ned alle",
+		"IMPORT": "Importer spilleliste",
+		"ADD": "Legg til ny spilleliste",
+		"EXPORT": "Eksporter spilleliste",
+		"EDIT": "Rediger spilleliste",
+		"DELETE": "Slett spilleliste",
+		"EMPTY_LIST": "Tøm spilleliste",
+		"SELECT_ALL": "Velg alle synlige elementer",
+		"ADD_RANDOM": "Legg til tilfeldige spor",
+		"ADD_ALL": "Legg til alle spor på den andre listen",
+		"PLAYLIST_COMMANDS": "Spillelistekommandoer"
+	},
+	"PLAYLIST_HEADER": {
+		"EDIT_CRITERIAS": "Rediger kriterium",
+		"ACTIVE_FILTER": "Aktivt filter",
+		"FILTERS": "Filtre"
+	},
+	"MESSAGE": "Melding",
+	"INLINE_TAG": {
+		"SEARCH": "Karaoke med {{tag}}",
+		"COUNT": "{{count}} karaoke",
+		"COUNT_plural": "{{count}} karaoker"
+	},
+	"WEBAPPMODE_CLOSED_MESSAGE": "Grensesnittet er lukket. Vent.",
+	"PLAYLISTS": {
+		"FAVORITES": "Favoritter",
+		"LIBRARY": "Bibliotek"
+	},
+	"VOLUME_LEVEL": "Sett lydstyrke",
+	"NEW_PASSWORD": "Nytt passord",
+	"PASSWORDCONF": "Passordbekreftelse",
+	"PASSWORD": "Passord (minst 8 tegn)",
+	"NEXT_SONG": "Neste spor",
+	"PLAY_PAUSE": "Spill av/pause",
+	"PREVIOUS_SONG": "Forrige spor",
+	"REWIND": "Spol tilbake bånd",
+	"STOP_NOW": "Stopp NÅ (dette er farlig!)",
+	"STOP_AFTER": "Stopp etter nåværende spor",
+	"OPTIONS": "Innstillinger",
+	"HIDE_SUBS": "Skjul sangtekster på skjermen",
+	"SHOW_SUBS": "Vis sangtekster på skjermen",
+	"CHANGE_INTERFACE": "Endre grensesnitt",
+	"SHUTDOWN_POPUP": "Mistet tilkoblingen til Karaoke Mugen",
+	"SHUTDOWN": "Slå av Karaoke Mugen",
+	"VERSION": "Versjon",
+	"DURATION_REMAINING": "gjenstår",
+	"DETAILS": {
+		"YEAR": "År",
+		"DURATION": "Varighet"
+	},
+	"PASSWORD_DIFFERENT": "Passordene samsvarer ikke",
+	"SECURITY_CODE_MANDATORY": "Sikkerhetskope kreves for å opprette en operatørkonto",
+	"PASSWORD_MANDATORY": "Passord kreves",
+	"LOGIN_MANDATORY": "Innlogging er påkrevd",
+	"USERS": {
+		"CHAR_NOT_ALLOWED": "Tegnet «{{char}}» støttes ikke"
+	},
+	"NOT_FOUND_PAGE": {
+		"404_4": "Hjem",
+		"404_3": "Du er her",
+		"404_2": "Frykt ikke, vi kan hjelpe deg.",
+		"404": "Gått deg vill i Karaoke Mugen?"
+	},
+	"CANCEL": "Avbryt",
+	"SUBMIT": "Lagre",
+	"SEARCH": "Søk",
+	"AND": "og",
+	"NO": "Nei",
+	"YES": "Ja",
+	"SELECT_PLACEHOLDER": "Velg en spilleliste"
 }

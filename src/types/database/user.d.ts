@@ -1,10 +1,10 @@
 import { DBUserBase } from '../../lib/types/database/user';
 
 export interface DBGuest extends DBUserBase {
-	available: boolean
+	available: boolean;
 }
 
 export interface RemoteToken {
-	token: string,
-	username: string
+	token: string;
+	username: string;
 }

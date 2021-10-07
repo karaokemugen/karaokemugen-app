@@ -6,17 +6,16 @@ import React, { Component } from 'react';
 import { isElectron } from '../electron';
 
 interface IState {
-	showLoadingText: boolean
+	showLoadingText: boolean;
 }
 
 class Loading extends Component<Record<never, never>, IState> {
-
-	timeout: NodeJS.Timeout
+	timeout: NodeJS.Timeout;
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			showLoadingText: false
+			showLoadingText: false,
 		};
 	}
 
@@ -33,13 +32,14 @@ class Loading extends Component<Record<never, never>, IState> {
 	render() {
 		return (
 			<div className="loading-container">
-				{
-					this.state.showLoadingText ?
-						<>
-							<span className="header">{i18next.t('LOADING')}</span>
-							<span>{isElectron() ? i18next.t('LOADING_SUBTITLE_ELECTRON'):i18next.t('LOADING_SUBTITLE')}</span>
-						</>:null
-				}
+				{this.state.showLoadingText ? (
+					<>
+						<span className="header">{i18next.t('LOADING')}</span>
+						<span>
+							{isElectron() ? i18next.t('LOADING_SUBTITLE_ELECTRON') : i18next.t('LOADING_SUBTITLE')}
+						</span>
+					</>
+				) : null}
 			</div>
 		);
 	}

@@ -14,7 +14,6 @@ import FavMixModal from './FavMixModal';
 import PlaylistModal from './PlaylistModal';
 import ShuffleModal from './ShuffleModal';
 
-
 interface IProps {
 	side: 'left' | 'right';
 	criteriasOpen: boolean;
@@ -26,10 +25,8 @@ interface IProps {
 	addAllKaras: () => void;
 	addRandomKaras: () => void;
 	downloadAllMedias: () => void;
-	getListToSelect: () => { value: string, label: string, icons: string[] }[]
-
+	getListToSelect: () => { value: string; label: string; icons: string[] }[];
 }
-
 
 function PlaylistCommandsModal(props: IProps) {
 	const context = useContext(GlobalContext);
@@ -37,22 +34,21 @@ function PlaylistCommandsModal(props: IProps) {
 	const openShuffleModal = () => {
 		props.closePlaylistCommands();
 		const playlist = getPlaylistInfo(props.side, context);
-		showModal(context.globalDispatch, <ShuffleModal
-			idPlaylist={playlist?.plaid}
-			playlistWillUpdate={props.playlistWillUpdate}
-			playlistDidUpdate={props.playlistDidUpdate}
-		/>);
+		showModal(
+			context.globalDispatch,
+			<ShuffleModal
+				idPlaylist={playlist?.plaid}
+				playlistWillUpdate={props.playlistWillUpdate}
+				playlistDidUpdate={props.playlistDidUpdate}
+			/>
+		);
 	};
-
 
 	const startFavMix = async () => {
 		props.closePlaylistCommands();
 		const response = await commandBackend('getUsers');
 		const userList = response.filter((u: User) => (u.type as number) < 2);
-		showModal(context.globalDispatch, <FavMixModal
-			side={props.side}
-			userList={userList}
-		/>);
+		showModal(context.globalDispatch, <FavMixModal side={props.side} userList={userList} />);
 	};
 
 	const exportPlaylist = async () => {
@@ -74,9 +70,22 @@ function PlaylistCommandsModal(props: IProps) {
 				if (dlAnchorElem) {
 					dlAnchorElem.setAttribute('href', dataStr);
 					if (playlist?.plaid === nonStandardPlaylists.favorites) {
-						dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', context.globalState.auth.data.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
+						dlAnchorElem.setAttribute(
+							'download',
+							[
+								'KaraMugen',
+								'fav',
+								context.globalState.auth.data.username,
+								new Date().toLocaleDateString().replace('\\', '-'),
+							].join('_') + '.kmfavorites'
+						);
 					} else {
-						dlAnchorElem.setAttribute('download', ['KaraMugen', playlist?.name, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmplaylist');
+						dlAnchorElem.setAttribute(
+							'download',
+							['KaraMugen', playlist?.name, new Date().toLocaleDateString().replace('\\', '-')].join(
+								'_'
+							) + '.kmplaylist'
+						);
 					}
 					dlAnchorElem.click();
 				}
@@ -88,25 +97,17 @@ function PlaylistCommandsModal(props: IProps) {
 
 	const addOrEditPlaylist = (mode: 'create' | 'edit') => {
 		props.closePlaylistCommands();
-		showModal(context.globalDispatch, <PlaylistModal
-			side={props.side}
-			mode={mode}
-		/>);
+		showModal(context.globalDispatch, <PlaylistModal side={props.side} mode={mode} />);
 	};
 
 	const deletePlaylist = () => {
 		props.closePlaylistCommands();
 		const playlist = getPlaylistInfo(props.side, context);
-		const playlistList = props.getListToSelect()
-			.filter(pl => !isNonStandardPlaylist(pl.value)
-				&& pl.value !== playlist?.plaid);
-		if (playlistList.length === 0)
-			displayMessage('error', i18next.t('MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE'));
-		else
-			showModal(context.globalDispatch, <DeletePlaylistModal
-				side={props.side}
-				playlistList={playlistList}
-			/>);
+		const playlistList = props
+			.getListToSelect()
+			.filter((pl) => !isNonStandardPlaylist(pl.value) && pl.value !== playlist?.plaid);
+		if (playlistList.length === 0) displayMessage('error', i18next.t('MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE'));
+		else showModal(context.globalDispatch, <DeletePlaylistModal side={props.side} playlistList={playlistList} />);
 	};
 
 	const importPlaylistResponse = (data, file) => {
@@ -116,32 +117,29 @@ function PlaylistCommandsModal(props: IProps) {
 				'confirm',
 				i18next.t('MODAL.UNKNOW_REPOS.TITLE'),
 				<React.Fragment>
-					<p>
-						{i18next.t('MODAL.UNKNOW_REPOS.DESCRIPTION')}
-					</p>
-					<div>
-						{i18next.t('MODAL.UNKNOW_REPOS.DOWNLOAD_THEM')}
-					</div>
+					<p>{i18next.t('MODAL.UNKNOW_REPOS.DESCRIPTION')}</p>
+					<div>{i18next.t('MODAL.UNKNOW_REPOS.DOWNLOAD_THEM')}</div>
 					<br />
-					{data.reposUnknown.map((repository: string) =>
-						<label
-							key={repository}>{repository}</label>)}
+					{data.reposUnknown.map((repository: string) => (
+						<label key={repository}>{repository}</label>
+					))}
 				</React.Fragment>,
-				() => data.reposUnknown.map((repoName: string) => {
-					commandBackend('addRepo', {
-						Name: repoName,
-						Online: true,
-						Enabled: true,
-						SendStats: false,
-						AutoMediaDownloads: 'updateOnly',
-						MaintainerMode: false,
-						Git: null,
-						BaseDir: `repos/${repoName}`,
-						Path: {
-							Medias: [`repos/${repoName}/medias`]
-						}
-					});
-				})
+				() =>
+					data.reposUnknown.map((repoName: string) => {
+						commandBackend('addRepo', {
+							Name: repoName,
+							Online: true,
+							Enabled: true,
+							SendStats: false,
+							AutoMediaDownloads: 'updateOnly',
+							MaintainerMode: false,
+							Git: null,
+							BaseDir: `repos/${repoName}`,
+							Path: {
+								Medias: [`repos/${repoName}/medias`],
+							},
+						});
+					})
 			);
 		}
 		const plaid = file?.name.includes('.kmfavorites') ? nonStandardPlaylists.favorites : data.plaid;
@@ -159,9 +157,9 @@ function PlaylistCommandsModal(props: IProps) {
 			fr = new FileReader();
 			fr.onload = async () => {
 				const data: {
-					playlist?: string | ArrayBuffer | null,
-					favorites?: string | ArrayBuffer | null,
-					blcSet?: string | ArrayBuffer | null
+					playlist?: string | ArrayBuffer | null;
+					favorites?: string | ArrayBuffer | null;
+					blcSet?: string | ArrayBuffer | null;
 				} = {};
 				let name: string;
 				const json = JSON.parse(fr.result as string);
@@ -180,7 +178,9 @@ function PlaylistCommandsModal(props: IProps) {
 				} else {
 					!file?.name.includes('.kmfavorites') &&
 						displayMessage('success', i18next.t(`SUCCESS_CODES.${response.message.code}`, { data: name }));
-					const plaid = file?.name.includes('.kmfavorites') ? nonStandardPlaylists.favorites : response.message.data.plaid;
+					const plaid = file?.name.includes('.kmfavorites')
+						? nonStandardPlaylists.favorites
+						: response.message.data.plaid;
 					setPlaylistInfo(props.side, context, plaid);
 				}
 			};
@@ -191,20 +191,26 @@ function PlaylistCommandsModal(props: IProps) {
 	const deleteAllKaras = () => {
 		props.closePlaylistCommands();
 		const playlist = getPlaylistInfo(props.side, context);
-		callModal(context.globalDispatch, 'confirm', <>
-			<picture>
-				<source type="image/webp" srcSet={nanamiShockedWebP} />
-				<source type="image/png" srcSet={nanamiShockedPng} />
-				<img src={nanamiShockedPng} alt="Nanami is shocked oO" />
-			</picture>
-			{i18next.t('CL_EMPTY_LIST')}
-		</>, '', () => {
-			if (playlist?.flag_smart) {
-				commandBackend('emptyCriterias', { plaid: playlist?.plaid });
-			} else {
-				commandBackend('emptyPlaylist', { plaid: playlist?.plaid });
+		callModal(
+			context.globalDispatch,
+			'confirm',
+			<>
+				<picture>
+					<source type="image/webp" srcSet={nanamiShockedWebP} />
+					<source type="image/png" srcSet={nanamiShockedPng} />
+					<img src={nanamiShockedPng} alt="Nanami is shocked oO" />
+				</picture>
+				{i18next.t('CL_EMPTY_LIST')}
+			</>,
+			'',
+			() => {
+				if (playlist?.flag_smart) {
+					commandBackend('emptyCriterias', { plaid: playlist?.plaid });
+				} else {
+					commandBackend('emptyPlaylist', { plaid: playlist?.plaid });
+				}
 			}
-		});
+		);
 	};
 
 	const handleClick = (e: MouseEvent) => {
@@ -236,54 +242,64 @@ function PlaylistCommandsModal(props: IProps) {
 			style={{
 				position: 'absolute',
 				zIndex: 9998,
-				bottom: window.innerHeight < (props.topKaraMenu + 250) ? (window.innerHeight - props.topKaraMenu) + 35 : undefined,
-				top: window.innerHeight < (props.topKaraMenu + 250) ? undefined : props.topKaraMenu,
-				left: window.innerWidth < (props.leftKaraMenu + 250) ? window.innerWidth - 250 : props.leftKaraMenu
-			}}>
-			{!isNonStandardPlaylist(playlist?.plaid) ?
+				bottom:
+					window.innerHeight < props.topKaraMenu + 250
+						? window.innerHeight - props.topKaraMenu + 35
+						: undefined,
+				top: window.innerHeight < props.topKaraMenu + 250 ? undefined : props.topKaraMenu,
+				left: window.innerWidth < props.leftKaraMenu + 250 ? window.innerWidth - 250 : props.leftKaraMenu,
+			}}
+		>
+			{!isNonStandardPlaylist(playlist?.plaid) ? (
 				<li>
 					<a href="#" onClick={openShuffleModal}>
 						<i className="fas fa-fw fa-random" />
 						{i18next.t('ADVANCED.SHUFFLE')}
 					</a>
-				</li> : null
-			}
-			{!isNonStandardPlaylist(oppositePlaylist?.plaid) && !props.criteriasOpen ?
+				</li>
+			) : null}
+			{!isNonStandardPlaylist(oppositePlaylist?.plaid) && !props.criteriasOpen ? (
 				<React.Fragment>
 					<li>
-						<a href="#" onClick={() => {
-							props.closePlaylistCommands();
-							props.addAllKaras();
-						}} className="danger-hover">
+						<a
+							href="#"
+							onClick={() => {
+								props.closePlaylistCommands();
+								props.addAllKaras();
+							}}
+							className="danger-hover"
+						>
 							<i className="fas fa-fw fa-share" />
 							{i18next.t('ADVANCED.ADD_ALL')}
 						</a>
 					</li>
-					{!isNonStandardPlaylist(playlist?.plaid) || playlist?.plaid === nonStandardPlaylists.library ?
+					{!isNonStandardPlaylist(playlist?.plaid) || playlist?.plaid === nonStandardPlaylists.library ? (
 						<li>
-							<a href="#" onClick={() => {
-								props.closePlaylistCommands();
-								props.addRandomKaras();
-							}}>
+							<a
+								href="#"
+								onClick={() => {
+									props.closePlaylistCommands();
+									props.addRandomKaras();
+								}}
+							>
 								<i className="fas fa-fw fa-dice" />
 								{i18next.t('ADVANCED.ADD_RANDOM')}
 							</a>
-						</li> : null
-					}
+						</li>
+					) : null}
 				</React.Fragment>
-				: null
-			}
-			{!isNonStandardPlaylist(playlist?.plaid)
-				|| props.criteriasOpen
-				|| playlist?.plaid === context.globalState.settings.data.state.whitelistPlaid ?
+			) : null}
+			{!isNonStandardPlaylist(playlist?.plaid) ||
+			props.criteriasOpen ||
+			playlist?.plaid === context.globalState.settings.data.state.whitelistPlaid ? (
 				<li>
 					<a href="#" onClick={deleteAllKaras} className="danger-hover">
 						<i className="fas fa-fw fa-eraser" />
 						{i18next.t('ADVANCED.EMPTY_LIST')}
 					</a>
-				</li> : null
-			}
-			{!isNonStandardPlaylist(playlist?.plaid) ?
+				</li>
+			) : null}
+			{!isNonStandardPlaylist(playlist?.plaid) ? (
 				<React.Fragment>
 					<li>
 						<a href="#" onClick={deletePlaylist} className="danger-hover">
@@ -297,31 +313,32 @@ function PlaylistCommandsModal(props: IProps) {
 							{i18next.t('ADVANCED.EDIT')}
 						</a>
 					</li>
-				</React.Fragment> : null
-			}
-			{
-				playlist?.plaid !== nonStandardPlaylists.library ?
-					<li>
-						<a href="#" onClick={exportPlaylist}>
-							<i className="fas fa-fw fa-upload" />
-							{i18next.t(
-								playlist?.plaid === nonStandardPlaylists.favorites
-									? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT')}
-						</a>
-					</li> : null
-			}
-			{
-				playlist?.plaid !== nonStandardPlaylists.library && !props.criteriasOpen ?
-					<li>
-						<a href="#" onClick={() => {
+				</React.Fragment>
+			) : null}
+			{playlist?.plaid !== nonStandardPlaylists.library ? (
+				<li>
+					<a href="#" onClick={exportPlaylist}>
+						<i className="fas fa-fw fa-upload" />
+						{i18next.t(
+							playlist?.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_EXPORT' : 'ADVANCED.EXPORT'
+						)}
+					</a>
+				</li>
+			) : null}
+			{playlist?.plaid !== nonStandardPlaylists.library && !props.criteriasOpen ? (
+				<li>
+					<a
+						href="#"
+						onClick={() => {
 							props.closePlaylistCommands();
 							props.downloadAllMedias();
-						}}>
-							<i className="fas fa-fw fa-cloud-download-alt" />
-							{i18next.t('ADVANCED.DOWNLOAD_ALL')}
-						</a>
-					</li> : null
-			}
+						}}
+					>
+						<i className="fas fa-fw fa-cloud-download-alt" />
+						{i18next.t('ADVANCED.DOWNLOAD_ALL')}
+					</a>
+				</li>
+			) : null}
 			<hr />
 			<li>
 				<a href="#" onClick={() => addOrEditPlaylist('create')}>
@@ -329,26 +346,31 @@ function PlaylistCommandsModal(props: IProps) {
 					{i18next.t('ADVANCED.ADD')}
 				</a>
 			</li>
-			{!props.criteriasOpen ?
+			{!props.criteriasOpen ? (
 				<li>
 					<a href="#" onClick={startFavMix}>
 						<i className="fas fa-fw fa-bolt" />
 						{i18next.t('ADVANCED.AUTOMIX')}
 					</a>
-				</li> : null
-			}
+				</li>
+			) : null}
 			<li>
 				<a href="#">
 					<label className="importFile" htmlFor={'import-file' + props.side}>
 						<i className="fas fa-fw fa-download" />
 						{i18next.t(
-							playlist?.plaid === nonStandardPlaylists.favorites ?
-								'FAVORITES_IMPORT' : 'ADVANCED.IMPORT')}
+							playlist?.plaid === nonStandardPlaylists.favorites ? 'FAVORITES_IMPORT' : 'ADVANCED.IMPORT'
+						)}
 					</label>
 				</a>
-				<input id={'import-file' + props.side} className="import-file" type="file"
+				<input
+					id={'import-file' + props.side}
+					className="import-file"
+					type="file"
 					style={{ display: 'none' }}
-					accept=".kmplaylist, .kmfavorites, .kmblc" onChange={importPlaylist} />
+					accept=".kmplaylist, .kmfavorites, .kmblc"
+					onChange={importPlaylist}
+				/>
 			</li>
 		</ul>
 	);

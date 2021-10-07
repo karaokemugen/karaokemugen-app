@@ -24,11 +24,11 @@
 
 	.title {
 		position: absolute;
-		left: .25em;
-		top: .25em;
+		left: 0.25em;
+		top: 0.25em;
 		font-size: 2em;
 		background-color: black;
-		padding: .5em;
+		padding: 0.5em;
 	}
 
 	.steps {
@@ -61,7 +61,7 @@
 			margin: 0 10%;
 		}
 		&.inline {
-			padding: .5em;
+			padding: 0.5em;
 			font-size: 1.25em;
 		}
 	}
@@ -77,7 +77,7 @@
 
 		@media screen and (max-width: $mugen-breakpoint-xl) {
 			width: 99%;
-			margin: 0 .5%;
+			margin: 0 0.5%;
 			top: 200px;
 		}
 
@@ -114,7 +114,8 @@
 		}
 	}
 
-	.header-presentation, .player-presentation {
+	.header-presentation,
+	.player-presentation {
 		position: absolute;
 		background-color: black;
 		padding: 1em;
@@ -125,7 +126,7 @@
 			color: lightskyblue;
 		}
 		li {
-			margin: .25em 0;
+			margin: 0.25em 0;
 		}
 		.ul-l1 {
 			margin-left: 1.5em;

@@ -27,21 +27,21 @@ interface IState {
 	dropDownMenu: boolean;
 	quotaType: number;
 	quotaLeft: number;
-	ref: Ref<HTMLElement>
-	observer?: MutationObserver
+	ref: Ref<HTMLElement>;
+	observer?: MutationObserver;
 }
 
 class PublicHeader extends Component<IProps, IState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
-	observer: ResizeObserver
+	context: React.ContextType<typeof GlobalContext>;
+	observer: ResizeObserver;
 
 	state = {
 		dropDownMenu: false,
 		quotaType: undefined,
 		quotaLeft: undefined,
-		ref: createRef<HTMLElement>()
-	}
+		ref: createRef<HTMLElement>(),
+	};
 
 	componentDidMount() {
 		getSocket().on('quotaAvailableUpdated', this.updateQuotaAvailable);
@@ -59,7 +59,7 @@ class PublicHeader extends Component<IProps, IState> {
 		this.observer.disconnect();
 	}
 
-	toggleProfileModal = e => {
+	toggleProfileModal = (e) => {
 		e.preventDefault();
 		this.setState({ dropDownMenu: false });
 		if (this.context.globalState.auth.data.onlineAvailable !== false) {
@@ -69,19 +69,19 @@ class PublicHeader extends Component<IProps, IState> {
 		}
 	};
 
-	toggleUsersModal = e => {
+	toggleUsersModal = (e) => {
 		e.preventDefault();
 		this.setState({ dropDownMenu: false });
 		this.props.openModal('users');
 	};
 
-	goToFavorites = e => {
+	goToFavorites = (e) => {
 		e.preventDefault();
 		this.setState({ dropDownMenu: false });
 		this.props.changeView('favorites');
-	}
+	};
 
-	updateQuotaAvailable = (data: { username: string, quotaType: number, quotaLeft: number }) => {
+	updateQuotaAvailable = (data: { username: string; quotaType: number; quotaLeft: number }) => {
 		if (this.context.globalState.auth.data.username === data.username) {
 			if (data.quotaLeft > 0 && this.state.quotaLeft === 0) {
 				displayMessage('info', i18next.t('QUOTA_AVAILABLE'));
@@ -96,15 +96,23 @@ class PublicHeader extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<header className="menu-container" style={{ ['--img' as any]: this.context.globalState.frontendContext.backgroundImg }} ref={this.state.ref}>
+			<header
+				className="menu-container"
+				style={{ ['--img' as any]: this.context.globalState.frontendContext.backgroundImg }}
+				ref={this.state.ref}
+			>
 				<div className="menu">
-					<a href="/public" className="nanamin-logo" onClick={e => {
-						e.preventDefault();
-						this.props.changeView('home');
-					}}>
+					<a
+						href="/public"
+						className="nanamin-logo"
+						onClick={(e) => {
+							e.preventDefault();
+							this.props.changeView('home');
+						}}
+					>
 						<picture>
-							<source srcSet={nanamiWebP} type='image/webp' />
-							<source srcSet={nanamiPNG} type='image/png' />
+							<source srcSet={nanamiWebP} type="image/webp" />
+							<source srcSet={nanamiPNG} type="image/png" />
 							<img src={nanamiPNG} alt="Nanamin logo" />
 						</picture>
 					</a>
@@ -114,56 +122,84 @@ class PublicHeader extends Component<IProps, IState> {
 						publicVisible={this.props.publicVisible}
 						currentVisible={this.props.currentVisible}
 					/>
-					{this.state.quotaType > 0 ? <div className={`quota-bar${this.state.quotaLeft <= 5 ? ' exhaust' : ''}`}>
-						{this.state.quotaType === 1 ? i18next.t('QUOTA_KARA') : i18next.t('QUOTA_TIME')
-						}&nbsp;:&nbsp;{
-							this.state.quotaLeft === -1 ? '∞' :
-								(this.state.quotaType === 2 ? secondsTimeSpanToHMS(this.state.quotaLeft, 'ms') : this.state.quotaLeft)
-						}
-					</div> : null}
+					{this.state.quotaType > 0 ? (
+						<div className={`quota-bar${this.state.quotaLeft <= 5 ? ' exhaust' : ''}`}>
+							{this.state.quotaType === 1 ? i18next.t('QUOTA_KARA') : i18next.t('QUOTA_TIME')}
+							&nbsp;:&nbsp;
+							{this.state.quotaLeft === -1
+								? '∞'
+								: this.state.quotaType === 2
+								? secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')
+								: this.state.quotaLeft}
+						</div>
+					) : null}
 					<div className="profile-btn">
 						<div className="dropdown-container">
-							<div className={`closeHandler${this.state.dropDownMenu ? ' active' : ''}`} onClick={() => this.setState({ dropDownMenu: false })} />
+							<div
+								className={`closeHandler${this.state.dropDownMenu ? ' active' : ''}`}
+								onClick={() => this.setState({ dropDownMenu: false })}
+							/>
 							<a href="#" onClick={() => this.setState({ dropDownMenu: !this.state.dropDownMenu })}>
 								<ProfilePicture user={this.context.globalState.settings.data.user} />
 							</a>
 							<div className={`dropdown ${this.state.dropDownMenu ? 'active' : ''}`}>
 								<div className="header">{this.context.globalState.settings.data.user.nickname}</div>
-								{this.state.quotaType === 1 ?
+								{this.state.quotaType === 1 ? (
 									<div className="info">
 										{i18next.t('QUOTA_KARA')}
 										&nbsp;:&nbsp;
-										<span className="data">{this.state.quotaLeft === -1 ? '∞' : this.state.quotaLeft}</span>
-									</div> : null
-								}
-								{this.state.quotaType === 2 ?
+										<span className="data">
+											{this.state.quotaLeft === -1 ? '∞' : this.state.quotaLeft}
+										</span>
+									</div>
+								) : null}
+								{this.state.quotaType === 2 ? (
 									<div className="info">
 										<div className="title">{i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;</div>
-										<div className="data">{this.state.quotaLeft === -1 ? '∞' : secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')}</div>
-									</div> : null
-								}
-								{this.context?.globalState.auth.data.role !== 'guest' ?
+										<div className="data">
+											{this.state.quotaLeft === -1
+												? '∞'
+												: secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')}
+										</div>
+									</div>
+								) : null}
+								{this.context?.globalState.auth.data.role !== 'guest' ? (
 									<>
-										<div className="link"><a href="/public/favorites" onClick={this.goToFavorites}>
-											<i className="fas fa-fw fa-star" /> {i18next.t('VIEW_FAVORITES')}
-										</a></div>
-										<div className="link"><a href="/public/user" onClick={this.toggleProfileModal}>
-											<i className="fas fa-fw fa-user" /> {i18next.t('PROFILE')}
-										</a></div>
-									</> : null
-								}
-								<div className="link"><a href="/public/users" onClick={this.toggleUsersModal}>
-									<i className="fas fa-fw fa-users" /> {i18next.t('USERLIST')}
-								</a></div>
-								{this.context?.globalState.auth.data.role === 'admin' ? <div className="link"><a href="/welcome">
-									<i className="fas fa-fw fa-home" /> {i18next.t('CHANGE_INTERFACE')}
-								</a></div> : null}
-								<div className="link"><a href="/login" onClick={e => {
-									e.preventDefault();
-									logout(this.context.globalDispatch);
-								}}>
-									<i className="fas fa-fw fa-sign-out-alt" /> {i18next.t('LOGOUT')}
-								</a></div>
+										<div className="link">
+											<a href="/public/favorites" onClick={this.goToFavorites}>
+												<i className="fas fa-fw fa-star" /> {i18next.t('VIEW_FAVORITES')}
+											</a>
+										</div>
+										<div className="link">
+											<a href="/public/user" onClick={this.toggleProfileModal}>
+												<i className="fas fa-fw fa-user" /> {i18next.t('PROFILE')}
+											</a>
+										</div>
+									</>
+								) : null}
+								<div className="link">
+									<a href="/public/users" onClick={this.toggleUsersModal}>
+										<i className="fas fa-fw fa-users" /> {i18next.t('USERLIST')}
+									</a>
+								</div>
+								{this.context?.globalState.auth.data.role === 'admin' ? (
+									<div className="link">
+										<a href="/welcome">
+											<i className="fas fa-fw fa-home" /> {i18next.t('CHANGE_INTERFACE')}
+										</a>
+									</div>
+								) : null}
+								<div className="link">
+									<a
+										href="/login"
+										onClick={(e) => {
+											e.preventDefault();
+											logout(this.context.globalDispatch);
+										}}
+									>
+										<i className="fas fa-fw fa-sign-out-alt" /> {i18next.t('LOGOUT')}
+									</a>
+								</div>
 							</div>
 						</div>
 					</div>

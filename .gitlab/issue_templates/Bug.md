@@ -1,12 +1,12 @@
-# Résumé
+# Rï¿½sumï¿½
 
-(décrivez de façon concise le bug rencontré)
+(dï¿½crivez de faï¿½on concise le bug rencontrï¿½)
 
 # Quelle version de Karaoke Mugen ?
 
 (indiquez la version ici)
 
-# Quel OS ? 
+# Quel OS ?
 
 (Windows/Linux/Mac)
 
@@ -20,11 +20,10 @@
 
 (Racontez-nous tout)
 
+# Qu'est-ce qu'il devrait plutï¿½t se passer si tout marchait bien ?
 
-# Qu'est-ce qu'il devrait plutôt se passer si tout marchait bien ?
+(Ce ï¿½ quoi vous vous attendiez)
 
-(Ce à quoi vous vous attendiez)
+# Logs et/ou captures d'ï¿½crans
 
-# Logs et/ou captures d'écrans
-
-(Joignez votre karaokemugen.log et/ou une capture d'écran du bug rencontré)
+(Joignez votre karaokemugen.log et/ou une capture d'ï¿½cran du bug rencontrï¿½)

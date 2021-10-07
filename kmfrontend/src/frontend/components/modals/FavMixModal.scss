@@ -10,7 +10,7 @@ p.autoMixExplanation {
 	margin: 1em;
 
 	.checkbox {
-		padding: .25em 0;
+		padding: 0.25em 0;
 		flex: 33%;
 		display: inline-flex;
 		> label {
@@ -18,7 +18,7 @@ p.autoMixExplanation {
 			align-items: center;
 			user-select: none;
 			> input {
-				margin-right: .5em;
+				margin-right: 0.5em;
 			}
 		}
 	}

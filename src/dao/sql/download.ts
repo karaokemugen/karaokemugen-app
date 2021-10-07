@@ -8,7 +8,7 @@ SELECT name,
 	mediafile,
 	fk_kid AS kid
 FROM download
-${pending ? 'WHERE status = \'DL_PLANNED\'' : ''}
+${pending ? "WHERE status = 'DL_PLANNED'" : ''}
 ORDER BY started_at DESC
 `;
 

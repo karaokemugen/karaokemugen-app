@@ -25,37 +25,38 @@ export async function checkLogin(username: string, password: string): Promise<To
 				// Download and add all favorites
 				await fetchAndAddFavorites(username, onlineToken);
 			}
-		} catch(err) {
-			logger.error(`Failed to authenticate ${username}`, {service: 'RemoteAuth', obj: err});
+		} catch (err) {
+			logger.error(`Failed to authenticate ${username}`, { service: 'RemoteAuth', obj: err });
 		}
 	}
 
 	user = await findUserByName(username);
 	if (!user) throw false;
-	if (user.type < 2 && !await checkPassword(user, password)) throw false;
+	if (user.type < 2 && !(await checkPassword(user, password))) throw false;
 	const role = getRole(user);
 	updateLastLoginName(username);
 	return {
 		token: createJwtToken(username, role, conf),
 		onlineToken: onlineToken,
 		username: username,
-		role: role
+		role: role,
 	};
 }
 
 export function resetSecurityCode() {
-	setState({ securityCode: generateSecurityCode()});
+	setState({ securityCode: generateSecurityCode() });
 	const securityCodeStr = `${getState().securityCode}`.padStart(6, '0');
-	logger.warn(`SECURITY CODE : ${securityCodeStr}`, {service: 'Users'});
+	logger.warn(`SECURITY CODE : ${securityCodeStr}`, { service: 'Users' });
 }
 
 function generateSecurityCode(): number {
-	return parseInt(randomstring.generate({
-		length: 6,
-		charset: 'numeric'
-	}));
+	return parseInt(
+		randomstring.generate({
+			length: 6,
+			charset: 'numeric',
+		})
+	);
 }
-
 
 /** Get role depending on user type */
 function getRole(user: User): Role {

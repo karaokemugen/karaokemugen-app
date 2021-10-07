@@ -1,25 +1,24 @@
-
 import i18n from 'i18next';
 import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
-import {setTimeout as sleep} from 'timers/promises';
+import { setTimeout as sleep } from 'timers/promises';
 
 import { APIMessage } from '../controllers/common';
 import { getSongTitle } from '../lib/services/kara';
 import { Token } from '../lib/types/user';
-import {getConfig} from '../lib/utils/config';
-import {timer} from '../lib/utils/date';
+import { getConfig } from '../lib/utils/config';
+import { timer } from '../lib/utils/date';
 import logger from '../lib/utils/logger';
-import { emit,on } from '../lib/utils/pubsub';
-import {emitWS} from '../lib/utils/ws';
+import { emit, on } from '../lib/utils/pubsub';
+import { emitWS } from '../lib/utils/ws';
 import { DBPLC } from '../types/database/playlist';
-import { PollItem,PollResults } from '../types/poll';
+import { PollItem, PollResults } from '../types/poll';
 import { State } from '../types/state';
-import {getState, setState} from '../utils/state';
+import { getState, setState } from '../utils/state';
 import { sayTwitch } from '../utils/twitch';
 import { getSongSeriesSingers, getSongVersion } from './kara';
-import { displayInfo,playerMessage } from './player';
-import {copyKaraToPlaylist, editPLC,getPlaylistContentsMini} from './playlist';
+import { displayInfo, playerMessage } from './player';
+import { copyKaraToPlaylist, editPLC, getPlaylistContentsMini } from './playlist';
 
 let poll: PollItem[] = [];
 let voters = new Set();
@@ -32,10 +31,10 @@ on('stateUpdated', (state: State) => {
 });
 
 async function displayPoll(winner?: number) {
-	const data = getPoll({role: 'admin', username: 'admin'});
+	const data = getPoll({ role: 'admin', username: 'admin' });
 	let maxVotes = 0;
-	data.poll.forEach(s => maxVotes = maxVotes + s.votes);
-	const votes = data.poll.map(kara => {
+	data.poll.forEach((s) => (maxVotes = maxVotes + s.votes));
+	const votes = data.poll.map((kara) => {
 		let percentage = (kara.votes / maxVotes) * 100;
 		let boldWinnerOpen = '';
 		let boldWinnerClose = '';
@@ -44,27 +43,30 @@ async function displayPoll(winner?: number) {
 			boldWinnerClose = '{\\b0}';
 		}
 		if (isNaN(percentage)) percentage = 0;
-		const percentageStr = percentage < 1
-			? `0${percentage.toFixed(1)}`
-			: percentage.toFixed(1);
+		const percentageStr = percentage < 1 ? `0${percentage.toFixed(1)}` : percentage.toFixed(1);
 		// If series is empty, pick singer information instead
 		const series = getSongSeriesSingers(kara);
 		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-		const songorder = !kara.songorder || kara.songorder === 0
-			? `${kara.songorder}`
-			: '';
+		const songorder = !kara.songorder || kara.songorder === 0 ? `${kara.songorder}` : '';
 		const version = getSongVersion(kara);
-		return `${boldWinnerOpen}${kara.index}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes.map(s => s.name).join(' ')}${songorder} - ${getSongTitle(kara)}${version}${boldWinnerClose}`;
+		return `${boldWinnerOpen}${
+			kara.index
+		}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes
+			.map((s) => s.name)
+			.join(' ')}${songorder} - ${getSongTitle(kara)}${version}${boldWinnerClose}`;
 	});
-	const voteMessage = winner
-		? i18n.t('VOTE_MESSAGE_SCREEN_WINNER')
-		: i18n.t('VOTE_MESSAGE_SCREEN');
-	await playerMessage('{\\fscx80}{\\fscy80}{\\b1}'+voteMessage+'{\\b0}\\N{\\fscx70}{\\fscy70}'+votes.join('\\N'), -1, 4, 'poll');
+	const voteMessage = winner ? i18n.t('VOTE_MESSAGE_SCREEN_WINNER') : i18n.t('VOTE_MESSAGE_SCREEN');
+	await playerMessage(
+		'{\\fscx80}{\\fscy80}{\\b1}' + voteMessage + '{\\b0}\\N{\\fscx70}{\\fscy70}' + votes.join('\\N'),
+		-1,
+		4,
+		'poll'
+	);
 }
 
 /** Create poll timer so it ends after a time */
 export async function timerPoll() {
-	const internalDate = pollDate = new Date();
+	const internalDate = (pollDate = new Date());
 	const conf = getConfig();
 	const duration = conf.Karaoke.Poll.Timeout;
 	clock = new timer(() => {}, duration * 1000);
@@ -75,7 +77,7 @@ export async function timerPoll() {
 async function displayPollWinnerTwitch(winner: PollResults) {
 	try {
 		await sayTwitch(`Poll winner : ${winner.kara} (${winner.votes} votes)`);
-	} catch(err) {
+	} catch (err) {
 		//Non fatal
 	}
 }
@@ -91,7 +93,7 @@ export async function endPoll() {
 			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(winner);
 		}
 		pollEnding = true;
-		logger.debug('Ending poll', {service: 'Poll', obj: winner});
+		logger.debug('Ending poll', { service: 'Poll', obj: winner });
 		emit('songPollResult', winner);
 		emitWS('songPollResult', winner);
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_WINNER', winner));
@@ -101,7 +103,7 @@ export async function endPoll() {
 
 /** Stop polls completely */
 export function stopPoll() {
-	logger.debug('Stopping poll', {service: 'Poll'});
+	logger.debug('Stopping poll', { service: 'Poll' });
 	poll = [];
 	voters = new Set();
 	pollEnding = false;
@@ -110,10 +112,10 @@ export function stopPoll() {
 
 /** Get poll results once a poll has ended */
 export async function getPollResults(): Promise<PollResults> {
-	logger.debug('Getting poll results', {service: 'Poll'});
-	const maxVotes = Math.max(...poll.map(choice => choice.votes));
+	logger.debug('Getting poll results', { service: 'Poll' });
+	const maxVotes = Math.max(...poll.map((choice) => choice.votes));
 	// We check if winner isn't the only one...
-	const winners = poll.filter(c => +c.votes === +maxVotes);
+	const winners = poll.filter((c) => +c.votes === +maxVotes);
 	const winner = sample(winners);
 	const state = getState();
 	const plaid = getState().currentPlaid;
@@ -121,7 +123,7 @@ export async function getPollResults(): Promise<PollResults> {
 		await copyKaraToPlaylist([winner.plcid], plaid);
 	} else {
 		await editPLC([winner.plcid], {
-			pos: -1
+			pos: -1,
 		});
 	}
 
@@ -129,12 +131,14 @@ export async function getPollResults(): Promise<PollResults> {
 	emitWS('playlistContentsUpdated', plaid);
 
 	const version = getSongVersion(winner);
-	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes.map(s => s.name).join(' ')}${winner.songorder ? winner.songorder : ''} - ${getSongTitle(winner)}${version}`;
-	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, {service: 'Poll'});
+	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes
+		.map((s) => s.name)
+		.join(' ')}${winner.songorder ? winner.songorder : ''} - ${getSongTitle(winner)}${version}`;
+	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, { service: 'Poll' });
 	return {
 		votes: maxVotes,
 		kara: kara,
-		index: winner.index
+		index: winner.index,
 	};
 }
 
@@ -145,46 +149,49 @@ export function addPollVoteIndex(index: number, nickname: string) {
 			role: 'guest',
 		});
 		return 'POLL_VOTED';
-	} catch(err) {
+	} catch (err) {
 		throw err.code;
 	}
 }
 
 /** Add a vote to a poll option */
 export function addPollVote(index: number, token: Token) {
-	if (poll.length === 0 || pollEnding) throw {
-		code: 425,
-		msg: 'POLL_NOT_ACTIVE'
-	};
-	if (!poll[index - 1]) throw {
-		code: 404,
-		msg: 'POLL_VOTE_ERROR'
-	};
-	if (voters.has(token.username.toLowerCase())) throw {
-		code: 429,
-		msg: 'POLL_USER_ALREADY_VOTED'
-	};
+	if (poll.length === 0 || pollEnding)
+		throw {
+			code: 425,
+			msg: 'POLL_NOT_ACTIVE',
+		};
+	if (!poll[index - 1])
+		throw {
+			code: 404,
+			msg: 'POLL_VOTE_ERROR',
+		};
+	if (voters.has(token.username.toLowerCase()))
+		throw {
+			code: 429,
+			msg: 'POLL_USER_ALREADY_VOTED',
+		};
 	poll[index - 1].votes++;
 	voters.add(token.username.toLowerCase());
 	if (getState().player.mediaType === 'pauseScreen') displayPoll();
 	emitWS('songPollUpdated', poll);
 	return {
 		code: 'POLL_VOTED',
-		data: poll
+		data: poll,
 	};
 }
 
 /** Start poll system */
 export async function startPoll(): Promise<boolean> {
 	const conf = getConfig();
-	setState({songPoll: true});
+	setState({ songPoll: true });
 	if (poll.length > 0) {
-		logger.info('Unable to start poll, another one is already in progress', {service: 'Poll'});
+		logger.info('Unable to start poll, another one is already in progress', { service: 'Poll' });
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_ALREADY_STARTED'));
 
 		return false;
 	}
-	logger.info('Starting a new poll', {service: 'Poll'});
+	logger.info('Starting a new poll', { service: 'Poll' });
 	poll = [];
 	voters = new Set();
 	pollEnding = false;
@@ -196,23 +203,26 @@ export async function startPoll(): Promise<boolean> {
 	if (publicPlaylistID !== currentPlaylistID) {
 		const [pubpl, curpl] = await Promise.all([
 			getPlaylistContentsMini(getState().publicPlaid),
-			getPlaylistContentsMini(getState().currentPlaid)
+			getPlaylistContentsMini(getState().currentPlaid),
 		]);
 		if (pubpl.length === 0) {
-			logger.info('Public playlist is empty, cannot select songs for poll', {service: 'Poll'});
+			logger.info('Public playlist is empty, cannot select songs for poll', { service: 'Poll' });
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_PUBLIC_PL_EMPTY'));
 			return false;
 		}
-		availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
+		availableKaras = pubpl.filter((k) => !curpl.map((ktr) => ktr.kid).includes(k.kid));
 	} else {
 		const pl = await getPlaylistContentsMini(getState().publicPlaid);
-		const currentKara = pl.find(plc => plc.flag_playing === true);
-		availableKaras = pl.filter(plc => plc.pos > currentKara.pos);
+		const currentKara = pl.find((plc) => plc.flag_playing === true);
+		availableKaras = pl.filter((plc) => plc.pos > currentKara.pos);
 	}
 
 	let pollChoices = conf.Karaoke.Poll.Choices;
 	if (availableKaras.length === 0) {
-		logger.error('Unable to start poll : public playlist has no available songs (have they all been added to current playlist already?)', {service: 'Poll'});
+		logger.error(
+			'Unable to start poll : public playlist has no available songs (have they all been added to current playlist already?)',
+			{ service: 'Poll' }
+		);
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_NOT_ENOUGH_SONGS'));
 		return false;
 	}
@@ -223,13 +233,13 @@ export async function startPoll(): Promise<boolean> {
 		poll[index].votes = 0;
 		poll[index].index = +index + 1;
 	}
-	logger.debug('New poll', {service: 'Poll', obj: poll});
+	logger.debug('New poll', { service: 'Poll', obj: poll });
 	emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_STARTING'));
 	// Do not display modal for clients if twitch is enabled
 	if (conf.Karaoke.StreamerMode.Twitch.Enabled) {
 		displayPollTwitch();
 	} else {
-		emitWS('songPollStarted',poll);
+		emitWS('songPollStarted', poll);
 	}
 	timerPoll();
 	if (getState().player.mediaType === 'pauseScreen') displayPoll();
@@ -238,7 +248,7 @@ export async function startPoll(): Promise<boolean> {
 
 async function displayPollTwitch() {
 	try {
-		logger.info('Announcing vote on Twitch', {service: 'Poll'});
+		logger.info('Announcing vote on Twitch', { service: 'Poll' });
 		await sayTwitch(i18n.t('TWITCH.CHAT.VOTE'));
 		for (const kara of poll) {
 			const series = getSongSeriesSingers(kara);
@@ -247,28 +257,33 @@ async function displayPollTwitch() {
 			if (!kara.songorder || kara.songorder === 0) songorder = '';
 			await sleep(1000);
 			const version = getSongVersion(kara);
-			await sayTwitch(`${kara.index}. ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes[0].name}${songorder} - ${getSongTitle(kara)}${version}`);
+			await sayTwitch(
+				`${kara.index}. ${kara.langs[0].name.toUpperCase()} - ${series} - ${
+					kara.songtypes[0].name
+				}${songorder} - ${getSongTitle(kara)}${version}`
+			);
 		}
-	} catch(err) {
-		logger.error('Unable to post poll on twitch', {service: 'Poll', obj: err});
+	} catch (err) {
+		logger.error('Unable to post poll on twitch', { service: 'Poll', obj: err });
 	}
 }
 
 /** Get current poll options */
 export function getPoll(token: Token) {
-	if (poll.length === 0) throw {
-		code: 425,
-		msg: 'POLL_NOT_ACTIVE'
-	};
+	if (poll.length === 0)
+		throw {
+			code: 425,
+			msg: 'POLL_NOT_ACTIVE',
+		};
 	return {
 		infos: {
 			count: poll.length,
 			from: 0,
-			to: poll.length
+			to: poll.length,
 		},
 		poll: poll,
 		timeLeft: clock.getTimeLeft(),
-		flag_uservoted: voters.has(token.username.toLowerCase())
+		flag_uservoted: voters.has(token.username.toLowerCase()),
 	};
 }
 
@@ -276,11 +291,11 @@ export function getPoll(token: Token) {
 export function setSongPoll(enabled: boolean) {
 	const state = getState();
 	const oldState = state.songPoll;
-	setState({songPoll: enabled});
+	setState({ songPoll: enabled });
 	if (!oldState && enabled) startPoll();
 	if (oldState && !enabled) {
 		if (getConfig().Karaoke.StreamerMode.Enabled) {
-			logger.debug('SongPoll Toggle DI', {service: 'Player'});
+			logger.debug('SongPoll Toggle DI', { service: 'Player' });
 			displayInfo();
 		}
 		stopPoll();

@@ -13,7 +13,7 @@ interface IProps {
 
 class ShuffleModal extends Component<IProps, unknown> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	shuffle = async (method: string) => {
 		this.props.playlistWillUpdate();
@@ -24,7 +24,7 @@ class ShuffleModal extends Component<IProps, unknown> {
 
 	closeModal = () => {
 		closeModal(this.context.globalDispatch);
-	}
+	};
 
 	render() {
 		return (
@@ -33,16 +33,18 @@ class ShuffleModal extends Component<IProps, unknown> {
 					<div className="modal-content">
 						<ul className="modal-header">
 							<h4 className="modal-title">{i18next.t('MODAL.SHUFFLE_MODAL.TITLE')}</h4>
-							<button className="closeModal"
-								onClick={this.closeModal}>
+							<button className="closeModal" onClick={this.closeModal}>
 								<i className="fas fa-times"></i>
 							</button>
 						</ul>
 						<div className="modal-body flex-direction-btns">
 							<div>{i18next.t('MODAL.SHUFFLE_MODAL.LABEL')}</div>
 							<div>
-								<button className="btn btn-default"
-									type="button" onClick={() => this.shuffle('normal')}>
+								<button
+									className="btn btn-default"
+									type="button"
+									onClick={() => this.shuffle('normal')}
+								>
 									<i className="fas fa-fw fa-random fa-2x" />
 									<div className="btn-large-container">
 										<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SHUFFLE')}</div>
@@ -51,18 +53,22 @@ class ShuffleModal extends Component<IProps, unknown> {
 								</button>
 							</div>
 							<div>
-								<button className="btn btn-default"
-									type="button" onClick={() => this.shuffle('smart')}>
+								<button className="btn btn-default" type="button" onClick={() => this.shuffle('smart')}>
 									<i className="fas fa-fw fa-lightbulb fa-2x" />
 									<div className="btn-large-container">
 										<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SMART_SHUFFLE')}</div>
-										<div className="desc">{i18next.t('MODAL.SHUFFLE_MODAL.SMART_SHUFFLE_DESC')}</div>
+										<div className="desc">
+											{i18next.t('MODAL.SHUFFLE_MODAL.SMART_SHUFFLE_DESC')}
+										</div>
 									</div>
 								</button>
 							</div>
 							<div>
-								<button className="btn btn-default"
-									type="button" onClick={() => this.shuffle('balance')}>
+								<button
+									className="btn btn-default"
+									type="button"
+									onClick={() => this.shuffle('balance')}
+								>
 									<i className="fas fa-fw fa-balance-scale fa-2x" />
 									<div className="btn-large-container">
 										<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.BALANCE')}</div>
@@ -71,8 +77,11 @@ class ShuffleModal extends Component<IProps, unknown> {
 								</button>
 							</div>
 							<div>
-								<button className="btn btn-default"
-									type="button" onClick={() => this.shuffle('upvotes')}>
+								<button
+									className="btn btn-default"
+									type="button"
+									onClick={() => this.shuffle('upvotes')}
+								>
 									<i className="fas fa-fw fa-thumbs-up fa-2x" />
 									<div className="btn-large-container">
 										<div className="title">{i18next.t('MODAL.SHUFFLE_MODAL.SORTUPVOTES')}</div>
@@ -80,10 +89,10 @@ class ShuffleModal extends Component<IProps, unknown> {
 									</div>
 								</button>
 							</div>
-						</div >
-					</div >
-				</div >
-			</div >
+						</div>
+					</div>
+				</div>
+			</div>
 		);
 	}
 }

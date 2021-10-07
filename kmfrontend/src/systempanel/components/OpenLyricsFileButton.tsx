@@ -7,8 +7,8 @@ import { Kara } from '../../../../src/lib/types/kara';
 import { commandBackend } from '../../utils/socket';
 
 interface IProps {
-    kara: Kara,
-    showOnlyIfDownloaded?: boolean,
+	kara: Kara;
+	showOnlyIfDownloaded?: boolean;
 }
 
 export default function OpenLyricsFileButton({ kara, showOnlyIfDownloaded = true }: IProps): JSX.Element {

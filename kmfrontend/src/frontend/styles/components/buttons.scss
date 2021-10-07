@@ -16,7 +16,8 @@
 	}
 }
 
-div > a, h5 > a {
+div > a,
+h5 > a {
 	color: #99cdfa;
 }
 
@@ -43,7 +44,9 @@ div > a, h5 > a {
 	background-color: $mugen-btn-background;
 }
 
-.btn-danger, .btn-danger:focus:active, .btn-danger:focus {
+.btn-danger,
+.btn-danger:focus:active,
+.btn-danger:focus {
 	background-color: $mugen-btn-danger-background;
 }
 .btn-danger:hover {
@@ -60,7 +63,9 @@ div > a, h5 > a {
 	color: white;
 }
 
-.btn-primary, .btn-primary:active:focus, .btn-primary:focus {
+.btn-primary,
+.btn-primary:active:focus,
+.btn-primary:focus {
 	color: white;
 	background-color: $mugen-btn-primary-background;
 }
@@ -69,8 +74,9 @@ div > a, h5 > a {
 	background-color: lighten($mugen-btn-primary-background, 5);
 }
 
-.btn-dark, .btn-dark:focus {
-	background-color: #1E2124;
+.btn-dark,
+.btn-dark:focus {
+	background-color: #1e2124;
 	border: solid #595959;
 	border-left-width: 1px;
 	color: white;
@@ -79,7 +85,7 @@ div > a, h5 > a {
 	background-color: #292929;
 	color: white;
 }
-.btn-dark:active:focus{
+.btn-dark:active:focus {
 	background-color: #444;
 	color: white;
 }
@@ -95,7 +101,7 @@ div > a, h5 > a {
 }
 
 .btn-large-container {
-	margin-left: .5em;
+	margin-left: 0.5em;
 	.title {
 		font-size: 1.5em;
 		font-weight: bold;
@@ -105,7 +111,7 @@ div > a, h5 > a {
 .volumeButton,
 .subtitleButton,
 .messageButton {
-	order:90;
+	order: 90;
 }
 
 .klogo {
@@ -117,18 +123,18 @@ div > a, h5 > a {
 		width: 2em;
 	}
 	&:after {
-		content: "";
+		content: '';
 		display: inline-block;
 		position: relative;
-		top: .25em;
+		top: 0.25em;
 		border-color: currentColor transparent transparent;
-		border-width: .25em;
+		border-width: 0.25em;
 		border-style: solid;
 	}
 }
 
 .volumeButton {
-	input[type=range] {
+	input[type='range'] {
 		-webkit-appearance: none;
 		margin: 0;
 		position: absolute;
@@ -139,40 +145,66 @@ div > a, h5 > a {
 }
 
 .subtitleButton {
-	> .fas, .fa-stack {
+	> .fas,
+	.fa-stack {
 		display: none;
 	}
 	&.hideSubs {
-		> *:first-child { display: inline-block; }
-		&:hover {
-			> *:first-child { display: none; }
-			> *:last-child { display: unset; }
+		> *:first-child {
+			display: inline-block;
 		}
-		&:active { // This trick seems broken
-			> *:first-child { display: inline-block; }
-			> *:last-child { display: none; }
+		&:hover {
+			> *:first-child {
+				display: none;
+			}
+			> *:last-child {
+				display: unset;
+			}
+		}
+		&:active {
+			// This trick seems broken
+			> *:first-child {
+				display: inline-block;
+			}
+			> *:last-child {
+				display: none;
+			}
 		}
 	}
 	&.showSubs {
-		> *:last-child { display: unset; }
-		&:hover {
-			> *:first-child { display: inline-block; }
-			> *:last-child { display: none; }
+		> *:last-child {
+			display: unset;
 		}
-		&:active { // This trick seems broken
-			> *:first-child { display: none; }
-			> *:last-child { display: unset; }
+		&:hover {
+			> *:first-child {
+				display: inline-block;
+			}
+			> *:last-child {
+				display: none;
+			}
+		}
+		&:active {
+			// This trick seems broken
+			> *:first-child {
+				display: none;
+			}
+			> *:last-child {
+				display: unset;
+			}
 		}
 	}
 }
 
-.buttonsMobileMenu, .buttonsMobileMenuSmaller {
+.buttonsMobileMenu,
+.buttonsMobileMenuSmaller {
 	display: none;
 }
 
-@media (max-width:$mugen-breakpoint-small) {
+@media (max-width: $mugen-breakpoint-small) {
 	.KmAppWrapperDecorator:not(.chibi) {
-		.messageButton, .subtitleButton, .rewindButton {
+		.messageButton,
+		.subtitleButton,
+		.rewindButton {
 			display: none;
 		}
 
@@ -182,8 +214,9 @@ div > a, h5 > a {
 	}
 }
 
-@media (max-width:$mugen-breakpoint-smaller) {
-	.stopButton, .volumeButton {
+@media (max-width: $mugen-breakpoint-smaller) {
+	.stopButton,
+	.volumeButton {
 		display: none;
 	}
 

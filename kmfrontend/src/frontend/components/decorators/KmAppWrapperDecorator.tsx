@@ -4,12 +4,12 @@ import { View } from '../../types/view';
 
 interface IProps {
 	children?: ReactNodeArray | ReactNode;
-	single?: boolean
-	chibi?: boolean
-	top?: string
-	bottom?: string
+	single?: boolean;
+	chibi?: boolean;
+	top?: string;
+	bottom?: string;
 	view?: View;
-	hmagrin?: boolean
+	hmagrin?: boolean;
 }
 
 function KmAppWrapperDecorator(props: IProps) {
@@ -35,7 +35,6 @@ function KmAppWrapperDecorator(props: IProps) {
 		setTimeout(resizeCheck, 0);
 	}, [props.view]);
 
-
 	useEffect(() => {
 		resizeCheck();
 		window.addEventListener('resize', resizeCheck);
@@ -47,7 +46,9 @@ function KmAppWrapperDecorator(props: IProps) {
 
 	return (
 		<div
-			className={`KmAppWrapperDecorator${props.single ? ' single' : ''}${props.hmagrin !== false ? ' hmargin' : ''}${props.chibi ? ' chibi' : ''}`}
+			className={`KmAppWrapperDecorator${props.single ? ' single' : ''}${
+				props.hmagrin !== false ? ' hmargin' : ''
+			}${props.chibi ? ' chibi' : ''}`}
 			style={{ ['--top' as any]: props.top, ['--bottom' as any]: props.bottom, ['--height' as any]: height }}
 			ref={ref}
 		>

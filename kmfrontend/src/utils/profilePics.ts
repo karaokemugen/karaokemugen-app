@@ -16,8 +16,9 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 				return cache.get(user.login);
 			}
 			const [login, instance] = user.login.split('@');
-			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login)}`)
-				.then(res => res.json());
+			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login)}`).then((res) =>
+				res.json()
+			);
 			if (data.avatar_file) {
 				const url = `https://${instance}/avatars/${data.avatar_file}`;
 				cache.set(user.login, url);
@@ -29,7 +30,7 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 		} else if (user.type === 2) {
 			return `/guests/${slugify(user.login, {
 				lower: true,
-				remove: /['"!,?()]/g
+				remove: /['"!,?()]/g,
 			})}.jpg`;
 		} else {
 			return blankAvatar;

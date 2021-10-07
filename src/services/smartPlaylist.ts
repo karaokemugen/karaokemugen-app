@@ -1,19 +1,35 @@
-import i18next from "i18next";
-import langs from "langs";
-import intersectionWith from "lodash.intersectionwith";
+import i18next from 'i18next';
+import langs from 'langs';
+import intersectionWith from 'lodash.intersectionwith';
 import isEqual from 'lodash.isequal';
-import { insertPlaylist, deleteCriteria, selectKarasFromCriterias, insertCriteria, selectCriterias, truncateCriterias, updatePlaylistLastEditTime } from "../dao/playlist";
-import { Criteria } from "../lib/types/playlist";
-import { uuidRegexp } from "../lib/utils/constants";
-import logger, { profile } from "../lib/utils/logger";
-import { isNumber } from "../lib/utils/validators";
-import { emitWS } from "../lib/utils/ws";
-import Sentry from "../utils/sentry";
-import { getState, setState } from "../utils/state";
-import { downloadStatuses } from "./download";
-import { getKara } from "./kara";
-import { addKaraToPlaylist, deleteKaraFromPlaylist, editPLC, getPlaylistContentsMini, getPlaylistInfo, getPlaylists } from "./playlist";
-import { getTag, getTags } from "./tag";
+
+import {
+	deleteCriteria,
+	insertCriteria,
+	insertPlaylist,
+	selectCriterias,
+	selectKarasFromCriterias,
+	truncateCriterias,
+	updatePlaylistLastEditTime,
+} from '../dao/playlist';
+import { Criteria } from '../lib/types/playlist';
+import { uuidRegexp } from '../lib/utils/constants';
+import logger, { profile } from '../lib/utils/logger';
+import { isNumber } from '../lib/utils/validators';
+import { emitWS } from '../lib/utils/ws';
+import Sentry from '../utils/sentry';
+import { getState, setState } from '../utils/state';
+import { downloadStatuses } from './download';
+import { getKara } from './kara';
+import {
+	addKaraToPlaylist,
+	deleteKaraFromPlaylist,
+	editPLC,
+	getPlaylistContentsMini,
+	getPlaylistInfo,
+	getPlaylists,
+} from './playlist';
+import { getTag, getTags } from './tag';
 
 export async function getCriterias(plaid: string, lang?: string, translate = true): Promise<Criteria[]> {
 	try {
@@ -21,7 +37,7 @@ export async function getCriterias(plaid: string, lang?: string, translate = tru
 		const c = await selectCriterias(plaid);
 		if (!translate) return c;
 		return await translateCriterias(c, lang);
-	} catch(err) {
+	} catch (err) {
 		Sentry.error(err);
 		throw err;
 	} finally {
@@ -31,9 +47,9 @@ export async function getCriterias(plaid: string, lang?: string, translate = tru
 
 export async function emptyCriterias(plaid: string) {
 	profile('emptyCriterias');
-	logger.debug('Wiping criterias', {service: 'Playlist'});
+	logger.debug('Wiping criterias', { service: 'Playlist' });
 	const pl = await getPlaylistInfo(plaid);
-	if (!pl) throw {code: 404, message: 'Playlist unknown'};
+	if (!pl) throw { code: 404, message: 'Playlist unknown' };
 	await truncateCriterias(plaid);
 	if (pl.flag_smart) {
 		if (plaid === getState().blacklistPlaid || pl.plaid === getState().whitelistPlaid) {
@@ -47,14 +63,14 @@ export async function emptyCriterias(plaid: string) {
 
 export async function updateAllSmartPlaylists() {
 	profile('updateAllSmartPlaylists');
-	const pls = await getPlaylists({role: 'admin', username: 'admin'});
+	const pls = await getPlaylists({ role: 'admin', username: 'admin' });
 	const updatePromises = [];
 	// We need to update the whitelist first if it's smart, then the blacklist, then all others.
-	const wl = pls.find(p => p.flag_whitelist && p.flag_smart);
+	const wl = pls.find((p) => p.flag_whitelist && p.flag_smart);
 	if (wl) await updateSmartPlaylist(wl.plaid);
-	const bl = pls.find(p => p.flag_blacklist && p.flag_smart);
+	const bl = pls.find((p) => p.flag_blacklist && p.flag_smart);
 	if (bl) await updateSmartPlaylist(bl.plaid);
-	for (const pl of pls.filter(p => p.flag_smart && !p.flag_whitelist && !p.flag_blacklist)) {
+	for (const pl of pls.filter((p) => p.flag_smart && !p.flag_whitelist && !p.flag_blacklist)) {
 		updatePromises.push(updateSmartPlaylist(pl.plaid));
 	}
 	await Promise.all(updatePromises);
@@ -66,7 +82,7 @@ export async function updateSmartPlaylist(plaid: string) {
 	const [pl, plc, list] = await Promise.all([
 		getPlaylistInfo(plaid),
 		getPlaylistContentsMini(plaid),
-		selectKarasFromCriterias(plaid)
+		selectKarasFromCriterias(plaid),
 	]);
 	if (!pl.flag_smart) {
 		// Playlist is not smart! We're not throwing, simply returning.
@@ -74,33 +90,29 @@ export async function updateSmartPlaylist(plaid: string) {
 		return;
 	}
 	// We compare what we have in the playlist and what we have in the generated list, removing and adding songs without changing the order.
-	const removedSongs = plc.filter(pc => !list.find(l => l.kid === pc.kid));
-	const addedSongs = list.filter(l => !plc.find(pc => pc.kid === l.kid));
-	const sameSongs = list.filter(l => plc.find(pc => pc.kid === l.kid));
+	const removedSongs = plc.filter((pc) => !list.find((l) => l.kid === pc.kid));
+	const addedSongs = list.filter((l) => !plc.find((pc) => pc.kid === l.kid));
+	const sameSongs = list.filter((l) => plc.find((pc) => pc.kid === l.kid));
 
 	// We need to run through the addedSongs part and consolidate it
 	// Because getKarasFromCriterias will give us the same song several times if it's
 	const newMap = new Map<string, Criteria[]>();
 	for (const song of addedSongs) {
 		let criterias = newMap.get(song.kid);
-		criterias
-			? criterias.push(song.criteria)
-			: criterias = [song.criteria];
+		criterias ? criterias.push(song.criteria) : (criterias = [song.criteria]);
 		newMap.set(song.kid, criterias);
 	}
-	const newArray = Array.from(newMap, ([kid, criterias]) => ({ kid, criterias}));
+	const newArray = Array.from(newMap, ([kid, criterias]) => ({ kid, criterias }));
 
 	// Tricky part, we need to compare criterias between the list we got and the criterias stored in the PLC.
 	const sameMap = new Map<string, Criteria[]>();
 	for (const song of sameSongs) {
 		let criterias = sameMap.get(song.kid);
-		criterias
-			? criterias.push(song.criteria)
-			: criterias = [song.criteria];
+		criterias ? criterias.push(song.criteria) : (criterias = [song.criteria]);
 		sameMap.set(song.kid, criterias);
 	}
 	// Now that we aggregated, we need to compare.
-	const modifiedSongs = plc.filter(pc => {
+	const modifiedSongs = plc.filter((pc) => {
 		const songCriterias = sameMap.get(pc.kid);
 		// No more criterias exist, it means the song got deleted by another criteria
 		if (!songCriterias) return false;
@@ -111,12 +123,31 @@ export async function updateSmartPlaylist(plaid: string) {
 	});
 
 	// Removed songs, that's simple.
-	if (removedSongs.length > 0) await deleteKaraFromPlaylist(removedSongs.map(s => s.plcid), {role: 'admin', username: 'admin'}, false, true);
-	if (addedSongs.length > 0) await addKaraToPlaylist(addedSongs.map(s => s.kid), pl.username, plaid, undefined, true, false, newArray);
+	if (removedSongs.length > 0)
+		await deleteKaraFromPlaylist(
+			removedSongs.map((s) => s.plcid),
+			{ role: 'admin', username: 'admin' },
+			false,
+			true
+		);
+	if (addedSongs.length > 0)
+		await addKaraToPlaylist(
+			addedSongs.map((s) => s.kid),
+			pl.username,
+			plaid,
+			undefined,
+			true,
+			false,
+			newArray
+		);
 	for (const song of modifiedSongs) {
-		await editPLC([song.plcid], {
-			criterias: song.criterias
-		}, false);
+		await editPLC(
+			[song.plcid],
+			{
+				criterias: song.criterias,
+			},
+			false
+		);
 	}
 	updatePlaylistLastEditTime(plaid);
 	emitWS('playlistContentsUpdated', plaid);
@@ -126,7 +157,7 @@ export async function updateSmartPlaylist(plaid: string) {
 
 export async function removeCriteria(cs: Criteria[]) {
 	profile('delCriteria');
-	logger.debug('Deleting criterias', {service: 'Playlist'});
+	logger.debug('Deleting criterias', { service: 'Playlist' });
 	const promises: Promise<any>[] = [];
 	for (const c of cs) {
 		promises.push(deleteCriteria(c));
@@ -149,14 +180,14 @@ export async function removeCriteria(cs: Criteria[]) {
 /** Add one or more criterias to smart playlists */
 export async function addCriteria(cs: Criteria[]) {
 	profile('addCriteria');
-	if (!Array.isArray(cs)) throw {code: 400};
-	logger.info(`Adding criterias = ${JSON.stringify(cs)}`, {service: 'Playlist'});
+	if (!Array.isArray(cs)) throw { code: 400 };
+	logger.info(`Adding criterias = ${JSON.stringify(cs)}`, { service: 'Playlist' });
 	try {
 		const playlistsToUpdate = new Set<string>();
 		for (const c of cs) {
 			if (playlistsToUpdate.has(c.plaid)) continue;
 			const pl = await getPlaylistInfo(c.plaid);
-			if (!pl) throw {code: 404, msg: 'PL unknown'};
+			if (!pl) throw { code: 404, msg: 'PL unknown' };
 			playlistsToUpdate.add(c.plaid);
 		}
 		// Validation
@@ -165,30 +196,44 @@ export async function addCriteria(cs: Criteria[]) {
 		// Placed to true to check for multiples occurrences of the same type
 		const timeC = [false, false];
 		for (const c of cs) {
-			if (c.type < 0 || c.type > 1006 || c.type === 1000) throw {code: 400, msg: `Incorrect Criteria type (${c.type})`};
+			if (c.type < 0 || c.type > 1006 || c.type === 1000)
+				throw { code: 400, msg: `Incorrect Criteria type (${c.type})` };
 			if (c.type === 1006) {
-				if (!downloadStatuses.includes(c.value)) throw {code: 400, msg: `Criteria value mismatch : type ${c.type} must have either of these values : ${downloadStatuses.toString()}`};
+				if (!downloadStatuses.includes(c.value))
+					throw {
+						code: 400,
+						msg: `Criteria value mismatch : type ${
+							c.type
+						} must have either of these values : ${downloadStatuses.toString()}`,
+					};
 			}
 			if (c.type === 1001 || (c.type >= 1 && c.type < 1000)) {
-				if (!c.value.match(uuidRegexp)) throw {code: 400, msg: `Criteria value mismatch : type ${c.type} must have UUID values`};
+				if (!c.value.match(uuidRegexp))
+					throw { code: 400, msg: `Criteria value mismatch : type ${c.type} must have UUID values` };
 			}
 			if (c.type === 1002 || c.type === 1003) {
 				c.value = +c.value;
-				if (!isNumber(c.value)) throw {code: 400, msg: `Criteria type mismatch : type ${c.type} must have a numeric value!`};
-				if (timeC[c.type - 1002]) throw {code: 400, msg: `Criteria type mismatch : type ${c.type} can occur only once in a smart playlist.`};
-				const opposingC = cs.find(crit => {
+				if (!isNumber(c.value))
+					throw { code: 400, msg: `Criteria type mismatch : type ${c.type} must have a numeric value!` };
+				if (timeC[c.type - 1002])
+					throw {
+						code: 400,
+						msg: `Criteria type mismatch : type ${c.type} can occur only once in a smart playlist.`,
+					};
+				const opposingC = cs.find((crit) => {
 					// Find the C type 1003 (shorter than) when we add a 1002 C (longer than) and vice versa.
 					return crit.plaid === c.plaid && crit.type === (c.type === 1002 ? 1003 : 1002);
 				});
 				if (opposingC) {
 					if (c.type === 1002 && c.value <= opposingC.value) {
-						throw {code: 409, msg: { code: 'C_LONGER_THAN_CONFLICT' }};
+						throw { code: 409, msg: { code: 'C_LONGER_THAN_CONFLICT' } };
 					} else if (c.type === 1003 && c.value >= opposingC.value) {
-						throw {code: 409, msg: { code: 'C_SHORTER_THAN_CONFLICT' }};
+						throw { code: 409, msg: { code: 'C_SHORTER_THAN_CONFLICT' } };
 					}
 				}
-				const existingC = cs.find(crit => crit.type === c.type && crit.plaid === c.plaid);
-				if (existingC) { // Replace the one
+				const existingC = cs.find((crit) => crit.type === c.type && crit.plaid === c.plaid);
+				if (existingC) {
+					// Replace the one
 					await deleteCriteria(existingC);
 				}
 				timeC[c.type - 1002] = true;
@@ -202,8 +247,8 @@ export async function addCriteria(cs: Criteria[]) {
 				updateSmartPlaylist(plaid);
 			}
 		}
-	} catch(err) {
-		logger.error('Error adding criteria', {service: 'Playlist', obj: err});
+	} catch (err) {
+		logger.error('Error adding criteria', { service: 'Playlist', obj: err });
 		if (!err.code || err.code >= 500) Sentry.error(err);
 		throw err;
 	} finally {
@@ -228,36 +273,34 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 			// We need to get the tag name and then translate it if needed
 			const tag = await getTag(cList[i].value);
 			tag
-				? cList[i].value_i18n = tag.i18n[langObj['2B']]
-					? tag.i18n[langObj['2B']]
-					: (tag.i18n['eng']
+				? (cList[i].value_i18n = tag.i18n[langObj['2B']]
+						? tag.i18n[langObj['2B']]
+						: tag.i18n['eng']
 						? tag.i18n['eng']
 						: tag.name)
-				: cList[i] = null;
+				: (cList[i] = null);
 		}
 		if (cList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
-			const kara = await getKara(cList[i].value, {role: 'admin', username: 'admin'}, lang);
+			const kara = await getKara(cList[i].value, { role: 'admin', username: 'admin' }, lang);
 			// If it doesn't exist anymore, remove the entry with null.
-			kara
-				? cList[i].value = kara
-				: cList[i] = null;
+			kara ? (cList[i].value = kara) : (cList[i] = null);
 		}
 		// No need to do anything, values have been modified if necessary
 	}
 	// Filter all nulls
-	return cList.filter(blc => blc !== null);
+	return cList.filter((blc) => blc !== null);
 }
 
 export async function createProblematicSmartPlaylist() {
-	const tags = await getTags({problematic: true});
+	const tags = await getTags({ problematic: true });
 	const plaid = await insertPlaylist({
 		name: i18next.t('PROBLEMATIC_SONGS'),
 		created_at: new Date(),
 		modified_at: new Date(),
 		flag_visible: true,
 		flag_smart: true,
-		username: 'admin'
+		username: 'admin',
 	});
 	const blcs: Criteria[] = [];
 
@@ -265,7 +308,7 @@ export async function createProblematicSmartPlaylist() {
 		blcs.push({
 			plaid: plaid,
 			type: tag.types[0],
-			value: tag.tid
+			value: tag.tid,
 		});
 	}
 	await addCriteria(blcs);
@@ -277,7 +320,7 @@ export function whitelistHook(plaid: string) {
 	const oldWhitelistPlaylist_id = getState().whitelistPlaid;
 	updatePlaylistLastEditTime(oldWhitelistPlaylist_id);
 	emitWS('playlistInfoUpdated', oldWhitelistPlaylist_id);
-	setState({whitelistPlaid: plaid});
+	setState({ whitelistPlaid: plaid });
 	updateAllSmartPlaylists();
 }
 
@@ -286,6 +329,6 @@ export function blacklistHook(plaid: string) {
 	const oldBlacklistPlaylist_id = getState().blacklistPlaid;
 	updatePlaylistLastEditTime(oldBlacklistPlaylist_id);
 	emitWS('playlistInfoUpdated', oldBlacklistPlaylist_id);
-	setState({blacklistPlaid: plaid});
+	setState({ blacklistPlaid: plaid });
 	updateAllSmartPlaylists();
 }

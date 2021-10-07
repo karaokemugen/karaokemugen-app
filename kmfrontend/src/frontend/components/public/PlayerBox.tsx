@@ -14,35 +14,35 @@ import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
 interface IProps {
-	mode: 'fixed' | 'homepage' | 'playlist'
-	show: boolean
-	currentVisible: boolean
-	goToCurrentPL?: () => void
-	onResize?: (bottom: string) => void
-	onKaraChange?: (kid: string) => void
+	mode: 'fixed' | 'homepage' | 'playlist';
+	show: boolean;
+	currentVisible: boolean;
+	goToCurrentPL?: () => void;
+	onResize?: (bottom: string) => void;
+	onKaraChange?: (kid: string) => void;
 }
 
 interface IState {
-	width: string,
-	ref: RefObject<HTMLDivElement>,
-	containerRef: RefObject<HTMLDivElement>,
-	title: string,
-	subtitle: string,
-	length: number,
-	timePosition: number,
-	img: string,
-	lyrics: ASSLine[],
-	showLyrics: boolean,
-	kid: string,
-	favorites: Set<string>,
-	karaVersions?: React.ReactFragment
+	width: string;
+	ref: RefObject<HTMLDivElement>;
+	containerRef: RefObject<HTMLDivElement>;
+	title: string;
+	subtitle: string;
+	length: number;
+	timePosition: number;
+	img: string;
+	lyrics: ASSLine[];
+	showLyrics: boolean;
+	kid: string;
+	favorites: Set<string>;
+	karaVersions?: React.ReactFragment;
 }
 
 class PlayerBox extends Component<IProps, IState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
-	observer: ResizeObserver
+	observer: ResizeObserver;
 
 	static resetBox = {
 		title: i18next.t('KARA_PAUSED_WAITING'),
@@ -52,7 +52,7 @@ class PlayerBox extends Component<IProps, IState> {
 		timePosition: 0,
 		img: '',
 		lyrics: [],
-		kid: ''
+		kid: '',
 	};
 
 	constructor(props) {
@@ -62,7 +62,7 @@ class PlayerBox extends Component<IProps, IState> {
 			ref: createRef(),
 			containerRef: createRef(),
 			showLyrics: false,
-			favorites: new Set<string>()
+			favorites: new Set<string>(),
 		};
 	}
 
@@ -85,17 +85,20 @@ class PlayerBox extends Component<IProps, IState> {
 		event.stopPropagation();
 		if (this.state.favorites.has(this.state.kid)) {
 			await commandBackend('deleteFavorites', {
-				kids: [this.state.kid]
+				kids: [this.state.kid],
 			});
 		} else {
 			await commandBackend('addFavorites', {
-				kids: [this.state.kid]
+				kids: [this.state.kid],
 			});
 		}
-	}
+	};
 
 	async componentDidMount() {
-		if (this.context.globalState.auth.isAuthenticated && this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) {
+		if (
+			this.context.globalState.auth.isAuthenticated &&
+			this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0
+		) {
 			try {
 				const result = await commandBackend('getPlayerStatus');
 				this.refreshPlayerInfos(result);
@@ -112,7 +115,8 @@ class PlayerBox extends Component<IProps, IState> {
 			this.observer.observe(this.state.containerRef.current);
 			this.resizeCheck();
 		} else {
-			if (this.context.globalState.auth.data.role !== 'guest') getSocket().on('favoritesUpdated', this.getFavorites);
+			if (this.context.globalState.auth.data.role !== 'guest')
+				getSocket().on('favoritesUpdated', this.getFavorites);
 		}
 	}
 
@@ -122,7 +126,8 @@ class PlayerBox extends Component<IProps, IState> {
 		if (this.observer) {
 			this.observer.disconnect();
 		} else {
-			if (this.context.globalState.auth.data.role !== 'guest') getSocket().off('favoritesUpdated', this.getFavorites);
+			if (this.context.globalState.auth.data.role !== 'guest')
+				getSocket().off('favoritesUpdated', this.getFavorites);
 		}
 	}
 
@@ -136,70 +141,84 @@ class PlayerBox extends Component<IProps, IState> {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('KARA_PAUSED_WAITING'),
-					subtitle: sample(i18next.t('KARA_PAUSED_TAGLINES', { returnObjects: true }))
+					subtitle: sample(i18next.t('KARA_PAUSED_TAGLINES', { returnObjects: true })),
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Jingles') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('JINGLE_TIME'),
-					subtitle: sample(i18next.t('JINGLE_TAGLINES', { returnObjects: true }))
+					subtitle: sample(i18next.t('JINGLE_TAGLINES', { returnObjects: true })),
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Intros') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('INTRO_TIME'),
-					subtitle: sample(i18next.t('INTRO_TAGLINES', { returnObjects: true }))
+					subtitle: sample(i18next.t('INTRO_TAGLINES', { returnObjects: true })),
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Outros') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('OUTRO_TIME'),
-					subtitle: sample(i18next.t('OUTRO_TAGLINES', { returnObjects: true }))
+					subtitle: sample(i18next.t('OUTRO_TAGLINES', { returnObjects: true })),
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Encores') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('ENCORES_TIME'),
-					subtitle: sample(i18next.t('ENCORES_TAGLINES', { returnObjects: true }))
+					subtitle: sample(i18next.t('ENCORES_TAGLINES', { returnObjects: true })),
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'Sponsors') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('SPONSOR_TIME'),
-					subtitle: sample(i18next.t('SPONSOR_TAGLINES', { returnObjects: true }))
+					subtitle: sample(i18next.t('SPONSOR_TAGLINES', { returnObjects: true })),
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.mediaType === 'pauseScreen') {
 				this.setState({
 					...PlayerBox.resetBox,
 					title: i18next.t('PAUSE_TIME'),
-					subtitle: sample(i18next.t('PAUSE_TAGLINES', { returnObjects: true }))
+					subtitle: sample(i18next.t('PAUSE_TAGLINES', { returnObjects: true })),
 				});
 				if (this.props.onKaraChange) this.props.onKaraChange(null);
 			} else if (data.currentSong) {
 				const kara = data.currentSong;
-				const serieText = kara.series?.length > 0 ? kara.series.slice(0, 3).map(e => getTagInLocale(this.context?.globalState.settings.data, e)).join(', ')
-					+ (kara.series.length > 3 ? '...' : '')
-					: (kara.singers ? kara.singers.slice(0, 3).map(e => e.name).join(', ') + (kara.singers.length > 3 ? '...' : '') : '');
-				const songtypeText = [...kara.songtypes].sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
+				const serieText =
+					kara.series?.length > 0
+						? kara.series
+								.slice(0, 3)
+								.map((e) => getTagInLocale(this.context?.globalState.settings.data, e))
+								.join(', ') + (kara.series.length > 3 ? '...' : '')
+						: kara.singers
+						? kara.singers
+								.slice(0, 3)
+								.map((e) => e.name)
+								.join(', ') + (kara.singers.length > 3 ? '...' : '')
+						: '';
+				const songtypeText = [...kara.songtypes]
+					.sort(sortTagByPriority)
+					.map((e) => (e.short ? +e.short : e.name))
+					.join(' ');
 				const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
 				const karaVersions = (() => {
 					// Tags in the header
 					const typeData = tagTypes['VERSIONS'];
 					if (kara.versions) {
-						return kara[typeData.karajson].sort(sortTagByPriority).map(tag => {
-							return <div
-								key={tag.tid}
-								className={`tag inline ${typeData.color}`}
-								title={getTagInLocale(this.context?.globalState.settings.data, tag)}
-							>
-								{getTagInLocale(this.context?.globalState.settings.data, tag)}
-							</div>;
+						return kara[typeData.karajson].sort(sortTagByPriority).map((tag) => {
+							return (
+								<div
+									key={tag.tid}
+									className={`tag inline ${typeData.color}`}
+									title={getTagInLocale(this.context?.globalState.settings.data, tag)}
+								>
+									{getTagInLocale(this.context?.globalState.settings.data, tag)}
+								</div>
+							);
 						});
 					} else {
 						return null;
@@ -214,19 +233,18 @@ class PlayerBox extends Component<IProps, IState> {
 					length: kara.duration,
 					kid: kara.kid,
 					img: `url(${getPreviewLink(kara)})`,
-					karaVersions
+					karaVersions,
 				});
 			}
 		}
 
 		if (this.state.ref.current) {
-			const newWidth = this.state.ref.current.offsetWidth *
-				(data.timeposition) / this.state.length + 'px';
+			const newWidth = (this.state.ref.current.offsetWidth * data.timeposition) / this.state.length + 'px';
 
 			if (data.timeposition && this.state.length !== 0) {
 				this.setState({
 					width: newWidth,
-					timePosition: data.timeposition
+					timePosition: data.timeposition,
 				});
 			}
 		}
@@ -234,52 +252,65 @@ class PlayerBox extends Component<IProps, IState> {
 
 	render() {
 		return (
-			<div onClick={this.props.currentVisible ? this.props.goToCurrentPL : undefined}
+			<div
+				onClick={this.props.currentVisible ? this.props.goToCurrentPL : undefined}
 				className={`player-box${this.props.mode === 'fixed' ? ' fixed' : ''}`}
 				style={{ ['--img' as any]: this.state.img, display: this.props.show ? undefined : 'none' }}
-				ref={this.state.containerRef}>
-				{this.props.mode !== 'fixed' ?
+				ref={this.state.containerRef}
+			>
+				{this.props.mode !== 'fixed' ? (
 					<div className="first">
 						<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
-						{this.props.currentVisible && this.props.goToCurrentPL ?
+						{this.props.currentVisible && this.props.goToCurrentPL ? (
 							<p className="next" tabIndex={0} onKeyDown={this.props.goToCurrentPL}>
-								{i18next.t('PUBLIC_HOMEPAGE.NEXT')}<i className="fas fa-fw fa-chevron-right" />
-							</p> : null
-						}
-					</div> : null
-				}
-				{this.props.mode === 'fixed' ?
+								{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
+								<i className="fas fa-fw fa-chevron-right" />
+							</p>
+						) : null}
+					</div>
+				) : null}
+				{this.props.mode === 'fixed' ? (
 					<div className="title inline">
 						<div>
 							<h3 className="song">{this.state.title}</h3>
 							{this.state.karaVersions}
 						</div>
 						<h4 className="series">{this.state.subtitle}</h4>
-					</div> :
+					</div>
+				) : (
 					<div className="title">
 						<div>
 							<h3 className="song">{this.state.title}</h3>
 							{this.state.karaVersions}
 						</div>
 						<h4 className="series">{this.state.subtitle}</h4>
-					</div>}
-				{this.props.mode === 'homepage' && this.state.length !== 0 && this.context.globalState.auth.data.role !== 'guest' ?
+					</div>
+				)}
+				{this.props.mode === 'homepage' &&
+				this.state.length !== 0 &&
+				this.context.globalState.auth.data.role !== 'guest' ? (
 					<button className="btn favorites" onClick={this.toggleFavorite}>
 						<i className="fas fa-fw fa-star" />
-						{this.state.favorites.has(this.state.kid) ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}
-					</button> : null}
-				{this.state.length !== 0 ?
+						{this.state.favorites.has(this.state.kid)
+							? i18next.t('KARA_MENU.FAV_DEL')
+							: i18next.t('KARA_MENU.FAV')}
+					</button>
+				) : null}
+				{this.state.length !== 0 ? (
 					<React.Fragment>
-						{this.props.mode !== 'fixed' ?
+						{this.props.mode !== 'fixed' ? (
 							<div className="timers">
 								<div>{secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
 								<div>{secondsTimeSpanToHMS(this.state.length, 'mm:ss')}</div>
-							</div> : null}
+							</div>
+						) : null}
 						<div className="progress-bar-container" ref={this.state.ref}>
 							<div className="progress-bar" style={{ width: this.state.width }} />
 						</div>
-					</React.Fragment> : null}
-			</div>);
+					</React.Fragment>
+				) : null}
+			</div>
+		);
 	}
 }
 

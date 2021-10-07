@@ -7,12 +7,14 @@
 		background-color: $mugen-playlist-odd;
 		transition: background-color 250ms ease;
 		cursor: pointer;
-		&:hover, &:focus {
+		&:hover,
+		&:focus {
 			background-color: lighten($mugen-playlist-odd, 5);
 		}
 		&.even {
 			background-color: $mugen-playlist-even;
-			&:hover, &:focus {
+			&:hover,
+			&:focus {
 				background-color: lighten($mugen-playlist-even, 5);
 			}
 		}

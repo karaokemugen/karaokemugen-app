@@ -33,15 +33,19 @@ function AdminPage(props: IProps) {
 	const [playlistList, setPlaylistList] = useState([]);
 	const [tags, setTags] = useState([]);
 
-
-	const operatorNotificationInfo = (data: { code: string, data: string }) => displayMessage('info', i18next.t(data.code, { data: data }));
-	const operatorNotificationError = (data: { code: string, data: string }) => displayMessage('error', i18next.t(data.code, { data: data }));
-	const operatorNotificationWarning = (data: { code: string, data: string }) => displayMessage('warning', i18next.t(data.code, { data: data }));
+	const operatorNotificationInfo = (data: { code: string; data: string }) =>
+		displayMessage('info', i18next.t(data.code, { data: data }));
+	const operatorNotificationError = (data: { code: string; data: string }) =>
+		displayMessage('error', i18next.t(data.code, { data: data }));
+	const operatorNotificationWarning = (data: { code: string; data: string }) =>
+		displayMessage('warning', i18next.t(data.code, { data: data }));
 
 	const playlistInfoUpdated = async (plaid: string) => {
 		await getPlaylistList();
-		if (context.globalState.frontendContext.playlistInfoLeft.plaid === plaid) setPlaylistInfoLeft(context.globalDispatch, plaid);
-		if (context.globalState.frontendContext.playlistInfoRight.plaid === plaid) setPlaylistInfoRight(context.globalDispatch, plaid);
+		if (context.globalState.frontendContext.playlistInfoLeft.plaid === plaid)
+			setPlaylistInfoLeft(context.globalDispatch, plaid);
+		if (context.globalState.frontendContext.playlistInfoRight.plaid === plaid)
+			setPlaylistInfoRight(context.globalDispatch, plaid);
 	};
 
 	const toggleSearchMenuLeft = () => {
@@ -72,26 +76,27 @@ function AdminPage(props: IProps) {
 		} else if (namecommand === 'goTo') {
 			data = {
 				command: namecommand,
-				options: 0
+				options: 0,
 			};
 		} else {
 			data = {
-				command: namecommand
+				command: namecommand,
 			};
 		}
-		commandBackend('sendPlayerCommand', data).catch(() => { });
+		commandBackend('sendPlayerCommand', data).catch(() => {});
 	};
 
 	const parseTags = async () => {
 		try {
 			const response = await commandBackend('getTags');
-			return response.content.filter((val: DBTag) => val.karacount !== null)
+			return response.content
+				.filter((val: DBTag) => val.karacount !== null)
 				.map((val: DBTag) => {
 					return {
 						value: val.tid,
 						label: getTagInLocale(context.globalState.settings.data, val as unknown as DBKaraTag),
 						type: val.types,
-						karacount: val.karacount
+						karacount: val.karacount,
 					};
 				});
 		} catch (e) {
@@ -105,7 +110,6 @@ function AdminPage(props: IProps) {
 			return { value: val.year, label: val.year, type: [0], karacount: [{ type: 0, count: val.karacount }] };
 		});
 	};
-
 
 	const addTags = async () => {
 		try {
@@ -123,17 +127,17 @@ function AdminPage(props: IProps) {
 			kmStats = await commandBackend('getStats');
 		} catch (e) {
 			kmStats = {
-				karas: 0
+				karas: 0,
 			};
 		}
 		playlistList.push({
 			plaid: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94',
-			name: i18next.t('PLAYLISTS.FAVORITES')
+			name: i18next.t('PLAYLISTS.FAVORITES'),
 		});
 		playlistList.push({
 			plaid: '524de79d-10b2-49dc-90b1-597626d0cee8',
 			name: i18next.t('PLAYLISTS.LIBRARY'),
-			karacount: kmStats.karas
+			karacount: kmStats.karas,
 		});
 		setPlaylistList(playlistList);
 	};
@@ -141,10 +145,20 @@ function AdminPage(props: IProps) {
 	const toggleKaraDetail = async (kara: KaraElement, idPlaylist: string) => {
 		const reason = [];
 		if (kara.criterias) {
-			kara.criterias.map(async criteria => reason.push(await decodeCriteriaReason(context.globalState.settings.data, criteria)));
+			kara.criterias.map(async (criteria) =>
+				reason.push(await decodeCriteriaReason(context.globalState.settings.data, criteria))
+			);
 		}
-		showModal(context.globalDispatch, <KaraDetail kid={kara.kid} playlistcontentId={kara.plcid} scope='admin'
-			plaid={idPlaylist} criteriaLabel={reason.join(', ')} />);
+		showModal(
+			context.globalDispatch,
+			<KaraDetail
+				kid={kara.kid}
+				playlistcontentId={kara.plcid}
+				scope="admin"
+				plaid={idPlaylist}
+				criteriaLabel={reason.join(', ')}
+			/>
+		);
 	};
 
 	useEffect(() => {
@@ -163,7 +177,6 @@ function AdminPage(props: IProps) {
 			getSocket().off('operatorNotificationInfo', operatorNotificationInfo);
 			getSocket().off('operatorNotificationError', operatorNotificationError);
 			getSocket().off('operatorNotificationWarning', operatorNotificationWarning);
-
 		};
 	}, []);
 
@@ -174,39 +187,41 @@ function AdminPage(props: IProps) {
 					powerOff={props.powerOff}
 					adminMessage={adminMessage}
 					putPlayerCommando={putPlayerCommando}
-					currentPlaylist={playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
+					currentPlaylist={playlistList.filter((playlistElem) => playlistElem.flag_current)[0]}
 				/>
 				<ProgressBar />
 				<KmAppBodyDecorator mode="admin" extraClass="fillSpace">
-					{playlistList.length > 0 ?
+					{playlistList.length > 0 ? (
 						<Switch>
 							<Route path="/admin/options" component={Options} />
-							<Route path="/admin" render={() =>
-								<PlaylistMainDecorator>
-									<Playlist
-										scope='admin'
-										side={'left'}
-										tags={tags}
-										toggleSearchMenu={toggleSearchMenuLeft}
-										searchMenuOpen={searchMenuOpenLeft}
-										playlistList={playlistList}
-										toggleKaraDetail={toggleKaraDetail}
-									/>
-									<Playlist
-										scope='admin'
-										side={'right'}
-										tags={tags}
-										toggleSearchMenu={toggleSearchMenuRight}
-										searchMenuOpen={searchMenuOpenRight}
-										playlistList={playlistList}
-										toggleKaraDetail={toggleKaraDetail}
-									/>
-								</PlaylistMainDecorator>
-							} />
-						</Switch> : null
-					}
+							<Route
+								path="/admin"
+								render={() => (
+									<PlaylistMainDecorator>
+										<Playlist
+											scope="admin"
+											side={'left'}
+											tags={tags}
+											toggleSearchMenu={toggleSearchMenuLeft}
+											searchMenuOpen={searchMenuOpenLeft}
+											playlistList={playlistList}
+											toggleKaraDetail={toggleKaraDetail}
+										/>
+										<Playlist
+											scope="admin"
+											side={'right'}
+											tags={tags}
+											toggleSearchMenu={toggleSearchMenuRight}
+											searchMenuOpen={searchMenuOpenRight}
+											playlistList={playlistList}
+											toggleKaraDetail={toggleKaraDetail}
+										/>
+									</PlaylistMainDecorator>
+								)}
+							/>
+						</Switch>
+					) : null}
 				</KmAppBodyDecorator>
-
 			</KmAppWrapperDecorator>
 		</>
 	);

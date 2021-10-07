@@ -41,7 +41,11 @@ function WelcomePage() {
 			commandBackend('getDownloads', undefined, false, 300000),
 			commandBackend('getDownloadQueueStatus', undefined, false, 300000),
 		]);
-		if (downloadQueueStatus === 'stopped' && downloadQueue.length > 0 && !sessionStorage.getItem('dlQueueRestart')) {
+		if (
+			downloadQueueStatus === 'stopped' &&
+			downloadQueue.length > 0 &&
+			!sessionStorage.getItem('dlQueueRestart')
+		) {
 			showModal(context.globalDispatch, <RestartDownloadsModal />);
 		}
 	};
@@ -57,9 +61,7 @@ function WelcomePage() {
 	};
 
 	const editActiveSession = async (value: string) => {
-		const sessionsEdit = sessions.filter(
-			session => session.name === value
-		);
+		const sessionsEdit = sessions.filter((session) => session.name === value);
 		let sessionId;
 		if (sessionsEdit.length === 0) {
 			const res = await commandBackend('createSession', { name: value });
@@ -82,10 +84,10 @@ function WelcomePage() {
 	const getNewsFeed = async () => {
 		try {
 			const data: Feed[] = await commandBackend('getNewsFeed', undefined, undefined, 300000);
-			const base = data.find(d => d.name === 'git_base');
-			const appli = data.find(d => d.name === 'git_app');
-			const mast = data.find(d => d.name === 'mastodon');
-			const system = data.find(d => d.name === 'system');
+			const base = data.find((d) => d.name === 'git_base');
+			const appli = data.find((d) => d.name === 'git_app');
+			const mast = data.find((d) => d.name === 'mastodon');
+			const system = data.find((d) => d.name === 'system');
 			const news: News[] = [];
 			if (base?.body && appli?.body) {
 				base.body = JSON.parse(base.body);
@@ -94,9 +96,7 @@ function WelcomePage() {
 					{
 						html: base.body.feed.entry[0].content._text,
 						date: base.body.feed.entry[0].updated._text,
-						dateStr: new Date(
-							base.body.feed.entry[0].updated._text
-						).toLocaleDateString(),
+						dateStr: new Date(base.body.feed.entry[0].updated._text).toLocaleDateString(),
 						title:
 							i18next.t('WELCOME_PAGE.BASE_UPDATE') +
 							' : ' +
@@ -105,14 +105,12 @@ function WelcomePage() {
 								? ' - ' + base.body.feed.entry[0].summary._text
 								: ''),
 						link: base.body.feed.entry[0].link._attributes.href,
-						type: 'base'
+						type: 'base',
 					},
 					{
 						html: appli.body.feed.entry[0].content._text,
 						date: appli.body.feed.entry[0].updated._text,
-						dateStr: new Date(
-							appli.body.feed.entry[0].updated._text
-						).toLocaleDateString(),
+						dateStr: new Date(appli.body.feed.entry[0].updated._text).toLocaleDateString(),
 						title:
 							i18next.t('WELCOME_PAGE.APP_UPDATE') +
 							' : ' +
@@ -121,26 +119,21 @@ function WelcomePage() {
 								? ' - ' + appli.body.feed.entry[0].summary._text
 								: ''),
 						link: appli.body.feed.entry[0].link._attributes.href,
-						type: 'app'
+						type: 'app',
 					}
 				);
 			}
 			if (mast?.body) {
 				mast.body = JSON.parse(mast.body);
-				const max =
-					mast.body.rss.channel.item.length > 3
-						? 3
-						: mast.body.rss.channel.item.length;
+				const max = mast.body.rss.channel.item.length > 3 ? 3 : mast.body.rss.channel.item.length;
 				for (let i = 0; i < max; i++) {
 					news.push({
 						html: mast.body.rss.channel.item[i].description._text,
 						date: mast.body.rss.channel.item[i].pubDate._text,
-						dateStr: new Date(
-							mast.body.rss.channel.item[i].pubDate._text
-						).toLocaleDateString(),
+						dateStr: new Date(mast.body.rss.channel.item[i].pubDate._text).toLocaleDateString(),
 						title: i18next.t('WELCOME_PAGE.MASTODON_UPDATE'),
 						link: mast.body.rss.channel.item[i].link._text,
-						type: 'mast'
+						type: 'mast',
 					});
 				}
 			}
@@ -167,14 +160,16 @@ function WelcomePage() {
 	const displayModal = async () => {
 		let migrationsToDo;
 		try {
-			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0;
+			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter((res) => !res.flag_done).length > 0;
 		} catch (e) {
 			migrationsToDo = false;
 		}
 		if (migrationsToDo) {
 			window.location.assign('/migrate');
-		} else if (context?.globalState.settings.data.config?.Online.Stats === undefined
-			|| context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
+		} else if (
+			context?.globalState.settings.data.config?.Online.Stats === undefined ||
+			context?.globalState.settings.data.config?.Online.ErrorTracking === undefined
+		) {
 			showModal(context.globalDispatch, <OnlineStatsModal />);
 		} else {
 			getDownloadQueue();
@@ -188,12 +183,13 @@ function WelcomePage() {
 		getSessions();
 		getRepositories();
 		getStats();
-		getSocket().on('statsRefresh', getStats); return () => {
+		getSocket().on('statsRefresh', getStats);
+		return () => {
 			getSocket().off('statsRefresh', getStats);
 		};
 	}, []);
 
-	const sessionsList = sessions.map(session => {
+	const sessionsList = sessions.map((session) => {
 		return { label: session.name, value: session.name };
 	});
 	return (
@@ -206,18 +202,34 @@ function WelcomePage() {
 				<div className="aside">
 					<nav>
 						<ul>
-							<li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-fw fa-pencil-alt" />{i18next.t('WELCOME_PAGE.CONTACT')}</a></li>
-							<li><a href="http://mugen.karaokes.moe/"><i className="fas fa-fw fa-link" />{i18next.t('WELCOME_PAGE.SITE')}</a></li>
-							<li><a href="#" onClick={toggleProfileModal}>
-								<i className="fas fa-fw fa-user" /><span>{context.globalState.settings.data.user.nickname}</span>
-							</a></li>
+							<li>
+								<a href="http://mugen.karaokes.moe/contact.html">
+									<i className="fas fa-fw fa-pencil-alt" />
+									{i18next.t('WELCOME_PAGE.CONTACT')}
+								</a>
+							</li>
+							<li>
+								<a href="http://mugen.karaokes.moe/">
+									<i className="fas fa-fw fa-link" />
+									{i18next.t('WELCOME_PAGE.SITE')}
+								</a>
+							</li>
+							<li>
+								<a href="#" onClick={toggleProfileModal}>
+									<i className="fas fa-fw fa-user" />
+									<span>{context.globalState.settings.data.user.nickname}</span>
+								</a>
+							</li>
 							<li>
 								<a
 									href="#"
 									title={i18next.t('LOGOUT')}
 									className="logout"
 									onClick={() => logout(context.globalDispatch)}
-								><i className="fas fa-fw fa-sign-out-alt" /><span>{i18next.t('LOGOUT')}</span></a>
+								>
+									<i className="fas fa-fw fa-sign-out-alt" />
+									<span>{i18next.t('LOGOUT')}</span>
+								</a>
 							</li>
 						</ul>
 					</nav>
@@ -234,7 +246,10 @@ function WelcomePage() {
 									/>
 								</article>
 								<article>
-									<a href={`/system/sessions/${activeSession?.seid}`} title={i18next.t('WELCOME_PAGE.EDIT_SESSION')} >
+									<a
+										href={`/system/sessions/${activeSession?.seid}`}
+										title={i18next.t('WELCOME_PAGE.EDIT_SESSION')}
+									>
 										<i className="fas fa-fw fa-edit" />
 									</a>
 								</article>
@@ -244,50 +259,69 @@ function WelcomePage() {
 				</div>
 
 				<main className="main">
-
 					<section className="tiles-panel">
-						{
-							context?.globalState.settings.data.user?.flag_tutorial_done
-								? <article className="tile-manage">
-									<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-										<i className="fas fa-fw fa-list" /><span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
-									</button>
-								</article>
-								: <article className="tile-tutorial">
-									<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-										<i className="fas fa-fw fa-hand-point-right" /><span>{i18next.t('WELCOME_PAGE.GETSTARTED')}</span>
-									</button>
-								</article>
-						}
+						{context?.globalState.settings.data.user?.flag_tutorial_done ? (
+							<article className="tile-manage">
+								<button
+									type="button"
+									onClick={() => window.location.assign('/admin' + window.location.search)}
+								>
+									<i className="fas fa-fw fa-list" />
+									<span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
+								</button>
+							</article>
+						) : (
+							<article className="tile-tutorial">
+								<button
+									type="button"
+									onClick={() => window.location.assign('/admin' + window.location.search)}
+								>
+									<i className="fas fa-fw fa-hand-point-right" />
+									<span>{i18next.t('WELCOME_PAGE.GETSTARTED')}</span>
+								</button>
+							</article>
+						)}
 						<article className="tile-system">
 							<button type="button" onClick={() => window.location.assign('/system')}>
-								<i className="fas fa-fw fa-cog" /><span>{i18next.t('WELCOME_PAGE.ADMINISTRATION')}</span>
+								<i className="fas fa-fw fa-cog" />
+								<span>{i18next.t('WELCOME_PAGE.ADMINISTRATION')}</span>
 							</button>
 						</article>
 						<article className="tile-system">
-							<button type="button" onClick={() => window.location.assign('/public' + window.location.search)}>
-								<i className="fas fa-fw fa-user" /><span>{i18next.t('WELCOME_PAGE.PUBLIC')}</span>
+							<button
+								type="button"
+								onClick={() => window.location.assign('/public' + window.location.search)}
+							>
+								<i className="fas fa-fw fa-user" />
+								<span>{i18next.t('WELCOME_PAGE.PUBLIC')}</span>
 							</button>
 						</article>
 						<article className="tile-help">
-							<button type="button" onClick={() => window.location.assign('https://mugen.karaokes.moe/docs/')}>
-								<i className="fas fa-fw fa-question-circle" /><span>{i18next.t('WELCOME_PAGE.HELP')}</span>
+							<button
+								type="button"
+								onClick={() => window.location.assign('https://mugen.karaokes.moe/docs/')}
+							>
+								<i className="fas fa-fw fa-question-circle" />
+								<span>{i18next.t('WELCOME_PAGE.HELP')}</span>
 							</button>
 						</article>
 						<article className="tile-download">
 							<button type="button" onClick={() => window.location.assign('/system/karas/download')}>
-								<i className="fas fa-fw fa-download" /><span>{i18next.t('WELCOME_PAGE.DOWNLOAD')}</span>
+								<i className="fas fa-fw fa-download" />
+								<span>{i18next.t('WELCOME_PAGE.DOWNLOAD')}</span>
 							</button>
 						</article>
 						<article className="tile-logs">
 							<button type="button" onClick={() => window.location.assign('/system/log')}>
-								<i className="fas fa-fw fa-terminal" /><span>{i18next.t('WELCOME_PAGE.LOGS')}</span>
+								<i className="fas fa-fw fa-terminal" />
+								<span>{i18next.t('WELCOME_PAGE.LOGS')}</span>
 							</button>
 						</article>
 						<article className="tile-stats">
 							<blockquote>
 								<label>
-									<i className="fas fa-fw fa-chart-line" />{i18next.t('WELCOME_PAGE.STATS')}
+									<i className="fas fa-fw fa-chart-line" />
+									{i18next.t('WELCOME_PAGE.STATS')}
 								</label>
 								<ul>
 									<li onClick={() => window.location.assign('/system/karas')}>
@@ -308,14 +342,24 @@ function WelcomePage() {
 						<article className="tile-repositories">
 							<blockquote>
 								<button type="button" onClick={() => window.location.assign('/system/repositories')}>
-									<i className="fas fa-fw fa-network-wired" />{i18next.t('WELCOME_PAGE.REPOSITORY')}
+									<i className="fas fa-fw fa-network-wired" />
+									{i18next.t('WELCOME_PAGE.REPOSITORY')}
 								</button>
 								<ul>
-									{repositories.map(repository => {
+									{repositories.map((repository) => {
 										return (
-											<li key={repository.Name} className={repository.Enabled ? '' : 'disabled'}
-												onClick={() => window.location.assign(`/system/repositories/${repository.Name}`)}>
-												<i className={`fas fa-fw ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
+											<li
+												key={repository.Name}
+												className={repository.Enabled ? '' : 'disabled'}
+												onClick={() =>
+													window.location.assign(`/system/repositories/${repository.Name}`)
+												}
+											>
+												<i
+													className={`fas fa-fw ${
+														repository.Online ? ' fa-globe' : 'fa-laptop'
+													}`}
+												/>
 												<span>{repository.Name}</span>
 											</li>
 										);
@@ -330,16 +374,12 @@ function WelcomePage() {
 							<p>{catchphrase}</p>
 						</header>
 						<div>
-							{news.map(article => {
-								return (
-									<WelcomePageArticle key={article.date} article={article} />
-								);
+							{news.map((article) => {
+								return <WelcomePageArticle key={article.date} article={article} />;
 							})}
 						</div>
 					</section>
-
 				</main>
-
 			</div>
 		</div>
 	);

@@ -67,9 +67,9 @@ build-react:
     expire_in: 8 hours
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
-    - kmfrontend/build/
-    - dist/
-    - zipWorker/
+      - kmfrontend/build/
+      - dist/
+      - zipWorker/
   script:
     - yarn build
     - yarn installkmfrontend
@@ -145,7 +145,7 @@ pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
   tags:
-# This must be run on a linux-only host. Weirdly this fails badly on Windows hosts.
+    # This must be run on a linux-only host. Weirdly this fails badly on Windows hosts.
     - linux
     - amd64
   cache:
@@ -211,7 +211,7 @@ pkg_mac:
     - build-react
     - test
   variables:
-    CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    CSC_IDENTITY_AUTO_DISCOVERY: 'false'
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
   script:

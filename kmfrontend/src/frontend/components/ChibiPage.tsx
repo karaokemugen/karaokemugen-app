@@ -49,14 +49,14 @@ function ChibiPage() {
 		} else if (namecommand === 'goTo') {
 			data = {
 				command: namecommand,
-				options: 0
+				options: 0,
 			};
 		} else {
 			data = {
-				command: namecommand
+				command: namecommand,
 			};
 		}
-		commandBackend('sendPlayerCommand', data).catch(() => { });
+		commandBackend('sendPlayerCommand', data).catch(() => {});
 	};
 
 	const electronCmd = (event: any) => {
@@ -71,8 +71,15 @@ function ChibiPage() {
 	};
 
 	const displayChibiPage = async () => {
-		if (new URL(window.location.toString()).searchParams.has('admpwd') && !context.globalState.auth.isAuthenticated) {
-			await login('admin', new URL(window.location.toString()).searchParams.get('admpwd'), context.globalDispatch);
+		if (
+			new URL(window.location.toString()).searchParams.has('admpwd') &&
+			!context.globalState.auth.isAuthenticated
+		) {
+			await login(
+				'admin',
+				new URL(window.location.toString()).searchParams.get('admpwd'),
+				context.globalDispatch
+			);
 		}
 		if (context.globalState.auth.isAuthenticated) {
 			getSocket().on('playerStatus', playerUpdate);
@@ -111,7 +118,9 @@ function ChibiPage() {
 						<i className="fas fa-fw fa-external-link-alt" />
 					</button>
 					<button
-						className={`btn${context.globalState.settings.data.config.GUI.ChibiPlayer.AlwaysOnTop ? ' btn-primary' : ''}`}
+						className={`btn${
+							context.globalState.settings.data.config.GUI.ChibiPlayer.AlwaysOnTop ? ' btn-primary' : ''
+						}`}
 						title={i18next.t('CHIBI.ONTOP')}
 						data-namecommand="setChibiPlayerAlwaysOnTop"
 						onClick={electronCmd}
@@ -129,28 +138,21 @@ function ChibiPage() {
 				</div>
 				<KmAppHeaderDecorator mode="admin">
 					<div className="header-group controls">
-						<button
-							type="button"
-							title={i18next.t('MUTE_UNMUTE')}
-							className="btn btn-dark volumeButton"
-						>
-							<div id="mute"
-								data-namecommand={(statusPlayer?.volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
+						<button type="button" title={i18next.t('MUTE_UNMUTE')} className="btn btn-dark volumeButton">
+							<div
+								id="mute"
+								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
 								onClick={putPlayerCommando}
 							>
-								{
-									statusPlayer?.volume === 0 || statusPlayer?.mute
-										? <i className="fas fa-volume-mute"></i>
-										: (
-											statusPlayer?.volume > 66
-												? <i className="fas fa-volume-up"></i>
-												: (
-													statusPlayer?.volume > 33
-														? <i className="fas fa-volume-down"></i>
-														: <i className="fas fa-volume-off"></i>
-												)
-										)
-								}
+								{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
+									<i className="fas fa-volume-mute"></i>
+								) : statusPlayer?.volume > 66 ? (
+									<i className="fas fa-volume-up"></i>
+								) : statusPlayer?.volume > 33 ? (
+									<i className="fas fa-volume-down"></i>
+								) : (
+									<i className="fas fa-volume-off"></i>
+								)}
 							</div>
 							<input
 								title={i18next.t('VOLUME_LEVEL')}
@@ -165,12 +167,15 @@ function ChibiPage() {
 						<AdminButtons
 							putPlayerCommando={putPlayerCommando}
 							statusPlayer={statusPlayer}
-							currentPlaylist={playlistList.find(playlistElem => playlistElem.flag_current)} />
+							currentPlaylist={playlistList.find((playlistElem) => playlistElem.flag_current)}
+						/>
 						<button
 							title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 							id="showSubs"
 							data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
-							className={`btn btn-dark subtitleButton ${statusPlayer?.showSubs ? 'showSubs' : 'hideSubs'}`}
+							className={`btn btn-dark subtitleButton ${
+								statusPlayer?.showSubs ? 'showSubs' : 'hideSubs'
+							}`}
 							onClick={putPlayerCommando}
 						>
 							<span className="fa-stack">
@@ -188,5 +193,3 @@ function ChibiPage() {
 }
 
 export default ChibiPage;
-
-

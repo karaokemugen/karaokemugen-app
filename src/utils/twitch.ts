@@ -1,6 +1,6 @@
 // Node modules
 import i18next from 'i18next';
-import tmi, { ChatUserstate,Client } from 'tmi.js';
+import tmi, { ChatUserstate, Client } from 'tmi.js';
 
 import { getSongTitle } from '../lib/services/kara';
 import { getConfig } from '../lib/utils/config';
@@ -28,30 +28,30 @@ export async function initTwitch() {
 		const opts = {
 			identity: {
 				username: 'KaraokeMugen',
-				password: conf.Karaoke.StreamerMode.Twitch.OAuth
+				password: conf.Karaoke.StreamerMode.Twitch.OAuth,
 			},
-			channels: [conf.Karaoke.StreamerMode.Twitch.Channel]
+			channels: [conf.Karaoke.StreamerMode.Twitch.Channel],
 		};
 		client = tmi.client(opts);
 		await client.connect();
 		listenChat(client);
-		logger.debug('Twitch initialized', {service: 'Twitch'});
-	} catch(err) {
-		logger.error('Unable to login to chat', {service: 'Twitch', obj: err});
+		logger.debug('Twitch initialized', { service: 'Twitch' });
+	} catch (err) {
+		logger.error('Unable to login to chat', { service: 'Twitch', obj: err });
 	} finally {
 		profile('initTwitch');
 	}
-
 }
 
 /** Simple function to say something to Twitch chat */
 export async function sayTwitch(message: string) {
-	if (client) try {
-		await client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
-	} catch(err) {
-		logger.warn('Unable to say to channel', {service: 'Twitch', obj: err});
-		throw err;
-	}
+	if (client)
+		try {
+			await client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
+		} catch (err) {
+			logger.warn('Unable to say to channel', { service: 'Twitch', obj: err });
+			throw err;
+		}
 }
 
 /** Vote Events are listened here and reacted upon */
@@ -65,14 +65,21 @@ function listenChat(chat: Client) {
 				try {
 					addPollVoteIndex(+choice, context.username);
 				} catch (err) {
-					if (err === 'POLL_VOTE_ERROR') chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.INVALID_CHOICE')}`);
-					if (err === 'POLL_NOT_ACTIVE') chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.NO_ACTIVE_POLL')}`);
-					if (err === 'POLL_USER_ALREADY_VOTED') chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.YOU_ALREADY_VOTED')}`);
+					if (err === 'POLL_VOTE_ERROR')
+						chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.INVALID_CHOICE')}`);
+					if (err === 'POLL_NOT_ACTIVE')
+						chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.NO_ACTIVE_POLL')}`);
+					if (err === 'POLL_USER_ALREADY_VOTED')
+						chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.YOU_ALREADY_VOTED')}`);
 				}
 			}
 		} else if (msg === '!song') {
 			const song = await getCurrentSong();
-			const str = `@${context.username} : ${getSongTitle(song)} - ${getSongSeriesSingers(song)} (${/\./.test(song.repository) ? `https://${song.repository}/base/kara/${song.kid}`:`${getState().osURL}/public/karaoke/${song.kid}`})`;
+			const str = `@${context.username} : ${getSongTitle(song)} - ${getSongSeriesSingers(song)} (${
+				/\./.test(song.repository)
+					? `https://${song.repository}/base/kara/${song.kid}`
+					: `${getState().osURL}/public/karaoke/${song.kid}`
+			})`;
 			chat.say(target, str);
 		}
 	});
@@ -81,11 +88,12 @@ function listenChat(chat: Client) {
 /** Stops Twitch chat and disconnects */
 export async function stopTwitch() {
 	// Let's properly stop Twitch. If it fails, it's not a big issue
-	if (client) try {
-		await client.disconnect();
-	} catch(err) {
-		//Non fatal.
-	} finally {
-		client = null;
-	}
+	if (client)
+		try {
+			await client.disconnect();
+		} catch (err) {
+			//Non fatal.
+		} finally {
+			client = null;
+		}
 }

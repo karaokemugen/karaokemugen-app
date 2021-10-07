@@ -21,11 +21,11 @@
 		width: 100%;
 		background-color: lighten($mugen-background, 10);
 		padding: 1em;
-		margin: 0 .5em;
+		margin: 0 0.5em;
 		border-radius: 15px;
 		text-align: center;
 		> div {
-			transition: font-size,color,margin ease 200ms,200ms,200ms;
+			transition: font-size, color, margin ease 200ms, 200ms, 200ms;
 			> span {
 				&.singing {
 					color: scale-color(skyblue, $saturation: 100%, $lightness: -15%);

@@ -5,26 +5,26 @@
 
 	grid-template-columns: 200px auto;
 	grid-template-areas:
-				"logo title aside"
-				"other main main";
+		'logo title aside'
+		'other main main';
 
 	@media (max-width: $mugen-breakpoint-large) {
-		grid-template-columns: auto 200px ;
+		grid-template-columns: auto 200px;
 		grid-template-rows: auto auto 100%;
 		grid-template-areas:
-					"aside logo"
-					"title logo"
-					"main main";
+			'aside logo'
+			'title logo'
+			'main main';
 	}
 
 	@media (max-width: $mugen-breakpoint-small) {
 		grid-template-columns: auto;
 		grid-template-rows: auto;
 		grid-template-areas:
-					"logo"
-					"aside"
-					"title"
-					"main";
+			'logo'
+			'aside'
+			'title'
+			'main';
 	}
 
 	.limited-width {
@@ -36,12 +36,12 @@
 
 		h2 {
 			font-size: 2.5em;
-			margin-bottom: .25em;
+			margin-bottom: 0.25em;
 		}
 
 		h3 {
 			font-size: 1.5em;
-			margin-bottom: .5em;
+			margin-bottom: 0.5em;
 		}
 
 		p {
@@ -52,7 +52,7 @@
 			margin: 1em 0;
 			list-style: circle;
 			li {
-				margin-bottom: .5em;
+				margin-bottom: 0.5em;
 			}
 		}
 	}
@@ -61,8 +61,8 @@
 		cursor: pointer;
 		color: white;
 		border: 2px solid white;
-		border-radius: .5em;
-		padding: .5em 1em;
+		border-radius: 0.5em;
+		padding: 0.5em 1em;
 		text-transform: uppercase;
 		font-weight: bold;
 		background: none;

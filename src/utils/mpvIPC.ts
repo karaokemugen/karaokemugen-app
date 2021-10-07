@@ -5,14 +5,14 @@ import { Socket } from 'net';
 import { MpvCommand } from '../types/mpvIPC';
 
 class Mpv extends EventEmitter {
-	binary: string
-	socketlink: string
-	args: string[]
-	socket: Socket
-	isRunning: boolean
-	observedProperties: string[]
-	program: ChildProcess
-	lastCommandId: number
+	binary: string;
+	socketlink: string;
+	args: string[];
+	socket: Socket;
+	isRunning: boolean;
+	observedProperties: string[];
+	program: ChildProcess;
+	lastCommandId: number;
 
 	constructor(binary: string, socket: string, args: string[]) {
 		super();
@@ -27,22 +27,25 @@ class Mpv extends EventEmitter {
 	}
 
 	private genCommand(): [string, string[]] {
-		return [this.binary, ['--idle', '--msg-level=all=no,ipc=v', `--input-ipc-server=${this.socketlink}`, ...this.args]];
+		return [
+			this.binary,
+			['--idle', '--msg-level=all=no,ipc=v', `--input-ipc-server=${this.socketlink}`, ...this.args],
+		];
 	}
 
 	private launchMpv() {
 		return new Promise<void>((resolve, reject) => {
 			setTimeout(reject, 10000, new Error('Timeout')); // Set timeout to avoid hangs
 			const command = this.genCommand();
-			const program = spawn(...command, {stdio: ['ignore', 'pipe', 'pipe']});
-			program.once('error', err => {
+			const program = spawn(...command, { stdio: ['ignore', 'pipe', 'pipe'] });
+			program.once('error', (err) => {
 				reject(err);
 			});
-			program.once('exit', code => {
+			program.once('exit', (code) => {
 				if (code !== 0) reject(new Error(`Mpv process exited with ${code}`));
 				this.destroyConnection(code !== 0);
 			});
-			program.stdout.on('data', data => {
+			program.stdout.on('data', (data) => {
 				const str = data.toString();
 				if (str.match(/Listening to IPC (socket|pipe)/)) {
 					program.stdout.removeAllListeners();
@@ -52,9 +55,9 @@ class Mpv extends EventEmitter {
 					resolve();
 				}
 			});
-			program.stderr.on('data', data => {
+			program.stderr.on('data', (data) => {
 				const str = data.toString();
-				if (str.match(/Could not bind IPC (socket|pipe)/)){
+				if (str.match(/Could not bind IPC (socket|pipe)/)) {
 					program.stdout.removeAllListeners();
 					program.stderr.removeAllListeners();
 					program.stdout.destroy();
@@ -78,12 +81,12 @@ class Mpv extends EventEmitter {
 	private setupEvents() {
 		// Connected hook
 		this.socket.once('connect', async () => {
-			await this.ishukan({command: ['disable_event', 'all']});
-			await this.ishukan({command: ['enable_event', 'client-message']});
+			await this.ishukan({ command: ['disable_event', 'all'] });
+			await this.ishukan({ command: ['enable_event', 'client-message'] });
 		});
 		// Observe hook
 		this.socket.on('data', (data: string) => {
-			data.split('\n').forEach(line => {
+			data.split('\n').forEach((line) => {
 				if (line.length > 0) {
 					const payload = JSON.parse(line);
 					if (payload?.event) {
@@ -110,10 +113,10 @@ class Mpv extends EventEmitter {
 		// LET'S ishukan COMMUNICATION :) (come on it's funny)
 		return new Promise((resolve, reject) => {
 			const req_id = this.genCommandId();
-			const command_with_id = {...command, request_id: req_id, async: true};
+			const command_with_id = { ...command, request_id: req_id, async: true };
 			const dataHandler = (data: Record<string, any>) => {
 				if (req_id === data.request_id) {
-					data.error === 'success' ? resolve(data):reject(data);
+					data.error === 'success' ? resolve(data) : reject(data);
 					this.off('output', dataHandler);
 					this.socket.off('error', reject);
 				}
@@ -162,7 +165,7 @@ class Mpv extends EventEmitter {
 
 	async stop() {
 		if (!this.isRunning) throw new Error('MPV is not running');
-		await this.ishukan({command: ['quit']}).catch(_err => {
+		await this.ishukan({ command: ['quit'] }).catch((_err) => {
 			// Ow. mpv is probably already dying, just destroy the connection
 		});
 		this.destroyConnection(false);
@@ -170,10 +173,8 @@ class Mpv extends EventEmitter {
 	}
 
 	send(command: MpvCommand) {
-		if (this.isRunning)
-			return this.ishukan(command);
-		else
-			throw new Error('MPV is not running');
+		if (this.isRunning) return this.ishukan(command);
+		else throw new Error('MPV is not running');
 	}
 
 	async observeProperty(property: string) {
@@ -181,7 +182,7 @@ class Mpv extends EventEmitter {
 		if (this.isRunning) {
 			id = this.observedProperties.length;
 			this.observedProperties.push(property);
-			await this.ishukan({command: ['observe_property', id, property]}).catch(err => {
+			await this.ishukan({ command: ['observe_property', id, property] }).catch((err) => {
 				delete this.observedProperties[id];
 				throw err;
 			});
@@ -195,7 +196,7 @@ class Mpv extends EventEmitter {
 		const id = this.observedProperties.indexOf(property);
 		if (id === -1) throw new Error('This property is not observed');
 		if (!this.isRunning) throw new Error('MPV is not running');
-		await this.ishukan({command: ['unobserve_property', id]});
+		await this.ishukan({ command: ['unobserve_property', id] });
 		delete this.observedProperties[id];
 		return;
 	}

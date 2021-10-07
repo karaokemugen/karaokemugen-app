@@ -159,5 +159,5 @@ export const migrations = [
 		version: 20200331095154,
 		name: 'addModifiedAtToTagsAndSeries',
 		md5: 'da270f39fcaf4612517ee996d8dd0ea2',
-	}
+	},
 ];

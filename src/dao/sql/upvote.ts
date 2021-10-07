@@ -22,4 +22,3 @@ SELECT fk_login AS username
 FROM upvote
 WHERE fk_id_plcontent = $1;
 `;
-

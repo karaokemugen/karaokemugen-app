@@ -14,12 +14,7 @@ interface Props {
 	className?: string;
 	scope: 'admin' | 'public';
 	tagType: number;
-	changeView: (
-		view: View,
-		tagType?: number,
-		searchValue?: string,
-		searchCriteria?: 'year' | 'tag'
-	) => void;
+	changeView: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
 }
 
 export default function InlineTag(props: Props) {
@@ -33,7 +28,7 @@ export default function InlineTag(props: Props) {
 	};
 
 	const getTag = async () => {
-		const res = await commandBackend('getTag', {tid: props.tag.tid});
+		const res = await commandBackend('getTag', { tid: props.tag.tid });
 		const count = Array.isArray(res.karacount)
 			? res.karacount.filter((karacount: any) => karacount.type === props.tagType)
 			: [];
@@ -66,24 +61,36 @@ export default function InlineTag(props: Props) {
 
 	return (
 		<div
-			className={`inline-tag ${props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? 'public' : ''}`}
+			className={`inline-tag ${
+				props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2
+					? 'public'
+					: ''
+			}`}
 			ref={node}
 		>
-			<span className={props.className} onClick={() => {
-				if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2) setShowPopup(!showPopup);
-			}}>
+			<span
+				className={props.className}
+				onClick={() => {
+					if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2)
+						setShowPopup(!showPopup);
+				}}
+			>
 				{getTagInLocale(context.globalState.settings.data, props.tag)}
 			</span>
-			{showPopup ? <div className="tag-popup">
-				<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag)}</p>
-				<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', {count: count})}</p>
-				<p className="tag-action">
-					<button className="btn" onClick={goToTagSearch}>
-						<i className="fas fa-fw fa-search" />
-						{i18next.t('INLINE_TAG.SEARCH', {tag: getTagInLocale(context.globalState.settings.data, props.tag)})}
-					</button>
-				</p>
-			</div> : null}
+			{showPopup ? (
+				<div className="tag-popup">
+					<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag)}</p>
+					<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', { count: count })}</p>
+					<p className="tag-action">
+						<button className="btn" onClick={goToTagSearch}>
+							<i className="fas fa-fw fa-search" />
+							{i18next.t('INLINE_TAG.SEARCH', {
+								tag: getTagInLocale(context.globalState.settings.data, props.tag),
+							})}
+						</button>
+					</p>
+				</div>
+			) : null}
 		</div>
 	);
 }

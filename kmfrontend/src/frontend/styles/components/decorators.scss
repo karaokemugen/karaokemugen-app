@@ -15,7 +15,7 @@
 		height: var(--height);
 	}
 
-	&[data-mode="admin"] {
+	&[data-mode='admin'] {
 		.contentDivMobile {
 			flex-basis: 60%;
 		}
@@ -52,7 +52,7 @@
 				> p {
 					img {
 						max-height: 1.75em;
-						margin: .25em .25em 0;
+						margin: 0.25em 0.25em 0;
 					}
 					flex-grow: 1;
 					display: flex;
@@ -71,7 +71,7 @@
 		.KmAppHeaderDecorator {
 			min-height: 4em;
 			margin-bottom: 0.1em;
-			box-shadow: 0 4px 0 0 #0000001a, 0 1px 0 0 #0000001f
+			box-shadow: 0 4px 0 0 #0000001a, 0 1px 0 0 #0000001f;
 		}
 
 		&.hmargin {
@@ -81,7 +81,8 @@
 }
 
 @media screen and (min-width: $mugen-breakpoint-large) {
-	.KmAppWrapperDecorator.single, .KmAppWrapperDecorator.single.hmargin {
+	.KmAppWrapperDecorator.single,
+	.KmAppWrapperDecorator.single.hmargin {
 		width: 75%;
 		margin-left: auto;
 		margin-right: auto;
@@ -97,7 +98,7 @@
 	display: flex;
 	flex-direction: row;
 	> * {
-		order:50; // default element order -> play arround to reorder elements
+		order: 50; // default element order -> play arround to reorder elements
 	}
 
 	justify-content: space-between;
@@ -116,12 +117,12 @@
 	}
 
 	.dropdown {
-		order:99;
+		order: 99;
 		> button {
 			height: 100%;
 		}
 		.dropdown-menu {
-			font-size :   1.5em;
+			font-size: 1.5em;
 			left: initial;
 			right: 0;
 			position: absolute;
@@ -129,15 +130,15 @@
 		}
 	}
 
-	&[data-mode="admin"] {
+	&[data-mode='admin'] {
 		.header-group.switchs {
 			display: flex;
 			flex-direction: column;
 			> * {
-				flex:1;
+				flex: 1;
 			}
 			label {
-				margin: .25em;
+				margin: 0.25em;
 				text-align: end;
 			}
 			div {
@@ -159,7 +160,7 @@
 		}
 
 		.header-group.controls {
-			flex:auto;
+			flex: auto;
 			text-align: center;
 			> .btn {
 				height: 100%;
@@ -167,14 +168,13 @@
 		}
 	}
 
-	&[data-mode="public"] {
-
+	&[data-mode='public'] {
 		.btn.favorites.on {
 			color: orangered;
 		}
 
 		.plSearch {
-			flex:1;
+			flex: 1;
 			margin: 0em;
 			input {
 				font-weight: bold;
@@ -193,7 +193,7 @@
 	position: relative;
 	flex-grow: 1;
 	.panel {
-		border: 3px solid #1E2124;
+		border: 3px solid #1e2124;
 		background-color: #2d2d2f;
 		margin: 0;
 		padding: 0;
@@ -204,7 +204,7 @@
 	}
 
 	.panel-heading {
-		padding: .75em;
+		padding: 0.75em;
 		z-index: 40;
 		background-color: #2d2d2f;
 		position: relative;
@@ -212,8 +212,8 @@
 		&.mobile {
 			z-index: unset;
 			i {
-			margin-left: 1em;
-			margin-right: 1em;
+				margin-left: 1em;
+				margin-right: 1em;
 			}
 		}
 	}

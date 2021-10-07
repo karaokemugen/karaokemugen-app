@@ -9,17 +9,20 @@ import KaraokeOptions from './KaraokeOptions';
 import PlayerOptions from './PlayerOptions';
 
 function Options(props: RouteComponentProps) {
-
 	const saveSettings = (e: any) => {
-		let value = e.target.type === 'checkbox' ? e.target.checked :
-			((Number(e.target.value) || e.target.value === '0') ? Number(e.target.value) : e.target.value);
+		let value =
+			e.target.type === 'checkbox'
+				? e.target.checked
+				: Number(e.target.value) || e.target.value === '0'
+				? Number(e.target.value)
+				: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
 			value = false;
 		}
 		const data = expand(e.target.id, value);
-		commandBackend('updateSettings', { setting: data }).catch(() => { });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	const keyObserverHandler = (e: KeyboardEvent) => {
@@ -39,14 +42,20 @@ function Options(props: RouteComponentProps) {
 		<>
 			<div className="settings-nav">
 				<ul className="nav nav-tabs nav-justified" id="settingsNav">
-					<li className={(props.location.pathname.includes('/options/player') ? 'active' : '')}>
-						<a onClick={() => props.history.push('/admin/options/player')}>{i18next.t('SETTINGS.PLAYER.LABEL')}</a>
+					<li className={props.location.pathname.includes('/options/player') ? 'active' : ''}>
+						<a onClick={() => props.history.push('/admin/options/player')}>
+							{i18next.t('SETTINGS.PLAYER.LABEL')}
+						</a>
 					</li>
-					<li className={(props.location.pathname.includes('/options/karaoke') ? 'active' : '')}>
-						<a onClick={() => props.history.push('/admin/options/karaoke')}>{i18next.t('SETTINGS.KARAOKE.LABEL')}</a>
+					<li className={props.location.pathname.includes('/options/karaoke') ? 'active' : ''}>
+						<a onClick={() => props.history.push('/admin/options/karaoke')}>
+							{i18next.t('SETTINGS.KARAOKE.LABEL')}
+						</a>
 					</li>
-					<li className={(props.location.pathname.includes('/options/interface') ? 'active' : '')}>
-						<a onClick={() => props.history.push('/admin/options/interface')}>{i18next.t('SETTINGS.INTERFACE.LABEL')}</a>
+					<li className={props.location.pathname.includes('/options/interface') ? 'active' : ''}>
+						<a onClick={() => props.history.push('/admin/options/interface')}>
+							{i18next.t('SETTINGS.INTERFACE.LABEL')}
+						</a>
 					</li>
 				</ul>
 			</div>
@@ -54,8 +63,14 @@ function Options(props: RouteComponentProps) {
 				<div>
 					<Switch>
 						<Route path="/admin/options/player" render={() => <PlayerOptions onChange={saveSettings} />} />
-						<Route path="/admin/options/karaoke" render={() => <KaraokeOptions onChange={saveSettings} />} />
-						<Route path="/admin/options/interface" render={() => <InterfaceOptions onChange={saveSettings} />} />
+						<Route
+							path="/admin/options/karaoke"
+							render={() => <KaraokeOptions onChange={saveSettings} />}
+						/>
+						<Route
+							path="/admin/options/interface"
+							render={() => <InterfaceOptions onChange={saveSettings} />}
+						/>
 						<Redirect to="/admin/options/player" />
 					</Switch>
 
@@ -63,9 +78,7 @@ function Options(props: RouteComponentProps) {
 						{i18next.t('SETTINGS.SYSTEMPANEL_TIP.QUESTION')}
 						<strong>
 							{i18next.t('SETTINGS.SYSTEMPANEL_TIP.RESPONSE')}
-							<a href="/system/options">
-								{i18next.t('SETTINGS.SYSTEMPANEL_TIP.LINK')}
-							</a>
+							<a href="/system/options">{i18next.t('SETTINGS.SYSTEMPANEL_TIP.LINK')}</a>
 							{i18next.t('SETTINGS.SYSTEMPANEL_TIP.AFTER_LINK')}
 						</strong>
 					</div>

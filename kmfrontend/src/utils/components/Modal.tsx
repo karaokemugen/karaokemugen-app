@@ -3,7 +3,7 @@ import './Modal.scss';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
-import {closeModal} from '../../store/actions/modal';
+import { closeModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 
 interface IProps {
@@ -13,7 +13,7 @@ interface IProps {
 	message: any;
 	forceSmall: boolean | undefined;
 	callback: (param?: boolean | string) => void;
-	abortCallback?: boolean
+	abortCallback?: boolean;
 }
 
 interface IState {
@@ -22,12 +22,12 @@ interface IState {
 
 class Modal extends Component<IProps, IState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			promptText: this.props.placeholder
+			promptText: this.props.placeholder,
 		};
 	}
 
@@ -51,7 +51,6 @@ class Modal extends Component<IProps, IState> {
 		closeModal(this.context.globalDispatch);
 	};
 
-
 	keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.code === 'Enter') {
 			this.confirmModal();
@@ -59,7 +58,7 @@ class Modal extends Component<IProps, IState> {
 		if (e.code === 'Escape') {
 			this.abortModal();
 		}
-	}
+	};
 
 	componentDidMount() {
 		document.addEventListener('keyup', this.keyObserverHandler);
@@ -70,7 +69,8 @@ class Modal extends Component<IProps, IState> {
 	}
 
 	render() {
-		const modalDialogClass = window.innerWidth <= 1023 || this.props.forceSmall ? 'modal-dialog modal-sm' : 'modal-dialog';
+		const modalDialogClass =
+			window.innerWidth <= 1023 || this.props.forceSmall ? 'modal-dialog modal-sm' : 'modal-dialog';
 		return (
 			<div className="modal modalPage" id="modalBox">
 				<div className={modalDialogClass}>
@@ -78,23 +78,32 @@ class Modal extends Component<IProps, IState> {
 						<div className="modal-header">
 							<h4 className="modal-title">{this.props.title}</h4>
 						</div>
-						{this.props.type === 'prompt' || (this.props.message && this.props.message !== '') ?
+						{this.props.type === 'prompt' || (this.props.message && this.props.message !== '') ? (
 							<div className="modal-body">
 								<div className="modal-message">{this.props.message}</div>
-								{this.props.type === 'prompt' ?
+								{this.props.type === 'prompt' ? (
 									<div className="form">
-										<input type="text" autoFocus className="modal-input" defaultValue={this.state.promptText}
-											onChange={(event) => this.setState({ promptText: event.target.value })} />
-									</div> : null
-								}
-							</div> : null
-						}
+										<input
+											type="text"
+											autoFocus
+											className="modal-input"
+											defaultValue={this.state.promptText}
+											onChange={(event) => this.setState({ promptText: event.target.value })}
+										/>
+									</div>
+								) : null}
+							</div>
+						) : null}
 						<div className="modal-footer">
-							{this.props.type === 'confirm' || this.props.type === 'prompt' ?
-								<button type="button" className="btn btn-action btn-primary other" onClick={this.abortModal}>
+							{this.props.type === 'confirm' || this.props.type === 'prompt' ? (
+								<button
+									type="button"
+									className="btn btn-action btn-primary other"
+									onClick={this.abortModal}
+								>
 									<i className="fas fa-times" /> {i18next.t('NO')}
-								</button> : null
-							}
+								</button>
+							) : null}
 							<button type="button" className="btn btn-action btn-default ok" onClick={this.confirmModal}>
 								<i className="fas fa-check" /> {i18next.t('YES')}
 							</button>

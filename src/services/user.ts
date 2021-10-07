@@ -1,19 +1,20 @@
-import {compare, genSalt, hash} from 'bcryptjs';
-import {createHash} from 'crypto';
+import { compare, genSalt, hash } from 'bcryptjs';
+import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
-import {decode,encode} from 'jwt-simple';
+import { decode, encode } from 'jwt-simple';
 import deburr from 'lodash.deburr';
 import merge from 'lodash.merge';
-import {resolve} from 'path';
+import { resolve } from 'path';
 import randomstring from 'randomstring';
 import slugify from 'slugify';
 import { v4 as uuidV4 } from 'uuid';
 import logger from 'winston';
 
-import {getSongCountForUser} from '../dao/kara';
+import { getSongCountForUser } from '../dao/kara';
 import { getSongTimeSpentForUser } from '../dao/playlist';
-import { addUser as DBAddUser,
+import {
+	addUser as DBAddUser,
 	checkNicknameExists as DBCheckNicknameExists,
 	deleteUser as DBDeleteUser,
 	editUser as DBEditUser,
@@ -26,18 +27,19 @@ import { addUser as DBAddUser,
 	reassignToUser as DBReassignToUser,
 	selectAllDupeUsers,
 	updateUserLastLogin as DBUpdateUserLastLogin,
-	updateUserPassword as DBUpdateUserPassword} from '../dao/user';
-import {User} from '../lib/types/user';
-import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
-import {asciiRegexp, imageFileTypes} from '../lib/utils/constants';
-import {asyncExists, detectFileType} from '../lib/utils/files';
-import {emitWS} from '../lib/utils/ws';
-import {Config} from '../types/config';
+	updateUserPassword as DBUpdateUserPassword,
+} from '../dao/user';
+import { User } from '../lib/types/user';
+import { getConfig, resolvedPathAvatars, resolvedPathTemp, setConfig } from '../lib/utils/config';
+import { asciiRegexp, imageFileTypes } from '../lib/utils/constants';
+import { asyncExists, detectFileType } from '../lib/utils/files';
+import { emitWS } from '../lib/utils/ws';
+import { Config } from '../types/config';
 import { DBGuest } from '../types/database/user';
-import {UserOpts} from '../types/user';
-import {defaultGuestNames} from '../utils/constants';
+import { UserOpts } from '../types/user';
+import { defaultGuestNames } from '../utils/constants';
 import sentry from '../utils/sentry';
-import {getState} from '../utils/state';
+import { getState } from '../utils/state';
 import { stopSub } from '../utils/userPubSub';
 import { addToFavorites, getFavorites } from './favorites';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
@@ -47,7 +49,7 @@ const userLoginTimes = new Map();
 export async function findAvailableGuest() {
 	const guest = await DBGetRandomGuest();
 	if (!guest) return null;
-	if (getState().isTest) logger.debug('New guest logging in: ', {service: 'User', obj: guest});
+	if (getState().isTest) logger.debug('New guest logging in: ', { service: 'User', obj: guest });
 	return guest;
 }
 
@@ -55,10 +57,7 @@ export async function findAvailableGuest() {
 export function createJwtToken(username: string, role: string, config?: Config): string {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
-	return encode(
-		{ username, iat: timestamp, role },
-		conf.App.JwtSecret
-	);
+	return encode({ username, iat: timestamp, role }, conf.App.JwtSecret);
 }
 
 /** Decode token to see if it matches */
@@ -73,45 +72,52 @@ export function updateLastLoginName(login: string) {
 		userLoginTimes.set(login, new Date());
 		DBUpdateUserLastLogin(login);
 	}
-	if (userLoginTimes.get(login) < new Date(new Date().getTime() - (60 * 1000))) {
+	if (userLoginTimes.get(login) < new Date(new Date().getTime() - 60 * 1000)) {
 		userLoginTimes.set(login, new Date());
 		DBUpdateUserLastLogin(login);
 	}
 }
 
 /** Edit local user profile */
-export async function editUser(username: string, user: User, avatar: Express.Multer.File, role: string, opts: UserOpts = {
-	editRemote: false,
-	renameUser: false,
-	noPasswordCheck: false
-}) {
+export async function editUser(
+	username: string,
+	user: User,
+	avatar: Express.Multer.File,
+	role: string,
+	opts: UserOpts = {
+		editRemote: false,
+		renameUser: false,
+		noPasswordCheck: false,
+	}
+) {
 	try {
-		if (!username) throw {code: 401, msg: 'USER_NOT_PROVIDED'};
+		if (!username) throw { code: 401, msg: 'USER_NOT_PROVIDED' };
 		username = username.toLowerCase();
 		const currentUser = await findUserByName(username);
-		if (!currentUser) throw {code: 404, msg: 'USER_NOT_EXISTS'};
-		if (currentUser.type === 2 && role !== 'admin') throw {code: 403, msg: 'GUESTS_CANNOT_EDIT'};
+		if (!currentUser) throw { code: 404, msg: 'USER_NOT_EXISTS' };
+		if (currentUser.type === 2 && role !== 'admin') throw { code: 403, msg: 'GUESTS_CANNOT_EDIT' };
 		const mergedUser = merge(currentUser, user);
 		delete mergedUser.password;
 		if (user.password) {
-			if (!opts.noPasswordCheck && user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
+			if (!opts.noPasswordCheck && user.password.length < 8) throw { code: 400, msg: 'PASSWORD_TOO_SHORT' };
 			const password = await hashPasswordbcrypt(user.password);
 			await DBUpdateUserPassword(username, password);
 		}
-		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
+		if (user.type && +user.type !== currentUser.type && role !== 'admin')
+			throw { code: 403, msg: 'USER_CANNOT_CHANGE_TYPE' };
 		// If we're renaming a user, user.login is going to be set to something different than username
 		user.old_login = username;
 		// Check if login already exists.
-		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw {code: 409};
+		if (currentUser.nickname !== user.nickname && (await DBCheckNicknameExists(user.nickname))) throw { code: 409 };
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			try {
 				mergedUser.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
-			} catch(err) {
+			} catch (err) {
 				//Non-fatal
-				logger.warn('Cannot replace avatar', {service: 'User', obj: err});
+				logger.warn('Cannot replace avatar', { service: 'User', obj: err });
 			}
 		} else {
 			mergedUser.avatar_file = currentUser.avatar_file;
@@ -121,19 +127,22 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		let KMServerResponse: any;
 		try {
 			if (updatedUser.login.includes('@') && opts.editRemote && +getConfig().Online.Users)
-				KMServerResponse = await editRemoteUser({...updatedUser, password: user.password || undefined}, opts.editRemote);
-		} catch(err) {
-			logger.warn('Cannot push user changes to remote', {service: 'RemoteUser', obj: err});
-			throw {code: 500};
+				KMServerResponse = await editRemoteUser(
+					{ ...updatedUser, password: user.password || undefined },
+					opts.editRemote
+				);
+		} catch (err) {
+			logger.warn('Cannot push user changes to remote', { service: 'RemoteUser', obj: err });
+			throw { code: 500 };
 		}
 		emitWS('userUpdated', username);
-		logger.debug(`${username} (${mergedUser.nickname}) profile updated`, {service: 'User'});
+		logger.debug(`${username} (${mergedUser.nickname}) profile updated`, { service: 'User' });
 		return {
 			user: updatedUser,
-			onlineToken: KMServerResponse?.token
+			onlineToken: KMServerResponse?.token,
 		};
 	} catch (err) {
-		logger.error(`Failed to update ${username}'s profile`, {service: 'User', obj: err});
+		logger.error(`Failed to update ${username}'s profile`, { service: 'User', obj: err });
 		if (!err.msg) err.msg = 'USER_EDIT_ERROR';
 		throw err;
 	}
@@ -158,18 +167,17 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		const newAvatarFile = `${uuidV4()}.${fileType}`;
 		const newAvatarPath = resolve(resolvedPathAvatars(), newAvatarFile);
 		const oldAvatarPath = resolve(resolvedPathAvatars(), oldImageFile);
-		if (await asyncExists(oldAvatarPath) &&
-			oldImageFile !== 'blank.png') {
+		if ((await asyncExists(oldAvatarPath)) && oldImageFile !== 'blank.png') {
 			try {
 				await fs.unlink(oldAvatarPath);
-			} catch(err) {
-				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, {service: 'User', obj: err});
+			} catch (err) {
+				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, { service: 'User', obj: err });
 			}
 		}
 		try {
-			await copy(avatar.path, newAvatarPath, {overwrite: true});
-		} catch(err) {
-			logger.error(`Could not copy new avatar ${avatar.path} to ${newAvatarPath}`, {service: 'User', obj: err});
+			await copy(avatar.path, newAvatarPath, { overwrite: true });
+		} catch (err) {
+			logger.error(`Could not copy new avatar ${avatar.path} to ${newAvatarPath}`, { service: 'User', obj: err });
 		}
 		return newAvatarFile;
 	} catch (err) {
@@ -179,10 +187,13 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 }
 
 /** Get user by its name, with non-public info like password and mail removed (or not) */
-export async function findUserByName(username: string, opt = {
-	public: false
-}): Promise<User> {
-	if (!username) throw('No user provided');
+export async function findUserByName(
+	username: string,
+	opt = {
+		public: false,
+	}
+): Promise<User> {
+	if (!username) throw 'No user provided';
 	username = username.toLowerCase();
 	//Check if user exists in db
 	const userdata = await DBGetUser(username);
@@ -210,7 +221,6 @@ export async function hashPasswordbcrypt(password: string): Promise<string> {
 	return hash(password, await genSalt(10));
 }
 
-
 /** Check if password matches or if user type is 2 (guest) and password in database is empty. */
 export async function checkPassword(user: User, password: string): Promise<boolean> {
 	// First we test if password needs to be updated to new hash
@@ -223,7 +233,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 		user.password = hashedPasswordbcrypt;
 	}
 
-	if (await compare(password, user.password) || (user.type === 2 && !user.password)) {
+	if ((await compare(password, user.password)) || (user.type === 2 && !user.password)) {
 		return true;
 	}
 	delete user.password;
@@ -235,7 +245,7 @@ export function createAdminUser(user: User, remote: boolean, requester: User) {
 	if (requester.type === 0 || user.securityCode === getState().securityCode) {
 		return createUser(user, { createRemote: remote, admin: true });
 	} else {
-		throw {code: 403, msg: 'UNAUTHORIZED'};
+		throw { code: 403, msg: 'UNAUTHORIZED' };
 	}
 }
 
@@ -247,19 +257,22 @@ function getDefaultUser(): User {
 		language: getConfig().App.Language,
 		flag_sendstats: null,
 		flag_tutorial_done: false,
-		type: 1
+		type: 1,
 	};
 }
 
 /** Create new user (either local or online. Defaults to online) */
-export async function createUser(user: User, opts: UserOpts = {
-	admin: false,
-	createRemote: true,
-	noPasswordCheck: false
-}) {
+export async function createUser(
+	user: User,
+	opts: UserOpts = {
+		admin: false,
+		createRemote: true,
+		noPasswordCheck: false,
+	}
+) {
 	user.login = user.login.toLowerCase();
 	// If nickname is not supplied, guess one
-	user.nickname ||= user.login.includes('@') ? user.login.split('@')[0]:user.login;
+	user.nickname ||= user.login.includes('@') ? user.login.split('@')[0] : user.login;
 	user = merge(getDefaultUser(), user);
 	if (opts.admin) user.type = 0;
 	if (user.type === 2) {
@@ -268,32 +281,48 @@ export async function createUser(user: User, opts: UserOpts = {
 	}
 
 	try {
-		await newUserIntegrityChecks(user).catch(async err => {
+		await newUserIntegrityChecks(user).catch(async (err) => {
 			if (user.login.includes('@')) {
 				// If nickname isn't allowed, append something random to it and retry integrity checks
 				user.nickname = `${user.nickname}${randomstring.generate({
 					length: 3,
-					charset: 'numeric'
+					charset: 'numeric',
 				})}`;
-				logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'});
+				logger.warn(
+					`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${
+						user.login
+					} is ${user.nickname}`,
+					{ service: 'User' }
+				);
 				await newUserIntegrityChecks(user);
-				if (user.login.split('@')[0] === 'admin') throw { code: 403, msg: 'USER_CREATE_ERROR', details: 'Admin accounts are not allowed to be created online' };
-				if (!+getConfig().Online.Users) throw { code: 403, msg : 'USER_CREATE_ERROR', details: 'Creating online accounts is not allowed on this instance'};
+				if (user.login.split('@')[0] === 'admin')
+					throw {
+						code: 403,
+						msg: 'USER_CREATE_ERROR',
+						details: 'Admin accounts are not allowed to be created online',
+					};
+				if (!+getConfig().Online.Users)
+					throw {
+						code: 403,
+						msg: 'USER_CREATE_ERROR',
+						details: 'Creating online accounts is not allowed on this instance',
+					};
 				if (opts.createRemote) await createRemoteUser(user);
 			} else {
 				throw err;
 			}
 		});
 		if (user.password) {
-			if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length};
+			if (user.password.length < 8 && !opts.noPasswordCheck)
+				throw { code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length };
 			user.password = await hashPasswordbcrypt(user.password);
 		}
 		await DBAddUser(user);
-		if (user.type < 2) logger.info(`Created user ${user.login}`, {service: 'User'});
+		if (user.type < 2) logger.info(`Created user ${user.login}`, { service: 'User' });
 		delete user.password;
 		return true;
 	} catch (err) {
-		logger.error(`Unable to create user ${user.login}`, {service: 'User', obj: err});
+		logger.error(`Unable to create user ${user.login}`, { service: 'User', obj: err });
 		if (!err.msg) err.msg = 'USER_CREATE_ERROR';
 		throw err;
 	}
@@ -301,25 +330,30 @@ export async function createUser(user: User, opts: UserOpts = {
 
 /** Checks if a user can be created */
 async function newUserIntegrityChecks(user: User) {
-	if (!asciiRegexp.test(user.login)) throw { code: 400, msg: 'USER_ASCII_CHARACTERS_ONLY'};
-	if (user.type < 2 && !user.password) throw { code: 400, msg: 'USER_EMPTY_PASSWORD'};
-	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD'};
+	if (!asciiRegexp.test(user.login)) throw { code: 400, msg: 'USER_ASCII_CHARACTERS_ONLY' };
+	if (user.type < 2 && !user.password) throw { code: 400, msg: 'USER_EMPTY_PASSWORD' };
+	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD' };
 
 	// Check if login already exists.
-	if (await DBGetUser(user.login) || await DBCheckNicknameExists(user.login)) {
-		logger.error(`User/nickname ${user.login} already exists, cannot create it`, {service: 'User'});
-		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: {username: user.login}};
+	if ((await DBGetUser(user.login)) || (await DBCheckNicknameExists(user.login))) {
+		logger.error(`User/nickname ${user.login} already exists, cannot create it`, { service: 'User' });
+		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: { username: user.login } };
 	}
 }
 
 /** Remove a user from database */
 export async function deleteUser(username: string) {
 	try {
-		if (username === 'admin') throw {code: 406, msg:  'USER_DELETE_ADMIN_DAMEDESU', details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
-		if (!username) throw {code: 400};
+		if (username === 'admin')
+			throw {
+				code: 406,
+				msg: 'USER_DELETE_ADMIN_DAMEDESU',
+				details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project',
+			};
+		if (!username) throw { code: 400 };
 		username = username.toLowerCase();
 		const user = await findUserByName(username);
-		if (!user) throw {code: 404, msg: 'USER_NOT_EXISTS'};
+		if (!user) throw { code: 404, msg: 'USER_NOT_EXISTS' };
 		//Reassign karas and playlists owned by the user to the admin user
 		await DBReassignToUser(username, 'admin');
 		await DBDeleteUser(username);
@@ -328,11 +362,11 @@ export async function deleteUser(username: string) {
 			stopSub(login, instance);
 		}
 		if (getUsersFetched().has(username)) getUsersFetched().delete(username);
-		logger.debug(`Deleted user ${username}`, {service: 'User'});
+		logger.debug(`Deleted user ${username}`, { service: 'User' });
 		emitWS('usersUpdated');
 		return true;
 	} catch (err) {
-		logger.error(`Unable to delete user ${username}`, {service: 'User', obj: err});
+		logger.error(`Unable to delete user ${username}`, { service: 'User', obj: err });
 		if (!err.msg) err.msg = 'USER_DELETE_ERROR';
 		throw err;
 	}
@@ -342,17 +376,17 @@ export async function deleteUser(username: string) {
 async function updateGuestAvatar(user: DBGuest) {
 	const bundledAvatarFile = `${slugify(user.login, {
 		lower: true,
-		remove: /['"!,?()]/g
+		remove: /['"!,?()]/g,
 	})}.jpg`;
 	const bundledAvatarPath = resolve(getState().resourcePath, 'assets/guestAvatars/', bundledAvatarFile);
-	if (!await asyncExists(bundledAvatarPath)) {
+	if (!(await asyncExists(bundledAvatarPath))) {
 		// Bundled avatar does not exist for this user, skipping.
 		return false;
 	}
 	let avatarStats: any = {};
 	try {
 		avatarStats = await fs.stat(resolve(resolvedPathAvatars(), user.avatar_file));
-	} catch(err) {
+	} catch (err) {
 		// It means one avatar has disappeared, we'll put a 0 size on it so the replacement is triggered later
 		avatarStats.size = 0;
 	}
@@ -362,31 +396,37 @@ async function updateGuestAvatar(user: DBGuest) {
 		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
 		const tempFile = resolve(resolvedPathTemp(), bundledAvatarFile);
 		await copy(bundledAvatarPath, tempFile);
-		editUser(user.login, user, {
-			fieldname: null,
-			path: tempFile,
-			originalname: null,
-			encoding: null,
-			mimetype: null,
-			destination: null,
-			filename: null,
-			buffer: null,
-			size: null,
-			stream: null,
-		}, 'admin', {
-			renameUser: false,
-			editRemote: false
-		}).catch((err) => {
-			logger.error(`Unable to change guest avatar for ${user.login}`, {service: 'User', obj: err});
+		editUser(
+			user.login,
+			user,
+			{
+				fieldname: null,
+				path: tempFile,
+				originalname: null,
+				encoding: null,
+				mimetype: null,
+				destination: null,
+				filename: null,
+				buffer: null,
+				size: null,
+				stream: null,
+			},
+			'admin',
+			{
+				renameUser: false,
+				editRemote: false,
+			}
+		).catch((err) => {
+			logger.error(`Unable to change guest avatar for ${user.login}`, { service: 'User', obj: err });
 		});
 	}
 }
 
 /** Check all guests to see if we need to replace their avatars with built-in ones */
 async function checkGuestAvatars() {
-	logger.debug('Updating default avatars', {service: 'User'});
+	logger.debug('Updating default avatars', { service: 'User' });
 	const guests = await listGuests();
-	guests.forEach(u => updateGuestAvatar(u));
+	guests.forEach((u) => updateGuestAvatar(u));
 }
 
 /** Create default guest accounts */
@@ -395,63 +435,76 @@ async function createDefaultGuests() {
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
-		if (!guests.find(g => g.login === deburr(guest.toLowerCase()))) guestsToCreate.push(guest);
+		if (!guests.find((g) => g.login === deburr(guest.toLowerCase()))) guestsToCreate.push(guest);
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getState().isTest) maxGuests = 1;
-	logger.debug(`Creating ${maxGuests} new guest accounts`, {service: 'User'});
+	logger.debug(`Creating ${maxGuests} new guest accounts`, { service: 'User' });
 	for (let i = 0; i < maxGuests; i++) {
-		if (!await findUserByName(guestsToCreate[i])) try {
-			await createUser({
-				login: deburr(guestsToCreate[i]),
-				nickname: guestsToCreate[i],
-				type: 2
-			});
-		} catch(err) {
-			// Not a big problem, it probably means the guest account exists already for some reason.
-		}
+		if (!(await findUserByName(guestsToCreate[i])))
+			try {
+				await createUser({
+					login: deburr(guestsToCreate[i]),
+					nickname: guestsToCreate[i],
+					type: 2,
+				});
+			} catch (err) {
+				// Not a big problem, it probably means the guest account exists already for some reason.
+			}
 	}
-	logger.debug('Default guest accounts created', {service: 'User'});
+	logger.debug('Default guest accounts created', { service: 'User' });
 }
 
 /** Initializing user auth module */
 export async function initUserSystem() {
 	// Check if a admin user exists just in case. If not create it with a random password.
-	if (!await findUserByName('admin')) {
-		await createUser({
-			login: 'admin',
-			password: randomstring.generate(8)
-		}, {
-			admin: true
-		});
-		setConfig({ App: { FirstRun: true }});
+	if (!(await findUserByName('admin'))) {
+		await createUser(
+			{
+				login: 'admin',
+				password: randomstring.generate(8),
+			},
+			{
+				admin: true,
+			}
+		);
+		setConfig({ App: { FirstRun: true } });
 	}
 
 	if (getState().isTest) {
-		if (!await findUserByName('adminTest')) {
-			await createUser({
-				login: 'adminTest',
-				password: 'ceciestuntest'
-			}, {
-				admin: true
-			});
+		if (!(await findUserByName('adminTest'))) {
+			await createUser(
+				{
+					login: 'adminTest',
+					password: 'ceciestuntest',
+				},
+				{
+					admin: true,
+				}
+			);
 		}
-		if (!await findUserByName('adminTest2')) {
-			await createUser({
-				login: 'adminTest2',
-				password: 'ceciestuntest'
-			}, {
-				admin: true
-			});
+		if (!(await findUserByName('adminTest2'))) {
+			await createUser(
+				{
+					login: 'adminTest2',
+					password: 'ceciestuntest',
+				},
+				{
+					admin: true,
+				}
+			);
 		}
-		if (!await findUserByName('publicTest')) {
-			await createUser({
-				login: 'publicTest',
-				password: 'ceciestuntest',
-				type: 1
-			}, {
-				admin: false
-			});
+		if (!(await findUserByName('publicTest'))) {
+			await createUser(
+				{
+					login: 'publicTest',
+					password: 'ceciestuntest',
+					type: 1,
+				},
+				{
+					admin: false,
+				}
+			);
 		}
 	} else {
 		if (await findUserByName('adminTest')) deleteUser('adminTest');
@@ -464,10 +517,10 @@ export async function initUserSystem() {
 	// Find admin users.
 	const users = await listUsers();
 	const adminUsers = users
-		.filter(u => u.type === 0 && u.login !== 'admin')
+		.filter((u) => u.type === 0 && u.login !== 'admin')
 		// Sort by last login at in descending order.
-		.sort((a, b) => (a.last_login_at < b.last_login_at) ? 1 : -1);
-	logger.debug('Admin users', {service: 'User', obj: JSON.stringify(adminUsers)});
+		.sort((a, b) => (a.last_login_at < b.last_login_at ? 1 : -1));
+	logger.debug('Admin users', { service: 'User', obj: JSON.stringify(adminUsers) });
 	sentry.setUser(adminUsers[0]?.login || 'admin');
 }
 
@@ -482,35 +535,27 @@ async function userChecks() {
 
 /** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */
 async function checkUserAvatars() {
-	logger.debug('Checking if all avatars exist', {service: 'User'});
+	logger.debug('Checking if all avatars exist', { service: 'User' });
 	const users = await listUsers();
 	const defaultAvatar = resolve(resolvedPathAvatars(), 'blank.png');
 	for (const user of users) {
 		if (!user.avatar_file) {
-			logger.warn(`User ${user.login} has no avatar file`, {service: 'User'});
+			logger.warn(`User ${user.login} has no avatar file`, { service: 'User' });
 			continue;
 		}
 		const file = resolve(resolvedPathAvatars(), user.avatar_file);
-		if (!await asyncExists(file)) {
-			await copy(
-				defaultAvatar,
-				file,
-				{overwrite: true}
-			);
+		if (!(await asyncExists(file))) {
+			await copy(defaultAvatar, file, { overwrite: true });
 		} else {
 			const fstat = await fs.stat(file);
-			if (fstat.size === 0) await copy(
-				defaultAvatar,
-				file,
-				{overwrite: true}
-			);
+			if (fstat.size === 0) await copy(defaultAvatar, file, { overwrite: true });
 		}
 	}
 }
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
-	logger.debug('Cleaning up unused avatars', {service: 'User'});
+	logger.debug('Cleaning up unused avatars', { service: 'User' });
 	const users = await listUsers();
 	const avatars = [];
 	for (const user of users) {
@@ -518,14 +563,14 @@ async function cleanupAvatars() {
 	}
 	const avatarFiles = await fs.readdir(resolvedPathAvatars());
 	for (const file of avatarFiles) {
-		const avatar = avatars.find(a => a === file);
+		const avatar = avatars.find((a) => a === file);
 		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPathAvatars(), file);
 			try {
-				logger.debug(`Deleting old file ${fullFile}`, {service: 'User'});
+				logger.debug(`Deleting old file ${fullFile}`, { service: 'User' });
 				await fs.unlink(fullFile);
-			} catch(err) {
-				logger.warn(`Failed deleting old file ${fullFile}`, {service: 'User', obj: err});
+			} catch (err) {
+				logger.warn(`Failed deleting old file ${fullFile}`, { service: 'User', obj: err });
 				//Non-fatal
 			}
 		}
@@ -542,9 +587,9 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 		let quotaLeft: number;
 		if (!plaid) plaid = getState().publicPlaid;
 		if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
-			switch(+conf.Karaoke.Quota.Type) {
+			switch (+conf.Karaoke.Quota.Type) {
 				case 2:
-					const time = await getSongTimeSpentForUser(plaid,username);
+					const time = await getSongTimeSpentForUser(plaid, username);
 					quotaLeft = +conf.Karaoke.Quota.Time - time;
 					break;
 				default:
@@ -559,10 +604,10 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 		emitWS('quotaAvailableUpdated', {
 			username: user.login,
 			quotaLeft: quotaLeft,
-			quotaType: +conf.Karaoke.Quota.Type
+			quotaType: +conf.Karaoke.Quota.Type,
 		});
-	} catch(err) {
-		logger.error(`Unable to update songs left for user ${username}`, {service: 'User', obj: err});
+	} catch (err) {
+		logger.error(`Unable to update songs left for user ${username}`, { service: 'User', obj: err });
 		sentry.error(err);
 		// Non-fatal
 	}
@@ -573,15 +618,17 @@ let adminPasswordCache: string;
 /** Resets admin's password when appFirstRun is set to true. */
 export async function generateAdminPassword(): Promise<string> {
 	const adminPassword = adminPasswordCache || getState().opt.forceAdminPassword || randomstring.generate(8);
-	await editUser('admin',
+	await editUser(
+		'admin',
 		{
 			password: adminPassword,
 			nickname: 'Dummy Plug System',
 			type: 0,
-			flag_sendstats: false
+			flag_sendstats: false,
 		},
 		null,
-		'admin');
+		'admin'
+	);
 	adminPasswordCache = adminPassword;
 	return adminPassword;
 }
@@ -623,12 +670,9 @@ export async function lowercaseMigration() {
 					// We need to merge their data with mainUser
 					for (const user of dupeUsers) {
 						// Special case for favorites since we may break the unique constraint if the two users had the same favorites.
-						const favs = await getFavorites({username: user.pk_login});
-						const favsToAdd = favs.content.map(f => f.kid);
-						const promises = [
-							mergeUserData(user.pk_login, mainUser),
-							addToFavorites(mainUser, favsToAdd)
-						];
+						const favs = await getFavorites({ username: user.pk_login });
+						const favsToAdd = favs.content.map((f) => f.kid);
+						const promises = [mergeUserData(user.pk_login, mainUser), addToFavorites(mainUser, favsToAdd)];
 						await Promise.all(promises);
 						await deleteUser(user.pk_login);
 					}
@@ -637,8 +681,8 @@ export async function lowercaseMigration() {
 		}
 		// Let's pray this doesn't catch fire.
 		await lowercaseAllUsers();
-	} catch(err) {
-		logger.error('Unable to lowercase all users', {service: 'User', obj: err});
+	} catch (err) {
+		logger.error('Unable to lowercase all users', { service: 'User', obj: err });
 		sentry.error(err, 'Warning');
 	}
 }

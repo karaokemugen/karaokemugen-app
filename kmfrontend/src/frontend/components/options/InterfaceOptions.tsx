@@ -14,15 +14,19 @@ function InterfaceOptions(props: IProps) {
 	const [config, setConfig] = useState(dotify(context.globalState.settings.data.config));
 
 	const onChange = (e: any) => {
-		let value = e.target.type === 'checkbox' ? e.target.checked :
-			(Number(e.target.value) ? Number(e.target.value) : e.target.value);
+		let value =
+			e.target.type === 'checkbox'
+				? e.target.checked
+				: Number(e.target.value)
+				? Number(e.target.value)
+				: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
 			value = false;
 		}
 		config[e.target.id] = value;
-		if (e.target.type !== 'number' || (Number(e.target.value))) props.onChange(e);
+		if (e.target.type !== 'number' || Number(e.target.value)) props.onChange(e);
 	};
 
 	useEffect(() => {
@@ -38,11 +42,7 @@ function InterfaceOptions(props: IProps) {
 					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}</span>
 				</label>
 				<div>
-					<select
-						id="Frontend.Mode"
-						onChange={onChange}
-						value={config['Frontend.Mode']}
-					>
+					<select id="Frontend.Mode" onChange={onChange} value={config['Frontend.Mode']}>
 						<option value={0}>{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')}</option>
 						<option value={1}>{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')}</option>
 						<option value={2}>{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')}</option>
@@ -57,8 +57,11 @@ function InterfaceOptions(props: IProps) {
 					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.SHOW_AVATARS_ON_PLAYLIST_TOOLTIP')}</span>
 				</label>
 				<div>
-					<Switch idInput="Frontend.ShowAvatarsOnPlaylist" handleChange={onChange}
-						isChecked={config['Frontend.ShowAvatarsOnPlaylist']} />
+					<Switch
+						idInput="Frontend.ShowAvatarsOnPlaylist"
+						handleChange={onChange}
+						isChecked={config['Frontend.ShowAvatarsOnPlaylist']}
+					/>
 				</div>
 			</div>
 		</>

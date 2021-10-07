@@ -3,7 +3,7 @@
 @import 'styles/variables';
 
 body {
-	font-family: Lato, "Helvetica Neue", Cantarell, sans-serif;
+	font-family: Lato, 'Helvetica Neue', Cantarell, sans-serif;
 	background: $mugen-background;
 	color: white;
 	&.no-scroll {
@@ -39,4 +39,3 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~@fortawesome/fontawesome-free/scss/regular';
-

@@ -20,8 +20,8 @@ export function requireValidUser(req: any, res: any, next: any) {
 			req.user = user;
 			next();
 		})
-		.catch(err => {
-			logger.error(`Error checking user : ${JSON.stringify(req.token)}`, {service: 'API', obj: err});
+		.catch((err) => {
+			logger.error(`Error checking user : ${JSON.stringify(req.token)}`, { service: 'API', obj: err });
 			res.status(403).json(APIMessage('USER_UNKNOWN'));
 		});
 }

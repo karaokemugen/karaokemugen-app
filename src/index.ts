@@ -1,28 +1,28 @@
 import dotenv from 'dotenv';
-import {app} from 'electron';
-import {existsSync} from 'fs';
-import {mkdirpSync} from 'fs-extra';
-import {dirname,resolve} from 'path';
-import {createInterface} from 'readline';
+import { app } from 'electron';
+import { existsSync } from 'fs';
+import { mkdirpSync } from 'fs-extra';
+import { dirname, resolve } from 'path';
+import { createInterface } from 'readline';
 
-import {exit} from './components/engine';
-import {startElectron} from './electron/electron';
+import { exit } from './components/engine';
+import { startElectron } from './electron/electron';
 import logger from './lib/utils/logger';
 import sentry from './utils/sentry';
-import {setState} from './utils/state';
+import { setState } from './utils/state';
 
 dotenv.config();
 sentry.init(process.argv.includes('--strict'));
 
 process.on('uncaughtException', (exception: any) => {
 	console.log('Uncaught exception:', exception);
-	if (logger) logger.error('', {service: 'UncaughtException', obj: exception});
+	if (logger) logger.error('', { service: 'UncaughtException', obj: exception });
 	sentry.error(exception);
 });
 
 process.on('unhandledRejection', (error: Error) => {
 	console.log('Unhandled Rejection at:', error);
-	if (logger) logger.error('', {service: 'UnhandledRejection', obj: error});
+	if (logger) logger.error('', { service: 'UnhandledRejection', obj: error });
 	sentry.error(error);
 });
 
@@ -36,10 +36,10 @@ process.on('SIGTERM', () => {
 
 // CTRL+C for Windows :
 
-if (process.platform === 'win32' ) {
+if (process.platform === 'win32') {
 	const rl = createInterface({
 		input: process.stdin,
-		output: process.stdout
+		output: process.stdout,
 	});
 
 	rl.on('SIGINT', () => {
@@ -56,9 +56,8 @@ let resourcePath: string;
 // First, this is a test for unpacked electron mode.
 if (app.isPackaged) {
 	// Starting Electron from the app's executable
-	appPath = process.platform === 'darwin'
-		? resolve(app.getAppPath(), '../../../../')
-		: resolve(app.getAppPath(), '../../');
+	appPath =
+		process.platform === 'darwin' ? resolve(app.getAppPath(), '../../../../') : resolve(app.getAppPath(), '../../');
 	resourcePath = process.resourcesPath;
 } else {
 	if (app.getAppPath().endsWith('.asar')) {
@@ -75,22 +74,20 @@ if (app.isPackaged) {
 // DataPath is by default appPath + app. This is default when running from source
 const dataPath = existsSync(resolve(appPath, 'portable'))
 	? resolve(appPath, 'app/')
-	// Rewriting dataPath to point to user home directory
-	// With Electron we get the handy app.getPath()
-	: resolve(app.getPath('home'), 'KaraokeMugen');
+	: // Rewriting dataPath to point to user home directory
+	  // With Electron we get the handy app.getPath()
+	  resolve(app.getPath('home'), 'KaraokeMugen');
 
 if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
-if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({forceDisableAppUpdate: true});
+if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({ forceDisableAppUpdate: true });
 
-setState({appPath, dataPath, resourcePath});
+setState({ appPath, dataPath, resourcePath });
 
 process.env['NODE_ENV'] = 'production'; // Default
 
 // Electron packaged app does not need a slice(2) but a (1) since it has no script argument
-const args = app.isPackaged
-	? process.argv.slice(1)
-	: process.argv.slice(2);
+const args = app.isPackaged ? process.argv.slice(1) : process.argv.slice(2);
 
 setState({ args: args });
 
@@ -98,8 +95,8 @@ setState({ args: args });
 // Start Electron -> Pre Init -> Main Init -> Engine Init -> Post Init
 try {
 	startElectron();
-} catch(err) {
-	if (logger) logger.error('Error during launch', {service: 'Launcher', obj: err});
+} catch (err) {
+	if (logger) logger.error('Error during launch', { service: 'Launcher', obj: err });
 	console.log(err);
 	sentry.error(err);
 	exit(1);

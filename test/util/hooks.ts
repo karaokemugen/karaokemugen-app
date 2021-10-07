@@ -1,8 +1,8 @@
-import {disconnectSocket} from './util';
+import { disconnectSocket } from './util';
 
 exports.mochaHooks = {
 	afterAll(done: any) {
-	  disconnectSocket();
-	  done();
-	}
+		disconnectSocket();
+		done();
+	},
 };

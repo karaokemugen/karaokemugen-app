@@ -5,17 +5,22 @@ import { commandBackend } from '../../utils/socket';
 import { isNonStandardPlaylist, nonStandardPlaylists } from '../../utils/tools';
 import { BackgroundImage, FilterValue, FrontendContextAction, PlaylistInfo } from '../types/frontendContext';
 
-export function setFilterValue(dispatch: Dispatch<FilterValue>, filterValue: string, side: 'left' | 'right', idPlaylist: string) {
+export function setFilterValue(
+	dispatch: Dispatch<FilterValue>,
+	filterValue: string,
+	side: 'left' | 'right',
+	idPlaylist: string
+) {
 	dispatch({
 		type: FrontendContextAction.FILTER_VALUE,
-		payload: { filterValue, side, idPlaylist }
+		payload: { filterValue, side, idPlaylist },
 	});
 }
 
 export function setBgImage(dispatch: Dispatch<BackgroundImage>, backgroundImg) {
 	dispatch({
 		type: FrontendContextAction.BG_IMAGE,
-		payload: { backgroundImg }
+		payload: { backgroundImg },
 	});
 }
 
@@ -23,14 +28,17 @@ export async function setPlaylistInfoLeft(dispatch: Dispatch<PlaylistInfo>, plai
 	if (!plaid) {
 		const cookie = localStorage.getItem('mugenPlVal1');
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
-		plaid = cookie !== null && (isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie))
-			? cookie : nonStandardPlaylists.library;
+		plaid =
+			cookie !== null &&
+			(isNonStandardPlaylist(cookie) || playlistList.find((playlist) => playlist.plaid === cookie))
+				? cookie
+				: nonStandardPlaylists.library;
 	}
 	const playlist = await getPlaylistInfo(plaid);
 	localStorage.setItem('mugenPlVal1', playlist.plaid);
 	dispatch({
 		type: FrontendContextAction.PLAYLIST_INFO_LEFT,
-		payload: { playlist }
+		payload: { playlist },
 	});
 }
 
@@ -38,14 +46,17 @@ export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, pla
 	if (!plaid) {
 		const cookie = localStorage.getItem('mugenPlVal2');
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
-		plaid = cookie !== null && (isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie))
-			? cookie : playlistList.find(playlist => playlist.flag_current).plaid;
+		plaid =
+			cookie !== null &&
+			(isNonStandardPlaylist(cookie) || playlistList.find((playlist) => playlist.plaid === cookie))
+				? cookie
+				: playlistList.find((playlist) => playlist.flag_current).plaid;
 	}
 	const playlist = await getPlaylistInfo(plaid);
 	localStorage.setItem('mugenPlVal2', playlist.plaid);
 	dispatch({
 		type: FrontendContextAction.PLAYLIST_INFO_RIGHT,
-		payload: { playlist }
+		payload: { playlist },
 	});
 }
 

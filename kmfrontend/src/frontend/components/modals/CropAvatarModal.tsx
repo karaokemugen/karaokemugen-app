@@ -16,11 +16,9 @@ interface IState {
 	imageRef?: any;
 	imageSource: any;
 	crop: Crop;
-
 }
 
 class CropAvatarModal extends Component<IProps, IState> {
-
 	state = {
 		crop: {
 			unit: '%' as const,
@@ -28,28 +26,25 @@ class CropAvatarModal extends Component<IProps, IState> {
 			height: undefined,
 			aspect: 1,
 			x: 0,
-			y: 0
+			y: 0,
 		},
 		imageRef: undefined,
-		imageSource: undefined
-	}
+		imageSource: undefined,
+	};
 
 	componentDidMount() {
 		const reader = new FileReader();
-		reader.addEventListener('load', () =>
-			this.setState({ imageSource: reader.result })
-		);
+		reader.addEventListener('load', () => this.setState({ imageSource: reader.result }));
 		reader.readAsDataURL(this.props.src);
 	}
 
-	onImageLoaded = imageRef => {
+	onImageLoaded = (imageRef) => {
 		this.setState({ imageRef });
 	};
 
 	onCropChange = (crop) => {
 		this.setState({ crop });
 	};
-
 
 	getCroppedImg(image, crop) {
 		const canvas = document.createElement('canvas');
@@ -72,7 +67,7 @@ class CropAvatarModal extends Component<IProps, IState> {
 		);
 
 		return new Promise((resolve) => {
-			canvas.toBlob(blob => {
+			canvas.toBlob((blob) => {
 				if (!blob) {
 					//reject(new Error('Canvas is empty'));
 					console.error('Canvas is empty');
@@ -88,8 +83,8 @@ class CropAvatarModal extends Component<IProps, IState> {
 			const croppedImageUrl = await this.getCroppedImg(this.state.imageRef, this.state.crop);
 			if (croppedImageUrl) {
 				if (isRemote()) {
-					const response = await commandBackend('importFile', {extension: 'jpg', buffer: croppedImageUrl});
-					this.props.saveAvatar({path: response.filename});
+					const response = await commandBackend('importFile', { extension: 'jpg', buffer: croppedImageUrl });
+					this.props.saveAvatar({ path: response.filename });
 				} else {
 					const formData = new FormData();
 					formData.append('file', croppedImageUrl as any);
@@ -98,8 +93,8 @@ class CropAvatarModal extends Component<IProps, IState> {
 						body: formData,
 						headers: {
 							authorization: localStorage.getItem('kmToken'),
-							onlineAuthorization: localStorage.getItem('kmOnlineToken')
-						}
+							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
+						},
 					});
 					this.props.saveAvatar(await response.json());
 				}
@@ -108,12 +103,11 @@ class CropAvatarModal extends Component<IProps, IState> {
 		}
 	};
 
-
 	closeModal = () => {
 		const element = document.getElementById('import-avatar');
 		if (element) ReactDOM.unmountComponentAtNode(element);
 		this.props.saveAvatar();
-	}
+	};
 
 	render() {
 		return (
@@ -133,7 +127,11 @@ class CropAvatarModal extends Component<IProps, IState> {
 						</div>
 						<div className="modal-footer">
 							<em className="modal-help">{i18next.t('MODAL.CROP_AVATAR_MODAL.HELP')}</em>
-							<button type="button" className="btn btn-action btn-primary other" onClick={this.closeModal}>
+							<button
+								type="button"
+								className="btn btn-action btn-primary other"
+								onClick={this.closeModal}
+							>
 								<i className="fas fa-times" /> {i18next.t('CANCEL')}
 							</button>
 							<button type="button" className="btn btn-action btn-default ok" onClick={this.saveAvatar}>
@@ -142,7 +140,7 @@ class CropAvatarModal extends Component<IProps, IState> {
 						</div>
 					</div>
 				</div>
-			</div >
+			</div>
 		);
 	}
 }

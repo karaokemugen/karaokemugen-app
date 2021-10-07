@@ -56,7 +56,7 @@ let timerFilter: any;
 
 class PublicPage extends Component<IProps, IState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: IProps) {
 		super(props);
@@ -72,16 +72,11 @@ class PublicPage extends Component<IProps, IState> {
 			bottom: '0',
 			publicVisible: false,
 			currentVisible: false,
-			searchType: 'search'
+			searchType: 'search',
 		};
 	}
 
-	changeView = async (
-		view: View,
-		tagType?: number,
-		searchValue?: string,
-		searchCriteria?: 'year' | 'tag'
-	) => {
+	changeView = async (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => {
 		let route;
 		let searchType: 'search' | 'recent' | 'requested' = 'search';
 		if (view === 'home') {
@@ -126,17 +121,22 @@ class PublicPage extends Component<IProps, IState> {
 	initView() {
 		if (this.props.route.location.pathname.includes('/public/search/requested')) {
 			this.changeView('requested');
-		} if (this.props.route.location.pathname.includes('/public/search/history')) {
+		}
+		if (this.props.route.location.pathname.includes('/public/search/history')) {
 			this.changeView('history');
 		} else if (this.props.route.location.pathname.includes('/public/search')) {
 			this.changeView('search');
 		} else if (this.props.route.location.pathname.includes('/public/favorites')) {
 			this.changeView('favorites');
 		} else if (this.props.route.location.pathname.includes('/public/tags')) {
-			const tagType = Number(this.props.route.location.pathname.substring(this.props.route.location.pathname.lastIndexOf('/') + 1));
+			const tagType = Number(
+				this.props.route.location.pathname.substring(this.props.route.location.pathname.lastIndexOf('/') + 1)
+			);
 			this.changeView('tag', tagType);
 		} else if (this.props.route.location.pathname.includes('/public/playlist')) {
-			const idPlaylist = this.props.route.location.pathname.substring(this.props.route.location.pathname.lastIndexOf('/') + 1);
+			const idPlaylist = this.props.route.location.pathname.substring(
+				this.props.route.location.pathname.lastIndexOf('/') + 1
+			);
 			if (idPlaylist === this.context.globalState.settings.data.state.publicPlaid) {
 				this.changeView('publicPlaylist');
 			} else if (idPlaylist === this.context.globalState.settings.data.state.currentPlaid) {
@@ -145,7 +145,7 @@ class PublicPage extends Component<IProps, IState> {
 		}
 	}
 
-	historyCallback: () => void
+	historyCallback: () => void;
 
 	async componentDidMount() {
 		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) await this.getPlaylistList();
@@ -161,7 +161,12 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().on('nextSong', this.nextSong);
 		this.historyCallback = this.props.route.history.listen(() => {
 			if (this.state.indexKaraDetail === undefined) {
-				setFilterValue(this.context.globalDispatch, '', 'left', this.context.globalState.frontendContext.playlistInfoLeft.plaid);
+				setFilterValue(
+					this.context.globalDispatch,
+					'',
+					'left',
+					this.context.globalState.frontendContext.playlistInfoLeft.plaid
+				);
 			}
 		});
 	}
@@ -185,18 +190,20 @@ class PublicPage extends Component<IProps, IState> {
 			setSettings(this.context.globalDispatch);
 			setPlaylistInfo('right', this.context, plaid);
 		}
-	}
+	};
 
 	playlistInfoUpdated = (plaid: string) => {
 		this.getPlaylistList();
-		if (this.context.globalState.frontendContext.playlistInfoLeft.plaid === plaid) setPlaylistInfo('left', this.context, plaid);
-		if (this.context.globalState.frontendContext.playlistInfoRight.plaid === plaid) setPlaylistInfo('right', this.context, plaid);
-	}
+		if (this.context.globalState.frontendContext.playlistInfoLeft.plaid === plaid)
+			setPlaylistInfo('left', this.context, plaid);
+		if (this.context.globalState.frontendContext.playlistInfoRight.plaid === plaid)
+			setPlaylistInfo('right', this.context, plaid);
+	};
 
 	getPlaylistList = async () => {
 		try {
 			const playlistsList = await commandBackend('getPlaylists');
-			playlistsList.forEach(playlist => {
+			playlistsList.forEach((playlist) => {
 				if (playlist.flag_public) {
 					this.setState({ publicVisible: playlist.flag_visible });
 				}
@@ -207,61 +214,78 @@ class PublicPage extends Component<IProps, IState> {
 		} catch (e) {
 			// already display
 		}
-	}
+	};
 
 	songPollStarted = () => {
 		if (this.context.globalState.auth.isAuthenticated) {
 			this.setState({ isPollActive: true });
-			showModal(this.context.globalDispatch,
-				<PollModal hasVoted={() => this.setState({ isPollActive: false })} />);
+			showModal(
+				this.context.globalDispatch,
+				<PollModal hasVoted={() => this.setState({ isPollActive: false })} />
+			);
 		}
-	}
+	};
 
 	songPollEnded = () => {
 		this.setState({ isPollActive: false });
 		closeModal(this.context.globalDispatch);
-	}
+	};
 
 	songPollResult = (data: any) => {
 		displayMessage('success', i18next.t('POLLENDED', { kara: data.kara.substring(0, 100), votes: data.votes }));
-	}
+	};
 
-	adminMessage = (data: any) => displayMessage('info', <div><label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br />{data.message}</div>, data.duration)
+	adminMessage = (data: any) =>
+		displayMessage(
+			'info',
+			<div>
+				<label>{i18next.t('CL_INFORMATIVE_MESSAGE')}</label> <br />
+				{data.message}
+			</div>,
+			data.duration
+		);
 
 	userSongPlaysIn = (data: DBPLCInfo) => {
 		if (data && data.username === this.context.globalState.auth.data.username) {
 			const playTime = new Date(Date.now() + data.time_before_play * 1000);
 			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 			const beforePlayTime = secondsTimeSpanToHMS(data.time_before_play, 'hm');
-			displayMessage('info', i18next.t('USER_SONG_PLAYS_IN', {
-				kara: buildKaraTitle(this.context.globalState.settings.data, data, true),
-				time: beforePlayTime,
-				date: playTimeDate
-			}));
+			displayMessage(
+				'info',
+				i18next.t('USER_SONG_PLAYS_IN', {
+					kara: buildKaraTitle(this.context.globalState.settings.data, data, true),
+					time: beforePlayTime,
+					date: playTimeDate,
+				})
+			);
 		}
-	}
+	};
 
 	nextSong = (data: DBPLC) => {
 		if (data && data.flag_visible && !this.state.playerStopping) {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
-				displayMessage('info',
+				displayMessage(
+					'info',
 					<div>
 						<label>{i18next.t('NEXT_SONG_MESSAGE')}</label>
 						<br />
 						{buildKaraTitle(this.context.globalState.settings.data, data, true)}
-					</div>);
+					</div>
+				);
 			}, 500);
 		}
-	}
+	};
 
 	displayClassicModeModal = (data: PublicPlayerState) => {
 		if (data.stopping !== undefined) this.setState({ playerStopping: data.stopping });
 		if (data.playerStatus === 'stop') this.setState({ playerStopped: true });
 		else if (typeof data.playerStatus === 'string') this.setState({ playerStopped: false });
-		if (this.state.playerStopped
-			&& data.currentRequester === this.context.globalState.auth.data.username
-			&& !this.state.classicModeModal) {
+		if (
+			this.state.playerStopped &&
+			data.currentRequester === this.context.globalState.auth.data.username &&
+			!this.state.classicModeModal
+		) {
 			showModal(this.context.globalDispatch, <ClassicModeModal />);
 			this.setState({ classicModeModal: true });
 		} else if (!this.state.playerStopped && this.state.classicModeModal) {
@@ -279,97 +303,128 @@ class PublicPage extends Component<IProps, IState> {
 
 	changeFilterValue = (e) => {
 		if (timerFilter) clearTimeout(timerFilter);
-		timerFilter = setTimeout(() =>
-			setFilterValue(
-				this.context.globalDispatch,
-				e.target.value,
-				'left',
-				this.context.globalState.frontendContext.playlistInfoLeft.plaid
-			), 1000);
+		timerFilter = setTimeout(
+			() =>
+				setFilterValue(
+					this.context.globalDispatch,
+					e.target.value,
+					'left',
+					this.context.globalState.frontendContext.playlistInfoLeft.plaid
+				),
+			1000
+		);
 	};
 
 	render() {
-		if (this.context?.globalState.settings.data.config?.Frontend?.Mode !== 2 && this.props.route.location.pathname.includes('/public/search')) {
+		if (
+			this.context?.globalState.settings.data.config?.Frontend?.Mode !== 2 &&
+			this.props.route.location.pathname.includes('/public/search')
+		) {
 			this.changeView('currentPlaylist');
 		}
-		return this.context?.globalState.settings.data.config.Frontend?.Mode === 0 ?
-			(<div
+		return this.context?.globalState.settings.data.config.Frontend?.Mode === 0 ? (
+			<div
 				style={{
 					top: '25%',
 					position: 'relative',
-					textAlign: 'center'
+					textAlign: 'center',
 				}}
 			>
 				<picture>
 					<source type="image/webp" srcSet={nanamiSingingWebP} />
 					<source type="image/png" srcSet={nanamiSingingPng} />
-					<img alt="Nanami is singing!" style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 150px)' }}
+					<img
+						alt="Nanami is singing!"
+						style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 150px)' }}
 						src={nanamiSingingPng}
 					/>
 				</picture>
-				<div style={{ fontSize: '30px', padding: '10px' }}>
-					{i18next.t('WEBAPPMODE_CLOSED_MESSAGE')}
-				</div>
-			</div>) : (
-				<>
-					<PublicHeader
-						openModal={(type: string) => this.props.route.history.push(`/public/${type}`)}
-						onResize={top => this.setState({ top })}
-						changeView={this.changeView} currentView={this.state.view}
-						currentVisible={this.state.currentVisible}
-						publicVisible={this.state.publicVisible}
-					/>
-					<PlayerBox
-						mode="fixed"
-						show={this.state.view !== 'home'}
-						currentVisible={this.state.currentVisible}
-						goToCurrentPL={() => this.changeView('currentPlaylist')}
-						onResize={bottom => this.setState({ bottom })}
-					/>
-					<KmAppWrapperDecorator single top={this.state.top} bottom={this.state.bottom} view={this.state.view}
-						hmagrin={(!['favorites', 'publicPlaylist', 'currentPlaylist', 'tag', 'search']
-							.includes(this.state.view)) && this.state.kara === undefined}>
-						<Switch>
-							<Route path="/public/user" render={() =>
+				<div style={{ fontSize: '30px', padding: '10px' }}>{i18next.t('WEBAPPMODE_CLOSED_MESSAGE')}</div>
+			</div>
+		) : (
+			<>
+				<PublicHeader
+					openModal={(type: string) => this.props.route.history.push(`/public/${type}`)}
+					onResize={(top) => this.setState({ top })}
+					changeView={this.changeView}
+					currentView={this.state.view}
+					currentVisible={this.state.currentVisible}
+					publicVisible={this.state.publicVisible}
+				/>
+				<PlayerBox
+					mode="fixed"
+					show={this.state.view !== 'home'}
+					currentVisible={this.state.currentVisible}
+					goToCurrentPL={() => this.changeView('currentPlaylist')}
+					onResize={(bottom) => this.setState({ bottom })}
+				/>
+				<KmAppWrapperDecorator
+					single
+					top={this.state.top}
+					bottom={this.state.bottom}
+					view={this.state.view}
+					hmagrin={
+						!['favorites', 'publicPlaylist', 'currentPlaylist', 'tag', 'search'].includes(
+							this.state.view
+						) && this.state.kara === undefined
+					}
+				>
+					<Switch>
+						<Route
+							path="/public/user"
+							render={() => (
 								<ProfilModal
-									scope='public'
+									scope="public"
 									closeProfileModal={() => this.props.route.history.goBack()}
 								/>
-							} />
-							<Route path="/public/users" render={() =>
-								<UsersModal
-									scope='public'
-									closeModal={() => this.props.route.history.goBack()}
-								/>
-							} />
-							<Route path="/public/karaoke/:kid" render={({ match }) =>
-								<KaraDetail kid={this.state.kara?.kid || match.params.kid}
+							)}
+						/>
+						<Route
+							path="/public/users"
+							render={() => (
+								<UsersModal scope="public" closeModal={() => this.props.route.history.goBack()} />
+							)}
+						/>
+						<Route
+							path="/public/karaoke/:kid"
+							render={({ match }) => (
+								<KaraDetail
+									kid={this.state.kara?.kid || match.params.kid}
 									playlistcontentId={this.state.kara?.plcid}
-									scope='public'
+									scope="public"
 									plaid={this.context.globalState.frontendContext.playlistInfoLeft.plaid}
 									closeOnPublic={() => {
 										this.props.route.history.goBack();
 										this.setState({ kara: undefined });
 									}}
-									changeView={this.changeView} />
-							} />
-							<Route path={[
+									changeView={this.changeView}
+								/>
+							)}
+						/>
+						<Route
+							path={[
 								'/public/search',
 								'/public/playlist/:plaid',
 								'/public/favorites',
-								'/public/tags/:tagType'
-							]} render={({ match }) =>
+								'/public/tags/:tagType',
+							]}
+							render={({ match }) => (
 								<React.Fragment>
 									<KmAppHeaderDecorator mode="public">
 										<button
 											className="btn"
 											type="button"
-											onClick={() => this.changeView((this.state.view === 'search' && this.state.searchCriteria ? 'tag' : 'home'))}>
+											onClick={() =>
+												this.changeView(
+													this.state.view === 'search' && this.state.searchCriteria
+														? 'tag'
+														: 'home'
+												)
+											}
+										>
 											<i className="fas fa-arrow-left" />
 										</button>
-										<div
-											className="plSearch"
-										>
+										<div className="plSearch">
 											<input
 												placeholder={`\uF002 ${i18next.t('SEARCH')}`}
 												type="text"
@@ -380,8 +435,13 @@ class PublicPage extends Component<IProps, IState> {
 										{this.state.isPollActive ? (
 											<button
 												className="btn btn-default showPoll"
-												onClick={() => showModal(this.context.globalDispatch,
-													<PollModal hasVoted={() => this.setState({ isPollActive: false })} />)
+												onClick={() =>
+													showModal(
+														this.context.globalDispatch,
+														<PollModal
+															hasVoted={() => this.setState({ isPollActive: false })}
+														/>
+													)
 												}
 											>
 												<i className="fas fa-chart-line" />
@@ -391,13 +451,11 @@ class PublicPage extends Component<IProps, IState> {
 
 									<KmAppBodyDecorator
 										mode={this.context?.globalState.settings.data.config?.Frontend?.Mode}
-										extraClass='JustPlaylist fillSpace'
+										extraClass="JustPlaylist fillSpace"
 									>
-										{this.state.view === 'tag' ?
-											<TagsList
-												tagType={this.state.tagType}
-												changeView={this.changeView}
-											/> :
+										{this.state.view === 'tag' ? (
+											<TagsList tagType={this.state.tagType} changeView={this.changeView} />
+										) : (
 											<Playlist
 												scope="public"
 												side={'left'}
@@ -405,36 +463,48 @@ class PublicPage extends Component<IProps, IState> {
 												searchValue={this.state.searchValue}
 												searchCriteria={this.state.searchCriteria}
 												indexKaraDetail={this.state.indexKaraDetail}
-												clearIndexKaraDetail={() => this.setState({ indexKaraDetail: undefined })}
+												clearIndexKaraDetail={() =>
+													this.setState({ indexKaraDetail: undefined })
+												}
 												searchType={
-													this.props.route.location.pathname.includes('/public/search/requested') ?
-														'requested' :
-														(this.props.route.location.pathname.includes('/public/search/history') ?
-															'recent' :
-															this.state.searchType
-														)
+													this.props.route.location.pathname.includes(
+														'/public/search/requested'
+													)
+														? 'requested'
+														: this.props.route.location.pathname.includes(
+																'/public/search/history'
+														  )
+														? 'recent'
+														: this.state.searchType
 												}
 											/>
-										}
+										)}
 									</KmAppBodyDecorator>
 								</React.Fragment>
-							} />
-							<Route path='/public' render={() =>
+							)}
+						/>
+						<Route
+							path="/public"
+							render={() => (
 								<PublicHomepage
 									changeView={this.changeView}
 									toggleKaraDetail={this.toggleKaraDetail}
 									activePoll={this.state.isPollActive}
 									currentVisible={this.state.currentVisible}
 									publicVisible={this.state.publicVisible}
-									openPoll={() => showModal(this.context.globalDispatch,
-										<PollModal hasVoted={() => this.setState({ isPollActive: false })} />)
+									openPoll={() =>
+										showModal(
+											this.context.globalDispatch,
+											<PollModal hasVoted={() => this.setState({ isPollActive: false })} />
+										)
 									}
 								/>
-							} />
-						</Switch>
-					</KmAppWrapperDecorator>
-				</>
-			);
+							)}
+						/>
+					</Switch>
+				</KmAppWrapperDecorator>
+			</>
+		);
 	}
 }
 

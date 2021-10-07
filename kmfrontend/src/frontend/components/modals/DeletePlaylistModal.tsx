@@ -13,11 +13,10 @@ import SelectWithIcon from '../generic/SelectWithIcon';
 
 interface IProps {
 	side: 'left' | 'right';
-	playlistList: { value: string, label: string, icons: string[] }[];
+	playlistList: { value: string; label: string; icons: string[] }[];
 }
 
 function DeletePlaylistModal(props: IProps) {
-
 	const context = useContext(GlobalContext);
 	const [plaidChosen, setPlaidChosen] = useState<string>();
 
@@ -30,23 +29,23 @@ function DeletePlaylistModal(props: IProps) {
 				await commandBackend('editPlaylist', {
 					flag_whitelist: playlist.flag_whitelist,
 					flag_blacklist: playlist.flag_blacklist,
-					flag_current: (playlist.flag_current
-						|| context.globalState.settings.data.state.currentPlaid === plaidChosen),
-					flag_public: playlist.flag_public
-						|| context.globalState.settings.data.state.publicPlaid === plaidChosen,
-					plaid: plaidChosen
+					flag_current:
+						playlist.flag_current || context.globalState.settings.data.state.currentPlaid === plaidChosen,
+					flag_public:
+						playlist.flag_public || context.globalState.settings.data.state.publicPlaid === plaidChosen,
+					plaid: plaidChosen,
 				});
 				await setSettings(context.globalDispatch);
 			} else {
 				setPlaylistInfo(
 					props.side,
 					context,
-					oppositePlaylist.plaid === context.globalState.settings.data.state.publicPlaid ?
-						nonStandardPlaylists.library :
-						context.globalState.settings.data.state.publicPlaid
+					oppositePlaylist.plaid === context.globalState.settings.data.state.publicPlaid
+						? nonStandardPlaylists.library
+						: context.globalState.settings.data.state.publicPlaid
 				);
 				commandBackend('deletePlaylist', {
-					plaid: playlist.plaid
+					plaid: playlist.plaid,
 				});
 			}
 			closeModalWithContext();
@@ -58,20 +57,17 @@ function DeletePlaylistModal(props: IProps) {
 	const closeModalWithContext = () => closeModal(context.globalDispatch);
 
 	const playlist = getPlaylistInfo(props.side, context);
-	const message = playlist.flag_whitelist ?
-		'MODAL.DELETE_PLAYLIST_MODAL.DELETE_WHITELIST' : (playlist.flag_blacklist ?
-			'MODAL.DELETE_PLAYLIST_MODAL.DELETE_BLACKLIST' :
-			(playlist.flag_current && playlist.flag_public ?
-				'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT_PUBLIC' :
-				(playlist.flag_public ?
-					'MODAL.DELETE_PLAYLIST_MODAL.DELETE_PUBLIC' :
-					(playlist.flag_current ?
-						'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT' :
-						null
-					)
-				)
-			)
-		);
+	const message = playlist.flag_whitelist
+		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_WHITELIST'
+		: playlist.flag_blacklist
+		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_BLACKLIST'
+		: playlist.flag_current && playlist.flag_public
+		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT_PUBLIC'
+		: playlist.flag_public
+		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_PUBLIC'
+		: playlist.flag_current
+		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT'
+		: null;
 	return (
 		<div className="modal modalPage">
 			<div className="modal-dialog">
@@ -84,33 +80,37 @@ function DeletePlaylistModal(props: IProps) {
 								<img src={nanamiShockedPng} alt="Nanami is shocked oO" />
 							</picture>
 							{i18next.t('MODAL.DELETE_PLAYLIST_MODAL.TITLE', {
-								playlist: playlist.name
+								playlist: playlist.name,
 							})}
 						</h4>
 					</ul>
-					{message ?
+					{message ? (
 						<div className="modal-body">
 							<div className="modal-message text">
 								<p>{i18next.t(message)}</p>
 								<SelectWithIcon
 									list={props.playlistList}
 									value={plaidChosen}
-									onChange={(value: any) => setPlaidChosen(value)} />
+									onChange={(value: any) => setPlaidChosen(value)}
+								/>
 							</div>
-						</div> : null
-					}
+						</div>
+					) : null}
 					<div className="modal-footer">
-						<button type="button" className="btn btn-action btn-primary other" onClick={closeModalWithContext}>
+						<button
+							type="button"
+							className="btn btn-action btn-primary other"
+							onClick={closeModalWithContext}
+						>
 							<i className="fas fa-times" /> {i18next.t('CANCEL')}
 						</button>
-						<button type="button" className="btn btn-action btn-default ok"
-							onClick={deletePlaylist}>
+						<button type="button" className="btn btn-action btn-default ok" onClick={deletePlaylist}>
 							<i className="fas fa-check" /> {i18next.t('YES')}
 						</button>
 					</div>
-				</div >
-			</div >
-		</div >
+				</div>
+			</div>
+		</div>
 	);
 }
 

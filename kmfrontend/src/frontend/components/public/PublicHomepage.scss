@@ -27,7 +27,7 @@
 		width: 100%;
 		font-size: 2em;
 		text-align: start;
-		margin: .5em 0;
+		margin: 0.5em 0;
 		@media screen and (max-width: $mugen-breakpoint-large) {
 			text-align: unset;
 		}
@@ -39,7 +39,7 @@
 			width: 100%;
 		}
 		> i {
-			margin-right: .25em;
+			margin-right: 0.25em;
 		}
 		flex-shrink: 0;
 		background: none;
@@ -48,23 +48,24 @@
 		color: unset;
 		text-decoration: unset;
 		font-size: 1.25em;
-		margin: .5em 0;
+		margin: 0.5em 0;
 		transition: color ease-out 200ms;
 		font-family: inherit;
 		@each $name, $color in $mugen-colors {
-			 @if $name != 'black' {
-				 &.#{$name} {
-					 &:hover, &:focus {
-						 color: saturate(lighten($color, 25), 10);
-					 }
-					 &.big {
-						 color: saturate(lighten($color, 10), 20);
-					 }
-					 > i {
-						 color: saturate(lighten($color, 10), 20);
-					 }
-				 }
-			 }
+			@if $name != 'black' {
+				&.#{$name} {
+					&:hover,
+					&:focus {
+						color: saturate(lighten($color, 25), 10);
+					}
+					&.big {
+						color: saturate(lighten($color, 10), 20);
+					}
+					> i {
+						color: saturate(lighten($color, 10), 20);
+					}
+				}
+			}
 		}
 		&.big {
 			width: 100%;

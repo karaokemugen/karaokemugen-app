@@ -1,71 +1,75 @@
 .switch-ui {
-	font-family:Lato;
+	font-family: Lato;
 	margin-top: 5px;
-	
-	input { display: none; }
+
+	input {
+		display: none;
+	}
 
 	.switch-ui--control {
-	  display: inline-block;
-	  position:relative;
-	  background:#0000004d;
-	  color:#ffffff99;
-	  line-height: 1.5em;
-	  width: 4em;
-	  white-space: nowrap;
-	  overflow: hidden;
-	  border-radius:.75em;
-	  box-shadow: 0 0 5px #0000004d;
-	  border:1px solid white;
-	  transition: all ease .5s;
-
-	  --text-on: "ON";
-	  --text-off: "OFF";
-	  
-	  span {
-		display:block;
-		position: absolute;
-		width: 1em;
-		height: 1em;
-		border-radius:50%;
-		background:#ffffff99;
-		top: .30em;
-		left: .25em;
-		transition: left ease .5s;
-		box-shadow: inset 1px 1px 1px 0px #0000004d;
-		transition: all ease .5s;
-	  }
-	  
-	  &:before, &:after {
 		display: inline-block;
-		width: 2.5em;
-		margin:0 0 0 0.5em;
-		transform:translateX(-100%);
-		transition: transform ease .5s;
-	  }
-	  &:before {
-		content: var(--text-on);
-		text-align: left;
-	  }
-	  &:after {
-		content: var(--text-off);
-		text-align: right;
-	  }
+		position: relative;
+		background: #0000004d;
+		color: #ffffff99;
+		line-height: 1.5em;
+		width: 4em;
+		white-space: nowrap;
+		overflow: hidden;
+		border-radius: 0.75em;
+		box-shadow: 0 0 5px #0000004d;
+		border: 1px solid white;
+		transition: all ease 0.5s;
+
+		--text-on: 'ON';
+		--text-off: 'OFF';
+
+		span {
+			display: block;
+			position: absolute;
+			width: 1em;
+			height: 1em;
+			border-radius: 50%;
+			background: #ffffff99;
+			top: 0.3em;
+			left: 0.25em;
+			transition: left ease 0.5s;
+			box-shadow: inset 1px 1px 1px 0px #0000004d;
+			transition: all ease 0.5s;
+		}
+
+		&:before,
+		&:after {
+			display: inline-block;
+			width: 2.5em;
+			margin: 0 0 0 0.5em;
+			transform: translateX(-100%);
+			transition: transform ease 0.5s;
+		}
+		&:before {
+			content: var(--text-on);
+			text-align: left;
+		}
+		&:after {
+			content: var(--text-off);
+			text-align: right;
+		}
 	}
-	
+
 	// Active effect
-  
+
 	input:checked + .switch-ui--control {
-	  color:white;
-	  background:#57bb00;
-	  box-shadow: 0 0 5px #b7ff27cc;
-	  
-	  &:before, &:after {
-		transform:translateX(0);
-	  }
-	  span {
-		left: 2.65em;
-		top: 0.25em;
-		background: white;
-	  }
+		color: white;
+		background: #57bb00;
+		box-shadow: 0 0 5px #b7ff27cc;
+
+		&:before,
+		&:after {
+			transform: translateX(0);
+		}
+		span {
+			left: 2.65em;
+			top: 0.25em;
+			background: white;
+		}
 	}
-  }
+}

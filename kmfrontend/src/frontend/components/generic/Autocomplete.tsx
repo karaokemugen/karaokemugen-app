@@ -14,11 +14,10 @@ interface IProps {
 	value: any;
 	acceptNewValues?: boolean;
 	onChange: (value: any) => void;
-	forceTop?: boolean
+	forceTop?: boolean;
 }
 
 function Autocomplete(props: IProps) {
-
 	const options = props.options || [];
 
 	const node: any = useRef();
@@ -28,8 +27,7 @@ function Autocomplete(props: IProps) {
 	let temp: string | any[] = '';
 	if (selectedValue) {
 		temp = options.filter((o) => o.value === selectedValue);
-		if (temp.length)
-			temp = temp[0].label;
+		if (temp.length) temp = temp[0].label;
 	}
 	const [searchValue, setSearchValue] = useState(temp);
 
@@ -44,8 +42,7 @@ function Autocomplete(props: IProps) {
 
 	const updateSelectedValue = (v: any) => {
 		setSelectedValue(v);
-		if (typeof props.onChange === 'function')
-			props.onChange(v);
+		if (typeof props.onChange === 'function') props.onChange(v);
 		return;
 	};
 
@@ -75,11 +72,14 @@ function Autocomplete(props: IProps) {
 			} else if (o) {
 				updateSelectedValue(o.value);
 			}
-		} else if (e.keyCode === 27) //ESC
+		} else if (e.keyCode === 27)
+			//ESC
 			setFocus(false);
-		else if (e.keyCode === 40) //DOWN
+		else if (e.keyCode === 40)
+			//DOWN
 			setActiveIndex(fo.length > 0 ? Math.min(activeIndex + 1, fo.length - 1) : 0);
-		else if (e.keyCode === 38) //UP
+		else if (e.keyCode === 38)
+			//UP
 			setActiveIndex(fo.length > 0 ? Math.max(activeIndex - 1, 0) : 0);
 	};
 
@@ -94,10 +94,17 @@ function Autocomplete(props: IProps) {
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	};
 
-	const filteredOptions = () => options.filter((o) => {
-		return String(o.label).toLowerCase().match(escapeRegExp(String(searchValue).toLowerCase()))
-			|| String(o.value).toLowerCase().match(escapeRegExp(String(searchValue).toLowerCase()));
-	});
+	const filteredOptions = () =>
+		options.filter((o) => {
+			return (
+				String(o.label)
+					.toLowerCase()
+					.match(escapeRegExp(String(searchValue).toLowerCase())) ||
+				String(o.value)
+					.toLowerCase()
+					.match(escapeRegExp(String(searchValue).toLowerCase()))
+			);
+		});
 
 	const handleClick = (e: any) => {
 		if (node.current.contains(e.target)) {
@@ -109,8 +116,7 @@ function Autocomplete(props: IProps) {
 	};
 
 	useEffect(() => {
-		if (focus)
-			searchInputRef.current.focus();
+		if (focus) searchInputRef.current.focus();
 		// add when mounted
 		document.addEventListener('mousedown', handleClick);
 		// return function to be called when unmounted
@@ -122,7 +128,8 @@ function Autocomplete(props: IProps) {
 	return (
 		<div className="UI-autocomplete" ref={node}>
 			<div className="UI-autocomplete-input" data-focus={focus ? 'true' : 'false'}>
-				<input type="text"
+				<input
+					type="text"
 					data-exclude={true}
 					ref={searchInputRef}
 					value={searchValue}
@@ -132,13 +139,23 @@ function Autocomplete(props: IProps) {
 					onChange={handleSearchChange}
 					onKeyUp={handleSearchKeyUp}
 				/>
-				<ul className="UI-autocomplete-options"
-					style={{top: node.current && props.forceTop ? node.current.getBoundingClientRect().top - 30 : undefined }}>
+				<ul
+					className="UI-autocomplete-options"
+					style={{
+						top: node.current && props.forceTop ? node.current.getBoundingClientRect().top - 30 : undefined,
+					}}
+				>
 					<div className="UI-autocomplete-options-wrapper">
-						{filteredOptions().map((o, index) =>
-							<li className="UI-autocomplete-option" data-active={index === activeIndex ? 'true' : 'false'}
-								key={index} onClick={() => handleOptionSelection(o)}>{o.label}</li>
-						)}
+						{filteredOptions().map((o, index) => (
+							<li
+								className="UI-autocomplete-option"
+								data-active={index === activeIndex ? 'true' : 'false'}
+								key={index}
+								onClick={() => handleOptionSelection(o)}
+							>
+								{o.label}
+							</li>
+						))}
 					</div>
 				</ul>
 			</div>

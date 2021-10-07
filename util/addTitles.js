@@ -10,17 +10,17 @@ async function main() {
 		const kara = JSON.parse(karaData);
 		kara.data.titles = {};
 		kara.data.titles.eng = kara.data.title;
-		if (kara.data.tags.langs.includes('4dcf9614-7914-42aa-99f4-dbce2e059133')) kara.data.titles.qjr = kara.data.title;
-		const dataOrdered = Object.keys(kara.data).sort().reduce(
-			(obj, key) => {
-			  obj[key] = kara.data[key];
-			  return obj;
-			},
-			{}
-		  );
+		if (kara.data.tags.langs.includes('4dcf9614-7914-42aa-99f4-dbce2e059133'))
+			kara.data.titles.qjr = kara.data.title;
+		const dataOrdered = Object.keys(kara.data)
+			.sort()
+			.reduce((obj, key) => {
+				obj[key] = kara.data[key];
+				return obj;
+			}, {});
 		kara.data = dataOrdered;
 		await fs.writeFile(path.resolve(kpath, file), JSON.stringify(kara, null, 2), 'utf-8');
 	}
 }
 
-main().catch(err => console.log(err));
+main().catch((err) => console.log(err));

@@ -9,16 +9,15 @@ import { commandBackend } from '../../../utils/socket';
 import KaraForm from './KaraForm';
 
 interface KaraEditState {
-	kara: DBKara | Record<string, never>,
-	save: any,
-	loadKara: boolean
+	kara: DBKara | Record<string, never>;
+	save: any;
+	loadKara: boolean;
 }
 class KaraEdit extends Component<RouteComponentProps<{ kid: string }>, KaraEditState> {
-
 	state = {
 		kara: {},
-		save: () => { },
-		loadKara: false
+		save: () => {},
+		loadKara: false,
 	};
 
 	componentDidMount() {
@@ -58,23 +57,29 @@ class KaraEdit extends Component<RouteComponentProps<{ kid: string }>, KaraEditS
 	handleCopy = async (kid, repo) => {
 		await commandBackend('copyKaraToRepo', { repo, kid }, true);
 		this.props.history.push('/system/karas');
-	}
+	};
 
 	render() {
 		return (
 			<>
 				<Layout.Header>
-					<div className='title'>{i18next.t(this.props.match.params.kid ?
-						'HEADERS.KARAOKE_EDIT.TITLE' :
-						'HEADERS.KARAOKE_NEW.TITLE'
-					)}</div>
-					<div className='description'>{i18next.t(this.props.match.params.kid ?
-						'HEADERS.KARAOKE_EDIT.DESCRIPTION' :
-						'HEADERS.KARAOKE_NEW.DESCRIPTION'
-					)}</div>
+					<div className="title">
+						{i18next.t(
+							this.props.match.params.kid ? 'HEADERS.KARAOKE_EDIT.TITLE' : 'HEADERS.KARAOKE_NEW.TITLE'
+						)}
+					</div>
+					<div className="description">
+						{i18next.t(
+							this.props.match.params.kid
+								? 'HEADERS.KARAOKE_EDIT.DESCRIPTION'
+								: 'HEADERS.KARAOKE_NEW.DESCRIPTION'
+						)}
+					</div>
 				</Layout.Header>
 				<Layout.Content>
-					{this.state.loadKara && <KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy} />}
+					{this.state.loadKara && (
+						<KaraForm kara={this.state.kara} save={this.state.save} handleCopy={this.handleCopy} />
+					)}
 				</Layout.Content>
 			</>
 		);

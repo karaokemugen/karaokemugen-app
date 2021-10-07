@@ -14,12 +14,7 @@ import { View } from '../../types/view';
 
 interface IProps {
 	tagType: number;
-	changeView: (
-		view: View,
-		tagType?: number,
-		searchValue?: string,
-		searchCriteria?: 'year' | 'tag'
-	) => void;
+	changeView: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
 }
 
 const chunksize = 100;
@@ -33,20 +28,19 @@ function TagsList(props: IProps) {
 		infos: {
 			count: 0,
 			from: 0,
-			to: 0
-		}
+			to: 0,
+		},
 	});
 
 	const getTags = async () => {
 		try {
-			const response = await commandBackend('getTags',
-				{
-					type: props.tagType,
-					from: tags.infos.from,
-					size: chunksize,
-					filter: context.globalState.frontendContext.filterValue1,
-					stripEmpty: true
-				});
+			const response = await commandBackend('getTags', {
+				type: props.tagType,
+				from: tags.infos.from,
+				size: chunksize,
+				filter: context.globalState.frontendContext.filterValue1,
+				stripEmpty: true,
+			});
 			let data;
 			if (response.infos?.from > 0) {
 				data = tags;
@@ -82,7 +76,6 @@ function TagsList(props: IProps) {
 		setTags(response);
 	};
 
-
 	const isRowLoaded = (index) => {
 		return !!tags?.content[index];
 	};
@@ -92,7 +85,7 @@ function TagsList(props: IProps) {
 		tags.infos.from = Math.floor(endIndex / chunksize) * chunksize;
 		setTags(tags);
 		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => props.tagType === YEARS.type ? getYears() : getTags(), 1000);
+		timer = setTimeout(() => (props.tagType === YEARS.type ? getYears() : getTags()), 1000);
 	};
 
 	const openSearch = (tid: string) => {
@@ -101,37 +94,49 @@ function TagsList(props: IProps) {
 		props.changeView('search', props.tagType, searchValue, props.tagType === YEARS.type ? 'year' : 'tag');
 	};
 
-	const Item = useCallback(({ index }: { index: number }) => {
-		let tag: DBTag;
-		if (tags?.content[index]) {
-			tag = tags.content[index];
-			return (
-				<div className={`tags-item${index % 2 === 0 ? ' even' : ''}`} tabIndex={0}
-					key={tag.tid} onClick={() => openSearch(tag.tid)}>
-					<div className="title">{
-						props.tagType === YEARS.type ?
-							tag.name :
-							getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag)
-					}</div>
-					<div className="karacount">
-						<em>
-							{i18next.t('KARAOKE', {
-								count: (tag?.karacount as unknown as { count: number, type: number }[])
-									?.filter(value => value.type === props.tagType).length > 0 ?
-									(tag.karacount as unknown as { count: number, type: number }[])
-										?.filter(value => value.type === props.tagType)[0].count
-									: 0
-							})}
-						</em>
+	const Item = useCallback(
+		({ index }: { index: number }) => {
+			let tag: DBTag;
+			if (tags?.content[index]) {
+				tag = tags.content[index];
+				return (
+					<div
+						className={`tags-item${index % 2 === 0 ? ' even' : ''}`}
+						tabIndex={0}
+						key={tag.tid}
+						onClick={() => openSearch(tag.tid)}
+					>
+						<div className="title">
+							{props.tagType === YEARS.type
+								? tag.name
+								: getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag)}
+						</div>
+						<div className="karacount">
+							<em>
+								{i18next.t('KARAOKE', {
+									count:
+										(tag?.karacount as unknown as { count: number; type: number }[])?.filter(
+											(value) => value.type === props.tagType
+										).length > 0
+											? (tag.karacount as unknown as { count: number; type: number }[])?.filter(
+													(value) => value.type === props.tagType
+											  )[0].count
+											: 0,
+								})}
+							</em>
+						</div>
 					</div>
-				</div>
-			);
-		} else {
-			return <div className="tags-item" key={index}>
-				{i18next.t('LOADING')}
-			</div>;
-		}
-	}, [tags?.infos.to]);
+				);
+			} else {
+				return (
+					<div className="tags-item" key={index}>
+						{i18next.t('LOADING')}
+					</div>
+				);
+			}
+		},
+		[tags?.infos.to]
+	);
 
 	const HeightPreservingItem = useCallback(({ children, ...props }: PropsWithChildren<ItemProps>) => {
 		return (
@@ -156,12 +161,11 @@ function TagsList(props: IProps) {
 		<div className="tags-list">
 			<Virtuoso
 				components={{
-					Item: HeightPreservingItem
+					Item: HeightPreservingItem,
 				}}
-				itemContent={(index) => (<Item index={index} />)}
+				itemContent={(index) => <Item index={index} />}
 				totalCount={tags.infos.count}
 				rangeChanged={loadMoreRows}
-
 			/>
 		</div>
 	);

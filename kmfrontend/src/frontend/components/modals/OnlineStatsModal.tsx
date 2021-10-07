@@ -11,17 +11,17 @@ import RadioButton from '../generic/RadioButton';
 interface IState {
 	openDetails: boolean;
 	stats?: boolean;
-	errorTracking?: boolean
+	errorTracking?: boolean;
 }
 
 class OnlineStatsModal extends Component<unknown, IState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: unknown) {
 		super(props);
 		this.state = {
-			openDetails: false
+			openDetails: false,
 		};
 	}
 
@@ -32,9 +32,9 @@ class OnlineStatsModal extends Component<unknown, IState> {
 					setting: {
 						Online: {
 							Stats: this.state.stats,
-							ErrorTracking: this.state.errorTracking
-						}
-					}
+							ErrorTracking: this.state.errorTracking,
+						},
+					},
 				});
 				closeModal(this.context.globalDispatch);
 			} catch (e) {
@@ -56,10 +56,14 @@ class OnlineStatsModal extends Component<unknown, IState> {
 								<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
 							</div>
 							<div className="text">
-								<a className="btn-link" type="button" onClick={() => this.setState({ openDetails: !this.state.openDetails })}>
+								<a
+									className="btn-link"
+									type="button"
+									onClick={() => this.setState({ openDetails: !this.state.openDetails })}
+								>
 									{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
 								</a>
-								{this.state.openDetails ?
+								{this.state.openDetails ? (
 									<React.Fragment>
 										<ul>
 											<li>{i18next.t('ONLINE_STATS.DETAILS.1')}</li>
@@ -69,8 +73,8 @@ class OnlineStatsModal extends Component<unknown, IState> {
 										</ul>
 										<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
 										<br />
-									</React.Fragment> : null
-								}
+									</React.Fragment>
+								) : null}
 								<div className="text">
 									<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
 								</div>
@@ -81,14 +85,14 @@ class OnlineStatsModal extends Component<unknown, IState> {
 											label: i18next.t('YES'),
 											activeColor: '#57bb00',
 											active: this.state.stats,
-											onClick: () => this.setState({ stats: true })
+											onClick: () => this.setState({ stats: true }),
 										},
 										{
 											label: i18next.t('NO'),
 											activeColor: '#880500',
 											active: this.state.stats === false,
-											onClick: () => this.setState({ stats: false })
-										}
+											onClick: () => this.setState({ stats: false }),
+										},
 									]}
 								/>
 								<br />
@@ -102,28 +106,32 @@ class OnlineStatsModal extends Component<unknown, IState> {
 											label: i18next.t('YES'),
 											activeColor: '#57bb00',
 											active: this.state.errorTracking,
-											onClick: () => this.setState({ errorTracking: true })
+											onClick: () => this.setState({ errorTracking: true }),
 										},
 										{
 											label: i18next.t('NO'),
 											activeColor: '#880500',
 											active: this.state.errorTracking === false,
-											onClick: () => this.setState({ errorTracking: false })
-										}
+											onClick: () => this.setState({ errorTracking: false }),
+										},
 									]}
 								/>
 								<br />
 								{i18next.t('ONLINE_STATS.CHANGE')}
-							</div >
-						</div >
+							</div>
+						</div>
 						<div className="modal-footer">
-							<button type="button" className="btn btn-action btn-default ok" onClick={() => this.onClick()}>
+							<button
+								type="button"
+								className="btn btn-action btn-default ok"
+								onClick={() => this.onClick()}
+							>
 								{i18next.t('ONLINE_STATS.CONFIRM')}
 							</button>
 						</div>
-					</div >
-				</div >
-			</div >
+					</div>
+				</div>
+			</div>
 		);
 	}
 }

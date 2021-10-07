@@ -24,7 +24,6 @@
 	}
 }
 
-
 .modal-header-title {
 	display: flex;
 	flex-direction: row;
@@ -60,7 +59,7 @@
 			margin: 0.25em;
 			text-align: left;
 			span {
-				margin-left: .5em;
+				margin-left: 0.5em;
 			}
 		}
 	}
@@ -74,7 +73,7 @@
 		display: flex;
 		align-items: center;
 		i {
-			margin-right: .5em;
+			margin-right: 0.5em;
 		}
 		&.timeData {
 			justify-content: space-between;
@@ -107,7 +106,7 @@
 }
 
 .currentFav {
-    color: #F3C71E !important;
+	color: #f3c71e !important;
 }
 
 .colored {

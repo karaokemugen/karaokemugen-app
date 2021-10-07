@@ -14,17 +14,17 @@ interface IProps {
 interface IState {
 	width: string;
 	timeLeft?: string;
-	poll: PollItem[]
+	poll: PollItem[];
 }
 class PollModal extends Component<IProps, IState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			poll: [],
-			width: '100%'
+			width: '100%',
 		};
 		this.getSongPoll();
 	}
@@ -53,32 +53,41 @@ class PollModal extends Component<IProps, IState> {
 							<li className="modal-title active">
 								<a style={{ fontWeight: 'bold' }}>{i18next.t('POLLTITLE')}</a>
 							</li>
-							<button className="closeModal"
+							<button
+								className="closeModal"
 								onClick={() => {
 									closeModal(this.context.globalDispatch);
-								}}>
+								}}
+							>
 								<i className="fas fa-times"></i>
 							</button>
-							<span className="timer" style={{ transition: `width ${this.state.timeLeft}`, width: this.state.width }}></span>
-
+							<span
+								className="timer"
+								style={{ transition: `width ${this.state.timeLeft}`, width: this.state.width }}
+							></span>
 						</ul>
 						<div id="nav-poll" className="modal-body" style={{ height: 3 * this.state.poll.length + 'em' }}>
 							<div className="modal-message">
-								{this.state.poll.map(kara => {
-									return <button className="btn btn-default tour poll" key={kara.plcid} value={kara.index}
-										onClick={this.postSong}
-										style={{
-											backgroundColor: 'hsl('
-												+ Math.floor(Math.random() * 256)
-												+ ',20%, 26%)'
-										}}>
-										{buildKaraTitle(this.context.globalState.settings.data, kara, true)}
-									</button>;
+								{this.state.poll.map((kara) => {
+									return (
+										<button
+											className="btn btn-default tour poll"
+											key={kara.plcid}
+											value={kara.index}
+											onClick={this.postSong}
+											style={{
+												backgroundColor:
+													'hsl(' + Math.floor(Math.random() * 256) + ',20%, 26%)',
+											}}
+										>
+											{buildKaraTitle(this.context.globalState.settings.data, kara, true)}
+										</button>
+									);
 								})}
 							</div>
 						</div>
 					</div>
-				</div >
+				</div>
 			</div>
 		);
 	}

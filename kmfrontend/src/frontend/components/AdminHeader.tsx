@@ -26,7 +26,6 @@ interface IProps extends RouteComponentProps {
 }
 
 function AdminHeader(props: IProps) {
-
 	const context = useContext(GlobalContext);
 	const [dropDownMenu, setDropDownMenu] = useState(false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
@@ -43,7 +42,7 @@ function AdminHeader(props: IProps) {
 		const pow = 0.76;
 		val = val / base;
 		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
-		setStatusPlayer(oldState => {
+		setStatusPlayer((oldState) => {
 			const state = { ...oldState };
 			return merge(state, data);
 		});
@@ -67,22 +66,29 @@ function AdminHeader(props: IProps) {
 
 	const saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
-		commandBackend('updateSettings', { setting: data }).catch(() => { });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	const changePublicInterfaceMode = (value: number) => {
 		const data = expand('Frontend.Mode', value);
-		commandBackend('updateSettings', { setting: data }).catch(() => { });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	const play = (event: any) => {
-		if ((!statusPlayer || statusPlayer?.playerStatus === 'stop')
-			&& context.globalState.frontendContext.playlistInfoLeft.plaid !== props.currentPlaylist?.plaid
-			&& context.globalState.frontendContext.playlistInfoRight.plaid !== props.currentPlaylist?.plaid
-			&& (!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoLeft.plaid)
-				|| !isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid))) {
-			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }), '',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => { }));
+		if (
+			(!statusPlayer || statusPlayer?.playerStatus === 'stop') &&
+			context.globalState.frontendContext.playlistInfoLeft.plaid !== props.currentPlaylist?.plaid &&
+			context.globalState.frontendContext.playlistInfoRight.plaid !== props.currentPlaylist?.plaid &&
+			(!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoLeft.plaid) ||
+				!isNonStandardPlaylist(context.globalState.frontendContext.playlistInfoRight.plaid))
+		) {
+			callModal(
+				context.globalDispatch,
+				'confirm',
+				i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }),
+				'',
+				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {})
+			);
 		} else {
 			props.putPlayerCommando(event);
 		}
@@ -110,7 +116,7 @@ function AdminHeader(props: IProps) {
 	}, []);
 
 	const setVolume = (event) => {
-		setStatusPlayer(oldState => {
+		setStatusPlayer((oldState) => {
 			const state = { ...oldState };
 			state.volume = event.target.value;
 			return state;
@@ -119,16 +125,16 @@ function AdminHeader(props: IProps) {
 
 	return (
 		<KmAppHeaderDecorator mode="admin">
-			{props.location.pathname.includes('/options') ?
+			{props.location.pathname.includes('/options') ? (
 				<button
 					title={i18next.t('BACK_PLAYLISTS')}
 					className="btn btn-default"
 					onClick={() => props.history.push('/admin')}
 				>
 					<i className="fas fa-fw fa-long-arrow-alt-left " />
-				</button> : null
-			}
-			{props.location.pathname.includes('/options') ? null :
+				</button>
+			) : null}
+			{props.location.pathname.includes('/options') ? null : (
 				<>
 					<div className="header-group switchs">
 						<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
@@ -148,18 +154,20 @@ function AdminHeader(props: IProps) {
 							buttons={[
 								{
 									label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
-									active: context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
+									active: context?.globalState.settings.data.config?.Playlist?.MysterySongs
+										.AddedSongVisibilityAdmin,
 									activeColor: '#3c5c00',
 									onClick: () => saveOperatorAdd(true),
-									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF')
+									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF'),
 								},
 								{
 									label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
-									active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs.AddedSongVisibilityAdmin,
+									active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs
+										.AddedSongVisibilityAdmin,
 									activeColor: '#880500',
 									onClick: () => saveOperatorAdd(false),
-									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON')
-								}
+									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON'),
+								},
 							]}
 						/>
 						<RadioButton
@@ -170,49 +178,49 @@ function AdminHeader(props: IProps) {
 									active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
 									activeColor: '#880500',
 									onClick: () => changePublicInterfaceMode(0),
-									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED')
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED'),
 								},
 								{
 									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
 									active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
 									activeColor: '#a36700',
 									onClick: () => changePublicInterfaceMode(1),
-									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED')
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED'),
 								},
 								{
 									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
 									active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
 									activeColor: '#3c5c00',
 									onClick: () => changePublicInterfaceMode(2),
-									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN')
-								}
+									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN'),
+								},
 							]}
 						/>
 					</div>
 				</>
-			}
+			)}
 			<div className="header-group controls">
-				{
-					statusPlayer?.stopping || statusPlayer?.streamerPause ?
-						<button
-							title={i18next.t('STOP_NOW')}
-							id="stopNow"
-							data-namecommand="stopNow"
-							className="btn btn-danger stopButton"
-							onClick={props.putPlayerCommando}
-						>
-							<i className="fas fa-fw fa-stop" />
-						</button> :
-						<button
-							title={i18next.t('STOP_AFTER')}
-							id="stopAfter"
-							data-namecommand="stopAfter"
-							className="btn btn-danger-low stopButton"
-							onClick={props.putPlayerCommando}
-						>
-							<i className="fas fa-fw fa-stop" />
-						</button>
-				}
+				{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
+					<button
+						title={i18next.t('STOP_NOW')}
+						id="stopNow"
+						data-namecommand="stopNow"
+						className="btn btn-danger stopButton"
+						onClick={props.putPlayerCommando}
+					>
+						<i className="fas fa-fw fa-stop" />
+					</button>
+				) : (
+					<button
+						title={i18next.t('STOP_AFTER')}
+						id="stopAfter"
+						data-namecommand="stopAfter"
+						className="btn btn-danger-low stopButton"
+						onClick={props.putPlayerCommando}
+					>
+						<i className="fas fa-fw fa-stop" />
+					</button>
+				)}
 				<button
 					title={i18next.t('PREVIOUS_SONG')}
 					id="prev"
@@ -231,7 +239,11 @@ function AdminHeader(props: IProps) {
 					onClick={play}
 					disabled={statusPlayer?.playerStatus === 'pause' && props.currentPlaylist?.karacount === 0}
 				>
-					{statusPlayer?.playerStatus === 'play' ? <i className="fas fa-fw fa-pause" /> : <i className="fas fa-fw fa-play" />}
+					{statusPlayer?.playerStatus === 'play' ? (
+						<i className="fas fa-fw fa-pause" />
+					) : (
+						<i className="fas fa-fw fa-play" />
+					)}
 				</button>
 				<button
 					title={i18next.t('NEXT_SONG')}
@@ -277,30 +289,23 @@ function AdminHeader(props: IProps) {
 				</span>
 				<i className="fas fa-fw fa-closed-captioning" />
 			</button>
-			<button
-				type="button"
-				title={i18next.t('MUTE_UNMUTE')}
-				className="btn btn-dark volumeButton"
-			>
-				<div id="mute"
-					data-namecommand={(statusPlayer?.volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
+			<button type="button" title={i18next.t('MUTE_UNMUTE')} className="btn btn-dark volumeButton">
+				<div
+					id="mute"
+					data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
 					onClick={props.putPlayerCommando}
 				>
-					{
-						statusPlayer?.volume === 0 || statusPlayer?.mute
-							? <i className="fas fa-fw fa-volume-mute" />
-							: (
-								statusPlayer?.volume > 66
-									? <i className="fas fa-fw fa-volume-up" />
-									: (
-										statusPlayer?.volume > 33
-											? <i className="fas fa-fw fa-volume-down" />
-											: <i className="fas fa-fw fa-volume-off" />
-									)
-							)
-					}
+					{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
+						<i className="fas fa-fw fa-volume-mute" />
+					) : statusPlayer?.volume > 66 ? (
+						<i className="fas fa-fw fa-volume-up" />
+					) : statusPlayer?.volume > 33 ? (
+						<i className="fas fa-fw fa-volume-down" />
+					) : (
+						<i className="fas fa-fw fa-volume-off" />
+					)}
 				</div>
-				{statusPlayer ?
+				{statusPlayer ? (
 					<input
 						title={i18next.t('VOLUME_LEVEL')}
 						data-namecommand="setVolume"
@@ -309,12 +314,10 @@ function AdminHeader(props: IProps) {
 						type="range"
 						onChange={setVolume}
 						onMouseUp={props.putPlayerCommando}
-					/> : null
-				}
+					/>
+				) : null}
 			</button>
-			<div
-				className="dropdown"
-			>
+			<div className="dropdown">
 				<button
 					className="btn btn-dark dropdown-toggle klogo"
 					type="button"
@@ -322,78 +325,86 @@ function AdminHeader(props: IProps) {
 				>
 					<img src={KLogo} alt="Karaoke Mugen logo" />
 				</button>
-				{dropDownMenu ?
+				{dropDownMenu ? (
 					<ul className="dropdown-menu">
 						<li>
 							<a
 								href={`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`}
-								onClick={e => {
+								onClick={(e) => {
 									e.preventDefault();
-									props.history.push(`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`);
+									props.history.push(
+										`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`
+									);
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								{props.location.pathname.includes('/options') ?
+								{props.location.pathname.includes('/options') ? (
 									<>
-										<i className="fas fa-fw fa-list-ul" />&nbsp;{i18next.t('CL_PLAYLISTS')}
-									</> :
-									<>
-										<i className="fas fa-fw fa-cog" />&nbsp;{i18next.t('OPTIONS')}
+										<i className="fas fa-fw fa-list-ul" />
+										&nbsp;{i18next.t('CL_PLAYLISTS')}
 									</>
-								}
+								) : (
+									<>
+										<i className="fas fa-fw fa-cog" />
+										&nbsp;{i18next.t('OPTIONS')}
+									</>
+								)}
 							</a>
 						</li>
 						<li>
-							<a
-								href="#"
-								onClick={toggleProfileModal}
-							>
-								<i className="fas fa-fw fa-user" />&nbsp;{i18next.t('ACCOUNT')}
+							<a href="#" onClick={toggleProfileModal}>
+								<i className="fas fa-fw fa-user" />
+								&nbsp;{i18next.t('ACCOUNT')}
 							</a>
 						</li>
 						<li>
-							<a
-								href="#"
-								onClick={toggleUsersModal}
-							>
-								<i className="fas fa-fw fa-users" />&nbsp;{i18next.t('USERLIST')}
+							<a href="#" onClick={toggleUsersModal}>
+								<i className="fas fa-fw fa-users" />
+								&nbsp;{i18next.t('USERLIST')}
 							</a>
 						</li>
 						<li>
 							<a href="#" onClick={() => logout(context.globalDispatch)}>
-								<i className="fas fa-fw fa-sign-out-alt" />&nbsp;{i18next.t('LOGOUT')}
+								<i className="fas fa-fw fa-sign-out-alt" />
+								&nbsp;{i18next.t('LOGOUT')}
 							</a>
 						</li>
 						<li>
-							<a href="#" onClick={() => {
-								render(<Tutorial />, document.getElementById('tuto'));
-								setDropDownMenu(!dropDownMenu);
-							}}>
-								<i className="fas fa-fw fa-question-circle" />&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
+							<a
+								href="#"
+								onClick={() => {
+									render(<Tutorial />, document.getElementById('tuto'));
+									setDropDownMenu(!dropDownMenu);
+								}}
+							>
+								<i className="fas fa-fw fa-question-circle" />
+								&nbsp;{i18next.t('MODAL.TUTORIAL.TITLE')}
 							</a>
 						</li>
 						<li>
 							<a href="/welcome">
-								<i className="fas fa-fw fa-home" />&nbsp;{i18next.t('CHANGE_INTERFACE')}
+								<i className="fas fa-fw fa-home" />
+								&nbsp;{i18next.t('CHANGE_INTERFACE')}
 							</a>
 						</li>
-						{props.powerOff ?
+						{props.powerOff ? (
 							<li>
-								<a
-									href="#"
-									onClick={props.powerOff}
-								>
-									<i className="fas fa-fw fa-power-off" />&nbsp;{i18next.t('SHUTDOWN')}
+								<a href="#" onClick={props.powerOff}>
+									<i className="fas fa-fw fa-power-off" />
+									&nbsp;{i18next.t('SHUTDOWN')}
 								</a>
-							</li> : null
-						}
+							</li>
+						) : null}
 						<li className="buttonsMobileMenu">
-							<a href="#" onClick={() => {
-								props.adminMessage();
-								setDropDownMenu(!dropDownMenu);
-							}}
+							<a
+								href="#"
+								onClick={() => {
+									props.adminMessage();
+									setDropDownMenu(!dropDownMenu);
+								}}
 							>
-								<i className="fas fa-fw fa-comment" />&nbsp;{i18next.t('MESSAGE')}
+								<i className="fas fa-fw fa-comment" />
+								&nbsp;{i18next.t('MESSAGE')}
 							</a>
 						</li>
 						<li className="buttonsMobileMenu">
@@ -406,7 +417,8 @@ function AdminHeader(props: IProps) {
 								data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 								id="showSubs"
 							>
-								<i className="fas fa-fw fa-closed-captioning" />&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
+								<i className="fas fa-fw fa-closed-captioning" />
+								&nbsp;{i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 							</a>
 						</li>
 						<li className="buttonsMobileMenu">
@@ -419,7 +431,8 @@ function AdminHeader(props: IProps) {
 								id="goTo"
 								data-namecommand="goTo"
 							>
-								<i className="fas fa-fw fa-undo-alt" />&nbsp;{i18next.t('REWIND')}
+								<i className="fas fa-fw fa-undo-alt" />
+								&nbsp;{i18next.t('REWIND')}
 							</a>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
@@ -430,53 +443,51 @@ function AdminHeader(props: IProps) {
 									setDropDownMenu(!dropDownMenu);
 								}}
 								id="mute"
-								data-namecommand={(statusPlayer?.volume === 0 || statusPlayer?.mute) ? 'unmute' : 'mute'}
+								data-namecommand={statusPlayer?.volume === 0 || statusPlayer?.mute ? 'unmute' : 'mute'}
 							>
-								{
-									statusPlayer?.volume === 0 || statusPlayer?.mute
-										? <i className="fas fa-fw fa-volume-mute" />
-										: (
-											statusPlayer?.volume > 66
-												? <i className="fas fa-fw fa-volume-up" />
-												: (
-													statusPlayer?.volume > 33
-														? <i className="fas fa-fw fa-volume-down" />
-														: <i className="fas fa-fw fa-volume-off" />
-												)
-										)
-								}&nbsp;{i18next.t('MUTE_UNMUTE')}
+								{statusPlayer?.volume === 0 || statusPlayer?.mute ? (
+									<i className="fas fa-fw fa-volume-mute" />
+								) : statusPlayer?.volume > 66 ? (
+									<i className="fas fa-fw fa-volume-up" />
+								) : statusPlayer?.volume > 33 ? (
+									<i className="fas fa-fw fa-volume-down" />
+								) : (
+									<i className="fas fa-fw fa-volume-off" />
+								)}
+								&nbsp;{i18next.t('MUTE_UNMUTE')}
 							</a>
 						</li>
 						<li className="buttonsMobileMenuSmaller">
-							{
-								statusPlayer?.stopping || statusPlayer?.streamerPause ?
-									<a
-										href="#"
-										onClick={(event) => {
-											props.putPlayerCommando(event);
-											setDropDownMenu(!dropDownMenu);
-										}}
-										id="stopNow"
-										data-namecommand="stopNow"
-									>
-										<i className="fas fa-fw fa-stop" />&nbsp;{i18next.t('STOP_NOW')}
-									</a> :
-									<a
-										href="#"
-										onClick={(event) => {
-											props.putPlayerCommando(event);
-											setDropDownMenu(!dropDownMenu);
-										}}
-										id="stopAfter"
-										data-namecommand="stopAfter"
-									>
-										<i className="fas fa-fw fa-stop" />&nbsp;{i18next.t('STOP_AFTER')}
-									</a>
-
-							}
+							{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
+								<a
+									href="#"
+									onClick={(event) => {
+										props.putPlayerCommando(event);
+										setDropDownMenu(!dropDownMenu);
+									}}
+									id="stopNow"
+									data-namecommand="stopNow"
+								>
+									<i className="fas fa-fw fa-stop" />
+									&nbsp;{i18next.t('STOP_NOW')}
+								</a>
+							) : (
+								<a
+									href="#"
+									onClick={(event) => {
+										props.putPlayerCommando(event);
+										setDropDownMenu(!dropDownMenu);
+									}}
+									id="stopAfter"
+									data-namecommand="stopAfter"
+								>
+									<i className="fas fa-fw fa-stop" />
+									&nbsp;{i18next.t('STOP_AFTER')}
+								</a>
+							)}
 						</li>
-					</ul> : null
-				}
+					</ul>
+				) : null}
 			</div>
 		</KmAppHeaderDecorator>
 	);

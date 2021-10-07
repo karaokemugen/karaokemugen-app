@@ -7,12 +7,12 @@ import { commandBackend } from '../../../utils/socket';
 
 class ClassicModeModal extends Component {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	playSong = () => {
 		commandBackend('play');
 		closeModal(this.context.globalDispatch);
-	}
+	};
 
 	render() {
 		const modalDialogClass = window.innerWidth <= 1023 ? 'modal-dialog modal-sm' : 'modal-dialog';
@@ -22,10 +22,12 @@ class ClassicModeModal extends Component {
 					<div className="modal-content">
 						<div className="modal-header">
 							<h4 className="modal-title">{i18next.t('MODAL.CLASSIC_MODE.TITLE')}</h4>
-							<button className="closeModal"
+							<button
+								className="closeModal"
 								onClick={() => {
 									closeModal(this.context.globalDispatch);
-								}}>
+								}}
+							>
 								<i className="fas fa-times" />
 							</button>
 						</div>
@@ -36,15 +38,17 @@ class ClassicModeModal extends Component {
 								flexDirection: 'column',
 								justifyContent: 'center',
 								alignItems: 'center',
-								margin: '1em'
-							}}>
-							<div
-								className="modal-message"
-								style={{ textAlign: 'center', marginBottom: '.5em' }}
-							>
+								margin: '1em',
+							}}
+						>
+							<div className="modal-message" style={{ textAlign: 'center', marginBottom: '.5em' }}>
 								{i18next.t('MODAL.CLASSIC_MODE.TEXT')}
 							</div>
-							<button className="btn btn-default btn-primary btn-big" type="button" onClick={this.playSong}>
+							<button
+								className="btn btn-default btn-primary btn-big"
+								type="button"
+								onClick={this.playSong}
+							>
 								<i className="fas fa-play" />
 							</button>
 						</div>

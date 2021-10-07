@@ -5,13 +5,12 @@ import React from 'react';
 interface IProps {
 	nameCommand?: string;
 	isChecked: boolean | undefined;
-	handleChange: (e:any) => void;
+	handleChange: (e: any) => void;
 	idInput?: string;
-	disabled?: boolean
+	disabled?: boolean;
 }
 
-function Switch(props:IProps) {
-
+function Switch(props: IProps) {
 	const checkbox = React.createRef<HTMLInputElement>();
 
 	const onKeyPress = (e) => {
@@ -30,7 +29,9 @@ function Switch(props:IProps) {
 				ref={checkbox}
 				disabled={props.disabled}
 			/>
-			<span className="switch-ui--control"><span/></span>
+			<span className="switch-ui--control">
+				<span />
+			</span>
 		</label>
 	);
 }

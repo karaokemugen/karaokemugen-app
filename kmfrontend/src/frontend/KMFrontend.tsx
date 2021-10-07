@@ -24,12 +24,12 @@ interface IState {
 
 class KMFrontend extends Component<unknown, IState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props: unknown) {
 		super(props);
 		this.state = {
-			shutdownPopup: false
+			shutdownPopup: false,
 		};
 	}
 
@@ -42,18 +42,30 @@ class KMFrontend extends Component<unknown, IState> {
 		});
 
 		if (this.context?.globalState.settings.data.user?.flag_sendstats === null) {
-			callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.STATS_MODAL.TITLE'), <>
-				{i18next.t('MODAL.STATS_MODAL.DESC')}
-				<br/>
-				<br/>
-				{i18next.t('MODAL.STATS_MODAL.REFUSE_DESC')}
-				<br/>
-				<br/>
-				{i18next.t('MODAL.STATS_MODAL.CHANGE')}
-			</>, this.updateUser, '', undefined, true);
+			callModal(
+				this.context.globalDispatch,
+				'confirm',
+				i18next.t('MODAL.STATS_MODAL.TITLE'),
+				<>
+					{i18next.t('MODAL.STATS_MODAL.DESC')}
+					<br />
+					<br />
+					{i18next.t('MODAL.STATS_MODAL.REFUSE_DESC')}
+					<br />
+					<br />
+					{i18next.t('MODAL.STATS_MODAL.CHANGE')}
+				</>,
+				this.updateUser,
+				'',
+				undefined,
+				true
+			);
 		}
 
-		if (!this.context?.globalState.settings.data.user?.flag_tutorial_done && window.location.pathname === '/admin') {
+		if (
+			!this.context?.globalState.settings.data.user?.flag_tutorial_done &&
+			window.location.pathname === '/admin'
+		) {
 			startIntro();
 		}
 	}
@@ -66,7 +78,7 @@ class KMFrontend extends Component<unknown, IState> {
 		} catch (e) {
 			// already display
 		}
-	}
+	};
 
 	powerOff = () => {
 		callModal(this.context.globalDispatch, 'confirm', `${i18next.t('SHUTDOWN')} ?`, '', async () => {
@@ -80,28 +92,33 @@ class KMFrontend extends Component<unknown, IState> {
 	};
 
 	render() {
-		return (
-			this.state.shutdownPopup ?
-				<ShutdownModal close={() => this.setState({ shutdownPopup: false })} /> :
-				this.context.globalState.settings.data.config ?
-					<div className={is_touch_device() ? 'touch' : ''}>
-						<Switch>
-							<Route path="/setup" render={(route) => <SetupPage route={route} />} />
-							<Route path="/migrate" render={() => <MigratePage />} />
-							<Route path="/welcome" render={() => <WelcomePage />} />
-							<Route path="/admin" render={() => <AdminPage
-								powerOff={isElectron() ? undefined : this.powerOff} />} />
-							<Route path="/chibi" exact component={ChibiPage} />
-							<Route path="/chibiPlaylist" exact component={PlaylistPage} />
-							<Route path="/public" render={(route) => <PublicPage route={route} />} />
-							<Route exact path="/">{this.context.globalState.auth.data.role === 'admin' ?
-								<Redirect to="/welcome" />:<Redirect to="/public" />
-							}</Route>
-							<Route component={NotFoundPage} />
-						</Switch>
-						<a id="downloadAnchorElem" />
-					</div> : null
-		);
+		return this.state.shutdownPopup ? (
+			<ShutdownModal close={() => this.setState({ shutdownPopup: false })} />
+		) : this.context.globalState.settings.data.config ? (
+			<div className={is_touch_device() ? 'touch' : ''}>
+				<Switch>
+					<Route path="/setup" render={(route) => <SetupPage route={route} />} />
+					<Route path="/migrate" render={() => <MigratePage />} />
+					<Route path="/welcome" render={() => <WelcomePage />} />
+					<Route
+						path="/admin"
+						render={() => <AdminPage powerOff={isElectron() ? undefined : this.powerOff} />}
+					/>
+					<Route path="/chibi" exact component={ChibiPage} />
+					<Route path="/chibiPlaylist" exact component={PlaylistPage} />
+					<Route path="/public" render={(route) => <PublicPage route={route} />} />
+					<Route exact path="/">
+						{this.context.globalState.auth.data.role === 'admin' ? (
+							<Redirect to="/welcome" />
+						) : (
+							<Redirect to="/public" />
+						)}
+					</Route>
+					<Route component={NotFoundPage} />
+				</Switch>
+				<a id="downloadAnchorElem" />
+			</div>
+		) : null;
 	}
 }
 
