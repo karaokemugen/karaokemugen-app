@@ -2,9 +2,10 @@ import '../styles/start/Start.scss';
 import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { Repository } from '../../../../src/lib/types/repo';
+import { DBStats } from '../../../../src/types/database/database';
 import { Feed } from '../../../../src/types/feeds';
 import { Session } from '../../../../src/types/session';
 import logo from '../../assets/Logo-final-fond-transparent.png';
@@ -20,112 +21,65 @@ import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
 
-interface IState {
-	news: News[];
-	sessions: Session[];
-	activeSession?: Session;
-	catchphrase?: string;
-	repositories: Repository[];
-	stats?: any;
-}
-class WelcomePage extends Component<unknown, IState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+function WelcomePage() {
+	const context = useContext(GlobalContext);
+	const [news, setNews] = useState<News[]>([]);
+	const [sessions, setSessions] = useState<Session[]>([]);
+	const [activeSession, setActiveSession] = useState<Session>();
+	const [catchphrase, setCatchphrase] = useState('');
+	const [repositories, setRepositories] = useState<Repository[]>([]);
+	const [stats, setStats] = useState<DBStats>();
 
-	constructor(props: unknown) {
-		super(props);
-		this.state = {
-			news: [],
-			sessions: [],
-			repositories: []
-		};
-	}
-
-	async componentDidMount() {
-		let migrationsToDo;
-		try {
-			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0;
-		} catch (e) {
-			migrationsToDo = false;
-		}
-		if (migrationsToDo) {
-			window.location.assign('/migrate');
-		} else if (this.context?.globalState.settings.data.config?.Online.Stats === undefined
-			|| this.context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
-			showModal(this.context.globalDispatch, <OnlineStatsModal />);
-		} else {
-			this.getDownloadQueue();
-		}
-		this.getCatchphrase();
-		this.getNewsFeed();
-		this.getSessions();
-		this.getRepositories();
-		this.getStats();
-		getSocket().on('statsRefresh', this.getStats);
-	}
-
-	componentWillUnmount() {
-		getSocket().off('statsRefresh', this.getStats);
-	}
-
-	getSessions = async () => {
+	const getSessions = async () => {
 		const res = await commandBackend('getSessions');
-		this.setState({
-			sessions: res,
-			activeSession: res.filter((valueSession: Session) => valueSession.active)[0]
-		});
+		setSessions(res);
+		setActiveSession(res.filter((valueSession: Session) => valueSession.active)[0]);
 	};
 
-	getDownloadQueue = async () => {
+	const getDownloadQueue = async () => {
 		const [downloadQueue, downloadQueueStatus] = await Promise.all([
 			commandBackend('getDownloads', undefined, false, 300000),
 			commandBackend('getDownloadQueueStatus', undefined, false, 300000),
 		]);
 		if (downloadQueueStatus === 'stopped' && downloadQueue.length > 0 && !sessionStorage.getItem('dlQueueRestart')) {
-			showModal(this.context.globalDispatch, <RestartDownloadsModal />);
+			showModal(context.globalDispatch, <RestartDownloadsModal />);
 		}
-	}
+	};
 
-	getRepositories = async () => {
+	const getRepositories = async () => {
 		const res = await commandBackend('getRepos');
-		this.setState({
-			repositories: res
-		});
+		setRepositories(res);
 	};
 
-	getStats = async () => {
+	const getStats = async () => {
 		const res = await commandBackend('getStats');
-		this.setState({
-			stats: res
-		});
+		setStats(res);
 	};
 
-	setActiveSession = async (value: string) => {
-		const sessions: Session[] = this.state.sessions.filter(
+	const editActiveSession = async (value: string) => {
+		const sessionsEdit = sessions.filter(
 			session => session.name === value
 		);
 		let sessionId;
-		if (sessions.length === 0) {
+		if (sessionsEdit.length === 0) {
 			const res = await commandBackend('createSession', { name: value });
 			sessionId = res;
 			const sessionsList = await commandBackend('getSessions');
-			this.setState({
-				sessions: sessionsList,
-				activeSession: sessionsList.filter((valueSession: Session) => valueSession.active)[0]
-			});
+			setSessions(sessionsList);
+			setActiveSession(sessionsList.filter((valueSession: Session) => valueSession.active)[0]);
 		} else {
-			this.setState({ activeSession: sessions[0] });
-			sessionId = sessions[0].seid;
+			setActiveSession(sessionsEdit[0]);
+			sessionId = sessionsEdit[0].seid;
 			commandBackend('activateSession', { seid: sessionId });
 		}
 	};
 
-	getCatchphrase = async () => {
+	const getCatchphrase = async () => {
 		const res = await commandBackend('getCatchphrase');
-		this.setState({ catchphrase: res });
+		setCatchphrase(res);
 	};
 
-	getNewsFeed = async () => {
+	const getNewsFeed = async () => {
 		try {
 			const data: Feed[] = await commandBackend('getNewsFeed', undefined, undefined, 300000);
 			const base = data.find(d => d.name === 'git_base');
@@ -200,169 +154,195 @@ class WelcomePage extends Component<unknown, IState> {
 				const dateB = new Date(b.date);
 				return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
 			});
-			this.setState({ news });
+			setNews(news);
 		} catch (err) {
 			// error already display
 		}
 	};
 
-	toggleProfileModal = () => {
-		showModal(this.context.globalDispatch, <ProfilModal scope="admin" />);
+	const toggleProfileModal = () => {
+		showModal(context.globalDispatch, <ProfilModal scope="admin" />);
 	};
 
-	render() {
-		const sessions: [{ label: string, value: string }?] = [];
-		for (const session of this.state.sessions) {
-			sessions.push({ label: session.name, value: session.name });
+	const displayModal = async () => {
+		let migrationsToDo;
+		try {
+			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0;
+		} catch (e) {
+			migrationsToDo = false;
 		}
-		return (
-			<div className="start-page">
-				<div className="wrapper welcome">
-					<div className="logo">
-						<img src={logo} alt="Logo Karaoke Mugen" />
-					</div>
-					<TasksEvent limit={3} isWelcomePage={true} />
-					<div className="aside">
-						<nav>
-							<ul>
-								<li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-fw fa-pencil-alt" />{i18next.t('WELCOME_PAGE.CONTACT')}</a></li>
-								<li><a href="http://mugen.karaokes.moe/"><i className="fas fa-fw fa-link" />{i18next.t('WELCOME_PAGE.SITE')}</a></li>
-								<li><a href="#" onClick={this.toggleProfileModal}>
-									<i className="fas fa-fw fa-user" /><span>{this.context.globalState.settings.data.user.nickname}</span>
-								</a></li>
-								<li>
-									<a
-										href="#"
-										title={i18next.t('LOGOUT')}
-										className="logout"
-										onClick={() => logout(this.context.globalDispatch)}
-									><i className="fas fa-fw fa-sign-out-alt" /><span>{i18next.t('LOGOUT')}</span></a>
-								</li>
-							</ul>
-						</nav>
-						<div className="session-setting">
-							{sessions.length > 0 ? (
-								<React.Fragment>
-									<article>
-										<label>{i18next.t('WELCOME_PAGE.ACTIVE_SESSION')}</label>
-										<Autocomplete
-											value={this.state.activeSession?.name}
-											options={sessions}
-											onChange={this.setActiveSession}
-											acceptNewValues={true}
-										/>
-									</article>
-									<article>
-										<a href={`/system/sessions/${this.state.activeSession?.seid}`} title={i18next.t('WELCOME_PAGE.EDIT_SESSION')} >
-											<i className="fas fa-fw fa-edit" />
-										</a>
-									</article>
-								</React.Fragment>
-							) : null}
-						</div>
-					</div>
+		if (migrationsToDo) {
+			window.location.assign('/migrate');
+		} else if (context?.globalState.settings.data.config?.Online.Stats === undefined
+			|| context?.globalState.settings.data.config?.Online.ErrorTracking === undefined) {
+			showModal(context.globalDispatch, <OnlineStatsModal />);
+		} else {
+			getDownloadQueue();
+		}
+	};
 
-					<main className="main">
+	useEffect(() => {
+		displayModal();
+		getCatchphrase();
+		getNewsFeed();
+		getSessions();
+		getRepositories();
+		getStats();
+		getSocket().on('statsRefresh', getStats); return () => {
+			getSocket().off('statsRefresh', getStats);
+		};
+	}, []);
 
-						<section className="tiles-panel">
-							{
-								this.context?.globalState.settings.data.user?.flag_tutorial_done
-									? <article className="tile-manage">
-										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-											<i className="fas fa-fw fa-list" /><span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
-										</button>
-									</article>
-									: <article className="tile-tutorial">
-										<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
-											<i className="fas fa-fw fa-hand-point-right" /><span>{i18next.t('WELCOME_PAGE.GETSTARTED')}</span>
-										</button>
-									</article>
-							}
-							<article className="tile-system">
-								<button type="button" onClick={() => window.location.assign('/system')}>
-									<i className="fas fa-fw fa-cog" /><span>{i18next.t('WELCOME_PAGE.ADMINISTRATION')}</span>
-								</button>
-							</article>
-							<article className="tile-system">
-								<button type="button" onClick={() => window.location.assign('/public' + window.location.search)}>
-									<i className="fas fa-fw fa-user" /><span>{i18next.t('WELCOME_PAGE.PUBLIC')}</span>
-								</button>
-							</article>
-							<article className="tile-help">
-								<button type="button" onClick={() => window.location.assign('https://mugen.karaokes.moe/docs/')}>
-									<i className="fas fa-fw fa-question-circle" /><span>{i18next.t('WELCOME_PAGE.HELP')}</span>
-								</button>
-							</article>
-							<article className="tile-download">
-								<button type="button" onClick={() => window.location.assign('/system/karas/download')}>
-									<i className="fas fa-fw fa-download" /><span>{i18next.t('WELCOME_PAGE.DOWNLOAD')}</span>
-								</button>
-							</article>
-							<article className="tile-logs">
-								<button type="button" onClick={() => window.location.assign('/system/log')}>
-									<i className="fas fa-fw fa-terminal" /><span>{i18next.t('WELCOME_PAGE.LOGS')}</span>
-								</button>
-							</article>
-							<article className="tile-stats">
-								<blockquote>
-									<label>
-										<i className="fas fa-fw fa-chart-line" />{i18next.t('WELCOME_PAGE.STATS')}
-									</label>
-									<ul>
-										<li onClick={() => window.location.assign('/system/karas')}>
-											<strong>{i18next.t('WELCOME_PAGE.STATS_KARAS')}</strong>
-											<span>{this.state.stats?.karas}</span>
-										</li>
-										<li onClick={() => window.location.assign('/system/tags?type=1')}>
-											<strong>{i18next.t('WELCOME_PAGE.STATS_SERIES')}</strong>
-											<span>{this.state.stats?.series}</span>
-										</li>
-										<li onClick={() => window.location.assign('/system/tags')}>
-											<strong>{i18next.t('WELCOME_PAGE.STATS_TAGS')}</strong>
-											<span>{this.state.stats?.tags}</span>
-										</li>
-									</ul>
-								</blockquote>
-							</article>
-							<article className="tile-repositories">
-								<blockquote>
-									<button type="button" onClick={() => window.location.assign('/system/repositories')}>
-										<i className="fas fa-fw fa-network-wired" />{i18next.t('WELCOME_PAGE.REPOSITORY')}
-									</button>
-									<ul>
-										{this.state.repositories.map(repository => {
-											return (
-												<li key={repository.Name} className={repository.Enabled ? '' : 'disabled'}
-													onClick={() => window.location.assign(`/system/repositories/${repository.Name}`)}>
-													<i className={`fas fa-fw ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
-													<span>{repository.Name}</span>
-												</li>
-											);
-										})}
-									</ul>
-								</blockquote>
-							</article>
-						</section>
-
-						<section className="feed-panel">
-							<header>
-								<p>{this.state.catchphrase}</p>
-							</header>
-							<div>
-								{this.state.news.map(article => {
-									return (
-										<WelcomePageArticle key={article.date} article={article} />
-									);
-								})}
-							</div>
-						</section>
-
-					</main>
-
+	const sessionsList = sessions.map(session => {
+		return { label: session.name, value: session.name };
+	});
+	return (
+		<div className="start-page">
+			<div className="wrapper welcome">
+				<div className="logo">
+					<img src={logo} alt="Logo Karaoke Mugen" />
 				</div>
+				<TasksEvent limit={3} isWelcomePage={true} />
+				<div className="aside">
+					<nav>
+						<ul>
+							<li><a href="http://mugen.karaokes.moe/contact.html"><i className="fas fa-fw fa-pencil-alt" />{i18next.t('WELCOME_PAGE.CONTACT')}</a></li>
+							<li><a href="http://mugen.karaokes.moe/"><i className="fas fa-fw fa-link" />{i18next.t('WELCOME_PAGE.SITE')}</a></li>
+							<li><a href="#" onClick={toggleProfileModal}>
+								<i className="fas fa-fw fa-user" /><span>{context.globalState.settings.data.user.nickname}</span>
+							</a></li>
+							<li>
+								<a
+									href="#"
+									title={i18next.t('LOGOUT')}
+									className="logout"
+									onClick={() => logout(context.globalDispatch)}
+								><i className="fas fa-fw fa-sign-out-alt" /><span>{i18next.t('LOGOUT')}</span></a>
+							</li>
+						</ul>
+					</nav>
+					<div className="session-setting">
+						{sessionsList.length > 0 ? (
+							<React.Fragment>
+								<article>
+									<label>{i18next.t('WELCOME_PAGE.ACTIVE_SESSION')}</label>
+									<Autocomplete
+										value={activeSession?.name}
+										options={sessionsList}
+										onChange={editActiveSession}
+										acceptNewValues={true}
+									/>
+								</article>
+								<article>
+									<a href={`/system/sessions/${activeSession?.seid}`} title={i18next.t('WELCOME_PAGE.EDIT_SESSION')} >
+										<i className="fas fa-fw fa-edit" />
+									</a>
+								</article>
+							</React.Fragment>
+						) : null}
+					</div>
+				</div>
+
+				<main className="main">
+
+					<section className="tiles-panel">
+						{
+							context?.globalState.settings.data.user?.flag_tutorial_done
+								? <article className="tile-manage">
+									<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
+										<i className="fas fa-fw fa-list" /><span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
+									</button>
+								</article>
+								: <article className="tile-tutorial">
+									<button type="button" onClick={() => window.location.assign('/admin' + window.location.search)}>
+										<i className="fas fa-fw fa-hand-point-right" /><span>{i18next.t('WELCOME_PAGE.GETSTARTED')}</span>
+									</button>
+								</article>
+						}
+						<article className="tile-system">
+							<button type="button" onClick={() => window.location.assign('/system')}>
+								<i className="fas fa-fw fa-cog" /><span>{i18next.t('WELCOME_PAGE.ADMINISTRATION')}</span>
+							</button>
+						</article>
+						<article className="tile-system">
+							<button type="button" onClick={() => window.location.assign('/public' + window.location.search)}>
+								<i className="fas fa-fw fa-user" /><span>{i18next.t('WELCOME_PAGE.PUBLIC')}</span>
+							</button>
+						</article>
+						<article className="tile-help">
+							<button type="button" onClick={() => window.location.assign('https://mugen.karaokes.moe/docs/')}>
+								<i className="fas fa-fw fa-question-circle" /><span>{i18next.t('WELCOME_PAGE.HELP')}</span>
+							</button>
+						</article>
+						<article className="tile-download">
+							<button type="button" onClick={() => window.location.assign('/system/karas/download')}>
+								<i className="fas fa-fw fa-download" /><span>{i18next.t('WELCOME_PAGE.DOWNLOAD')}</span>
+							</button>
+						</article>
+						<article className="tile-logs">
+							<button type="button" onClick={() => window.location.assign('/system/log')}>
+								<i className="fas fa-fw fa-terminal" /><span>{i18next.t('WELCOME_PAGE.LOGS')}</span>
+							</button>
+						</article>
+						<article className="tile-stats">
+							<blockquote>
+								<label>
+									<i className="fas fa-fw fa-chart-line" />{i18next.t('WELCOME_PAGE.STATS')}
+								</label>
+								<ul>
+									<li onClick={() => window.location.assign('/system/karas')}>
+										<strong>{i18next.t('WELCOME_PAGE.STATS_KARAS')}</strong>
+										<span>{stats?.karas}</span>
+									</li>
+									<li onClick={() => window.location.assign('/system/tags?type=1')}>
+										<strong>{i18next.t('WELCOME_PAGE.STATS_SERIES')}</strong>
+										<span>{stats?.series}</span>
+									</li>
+									<li onClick={() => window.location.assign('/system/tags')}>
+										<strong>{i18next.t('WELCOME_PAGE.STATS_TAGS')}</strong>
+										<span>{stats?.tags}</span>
+									</li>
+								</ul>
+							</blockquote>
+						</article>
+						<article className="tile-repositories">
+							<blockquote>
+								<button type="button" onClick={() => window.location.assign('/system/repositories')}>
+									<i className="fas fa-fw fa-network-wired" />{i18next.t('WELCOME_PAGE.REPOSITORY')}
+								</button>
+								<ul>
+									{repositories.map(repository => {
+										return (
+											<li key={repository.Name} className={repository.Enabled ? '' : 'disabled'}
+												onClick={() => window.location.assign(`/system/repositories/${repository.Name}`)}>
+												<i className={`fas fa-fw ${repository.Online ? ' fa-globe' : 'fa-laptop'}`} />
+												<span>{repository.Name}</span>
+											</li>
+										);
+									})}
+								</ul>
+							</blockquote>
+						</article>
+					</section>
+
+					<section className="feed-panel">
+						<header>
+							<p>{catchphrase}</p>
+						</header>
+						<div>
+							{news.map(article => {
+								return (
+									<WelcomePageArticle key={article.date} article={article} />
+								);
+							})}
+						</div>
+					</section>
+
+				</main>
+
 			</div>
-		);
-	}
+		</div>
+	);
 }
 
 export default WelcomePage;
