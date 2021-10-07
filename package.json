@@ -16,7 +16,7 @@
     "testCI": "yarn build && electron --no-sandbox . --test --cli",
     "manualTest": "mocha --require ts-node/register --timeout 60000 test/*.ts",
     "build": "npx rimraf \"dist\" && tsc --build",
-    "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn build && yarn installkmfrontend && yarn buildkmfrontend && yarn buildWorker",
+    "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn build && yarn installkmfrontend && yarn buildkmfrontend",
     "gitconfig": "git config diff.submodule log && git config fetch.recursesubmodules on-demand && git config status.submodulesummary true && git config push.recursesubmodules on-demand && git config submodule.recurse true",
     "pull": "git pull && yarn sync",
     "sync": "git submodule sync --recursive && git submodule update --init --recursive",
