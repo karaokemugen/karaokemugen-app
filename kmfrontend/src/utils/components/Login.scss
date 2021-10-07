@@ -12,6 +12,7 @@ body {
 }
 
 .loginBox {
+
 	margin: 0 1em;
 
 	button {
@@ -43,8 +44,8 @@ body {
 
 	.helpButton {
 		border-radius: 50%;
-		margin-right: 0.5em;
-		padding: 0 0.5em;
+		margin-right: .5em;
+		padding: 0 .5em;
 		&:hover {
 			background-color: white;
 		}
@@ -109,7 +110,7 @@ body {
 
 	.arobase {
 		font-size: x-large;
-		margin: 0 0.25em;
+		margin: 0 .25em;
 	}
 }
 

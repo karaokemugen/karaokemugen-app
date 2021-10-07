@@ -8,14 +8,14 @@
 		margin: 0;
 		flex-wrap: wrap;
 		.tag {
-			margin-top: 0.4em;
-			font-size: 0.9em;
-			padding: 0.125em 0.25em !important;
+			margin-top: .4em;
+			font-size: .9em;
+			padding: .125em .25em !important;
 		}
 	}
 	.tag {
-		margin-right: 0.4em;
-		margin-bottom: 0.2em;
+		margin-right: .4em;
+		margin-bottom: .2em;
 		float: right;
 	}
 }
@@ -35,14 +35,13 @@
 			}
 		}
 	}
-	&.problematicTag,
-	.problematicTag {
+	&.problematicTag, .problematicTag {
 		color: gold;
 	}
 	&.inline {
-		margin: 0 0.5em;
+		margin: 0 .5em;
 	}
-	padding: 0.25em 0.75em;
+	padding: .25em .75em;
 	text-align: center;
 	font-weight: bold;
 	color: #aaa;

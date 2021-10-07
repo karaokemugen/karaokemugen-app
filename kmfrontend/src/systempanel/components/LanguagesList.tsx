@@ -6,8 +6,8 @@ import React, { useState } from 'react';
 import { getLanguagesInLocaleFromCode, getListLanguagesInLocale } from '../../utils/isoLanguages';
 
 interface IProps {
-	value: Record<string, string>;
-	onChange: (i18n: Record<string, string>) => void;
+	value: Record<string, string>,
+	onChange: (i18n: Record<string, string>) => void
 }
 
 export default function LanguagesList(props: IProps) {
@@ -41,63 +41,60 @@ export default function LanguagesList(props: IProps) {
 		setI18n(newI18n);
 		props.onChange(newI18n);
 	}
-	return (
-		<>
-			{Object.keys(i18n).map((langKey) => (
-				<Row key={langKey} style={{ maxWidth: '65%', minWidth: '150px' }}>
-					<Col style={{ width: '80%' }}>
-						<Form.Item
-							label={getLanguagesInLocaleFromCode(langKey)}
-							labelCol={{ flex: '0 1 300px' }}
-							rules={[
-								{
-									required: true,
-									message: i18next.t('TAGS.I18N_ERROR'),
-								},
-							]}
-						>
-							<Input
-								autoFocus={inputToFocus === langKey}
-								value={i18n[langKey]}
-								placeholder={i18next.t('TAGS.I18N_NAME')}
-								onChange={(event) => setValueLanguage(event.target.value, langKey)}
-							/>
-						</Form.Item>
-					</Col>
-					<Col style={{ marginLeft: '10px' }}>
-						{Object.keys(i18n).length > 1 ? (
-							<Tooltip title={i18next.t('TAGS.I18N_DELETE')}>
-								<MinusCircleOutlined
-									className="dynamic-delete-button"
-									onClick={() => removeLang(langKey)}
-								/>
-							</Tooltip>
-						) : null}
-					</Col>
-				</Row>
-			))}
-			<Form.Item label={i18next.t('TAGS.I18N_SELECT')} labelCol={{ flex: '0 1 300px' }}>
-				{selectVisible ? (
-					<Select
-						style={{ maxWidth: '40%', minWidth: '150px' }}
-						showSearch
-						optionFilterProp="children"
-						autoFocus={selectVisible}
-						onChange={(value) => addLang(value)}
+	return <>
+		{Object.keys(i18n).map(langKey => (
+			<Row key={langKey} style={{ maxWidth: '65%', minWidth: '150px' }}>
+				<Col style={{ width: '80%' }}>
+					<Form.Item
+						label={getLanguagesInLocaleFromCode(langKey)}
+						labelCol={{ flex: '0 1 300px' }}
+						rules={[{
+							required: true,
+							message: i18next.t('TAGS.I18N_ERROR')
+						}]}
 					>
-						{languages.map((lang) => (
-							<Select.Option key={lang.value} value={lang.value}>
-								{lang.label} ({lang.value.toUpperCase()})
-							</Select.Option>
-						))}
-					</Select>
-				) : (
-					<Tag onClick={showSelect} style={{ borderStyle: 'dashed' }}>
-						<PlusOutlined />
-						{i18next.t('ADD')}
-					</Tag>
-				)}
-			</Form.Item>
-		</>
-	);
+						<Input
+							autoFocus={inputToFocus === langKey}
+							value={i18n[langKey]}
+							placeholder={i18next.t('TAGS.I18N_NAME')}
+							onChange={(event) => setValueLanguage(event.target.value, langKey)}
+						/>
+					</Form.Item>
+				</Col>
+				<Col style={{ marginLeft: '10px' }}>
+					{Object.keys(i18n).length > 1 ? (
+						<Tooltip title={i18next.t('TAGS.I18N_DELETE')}>
+							<MinusCircleOutlined
+								className="dynamic-delete-button"
+								onClick={() => removeLang(langKey)}
+							/>
+						</Tooltip>
+					) : null}
+				</Col>
+			</Row>
+		))}
+		<Form.Item
+			label={i18next.t('TAGS.I18N_SELECT')}
+			labelCol={{ flex: '0 1 300px' }}
+		>
+			{selectVisible ?
+				<Select style={{ maxWidth: '40%', minWidth: '150px' }}
+					showSearch
+					optionFilterProp="children"
+					autoFocus={selectVisible}
+					onChange={value => addLang(value)}>
+					{languages.map(lang => (
+						<Select.Option key={lang.value} value={lang.value}>
+							{lang.label} ({lang.value.toUpperCase()})
+						</Select.Option>))}
+				</Select> :
+				<Tag
+					onClick={showSelect}
+					style={{ borderStyle: 'dashed' }}
+				>
+					<PlusOutlined />{i18next.t('ADD')}
+				</Tag>
+			}
+		</Form.Item>
+	</>;
 }

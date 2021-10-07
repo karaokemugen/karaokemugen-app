@@ -8,21 +8,11 @@ import { SettingsStoreData } from '../store/types/settings';
 import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
 
-export function getTagInLanguage(
-	tag: DBKaraTag,
-	mainLanguage: string,
-	fallbackLanguage: string,
-	i18nParam?: any
-): string {
-	const i18n = i18nParam && i18nParam[tag.tid] ? i18nParam[tag.tid] : tag.i18n;
+export function getTagInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string, i18nParam?: any): string {
+	const i18n = (i18nParam && i18nParam[tag.tid]) ? i18nParam[tag.tid] : tag.i18n;
 	if (i18n) {
-		return i18n[mainLanguage]
-			? i18n[mainLanguage]
-			: i18n[fallbackLanguage]
-			? i18n[fallbackLanguage]
-			: i18n.eng
-			? i18n.eng
-			: tag.name;
+		return i18n[mainLanguage] ? i18n[mainLanguage] :
+			(i18n[fallbackLanguage] ? i18n[fallbackLanguage] : (i18n.eng ? i18n.eng : tag.name));
 	} else {
 		return tag.name;
 	}
@@ -48,11 +38,8 @@ export function getTagInLocale(settings: SettingsStoreData, tag: DBKaraTag, i18n
 export function getTitleInLocale(settings: SettingsStoreData, titles: any): any {
 	const user = settings?.user;
 	if (user?.main_series_lang && user?.fallback_series_lang) {
-		return titles[user.main_series_lang]
-			? titles[user.main_series_lang]
-			: titles[user.fallback_series_lang]
-			? titles[user.fallback_series_lang]
-			: titles['eng'];
+		return titles[user.main_series_lang] ? titles[user.main_series_lang] :
+			(titles[user.fallback_series_lang] ? titles[user.fallback_series_lang] : titles['eng']);
 	} else {
 		return titles[getLanguageIn3B(langSupport)] ? titles[getLanguageIn3B(langSupport)] : titles['eng'];
 	}
@@ -63,55 +50,32 @@ export function sortTagByPriority(a: any, b: any) {
 }
 
 /**
- * Build kara title for users depending on the data
- * @param {Object} data - data from the kara
- * @param {boolean} onlyText - if only text and no component
- * @return {String} the title
- */
-export function buildKaraTitle(
-	settings: SettingsStoreData,
-	data: DBKara,
-	onlyText?: boolean,
-	i18nParam?: any
-): string | React.ReactFragment {
-	const isMulti = data?.langs.find((e) => e.name.indexOf('mul') > -1);
+* Build kara title for users depending on the data
+* @param {Object} data - data from the kara
+* @param {boolean} onlyText - if only text and no component
+* @return {String} the title
+*/
+export function buildKaraTitle(settings: SettingsStoreData, data: DBKara, onlyText?: boolean, i18nParam?: any): string | React.ReactFragment {
+	const isMulti = data?.langs.find(e => e.name.indexOf('mul') > -1);
 	if (data?.langs && isMulti) {
 		data.langs = [isMulti];
 	}
-	const serieText =
-		data?.series?.length > 0
-			? data.series.map((e) => getTagInLocale(settings, e, i18nParam)).join(', ') +
-			  (data.series.length > 3 ? '...' : '')
-			: data?.singers
-			? data.singers
-					.slice(0, 3)
-					.map((e) => e.name)
-					.join(', ') + (data.singers.length > 3 ? '...' : '')
-			: '';
-	const langsText = data?.langs
-		.map((e) => e.name)
-		.join(', ')
-		.toUpperCase();
-	const songtypeText = data?.songtypes
-		.sort(sortTagByPriority)
-		.map((e) => (e.short ? +e.short : e.name))
-		.join(' ');
+	const serieText = data?.series?.length > 0 ? data.series.map(e => getTagInLocale(settings, e, i18nParam)).join(', ')
+		+ (data.series.length > 3 ? '...' : '')
+		: (data?.singers ? data.singers.slice(0, 3).map(e => e.name).join(', ') + (data.singers.length > 3 ? '...' : '') : '');
+	const langsText = data?.langs.map(e => e.name).join(', ').toUpperCase();
+	const songtypeText = data?.songtypes.sort(sortTagByPriority).map(e => e.short ? + e.short : e.name).join(' ');
 	const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
 	if (onlyText) {
-		const versions = data?.versions
-			?.sort(sortTagByPriority)
-			.map((t) => `[${getTagInLocale(settings, t, i18nParam)}]`);
-		const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
-		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${getTitleInLocale(
-			settings,
-			data.titles
-		)} ${version}`;
+		const versions = data?.versions?.sort(sortTagByPriority).map(t => `[${getTagInLocale(settings, t, i18nParam)}]`);
+		const version = versions?.length > 0
+			? ` ${versions.join(' ')}`
+			: '';
+		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${getTitleInLocale(settings, data.titles)} ${version}`;
 	} else {
-		const versions = data?.versions?.sort(sortTagByPriority).map((t) => (
-			<span className="tag inline white" key={t.tid}>
-				{getTagInLocale(settings, t, i18nParam)}
-			</span>
-		));
+		const versions = data?.versions?.sort(sortTagByPriority).map(t =>
+			<span className="tag inline white" key={t.tid}>{getTagInLocale(settings, t, i18nParam)}</span>
+		);
 		return (
 			<React.Fragment>
 				<span>{langsText}</span>
@@ -151,11 +115,7 @@ export function formatLyrics(lyrics: ASSLine[]) {
 		const fixedLyrics: ASSLine[] = [];
 		for (const [lyric, lyricGroups] of map.entries()) {
 			for (const lyricGroup of lyricGroups) {
-				fixedLyrics.push({
-					start: lyricGroup[0].start,
-					text: lyric,
-					end: lyricGroup[lyricGroup.length - 1].end,
-				});
+				fixedLyrics.push({ start: lyricGroup[0].start, text: lyric, end: lyricGroup[lyricGroup.length - 1].end });
 			}
 		}
 		fixedLyrics.sort((el1, el2) => {
@@ -167,23 +127,21 @@ export function formatLyrics(lyrics: ASSLine[]) {
 		const mappedLyrics: ASSLine[] = [];
 		for (const lyric of lyrics) {
 			if (lyric.fullText) {
-				const newFullText = lyric.fullText
-					.map((value) => {
-						// Crush down tags
-						const tags = value.tags.reduce((acc, tagCollec) => {
-							const newK = (acc.k || 0) + (tagCollec.k || tagCollec.kf || tagCollec.ko || 0);
-							return Object.assign(acc, { ...tagCollec, k: newK });
-						}, {});
-						return { ...value, tags };
-					})
-					.map((block, i, blocks) => {
-						let KTime = 0;
-						for (let i2 = 0; i2 < i; i2++) {
-							KTime += blocks[i2].tags?.k || 0;
-						}
-						KTime = KTime * 0.01;
-						return { ...block, tags: [{ ...block.tags, k: KTime }] };
-					});
+				const newFullText = lyric.fullText.map(value => {
+					// Crush down tags
+					const tags = value.tags.reduce((acc, tagCollec) => {
+						const newK = (acc.k || 0) + (tagCollec.k || tagCollec.kf || tagCollec.ko || 0);
+						return Object.assign(acc, { ...tagCollec, k: newK });
+					}, {});
+					return { ...value, tags };
+				}).map((block, i, blocks) => {
+					let KTime = 0;
+					for (let i2 = 0; i2 < i; i2++) {
+						KTime += blocks[i2].tags?.k || 0;
+					}
+					KTime = KTime * 0.01;
+					return { ...block, tags: [{ ...block.tags, k: KTime }] };
+				});
 				mappedLyrics.push({ ...lyric, fullText: newFullText });
 			} else {
 				// Push as-is, no support
@@ -201,6 +159,7 @@ export function getPreviewLink(kara: DBKara) {
 		return `/previews/${kara.kid}.${kara.mediasize}.25.jpg`;
 	}
 }
+
 
 export function getPlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface) {
 	if (side === 'left') {
@@ -221,23 +180,23 @@ export function getOppositePlaylistInfo(side: 'left' | 'right', context: GlobalC
 export function setPlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface, plaid?: string) {
 	const oldIdPlaylist = getPlaylistInfo(side, context)?.plaid;
 	if (plaid === getOppositePlaylistInfo(side, context)?.plaid) {
-		side === 'left'
-			? setPlaylistInfoRight(context.globalDispatch, oldIdPlaylist)
+		side === 'left' ?
+			setPlaylistInfoRight(context.globalDispatch, oldIdPlaylist)
 			: setPlaylistInfoLeft(context.globalDispatch, oldIdPlaylist);
 	}
-	side === 'left'
-		? setPlaylistInfoLeft(context.globalDispatch, plaid)
+	side === 'left' ?
+		setPlaylistInfoLeft(context.globalDispatch, plaid)
 		: setPlaylistInfoRight(context.globalDispatch, plaid);
 }
 
 export function setOppositePlaylistInfo(side: 'left' | 'right', context: GlobalContextInterface, plaid?: string) {
 	const oldIdPlaylist = getOppositePlaylistInfo(side, context)?.plaid;
 	if (plaid === getPlaylistInfo(side, context)?.plaid) {
-		side === 'left'
-			? setPlaylistInfoLeft(context.globalDispatch, oldIdPlaylist)
+		side === 'left' ?
+			setPlaylistInfoLeft(context.globalDispatch, oldIdPlaylist)
 			: setPlaylistInfoRight(context.globalDispatch, oldIdPlaylist);
 	}
-	side === 'left'
-		? setPlaylistInfoRight(context.globalDispatch, plaid)
+	side === 'left' ?
+		setPlaylistInfoRight(context.globalDispatch, plaid)
 		: setPlaylistInfoLeft(context.globalDispatch, plaid);
 }

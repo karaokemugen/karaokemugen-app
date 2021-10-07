@@ -25,8 +25,8 @@ interface FoldersElementState {
 }
 
 export default class FoldersElement extends React.Component<FoldersElementProps, FoldersElementState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>;
+	static contextType = GlobalContext
+	context: React.ContextType<typeof GlobalContext>
 
 	input: any;
 	currentVal: any;
@@ -36,12 +36,12 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 		this.state = {
 			value: this.props.value || [],
 			keyModal: this.props.keyModal,
-			visibleModal: false,
+			visibleModal: false
 		};
 	}
 
 	componentDidUpdate(prevProps: FoldersElementProps) {
-		if (prevProps.value !== this.props.value) this.setState({ value: this.props.value || [] });
+		if (prevProps.value !== this.props.value) this.setState({value: this.props.value || []});
 	}
 
 	async openFileSystemModal(item, index?: number, key?: string) {
@@ -49,18 +49,15 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 			this.setState({ itemModal: item, indexModal: index, keyModal: key });
 			const { ipcRenderer: ipc } = window.require('electron');
 			const value = Array.isArray(item) ? item[index] : item;
-			const path = `${this.getPathForFileSystem(value, key)}${
-				index === -1 || !value
-					? '/'
-					: this.context.globalState.settings.data.state.os === 'win32'
-					? value?.replace(/\//g, '\\')
-					: value
+			const path = `${this.getPathForFileSystem(value, key)}${index === -1 || !value
+				? '/'
+				: (this.context.globalState.settings.data.state.os === 'win32' ? value?.replace(/\//g, '\\') : value)
 			}`;
 			const options = {
 				defaultPath: path,
 				title: this.getTitleModal(),
 				buttonLabel: this.getButtonLabel(),
-				properties: ['createDirectory'],
+				properties: ['createDirectory']
 			};
 			if (this.props.openFile) options.properties.push('openFile');
 			if (this.props.openDirectory) options.properties.push('openDirectory');
@@ -92,12 +89,10 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 
 	getPathForFileSystem(value: string[] | string, key?: string) {
 		const regexp = this.context.globalState.settings.data.state.os === 'win32' ? '^[a-zA-Z]:' : '^/';
-		if (
-			(Array.isArray(value) && value[0].match(regexp) === null) ||
-			(value && !Array.isArray(value) && value.match(regexp) === null)
-		) {
-			const path = key?.includes('System.Binaries')
-				? this.context.globalState.settings.data.state.appPath
+		if ((Array.isArray(value) && value[0].match(regexp) === null)
+			|| (value && !Array.isArray(value) && value.match(regexp) === null)) {
+			const path = key?.includes('System.Binaries') ?
+				this.context.globalState.settings.data.state.appPath
 				: this.context.globalState.settings.data.state.dataPath;
 			return `${path}${this.context.globalState.settings.data.state.os === 'win32' ? '\\' : '/'}`;
 		} else {
@@ -106,11 +101,9 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	}
 
 	getTitleModal() {
-		if (
-			this.state.itemModal &&
-			(this.state.keyModal?.includes('System.Binaries.ffmpeg') ||
-				this.state.keyModal?.includes('System.Binaries.Player'))
-		) {
+		if (this.state.itemModal
+			&& (this.state.keyModal?.includes('System.Binaries.ffmpeg')
+				|| this.state.keyModal?.includes('System.Binaries.Player'))) {
 			return i18next.t('CONFIG.CHOOSE_FILE');
 		} else {
 			return i18next.t('CONFIG.CHOOSE_DIRECTORY');
@@ -122,71 +115,44 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 	}
 
 	render() {
-		const item = Array.isArray(this.state.itemModal)
-			? this.state.itemModal[this.state.indexModal]
-			: this.state.itemModal;
+		const item = Array.isArray(this.state.itemModal) ? this.state.itemModal[this.state.indexModal] : this.state.itemModal;
 		return (
 			<div>
-				{Array.isArray(this.props.value) ? (
+				{Array.isArray(this.props.value) ?
 					<React.Fragment>
-						{this.props.value.map((element, index) => (
+						{this.props.value.map((element, index) =>
 							<div key={element} style={{ display: 'flex', marginBottom: '10px' }}>
-								{this.props.value.length > 1 ? (
+								{this.props.value.length > 1 ?
 									<React.Fragment>
-										<Radio
-											style={{ width: '150px' }}
-											checked={this.props.value[0] === element}
+										<Radio style={{ width: '150px' }} checked={this.props.value[0] === element}
 											onChange={() => {
-												const value = (this.state.value as string[])
-													.filter((val) => val === element)
-													.concat(
-														(this.state.value as string[]).filter((val) => val !== element)
-													);
+												const value = (this.state.value as string[]).filter(val => val === element)
+													.concat((this.state.value as string[]).filter(val => val !== element));
 												this.setState({ value: value });
 												this.props.onChange && this.props.onChange(value);
-											}}
-										>
-											{this.props.value[0] === element
-												? i18next.t('CONFIG.PRIMARY_DIRECTORY')
-												: null}
+											}}>
+											{this.props.value[0] === element ? i18next.t('CONFIG.PRIMARY_DIRECTORY') : null}
 										</Radio>
 										<div style={{ width: '50px' }}>
-											<Button
-												type="primary"
-												danger
-												icon={<DeleteOutlined />}
+											<Button type="primary" danger icon={<DeleteOutlined />}
 												onClick={() => {
-													const value = this.state.value as any[];
+													const value = (this.state.value as any[]);
 													value.splice(index, 1);
 													this.setState({ value: value });
-												}}
-											/>
+												}} />
 										</div>
-									</React.Fragment>
-								) : null}
-								<Input
-									onClick={() =>
-										this.openFileSystemModal(this.state.value, index, this.props.keyModal)
-									}
-									style={{ maxWidth: this.state.value.length > 1 ? '500px' : '700px' }}
-									defaultValue={element}
-								/>
+									</React.Fragment> : null
+								}
+								<Input onClick={() => this.openFileSystemModal(this.state.value, index, this.props.keyModal)}
+									style={{ maxWidth: this.state.value.length > 1 ? '500px' : '700px' }} defaultValue={element} />
 							</div>
-						))}
-						<Button
-							type="primary"
-							onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}
-						>
-							<PlusOutlined />
-							{this.getButtonLabel()}
+						)}
+						<Button type='primary' onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}>
+							<PlusOutlined />{this.getButtonLabel()}
 						</Button>
-					</React.Fragment>
-				) : (
-					<Input
-						onClick={() => this.openFileSystemModal(this.props.value, undefined, this.props.keyModal)}
-						value={this.state.value}
-					/>
-				)}
+					</React.Fragment> :
+					<Input onClick={() => this.openFileSystemModal(this.props.value, undefined, this.props.keyModal)} value={this.state.value} />
+				}
 
 				<Modal
 					title={this.getTitleModal()}
@@ -199,21 +165,16 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 					okText={i18next.t('CONFIG.SAVE')}
 					cancelText={i18next.t('NO')}
 				>
-					{this.state.visibleModal ? (
-						<FileSystem
-							saveValueModal={(value) => this.setState({ newValueModal: value })}
-							fileRequired={
-								this.state.keyModal?.includes('System.Binaries.ffmpeg') ||
-								this.state.keyModal?.includes('System.Binaries.Player')
-							}
-							os={this.context.globalState.settings.data.state.os}
-							path={`${this.getPathForFileSystem(item, this.state.keyModal)}${
-								this.state.indexModal === -1 || !item ? '/' : item
-							}`}
-						/>
-					) : null}
+					{this.state.visibleModal ?
+						<FileSystem saveValueModal={(value) => this.setState({ newValueModal: value })}
+							fileRequired={this.state.keyModal?.includes('System.Binaries.ffmpeg')
+								|| this.state.keyModal?.includes('System.Binaries.Player')} os={this.context.globalState.settings.data.state.os}
+							path={`${this.getPathForFileSystem(item, this.state.keyModal)}${this.state.indexModal === -1 || !item ? '/' : item}`}
+						/> : null
+					}
 				</Modal>
 			</div>
 		);
+
 	}
 }

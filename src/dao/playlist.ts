@@ -12,47 +12,7 @@ import { profile } from '../lib/utils/logger';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { getState } from '../utils/state';
-import {
-	sqladdCriteria,
-	sqladdKaraToPlaylist,
-	sqlcountPlaylistUsers,
-	sqlcreatePlaylist,
-	sqldeleteCriteria,
-	sqldeleteCriteriaForPlaylist,
-	sqldeletePlaylist,
-	sqleditPlaylist,
-	sqlemptyPlaylist,
-	sqlgetCriterias,
-	sqlgetMaxPosInPlaylist,
-	sqlgetMaxPosInPlaylistForUser,
-	sqlgetPlaylistContents,
-	sqlgetPlaylistContentsMicro,
-	sqlgetPlaylistContentsMini,
-	sqlgetPlaylistInfo,
-	sqlgetPlaylists,
-	sqlgetPLCByKIDUser,
-	sqlgetPLCInfo,
-	sqlgetPLCInfoMini,
-	sqlgetTimeSpentPerUser,
-	sqlremoveKaraFromPlaylist,
-	sqlreorderPlaylist,
-	sqlselectKarasFromCriterias,
-	sqlsetPlaying,
-	sqlsetPLCAccepted,
-	sqlsetPLCFree,
-	sqlsetPLCFreeBeforePos,
-	sqlsetPLCInvisible,
-	sqlsetPLCRefused,
-	sqlsetPLCVisible,
-	sqlshiftPosInPlaylist,
-	sqltrimPlaylist,
-	sqlupdateFreeOrphanedSongs,
-	sqlupdatePlaylistDuration,
-	sqlupdatePlaylistKaraCount,
-	sqlupdatePlaylistLastEditTime,
-	sqlupdatePLCCriterias,
-	sqlupdatePLCSetPos,
-} from './sql/playlist';
+import { sqladdCriteria, sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeleteCriteria, sqldeleteCriteriaForPlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetCriterias, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlselectKarasFromCriterias, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCCriterias, sqlupdatePLCSetPos } from './sql/playlist';
 
 export function editPLCCriterias(plc: number, criterias: Criteria[]) {
 	return db().query(sqlupdatePLCCriterias, [plc, criterias]);
@@ -63,20 +23,18 @@ export function updatePlaylist(pl: DBPL) {
 }
 
 export async function insertPlaylist(pl: DBPL): Promise<string> {
-	const res = await db().query(
-		yesql(sqlcreatePlaylist)({
-			name: pl.name,
-			created_at: pl.created_at,
-			modified_at: pl.modified_at,
-			flag_visible: pl.flag_visible || false,
-			flag_current: pl.flag_current || null,
-			flag_public: pl.flag_public || null,
-			flag_smart: pl.flag_smart || false,
-			flag_whitelist: pl.flag_whitelist || false,
-			flag_blacklist: pl.flag_blacklist || false,
-			username: pl.username.toLowerCase(),
-		})
-	);
+	const res = await db().query(yesql(sqlcreatePlaylist)({
+		name: pl.name,
+		created_at: pl.created_at,
+		modified_at: pl.modified_at,
+		flag_visible: pl.flag_visible || false,
+		flag_current: pl.flag_current || null,
+		flag_public: pl.flag_public || null,
+		flag_smart: pl.flag_smart || false,
+		flag_whitelist: pl.flag_whitelist || false,
+		flag_blacklist: pl.flag_blacklist || false,
+		username: pl.username.toLowerCase()
+	}));
 	return res.rows[0]?.pk_id_playlist;
 }
 
@@ -109,12 +67,10 @@ export function setPLCRefused(plc_id: number, flag_refused: boolean) {
 }
 
 export function setPLCFreeBeforePos(pos: number, plaid: string) {
-	return db().query(
-		yesql(sqlsetPLCFreeBeforePos)({
-			pos: pos,
-			plaid: plaid,
-		})
-	);
+	return db().query(yesql(sqlsetPLCFreeBeforePos)({
+		pos: pos,
+		plaid: plaid
+	}));
 }
 
 export function updatePlaylistKaraCount(id: string) {
@@ -122,22 +78,18 @@ export function updatePlaylistKaraCount(id: string) {
 }
 
 export function updatePlaylistLastEditTime(id: string) {
-	return db().query(
-		yesql(sqlupdatePlaylistLastEditTime)({
-			plaid: id,
-			modified_at: new Date(),
-		})
-	);
+	return db().query(yesql(sqlupdatePlaylistLastEditTime)({
+		plaid: id,
+		modified_at: new Date()
+	}));
 }
 
 export function shiftPosInPlaylist(id: string, pos: number, shift: number) {
-	return db().query(
-		yesql(sqlshiftPosInPlaylist)({
-			shift: shift,
-			plaid: id,
-			pos: pos,
-		})
-	);
+	return db().query(yesql(sqlshiftPosInPlaylist)({
+		shift: shift,
+		plaid: id,
+		pos: pos
+	}));
 }
 
 export async function getMaxPosInPlaylist(id: string): Promise<number> {
@@ -147,29 +99,33 @@ export async function getMaxPosInPlaylist(id: string): Promise<number> {
 
 export function replacePlaylist(playlist: PLC[]) {
 	let newpos = 0;
-	const karaList = playlist.map((kara) => [++newpos, kara.plcid]);
-	return transaction({ sql: sqlupdatePLCSetPos, params: karaList });
+	const karaList = playlist.map(kara => ([
+		++newpos,
+		kara.plcid
+	]));
+	return transaction({sql: sqlupdatePLCSetPos, params: karaList});
 }
 
 export function reorderPlaylist(id: string) {
 	return db().query(sqlreorderPlaylist, [id]);
 }
 
-export function setPos(plc_id: number, pos: number) {
-	return db().query(sqlupdatePLCSetPos, [pos, plc_id]);
+export  function setPos(plc_id: number, pos: number) {
+	return db().query(sqlupdatePLCSetPos,[
+		pos,
+		plc_id
+	]);
 }
 
-export function updatePlaylistDuration(id: string) {
+export  function updatePlaylistDuration(id: string) {
 	return db().query(sqlupdatePlaylistDuration, [id]);
 }
 
-export function trimPlaylist(id: string, pos: number) {
-	return db().query(
-		yesql(sqltrimPlaylist)({
-			plaid: id,
-			pos: pos,
-		})
-	);
+export  function trimPlaylist(id: string, pos: number) {
+	return db().query(yesql(sqltrimPlaylist)({
+		plaid: id,
+		pos: pos
+	}));
 }
 
 export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
@@ -178,9 +134,7 @@ export async function selectPlaylistContentsMini(id: string): Promise<DBPLC[]> {
 }
 
 export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]> {
-	const filterClauses: WhereClause = params.filter
-		? buildClauses(params.filter, true)
-		: { sql: [], params: {}, additionalFrom: [] };
+	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, true) : {sql: [], params: {}, additionalFrom: []};
 	let limitClause = '';
 	let offsetClause = '';
 	let orderClause = 'pc.pos';
@@ -196,28 +150,18 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 		)`;
 		orderClause = 'RANDOM()';
 	}
-	if (params.orderByLikes)
-		orderClause =
-			'(CASE WHEN pc.flag_accepted = FALSE AND pc.flag_refused = FALSE THEN TRUE ELSE FALSE END) DESC, pc.flag_accepted DESC, pc.flag_refused DESC, upvotes DESC';
-	const query = sqlgetPlaylistContents(
-		filterClauses.sql,
-		whereClause,
-		orderClause,
-		limitClause,
-		offsetClause,
-		filterClauses.additionalFrom.join('')
-	);
-	const res = await db().query(
-		yesql(query)({
-			plaid: params.plaid,
-			username: params.username,
-			dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
-			public_plaid: getState().publicPlaid,
-			whitelist_plaid: getState().whitelistPlaid,
-			blacklist_plaid: getState().blacklistPlaid,
-			...filterClauses.params,
-		})
-	);
+	if (params.orderByLikes) orderClause = '(CASE WHEN pc.flag_accepted = FALSE AND pc.flag_refused = FALSE THEN TRUE ELSE FALSE END) DESC, pc.flag_accepted DESC, pc.flag_refused DESC, upvotes DESC';
+	const query = sqlgetPlaylistContents(filterClauses.sql, whereClause, orderClause, limitClause, offsetClause,
+		filterClauses.additionalFrom.join(''));
+	const res = await db().query(yesql(query)({
+		plaid: params.plaid,
+		username: params.username,
+		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
+		public_plaid: getState().publicPlaid,
+		whitelist_plaid: getState().whitelistPlaid,
+		blacklist_plaid: getState().blacklistPlaid,
+		...filterClauses.params
+	}));
 	return res.rows;
 }
 
@@ -226,26 +170,26 @@ export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCKID[
 		profile('selectPlaylistContentsMicro');
 		const res = await db().query(sqlgetPlaylistContentsMicro, [id]);
 		return res.rows;
-	} catch (err) {
+	} catch(err) {
 		throw err;
 	} finally {
 		profile('selectPlaylistContentsMicro');
 	}
+
 }
 
 export async function selectPLCInfo(id: number, forUser: boolean, username: string): Promise<DBPLCInfo> {
 	const query = sqlgetPLCInfo(forUser);
-	const res = await db().query(
-		yesql(query)({
+	const res = await db().query(yesql(query)(
+		{
 			plcid: id,
-			dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
+			dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
 			username: username,
 			public_plaid: getState().publicPlaid,
 			current_plaid: getState().currentPlaid,
 			whitelist_plaid: getState().whitelistPlaid,
-			blacklist_plaid: getState().blacklistPlaid,
-		})
-	);
+			blacklist_plaid: getState().blacklistPlaid
+		}));
 	return res.rows[0] || {};
 }
 
@@ -255,14 +199,12 @@ export async function selectPLCInfoMini(id: number): Promise<DBPLC> {
 }
 
 export async function selectPLCByKIDAndUser(kid: string, username: string, plaid: string): Promise<DBPLC> {
-	const res = await db().query(
-		yesql(sqlgetPLCByKIDUser)({
-			kid: kid,
-			plaid: plaid,
-			dejavu_time: new Date((now() - getConfig().Playlist.MaxDejaVuTime * 60) * 1000),
-			username: username,
-		})
-	);
+	const res = await db().query(yesql(sqlgetPLCByKIDUser)({
+		kid: kid,
+		plaid: plaid,
+		dejavu_time: new Date((now() - (getConfig().Playlist.MaxDejaVuTime * 60)) * 1000),
+		username: username
+	}));
 	return res.rows[0];
 }
 
@@ -293,18 +235,20 @@ export async function countPlaylistUsers(plaid: string): Promise<number> {
 }
 
 export async function getMaxPosInPlaylistForUser(plaid: string, username: string): Promise<number> {
-	const res = await db().query(
-		yesql(sqlgetMaxPosInPlaylistForUser)({
-			plaid: plaid,
-			username: username,
-		})
-	);
+	const res = await db().query(yesql(sqlgetMaxPosInPlaylistForUser)({
+		plaid: plaid,
+		username: username
+	}));
 	return res.rows[0]?.maxpos;
 }
 
 export function insertCriteria(cList: Criteria[]) {
-	const c = cList.map((cItem) => [cItem.value, cItem.type, cItem.plaid]);
-	return transaction({ params: c, sql: sqladdCriteria });
+	const c = cList.map((cItem) => ([
+		cItem.value,
+		cItem.type,
+		cItem.plaid
+	]));
+	return transaction({params: c, sql: sqladdCriteria});
 }
 
 export async function selectCriterias(plaid: string): Promise<Criteria[]> {
@@ -340,7 +284,7 @@ export async function migrateBLWLToSmartPLs() {
 	const [BLCSets, BLCs, WL] = await Promise.all([
 		db().query('SELECT * FROM blacklist_criteria_set'),
 		db().query('SELECT * FROM blacklist_criteria'),
-		db().query('SELECT * FROM whitelist'),
+		db().query('SELECT * FROM whitelist')
 	]);
 	// Convert whitelist, that's the easiest part.
 	if (WL.rows.length > 0) {
@@ -350,10 +294,10 @@ export async function migrateBLWLToSmartPLs() {
 			flag_visible: true,
 			created_at: new Date(),
 			modified_at: new Date(),
-			username: 'admin',
+			username: 'admin'
 		});
 		let pos = 0;
-		const songs = WL.rows.map((s) => {
+		const songs = WL.rows.map(s => {
 			pos++;
 			return {
 				plaid: plaid,
@@ -362,14 +306,14 @@ export async function migrateBLWLToSmartPLs() {
 				kid: s.kid,
 				created_at: new Date(),
 				pos: pos,
-				criteria: null,
+				criteria: null
 			};
 		});
 		await insertKaraIntoPlaylist(songs);
 	}
 	// Blacklist(s)
 	for (const set of BLCSets.rows) {
-		const blc = BLCs.rows.filter((e) => e.fk_id_blc_set === set.pk_id_blc_set);
+		const blc = BLCs.rows.filter(e => e.fk_id_blc_set === set.pk_id_blc_set);
 		// No need to import an empty BLC set.
 		if (blc.length === 0) continue;
 		const plaid = await insertPlaylist({
@@ -378,17 +322,15 @@ export async function migrateBLWLToSmartPLs() {
 			flag_visible: true,
 			flag_blacklist: set.flag_current,
 			flag_smart: true,
-			username: 'admin',
+			username: 'admin'
 		});
-		await insertCriteria(
-			blc.map((e) => {
-				return {
-					plaid: plaid,
-					type: e.type,
-					value: e.value,
-				};
-			})
-		);
+		await insertCriteria(blc.map(e => {
+			return {
+				plaid: plaid,
+				type: e.type,
+				value: e.value
+			};
+		}));
 	}
 	await updateAllSmartPlaylists();
 	/**
@@ -405,7 +347,7 @@ export async function migrateBLWLToSmartPLs() {
 	 */
 }
 export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfterInsert[]> {
-	const karas: any[] = karaList.map((kara) => [
+	const karas: any[] = karaList.map(kara => ([
 		kara.plaid,
 		kara.username,
 		kara.nickname,
@@ -416,9 +358,9 @@ export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfte
 		kara.flag_visible || true,
 		kara.flag_refused || false,
 		kara.flag_accepted || false,
-		JSON.stringify(kara.criterias),
-	]);
-	return transaction({ params: karas, sql: sqladdKaraToPlaylist });
+		JSON.stringify(kara.criterias)
+	]));
+	return transaction({params: karas, sql: sqladdKaraToPlaylist});	
 }
 
 export function removeKaraFromPlaylist(karas: number[]) {
@@ -430,6 +372,9 @@ export function updateFreeOrphanedSongs(expireTime: number) {
 }
 
 export async function getSongTimeSpentForUser(plaid: string, username: string): Promise<number> {
-	const res = await db().query(sqlgetTimeSpentPerUser, [plaid, username]);
+	const res = await db().query(sqlgetTimeSpentPerUser, [
+		plaid,
+		username
+	]);
 	return res.rows[0]?.time_spent || 0;
 }

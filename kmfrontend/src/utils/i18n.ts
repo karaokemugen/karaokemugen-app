@@ -19,15 +19,16 @@ i18n
 		},
 		resources: {
 			en: {
-				translation: en,
+				translation: en
 			},
 			fr: {
-				translation: fr,
+				translation: fr
 			},
 			es: {
-				translation: es,
-			},
-		},
+				translation: es
+			}
+		}
 	});
+
 
 export default i18n;

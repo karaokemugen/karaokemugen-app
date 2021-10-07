@@ -22,7 +22,9 @@ function WelcomePageArticle(props: IProps) {
 		>
 			<div className="article-header">
 				<b>{props.article.title}</b>
-				<a href={props.article.link}>{props.article.dateStr}</a>
+				<a href={props.article.link}>
+					{props.article.dateStr}
+				</a>
 			</div>
 			<div className="article-body">
 				<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(props.article.html) }} />

@@ -1,6 +1,6 @@
 export interface MpvCommand {
-	command: any[];
-	request_id?: number;
+    command: any[]
+    request_id?: number
 }
 
-export type MpvHardwareDecodingOptions = 'auto-safe' | 'no' | 'yes';
+export type MpvHardwareDecodingOptions = 'auto-safe' | 'no' | 'yes'

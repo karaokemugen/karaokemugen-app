@@ -1,6 +1,6 @@
 import openAboutWindow from 'about-window';
 import { dialog, MenuItem, MenuItemConstructorOptions } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import {autoUpdater} from 'electron-updater';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
@@ -15,7 +15,7 @@ import { setManualUpdate } from './electronAutoUpdate';
 
 const isMac = process.platform === 'darwin';
 
-let menuItems: Array<MenuItemConstructorOptions | MenuItem>;
+let menuItems: Array<(MenuItemConstructorOptions) | (MenuItem)>;
 
 export function getMenu() {
 	return menuItems;
@@ -34,7 +34,7 @@ export function initMenu() {
 		logs: `${base}:${port}/system/log`,
 		download: `${base}:${port}/system/karas/download`,
 		karas: `${base}:${port}/system/karas`,
-		database: `${base}:${port}/system/db`,
+		database: `${base}:${port}/system/db`
 	};
 	menuItems = [
 		/**
@@ -48,16 +48,16 @@ export function initMenu() {
 				{
 					label: i18next.t('MENU_FILE_ABOUT'),
 					click: displayAbout,
-					visible: isMac,
+					visible: isMac
 				},
-				isMac ? { type: 'separator', visible: isMac } : null,
+				isMac ? { type: 'separator', visible: isMac }:null,
 				{
 					label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
 					accelerator: 'CmdOrCtrl+T',
 					visible: isMac,
 					click: () => {
 						openURL(urls.operatorOptions);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG_OSX'),
@@ -65,14 +65,14 @@ export function initMenu() {
 					visible: isMac,
 					click: () => {
 						openURL(urls.systemOptions);
-					},
+					}
 				},
-				isMac ? { type: 'separator', visible: isMac } : null,
+				isMac ? { type: 'separator', visible: isMac }:null,
 				{
 					// Updater menu disabled on macs until we can sign our code
 					label: i18next.t('MENU_FILE_UPDATE'),
 					visible: !isMac && !getState().forceDisableAppUpdate,
-					click: checkForUpdates,
+					click: checkForUpdates
 				},
 				{ role: 'services', visible: isMac },
 				{
@@ -81,33 +81,33 @@ export function initMenu() {
 					submenu: [
 						{
 							label: i18next.t('MENU_FILE_IMPORT_PLAYLIST'),
-							click: importFile,
+							click: importFile
 						},
 						{
 							label: i18next.t('MENU_FILE_IMPORT_FAVORITES'),
-							click: importFile,
+							click: importFile
 						},
 						{
 							label: i18next.t('MENU_FILE_IMPORT_KARABUNDLE'),
-							click: importFile,
+							click: importFile
 						},
-					],
+					]
 				},
-				{ type: 'separator' },
+				{ type: 'separator'},
 				{
 					label: isMac ? i18next.t('MENU_FILE_QUIT_OSX') : i18next.t('MENU_FILE_QUIT'),
 					accelerator: 'CmdOrCtrl+Q',
 					click: () => {
 						exit();
-					},
-				},
-			],
+					}
+				}
+			]
 		},
 		/**
-		 *
-		 * VIEW MENU
-		 *
-		 */
+		*
+		* VIEW MENU
+		*
+		*/
 		{
 			label: i18next.t('MENU_VIEW'),
 			submenu: [
@@ -119,14 +119,14 @@ export function initMenu() {
 				{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomIn' },
 				{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomOut' },
 				{ type: 'separator' },
-				{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' },
-			],
+				{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
+			]
 		},
 		/**
-		 *
-		 * GO TO MENU
-		 *
-		 */
+		*
+		* GO TO MENU
+		*
+		*/
 		{
 			label: isMac ? i18next.t('MENU_GOTO_OSX') : i18next.t('MENU_GOTO'),
 			submenu: [
@@ -135,36 +135,36 @@ export function initMenu() {
 					accelerator: 'CmdOrCtrl+H',
 					click: () => {
 						openURL(urls.home);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_GOTO_OPERATOR'),
 					accelerator: 'CmdOrCtrl+O',
 					click: () => {
 						openURL(urls.operator);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_GOTO_SYSTEM'),
 					accelerator: 'CmdOrCtrl+S',
 					click: () => {
 						openURL(urls.system);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_GOTO_PUBLIC'),
 					accelerator: 'CmdOrCtrl+P',
 					click: () => {
 						openURL(urls.public);
-					},
+					}
 				},
-			],
+			]
 		},
 		/**
-		 *
-		 * TOOLS MENU
-		 *
-		 */
+		*
+		* TOOLS MENU
+		*
+		*/
 		{
 			label: i18next.t('MENU_TOOLS'),
 			submenu: [
@@ -173,36 +173,36 @@ export function initMenu() {
 					accelerator: 'CmdOrCtrl+L',
 					click: () => {
 						openURL(urls.logs);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_TOOLS_DOWNLOADS'),
 					accelerator: 'CmdOrCtrl+D',
 					click: () => {
 						openURL(urls.download);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_TOOLS_KARAOKES'),
 					accelerator: 'CmdOrCtrl+K',
 					click: () => {
 						openURL(urls.karas);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_TOOLS_DATABASE'),
 					accelerator: 'CmdOrCtrl+B',
 					click: () => {
 						openURL(urls.database);
-					},
+					}
 				},
-			],
+			]
 		},
 		/**
-		 *
-		 * OPTIONS
-		 *
-		 */
+		*
+		* OPTIONS
+		*
+		*/
 		{
 			label: i18next.t('MENU_OPTIONS'),
 			visible: !isMac,
@@ -213,8 +213,8 @@ export function initMenu() {
 					checked: getConfig().Online.Updates.App,
 					visible: !getState().forceDisableAppUpdate,
 					click: () => {
-						setConfig({ Online: { Updates: { App: !getConfig().Online.Updates.App } } });
-					},
+						setConfig({Online: {Updates: { App: !getConfig().Online.Updates.App}}});
+					}
 				},
 				{ type: 'separator' },
 				{
@@ -222,22 +222,22 @@ export function initMenu() {
 					accelerator: 'CmdOrCtrl+T',
 					click: () => {
 						openURL(urls.operatorOptions);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG'),
 					accelerator: 'CmdOrCtrl+G',
 					click: () => {
 						openURL(urls.systemOptions);
-					},
+					}
 				},
-			],
+			]
 		},
 		/**
-		 *
-		 * WINDOW MENU
-		 *
-		 */
+		*
+		* WINDOW MENU
+		*
+		*/
 		{
 			label: i18next.t('MENU_WINDOW'),
 			submenu: [
@@ -248,8 +248,8 @@ export function initMenu() {
 					type: 'checkbox',
 					checked: getConfig().GUI.OpenInElectron,
 					click: () => {
-						setConfig({ GUI: { OpenInElectron: !getConfig().GUI.OpenInElectron } });
-					},
+						setConfig({GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
+					}
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
@@ -258,8 +258,8 @@ export function initMenu() {
 					checked: getConfig().GUI.ChibiPlayer.Enabled,
 					click: () => {
 						updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
-						setConfig({ GUI: { ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled } } });
-					},
+						setConfig({GUI: {ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled }}});
+					}
 				},
 				{
 					label: i18next.t('MENU_OPTIONS_CHIBIPLAYLIST'),
@@ -268,16 +268,16 @@ export function initMenu() {
 					checked: getConfig().GUI.ChibiPlaylist.Enabled,
 					click: () => {
 						updateChibiPlaylistWindow(!getConfig().GUI.ChibiPlaylist.Enabled);
-						setConfig({ GUI: { ChibiPlaylist: { Enabled: !getConfig().GUI.ChibiPlaylist.Enabled } } });
-					},
-				},
-			],
+						setConfig({GUI: {ChibiPlaylist: { Enabled: !getConfig().GUI.ChibiPlaylist.Enabled }}});
+					}
+				}
+			]
 		},
 		/**
-		 *
-		 * HELP MENU
-		 *
-		 */
+		*
+		* HELP MENU
+		*
+		*/
 		{
 			label: i18next.t('MENU_HELP'),
 			role: 'help',
@@ -286,76 +286,74 @@ export function initMenu() {
 					label: i18next.t('MENU_HELP_GUIDE'),
 					click: () => {
 						open(`https://docs.karaokes.moe/${getState().defaultLocale}/user-guide/getting-started/`);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_HELP_WEBSITE'),
 					click: () => {
 						open('https://karaokes.moe');
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_HELP_TWITTER'),
 					click: () => {
 						open('https://twitter.com/KaraokeMugen');
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_HELP_DISCORD'),
 					click: () => {
 						open('https://karaokes.moe/discord');
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_HELP_GITLAB'),
 					click: () => {
 						open('https://lab.shelter.moe/karaokemugen/karaokemugen-app');
-					},
+					}
 				},
-				{ type: 'separator' },
+				{ type: 'separator'},
 				{
 					label: i18next.t('MENU_HELP_CHANGELOG'),
 					click: () => {
 						open('https://lab.shelter.moe/karaokemugen/karaokemugen-app/-/releases');
-					},
+					}
 				},
-				{ type: 'separator' },
+				{ type: 'separator'},
 				{
 					label: i18next.t('MENU_HELP_CONTRIB_DOC'),
 					click: () => {
 						open(`https://docs.karaokes.moe/${getState().defaultLocale}/contrib-guide/base/`);
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_HELP_SEND_KARAOKE'),
 					click: () => {
 						open('https://kara.moe/base/import');
-					},
+					}
 				},
-				{ type: 'separator' },
+				{ type: 'separator'},
 				{
 					label: i18next.t('MENU_HELP_REPORT_BUG'),
 					click: () => {
 						open('https://lab.shelter.moe/karaokemugen/karaokemugen-app/-/issues');
-					},
+					}
 				},
 				{
 					label: i18next.t('MENU_FILE_ABOUT'),
 					click: displayAbout,
-					visible: !isMac,
-				},
-			],
-		},
+					visible: !isMac
+				}
+			]
+		}
 	];
 	if (isMac) {
-		menuItems.splice(
-			2,
-			0,
+		menuItems.splice(2, 0,
 			/**
-			 *
-			 * EDIT MENU
-			 *
-			 */
+			*
+			* EDIT MENU
+			*
+			*/
 			{
 				label: i18next.t('MENU_EDIT'),
 				submenu: [
@@ -372,23 +370,24 @@ export function initMenu() {
 						label: i18next.t('MENU_EDIT_SPEECH'),
 						submenu: [
 							{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startSpeaking' },
-							{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopSpeaking' },
-						],
-					},
-				],
-			}
-		);
+							{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopSpeaking' }
+						]
+					}
+				]
+			});
 	}
 	menuItems = removeNulls(menuItems);
 }
 
 function openURL(url: string) {
-	getConfig().GUI.OpenInElectron ? win?.loadURL(url) : open(url);
+	getConfig().GUI.OpenInElectron
+		? win?.loadURL(url)
+		: open(url);
 }
 
 async function checkForUpdates() {
 	setManualUpdate(true);
-	logger.info('Checking for updates manually', { service: 'AppUpdate' });
+	logger.info('Checking for updates manually', {service: 'AppUpdate'});
 	await autoUpdater.checkForUpdates().catch(() => {
 		// Handled in electronAutoUpadte.ts
 	});
@@ -397,7 +396,7 @@ async function checkForUpdates() {
 
 async function importFile() {
 	const files = await dialog.showOpenDialog({
-		properties: ['openFile', 'multiSelections'],
+		properties: ['openFile', 'multiSelections']
 	});
 	if (!files.canceled) {
 		for (const file of files.filePaths) {
@@ -409,21 +408,22 @@ async function importFile() {
 function displayAbout() {
 	{
 		const version = getState().version;
-		const versionSHA = version.sha ? `version ${version.sha}` : '';
+		const versionSHA = version.sha
+			? `version ${version.sha}`
+			: '';
 		openAboutWindow({
 			icon_path: resolve(getState().resourcePath, 'build/icon.png'),
 			product_name: `Karaoke Mugen\n${version.name}`,
 			bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
-			bug_report_url:
-				'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
+			bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
 			homepage: 'https://mugen.karaokes.moe',
 			description: versionSHA,
 			copyright: i18next.t('ABOUT.COPYRIGHT'),
 			use_version_info: true,
 			css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css'),
 			win_options: {
-				title: i18next.t('ABOUT.TITLE'),
-			},
+				title: i18next.t('ABOUT.TITLE')
+			}
 		});
 	}
 }

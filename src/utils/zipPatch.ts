@@ -11,7 +11,7 @@ import Sentry from './sentry';
 import { getState } from './state';
 
 // This is only used in cli mode, without a worker available
-async function extractZip(path: string, outDir: string, task: Task): Promise<string> {
+async function extractZip(path: string, outDir: string, task: Task): Promise<string>  {
 	let firstDir: string;
 	await extract(path, {
 		dir: outDir,
@@ -22,33 +22,33 @@ async function extractZip(path: string, outDir: string, task: Task): Promise<str
 			task.update({
 				subtext: entry.fileName,
 				value: zipFile.entriesRead,
-				total: zipFile.entryCount,
+				total: zipFile.entryCount
 			});
-		},
+		}
 	});
 	return firstDir;
 }
 
 export async function downloadAndExtractZip(zipURL: string, outDir: string, repo: string) {
-	logger.debug(`Downloading ${repo} archive`, { service: 'Zip' });
+	logger.debug(`Downloading ${repo} archive`, {service: 'Zip'});
 	const task = new Task({
 		text: 'DOWNLOADING_ZIP',
-		data: repo,
+		data: repo
 	});
 	try {
 		const target = resolve(resolvedPathTemp(), `base-${repo}.zip`);
 		await downloadFiles(null, [{ filename: target, url: zipURL, id: repo }], task);
-		logger.debug(`Extracting ${repo} archive to ${outDir}`, { service: 'Zip' });
+		logger.debug(`Extracting ${repo} archive to ${outDir}`, {service: 'Zip'});
 		const tempDir = resolvedPathTemp();
 		task.update({
 			text: 'EXTRACTING_ZIP',
-			data: repo,
+			data: repo
 		});
 		const dir = await extractZip(target, tempDir, task);
 		await remove(outDir);
 		await move(resolve(tempDir, dir), outDir);
-	} catch (err) {
-		logger.error('Unable to download and extract ${repo} zip : ${err}', { service: 'Zip', obj: err });
+	} catch(err) {
+		logger.error('Unable to download and extract ${repo} zip : ${err}', {service: 'Zip', obj: err});
 		throw err;
 	} finally {
 		task.end();
@@ -59,48 +59,38 @@ const patchRegex = /^a\/.+ b\/(.+)\n(index|new file|deleted file)/m;
 const KTidRegex = /"[kt]id": *"(.+)"/;
 
 function computeFileChanges(patch: string) {
-	const patches = patch
-		.split('diff --git ')
+	const patches = patch.split('diff --git ')
 		.slice(1)
-		.map<{ type: 'new' | 'delete'; path: string; uid?: string }>((v) => {
+		.map<{ type: 'new' | 'delete', path: string, uid?: string }>((v) => {
 			const result = v.match(patchRegex);
 			const uid = v.match(KTidRegex);
 			if (!result) {
 				throw new Error('Cannot find diff header, huh.');
 			}
 			return {
-				type: result[2] === 'deleted file' ? 'delete' : 'new',
+				type: result[2] === 'deleted file' ? 'delete':'new',
 				path: result[1],
-				uid: uid ? uid[1] : undefined,
+				uid: uid ? uid[1]:undefined
 			};
 		});
 	// Remove delete patches that have a corresponding new entry (renames)
-	const newPatches = patches.filter((p) => p.type === 'new');
-	return patches.filter((p) => !(p.type === 'delete' && newPatches.findIndex((p2) => p.uid === p2.uid) !== -1));
+	const newPatches = patches.filter(p => p.type === 'new');
+	return patches.filter(p => !(p.type === 'delete' && newPatches.findIndex(p2 => p.uid === p2.uid) !== -1));
 }
 
 export async function applyPatch(patch: string, dir: string) {
 	try {
-		const patchProcess = execa(
-			getState().binPath.patch,
-			[
-				'-p1',
-				'-N',
-				'-f',
-				`--directory=${resolve(getState().dataPath, dir)}`,
-				`--reject-file=${resolve(resolvedPathTemp(), 'patch.rej')}`,
-			],
-			{ stdio: 'pipe' }
-		);
+		const patchProcess = execa(getState().binPath.patch, [
+			'-p1', '-N', '-f',
+			`--directory=${resolve(getState().dataPath, dir)}`,
+			`--reject-file=${resolve(resolvedPathTemp(), 'patch.rej')}`
+		], {stdio: 'pipe'});
 		patchProcess.stdin.write(`${patch}\n`);
 		patchProcess.stdin.end();
 		await patchProcess;
 		return computeFileChanges(patch);
 	} catch (err) {
-		logger.warn('Cannot apply patch from server, fallback to zip full 	download', {
-			service: 'DiffPatch',
-			obj: err,
-		});
+		logger.warn('Cannot apply patch from server, fallback to zip full 	download', {service: 'DiffPatch', obj: err});
 		Sentry.addErrorInfo('patch', patch);
 		Sentry.error(err, 'Warning');
 		throw err;

@@ -16,9 +16,10 @@ import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP';
 
 export default function filesController(router: Router) {
 	const upload = multer({ dest: resolvedPathTemp() });
-	router.route('/importFile').post(requireHTTPAuth, requireValidUser, upload.single('file'), (req, res: any) => {
-		res.status(200).send(JSON.stringify(req.file));
-	});
+	router.route('/importFile')
+		.post(requireHTTPAuth, requireValidUser, upload.single('file'), (req, res: any) => {
+			res.status(200).send(JSON.stringify(req.file));
+		});
 }
 
 export function filesSocketController(router: SocketIOApp) {
@@ -30,11 +31,11 @@ export function filesSocketController(router: SocketIOApp) {
 			const fullPath = resolve(resolvedPathTemp(), filename);
 			await fs.writeFile(fullPath, req.body.buffer);
 			return {
-				filename: fullPath,
+				filename: fullPath
 			};
 		} catch (err) {
 			logger.error('Unable to write received file', { service: 'API', obj: err });
-			return { code: 500 };
+			return {code: 500};
 		}
 	});
 
@@ -45,7 +46,7 @@ export function filesSocketController(router: SocketIOApp) {
 		} catch (err) {
 			const code = 'LYRICS_FILE_OPEN_ERROR';
 			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
+			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
 }

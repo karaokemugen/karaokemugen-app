@@ -20,7 +20,7 @@ export async function login(
 		const info: IAuthentifactionInformation = await commandBackend(username ? 'login' : 'loginGuest', {
 			username,
 			password,
-			securityCode,
+			securityCode
 		});
 
 		// Store data, should be managed in a service and item should be enum and not string
@@ -32,7 +32,7 @@ export async function login(
 		setPlaylistInfoRight(dispatch);
 		dispatch({
 			type: AuthAction.LOGIN_SUCCESS,
-			payload: info,
+			payload: info
 		});
 		await setSettings(dispatch);
 		return info.role;
@@ -40,8 +40,8 @@ export async function login(
 		dispatch({
 			type: AuthAction.LOGIN_FAILURE,
 			payload: {
-				error: error?.message ? error?.message : error?.toString(),
-			},
+				error: error?.message ? error?.message : error?.toString()
+			}
 		});
 		throw error;
 	}
@@ -53,14 +53,11 @@ export function logout(dispatch: Dispatch<LogoutUser>): void {
 	setAuthorization(null, null);
 
 	dispatch({
-		type: AuthAction.LOGOUT_USER,
+		type: AuthAction.LOGOUT_USER
 	});
 }
 
-export function setAuthentifactionInformation(
-	dispatch: Dispatch<LoginSuccess | SettingsSuccess | SettingsFailure>,
-	data: IAuthentifactionInformation
-) {
+export function setAuthentifactionInformation(dispatch: Dispatch<LoginSuccess | SettingsSuccess | SettingsFailure>, data: IAuthentifactionInformation) {
 	// Store data, should be managed in a service and item should be enum and not string
 	localStorage.setItem('kmToken', data.token);
 	localStorage.setItem('kmOnlineToken', data.onlineToken);
@@ -72,15 +69,13 @@ export function setAuthentifactionInformation(
 			username: data.username,
 			role: data.role,
 			token: data.token,
-			onlineToken: data.onlineToken,
-		},
+			onlineToken: data.onlineToken
+		}
 	});
 	setSettings(dispatch);
 }
 
-export async function isAlreadyLogged(
-	dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | LogoutUser | PlaylistInfo>
-) {
+export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | LogoutUser | PlaylistInfo>) {
 	const kmToken = localStorage.getItem('kmToken');
 	const kmOnlineToken = localStorage.getItem('kmOnlineToken');
 	setAuthorization(kmToken, kmOnlineToken);
@@ -97,8 +92,8 @@ export async function isAlreadyLogged(
 					role: verification.role,
 					token: kmToken,
 					onlineToken: kmOnlineToken,
-					onlineAvailable: verification.onlineAvailable,
-				},
+					onlineAvailable: verification.onlineAvailable
+				}
 			});
 			await setSettings(dispatch);
 		} catch (error: any) {
@@ -106,8 +101,8 @@ export async function isAlreadyLogged(
 			dispatch({
 				type: AuthAction.LOGIN_FAILURE,
 				payload: {
-					error: error,
-				},
+					error: error
+				}
 			});
 			await setSettings(dispatch, true);
 		}

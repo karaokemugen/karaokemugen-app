@@ -5,7 +5,7 @@ import { PublicState, Version } from '../../../../src/types/state';
 // Action name
 export enum Settings {
 	SETTINGS_SUCCESS = 'settings_success',
-	SETTINGS_FAILURE = 'settings_failure',
+	SETTINGS_FAILURE = 'settings_failure'
 }
 
 // Dispatch action
@@ -18,19 +18,19 @@ export interface SettingsFailure {
 	type: Settings.SETTINGS_FAILURE;
 	payload: {
 		error: string;
-	};
+	}
 }
 
 // Store
 
 export interface SettingsStore {
-	data: SettingsStoreData;
-	error: string;
+	data: SettingsStoreData,
+	error: string
 }
 
 export interface SettingsStoreData {
-	state: PublicState;
-	config: Config;
-	user: User;
-	version: Version;
+	state: PublicState,
+	config: Config,
+	user: User,
+	version: Version
 }

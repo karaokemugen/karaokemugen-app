@@ -3,12 +3,12 @@ import merge from 'lodash.merge';
 
 import packageJSON from '../../package.json';
 // KM Imports
-import { getConfig } from '../lib/utils/config';
+import {getConfig} from '../lib/utils/config';
 import { supportedFiles } from '../lib/utils/constants';
-import { emit } from '../lib/utils/pubsub';
-import { emitWS } from '../lib/utils/ws';
+import {emit} from '../lib/utils/pubsub';
+import {emitWS} from '../lib/utils/ws';
 // Types
-import { PublicPlayerState, PublicState, State } from '../types/state';
+import { PublicPlayerState, PublicState, State} from '../types/state';
 
 // Internal settings
 let state: State = {
@@ -42,10 +42,10 @@ let state: State = {
 	sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
 	version: {
 		number: packageJSON.version,
-		name: packageJSON.versionName,
+		name: packageJSON.versionName
 	},
 	restoreNeeded: false,
-	systemMessages: [],
+	systemMessages: []
 };
 
 /** Get public state (to send to webapp users) */
@@ -58,12 +58,8 @@ export function getPlayerState(): PublicPlayerState {
 		stopping: state.stopping,
 		streamerPause: state.streamerPause,
 		defaultLocale: conf.App.Language,
-		songsBeforeJingle: conf.Playlist?.Medias.Jingles.Enabled
-			? conf.Playlist?.Medias.Jingles.Interval - state.counterToJingle
-			: undefined,
-		songsBeforeSponsor: conf.Playlist?.Medias.Sponsors.Enabled
-			? conf.Playlist?.Medias.Sponsors.Interval - state.counterToSponsor
-			: undefined,
+		songsBeforeJingle: conf.Playlist?.Medias.Jingles.Enabled ? conf.Playlist?.Medias.Jingles.Interval - state.counterToJingle:undefined,
+		songsBeforeSponsor: conf.Playlist?.Medias.Sponsors.Enabled ? conf.Playlist?.Medias.Sponsors.Interval - state.counterToSponsor:undefined
 	};
 }
 
@@ -71,18 +67,11 @@ export function getPlayerState(): PublicPlayerState {
 function emitPlayerState(part: Partial<State>) {
 	// Compute diff in other elements
 	const map = new Map([
-		['counterToJingle', { conf: 'Jingles', state: 'songsBeforeJingle' }],
-		['counterToSponsor', { conf: 'Sponsors', state: 'songsBeforeSponsor' }],
+		['counterToJingle', {conf: 'Jingles', state: 'songsBeforeJingle'}],
+		['counterToSponsor', {conf: 'Sponsors', state: 'songsBeforeSponsor'}]
 	]);
-	const toEmit: Partial<PublicPlayerState> = { ...part.player };
-	for (const key of [
-		'currentSessionID',
-		'currentRequester',
-		'stopping',
-		'defaultLocale',
-		'counterToJingle',
-		'counterToSponsor',
-	]) {
+	const toEmit: Partial<PublicPlayerState> = {...part.player};
+	for (const key of ['currentSessionID', 'currentRequester', 'stopping', 'defaultLocale', 'counterToJingle', 'counterToSponsor']) {
 		switch (key) {
 			case 'counterToJingle':
 			case 'counterToSponsor':
@@ -108,7 +97,7 @@ function emitPlayerState(part: Partial<State>) {
 
 /** Get current app state object */
 export function getState() {
-	return { ...state };
+	return {...state};
 }
 
 /** Get public state */
@@ -126,7 +115,7 @@ export function getPublicState(admin: boolean): PublicState {
 		supportedMedias: [].concat(supportedFiles.video, supportedFiles.audio),
 		environment: process.env.SENTRY_ENVIRONMENT,
 		sentrytest: (process.env.CI_SERVER || process.env.SENTRY_TEST === 'true') as boolean,
-		url: state.osURL,
+		url: state.osURL
 	};
 }
 

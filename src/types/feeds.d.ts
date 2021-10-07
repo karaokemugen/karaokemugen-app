@@ -1,4 +1,4 @@
 export interface Feed {
-	name: string;
-	body: any;
+	name: string,
+	body: any
 }

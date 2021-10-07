@@ -123,7 +123,7 @@ Player:
       # Additional message prepended to the connection URL
       #Message: 'Connect to Wifi xxx'
       # Override host/IP address
-      Host: '192.168.0.1'
+      Host: '192.168.0.1'  
   # Override mpv's video output driver
   mpvVideoOutput: null
   # Background file to load
@@ -193,7 +193,7 @@ Playlist:
     Encores:
       Enabled: false
       File: encoru.mp4
-      Message: 'This is the last song!'
+      Message: "This is the last song!"
   MysterySongs:
     # Invisible songs are not hidden (they appear as a slot in playlist)
     Hide: false
@@ -203,11 +203,11 @@ Playlist:
     AddedSongVisibilityPublic: false
     # List of mystery songs labels
     Labels:
-      - ???
-      - Chanson mystère !
+    - ???
+    - Chanson mystère !
 System:
   # Port to listen to
-  FrontendPort: 1337
+  FrontendPort: 1337  
   Database:
     bundledPostgresBinary: false
     database: karaokemugen_app

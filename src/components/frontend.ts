@@ -1,10 +1,10 @@
 // Node Modules
-import { json, urlencoded } from 'body-parser';
+import {json,urlencoded} from 'body-parser';
 import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
-import { createServer } from 'http';
-import { resolve } from 'path';
+import {createServer} from 'http';
+import {resolve} from 'path';
 
 import authController from '../controllers/auth';
 import downloadController from '../controllers/frontend/download';
@@ -22,7 +22,7 @@ import smartPlaylistsController from '../controllers/frontend/smartPlaylists';
 import tagsController from '../controllers/frontend/tags';
 import testController from '../controllers/frontend/test';
 import userController from '../controllers/frontend/user';
-import { resolvedPathAvatars, resolvedPathPreviews, resolvedPathRepos } from '../lib/utils/config';
+import {resolvedPathAvatars, resolvedPathPreviews, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { initWS, SocketIOApp } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
@@ -63,7 +63,7 @@ export function initFrontend(): number {
 		app.use(cors());
 		app.use(compression());
 		app.use(urlencoded({ extended: true, limit: '50mb' }));
-		app.use(json({ limit: '50mb' }));
+		app.use(json({limit: '50mb'}));
 		// Add headers
 		app.use((req, res, next) => {
 			// Website you wish to allow to connect
@@ -71,17 +71,16 @@ export function initFrontend(): number {
 			// Request methods you wish to allow
 			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 			// Request headers you wish to allow
-			res.setHeader(
-				'Access-Control-Allow-Headers',
-				'Origin, X-Requested-With, Content-Type, Authorization, Accept, Key'
-			);
-			req.method === 'OPTIONS' ? res.json() : next();
+			res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, Accept, Key');
+			req.method === 'OPTIONS'
+				? res.json()
+				: next();
 		});
 
 		//Path to video previews
-		app.use('/previews', express.static(resolvedPathPreviews(), { fallthrough: false }));
+		app.use('/previews', express.static(resolvedPathPreviews(), {fallthrough: false}));
 		//There's a single /medias path which will list all files in all folders. Pretty handy.
-		resolvedPathRepos('Medias').forEach((dir) => app.use('/medias', express.static(dir)));
+		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir)));
 		//Path to user avatars
 		app.use('/avatars', express.static(resolvedPathAvatars()));
 
@@ -104,20 +103,22 @@ export function initFrontend(): number {
 		let port = state.frontendPort;
 		try {
 			server.listen(port, () => {
-				logger.debug(`Webapp is READY and listens on port ${port}`, { service: 'Webapp' });
+				logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
 			});
-		} catch (err) {
+		} catch(err) {
 			// Likely port is busy for some reason, so we're going to change that number to something else.
 			port = port + 1;
 			server.listen(port, () => {
-				logger.debug(`Webapp is READY and listens on port ${port}`, { service: 'Webapp' });
+				logger.debug(`Webapp is READY and listens on port ${port}`, {service: 'Webapp'});
 			});
 		}
 		return port;
-	} catch (err) {
+	} catch(err) {
 		// Utter failure
-		logger.error('Webapp is NOT READY', { service: 'Webapp', obj: err });
+		logger.error('Webapp is NOT READY', {service: 'Webapp', obj: err});
 		sentry.error(err);
 		throw err;
 	}
 }
+
+

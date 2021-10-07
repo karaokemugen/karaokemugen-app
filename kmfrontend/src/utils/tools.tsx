@@ -74,11 +74,11 @@ export function dotify(obj: any) {
 	function recurse(obj: any, current?: any) {
 		for (const key in obj) {
 			const value = obj[key];
-			const newKey = current ? current + '.' + key : key; // joined key with dot
+			const newKey = (current ? current + '.' + key : key);  // joined key with dot
 			if (value && typeof value === 'object' && !Array.isArray(value)) {
-				recurse(value, newKey); // it's a nested object, so do it again
+				recurse(value, newKey);  // it's a nested object, so do it again
 			} else {
-				res[newKey] = value; // it's not an object, so set the property
+				res[newKey] = value;  // it's not an object, so set the property
 			}
 		}
 	}
@@ -128,45 +128,37 @@ export function startIntro() {
 const chibis = new Map<TypeOptions, ReactNode>([
 	[
 		'error',
-		<picture>
+		(<picture>
 			<source type="image/webp" srcSet={nanamiCryWebP} />
 			<source type="image/png" srcSet={nanamiCryPNG} />
 			<img src={nanamiCryPNG} alt="Nanami is crying :c" />
-		</picture>,
+		</picture>)
 	],
 	[
 		'warning',
-		<picture>
+		(<picture>
 			<source type="image/webp" srcSet={nanamiThinkWebP} />
 			<source type="image/png" srcSet={nanamiThinkPng} />
 			<img src={nanamiThinkPng} alt="Nanami is confused :/" />
-		</picture>,
+		</picture>)
 	],
 	[
 		'success',
-		<picture>
+		(<picture>
 			<source type="image/webp" srcSet={nanamiUmuWebP} />
 			<source type="image/png" srcSet={nanamiUmuPng} />
 			<img src={nanamiUmuPng} alt="Nanami is UmU" />
-		</picture>,
-	],
+		</picture>)
+	]
 ]);
 
-export function displayMessage(
-	type: TypeOptions,
-	message: any,
-	time = 3500,
-	position: ToastPosition = 'top-left',
-	id?: string | number
-) {
+export function displayMessage(type: TypeOptions, message: any, time = 3500, position: ToastPosition = 'top-left', id?: string | number) {
 	let item;
 	if (typeof message === 'string') {
-		item = (
-			<div className="toast-with-img">
-				{chibis.has(type) ? chibis.get(type) : null}
-				<span>{message}</span>
-			</div>
-		);
+		item = (<div className="toast-with-img">
+			{chibis.has(type) ? chibis.get(type) : null}
+			<span>{message}</span>
+		</div>);
 	} else item = message;
 	if (!document.hidden) {
 		toast(item, { type: type, autoClose: time ? time : false, position, pauseOnFocusLoss: false, toastId: id });
@@ -183,23 +175,20 @@ export function callModal(
 	forceSmall?: boolean,
 	abortCallback?: boolean
 ) {
-	showModal(
-		dispatch,
-		React.createElement(Modal, {
-			type,
-			title,
-			message,
-			callback,
-			placeholder,
-			forceSmall,
-			abortCallback,
-		})
-	);
+	showModal(dispatch, React.createElement(Modal, {
+		type,
+		title,
+		message,
+		callback,
+		placeholder,
+		forceSmall,
+		abortCallback
+	}));
 }
 
 export const nonStandardPlaylists = {
 	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94', // -5
-	library: '524de79d-10b2-49dc-90b1-597626d0cee8', // -1
+	library: '524de79d-10b2-49dc-90b1-597626d0cee8' // -1
 };
 
 export function isNonStandardPlaylist(plaid: string) {
@@ -207,7 +196,7 @@ export function isNonStandardPlaylist(plaid: string) {
 }
 
 export function isModifiable(context: GlobalContextInterface, repoName: string): boolean {
-	const repo = context.globalState.settings.data.config.System.Repositories.find((r) => r.Name === repoName);
+	const repo = context.globalState.settings.data.config.System.Repositories.find(r => r.Name === repoName);
 	return repo.MaintainerMode || !repo.Online;
 }
 
@@ -241,7 +230,7 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 			const tag = await commandBackend('getTag', { tid: criteria.value });
 			args[1] = {
 				tag: getTagInLocale(settings, tag),
-				verb: i18next.t(`CRITERIA.LABEL.TAG_VERBS.${criteria.type}`),
+				verb: i18next.t(`CRITERIA.LABEL.TAG_VERBS.${criteria.type}`)
 			};
 			break;
 	}

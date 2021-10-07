@@ -1,111 +1,112 @@
 .welcome-page-tasks-wrapper {
-	@keyframes pulse {
-		0% {
-			opacity: 0.5;
-		}
 
-		50% {
-			opacity: 1;
-		}
+    @keyframes pulse {
+        0% {
+            opacity: 0.5;
+        }
 
-		100% {
-			opacity: 0.5;
-		}
-	}
+        50% {
+            opacity: 1;
+        }
 
-	font-size: 0.8em;
+        100% {
+            opacity: 0.5;
+        }
+    }
 
-	@media (max-width: 1000px) {
-		font-size: 0.7em;
-	}
+    font-size: 0.8em;
 
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	pointer-events: none;
+    @media (max-width:1000px) {
+        font-size: 0.7em;
+    }
 
-	blockquote {
-		width: 90%;
-		background: #333333;
-		color: white;
-		padding: 0.3em 0.5em 0;
-		margin: 0 0 0.3em;
-		border-radius: 0.5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
 
-		.text {
-			font-size: 1em;
-			margin: 0;
-			padding: 0;
-		}
+    blockquote {
+        width: 90%;
+        background: #333333;
+        color: white;
+        padding: .3em .5em 0;
+        margin: 0 0 .3em;
+        border-radius: 0.5em;
 
-		.subtext {
-			font-size: 0.8em;
-			opacity: 0.8;
-			margin-left: 0.5em;
-		}
+        .text {
+            font-size: 1em;
+            margin: 0;
+            padding: 0;
+        }
 
-		.progress {
-			margin-top: 0.5em;
+        .subtext {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-left: 0.5em;
+        }
 
-			.progress-bar {
-				max-width: 100%;
-				background: rgba(#fff, 0.5);
-				height: 2px;
+        .progress {
+            margin-top: 0.5em;
 
-				&.unknown {
-					width: 100% !important;
-					animation: pulse 1s infinite ease-in-out;
-				}
-			}
-		}
-	}
+            .progress-bar {
+                max-width: 100%;
+                background: rgba(#fff, 0.5);
+                height: 2px;
+
+                &.unknown {
+                    width: 100% !important;
+                    animation: pulse 1s infinite ease-in-out;
+                }
+            }
+        }
+    }
 }
 
 .tasksEvent-wrapper {
-	padding: 0.5em;
-	position: fixed;
-	top: 5em;
-	right: 1em;
-	z-index: 1000;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	pointer-events: none;
+    padding: 0.5em;
+    position: fixed;
+    top: 5em;
+    right: 1em;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
 
-	blockquote {
-		min-width: 300px;
-		background: #454545;
-		color: white;
-		padding: 0.3em 0.5em;
-		margin: 0 0 0.3em;
-		border-radius: 0.5em;
+    blockquote {
+        min-width: 300px;
+        background: #454545;
+        color: white;
+        padding: .3em .5em;
+        margin: 0 0 .3em;
+        border-radius: 0.5em;
 
-		.text {
-			font-size: 1em;
-			margin: 0;
-			padding: 0;
-		}
+        .text {
+            font-size: 1em;
+            margin: 0;
+            padding: 0;
+        }
 
-		.subtext {
-			font-size: 0.8em;
-			opacity: 0.8;
-			margin-left: 0.5em;
-		}
+        .subtext {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-left: 0.5em;
+        }
 
-		.progress {
-			margin-top: 0.5em;
+        .progress {
+            margin-top: 0.5em;
 
-			.progress-bar {
-				background: rgba(255, 255, 255, 0.5);
-				height: 2px;
+            .progress-bar {
+                background: rgba(255, 255, 255, 0.5);
+                height: 2px;
 
-				&.unknown {
-					width: 100% !important;
-					animation: pulse 1s infinite ease-in-out;
-				}
-			}
-		}
-	}
+                &.unknown {
+                    width: 100% !important;
+                    animation: pulse 1s infinite ease-in-out;
+                }
+            }
+        }
+    }
 }

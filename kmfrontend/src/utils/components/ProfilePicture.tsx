@@ -1,11 +1,11 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo,useEffect,useState } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
 import blankAvatar from '../../assets/blank.png';
 import { generateProfilePicLink } from '../profilePics';
 
 interface IProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-	user: User;
+	user: User
 }
 
 function ProfilePicture(props: IProps) {
@@ -27,7 +27,9 @@ function ProfilePicture(props: IProps) {
 	}, [props.user.avatar_file]);
 
 	const htmlProps = { ...props, user: undefined };
-	return <img src={url} alt={props.user?.nickname} title={props.user?.nickname} {...htmlProps} />;
+	return (<img src={url} alt={props.user?.nickname} title={props.user?.nickname} {...htmlProps} />);
 }
 
-export default memo(ProfilePicture, (prev, next) => prev.user.avatar_file === next.user.avatar_file);
+export default memo(ProfilePicture,
+	(prev, next) =>
+		prev.user.avatar_file === next.user.avatar_file);

@@ -9,7 +9,7 @@ export const languagesSupport = ['en', 'fr', 'es'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
 export const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 
-export function getListLanguagesInLocale(): { value: string; label: string }[] {
+export function getListLanguagesInLocale(): { value: string, label: string }[] {
 	const result = [];
 	const langs = Object.values(languages.getNames(langSupport));
 	for (const langInLocale of langs) {
@@ -30,7 +30,7 @@ export function getLanguageIn3B(code) {
 	return languages.alpha2ToAlpha3B(code);
 }
 
-export function listCountries(): { value: string; text: string }[] {
+export function listCountries(): { value: string, text: string }[] {
 	const listCountries = [];
 	for (const [key, value] of Object.entries(isoCountriesLanguages.getCountries(langSupport))) {
 		listCountries.push({ value: key, label: value });

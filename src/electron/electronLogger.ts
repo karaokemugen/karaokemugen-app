@@ -7,7 +7,7 @@ import { win } from './electron';
 let errorHappened = false;
 
 export function initStep(step: string, lastEvent?: boolean) {
-	emitIPC('initStep', { message: step, lastEvent: lastEvent });
+	emitIPC('initStep', {message: step, lastEvent: lastEvent});
 }
 
 export function errorStep(step: string) {
@@ -16,7 +16,7 @@ export function errorStep(step: string) {
 		errorHappened = true;
 		initStep(i18next.t('INIT_ERROR'));
 		setTipLoop('errors');
-		emitIPC('error', { message: step });
+		emitIPC('error', {message: step});
 	}
 }
 
@@ -32,10 +32,11 @@ export class IPCTransport extends Transport {
 	log(info: any, callback: any) {
 		try {
 			emitIPC('log', info);
-		} catch (err) {
+		} catch(err) {
 			// Non fatal. We can safely ignore
 		} finally {
 			callback();
 		}
 	}
 }
+

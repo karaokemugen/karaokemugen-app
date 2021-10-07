@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import internet from 'internet-available';
 import cloneDeep from 'lodash.clonedeep';
-import { resolve } from 'path';
+import {resolve} from 'path';
 import prettyBytes from 'pretty-bytes';
 import si from 'systeminformation';
 
@@ -31,7 +31,7 @@ export function stopStats() {
 }
 
 export async function sendAllPayloads() {
-	const repos = getConfig().System.Repositories.filter((r) => r.Online && r.Enabled && r.SendStats);
+	const repos = getConfig().System.Repositories.filter(r => r.Online && r.Enabled && r.SendStats);
 	for (const repo of repos) {
 		const minimal = getConfig().Online.Host !== repo.Name;
 		sendPayload(repo.Name, minimal);
@@ -44,41 +44,38 @@ export async function sendPayload(host: string, minimal: boolean) {
 	try {
 		try {
 			await internet();
-		} catch (err) {
+		} catch(err) {
 			throw 'This instance is not connected to the internets';
 		}
 		payload = await buildPayload(minimal);
 		if (!payload.instance.instance_id) throw 'Could not fetch instance ID';
-		logger.info(`Sending payload to ${host} (${prettyBytes(JSON.stringify(payload).length)})`, {
-			service: 'Stats',
-		});
+		logger.info(`Sending payload to ${host} (${prettyBytes(JSON.stringify(payload).length)})`, {service: 'Stats'});
 		savePayload(payload, host);
 		await HTTP.post(`https://${host}/api/stats`, {
-			json: payload,
+			json: payload
 		});
 
-		logger.info(`Payload sent successfully to ${host}`, { service: 'Stats' });
-	} catch (err) {
-		logger.warn(`Uploading stats payload failed (${host})`, { service: 'Stats', obj: err });
-		if (err !== 'This instance is not connected to the internets' && err !== 'Could not fetch instance ID') {
+		logger.info(`Payload sent successfully to ${host}`, {service: 'Stats'});
+	} catch(err) {
+		logger.warn(`Uploading stats payload failed (${host})`, {service: 'Stats', obj: err});
+		if (err !== 'This instance is not connected to the internets' &&
+			err !== 'Could not fetch instance ID'
+		) {
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.STATS_PAYLOAD'));
 			if (payload) sentry.addErrorInfo('Payload', JSON.stringify(payload, null, 2), payload);
 			sentry.error(err);
 		}
 	}
+
 }
 
 async function savePayload(payload: any, host: string) {
 	try {
-		await fs.writeFile(
-			resolve(getState().dataPath, `logs/statsPayload-${host}.json`),
-			JSON.stringify(payload, null, 2),
-			'utf-8'
-		);
-		logger.info('Payload data saved locally to logs/statsPayload.json', { service: 'Stats' });
-	} catch (err) {
+		await fs.writeFile(resolve(getState().dataPath, `logs/statsPayload-${host}.json`), JSON.stringify(payload, null, 2), 'utf-8');
+		logger.info('Payload data saved locally to logs/statsPayload.json', {service: 'Stats'});
+	} catch(err) {
 		// Non-fatal
-		logger.warn('Could not save payload', { service: 'Stats', obj: err });
+		logger.warn('Could not save payload', {service: 'Stats', obj: err});
 		sentry.error(err, 'Warning');
 	}
 }
@@ -90,7 +87,7 @@ async function buildPayload(minimal: boolean) {
 		instance: await buildInstanceStats(minimal),
 		viewcounts: await exportPlayed(),
 		requests: await exportRequests(),
-		sessions: await getSessions(),
+		sessions: await getSessions()
 	};
 }
 
@@ -112,10 +109,10 @@ async function buildInstanceStats(minimal: boolean) {
 			si.mem(),
 			si.graphics(),
 			si.osInfo(),
-			si.diskLayout(),
+			si.diskLayout()
 		]);
 		let total_disk_size = 0;
-		disks.forEach((d) => {
+		disks.forEach(d => {
 			total_disk_size += d.size;
 		});
 		extraStats = {
@@ -129,13 +126,13 @@ async function buildInstanceStats(minimal: boolean) {
 			total_disk_space: total_disk_size,
 			os_platform: os.platform,
 			os_distro: os.distro,
-			os_release: os.release,
+			os_release: os.release
 		};
 	}
 	return {
-		config: { ...conf },
+		config: {...conf},
 		instance_id: await getInstanceID(),
 		version: state.version.number,
-		...extraStats,
+		...extraStats
 	};
 }

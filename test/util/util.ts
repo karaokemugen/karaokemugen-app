@@ -1,10 +1,10 @@
-import { expect } from 'chai';
+import {expect} from 'chai';
 import langs from 'langs';
 import { io } from 'socket.io-client';
 
 import { DBTag } from '../../src/lib/types/database/tag';
-import { tagTypes, uuidPlusTypeRegexp, uuidRegexp } from '../../src/lib/utils/constants';
-import { Config } from '../../src/types/config';
+import { tagTypes, uuidPlusTypeRegexp,uuidRegexp } from '../../src/lib/utils/constants';
+import {Config} from '../../src/types/config';
 import { testSongs } from '../../src/utils/constants';
 
 export const socket = io('http://localhost:1337');
@@ -32,17 +32,19 @@ export async function getToken(username = usernameAdmin): Promise<string> {
 	if (!tokens.has(username)) {
 		const data = await commandBackend(undefined, 'login', {
 			username: username,
-			password: passwordAdmin,
+			password: passwordAdmin
 		});
 		tokens.set(username, data.token);
 	}
 	return tokens.get(username);
 }
 
-export function commandBackend(token: string, name: string, body?: any, expectError?: boolean): Promise<any> {
+export function commandBackend(token: string, name: string, body?: any, expectError?:boolean): Promise<any> {
 	return new Promise((resolve, reject) => {
-		socket.emit(name, { authorization: token, body }, ({ err, data }: { err: boolean; data: any }) => {
-			(err && !expectError) || (!err && expectError) ? reject(data) : resolve(data);
+		socket.emit(name, {authorization: token, body}, ({err, data}:{err: boolean, data: any}) => {
+			(err && !expectError) || (!err && expectError)
+				? reject(data)
+				: resolve(data);
 		});
 	});
 }
@@ -58,10 +60,10 @@ export function setConfig(newConfig: Config) {
 }
 
 interface TestDetails {
-	tagDetails: 'short' | 'full';
-	kara?: boolean;
-	plc?: boolean;
-	plcDetail?: boolean;
+	tagDetails: 'short'|'full',
+	kara?: boolean
+	plc?: boolean
+	plcDetail?: boolean
 }
 
 export function testKara(kara: any, details: TestDetails) {
@@ -85,21 +87,20 @@ export function testKara(kara: any, details: TestDetails) {
 	if (details.plcDetail) expect(kara.kara_modified_at).to.be.a('string');
 	expect(kara.karafile).to.be.a('string');
 	expect(kara.kid).to.be.a('string').and.match(new RegExp(uuidRegexp));
-	if (details.kara || details.plcDetail)
-		expect(kara.lastplayed_ago).to.satisfy((e: any) => typeof e === 'string' || e === null);
-	if (details.kara) expect(kara.lastrequested_at).to.satisfy((e: any) => typeof e === 'string' || e === null);
-	expect(kara.lastplayed_at).to.satisfy((e: any) => typeof e === 'string' || e === null);
+	if (details.kara || details.plcDetail) expect(kara.lastplayed_ago).to.satisfy((e:any) => typeof e === 'string' || e === null);
+	if (details.kara) expect(kara.lastrequested_at).to.satisfy((e:any) => typeof e === 'string' || e === null);
+	expect(kara.lastplayed_at).to.satisfy((e:any) => typeof e === 'string' || e === null);
 	expect(kara.mediafile).to.be.a('string');
 	expect(kara.mediasize).to.be.a('number').and.at.least(0);
 	if (details.kara) expect(kara.modified_at).to.be.a('string');
 	if (details.kara) {
 		expect(kara.my_public_plc_id).to.be.an('array');
 		for (const plcid of kara.my_public_plc_id) {
-			expect(plcid).to.satisfy((p: any) => typeof p === 'number' || p === null);
+			expect(plcid).to.satisfy((p:any) => typeof p === 'number' || p === null);
 		}
 		expect(kara.public_plc_id).to.be.an('array');
 		for (const plcid of kara.public_plc_id) {
-			expect(plcid).to.satisfy((p: any) => typeof p === 'number' || p === null);
+			expect(plcid).to.satisfy((p:any) => typeof p === 'number' || p === null);
 		}
 	}
 	if (details.plc) {
@@ -110,8 +111,8 @@ export function testKara(kara: any, details: TestDetails) {
 	if (details.plc) expect(kara.plcid).to.be.a('number').and.at.least(0);
 	if (details.plc) expect(kara.pos).to.be.a('number').and.at.least(0);
 	expect(kara.requested).to.be.a('number').and.at.least(0);
-	expect(kara.songorder).to.satisfy((s: any) => typeof s === 'number' || s === null);
-	expect(kara.subfile).to.satisfy((s: any) => typeof s === 'string' || s === null);
+	expect(kara.songorder).to.satisfy((s:any) => typeof s === 'number' || s === null);
+	expect(kara.subfile).to.satisfy((s:any) => typeof s === 'string' || s === null);
 	if (details.kara) {
 		expect(kara.tid).to.be.an('array');
 		for (const tid of kara.tid) {
@@ -125,14 +126,14 @@ export function testKara(kara: any, details: TestDetails) {
 	expect(kara.year).to.be.a('number');
 }
 
-export function testTag(tag: DBTag, type: 'short' | 'full' | 'tag') {
+export function testTag(tag: DBTag, type: 'short'|'full'|'tag') {
 	expect(tag.name).to.be.a('string');
 	expect(tag.problematic).to.be.a('boolean');
 	if (tag.noLiveDownload) expect(tag.noLiveDownload).to.be.a('boolean');
 	expect(tag.short).to.satisfy((val: any) => typeof val === 'string' || val === null);
 	expect(tag.tid).to.be.a('string').and.match(new RegExp(uuidRegexp));
 	if (type === 'full' || type === 'tag') {
-		if (tag.aliases) expect(tag.aliases).to.satisfy((e: any) => e === undefined || Array.isArray(e));
+		if (tag.aliases) expect(tag.aliases).to.satisfy((e:any) => e === undefined || Array.isArray(e));
 		expect(tag.i18n).to.be.an('object');
 		for (const val of Object.values(tag.i18n)) {
 			expect(val).to.be.a('string');
@@ -147,13 +148,12 @@ export function testTag(tag: DBTag, type: 'short' | 'full' | 'tag') {
 		expect(tag.modified_at).to.be.a('string');
 		expect(tag.repository).to.be.a('string');
 		expect(tag.tagfile).to.be.a('string');
-		if (tag.karacount)
-			expect(tag.karacount).to.satisfy((karacounts: any) => {
-				if (karacounts === null) return true;
-				if (Array.isArray(karacounts)) {
-					return karacounts.every((kc) => typeof kc.count === 'number' && typeof kc.type === 'number');
-				}
-				return false;
-			});
+		if (tag.karacount) expect(tag.karacount).to.satisfy((karacounts: any) => {
+			if (karacounts === null) return true;
+			if (Array.isArray(karacounts)) {
+				return karacounts.every(kc => typeof kc.count === 'number' && typeof kc.type === 'number');
+			}
+			return false;
+		});
 	}
 }

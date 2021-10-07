@@ -6,7 +6,7 @@
 	cursor: pointer;
 	margin-top: 1em;
 	box-shadow: 0 2px 2px 0 #00000024, 0 1px 5px 0 #0000001f, 0 3px 1px -2px #00000033;
-	padding: 0.5em 1em;
+	padding: .5em 1em;
 	transition: all 0.5s ease-in-out 0s;
 	list-style: none;
 	border-left: 4px solid white;
@@ -15,22 +15,16 @@
 		max-height: 6em;
 		overflow: hidden;
 
-		h1 {
-			font-size: 1.5em;
-		}
-		h2 {
-			font-size: 1.4em;
-		}
-		h3 {
-			font-size: 1.3em;
-		}
+		h1 { font-size: 1.5em; }
+		h2 { font-size: 1.4em; }
+		h3 { font-size: 1.3em; }
 
 		position: relative;
 
 		&:after {
 			position: absolute;
 			display: block;
-			content: '\2000';
+			content: "\2000";
 			bottom: 0;
 			left: 0em;
 			width: 100%;
@@ -39,29 +33,29 @@
 		}
 	}
 
-	.article-header {
+	.article-header{
 		a {
 			float: right;
 		}
 	}
 
-	&[data-open='1'] .article-body {
+	&[data-open="1"] .article-body {
 		max-height: none;
 		&:after {
 			display: none;
 		}
 	}
 
-	&[data-type='mast'] {
-		border-color: $mugen-article-mastodon-border;
+	&[data-type="mast"] {
+	border-color: $mugen-article-mastodon-border;
 	}
-	&[data-type='app'] {
+	&[data-type="app"] {
 		border-color: $mugen-article-application-border;
 	}
-	&[data-type='base'] {
+	&[data-type="base"] {
 		border-color: $mugen-article-database-border;
 	}
-	&[data-type='system_error'] {
+	&[data-type="system_error"] {
 		border-color: $mugen-article-error-border;
 		background-color: black;
 		color: palegoldenrod;

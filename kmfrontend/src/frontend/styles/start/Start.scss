@@ -29,7 +29,7 @@
 		button.fab {
 			cursor: pointer;
 			padding: 0;
-			margin: 0 0.2em;
+			margin: 0 .2em;
 			background: none;
 			border: none;
 		}
@@ -64,7 +64,7 @@
 				position: fixed;
 				z-index: 100;
 				top: 1em;
-				left: 0.5em;
+				left: .5em;
 			}
 		}
 
@@ -86,10 +86,10 @@
 					list-style: none;
 					li {
 						margin-right: 1em;
-						margin-bottom: 0.5em;
-						border-radius: 0.75em;
-						padding: 0.5em;
-						border: 0.1em solid #bbbcbc;
+						margin-bottom: .5em;
+						border-radius: .75em;
+						padding: .5em;
+						border: .1em solid #BBBCBC;
 						a {
 							display: flex;
 							text-decoration: none;

@@ -1,7 +1,7 @@
 import { CloseModal, ModalStore, ShowModal } from '../types/modal';
 
-export default function (_state: ModalStore, action: ShowModal | CloseModal) {
+export default function(_state: ModalStore, action: ShowModal | CloseModal) {
 	return {
-		modal: action.payload?.modal || null,
+		modal: action.payload?.modal || null
 	};
 }

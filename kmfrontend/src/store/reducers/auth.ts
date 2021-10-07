@@ -5,10 +5,10 @@ export const initialStateAuth: AuthStore = {
 		token: '',
 		onlineToken: '',
 		role: '',
-		username: '',
+		username: ''
 	},
 	isAuthenticated: false,
-	error: '',
+	error: ''
 };
 
 export default function (state, action: LoginSuccess | LoginFailure | LogoutUser) {
@@ -18,9 +18,9 @@ export default function (state, action: LoginSuccess | LoginFailure | LogoutUser
 				...state,
 				isAuthenticated: true,
 				data: {
-					...action.payload,
+					...action.payload
 				},
-				error: '',
+				error: ''
 			};
 		case AuthAction.LOGIN_FAILURE:
 			return {
@@ -30,9 +30,9 @@ export default function (state, action: LoginSuccess | LoginFailure | LogoutUser
 					token: '',
 					onlineToken: '',
 					role: '',
-					username: '',
+					username: ''
 				},
-				error: action.payload.error,
+				error: action.payload.error
 			};
 		case AuthAction.LOGOUT_USER:
 			return {
@@ -42,9 +42,9 @@ export default function (state, action: LoginSuccess | LoginFailure | LogoutUser
 					token: '',
 					onlineToken: '',
 					role: '',
-					username: '',
+					username: ''
 				},
-				error: '',
+				error: ''
 			};
 		default:
 			return state;

@@ -3,15 +3,15 @@ import { Button, Form, Input, Tag } from 'antd';
 import i18next from 'i18next';
 import React from 'react';
 interface EditableTagGroupProps {
-	onChange: any;
-	value?: any[];
+	onChange: any,
+	value?: any[]
 }
 
 interface EditableTagGroupState {
-	DS: string[];
-	value: any[];
-	inputVisible: boolean;
-	currentVal: any;
+	DS: string[],
+	value: any[],
+	inputVisible: boolean,
+	currentVal: any
 }
 export default class EditableTagGroupAlias extends React.Component<EditableTagGroupProps, EditableTagGroupState> {
 	input: any;
@@ -20,7 +20,7 @@ export default class EditableTagGroupAlias extends React.Component<EditableTagGr
 		value: this.props.value || [],
 		inputVisible: false,
 		DS: [],
-		currentVal: undefined,
+		currentVal: undefined
 	};
 
 	showInput = () => {
@@ -34,13 +34,13 @@ export default class EditableTagGroupAlias extends React.Component<EditableTagGr
 		}
 		this.setState({
 			value: tags,
-			inputVisible: false,
+			inputVisible: false
 		});
 		this.props.onChange && this.props.onChange(tags);
 	};
 
 	handleCloseAlias = (removedTag) => {
-		const tags = this.state.value.filter((tag) => tag !== removedTag);
+		const tags = this.state.value.filter(tag => tag !== removedTag);
 		this.setState({ value: tags });
 		this.props.onChange && this.props.onChange(tags);
 	};
@@ -49,25 +49,19 @@ export default class EditableTagGroupAlias extends React.Component<EditableTagGr
 		const { value, inputVisible } = this.state;
 		return (
 			<div>
-				{value.map((tag) => (
-					<Tag
-						style={{ marginBottom: '8px' }}
-						key={tag}
-						closable={true}
-						onClose={() => this.handleCloseAlias(tag)}
-					>
-						{tag}
-					</Tag>
-				))}
+				{value.map((tag) => <Tag style={{ marginBottom: '8px' }} key={tag} closable={true}
+					onClose={() => this.handleCloseAlias(tag)}>{tag}</Tag>)}
 				{inputVisible && (
-					<Form.Item wrapperCol={{ span: 10 }}>
+					<Form.Item
+						wrapperCol={{ span: 10 }}
+					>
 						<Input
-							ref={(input) => (this.input = input)}
-							onChange={(e) => this.setState({ currentVal: e.target.value })}
+							ref={input => this.input = input}
+							onChange={e => this.setState({ currentVal: e.target.value })}
 						/>
 						<Button
 							style={{ marginTop: '10px' }}
-							type="primary"
+							type='primary'
 							onClick={() => this.handleInputConfirmAlias(this.state.currentVal)}
 						>
 							{i18next.t('ADD')}
@@ -75,7 +69,10 @@ export default class EditableTagGroupAlias extends React.Component<EditableTagGr
 					</Form.Item>
 				)}
 				{!inputVisible && (
-					<Tag onClick={this.showInput} style={{ borderStyle: 'dashed' }}>
+					<Tag
+						onClick={this.showInput}
+						style={{ borderStyle: 'dashed' }}
+					>
 						<PlusOutlined /> {i18next.t('ADD')}
 					</Tag>
 				)}

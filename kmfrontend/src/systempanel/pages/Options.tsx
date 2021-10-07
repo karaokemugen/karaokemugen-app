@@ -15,12 +15,15 @@ const propertiesToDisplay = [
 	'Online.Updates.Medias.Sponsors',
 	'Online.Updates.Medias.Intros',
 	'Online.Updates.Medias.Outros',
-	'Online.Updates.Medias.Encores',
+	'Online.Updates.Medias.Encores'
 ];
 
 class Options extends Component<unknown, unknown> {
+
 	render() {
-		return <Config properties={propertiesToDisplay} />;
+		return (
+			<Config properties={propertiesToDisplay} />
+		);
 	}
 }
 

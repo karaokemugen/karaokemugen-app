@@ -1,11 +1,6 @@
 // SQL for favorites management
 
-export const sqlgetFavorites = (
-	filterClauses: string[],
-	limitClause: string,
-	offsetClause: string,
-	additionalFrom: string[]
-) => `
+export const sqlgetFavorites = (filterClauses: string[], limitClause: string, offsetClause: string, additionalFrom: string[]) => `
 SELECT
   ak.pk_kid AS kid,
   ak.titles AS titles,
@@ -39,7 +34,7 @@ SELECT
   LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username
   ${additionalFrom.join('')}
   WHERE f.fk_login = :username
-  ${filterClauses.map((clause) => 'AND (' + clause + ')').reduce((a, b) => a + ' ' + b, '')}
+  ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 GROUP BY ak.pk_kid, ak.titles, ak.songorder, year, ak.tags, duration, ak.created_at, ak.modified_at, pc.fk_kid, ak.serie_singer_sortable, ak.songtypes_sortable, ak.languages_sortable, ak.titles_sortable
 ORDER BY ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
 ${limitClause}

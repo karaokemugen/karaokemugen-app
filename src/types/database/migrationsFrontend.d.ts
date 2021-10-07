@@ -1,4 +1,4 @@
 export interface MigrationsFrontend {
-	name: string;
-	flag_done: boolean;
+	name: string
+	flag_done: boolean
 }

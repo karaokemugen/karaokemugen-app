@@ -7,12 +7,12 @@ import { SettingsStore } from './types/settings';
 
 export interface GlobalContextInterface {
 	globalState: {
-		auth: AuthStore;
-		frontendContext: FrontendContextStore;
-		settings: SettingsStore;
-		modal: ModalStore;
-	};
-	globalDispatch: Dispatch<any>;
+		auth: AuthStore,
+		frontendContext: FrontendContextStore,
+		settings: SettingsStore,
+		modal: ModalStore
+	}
+	globalDispatch: Dispatch<any>
 }
 
 const GlobalContext = createContext<GlobalContextInterface>(null);

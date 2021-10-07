@@ -5,13 +5,13 @@ import { CloseModal, ModalAction, ShowModal } from '../types/modal';
 export function showModal(dispatch: Dispatch<ShowModal>, modal: ReactElement) {
 	dispatch({
 		type: ModalAction.SHOW_MODAL,
-		payload: { modal },
+		payload: { modal }
 	});
 }
 
 export function closeModal(dispatch: Dispatch<CloseModal>) {
 	dispatch({
 		type: ModalAction.CLOSE_MODAL,
-		payload: { modal: null },
+		payload: { modal: null }
 	});
 }

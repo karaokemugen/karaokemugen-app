@@ -51,7 +51,7 @@ export const defaultGuestNames = [
 	'Le Respect',
 	'Idolmaster > Love Live',
 	'Love Live > Idolmaster',
-	"Les yeux noisette d'Asuna",
+	'Les yeux noisette d\'Asuna',
 	'Lelouch',
 	'Phantom Thieves',
 	'Random Isekai MC',
@@ -64,7 +64,7 @@ export const defaultGuestNames = [
 	'Black Beaujolais',
 	'Silver Mousquetaire',
 	'Kyonko',
-	"My karaoke can't be this cute",
+	'My karaoke can\'t be this cute',
 	'No bully please',
 	'The guy with a white t-shirt over there',
 	'David Goodenough',
@@ -86,7 +86,7 @@ export const defaultGuestNames = [
 	'Tomino "Big Bald Man" Yoshiyuki',
 	'Your waifu is shiiiiiiiiiit',
 	'My Waifu > Your Waifu',
-	"Hideaki Anno's depression",
+	'Hideaki Anno\'s depression',
 	'Mon Voisin Rototo',
 	'Kaaaaaneeeeedaaaaaaa',
 	'Teeeeetsuuuuoooooooooo',
@@ -180,7 +180,7 @@ export const defaultGuestNames = [
 	'Nezuko',
 	'Boss',
 	'Un Miam',
-	'Groquik',
+	'Groquik'
 ];
 
 /** Initialization catchphrases. We need more of them. */
@@ -236,7 +236,7 @@ export const initializationCatchphrases = [
 	'"Whatever you sing, enjoy it to the fullest. That is the secret of karaoke." ‒Rider',
 	'"If you don\'t like your song, don\'t accept it. Instead, have the courage to change it the way you want to be." ‒Naruto Uzumaki',
 	'"If you can\'t find a reason to sing, then you shouldn\'t be singing." ‒Akame',
-	"\"Karaoke is like a tube of toothpaste. When you've used all the toothpaste, that's when you've really sang. Sing with all your might, and struggle as long as you have your voice.\" ‒Mion Sonozaki",
+	'"Karaoke is like a tube of toothpaste. When you\'ve used all the toothpaste, that\'s when you\'ve really sang. Sing with all your might, and struggle as long as you have your voice." ‒Mion Sonozaki',
 	'"Sing exactly as you like. That is the true meaning of karaoke. Karaoke leads to joy and joy leads to happiness." ‒Gilgamesh',
 	'"If you can\'t sing something, then don\'t. Focus on what you can sing." ‒Shiroe',
 	'"When you lose sight of the lyrics, listen to the karaoke in your heart." ‒Allen Walker',
@@ -259,13 +259,13 @@ export const testSongs = [
 	'31f60393-8bd3-4b84-843e-a92d03a1a314',
 	'f99df658-9c61-4ea2-a46c-624a1a4c4768',
 	'495e2635-38a9-42db-bdd0-df4d27329c87',
-	'2581dec1-4f92-4f5a-a3ec-71dd6874b990',
+	'2581dec1-4f92-4f5a-a3ec-71dd6874b990'
 ];
 
 export const webappModes = Object.freeze({
 	closed: 0,
 	limited: 1,
-	open: 2,
+	open: 2
 });
 
 export const logo = `
