@@ -534,26 +534,26 @@ class ProfilModal extends Component<IProps, IState> {
 										<div>
 											{this.context?.globalState.settings.data.config?.Online.Users &&
 											logInfos?.username !== 'admin' ? (
-												logInfos?.onlineToken ? (
-													<button
-														type="button"
-														className="btn btn-danger profileDelete"
-														onClick={this.profileDelete}
-													>
-														<i className="fas fa-fw fa-retweet" />{' '}
-														{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
-													</button>
-												) : (
-													<button
-														type="button"
-														className="btn btn-primary profileConvert"
-														onClick={this.profileConvert}
-													>
-														<i className="fas fa-fw fa-retweet" />{' '}
-														{i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
-													</button>
-												)
-											) : null}
+													logInfos?.onlineToken ? (
+														<button
+															type="button"
+															className="btn btn-danger profileDelete"
+															onClick={this.profileDelete}
+														>
+															<i className="fas fa-fw fa-retweet" />{' '}
+															{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
+														</button>
+													) : (
+														<button
+															type="button"
+															className="btn btn-primary profileConvert"
+															onClick={this.profileConvert}
+														>
+															<i className="fas fa-fw fa-retweet" />{' '}
+															{i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
+														</button>
+													)
+												) : null}
 											<button
 												type="button"
 												className={`btn profileDelete ${

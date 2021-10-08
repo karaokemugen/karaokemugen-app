@@ -134,10 +134,10 @@ export default function KaraDetail(props: IProps) {
 		if (context.globalState.auth.data.onlineAvailable !== false) {
 			isFavorite
 				? commandBackend('deleteFavorites', {
-						kids: [props.kid],
+					kids: [props.kid],
 				  })
 				: commandBackend('addFavorites', {
-						kids: [props.kid],
+					kids: [props.kid],
 				  });
 			setFavorite(!isFavorite);
 		} else {
@@ -253,18 +253,18 @@ export default function KaraDetail(props: IProps) {
 			const isMulti = kara.langs.find((e) => e.name.indexOf('mul') > -1);
 			isMulti
 				? karaTags.push(
-						<div key={isMulti.tid} className="tag">
-							{getInlineTag(isMulti, tagTypes.LANGS.type)}
-						</div>
+					<div key={isMulti.tid} className="tag">
+						{getInlineTag(isMulti, tagTypes.LANGS.type)}
+					</div>
 				  )
 				: karaTags.push(
-						...kara.langs.sort(sortTagByPriority).map((tag) => {
-							return (
-								<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
-									{getInlineTag(tag, tagTypes.LANGS.type)}
-								</div>
-							);
-						})
+					...kara.langs.sort(sortTagByPriority).map((tag) => {
+						return (
+							<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
+								{getInlineTag(tag, tagTypes.LANGS.type)}
+							</div>
+						);
+					})
 				  );
 		}
 		if (kara.songtypes) {
@@ -318,24 +318,24 @@ export default function KaraDetail(props: IProps) {
 											acc === null
 												? [x]
 												: [
-														acc,
-														index + 1 === arr.length ? (
-															<span
-																key={`${type}${key}`}
-																className={`colored ${tagData.color}`}
-															>
-																{' '}
-																{i18next.t('AND')}{' '}
-															</span>
-														) : (
-															<span
-																key={`${type}${key}`}
-																className={`colored ${tagData.color}`}
-															>
+													acc,
+													index + 1 === arr.length ? (
+														<span
+															key={`${type}${key}`}
+															className={`colored ${tagData.color}`}
+														>
+															{' '}
+															{i18next.t('AND')}{' '}
+														</span>
+													) : (
+														<span
+															key={`${type}${key}`}
+															className={`colored ${tagData.color}`}
+														>
 																,{' '}
-															</span>
-														),
-														x,
+														</span>
+													),
+													x,
 												  ],
 										null
 									)}
@@ -366,12 +366,12 @@ export default function KaraDetail(props: IProps) {
 					<span>
 						{playTime
 							? i18next.t('KARA_DETAIL.PLAYING_IN', {
-									time: secondsTimeSpanToHMS(kara.time_before_play, 'hm'),
-									date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2),
+								time: secondsTimeSpanToHMS(kara.time_before_play, 'hm'),
+								date: playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2),
 							  })
 							: kara.lastplayed_ago
-							? getLastPlayed(kara.lastplayed_at, kara.lastplayed_ago)
-							: ''}
+								? getLastPlayed(kara.lastplayed_at, kara.lastplayed_ago)
+								: ''}
 					</span>
 				</div>
 				{kara.upvotes && props.scope === 'admin' ? (

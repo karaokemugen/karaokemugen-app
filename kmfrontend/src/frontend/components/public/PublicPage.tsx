@@ -472,10 +472,10 @@ class PublicPage extends Component<IProps, IState> {
 													)
 														? 'requested'
 														: this.props.route.location.pathname.includes(
-																'/public/search/history'
+															'/public/search/history'
 														  )
-														? 'recent'
-														: this.state.searchType
+															? 'recent'
+															: this.state.searchType
 												}
 											/>
 										)}

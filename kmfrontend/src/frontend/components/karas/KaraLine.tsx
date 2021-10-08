@@ -267,23 +267,23 @@ function KaraLine(props: IProps) {
 			const isMulti = data.langs.find((e) => e.name.indexOf('mul') > -1);
 			isMulti
 				? karaTags.push(
-						<div key={isMulti.tid} className="tag">
-							{getTagInLocale(context?.globalState.settings.data, isMulti)}
-						</div>
+					<div key={isMulti.tid} className="tag">
+						{getTagInLocale(context?.globalState.settings.data, isMulti)}
+					</div>
 				  )
 				: karaTags.push(
-						...data.langs.sort(sortTagByPriority).map((tag, i) => {
-							if (i === 0) return undefined;
-							return (
-								<div
-									key={tag.tid}
-									className="tag green"
-									title={getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
-								>
-									{getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
-								</div>
-							);
-						})
+					...data.langs.sort(sortTagByPriority).map((tag, i) => {
+						if (i === 0) return undefined;
+						return (
+							<div
+								key={tag.tid}
+								className="tag green"
+								title={getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
+							>
+								{getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
+							</div>
+						);
+					})
 				  );
 		}
 		if (data.songtypes && (props.scope === 'public' || is_touch_device())) {
@@ -397,258 +397,258 @@ function KaraLine(props: IProps) {
 					kara.flag_dejavu ? ' dejavu' : ''
 				}
 				${props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${
-					(props.jingle || props.sponsor) && scope === 'admin' ? ' marker' : ''
-				}
+			(props.jingle || props.sponsor) && scope === 'admin' ? ' marker' : ''
+		}
 				${props.sponsor && scope === 'admin' ? ' green' : ''}${props.side === 'right' ? ' side-right' : ''}`}
 			>
 				{scope === 'public' &&
 				kara.username !== context.globalState.auth.data.username &&
 				kara.flag_visible === false ? (
-					<div className="contentDiv">
-						<div>
-							{
-								(context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])[
-									props.kara.pos %
+						<div className="contentDiv">
+							<div>
+								{
+									(context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])[
+										props.kara.pos %
 										(
 											context.globalState.settings.data.config.Playlist.MysterySongs
 												.Labels as string[]
 										).length |
 										0
-								]
-							}
+									]
+								}
+							</div>
 						</div>
-					</div>
-				) : (
-					<React.Fragment>
-						<div className="infoDiv">
-							{scope === 'admin' &&
+					) : (
+						<React.Fragment>
+							<div className="infoDiv">
+								{scope === 'admin' &&
 							(isNonStandardPlaylist(plaid) ||
 								(getPlaylistInfo(props.side, context)?.flag_public &&
 									!getPlaylistInfo(props.side, context)?.flag_current)) ? (
-								<button
-									title={i18next.t('KARA_MENU.PLAY_LIBRARY')}
-									className="btn btn-action playKara karaLineButton"
-									onClick={playKara}
-								>
-									<i className="fas fa-play" />
-								</button>
-							) : null}
-							{scope === 'admin' &&
+										<button
+											title={i18next.t('KARA_MENU.PLAY_LIBRARY')}
+											className="btn btn-action playKara karaLineButton"
+											onClick={playKara}
+										>
+											<i className="fas fa-play" />
+										</button>
+									) : null}
+								{scope === 'admin' &&
 							!isNonStandardPlaylist(plaid) &&
 							!(
 								getPlaylistInfo(props.side, context)?.flag_public &&
 								!getPlaylistInfo(props.side, context)?.flag_current
 							) ? (
-								<button
-									title={i18next.t('KARA_MENU.PLAY')}
-									className="btn btn-action playKara karaLineButton"
-									onClick={editPlayingFlag}
-								>
-									<i className="fas fa-play-circle" />
-								</button>
-							) : null}
-							{scope === 'admin' && !isNonStandardPlaylist(plaid) && !kara.flag_visible ? (
-								<button
-									type="button"
-									className={'btn btn-action btn-primary'}
-									onClick={changeVisibilityKara}
-								>
-									<i className="fas fa-eye-slash"></i>
-								</button>
-							) : null}
-						</div>
-						{is_touch_device() || props.scope === 'public' ? (
-							<div
-								className="contentDiv contentDivMobile"
-								onClick={() => props.toggleKaraDetail(kara, plaid)}
-								tabIndex={1}
-							>
-								<div className="contentDivMobileTitle">
-									<span
-										className="tag inline green"
-										title={getTagInLocale(
-											context?.globalState.settings.data,
-											kara.langs[0],
-											props.i18nTag
-										)}
-									>
-										{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
-									</span>
-									{kara.flag_dejavu && !kara.flag_playing ? (
-										<i
-											className="fas fa-fw fa-history dejavu-icon"
-											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
-										/>
+										<button
+											title={i18next.t('KARA_MENU.PLAY')}
+											className="btn btn-action playKara karaLineButton"
+											onClick={editPlayingFlag}
+										>
+											<i className="fas fa-play-circle" />
+										</button>
 									) : null}
-									{getTitleInLocale(context.globalState.settings.data, kara.titles)}
-									{downloadIcon()}
-									{problematic.length > 0 ? (
-										<i
-											className="fas fa-fw fa-exclamation-triangle problematic"
-											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
-												tags: problematic
-													.map((t) =>
-														getTagInLocale(
-															context?.globalState.settings.data,
-															t,
-															props.i18nTag
-														)
-													)
-													.join(', '),
-											})}
-										/>
-									) : null}
-								</div>
-								<div className="contentDivMobileSerie">
-									<span
-										className="tag inline green"
-										title={getTagInLocale(
-											context?.globalState.settings.data,
-											kara.songtypes[0],
-											props.i18nTag
-										)}
+								{scope === 'admin' && !isNonStandardPlaylist(plaid) && !kara.flag_visible ? (
+									<button
+										type="button"
+										className={'btn btn-action btn-primary'}
+										onClick={changeVisibilityKara}
 									>
-										{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}{' '}
-										{kara.songorder}
-									</span>
-									{karaSerieOrSingers}
-								</div>
-								{kara.upvotes && props.scope === 'admin' ? (
-									<div className="upvoteCount">
-										<i className="fas fa-thumbs-up" />
-										{kara.upvotes}
-									</div>
-								) : null}
-								{!is_touch_device() ? (
-									<div className="tagConteneur">
-										{karaTags}
-										{kara.versions?.sort(sortTagByPriority).map((t) => (
-											<span className="tag white" key={t.tid}>
-												{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
-											</span>
-										))}
-									</div>
+										<i className="fas fa-eye-slash"></i>
+									</button>
 								) : null}
 							</div>
-						) : (
-							<div
-								className="contentDiv"
-								onClick={() => props.toggleKaraDetail(kara, plaid)}
-								tabIndex={1}
-							>
-								<div className="disable-select karaTitle">
-									{kara.flag_dejavu && !kara.flag_playing ? (
-										<i
-											className="fas fa-fw fa-history dejavu-icon"
-											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
-										/>
-									) : null}
-									{karaTitle}
-									{downloadIcon()}
-									{problematic.length > 0 ? (
-										<i
-											className="fas fa-fw fa-exclamation-triangle problematic"
-											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
-												tags: problematic
-													.map((t) =>
-														getTagInLocale(
-															context?.globalState.settings.data,
-															t,
-															props.i18nTag
+							{is_touch_device() || props.scope === 'public' ? (
+								<div
+									className="contentDiv contentDivMobile"
+									onClick={() => props.toggleKaraDetail(kara, plaid)}
+									tabIndex={1}
+								>
+									<div className="contentDivMobileTitle">
+										<span
+											className="tag inline green"
+											title={getTagInLocale(
+												context?.globalState.settings.data,
+												kara.langs[0],
+												props.i18nTag
+											)}
+										>
+											{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
+										</span>
+										{kara.flag_dejavu && !kara.flag_playing ? (
+											<i
+												className="fas fa-fw fa-history dejavu-icon"
+												title={i18next.t('KARA.DEJAVU_TOOLTIP')}
+											/>
+										) : null}
+										{getTitleInLocale(context.globalState.settings.data, kara.titles)}
+										{downloadIcon()}
+										{problematic.length > 0 ? (
+											<i
+												className="fas fa-fw fa-exclamation-triangle problematic"
+												title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
+													tags: problematic
+														.map((t) =>
+															getTagInLocale(
+																context?.globalState.settings.data,
+																t,
+																props.i18nTag
+															)
 														)
-													)
-													.join(', '),
-											})}
-										/>
-									) : null}
+														.join(', '),
+												})}
+											/>
+										) : null}
+									</div>
+									<div className="contentDivMobileSerie">
+										<span
+											className="tag inline green"
+											title={getTagInLocale(
+												context?.globalState.settings.data,
+												kara.songtypes[0],
+												props.i18nTag
+											)}
+										>
+											{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}{' '}
+											{kara.songorder}
+										</span>
+										{karaSerieOrSingers}
+									</div>
 									{kara.upvotes && props.scope === 'admin' ? (
-										<div className="upvoteCount" title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
+										<div className="upvoteCount">
 											<i className="fas fa-thumbs-up" />
 											{kara.upvotes}
 										</div>
 									) : null}
-									<div className="tagConteneur">{karaTags}</div>
+									{!is_touch_device() ? (
+										<div className="tagConteneur">
+											{karaTags}
+											{kara.versions?.sort(sortTagByPriority).map((t) => (
+												<span className="tag white" key={t.tid}>
+													{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
+												</span>
+											))}
+										</div>
+									) : null}
 								</div>
-							</div>
-						)}
-						{scope === 'admin' ? (
-							<span className="checkboxKara" onClick={checkKara}>
-								{kara.checked ? (
-									<i className="far fa-check-square"></i>
-								) : (
-									<i className="far fa-square"></i>
-								)}
-							</span>
-						) : null}
-						<div className="actionDiv">
-							{!is_touch_device() && shouldShowProfile ? (
-								<ProfilePicture
-									className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-									alt="User Pic"
-									user={{
-										login: props.kara.username,
-										avatar_file: props.avatar_file,
-										nickname: props.kara.nickname,
-										type: props.kara.user_type,
-									}}
-								/>
+							) : (
+								<div
+									className="contentDiv"
+									onClick={() => props.toggleKaraDetail(kara, plaid)}
+									tabIndex={1}
+								>
+									<div className="disable-select karaTitle">
+										{kara.flag_dejavu && !kara.flag_playing ? (
+											<i
+												className="fas fa-fw fa-history dejavu-icon"
+												title={i18next.t('KARA.DEJAVU_TOOLTIP')}
+											/>
+										) : null}
+										{karaTitle}
+										{downloadIcon()}
+										{problematic.length > 0 ? (
+											<i
+												className="fas fa-fw fa-exclamation-triangle problematic"
+												title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
+													tags: problematic
+														.map((t) =>
+															getTagInLocale(
+																context?.globalState.settings.data,
+																t,
+																props.i18nTag
+															)
+														)
+														.join(', '),
+												})}
+											/>
+										) : null}
+										{kara.upvotes && props.scope === 'admin' ? (
+											<div className="upvoteCount" title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
+												<i className="fas fa-thumbs-up" />
+												{kara.upvotes}
+											</div>
+										) : null}
+										<div className="tagConteneur">{karaTags}</div>
+									</div>
+								</div>
+							)}
+							{scope === 'admin' ? (
+								<span className="checkboxKara" onClick={checkKara}>
+									{kara.checked ? (
+										<i className="far fa-check-square"></i>
+									) : (
+										<i className="far fa-square"></i>
+									)}
+								</span>
 							) : null}
-							<div className="btn-group">
-								{props.scope === 'admin' ||
-								context?.globalState.settings.data?.config?.Frontend?.Mode === 2 ? (
-									<ActionsButtons
-										side={props.side}
-										scope={props.scope}
-										kara={kara}
-										addKara={addKara}
-										deleteKara={deleteKara}
-										deleteFavorite={deleteFavorite}
-										upvoteKara={upvoteKara}
-										refuseKara={refuseKara}
-										acceptKara={acceptKara}
+							<div className="actionDiv">
+								{!is_touch_device() && shouldShowProfile ? (
+									<ProfilePicture
+										className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
+										alt="User Pic"
+										user={{
+											login: props.kara.username,
+											avatar_file: props.avatar_file,
+											nickname: props.kara.nickname,
+											type: props.kara.user_type,
+										}}
 									/>
 								) : null}
-								{scope === 'admin' ? (
-									<button
-										title={i18next.t('KARA_MENU.KARA_COMMANDS')}
-										onClick={(event) => {
-											karaMenu ? closeKaraMenu() : openKaraMenu(event);
-										}}
-										className={
-											'btn showPlaylistCommands karaLineButton' + (karaMenu ? ' btn-primary' : '')
-										}
-									>
-										<i className="fas fa-wrench" />
-									</button>
-								) : null}
-							</div>
-							{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
-						</div>
-						{is_touch_device() ? (
-							<div className="tagConteneur mobile">
-								{karaTags}
-								{kara.versions?.sort(sortTagByPriority).map((t) => (
-									<span className="tag white" key={t.tid}>
-										{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
-									</span>
-								))}
-								{!(is_touch_device() && scope === 'admin') && shouldShowProfile ? (
-									<div className="img-container">
-										<ProfilePicture
-											className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-											alt="User Pic"
-											user={{
-												login: props.kara.username,
-												avatar_file: props.avatar_file,
-												nickname: props.kara.username,
+								<div className="btn-group">
+									{props.scope === 'admin' ||
+								context?.globalState.settings.data?.config?.Frontend?.Mode === 2 ? (
+											<ActionsButtons
+												side={props.side}
+												scope={props.scope}
+												kara={kara}
+												addKara={addKara}
+												deleteKara={deleteKara}
+												deleteFavorite={deleteFavorite}
+												upvoteKara={upvoteKara}
+												refuseKara={refuseKara}
+												acceptKara={acceptKara}
+											/>
+										) : null}
+									{scope === 'admin' ? (
+										<button
+											title={i18next.t('KARA_MENU.KARA_COMMANDS')}
+											onClick={(event) => {
+												karaMenu ? closeKaraMenu() : openKaraMenu(event);
 											}}
-										/>
-									</div>
-								) : null}
+											className={
+												'btn showPlaylistCommands karaLineButton' + (karaMenu ? ' btn-primary' : '')
+											}
+										>
+											<i className="fas fa-wrench" />
+										</button>
+									) : null}
+								</div>
+								{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
 							</div>
-						) : null}
-					</React.Fragment>
-				)}
+							{is_touch_device() ? (
+								<div className="tagConteneur mobile">
+									{karaTags}
+									{kara.versions?.sort(sortTagByPriority).map((t) => (
+										<span className="tag white" key={t.tid}>
+											{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
+										</span>
+									))}
+									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ? (
+										<div className="img-container">
+											<ProfilePicture
+												className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
+												alt="User Pic"
+												user={{
+													login: props.kara.username,
+													avatar_file: props.avatar_file,
+													nickname: props.kara.username,
+												}}
+											/>
+										</div>
+									) : null}
+								</div>
+							) : null}
+						</React.Fragment>
+					)}
 			</div>
 			{props.sponsor && props.jingle && scope === 'admin' ? (
 				<div className="marker-label green">{i18next.t('KARA_DETAIL.JINGLE_SPONSOR')}</div>

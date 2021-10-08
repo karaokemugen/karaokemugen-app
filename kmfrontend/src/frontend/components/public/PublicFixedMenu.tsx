@@ -35,17 +35,17 @@ class PlayerBox extends Component<IProps, unknown> {
 				{this.props.publicVisible &&
 				this.context.globalState.settings.data.state.currentPlaid !==
 					this.context.globalState.settings.data.state.publicPlaid ? (
-					<a
-						className="orange"
-						onClick={(event) => {
-							event.preventDefault();
-							this.props.changeView('publicPlaylist');
-						}}
-					>
-						<i className="fas fa-fw fa-globe fa-2x" />
-						{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
-					</a>
-				) : null}
+						<a
+							className="orange"
+							onClick={(event) => {
+								event.preventDefault();
+								this.props.changeView('publicPlaylist');
+							}}
+						>
+							<i className="fas fa-fw fa-globe fa-2x" />
+							{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
+						</a>
+					) : null}
 				{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
 					<a
 						className="blue"

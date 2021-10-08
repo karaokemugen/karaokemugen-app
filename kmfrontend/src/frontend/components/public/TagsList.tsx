@@ -119,7 +119,7 @@ function TagsList(props: IProps) {
 											(value) => value.type === props.tagType
 										).length > 0
 											? (tag.karacount as unknown as { count: number; type: number }[])?.filter(
-													(value) => value.type === props.tagType
+												(value) => value.type === props.tagType
 											  )[0].count
 											: 0,
 								})}

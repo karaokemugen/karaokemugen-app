@@ -32,8 +32,8 @@ function PlayerOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value) && !e.target.value.includes('.')
-				? Number(e.target.value)
-				: e.target.value;
+					? Number(e.target.value)
+					: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -52,8 +52,8 @@ function PlayerOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value) && !e.target.value.includes('.')
-				? Number(e.target.value)
-				: e.target.value;
+					? Number(e.target.value)
+					: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {

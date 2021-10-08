@@ -143,9 +143,9 @@ class LyricsBox extends Component<IProps, IState> {
 									<div className={classes} key={index}>
 										{val.fullText && classes === 'current'
 											? val.fullText.map((block, index) => (
-													<span key={index} className={this.genBlockClasses(block, val)}>
-														{block.text}
-													</span>
+												<span key={index} className={this.genBlockClasses(block, val)}>
+													{block.text}
+												</span>
 											  ))
 											: val.text.replace(/\\N/g, ' ')}
 									</div>

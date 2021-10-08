@@ -60,14 +60,14 @@ function DeletePlaylistModal(props: IProps) {
 	const message = playlist.flag_whitelist
 		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_WHITELIST'
 		: playlist.flag_blacklist
-		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_BLACKLIST'
-		: playlist.flag_current && playlist.flag_public
-		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT_PUBLIC'
-		: playlist.flag_public
-		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_PUBLIC'
-		: playlist.flag_current
-		? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT'
-		: null;
+			? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_BLACKLIST'
+			: playlist.flag_current && playlist.flag_public
+				? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT_PUBLIC'
+				: playlist.flag_public
+					? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_PUBLIC'
+					: playlist.flag_current
+						? 'MODAL.DELETE_PLAYLIST_MODAL.DELETE_CURRENT'
+						: null;
 	return (
 		<div className="modal modalPage">
 			<div className="modal-dialog">

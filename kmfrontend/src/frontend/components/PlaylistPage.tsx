@@ -59,15 +59,15 @@ export default function PlaylistPage() {
 					const serieText =
 						kara.series?.length > 0
 							? kara.series
-									.slice(0, 3)
-									.map((e) => getTagInLocale(context.globalState.settings.data, e, i18n))
-									.join(', ') + (kara.series.length > 3 ? '...' : '')
+								.slice(0, 3)
+								.map((e) => getTagInLocale(context.globalState.settings.data, e, i18n))
+								.join(', ') + (kara.series.length > 3 ? '...' : '')
 							: kara.singers
-							? kara.singers
+								? kara.singers
 									.slice(0, 3)
 									.map((e) => e.name)
 									.join(', ') + (kara.singers.length > 3 ? '...' : '')
-							: '';
+								: '';
 					const songtypeText = [...kara.songtypes]
 						.sort(sortTagByPriority)
 						.map((e) => (e.short ? +e.short : e.name))

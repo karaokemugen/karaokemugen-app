@@ -191,15 +191,15 @@ class PlayerBox extends Component<IProps, IState> {
 				const serieText =
 					kara.series?.length > 0
 						? kara.series
-								.slice(0, 3)
-								.map((e) => getTagInLocale(this.context?.globalState.settings.data, e))
-								.join(', ') + (kara.series.length > 3 ? '...' : '')
+							.slice(0, 3)
+							.map((e) => getTagInLocale(this.context?.globalState.settings.data, e))
+							.join(', ') + (kara.series.length > 3 ? '...' : '')
 						: kara.singers
-						? kara.singers
+							? kara.singers
 								.slice(0, 3)
 								.map((e) => e.name)
 								.join(', ') + (kara.singers.length > 3 ? '...' : '')
-						: '';
+							: '';
 				const songtypeText = [...kara.songtypes]
 					.sort(sortTagByPriority)
 					.map((e) => (e.short ? +e.short : e.name))
@@ -289,13 +289,13 @@ class PlayerBox extends Component<IProps, IState> {
 				{this.props.mode === 'homepage' &&
 				this.state.length !== 0 &&
 				this.context.globalState.auth.data.role !== 'guest' ? (
-					<button className="btn favorites" onClick={this.toggleFavorite}>
-						<i className="fas fa-fw fa-star" />
-						{this.state.favorites.has(this.state.kid)
-							? i18next.t('KARA_MENU.FAV_DEL')
-							: i18next.t('KARA_MENU.FAV')}
-					</button>
-				) : null}
+						<button className="btn favorites" onClick={this.toggleFavorite}>
+							<i className="fas fa-fw fa-star" />
+							{this.state.favorites.has(this.state.kid)
+								? i18next.t('KARA_MENU.FAV_DEL')
+								: i18next.t('KARA_MENU.FAV')}
+						</button>
+					) : null}
 				{this.state.length !== 0 ? (
 					<React.Fragment>
 						{this.props.mode !== 'fixed' ? (

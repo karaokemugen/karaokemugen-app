@@ -155,17 +155,17 @@ function CriteriasList(props: IProps) {
 										<div className="contentDiv">
 											{criteria.type === 1001
 												? buildKaraTitle(
-														context.globalState.settings.data,
-														Array.isArray(criteria.value)
-															? criteria.value[0]
-															: criteria.value,
-														true
+													context.globalState.settings.data,
+													Array.isArray(criteria.value)
+														? criteria.value[0]
+														: criteria.value,
+													true
 												  )
 												: criteria.value_i18n
-												? criteria.value_i18n
-												: [1002, 1003].includes(criteria.type)
-												? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
-												: criteria.value}
+													? criteria.value_i18n
+													: [1002, 1003].includes(criteria.type)
+														? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
+														: criteria.value}
 										</div>
 									) : null}
 								</div>

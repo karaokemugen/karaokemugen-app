@@ -292,13 +292,13 @@ function PlaylistCommandsModal(props: IProps) {
 			{!isNonStandardPlaylist(playlist?.plaid) ||
 			props.criteriasOpen ||
 			playlist?.plaid === context.globalState.settings.data.state.whitelistPlaid ? (
-				<li>
-					<a href="#" onClick={deleteAllKaras} className="danger-hover">
-						<i className="fas fa-fw fa-eraser" />
-						{i18next.t('ADVANCED.EMPTY_LIST')}
-					</a>
-				</li>
-			) : null}
+					<li>
+						<a href="#" onClick={deleteAllKaras} className="danger-hover">
+							<i className="fas fa-fw fa-eraser" />
+							{i18next.t('ADVANCED.EMPTY_LIST')}
+						</a>
+					</li>
+				) : null}
 			{!isNonStandardPlaylist(playlist?.plaid) ? (
 				<React.Fragment>
 					<li>

@@ -66,7 +66,7 @@ class PublicHomepage extends Component<IProps, IState> {
 						{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
 						this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 1
 							? i18next.t('PUBLIC_HOMEPAGE.QUOTA_KARA_DESCRIPTION', {
-									count: this.context.globalState.settings.data.config?.Karaoke?.Quota?.Songs,
+								count: this.context.globalState.settings.data.config?.Karaoke?.Quota?.Songs,
 							  })
 							: null}
 					</div>
@@ -74,10 +74,10 @@ class PublicHomepage extends Component<IProps, IState> {
 						{this.context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
 						this.context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 2
 							? i18next.t('PUBLIC_HOMEPAGE.QUOTA_TIME_DESCRIPTION', {
-									time: secondsTimeSpanToHMS(
-										this.context.globalState.settings.data.config?.Karaoke?.Quota?.Time,
-										'ms'
-									),
+								time: secondsTimeSpanToHMS(
+									this.context.globalState.settings.data.config?.Karaoke?.Quota?.Time,
+									'ms'
+								),
 							  })
 							: null}
 					</div>
@@ -101,14 +101,14 @@ class PublicHomepage extends Component<IProps, IState> {
 							{this.props.publicVisible &&
 							this.context.globalState.settings.data.state.currentPlaid !==
 								this.context.globalState.settings.data.state.publicPlaid ? (
-								<button
-									className="action green"
-									onClick={() => this.props.changeView('publicPlaylist')}
-								>
-									<i className="fas fa-fw fa-tasks" />{' '}
-									{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
-								</button>
-							) : null}
+									<button
+										className="action green"
+										onClick={() => this.props.changeView('publicPlaylist')}
+									>
+										<i className="fas fa-fw fa-tasks" />{' '}
+										{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
+									</button>
+								) : null}
 							{this.context?.globalState.auth.data.role !== 'guest' ? (
 								<button className="action yellow" onClick={() => this.props.changeView('favorites')}>
 									<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}

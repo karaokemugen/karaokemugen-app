@@ -510,44 +510,44 @@ class SetupPage extends Component<IProps, IState> {
 								) : null}
 								{this.state.accountType === 'local' ||
 								(this.state.accountType === 'online' && this.state.onlineAction !== null) ? (
-									<section className="step step-3">
-										{!isElectron() ? (
-											<div className="input-group">
-												<p className="intro">
-													{i18next.t('SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE')}
-													<br />
-													<em>{i18next.t('SETUP_PAGE.SECURITY_CODE_USE')}</em>
-												</p>
-												<div className="input-control">
-													<label>{i18next.t('SECURITY_CODE')}</label>
-													<input
-														className="input-field"
-														type="text"
-														required
-														onChange={(event) =>
-															this.setState({
-																securityCode: parseInt(event.target.value),
-															})
-														}
-													/>
+										<section className="step step-3">
+											{!isElectron() ? (
+												<div className="input-group">
+													<p className="intro">
+														{i18next.t('SETUP_PAGE.SECURITY_CODE_DESC_CONSOLE')}
+														<br />
+														<em>{i18next.t('SETUP_PAGE.SECURITY_CODE_USE')}</em>
+													</p>
+													<div className="input-control">
+														<label>{i18next.t('SECURITY_CODE')}</label>
+														<input
+															className="input-field"
+															type="text"
+															required
+															onChange={(event) =>
+																this.setState({
+																	securityCode: parseInt(event.target.value),
+																})
+															}
+														/>
+													</div>
 												</div>
-											</div>
-										) : null}
-										<div className="actions">
-											<label className="error">{this.state.error}</label>
-											{this.state.accountType === 'online' &&
+											) : null}
+											<div className="actions">
+												<label className="error">{this.state.error}</label>
+												{this.state.accountType === 'online' &&
 											this.state.onlineAction === 'login' ? (
-												<button type="button" onClick={this.login}>
-													{i18next.t('LOG_IN')}
-												</button>
-											) : (
-												<button type="button" onClick={this.signup}>
-													{i18next.t('SIGN_UP')}
-												</button>
-											)}
-										</div>
-									</section>
-								) : null}
+														<button type="button" onClick={this.login}>
+															{i18next.t('LOG_IN')}
+														</button>
+													) : (
+														<button type="button" onClick={this.signup}>
+															{i18next.t('SIGN_UP')}
+														</button>
+													)}
+											</div>
+										</section>
+									) : null}
 							</form>
 						) : null}
 						{this.state.activeView === 'repo' ? (
@@ -716,10 +716,10 @@ class SetupPage extends Component<IProps, IState> {
 											<div className="ip--nanami">
 												{item.percentage < 100 &&
 												!window.matchMedia('(prefers-reduced-motion: reduce)').matches ? (
-													<img src={nanamiSearching} alt="Nanamin" />
-												) : (
-													<img src={nanamiHeHe} alt="Nanamin" />
-												)}
+														<img src={nanamiSearching} alt="Nanamin" />
+													) : (
+														<img src={nanamiHeHe} alt="Nanamin" />
+													)}
 											</div>
 										</>
 									);

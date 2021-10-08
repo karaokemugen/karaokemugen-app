@@ -286,18 +286,18 @@ function Playlist(props: IProps) {
 			<React.Fragment>
 				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
 				props.scope === 'admin' ? (
-					<div className="list-group-item karaSuggestion">
-						<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-						{context?.globalState.settings.data.config.System.Repositories.filter(
-							(value) => value.Enabled && value.Online
-						).map((value) => (
-							<a key={value.Name} href={`https://${value.Name}/`}>
-								{value.Name}
-							</a>
-						))}
-						<a href="https://suggest.karaokes.moe">suggest.karaokes.moe</a>
-					</div>
-				) : null}
+						<div className="list-group-item karaSuggestion">
+							<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
+							{context?.globalState.settings.data.config.System.Repositories.filter(
+								(value) => value.Enabled && value.Online
+							).map((value) => (
+								<a key={value.Name} href={`https://${value.Name}/`}>
+									{value.Name}
+								</a>
+							))}
+							<a href="https://suggest.karaokes.moe">suggest.karaokes.moe</a>
+						</div>
+					) : null}
 			</React.Fragment>
 		);
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
@@ -438,7 +438,7 @@ function Playlist(props: IProps) {
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS.DURATION')} ` +
 					  secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.duration, 'hm') +
 					  ` / ${secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.time_left, 'hm')} ${
-							is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')
+					  	is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')
 					  } `
 					: '');
 		}

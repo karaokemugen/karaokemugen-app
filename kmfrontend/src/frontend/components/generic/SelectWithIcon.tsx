@@ -21,12 +21,12 @@ function SelectWithIcon(props: IProps) {
 				<span className="selectWithIcon-triggerInnards">
 					{select?.icons
 						? select.icons.map((icon) => {
-								return (
-									<React.Fragment key={icon}>
-										<i className={`fas ${icon}`} />
+							return (
+								<React.Fragment key={icon}>
+									<i className={`fas ${icon}`} />
 										&nbsp;
-									</React.Fragment>
-								);
+								</React.Fragment>
+							);
 						  })
 						: null}
 					<span className="selectWithIcon-label">
@@ -40,12 +40,12 @@ function SelectWithIcon(props: IProps) {
 						<MenuItem value={element.value} key={element.value} className="selectWithIcon-menuItem">
 							{element.icons
 								? element.icons.map((icon) => {
-										return (
-											<React.Fragment key={icon}>
-												<i className={`fas ${icon}`} />
+									return (
+										<React.Fragment key={icon}>
+											<i className={`fas ${icon}`} />
 												&nbsp;
-											</React.Fragment>
-										);
+										</React.Fragment>
+									);
 								  })
 								: null}
 							<span className="selectWithIcon-label">{element.label}</span>

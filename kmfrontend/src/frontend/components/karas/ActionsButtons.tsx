@@ -41,26 +41,26 @@ function ActionsButtons(props: IProps) {
 			{props.scope === 'admin' &&
 			playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 			oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid ? (
-				<button
-					title={i18next.t(props.isHeader ? 'TOOLTIP_REFUSE_SELECT_KARA' : 'TOOLTIP_REFUSE_KARA')}
-					className={`${classValue} ${props.kara?.flag_refused ? 'off' : ''}`}
-					onClick={props.refuseKara}
-				>
-					<i className="fas fa-times" />
-				</button>
-			) : null}
+					<button
+						title={i18next.t(props.isHeader ? 'TOOLTIP_REFUSE_SELECT_KARA' : 'TOOLTIP_REFUSE_KARA')}
+						className={`${classValue} ${props.kara?.flag_refused ? 'off' : ''}`}
+						onClick={props.refuseKara}
+					>
+						<i className="fas fa-times" />
+					</button>
+				) : null}
 
 			{props.scope === 'admin' &&
 			playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 			oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid ? (
-				<button
-					title={i18next.t(props.isHeader ? 'TOOLTIP_ACCEPT_SELECT_KARA' : 'TOOLTIP_ACCEPT_KARA')}
-					className={`${classValue} ${props.kara?.flag_accepted ? 'on' : ''}`}
-					onClick={props.acceptKara}
-				>
-					<i className="fas fa-check" />
-				</button>
-			) : null}
+					<button
+						title={i18next.t(props.isHeader ? 'TOOLTIP_ACCEPT_SELECT_KARA' : 'TOOLTIP_ACCEPT_KARA')}
+						className={`${classValue} ${props.kara?.flag_accepted ? 'on' : ''}`}
+						onClick={props.acceptKara}
+					>
+						<i className="fas fa-check" />
+					</button>
+				) : null}
 
 			{playlist?.plaid !== nonStandardPlaylists.favorites &&
 			((props.scope === 'admin' &&
@@ -76,15 +76,15 @@ function ActionsButtons(props: IProps) {
 					((props.kara?.my_public_plc_id && props.kara?.my_public_plc_id[0]) ||
 						(playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 							props.kara.username === context.globalState.auth.data.username)))) ? (
-				<button
-					title={i18next.t(props.isHeader ? 'TOOLTIP_DELETE_SELECT_KARA' : 'TOOLTIP_DELETEKARA')}
-					disabled={props?.checkedKaras === 0}
-					className={classValue}
-					onClick={props.deleteKara}
-				>
-					<i className="fas fa-eraser" />
-				</button>
-			) : null}
+					<button
+						title={i18next.t(props.isHeader ? 'TOOLTIP_DELETE_SELECT_KARA' : 'TOOLTIP_DELETEKARA')}
+						disabled={props?.checkedKaras === 0}
+						className={classValue}
+						onClick={props.deleteKara}
+					>
+						<i className="fas fa-eraser" />
+					</button>
+				) : null}
 
 			{playlist?.plaid === nonStandardPlaylists.favorites ? (
 				<button
@@ -108,39 +108,39 @@ function ActionsButtons(props: IProps) {
 				playlist?.plaid !== context.globalState.settings.data.state.publicPlaid &&
 				playlist?.plaid !== context.globalState.settings.data.state.currentPlaid &&
 				(!props.kara?.public_plc_id || !props.kara?.public_plc_id[0])) ? (
-				<button
-					title={
-						props.isHeader
-							? i18next.t('TOOLTIP_ADD_SELECT_KARA')
-							: `${i18next.t('TOOLTIP_ADDKARA')}${
+					<button
+						title={
+							props.isHeader
+								? i18next.t('TOOLTIP_ADD_SELECT_KARA')
+								: `${i18next.t('TOOLTIP_ADDKARA')}${
 									props.scope === 'admin' ? ' - ' + i18next.t('TOOLTIP_ADDKARA_ADMIN') : ''
 							  }`
-					}
-					className={classValue}
-					onContextMenu={onRightClickAdd}
-					onClick={props.addKara}
-					disabled={props?.checkedKaras === 0}
-				>
-					<i className="fas fa-plus" />
-				</button>
-			) : null}
+						}
+						className={classValue}
+						onContextMenu={onRightClickAdd}
+						onClick={props.addKara}
+						disabled={props?.checkedKaras === 0}
+					>
+						<i className="fas fa-plus" />
+					</button>
+				) : null}
 
 			{props.scope !== 'admin' &&
 			((props.kara.public_plc_id?.length > 0 && props.kara.my_public_plc_id?.length === 0) ||
 				props.kara?.upvotes > 0) ? (
-				<button
-					title={i18next.t('TOOLTIP_UPVOTE')}
-					className={`${classValue} upvoteKara`}
-					onClick={props.upvoteKara}
-					disabled={props.kara.my_public_plc_id?.length > 0}
-				>
-					<i
-						className={`fas fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}
+					<button
+						title={i18next.t('TOOLTIP_UPVOTE')}
+						className={`${classValue} upvoteKara`}
+						onClick={props.upvoteKara}
+						disabled={props.kara.my_public_plc_id?.length > 0}
+					>
+						<i
+							className={`fas fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}
 						${props.kara?.upvotes > 0 ? ' upvotes' : ''}`}
-					/>
-					{props.kara?.upvotes > 0 && props.kara?.upvotes}
-				</button>
-			) : null}
+						/>
+						{props.kara?.upvotes > 0 && props.kara?.upvotes}
+					</button>
+				) : null}
 		</>
 	);
 }

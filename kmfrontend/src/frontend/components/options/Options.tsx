@@ -14,8 +14,8 @@ function Options(props: RouteComponentProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value) || e.target.value === '0'
-				? Number(e.target.value)
-				: e.target.value;
+					? Number(e.target.value)
+					: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {

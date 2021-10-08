@@ -129,8 +129,8 @@ class PublicHeader extends Component<IProps, IState> {
 							{this.state.quotaLeft === -1
 								? '∞'
 								: this.state.quotaType === 2
-								? secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')
-								: this.state.quotaLeft}
+									? secondsTimeSpanToHMS(this.state.quotaLeft, 'ms')
+									: this.state.quotaLeft}
 						</div>
 					) : null}
 					<div className="profile-btn">
