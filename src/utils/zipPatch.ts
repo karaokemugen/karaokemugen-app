@@ -1,5 +1,6 @@
 import execa from 'execa';
 import extract from 'extract-zip';
+import { promises as fs } from 'fs';
 import { move, remove } from 'fs-extra';
 import { resolve } from 'path';
 
@@ -92,6 +93,12 @@ export async function applyPatch(patch: string, dir: string) {
 	} catch (err) {
 		logger.warn('Cannot apply patch from server, fallback to zip full 	download', {service: 'DiffPatch', obj: err});
 		Sentry.addErrorInfo('patch', patch);
+		try {
+			const rejectedPatch = await fs.readFile(resolve(resolvedPathTemp(), 'patch.rej'), 'utf-8');
+			Sentry.addErrorInfo('rejected', rejectedPatch);
+		} catch(err) {
+			logger.debug(`Could not get rejected patch : ${err}`, { service: 'DiffPatch', obj: err});
+		}
 		Sentry.error(err, 'Warning');
 		throw err;
 	}
