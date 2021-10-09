@@ -15,7 +15,7 @@ import ShutdownModal from './components/modals/ShutdownModal';
 import NotFoundPage from './components/NotfoundPage';
 import PlaylistPage from './components/PlaylistPage';
 import PublicPage from './components/public/PublicPage';
-import SetupPage from './components/SetupPage';
+import SetupPage from './components/setup/SetupPage';
 import WelcomePage from './components/WelcomePage';
 
 interface IState {
@@ -86,14 +86,14 @@ class KMFrontend extends Component<unknown, IState> {
 				this.context.globalState.settings.data.config ?
 					<div className={is_touch_device() ? 'touch' : ''}>
 						<Switch>
-							<Route path="/setup" render={(route) => <SetupPage route={route} />} />
+							<Route path="/setup" component={SetupPage} />
 							<Route path="/migrate" render={() => <MigratePage />} />
 							<Route path="/welcome" render={() => <WelcomePage />} />
 							<Route path="/admin" render={() => <AdminPage
 								powerOff={isElectron() ? undefined : this.powerOff} />} />
 							<Route path="/chibi" exact component={ChibiPage} />
 							<Route path="/chibiPlaylist" exact component={PlaylistPage} />
-							<Route path="/public" render={(route) => <PublicPage route={route} />} />
+							<Route path="/public" component={PublicPage} />
 							<Route exact path="/">{this.context.globalState.auth.data.role === 'admin' ?
 								<Redirect to="/welcome" />:<Redirect to="/public" />
 							}</Route>

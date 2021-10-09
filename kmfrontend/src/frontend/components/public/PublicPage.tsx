@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import React, { Component } from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch,withRouter } from 'react-router-dom';
 
 import { DBPLC, DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
@@ -29,10 +29,6 @@ import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
 import TagsList from './TagsList';
 
-interface IProps {
-	route: RouteComponentProps;
-}
-
 interface IState {
 	isPollActive: boolean;
 	classicModeModal: boolean;
@@ -54,11 +50,11 @@ interface IState {
 let timer: any;
 let timerFilter: any;
 
-class PublicPage extends Component<IProps, IState> {
+class PublicPage extends Component<RouteComponentProps, IState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>;
 
-	constructor(props: IProps) {
+	constructor(props: RouteComponentProps) {
 		super(props);
 		this.state = {
 			isPollActive: false,
@@ -115,27 +111,27 @@ class PublicPage extends Component<IProps, IState> {
 			);
 		}
 		this.setState({ view, tagType, searchValue, searchCriteria, searchType, kara: undefined });
-		this.props.route.history.push(route);
+		this.props.history.push(route);
 	};
 
 	initView() {
-		if (this.props.route.location.pathname.includes('/public/search/requested')) {
+		if (this.props.location.pathname.includes('/public/search/requested')) {
 			this.changeView('requested');
 		}
-		if (this.props.route.location.pathname.includes('/public/search/history')) {
+		if (this.props.location.pathname.includes('/public/search/history')) {
 			this.changeView('history');
-		} else if (this.props.route.location.pathname.includes('/public/search')) {
+		} else if (this.props.location.pathname.includes('/public/search')) {
 			this.changeView('search');
-		} else if (this.props.route.location.pathname.includes('/public/favorites')) {
+		} else if (this.props.location.pathname.includes('/public/favorites')) {
 			this.changeView('favorites');
-		} else if (this.props.route.location.pathname.includes('/public/tags')) {
+		} else if (this.props.location.pathname.includes('/public/tags')) {
 			const tagType = Number(
-				this.props.route.location.pathname.substring(this.props.route.location.pathname.lastIndexOf('/') + 1)
+				this.props.location.pathname.substring(this.props.location.pathname.lastIndexOf('/') + 1)
 			);
 			this.changeView('tag', tagType);
-		} else if (this.props.route.location.pathname.includes('/public/playlist')) {
-			const idPlaylist = this.props.route.location.pathname.substring(
-				this.props.route.location.pathname.lastIndexOf('/') + 1
+		} else if (this.props.location.pathname.includes('/public/playlist')) {
+			const idPlaylist = this.props.location.pathname.substring(
+				this.props.location.pathname.lastIndexOf('/') + 1
 			);
 			if (idPlaylist === this.context.globalState.settings.data.state.publicPlaid) {
 				this.changeView('publicPlaylist');
@@ -159,7 +155,7 @@ class PublicPage extends Component<IProps, IState> {
 		getSocket().on('adminMessage', this.adminMessage);
 		getSocket().on('userSongPlaysIn', this.userSongPlaysIn);
 		getSocket().on('nextSong', this.nextSong);
-		this.historyCallback = this.props.route.history.listen(() => {
+		this.historyCallback = this.props.history.listen(() => {
 			if (this.state.indexKaraDetail === undefined) {
 				setFilterValue(
 					this.context.globalDispatch,
@@ -297,7 +293,7 @@ class PublicPage extends Component<IProps, IState> {
 	toggleKaraDetail = (kara: KaraElement, plaid: string, indexKaraDetail: number) => {
 		this.setState({ kara, indexKaraDetail }, () => {
 			setPlaylistInfo('left', this.context, plaid);
-			this.props.route.history.push(`/public/karaoke/${kara.kid}`);
+			this.props.history.push(`/public/karaoke/${kara.kid}`);
 		});
 	};
 
@@ -318,7 +314,7 @@ class PublicPage extends Component<IProps, IState> {
 	render() {
 		if (
 			this.context?.globalState.settings.data.config?.Frontend?.Mode !== 2 &&
-			this.props.route.location.pathname.includes('/public/search')
+			this.props.location.pathname.includes('/public/search')
 		) {
 			this.changeView('currentPlaylist');
 		}
@@ -344,7 +340,7 @@ class PublicPage extends Component<IProps, IState> {
 		) : (
 			<>
 				<PublicHeader
-					openModal={(type: string) => this.props.route.history.push(`/public/${type}`)}
+					openModal={(type: string) => this.props.history.push(`/public/${type}`)}
 					onResize={(top) => this.setState({ top })}
 					changeView={this.changeView}
 					currentView={this.state.view}
@@ -375,14 +371,14 @@ class PublicPage extends Component<IProps, IState> {
 							render={() => (
 								<ProfilModal
 									scope="public"
-									closeProfileModal={() => this.props.route.history.goBack()}
+									closeProfileModal={() => this.props.history.goBack()}
 								/>
 							)}
 						/>
 						<Route
 							path="/public/users"
 							render={() => (
-								<UsersModal scope="public" closeModal={() => this.props.route.history.goBack()} />
+								<UsersModal scope="public" closeModal={() => this.props.history.goBack()} />
 							)}
 						/>
 						<Route
@@ -394,7 +390,7 @@ class PublicPage extends Component<IProps, IState> {
 									scope="public"
 									plaid={this.context.globalState.frontendContext.playlistInfoLeft.plaid}
 									closeOnPublic={() => {
-										this.props.route.history.goBack();
+										this.props.history.goBack();
 										this.setState({ kara: undefined });
 									}}
 									changeView={this.changeView}
@@ -467,11 +463,11 @@ class PublicPage extends Component<IProps, IState> {
 													this.setState({ indexKaraDetail: undefined })
 												}
 												searchType={
-													this.props.route.location.pathname.includes(
+													this.props.location.pathname.includes(
 														'/public/search/requested'
 													)
 														? 'requested'
-														: this.props.route.location.pathname.includes(
+														: this.props.location.pathname.includes(
 															'/public/search/history'
 														  )
 															? 'recent'
@@ -508,4 +504,4 @@ class PublicPage extends Component<IProps, IState> {
 	}
 }
 
-export default PublicPage;
+export default withRouter(PublicPage);
