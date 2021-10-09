@@ -96,19 +96,19 @@
         "TRANSFER_KARA": "Transférer cette chanson en face - clic droit la transfère après la chanson en cours",
         "MOVE_KARA": "Déplacer après la chanson en cours"
     },
-	"KAROULETTE": {
-		"START": "Passer en revue les suggestions du public",
-		"STATS_one": "{{count}} traité ({{accepted}} / {{refused}})",
-		"STATS_other": "{{count}} traités ({{accepted}} / {{refused}})",
-		"ACCEPTED_one": "{{count}} accepté",
-		"ACCEPTED_other": "{{count}} acceptés",
-		"REFUSED_one": "{{count}} refusé",
-		"REFUSED_other": "{{count}} refusés",
-		"ACCEPT": "Accepter",
-		"REFUSE": "Refuser",
-		"PLAYLIST_REMAINING_one": "Temps restant de la liste courante : {{count}} minute",
-		"PLAYLIST_REMAINING_other": "Temps restant de la liste courante : {{count}} minutes"
-	},
+    "KAROULETTE": {
+        "START": "Passer en revue les suggestions du public",
+        "STATS_one": "{{count}} traité ({{accepted}} / {{refused}})",
+        "STATS_other": "{{count}} traités ({{accepted}} / {{refused}})",
+        "ACCEPTED_one": "{{count}} accepté",
+        "ACCEPTED_other": "{{count}} acceptés",
+        "REFUSED_one": "{{count}} refusé",
+        "REFUSED_other": "{{count}} refusés",
+        "ACCEPT": "Accepter",
+        "REFUSE": "Refuser",
+        "PLAYLIST_REMAINING_one": "Temps restant de la liste courante : {{count}} minute",
+        "PLAYLIST_REMAINING_other": "Temps restant de la liste courante : {{count}} minutes"
+    },
     "FLAGS": {
         "PUBLIC": "Publique",
         "CURRENT": "Courante",
@@ -940,7 +940,6 @@
         "AUTHORS_one": "Auteur de karaokés",
         "AUTHORS_other": "Auteurs de karaokés",
         "MISC_one": "Divers",
-		"MISC_others": "Divers",
         "SONGWRITERS_one": "Compositeur",
         "SONGWRITERS_other": "Compositeurs",
         "GROUPS_one": "Groupe",
