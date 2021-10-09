@@ -1,21 +1,27 @@
 import './KaraDetail.scss';
 
 import i18next from 'i18next';
-import React, { MouseEvent, ReactNode, useContext, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { toast } from 'react-toastify';
+import React, {MouseEvent, ReactNode, useContext, useEffect, useState} from 'react';
+import {createPortal} from 'react-dom';
+import {toast} from 'react-toastify';
 
-import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
-import { DBPLCInfo } from '../../../../../src/types/database/playlist';
-import { KaraDownloadRequest } from '../../../../../src/types/download';
+import {DBKaraTag, lastplayed_ago} from '../../../../../src/lib/types/database/kara';
+import {DBPLCInfo} from '../../../../../src/types/database/playlist';
+import {KaraDownloadRequest} from '../../../../../src/types/download';
 import nanamiSingPng from '../../../assets/nanami-sing.png';
 import nanamiSingWebP from '../../../assets/nanami-sing.webp';
-import { setBgImage } from '../../../store/actions/frontendContext';
-import { closeModal } from '../../../store/actions/modal';
+import {setBgImage} from '../../../store/actions/frontendContext';
+import {closeModal} from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
-import { buildKaraTitle, formatLyrics, getPreviewLink, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
-import { commandBackend, isRemote } from '../../../utils/socket';
-import { tagTypes, YEARS } from '../../../utils/tagTypes';
+import {
+	buildKaraTitle,
+	formatLyrics,
+	getPreviewLink,
+	getTitleInLocale,
+	sortTagByPriority
+} from '../../../utils/kara';
+import {commandBackend, isRemote} from '../../../utils/socket';
+import {tagTypes, YEARS} from '../../../utils/tagTypes';
 import {
 	displayMessage,
 	is_touch_device,
@@ -23,7 +29,7 @@ import {
 	nonStandardPlaylists,
 	secondsTimeSpanToHMS,
 } from '../../../utils/tools';
-import { View } from '../../types/view';
+import {View} from '../../types/view';
 import InlineTag from './InlineTag';
 
 interface IProps {
@@ -34,6 +40,12 @@ interface IProps {
 	playlistcontentId?: number;
 	closeOnPublic?: () => void;
 	changeView?: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
+	karoulette?: {
+		next(accepted: boolean): void,
+		accepted: number,
+		refused: number,
+		timeRemaining: number
+	};
 }
 
 export default function KaraDetail(props: IProps) {
@@ -42,6 +54,7 @@ export default function KaraDetail(props: IProps) {
 	const [isFavorite, setFavorite] = useState(false);
 	const [showVideo, setShowVideo] = useState(false);
 	const [lyrics, setLyrics] = useState<string[]>([]);
+	const [pending, setPending] = useState(false);
 
 	const keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.key === 'Escape' && !document.getElementById('video')) {
@@ -73,10 +86,10 @@ export default function KaraDetail(props: IProps) {
 			let data: { plaid?: string; plc_id?: number; kid?: string };
 			if (props.plaid && !isNonStandardPlaylist(props.plaid)) {
 				url = 'getPLC';
-				data = { plaid: props.plaid, plc_id: props.playlistcontentId };
+				data = {plaid: props.plaid, plc_id: props.playlistcontentId};
 			} else {
 				url = 'getKara';
-				data = { kid: kid ? kid : props.kid };
+				data = {kid: kid ? kid : props.kid };
 			}
 			const karaGet = await commandBackend(url, data);
 			await setKara(karaGet);
@@ -98,16 +111,16 @@ export default function KaraDetail(props: IProps) {
 					? secondsTimeSpanToHMS(timeAgo, 'hm')
 					: secondsTimeSpanToHMS(timeAgo, 'ms');
 
-			return i18next.t('KARA_DETAIL.LAST_PLAYED_2', { time: timeAgoStr });
+			return i18next.t('KARA_DETAIL.LAST_PLAYED_2', {time: timeAgoStr});
 		} else if (lastPlayed_at) {
-			return i18next.t('KARA_DETAIL.LAST_PLAYED', { date: new Date(lastPlayed_at).toLocaleDateString() });
+			return i18next.t('KARA_DETAIL.LAST_PLAYED', {date: new Date(lastPlayed_at).toLocaleDateString()});
 		}
 		return null;
 	};
 
 	const fetchLyrics = async () => {
 		try {
-			let response = await commandBackend('getKaraLyrics', { kid: props.kid });
+			let response = await commandBackend('getKaraLyrics', {kid: props.kid});
 			if (response?.length > 0) {
 				response = formatLyrics(response);
 			}
@@ -162,7 +175,7 @@ export default function KaraDetail(props: IProps) {
 						{i18next.t(`SUCCESS_CODES.${response.code}`, {
 							song: getTitleInLocale(context.globalState.settings.data, kara.titles),
 						})}
-						<br />
+						<br/>
 						{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
 							time: beforePlayTime,
 							date: playTimeDate,
@@ -178,39 +191,34 @@ export default function KaraDetail(props: IProps) {
 					</>
 				);
 			}
-			displayMessage(
-				'success',
-				<div className="toast-with-img">
-					<picture>
-						<source type="image/webp" srcSet={nanamiSingWebP} />
-						<source type="image/png" srcSet={nanamiSingPng} />
-						<img src={nanamiSingPng} alt="Nanami is singing!" />
-					</picture>
-					<span>
-						{message}
-						<br />
-						<button
-							className="btn"
-							onClick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.data.plc.plcid] })
-									.then(() => {
-										toast.dismiss(response.data.plc.plcid);
-										displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
-									})
-									.catch(() => {
-										toast.dismiss(response.data.plc.plcid);
-									});
-							}}
-						>
-							{i18next.t('CANCEL')}
-						</button>
-					</span>
-				</div>,
-				10000,
-				'top-left',
-				response.data.plc.plcid
+			displayMessage('success', <div className="toast-with-img">
+				<picture>
+					<source type="image/webp" srcSet={nanamiSingWebP}/>
+					<source type="image/png" srcSet={nanamiSingPng}/>
+					<img src={nanamiSingPng} alt="Nanami is singing!"/>
+				</picture>
+				<span>
+					{message}
+					<br/>
+					<button className="btn" onClick={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						commandBackend('deleteKaraFromPlaylist', {plc_ids: [response.data.plc.plcid]})
+							.then(() => {
+								toast.dismiss(response.data.plc.plcid);
+								displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+							}).catch(() => {
+								toast.dismiss(response.data.plc.plcid);
+							});
+					}}
+					>
+						{i18next.t('CANCEL')}
+					</button>
+				</span>
+			</div>,
+			10000,
+			'top-left',
+			response.data.plc.plcid
 			);
 		}
 	};
@@ -223,7 +231,8 @@ export default function KaraDetail(props: IProps) {
 			name: buildKaraTitle(context.globalState.settings.data, kara, true) as string,
 			repository: kara.repository,
 		};
-		commandBackend('addDownloads', { downloads: [downloadObject] }).catch(() => {});
+		commandBackend('addDownloads', {downloads: [downloadObject]}).catch(() => {
+		});
 	};
 
 	const placeHeader = (headerEl: ReactNode) => createPortal(headerEl, document.getElementById('menu-supp-root'));
@@ -244,6 +253,19 @@ export default function KaraDetail(props: IProps) {
 			if (props.scope === 'public') setBgImage(context.globalDispatch, 'none');
 		};
 	}, []);
+
+	useEffect(() => {
+		if (props.kid) {
+			setShowVideo(false);
+			setPending(false);
+			getKaraDetail();
+		}
+	}, [props.kid]);
+
+	const karoulette_submit = (accepted: boolean) => {
+		setPending(true);
+		props.karoulette.next(accepted);
+	};
 
 	if (kara) {
 		// Tags in the header
@@ -304,44 +326,39 @@ export default function KaraDetail(props: IProps) {
 			let key = 0;
 			const tagData = tagTypes[type];
 			if (kara[tagData.karajson].length > 0) {
-				karaBlockTags.push(
-					<div className={`detailsKaraLine colored ${tagData.color}`} key={tagData.karajson}>
-						<i className={`fas fa-fw fa-${tagData.icon}`} />
-						<div>
-							{i18next.t(`KARA.${type}_BY`)}
-							<span key={`${type}${key}`} className="detailsKaraLineContent">
-								{' '}
-								{kara[tagData.karajson]
-									.map((e) => getInlineTag(e, tagData.type))
-									.reduce(
-										(acc, x, index, arr): any =>
-											acc === null
-												? [x]
-												: [
-													acc,
-													index + 1 === arr.length ? (
-														<span
-															key={`${type}${key}`}
-															className={`colored ${tagData.color}`}
-														>
-															{' '}
-															{i18next.t('AND')}{' '}
-														</span>
-													) : (
-														<span
-															key={`${type}${key}`}
-															className={`colored ${tagData.color}`}
-														>
+				karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`}
+					key={tagData.karajson}>
+					<i className={`fas fa-fw fa-${tagData.icon}`}/>
+					<div>
+						{i18next.t(`KARA.${type}_BY`)}
+						<span key={`${type}${key}`} className="detailsKaraLineContent"> {' '}
+							{kara[tagData.karajson]
+								.map((e) => getInlineTag(e, tagData.type))
+								.reduce(
+									(acc, x, index, arr): any =>
+										acc === null
+											? [x]
+											: [
+												acc,
+												index + 1 === arr.length ? (
+													<span key={`${type}${key}`}
+									  className={`colored ${tagData.color}`}>
+														{' '}
+														{i18next.t('AND')}{' '}
+													</span>
+												) : (
+													<span key={`${type}${key}`}
+									  className={`colored ${tagData.color}`}>
 																,{' '}
-														</span>
-													),
-													x,
+													</span>
+												),
+												x,
 												  ],
-										null
-									)}
-							</span>
-						</div>
+									null
+								)}
+						</span>
 					</div>
+				</div>
 				);
 				key++;
 			}
@@ -353,14 +370,14 @@ export default function KaraDetail(props: IProps) {
 				{props.criteriaLabel ? (
 					<div className="detailsKaraLine">
 						<span>
-							<i className="fas fa-fw fa-ban" />
+							<i className="fas fa-fw fa-ban"/>
 							{props.criteriaLabel}
 						</span>
 					</div>
 				) : null}
 				<div className="detailsKaraLine timeData">
 					<span>
-						<i className="fas fa-fw fa-clock" />
+						<i className="fas fa-fw fa-clock"/>
 						{secondsTimeSpanToHMS(kara.duration, 'mm:ss')}
 					</span>
 					<span>
@@ -377,7 +394,7 @@ export default function KaraDetail(props: IProps) {
 				{kara.upvotes && props.scope === 'admin' ? (
 					<div className="detailsKaraLine">
 						<span title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
-							<i className="fas fa-thumbs-up" />
+							<i className="fas fa-thumbs-up"/>
 							{kara.upvotes}
 						</span>
 					</div>
@@ -402,7 +419,7 @@ export default function KaraDetail(props: IProps) {
 				{karaBlockTags}
 				<div className="detailsKaraLine">
 					<span className="boldDetails">
-						<i className={`fas fa-fw fa-${YEARS.icon}`} />
+						<i className={`fas fa-fw fa-${YEARS.icon}`}/>
 						{kara.year}
 					</span>
 				</div>
@@ -411,7 +428,7 @@ export default function KaraDetail(props: IProps) {
 
 		const addKaraButton = (
 			<button type="button" onClick={addKara} className="btn btn-action">
-				<i className="fas fa-fw fa-plus" />
+				<i className="fas fa-fw fa-plus"/>
 				<span>{i18next.t('TOOLTIP_ADDKARA')}</span>
 			</button>
 		);
@@ -422,7 +439,7 @@ export default function KaraDetail(props: IProps) {
 				onClick={makeFavorite}
 				className={`makeFav btn btn-action${isFavorite ? ' currentFav' : ''}`}
 			>
-				<i className="fas fa-fw fa-star" />
+				<i className="fas fa-fw fa-star"/>
 				<span>{isFavorite ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}</span>
 			</button>
 		);
@@ -430,7 +447,7 @@ export default function KaraDetail(props: IProps) {
 		const showVideoButton =
 			isRemote() && !/\./.test(kara.repository) ? null : (
 				<button type="button" className="btn btn-action" onClick={() => setShowVideo(!showVideo)}>
-					<i className="fas fa-fw fa-video" />
+					<i className="fas fa-fw fa-video"/>
 					<span>{showVideo ? i18next.t('KARA_DETAIL.HIDE_VIDEO') : i18next.t('KARA_DETAIL.SHOW_VIDEO')}</span>
 				</button>
 			);
@@ -438,7 +455,7 @@ export default function KaraDetail(props: IProps) {
 		const downloadVideoButton =
 			kara.download_status !== 'MISSING' ? null : (
 				<button type="button" className="btn btn-action" onClick={downloadMedia}>
-					<i className="fas fa-fw fa-file-download" />
+					<i className="fas fa-fw fa-file-download"/>
 					<span>{i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}</span>
 				</button>
 			);
@@ -455,61 +472,83 @@ export default function KaraDetail(props: IProps) {
 				loop={true}
 				playsInline={true}
 				onLoadStart={(e) => (e.currentTarget.volume = 0.5)}
-				className={`modal-video${props.scope === 'public' ? ' public' : ''}`}
-			/>
+				className={`modal-video${props.scope === 'public' ? ' public' : ''}`}/>
 		) : null;
 
-		const lyricsKara = kara.subfile ? (
-			<div className="lyricsKara detailsKaraLine">
-				{lyrics?.length > 0 ? (
-					<div className="boldDetails">
-						<i className="fas fa-fw fa-closed-captioning" />
-						{i18next.t('KARA_DETAIL.LYRICS')}
-					</div>
-				) : null}
-				{kara.subfile &&
-					lyrics?.map((ligne, index) => {
-						return (
-							<React.Fragment key={index}>
-								{ligne}
-								<br />
-							</React.Fragment>
-						);
-					})}
-			</div>
-		) : null;
+		const lyricsKara = kara.subfile ? (<div className="lyricsKara detailsKaraLine">
+			{
+				lyrics?.length > 0 ? (<div className="boldDetails">
+					<i className="fas fa-fw fa-closed-captioning"/>
+					{i18next.t('KARA_DETAIL.LYRICS')}
+				</div>) : null
+			}
+			{kara.subfile && lyrics?.map((ligne, index) => {
+				return (
+					<React.Fragment key={index}>
+						{ligne}
+						<br/>
+					</React.Fragment>
+				);
+			})}
+		</div>) : null;
 
 		const header = (
 			<div
 				className={`modal-header img-background${props.scope === 'public' ? ' fixed' : ''}`}
-				style={{ ['--img' as any]: props.scope === 'admin' ? `url('${getPreviewLink(kara)}')` : 'none' }}
+				 style={{['--img' as any]: props.scope === 'admin' ? `url('${getPreviewLink(kara)}')` : 'none'}}
 			>
 				<div className="modal-header-title">
-					{props.scope === 'public' ? (
-						<button className="transparent-btn" type="button" onClick={props.closeOnPublic}>
-							<i className="fas fa-fw fa-arrow-left" />
-						</button>
-					) : null}
+					{
+						props.scope === 'public' ?(
+							<button
+								className="transparent-btn"
+								type="button" onClick={props.closeOnPublic}>
+								<i className="fas fa-fw fa-arrow-left"/>
+							</button>) : null
+					}
 					<div className="modal-title-block">
 						<h4 className="modal-title">
 							{getTitleInLocale(context.globalState.settings.data, kara.titles)}
 						</h4>
 						<h5 className="modal-series">
-							<InlineTag
-								tag={kara.series[0] || kara.singers[0]}
-								scope={props.scope}
-								changeView={props.changeView}
-								tagType={kara.series[0] ? 1 : 2}
-							/>
+							<InlineTag tag={kara.series[0] || kara.singers[0]}
+									   scope={props.scope}
+									   changeView={props.changeView}
+									   tagType={kara.series[0] ? 1 : 2}/>
 						</h5>
 					</div>
-					{props.scope === 'admin' ? (
-						<button className="transparent-btn" type="button" onClick={closeModalWithContext}>
-							<i className="fas fa-fw fa-times" />
-						</button>
-					) : null}
+					{
+						props.scope === 'admin' ?(
+							<button
+								className="transparent-btn"
+								type="button" onClick={closeModalWithContext}>
+								<i className="fas fa-fw fa-times"/>
+							</button>
+						) : null}
 				</div>
 				<div className="tagConteneur">{karaTags}</div>
+				{
+					props.karoulette ? <div className="karoulette">
+						<button className="btn btn-action" disabled={pending} onClick={() => karoulette_submit(false)}>
+							<i className="fas fa-fw fa-times"/>
+							{i18next.t('KAROULETTE.REFUSE')}
+						</button>
+						<p>
+							{i18next.t('KAROULETTE.STATS', {
+								count: props.karoulette.accepted + props.karoulette.refused,
+								accepted: i18next.t('KAROULETTE.ACCEPTED', {count: props.karoulette.accepted}),
+								refused: i18next.t('KAROULETTE.REFUSED', {count: props.karoulette.refused})
+							})}<br/>
+							{i18next.t('KAROULETTE.PLAYLIST_REMAINING', {
+								count: Math.floor(props.karoulette.timeRemaining / 60)
+							})}
+						</p>
+						<button className="btn btn-action" disabled={pending} onClick={() => karoulette_submit(true)}>
+							<i className="fas fa-fw fa-check"/>
+							{i18next.t('KAROULETTE.ACCEPT')}
+						</button>
+					</div> : null
+				}
 			</div>
 		);
 

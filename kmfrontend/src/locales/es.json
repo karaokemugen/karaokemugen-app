@@ -235,8 +235,8 @@
     "CL_ADD_RANDOM_TITLE": "Cuantas canciones aleatorias quieres añadir?",
     "CL_ABOUT_TO_ADD": "Estás a punto de añadir {{title}}",
     "CL_CONGRATS": "Felicitaciones",
-    "KARAOKE": "{{count}} canción",
-    "KARAOKE_plural": "{{count}} canciones",
+    "KARAOKE_one": "{{count}} canción",
+    "KARAOKE_other": "{{count}} canciones",
     "AUTOMIX_MODAL": {
         "EMPTY": "Seleccionar usuarios y una duración",
         "MIX": "Crear AutoMix",

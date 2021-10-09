@@ -72,8 +72,8 @@
     "WEBAPPMODE_CLOSED_MESSAGE": "Das Interface ist geschlossen, bitte warten",
     "INLINE_TAG": {
         "SEARCH": "Karaokes mit {{tag}}",
-        "COUNT": "{{count}} Karaoke",
-        "COUNT_plural": "{{count}} Karaokes"
+        "COUNT_one": "{{count}} Karaoke",
+        "COUNT_other": "{{count}} Karaokes"
     },
     "PLAYLIST_HEADER": {
         "FILTERS": "Filter",
