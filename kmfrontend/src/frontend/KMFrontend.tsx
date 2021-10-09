@@ -87,8 +87,8 @@ class KMFrontend extends Component<unknown, IState> {
 					<div className={is_touch_device() ? 'touch' : ''}>
 						<Switch>
 							<Route path="/setup" component={SetupPage} />
-							<Route path="/migrate" render={() => <MigratePage />} />
-							<Route path="/welcome" render={() => <WelcomePage />} />
+							<Route path="/migrate" component={MigratePage} />
+							<Route path="/welcome" component={WelcomePage} />
 							<Route path="/admin" render={() => <AdminPage
 								powerOff={isElectron() ? undefined : this.powerOff} />} />
 							<Route path="/chibi" exact component={ChibiPage} />
