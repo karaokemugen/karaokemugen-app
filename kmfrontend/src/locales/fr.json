@@ -940,6 +940,7 @@
         "AUTHORS_one": "Auteur de karaokés",
         "AUTHORS_other": "Auteurs de karaokés",
         "MISC_one": "Divers",
+		"MISC_other": "Divers",
         "SONGWRITERS_one": "Compositeur",
         "SONGWRITERS_other": "Compositeurs",
         "GROUPS_one": "Groupe",
