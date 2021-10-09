@@ -98,7 +98,7 @@ export async function testPlaylists() {
 		} else {
 			setState({currentPlaid:
 				await insertPlaylist({
-					name: i18n.t('CURRENT_PLAYLST'),
+					name: i18n.t('CURRENT_PLAYLIST'),
 					flag_visible: true,
 					flag_current: true,
 					username: 'admin'
@@ -111,7 +111,7 @@ export async function testPlaylists() {
 		} else {
 			setState({publicPlaid:
 				await insertPlaylist({
-					name: i18n.t('PUBLIC_PLAYLST'),
+					name: i18n.t('PUBLIC_PLAYLIST'),
 					flag_visible: true,
 					flag_public: true,
 					username: 'admin'

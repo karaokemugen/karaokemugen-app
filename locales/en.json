@@ -3,6 +3,8 @@
     "MY_PLAYLIST": "My playlist",
     "WHITELIST": "Whitelist",
     "BLACKLIST": "Blacklist",
+	"CURRENT_PLAYLIST": "Play list",
+	"PUBLIC_PLAYLIST": "Public suggestions",
     "GO_TO": "Go to",
     "VOTE_MESSAGE_SCREEN": "Vote for the next song!",
     "VOTE_MESSAGE_SCREEN_WINNER": "We have a winner!",
