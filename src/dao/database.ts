@@ -109,13 +109,10 @@ async function migrateDB(): Promise<Migration[]> {
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
 	const migrator = new Postgrator({
-		migrationDirectory: migrationDir,
-		host: conf.System.Database.host,
+		migrationPattern: migrationDir + '/*.sql',
 		driver: 'pg',
-		username: conf.System.Database.username,
-		password: conf.System.Database.password,
-		port: conf.System.Database.port,
 		database: conf.System.Database.database,
+		execQuery: (query) => db().query(query),
 		validateChecksums: false,
 	});
 	try {
