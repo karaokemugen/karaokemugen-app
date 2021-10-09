@@ -48,8 +48,8 @@
     "MESSAGE": "Melding",
     "INLINE_TAG": {
         "SEARCH": "Karaoke med {{tag}}",
-        "COUNT": "{{count}} karaoke",
-        "COUNT_plural": "{{count}} karaoker"
+        "COUNT_one": "{{count}} karaoke",
+        "COUNT_other": "{{count}} karaoker"
     },
     "WEBAPPMODE_CLOSED_MESSAGE": "Grensesnittet er lukket. Vent.",
     "PLAYLISTS": {

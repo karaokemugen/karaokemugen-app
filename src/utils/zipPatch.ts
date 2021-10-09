@@ -49,7 +49,7 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 		await remove(outDir);
 		await move(resolve(tempDir, dir), outDir);
 	} catch(err) {
-		logger.error('Unable to download and extract ${repo} zip : ${err}', {service: 'Zip', obj: err});
+		logger.error(`Unable to download and extract ${repo} zip : ${err}`, {service: 'Zip', obj: err});
 		throw err;
 	} finally {
 		task.end();

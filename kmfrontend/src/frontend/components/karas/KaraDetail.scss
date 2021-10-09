@@ -10,6 +10,7 @@
 	position: relative;
 	--img: none;
 	@include blurred-bg;
+
 	&.fixed {
 		width: 95%;
 		margin: auto;
@@ -17,10 +18,27 @@
 			width: 75%;
 		}
 	}
+
 	> * {
 		position: relative;
 		text-shadow: 2px 2px 2px #000000bf;
 		z-index: 2;
+	}
+}
+
+.modal-header.img-background .karoulette {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	padding: .5em;
+	align-items: center;
+
+	> .btn.btn-action {
+		font-size: 1.25em;
+	}
+
+	> p {
+		text-align: center;
 	}
 }
 
@@ -30,10 +48,12 @@
 	align-items: stretch;
 	width: 100%;
 	margin-bottom: 1em;
+
 	.modal-title-block {
 		flex-grow: 2;
 		overflow-wrap: anywhere;
 	}
+
 	.transparent-btn {
 		background: none;
 		border: none;
@@ -55,14 +75,17 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
+
 		button {
 			margin: 0.25em;
 			text-align: left;
+
 			span {
 				margin-left: 0.5em;
 			}
 		}
 	}
+
 	.detailsKaraLineContent {
 		font-weight: bold;
 		overflow-wrap: anywhere;
@@ -72,20 +95,25 @@
 		margin: 1em 0;
 		display: flex;
 		align-items: center;
+
 		i {
 			margin-right: 0.5em;
 		}
+
 		&.timeData {
 			justify-content: space-between;
 		}
+
 		&.lyricsKara {
 			flex-direction: column;
 			align-items: flex-start;
 			font-weight: normal;
 		}
+
 		.boldDetails {
 			font-weight: bold;
 		}
+
 		.inlineTag {
 			display: inline-block;
 			overflow-wrap: normal;
@@ -97,6 +125,7 @@
 	border-radius: 8px;
 	margin-top: 1em;
 	width: 100%;
+
 	&.public {
 		@media screen and (min-width: $mugen-breakpoint-large) {
 			width: 33%;
@@ -113,6 +142,7 @@
 	@each $name, $color in $mugen-colors {
 		&.#{$name} {
 			color: saturate(lighten($color, 40), 10);
+
 			.inlineTag {
 				color: saturate(lighten($color, 55), 10);
 			}
