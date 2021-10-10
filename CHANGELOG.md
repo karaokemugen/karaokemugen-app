@@ -1,3 +1,16 @@
+# v5.1.29 - 10/09/2021
+
+## Fixes
+
+- Microsoft Visual C++ Redistribuable will now be downloaded and installed by KM if it's missing. (#1105)
+- Failed patches are now reported to sentry so we can debug what's wrong
+- Failure to delete local users after they've been deleted from KM Server is now properly handled
+- Merging tags now takes the full tag information into account
+
+## Misc
+
+- Extracting zip files is now made in Electron's main thread instead of a separate worker.
+
 # v5.1.27 - 26/09/2021
 
 ## Improvements
