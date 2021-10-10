@@ -243,6 +243,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 							total: this.state.karas.filter(kara => this.isQueuedKara(kara)).length,
 							showQuickJumper: true,
 						}}
+						childrenColumnName='childrenColumnName'
 					/>
 				</Layout.Content>
 			</>

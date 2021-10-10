@@ -369,6 +369,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 							total: this.state.karasCount,
 							showQuickJumper: true,
 						}}
+						childrenColumnName='childrenColumnName'
 					/>
 				</Layout.Content>
 				{this.state.preview ?

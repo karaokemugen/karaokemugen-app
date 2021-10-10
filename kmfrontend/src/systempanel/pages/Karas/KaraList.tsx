@@ -207,6 +207,7 @@ class KaraList extends Component<unknown, KaraListState> {
 							total: this.state.totalCount,
 							showQuickJumper: true
 						}}
+						childrenColumnName='childrenColumnName'
 					/>
 				</Layout.Content>
 			</>

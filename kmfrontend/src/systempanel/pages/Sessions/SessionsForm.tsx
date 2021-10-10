@@ -219,12 +219,14 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 							dataSource={this.state.sessionPlayed}
 							columns={this.columns}
 							rowKey='kid'
+							childrenColumnName='childrenColumnName'
 						/>
 						<h1>{i18next.t('SESSIONS.KARA_REQUESTED')}</h1>
 						<Table
 							dataSource={this.state.sessionRequested}
 							columns={this.columns}
 							rowKey='kid'
+							childrenColumnName='childrenColumnName'
 						/>
 					</> : null
 				}

@@ -48,6 +48,7 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 						dataSource={this.state.karas}
 						columns={this.columns}
 						rowKey='kid'
+						childrenColumnName='childrenColumnName'
 					/>
 				</Layout.Content>
 			</>
