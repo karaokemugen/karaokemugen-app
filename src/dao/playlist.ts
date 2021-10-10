@@ -285,7 +285,7 @@ export async function selectKarasFromCriterias(plaid: string, smartPlaylistType:
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {
 			if (c.type > 0 && c.type < 1000) {
-				queryArr.push(sqlselectKarasFromCriterias[c.type]('BETWEEN 1 AND 999'));
+				queryArr.push(sqlselectKarasFromCriterias[c.type](`= ${c.type}`, c.value));
 			} else if (c.type === 1001) {
 				queryArr.push(sqlselectKarasFromCriterias[c.type]);
 			} else {
@@ -303,13 +303,22 @@ export async function selectKarasFromCriterias(plaid: string, smartPlaylistType:
 			i++;
 			if (c.type > 0 && c.type < 1000) {
 				queryArr.push(`SELECT type${c.type}_${i}.kid FROM (${sqlselectKarasFromCriterias.tagTypes('= ' + c.type, c.value)}) type${c.type}_${i}`);
-			} else if (c.type === 1001) {
-				uniqueKIDsSQL = `UNION ${sqlselectKarasFromCriterias[1001]}`;
+			} else if (c.type === 1001 && uniqueKIDsSQL === '') {
+				// Only need to add this criteria once.
+				uniqueKIDsSQL = sqlselectKarasFromCriterias[1001];
 			} else {
 				queryArr.push(`SELECT type${c.type}_${i}.kid FROM (${sqlselectKarasFromCriterias[c.type](c.value)}) type${c.type}_${i}`);
 			}
 		}
-		sql = '(' + queryArr.join(`) ${smartPlaylistType} (`) + ')' + uniqueKIDsSQL;
+		// If queryArr is empty and we're here, it means we don't have any criterias other than the uniqueKIDsSQL one.
+		// So we build the query differently
+		sql = queryArr.length > 0
+			? '(' + queryArr.join(`) ${smartPlaylistType} (`) + ')' +
+			(uniqueKIDsSQL === ''
+				? ''
+				: ' UNION ' + uniqueKIDsSQL
+			)
+			: uniqueKIDsSQL;
 	}
 	const res = await db().query(sql, params);
 	// When INTERSECT, we add all criterias to the songs.
