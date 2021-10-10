@@ -60,9 +60,7 @@ class App extends Component<unknown, AppState> {
 						<Router>
 							<Suspense fallback={<Loading />}>
 								<Switch>
-									<Route path='/login' render={() => <Login
-										context={this.context}
-									/> }/>
+									<Route path='/login' component={Login} />
 									<PrivateRoute path='/system' component={KMSystem} />
 									<PrivateRoute component={KMFrontend} />
 								</Switch>

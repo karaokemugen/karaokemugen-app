@@ -1,48 +1,33 @@
 import './Loading.scss';
 
 import i18next from 'i18next';
-import { Component } from 'react';
+import { useEffect,useState } from 'react';
 
 import { isElectron } from '../electron';
 
-interface IState {
-	showLoadingText: boolean
-}
+function Loading() {
+	const [showLoadingText, setShowLoadingText] = useState(false);
 
-class Loading extends Component<Record<never, never>, IState> {
+	let timeout: NodeJS.Timeout;
 
-	timeout: NodeJS.Timeout
-
-	constructor(props) {
-		super(props);
-		this.state = {
-			showLoadingText: false
+	useEffect(() => {
+		timeout = setTimeout(() => setShowLoadingText(true), 1000);
+		return () => {
+			clearTimeout(timeout);
 		};
-	}
+	}, []);
 
-	componentDidMount() {
-		this.timeout = setTimeout(() => {
-			this.setState({ showLoadingText: true });
-		}, 1000);
-	}
-
-	componentWillUnmount() {
-		clearTimeout(this.timeout);
-	}
-
-	render() {
-		return (
-			<div className="loading-container">
-				{
-					this.state.showLoadingText ?
-						<>
-							<span className="header">{i18next.t('LOADING')}</span>
-							<span>{isElectron() ? i18next.t('LOADING_SUBTITLE_ELECTRON'):i18next.t('LOADING_SUBTITLE')}</span>
-						</>:null
-				}
-			</div>
-		);
-	}
+	return (
+		<div className="loading-container">
+			{
+				showLoadingText ?
+					<>
+						<span className="header">{i18next.t('LOADING')}</span>
+						<span>{isElectron() ? i18next.t('LOADING_SUBTITLE_ELECTRON') : i18next.t('LOADING_SUBTITLE')}</span>
+					</> : null
+			}
+		</div>
+	);
 }
 
 export default Loading;
