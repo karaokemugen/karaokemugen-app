@@ -115,6 +115,10 @@
         "CURRENT_PUBLIC": "Courante et publique"
     },
     "CRITERIA": {
+        "OR": "OU",
+        "AND": "ET",
+        "TYPE_SMART": "Type de liste de lecture intelligente",
+        "TYPE_SMART_DESC": "Les critères en \"OU\" sont plus adaptés à une liste noire. \"ET\" à des playlists classiques",
         "CRITERIA_DESC": "Sélectionnez et ajoutez des critères pour automatiquement inclure certaines chansons.",
         "ADD": "Ajouter une valeur au critère",
         "DELETE": "Supprimer ce critère",

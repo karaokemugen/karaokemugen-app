@@ -17,7 +17,7 @@ export function vote(plc_id: number, username: string, downvote: boolean) {
 export async function addUpvote(plc_id: number, username: string) {
 	try {
 		username = username.toLowerCase();
-		const plc = await getPLCInfoMini(plc_id);
+		const plc = (await getPLCInfoMini([plc_id]))[0];
 		if (!plc) throw {code: 404};
 		if (plc.plaid !== getState().publicPlaid) throw {code: 403, msg: 'UPVOTE_FAILED'};
 		if (plc.username === username) throw {code: 403, msg: 'UPVOTE_NO_SELF'};
@@ -43,7 +43,7 @@ export async function addUpvote(plc_id: number, username: string) {
 export async function deleteUpvote(plc_id: number, username: string) {
 	try {
 		username = username.toLowerCase();
-		const plc = await getPLCInfoMini(plc_id);
+		const plc = (await getPLCInfoMini([plc_id]))[0];
 		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
 		if (plc.plaid !== getState().publicPlaid) throw {code: 403, msg: 'DOWNVOTE_FAILED'};
 		if (plc.username === username) throw {code: 403, msg: 'DOWNVOTE_NO_SELF'};
@@ -72,7 +72,7 @@ async function tryToFreeKara(plc_id: number, upvotes: number, username: string, 
 	const conf = getConfig();
 	if (upvotePercent >= +conf.Karaoke.Quota.FreeUpVotesRequiredPercent &&
 		upvotes >= +conf.Karaoke.Quota.FreeUpVotesRequiredMin) {
-		await freePLC(plc_id);
+		await freePLC([plc_id]);
 		updateSongsLeft(username, plaid);
 		logger.debug(`PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`, {service: 'Upvote'});
 	}

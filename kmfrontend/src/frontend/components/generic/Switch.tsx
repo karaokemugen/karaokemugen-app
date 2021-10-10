@@ -8,6 +8,8 @@ interface IProps {
 	handleChange: (e: any) => void;
 	idInput?: string;
 	disabled?: boolean;
+	onLabel?: string;
+	offLabel?: string;
 }
 
 function Switch(props: IProps) {
@@ -29,7 +31,10 @@ function Switch(props: IProps) {
 				ref={checkbox}
 				disabled={props.disabled}
 			/>
-			<span className="switch-ui--control">
+			<span
+				data-text-on={props.onLabel ? props.onLabel : 'ON'}
+				data-text-off={props.offLabel ? props.offLabel : 'OFF'}
+				className="switch-ui--control">
 				<span />
 			</span>
 		</label>
