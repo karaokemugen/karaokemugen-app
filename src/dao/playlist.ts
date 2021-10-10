@@ -33,6 +33,7 @@ export async function insertPlaylist(pl: DBPL): Promise<string> {
 		flag_smart: pl.flag_smart || false,
 		flag_whitelist: pl.flag_whitelist || false,
 		flag_blacklist: pl.flag_blacklist || false,
+		type_smart: pl.type_smart || 'INTERSECT',
 		username: pl.username.toLowerCase()
 	}));
 	return res.rows[0]?.pk_id_playlist;
@@ -372,7 +373,8 @@ export async function migrateBLWLToSmartPLs() {
 			flag_visible: true,
 			flag_blacklist: set.flag_current,
 			flag_smart: true,
-			username: 'admin'
+			username: 'admin',
+			type_smart: 'UNION'
 		});
 		await insertCriteria(blc.map(e => {
 			return {

@@ -148,7 +148,8 @@ export async function testPlaylists() {
 				flag_visible: true,
 				flag_blacklist: true,
 				flag_smart: true,
-				username: 'admin'
+				username: 'admin',
+				type_smart: 'UNION'
 			})
 		});
 		logger.debug('Initial blacklist playlist created', {service: 'Playlist'});
@@ -354,13 +355,11 @@ export async function editPlaylist(plaid: string, playlist: DBPL) {
 /** Create new playlist */
 export async function createPlaylist(pl: DBPL, username: string): Promise<string> {
 	const plaid = await insertPlaylist({
-		name: pl.name,
+		...pl,
 		created_at: new Date(),
 		modified_at: new Date(),
-		flag_visible: pl.flag_visible,
 		flag_current: pl.flag_current || null,
 		flag_public: pl.flag_public || null,
-		flag_smart: pl.flag_smart,
 		flag_whitelist: pl.flag_whitelist || null,
 		flag_blacklist: pl.flag_blacklist || null,
 		username: username
