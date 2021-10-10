@@ -237,7 +237,6 @@ function AdminHeader(props: IProps) {
 					data-namecommand={statusPlayer && statusPlayer.playerStatus === 'play' ? 'pause' : 'play'}
 					className="btn btn-primary"
 					onClick={play}
-					disabled={statusPlayer?.playerStatus === 'pause' && props.currentPlaylist?.karacount === 0}
 				>
 					{statusPlayer?.playerStatus === 'play' ? (
 						<i className="fas fa-fw fa-pause" />

@@ -50,7 +50,6 @@ function AdminButtons(props: IProps) {
 				data-namecommand={props.statusPlayer && props.statusPlayer.playerStatus === 'play' ? 'pause' : 'play'}
 				className="btn btn-primary"
 				onClick={props.putPlayerCommando}
-				disabled={props.statusPlayer?.playerStatus === 'pause' && props.currentPlaylist?.karacount === 0}
 			>
 				{props.statusPlayer?.playerStatus === 'play' ? (
 					<i className="fas fa-pause" />
