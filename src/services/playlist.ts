@@ -1358,8 +1358,8 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			currentPos = 0;
 			updatePlayingKara = true;
 		}
+		if (!playlist[currentPos]) throw 'No karaoke found in playlist object';
 		const kara = await getPLCInfo(playlist[currentPos].plcid, false, 'admin');
-		if (!kara) throw 'No karaoke found in playlist object';
 		// If there's no kara with a playing flag, we set the first one in the playlist
 		const plaid = getState().currentPlaid;
 		if (updatePlayingKara) await setPlaying(kara.plcid, plaid);
