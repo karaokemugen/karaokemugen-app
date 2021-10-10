@@ -546,7 +546,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.MISC')}
+					label={i18next.t('TAG_TYPES.MISC', { count: 2 })}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="misc"
