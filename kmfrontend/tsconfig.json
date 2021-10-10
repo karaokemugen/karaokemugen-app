@@ -4,7 +4,7 @@
     "inlineSources": true,
     "sourceRoot": "/",
     "target": "es6",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,

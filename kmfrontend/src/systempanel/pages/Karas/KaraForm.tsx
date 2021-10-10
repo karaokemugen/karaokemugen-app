@@ -1,12 +1,24 @@
 import { QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Form, Input, InputNumber, message, Modal, Select, Tooltip, Upload } from 'antd';
+import {
+	Button,
+	Checkbox,
+	Divider,
+	Form,
+	Input,
+	InputNumber,
+	message,
+	Modal,
+	Select,
+	Tooltip,
+	Upload
+} from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
 import React, { Component } from 'react';
 
 import { Kara } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
-import { getTagInLocale } from '../../../utils/kara';
+import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName } from '../../../utils/tagTypes';
 import EditableTagGroup from '../../components/EditableTagGroup';
@@ -31,12 +43,14 @@ interface KaraFormState {
 	mediafile_orig: string;
 	subfile_orig: string;
 	comment?: string;
+	karaSearch: { label: string, value: string }[];
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	formRef = React.createRef<FormInstance>();
 	static contextType = GlobalContext
 	context: React.ContextType<typeof GlobalContext>
+	timer: NodeJS.Timeout
 
 	constructor(props) {
 		super(props);
@@ -69,7 +83,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			repoToCopySong: null,
 			mediafile_orig: null,
 			subfile_orig: null,
-			comment: kara.comment
+			comment: kara.comment,
+			karaSearch: []
 		};
 	}
 
@@ -184,6 +199,25 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		});
 	}
 
+	search = (value) => {
+		if (this.timer) clearTimeout(this.timer);
+		this.timer = setTimeout(async () => {
+			const karas = await commandBackend('getKaras', {
+				q: this.formRef.current.getFieldValue('repository') ?
+					`r:${this.formRef.current.getFieldValue('repository')}`:'',
+				filter: value,
+				size: 50
+			}).catch(() => {
+				return {content: []};
+			});
+			if (karas.content) {
+				this.setState({karaSearch: karas.content.map(k => {
+					return {label: buildKaraTitle(this.context.globalState.settings.data, k, true, karas.i18n), value: k.kid};
+				})});
+			}
+		}, 1000);
+	}
+
 	submitHandler(e) {
 		e.key === 'Enter' && e.preventDefault();
 	}
@@ -219,7 +253,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					created_at: this.state.created_at,
 					modified_at: this.state.modified_at,
 					mediafile: this.props.kara.mediafile,
-					subfile: this.props.kara.subfile
+					subfile: this.props.kara.subfile,
+					parents: this.props.kara.parents || []
 				}}>
 				<Form.Item
 					label={
@@ -594,6 +629,28 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</Select>
 					</Form.Item> : null
 				}
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('KARA.PARENTS')}&nbsp;
+							<Tooltip title={i18next.t('KARA.PARENTS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 8 }}
+					name="parents"
+				>
+					<Select
+						showSearch
+						mode="multiple"
+						onSearch={this.search}
+						showArrow={false}
+						filterOption={false}
+						options={this.state.karaSearch}
+					/>
+				</Form.Item>
 				<Form.Item
 					hasFeedback
 					label={

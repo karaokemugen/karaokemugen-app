@@ -217,8 +217,8 @@ export interface Config {
 			SessionExports?: string,
 			Import?: string,
 			Avatars?: string,
-			Banners?: string,
-			StreamFiles?: string
+			StreamFiles?: string,
+			Banners?: string
 		}
 	}
 }

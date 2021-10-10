@@ -28,7 +28,7 @@ VALUES(
 ) ON CONFLICT DO NOTHING;
 `;
 
-export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string, additionalFrom: string[], selectRequested: string, groupClauseEnd: string, joinClauses: string[]) => `SELECT
+export const sqlgetAllKaras = (filterClauses: string[], whereClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string, additionalFrom: string[], selectRequested: string, groupClauseEnd: string, joinClauses: string[]) => `SELECT
   ak.pk_kid AS kid,
   ak.titles AS titles,
   ak.songorder AS songorder,
@@ -76,8 +76,12 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   array_remove(array_agg(DISTINCT pc.pk_id_plcontent), null) AS public_plc_id,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
-  count(ak.pk_kid) OVER()::integer AS count
+  count(ak.pk_kid) OVER()::integer AS count,
+  array_remove(array_agg(krc.fk_kid_parent), null) AS parents,
+  array_remove(array_agg(krp.fk_kid_child), null) AS children
 FROM all_karas AS ak
+LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid
+LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid AND pc.fk_id_playlist = :publicPlaylist_id
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.pk_kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
@@ -87,7 +91,7 @@ ${joinClauses.join('')}
 ${additionalFrom.join('')}
 WHERE true
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-  ${typeClauses}
+  ${whereClauses}
 GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable ${groupClauseEnd}
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
@@ -187,3 +191,16 @@ FROM all_karas ak;
 `;
 
 export const sqlTruncateOnlineRequested = 'TRUNCATE online_requested';
+
+export const sqldeleteChildrenKara = 'DELETE FROM kara_relation WHERE fk_kid_child = $1';
+
+export const sqlinsertChildrenParentKara = `
+INSERT INTO kara_relation(
+	fk_kid_parent,
+	fk_kid_child
+)
+VALUES(
+	:parent_kid,
+	:child_kid
+);
+`;

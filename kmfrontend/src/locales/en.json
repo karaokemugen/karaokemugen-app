@@ -822,8 +822,10 @@
         "DELETE_MEDIA_TOOLTIP": "Delete the karaoke media",
         "MISSING_DOWNLOAD_TOOLTIP": "This karaoke is not downloaded, you will need Internet in order to play it. You can make it work offline by downloading the media.",
         "IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in progress",
-        "ONLINE_REPOSITORIES": "Some of your karaokes are from remote repositories (kara.moe server for example), these karaokes are not editable through this interface, to make sure that the repositories stays in sync. You can check the \"Maintainer mode\" checkbox in the repository settings, you will not receive any updates anymore but you will be able to edit or delete karaokes."
-    },
+        "ONLINE_REPOSITORIES": "Some of your karaokes are from remote repositories (kara.moe server for example), these karaokes are not editable through this interface, to make sure that the repositories stays in sync. You can check the \"Maintainer mode\" checkbox in the repository settings, you will not receive any updates anymore but you will be able to edit or delete karaokes.",
+		"PARENTS": "Parents",
+		"PARENTS_TOOLTIP": "If a parent is defined, this karaoke will show as alternative to the selected parent karaoke(s). Please mind to select the good repository before filling this array to avoid adding karaokes from other repositories."
+	},
     "MENU": {
         "HOME": "Home",
         "SYSTEM": "System",

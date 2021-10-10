@@ -4,11 +4,11 @@ import open from 'open';
 import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
-import { addKara, deleteKara as deleteKaraDB, selectAllKaras, updateKara } from '../dao/kara';
+import { addKara, deleteKara as deleteKaraDB, selectAllKaras, updateKara, updateKaraParents } from '../dao/kara';
 import { selectPlaylistContentsMicro } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
-import { refreshKaras, refreshKarasDelete, refreshKarasInsert, refreshKarasUpdate, refreshYears, updateKaraSearchVector } from '../lib/dao/kara';
+import { refreshKaras, refreshKarasDelete, refreshKarasInsert, refreshKarasUpdate, refreshYears, updateKaraParentSearchVector, updateKaraSearchVector } from '../lib/dao/kara';
 import { getDataFromKaraFile, parseKara, writeKara } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
@@ -25,8 +25,8 @@ import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
 import {getKara, getKaras} from './kara';
 import { editKara } from './karaCreation';
-import { updateAllSmartPlaylists } from './smartPlaylist';
 import { getRepo, getRepos } from './repo';
+import { updateAllSmartPlaylists } from './smartPlaylist';
 import { getTag } from './tag';
 
 export async function updateTags(kara: Kara) {
@@ -43,9 +43,9 @@ export async function updateTags(kara: Kara) {
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await addKara(kara);
 	emitWS('statsRefresh');
-	await updateTags(kara);
+	await Promise.all([updateKaraParents(kara), updateTags(kara)]);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('ADD', [kara.kid], true);
+		await refreshKarasAfterDBChange('ADD', [kara], true);
 		updateAllSmartPlaylists();
 	}
 }
@@ -54,11 +54,11 @@ export async function editKaraInDB(kara: Kara, opts = {
 	refresh: true
 }) {
 	profile('editKaraDB');
-	const promises = [updateKara(kara)];
+	const promises = [updateKara(kara), updateKaraParents(kara)];
 	if (kara.newTags) promises.push(updateTags(kara));
 	await Promise.all(promises);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('UPDATE', [kara.kid], kara.newTags);
+		await refreshKarasAfterDBChange('UPDATE', [kara], kara.newTags);
 		updateAllSmartPlaylists();
 	}
 	profile('editKaraDB');
@@ -210,20 +210,30 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 	}
 }
 
-export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', kids?: string[], newTags?: boolean) {
+export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', karas?: Kara[], newTags?: boolean) {
 	profile('RefreshAfterDBChange');
 	logger.debug('Refreshing DB after kara change', {service: 'DB'});
-	await updateKaraSearchVector(kids);
+	await updateKaraSearchVector();
 	if (action === 'ADD') {
-		await refreshKarasInsert(kids);
+		await refreshKarasInsert(karas.map(k => k.kid));
 	} else if (action === 'UPDATE') {
-		await refreshKarasUpdate(kids);
+		await refreshKarasUpdate(karas.map(k => k.kid));
 	} else if (action === 'DELETE') {
-		await refreshKarasDelete(kids);
+		await refreshKarasDelete(karas.map(k => k.kid));
 	} else if (action === 'ALL') {
 		await refreshKaras();
 	}
 	refreshYears();
+	const parentsToUpdate: Set<string> = new Set();
+	for (const kara of karas) {
+		for (const parent of kara.parents) {
+			parentsToUpdate.add(parent);
+		}
+	}
+	// If karas is not initialized then we're updating ALL search vectors
+	karas
+		? updateKaraParentSearchVector(Array.from(parentsToUpdate))
+		: updateKaraParentSearchVector();
 	if (newTags) {
 		await updateTagSearchVector();
 		refreshTags();

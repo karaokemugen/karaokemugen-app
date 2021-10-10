@@ -6,6 +6,7 @@ import logger from 'winston';
 
 import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
+import { updateKaraParentSearchVector } from '../lib/dao/kara';
 import {generateDatabase} from '../lib/services/generation';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
@@ -193,6 +194,14 @@ export async function generateDB(): Promise<boolean> {
 			await reorderPlaylist(pl.plaid);
 		}
 		await updateAllSmartPlaylists();
+		// If we're in cli, we await the parent search vector update.
+		// If not it can be done in the background
+		logger.info('Generating parent song search vectors', {service: 'DB'});
+		if (getState().opt.generateDB) {
+			await updateKaraParentSearchVector();
+		} else {
+			updateKaraParentSearchVector();
+		}
 	} catch(err) {
 		sentry.error(err);
 		throw err;
