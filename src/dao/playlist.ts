@@ -4,7 +4,7 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import { DBPL, DBPLCAfterInsert } from '../lib/types/database/playlist';
+import { DBPL, DBPLCAfterInsert, SmartPlaylistType } from '../lib/types/database/playlist';
 import { Criteria, PLC, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
@@ -14,8 +14,8 @@ import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { getState } from '../utils/state';
 import { sqladdCriteria, sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeleteCriteria, sqldeleteCriteriaForPlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetCriterias, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlselectKarasFromCriterias, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCCriterias, sqlupdatePLCSetPos } from './sql/playlist';
 
-export function editPLCCriterias(plc: number, criterias: Criteria[]) {
-	return db().query(sqlupdatePLCCriterias, [plc, criterias]);
+export function editPLCCriterias(plcs: number[], criterias: Criteria[]) {
+	return db().query(sqlupdatePLCCriterias, [plcs, criterias]);
 }
 
 export function updatePlaylist(pl: DBPL) {
@@ -28,8 +28,8 @@ export async function insertPlaylist(pl: DBPL): Promise<string> {
 		created_at: pl.created_at,
 		modified_at: pl.modified_at,
 		flag_visible: pl.flag_visible || false,
-		flag_current: pl.flag_current || null,
-		flag_public: pl.flag_public || null,
+		flag_current: pl.flag_current || false,
+		flag_public: pl.flag_public || false,
 		flag_smart: pl.flag_smart || false,
 		flag_whitelist: pl.flag_whitelist || false,
 		flag_blacklist: pl.flag_blacklist || false,
@@ -46,24 +46,24 @@ export function deletePlaylist(id: string) {
 	return db().query(sqldeletePlaylist, [id]);
 }
 
-export function setPLCVisible(plc_id: number) {
-	return db().query(sqlsetPLCVisible, [plc_id]);
+export function setPLCVisible(plc_ids: number[]) {
+	return db().query(sqlsetPLCVisible, [plc_ids]);
 }
 
-export function setPLCInvisible(plc_id: number) {
-	return db().query(sqlsetPLCInvisible, [plc_id]);
+export function setPLCInvisible(plc_ids: number[]) {
+	return db().query(sqlsetPLCInvisible, [plc_ids]);
 }
 
-export function setPLCFree(plc_id: number) {
-	return db().query(sqlsetPLCFree, [plc_id]);
+export function setPLCFree(plc_ids: number[]) {
+	return db().query(sqlsetPLCFree, [plc_ids]);
 }
 
-export function setPLCAccepted(plc_id: number, flag_accepted: boolean) {
-	return db().query(sqlsetPLCAccepted, [plc_id, flag_accepted]);
+export function setPLCAccepted(plc_ids: number[], flag_accepted: boolean) {
+	return db().query(sqlsetPLCAccepted, [plc_ids, flag_accepted]);
 }
 
-export function setPLCRefused(plc_id: number, flag_refused: boolean) {
-	return db().query(sqlsetPLCRefused, [plc_id, flag_refused]);
+export function setPLCRefused(plc_ids: number[], flag_refused: boolean) {
+	return db().query(sqlsetPLCRefused, [plc_ids, flag_refused]);
 }
 
 export function setPLCFreeBeforePos(pos: number, plaid: string) {
@@ -193,9 +193,9 @@ export async function selectPLCInfo(id: number, forUser: boolean, username: stri
 	return res.rows[0] || {};
 }
 
-export async function selectPLCInfoMini(id: number): Promise<DBPLC> {
-	const res = await db().query(sqlgetPLCInfoMini, [id]);
-	return res.rows[0];
+export async function selectPLCInfoMini(ids: number[]): Promise<DBPLC[]> {
+	const res = await db().query(sqlgetPLCInfoMini, [ids]);
+	return res.rows;
 }
 
 export async function selectPLCByKIDAndUser(kid: string, username: string, plaid: string): Promise<DBPLC> {
@@ -264,7 +264,7 @@ export function truncateCriterias(plaid: string) {
 	return db().query(sqldeleteCriteriaForPlaylist, [plaid]);
 }
 
-export async function selectKarasFromCriterias(plaid: string): Promise<UnaggregatedCriteria[]> {
+export async function selectKarasFromCriterias(plaid: string, smartPlaylistType: SmartPlaylistType): Promise<UnaggregatedCriteria[]> {
 	// How that works:
 	// When getting a kara list from criterias, we ignore songs from the whitelist when making :
 	// - the whitelist itself,  or it would be unable to list songs already in there, causing the songs to be deleted from the whitelist since we're comparing this list to what's already in there
@@ -276,7 +276,48 @@ export async function selectKarasFromCriterias(plaid: string): Promise<Unaggrega
 	} else {
 		params.push(getState().blacklistPlaid);
 	}
-	const res = await db().query(sqlselectKarasFromCriterias, params);
+
+	// Now we build query
+	const queryArr = [];
+	let sql = '';
+	const criterias = await selectCriterias(plaid);
+	if (criterias.length === 0) return [];
+	if (smartPlaylistType === 'UNION') {
+		for (const c of criterias) {
+			if (c.type > 0 && c.type < 1000) {
+				queryArr.push(sqlselectKarasFromCriterias[c.type]('BETWEEN 1 AND 999'));
+			} else if (c.type === 1001) {
+				queryArr.push(sqlselectKarasFromCriterias[c.type]);
+			} else {
+				queryArr.push(sqlselectKarasFromCriterias[c.type](c.value));
+			}
+		}
+	} else {
+		// INTERSECT
+		// Now the fun begins.
+		// We have to wrap all blocks into a SELECT kid to make sure all columns intersect.
+		// We also have to put single song additions (type 1001)
+		let uniqueKIDsSQL = '';
+		let i = 0;
+		for (const c of criterias) {
+			i++;
+			if (c.type > 0 && c.type < 1000) {
+				queryArr.push(`SELECT type${c.type}_${i}.kid FROM (${sqlselectKarasFromCriterias.tagTypes('= ' + c.type, c.value)}) type${c.type}_${i}`);
+			} else if (c.type === 1001) {
+				uniqueKIDsSQL = `UNION ${sqlselectKarasFromCriterias[1001]}`;
+			} else {
+				queryArr.push(`SELECT type${c.type}_${i}.kid FROM (${sqlselectKarasFromCriterias[c.type](c.value)}) type${c.type}_${i}`);
+			}
+		}
+		sql = '(' + queryArr.join(`) ${smartPlaylistType} (`) + ')' + uniqueKIDsSQL;
+	}
+	const res = await db().query(sql, params);
+	// When INTERSECT, we add all criterias to the songs.
+	if (smartPlaylistType === 'INTERSECT') {
+		for (const song of res.rows) {
+			song.criterias = criterias;
+		}
+	}
 	return res.rows;
 }
 
@@ -358,9 +399,9 @@ export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfte
 		kara.flag_visible || true,
 		kara.flag_refused || false,
 		kara.flag_accepted || false,
-		JSON.stringify(kara.criterias)
+		kara.criterias
 	]));
-	return transaction({params: karas, sql: sqladdKaraToPlaylist});	
+	return transaction({params: karas, sql: sqladdKaraToPlaylist});
 }
 
 export function removeKaraFromPlaylist(karas: number[]) {

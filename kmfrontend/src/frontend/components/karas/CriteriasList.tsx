@@ -3,7 +3,9 @@ import './CriteriasList.scss';
 import i18next from 'i18next';
 import React, { useContext, useEffect, useState } from 'react';
 
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { Criteria } from '../../../../../src/lib/types/playlist';
+import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
@@ -11,12 +13,13 @@ import { getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
+import Switch from '../generic/Switch';
 
 const listTypeCriteria = [1002, 1003, 1004, 1005, 1006];
 
 interface IProps {
 	tags: Tag[] | undefined;
-	plaid: string;
+	playlist: DBPL;
 }
 
 function CriteriasList(props: IProps) {
@@ -28,7 +31,7 @@ function CriteriasList(props: IProps) {
 	const getCriterias = async () => {
 		const user = context.globalState.settings.data.user;
 		const criteriasList = await commandBackend('getCriterias', {
-			plaid: props.plaid,
+			plaid: props.playlist.plaid,
 			langs: [user.main_series_lang, user.fallback_series_lang],
 		});
 		setCriterias(criteriasList);
@@ -46,7 +49,7 @@ function CriteriasList(props: IProps) {
 				{
 					type: criteriaType,
 					value: value,
-					plaid: props.plaid,
+					plaid: props.playlist.plaid,
 				},
 			],
 		});
@@ -56,6 +59,15 @@ function CriteriasList(props: IProps) {
 	const deleteCriteria = async (criteriaToDelete: Criteria) => {
 		await commandBackend('removeCriterias', { criterias: [criteriaToDelete] });
 		getCriterias();
+	};
+
+	const editPlaylist = async (e: any) => {
+		await commandBackend('editPlaylist', {
+			name: props.playlist.name,
+			plaid: props.playlist.plaid,
+			type_smart: e.target.checked ? 'UNION' : 'INTERSECT'
+		});
+		setSettings(context.globalDispatch);
 	};
 
 	useEffect(() => {
@@ -69,6 +81,18 @@ function CriteriasList(props: IProps) {
 	const tagsFiltered = props.tags ? props.tags.filter((obj) => obj.type.includes(criteriaType)) : [];
 	return (
 		<div className="criteriasContainer">
+			<div className="criterias-type-smart">
+				<div>{i18next.t('CRITERIA.TYPE_SMART')}</div>
+				<div className="criterias-type-smart-label">
+					<Switch
+						handleChange={editPlaylist}
+						isChecked={props.playlist.type_smart === 'UNION'}
+						onLabel={i18next.t('CRITERIA.OR')}
+						offLabel={i18next.t('CRITERIA.AND')}
+					/>
+				</div>
+				<div>{i18next.t('CRITERIA.TYPE_SMART_DESC')}</div>
+			</div>
 			<div className="criteriasDescription">{i18next.t('CRITERIA.CRITERIA_DESC')}</div>
 			<div className="criterias-input">
 				<select
@@ -111,9 +135,7 @@ function CriteriasList(props: IProps) {
 						<input
 							type="text"
 							value={criteriaVal}
-							placeholder={`${i18next.t('CRITERIA.ADD')} ${
-								[1002, 1003].includes(criteriaType) ? 'mm:ss' : ''
-							}`}
+							placeholder={`${i18next.t('CRITERIA.ADD')} ${[1002, 1003].includes(criteriaType) ? 'mm:ss' : ''}`}
 							className="input-blc"
 							onChange={(e) => setCriteriaVal(e.target.value)}
 							onKeyPress={(e) => {
@@ -126,55 +148,57 @@ function CriteriasList(props: IProps) {
 					</button>
 				</div>
 			</div>
-			{types.map((type) => {
-				let typeLabel;
-				if (type === 0) {
-					typeLabel = i18next.t('DETAILS.YEAR');
-				} else if (type > 1000) {
-					typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${type}`);
-				} else {
-					typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}`, { count: 2 });
-				}
-				return (
-					<React.Fragment key={type}>
-						<div className="list-group-item liType">{typeLabel}</div>
-						{criterias.map((criteria) => {
-							return criteria.type === type ? (
-								<div key={criteria.value} className="list-group-item liTag">
-									<div className="actionDiv">
-										<button
-											title={i18next.t('CRITERIA.DELETE')}
-											name="deleteCriteria"
-											className="btn btn-action deleteCriteria"
-											onClick={() => deleteCriteria(criteria)}
-										>
-											<i className="fas fa-eraser"></i>
-										</button>
-									</div>
-									{criteria.type !== 1006 ? (
-										<div className="contentDiv">
-											{criteria.type === 1001
-												? buildKaraTitle(
-													context.globalState.settings.data,
-													Array.isArray(criteria.value)
-														? criteria.value[0]
-														: criteria.value,
-													true
-												  )
-												: criteria.value_i18n
-													? criteria.value_i18n
-													: [1002, 1003].includes(criteria.type)
-														? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
-														: criteria.value}
+			{
+				types.map((type) => {
+					let typeLabel;
+					if (type === 0) {
+						typeLabel = i18next.t('DETAILS.YEAR');
+					} else if (type > 1000) {
+						typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${type}`);
+					} else {
+						typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}`, { count: 2 });
+					}
+					return (
+						<React.Fragment key={type}>
+							<div className="list-group-item liType">{typeLabel}</div>
+							{criterias.map((criteria) => {
+								return criteria.type === type ? (
+									<div key={criteria.value} className="list-group-item liTag">
+										<div className="actionDiv">
+											<button
+												title={i18next.t('CRITERIA.DELETE')}
+												name="deleteCriteria"
+												className="btn btn-action deleteCriteria"
+												onClick={() => deleteCriteria(criteria)}
+											>
+												<i className="fas fa-eraser"></i>
+											</button>
 										</div>
-									) : null}
-								</div>
-							) : null;
-						})}
-					</React.Fragment>
-				);
-			})}
-		</div>
+										{criteria.type !== 1006 ? (
+											<div className="contentDiv">
+												{criteria.type === 1001
+													? buildKaraTitle(
+														context.globalState.settings.data,
+														Array.isArray(criteria.value)
+															? criteria.value[0]
+															: criteria.value,
+														true
+													)
+													: criteria.value_i18n
+														? criteria.value_i18n
+														: [1002, 1003].includes(criteria.type)
+															? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
+															: criteria.value}
+											</div>
+										) : null}
+									</div>
+								) : null;
+							})}
+						</React.Fragment>
+					);
+				})
+			}
+		</div >
 	);
 }
 

@@ -114,6 +114,10 @@
         "CURRENT_PUBLIC": "Current and public"
     },
     "CRITERIA": {
+		"OR": "OR",
+		"AND": "AND",
+		"TYPE_SMART": "Type of smart playlist",
+		"TYPE_SMART_DESC": "The \"OR\" criteria are more suited to a blacklist. \"AND\" to classic playlists",
         "CRITERIA_DESC": "Select and add criteria to automatically include specific songs.",
         "ADD": "Add a value to criteria",
         "DELETE": "Delete this criteria",

@@ -285,7 +285,8 @@ function Playlist(props: IProps) {
 		return (
 			<React.Fragment>
 				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
-				props.scope === 'admin' ? (
+					props.scope === 'admin' ?
+					(
 						<div className="list-group-item karaSuggestion">
 							<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 							{context?.globalState.settings.data.config.System.Repositories.filter(
@@ -297,7 +298,8 @@ function Playlist(props: IProps) {
 							))}
 							<a href="https://suggest.karaokes.moe">suggest.karaokes.moe</a>
 						</div>
-					) : null}
+					) : null
+				}
 			</React.Fragment>
 		);
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
@@ -434,12 +436,11 @@ function Playlist(props: IProps) {
 				data.infos.count +
 				' karas' +
 				(!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) &&
-				getPlaylistInfo(props.side, context)?.duration
+					getPlaylistInfo(props.side, context)?.duration
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS.DURATION')} ` +
-					  secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.duration, 'hm') +
-					  ` / ${secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.time_left, 'hm')} ${
-					  	is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')
-					  } `
+					secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.duration, 'hm') +
+					` / ${secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.time_left, 'hm')} ${is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')
+					} `
 					: '');
 		}
 		return plInfos;
@@ -564,7 +565,7 @@ function Playlist(props: IProps) {
 							commandBackend('addKaraToPlaylist', {
 								kids: karaList,
 								plaid: getOppositePlaylistInfo(props.side, context).plaid,
-							}).catch(() => {});
+							}).catch(() => { });
 						},
 						''
 					);
@@ -586,7 +587,7 @@ function Playlist(props: IProps) {
 			kids: karaList,
 			requestedby: context.globalState.auth.data.username,
 			plaid: getOppositePlaylistInfo(props.side, context).plaid,
-		}).catch(() => {});
+		}).catch(() => { });
 	};
 
 	const addCheckedKaras = async (_event?: any, pos?: number) => {
@@ -709,7 +710,7 @@ function Playlist(props: IProps) {
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_accepted: true,
-		}).catch(() => {});
+		}).catch(() => { });
 		setSelectAllKarasChecked(false);
 	};
 
@@ -723,7 +724,7 @@ function Playlist(props: IProps) {
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_refused: true,
-		}).catch(() => {});
+		}).catch(() => { });
 		setSelectAllKarasChecked(false);
 	};
 
@@ -740,7 +741,7 @@ function Playlist(props: IProps) {
 					repository: kara.repository,
 				};
 			});
-		if (karaList.length > 0) commandBackend('addDownloads', { downloads: karaList }).catch(() => {});
+		if (karaList.length > 0) commandBackend('addDownloads', { downloads: karaList }).catch(() => { });
 	};
 
 	const onChangeTags = (type: number | string, value: string) => {
@@ -987,47 +988,50 @@ function Playlist(props: IProps) {
 						</Droppable>
 					</DragDropContext>
 				) : playlist?.flag_smart && criteriasOpen ? (
-					<CriteriasList tags={props.tags} plaid={playlist?.plaid} />
+					<CriteriasList tags={props.tags} playlist={playlist} />
 				) : null}
 			</div>
 			<div className="plFooter">
-				<div className="plBrowse btn-group">
-					<button
-						type="button"
-						title={i18next.t('GOTO_TOP')}
-						className="btn btn-action"
-						onClick={() => {
-							scrollToIndex(0);
-							setGotToPlaying(false);
-							setGotToPlayingAvoidScroll(false);
-						}}
-					>
-						<i className="fas fa-chevron-up" />
-					</button>
-					{!isNonStandardPlaylist(playlist?.plaid) ? (
+				{!criteriasOpen ?
+					<div className="plBrowse btn-group">
 						<button
 							type="button"
-							title={i18next.t('GOTO_PLAYING')}
-							className={`btn btn-action ${goToPlaying ? 'btn-active' : ''}`}
-							onClick={scrollToPlaying}
-							value="playing"
+							title={i18next.t('GOTO_TOP')}
+							className="btn btn-action"
+							onClick={() => {
+								scrollToIndex(0);
+								setGotToPlaying(false);
+								setGotToPlayingAvoidScroll(false);
+							}}
 						>
-							<i className="fas fa-play" />
+							<i className="fas fa-chevron-up" />
 						</button>
-					) : null}
-					<button
-						type="button"
-						title={i18next.t('GOTO_BOTTOM')}
-						className="btn btn-action"
-						onClick={() => {
-							scrollToIndex(data.infos?.count - 1);
-							setGotToPlaying(false);
-							setGotToPlayingAvoidScroll(false);
-						}}
-					>
-						<i className="fas fa-chevron-down" />
-					</button>
-				</div>
+						{!isNonStandardPlaylist(playlist?.plaid) ? (
+							<button
+								type="button"
+								title={i18next.t('GOTO_PLAYING')}
+								className={`btn btn-action ${goToPlaying ? 'btn-active' : ''}`}
+								onClick={scrollToPlaying}
+								value="playing"
+							>
+								<i className="fas fa-play" />
+							</button>
+						) : null}
+						<button
+							type="button"
+							title={i18next.t('GOTO_BOTTOM')}
+							className="btn btn-action"
+							onClick={() => {
+								scrollToIndex(data.infos?.count - 1);
+								setGotToPlaying(false);
+								setGotToPlayingAvoidScroll(false);
+							}}
+						>
+							<i className="fas fa-chevron-down" />
+						</button>
+					</div>
+					: null
+				}
 				<div className="plInfos">{getPlInfosElement()}</div>
 				{checkedKaras > 0 ? (
 					<div className="plQuota selection">

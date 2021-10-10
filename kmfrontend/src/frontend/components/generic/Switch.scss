@@ -19,9 +19,7 @@
 		box-shadow: 0 0 5px #0000004d;
 		border: 1px solid white;
 		transition: all ease 0.5s;
-
-		--text-on: 'ON';
-		--text-off: 'OFF';
+		padding-bottom: 0.1em;
 
 		span {
 			display: block;
@@ -46,11 +44,11 @@
 			transition: transform ease 0.5s;
 		}
 		&:before {
-			content: var(--text-on);
+			content: attr(data-text-on);
 			text-align: left;
 		}
 		&:after {
-			content: var(--text-off);
+			content: attr(data-text-off);
 			text-align: right;
 		}
 	}

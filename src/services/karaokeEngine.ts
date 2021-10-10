@@ -116,7 +116,7 @@ export async function playCurrentSong(now: boolean) {
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
 			await Promise.all([
-				setPLCVisible(kara.plcid),
+				setPLCVisible([kara.plcid]),
 				updatePlaylistDuration(kara.plaid),
 				updateUserQuotas(kara),
 				writeStreamFiles('time_remaining_in_current_playlist'),

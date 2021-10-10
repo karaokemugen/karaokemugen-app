@@ -25,7 +25,8 @@ UPDATE playlist SET
 	flag_public = :flag_public,
 	flag_smart = :flag_smart,
 	flag_whitelist = :flag_whitelist,
-	flag_blacklist = :flag_blacklist
+	flag_blacklist = :flag_blacklist,
+	type_smart = :type_smart
 WHERE pk_id_playlist = :plaid;
 `;
 
@@ -376,7 +377,7 @@ FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = pc.fk_id_playlist
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
-WHERE  pc.pk_id_plcontent = $1
+WHERE  pc.pk_id_plcontent = ANY ($1)
 GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.titles, ak.mediasize, ak.mediafile, ak.repository, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist, ak.tags
 `;
 
@@ -411,7 +412,8 @@ SELECT pk_id_playlist AS plaid,
 	flag_whitelist,
 	flag_blacklist,
 	fk_id_plcontent_playing AS plcontent_id_playing,
-	fk_login AS username
+	fk_login AS username,
+	type_smart
 FROM playlist
 WHERE pk_id_playlist = $1
 `;
@@ -425,50 +427,51 @@ SELECT pk_id_playlist AS plaid,
 	created_at,
 	modified_at,
 	flag_visible,
-	COALESCE(flag_current, false) AS flag_current,
-	COALESCE(flag_public, false) AS flag_public,
-	COALESCE(flag_whitelist, false) AS flag_whitelist,
-	COALESCE(flag_blacklist, false) AS flag_blacklist,
+	flag_current,
+	flag_public,
+	flag_whitelist,
+	flag_blacklist,
 	flag_smart,
 	fk_id_plcontent_playing AS plcontent_id_playing,
-	fk_login AS username
+	fk_login AS username,
+	type_smart
 FROM playlist
 `;
 
 export const sqlupdatePLCCriterias = `
 UPDATE playlist_content
 SET criterias = $2
-WHERE pk_id_plcontent = $1;
+WHERE pk_id_plcontent = ANY ($1);
 `;
 
 export const sqlsetPLCFree = `
 UPDATE playlist_content
 SET flag_free = TRUE
-WHERE pk_id_plcontent = $1;
+WHERE pk_id_plcontent = ANY ($1);
 `;
 
 export const sqlsetPLCVisible = `
 UPDATE playlist_content
 SET flag_visible = TRUE
-WHERE pk_id_plcontent = $1;
+WHERE pk_id_plcontent = ANY ($1);
 `;
 
 export const sqlsetPLCInvisible = `
 UPDATE playlist_content
 SET flag_visible = FALSE
-WHERE pk_id_plcontent = $1;
+WHERE pk_id_plcontent = ANY ($1);
 `;
 
 export const sqlsetPLCAccepted = `
 UPDATE playlist_content
 SET flag_accepted = $2
-WHERE pk_id_plcontent = $1;
+WHERE pk_id_plcontent = ANY ($1);
 `;
 
 export const sqlsetPLCRefused = `
 UPDATE playlist_content
 SET flag_refused = $2
-WHERE pk_id_plcontent = $1;
+WHERE pk_id_plcontent = ANY ($1);
 `;
 
 export const sqlsetPLCFreeBeforePos = `
@@ -546,64 +549,80 @@ WHERE type = $1
   AND fk_id_playlist = $3;
 `;
 
-export const sqlselectKarasFromCriterias = `
-SELECT kt.fk_kid AS kid, jsonb_build_object('type', c.type, 'value', c.value::uuid) AS criteria
+export const sqlselectKarasFromCriterias = {
+	tagTypes: (type: string, value: any) => `
+	SELECT kt.fk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias
 	FROM playlist_criteria AS c
 	INNER JOIN tag t ON t.types @> ARRAY[c.type] AND c.value = t.pk_tid::varchar
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid AND kt.type = c.type
-	WHERE c.type BETWEEN 1 and 999
+	WHERE c.type ${type} AND c.value = '${value}'
 		AND   kt.fk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 		AND   fk_id_playlist = $1
-UNION
-	SELECT k.pk_kid AS kid , jsonb_build_object('type', c.type, 'value', c.value::smallint) AS criteria
+	`,
+
+	0: (value: any) => `
+	SELECT k.pk_kid AS kid , jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::smallint)) AS criterias
 	FROM playlist_criteria c
- 	INNER JOIN kara k ON k.year = c.value::smallint
+ 	INNER JOIN kara k ON k.year = ${value}
 	WHERE c.type = 0
 	AND   k.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 	AND   fk_id_playlist = $1
-UNION
-	SELECT k.pk_kid AS kid, jsonb_build_object('type', c.type, 'value', c.value::uuid) AS criteria
+	`,
+
+	1001: `
+	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias
 	FROM playlist_criteria c
 	INNER JOIN kara k ON k.pk_kid = c.value::uuid
 	WHERE c.type = 1001
 	AND   c.value::uuid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 	AND   fk_id_playlist = $1
-UNION
-	SELECT k.pk_kid AS kid, jsonb_build_object('type', c.type, 'value', c.value::integer) AS criteria
+	`,
+
+	1002: (value: any) => `
+	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias
 	FROM playlist_criteria c
-	INNER JOIN kara k on k.duration >= c.value::integer
+	INNER JOIN kara k on k.duration >= ${value}
 	WHERE c.type = 1002
 	AND   k.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 	AND   fk_id_playlist = $1
-UNION
-	SELECT k.pk_kid AS kid, jsonb_build_object('type', c.type, 'value', c.value::integer) AS criteria
+	`,
+
+	1003: (value: any) => `
+	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias
 	FROM playlist_criteria c
-	INNER JOIN kara k on k.duration <= c.value::integer
+	INNER JOIN kara k on k.duration <= ${value}
 	WHERE c.type = 1003
 	AND   k.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 	AND   fk_id_playlist = $1
-UNION
-	SELECT ak.pk_kid AS kid, jsonb_build_object('type', c.type, 'value', c.value::varchar) AS criteria
+	`,
+
+	1004: (value: any) => `
+	SELECT ak.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias
 	FROM playlist_criteria c
-	INNER JOIN all_karas ak ON ak.titles_sortable LIKE ('%' || lower(unaccent(c.value)) || '%')
+	INNER JOIN all_karas ak ON ak.titles_sortable LIKE ('%' || lower(unaccent('${value}')) || '%')
 	WHERE c.type = 1004
 	AND   ak.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 	AND   fk_id_playlist = $1
-UNION
-	SELECT kt.fk_kid AS kid, jsonb_build_object('type', c.type, 'value', c.value::varchar) AS criteria
+	`,
+
+	1005: (value: any) => `
+	SELECT kt.fk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias
 	FROM playlist_criteria c
-	INNER JOIN tag t ON unaccent(t.name) ILIKE ('%' || unaccent(c.value) || '%')
+	INNER JOIN tag t ON unaccent(t.name) ILIKE ('%' || unaccent('${value}') || '%')
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
 	WHERE c.type = 1005
 	AND   kt.fk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 	AND   fk_id_playlist = $1
-UNION
-	SELECT k.pk_kid AS kid, jsonb_build_object('type', c.type, 'value', c.value::varchar) AS criteria
+	`,
+
+	1006: (value: any) => `
+	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias
 	FROM playlist_criteria c
-	INNER JOIN kara k ON k.download_status = c.value
+	INNER JOIN kara k ON k.download_status = '${value}'
 	WHERE c.type = 1006
 	AND   k.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
-`;
+	`
+};
 
 export const sqlremoveKaraFromPlaylist = `
 DELETE FROM playlist_content

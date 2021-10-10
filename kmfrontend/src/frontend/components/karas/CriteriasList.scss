@@ -1,10 +1,22 @@
-@import '../../styles/variables';
+@import "../../styles/variables";
 
 .criteriasContainer {
 	height: 100%;
 	overflow-y: scroll;
 	> *:last-child {
 		margin-bottom: 2em;
+	}
+}
+
+.criterias-type-smart {
+	margin: 1em;
+	display: flex;
+	justify-content: space-around;
+
+	.criterias-type-smart-label {
+		margin-top: 0.5em;
+		margin-left: 0.5em;
+		margin-right: 0.5em;
 	}
 }
 

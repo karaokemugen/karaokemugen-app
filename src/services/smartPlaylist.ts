@@ -1,19 +1,20 @@
-import i18next from "i18next";
-import langs from "langs";
-import intersectionWith from "lodash.intersectionwith";
+import i18next from 'i18next';
+import langs from 'langs';
+import intersectionWith from 'lodash.intersectionwith';
 import isEqual from 'lodash.isequal';
-import { insertPlaylist, deleteCriteria, selectKarasFromCriterias, insertCriteria, selectCriterias, truncateCriterias, updatePlaylistLastEditTime } from "../dao/playlist";
-import { Criteria } from "../lib/types/playlist";
-import { uuidRegexp } from "../lib/utils/constants";
-import logger, { profile } from "../lib/utils/logger";
-import { isNumber } from "../lib/utils/validators";
-import { emitWS } from "../lib/utils/ws";
-import Sentry from "../utils/sentry";
-import { getState, setState } from "../utils/state";
-import { downloadStatuses } from "./download";
-import { getKara } from "./kara";
-import { addKaraToPlaylist, deleteKaraFromPlaylist, editPLC, getPlaylistContentsMini, getPlaylistInfo, getPlaylists } from "./playlist";
-import { getTag, getTags } from "./tag";
+
+import { deleteCriteria, insertCriteria, insertPlaylist, selectCriterias, selectKarasFromCriterias, truncateCriterias, updatePlaylistLastEditTime } from '../dao/playlist';
+import { Criteria } from '../lib/types/playlist';
+import { uuidRegexp } from '../lib/utils/constants';
+import logger, { profile } from '../lib/utils/logger';
+import { isNumber } from '../lib/utils/validators';
+import { emitWS } from '../lib/utils/ws';
+import Sentry from '../utils/sentry';
+import { getState, setState } from '../utils/state';
+import { downloadStatuses } from './download';
+import { getKara } from './kara';
+import { addKaraToPlaylist, deleteKaraFromPlaylist, editPLC, getPlaylistContentsMini, getPlaylistInfo, getPlaylists } from './playlist';
+import { getTag, getTags } from './tag';
 
 export async function getCriterias(plaid: string, lang?: string, translate = true): Promise<Criteria[]> {
 	try {
@@ -36,24 +37,26 @@ export async function emptyCriterias(plaid: string) {
 	if (!pl) throw {code: 404, message: 'Playlist unknown'};
 	await truncateCriterias(plaid);
 	if (pl.flag_smart) {
-		if (plaid === getState().blacklistPlaid || pl.plaid === getState().whitelistPlaid) {
-			updateAllSmartPlaylists();
-		} else {
-			updateSmartPlaylist(plaid);
+		await updateSmartPlaylist(plaid);
+		const isBlacklist = plaid === getState().blacklistPlaid;
+		const isWhitelist = plaid === getState().whitelistPlaid;
+		if (isBlacklist || isWhitelist) {
+			updateAllSmartPlaylists(isBlacklist, isWhitelist);
 		}
 	}
 	profile('emptyCriterias');
 }
 
-export async function updateAllSmartPlaylists() {
+export async function updateAllSmartPlaylists(skipBlacklist = false, skipWhitelist = false) {
 	profile('updateAllSmartPlaylists');
+	logger.info('Updating all smart playlists...', {service: 'SmartPlaylist'});
 	const pls = await getPlaylists({role: 'admin', username: 'admin'});
 	const updatePromises = [];
 	// We need to update the whitelist first if it's smart, then the blacklist, then all others.
 	const wl = pls.find(p => p.flag_whitelist && p.flag_smart);
-	if (wl) await updateSmartPlaylist(wl.plaid);
+	if (wl && !skipWhitelist) await updateSmartPlaylist(wl.plaid);
 	const bl = pls.find(p => p.flag_blacklist && p.flag_smart);
-	if (bl) await updateSmartPlaylist(bl.plaid);
+	if (bl && !skipBlacklist) await updateSmartPlaylist(bl.plaid);
 	for (const pl of pls.filter(p => p.flag_smart && !p.flag_whitelist && !p.flag_blacklist)) {
 		updatePromises.push(updateSmartPlaylist(pl.plaid));
 	}
@@ -63,29 +66,30 @@ export async function updateAllSmartPlaylists() {
 
 export async function updateSmartPlaylist(plaid: string) {
 	profile(`updateSmartPlaylist-${plaid}`);
-	const [pl, plc, list] = await Promise.all([
-		getPlaylistInfo(plaid),
-		getPlaylistContentsMini(plaid),
-		selectKarasFromCriterias(plaid)
-	]);
+	const pl = await getPlaylistInfo(plaid);
 	if (!pl.flag_smart) {
 		// Playlist is not smart! We're not throwing, simply returning.
 		logger.info(`Playlist "${pl.name}" is not a smart one, skipping update`);
 		return;
 	}
+	logger.info(`Updating smart playlist "${pl.name}"...`, {service: 'SmartPlaylist'});
+	const [plc, list] = await Promise.all([
+		getPlaylistContentsMini(plaid),
+		selectKarasFromCriterias(plaid, pl.type_smart)
+	]);
 	// We compare what we have in the playlist and what we have in the generated list, removing and adding songs without changing the order.
 	const removedSongs = plc.filter(pc => !list.find(l => l.kid === pc.kid));
 	const addedSongs = list.filter(l => !plc.find(pc => pc.kid === l.kid));
 	const sameSongs = list.filter(l => plc.find(pc => pc.kid === l.kid));
 
 	// We need to run through the addedSongs part and consolidate it
-	// Because getKarasFromCriterias will give us the same song several times if it's
+	// Because getKarasFromCriterias will give us the same song several times if it's from an UNION.
 	const newMap = new Map<string, Criteria[]>();
 	for (const song of addedSongs) {
 		let criterias = newMap.get(song.kid);
 		criterias
-			? criterias.push(song.criteria)
-			: criterias = [song.criteria];
+			? criterias = [].concat(criterias, song.criterias)
+			: criterias = song.criterias;
 		newMap.set(song.kid, criterias);
 	}
 	const newArray = Array.from(newMap, ([kid, criterias]) => ({ kid, criterias}));
@@ -95,8 +99,8 @@ export async function updateSmartPlaylist(plaid: string) {
 	for (const song of sameSongs) {
 		let criterias = sameMap.get(song.kid);
 		criterias
-			? criterias.push(song.criteria)
-			: criterias = [song.criteria];
+			? criterias = [].concat(criterias, song.criterias)
+			: criterias = song.criterias;
 		sameMap.set(song.kid, criterias);
 	}
 	// Now that we aggregated, we need to compare.
