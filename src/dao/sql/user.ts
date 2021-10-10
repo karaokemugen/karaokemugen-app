@@ -14,15 +14,15 @@ export const sqlreassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_
 
 export const sqlselectUserByName = `
 SELECT
-	u.type AS type,
+	u.type,
 	u.pk_login AS login,
-	u.password AS password,
-	u.nickname AS nickname,
-	u.avatar_file AS avatar_file,
-	u.bio AS bio,
-	u.url AS url,
-	u.email AS email,
-	u.last_login_at AS last_login_at,
+	u.password,
+	u.nickname,
+	u.avatar_file,
+	u.bio,
+	u.url,
+	u.email,
+	u.last_login_at,
 	(CASE WHEN :last_login_time_limit < u.last_login_at
 		THEN TRUE
 		ELSE FALSE
@@ -32,7 +32,8 @@ SELECT
 	u.flag_tutorial_done AS flag_tutorial_done,
 	u.flag_sendstats AS flag_sendstats,
 	u.location AS location,
-	u.language AS language
+	u.language AS language,
+	u.flag_parentsonly AS flag_parentsonly
 FROM users AS u
 WHERE u.pk_login = :username
 `;
@@ -117,6 +118,7 @@ UPDATE users SET
 	flag_tutorial_done = :flag_tutorial_done,
 	location = :location,
 	flag_sendstats = :flag_sendstats,
+	flag_parentsonly = :flag_parentsonly,
 	language = :language
 WHERE pk_login = :old_login
 RETURNING pk_login as login, *;

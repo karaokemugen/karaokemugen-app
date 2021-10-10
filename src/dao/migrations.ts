@@ -39,6 +39,10 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 				logger.info('Migrating blacklist and whitelist to smart playlists', {service: 'DB'});
 				await migrateBLWLToSmartPLs();
 				break;
+			case 'addKaraParents':
+				if (!didGeneration) doGenerate = true;
+				logger.info('Migration adding parents to karas detected, forcing generation', {service: 'DB'});
+				break;
 			default:
 		}
 		if (breakFromLoop) break;

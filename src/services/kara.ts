@@ -105,7 +105,8 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 			from: params.from || 0,
 			size: params.size || 9999999999,
 			random: params.random,
-			blacklist: params.blacklist
+			blacklist: params.blacklist,
+			parentsOnly: params.parentsOnly
 		});
 		profile('formatList');
 		const count = pl.length > 0 ? pl[0].count : 0;

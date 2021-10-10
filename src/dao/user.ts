@@ -64,6 +64,7 @@ export async function editUser(user: User): Promise<User> {
 		flag_tutorial_done: user.flag_tutorial_done || false,
 		flag_sendstats: user.flag_sendstats,
 		location: user.location,
+		flag_parentsonly: user.flag_parentsonly,
 		language: user.language
 	}))).rows[0];
 	if (!ret) {

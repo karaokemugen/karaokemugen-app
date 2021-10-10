@@ -7,7 +7,7 @@ import { Kara, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { getState } from '../utils/state';
-import { sqladdRequested, sqladdViewcount, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetYears, sqlinsertKara, sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateKara } from './sql/kara';
+import { sqladdRequested, sqladdViewcount, sqldeleteChildrenKara, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetYears, sqlinsertChildrenParentKara, sqlinsertKara, sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateKara } from './sql/kara';
 
 
 export async function getSongCountForUser(plaid: string, username: string): Promise<number> {
@@ -67,10 +67,10 @@ export async function deleteKara(kids: string[]) {
 }
 
 export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
-	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter) : {sql: [], params: {}, additionalFrom: []};
-	let typeClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
+	const filterClauses: WhereClause = params.filter ? buildClauses(params.filter, false, params.parentsOnly) : {sql: [], params: {}, additionalFrom: []};
+	let whereClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
 	// Hide blacklisted songs
-	if (params.blacklist) typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${getState().blacklistPlaid}')`;
+	if (params.blacklist) whereClauses = `${whereClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${getState().blacklistPlaid}')`;
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -100,7 +100,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		// Emptying joinClauses first before adding something to it.
 		joinClauses.splice(0, joinClauses.length);
 		joinClauses.push(' LEFT OUTER JOIN online_requested AS orq ON orq.fk_kid = ak.pk_kid ');
-		typeClauses = ' AND requested > 1';
+		whereClauses = ' AND requested > 1';
 	}
 	if (params.order === 'requestedLocal' || (params.order === 'requested' && !getConfig().Online.FetchPopularSongs)) {
 		orderClauses = 'requested DESC, ';
@@ -116,13 +116,21 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (params.random > 0) {
 		orderClauses = `RANDOM(), ${orderClauses}`;
 		limitClause = `LIMIT ${params.random}`;
-		typeClauses = `${typeClauses} AND ak.pk_kid NOT IN (
+		whereClauses = `${whereClauses} AND ak.pk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
 			WHERE pc.fk_id_playlist = '${getState().publicPlaid}'
 		)`;
 	}
-	const query = sqlgetAllKaras(filterClauses.sql, typeClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom, selectRequested, groupClauseEnd, joinClauses);
+	if (params.parentsOnly) {
+		// List all songs which are parents or not children.
+		whereClauses = `${whereClauses} AND (ak.pk_kid IN (
+			SELECT fk_kid_parent FROM kara_relation
+		) OR ak.pk_kid NOT IN (
+			SELECT fk_kid_child FROM kara_relation
+		))`;
+	}
+	const query = sqlgetAllKaras(filterClauses.sql, whereClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom, selectRequested, groupClauseEnd, joinClauses);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaid,
 		dejavu_time: new Date(now() - (getConfig().Playlist.MaxDejaVuTime * 60 * 1000)),
@@ -167,4 +175,19 @@ export function emptyOnlineRequested() {
 
 export function insertOnlineRequested(requested: string[][]) {
 	return copyFromData('online_requested', requested);
+}
+
+export async function updateKaraParents(kara: Kara) {
+	await db().query(sqldeleteChildrenKara, [kara.kid]);
+	if (!kara.parents) return;
+	for (const pkid of kara.parents) {
+		const pkara = await getKaraMini(pkid);
+		if (kara.repository !== pkara.repository) {
+			throw new Error(`${pkid} does not exists or is not in ${kara.repository} repository`);
+		}
+		await db().query(yesql(sqlinsertChildrenParentKara)({
+			parent_kid: pkid,
+			child_kid: kara.kid
+		}));
+	}
 }

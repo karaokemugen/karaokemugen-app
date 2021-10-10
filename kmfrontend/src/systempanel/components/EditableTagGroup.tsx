@@ -21,7 +21,7 @@ interface EditableTagGroupState {
 	currentVal: any
 }
 
-const timer: any[] = [];
+const timer: NodeJS.Timeout[] = [];
 export default class EditableTagGroup extends React.Component<EditableTagGroupProps, EditableTagGroupState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>

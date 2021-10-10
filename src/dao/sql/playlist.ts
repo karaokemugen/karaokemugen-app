@@ -337,10 +337,14 @@ SELECT
   ak.repository as repository,
   array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
   array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
+  array_remove(array_agg(krc.fk_kid_parent), null) AS parents,
+  array_remove(array_agg(krp.fk_kid_child), null) AS children,
   pc.criterias
 FROM playlist_content AS pc
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = :current_plaid
 INNER JOIN all_karas AS ak ON pc.fk_kid = ak.pk_kid
+LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid
+LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
 LEFT OUTER JOIN played p ON ak.pk_kid = p.fk_kid
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent AND up.fk_login = :username

@@ -136,6 +136,7 @@ export async function editRemoteUser(user: User, token: string) {
 	form.append('bio', user.bio ? user.bio : '');
 	form.append('location', user.location ? user.location : '');
 	if (typeof user.flag_sendstats === 'boolean') form.append('flag_sendstats', user.flag_sendstats.toString());
+	if (typeof user.flag_parentsonly === 'boolean') form.append('flag_parentsonly', user.flag_parentsonly.toString());
 	form.append('email', user.email ? user.email : '');
 	form.append('url', user.url ? user.url : '');
 	form.append('language', user.language ? user.language : getConfig().App.Language);
