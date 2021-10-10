@@ -768,7 +768,7 @@ function Playlist(props: IProps) {
 		} else if (criteria.type > 1000) {
 			typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${criteria.type}`);
 		} else {
-			typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type)}`, { count: 2 });
+			typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(criteria.type)}_other`);
 		}
 		callModal(
 			context.globalDispatch,

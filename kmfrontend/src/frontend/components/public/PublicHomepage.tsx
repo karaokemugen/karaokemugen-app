@@ -131,7 +131,7 @@ function PublicHomepage(props: IProps) {
 												key={`tag-${tagTypes[type].type}`}
 											>
 												<i className={`fas fa-fw fa-${tagTypes[type].icon}`} />{' '}
-												{i18next.t(`TAG_TYPES.${type}`, { count: 2 })}
+												{i18next.t(`TAG_TYPES.${type}_other`)}
 											</button>
 										);
 									}
@@ -165,7 +165,7 @@ function PublicHomepage(props: IProps) {
 														key={`tag-${tagTypes[type].type}`}
 													>
 														<i className={`fas fa-fw fa-${tagTypes[type].icon}`} />{' '}
-														{i18next.t(`TAG_TYPES.${type}`, { count: 2 })}
+														{i18next.t(`TAG_TYPES.${type}_other`)}
 													</button>
 												);
 											}

@@ -110,7 +110,7 @@ function CriteriasList(props: IProps) {
 					})}
 					{Object.entries(tagTypes).map(([key, value]) => (
 						<option key={value.type} value={value.type}>
-							{i18next.t(`TAG_TYPES.${key}`, { count: 2 })}
+							{i18next.t(`TAG_TYPES.${key}_other`)}
 						</option>
 					))}
 					<option key={YEARS.type} value={YEARS.type}>
@@ -156,7 +156,7 @@ function CriteriasList(props: IProps) {
 					} else if (type > 1000) {
 						typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${type}`);
 					} else {
-						typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}`, { count: 2 });
+						typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}_other`);
 					}
 					return (
 						<Fragment key={type}>

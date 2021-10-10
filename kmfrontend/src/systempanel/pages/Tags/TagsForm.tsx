@@ -76,7 +76,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 			const option = {
 				value: typeID,
-				label: i18next.t(`TAG_TYPES.${type}`),
+				label: i18next.t(`TAG_TYPES.${type}_other`),
 				children: []
 			};
 			for (const tag of this.props.tags) {
@@ -181,7 +181,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						{Object.keys(tagTypes).map(type => {
 							const value = tagTypes[type].type;
 							return <Select.Option key={value} value={value}>
-								{i18next.t(`TAG_TYPES.${type}`)}
+								{i18next.t(`TAG_TYPES.${type}_other`)}
 							</Select.Option>;
 						})
 						}

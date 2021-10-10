@@ -49,7 +49,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 
 			const option = {
 				value: typeID,
-				label: i18next.t(`TAG_TYPES.${type}`),
+				label: i18next.t(`TAG_TYPES.${type}_other`),
 				children: []
 			};
 			for (const tag of tags.content) {
@@ -141,14 +141,14 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 	}
 
 	columns = [{
-		title: i18next.t('TAG_TYPES.LANGS', { count: 2 }),
+		title: i18next.t('TAG_TYPES.LANGS_other'),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => {
 			return getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ');
 		}
 	}, {
-		title: `${i18next.t('TAG_TYPES.SERIES', { count: 2 })} / ${i18next.t('KARA.SINGERS_BY')}`,
+		title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record: DBKara) => {
@@ -156,7 +156,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 				|| getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(', ');
 		}
 	}, {
-		title: i18next.t('TAG_TYPES.SONGTYPES', { count: 2 }),
+		title: i18next.t('TAG_TYPES.SONGTYPES_other'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => {
@@ -164,7 +164,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			return getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
 		}
 	}, {
-		title: i18next.t('TAG_TYPES.FAMILIES', { count: 2 }),
+		title: i18next.t('TAG_TYPES.FAMILIES_other'),
 		dataIndex: 'families',
 		key: 'families',
 		render: (families) => {
@@ -176,7 +176,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		key: 'titles',
 		render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles)
 	}, {
-		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+		title: i18next.t('TAG_TYPES.VERSIONS_other'),
 		dataIndex: 'versions',
 		key: 'versions',
 		render: (versions) => getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18nTag).join(', ')

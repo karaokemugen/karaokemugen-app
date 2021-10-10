@@ -55,19 +55,19 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	columns: ColumnProps<any>[] = [{
-		title: i18next.t('TAG_TYPES.LANGS', { count: 2 }),
+		title: i18next.t('TAG_TYPES.LANGS_other'),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18n).join(', ')
 	}, {
-		title: `${i18next.t('TAG_TYPES.SERIES', { count: 2 })} / ${i18next.t('KARA.SINGERS_BY')}`,
+		title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record) => (series && series.length > 0) ?
 			series.map(serie => getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n)).join(', ')
 			: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18n).join(', ')
 	}, {
-		title: i18next.t('TAG_TYPES.SONGTYPES', { count: 2 }),
+		title: i18next.t('TAG_TYPES.SONGTYPES_other'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18n).join(', ') + ' ' + (record.songorder || '')
@@ -77,7 +77,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		key: 'titles',
 		render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles)
 	}, {
-		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
+		title: i18next.t('TAG_TYPES.VERSIONS_other'),
 		dataIndex: 'versions',
 		key: 'versions',
 		render: (versions) => getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18n).join(', ')

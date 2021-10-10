@@ -112,7 +112,7 @@ class KaraList extends Component<unknown, KaraListState> {
 
 			const option = {
 				value: typeID,
-				label: i18next.t(`TAG_TYPES.${type}`),
+				label: i18next.t(`TAG_TYPES.${type}_other`),
 				children: []
 			};
 			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
@@ -214,24 +214,24 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	columns = [{
-		title: i18next.t('TAG_TYPES.LANGS', { count: 2 }),
+		title: i18next.t('TAG_TYPES.LANGS_other'),
 		dataIndex: 'langs',
 		key: 'langs',
 		render: langs => getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ')
 	}, {
-		title: `${i18next.t('TAG_TYPES.SERIES', { count: 2 })} / ${i18next.t('KARA.SINGERS_BY')}`,
+		title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
 		dataIndex: 'series',
 		key: 'series',
 		render: (series, record: DBKara) => (series && series.length > 0) ?
 			series.map(serie => getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)).join(', ')
 			: getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(', ')
 	}, {
-		title: i18next.t('TAG_TYPES.SONGTYPES', { count: 2 }),
+		title: i18next.t('TAG_TYPES.SONGTYPES_other'),
 		dataIndex: 'songtypes',
 		key: 'songtypes',
 		render: (songtypes, record) => getTagInLocaleList(this.context.globalState.settings.data, songtypes.sort(sortTagByPriority), this.state.i18nTag).join(', ') + ' ' + (record.songorder || '')
 	}, {
-		title: i18next.t('TAG_TYPES.FAMILIES', { count: 2 }),
+		title: i18next.t('TAG_TYPES.FAMILIES_other'),
 		dataIndex: 'families',
 		key: 'families',
 		render: (families) => getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(', ')
@@ -241,7 +241,7 @@ class KaraList extends Component<unknown, KaraListState> {
 		key: 'titles',
 		render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles)
 	}, {
-		title: i18next.t('TAG_TYPES.VERSIONS', { count: 2 }),
+		title: i18next.t('TAG_TYPES.VERSIONS_other'),
 		dataIndex: 'versions',
 		key: 'versions',
 		render: (versions) => getTagInLocaleList(this.context.globalState.settings.data, versions.sort(sortTagByPriority), this.state.i18nTag).join(', ')

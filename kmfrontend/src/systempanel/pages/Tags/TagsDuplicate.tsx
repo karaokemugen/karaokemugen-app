@@ -90,7 +90,7 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 	}, {
 		title: i18next.t('TAGS.TYPES'),
 		dataIndex: 'types',
-		render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}`)).join(', ')
+		render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', ')
 	}, {
 		title: i18next.t('TAGS.I18N'),
 		dataIndex: 'i18n',

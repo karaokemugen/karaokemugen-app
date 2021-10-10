@@ -83,7 +83,7 @@ class TagsList extends Component<unknown, TagsListState> {
 						<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
 						<Select allowClear={true} style={{ width: 300 }} onChange={this.changeType} defaultValue={this.state.type}>
 							{Object.entries(tagTypes).map(([key, value]) => {
-								return <Select.Option key={value.type} value={value.type}>{i18next.t(`TAG_TYPES.${key}`)}</Select.Option>;
+								return <Select.Option key={value.type} value={value.type}>{i18next.t(`TAG_TYPES.${key}_other`)}</Select.Option>;
 							})
 							}
 						</Select>
@@ -117,7 +117,7 @@ class TagsList extends Component<unknown, TagsListState> {
 	}, {
 		title: i18next.t('TAGS.TYPES'),
 		dataIndex: 'types',
-		render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}`)).join(', ')
+		render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', ')
 	}, {
 		title: i18next.t('TAGS.I18N'),
 		dataIndex: 'i18n',

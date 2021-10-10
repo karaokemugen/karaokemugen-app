@@ -107,7 +107,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		Modal.info({
 			title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
 			content: <ul>{data?.map(tag => <li key={tag.tid} title={tag.tagfile}>
-				{getTagInLocale(this.context?.globalState.settings.data, tag)} ({i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}`)})
+				{getTagInLocale(this.context?.globalState.settings.data, tag)} ({i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}_other`)})
 			</li>)}</ul>
 		});
 	}
@@ -346,7 +346,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				/>
 				<Form.Item
 					label={(
-						<span>{i18next.t('TAG_TYPES.VERSIONS', { count: 2 })}&nbsp;
+						<span>{i18next.t('TAG_TYPES.VERSIONS_other')}&nbsp;
 							<Tooltip title={i18next.t('KARA.VERSIONS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
@@ -364,7 +364,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={
-						<span>{i18next.t('TAG_TYPES.SERIES', { count: 2 })}&nbsp;
+						<span>{i18next.t('TAG_TYPES.SERIES_other')}&nbsp;
 							<Tooltip title={i18next.t('KARA.SERIES_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
@@ -387,7 +387,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.SONGTYPES', { count: 2 })}
+					label={i18next.t('TAG_TYPES.SONGTYPES_other')}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10, offset: 0 }}
 					name="songtypes"
@@ -423,7 +423,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.LANGS', { count: 2 })}
+					label={i18next.t('TAG_TYPES.LANGS_other')}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
 					rules={[{
@@ -533,7 +533,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.FAMILIES', { count: 2 })}
+					label={i18next.t('TAG_TYPES.FAMILIES_other')}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="families"
@@ -545,7 +545,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.PLATFORMS', { count: 2 })}
+					label={i18next.t('TAG_TYPES.PLATFORMS_other')}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="platforms"
@@ -557,7 +557,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.GENRES', { count: 2 })}
+					label={i18next.t('TAG_TYPES.GENRES_other')}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="genres"
@@ -569,7 +569,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.ORIGINS', { count: 2 })}
+					label={i18next.t('TAG_TYPES.ORIGINS_other')}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="origins"
@@ -581,7 +581,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('TAG_TYPES.MISC', { count: 2 })}
+					label={i18next.t('TAG_TYPES.MISC_other')}
 					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="misc"
@@ -594,7 +594,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Form.Item
 					label={(
-						<span>{i18next.t('TAG_TYPES.GROUPS', { count: 2 })}&nbsp;
+						<span>{i18next.t('TAG_TYPES.GROUPS_other')}&nbsp;
 							<Tooltip title={i18next.t('KARA.GROUPS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>

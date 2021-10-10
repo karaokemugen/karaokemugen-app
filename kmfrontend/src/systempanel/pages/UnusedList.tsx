@@ -113,7 +113,7 @@ class SessionList extends Component<unknown, SessionListState> {
 								<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
 								<Select allowClear={true} style={{ width: 300 }} onChange={this.changeType} defaultValue={this.state.tagType}>
 									{Object.entries(tagTypes).map(([key, value]) => {
-										return <Select.Option key={value.type} value={value.type}>{i18next.t(`TAG_TYPES.${key}`)}</Select.Option>;
+										return <Select.Option key={value.type} value={value.type}>{i18next.t(`TAG_TYPES.${key}_other`)}</Select.Option>;
 									})
 									}
 								</Select>
@@ -138,7 +138,7 @@ class SessionList extends Component<unknown, SessionListState> {
 		title: i18next.t('UNUSED_FILES.TYPE'),
 		dataIndex: 'types',
 		key: 'types',
-		render: types => types && types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}`)).join(', ')
+		render: types => types && types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', ')
 	}, {
 		title: i18next.t('UNUSED_FILES.FILE'),
 		dataIndex: 'file',

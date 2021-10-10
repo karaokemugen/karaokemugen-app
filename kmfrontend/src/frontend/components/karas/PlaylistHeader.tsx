@@ -237,7 +237,7 @@ function PlaylistHeader(props: IProps) {
 							}}
 							value={tagType}>
 							{Object.entries(tagTypes).map(([key, value]) => (<option key={value.type}
-								value={value.type}>{i18next.t(`TAG_TYPES.${key}`, {count: 2})}</option>
+								value={value.type}>{i18next.t(`TAG_TYPES.${key}_other`)}</option>
 							))}
 							<option key={YEARS.type} value={YEARS.type}>{i18next.t('DETAILS.YEAR')}</option>
 						</select>
