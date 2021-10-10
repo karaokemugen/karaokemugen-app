@@ -31,6 +31,17 @@ async function main() {
 		console.log(row.command);
 		await client.query(row.command);
 	}
+	const res2 = await client.query(`
+	SELECT DISTINCT ON(pg_type.typname) pg_type.typname AS enumtype,
+	pg_enum.enumlabel AS enumlabel
+FROM pg_type
+JOIN pg_enum
+	ON pg_enum.enumtypid = pg_type.oid;
+	`);
+	for (const row of res2.rows) {
+		console.log('drop type', row.enumtype);
+		await client.query(`DROP TYPE ${row.enumtype}`);
+	}
 }
 
 main().then(() => {
