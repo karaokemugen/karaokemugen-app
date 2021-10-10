@@ -135,7 +135,7 @@ export async function migrateReposToZip() {
 }
 
 export async function updateAllZipRepos() {
-	const repos = getRepos().filter(r => r.Online && !r.MaintainerMode);
+	const repos = getRepos().filter(r => r.Online && !r.MaintainerMode && r.Enabled);
 	let doGenerate = false;
 	logger.info('Updating all repositories', {service: 'Repo'});
 	for (const repo of repos) {
