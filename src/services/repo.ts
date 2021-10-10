@@ -223,9 +223,9 @@ export async function updateZipRepo(name: string) {
 	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
 	updateRunning = true;
 	const repo = getRepo(name);
-	if (!repo.Online || repo.MaintainerMode) {
+	if (!repo.Online || repo.MaintainerMode || !repo.Enabled) {
 		updateRunning = false;
-		throw 'Repository is not online or is in Maintainer Mode!';
+		throw 'Repository is not online, disabled or is in Maintainer Mode!';
 	}
 	const LocalCommit = await getLocalRepoLastCommit(repo);
 	logger.info(`Updating repository from ${name}, our commit is ${LocalCommit}`, {service: 'Repo'});
