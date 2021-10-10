@@ -46,7 +46,7 @@ function computeListing(listing: Listing, path: string, seeFiles: boolean): List
 	if (path === '/' || path === '') {
 		return filteredListing; // as is
 	} else {
-		return [{ name: i18next.t('CONFIG.BACK'), isDirectory: true, back: true }, ...filteredListing]; // return listing with back button
+		return [{ name: `[${i18next.t('CONFIG.BACK')}]`, isDirectory: true, back: true }, ...filteredListing]; // return listing with back button
 	}
 }
 

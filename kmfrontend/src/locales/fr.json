@@ -972,7 +972,7 @@
         "MESSAGE": "Pour modifier un paramètre, éditez-le et pressez sur entrée. Tout les paramètres ne sont pas modifiables et retournerons une erreur si vous essayez de les modifier.",
         "SAVE": "Sauvegarder",
         "SELECT": "Sélectionner",
-        "BACK": "[Retour en arrière]",
+        "BACK": "Retour en arrière",
         "CHOOSE_FILE": "Choisissez un fichier",
         "CHOOSE_DIRECTORY": "Choisissez un dossier",
         "PRIMARY_DIRECTORY": "Dossier par défaut",
