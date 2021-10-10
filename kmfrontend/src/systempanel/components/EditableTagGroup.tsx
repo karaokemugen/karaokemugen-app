@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { AutoComplete, Button, Checkbox, Col, Form, Row, Tag } from 'antd';
 import i18next from 'i18next';
-import React from 'react';
+import { Component } from 'react';
 
 import { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import GlobalContext from '../../store/context';
@@ -22,7 +22,7 @@ interface EditableTagGroupState {
 }
 
 const timer: NodeJS.Timeout[] = [];
-export default class EditableTagGroup extends React.Component<EditableTagGroupProps, EditableTagGroupState> {
+export default class EditableTagGroup extends Component<EditableTagGroupProps, EditableTagGroupState> {
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
 	input: any;

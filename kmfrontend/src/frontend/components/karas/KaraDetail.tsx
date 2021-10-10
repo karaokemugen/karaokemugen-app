@@ -1,7 +1,7 @@
 import './KaraDetail.scss';
 
 import i18next from 'i18next';
-import React, {MouseEvent, ReactNode, useContext, useEffect, useState} from 'react';
+import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useState } from 'react';
 import {createPortal} from 'react-dom';
 import {toast} from 'react-toastify';
 
@@ -366,7 +366,7 @@ export default function KaraDetail(props: IProps) {
 
 		const playTime = kara.time_before_play > 0 ? new Date(Date.now() + kara.time_before_play * 1000) : null;
 		const details = (
-			<React.Fragment>
+			<>
 				{props.criteriaLabel ? (
 					<div className="detailsKaraLine">
 						<span>
@@ -423,7 +423,7 @@ export default function KaraDetail(props: IProps) {
 						{kara.year}
 					</span>
 				</div>
-			</React.Fragment>
+			</>
 		);
 
 		const addKaraButton = (
@@ -494,10 +494,10 @@ export default function KaraDetail(props: IProps) {
 			}
 			{kara.subfile && lyrics?.map((ligne, index) => {
 				return (
-					<React.Fragment key={index}>
+					<Fragment key={index}>
 						{ligne}
-						<br/>
-					</React.Fragment>
+						<br />
+					</Fragment>
 				);
 			})}
 		</div>) : null;
@@ -586,7 +586,7 @@ export default function KaraDetail(props: IProps) {
 			);
 		} else {
 			infoKaraTemp = (
-				<React.Fragment>
+				<>
 					{placeHeader(header)}
 					<div className="detailsKara">
 						<div className="centerButtons">
@@ -598,7 +598,7 @@ export default function KaraDetail(props: IProps) {
 						{details}
 						{lyricsKara}
 					</div>
-				</React.Fragment>
+				</>
 			);
 		}
 		return infoKaraTemp;

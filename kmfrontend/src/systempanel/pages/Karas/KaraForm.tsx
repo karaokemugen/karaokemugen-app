@@ -14,7 +14,7 @@ import {
 } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component,createRef } from 'react';
 
 import { Kara } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
@@ -47,7 +47,7 @@ interface KaraFormState {
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
-	formRef = React.createRef<FormInstance>();
+	formRef = createRef<FormInstance>();
 	static contextType = GlobalContext
 	context: React.ContextType<typeof GlobalContext>
 	timer: NodeJS.Timeout
@@ -714,7 +714,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<Divider />
 				{this.state.repositoriesValue && this.props.kara.repository ?
-					<React.Fragment>
+					<>
 						<Form.Item
 							hasFeedback
 							label={i18next.t('KARA.REPOSITORY')}
@@ -749,7 +749,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 								{i18next.t('KARA.COPY_SONG')}
 							</Button>
 						</Form.Item>
-					</React.Fragment> : null
+					</> : null
 				}
 			</Form>
 		);

@@ -1,7 +1,7 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { Collapse, Layout, Select,Timeline } from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import GlobalContext from '../../store/context';
 import i18n from '../../utils/i18n';

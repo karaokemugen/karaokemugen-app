@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import merge from 'lodash.merge';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { RouteComponentProps, withRouter } from 'react-router';
 

@@ -1,7 +1,7 @@
 import './OnlineProfileModal.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
@@ -52,7 +52,7 @@ function OnlineStatsModal() {
 								{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
 							</a>
 							{openDetails ? (
-								<React.Fragment>
+								<>
 									<ul>
 										<li>{i18next.t('ONLINE_STATS.DETAILS.1')}</li>
 										<li>{i18next.t('ONLINE_STATS.DETAILS.2')}</li>
@@ -61,7 +61,7 @@ function OnlineStatsModal() {
 									</ul>
 									<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
 									<br />
-								</React.Fragment>
+								</>
 							) : null}
 							<div className="text">
 								<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>

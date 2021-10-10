@@ -1,7 +1,7 @@
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, Modal, Radio } from 'antd';
 import i18next from 'i18next';
-import React from 'react';
+import { Component } from 'react';
 
 import GlobalContext from '../../store/context';
 import { isElectron } from '../../utils/electron';
@@ -24,7 +24,7 @@ interface FoldersElementState {
 	newValueModal?: string;
 }
 
-export default class FoldersElement extends React.Component<FoldersElementProps, FoldersElementState> {
+export default class FoldersElement extends Component<FoldersElementProps, FoldersElementState> {
 	static contextType = GlobalContext
 	context: React.ContextType<typeof GlobalContext>
 
@@ -119,11 +119,11 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 		return (
 			<div>
 				{Array.isArray(this.props.value) ?
-					<React.Fragment>
+					<>
 						{this.props.value.map((element, index) =>
 							<div key={element} style={{ display: 'flex', marginBottom: '10px' }}>
 								{this.props.value.length > 1 ?
-									<React.Fragment>
+									<>
 										<Radio style={{ width: '150px' }} checked={this.props.value[0] === element}
 											onChange={() => {
 												const value = (this.state.value as string[]).filter(val => val === element)
@@ -141,7 +141,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 													this.setState({ value: value });
 												}} />
 										</div>
-									</React.Fragment> : null
+									</> : null
 								}
 								<Input onClick={() => this.openFileSystemModal(this.state.value, index, this.props.keyModal)}
 									style={{ maxWidth: this.state.value.length > 1 ? '500px' : '700px' }} defaultValue={element} />
@@ -150,7 +150,7 @@ export default class FoldersElement extends React.Component<FoldersElementProps,
 						<Button type='primary' onClick={() => this.openFileSystemModal(this.state.value, -1, this.props.keyModal)}>
 							<PlusOutlined />{this.getButtonLabel()}
 						</Button>
-					</React.Fragment> :
+					</> :
 					<Input onClick={() => this.openFileSystemModal(this.props.value, undefined, this.props.keyModal)} value={this.state.value} />
 				}
 

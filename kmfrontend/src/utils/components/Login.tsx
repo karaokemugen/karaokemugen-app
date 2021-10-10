@@ -1,7 +1,7 @@
 import './Login.scss';
 
 import i18next from 'i18next';
-import React, { Component, FormEvent } from 'react';
+import { Component, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { User } from '../../../../src/lib/types/user';
@@ -245,12 +245,12 @@ class Login extends Component<IProps, IState> {
 									<input type="text" className={`${this.state.errorBackground} ${this.state.onlineSwitch ? 'loginName' : ''}`}
 										defaultValue={this.state.login} placeholder={i18next.t('USERNAME')} autoComplete="username"
 										required autoFocus onChange={(event) => this.setState({ login: event.target.value })} />
-									{this.state.onlineSwitch ? <React.Fragment>
+									{this.state.onlineSwitch ? <>
 										<div className="arobase">@</div>
 										<input type="text" className="instanceName" defaultValue={this.state.serv}
 											placeholder={i18next.t('INSTANCE_NAME_SHORT')} autoComplete="off"
 											onChange={(event) => this.setState({ serv: event.target.value })} />
-									</React.Fragment> : null}
+									</> : null}
 								</div>
 								<label className="loginLabel">{this.state.forgotPassword && !this.state.onlineSwitch ?
 									i18next.t('NEW_PASSWORD') : i18next.t('PASSWORD')}

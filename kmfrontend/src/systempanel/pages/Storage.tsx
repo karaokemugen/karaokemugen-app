@@ -2,7 +2,7 @@ import { ClearOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Alert, Button, Layout, Table } from 'antd';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import { commandBackend } from '../../utils/socket';
 

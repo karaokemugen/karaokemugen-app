@@ -1,7 +1,7 @@
 import './InlineTag.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';

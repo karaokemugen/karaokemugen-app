@@ -1,7 +1,7 @@
 import './Modal.scss';
 
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import {closeModal} from '../../store/actions/modal';
 import GlobalContext from '../../store/context';

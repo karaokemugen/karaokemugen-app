@@ -1,7 +1,7 @@
 import { HomeOutlined,LogoutOutlined,UserOutlined } from '@ant-design/icons';
 import { Button,Menu } from 'antd';
 import i18next from 'i18next';
-import React, {Component} from 'react';
+import { Component } from 'react';
 import {Link} from 'react-router-dom';
 
 import {logout} from '../../store/actions/auth';

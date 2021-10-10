@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 import { User } from '../../../../../src/lib/types/user';
 import nanamiShockedPng from '../../../assets/nanami-shocked.png';
@@ -116,14 +116,14 @@ function PlaylistCommandsModal(props: IProps) {
 				context.globalDispatch,
 				'confirm',
 				i18next.t('MODAL.UNKNOW_REPOS.TITLE'),
-				<React.Fragment>
+				<>
 					<p>{i18next.t('MODAL.UNKNOW_REPOS.DESCRIPTION')}</p>
 					<div>{i18next.t('MODAL.UNKNOW_REPOS.DOWNLOAD_THEM')}</div>
 					<br />
 					{data.reposUnknown.map((repository: string) => (
 						<label key={repository}>{repository}</label>
 					))}
-				</React.Fragment>,
+				</>,
 				() =>
 					data.reposUnknown.map((repoName: string) => {
 						commandBackend('addRepo', {
@@ -259,7 +259,7 @@ function PlaylistCommandsModal(props: IProps) {
 				</li>
 			) : null}
 			{!isNonStandardPlaylist(oppositePlaylist?.plaid) && !props.criteriasOpen ? (
-				<React.Fragment>
+				<>
 					<li>
 						<a
 							href="#"
@@ -287,7 +287,7 @@ function PlaylistCommandsModal(props: IProps) {
 							</a>
 						</li>
 					) : null}
-				</React.Fragment>
+				</>
 			) : null}
 			{!isNonStandardPlaylist(playlist?.plaid) ||
 			props.criteriasOpen ||
@@ -300,7 +300,7 @@ function PlaylistCommandsModal(props: IProps) {
 					</li>
 				) : null}
 			{!isNonStandardPlaylist(playlist?.plaid) ? (
-				<React.Fragment>
+				<>
 					<li>
 						<a href="#" onClick={deletePlaylist} className="danger-hover">
 							<i className="fas fa-fw fa-trash" />
@@ -313,7 +313,7 @@ function PlaylistCommandsModal(props: IProps) {
 							{i18next.t('ADVANCED.EDIT')}
 						</a>
 					</li>
-				</React.Fragment>
+				</>
 			) : null}
 			{playlist?.plaid !== nonStandardPlaylists.library ? (
 				<li>

@@ -1,5 +1,4 @@
 import i18next from 'i18next';
-import React from 'react';
 
 import { CurrentSong } from '../../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';

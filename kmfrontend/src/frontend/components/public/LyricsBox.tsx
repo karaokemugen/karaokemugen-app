@@ -1,7 +1,7 @@
 import './LyricsBox.scss';
 
 import i18next from 'i18next';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ASSEvent, ASSLine } from '../../../../../src/lib/types/ass';
 import { PublicPlayerState } from '../../../../../src/types/state';

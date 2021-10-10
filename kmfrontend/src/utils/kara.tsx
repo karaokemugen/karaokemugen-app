@@ -1,4 +1,4 @@
-import React from 'react';
+import {ReactFragment} from 'react';
 
 import { ASSLine } from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
@@ -55,7 +55,7 @@ export function sortTagByPriority(a: any, b: any) {
 * @param {boolean} onlyText - if only text and no component
 * @return {String} the title
 */
-export function buildKaraTitle(settings: SettingsStoreData, data: DBKara, onlyText?: boolean, i18nParam?: any): string | React.ReactFragment {
+export function buildKaraTitle(settings: SettingsStoreData, data: DBKara, onlyText?: boolean, i18nParam?: any): string | ReactFragment {
 	const isMulti = data?.langs.find(e => e.name.indexOf('mul') > -1);
 	if (data?.langs && isMulti) {
 		data.langs = [isMulti];
@@ -77,7 +77,7 @@ export function buildKaraTitle(settings: SettingsStoreData, data: DBKara, onlyTe
 			<span className="tag inline white" key={t.tid}>{getTagInLocale(settings, t, i18nParam)}</span>
 		);
 		return (
-			<React.Fragment>
+			<>
 				<span>{langsText}</span>
 				<span>&nbsp;-&nbsp;</span>
 				<span className="karaTitleSerie">{serieText}</span>
@@ -86,7 +86,7 @@ export function buildKaraTitle(settings: SettingsStoreData, data: DBKara, onlyTe
 				<span>&nbsp;-&nbsp;</span>
 				<span className="karaTitleTitle">{getTitleInLocale(settings, data.titles)}</span>
 				{versions}
-			</React.Fragment>
+			</>
 		);
 	}
 }

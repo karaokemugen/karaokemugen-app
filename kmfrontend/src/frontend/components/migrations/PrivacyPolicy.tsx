@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import useMigration from './Migration';
 

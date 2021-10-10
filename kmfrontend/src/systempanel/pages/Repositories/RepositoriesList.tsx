@@ -1,7 +1,7 @@
 import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, EditOutlined,PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Divider, Layout, Table, Tooltip } from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Repository } from '../../../../../src/lib/types/repo';
@@ -135,12 +135,12 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 		key: 'move',
 		render: (text, record, index) => {
 			return (
-				<React.Fragment>
+				<>
 					{index > 0 ?
 						<Button type="default" icon={<ArrowUpOutlined />} onClick={() => this.move(index, -1)}></Button> : null}
 					{index < this.state.repositories.length - 1 ?
 						<Button type="default" icon={<ArrowDownOutlined />} onClick={() => this.move(index, +1)}></Button> : null}
-				</React.Fragment>
+				</>
 			);
 		}
 	}, {
@@ -150,11 +150,11 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			<span>
 				<Link to={`/system/repositories/${record.Name}`}><Button type="primary" icon={<EditOutlined />} /></Link>
 				{this.state.repositories.length > 1 ?
-					<React.Fragment>
+					<>
 						<Divider type="vertical" />
 						<Button type="primary" danger icon={<DeleteOutlined />}
 							onClick={() => this.deleteRepository(record)}></Button>
-					</React.Fragment> : null
+					</> : null
 				}
 			</span>
 		)

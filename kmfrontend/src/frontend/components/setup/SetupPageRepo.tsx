@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import GlobalContext from '../../../store/context';

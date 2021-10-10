@@ -13,7 +13,7 @@ import {
 } from '@ant-design/icons';
 import { Button, Card, Col, Layout, Row } from 'antd';
 import i18next from 'i18next';
-import React, {Component} from 'react';
+import { Component } from 'react';
 import {Link} from 'react-router-dom';
 
 import GlobalContext from '../../store/context';

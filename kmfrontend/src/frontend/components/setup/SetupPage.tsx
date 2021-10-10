@@ -2,7 +2,7 @@ import '../../styles/start/Start.scss';
 import '../../styles/start/SetupPage.scss';
 
 import i18next from 'i18next';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Redirect, Route, Switch, withRouter } from 'react-router';
 
 import logo from '../../../assets/Logo-final-fond-transparent.png';

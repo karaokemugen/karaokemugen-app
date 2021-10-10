@@ -1,6 +1,6 @@
 import { Button, Cascader, Col, Layout, Radio, Row,Select, Table } from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';

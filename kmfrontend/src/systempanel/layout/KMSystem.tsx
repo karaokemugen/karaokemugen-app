@@ -4,7 +4,7 @@ import { ConfigProvider, Layout } from 'antd';
 import enUS from 'antd/es/locale/en_US';
 import frFR from 'antd/es/locale/fr_FR';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import TasksEvent from '../../TasksEvent';

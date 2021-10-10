@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined,FileExcelOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Checkbox,Divider, Layout, Modal, Table } from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Session, SessionExports } from '../../../../../src/types/session';
@@ -141,11 +141,11 @@ class SessionList extends Component<unknown, SessionListState> {
 			<span>
 				<Link to={`/system/sessions/${record.seid}`}><Button type="primary" icon={<EditOutlined />} /></Link>
 				{record.active ? '' :
-					<React.Fragment>
+					<>
 						<Divider type="vertical" />
 						<Button type="primary" danger icon={<DeleteOutlined />}
 							onClick={() => this.deleteSession(record)}></Button>
-					</React.Fragment>
+					</>
 				}
 			</span>
 		)

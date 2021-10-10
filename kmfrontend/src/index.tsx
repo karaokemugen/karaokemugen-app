@@ -4,7 +4,6 @@ import './utils/electron';
 import './utils/socket';
 import './common.scss';
 
-import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from './App';

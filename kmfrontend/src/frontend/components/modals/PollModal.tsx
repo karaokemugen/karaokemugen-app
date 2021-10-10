@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { PollItem } from '../../../../../src/types/poll';
 import { closeModal } from '../../../store/actions/modal';

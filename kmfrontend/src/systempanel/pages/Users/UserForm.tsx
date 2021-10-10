@@ -2,7 +2,7 @@ import { LockOutlined,UserOutlined } from '@ant-design/icons';
 import { Alert,Button, Checkbox, Form, Input, Select } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component,createRef } from 'react';
 
 import { User as UserType } from '../../../../../src/lib/types/user';
 
@@ -17,7 +17,7 @@ interface UserFormState {
 }
 
 class UserForm extends Component<UserFormProps, UserFormState> {
-	formRef = React.createRef<FormInstance>();
+	formRef = createRef<FormInstance>();
 
 	constructor(props) {
 		super(props);

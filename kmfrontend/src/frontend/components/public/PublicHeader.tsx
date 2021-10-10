@@ -1,7 +1,7 @@
 import './PublicHeader.scss';
 
 import i18next from 'i18next';
-import React, { createRef, useContext, useEffect,useState } from 'react';
+import { createRef, useContext, useEffect, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import nanamiPNG from '../../../assets/nanami.png';

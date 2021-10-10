@@ -1,7 +1,7 @@
 import './TagsList.scss';
 
 import i18next from 'i18next';
-import React, { PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
+import { PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
 
 import { DBKaraTag, DBYear } from '../../../../../src/lib/types/database/kara';

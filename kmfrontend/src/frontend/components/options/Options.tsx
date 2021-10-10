@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Redirect, Route, RouteComponentProps, Switch, withRouter } from 'react-router';
 
 import { commandBackend } from '../../../utils/socket';

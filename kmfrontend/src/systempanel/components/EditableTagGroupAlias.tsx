@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Tag } from 'antd';
 import i18next from 'i18next';
-import React from 'react';
+import { Component } from 'react';
 interface EditableTagGroupProps {
 	onChange: any,
 	value?: any[]
@@ -13,7 +13,7 @@ interface EditableTagGroupState {
 	inputVisible: boolean,
 	currentVal: any
 }
-export default class EditableTagGroupAlias extends React.Component<EditableTagGroupProps, EditableTagGroupState> {
+export default class EditableTagGroupAlias extends Component<EditableTagGroupProps, EditableTagGroupState> {
 	input: any;
 
 	state = {

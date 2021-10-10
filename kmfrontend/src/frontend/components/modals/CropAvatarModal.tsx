@@ -1,7 +1,7 @@
 import 'react-image-crop/dist/ReactCrop.css';
 
 import i18next from 'i18next';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom';
 import ReactCrop, { Crop } from 'react-image-crop';
 

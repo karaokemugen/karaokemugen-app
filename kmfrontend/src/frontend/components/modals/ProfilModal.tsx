@@ -1,7 +1,7 @@
 import './ProfilModal.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect,useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';

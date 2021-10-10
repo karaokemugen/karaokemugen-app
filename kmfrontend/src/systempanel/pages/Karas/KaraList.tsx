@@ -1,7 +1,7 @@
 import { ClearOutlined, DeleteOutlined, EditOutlined, FontColorsOutlined } from '@ant-design/icons';
-import { Alert, Button, Cascader, Col, Divider, Input, Layout, Modal, Row, Table } from 'antd';
+import { Alert, Button, Cascader, Col, Input, Layout, Modal, Row, Table } from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';

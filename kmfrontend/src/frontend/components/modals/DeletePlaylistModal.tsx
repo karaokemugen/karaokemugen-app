@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import nanamiShockedPng from '../../../assets/nanami-shocked.png';
 import nanamiShockedWebP from '../../../assets/nanami-shocked.webp';

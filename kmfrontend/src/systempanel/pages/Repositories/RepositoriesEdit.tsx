@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { Repository } from '../../../../../src/lib/types/repo';

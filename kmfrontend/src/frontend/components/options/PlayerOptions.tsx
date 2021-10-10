@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { getLanguagesInLangFromCode, languagesSupport } from '../../../utils/isoLanguages';
@@ -96,7 +96,7 @@ function PlayerOptions(props: IProps) {
 		[displays]
 	);
 	return config ? (
-		<React.Fragment>
+		<>
 			<div className="settings-line subCategoryGroupPanel">{i18next.t('SETTINGS.PLAYER.WINDOW_SETTINGS')}</div>
 			<div className="settings-line">
 				<label htmlFor="Player.StayOnTop">
@@ -354,7 +354,7 @@ function PlayerOptions(props: IProps) {
 					/>
 				</div>
 			</div>
-		</React.Fragment>
+		</>
 	) : null;
 }
 

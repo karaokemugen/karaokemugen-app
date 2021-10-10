@@ -1,6 +1,6 @@
 import './Switch.scss';
 
-import React from 'react';
+import { createRef } from 'react';
 
 interface IProps {
 	nameCommand?: string;
@@ -13,7 +13,7 @@ interface IProps {
 }
 
 function Switch(props: IProps) {
-	const checkbox = React.createRef<HTMLInputElement>();
+	const checkbox = createRef<HTMLInputElement>();
 
 	const onKeyPress = (e) => {
 		e.preventDefault();

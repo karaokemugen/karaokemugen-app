@@ -3,7 +3,7 @@ import { Button, Cascader, Checkbox, DatePicker, Divider, Form, Input, Modal, Ta
 import { FormInstance,FormProps } from 'antd/lib/form';
 import i18next from 'i18next';
 import moment from 'moment';
-import React, { Component } from 'react';
+import { Component,createRef } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { Session, SessionExports } from '../../../../../src/types/session';
@@ -29,7 +29,7 @@ interface SessionsFormState {
 const { RangePicker } = DatePicker;
 
 class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
-	formRef = React.createRef<FormInstance>();
+	formRef = createRef<FormInstance>();
 	static contextType = GlobalContext;
 	context: React.ContextType<typeof GlobalContext>
 	
@@ -180,7 +180,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 					<Button type='primary' htmlType='submit'>{i18next.t('SUBMIT')}</Button>
 				</Form.Item>
 				{this.props.session.seid ?
-					<React.Fragment>
+					<>
 						<Divider>{i18next.t('SESSIONS.EXPORT')}</Divider>
 						<Form.Item
 							wrapperCol={{ span: 4, offset: 3 }}
@@ -226,7 +226,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 							columns={this.columns}
 							rowKey='kid'
 						/>
-					</React.Fragment> : null
+					</> : null
 				}
 			</Form>
 		);

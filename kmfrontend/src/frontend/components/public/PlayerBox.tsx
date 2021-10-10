@@ -2,7 +2,7 @@ import './PlayerBox.scss';
 
 import i18next from 'i18next';
 import sample from 'lodash.sample';
-import React, { createRef, RefObject,useContext, useEffect, useState } from 'react';
+import { createRef, ReactFragment,RefObject, useContext, useEffect, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import { ASSLine } from '../../../../../src/lib/types/ass';
@@ -35,7 +35,7 @@ interface IState {
 	showLyrics: boolean;
 	kid: string;
 	favorites: Set<string>;
-	karaVersions?: React.ReactFragment;
+	karaVersions?: ReactFragment;
 }
 
 function PlayerBox(props: IProps) {
@@ -282,7 +282,7 @@ function PlayerBox(props: IProps) {
 					</button>
 				) : null}
 			{length !== 0 ? (
-				<React.Fragment>
+				<>
 					{props.mode !== 'fixed' ? (
 						<div className="timers">
 							<div>{secondsTimeSpanToHMS(Math.round(timePosition), 'mm:ss')}</div>
@@ -292,7 +292,7 @@ function PlayerBox(props: IProps) {
 					<div className="progress-bar-container" ref={ref}>
 						<div className="progress-bar" style={{ width: width }} />
 					</div>
-				</React.Fragment>
+				</>
 			) : null}
 		</div>
 	);

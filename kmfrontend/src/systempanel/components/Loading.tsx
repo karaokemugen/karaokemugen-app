@@ -1,6 +1,6 @@
 import {Alert, Spin} from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import { eventEmitter } from '../../utils/tools';
 

@@ -1,7 +1,7 @@
 import './CriteriasList.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { Criteria } from '../../../../../src/lib/types/playlist';
@@ -159,7 +159,7 @@ function CriteriasList(props: IProps) {
 						typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}`, { count: 2 });
 					}
 					return (
-						<React.Fragment key={type}>
+						<Fragment key={type}>
 							<div className="list-group-item liType">{typeLabel}</div>
 							{criterias.map((criteria) => {
 								return criteria.type === type ? (
@@ -194,7 +194,7 @@ function CriteriasList(props: IProps) {
 									</div>
 								) : null;
 							})}
-						</React.Fragment>
+						</Fragment>
 					);
 				})
 			}

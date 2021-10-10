@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';

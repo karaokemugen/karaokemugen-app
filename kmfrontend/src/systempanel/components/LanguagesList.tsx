@@ -1,7 +1,7 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Col, Form, Input, Row, Select, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { getLanguagesInLocaleFromCode, getListLanguagesInLocale } from '../../utils/isoLanguages';
 

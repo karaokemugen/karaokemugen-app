@@ -1,7 +1,7 @@
 import './KaraMenuModal.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
@@ -231,17 +231,17 @@ function KaraMenuModal(props: IProps) {
 						}
 					>
 						{kara.flag_visible ? (
-							<React.Fragment>
+							<>
 								<i className="fas fa-fw fa-eye-slash" />
 								&nbsp;
 								{i18next.t('KARA_MENU.VISIBLE_OFF_SHORT')}
-							</React.Fragment>
+							</>
 						) : (
-							<React.Fragment>
+							<>
 								<i className="fas fa-fw fa-eye" />
 								&nbsp;
 								{i18next.t('KARA_MENU.VISIBLE_ON_SHORT')}
-							</React.Fragment>
+							</>
 						)}
 					</a>
 					<a href="#" className={`animate-button-success${effectVisibility ? ' activate' : ''}`}>

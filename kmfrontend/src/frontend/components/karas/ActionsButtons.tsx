@@ -1,7 +1,7 @@
 import './ActionsButtons.scss';
 
 import i18next from 'i18next';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';

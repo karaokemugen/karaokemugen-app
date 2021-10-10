@@ -2,7 +2,16 @@ import './Playlist.scss';
 
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
-import React, { PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+	Fragment,
+	PropsWithChildren,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { DragDropContext, Draggable, DraggableProvided, Droppable, DropResult } from 'react-beautiful-dnd';
 import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
 
@@ -283,7 +292,7 @@ function Playlist(props: IProps) {
 
 	const noRowsRenderer = useCallback(() => {
 		return (
-			<React.Fragment>
+			<>
 				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
 					props.scope === 'admin' ?
 					(
@@ -300,7 +309,7 @@ function Playlist(props: IProps) {
 						</div>
 					) : null
 				}
-			</React.Fragment>
+			</>
 		);
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
 
@@ -543,21 +552,21 @@ function Playlist(props: IProps) {
 				});
 				if (randomKaras.content.length > 0) {
 					const textContent = randomKaras.content.map((e: KaraElement) => (
-						<React.Fragment key={e.kid}>
+						<Fragment key={e.kid}>
 							{buildKaraTitle(context.globalState.settings.data, e, true)} <br />
 							<br />
-						</React.Fragment>
+						</Fragment>
 					));
 					callModal(
 						context.globalDispatch,
 						'confirm',
 						i18next.t('CL_CONGRATS'),
-						<React.Fragment>
+						<>
 							{i18next.t('CL_ABOUT_TO_ADD')}
 							<br />
 							<br />
 							{textContent}
-						</React.Fragment>,
+						</>,
 						() => {
 							const karaList = randomKaras.content.map((a: KaraElement) => {
 								return a.kid;
@@ -804,7 +813,7 @@ function Playlist(props: IProps) {
 		);
 	};
 
-	const sortRow = React.useCallback(
+	const sortRow = useCallback(
 		(result: DropResult) => {
 			if (!result.destination) {
 				return;

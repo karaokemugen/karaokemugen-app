@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import { commandBackend } from '../../../utils/socket';
@@ -38,7 +38,7 @@ function SetupPageStats(props: RouteComponentProps) {
 					{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
 				</a>
 				{openDetails ? (
-					<React.Fragment>
+					<>
 						<ul>
 							<li>{i18next.t('ONLINE_STATS.DETAILS.1')}</li>
 							<li>{i18next.t('ONLINE_STATS.DETAILS.2')}</li>
@@ -47,7 +47,7 @@ function SetupPageStats(props: RouteComponentProps) {
 						</ul>
 						<p>{i18next.t('ONLINE_STATS.DETAILS.OUTRO')}</p>
 						<br />
-					</React.Fragment>
+					</>
 				) : null}
 			</p>
 			<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>

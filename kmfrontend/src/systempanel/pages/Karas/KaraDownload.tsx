@@ -2,7 +2,7 @@ import { CheckCircleTwoTone, ClockCircleTwoTone, DownloadOutlined, InfoCircleTwo
 import { Button, Cascader, Col, Input, Layout, Radio, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
 import prettyBytes from 'pretty-bytes';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';

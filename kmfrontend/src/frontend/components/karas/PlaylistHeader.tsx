@@ -1,7 +1,7 @@
 import './PlaylistHeader.scss';
 
 import i18next from 'i18next';
-import React, {MouseEvent as MouseEventReact, useContext, useEffect, useState} from 'react';
+import { MouseEvent as MouseEventReact, useContext, useEffect, useState } from 'react';
 import {Trans} from 'react-i18next';
 
 import {setFilterValue} from '../../../store/actions/frontendContext';
@@ -283,7 +283,7 @@ function PlaylistHeader(props: IProps) {
 			</div>
 		) : null;
 	return (
-		<React.Fragment>
+		<>
 			<div className="panel-heading plDashboard">
 				<div className="btn-group">
 					<div className="dropdown">
@@ -401,7 +401,7 @@ function PlaylistHeader(props: IProps) {
 					/>
 				</p>
 			) : null}
-		</React.Fragment>
+		</>
 	);
 }
 

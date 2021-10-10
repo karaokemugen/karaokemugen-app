@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import { TaskItem } from '../../../../../src/lib/types/taskItem';

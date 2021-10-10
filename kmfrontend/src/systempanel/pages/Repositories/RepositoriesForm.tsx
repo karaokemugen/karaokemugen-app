@@ -2,7 +2,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Checkbox, Divider, Form, Input, Select, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component,createRef } from 'react';
 
 import { Repository } from '../../../../../src/lib/types/repo';
 import { TaskItem } from '../../../../../src/lib/types/taskItem';
@@ -25,7 +25,7 @@ interface RepositoriesFormState {
 }
 
 class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormState> {
-	formRef = React.createRef<FormInstance>();
+	formRef = createRef<FormInstance>();
 	timeout: NodeJS.Timeout
 
 	constructor(props) {
@@ -223,14 +223,14 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					</Button>
 				</Form.Item>
 				{this.props.repository.Name ?
-					<React.Fragment>
+					<>
 						<Divider orientation="left">{i18next.t('REPOSITORIES.COMPARE_LYRICS')}</Divider>
 						<Alert style={{ textAlign: 'left', marginBottom: '10px' }}
 							message={i18next.t('REPOSITORIES.COMPARE_ABOUT_MESSAGE')}
 							type="info"
 						/>
 						{this.state.repositoriesValue ?
-							<React.Fragment>
+							<>
 								<Form.Item
 									label={i18next.t('REPOSITORIES.COMPARE_LYRICS_CHOOSE_REPOSITORY')}
 									labelCol={{ flex: '0 1 300px' }}
@@ -257,7 +257,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 										</Button>
 									</div>
 								</Form.Item>
-							</React.Fragment>
+							</>
 							: null
 						}
 						<Divider orientation="left">{i18next.t('REPOSITORIES.MOVING_MEDIA_PANEL')}</Divider>
@@ -289,7 +289,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							/>
 
 						</Form.Item>
-					</React.Fragment> : null
+					</> : null
 				}
 			</Form>
 		);

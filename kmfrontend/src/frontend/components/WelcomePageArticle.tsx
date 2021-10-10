@@ -1,7 +1,7 @@
 import '../styles/start/WelcomePageArticle.scss';
 
 import DOMPurify from 'dompurify';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { News } from '../types/news';
 

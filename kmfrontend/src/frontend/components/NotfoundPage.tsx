@@ -1,7 +1,6 @@
 import './NotfoundPage.scss';
 
 import i18next from 'i18next';
-import React from 'react';
 
 import image404 from '../../assets/nanami-surpris.png';
 

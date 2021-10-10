@@ -1,7 +1,7 @@
 import './KaraLine.scss';
 
 import i18next from 'i18next';
-import React, { CSSProperties, Key, MouseEvent, Ref, useContext, useState } from 'react';
+import { Key, MouseEvent, useContext, useState } from 'react';
 import { DraggableProvided } from 'react-beautiful-dnd';
 import { toast } from 'react-toastify';
 
@@ -419,7 +419,7 @@ function KaraLine(props: IProps) {
 							</div>
 						</div>
 					) : (
-						<React.Fragment>
+						<>
 							<div className="infoDiv">
 								{scope === 'admin' &&
 							(isNonStandardPlaylist(plaid) ||
@@ -647,7 +647,7 @@ function KaraLine(props: IProps) {
 									) : null}
 								</div>
 							) : null}
-						</React.Fragment>
+						</>
 					)}
 			</div>
 			{props.sponsor && props.jingle && scope === 'admin' ? (

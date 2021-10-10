@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { isElectron, sendIPC } from '../../../utils/electron';
@@ -58,7 +58,7 @@ function KaraokeOptions(props: IProps) {
 	}, [context.globalState.settings.data.config]);
 
 	return config ? (
-		<React.Fragment>
+		<>
 			<div id="nav-karaokeAllMode">
 				<div className="settings-line subCategoryGroupPanel">
 					{i18next.t('SETTINGS.KARAOKE.QUOTA_SETTINGS')}
@@ -324,7 +324,7 @@ function KaraokeOptions(props: IProps) {
 							isChecked={config['Playlist.Medias.Jingles.Enabled']}
 						/>
 						{config['Playlist.Medias.Jingles.Enabled'] ? (
-							<React.Fragment>
+							<>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.EVERY')}</label>
 								<input
 									type="number"
@@ -336,7 +336,7 @@ function KaraokeOptions(props: IProps) {
 									value={config['Playlist.Medias.Jingles.Interval']}
 								/>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.SONGS')}</label>
-							</React.Fragment>
+							</>
 						) : null}
 					</div>
 				</div>
@@ -355,7 +355,7 @@ function KaraokeOptions(props: IProps) {
 							isChecked={config['Playlist.Medias.Sponsors.Enabled']}
 						/>
 						{config['Playlist.Medias.Sponsors.Enabled'] ? (
-							<React.Fragment>
+							<>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.EVERY')}</label>
 								<input
 									type="number"
@@ -367,7 +367,7 @@ function KaraokeOptions(props: IProps) {
 									value={config['Playlist.Medias.Sponsors.Interval']}
 								/>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.SONGS')}</label>
-							</React.Fragment>
+							</>
 						) : null}
 					</div>
 				</div>
@@ -385,7 +385,7 @@ function KaraokeOptions(props: IProps) {
 							isChecked={config['Playlist.Medias.Intros.Enabled']}
 						/>
 						{config['Playlist.Medias.Intros.Enabled'] ? (
-							<React.Fragment>
+							<>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.WITH')}</label>
 								<input
 									className="input-options"
@@ -394,7 +394,7 @@ function KaraokeOptions(props: IProps) {
 									value={config['Playlist.Medias.Intros.Message'] || ''}
 								/>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.MESSAGE')}</label>
-							</React.Fragment>
+							</>
 						) : null}
 					</div>
 				</div>
@@ -412,7 +412,7 @@ function KaraokeOptions(props: IProps) {
 							isChecked={config['Playlist.Medias.Outros.Enabled']}
 						/>
 						{config['Playlist.Medias.Outros.Enabled'] ? (
-							<React.Fragment>
+							<>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.WITH')}</label>
 								<input
 									className="input-options"
@@ -421,7 +421,7 @@ function KaraokeOptions(props: IProps) {
 									value={config['Playlist.Medias.Outros.Message'] || ''}
 								/>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.MESSAGE')}</label>
-							</React.Fragment>
+							</>
 						) : null}
 					</div>
 				</div>
@@ -438,7 +438,7 @@ function KaraokeOptions(props: IProps) {
 							isChecked={config['Playlist.Medias.Encores.Enabled']}
 						/>
 						{config['Playlist.Medias.Encores.Enabled'] ? (
-							<React.Fragment>
+							<>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.WITH')}</label>
 								<input
 									className="input-options"
@@ -447,7 +447,7 @@ function KaraokeOptions(props: IProps) {
 									value={config['Playlist.Medias.Encores.Message'] || ''}
 								/>
 								<label className="label-input-options">{i18next.t('SETTINGS.KARAOKE.MESSAGE')}</label>
-							</React.Fragment>
+							</>
 						) : null}
 					</div>
 				</div>
@@ -795,7 +795,7 @@ function KaraokeOptions(props: IProps) {
 					</div>
 				</div>
 			</div>
-		</React.Fragment>
+		</>
 	) : null;
 }
 

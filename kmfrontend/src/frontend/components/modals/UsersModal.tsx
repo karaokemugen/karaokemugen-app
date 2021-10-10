@@ -1,7 +1,7 @@
 import './UsersModal.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect,useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { User } from '../../../../../src/lib/types/user';
 import { closeModal } from '../../../store/actions/modal';

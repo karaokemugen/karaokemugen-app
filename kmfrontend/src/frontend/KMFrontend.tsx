@@ -1,7 +1,7 @@
 import './KMFrontend.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import GlobalContext from '../store/context';

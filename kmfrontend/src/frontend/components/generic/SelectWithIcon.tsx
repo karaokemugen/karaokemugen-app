@@ -1,7 +1,7 @@
 import './SelectWithIcon.scss';
 
 import i18next from 'i18next';
-import React from 'react';
+import { Fragment } from 'react';
 import { Button, Menu, MenuItem, Wrapper } from 'react-aria-menubutton';
 
 interface IProps {
@@ -22,12 +22,12 @@ function SelectWithIcon(props: IProps) {
 					{select?.icons
 						? select.icons.map((icon) => {
 							return (
-								<React.Fragment key={icon}>
+								<Fragment key={icon}>
 									<i className={`fas ${icon}`} />
-										&nbsp;
-								</React.Fragment>
+									&nbsp;
+								</Fragment>
 							);
-						  })
+						})
 						: null}
 					<span className="selectWithIcon-label">
 						{props.value ? select?.label : i18next.t('SELECT_PLACEHOLDER')}
@@ -41,12 +41,12 @@ function SelectWithIcon(props: IProps) {
 							{element.icons
 								? element.icons.map((icon) => {
 									return (
-										<React.Fragment key={icon}>
+										<Fragment key={icon}>
 											<i className={`fas ${icon}`} />
-												&nbsp;
-										</React.Fragment>
+											&nbsp;
+										</Fragment>
 									);
-								  })
+								})
 								: null}
 							<span className="selectWithIcon-label">{element.label}</span>
 						</MenuItem>

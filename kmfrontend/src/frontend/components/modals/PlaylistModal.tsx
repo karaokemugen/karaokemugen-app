@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { closeModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';

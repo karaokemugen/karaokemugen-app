@@ -1,7 +1,7 @@
 import './AdminMessageModal.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';

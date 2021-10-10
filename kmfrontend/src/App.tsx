@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { Component, lazy, Suspense } from 'react';
+import { Component, lazy, Suspense } from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 

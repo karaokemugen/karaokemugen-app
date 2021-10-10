@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useEffect,useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Route, RouteComponentProps, Switch, withRouter } from 'react-router-dom';
 
 import { DBPLC, DBPLCInfo } from '../../../../../src/types/database/playlist';
@@ -385,7 +385,7 @@ function PublicPage(props: RouteComponentProps) {
 							'/public/tags/:tagType',
 						]}
 						render={({ match }) => (
-							<React.Fragment>
+							<>
 								<KmAppHeaderDecorator mode="public">
 									<button
 										className="btn"
@@ -454,7 +454,7 @@ function PublicPage(props: RouteComponentProps) {
 										/>
 									)}
 								</KmAppBodyDecorator>
-							</React.Fragment>
+							</>
 						)}
 					/>
 					<Route

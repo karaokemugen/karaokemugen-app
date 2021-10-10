@@ -1,7 +1,7 @@
 import './ProgressBar.scss';
 
 import i18next from 'i18next';
-import React, { Component, createRef } from 'react';
+import { Component, createRef,ReactFragment } from 'react';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
@@ -17,7 +17,7 @@ interface IState {
 	mouseDown: boolean;
 	refreshTime: number;
 	playerStatus?: string;
-	karaInfoText: string | React.ReactFragment;
+	karaInfoText: string | ReactFragment;
 	length: number;
 	width: string;
 	timePosition: number;

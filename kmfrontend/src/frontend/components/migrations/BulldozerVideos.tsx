@@ -1,5 +1,4 @@
 import i18next from 'i18next';
-import React from 'react';
 
 import { commandBackend } from '../../../utils/socket';
 import useMigration from './Migration';

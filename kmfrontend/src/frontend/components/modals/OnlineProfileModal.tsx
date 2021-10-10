@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import { setAuthentifactionInformation } from '../../../store/actions/auth';
 import { closeModal } from '../../../store/actions/modal';
@@ -62,14 +62,14 @@ function OnlineProfileModal(props: IProps) {
 								</p>
 							) : null}
 							{props.type === 'convert' ? (
-								<React.Fragment>
+								<>
 									<label>{i18next.t('INSTANCE_NAME')}</label>
 									<input
 										type="text"
 										value={loginServ}
 										onChange={(e) => setLoginServ(e.target.value)}
 									/>
-								</React.Fragment>
+								</>
 							) : null}
 							<label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
 							<input

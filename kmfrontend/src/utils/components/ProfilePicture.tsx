@@ -1,4 +1,4 @@
-import React, { memo,useEffect,useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
 import blankAvatar from '../../assets/blank.png';

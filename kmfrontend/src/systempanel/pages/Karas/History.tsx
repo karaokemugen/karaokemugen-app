@@ -1,7 +1,7 @@
 import {Button, Layout, Table} from 'antd';
 import {ColumnProps} from 'antd/lib/table';
 import i18next from 'i18next';
-import React, {Component} from 'react';
+import { Component } from 'react';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';

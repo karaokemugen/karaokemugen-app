@@ -1,7 +1,7 @@
 import './FavMixModal.scss';
 
 import i18next from 'i18next';
-import React, { MouseEvent, useContext, useState } from 'react';
+import { MouseEvent, useContext, useState } from 'react';
 
 import { User } from '../../../../../src/lib/types/user';
 import { closeModal } from '../../../store/actions/modal';

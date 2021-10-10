@@ -1,7 +1,7 @@
 import './TasksEvent.scss';
 
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import { TaskItem } from '../../src/lib/types/taskItem';
 import { getSocket } from './utils/socket';

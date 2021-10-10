@@ -1,7 +1,5 @@
 import './RadioButton.scss';
 
-import React from 'react';
-
 interface Button {
 	activeColor: string;
 	active: boolean;

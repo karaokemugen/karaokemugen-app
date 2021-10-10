@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import i18next from 'i18next';
-import React, { Dispatch, ReactNode } from 'react';
+import { createElement, Dispatch, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
 
@@ -121,7 +121,7 @@ export function hmsToSecondsOnly(str: string) {
 }
 
 export function startIntro() {
-	tuto = ReactDOM.render(React.createElement(Tutorial), document.getElementById('tuto'));
+	tuto = ReactDOM.render(createElement(Tutorial), document.getElementById('tuto'));
 	return tuto;
 }
 
@@ -175,7 +175,7 @@ export function callModal(
 	forceSmall?: boolean,
 	abortCallback?: boolean
 ) {
-	showModal(dispatch, React.createElement(Modal, {
+	showModal(dispatch, createElement(Modal, {
 		type,
 		title,
 		message,

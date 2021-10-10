@@ -1,7 +1,7 @@
 import './PlaylistPage.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { DBPLC } from '../../../../src/types/database/playlist';
 import GlobalContext from '../../store/context';

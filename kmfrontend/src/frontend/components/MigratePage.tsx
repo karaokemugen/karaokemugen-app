@@ -2,7 +2,7 @@ import '../styles/start/Start.scss';
 import '../styles/start/MigratePage.scss';
 
 import i18next from 'i18next';
-import React, { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { MigrationsFrontend } from '../../../../src/types/database/migrationsFrontend';

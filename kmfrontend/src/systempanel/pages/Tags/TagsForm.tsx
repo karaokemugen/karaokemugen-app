@@ -2,7 +2,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Alert, Button, Cascader, Checkbox, Divider, Form, Input, InputNumber, message, Select, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component,createRef } from 'react';
 
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { commandBackend } from '../../../utils/socket';
@@ -27,7 +27,7 @@ interface TagsFormState {
 }
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {
-	formRef = React.createRef<FormInstance>();
+	formRef = createRef<FormInstance>();
 
 	constructor(props) {
 		super(props);
@@ -323,7 +323,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				}
 				<Divider />
 				{this.state.repositoriesValue && this.props.tag?.repository ?
-					<React.Fragment>
+					<>
 						<Form.Item hasFeedback
 							label={i18next.t('TAGS.REPOSITORY')}
 							labelCol={{ flex: '0 1 200px' }}
@@ -346,7 +346,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 								{i18next.t('TAGS.COPY_TAG')}
 							</Button>
 						</Form.Item>
-					</React.Fragment> : null
+					</> : null
 				}
 			</Form>
 		);

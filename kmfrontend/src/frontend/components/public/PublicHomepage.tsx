@@ -1,7 +1,7 @@
 import './PublicHomepage.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
@@ -39,7 +39,7 @@ function PublicHomepage(props: IProps) {
 	};
 
 	return (
-		<React.Fragment>
+		<>
 			<div className="hello-bar">
 				<span>
 					{`${i18next.t('PUBLIC_HOMEPAGE.HELLO')} ${context.globalState.settings.data.user.nickname}`}
@@ -104,7 +104,7 @@ function PublicHomepage(props: IProps) {
 							</button>
 						) : null}
 						{context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
-							<React.Fragment>
+							<>
 								<button className="action blue" onClick={() => props.changeView('search')}>
 									<i className="fas fa-fw fa-search" /> {i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}
 								</button>
@@ -172,13 +172,13 @@ function PublicHomepage(props: IProps) {
 										})}
 									</>
 								) : null}
-							</React.Fragment>
+							</>
 						) : null}
 					</div>
 				</div>
 				<LyricsBox kid={currentKid} />
 			</div>
-		</React.Fragment>
+		</>
 	);
 }
 

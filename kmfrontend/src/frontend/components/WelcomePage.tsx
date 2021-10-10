@@ -2,7 +2,7 @@ import '../styles/start/Start.scss';
 import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { Repository } from '../../../../src/lib/types/repo';
 import { DBStats } from '../../../../src/types/database/database';
@@ -235,7 +235,7 @@ function WelcomePage() {
 					</nav>
 					<div className="session-setting">
 						{sessionsList.length > 0 ? (
-							<React.Fragment>
+							<>
 								<article>
 									<label>{i18next.t('WELCOME_PAGE.ACTIVE_SESSION')}</label>
 									<Autocomplete
@@ -253,7 +253,7 @@ function WelcomePage() {
 										<i className="fas fa-fw fa-edit" />
 									</a>
 								</article>
-							</React.Fragment>
+							</>
 						) : null}
 					</div>
 				</div>

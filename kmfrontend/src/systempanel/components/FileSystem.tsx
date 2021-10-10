@@ -1,7 +1,7 @@
 import { FileOutlined, FolderOutlined, LeftOutlined, UsbOutlined } from '@ant-design/icons';
 import { Button, List } from 'antd';
 import i18next from 'i18next';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
 

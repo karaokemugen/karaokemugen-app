@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import merge from 'lodash.merge';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { PublicPlayerState } from '../../../../src/types/state';
 import nanamiSingPng from '../../assets/nanami-sing.png';

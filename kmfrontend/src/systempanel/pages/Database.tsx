@@ -1,6 +1,6 @@
 import { Button, Col,Layout, Row } from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Trans } from 'react-i18next';
 
 import { commandBackend } from '../../utils/socket';
