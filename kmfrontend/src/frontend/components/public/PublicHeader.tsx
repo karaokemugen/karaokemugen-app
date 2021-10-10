@@ -1,7 +1,7 @@
 import './PublicHeader.scss';
 
 import i18next from 'i18next';
-import { createRef, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import nanamiPNG from '../../../assets/nanami.png';
@@ -29,7 +29,7 @@ function PublicHeader(props: IProps) {
 	const [dropDownMenu, setDropDownMenu] = useState(false);
 	const [quotaType, setQuotaType] = useState<number>();
 	const [quotaLeft, setQuotaLeft] = useState<number>();
-	const [ref, setRef] = useState(createRef<HTMLElement>());
+	const ref = useRef<HTMLElement>();
 
 	const toggleProfileModal = (e) => {
 		e.preventDefault();

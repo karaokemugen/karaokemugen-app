@@ -2,7 +2,7 @@ import './PlayerBox.scss';
 
 import i18next from 'i18next';
 import sample from 'lodash.sample';
-import { createRef, ReactFragment,RefObject, useContext, useEffect, useState } from 'react';
+import { ReactFragment,RefObject, useContext, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
@@ -32,8 +32,8 @@ function PlayerBox(props: IProps) {
 	const [kid, setKid] = useState('');
 	const [favorites, setFavorites] = useState(new Set<string>());
 	const [karaVersions, setKaraVersions] = useState<ReactFragment>();
-	const ref:RefObject<HTMLDivElement> = createRef();
-	const containerRef:RefObject<HTMLDivElement> = createRef();
+	const ref:RefObject<HTMLDivElement> = useRef();
+	const containerRef:RefObject<HTMLDivElement> = useRef();
 
 	let observer: ResizeObserver;
 

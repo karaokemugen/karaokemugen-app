@@ -1,7 +1,7 @@
 import './ProgressBar.scss';
 
 import i18next from 'i18next';
-import { createRef, ReactFragment, useContext, useEffect, useState } from 'react';
+import { ReactFragment, useContext, useEffect, useRef, useState } from 'react';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
@@ -23,9 +23,9 @@ function ProgressBar() {
 
 	// Int (ms) : time unit between every call
 	const refreshTime = 1000;
-	const refBar = createRef<HTMLDivElement>();
-	const refCont = createRef<HTMLDivElement>();
-	const refP = createRef<HTMLParagraphElement>();
+	const refBar = useRef<HTMLDivElement>();
+	const refCont = useRef<HTMLDivElement>();
+	const refP = useRef<HTMLParagraphElement>();
 	let timeout: NodeJS.Timeout;
 
 	const mouseDownAction = (e: any) => {
