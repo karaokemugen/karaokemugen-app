@@ -8,7 +8,7 @@ import { DBPLC } from '../src/types/database/playlist';
 import { allKIDs, commandBackend, getToken, setPlaid, socket,testKara } from './util/util';
 
 describe('Playlists', () => {
-	let playlistExport: PlaylistExport;	
+	let playlistExport: PlaylistExport;
 	let newPlaylistID: string;
 	let currentPlaylistID: string;
 	let publicPlaylistID: string;
@@ -95,7 +95,7 @@ describe('Playlists', () => {
 			testKara(plc, { tagDetails: 'short', plc: true });
 		}
 		PLCID = data.content[0].plcid;
-	});	
+	});
 
 	it('Get specific karaoke in a playlist', async () => {
 		const data = await commandBackend(token, 'getPLC', {
@@ -251,16 +251,16 @@ describe('Playlists', () => {
 		expect(data.PlaylistInformation.name).to.be.a('string');
 		for (const c of data.PlaylistCriterias) {
 			expect(c.type).to.be.a('number');
-			expect(c.value).to.exist;				
-		}			
+			expect(c.value).to.exist;
+		}
 	}
 
 	it('Export a dumb playlist', async () => {
-		const data = await commandBackend(token, 'exportPlaylist', { plaid: newPlaylistID });		
+		const data = await commandBackend(token, 'exportPlaylist', { plaid: newPlaylistID });
 		testExport(data);
 		playlistExport = data;
 	});
-	
+
 	it('Import a dumb playlist', async () => {
 		const data = {
 			playlist: playlistExport
@@ -472,7 +472,7 @@ describe('Playlists', () => {
 					value: bannedKID,
 					plaid: newBlacklistPlaylistID
 				}
-			]			
+			]
 		};
 		await commandBackend(token, 'addCriterias', data);
 		return new Promise(resolve => {
@@ -488,7 +488,7 @@ describe('Playlists', () => {
 	it(`Add a blacklist criteria (song ${bannedKID})`, async () => {
 		return requestAddCriteria();
 	});
-	
+
 	it('Get list of blacklist criterias', async () => {
 		return requestBlacklistCriterias(newBlacklistPlaylistID);
 	});
@@ -528,13 +528,6 @@ describe('Playlists', () => {
 
 	it('Empty list of blacklist criterias', async () => {
 		await commandBackend(token, 'emptyCriterias', {plaid: newBlacklistPlaylistID});
-		return new Promise(resolve => {
-			socket.on('playlistContentsUpdated', plaid => {
-				if (plaid === newBlacklistPlaylistID) {
-					resolve();
-				}
-			});
-		});
 	});
 
 	it('Get blacklist AFTER empty', async () => {
@@ -570,6 +563,6 @@ describe('Playlists', () => {
 	it('Get list of karaokes in a smart playlist', async () => {
 		const data = await commandBackend(token, 'getPlaylistContents', {plaid: newSmartPlaylistID});
 		expect(data.content.length).to.be.at.least(1);
-		expect(data.content[0].kid === bannedKID);		
-	});	
+		expect(data.content[0].kid === bannedKID);
+	});
 });
