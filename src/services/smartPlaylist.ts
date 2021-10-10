@@ -78,6 +78,7 @@ export async function updateSmartPlaylist(plaid: string) {
 		selectKarasFromCriterias(plaid, pl.type_smart)
 	]);
 	// We compare what we have in the playlist and what we have in the generated list, removing and adding songs without changing the order.
+
 	const removedSongs = plc.filter(pc => !list.find(l => l.kid === pc.kid));
 	const addedSongs = list.filter(l => !plc.find(pc => pc.kid === l.kid));
 	const sameSongs = list.filter(l => plc.find(pc => pc.kid === l.kid));
@@ -115,12 +116,24 @@ export async function updateSmartPlaylist(plaid: string) {
 	});
 
 	// Removed songs, that's simple.
-	if (removedSongs.length > 0) await deleteKaraFromPlaylist(removedSongs.map(s => s.plcid), {role: 'admin', username: 'admin'}, false, true);
-	if (addedSongs.length > 0) await addKaraToPlaylist(addedSongs.map(s => s.kid), pl.username, plaid, undefined, true, false, newArray);
+	if (removedSongs.length > 0) try {
+		await deleteKaraFromPlaylist(removedSongs.map(s => s.plcid), {role: 'admin', username: 'admin'}, false, true);
+	} catch(err) {
+		logger.warn(`Unable to remove karaokes from playlist "${pl.name}"`, {service: 'SmartPlaylist', obj: err});
+	}
+	if (addedSongs.length > 0) try {
+		await addKaraToPlaylist(addedSongs.map(s => s.kid), pl.username, plaid, undefined, true, false, newArray);
+	} catch(err) {
+		logger.warn(`Unable to add karaokes to playlist "${pl.name}"`, {service: 'SmartPlaylist', obj: err});
+	}
 	for (const song of modifiedSongs) {
-		await editPLC([song.plcid], {
-			criterias: song.criterias
-		}, false);
+		try {
+			await editPLC([song.plcid], {
+				criterias: song.criterias
+			}, false);
+		} catch(err) {
+			logger.warn(`Unable to edit PLCs in playlist "${pl.name}"`, {service: 'SmartPlaylist', obj: err});
+		}
 	}
 	updatePlaylistLastEditTime(plaid);
 	emitWS('playlistContentsUpdated', plaid);
@@ -261,7 +274,8 @@ export async function createProblematicSmartPlaylist() {
 		modified_at: new Date(),
 		flag_visible: true,
 		flag_smart: true,
-		username: 'admin'
+		username: 'admin',
+		type_smart: 'UNION'
 	});
 	const blcs: Criteria[] = [];
 
