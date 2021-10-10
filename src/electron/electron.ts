@@ -28,7 +28,6 @@ import { emitIPC } from './electronLogger';
 import { getMenu,initMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
-export let zipWorker: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
 export let chibiPlaylistWindow: Electron.BrowserWindow;
 
@@ -51,18 +50,16 @@ export function startElectron() {
 		}
 		// Register km:// protocol for internal use only.
 		registerKMProtocol();
-		// Create zip decompression worker to avoid blocking the main event loop.
-		createZipWorker();
 		// Create electron window with init screen
 		if (!getState().opt.cli) await initElectronWindow();
 		// Once init page is ready, or if we're in cli mode we start running init operations
-		// 
+		//
 		if (getState().opt.cli) {
-			await initMain();		
+			await initMain();
 		} else {
-			ipcMain.once('initPageReady', initMain);		
+			ipcMain.once('initPageReady', initMain);
 		}
-		registerIPCEvents();		
+		registerIPCEvents();
 	});
 
 	// macOS only. Yes.
@@ -76,7 +73,7 @@ export function startElectron() {
 	});
 
 	// Recreate the window if the app is clicked on in the dock(for macOS)
-	app.on('activate', async () => {		
+	app.on('activate', async () => {
 		if (win === null) {
 			await initElectronWindow();
 		}
@@ -103,7 +100,7 @@ export function startElectron() {
 	app.on('will-quit', () => {
 		exit(0);
 	});
-	
+
 	if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
 }
 
@@ -298,31 +295,6 @@ async function initElectronWindow() {
 	applyMenu();
 }
 
-export async function createZipWorker() {
-	zipWorker = new BrowserWindow({
-		show: getState().opt.debug,
-		webPreferences: {
-			nodeIntegration: true,
-			contextIsolation: false
-		}
-	});
-	zipWorker.loadURL(`file://${resolve(getState().resourcePath, 'zipWorker/index.html')}`);
-	zipWorker.setMenu(Menu.buildFromTemplate([{
-		label: i18next.t('MENU_VIEW'),
-		submenu: [
-			{ label: i18next.t('MENU_VIEW_RELOAD'), role: 'reload' },
-			{ label: i18next.t('MENU_VIEW_RELOADFORCE'), role: 'forceReload' },
-			{ label: i18next.t('MENU_VIEW_TOGGLEDEVTOOLS'), role: 'toggleDevTools' },
-			{ type: 'separator' },
-			{ label: i18next.t('MENU_VIEW_RESETZOOM'), role: 'resetZoom' },
-			{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomIn' },
-			{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomOut' },
-			{ type: 'separator' },
-			{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
-		]
-	}]));
-}
-
 async function createWindow() {
 	// Create the browser window
 	const state = getState();
@@ -361,7 +333,6 @@ async function createWindow() {
 		win = null;
 		chibiPlayerWindow?.destroy();
 		chibiPlaylistWindow?.destroy();
-		zipWorker?.destroy();
 	});
 }
 

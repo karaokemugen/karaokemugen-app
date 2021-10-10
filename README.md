@@ -216,7 +216,13 @@ yarn startNoElectron
 
 ## Translations
 
-Currently French and English are supported. Translators are welcome!
+### Frontend
+
+[![Translation status frontend](https://hosted.weblate.org/widgets/karaoke-mugen/-/karaoke-mugen-app-frontend/multi-auto.svg)](https://hosted.weblate.org/engage/karaoke-mugen/)
+
+### Backend
+
+[![Translation status backend](https://hosted.weblate.org/widgets/karaoke-mugen/-/karaoke-mugen-app-backend/multi-auto.svg)](https://hosted.weblate.org/engage/karaoke-mugen/)
 
 ## Contact
 
@@ -248,6 +254,10 @@ Thanks to the [BrowserStack testing solution](https://browserstack.com), we can 
 <img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium full logo" width="125"/>
 
 Thanks to [MacStadium](http://www.macstadium.com), we have a Mac mini M1 to run tests and CI to build Karaoke Mugen for the M1 architecture!
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Weblate_logo.svg/1024px-Weblate_logo.svg.png" alts="Weblate logo" width="125"/>
+
+Thanks to [Weblate](https://weblate.org) we can allow people to more easily contribute to translating the app in many languages!
 
 ## Credits
 

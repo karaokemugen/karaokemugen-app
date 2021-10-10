@@ -77,7 +77,7 @@ export default class Downloader {
 		let prettySize = prettyBytes(+size);
 		if (!prettySize) prettySize = 'size unknown';
 		logger.info(`(${this.pos}/${this.list.length}) Downloading ${basename(dl.filename)} (${prettySize})`, {service: 'Download'});
-		this.task.update({
+		if (this.task) this.task.update({
 			subtext: `${basename(dl.filename)} (${prettySize})`,
 			value: 0,
 			total: +size
@@ -104,7 +104,7 @@ export default class Downloader {
 					size = +res.headers['content-length'];
 				})
 				.on('downloadProgress', state => {
-					this.task.update({
+					if (this.task) this.task.update({
 						value: state.transferred
 					});
 				})
@@ -112,7 +112,7 @@ export default class Downloader {
 					reject(err);
 				})
 				.on('end', () => {
-					this.task.update({
+					if (this.task) this.task.update({
 						value: size
 					});
 					resolve();
