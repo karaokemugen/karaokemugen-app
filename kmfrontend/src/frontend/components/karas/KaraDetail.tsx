@@ -452,13 +452,23 @@ export default function KaraDetail(props: IProps) {
 				</button>
 			);
 
-		const downloadVideoButton =
-			kara.download_status !== 'MISSING' ? null : (
-				<button type="button" className="btn btn-action" onClick={downloadMedia}>
-					<i className="fas fa-fw fa-file-download"/>
-					<span>{i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}</span>
-				</button>
-			);
+		const downloadVideoButton = kara.download_status !== 'MISSING' ? null : (
+			<button type="button" className="btn btn-action" onClick={downloadMedia}>
+				<i className="fas fa-fw fa-file-download"/>
+				<span>{i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}</span>
+			</button>
+		);
+
+		const modifyKaraokeButton = context.globalState.settings.data.config.System.Repositories
+			.filter(value => value.Name === kara.repository)[0].MaintainerMode ? (
+				<a href={`/system/karas/${kara.kid}`}>
+					<button type="button" className="btn btn-action" >
+						
+						<i className="fas fa-fw fa-edit"/>
+						<span>{i18next.t('KARA_DETAIL.MODIFY_KARAOKE')}</span>
+					</button>
+				</a>
+			) : null;
 
 		const video = showVideo ? (
 			<video
@@ -564,6 +574,7 @@ export default function KaraDetail(props: IProps) {
 									{makeFavButton}
 									{showVideoButton}
 									{downloadVideoButton}
+									{modifyKaraokeButton}
 								</div>
 								{video}
 								{details}

@@ -269,7 +269,8 @@
         "UPVOTE_NUMBER": "Soutiens",
         "SPONSOR": "Sponsors",
         "JINGLE_SPONSOR": "Jingle & Sponsors",
-        "JINGLE": "Jingle"
+        "JINGLE": "Jingle",
+        "MODIFY_KARAOKE": "Modifier le karaoké"
     },
     "TOOLTIP_UPVOTE": "Voter pour cette chanson",
     "PROFILE_PASSWORDCONF": "Confirmer",

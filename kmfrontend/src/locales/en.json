@@ -270,7 +270,8 @@
         "UPVOTE_NUMBER": "Upvotes",
         "SPONSOR": "Sponsors",
         "JINGLE_SPONSOR": "Jingle & Sponsors",
-        "JINGLE": "Jingle"
+        "JINGLE": "Jingle",
+        "MODIFY_KARAOKE": "Modify karaoke"
     },
     "TOOLTIP_UPVOTE": "Vote for this song",
     "WELCOME_PAGE": {
