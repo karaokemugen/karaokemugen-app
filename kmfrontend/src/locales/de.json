@@ -48,7 +48,7 @@
         "HIDE_LYRICS": "Songtext ausblenden",
         "LYRICS_EXPL": {
             "LINES": "Der aktuelle Songtext wird hier angezeigt.",
-            "CURRENT": "Die fettgeschriebenen Zeilen zeigen die aktuell gesungene Zeile an"
+            "CURRENT": "Die fettgeschriebenen Zeilen zeigen die aktuell gesungene Zeile an."
         },
         "OPEN_POLL": "Für den nächsten Song abstimmen",
         "PUBLIC_SUGGESTIONS": "Öffentliche vorschläge",
@@ -69,7 +69,7 @@
     "PASSWORDCONF": "Passwort bestätigen",
     "PASSWORD": "Passwort (mindestens 8 Zeichen)",
     "NEW_PASSWORD": "Neues Passwort",
-    "WEBAPPMODE_CLOSED_MESSAGE": "Das Interface ist geschlossen, bitte warten",
+    "WEBAPPMODE_CLOSED_MESSAGE": "Das Interface ist geschlossen, bitte warten.",
     "INLINE_TAG": {
         "SEARCH": "Karaokes mit {{tag}}",
         "COUNT_one": "{{count}} Karaoke",
