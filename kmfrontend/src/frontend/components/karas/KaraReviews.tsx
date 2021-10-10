@@ -22,7 +22,7 @@ export default function KaraReviews(props: Props) {
 	const [queue, setQueue] = useState<CompactKara[]>([]);
 	const [i, setI] = useState(0);
 	const [end, setEnd] = useState(false);
-	const context: GlobalContextInterface = useContext(GlobalContext);
+	const context = useContext(GlobalContext);
 	// Stats
 	const [accepted, setAccepted] = useState(0);
 	const [refused, setRefused] = useState(0);

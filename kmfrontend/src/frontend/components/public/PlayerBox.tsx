@@ -5,7 +5,6 @@ import sample from 'lodash.sample';
 import { createRef, ReactFragment,RefObject, useContext, useEffect, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import { ASSLine } from '../../../../../src/lib/types/ass';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
 import { getPreviewLink, getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
@@ -22,37 +21,19 @@ interface IProps {
 	onKaraChange?: (kid: string) => void;
 }
 
-interface IState {
-	width: string;
-	ref: RefObject<HTMLDivElement>;
-	containerRef: RefObject<HTMLDivElement>;
-	title: string;
-	subtitle: string;
-	length: number;
-	timePosition: number;
-	img: string;
-	lyrics: ASSLine[];
-	showLyrics: boolean;
-	kid: string;
-	favorites: Set<string>;
-	karaVersions?: ReactFragment;
-}
-
 function PlayerBox(props: IProps) {
 	const context = useContext(GlobalContext);
 	const [width, setWidth] = useState('0');
-	const [ref, setRef] = useState<RefObject<HTMLDivElement>>(createRef());
-	const [containerRef, setContainerRef] = useState<RefObject<HTMLDivElement>>(createRef());
 	const [title, setTitle] = useState(i18next.t('KARA_PAUSED_WAITING'));
 	const [subtitle, setSubtitle] = useState('');
 	const [length, setLength] = useState(0);
 	const [timePosition, setTimePosition] = useState(0);
 	const [img, setImg] = useState('');
-	const [lyrics, setLyrics] = useState([]);
-	const [showLyrics, setShowLyrics] = useState(false);
 	const [kid, setKid] = useState('');
 	const [favorites, setFavorites] = useState(new Set<string>());
-	const [karaVersions, setKaraVersions] = useState<React.ReactFragment>();
+	const [karaVersions, setKaraVersions] = useState<ReactFragment>();
+	const ref:RefObject<HTMLDivElement> = createRef();
+	const containerRef:RefObject<HTMLDivElement> = createRef();
 
 	let observer: ResizeObserver;
 
@@ -63,7 +44,6 @@ function PlayerBox(props: IProps) {
 		setLength(0);
 		setTimePosition(0);
 		setImg('');
-		setLyrics([]);
 		setKid('');
 	};
 
@@ -223,7 +203,8 @@ function PlayerBox(props: IProps) {
 		} else {
 			if (context.globalState.auth.data.role !== 'guest')
 				getSocket().on('favoritesUpdated', getFavorites);
-		} return () => {
+		}
+		return () => {
 			getSocket().off('playerStatus', refreshPlayerInfos);
 			window.removeEventListener('resize', resizeCheck);
 			if (observer) {
