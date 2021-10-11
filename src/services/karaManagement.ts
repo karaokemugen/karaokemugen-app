@@ -299,13 +299,13 @@ export async function openLyricsFile(kid: string) {
 	try {
 		const { subfile, repository, mediafile } = await getKara(kid, {role: 'admin', username: 'admin'});
 		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
-		if (extname(lyricsPath) === '.ass' && mediafile && !mediafile.match(audioFileRegexp)) {
+		if (extname(lyricsPath) === '.ass' && mediafile) {
 			for (const repo of resolvedPathRepos('Medias', repository)) {
 				const mediaPath = resolve(repo, mediafile);
 				if (await asyncExists(mediaPath, true)) {
 					const garbageBlock = `[Aegisub Project Garbage]
 Audio File: ${mediaPath}
-Video File: ${mediaPath}
+${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
 `;
 
 					let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
