@@ -504,15 +504,15 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 		const repo = getRepo(repoName);
 		const state = getState();
 		if (!repo) throw 'Unknown repository';
-		repo.Path.Medias = [relativePath(state.dataPath, newPath)];
 		await checkRepoPaths(repo);
 		logger.info(`Moving ${repoName} medias repository to ${newPath}...`, {service: 'Repo'});
 		const moveTasks = [];
 		for (const dir of repo.Path.Medias) {
-			if (resolve(state.dataPath, dir) === resolve(newPath, 'medias')) return;
-			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), resolve(newPath, 'medias/')));
+			if (resolve(state.dataPath, dir) === newPath) return;
+			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), newPath));
 		}
 		await Promise.all(moveTasks);
+		repo.Path.Medias = [relativePath(state.dataPath, newPath)];
 		await editRepo(repoName, repo, true);
 	} catch(err) {
 		logger.error(`Failed to move repo ${repoName}`, {service: 'Repo', obj: err});
