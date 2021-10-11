@@ -178,12 +178,13 @@ export function insertOnlineRequested(requested: string[][]) {
 }
 
 export async function updateKaraParents(kara: Kara) {
+	// First removing all parents for that (child) karaoke
 	await db().query(sqldeleteChildrenKara, [kara.kid]);
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
 		const pkara = await getKaraMini(pkid);
 		if (kara.repository !== pkara.repository) {
-			throw new Error(`${pkid} does not exists or is not in ${kara.repository} repository`);
+			throw new Error(`${pkid} is not in ${kara.repository} repository`);
 		}
 		await db().query(yesql(sqlinsertChildrenParentKara)({
 			parent_kid: pkid,

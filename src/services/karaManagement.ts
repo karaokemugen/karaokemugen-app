@@ -19,7 +19,6 @@ import { asyncExists, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
-import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
@@ -42,8 +41,10 @@ export async function updateTags(kara: Kara) {
 
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await addKara(kara);
-	emitWS('statsRefresh');
-	await Promise.all([updateKaraParents(kara), updateTags(kara)]);
+	await Promise.all([
+		updateKaraParents(kara), 
+		updateTags(kara)
+	]);
 	if (opts.refresh) {
 		await refreshKarasAfterDBChange('ADD', [kara], true);
 		updateAllSmartPlaylists();
@@ -54,7 +55,10 @@ export async function editKaraInDB(kara: Kara, opts = {
 	refresh: true
 }) {
 	profile('editKaraDB');
-	const promises = [updateKara(kara), updateKaraParents(kara)];
+	const promises = [
+		updateKara(kara), 
+		updateKaraParents(kara)
+	];
 	if (kara.newTags) promises.push(updateTags(kara));
 	await Promise.all(promises);
 	if (opts.refresh) {
@@ -69,6 +73,7 @@ export async function deleteKara(kids: string[], refresh = true, deleteFiles = {
 		q: `k:${kids.join(',')}`,
 	});
 	if (karas.length === 0) throw {code: 404, msg: `Unknown kara IDs in ${kids.join(',')}`};
+	if (karas.some(k => k.children && k.children.length > 0)) throw {code: 409, msg: 'Some songs have children!'};
 	for (const kara of karas) {
 		// Remove files
 		if (kara.download_status === 'DOWNLOADED' && deleteFiles.media) {
@@ -98,7 +103,6 @@ export async function deleteKara(kids: string[], refresh = true, deleteFiles = {
 	saveSetting('baseChecksum', getStoreChecksum());
 	// Remove kara from database
 	await deleteKaraDB(karas.map(k => k.kid));
-	emitWS('statsRefresh');
 	if (refresh) {
 		await refreshKarasDelete(karas.map(k => k.kid));
 		refreshTags();
