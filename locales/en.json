@@ -203,5 +203,7 @@
             "TITLE": "Migration problem",
             "BODY": "The {{repo}} repository wasn't able to be migrated to the new repositories management system. The repository was disabled, you can enable it again by going into the system panel and configure it correctly. You can use the Contact us button if you need help."
         }
-    }
+    },
+    "OFFICIAL_WEBSITE": "Official Website",
+    "SUGGEST_SONGS": "Suggest songs!"
 }
