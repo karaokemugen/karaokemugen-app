@@ -42,7 +42,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 		const buttons = [];
 		if (getState().remoteAccess && 'host' in getState().remoteAccess) {
 			buttons.push({
-				label: i18next.t('SUGGEST_SONGS'), url: `https://${getState().remoteAccess}`
+				label: i18next.t('SUGGEST_SONGS'), url: getState().osURL
 			});
 		}
 		buttons.push({
