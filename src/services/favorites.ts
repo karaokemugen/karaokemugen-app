@@ -121,11 +121,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 export async function exportFavorites(username: string) {
 	username = username.toLowerCase();
 	const favs = await getFavorites({
-		username: username,
-		filter: null,
-		lang: null,
-		from: 0,
-		size: 99999999
+		username: username		
 	});
 	if (favs.content.length === 0) throw {code: 404, msg: 'No favorites'};
 	return {
@@ -186,11 +182,7 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 			logger.warn(`Username ${user} does not exist`, {service: 'Favorites'});
 		} else {
 			const favs = await getFavorites({
-				username: user,
-				filter: null,
-				lang: null,
-				from: 0,
-				size: 9999999
+				username: user				
 			});
 			for (const f of favs.content) {
 				if (!faves.find(fav => fav.kid === f.kid)) faves.push({

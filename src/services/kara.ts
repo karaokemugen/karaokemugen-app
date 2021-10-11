@@ -98,15 +98,8 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	profile('getKaras');
 	try {
 		const pl = await selectAllKaras({
-			username: params.token?.username || 'admin',
-			filter: params.filter || '',
-			order: params.order,
-			q: params.q,
-			from: params.from || 0,
-			size: params.size || 9999999999,
-			random: params.random,
-			blacklist: params.blacklist,
-			parentsOnly: params.parentsOnly
+			...params,
+			username: params.token?.username || 'admin'			
 		});
 		profile('formatList');
 		const count = pl.length > 0 ? pl[0].count : 0;
