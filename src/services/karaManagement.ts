@@ -14,7 +14,7 @@ import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { Kara, KaraTag } from '../lib/types/kara';
 import { resolvedPathRepos } from '../lib/utils/config';
-import { getTagTypeName, tagTypes } from '../lib/utils/constants';
+import { audioFileRegexp, getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { asyncExists, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
@@ -299,7 +299,7 @@ export async function openLyricsFile(kid: string) {
 	try {
 		const { subfile, repository, mediafile } = await getKara(kid, {role: 'admin', username: 'admin'});
 		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
-		if (extname(lyricsPath) === '.ass' && mediafile) {
+		if (extname(lyricsPath) === '.ass' && mediafile && !mediafile.match(audioFileRegexp)) {
 			for (const repo of resolvedPathRepos('Medias', repository)) {
 				const mediaPath = resolve(repo, mediafile);
 				if (await asyncExists(mediaPath, true)) {
