@@ -5,7 +5,7 @@ import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { resetSecurityCode } from '../../services/auth';
-import { createAdminUser, createUser, deleteUser, editUser, findUserByName, listUsers } from '../../services/user';
+import { createAdminUser, createUser, editUser, findUserByName, listUsers,removeUser } from '../../services/user';
 import { convertToRemoteUser, removeRemoteUser, resetRemotePassword } from '../../services/userOnline';
 import { getState } from '../../utils/state';
 import { APIMessage,errMessage } from '../common';
@@ -70,7 +70,7 @@ export default function userController(router: SocketIOApp) {
 	router.route('deleteUser', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			await deleteUser(req.body.username);
+			await removeUser(req.body.username);
 			return {code: 200, message: APIMessage('USER_DELETED')};
 		} catch(err) {
 			errMessage(err.msg, err.details);
@@ -142,7 +142,7 @@ export default function userController(router: SocketIOApp) {
 	router.route('deleteMyAccount', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
-			await deleteUser(req.token.username);
+			await removeUser(req.token.username);
 			return {code: 200, message: APIMessage('USER_DELETED')};
 		} catch(err) {
 			const code = 'USER_DELETE_ERROR';

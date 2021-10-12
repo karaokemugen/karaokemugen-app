@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { DBUser } from '../lib/types/database/user';
 import logger from '../lib/utils/logger';
 import {importFavorites} from '../services/favorites';
-import { deleteUser, editUser, findUserByName, listUsers } from '../services/user';
+import { editUser, findUserByName, listUsers,removeUser } from '../services/user';
 import { Favorite } from '../types/stats';
 
 // Map io connections
@@ -63,7 +63,7 @@ function setupUserWatch(server: string) {
 		const login = `${user}@${server}`;
 		try {
 			logger.info(`${login} user was DELETED on remote, delete local account`, { service: 'RemoteUser' });
-			deleteUser(login).catch(err => {
+			removeUser(login).catch(err => {
 				logger.warn(`Cannot remove remote user ${login}`, { service: 'RemoteUser', obj: err });
 			});
 		} catch (err) {
@@ -89,7 +89,7 @@ export function startSub(user: string, server: string) {
 			try {
 				logger.info(`User ${name} doesn't exist anymore on remote, delete local version.`, { service: 'RemoteUser' });
 				// It's okay if the local version is already deleted.
-				deleteUser(name).catch(() => {});
+				removeUser(name).catch(() => {});
 			} catch (err) {
 				logger.warn(`Cannot delete ${name}`, { service: 'RemoteUser' });
 			}
