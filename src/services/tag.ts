@@ -3,7 +3,7 @@ import { dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, removeTagInStore, sortKaraStore, sortTagsStore } from '../dao/dataStore';
-import { deleteTag, insertTag, selectAllTags, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini, updateKaraTagsTID, updateTag } from '../dao/tag';
+import { deleteTag, insertTag, selectAllTags, selectTagByNameAndType, updateKaraTagsTID, updateTag } from '../dao/tag';
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKarasUpdate } from '../lib/dao/kara';
@@ -46,7 +46,7 @@ export async function getTags(params: TagParams) {
 }
 
 export async function getDuplicateTags() {
-	const tags = await selectDuplicateTags();
+	const tags = await selectAllTags({duplicates: true});
 	return formatTagList(tags, 0, tags.length);
 }
 
@@ -88,12 +88,9 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 	}
 }
 
-export function getTag(tid: string) {
-	return selectTag(tid);
-}
-
-export function getTagMini(tid: string) {
-	return selectTagMini(tid);
+export async function getTag(tid: string) {
+	const tags = await selectAllTags({tid: tid});
+	return tags[0];
 }
 
 export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
@@ -120,8 +117,8 @@ export async function mergeTags(tid1: string, tid2: string) {
 	});
 	try {
 		const [tag1, tag2] = await Promise.all([
-			getTagMini(tid1),
-			getTagMini(tid2)
+			getTag(tid1),
+			getTag(tid2)
 		]);
 		if (!tag1 || !tag2) throw {code: 404};
 		task.update({
@@ -194,7 +191,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 	});
 	try {
 		profile('editTag');
-		const oldTag = await getTagMini(tid);
+		const oldTag = await getTag(tid);
 		if (!oldTag) throw {code: 404, msg: 'Tag ID unknown'};
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository) throw {code: 409, msg: 'Tag repository cannot be modified. Use copy function instead'};
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
@@ -270,7 +267,7 @@ export async function removeTag(tids: string[], opt = {
 }) {
 	const tags: DBTagMini[] = [];
 	for (const tid of tids) {
-		const tag = await getTagMini(tid);
+		const tag = await getTag(tid);
 		if (tag) tags.push(tag);
 	}
 	let karasToRemoveTagIn: DBKara[];
@@ -303,7 +300,7 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	const tagFileData = await getDataFromTagFile(file);
 	if (!tagFileData) return null;
 	try {
-		const tagDBData = await getTagMini(tagFileData.tid);
+		const tagDBData = await getTag(tagFileData.tid);
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository && tagDBData.modified_at.toISOString() !== tagFileData.modified_at) {
 				// Only edit if repositories are the same and modified_at are different.
@@ -327,7 +324,7 @@ export async function consolidateTagsInRepo(kara: Kara) {
 	for (const tagType of Object.keys(tagTypes)) {
 		if (kara[tagType]) {
 			for (const karaTag of kara[tagType]) {
-				const tag = await getTagMini(karaTag.tid);
+				const tag = await getTag(karaTag.tid);
 				if (!tag) continue;
 				if (tag.repository !== kara.repository) {
 					// This might need to be copied

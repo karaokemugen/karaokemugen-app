@@ -15,6 +15,7 @@ import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { DBKara } from '../lib/types/database/kara';
 import { Kara, KaraTag } from '../lib/types/kara';
+import { Tag } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName, tagTypes } from '../lib/utils/constants';
 import { asyncExists, resolveFileInDirs } from '../lib/utils/files';
@@ -161,9 +162,12 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			// If for some reason tag couldn't be found, continue.
 			if (!tag) continue;
 			// Modify tag file we just copied to change its repo
-			tag.repository = repoName;
-			tag.modified_at = new Date().toISOString();
-			tasks.push(writeTagFile(tag, resolvedPathRepos('Tags', repoName)[0]));
+			const newTag: Tag = {
+				...tag,
+				repository: repoName,
+				modified_at: new Date().toISOString()
+			};
+			tasks.push(writeTagFile(newTag, resolvedPathRepos('Tags', repoName)[0]));
 		}
 		await Promise.all(tasks);
 	} catch(err) {

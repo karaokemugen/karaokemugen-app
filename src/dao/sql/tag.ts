@@ -1,61 +1,5 @@
 // SQL for tags
 
-export const sqlgetTagMini = `
-SELECT pk_tid AS tid,
-	name,
-	i18n,
-	types,
-	tagfile,
-	repository,
-	short,
-	aliases,
-	modified_at,
-	problematic,
-	nolivedownload AS "noLiveDownload",
-	priority,
-	karafile_tag
-FROM tag
-WHERE pk_tid = $1
-`;
-
-export const sqlgetTag = `
-SELECT t.pk_tid AS tid,
-	t.name,
-	t.types,
-	t.short,
-	t.aliases,
-	t.i18n,
-	t.modified_at,
-	t.tagfile,
-	t.repository,
-	t.problematic,
-	t.nolivedownload AS "noLiveDownload",
-	t.priority,
-	t.karafile_tag,
-	at.karacount
-FROM tag t
-LEFT JOIN all_tags at ON at.pk_tid = $1
-WHERE t.pk_tid = $1
-`;
-
-export const sqlselectDuplicateTags = `
-SELECT pk_tid AS tid, 
-	name, 
-	types, 
-	short, 
-	aliases, 
-	i18n, 
-	modified_at, 
-	tagfile, 
-	repository, 
-	problematic, 
-	nolivedownload AS "noLiveDownload",
-	karafile_tag,
-	priority 
-FROM tag ou
-WHERE name in (select name FROM tag GROUP BY name HAVING COUNT(name) > 1)
-`;
-
 export const sqlgetAllTags = (
 	filterClauses: string[],
 	typeClauses: string,
@@ -65,7 +9,8 @@ export const sqlgetAllTags = (
 	additionnalFrom: string[],
 	joinClauses: string,
 	stripClause: string,
-	probClause: string
+	probClause: string,
+	whereClause: string
 ) => `
 SELECT t.pk_tid AS tid,
 	t.types,
@@ -91,7 +36,8 @@ WHERE 1 = 1
   ${typeClauses}
   ${stripClause}
   ${probClause}
-ORDER BY name${orderClauses}
+  ${whereClause}
+ORDER BY name ${orderClauses}
 ${limitClause}
 ${offsetClause}
 `;
@@ -143,7 +89,9 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 `;
 
 export const sqlupdateKaraTagsTID = `
-UPDATE kara_tag SET fk_tid = $2 WHERE fk_tid = $1 AND fk_kid NOT IN (
+UPDATE kara_tag 
+SET fk_tid = $2 
+WHERE fk_tid = $1 AND fk_kid NOT IN (
 	SELECT fk_kid FROM kara_tag WHERE fk_tid = $2
 );
 `;
