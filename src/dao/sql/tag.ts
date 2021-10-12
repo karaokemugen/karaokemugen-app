@@ -39,7 +39,20 @@ WHERE t.pk_tid = $1
 `;
 
 export const sqlselectDuplicateTags = `
-SELECT pk_tid AS tid, name, types, short, aliases, i18n, modified_at, tagfile, repository, problematic, nolivedownload, karafile_tag AS "noLiveDownload", priority FROM tag ou
+SELECT pk_tid AS tid, 
+	name, 
+	types, 
+	short, 
+	aliases, 
+	i18n, 
+	modified_at, 
+	tagfile, 
+	repository, 
+	problematic, 
+	nolivedownload AS "noLiveDownload",
+	karafile_tag,
+	priority 
+FROM tag ou
 WHERE name in (select name FROM tag GROUP BY name HAVING COUNT(name) > 1)
 `;
 
