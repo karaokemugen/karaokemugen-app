@@ -36,7 +36,7 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 
 	refresh = async () => {
 		try {
-			const res = await commandBackend('getDuplicateTags', undefined, false, 300000);
+			const res = await commandBackend('getTags', {duplicates: true}, false, 300000);
 			this.setState({ tags: res.content });
 		} catch (error) {
 			// already display

@@ -5,7 +5,7 @@ import { APIData } from '../../lib/types/api';
 import { isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getYears } from '../../services/kara';
-import { addTag, copyTagToRepo, editTag, getDuplicateTags, getTag, getTags, mergeTags,removeTag } from '../../services/tag';
+import { addTag, copyTagToRepo, editTag, getTag, getTags, mergeTags,removeTag } from '../../services/tag';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -14,13 +14,7 @@ export default function tagsController(router: SocketIOApp) {
 	router.route('getTags', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await getTags({
-				filter: req.body?.filter,
-				type: req.body?.type,
-				from: req.body?.from,
-				size: req.body?.size,
-				stripEmpty: req.body?.stripEmpty
-			});
+			return await getTags(req.body);
 		} catch(err) {
 			const code = 'TAGS_LIST_ERROR';
 			errMessage(code, err);
@@ -48,18 +42,7 @@ export default function tagsController(router: SocketIOApp) {
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
-	});
-
-	router.route('getDuplicateTags', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'admin', 'open');
-		try {
-			return await getDuplicateTags();
-		} catch(err) {
-			const code = 'TAG_DUPLICATE_LIST_ERROR';
-			errMessage(code, err);
-			throw {code: err?.code || 500, message: APIMessage(code)};
-		}
-	});
+	});	
 
 	router.route('mergeTags', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.tid1) || !isUUID(req.body.tid2)) throw {code: 400};

@@ -45,11 +45,6 @@ export async function getTags(params: TagParams) {
 	return ret;
 }
 
-export async function getDuplicateTags() {
-	const tags = await selectAllTags({duplicates: true});
-	return formatTagList(tags, 0, tags.length);
-}
-
 export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true}): Promise<Tag> {
 	let task: Task;
 	if (!opts.silent) task = new Task({

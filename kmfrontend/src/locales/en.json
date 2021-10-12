@@ -1232,7 +1232,6 @@
         "TAGS_LIST_ERROR": "Error fetching tags list",
         "TAG_CREATE_ERROR": "Error creating tag",
         "YEARS_LIST_ERROR": "Error fetching list of years",
-        "TAG_DUPLICATE_LIST_ERROR": "Error fetching tags dupes list",
         "TAGS_MERGED_ERROR": "Error merging tags",
         "TAG_DELETE_ERROR": "Error deleting tag",
         "TAG_GET_ERROR": "Error fetching tag",
