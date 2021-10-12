@@ -1121,6 +1121,7 @@
         "CREATING_TAG_IN_PROGRESS": "Creating tag…",
         "EDITING_TAG_IN_PROGRESS": "Editing tag…",
         "DELETING_TAG_IN_PROGRESS": "Deleting tag…",
+        "DELETING_PARENT_IN_PROGRESS": "Deleting parent song…",
         "MERGING_TAGS_IN_PROGRESS": "Merging tags…",
         "UPDATING_MEDIAS": "Updating medias…",
         "UPDATING_WORKDIR": "Updating workdir",

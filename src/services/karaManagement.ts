@@ -5,6 +5,7 @@ import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
 import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKara, updateKaraParents } from '../dao/kara';
+import { removeParentInKaras } from '../dao/karafile';
 import { selectPlaylistContentsMicro } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
@@ -12,6 +13,7 @@ import { refreshKaras, refreshKarasDelete, refreshKarasInsert, refreshKarasUpdat
 import { getDataFromKaraFile, parseKara, writeKara } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
+import { DBKara } from '../lib/types/database/kara';
 import { Kara, KaraTag } from '../lib/types/kara';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName, tagTypes } from '../lib/utils/constants';
@@ -68,12 +70,17 @@ export async function editKaraInDB(kara: Kara, opts = {
 	profile('editKaraDB');
 }
 
-export async function deleteKara(kids: string[], refresh = true, deleteFiles = {media: true, kara: true}) {
+interface Family {
+	parent: string,
+	children: DBKara[]
+}
+
+export async function deleteKara(kids: string[], refresh = true, deleteFiles = {media: true, kara: true}) {	
+	const parents: Family[] = [];
 	const karas = await selectAllKaras({
 		q: `k:${kids.join(',')}`,
 	});
-	if (karas.length === 0) throw {code: 404, msg: `Unknown kara IDs in ${kids.join(',')}`};
-	if (karas.some(k => k.children && k.children.length > 0)) throw {code: 409, msg: 'Some songs have children!'};
+	if (karas.length === 0) throw {code: 404, msg: `Unknown kara IDs in ${kids.join(',')}`};	
 	for (const kara of karas) {
 		// Remove files
 		if (kara.download_status === 'DOWNLOADED' && deleteFiles.media) {
@@ -96,13 +103,20 @@ export async function deleteKara(kids: string[], refresh = true, deleteFiles = {
 			}
 		}
 		logger.info(`Song files of ${kara.karafile} removed`, {service: 'Kara'});
-	}
-	for (const kara of karas) {
 		removeKaraInStore(kara.kid);
+		if (kara.children?.length > 0) parents.push({
+			parent: kara.kid,
+			children: await selectAllKaras({
+				q: `k:${kara.children.join(',')}`,
+			})
+		});
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
 	// Remove kara from database
-	await deleteKaraDB(karas.map(k => k.kid));
+	for (const parent of parents) {
+		await removeParentInKaras(parent.parent, parent.children);
+	}	
+	await deleteKaraDB(karas.map(k => k.kid));		
 	if (refresh) {
 		await refreshKarasDelete(karas.map(k => k.kid));
 		refreshTags();
