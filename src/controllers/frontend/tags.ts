@@ -14,7 +14,7 @@ export default function tagsController(router: SocketIOApp) {
 	router.route('getTags', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await getTags(req.body);
+			return await getTags(req.body || {});
 		} catch(err) {
 			const code = 'TAGS_LIST_ERROR';
 			errMessage(code, err);
@@ -42,7 +42,7 @@ export default function tagsController(router: SocketIOApp) {
 			errMessage(code, err);
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
-	});	
+	});
 
 	router.route('mergeTags', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.tid1) || !isUUID(req.body.tid2)) throw {code: 400};

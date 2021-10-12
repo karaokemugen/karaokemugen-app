@@ -103,7 +103,9 @@ describe('Tags', () => {
 		expect(data.name).to.be.equal(tag2.name);
 	});
 	it('List duplicate tags', async () => {
-		const data = await commandBackend(token, 'getDuplicateTags');
+		const data = await commandBackend(token, 'getTags', {
+			duplicates: true
+		});
 		expect(data.content.length).to.be.greaterThan(1);
 		for (const tag of data.content) {
 			testTag(tag, 'tag');
