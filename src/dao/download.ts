@@ -51,6 +51,6 @@ export function updateDownload(uuid: string, status: string) {
 	]);
 }
 
-export function emptyDownload() {
+export function truncateDownload() {
 	return db().query(sqlemptyDownload);
 }

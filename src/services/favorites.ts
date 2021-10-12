@@ -1,6 +1,6 @@
 import logger from 'winston';
 
-import { clearFavorites, insertFavorites, removeFavorites, selectFavorites } from '../dao/favorites';
+import { deleteFavorites, insertFavorites, selectFavorites,truncateFavorites } from '../dao/favorites';
 import {KaraList} from '../lib/types/kara';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
@@ -86,11 +86,11 @@ export async function convertToRemoteFavorites(username: string, token: string) 
 	}
 }
 
-export async function deleteFavorites(username: string, kids: string[], token: string) {
+export async function removeFavorites(username: string, kids: string[], token: string) {
 	try {
 		profile('deleteFavorites');
 		username = username.toLowerCase();
-		await removeFavorites(kids, username);
+		await deleteFavorites(kids, username);
 		if (username.includes('@') && getConfig().Online.Users) {
 			manageFavoriteInInstanceBatch('DELETE', username, kids, token);
 		}
@@ -152,7 +152,7 @@ export async function importFavorites(favs: FavExport, username: string, token?:
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {
 		if (emptyBefore) {
-			await clearFavorites(username);
+			await truncateFavorites(username);
 		}
 		const favorites = favs.Favorites.map(f => f.kid);
 		const [karasUnknown, userFavorites] = await Promise.all([

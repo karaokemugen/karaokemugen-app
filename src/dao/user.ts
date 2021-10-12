@@ -7,7 +7,7 @@ import { now } from '../lib/utils/date';
 import { DBGuest } from '../types/database/user';
 import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlSelectAllDupeUsers, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateLastLogin } from './sql/user';
 
-export async function getUser(username: string): Promise<DBUser> {
+export async function selectUser(username: string): Promise<DBUser> {
 	const res = await db().query(yesql(sqlselectUserByName)({
 		username: username,
 		last_login_time_limit: new Date(now() - (15 * 60 * 1000))
@@ -25,17 +25,17 @@ export function deleteUser(username: string) {
 	return db().query(sqldeleteUser, [username]);
 }
 
-export async function listUsers(): Promise<DBUser[]> {
+export async function selectUsers(): Promise<DBUser[]> {
 	const res = await db().query(sqlselectUsers, [new Date(now() - (15 * 60 * 1000))]);
 	return res.rows;
 }
 
-export async function listGuests(): Promise<DBGuest[]> {
+export async function selectGuests(): Promise<DBGuest[]> {
 	const res = await db().query(sqlselectGuests);
 	return res.rows;
 }
 
-export function addUser(user: User) {
+export function insertUser(user: User) {
 	return db().query(yesql(sqlcreateUser)({
 		type: user.type,
 		login: user.login,
@@ -48,7 +48,7 @@ export function addUser(user: User) {
 	}));
 }
 
-export async function editUser(user: User): Promise<User> {
+export async function updateUser(user: User): Promise<User> {
 	if (!user.old_login) user.old_login = user.login;
 	const ret = (await db().query(yesql(sqleditUser)({
 		nickname: user.nickname,
@@ -91,7 +91,7 @@ export function reassignToUser(oldUsername: string, username: string) {
 	]);
 }
 
-export async function getRandomGuest(): Promise<string> {
+export async function selectRandomGuest(): Promise<string> {
 	const res = await db().query(sqlselectRandomGuestName, [new Date(now() - (15 * 60 * 1000))]);
 	if (res.rows[0]) return res.rows[0].login;
 	return null;

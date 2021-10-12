@@ -1,6 +1,6 @@
 import logger from 'winston';
 
-import {getUpvotesByPLC,insertUpvote,removeUpvote} from '../dao/upvote';
+import {deleteUpvote,insertUpvote, selectUpvotesByPLC} from '../dao/upvote';
 import {getConfig} from '../lib/utils/config';
 import { emitWS } from '../lib/utils/ws';
 import {getState} from '../utils/state';
@@ -21,7 +21,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		if (!plc) throw {code: 404};
 		if (plc.plaid !== getState().publicPlaid) throw {code: 403, msg: 'UPVOTE_FAILED'};
 		if (plc.username === username) throw {code: 403, msg: 'UPVOTE_NO_SELF'};
-		const userList = await getUpvotesByPLC(plc_id);
+		const userList = await selectUpvotesByPLC(plc_id);
 		if (userList.some(u => u.username === username)) throw {code: 403, msg: 'UPVOTE_ALREADY_DONE'};
 
 		await insertUpvote(plc_id, username);
@@ -40,17 +40,17 @@ export async function addUpvote(plc_id: number, username: string) {
 }
 
 /** Downvote a song */
-export async function deleteUpvote(plc_id: number, username: string) {
+export async function removeUpvote(plc_id: number, username: string) {
 	try {
 		username = username.toLowerCase();
 		const plc = (await getPLCInfoMini([plc_id]))[0];
 		if (!plc) throw {code: 404, msg: 'PLC ID unknown'};
 		if (plc.plaid !== getState().publicPlaid) throw {code: 403, msg: 'DOWNVOTE_FAILED'};
 		if (plc.username === username) throw {code: 403, msg: 'DOWNVOTE_NO_SELF'};
-		const userList = await getUpvotesByPLC(plc_id);
+		const userList = await selectUpvotesByPLC(plc_id);
 		const users = userList.map(u => u.username);
 		if (!users.includes(username)) throw {code: 403, msg: 'DOWNVOTE_ALREADY_DONE'};
-		await removeUpvote(plc_id, username);
+		await deleteUpvote(plc_id, username);
 		// Karaokes are not 'un-freed' when downvoted.^
 		plc.upvotes--;
 		if (plc.plaid === getState().publicPlaid) {

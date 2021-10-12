@@ -675,3 +675,11 @@ UPDATE playlist_content SET
 	flag_free = TRUE
 WHERE created_at <= $1;
 `;
+
+export const sqlgetSongCountPerUser = `
+SELECT COUNT(1)::integer AS count
+FROM playlist_content AS pc
+WHERE pc.fk_login = $2
+	AND pc.fk_id_playlist = $1
+	AND pc.flag_free = FALSE
+`;

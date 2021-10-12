@@ -10,7 +10,7 @@ import isEqual from 'lodash.isequal';
 import merge from 'lodash.merge';
 import {resolve} from 'path';
 
-import { listUsers } from '../dao/user';
+import { selectUsers } from '../dao/user';
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
@@ -89,7 +89,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 		newConfig.Karaoke.Quota.Songs !== oldConfig.Karaoke.Quota.Songs ||
 		newConfig.Karaoke.Quota.Time !== oldConfig.Karaoke.Quota.Time
 	) {
-		const users = await listUsers();
+		const users = await selectUsers();
 		for (const user of users) {
 			updateSongsLeft(user.login, getState().publicPlaid);
 		}

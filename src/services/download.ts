@@ -5,7 +5,7 @@ import {resolve} from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import { APIMessage } from '../controllers/common';
-import {emptyDownload, initDownloads, insertDownloads, selectDownloads, updateDownload, updateDownloaded} from '../dao/download';
+import {initDownloads, insertDownloads, selectDownloads, truncateDownload, updateDownload, updateDownloaded} from '../dao/download';
 import {getConfig, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
 import {asyncMove, resolveFileInDirs} from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
@@ -263,5 +263,5 @@ export function wipeDownloads() {
 	wipeDownloadQueue();
 	initDownloadQueue();
 	emitQueueStatus('stopped');
-	return emptyDownload();
+	return truncateDownload();
 }

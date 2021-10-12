@@ -5,7 +5,7 @@ import { APIData } from '../../lib/types/api';
 import { isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getYears } from '../../services/kara';
-import { addTag, copyTagToRepo, deleteTag, editTag, getDuplicateTags, getTag, getTags, mergeTags } from '../../services/tag';
+import { addTag, copyTagToRepo, editTag, getDuplicateTags, getTag, getTags, mergeTags,removeTag } from '../../services/tag';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -78,7 +78,7 @@ export default function tagsController(router: SocketIOApp) {
 		if (!isUUID(req.body.tids)) throw {code: 400};
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			await deleteTag(req.body.tids);
+			await removeTag(req.body.tids);
 			return {code: 200, message: APIMessage('TAG_DELETED')};
 		} catch(err) {
 			const code = 'TAG_DELETE_ERROR';

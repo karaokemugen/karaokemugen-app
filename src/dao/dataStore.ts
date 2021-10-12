@@ -1,3 +1,7 @@
+/**
+ * Datastore is used to inventory all tags and kara files to determine if the files have changed and we need to re-generate database.
+ */
+
 import parallel from 'async-await-parallel';
 import { promises as fs } from 'fs';
 

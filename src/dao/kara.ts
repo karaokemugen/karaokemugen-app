@@ -7,16 +7,9 @@ import { Kara, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { getState } from '../utils/state';
-import { sqladdRequested, sqladdViewcount, sqldeleteChildrenKara, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetSongCountPerUser, sqlgetYears, sqlinsertChildrenParentKara, sqlinsertKara, sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateKara } from './sql/kara';
+import { sqladdRequested, sqladdViewcount, sqldeleteChildrenKara, sqldeleteKara, sqlgetAllKaras, sqlgetKaraMini, sqlgetYears, sqlinsertChildrenParentKara, sqlinsertKara, sqlselectAllKIDs, sqlTruncateOnlineRequested, sqlupdateKara } from './sql/kara';
 
-
-export async function getSongCountForUser(plaid: string, username: string): Promise<number> {
-	const res = await db().query(sqlgetSongCountPerUser, [plaid, username]);
-	return res.rows[0]?.count || 0;
-}
-
-
-export async function getYears(): Promise<DBYear[]> {
+export async function selectYears(): Promise<DBYear[]> {
 	const res = await db().query(sqlgetYears);
 	return res.rows;
 }
@@ -40,7 +33,7 @@ export async function updateKara(kara: Kara) {
 	}));
 }
 
-export async function addKara(kara: Kara) {
+export async function insertKara(kara: Kara) {
 	await db().query(yesql(sqlinsertKara)({
 		karafile: kara.karafile,
 		mediafile: kara.mediafile,
@@ -141,12 +134,12 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	return res.rows;
 }
 
-export async function getKaraMini(kid: string): Promise<DBKaraBase> {
+export async function selectKaraMini(kid: string): Promise<DBKaraBase> {
 	const res = await db().query(sqlgetKaraMini, [kid]);
 	return res.rows[0] || {};
 }
 
-export function addPlayed(kid: string) {
+export function insertPlayed(kid: string) {
 	return db().query(yesql(sqladdViewcount)({
 		kid: kid,
 		played_at: new Date(),
@@ -154,7 +147,7 @@ export function addPlayed(kid: string) {
 	}));
 }
 
-export function addKaraToRequests(username: string, karaList: string[]) {
+export function insertKaraToRequests(username: string, karaList: string[]) {
 	const karas = karaList.map(kara => ([
 		username,
 		kara,
@@ -169,7 +162,7 @@ export async function selectAllKIDs(): Promise<string[]> {
 	return res.rows.map((k: Kara) => k.kid);
 }
 
-export function emptyOnlineRequested() {
+export function truncateOnlineRequested() {
 	return db().query(sqlTruncateOnlineRequested);
 }
 
@@ -182,7 +175,7 @@ export async function updateKaraParents(kara: Kara) {
 	await db().query(sqldeleteChildrenKara, [kara.kid]);
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
-		const pkara = await getKaraMini(pkid);
+		const pkara = await selectKaraMini(pkid);
 		if (kara.repository !== pkara.repository) {
 			throw new Error(`${pkid} is not in ${kara.repository} repository`);
 		}

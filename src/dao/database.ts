@@ -64,6 +64,7 @@ export async function initDB() {
 	await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 }
 
+/** Remove this in KM 7.0 */
 async function migrateFromDBMigrate() {
 	// Return early if migrations table does not exist
 	let migrationsDone = [];

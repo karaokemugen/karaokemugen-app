@@ -13,7 +13,7 @@ import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { downloadStatuses } from './download';
 import { getKara } from './kara';
-import { addKaraToPlaylist, deleteKaraFromPlaylist, editPLC, getPlaylistContentsMini, getPlaylistInfo, getPlaylists } from './playlist';
+import { addKaraToPlaylist, editPLC, getPlaylistContentsMini, getPlaylistInfo, getPlaylists,removeKaraFromPlaylist } from './playlist';
 import { getTag, getTags } from './tag';
 
 export async function getCriterias(plaid: string, lang?: string, translate = true): Promise<Criteria[]> {
@@ -117,7 +117,7 @@ export async function updateSmartPlaylist(plaid: string) {
 
 	// Removed songs, that's simple.
 	if (removedSongs.length > 0) try {
-		await deleteKaraFromPlaylist(removedSongs.map(s => s.plcid), {role: 'admin', username: 'admin'}, false, true);
+		await removeKaraFromPlaylist(removedSongs.map(s => s.plcid), {role: 'admin', username: 'admin'}, false, true);
 	} catch(err) {
 		logger.warn(`Unable to remove karaokes from playlist "${pl.name}"`, {service: 'SmartPlaylist', obj: err});
 	}

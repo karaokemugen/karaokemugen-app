@@ -3,7 +3,7 @@ import { dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import { addTagToStore, editKaraInStore,editTagInStore, getStoreChecksum, removeTagInStore, sortKaraStore, sortTagsStore } from '../dao/dataStore';
-import { getAllTags, insertTag, removeTag, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini, updateKaraTagsTID, updateTag } from '../dao/tag';
+import { deleteTag, insertTag, selectAllTags, selectDuplicateTags, selectTag, selectTagByNameAndType, selectTagMini, updateKaraTagsTID, updateTag } from '../dao/tag';
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKarasUpdate } from '../lib/dao/kara';
@@ -38,7 +38,7 @@ export function formatTagList(tagList: DBTag[], from: number, count: number) {
 
 export async function getTags(params: TagParams) {
 	profile('getTags');
-	const tags = await getAllTags(params);
+	const tags = await selectAllTags(params);
 	const count = tags.length > 0 ? tags[0].count : 0;
 	const ret = formatTagList(tags, params.from || 0, count);
 	profile('getTags');
@@ -160,7 +160,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		await updateKaraTagsTID(tid1, tagObj.tid);
 		await updateKaraTagsTID(tid2, tagObj.tid);
 		await Promise.all([
-			removeTag([tid1, tid2]),
+			deleteTag([tid1, tid2]),
 			removeTagFile(tag1.tagfile, tag1.repository),
 			removeTagFile(tag2.tagfile, tag2.repository),
 			removeTagInStore(tid1),
@@ -265,7 +265,7 @@ async function getKarasWithTags(tags: DBTagMini[]): Promise<DBKara[]> {
 	return karasToReturn;
 }
 
-export async function deleteTag(tids: string[], opt = {
+export async function removeTag(tids: string[], opt = {
 	refresh: true, removeTagInKaras: true, deleteFile: true
 }) {
 	const tags: DBTagMini[] = [];
@@ -291,7 +291,7 @@ export async function deleteTag(tids: string[], opt = {
 		removeTagInStore(tag.tid);
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
-	await removeTag(tags.map(tag => tag.tid));
+	await deleteTag(tags.map(tag => tag.tid));
 	emitWS('statsRefresh');
 	if (opt.refresh) {
 		if (karasToRemoveTagIn.length > 0) await refreshKarasUpdate(karasToRemoveTagIn.map(k => k.kid));

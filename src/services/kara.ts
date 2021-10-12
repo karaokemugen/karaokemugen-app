@@ -1,12 +1,12 @@
 import internet from 'internet-available';
 
-import {	addPlayed,
-	emptyOnlineRequested,
-	getKaraMini as getKaraMiniDB,
-	getYears as getYearsDB,
-	insertOnlineRequested,
+import {		insertOnlineRequested,
+	insertPlayed,
 	selectAllKaras,
 	selectAllKIDs,
+	selectKaraMini,
+	selectYears,
+	truncateOnlineRequested,
 } from '../dao/kara';
 import {getASS} from '../lib/dao/karafile';
 import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
@@ -59,7 +59,7 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 }
 
 export function getKaraMini(kid: string): Promise<DBKaraBase> {
-	return getKaraMiniDB(kid);
+	return selectKaraMini(kid);
 }
 
 export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
@@ -73,12 +73,12 @@ export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
 
 export async function addPlayedKara(kid: string) {
 	profile('addPlayed');
-	await addPlayed(kid);
+	await insertPlayed(kid);
 	profile('addPlayed');
 }
 
 export async function getYears(): Promise<YearList> {
-	const years = await getYearsDB();
+	const years = await selectYears();
 	return {
 		content: years,
 		infos: {
@@ -177,7 +177,7 @@ export async function fetchPopularSongs() {
 				throw err;
 			}
 		}
-		await emptyOnlineRequested();
+		await truncateOnlineRequested();
 		const kidRequested = Array.from(popularKIDs.entries());
 		await insertOnlineRequested(kidRequested);
 	} catch(err) {

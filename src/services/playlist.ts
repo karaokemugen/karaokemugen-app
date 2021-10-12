@@ -5,22 +5,19 @@ import {resolve} from 'path';
 
 import { APIMessage } from '../controllers/common';
 import {
-	addKaraToRequests,
-	getSongCountForUser,
+	insertKaraToRequests,	
 } from '../dao/kara';
 //DAO
 import {
 	countPlaylistUsers,
+	deleteKaraFromPlaylist,
 	deletePlaylist,
-	editPLCCriterias,
-	getMaxPosInPlaylist,
-	getMaxPosInPlaylistForUser,
-	getSongTimeSpentForUser,
 	insertKaraIntoPlaylist,
 	insertPlaylist,
-	removeKaraFromPlaylist,
 	reorderPlaylist as reorderPL,
 	replacePlaylist,
+	selectMaxPosInPlaylist,
+	selectMaxPosInPlaylistForUser,
 	selectPlaylistContents,
 	selectPlaylistContentsMicro,
 	selectPlaylistContentsMini,
@@ -29,22 +26,25 @@ import {
 	selectPLCByKIDAndUser,
 	selectPLCInfo,
 	selectPLCInfoMini,
-	setPlaying as setPlayingFlag,
-	setPLCAccepted,
-	setPLCFree,
-	setPLCFreeBeforePos,
-	setPLCInvisible,
-	setPLCRefused,
-	setPLCVisible,
-	setPos,
+	selectSongCountForUser,
+	selectSongTimeSpentForUser,
 	shiftPosInPlaylist,
 	trimPlaylist as trimPL,
 	truncatePlaylist,
 	updateFreeOrphanedSongs,
+	updatePlaying as setPlayingFlag,
 	updatePlaylist,
 	updatePlaylistDuration,
 	updatePlaylistKaraCount,
 	updatePlaylistLastEditTime,
+	updatePLCAccepted,
+	updatePLCCriterias,
+	updatePLCFree,
+	updatePLCFreeBeforePos,
+	updatePLCInvisible,
+	updatePLCRefused,
+	updatePLCVisible,
+	updatePos,
 } from '../dao/playlist';
 import { getSongTitle } from '../lib/services/kara';
 import {PLImportConstraints} from '../lib/services/playlist';
@@ -168,12 +168,12 @@ function getPlayingPos(playlist: PLC[]): Pos {
 
 /** Set PLC's flag_free to enabled */
 export function freePLC(plc_ids: number[]) {
-	return setPLCFree(plc_ids);
+	return updatePLCFree(plc_ids);
 }
 
 /** Free all PLCs before a certain position in a playlist */
 export function freePLCBeforePos(pos: number, plaid: string) {
-	return setPLCFreeBeforePos(pos, plaid);
+	return updatePLCFreeBeforePos(pos, plaid);
 }
 
 /** Checks if user is allowed to add a song (quota) */
@@ -185,7 +185,7 @@ export async function isUserAllowedToAddKara(plaid: string, user: User, duration
 		switch(+conf.Karaoke.Quota.Type) {
 			case 2:
 				limit = conf.Karaoke.Quota.Time;
-				let time = await getSongTimeSpentForUser(plaid,user.login);
+				let time = await selectSongTimeSpentForUser(plaid,user.login);
 				if (!time) time = 0;
 				if ((limit - time - duration) < 0) {
 					logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit - time} seconds of time credit left and tried to add ${duration} seconds)`, {service: 'PLC'});
@@ -195,7 +195,7 @@ export async function isUserAllowedToAddKara(plaid: string, user: User, duration
 			case 1:
 			default:
 				limit = conf.Karaoke.Quota.Songs;
-				const count = await getSongCountForUser(plaid,user.login);
+				const count = await selectSongCountForUser(plaid,user.login);
 				if (count >= limit) {
 					logger.debug(`User ${user.login} tried to add more songs than he/she was allowed (${limit})`, {service: 'PLC'});
 					return false;
@@ -503,9 +503,9 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 		});
 
 		const [userMaxPosition, numUsersInPlaylist, playlistMaxPos] = await Promise.all([
-			getMaxPosInPlaylistForUser(plaid, user.login),
+			selectMaxPosInPlaylistForUser(plaid, user.login),
 			countPlaylistUsers(plaid),
-			getMaxPosInPlaylist(plaid),
+			selectMaxPosInPlaylist(plaid),
 		]);
 		const plContents = await selectPlaylistContentsMicro(plaid);
 		// Making a unique ID depending on if we're in public playlist or something else.
@@ -571,7 +571,7 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 		const PLCsInserted = await insertKaraIntoPlaylist(karaList);
 
 		// Song requests by admins are ignored and not added to requests stats
-		if (user.type > 0) addKaraToRequests(user.login, karaList.map(k => k.kid));
+		if (user.type > 0) insertKaraToRequests(user.login, karaList.map(k => k.kid));
 
 		updatePlaylistLastEditTime(plaid);
 
@@ -708,7 +708,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 		if (pos) {
 			await shiftPosInPlaylist(plaid, pos, plcs.length);
 		} else {
-			const maxpos = await getMaxPosInPlaylist(plaid);
+			const maxpos = await selectMaxPosInPlaylist(plaid);
 			const startpos = maxpos + 1;
 			for (const i in plcs) {
 				plcs[i].pos = startpos + +i;
@@ -756,7 +756,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 }
 
 /** Remove song from a playlist */
-export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token, refresh = true, ignorePlaying = false) {
+export async function removeKaraFromPlaylist(plc_ids: number[], token: Token, refresh = true, ignorePlaying = false) {
 	profile('deleteKara');
 	// If we get a single song, it's a user deleting it (most probably)
 	try {
@@ -783,7 +783,7 @@ export async function deleteKaraFromPlaylist(plc_ids: number[], token: Token, re
 			});
 		}
 		logger.debug(`Deleting songs ${plcsNeedingDelete.map(p => p.id).toString()}`, {service: 'Playlist'});
-		await removeKaraFromPlaylist(plcsNeedingDelete.map((p:any) => p.id));
+		await deleteKaraFromPlaylist(plcsNeedingDelete.map((p:any) => p.id));
 		const pubPLID = getState().publicPlaid;
 		const KIDsNeedingUpdate: Set<string> = new Set();
 		for (const plc of plcsNeedingDelete) {
@@ -892,8 +892,8 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			// This is allowed to fail
 		}
 		await Promise.all([
-			setPLCAccepted(plc_ids, true),
-			setPLCRefused(plc_ids, false)
+			updatePLCAccepted(plc_ids, true),
+			updatePLCRefused(plc_ids, false)
 		]);
 	}
 	// Remember kids, flags can also be undefined, that's the magic.
@@ -903,7 +903,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			const currentPLC = currentPlaylist.find(curplc => curplc.kid === plc.kid && curplc.username === plc.username);
 			if (currentPLC) PLCsToDeleteFromCurrent.push(plc_ids);
 		}
-		await setPLCAccepted(plc_ids, params.flag_accepted);
+		await updatePLCAccepted(plc_ids, params.flag_accepted);
 	}
 	if (params.flag_refused === true) {
 		for (const plc of plcs) {
@@ -912,15 +912,15 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 		}
 		params.flag_free = true;
 		await Promise.all([
-			setPLCAccepted(plc_ids, false),
-			setPLCRefused(plc_ids, true)
+			updatePLCAccepted(plc_ids, false),
+			updatePLCRefused(plc_ids, true)
 		]);
 	}
 	if (PLCsToDeleteFromCurrent.length > 0) {
-		deleteKaraFromPlaylist(PLCsToDeleteFromCurrent, {role: 'admin', username: 'admin'}).catch(() => {});
+		removeKaraFromPlaylist(PLCsToDeleteFromCurrent, {role: 'admin', username: 'admin'}).catch(() => {});
 	}
 	if (params.flag_refused === false) {
-		await setPLCRefused(plc_ids, params.flag_refused);
+		await updatePLCRefused(plc_ids, params.flag_refused);
 	}
 	if (params.flag_free === true) {
 		await freePLC(plc_ids);
@@ -931,8 +931,8 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			});
 		}
 	}
-	if (params.flag_visible === true) await setPLCVisible(plc_ids);
-	if (params.flag_visible === false) await setPLCInvisible(plc_ids);
+	if (params.flag_visible === true) await updatePLCVisible(plc_ids);
+	if (params.flag_visible === false) await updatePLCInvisible(plc_ids);
 	if (params.pos) {
 		// Pos works with only the first PLC
 		// If -1 move the song right after the one playing.
@@ -945,7 +945,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 			params.pos = playingPLC?.pos + 1;
 		}
 		await shiftPosInPlaylist(plc.plaid, params.pos, 1);
-		await setPos(plc.plcid, params.pos);
+		await updatePos(plc.plcid, params.pos);
 		await reorderPlaylist(plc.plaid);
 		const currentSong = getState().player.currentSong;
 		// If our new PLC has a position higher or equal than the current song pos in state, we need to update getCurrentSong's position
@@ -959,7 +959,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 		});
 	}
 	if (params.criterias) {
-		await editPLCCriterias(plc_ids, params.criterias);
+		await updatePLCCriterias(plc_ids, params.criterias);
 	}
 	for (const songUpdate of songsLeftToUpdate.values()) {
 		updateSongsLeft(songUpdate.username, songUpdate.plaid);

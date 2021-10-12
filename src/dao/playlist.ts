@@ -12,9 +12,9 @@ import { profile } from '../lib/utils/logger';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { getState } from '../utils/state';
-import { sqladdCriteria, sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeleteCriteria, sqldeleteCriteriaForPlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetCriterias, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlselectKarasFromCriterias, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCCriterias, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqladdCriteria, sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeleteCriteria, sqldeleteCriteriaForPlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetCriterias, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlselectKarasFromCriterias, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCCriterias, sqlupdatePLCSetPos } from './sql/playlist';
 
-export function editPLCCriterias(plcs: number[], criterias: Criteria[]) {
+export function updatePLCCriterias(plcs: number[], criterias: Criteria[]) {
 	return db().query(sqlupdatePLCCriterias, [plcs, criterias]);
 }
 
@@ -47,27 +47,27 @@ export function deletePlaylist(id: string) {
 	return db().query(sqldeletePlaylist, [id]);
 }
 
-export function setPLCVisible(plc_ids: number[]) {
+export function updatePLCVisible(plc_ids: number[]) {
 	return db().query(sqlsetPLCVisible, [plc_ids]);
 }
 
-export function setPLCInvisible(plc_ids: number[]) {
+export function updatePLCInvisible(plc_ids: number[]) {
 	return db().query(sqlsetPLCInvisible, [plc_ids]);
 }
 
-export function setPLCFree(plc_ids: number[]) {
+export function updatePLCFree(plc_ids: number[]) {
 	return db().query(sqlsetPLCFree, [plc_ids]);
 }
 
-export function setPLCAccepted(plc_ids: number[], flag_accepted: boolean) {
+export function updatePLCAccepted(plc_ids: number[], flag_accepted: boolean) {
 	return db().query(sqlsetPLCAccepted, [plc_ids, flag_accepted]);
 }
 
-export function setPLCRefused(plc_ids: number[], flag_refused: boolean) {
+export function updatePLCRefused(plc_ids: number[], flag_refused: boolean) {
 	return db().query(sqlsetPLCRefused, [plc_ids, flag_refused]);
 }
 
-export function setPLCFreeBeforePos(pos: number, plaid: string) {
+export function updatePLCFreeBeforePos(pos: number, plaid: string) {
 	return db().query(yesql(sqlsetPLCFreeBeforePos)({
 		pos: pos,
 		plaid: plaid
@@ -93,7 +93,7 @@ export function shiftPosInPlaylist(id: string, pos: number, shift: number) {
 	}));
 }
 
-export async function getMaxPosInPlaylist(id: string): Promise<number> {
+export async function selectMaxPosInPlaylist(id: string): Promise<number> {
 	const res = await db().query(sqlgetMaxPosInPlaylist, [id]);
 	return res.rows[0]?.maxpos;
 }
@@ -111,7 +111,7 @@ export function reorderPlaylist(id: string) {
 	return db().query(sqlreorderPlaylist, [id]);
 }
 
-export  function setPos(plc_id: number, pos: number) {
+export  function updatePos(plc_id: number, pos: number) {
 	return db().query(sqlupdatePLCSetPos,[
 		pos,
 		plc_id
@@ -226,7 +226,7 @@ export async function selectPlaylists(forUser: boolean): Promise<DBPL[]> {
 	return res.rows;
 }
 
-export async function setPlaying(plc_id: number, plaid: string) {
+export async function updatePlaying(plc_id: number, plaid: string) {
 	await db().query(sqlsetPlaying, [plc_id, plaid]);
 }
 
@@ -235,7 +235,7 @@ export async function countPlaylistUsers(plaid: string): Promise<number> {
 	return res.rows[0]?.NumberOfUsers;
 }
 
-export async function getMaxPosInPlaylistForUser(plaid: string, username: string): Promise<number> {
+export async function selectMaxPosInPlaylistForUser(plaid: string, username: string): Promise<number> {
 	const res = await db().query(yesql(sqlgetMaxPosInPlaylistForUser)({
 		plaid: plaid,
 		username: username
@@ -415,7 +415,7 @@ export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfte
 	return transaction({params: karas, sql: sqladdKaraToPlaylist});
 }
 
-export function removeKaraFromPlaylist(karas: number[]) {
+export function deleteKaraFromPlaylist(karas: number[]) {
 	return db().query(sqlremoveKaraFromPlaylist.replaceAll('$plcid', karas.join(',')));
 }
 
@@ -423,10 +423,15 @@ export function updateFreeOrphanedSongs(expireTime: number) {
 	return db().query(sqlupdateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
 }
 
-export async function getSongTimeSpentForUser(plaid: string, username: string): Promise<number> {
+export async function selectSongTimeSpentForUser(plaid: string, username: string): Promise<number> {
 	const res = await db().query(sqlgetTimeSpentPerUser, [
 		plaid,
 		username
 	]);
 	return res.rows[0]?.time_spent || 0;
+}
+
+export async function selectSongCountForUser(plaid: string, username: string): Promise<number> {
+	const res = await db().query(sqlgetSongCountPerUser, [plaid, username]);
+	return res.rows[0]?.count || 0;
 }

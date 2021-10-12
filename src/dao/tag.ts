@@ -16,7 +16,7 @@ export async function selectTagMini(id: string): Promise<DBTagMini> {
 	return res.rows[0];
 }
 
-export async function getAllTags(params: TagParams): Promise<DBTag[]> {
+export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildTagClauses(params.filter)
 		: {sql: [], params: {}, additionalFrom: []};
@@ -121,6 +121,6 @@ export function updateTag(tag: Tag) {
 	]);
 }
 
-export async function removeTag(tids: string[]) {
+export async function deleteTag(tids: string[]) {
 	await db().query(sqldeleteTag, [tids]);
 }

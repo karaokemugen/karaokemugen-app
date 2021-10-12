@@ -1,5 +1,5 @@
 import { APIMessage } from '../controllers/common';
-import { selectPlaylistContentsMicro, setPLCVisible, updatePlaylistDuration } from '../dao/playlist';
+import { selectPlaylistContentsMicro, updatePlaylistDuration,updatePLCVisible } from '../dao/playlist';
 import { getSongTitle } from '../lib/services/kara';
 import { getConfig } from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
@@ -116,7 +116,7 @@ export async function playCurrentSong(now: boolean) {
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
 			await Promise.all([
-				setPLCVisible([kara.plcid]),
+				updatePLCVisible([kara.plcid]),
 				updatePlaylistDuration(kara.plaid),
 				updateUserQuotas(kara),
 				writeStreamFiles('time_remaining_in_current_playlist'),

@@ -11,22 +11,21 @@ import slugify from 'slugify';
 import { v4 as uuidV4 } from 'uuid';
 import logger from 'winston';
 
-import {getSongCountForUser} from '../dao/kara';
-import { getSongTimeSpentForUser } from '../dao/playlist';
-import { addUser as DBAddUser,
-	checkNicknameExists as DBCheckNicknameExists,
-	deleteUser as DBDeleteUser,
-	editUser as DBEditUser,
-	getRandomGuest as DBGetRandomGuest,
-	getUser as DBGetUser,
-	listGuests as DBListGuests,
-	listUsers as DBListUsers,
+import { selectSongCountForUser,selectSongTimeSpentForUser } from '../dao/playlist';
+import { 	checkNicknameExists,
+	deleteUser,
+	insertUser,
 	lowercaseAllUsers,
 	mergeUserData,
-	reassignToUser as DBReassignToUser,
+	reassignToUser,
 	selectAllDupeUsers,
-	updateUserLastLogin as DBUpdateUserLastLogin,
-	updateUserPassword as DBUpdateUserPassword} from '../dao/user';
+	selectGuests,
+	selectRandomGuest,
+	selectUser,
+	selectUsers,
+	updateUser,
+	updateUserLastLogin,
+	updateUserPassword} from '../dao/user';
 import {User} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
 import {asciiRegexp, imageFileTypes} from '../lib/utils/constants';
@@ -45,7 +44,7 @@ import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline'
 const userLoginTimes = new Map();
 
 export async function findAvailableGuest() {
-	const guest = await DBGetRandomGuest();
+	const guest = await selectRandomGuest();
 	if (!guest) return null;
 	if (getState().isTest) logger.debug('New guest logging in: ', {service: 'User', obj: guest});
 	return guest;
@@ -71,11 +70,11 @@ export function decodeJwtToken(token: string, config?: Config) {
 export function updateLastLoginName(login: string) {
 	if (!userLoginTimes.has(login)) {
 		userLoginTimes.set(login, new Date());
-		DBUpdateUserLastLogin(login);
+		updateUserLastLogin(login);
 	}
 	if (userLoginTimes.get(login) < new Date(new Date().getTime() - (60 * 1000))) {
 		userLoginTimes.set(login, new Date());
-		DBUpdateUserLastLogin(login);
+		updateUserLastLogin(login);
 	}
 }
 
@@ -96,13 +95,13 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		if (user.password) {
 			if (!opts.noPasswordCheck && user.password.length < 8) throw {code: 400, msg: 'PASSWORD_TOO_SHORT'};
 			const password = await hashPasswordbcrypt(user.password);
-			await DBUpdateUserPassword(username, password);
+			await updateUserPassword(username, password);
 		}
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw {code: 403, msg: 'USER_CANNOT_CHANGE_TYPE'};
 		// If we're renaming a user, user.login is going to be set to something different than username
 		user.old_login = username;
 		// Check if login already exists.
-		if (currentUser.nickname !== user.nickname && await DBCheckNicknameExists(user.nickname)) throw {code: 409};
+		if (currentUser.nickname !== user.nickname && await checkNicknameExists(user.nickname)) throw {code: 409};
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
@@ -116,7 +115,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		} else {
 			mergedUser.avatar_file = currentUser.avatar_file;
 		}
-		const updatedUser = await DBEditUser(mergedUser);
+		const updatedUser = await updateUser(mergedUser);
 		delete updatedUser.password;
 		let KMServerResponse: any;
 		try {
@@ -141,12 +140,12 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 
 /** Get all guest users */
 export function listGuests(): Promise<DBGuest[]> {
-	return DBListGuests();
+	return selectGuests();
 }
 
 /** Get all users (including guests) */
 export function listUsers(): Promise<User[]> {
-	return DBListUsers();
+	return selectUsers();
 }
 
 /** Replace old avatar image by new one sent from editUser or createUser */
@@ -185,7 +184,7 @@ export async function findUserByName(username: string, opt = {
 	if (!username) throw('No user provided');
 	username = username.toLowerCase();
 	//Check if user exists in db
-	const userdata = await DBGetUser(username);
+	const userdata = await selectUser(username);
 	if (userdata) {
 		if (!userdata.bio || opt.public) userdata.bio = null;
 		if (!userdata.url || opt.public) userdata.url = null;
@@ -219,7 +218,7 @@ export async function checkPassword(user: User, password: string): Promise<boole
 
 	if (user.password === hashedPasswordSHA) {
 		// Needs update to bcrypt hashed password
-		await DBUpdateUserPassword(user.login, hashedPasswordbcrypt);
+		await updateUserPassword(user.login, hashedPasswordbcrypt);
 		user.password = hashedPasswordbcrypt;
 	}
 
@@ -288,7 +287,7 @@ export async function createUser(user: User, opts: UserOpts = {
 			if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length};
 			user.password = await hashPasswordbcrypt(user.password);
 		}
-		await DBAddUser(user);
+		await insertUser(user);
 		if (user.type < 2) logger.info(`Created user ${user.login}`, {service: 'User'});
 		delete user.password;
 		return true;
@@ -306,14 +305,14 @@ async function newUserIntegrityChecks(user: User) {
 	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
-	if (await DBGetUser(user.login) || await DBCheckNicknameExists(user.login)) {
+	if (await selectUser(user.login) || await checkNicknameExists(user.login)) {
 		logger.error(`User/nickname ${user.login} already exists, cannot create it`, {service: 'User'});
 		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
 }
 
 /** Remove a user from database */
-export async function deleteUser(username: string) {
+export async function removeUser(username: string) {
 	try {
 		if (username === 'admin') throw {code: 406, msg:  'USER_DELETE_ADMIN_DAMEDESU', details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
 		if (!username) throw {code: 400};
@@ -321,8 +320,8 @@ export async function deleteUser(username: string) {
 		const user = await findUserByName(username);
 		if (!user) throw {code: 404, msg: 'USER_NOT_EXISTS'};
 		//Reassign karas and playlists owned by the user to the admin user
-		await DBReassignToUser(username, 'admin');
-		await DBDeleteUser(username);
+		await reassignToUser(username, 'admin');
+		await deleteUser(username);
 		if (username.includes('@')) {
 			const [login, instance] = username.split('@');
 			stopSub(login, instance);
@@ -544,12 +543,12 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 		if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {
 			switch(+conf.Karaoke.Quota.Type) {
 				case 2:
-					const time = await getSongTimeSpentForUser(plaid,username);
+					const time = await selectSongTimeSpentForUser(plaid,username);
 					quotaLeft = +conf.Karaoke.Quota.Time - time;
 					break;
 				default:
 				case 1:
-					const count = await getSongCountForUser(plaid, username);
+					const count = await selectSongCountForUser(plaid, username);
 					quotaLeft = +conf.Karaoke.Quota.Songs - count;
 					break;
 			}

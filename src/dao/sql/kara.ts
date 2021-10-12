@@ -116,14 +116,6 @@ export const sqldeleteKara = `
 DELETE FROM kara WHERE pk_kid = ANY ($1);
 `;
 
-export const sqlgetSongCountPerUser = `
-SELECT COUNT(1)::integer AS count
-FROM playlist_content AS pc
-WHERE pc.fk_login = $2
-	AND pc.fk_id_playlist = $1
-	AND pc.flag_free = FALSE
-`;
-
 export const sqlupdateKara = `
 UPDATE kara SET
 	titles = :titles,

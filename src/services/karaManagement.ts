@@ -4,7 +4,7 @@ import open from 'open';
 import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
-import { addKara, deleteKara as deleteKaraDB, selectAllKaras, updateKara, updateKaraParents } from '../dao/kara';
+import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKara, updateKaraParents } from '../dao/kara';
 import { selectPlaylistContentsMicro } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
@@ -40,7 +40,7 @@ export async function updateTags(kara: Kara) {
 }
 
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
-	await addKara(kara);
+	await insertKara(kara);
 	await Promise.all([
 		updateKaraParents(kara), 
 		updateTags(kara)

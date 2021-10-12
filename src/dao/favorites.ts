@@ -39,7 +39,7 @@ export async function selectFavoritesMicro(params: FavParams) {
 	return res.rows;
 }
 
-export function removeFavorites(fList: string[], username: string) {
+export function deleteFavorites(fList: string[], username: string) {
 	const karas = fList.map(kara => ([
 		kara,
 		username
@@ -47,7 +47,7 @@ export function removeFavorites(fList: string[], username: string) {
 	return transaction({params: karas, sql: sqlremoveFavorites});
 }
 
-export function clearFavorites(username: string) {
+export function truncateFavorites(username: string) {
 	return db().query(sqlclearFavorites, [username]);
 }
 

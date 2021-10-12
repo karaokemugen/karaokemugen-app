@@ -40,7 +40,7 @@ import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { addSystemMessage } from './proxyFeeds';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
 import { sendPayload } from './stats';
-import { deleteTag, getTags, integrateTagFile } from './tag';
+import { getTags, integrateTagFile,removeTag } from './tag';
 
 const windowsDriveRootRegexp = new RegExp(/^[a-zA-Z]:\\$/);
 
@@ -274,7 +274,7 @@ export async function updateZipRepo(name: string) {
 				if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false, {media: true, kara: false}));
 				if (TIDsToDelete.length > 0) {
 					// Let's not remove tags in karas : it's already done anyway
-					deletePromises.push(deleteTag(TIDsToDelete, {refresh: false, removeTagInKaras: false, deleteFile: false}));
+					deletePromises.push(removeTag(TIDsToDelete, {refresh: false, removeTagInKaras: false, deleteFile: false}));
 				}
 				await Promise.all(deletePromises);
 				task.update({text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0});

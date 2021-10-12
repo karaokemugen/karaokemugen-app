@@ -6,7 +6,7 @@ import { resolve } from 'path';
 
 import { exit } from '../components/engine';
 import { init, preInit, welcomeToYoukousoKaraokeMugen } from '../components/init';
-import { listUsers } from '../dao/user';
+import { selectUsers } from '../dao/user';
 import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { testJSON } from '../lib/utils/validators';
@@ -222,7 +222,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 		logger.info(`Received file path ${file}`, {service: 'FileHandler'});
 		if (!getState().ready) return;
 		if (!username) {
-			const users = await listUsers();
+			const users = await selectUsers();
 			const adminUsersOnline = users.filter(u => u.type === 0 && u.login !== 'admin');
 			// We have no other choice but to pick only the first one
 			username = adminUsersOnline[0]?.login;

@@ -4,7 +4,7 @@ import {selectFavoritesMicro} from '../../dao/favorites';
 import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addToFavorites, createAutoMix, deleteFavorites, exportFavorites, getFavorites, importFavorites } from '../../services/favorites';
+import { addToFavorites, createAutoMix, exportFavorites, getFavorites, importFavorites,removeFavorites } from '../../services/favorites';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -86,7 +86,7 @@ export default function favoritesController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await deleteFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
+				return await removeFavorites(req.token.username, req.body?.kids, req.onlineAuthorization);
 			} catch(err) {
 				const code = 'FAVORITES_DELETED_ERROR';
 				errMessage(code, err);

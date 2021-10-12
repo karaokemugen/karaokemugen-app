@@ -4,7 +4,7 @@ import { APIData } from '../../lib/types/api';
 import { bools } from '../../lib/utils/constants';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist,  deleteKaraFromPlaylist, editPlaylist, editPLC,  emptyPlaylist, exportPlaylist,findPlaying, getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, removePlaylist, shufflePlaylist } from '../../services/playlist';
+import { addKaraToPlaylist, copyKaraToPlaylist, createPlaylist,  editPlaylist, editPLC,  emptyPlaylist, exportPlaylist,findPlaying, getKaraFromPlaylist, getPlaylistContents, getPlaylistInfo, getPlaylists, importPlaylist, removeKaraFromPlaylist, removePlaylist, shufflePlaylist } from '../../services/playlist';
 import { vote } from '../../services/upvote';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
@@ -167,7 +167,7 @@ export default function playlistsController(router: SocketIOApp) {
 		});
 		if (!validationErrors) {
 			try {
-				return await deleteKaraFromPlaylist(req.body.plc_ids, req.token);
+				return await removeKaraFromPlaylist(req.body.plc_ids, req.token);
 			} catch(err) {
 				const code = 'PL_DELETE_SONG_ERROR';
 				errMessage(code, err);
