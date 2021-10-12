@@ -12,7 +12,6 @@ import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
 export default function userController(router: SocketIOApp) {
-
 	router.route('getUsers', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
