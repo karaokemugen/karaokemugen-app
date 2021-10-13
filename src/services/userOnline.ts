@@ -62,16 +62,16 @@ export async function resetRemotePassword(user: string) {
 	}
 }
 
-/** Get all users from KM Server */
-async function getAllRemoteUsers(instance: string): Promise<User[]> {
+/** Get a user from KM Server */
+async function getARemoteUser(login: string, instance: string): Promise<User> {
 	try {
-		const users = await HTTP(`https://${instance}/api/users`,
+		const user = await HTTP<User>(`https://${instance}/api/users/${login}`,
 			{
 				responseType: 'json'
 			});
-		return users.body as User[];
+		return user.body;
 	} catch(err) {
-		logger.debug('Got error when get all remote users', {service: 'RemoteUser', obj: err});
+		logger.debug('Got error when trying to get an online user', {service: 'RemoteUser', obj: err});
 		throw {
 			code: 500,
 			msg: 'USER_GET_ERROR_ONLINE',
@@ -83,8 +83,7 @@ async function getAllRemoteUsers(instance: string): Promise<User[]> {
 /** Create a user on KM Server */
 export async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
-	const users = await getAllRemoteUsers(instance);
-	if (users.filter(u => u.login === login).length === 1) throw {
+	if (await getARemoteUser(login, instance)) throw {
 		code: 409,
 		msg: 'USER_ALREADY_EXISTS_ONLINE',
 		message: `User already exists on ${instance} or incorrect password`
