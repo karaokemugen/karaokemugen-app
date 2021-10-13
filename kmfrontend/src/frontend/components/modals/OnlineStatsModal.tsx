@@ -1,5 +1,3 @@
-import './OnlineProfileModal.scss';
-
 import i18next from 'i18next';
 import React, { Component } from 'react';
 

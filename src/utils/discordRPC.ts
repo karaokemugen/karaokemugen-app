@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import sample from 'lodash.sample';
 
 import { getConfig } from '../lib/utils/config';
+import logger from '../lib/utils/logger';
 import { discordClientID } from './constants';
 import { getState } from './state';
 
@@ -38,6 +39,15 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			activity = activityData.title;
 			activityDetail = activityData.source;
 		}
+		const buttons = [];
+		if (getState().remoteAccess && 'host' in getState().remoteAccess) {
+			buttons.push({
+				label: i18next.t('SUGGEST_SONGS'), url: getState().osURL
+			});
+		}
+		buttons.push({
+			label: i18next.t('OFFICIAL_WEBSITE'), url: 'https://karaokes.moe'
+		});
 		await rpc.setActivity({
 			details: sanitizeText(activity),
 			state: sanitizeText(activityDetail),
@@ -47,6 +57,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			smallImageKey: activityType === 'song' ? 'play' : 'pause',
 			smallImageText: `Version ${getState().version.number} - ${getState().version.name}`,
 			instance: false,
+			buttons: buttons
 		});
 	} catch(err) {
 		// Non-fatal
@@ -84,16 +95,20 @@ function stopCheckingDiscordRPC() {
 
 
 export function setupDiscordRPC() {
-	if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
-	rpc = new discordRPC.Client({ transport: 'ipc' });
+	try {
+		if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
+		rpc = new discordRPC.Client({ transport: 'ipc' });
 
-	rpc.on('ready', () => {
-		setDiscordActivity('idle');
-		stopCheckingDiscordRPC();
-		// activity can only be set every 15 seconds
-	});
-	rpc.login({ clientId: discordClientID }).catch(() => {
-		stopDiscordRPC();
-		if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
-	});
+		rpc.on('ready', () => {
+			setDiscordActivity('idle');
+			stopCheckingDiscordRPC();
+			// activity can only be set every 15 seconds
+		});
+		rpc.login({ clientId: discordClientID }).catch(() => {
+			stopDiscordRPC();
+			if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
+		});
+	} catch(err) {
+		logger.error('Failed to setup Discord Rich Presence', {service: 'Discord', obj: err});
+	}
 }
