@@ -1,3 +1,5 @@
+import './OnlineProfileModal.scss';
+
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
 
