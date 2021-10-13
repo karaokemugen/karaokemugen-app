@@ -265,7 +265,7 @@ export async function createUser(user: User, opts: UserOpts = {
 	}
 
 	try {
-		await newUserIntegrityChecks(user).catch(async err => {
+		await newUserIntegrityChecks(user).catch(err => {
 			if (user.login.includes('@')) {
 				// If nickname isn't allowed, append something random to it and retry integrity checks
 				user.nickname = `${user.nickname}${randomstring.generate({
@@ -273,14 +273,14 @@ export async function createUser(user: User, opts: UserOpts = {
 					charset: 'numeric'
 				})}`;
 				logger.warn(`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${user.login} is ${user.nickname}`, {service: 'User'});
-				await newUserIntegrityChecks(user);
-				if (user.login.split('@')[0] === 'admin') throw { code: 403, msg: 'USER_CREATE_ERROR', details: 'Admin accounts are not allowed to be created online' };
-				if (!+getConfig().Online.Users) throw { code: 403, msg : 'USER_CREATE_ERROR', details: 'Creating online accounts is not allowed on this instance'};
-				if (opts.createRemote) await createRemoteUser(user);
 			} else {
 				throw err;
 			}
+			return newUserIntegrityChecks(user);
 		});
+		if (user.login.split('@')[0] === 'admin') throw { code: 403, msg: 'USER_CREATE_ERROR', details: 'Admin accounts are not allowed to be created online' };
+		if (!+getConfig().Online.Users) throw { code: 403, msg : 'USER_CREATE_ERROR', details: 'Creating online accounts is not allowed on this instance'};
+		if (opts.createRemote) await createRemoteUser(user);
 		if (user.password) {
 			if (user.password.length < 8 && !opts.noPasswordCheck) throw {code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length};
 			user.password = await hashPasswordbcrypt(user.password);
