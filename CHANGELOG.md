@@ -1,3 +1,15 @@
+# v5.1.30 - 13/10/2021
+
+## Improvements
+
+- Discord activity now shows URLs to Karaoke Mugen website, and your remote access if enabled.
+
+## Fixes
+
+- [hotfix] Online users were not created properly due to Server API new behaviour.
+- CSS Imports fixes in Frontend
+- Rework move medias
+
 # v5.1.29 - 10/09/2021
 
 ## Fixes
