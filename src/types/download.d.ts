@@ -25,5 +25,6 @@ interface DownloadFile {
 
 export interface File {
 	basename: string,
-	size: number
+	size: number,
+	kid?: string
 }

@@ -3,78 +3,79 @@ import { resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
 
 import { APIMessage } from '../lib/services/frontend';
-import { DBKara } from '../lib/types/database/kara';
+import { DBMedia } from '../lib/types/database/kara';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { mediaFileRegexp } from '../lib/utils/constants';
 import { resolveFileInDirs } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
+import { on } from '../lib/utils/pubsub';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { File } from '../types/download';
-import Downloader from '../utils/downloader';
+import { addDownloads } from './download';
 import { checkDownloadStatus } from './repo';
 
 let updateRunning = false;
 
-async function getRemoteMedias(repo: string): Promise<DBKara[]> {
+async function getRemoteMedias(repo: string): Promise<DBMedia[]> {
 	const res = await HTTP.get(`https://${repo}/api/karas/medias`);
 	return JSON.parse(res.body);
 }
 
-async function listRemoteMedias(repo: string): Promise<File[]> {
+async function listRemoteMedias(repo: string) {
 	logger.info('Fetching current media list', {service: 'Update'});
 	profile('listRemoteMedias');
 	const remote = await getRemoteMedias(repo);
 	profile('listRemoteMedias');
 	return remote.map(m => {
 		return {
-			basename: m.mediafile,
-			size: m.mediasize
+			...m,
+			repository: repo
 		};
 	});
 }
 
-async function compareMedias(localFiles: File[], remoteFiles: File[], repo: string, updateOnly = false): Promise<boolean> {
+async function compareMedias(localFiles: File[], remoteKaras: DBMedia[], repo: string, updateOnly = false): Promise<boolean> {
 	const removedFiles:string[] = [];
-	const addedFiles:File[] = [];
-	const updatedFiles:File[] = [];
+	const addedFiles:DBMedia[] = [];
+	const updatedFiles:DBMedia[] = [];
 	const mediasPath = resolvedPathRepos('Medias', repo)[0];
 	logger.info('Comparing your medias with the current ones', {service: 'Update'});
-	for (const remoteFile of remoteFiles) {
-		const localFile = localFiles.find(f => f.basename === remoteFile.basename);
+	for (const remoteKara of remoteKaras) {
+		const localFile = localFiles.find(f => f.basename === remoteKara.mediafile);
 		if (localFile) {
-			if (remoteFile.size !== localFile.size) {
-				updatedFiles.push(remoteFile);
+			if (remoteKara.mediasize !== localFile.size) {
+				updatedFiles.push();
 			}
 			// Do nothing if file exists and sizes are the same
 		} else {
-			if (!updateOnly) addedFiles.push(remoteFile);
+			if (!updateOnly) addedFiles.push(remoteKara);
 		}
 	}
 
 	if (!updateOnly) {
 		for (const localFile of localFiles) {
-			const remoteFilePresent = remoteFiles.find(remoteFile => localFile.basename === remoteFile.basename);
+			const remoteFilePresent = remoteKaras.find(remoteKara => localFile.basename === remoteKara.mediafile);
 			if (!remoteFilePresent) removedFiles.push(localFile.basename);
 		}
 	}
 	// Remove files to update to start over their download
 	for (const file of updatedFiles) {
-		await fs.unlink(resolve(mediasPath, file.basename));
+		await fs.unlink(resolve(mediasPath, file.mediafile));
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
 	if (filesToDownload.length > 0) {
 		filesToDownload.sort((a,b) => {
-			return (a.basename > b.basename) ? 1 : ((b.basename > a.basename) ? -1 : 0);
+			return (a.mediafile > b.mediafile) ? 1 : ((b.mediafile > a.mediafile) ? -1 : 0);
 		});
 		let bytesToDownload = 0;
 		for (const file of filesToDownload) {
-			bytesToDownload = bytesToDownload + file.size;
+			bytesToDownload = bytesToDownload + file.mediasize;
 		}
 		logger.info(`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`, {service: 'Update'});
-		await downloadMedias(filesToDownload, mediasPath, repo);
+		await downloadMedias(filesToDownload);
 		logger.info('Done updating medias', {service: 'Update'});
 		return true;
 	} else {
@@ -83,28 +84,27 @@ async function compareMedias(localFiles: File[], remoteFiles: File[], repo: stri
 	}
 }
 
-async function downloadMedias(files: File[], mediasPath: string, repo: string): Promise<void> {
-	const list = [];
-	for (const file of files) {
-		list.push({
-			filename: resolve(mediasPath, file.basename),
-			url: `https://${repo}/downloads/medias/${encodeURIComponent(file.basename)}`,
-			size: file.size
+async function downloadMedias(karas: DBMedia[]): Promise<void> {
+	try {
+		await addDownloads(karas.map(k => {
+			return {
+				mediafile: k.mediafile,
+				name: k.mediafile,
+				size: k.mediasize,
+				repository: k.repository,
+				kid: k.kid
+			};
+		}));
+	} catch(err) {
+		// If 409ed, no download was added, they're all in the list already and will be downloaded shortly. Hopefully.
+		if (err.code === 409) return;
+		throw err;
+	}
+	return new Promise(resolve => {
+		on('downloadQueueDrained', () => {
+			resolve();
 		});
-	}
-	const downloadTask = new Task({
-		text: 'DOWNLOADING_MEDIAS',
-		value: 0,
-		total: files.length
 	});
-	const mediaDownloads = new Downloader({
-		task: downloadTask
-	});
-	const fileErrors = await mediaDownloads.download(list);
-	downloadTask.end();
-	if (fileErrors.length > 0) {
-		throw (`Error downloading these medias : ${fileErrors.toString()}`);
-	}
 }
 
 async function listLocalMedias(repo: string): Promise<File[]> {

@@ -1113,7 +1113,6 @@
         "GENERATING_READING": "Reading data…",
         "GENERATING_DATABASE": "Updating database…",
         "GENERATION_DONE": "Generation successful",
-        "DOWNLOADING_MEDIAS": "Downloading media files…",
         "MOVING_MEDIAS_REPO": "Moving medias for repository…",
         "CLEANING_REPO": "Cleaning up songs removed from repository",
         "UPDATING_REPO": "Updating songs from repository",

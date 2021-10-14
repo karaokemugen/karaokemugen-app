@@ -20,7 +20,7 @@ import {getConfig, setConfig} from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
 import {enableWSLogging,profile} from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
-import {initDownloader, wipeDownloadQueue} from '../services/download';
+import {initDownloader, wipeDownloadQueue, wipeDownloads} from '../services/download';
 import { updateAllMedias } from '../services/downloadUpdater';
 import { getKaras, initFetchPopularSongs } from '../services/kara';
 import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
@@ -74,6 +74,8 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_UPDATEMEDIAS'));
+			await initDownloader();
+			await wipeDownloads();
 			await updateAllMedias();
 			await exit(0);
 		} catch(err) {

@@ -1113,7 +1113,6 @@
         "GENERATING_READING": "Lecture des données…",
         "GENERATING_DATABASE": "Création de la base de données…",
         "GENERATION_DONE": "Génération terminée",
-        "DOWNLOADING_MEDIAS": "Téléchargement de médias…",
         "MOVING_MEDIAS_REPO": "Déplacement des médias du dépôt…",
         "CLEANING_REPO": "Nettoyage des chansons supprimées du dépôt",
         "UPDATING_REPO": "Mise à jour des chansons du dépôt",
