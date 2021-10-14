@@ -130,10 +130,13 @@ export async function dumpPG() {
 		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_dump);
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
-			cwd: resolve(state.appPath, state.binPath.postgres)
+			cwd: resolve(state.appPath, state.binPath.postgres),
+			stdio: 'inherit',
 		});
 		logger.info('Database dumped to file', {service: 'DB'});
 	} catch(err) {
+		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
+		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
 		logger.error('Database dump failed', {service: 'DB', obj: err});
 		sentry.error(err);
 		throw `Dump failed : ${err}`;
