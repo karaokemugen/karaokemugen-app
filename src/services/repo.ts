@@ -320,10 +320,10 @@ async function newZipRepo(repo: Repository): Promise<string> {
 }
 
 /** Edit a repository. Folders will be created if necessary */
-export async function editRepo(name: string, repo: Repository, refresh?: boolean) {
+export async function editRepo(name: string, repo: Repository, refresh?: boolean, onlineCheck = true) {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw {code: 404};
-	if (repo.Online && !repo.MaintainerMode) {
+	if (repo.Online && !repo.MaintainerMode && onlineCheck) {
 		// Testing if repository is reachable
 		try {
 			await getRepoMetadata(repo.Name);
@@ -334,7 +334,7 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 	await checkRepoPaths(repo);
 	updateRepo(repo, name);
 	//DBReady is needed as this can happen before the database is ready
-	if (oldRepo.Path.Medias !== repo.Path.Medias && DBReady) {
+	if (oldRepo.Path.Medias !== repo.Path.Medias && DBReady && onlineCheck) {
 		getKaras({q: `r:${repo.Name}`}).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
@@ -344,7 +344,7 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 			if (res) generateDB();
 		});
 	}
-	if (!oldRepo.SendStats && repo.SendStats && DBReady) {
+	if (!oldRepo.SendStats && repo.SendStats && DBReady && onlineCheck) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host);
 	}
 	logger.info(`Updated ${name}`, {service: 'Repo'});
@@ -431,7 +431,7 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 }
 
 function checkRepoPaths(repo: Repository) {
-	if (windowsDriveRootRegexp.test(repo.BaseDir)) throw {code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.'};	
+	if (windowsDriveRootRegexp.test(repo.BaseDir)) throw {code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.'};
 	if (repo.Online && !repo.MaintainerMode) {
 		for (const path of repo.Path.Medias) {
 			// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
@@ -513,7 +513,7 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 		}
 		await Promise.all(moveTasks);
 		repo.Path.Medias = [relativePath(state.dataPath, newPath)];
-		await editRepo(repoName, repo, true);
+		await editRepo(repoName, repo, true, false);
 	} catch(err) {
 		logger.error(`Failed to move repo ${repoName}`, {service: 'Repo', obj: err});
 		throw err;
