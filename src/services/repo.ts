@@ -340,7 +340,7 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 		});
 	}
 	if (oldRepo.Enabled !== repo.Enabled || refresh) {
-		compareKarasChecksum().then(res => {
+		if (DBReady) compareKarasChecksum().then(res => {
 			if (res) generateDB();
 		});
 	}
