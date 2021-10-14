@@ -35,8 +35,6 @@ function PlayerBox(props: IProps) {
 	const ref:RefObject<HTMLDivElement> = useRef();
 	const containerRef:RefObject<HTMLDivElement> = useRef();
 
-	let observer: ResizeObserver;
-
 	const resetBox = () => {
 		setTitle(i18next.t('KARA_PAUSED_WAITING'));
 		setSubtitle('');
@@ -194,8 +192,9 @@ function PlayerBox(props: IProps) {
 	};
 
 	useEffect(() => {
+		let observer;
 		getFirstPlayerInfos();
-		getSocket().on('playerStatus', refreshPlayerInfos);
+		getSocket().on('connect', getFirstPlayerInfos);
 		if (props.mode === 'fixed') {
 			observer = new ResizeObserver(resizeCheck);
 			observer.observe(containerRef.current);
@@ -205,7 +204,7 @@ function PlayerBox(props: IProps) {
 				getSocket().on('favoritesUpdated', getFavorites);
 		}
 		return () => {
-			getSocket().off('playerStatus', refreshPlayerInfos);
+			getSocket().off('connect', getFirstPlayerInfos);
 			window.removeEventListener('resize', resizeCheck);
 			if (observer) {
 				observer.disconnect();
@@ -215,6 +214,13 @@ function PlayerBox(props: IProps) {
 			}
 		};
 	}, []);
+
+	useEffect(() => {
+		getSocket().on('playerStatus', refreshPlayerInfos);
+		return () => {
+			getSocket().off('playerStatus', refreshPlayerInfos);
+		};
+	}, [length]);
 
 	return (
 		<div

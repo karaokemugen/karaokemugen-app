@@ -164,24 +164,27 @@ function ProgressBar() {
 		if (length > 0) {
 			resizeCheck();
 		}
+		getSocket().on('playerStatus', refreshPlayerInfos);
+		return () => {
+			getSocket().off('playerStatus', refreshPlayerInfos);
+		};
 	}, [length]);
 
 	useEffect(() => {
 		displayProgressBar();
-		getSocket().on('playerStatus', refreshPlayerInfos);
+		getSocket().on('connect', displayProgressBar);
 		window.addEventListener('resize', resizeCheck, { passive: true });
 		if (refP.current) {
 			refP.current.addEventListener('animationiteration', suspendAnimation, { passive: true });
 		}
 		return () => {
-			getSocket().off('playerStatus', refreshPlayerInfos);
+			getSocket().off('connect', displayProgressBar);
 			window.removeEventListener('resize', resizeCheck);
 			if (timeout) {
 				clearTimeout(timeout);
 			}
 		};
 	}, []);
-
 
 	return (
 		<div id="progressBar">
