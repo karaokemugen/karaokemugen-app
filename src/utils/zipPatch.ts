@@ -6,6 +6,7 @@ import { resolve } from 'path';
 
 import { resolvedPathTemp } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
+import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import { downloadFiles } from '../services/download';
 import Sentry from './sentry';
@@ -54,29 +55,6 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 	} finally {
 		task.end();
 	}
-}
-
-const patchRegex = /^a\/.+ b\/(.+)\n(index|new file|deleted file)/m;
-const KTidRegex = /"[kt]id": *"(.+)"/;
-
-function computeFileChanges(patch: string) {
-	const patches = patch.split('diff --git ')
-		.slice(1)
-		.map<{ type: 'new' | 'delete', path: string, uid?: string }>((v) => {
-			const result = v.match(patchRegex);
-			const uid = v.match(KTidRegex);
-			if (!result) {
-				throw new Error('Cannot find diff header, huh.');
-			}
-			return {
-				type: result[2] === 'deleted file' ? 'delete':'new',
-				path: result[1],
-				uid: uid ? uid[1]:undefined
-			};
-		});
-	// Remove delete patches that have a corresponding new entry (renames)
-	const newPatches = patches.filter(p => p.type === 'new');
-	return patches.filter(p => !(p.type === 'delete' && newPatches.findIndex(p2 => p.uid === p2.uid) !== -1));
 }
 
 export async function applyPatch(patch: string, dir: string) {
