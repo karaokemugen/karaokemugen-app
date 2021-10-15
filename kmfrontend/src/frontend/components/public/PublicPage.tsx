@@ -6,11 +6,11 @@ import { DBPLC, DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiSingingPng from '../../../assets/nanami-sing.png';
 import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
-import { setFilterValue } from '../../../store/actions/frontendContext';
+import { setFilterValue, setPlaylistInfoLeft, setPlaylistInfoRight } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
-import { buildKaraTitle, setPlaylistInfo } from '../../../utils/kara';
+import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, nonStandardPlaylists, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
@@ -60,24 +60,24 @@ function PublicPage(props: RouteComponentProps) {
 			route = `/public/tags/${tagType}`;
 		}
 		if (view === 'favorites') {
-			setPlaylistInfo('left', context, nonStandardPlaylists.favorites);
+			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.favorites);
 			route = '/public/favorites';
 		} else if (view === 'requested') {
-			setPlaylistInfo('left', context, nonStandardPlaylists.library);
+			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 			searchType = 'requested';
 			route = '/public/search/requested';
 		} else if (view === 'history') {
-			setPlaylistInfo('left', context, nonStandardPlaylists.library);
+			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 			route = '/public/search/history';
 		} else if (view === 'search') {
-			setPlaylistInfo('left', context, nonStandardPlaylists.library);
+			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 			searchType = 'search';
 			route = '/public/search';
 		} else if (view === 'publicPlaylist') {
-			setPlaylistInfo('left', context, context.globalState.settings.data.state.publicPlaid);
+			setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.publicPlaid);
 			route = `/public/playlist/${context.globalState.settings.data.state.publicPlaid}`;
 		} else if (view === 'currentPlaylist') {
-			setPlaylistInfo('left', context, context.globalState.settings.data.state.currentPlaid);
+			setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.currentPlaid);
 			route = `/public/playlist/${context.globalState.settings.data.state.currentPlaid}`;
 		}
 		if (indexKaraDetail === undefined) {
@@ -129,16 +129,16 @@ function PublicPage(props: RouteComponentProps) {
 		if (plaid !== context.globalState.settings.data.state.publicPlaid) {
 			await getPlaylistList();
 			setSettings(context.globalDispatch);
-			setPlaylistInfo('right', context, plaid);
+			setPlaylistInfoRight(context.globalDispatch, plaid);
 		}
 	};
 
 	const playlistInfoUpdated = (plaid: string) => {
 		getPlaylistList();
 		if (context.globalState.frontendContext.playlistInfoLeft.plaid === plaid)
-			setPlaylistInfo('left', context, plaid);
+			setPlaylistInfoLeft(context.globalDispatch, plaid);
 		if (context.globalState.frontendContext.playlistInfoRight.plaid === plaid)
-			setPlaylistInfo('right', context, plaid);
+			setPlaylistInfoRight(context.globalDispatch, plaid);
 	};
 
 	const getPlaylistList = async () => {
@@ -263,7 +263,7 @@ function PublicPage(props: RouteComponentProps) {
 				context.globalState.frontendContext.playlistInfoLeft.plaid
 			);
 		} else {
-			setPlaylistInfo('left', context, context.globalState.frontendContext.playlistInfoLeft.plaid);
+			setPlaylistInfoLeft(context.globalDispatch, context.globalState.frontendContext.playlistInfoLeft.plaid);
 			props.history.push(`/public/karaoke/${kara.kid}`);
 		}
 	}, [indexKaraDetail]);
