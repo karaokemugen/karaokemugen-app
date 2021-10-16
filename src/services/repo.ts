@@ -14,7 +14,7 @@ import { writeKara } from '../lib/dao/karafile';
 import { readAllKaras } from '../lib/services/generation';
 import { DBTag } from '../lib/types/database/tag';
 import { Kara } from '../lib/types/kara';
-import {Repository, RepositoryManifest} from '../lib/types/repo';
+import {DiffChanges, Repository, RepositoryManifest} from '../lib/types/repo';
 import {getConfig, resolvedPathRepos} from '../lib/utils/config';
 import {
 	asyncCheckOrMkdir,
@@ -27,13 +27,14 @@ import {
 } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
+import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import {DifferentChecksumReport, OldRepository} from '../types/repo';
 import {backupConfig} from '../utils/config';
 import {pathIsContainedInAnother} from '../utils/files';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
-import {applyPatch, downloadAndExtractZip} from '../utils/zipPatch';
+import {applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles} from '../utils/zipPatch';
 import { createProblematicBLCSet, generateBlacklist } from './blacklist';
 import { updateMedias } from './downloadUpdater';
 import { getKaras } from './kara';
@@ -242,7 +243,18 @@ export async function updateZipRepo(name: string) {
 		if (LatestCommit !== LocalCommit) {
 			try {
 				const patch = await HTTP.get(`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(LocalCommit)}`);
-				const changes = await applyPatch(patch.body, repo.BaseDir);
+				let changes: DiffChanges[];
+				try {
+					changes = await applyPatch(patch.body, repo.BaseDir);
+				} catch(err) {
+					// If patch fails, we need to try the other way around and get all modified files
+					// Need to remove .orig files if any
+					await cleanFailedPatch(repo);
+					logger.info('Trying to download full files instead', {service: 'Repo'});
+					const fullFiles = await HTTP.get(`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(LocalCommit)}`);
+					await writeFullPatchedFiles(JSON.parse(fullFiles.body), repo);
+					changes = computeFileChanges(patch.body);
+				}
 				const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
 				const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
 				const TIDsToDelete = [];
