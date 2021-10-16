@@ -325,7 +325,7 @@ export default function KaraDetail(props: IProps) {
 		for (const type of ['SINGERS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
 			let key = 0;
 			const tagData = tagTypes[type];
-			if (kara[tagData.karajson].length > 0) {
+			if (kara[tagData.karajson]?.length > 0) {
 				karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`}
 					key={tagData.karajson}>
 					<i className={`fas fa-fw fa-${tagData.icon}`}/>
