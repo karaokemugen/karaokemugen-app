@@ -405,7 +405,7 @@ function Playlist(props: IProps) {
 	};
 
 	const playingUpdate = (dataUpdate: { plaid: string; plc_id: number }) => {
-		if (getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid && !stopUpdate) {
+		if (!stopUpdate && data && getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid) {
 			setData((oldData) => {
 				let indexPlaying;
 				for (let index = 0; index < oldData.content.length; index++) {
