@@ -32,8 +32,6 @@ interface IProps {
 	checkedKaras: KaraElement[];
 	selectAllKarasChecked: boolean;
 	criteriasOpen: boolean;
-	playlistWillUpdate: () => void;
-	playlistDidUpdate: () => void;
 	getPlaylist: (searchType?: 'search' | 'recent' | 'requested', orderByLikes?: boolean) => void;
 	onChangeTags: (type: number | string, value: string) => void;
 	addAllKaras: () => void;
@@ -119,8 +117,6 @@ function PlaylistHeader(props: IProps) {
 					topKaraMenu={element.bottom}
 					leftKaraMenu={element.left}
 					closePlaylistCommands={closePlaylistCommands}
-					playlistWillUpdate={props.playlistWillUpdate}
-					playlistDidUpdate={props.playlistDidUpdate}
 					addAllKaras={props.addAllKaras}
 					addRandomKaras={props.addRandomKaras}
 					downloadAllMedias={props.downloadAllMedias}

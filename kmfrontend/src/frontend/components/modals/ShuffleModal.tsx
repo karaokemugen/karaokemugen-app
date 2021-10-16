@@ -7,17 +7,13 @@ import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
 	idPlaylist: string;
-	playlistWillUpdate: () => void;
-	playlistDidUpdate: () => void;
 }
 
 function ShuffleModal(props: IProps) {
 	const context = useContext(GlobalContext);
 
 	const shuffle = async (method: string) => {
-		props.playlistWillUpdate();
 		await commandBackend('shufflePlaylist', { plaid: props.idPlaylist, method: method });
-		props.playlistDidUpdate();
 		closeModalWithContext();
 	};
 

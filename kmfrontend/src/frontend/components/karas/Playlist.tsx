@@ -330,16 +330,6 @@ function Playlist(props: IProps) {
 		return url;
 	};
 
-	const playlistWillUpdate = () => {
-		setData(undefined);
-		setPlaylistInProgress(true);
-	};
-
-	const playlistDidUpdate = async () => {
-		await getPlaylist();
-		scrollToPlaying();
-	};
-
 	const getPlaylist = async (searchTypeParam?: 'search' | 'recent' | 'requested', orderByLikes?: boolean) => {
 		const criterias: any = {
 			year: 'y',
@@ -942,8 +932,6 @@ function Playlist(props: IProps) {
 					getPlaylist={getPlaylist}
 					toggleSearchMenu={toggleSearchMenu}
 					searchMenuOpen={props.searchMenuOpen}
-					playlistWillUpdate={playlistWillUpdate}
-					playlistDidUpdate={playlistDidUpdate}
 					checkedKaras={data?.content?.filter((a) => a?.checked)}
 					addRandomKaras={addRandomKaras}
 					downloadAllMedias={downloadAllMedias}

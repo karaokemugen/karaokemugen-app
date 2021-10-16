@@ -20,8 +20,6 @@ interface IProps {
 	topKaraMenu: number;
 	leftKaraMenu: number;
 	closePlaylistCommands: () => void;
-	playlistWillUpdate: () => void;
-	playlistDidUpdate: () => void;
 	addAllKaras: () => void;
 	addRandomKaras: () => void;
 	downloadAllMedias: () => void;
@@ -38,8 +36,6 @@ function PlaylistCommandsModal(props: IProps) {
 			context.globalDispatch,
 			<ShuffleModal
 				idPlaylist={playlist?.plaid}
-				playlistWillUpdate={props.playlistWillUpdate}
-				playlistDidUpdate={props.playlistDidUpdate}
 			/>
 		);
 	};
