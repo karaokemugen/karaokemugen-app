@@ -298,7 +298,7 @@ function PlaylistHeader(props: IProps) {
 					</div>
 					<SelectWithIcon list={getListToSelect()} value={playlist?.plaid?.toString()}
 						onChange={(value: any) => setPlaylistInfo(props.side, context, value)}/>
-					{playlist?.plaid >= nonStandardPlaylists.library ?(
+					{playlist?.plaid === nonStandardPlaylists.library ?(
 						<div className="btn-group">
 							<button
 								type="button"
