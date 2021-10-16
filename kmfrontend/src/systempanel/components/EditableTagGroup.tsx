@@ -50,21 +50,23 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 	};
 
 	handleInputConfirm = (val) => {
-		const tags = this.state.value;
-		const tag = this.state.tags.filter(tag => val === tag.tid)[0];
-		if (tags.filter(tag => val === tag.tid).length === 0) {
-			if (tag?.tid) {
-				tags.push(tag);
-			} else {
-				tags.push({ name: val });
+		if (val) {
+			const tags = this.state.value;
+			const tag = this.state.tags.filter(tag => val === tag.tid)[0];
+			if (tags.filter(tag => val === tag.tid).length === 0) {
+				if (tag?.tid) {
+					tags.push(tag);
+				} else {
+					tags.push({ name: val });
+				}
 			}
+			this.setState({
+				value: tags,
+				inputVisible: false,
+				currentVal: undefined
+			});
+			this.props.onChange && this.props.onChange(tags);
 		}
-		this.setState({
-			value: tags,
-			inputVisible: false,
-			currentVal: undefined
-		});
-		this.props.onChange && this.props.onChange(tags);
 	};
 
 	getTags = async (filter, type) => {
