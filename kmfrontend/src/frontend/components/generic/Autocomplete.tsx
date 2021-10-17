@@ -139,25 +139,27 @@ function Autocomplete(props: IProps) {
 					onChange={handleSearchChange}
 					onKeyUp={handleSearchKeyUp}
 				/>
-				<ul
-					className="UI-autocomplete-options"
-					style={{
-						top: node.current && props.forceTop ? node.current.getBoundingClientRect().top - 30 : undefined,
-					}}
-				>
-					<div className="UI-autocomplete-options-wrapper">
-						{filteredOptions().map((o, index) => (
-							<li
-								className="UI-autocomplete-option"
-								data-active={index === activeIndex ? 'true' : 'false'}
-								key={index}
-								onClick={() => handleOptionSelection(o)}
-							>
-								{o.label}
-							</li>
-						))}
-					</div>
-				</ul>
+				{filteredOptions().length > 0 ?
+					<ul
+						className="UI-autocomplete-options"
+						style={{
+							top: node.current && props.forceTop ? node.current.getBoundingClientRect().top - 30 : undefined,
+						}}
+					>
+						<div className="UI-autocomplete-options-wrapper">
+							{filteredOptions().map((o, index) => (
+								<li
+									className="UI-autocomplete-option"
+									data-active={index === activeIndex ? 'true' : 'false'}
+									key={index}
+									onClick={() => handleOptionSelection(o)}
+								>
+									{o.label}
+								</li>
+							))}
+						</div>
+					</ul> : null
+				}
 			</div>
 		</div>
 	);
