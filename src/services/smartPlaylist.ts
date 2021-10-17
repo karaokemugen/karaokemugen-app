@@ -72,11 +72,34 @@ export async function updateSmartPlaylist(plaid: string) {
 		logger.info(`Playlist "${pl.name}" is not a smart one, skipping update`);
 		return;
 	}
+
 	logger.info(`Updating smart playlist "${pl.name}"...`, {service: 'SmartPlaylist'});
 	const [plc, list] = await Promise.all([
 		getPlaylistContentsMini(plaid),
 		selectKarasFromCriterias(plaid, pl.type_smart)
 	]);
+
+	// First we need to trim our list if a limit is in place
+	if (pl.flag_smartlimit) {
+		// First, sort by newest or oldest
+		list.sort((a,b) => (a.created_at > b.created_at) ? 1 : ((b.created_at > a.created_at) ? -1 : 0));
+		if (pl.smart_limit_order === 'newest') list.reverse();
+		// Now let's trim that list!
+		const trimmedListInfo = {
+			songs: list.length,
+			duration: list.reduce((a, b) => a + b.duration, 0)
+		};
+		// Time in pl.smart_limit_number is in minutes)
+		const trimTarget = pl.smart_limit_type === 'duration'
+			? pl.smart_limit_number * 60
+			: pl.smart_limit_number;
+		while (trimmedListInfo[pl.smart_limit_type] > trimTarget) {
+			const lastSong = list.pop();
+			if (pl.smart_limit_type === 'songs') trimmedListInfo.songs -= 1;
+			if (pl.smart_limit_type === 'duration') trimmedListInfo.duration -= lastSong.duration;
+		}
+	}
+
 	// We compare what we have in the playlist and what we have in the generated list, removing and adding songs without changing the order.
 
 	const removedSongs = plc.filter(pc => !list.find(l => l.kid === pc.kid));
@@ -296,7 +319,6 @@ export function whitelistHook(plaid: string) {
 	updatePlaylistLastEditTime(oldWhitelistPlaylist_id);
 	emitWS('playlistInfoUpdated', oldWhitelistPlaylist_id);
 	setState({whitelistPlaid: plaid});
-	updateAllSmartPlaylists();
 }
 
 // Actions took when a new blacklist is set
@@ -305,5 +327,4 @@ export function blacklistHook(plaid: string) {
 	updatePlaylistLastEditTime(oldBlacklistPlaylist_id);
 	emitWS('playlistInfoUpdated', oldBlacklistPlaylist_id);
 	setState({blacklistPlaid: plaid});
-	updateAllSmartPlaylists();
 }

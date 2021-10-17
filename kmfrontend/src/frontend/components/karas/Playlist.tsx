@@ -940,7 +940,10 @@ function Playlist(props: IProps) {
 				/>
 			) : null}
 			<div id={'playlist' + props.side} className="playlistContainer" ref={refContainer}>
-				{(!data || (data?.infos && (data.infos.count === 0 || !data.infos.count))) && isPlaylistInProgress ? (
+				{playlist?.flag_smart && criteriasOpen ?
+					<CriteriasList tags={props.tags} playlist={playlist} /> : null
+				}
+				{(data?.infos && (data.infos.count === 0 || !data.infos.count)) && !criteriasOpen && isPlaylistInProgress ? (
 					<div className="loader" />
 				) : data && !criteriasOpen ? (
 					<DragDropContext onDragEnd={sortRow}>
@@ -984,9 +987,8 @@ function Playlist(props: IProps) {
 							)}
 						</Droppable>
 					</DragDropContext>
-				) : playlist?.flag_smart && criteriasOpen ? (
-					<CriteriasList tags={props.tags} playlist={playlist} />
-				) : null}
+				) : null
+				}
 			</div>
 			<div className="plFooter">
 				{!criteriasOpen ?

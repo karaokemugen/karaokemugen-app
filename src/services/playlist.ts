@@ -5,7 +5,7 @@ import {resolve} from 'path';
 
 import { APIMessage } from '../controllers/common';
 import {
-	insertKaraToRequests,	
+	insertKaraToRequests,
 } from '../dao/kara';
 //DAO
 import {
@@ -333,19 +333,26 @@ export async function editPlaylist(plaid: string, playlist: DBPL) {
 		...playlist
 	};
 	await updatePlaylist(newPL);
+	let needsSmartUpdating = false;
 	if (playlist.flag_current) currentHook(plaid, newPL.name);
 	if (playlist.flag_public) publicHook(plaid, newPL.name);
 	if (playlist.flag_whitelist) whitelistHook(plaid);
 	if (playlist.flag_blacklist) blacklistHook(plaid);
-	if (pl.flag_smart) {
-		if (playlist.type_smart !== pl.type_smart) {
-			await updateSmartPlaylist(plaid);
-			const isBlacklist = plaid === getState().blacklistPlaid;
-			const isWhitelist = plaid === getState().whitelistPlaid;
-			if (isBlacklist || isWhitelist) {
-				updateAllSmartPlaylists(isBlacklist, isWhitelist);
-			}
+	const isBlacklist = plaid === getState().blacklistPlaid;
+	const isWhitelist = plaid === getState().whitelistPlaid;
+
+	if (newPL.flag_smart && newPL.flag_smartlimit) {
+		// Only update if one of those has changed.
+		if (playlist.flag_smartlimit || playlist.smart_limit_number || playlist.smart_limit_order || playlist.smart_limit_type) {
+			needsSmartUpdating = true;
 		}
+	}
+	if (needsSmartUpdating) {
+		await updateSmartPlaylist(plaid);
+	}
+	// Skip playlist's smart updating if it's whitelist or blacklist since we already did it.
+	if (isBlacklist || isWhitelist) {
+		updateAllSmartPlaylists(isBlacklist, isWhitelist);
 	}
 	updatePlaylistLastEditTime(plaid);
 	emitWS('playlistInfoUpdated', plaid);

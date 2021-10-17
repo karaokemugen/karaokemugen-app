@@ -8,13 +8,33 @@
 	}
 }
 
-.criterias-type-smart {
+.criterias-line {
 	margin: 1em;
 	display: flex;
-	justify-content: space-around;
+	align-items: center;
 
 	.criterias-type-smart-label {
 		margin-top: 0.5em;
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+	}
+
+	input {
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+		border: 0;
+		box-shadow: none;
+		font-size: 1rem;
+		background-color: #5a5a5a;
+		outline: none;
+		color: #ccc;
+	}
+
+	input[type="number"] {
+		width: 5em;
+	}
+
+	select {
 		margin-left: 0.5em;
 		margin-right: 0.5em;
 	}
