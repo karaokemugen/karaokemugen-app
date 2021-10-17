@@ -6,6 +6,7 @@ import { promises as fs } from 'fs';
 import { mkdirp, remove } from 'fs-extra';
 import i18next from 'i18next';
 import {resolve} from 'path';
+import semver from 'semver';
 import {StringDecoder} from 'string_decoder';
 import tasklist from 'tasklist';
 
@@ -320,15 +321,28 @@ export async function initPG(relaunch = true) {
 /** Check Windows' VCRedist presence since we need it for postgresql */
 export async function checkAndInstallVCRedist() {
 	try {
-		if (await asyncExists(resolve('C:/Windows/System32/VCRUNTIME140.DLL'))) return;
+		const checks = {
+			2015: {
+				file: resolve('C:/Windows/System32/VCRUNTIME140.DLL'),
+				URL: 'https://mugen.karaokes.moe/downloads/vcredist2015_x64.exe'
+			},
+			2012: {
+				file: resolve('C:/Windows/System32/msvcr120.dll'),
+				URL: 'https://mugen.karaokes.moe/downloads/vcredist_x64.exe'
+			}
+		};
+		const check = semver.satisfies(getState().version.number.split('-')[0], '>=6.0.0')
+			? checks[2015]
+			: checks[2012];
+		if (await asyncExists(check.file)) return;
 		// Let's download VC Redist and install it yo.
-		logger.warn('Visual C++ Redistribuable 2015 not found, downloading and installing.', {service: 'Postgres'});
+		logger.warn('Visual C++ Redistribuable not found, downloading and installing.', {service: 'Postgres'});
 		const downloader = new Downloader({task: null});
 		// Launch downloads
-		const vcRedistPath = resolve(resolvedPathTemp(), 'vcredist2015.exe');
+		const vcRedistPath = resolve(resolvedPathTemp(), 'vcredist.exe');
 		const fileErrors = await downloader.download([
 			{
-				url: 'https://mugen.karaokes.moe/downloads/vcredist2015_x64.exe',
+				url: check.URL,
 				filename: vcRedistPath
 			}
 		]);
