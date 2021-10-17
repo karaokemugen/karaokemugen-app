@@ -2,6 +2,7 @@ import './CriteriasList.scss';
 
 import i18next from 'i18next';
 import { Fragment, useContext, useEffect, useState } from 'react';
+import { Trans } from 'react-i18next';
 
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { Criteria } from '../../../../../src/lib/types/playlist';
@@ -27,6 +28,8 @@ function CriteriasList(props: IProps) {
 	const [criterias, setCriterias] = useState<Criteria[]>([]);
 	const [criteriaType, setCriteriaType] = useState(1002);
 	const [criteriaVal, setCriteriaVal] = useState<string | number>('');
+	const [flagSmartLimit, setFlagSmartLimit] = useState(props.playlist.flag_smartlimit);
+	const [smartLimitNumber, setSmartLimitNumber] = useState(props.playlist.smart_limit_number);
 
 	const getCriterias = async () => {
 		const user = context.globalState.settings.data.user;
@@ -61,11 +64,43 @@ function CriteriasList(props: IProps) {
 		getCriterias();
 	};
 
-	const editPlaylist = async (e: any) => {
+	const editTypeSmart = (e: any) => editPlaylist({
+		type_smart: e.target.checked ? 'UNION' : 'INTERSECT'
+	});
+
+	const editFlagSmartLimit = (e: any) => {
+		setFlagSmartLimit(e.target.checked);
+		editPlaylist({
+			flag_smartlimit: e.target.checked
+		});
+	};
+
+	const editSmartLimitNumber = (e: any) => {
+		const limitNumber = Number(e.target.value) && Number(e.target.value) !== 0 ?
+			Number(e.target.value) : 0;
+		const flag = Number(e.target.value) && Number(e.target.value) !== 0 ?
+			props.playlist.flag_smartlimit : false;
+		setFlagSmartLimit(flag);
+		setSmartLimitNumber(limitNumber);
+		editPlaylist({
+			smart_limit_number: limitNumber,
+			flag_smartlimit: flag
+		});
+	};
+
+	const editSmartLimitOrder = (e: any) => editPlaylist({
+		smart_limit_order: e.target.value
+	});
+
+	const editSmartLimitType = (e: any) => editPlaylist({
+		smart_limit_type: e.target.value
+	});
+
+	const editPlaylist = async (data: any) => {
 		await commandBackend('editPlaylist', {
+			...data,
 			name: props.playlist.name,
-			plaid: props.playlist.plaid,
-			type_smart: e.target.checked ? 'UNION' : 'INTERSECT'
+			plaid: props.playlist.plaid
 		});
 		setSettings(context.globalDispatch);
 	};
@@ -81,17 +116,58 @@ function CriteriasList(props: IProps) {
 	const tagsFiltered = props.tags ? props.tags.filter((obj) => obj.type.includes(criteriaType)) : [];
 	return (
 		<div className="criteriasContainer">
-			<div className="criterias-type-smart">
+			<div className="criterias-line">
 				<div>{i18next.t('CRITERIA.TYPE_SMART')}</div>
 				<div className="criterias-type-smart-label">
 					<Switch
-						handleChange={editPlaylist}
+						handleChange={editTypeSmart}
 						isChecked={props.playlist.type_smart === 'UNION'}
 						onLabel={i18next.t('CRITERIA.OR')}
 						offLabel={i18next.t('CRITERIA.AND')}
 					/>
 				</div>
 				<div>{i18next.t('CRITERIA.TYPE_SMART_DESC')}</div>
+			</div>
+			<div className="criterias-line">
+				<Trans
+					i18nKey="CRITERIA.PLAYLIST_DURATION"
+					components={{
+						1: <input
+							type="checkbox"
+							checked={flagSmartLimit}
+							onChange={editFlagSmartLimit}
+						/>,
+						2: <input
+							type="number"
+							value={smartLimitNumber}
+							data-exclude="true"
+							min={0}
+							onChange={editSmartLimitNumber}
+						/>,
+						3: <select
+							onChange={editSmartLimitType}
+							defaultValue={props.playlist.smart_limit_type}
+						>
+							<option key='duration' value='duration'>
+								{i18next.t('CRITERIA.PLAYLIST_DURATION_TYPE_MINUTES')}
+							</option>
+							<option key='songs' value='songs'>
+								{i18next.t('CRITERIA.PLAYLIST_DURATION_TYPE_SONGS')}
+							</option>
+						</select>,
+						4: <select
+							onChange={editSmartLimitOrder}
+							defaultValue={props.playlist.smart_limit_order}
+						>
+							<option key='newest' value='newest'>
+								{i18next.t('CRITERIA.PLAYLIST_DURATION_ORDER_MORE_RECENT')}
+							</option>
+							<option key='oldest' value='oldest'>
+								{i18next.t('CRITERIA.PLAYLIST_DURATION_ORDER_LESS_RECENT')}
+							</option>
+						</select>
+					}}
+				/>
 			</div>
 			<div className="criteriasDescription">{i18next.t('CRITERIA.CRITERIA_DESC')}</div>
 			<div className="criterias-input">

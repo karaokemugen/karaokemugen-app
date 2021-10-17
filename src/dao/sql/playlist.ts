@@ -26,7 +26,11 @@ UPDATE playlist SET
 	flag_smart = :flag_smart,
 	flag_whitelist = :flag_whitelist,
 	flag_blacklist = :flag_blacklist,
-	type_smart = :type_smart
+	flag_smartlimit = :flag_smartlimit,
+	type_smart = :type_smart,
+	smart_limit_order = :smart_limit_order,
+	smart_limit_type = :smart_limit_type,
+	smart_limit_number = :smart_limit_number
 WHERE pk_id_playlist = :plaid;
 `;
 
@@ -415,6 +419,10 @@ SELECT pk_id_playlist AS plaid,
 	flag_smart,
 	flag_whitelist,
 	flag_blacklist,
+	flag_smartlimit,
+	smart_limit_number,
+	smart_limit_order,
+	smart_limit_type,
 	fk_id_plcontent_playing AS plcontent_id_playing,
 	fk_login AS username,
 	type_smart
@@ -436,6 +444,10 @@ SELECT pk_id_playlist AS plaid,
 	flag_whitelist,
 	flag_blacklist,
 	flag_smart,
+	flag_smartlimit,
+	smart_limit_number,
+	smart_limit_order,
+	smart_limit_type,
 	fk_id_plcontent_playing AS plcontent_id_playing,
 	fk_login AS username,
 	type_smart
@@ -555,17 +567,24 @@ WHERE type = $1
 
 export const sqlselectKarasFromCriterias = {
 	tagTypes: (type: string, value: any) => `
-	SELECT kt.fk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias
+	SELECT kt.fk_kid AS kid,
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias,
+		k.duration AS duration,
+		k.created_at AS created_at
 	FROM playlist_criteria AS c
 	INNER JOIN tag t ON t.types @> ARRAY[c.type] AND c.value = t.pk_tid::varchar
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid AND kt.type = c.type
+	LEFT JOIN kara k ON k.pk_kid = kt.fk_kid
 	WHERE c.type ${type} AND c.value = '${value}'
 		AND   kt.fk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 		AND   fk_id_playlist = $1
 	`,
 
 	0: (value: any) => `
-	SELECT k.pk_kid AS kid , jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::smallint)) AS criterias
+	SELECT k.pk_kid AS kid,
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::smallint)) AS criterias,
+		k.duration AS duration,
+		k.created_at AS created_at
 	FROM playlist_criteria c
  	INNER JOIN kara k ON k.year = ${value}
 	WHERE c.type = 0
@@ -574,7 +593,10 @@ export const sqlselectKarasFromCriterias = {
 	`,
 
 	1001: `
-	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias
+	SELECT k.pk_kid AS kid,
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::uuid)) AS criterias,
+		k.duration AS duration,
+		k.created_at AS created_at
 	FROM playlist_criteria c
 	INNER JOIN kara k ON k.pk_kid = c.value::uuid
 	WHERE c.type = 1001
@@ -583,7 +605,10 @@ export const sqlselectKarasFromCriterias = {
 	`,
 
 	1002: (value: any) => `
-	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias
+	SELECT k.pk_kid AS kid,
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias,
+		k.duration AS duration,
+		k.created_at AS created_at
 	FROM playlist_criteria c
 	INNER JOIN kara k on k.duration >= ${value}
 	WHERE c.type = 1002
@@ -592,7 +617,10 @@ export const sqlselectKarasFromCriterias = {
 	`,
 
 	1003: (value: any) => `
-	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias
+	SELECT k.pk_kid AS kid,
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::integer)) AS criterias,
+		k.duration AS duration,
+		k.created_at AS created_at
 	FROM playlist_criteria c
 	INNER JOIN kara k on k.duration <= ${value}
 	WHERE c.type = 1003
@@ -601,7 +629,10 @@ export const sqlselectKarasFromCriterias = {
 	`,
 
 	1004: (value: any) => `
-	SELECT ak.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias
+	SELECT ak.pk_kid AS kid,
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
+		k.duration AS duration,
+		k.created_at AS created_at
 	FROM playlist_criteria c
 	INNER JOIN all_karas ak ON ak.titles_sortable LIKE ('%' || lower(unaccent('${value}')) || '%')
 	WHERE c.type = 1004
@@ -610,7 +641,10 @@ export const sqlselectKarasFromCriterias = {
 	`,
 
 	1005: (value: any) => `
-	SELECT kt.fk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias
+	SELECT kt.fk_kid AS kid,
+		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
+		k.duration AS duration,
+		k.created_at AS created_at
 	FROM playlist_criteria c
 	INNER JOIN tag t ON unaccent(t.name) ILIKE ('%' || unaccent('${value}') || '%')
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
@@ -620,7 +654,9 @@ export const sqlselectKarasFromCriterias = {
 	`,
 
 	1006: (value: any) => `
-	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias
+	SELECT k.pk_kid AS kid, jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
+		k.duration AS duration,
+		k.created_at AS created_at
 	FROM playlist_criteria c
 	INNER JOIN kara k ON k.download_status = '${value}'
 	WHERE c.type = 1006
