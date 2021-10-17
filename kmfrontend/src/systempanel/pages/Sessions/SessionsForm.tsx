@@ -18,10 +18,21 @@ interface SessionsFormProps extends FormProps {
 	mergeAction: (seid1: string, seid2: string) => void;
 }
 
+interface KaraList {
+	content: DBKara[];
+	avatars: any;
+	i18n?: any;
+	infos: {
+		count: number;
+		from: number;
+		to: number;
+	};
+}
+
 interface SessionsFormState {
 	mergeSelection: string;
-	sessionPlayed: DBKara[];
-	sessionRequested: DBKara[];
+	sessionPlayed: KaraList;
+	sessionRequested: KaraList;
 	started_at: Date;
 	ended_at:Date;
 }
@@ -37,8 +48,8 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 		super(props);
 		this.state = {
 			mergeSelection: '',
-			sessionPlayed: [],
-			sessionRequested: [],
+			sessionPlayed: undefined,
+			sessionRequested: undefined,
 			started_at: this.props.session?.started_at,
 			ended_at: this.props.session?.ended_at
 		};
@@ -47,10 +58,11 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	async componentDidMount() {
 		if (this.props.session.seid) {
 			const played = await commandBackend('getKaras', 
-				{order: 'sessionPlayed', q: `seid=${this.props.session.seid}`});
+				{order: 'sessionPlayed', q: `seid:${this.props.session.seid}`});
 			const requested = await commandBackend('getKaras', 
-				{order: 'sessionRequested', q: `seid=${this.props.session.seid}`});
-			this.setState({ sessionPlayed: played.content, sessionRequested: requested.content });
+				{order: 'sessionRequested', q: `seid:${this.props.session.seid}`});
+			this.setState({ sessionPlayed: played, sessionRequested: requested });
+			console.log(played);
 		}
 	}
 
@@ -216,16 +228,40 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 
 						<h1>{i18next.t('SESSIONS.KARA_PLAYED')}</h1>
 						<Table
-							dataSource={this.state.sessionPlayed}
-							columns={this.columns}
-							rowKey='kid'
+							dataSource={this.state.sessionPlayed?.content}
+							columns={[{
+								title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
+								dataIndex: 'lastplayed_at',
+								render: (text) => text ? new Date(text).toLocaleString() : null
+							}, {
+								title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
+								dataIndex: 'lastrequested_at',
+								render: (text) => text ? new Date(text).toLocaleString() : null
+							}, {
+								title: i18next.t('SESSIONS.TITLE'),
+								dataIndex: 'title',
+								render: (text_, kara) => buildKaraTitle(this.context.globalState.settings.data, kara, true, this.state.sessionPlayed.i18n)
+							}]}
+							rowKey='lastplayed_at'
 							childrenColumnName='childrenColumnName'
 						/>
 						<h1>{i18next.t('SESSIONS.KARA_REQUESTED')}</h1>
 						<Table
-							dataSource={this.state.sessionRequested}
-							columns={this.columns}
-							rowKey='kid'
+							dataSource={this.state.sessionRequested?.content}
+							columns={[{
+								title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
+								dataIndex: 'lastplayed_at',
+								render: (text) => text ? new Date(text).toLocaleString() : null
+							}, {
+								title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
+								dataIndex: 'lastrequested_at',
+								render: (text) => text ? new Date(text).toLocaleString() : null
+							}, {
+								title: i18next.t('SESSIONS.TITLE'),
+								dataIndex: 'title',
+								render: (text_, kara) => buildKaraTitle(this.context.globalState.settings.data, kara, true, this.state.sessionRequested.i18n)
+							}]}
+							rowKey='lastplayed_at'
 							childrenColumnName='childrenColumnName'
 						/>
 					</> : null
@@ -233,21 +269,6 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 			</Form>
 		);
 	}
-
-	columns = [{
-		title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
-		dataIndex: 'lastplayed_at',
-		render: (text) => text ? new Date(text).toLocaleString() : null
-	}, {
-		title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
-		dataIndex: 'lastrequested_at',
-		render: (text) => text ? new Date(text).toLocaleString() : null
-	}, {
-		title: i18next.t('SESSIONS.TITLE'),
-		dataIndex: 'title',
-		render: (text_, kara) => buildKaraTitle(this.context.globalState.settings.data, kara, true)
-	}];
-
 }
 
 export default SessionForm;
