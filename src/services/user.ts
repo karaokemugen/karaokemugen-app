@@ -587,6 +587,7 @@ export async function generateAdminPassword(): Promise<string> {
 	return adminPassword;
 }
 
+// Remove this in KM 7.0
 export async function lowercaseMigration() {
 	try {
 		// First get list of users with double names
@@ -624,7 +625,7 @@ export async function lowercaseMigration() {
 					// We need to merge their data with mainUser
 					for (const user of dupeUsers) {
 						// Special case for favorites since we may break the unique constraint if the two users had the same favorites.
-						const favs = await getFavorites({username: user.pk_login});
+						const favs = await getFavorites({userFavorites: user.pk_login});
 						const favsToAdd = favs.content.map(f => f.kid);
 						const promises = [
 							mergeUserData(user.pk_login, mainUser),

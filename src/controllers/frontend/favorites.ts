@@ -46,6 +46,7 @@ export default function favoritesController(router: SocketIOApp) {
 			} else {
 				return await getFavorites({
 					username: req.token.username.toLowerCase(),
+					userFavorites: req.token.username.toLowerCase(),
 					filter: req.body?.filter,
 					lang: req.langs,
 					from: +req.body?.from || 0,

@@ -1,25 +1,23 @@
 import logger from 'winston';
 
-import { deleteFavorites, insertFavorites, selectFavorites,truncateFavorites } from '../dao/favorites';
-import {KaraList} from '../lib/types/kara';
+import { deleteFavorites, insertFavorites, truncateFavorites } from '../dao/favorites';
+import {KaraList, KaraParams} from '../lib/types/kara';
 import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
 import {date} from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
 import {profile} from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
-import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,Favorite,FavParams} from '../types/favorites';
+import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,Favorite} from '../types/favorites';
 import sentry from '../utils/sentry';
-import {formatKaraList, isAllKaras} from './kara';
+import {getKaras, isAllKaras} from './kara';
 import {addKaraToPlaylist,createPlaylist, shufflePlaylist, trimPlaylist} from './playlist';
 import {findUserByName} from './user';
 
-export async function getFavorites(params: FavParams): Promise<KaraList> {
+export async function getFavorites(params: KaraParams): Promise<KaraList> {
 	try {
 		profile('getFavorites');
-		const favs = await selectFavorites(params);
-		const count = favs.length > 0 ? favs[0].count : 0;
-		return formatKaraList(favs, params.from, count);
+		return await getKaras(params);		
 	} catch(err) {
 		sentry.error(err);
 		throw err;
@@ -78,7 +76,8 @@ export async function convertToRemoteFavorites(username: string, token: string) 
 	const favorites = await getFavorites({
 		filter: null,
 		lang: null,
-		username: username
+		username: username,
+		userFavorites: username
 	});
 	const localFavorites = favorites.content.map(fav => fav.kid);
 	if (localFavorites.length > 0) {
@@ -121,7 +120,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 export async function exportFavorites(username: string) {
 	username = username.toLowerCase();
 	const favs = await getFavorites({
-		username: username		
+		userFavorites: username
 	});
 	if (favs.content.length === 0) throw {code: 404, msg: 'No favorites'};
 	return {
@@ -157,7 +156,7 @@ export async function importFavorites(favs: FavExport, username: string, token?:
 		const favorites = favs.Favorites.map(f => f.kid);
 		const [karasUnknown, userFavorites] = await Promise.all([
 			isAllKaras(favorites),
-			getFavorites({username: username})
+			getFavorites({userFavorites: username})
 		]);
 		// Removing favorites already added
 		const mappedUserFavorites = userFavorites.content.map(uf => uf.kid);
@@ -182,7 +181,7 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 			logger.warn(`Username ${user} does not exist`, {service: 'Favorites'});
 		} else {
 			const favs = await getFavorites({
-				username: user				
+				userFavorites: user				
 			});
 			for (const f of favs.content) {
 				if (!faves.find(fav => fav.kid === f.kid)) faves.push({

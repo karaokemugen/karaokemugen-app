@@ -123,6 +123,10 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			SELECT fk_kid_child FROM kara_relation
 		))`;
 	}
+	if (params.userFavorites) {
+		whereClauses += ` AND uf.fk_login = '${params.userFavorites}' `;
+		joinClauses.push(` LEFT OUTER JOIN favorites AS uf ON uf.fk_login = '${params.userFavorites}' AND uf.fk_kid = ak.pk_kid `);
+	}
 	const query = sqlgetAllKaras(filterClauses.sql, whereClauses, groupClause, orderClauses, havingClause, limitClause, offsetClause, filterClauses.additionalFrom, selectRequested, groupClauseEnd, joinClauses);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaid,

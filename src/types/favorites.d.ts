@@ -1,9 +1,5 @@
 import {KaraParams} from '../lib/types/kara';
 
-export interface FavParams extends KaraParams {
-	username: string
-}
-
 interface FavExportContent {
 	kid: string
 }
