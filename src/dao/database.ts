@@ -1,3 +1,4 @@
+import { app, dialog } from 'electron';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import Postgrator, { Migration } from 'postgrator';
@@ -142,7 +143,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 			await initPG();
 			await initDB();
 			if (getState().restoreNeeded) await restorePG();
-		}
+		}		
 		logger.info('Initializing database connection', {service: 'DB'});
 		await connectDB(errorFunction, {
 			superuser: false,
@@ -151,6 +152,13 @@ export async function initDBSystem(): Promise<Migration[]> {
 		});
 		migrations = await migrateDB();
 	} catch(err) {
+		if (state.os === 'linux' && app.isPackaged) {
+			await dialog.showMessageBox({
+				type: 'none',
+				title: i18next.t('DATABASE_CONNECTION_ERROR_LINUX.TITLE'),
+				message: i18next.t('DATABASE_CONNECTION_ERROR_LINUX.MESSAGE')
+			});
+		}
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
 		sentry.error(err, 'Fatal');
 		throw Error(`Database system initialization failed : ${err}`);

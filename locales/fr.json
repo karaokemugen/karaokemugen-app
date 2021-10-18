@@ -171,6 +171,10 @@
         "TITLE": "Dépôt déjà existant",
         "MESSAGE": "Le dépôt que vous souhaitez ajouter existe déjà dans votre base de données Karaoke Mugen."
     },
+    "DATABASE_CONNECTION_ERROR_LINUX": {
+        "TITLE": "Erreur de connexion à la base de données - Linux",
+        "MESSAGE": "Sur les versions packagées Linux de Karaoke Mugen, vous DEVEZ utiliser votre propre PostgreSQL. Referrez-vous à la documentation sur https://docs.karaokes.moe"
+    },
     "MISSING_BINARIES": {
         "TITLE": "Binaires manquants",
         "MESSAGE": "Un ou plusieurs binaires nécessaires au Karaoke Mugen n'ont pu être trouvés.\n\nModifiez votre config.yml et définissez les variables System.Binaries.ffmpeg, System.Binaries.Player et System.Binaries.Postgres correctement pour votre OS.\n\nVous pouvez télécharger mpv pour votre OS à partir de http://mpv.io/.\n\nVous pouvez télécharger postgreSQL pour votre système d'exploitation à partir de http://postgresql.org/.\n\nVous pouvez télécharger ffmpeg pour votre système d'exploitation à partir de http://ffmpeg.org.\n\nVous pouvez télécharger l'utilitaire de correction à l'adresse https://mugen.karaokes.moe/downloads/patch.exe (Windows) ou https://mugen.karaokes.moe/downloads/patch (macOS) ou le paquet GNU Patch 2.7+ (Linux).\n\nDétails de l'erreur : "
