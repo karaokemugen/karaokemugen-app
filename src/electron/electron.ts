@@ -7,6 +7,7 @@ import { resolve } from 'path';
 import { exit } from '../components/engine';
 import { init, preInit, welcomeToYoukousoKaraokeMugen } from '../components/init';
 import { selectUsers } from '../dao/user';
+import { MenuLayout } from '../types/electron';
 import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { testJSON } from '../lib/utils/validators';
@@ -22,7 +23,7 @@ import { getState,setState } from '../utils/state';
 import { tip } from '../utils/tips';
 import { initAutoUpdate } from './electronAutoUpdate';
 import { emitIPC } from './electronLogger';
-import { getMenu,initMenu } from './electronMenu';
+import { createMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
@@ -116,6 +117,11 @@ export async function postInit() {
 		if (getConfig().GUI.ChibiPlaylist.Enabled) {
 			updateChibiPlaylistWindow(true);
 		}
+		if (getConfig().App.FirstRun) {
+			applyMenu('REDUCED');
+		} else {
+			applyMenu('DEFAULT');
+		}		
 	}
 	initDone = true;
 }
@@ -160,7 +166,11 @@ async function registerIPCEvents() {
 	ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
 		updateChibiPlayerWindow(false);
 		setConfig({GUI: {ChibiPlayer: { Enabled: false }}});
-		applyMenu();
+		if (getConfig().App.FirstRun) {
+			applyMenu('REDUCED');
+		} else {
+			applyMenu('DEFAULT');
+		}
 	});
 	ipcMain.on('focusMainWindow', (_event, _eventData) => {
 		focusWindow();
@@ -275,15 +285,13 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 	}
 }
 
-export function applyMenu() {
-	initMenu();
-	const menu = Menu.buildFromTemplate(getMenu());
-	process.platform === 'darwin' ? Menu.setApplicationMenu(menu):win.setMenu(menu);
+export function applyMenu(layout: MenuLayout) {
+	createMenu(layout);
 }
 
 async function initElectronWindow() {
 	await createWindow();
-	applyMenu();
+	applyMenu('REDUCED');
 }
 
 async function createWindow() {

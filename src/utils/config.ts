@@ -11,7 +11,7 @@ import merge from 'lodash.merge';
 import {resolve} from 'path';
 
 import { selectUsers } from '../dao/user';
-import { setProgressBar } from '../electron/electron';
+import { applyMenu, setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {RecursivePartial} from '../lib/types';
@@ -166,6 +166,11 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (config.Player.ProgressBarDock) setProgressBar(-1);
 
 	configureHost();
+
+	// Exiting first run, display full menu.
+	if (oldConfig.App.FirstRun && !config.App.FirstRun) {
+		applyMenu('DEFAULT');		
+	}
 }
 
 /** Initializing configuration */
