@@ -26,14 +26,15 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 
 * **Accepted formats**:
   * **Video**: AVI, MP4, MKV (anything supported by [mpv](http://mpv.io) really)
-  * **Subtitles**: ASS, Karafun, KAR, Epitanime Toyunda, Ultrastar .txt files (if not ASS, they will be converted to ASS upon importation, and cannot be used directly)
+  * **Subtitles**: ASS, Karafun, KAR, Epitanime Toyunda v1-v3, Ultrastar .txt files (if not ASS, they will be converted to ASS upon importation, and cannot be used directly)
   * **Music**: MP3, M4A, OGG (anything supported by [mpv](http://mpv.io) really)
 * **Complete player controls**: Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control.
 * **Playlist management**: Reorder, shuffle, copy and move songs around between playlists
   * Playlists can be _current_ (used by the video player) and/or _public_ (where users can send songs to)
   * Playlists can be _hidden_ from public interface.
   * Some songs in the playlist can be _hidden_, these songs will be displayed as "???" to keep the surprise to public users.
-* **Blacklist and whitelist system**: Create criterias to ban songs on.
+  * Playlists can be _smart_ : automatically generate playlists depending on some criterias.
+* **Blacklist and whitelist system**: Hide some songs from public view.
 * **Complete metadata structure for songs**: Singers, songwriters, creators, authors, languages, categorization tags...
   * Complete **filter system** and **search engine** based on the aforementionned metadata.
 * **System Panel** to configure Karaoke Mugen:
@@ -41,12 +42,12 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
   * **Configure** application behaviour and **view logs**
   * **Manage** your song library (add, remove, edit...)
   * **View stats** like most played or requested songs
-* **User profiles** with access rights, favorites list, and other info
+* **User profiles** with access rights, favorites list, and preferences
 * **Web interface** for smartphone/tablet/PC ~~IE6 compatible~~
   * Public interface is for public and can be set to _restricted mode_ to prevent adding songs or in _closed mode_ to prevent access while you prepare your karaoke.
   * Users can **add songs** they want from the library.
   * Operators can **organize playlists** and control the player through the operator interface.
-* **Highly customized experience** to tailor the app to your specific needs (for twitch streams, in front of a crowd, between friends, for karaoke contests, etc.)
+* **Highly customizable experience** to tailor the app to your specific needs (for twitch streams, in front of a crowd, between friends, for karaoke contests, etc.)
 * **Display karaoke information** or operator announcements during song playback
 * **Export/import** playlists, favorites, blacklist criterias sets
 * And **many other things**! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
@@ -92,7 +93,7 @@ mpv (video player), ffmpeg (video/audio processing), GNU Patch (data updates), a
 
 #### Depending on your system
 
-You can also paths where to find those binaries in your `config.yml` file if you have them already installed elsewhere on your system and wish to use them. See `config.sample.yml` for examples.
+You can also define paths where to find those binaries in your `config.yml` file if you have them already installed elsewhere on your system and wish to use them. See `config.sample.yml` for examples.
 
 Here are the default places where Karaoke Mugen will look for these binaries below :
 
@@ -134,8 +135,10 @@ Later PostgreSQL versions should work just fine.
 
 Karaoke Mugen can use PostgreSQL in two ways :
 
-* **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `config.yml` file to point to the correct server and database)
+* **Existing database cluster :** Connect to an existing PostgreSQL server (edit the `config.yml` file to point to the correct server and database). **This is the preferred way on Linux systems**.
 * **Bundled PostgreSQL version :** If `bundledPostgresBinary` is set to `true` in `config.yml` then Karaoke Mugen will seek a `app/bin/postgresql` directory. Inside, you should have a complete PostgreSQL distribution including a `bin`, `lib` and `share` folders. Karaoke Mugen needs to find the `pg_ctl` binary in the `bin` folder.
+
+See [Database setup](#Database-setup) for more information.
 
 ### Yarn
 
@@ -152,6 +155,8 @@ git config status.submodulesummary true
 git config push.recursesubmodules on-demand
 git config submodule.recurse true
 ```
+
+Use the `yarn pull` command (which is a shortcut for git pull with submodules) to update submodules.
 
 ### Dependencies
 
@@ -207,7 +212,7 @@ yarn start
 
 Generating a database ie required on first launch and is done automatically if the database specified in `config.yml` is empty. You can trigger it manually later by connecting to the system panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
-On first run, the app will make you create an admin user and follow a guided tour of the operator panel. You can trigger this tour/admin creation process again by selecting the Tutorial item in the K menu on the app's operator panel.
+On first run, the app will make you create an admin user and decide on a few base settings. You'll get to follow a guided tour of the operator panel too. You can trigger this tour process again by selecting the Tutorial item in the K menu on the app's operator panel.
 
 ## Translations
 

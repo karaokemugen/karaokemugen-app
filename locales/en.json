@@ -171,6 +171,10 @@
         "TITLE": "Repository already exists",
         "MESSAGE": "The repository you're trying to add already exists in your Karaoke Mugen database."
     },
+    "DATABASE_CONNECTION_ERROR_LINUX": {
+        "TITLE": "Database connection error - Linux",
+        "MESSAGE": "On packaged Linux versions of Karaoke Mugen, you HAVE to use your own PostgreSQL server. See documentation at https://docs.karaokes.moe"
+    },
     "MISSING_BINARIES": {
         "TITLE": "Missing binaries",
         "MESSAGE": "One or more binaries needed by Karaoke Mugen could not be found.\n\nEdit your config.yml and set System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres variables correctly for your OS.\n\nYou can download mpv for your OS from http://mpv.io/\n\nYou can download postgreSQL for your OS from http://postgresql.org/\n\nYou can download ffmpeg for your OS from http://ffmpeg.org\n\nYou can download the patch utility at https://mugen.karaokes.moe/downloads/patch.exe (Windows) or https://mugen.karaokes.moe/downloads/patch (macOS) or GNU Patch 2.7+ package (Linux)\n\nError details: "

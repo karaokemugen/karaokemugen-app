@@ -142,8 +142,8 @@ export async function initEngine() {
 		const port = initFrontend();
 		if (port !== conf.System.FrontendPort) {
 			setConfig({System: {FrontendPort: port}});
-			// Reinit menu since we switched ports.
-			applyMenu();
+			// Reinit menu since we switched ports. Only if first run has already been done.
+			if (!conf.App.FirstRun) applyMenu('DEFAULT');
 		}
 		if (internet) try {
 			initStep(i18n.t('INIT_ONLINEURL'));
