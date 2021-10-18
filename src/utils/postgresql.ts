@@ -6,7 +6,6 @@ import { promises as fs } from 'fs';
 import { mkdirp, remove } from 'fs-extra';
 import i18next from 'i18next';
 import {resolve} from 'path';
-import semver from 'semver';
 import {StringDecoder} from 'string_decoder';
 import tasklist from 'tasklist';
 
@@ -358,7 +357,7 @@ export async function checkAndInstallVCRedist() {
 				URL: 'https://mugen.karaokes.moe/downloads/vcredist_x64.exe'
 			}
 		};
-		const check = semver.satisfies(getState().version.number.split('-')[0], '>=6.0.0')
+		const check = expectedPGVersion > 10
 			? checks[2015]
 			: checks[2012];
 		if (await asyncExists(check.file)) return;
