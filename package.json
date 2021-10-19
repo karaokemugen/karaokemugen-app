@@ -128,7 +128,6 @@
     "portfinder": "^1.0.28",
     "postgrator": "^5.0.0",
     "pretty-bytes": "^5.6.0",
-    "public-ip": "^4.0.4",
     "randomstring": "^1.2.1",
     "sanitize-filename": "^1.6.3",
     "semver": "^7.3.5",
