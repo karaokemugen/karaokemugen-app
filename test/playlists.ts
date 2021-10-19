@@ -508,6 +508,7 @@ describe('Playlists', () => {
 		return new Promise(resolve => {
 			socket.on('playlistContentsUpdated', plaid => {
 				if (plaid === newBlacklistPlaylistID) {
+					socket.off('playlistContentsUpdated');
 					resolve();
 				}
 			});
