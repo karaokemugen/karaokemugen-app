@@ -42,7 +42,6 @@ export async function getKara(kid: string, token: Token, lang?: string): Promise
 	try {
 		const res = await selectAllKaras({
 			username: token.username.toLowerCase(),
-			filter: null,
 			q: `k:${kid}`,
 			lang: lang,
 			blacklist: false
