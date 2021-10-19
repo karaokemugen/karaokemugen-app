@@ -39,11 +39,12 @@
     "playlist",
     "mpv",
     "ffmpeg",
-    "webapp"
+    "webapp",
+    "electron"
   ],
   "bugs": {
     "url": "https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues",
-    "email": "axel@teri-chan.net"
+    "email": "mugen@karaokes.moe"
   },
   "author": "Guillaume Lebigot <axel@teri-chan.net> (http://www.meido-rando.net)",
   "contributors": [
@@ -62,11 +63,11 @@
     "Rinchama (@Rinchama)",
     "zeograd <zeograd@gmail.com>",
     "leonekmi <git+km@leonekmi.fr>",
-    "Pierre CAMILLI <camillipierre@gmail.com> @Shueisha64",
+    "Pierre CAMILLI <camillipierre@gmail.com> (@Shueisha64)",
     "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "license": "MIT",
   "private": true,
