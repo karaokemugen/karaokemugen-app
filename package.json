@@ -4,7 +4,7 @@
   "versionName": "Quintuplées Quintessentielles",
   "description": "Karaoke playlist manager / player",
   "bin": {
-    "karaokemugen": "./dist/index.js"
+    "karaokemugen": "./dist/src/index.js"
   },
   "main": "dist/src/index.js",
   "scripts": {
