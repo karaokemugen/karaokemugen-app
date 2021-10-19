@@ -2,8 +2,8 @@
  * Datastore is used to inventory all tags and kara files to determine if the files have changed and we need to re-generate database.
  */
 
-import parallel from 'async-await-parallel';
 import { promises as fs } from 'fs';
+import parallel from 'p-map';
 
 import { checksum, extractAllFiles } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
@@ -81,11 +81,15 @@ export async function baseChecksum(): Promise<string> {
 			total: fileCount
 		});
 		const files = [].concat(karaFiles, tagFiles);
-		const promises = [];
 		dataStore.karas.clear();
 		dataStore.tags.clear();
-		files.forEach(f => promises.push(() => processDataFile(f, task)));
-		await parallel(promises, 32);
+		const mapper = async (file: string) => {
+			return processDataFile(file, task);
+		};
+		await parallel(files, mapper, {
+			stopOnError: false,
+			concurrency: 32
+		});
 		sortKaraStore();
 		sortTagsStore();
 		task.end();
