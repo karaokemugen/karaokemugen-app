@@ -1,4 +1,5 @@
 // Node modules
+import agent from 'agentkeepalive';
 import Queue from 'better-queue';
 import {createWriteStream} from 'fs';
 import {basename} from 'path';
@@ -10,10 +11,6 @@ import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 // Types
 import { DownloadItem, DownloadOpts } from '../types/downloader';
-
-// for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
-const HttpAgent = require('agentkeepalive');
-const {HttpsAgent} = HttpAgent;
 
 /** Downloader class, to download one or more files, complete with a progress bar and crepes. */
 
@@ -60,9 +57,10 @@ export default class Downloader {
 	_download = async (dl: DownloadItem) => {
 		this.pos++;
 		const options = {
+			// for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
 			agent: {
-				http: new HttpAgent(),
-				https: new HttpsAgent()
+				http: new agent(),
+				https: new agent.HttpsAgent()
 			}
 		};
 		let size: string;
