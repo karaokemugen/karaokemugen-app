@@ -55,8 +55,8 @@ export function addSystemMessage(message: SystemMessage) {
 /** Fetch and process a RSS feed */
 async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
-		const response = await HTTP(url);
-		const feed = JSON.parse(xml2json(response.body, {compact: true}));
+		const response = await HTTP.get(url);
+		const feed = JSON.parse(xml2json(response.data as any, {compact: true}));
 		// For Mastodon, we filter out UnJourUnKaraoke toots because we don't want to be spammed.
 		if (name === 'mastodon') {
 			feed.rss.channel.item = feed.rss.channel.item.filter((item: any) => !item.description._text.includes('UnJourUnKaraoke'));

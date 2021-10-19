@@ -1,5 +1,4 @@
 // Node modules
-import agent from 'agentkeepalive';
 import Queue from 'better-queue';
 import {createWriteStream} from 'fs';
 import {basename} from 'path';
@@ -17,7 +16,7 @@ import { DownloadItem, DownloadOpts } from '../types/downloader';
 export default class Downloader {
 
 	list: DownloadItem[];
-	pos = 0;
+	pos: 0;
 	opts: DownloadOpts;
 	fileErrors: string[] = [];
 	task: Task;
@@ -28,19 +27,19 @@ export default class Downloader {
 		this.opts = opts;
 		this.onEnd = null;
 		this.task = this.opts.task;
-		this.q = new Queue(this._queueDownload, {
+		this.q = new Queue(this.queueDownload, {
 			id: 'id',
 			cancelIfRunning: true
 		});
 	}
 
-	_queueDownload = (input: DownloadItem, done: (error?: any) => void) => {
-		this._download(input)
+	private queueDownload (input: DownloadItem, done: (error?: any) => void) {
+		this.processDownload(input)
 			.then(() => done())
 			.catch((err: Error) => done(err));
 	}
 
-	download = (list: DownloadItem[]): Promise<string[]> => {
+	download(list: DownloadItem[]): Promise<string[]> {
 		// Launches download queue
 		this.list = list;
 		list.forEach(item => {
@@ -54,31 +53,23 @@ export default class Downloader {
 	}
 
 	/** Do the download dance now */
-	_download = async (dl: DownloadItem) => {
+	private async processDownload(dl: DownloadItem) {
 		this.pos++;
-		const options = {
-			// for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
-			agent: {
-				http: new agent(),
-				https: new agent.HttpsAgent()
-			}
-		};
-		let size: string;
 		try {
-			const response = await HTTP.head(dl.url, options);
-			size = response.headers['content-length'];
+			const response = await HTTP.head(dl.url);
+			dl.size = +response.headers['content-length'];
 		} catch(err) {
 			logger.error(`Error during download of ${basename(dl.filename)} (HEAD)`, {service: 'Download', obj: err});
 			this.fileErrors.push(basename(dl.filename));
 			return;
 		}
-		let prettySize = prettyBytes(+size);
+		let prettySize = prettyBytes(dl.size);
 		if (!prettySize) prettySize = 'size unknown';
 		logger.info(`(${this.pos}/${this.list.length}) Downloading ${basename(dl.filename)} (${prettySize})`, {service: 'Download'});
 		if (this.task) this.task.update({
 			subtext: `${basename(dl.filename)} (${prettySize})`,
 			value: 0,
-			total: +size
+			total: dl.size
 		});
 		// Insert auth in the url string
 		if (this.opts.auth) {
@@ -86,7 +77,7 @@ export default class Downloader {
 			dl.url = `${arr[0]}://${this.opts.auth.user}:${this.opts.auth.pass}@${arr[1]}`;
 		}
 		try {
-			await this._fetchFile(dl, options);
+			await this.fetchFile(dl);
 		} catch(err) {
 			logger.error(`Error during download of ${basename(dl.filename)} (GET)`, {service: 'Download', obj: err});
 			this.fileErrors.push(basename(dl.filename));
@@ -94,28 +85,32 @@ export default class Downloader {
 		}
 	}
 
-	_fetchFile = (dl: DownloadItem, options: any) => {
+	private async fetchFile(dl: DownloadItem) {
+		if (this.task) this.task.update({
+			total: dl.size
+		});
+		const writer = createWriteStream(dl.filename);
+		const streamResponse = await HTTP.get(dl.url, {
+			responseType: 'stream',
+			onDownloadProgress: (state: ProgressEvent) => {
+				if (this.task) this.task.update({
+					value: state.loaded
+				});
+			}
+		});
+		const data: any = streamResponse.data;
+		data.pipe(writer);
+
 		return new Promise<void>((resolve, reject) => {
-			let size = 0;
-			HTTP.stream.get(dl.url, options)
-				.on('response', (res: Response) => {
-					size = +res.headers['content-length'];
-				})
-				.on('downloadProgress', state => {
-					if (this.task) this.task.update({
-						value: state.transferred
-					});
-				})
-				.on('error', (err: any) => {
-					reject(err);
-				})
-				.on('end', () => {
-					if (this.task) this.task.update({
-						value: size
-					});
-					resolve();
-				})
-				.pipe(createWriteStream(dl.filename));
+			writer.on('finish', () => {
+				if (this.task) this.task.update({
+					value: dl.size
+				});
+				resolve();
+			});
+			writer.on('error', err => {
+				reject(err);
+			});
 		});
 	}
 }

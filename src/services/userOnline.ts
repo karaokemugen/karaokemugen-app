@@ -1,6 +1,7 @@
 import formData from 'form-data';
 import { createReadStream } from 'fs-extra';
 import { resolve } from 'path';
+import { Stream } from 'stream';
 
 import { Token, User } from '../lib/types/user';
 import { getConfig, resolvedPathAvatars, resolvedPathTemp } from '../lib/utils/config';
@@ -22,9 +23,9 @@ export async function remoteCheckAuth(instance: string, token: string) {
 				authorization: token
 			}
 		});
-		return res.body;
+		return res.data;
 	} catch(err) {
-		if ([403, 401].includes(err.response?.statusCode)) return false;
+		if ([403, 401].includes(err.response?.status)) return false;
 		logger.debug('Got error when check auth', {service: 'RemoteUser', obj: err});
 		throw err;
 	}
@@ -41,7 +42,7 @@ export async function remoteLogin(username: string, password: string): Promise<s
 				password: password
 			}
 		});
-		const body = JSON.parse(res.body);
+		const body = res.data as any;
 		return body.token;
 	} catch(err) {
 		// Remote login returned 401 so we throw an error
@@ -65,11 +66,8 @@ export async function resetRemotePassword(user: string) {
 /** Get a user from KM Server */
 async function getARemoteUser(login: string, instance: string): Promise<User> {
 	try {
-		const user = await HTTP<User>(`https://${instance}/api/users/${login}`,
-			{
-				responseType: 'json'
-			});
-		return user.body;
+		const user = await HTTP.get(`https://${instance}/api/users/${login}`);
+		return user.data as User;
 	} catch(err) {
 		logger.debug('Got error when trying to get an online user', {service: 'RemoteUser', obj: err});
 		throw {
@@ -113,10 +111,9 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 		const res = await HTTP(`https://${instance}/api/myaccount`, {
 			headers: {
 				authorization: token
-			},
-			responseType: 'json'
+			}			
 		});
-		return res.body as User;
+		return res.data as User;
 	} catch(err) {
 		logger.error(`Got error when get remote user ${username}`, {service: 'RemoteUser', obj: err});
 		throw err;
@@ -149,7 +146,7 @@ export async function editRemoteUser(user: User, token: string) {
 				authorization: token
 			}
 		});
-		return JSON.parse(res.body);
+		return res.data;
 	} catch(err) {
 		sentry.error(err);
 		throw `Remote update failed : ${err}`;
@@ -159,11 +156,13 @@ export async function editRemoteUser(user: User, token: string) {
 /** Get remote avatar from KM Server */
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
 	// If this stops working, use got() and a stream: true property again
-	const res = HTTP.stream(`https://${instance}/avatars/${avatarFile}`);
+	const res = await HTTP.get(`https://${instance}/avatars/${avatarFile}`, {
+		responseType: 'stream'
+	});
 	let avatarPath: string;
 	try {
 		avatarPath = resolve(resolvedPathTemp(), avatarFile);
-		await writeStreamToFile(res, avatarPath);
+		await writeStreamToFile(res.data as Stream, avatarPath);
 	} catch(err) {
 		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, {service: 'User', obj: err});
 		throw err;

@@ -32,15 +32,14 @@ export async function fetchAndAddFavorites(username: string, token: string) {
 		const res = await HTTP(`https://${instance}/api/favorites`, {
 			headers: {
 				authorization: token
-			},
-			responseType: 'json'
+			}			
 		});
 		const favorites = {
 			Header: {
 				version: 1,
 				description: 'Karaoke Mugen Favorites List File'
 			},
-			Favorites: res.body as FavExportContent[]
+			Favorites: res.data as FavExportContent[]
 		};
 		await importFavorites(favorites, username, token, false, false);
 	} catch(err) {
