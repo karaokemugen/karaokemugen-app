@@ -1,8 +1,7 @@
 // Node Modules
-import {json,urlencoded} from 'body-parser';
 import compression from 'compression';
 import cors from 'cors';
-import express, { Router } from 'express';
+import express, { json, Router, urlencoded } from 'express';
 import {createServer} from 'http';
 import {resolve} from 'path';
 
