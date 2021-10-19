@@ -20,6 +20,7 @@ stages:
   - schedule
   - test
   - build
+  - prepackage
   - package
   - deploy
   - release
@@ -75,6 +76,27 @@ build-react:
     - yarn installkmfrontend
     - yarn buildkmfrontend
     - yarn ts-node util/sentryUpdateReleases.ts
+  rules:
+    - if: '$SCHEDULED_RELEASES == "true"'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
+    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_BRANCH == "next"'
+    - if: $CI_COMMIT_TAG
+    - when: never
+
+clean:
+  stage: prepackage
+  interruptible: true
+  dependencies:
+    - build-react
+  needs:
+    - build-react
+  script:
+    - npm install -g modclean
+    - du -sh node_modules
+    - modclean -n default:safe,default:caution --ignore="path.txt"
+    - du -sh node_modules
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
       when: never
