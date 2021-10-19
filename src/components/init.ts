@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { app } from 'electron';
 import {promises as fs} from 'fs';
 import {copy, remove} from 'fs-extra';
@@ -73,9 +72,9 @@ export async function init() {
 	// Set version number
 	const sha = await getAppCommitSHA();
 	const state = getState();
-	console.log(chalk.white(logo));
+	console.log(logo);
 	console.log('Karaoke Player & Manager - https://karaokes.moe');
-	console.log(`Version ${chalk.bold.green(state.version.number)} "${chalk.bold.green(state.version.name)}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
+	console.log(`Version ${state.version.number} "${state.version.name}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
 	console.log('================================================================================');
 	logger.debug('Initial state', {service: 'Launcher', obj: state});
 

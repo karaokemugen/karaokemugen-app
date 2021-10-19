@@ -79,7 +79,6 @@
     "ass-compiler": "^0.1.4",
     "bcryptjs": "^2.4.3",
     "better-queue": "^3.8.10",
-    "chalk": "^4.1.2",
     "chokidar": "^3.5.2",
     "commander": "^8.2.0",
     "compression": "^1.7.4",
