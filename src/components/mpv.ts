@@ -244,7 +244,7 @@ async function checkMpv() {
 		logger.error(`mpv binary: ${state.binPath.mpv}`, {service: 'Player'});
 		logger.error('Exiting due to obsolete mpv version', {service: 'Player'});
 		await exit(1);
-	}	
+	}
 }
 
 class Player {
@@ -313,12 +313,12 @@ class Player {
 
 		// We want a 16/9
 		const screens = await graphics();
-		const screen = (conf.Player.Screen 
+		const screen = (conf.Player.Screen
 			? (screens.displays[conf.Player.Screen] || screens.displays[0])
 			// Assume 1080p screen if systeminformation can't find the screen
-			: screens.displays[0]) 
-		|| { currentResX: 1920 };
-		let targetResX = screen.currentResX * (conf.Player.PIP.Size / 100);
+			: screens.displays[0])
+		|| { currentResX: 1920, resolutionX: 1920 };
+		let targetResX = (screen.resolutionX || screen.currentResX) * (conf.Player.PIP.Size / 100);
 		if (isNaN(targetResX)) {
 			logger.warn('Cannot get a target res, defaulting to 480 (25% of 1080p display)', {service: 'Player',
 				obj: {screen, PIPSize: [conf.Player.PIP.Size, typeof conf.Player.PIP.Size]}});
@@ -390,7 +390,7 @@ class Player {
 				playerState.nextSongNotifSent = true;
 				notificationNextSong();
 			}
-			// Display informations if timeposition is 8 seconds before end of song				
+			// Display informations if timeposition is 8 seconds before end of song
 			if (position >= (playerState.currentSong.duration - 8) &&
 				playerState.mediaType === 'song') {
 				this.control.displaySongInfo(playerState.currentSong.infos);
@@ -398,7 +398,7 @@ class Player {
 				// Display informations if timeposition is 8 seconds after start of song
 				this.control.displaySongInfo(playerState.currentSong.infos, -1, false, playerState.currentSong?.misc?.some(t => t.name === 'Spoiler'));
 			} else if (position >= Math.floor(playerState.currentSong.duration / 2)-4 &&
-				// Display KM's banner if position reaches halfpoint in the song				
+				// Display KM's banner if position reaches halfpoint in the song
 				position <= Math.floor(playerState.currentSong.duration / 2)+4 &&
 				playerState.mediaType === 'song' && !getState().songPoll) {
 				this.control.displayInfo();
@@ -590,9 +590,9 @@ class Players {
 
 		// Avatar
 		const shouldDisplayAvatar = song.avatar && getConfig().Player.Display.Avatar;
-		const cropRatio = shouldDisplayAvatar 
+		const cropRatio = shouldDisplayAvatar
 			? Math.floor(await getAvatarResolution(song.avatar)*0.5)
-			: 0;		
+			: 0;
 		let avatar = '';
 		if (shouldDisplayAvatar) {
 			// Again, lavfi-complex expert @nah comes to the rescue!
