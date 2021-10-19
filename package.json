@@ -121,7 +121,6 @@
     "os-locale": "5",
     "p-cancelable": "2",
     "p-map": "4",
-    "p-queue": "^7.1.0",
     "p-retry": "^4.6.1",
     "pg": "^8.7.1",
     "pg-copy-streams": "^6.0.2",
