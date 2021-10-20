@@ -989,6 +989,8 @@
             "APP_QUICKSTART_TOOLTIP": "This disables data verification. You will have to generate your database in case of modification manually from the system panel -> database page.",
             "ONLINE_ERRORTRACKING": "Send error and crash reports (via sentry.io)",
             "ONLINE_STATS": "Send usage telemetry to Karaoke Mugen Server",
+            "PLAYER_KEYBOARDMEDIASHORTCUTS": "Control the player with the media keys on the keyboard",
+			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Disable if you want these keys to control another app (iTunes, foobar, etc.)",
             "PLAYER_HARDWAREDECODING": "Video Hardware Decoding",
             "PLAYER_HARDWAREDECODING_TOOLTIP": "Forces or not the player's hardware acceleration. Note: on some configurations, it can cause unexpected behavior during playback. In such cases, select \"Disabled\". The \"Automatic\" option is the safest, and \"Force\" the most risky/not recommended.",
             "PLAYER_HARDWAREDECODING_OPTIONS": {

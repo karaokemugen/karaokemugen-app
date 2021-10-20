@@ -989,6 +989,8 @@
             "APP_QUICKSTART_TOOLTIP": "Ceci désactive la vérification des données. Vous devrez générer votre base de données en cas de modification manuellement depuis le panneau système, onglet base de données.",
             "ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
             "ONLINE_STATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
+            "PLAYER_KEYBOARDMEDIASHORTCUTS": "Piloter le lecteur avec les touches média du clavier",
+			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Désactivez si vous voulez que ces touches contrôlent une autre application (iTunes, foobar, etc.)",
             "PLAYER_HARDWAREDECODING": "Décodage matériel des vidéos",
             "PLAYER_HARDWAREDECODING_TOOLTIP": "Force ou non le décodage matériel du lecteur vidéo. Attention : sur certaines configurations, il se peut que cela pose des problèmes de lecture vidéo. En cas de soucis, passez l'option à \"Désactivé\". Le réglage \"Automatique\" est le plus sûr et \"Forcer\" pas du tout recommandé.",
             "PLAYER_HARDWAREDECODING_OPTIONS": {
