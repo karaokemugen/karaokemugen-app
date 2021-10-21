@@ -16,8 +16,8 @@ import { FormInstance } from 'antd/lib/form';
 import { SelectValue } from 'antd/lib/select';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
-import { DBKara } from '../../../../../src/lib/types/database/kara';
 
+import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { Kara } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
@@ -26,7 +26,6 @@ import { getTagTypeName } from '../../../utils/tagTypes';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
-import TagsDuplicate from '../Tags/TagsDuplicate';
 
 interface KaraFormProps {
 	kara: Kara | Record<string, never>;
