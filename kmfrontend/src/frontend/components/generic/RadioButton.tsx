@@ -11,7 +11,6 @@ interface Button {
 interface IProps {
 	orientation?: string;
 	buttons: Button[];
-	title: string;
 }
 
 function RadioButton(props: IProps) {

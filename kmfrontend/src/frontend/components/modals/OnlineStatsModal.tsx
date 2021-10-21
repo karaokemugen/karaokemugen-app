@@ -65,7 +65,6 @@ function OnlineStatsModal() {
 								<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
 							</div>
 							<RadioButton
-								title={i18next.t('ONLINE_STATS.TITLE')}
 								buttons={[
 									{
 										label: i18next.t('YES'),
@@ -86,7 +85,6 @@ function OnlineStatsModal() {
 								<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
 							</div>
 							<RadioButton
-								title={i18next.t('ONLINE_STATS.ERROR_TRACKING')}
 								buttons={[
 									{
 										label: i18next.t('YES'),

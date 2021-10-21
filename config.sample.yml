@@ -160,6 +160,8 @@ Player:
   HardwareDecoding: auto-safe
   # Extra mpv commandline arguments example
   ExtraCommandLine: --tone-mapping=reinhard
+  # Live Comments enabled or not
+  LiveComments: false
 Playlist:
   # What to do at the end of playlist :
   # - random : plays random songs, should usually be used with autoplay

@@ -7,6 +7,7 @@ import { getConfig } from '../lib/utils/config';
 // KM Imports
 import logger, { profile } from '../lib/utils/logger';
 import { getSongSeriesSingers } from '../services/kara';
+import { playerComment } from '../services/player';
 import { getCurrentSong } from '../services/playlist';
 import { addPollVoteIndex } from '../services/poll';
 import { getState } from './state';
@@ -35,7 +36,7 @@ export async function initTwitch() {
 		client = tmi.client(opts);
 		await client.connect();
 		listenChat(client);
-		logger.debug('Twitch initialized', {service: 'Twitch'});
+		logger.info('Twitch initialized', {service: 'Twitch'});
 	} catch(err) {
 		logger.error('Unable to login to chat', {service: 'Twitch', obj: err});
 	} finally {
@@ -74,8 +75,31 @@ function listenChat(chat: Client) {
 			const song = await getCurrentSong();
 			const str = `@${context.username} : ${getSongTitle(song)} - ${getSongSeriesSingers(song)} (${/\./.test(song.repository) ? `https://${song.repository}/base/kara/${song.kid}`:`${getState().osURL}/public/karaoke/${song.kid}`})`;
 			chat.say(target, str);
+		} else {
+			// Any other message is treated here for the display message function
+			if (getConfig().Player.LiveComments) {
+				// We need to strip emotes first
+				msg = stripEmotes(msg, context);
+				playerComment(msg);
+
+			}
 		}
 	});
+}
+
+function stripEmotes(msg: string, context: ChatUserstate) {
+	if (!context.emotes) return msg;
+	const emotes = Object.keys(context.emotes);
+	const arr = msg.split('');
+	for (const e of emotes) {
+		for (const pos of context.emotes[e]) {
+			const [emoteStart, emoteEnd] = pos.split('-');
+			for (let i = +emoteStart; i <= +emoteEnd; i++) {
+				delete arr[i];
+			}
+		}
+	}
+	return arr.join('').replace(/\s{2,}/g, ' ');
 }
 
 /** Stops Twitch chat and disconnects */

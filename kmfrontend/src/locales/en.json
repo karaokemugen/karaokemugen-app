@@ -49,6 +49,9 @@
         "COUNT_other": "{{count}} karaokes",
         "SEARCH": "Karaokes with {{tag}}"
     },
+    "ADMIN_HEADER": {
+        "QUICK_ACCESS": "Quick access"
+    },
     "MESSAGE": "Message",
     "PLAYLIST_HEADER": {
         "FILTERS": "Filters",
@@ -349,7 +352,9 @@
             "DISPLAY_NICKNAME": "Display nicknames in karaokes",
             "DISPLAY_NICKNAME_TOOLTIP": "Displays at the bottom of the screen at the start and end of a song",
             "DISPLAY_AVATAR": "Display avatar in karaokes",
-            "DISPLAY_AVATAR_TOOLTIP": "The song requester's avatar will be displayed at the beginning and the end of the song in the lower right corner of the player's screen."
+            "DISPLAY_AVATAR_TOOLTIP": "The song requester's avatar will be displayed at the beginning and the end of the song in the lower right corner of the player's screen.",
+            "LIVE_COMMENTS": "Live comments",
+            "LIVE_COMMENTS_TOOLTIP": "Live video chat"
         },
         "KARAOKE": {
             "LABEL": "Karaoke",
@@ -554,8 +559,7 @@
         "CHANGE": "You can change your choice at any time from the options.",
         "QUESTION": "Do you agree to send these statistics to Karaoke Mugen Server?",
         "CONFIRM": "Confirm",
-        "ERROR": "Karaoke Mugen may send information about your instance to Sentry.io during errors. This helps us solve them as they come up much faster. Do you agree to send these error reports?",
-        "ERROR_TRACKING": "Error tracking"
+        "ERROR": "Karaoke Mugen may send information about your instance to Sentry.io during errors. This helps us solve them as they come up much faster. Do you agree to send these error reports?"
     },
     "INSTANCE_NAME": "Server name",
     "INSTANCE_NAME_SHORT": "Server",
