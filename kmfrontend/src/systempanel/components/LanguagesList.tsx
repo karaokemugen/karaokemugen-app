@@ -2,19 +2,30 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Col, Form, Input, Row, Select, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 import { getLanguagesInLocaleFromCode, getListLanguagesInLocale } from '../../utils/isoLanguages';
 
 interface IProps {
 	value: Record<string, string>,
 	onChange: (i18n: Record<string, string>) => void
+	onFieldIsTouched?: (boolean) => void
 }
 
 export default function LanguagesList(props: IProps) {
 	const [selectVisible, setSelectVisible] = useState<boolean>(false);
 	const [i18n, setI18n] = useState<Record<string, string>>(props.value);
 	const [inputToFocus, setInputToFocus] = useState<string>();
+	const [isFieldsTouched, setIsFieldsTouched] = useState<boolean>();
 	const languages = getListLanguagesInLocale();
+
+	useEffect(() => {
+		// Update all language fields if nothing has been touched yet
+		if (props.value && !isFieldsTouched) {
+		  setI18n(props.value);
+		}
+	  }, [props.value]);
+
 
 	function showSelect() {
 		setSelectVisible(true);
@@ -40,6 +51,7 @@ export default function LanguagesList(props: IProps) {
 		newI18n[langKey] = value;
 		setI18n(newI18n);
 		props.onChange(newI18n);
+		setIsFieldsTouched(true);
 	}
 	return <>
 		{Object.keys(i18n).map(langKey => (

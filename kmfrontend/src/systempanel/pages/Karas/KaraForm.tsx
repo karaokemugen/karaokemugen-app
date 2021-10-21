@@ -13,8 +13,10 @@ import {
 	Upload
 } from 'antd';
 import { FormInstance } from 'antd/lib/form';
+import { SelectValue } from 'antd/lib/select';
 import i18next from 'i18next';
-import { Component,createRef } from 'react';
+import { Component, createRef } from 'react';
+import { DBKara } from '../../../../../src/lib/types/database/kara';
 
 import { Kara } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
@@ -24,6 +26,7 @@ import { getTagTypeName } from '../../../utils/tagTypes';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
+import TagsDuplicate from '../Tags/TagsDuplicate';
 
 interface KaraFormProps {
 	kara: Kara | Record<string, never>;
@@ -33,6 +36,7 @@ interface KaraFormProps {
 
 interface KaraFormState {
 	titles: Record<string, string>;
+	titlesIsTouched: boolean;
 	serieSingersRequired: boolean;
 	subfile: any[];
 	mediafile: any[];
@@ -44,6 +48,7 @@ interface KaraFormState {
 	subfile_orig: string;
 	comment?: string;
 	karaSearch: { label: string, value: string }[];
+	parentKara: Kara;
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
@@ -58,6 +63,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.getRepositories();
 		this.state = {
 			titles: kara?.titles ? kara.titles : { 'eng': '' },
+			titlesIsTouched: false,
 			serieSingersRequired: false,
 			subfile: kara.subfile
 				? [
@@ -84,7 +90,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			mediafile_orig: null,
 			subfile_orig: null,
 			comment: kara.comment,
-			karaSearch: []
+			karaSearch: [],
+			parentKara: null
 		};
 	}
 
@@ -204,18 +211,42 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.timer = setTimeout(async () => {
 			const karas = await commandBackend('getKaras', {
 				q: this.formRef.current.getFieldValue('repository') ?
-					`r:${this.formRef.current.getFieldValue('repository')}`:'',
+					`r:${this.formRef.current.getFieldValue('repository')}` : '',
 				filter: value,
 				size: 50
 			}).catch(() => {
-				return {content: []};
+				return { content: [] };
 			});
 			if (karas.content) {
-				this.setState({karaSearch: karas.content.map(k => {
-					return {label: buildKaraTitle(this.context.globalState.settings.data, k, true, karas.i18n), value: k.kid};
-				})});
+				this.setState({
+					karaSearch: karas.content.map(k => {
+						return { label: buildKaraTitle(this.context.globalState.settings.data, k, true, karas.i18n), value: k.kid };
+					})
+				});
 			}
 		}, 1000);
+	}
+
+	onParentKaraChange = async (event: SelectValue) => {
+		if (event && event[0] && !event[1]) {
+			await this.applyFieldsFromKara(event[0] as string);
+		}
+	}
+
+	applyFieldsFromKara = async (kid: string) => {
+		const karas = await commandBackend('getKaras', {
+			q: (this.formRef.current.getFieldValue('repository') ?
+				`r:${this.formRef.current.getFieldValue('repository')}!` : '!') + 'k:' + kid,
+			size: 1
+		});
+		const parentKara = karas && karas.content[0] as DBKara;
+		if (parentKara && parentKara.kid === kid) {
+			// Check if user has already started doing input, or if it's an edit of existing kara
+			if (!this.props.kara.kid && this.state.titlesIsTouched !== true && this.formRef.current.isFieldsTouched(['versions', 'series', 'language']) !== true) {
+				this.setState({ titles: parentKara.titles, parentKara });
+				this.formRef.current.resetFields();
+			}
+		}
 	}
 
 	submitHandler(e) {
@@ -231,30 +262,30 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				onFinish={this.handleSubmit}
 				className="kara-form"
 				initialValues={{
-					series: this.props.kara.series,
-					songtypes: this.props.kara.songtypes,
-					songorder: this.props.kara.songorder,
-					langs: this.props.kara.langs,
-					year: this.props.kara.year || 2010,
-					singers: this.props.kara.singers,
-					songwriters: this.props.kara.songwriters,
-					creators: this.props.kara.creators,
-					authors: this.props.kara.authors,
-					families: this.props.kara.families,
-					platforms: this.props.kara.platforms,
-					genres: this.props.kara.genres,
-					origins: this.props.kara.origins,
-					misc: this.props.kara.misc,
-					groups: this.props.kara.groups,
-					versions: this.props.kara.versions,
+					series: this.props.kara.series || this.state.parentKara?.series,
+					songtypes: this.props.kara.songtypes || this.state.parentKara?.songtypes,
+					songorder: this.props.kara.songorder || this.state.parentKara?.songorder,
+					langs: this.props.kara.langs || this.state.parentKara?.langs,
+					year: this.props.kara.year || this.state.parentKara?.year || (new Date()).getFullYear(),
+					singers: this.props.kara.singers || this.state.parentKara?.singers,
+					songwriters: this.props.kara.songwriters || this.state.parentKara?.songwriters,
+					creators: this.props.kara.creators || this.state.parentKara?.creators,
+					authors: this.props.kara.authors || this.state.parentKara?.authors,
+					families: this.props.kara.families || this.state.parentKara?.families,
+					platforms: this.props.kara.platforms || this.state.parentKara?.platforms,
+					genres: this.props.kara.genres || this.state.parentKara?.genres,
+					origins: this.props.kara.origins || this.state.parentKara?.origins,
+					misc: this.props.kara.misc || this.state.parentKara?.misc,
+					groups: this.props.kara.groups || this.state.parentKara?.groups,
+					versions: this.props.kara.versions || this.state.parentKara?.versions,
 					comment: this.props.kara.comment || null,
 					ignoreHooks: this.props.kara.ignoreHooks || false,
-					repository: this.props.kara.repository || null,
+					repository: this.props.kara.repository || this.state.parentKara?.repository || null,
 					created_at: this.state.created_at,
 					modified_at: this.state.modified_at,
 					mediafile: this.props.kara.mediafile,
 					subfile: this.props.kara.subfile,
-					parents: this.props.kara.parents || []
+					parents: this.props.kara.parents || this.state.parentKara && [this.state.parentKara?.kid] || []
 				}}>
 				<Form.Item
 					label={
@@ -324,9 +355,32 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							<UploadOutlined />{i18next.t('KARA.LYRICS_FILE')}
 						</Button>
 					</Upload>
-					<div style={{marginTop: '1em'}}>
+					<div style={{ marginTop: '1em' }}>
 						<OpenLyricsFileButton kara={this.props.kara} />
 					</div>
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('KARA.PARENTS')}&nbsp;
+							<Tooltip title={i18next.t('KARA.PARENTS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 8 }}
+					name="parents"
+				>
+					<Select
+						showSearch
+						mode="multiple"
+						onSearch={this.search}
+						onChange={this.onParentKaraChange}
+						showArrow={false}
+						filterOption={false}
+						options={this.state.karaSearch}
+					/>
 				</Form.Item>
 				<Form.Item
 					hasFeedback
@@ -342,7 +396,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				</Form.Item>
 				<LanguagesList
 					value={this.state.titles}
-					onChange={(titles) => this.setState({ titles })}
+					onFieldIsTouched={(isFieldTouched) => this.state.titlesIsTouched !== true && this.setState({ titlesIsTouched: isFieldTouched })}
+					onChange={(titles) => this.setState({ titles: this.state.parentKara.titles })}
 				/>
 				<Form.Item
 					label={(
@@ -629,28 +684,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</Select>
 					</Form.Item> : null
 				}
-				<Form.Item
-					label={
-						<span>
-							{i18next.t('KARA.PARENTS')}&nbsp;
-							<Tooltip title={i18next.t('KARA.PARENTS_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</span>
-					}
-					labelCol={{ flex: '0 1 220px' }}
-					wrapperCol={{ span: 8 }}
-					name="parents"
-				>
-					<Select
-						showSearch
-						mode="multiple"
-						onSearch={this.search}
-						showArrow={false}
-						filterOption={false}
-						options={this.state.karaSearch}
-					/>
-				</Form.Item>
 				<Form.Item
 					hasFeedback
 					label={
