@@ -129,7 +129,8 @@ export interface Config {
 		Borders?: boolean,
 		HardwareDecoding?: MpvHardwareDecodingOptions,
 		KeyboardMediaShortcuts?: boolean,
-		Volume?: number
+		Volume?: number,
+		LiveComments?: boolean
 	},
 	Playlist: {
 		AllowDuplicates?: boolean,

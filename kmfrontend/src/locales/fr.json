@@ -51,6 +51,9 @@
     },
     "FAVORITES_IMPORT": "Importer vos favoris",
     "FAVORITES_EXPORT": "Exporter vos favoris",
+    "ADMIN_HEADER": {
+        "QUICK_ACCESS": "Accès rapide"
+    },
     "PLAYLIST_HEADER": {
         "FILTERS": "Filtres",
         "ACTIVE_FILTER": "Filtre actif",
@@ -349,7 +352,9 @@
             "DISPLAY_NICKNAME": "Afficher le pseudo du demandeur en début et en fin de chanson",
             "DISPLAY_NICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
             "DISPLAY_AVATAR": "Afficher l'avatar du demandeur",
-            "DISPLAY_AVATAR_TOOLTIP": "L'avatar de la personne ayant demandé à karaoké sera affiché au début et à la fin de la chanson, en bas à droite de l'écran."
+            "DISPLAY_AVATAR_TOOLTIP": "L'avatar de la personne ayant demandé à karaoké sera affiché au début et à la fin de la chanson, en bas à droite de l'écran.",
+            "LIVE_COMMENTS": "Commentaires Live",
+            "LIVE_COMMENTS_TOOLTIP": "Chat en direct sur la vidéo"
         },
         "KARAOKE": {
             "LABEL": "Karaoké",
@@ -554,8 +559,7 @@
         "CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
         "QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?",
         "CONFIRM": "Confirmer",
-        "ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de dysfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?",
-        "ERROR_TRACKING": "Suivi des erreurs"
+        "ERROR": "Karaoke Mugen peut envoyer des informations sur votre instance à Sentry.io lors de dysfonctionnements de l'application. Cela nous aide à régler les soucis que vous pourriez rencontrer. Acceptez-vous d'envoyer ces rapports d'erreur ?"
     },
     "INSTANCE_NAME": "Nom du serveur",
     "INSTANCE_NAME_SHORT": "Serveur",

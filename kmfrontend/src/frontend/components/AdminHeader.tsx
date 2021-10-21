@@ -27,12 +27,16 @@ interface IProps extends RouteComponentProps {
 
 function AdminHeader(props: IProps) {
 	const context = useContext(GlobalContext);
+	const [dropDownSettings, setDropDownSettings] = useState(false);
 	const [dropDownMenu, setDropDownMenu] = useState(false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
 
 	const closeDropdownMenu = (e: MouseEvent) => {
 		if (!(e.target as Element).closest('.klogo') && !(e.target as Element).closest('.dropdown-menu')) {
 			setDropDownMenu(false);
+		}
+		if (!(e.target as Element).closest('.dropdown-settings') && !(e.target as Element).closest('.dropdown-menu')) {
+			setDropDownSettings(false);
 		}
 	};
 
@@ -66,12 +70,17 @@ function AdminHeader(props: IProps) {
 
 	const saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend('updateSettings', { setting: data }).catch(() => { });
 	};
 
 	const changePublicInterfaceMode = (value: number) => {
 		const data = expand('Frontend.Mode', value);
-		commandBackend('updateSettings', { setting: data }).catch(() => {});
+		commandBackend('updateSettings', { setting: data }).catch(() => { });
+	};
+
+	const changeLiveComments = (liveComments: boolean) => {
+		const data = expand('Player.LiveComments', liveComments);
+		commandBackend('updateSettings', { setting: data }).catch(() => { });
 	};
 
 	const play = (event: any) => {
@@ -87,7 +96,7 @@ function AdminHeader(props: IProps) {
 				'confirm',
 				i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }),
 				'',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {})
+				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => { })
 			);
 		} else {
 			props.putPlayerCommando(event);
@@ -131,74 +140,109 @@ function AdminHeader(props: IProps) {
 					className="btn btn-default"
 					onClick={() => props.history.push('/admin')}
 				>
-					<i className="fas fa-fw fa-long-arrow-alt-left " />
+					<i className="fas fa-fw fa-long-arrow-alt-left" />
 				</button>
 			) : null}
-			{props.location.pathname.includes('/options') ? null : (
-				<>
-					<div className="header-group switchs">
-						<label title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
-							{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
-							&nbsp;
-							<i className="far fa-question-circle" />
-						</label>
-						<label title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
-							{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
-							&nbsp;
-							<i className="far fa-question-circle" />
-						</label>
-					</div>
-					<div id="switchValue" className="header-group switchs">
-						<RadioButton
-							title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}
-							buttons={[
-								{
-									label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
-									active: context?.globalState.settings.data.config?.Playlist?.MysterySongs
-										.AddedSongVisibilityAdmin,
-									activeColor: '#3c5c00',
-									onClick: () => saveOperatorAdd(true),
-									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF'),
-								},
-								{
-									label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
-									active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs
-										.AddedSongVisibilityAdmin,
-									activeColor: '#880500',
-									onClick: () => saveOperatorAdd(false),
-									description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON'),
-								},
-							]}
-						/>
-						<RadioButton
-							title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}
-							buttons={[
-								{
-									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
-									active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
-									activeColor: '#880500',
-									onClick: () => changePublicInterfaceMode(0),
-									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED'),
-								},
-								{
-									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
-									active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
-									activeColor: '#a36700',
-									onClick: () => changePublicInterfaceMode(1),
-									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED'),
-								},
-								{
-									label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
-									active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
-									activeColor: '#3c5c00',
-									onClick: () => changePublicInterfaceMode(2),
-									description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN'),
-								},
-							]}
-						/>
-					</div>
-				</>
-			)}
+			<div className="dropdown-settings">
+				<button
+					className="btn btn-dark"
+					type="button"
+					title={i18next.t('ADMIN_HEADER.QUICK_ACCESS')}
+					onClick={() => setDropDownSettings(!dropDownSettings)}
+				>
+					<i className="fas fa-fw fa-sliders-h" />
+				</button>
+				{dropDownSettings ? (
+					<ul className="dropdown-menu">
+						<li title={i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP')}>
+							<label>
+								{i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_SHORT')}
+								&nbsp;
+								<i className="far fa-question-circle" />
+							</label>
+							<RadioButton
+								buttons={[
+									{
+										label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_NORMAL_OPTION'),
+										active: context?.globalState.settings.data.config?.Playlist?.MysterySongs
+											.AddedSongVisibilityAdmin,
+										activeColor: '#3c5c00',
+										onClick: () => saveOperatorAdd(true),
+										description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_OFF'),
+									},
+									{
+										label: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_MYSTERY_OPTION'),
+										active: !context?.globalState.settings.data.config?.Playlist?.MysterySongs
+											.AddedSongVisibilityAdmin,
+										activeColor: '#880500',
+										onClick: () => saveOperatorAdd(false),
+										description: i18next.t('SETTINGS.KARAOKE.ADDED_SONG_VISIBILITY_ADMIN_ON'),
+									},
+								]}
+							/>
+
+						</li>
+						<li title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
+							<label>
+								{i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_SHORT')}
+								&nbsp;
+								<i className="far fa-question-circle" />
+							</label>
+							<RadioButton
+								buttons={[
+									{
+										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED_SHORT'),
+										active: context?.globalState.settings.data.config?.Frontend?.Mode === 0,
+										activeColor: '#880500',
+										onClick: () => changePublicInterfaceMode(0),
+										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_CLOSED'),
+									},
+									{
+										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED_SHORT'),
+										active: context?.globalState.settings.data.config?.Frontend?.Mode === 1,
+										activeColor: '#a36700',
+										onClick: () => changePublicInterfaceMode(1),
+										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_LIMITED'),
+									},
+									{
+										label: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN_SHORT'),
+										active: context?.globalState.settings.data.config?.Frontend?.Mode === 2,
+										activeColor: '#3c5c00',
+										onClick: () => changePublicInterfaceMode(2),
+										description: i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_OPEN'),
+									},
+								]}
+							/>
+						</li>
+						{context?.globalState.settings.data.config?.Karaoke?.StreamerMode?.Twitch?.Enabled ?
+							<li title={i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS_TOOLTIP')}>
+								<label>
+									{i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS')}
+									&nbsp;
+									<i className="far fa-question-circle" />
+								</label>
+								<RadioButton
+									buttons={[
+										{
+											label: i18next.t('YES'),
+											active: context?.globalState.settings.data.config?.Player?.LiveComments,
+											activeColor: '#3c5c00',
+											onClick: () => changeLiveComments(true)
+										},
+										{
+											label: i18next.t('NO'),
+											active: !context?.globalState.settings.data.config?.Player?.LiveComments,
+											activeColor: '#880500',
+											onClick: () => changeLiveComments(false)
+										},
+									]}
+								/>
+
+							</li> : null
+						}
+					</ul>
+				) : null}
+			</div>
 			<div className="header-group controls">
 				{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
 					<button
@@ -318,7 +362,7 @@ function AdminHeader(props: IProps) {
 			</button>
 			<div className="dropdown">
 				<button
-					className="btn btn-dark dropdown-toggle klogo"
+					className="btn btn-dark klogo"
 					type="button"
 					onClick={() => setDropDownMenu(!dropDownMenu)}
 				>

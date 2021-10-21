@@ -16,6 +16,10 @@ import {startPoll} from './poll';
 
 export const mpv = new Players();
 
+export function playerComment(msg: string) {
+	return mpv.comments.addComment(msg);
+}
+
 export function playerMessage(msg: string, duration: number, align = 4, type = 'admin') {
 	return mpv.message(msg, duration, align, type);
 }
