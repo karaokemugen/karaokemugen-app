@@ -3,9 +3,6 @@ import i18next from 'i18next';
 import { MenuItemBuilderFunction } from '../../types/electron';
 
 const builder: MenuItemBuilderFunction = (options) => {
-	if (options.isMac || options.layout === 'REDUCED') {
-		return null;
-	}
 	return {
 		label: i18next.t('MENU_EDIT'),
 		submenu: [
