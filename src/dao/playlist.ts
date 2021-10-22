@@ -304,9 +304,9 @@ export async function selectKarasFromCriterias(plaid: string, smartPlaylistType:
 			i++;
 			if (c.type > 0 && c.type < 1000) {
 				queryArr.push(`SELECT type${c.type}_${i}.kid, type${c.type}_${i}.duration, type${c.type}_${i}.created_at FROM (${sqlselectKarasFromCriterias.tagTypes('= ' + c.type, c.value)}) type${c.type}_${i}`);
-			} else if (c.type === 1001 && uniqueKIDsSQL === '') {
+			} else if (c.type === 1001) {
 				// Only need to add this criteria once.
-				uniqueKIDsSQL = sqlselectKarasFromCriterias[1001];
+				if (uniqueKIDsSQL === '') uniqueKIDsSQL = sqlselectKarasFromCriterias[1001];
 			} else {
 				queryArr.push(`SELECT type${c.type}_${i}.kid, type${c.type}_${i}.duration, type${c.type}_${i}.created_at FROM (${sqlselectKarasFromCriterias[c.type](c.value)}) type${c.type}_${i}`);
 			}
