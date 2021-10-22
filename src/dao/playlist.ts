@@ -286,7 +286,7 @@ export async function selectKarasFromCriterias(plaid: string, smartPlaylistType:
 	if (smartPlaylistType === 'UNION') {
 		for (const c of criterias) {
 			if (c.type > 0 && c.type < 1000) {
-				queryArr.push(sqlselectKarasFromCriterias[c.type](`= ${c.type}`, c.value));
+				queryArr.push(sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value));
 			} else if (c.type === 1001) {
 				queryArr.push(sqlselectKarasFromCriterias[c.type]);
 			} else {
