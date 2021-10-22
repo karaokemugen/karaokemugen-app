@@ -396,7 +396,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				<LanguagesList
 					value={this.state.titles}
 					onFieldIsTouched={(isFieldTouched) => this.state.titlesIsTouched !== true && this.setState({ titlesIsTouched: isFieldTouched })}
-					onChange={(titles) => this.setState({ titles: this.state.parentKara.titles })}
+					onChange={(titles) => this.setState({ titles })}
 				/>
 				<Form.Item
 					label={(
