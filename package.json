@@ -64,7 +64,8 @@
     "zeograd <zeograd@gmail.com>",
     "leonekmi <git+km@leonekmi.fr>",
     "Pierre CAMILLI <camillipierre@gmail.com> (@Shueisha64)",
-    "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)"
+    "Pierre Ellul <pierreellul.epi@gmail.com> (@Snak)",
+    "Themio <themio@protonmail.ch>"
   ],
   "engines": {
     "node": ">=16"
