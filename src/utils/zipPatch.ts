@@ -90,6 +90,7 @@ export async function applyPatch(patch: string, dir: string) {
 		try {
 			const rejectedPatch = await fs.readFile(resolve(resolvedPathTemp(), 'patch.rej'), 'utf-8');
 			Sentry.addErrorInfo('rejected', rejectedPatch);
+			logger.debug(`Rejected patch : ${rejectedPatch}`, {service: 'DiffPatch'});
 		} catch(err) {
 			logger.debug(`Could not get rejected patch : ${err}`, { service: 'DiffPatch', obj: err});
 		}
