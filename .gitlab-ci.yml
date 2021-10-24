@@ -95,7 +95,7 @@ clean:
   script:
     - npm install -g modclean
     - du -sh node_modules
-    - modclean -n default:safe,default:caution --ignore="path.txt"
+    - modclean -r -n default:safe,default:caution --ignore="path.txt"
     - du -sh node_modules
   rules:
     - if: '$SCHEDULED_RELEASES == "true"'
