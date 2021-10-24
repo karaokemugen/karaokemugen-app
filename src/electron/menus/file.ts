@@ -56,7 +56,7 @@ const builder: MenuItemBuilderFunction = (options) => {
 					},
 				]
 			},
-			{ type: 'separator' },
+			{ type: 'separator', visible: !isReduced },
 			{
 				label: isMac ? i18next.t('MENU_FILE_QUIT_OSX') : i18next.t('MENU_FILE_QUIT'),
 				accelerator: 'CmdOrCtrl+Q',
