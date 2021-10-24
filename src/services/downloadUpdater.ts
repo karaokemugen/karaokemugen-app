@@ -46,7 +46,7 @@ async function compareMedias(localFiles: File[], remoteKaras: DBMedia[], repo: s
 		const localFile = localFiles.find(f => f.basename === remoteKara.mediafile);
 		if (localFile) {
 			if (remoteKara.mediasize !== localFile.size) {
-				updatedFiles.push();
+				updatedFiles.push(remoteKara);
 			}
 			// Do nothing if file exists and sizes are the same
 		} else {
