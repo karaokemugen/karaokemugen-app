@@ -83,7 +83,8 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 	}
 }
 
-export async function getTag(tid: string) {
+/** Takes any number of arguments to comply with KM Server's multi-argument getTag */
+export async function getTag(tid: string, ..._: any) {
 	const tags = await selectAllTags({tid: tid});
 	return tags[0];
 }
