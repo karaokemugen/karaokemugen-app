@@ -218,7 +218,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			});
 			if (karas.content) {
 				this.setState({
-					karaSearch: karas.content.map(k => {
+					karaSearch: karas.content.filter(k => k.kid !== this.props.kara?.kid).map(k => {
 						return { label: buildKaraTitle(this.context.globalState.settings.data, k, true, karas.i18n), value: k.kid };
 					})
 				});
