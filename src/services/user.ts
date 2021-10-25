@@ -88,7 +88,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	try {
 		if (!username) throw {code: 401, msg: 'USER_NOT_PROVIDED'};
 		username = username.toLowerCase();
-		const currentUser = await getUser(username, false);
+		const currentUser = await getUser(username, true);
 		if (!currentUser) throw {code: 404, msg: 'USER_NOT_EXISTS'};
 		if (currentUser.type === 2 && role !== 'admin') throw {code: 403, msg: 'GUESTS_CANNOT_EDIT'};
 		const mergedUser = merge(currentUser, user);
@@ -182,7 +182,7 @@ export async function getUser(username: string, full = false) {
 		singleUser: username,
 		full: full
 	}))[0];
-	return userdata;	
+	return userdata;
 }
 
 /** Hash passwords with sha256 */
