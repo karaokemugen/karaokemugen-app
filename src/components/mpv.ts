@@ -394,7 +394,7 @@ class Player {
 			: screens.displays[0])
 			|| { currentResX: 1920, resolutionX: 1920 };
 		let targetResX = (screen.resolutionX || screen.currentResX) * (conf.Player.PIP.Size / 100);
-		if (isNaN(targetResX)) {
+		if (isNaN(targetResX) || targetResX === 0) {
 			logger.warn('Cannot get a target res, defaulting to 480 (25% of 1080p display)', {
 				service: 'Player',
 				obj: { screen, PIPSize: [conf.Player.PIP.Size, typeof conf.Player.PIP.Size] }
