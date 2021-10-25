@@ -1,10 +1,6 @@
 // SQL queries for user manipulation
 
-export const sqltestNickname = `
-SELECT pk_login AS login
-FROM users
-WHERE nickname = :nickname
-`;
+import { UserParams } from '../../lib/types/user';
 
 export const sqlreassignPlaylistToUser = 'UPDATE playlist SET fk_login = :username WHERE fk_login = :old_username;';
 
@@ -12,62 +8,37 @@ export const sqlreassignRequestedToUser = 'UPDATE requested SET fk_login = :user
 
 export const sqlreassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
 
-export const sqlselectUserByName = `
+export const sqlselectUsers = (params: UserParams) => `
 SELECT
 	u.type,
 	u.pk_login AS login,
-	u.password,
 	u.nickname,
 	u.avatar_file,
-	u.bio,
-	u.url,
-	u.email,
 	u.last_login_at,
+	${params.full ? `
+		u.password,	
+		u.bio,
+		u.url,
+		u.email,	
+		u.main_series_lang AS main_series_lang,
+		u.fallback_series_lang AS fallback_series_lang,
+		u.flag_tutorial_done AS flag_tutorial_done,
+		u.flag_sendstats AS flag_sendstats,
+		u.location AS location,
+		u.language AS language,
+		u.flag_parentsonly AS flag_parentsonly,
+	` : ''}
 	(CASE WHEN :last_login_time_limit < u.last_login_at
 		THEN TRUE
 		ELSE FALSE
-    END)  AS flag_online,
-	u.main_series_lang AS main_series_lang,
-	u.fallback_series_lang AS fallback_series_lang,
-	u.flag_tutorial_done AS flag_tutorial_done,
-	u.flag_sendstats AS flag_sendstats,
-	u.location AS location,
-	u.language AS language,
-	u.flag_parentsonly AS flag_parentsonly
+    END)  AS flag_logged_in	
 FROM users AS u
-WHERE u.pk_login = :username
-`;
-
-export const sqlselectRandomGuestName = `
-SELECT pk_login AS login
-FROM users
-WHERE type = 2
-	AND ($1 > last_login_at)
-ORDER BY RANDOM() LIMIT 1;
-`;
-
-export const sqlselectGuests = `
-SELECT
-	u.nickname AS nickname,
-	u.pk_login AS login,
-	u.avatar_file AS avatar_file
-FROM users AS u
-WHERE u.type = 2;
-`;
-
-export const sqlselectUsers = `
-SELECT
-	u.type AS type,
-	u.avatar_file AS avatar_file,
-	u.pk_login AS login,
-	u.nickname AS nickname,
-	u.last_login_at AS last_login_at,
-	(CASE WHEN $1 < u.last_login_at
-		THEN TRUE
-		ELSE FALSE
-    END)  AS flag_online
-FROM users AS u
-ORDER BY flag_online DESC, u.nickname
+WHERE 1 = 1 
+${params.singleUser ? ' AND u.pk_login = \'' + params.singleUser + '\'' : ''}
+${params.singleNickname ? ' AND u.nickname = \'' + params.singleNickname + '\'' : ''}
+${params.guestOnly || params.randomGuest ? ' AND u.type = 2' : ''}
+${params.randomGuest ? ' AND (:last_login_time_limit > u.last_login_at)' : ''}
+${params.randomGuest ? ' ORDER BY RANDOM() LIMIT 1' : ''}
 `;
 
 export const sqldeleteUser = `

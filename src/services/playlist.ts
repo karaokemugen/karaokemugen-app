@@ -69,7 +69,7 @@ import { playPlayer} from './player';
 import { getRepos } from './repo';
 import { addCriteria, blacklistHook, getCriterias, updateAllSmartPlaylists, updateSmartPlaylist, whitelistHook } from './smartPlaylist';
 //KM Modules
-import {findUserByName,updateSongsLeft} from './user';
+import {getUser, updateSongsLeft} from './user';
 
 /** Test if basic playlists exist */
 export async function testPlaylists() {
@@ -471,7 +471,7 @@ export async function addKaraToPlaylist(kids: string[], requester: string, plaid
 		profile('addKaraToPL');
 		if (!pl) throw {code: 404, msg: `Playlist ${plaid} unknown`};
 
-		const user: User = await findUserByName(requester);
+		const user: User = await getUser(requester);
 		if (!user) throw {code: 404, msg: 'Requester does not exist'};
 
 		const karasUnknown = kids.filter(kid => !karas.content.map(k => k.kid).includes(kid));
@@ -1053,11 +1053,11 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 			kara.username = kara.username.toLowerCase();
 			let user: User = users.get(kara.username);
 			if (!user) {
-				user = await findUserByName(kara.username);
+				user = await getUser(kara.username);
 				if (!user) {
 					// If user isn't found locally, replacing it with admin user
 					playlist.PlaylistContents[index].username = kara.username = 'admin';
-					user = await findUserByName('admin');
+					user = await getUser('admin');
 					playlist.PlaylistContents[index].nickname = user.nickname;
 				}
 				users.set(user.login, user);
@@ -1388,10 +1388,10 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 			kara.nickname = kara.nickname.replace(/[{}]/g,'');
 			requester = `${i18n.t('REQUESTED_BY')} ${kara.nickname}`;
 			// Get user avatar
-			let user = await findUserByName(kara.username);
+			let user = await getUser(kara.username);
 			if (!user) {
 				// User does not exist anymore, replacing it with admin
-				user = await findUserByName('admin');
+				user = await getUser('admin');
 			}
 			avatarfile = resolve(resolvedPathAvatars(), user.avatar_file);
 			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPathAvatars(), 'blank.png');

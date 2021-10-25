@@ -119,16 +119,16 @@ class UserList extends Component<unknown, UserListState> {
 		render: (date) => (new Date(date)).toLocaleString(),
 		sorter: (a,b) => a.last_login - b.last_login
 	}, {
-		title: i18next.t('USERS.FLAG_ONLINE'),
-		dataIndex: 'flag_online',
-		key: 'flag_online',
+		title: i18next.t('USERS.FLAG_LOGGED_IN'),
+		dataIndex: 'flag_logged_in',
+		key: 'flag_logged_in',
 		filters: [
 			{ text: i18next.t('USERS.ONLINE'), value: true },
 			{ text: i18next.t('USERS.OFFLINE'), value: false },
 		],
 		render: text => <Checkbox disabled defaultChecked={text === true} />,
 		filterMultiple: false,
-		onFilter: (value, record) => `${record.flag_online}` === value,
+		onFilter: (value, record) => `${record.flag_logged_in}` === value,
 	}, {
 		title: i18next.t('ACTION'),
 		key: 'action',

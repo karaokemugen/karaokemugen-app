@@ -6,7 +6,7 @@ import {Role, User} from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import { userTypes } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
-import { decodeJwtToken, findUserByName, updateLastLoginName } from '../services/user';
+import { decodeJwtToken, getUser, updateLastLoginName } from '../services/user';
 import { WebappModes } from '../types/frontend';
 import { webappModes } from '../utils/constants';
 import { APIMessage } from './common';
@@ -57,7 +57,7 @@ function checkAuthPresence(data: APIData) {
 export async function checkValidUser(token: { username: string, role: string }): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
 	token.username = token.username.toLowerCase();
-	const user = await findUserByName(token.username);
+	const user = await getUser(token.username);
 	if (user) {
 		if (token.role === 'admin' && user.type > 0) throw APIMessage('ADMIN_PLEASE');
 		return user;

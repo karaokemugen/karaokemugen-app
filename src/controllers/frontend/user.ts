@@ -5,7 +5,7 @@ import { APIData } from '../../lib/types/api';
 import { check } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { resetSecurityCode } from '../../services/auth';
-import { createAdminUser, createUser, editUser, findUserByName, listUsers,removeUser } from '../../services/user';
+import { createAdminUser, createUser, editUser, getUser, getUsers, removeUser } from '../../services/user';
 import { convertToRemoteUser, removeRemoteUser, resetRemotePassword } from '../../services/userOnline';
 import { getState } from '../../utils/state';
 import { APIMessage,errMessage } from '../common';
@@ -15,7 +15,7 @@ export default function userController(router: SocketIOApp) {
 	router.route('getUsers', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await listUsers();
+			return await getUsers();
 		} catch(err) {
 			const code = 'USER_LIST_ERROR';
 			errMessage(code, err);
@@ -56,7 +56,7 @@ export default function userController(router: SocketIOApp) {
 	router.route('getUser', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			const userdata = await findUserByName(req.body.username, {public: req.token.role !== 'admin'});
+			const userdata = await getUser(req.body.username, req.token.role === 'admin');
 			delete userdata.password;
 			if (!userdata) throw {code: 404};
 			return userdata;
@@ -128,7 +128,7 @@ export default function userController(router: SocketIOApp) {
 	router.route('getMyAccount', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'closed');
 		try {
-			const user = await findUserByName(req.token.username, {public: false});
+			const user = await getUser(req.token.username, true);
 			delete user.password;
 			return user;
 		} catch(err) {

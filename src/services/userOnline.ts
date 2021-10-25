@@ -12,7 +12,7 @@ import { SingleToken, Tokens } from '../types/user';
 import sentry from '../utils/sentry';
 import { startSub } from '../utils/userPubSub';
 import { convertToRemoteFavorites } from './favorites';
-import { checkPassword, createJwtToken, createUser, editUser, findUserByName } from './user';
+import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user';
 
 /** Check if the online token we have is still valid on KM Server */
 export async function remoteCheckAuth(instance: string, token: string) {
@@ -193,7 +193,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			throw err;
 		}
 		// Check if user exists. If it does not, create it.
-		let user = await findUserByName(username);
+		let user: User = await getUser(username, true);
 		if (!user) {
 			await createUser({...remoteUser, password, login: username}, {
 				createRemote: false,
@@ -232,12 +232,15 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			);
 			user = response.user;
 		}
-		user.onlineToken = onlineToken;
+		user = {
+			...user,
+			onlineToken: onlineToken
+		};
 		return user;
 	} else {
 		// Online token was not provided : KM Server might be offline
 		// We'll try to find user in local database. If failure return an error
-		const user = await findUserByName(username);
+		const user = await getUser(username, true);
 		if (!user) throw {code: 'USER_LOGIN_ERROR'};
 		return user;
 	}
@@ -249,11 +252,11 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
 	// Verify that no local user exists with the name we're going to rename it to
-	if (await findUserByName(username)) throw {code: 409, msg: 'User already exists locally, delete it first.'};
+	if (await getUser(username)) throw {code: 409, msg: 'User already exists locally, delete it first.'};
 	// Verify that password matches with online before proceeding
 	const onlineToken = await remoteLogin(token.username, password);
 	// Renaming user locally
-	const user = await findUserByName(token.username);
+	const user = await getUser(token.username);
 	user.login = username;
 	await editUser(token.username, user, null, 'admin', {
 		editRemote: false,
@@ -275,7 +278,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 export async function convertToRemoteUser(token: Token, password: string , instance: string): Promise<Tokens> {
 	token.username = token.username.toLowerCase();
 	if (token.username === 'admin') throw {code: 'ADMIN_CONVERT_ERROR'};
-	const user = await findUserByName(token.username);
+	const user = await getUser(token.username, true);
 	if (!user) throw {msg: 'UNKNOWN_CONVERT_ERROR'};
 	if (!await checkPassword(user, password)) throw {msg: 'PASSWORD_CONVERT_ERROR'};
 	user.login = `${token.username}@${instance}`;

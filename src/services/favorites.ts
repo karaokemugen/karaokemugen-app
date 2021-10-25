@@ -12,7 +12,7 @@ import {AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent,Favorite
 import sentry from '../utils/sentry';
 import {getKaras, isAllKaras} from './kara';
 import {addKaraToPlaylist,createPlaylist, shufflePlaylist, trimPlaylist} from './playlist';
-import {findUserByName} from './user';
+import { getUser } from './user';
 
 export async function getFavorites(params: KaraParams): Promise<KaraList> {
 	try {
@@ -177,7 +177,7 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 	const faves: Favorite[] = [];
 	for (let user of userList) {
 		user = user.toLowerCase();
-		if (!await findUserByName(user)) {
+		if (!await getUser(user)) {
 			logger.warn(`Username ${user} does not exist`, {service: 'Favorites'});
 		} else {
 			const favs = await getFavorites({

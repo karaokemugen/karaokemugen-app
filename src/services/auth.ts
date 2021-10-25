@@ -5,7 +5,7 @@ import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { getState, setState } from '../utils/state';
 import { fetchAndAddFavorites } from './favorites';
-import { checkPassword, createJwtToken, findUserByName, updateLastLoginName } from './user';
+import { checkPassword, createJwtToken, getUser, updateLastLoginName } from './user';
 import { fetchAndUpdateRemoteUser } from './userOnline';
 
 /** Check login and authenticates users */
@@ -30,7 +30,7 @@ export async function checkLogin(username: string, password: string): Promise<To
 		}
 	}
 
-	user = await findUserByName(username);
+	user = await getUser(username, true);
 	if (!user) throw false;
 	if (user.type < 2 && !await checkPassword(user, password)) throw false;
 	const role = getRole(user);
