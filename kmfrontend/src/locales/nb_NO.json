@@ -113,6 +113,7 @@
         "NEW_USER": "Ny bruker",
         "EMAIL": "E-post",
         "URL": "Nettside",
+        "FLAG_LOGGED_IN": "Innlogget?",
         "USER": "Bruker"
     },
     "NOT_FOUND_PAGE": {
