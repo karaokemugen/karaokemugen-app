@@ -12,9 +12,11 @@ export function deleteUser(username: string) {
 
 export async function selectUsers(params: UserParams = {}): Promise<DBUser[]> {
 	const res = await db().query(yesql(sqlselectUsers(params))({
-		last_login_time_limit: new Date(now() - (15 * 60 * 1000))
+		last_login_time_limit: new Date(now() - (15 * 60 * 1000)),
+		username: params.singleUser,
+		nickname: params.singleNickname
 	}));
-	return res.rows;	
+	return res.rows;
 }
 
 export function insertUser(user: User) {

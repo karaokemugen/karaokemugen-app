@@ -16,10 +16,10 @@ SELECT
 	u.avatar_file,
 	u.last_login_at,
 	${params.full ? `
-		u.password,	
+		u.password,
 		u.bio,
 		u.url,
-		u.email,	
+		u.email,
 		u.main_series_lang AS main_series_lang,
 		u.fallback_series_lang AS fallback_series_lang,
 		u.flag_tutorial_done AS flag_tutorial_done,
@@ -31,11 +31,11 @@ SELECT
 	(CASE WHEN :last_login_time_limit < u.last_login_at
 		THEN TRUE
 		ELSE FALSE
-    END)  AS flag_logged_in	
+    END)  AS flag_logged_in
 FROM users AS u
-WHERE 1 = 1 
-${params.singleUser ? ' AND u.pk_login = \'' + params.singleUser + '\'' : ''}
-${params.singleNickname ? ' AND u.nickname = \'' + params.singleNickname + '\'' : ''}
+WHERE 1 = 1
+${params.singleUser ? ' AND u.pk_login = :username' : ''}
+${params.singleNickname ? ' AND u.nickname = :nickname' : ''}
 ${params.guestOnly || params.randomGuest ? ' AND u.type = 2' : ''}
 ${params.randomGuest ? ' AND (:last_login_time_limit > u.last_login_at)' : ''}
 ${params.randomGuest ? ' ORDER BY RANDOM() LIMIT 1' : ''}
