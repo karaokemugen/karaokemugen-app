@@ -11,9 +11,9 @@ export function deleteUser(username: string) {
 }
 
 export async function selectUsers(params: UserParams = {}): Promise<DBUser[]> {
-	const res = await db().query(sqlselectUsers(params), [
-		new Date(now() - (15 * 60 * 1000))
-	]);
+	const res = await db().query(yesql(sqlselectUsers(params))({
+		last_login_time_limit: new Date(now() - (15 * 60 * 1000))
+	}));
 	return res.rows;	
 }
 
