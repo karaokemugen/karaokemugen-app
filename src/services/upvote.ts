@@ -5,7 +5,7 @@ import {getConfig} from '../lib/utils/config';
 import { emitWS } from '../lib/utils/ws';
 import {getState} from '../utils/state';
 import {freePLC, getPLCInfoMini} from './playlist';
-import {listUsers, updateSongsLeft} from './user';
+import { getUsers, updateSongsLeft } from './user';
 
 /** (Up|Down)vote a song. */
 export function vote(plc_id: number, username: string, downvote: boolean) {
@@ -66,8 +66,8 @@ export async function removeUpvote(plc_id: number, username: string) {
 
 /** Free song if it's sufficiently upvoted */
 async function tryToFreeKara(plc_id: number, upvotes: number, username: string, plaid: string) {
-	const allUsersList = await listUsers();
-	const onlineUsers = allUsersList.filter(user => user.flag_online);
+	const allUsersList = await getUsers();
+	const onlineUsers = allUsersList.filter(user => user.flag_logged_in);
 	const upvotePercent = (upvotes / onlineUsers.length) * 100;
 	const conf = getConfig();
 	if (upvotePercent >= +conf.Karaoke.Quota.FreeUpVotesRequiredPercent &&

@@ -12,27 +12,23 @@ import { v4 as uuidV4 } from 'uuid';
 import logger from 'winston';
 
 import { selectSongCountForUser,selectSongTimeSpentForUser } from '../dao/playlist';
-import { 	checkNicknameExists,
-	deleteUser,
+import { 	deleteUser,
 	insertUser,
 	lowercaseAllUsers,
 	mergeUserData,
 	reassignToUser,
 	selectAllDupeUsers,
-	selectGuests,
-	selectRandomGuest,
-	selectUser,
 	selectUsers,
 	updateUser,
 	updateUserLastLogin,
 	updateUserPassword} from '../dao/user';
-import {User} from '../lib/types/user';
+import { DBUser } from '../lib/types/database/user';
+import {User, UserParams} from '../lib/types/user';
 import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
 import {asciiRegexp, imageFileTypes} from '../lib/utils/constants';
 import {asyncExists, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
-import { DBGuest } from '../types/database/user';
 import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
 import sentry from '../utils/sentry';
@@ -43,8 +39,8 @@ import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline'
 
 const userLoginTimes = new Map();
 
-export async function findAvailableGuest() {
-	const guest = await selectRandomGuest();
+export async function getAvailableGuest() {
+	const guest = (await selectUsers({randomGuest: true}))[0];
 	if (!guest) return null;
 	if (getState().isTest) logger.debug('New guest logging in: ', {service: 'User', obj: guest});
 	return guest;
@@ -78,6 +74,11 @@ export function updateLastLoginName(login: string) {
 	}
 }
 
+async function checkNicknameExists(nickname: string) {
+	return (await selectUsers({
+		singleNickname: nickname
+	}))[0];
+}
 /** Edit local user profile */
 export async function editUser(username: string, user: User, avatar: Express.Multer.File, role: string, opts: UserOpts = {
 	editRemote: false,
@@ -87,7 +88,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	try {
 		if (!username) throw {code: 401, msg: 'USER_NOT_PROVIDED'};
 		username = username.toLowerCase();
-		const currentUser = await findUserByName(username);
+		const currentUser = await getUser(username, false);
 		if (!currentUser) throw {code: 404, msg: 'USER_NOT_EXISTS'};
 		if (currentUser.type === 2 && role !== 'admin') throw {code: 403, msg: 'GUESTS_CANNOT_EDIT'};
 		const mergedUser = merge(currentUser, user);
@@ -138,14 +139,9 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 	}
 }
 
-/** Get all guest users */
-export function listGuests(): Promise<DBGuest[]> {
-	return selectGuests();
-}
-
 /** Get all users (including guests) */
-export function listUsers(): Promise<User[]> {
-	return selectUsers();
+export function getUsers(params: UserParams = {}): Promise<DBUser[]> {
+	return selectUsers(params);
 }
 
 /** Replace old avatar image by new one sent from editUser or createUser */
@@ -178,23 +174,15 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 }
 
 /** Get user by its name, with non-public info like password and mail removed (or not) */
-export async function findUserByName(username: string, opt = {
-	public: false
-}): Promise<User> {
+export async function getUser(username: string, full = false) {
 	if (!username) throw('No user provided');
 	username = username.toLowerCase();
 	//Check if user exists in db
-	const userdata = await selectUser(username);
-	if (userdata) {
-		if (!userdata.bio || opt.public) userdata.bio = null;
-		if (!userdata.url || opt.public) userdata.url = null;
-		if (!userdata.email || opt.public) userdata.email = null;
-		if (!userdata.location || opt.public) userdata.location = null;
-		if (!userdata.language || opt.public) userdata.language = null;
-		if (opt.public) userdata.password = null;
-		return userdata;
-	}
-	return null;
+	const userdata = (await selectUsers({
+		singleUser: username,
+		full: full
+	}))[0];
+	return userdata;	
 }
 
 /** Hash passwords with sha256 */
@@ -213,6 +201,7 @@ export async function hashPasswordbcrypt(password: string): Promise<string> {
 /** Check if password matches or if user type is 2 (guest) and password in database is empty. */
 export async function checkPassword(user: User, password: string): Promise<boolean> {
 	// First we test if password needs to be updated to new hash
+	// Remove this in KM 7.0
 	const hashedPasswordSHA = hashPassword(password);
 	const hashedPasswordbcrypt = await hashPasswordbcrypt(password);
 
@@ -242,7 +231,6 @@ function getDefaultUser(): User {
 	return {
 		last_login_at: new Date(0),
 		avatar_file: 'blank.png',
-		flag_online: false,
 		language: getConfig().App.Language,
 		flag_sendstats: null,
 		flag_tutorial_done: false,
@@ -262,7 +250,6 @@ export async function createUser(user: User, opts: UserOpts = {
 	user = merge(getDefaultUser(), user);
 	if (opts.admin) user.type = 0;
 	if (user.type === 2) {
-		user.flag_online = false;
 		user.flag_sendstats = true;
 	}
 
@@ -307,7 +294,7 @@ async function newUserIntegrityChecks(user: User) {
 	if (user.type === 2 && user.password) throw { code: 400, msg: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
-	if (await selectUser(user.login) || await checkNicknameExists(user.login)) {
+	if ((await selectUsers({singleUser: user.login}))[0] || await checkNicknameExists(user.login)) {
 		logger.error(`User/nickname ${user.login} already exists, cannot create it`, {service: 'User'});
 		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
@@ -319,7 +306,7 @@ export async function removeUser(username: string) {
 		if (username === 'admin') throw {code: 406, msg:  'USER_DELETE_ADMIN_DAMEDESU', details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project'};
 		if (!username) throw {code: 400};
 		username = username.toLowerCase();
-		const user = await findUserByName(username);
+		const user = (await selectUsers({singleUser: username}))[0];
 		if (!user) throw {code: 404, msg: 'USER_NOT_EXISTS'};
 		//Reassign karas and playlists owned by the user to the admin user
 		await reassignToUser(username, 'admin');
@@ -340,7 +327,7 @@ export async function removeUser(username: string) {
 }
 
 /** Updates all guest avatars with those present in KM's codebase in the assets folder */
-async function updateGuestAvatar(user: DBGuest) {
+async function updateGuestAvatar(user: DBUser) {
 	const bundledAvatarFile = `${slugify(user.login, {
 		lower: true,
 		remove: /['"!,?()]/g
@@ -386,13 +373,13 @@ async function updateGuestAvatar(user: DBGuest) {
 /** Check all guests to see if we need to replace their avatars with built-in ones */
 async function checkGuestAvatars() {
 	logger.debug('Updating default avatars', {service: 'User'});
-	const guests = await listGuests();
+	const guests = await getUsers({guestOnly: true});
 	guests.forEach(u => updateGuestAvatar(u));
 }
 
 /** Create default guest accounts */
 async function createDefaultGuests() {
-	const guests = await listGuests();
+	const guests = await getUsers({guestOnly: true});
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
@@ -402,7 +389,7 @@ async function createDefaultGuests() {
 	if (getState().isTest) maxGuests = 1;
 	logger.debug(`Creating ${maxGuests} new guest accounts`, {service: 'User'});
 	for (let i = 0; i < maxGuests; i++) {
-		if (!await findUserByName(guestsToCreate[i])) try {
+		if (!await getUser(guestsToCreate[i])) try {
 			await createUser({
 				login: deburr(guestsToCreate[i]),
 				nickname: guestsToCreate[i],
@@ -418,7 +405,7 @@ async function createDefaultGuests() {
 /** Initializing user auth module */
 export async function initUserSystem() {
 	// Check if a admin user exists just in case. If not create it with a random password.
-	if (!await findUserByName('admin')) {
+	if (!await getUser('admin')) {
 		await createUser({
 			login: 'admin',
 			password: randomstring.generate(8)
@@ -429,7 +416,7 @@ export async function initUserSystem() {
 	}
 
 	if (getState().isTest) {
-		if (!await findUserByName('adminTest')) {
+		if (!await getUser('adminTest')) {
 			await createUser({
 				login: 'adminTest',
 				password: 'ceciestuntest'
@@ -437,7 +424,7 @@ export async function initUserSystem() {
 				admin: true
 			});
 		}
-		if (!await findUserByName('adminTest2')) {
+		if (!await getUser('adminTest2')) {
 			await createUser({
 				login: 'adminTest2',
 				password: 'ceciestuntest'
@@ -445,7 +432,7 @@ export async function initUserSystem() {
 				admin: true
 			});
 		}
-		if (!await findUserByName('publicTest')) {
+		if (!await getUser('publicTest')) {
 			await createUser({
 				login: 'publicTest',
 				password: 'ceciestuntest',
@@ -455,15 +442,15 @@ export async function initUserSystem() {
 			});
 		}
 	} else {
-		if (await findUserByName('adminTest')) deleteUser('adminTest');
-		if (await findUserByName('publicTest')) deleteUser('publicTest');
-		if (await findUserByName('adminTest2')) deleteUser('adminTest2');
+		if (await getUser('adminTest')) deleteUser('adminTest');
+		if (await getUser('publicTest')) deleteUser('publicTest');
+		if (await getUser('adminTest2')) deleteUser('adminTest2');
 	}
 
 	userChecks();
 	if (getState().opt.forceAdminPassword) await generateAdminPassword();
 	// Find admin users.
-	const users = await listUsers();
+	const users = await getUsers();
 	const adminUsers = users
 		.filter(u => u.type === 0 && u.login !== 'admin')
 		// Sort by last login at in descending order.
@@ -484,7 +471,7 @@ async function userChecks() {
 /** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */
 async function checkUserAvatars() {
 	logger.debug('Checking if all avatars exist', {service: 'User'});
-	const users = await listUsers();
+	const users = await getUsers();
 	const defaultAvatar = resolve(resolvedPathAvatars(), 'blank.png');
 	for (const user of users) {
 		if (!user.avatar_file) {
@@ -512,7 +499,7 @@ async function checkUserAvatars() {
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
 	logger.debug('Cleaning up unused avatars', {service: 'User'});
-	const users = await listUsers();
+	const users = await getUsers();
 	const avatars = [];
 	for (const user of users) {
 		if (!avatars.includes(user.avatar_file)) avatars.push(user.avatar_file);
@@ -539,7 +526,7 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 	try {
 		const conf = getConfig();
 		username = username.toLowerCase();
-		const user = await findUserByName(username);
+		const user = await getUser(username);
 		let quotaLeft: number;
 		if (!plaid) plaid = getState().publicPlaid;
 		if (user.type >= 1 && +conf.Karaoke.Quota.Type > 0) {

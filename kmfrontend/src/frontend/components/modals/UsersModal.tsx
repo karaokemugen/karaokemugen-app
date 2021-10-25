@@ -22,7 +22,7 @@ function UsersModal(props: IProps) {
 
 	const getUserList = async () => {
 		const response = await commandBackend('getUsers');
-		setUsers(response.filter((a: User) => a.flag_online));
+		setUsers(response.filter((a: User) => a.flag_logged_in));
 	};
 
 	const getUserDetails = async (user: User) => {
@@ -86,7 +86,7 @@ function UsersModal(props: IProps) {
 						return (
 							<li
 								key={user.login}
-								className={user.flag_online ? 'list-group-item online' : 'list-group-item'}
+								className={user.flag_logged_in ? 'list-group-item online' : 'list-group-item'}
 							>
 								<div className="userLine" onClick={() => getUserDetails(user)}>
 									<ProfilePicture user={user} className="img-circle avatar" />

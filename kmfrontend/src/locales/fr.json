@@ -880,7 +880,7 @@
         "EMAIL": "Email",
         "URL": "Site web",
         "LAST_LOGIN_AT": "Dernière connexion à",
-        "FLAG_ONLINE": "Connecté ?",
+        "FLAG_LOGGED_IN": "Connecté ?",
         "ONLINE": "En ligne",
         "OFFLINE": "Hors ligne",
         "USER_DELETED_CONFIRM": "Confirmer la suppression de l'utilisateur",

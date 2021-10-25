@@ -88,7 +88,7 @@ describe('Users', () => {
 
 function testUser(u: User, full?: boolean) {
 	expect(u.avatar_file).to.be.a('string');
-	expect(u.flag_online).to.be.a('boolean');
+	expect(u.flag_logged_in).to.be.a('boolean');
 	expect(u.last_login_at).to.be.a('string');
 	expect(u.login).to.be.a('string');
 	expect(u.nickname).to.be.a('string');

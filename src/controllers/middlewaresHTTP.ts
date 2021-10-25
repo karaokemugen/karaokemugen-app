@@ -1,4 +1,3 @@
-import { User } from '../lib/types/user';
 import logger from '../lib/utils/logger';
 import { decodeJwtToken } from '../services/user';
 import { APIMessage } from './common';
@@ -16,7 +15,7 @@ export function requireHTTPAuth(req: any, res: any, next: any) {
 export function requireValidUser(req: any, res: any, next: any) {
 	req.authToken = req.token;
 	checkValidUser(req.token)
-		.then((user: User) => {
+		.then(user => {
 			req.user = user;
 			next();
 		})

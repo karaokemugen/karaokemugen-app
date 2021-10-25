@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { DBUser } from '../lib/types/database/user';
 import logger from '../lib/utils/logger';
 import {importFavorites} from '../services/favorites';
-import { editUser, findUserByName, listUsers,removeUser } from '../services/user';
+import { editUser, getUser, getUsers, removeUser } from '../services/user';
 import { Favorite } from '../types/stats';
 
 // Map io connections
@@ -13,13 +13,13 @@ const ioMap: Map<string, Socket> = new Map();
 const debounceMap: Map<string, (login: string, payload: any) => Promise<void>> = new Map();
 
 async function listRemoteUsers() {
-	const users = await listUsers();
-	return users.filter(u => u.login.includes('@')).map(u => u.login);
+	const users = await getUsers({onlineOnly: true});
+	return users.map(u => u.login);
 }
 
 async function updateUser(login: string, payload: any) {
 	const userRemote: DBUser = payload.user;
-	let user: DBUser = await findUserByName(login);
+	let user: DBUser = await getUser(login);
 	if (user) {
 		const favorites: Favorite[] = payload.favorites;
 		user = {

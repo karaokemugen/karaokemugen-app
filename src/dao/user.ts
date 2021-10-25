@@ -2,37 +2,19 @@ import {pg as yesql} from 'yesql';
 
 import {db, newDBTask} from '../lib/dao/database';
 import { DBUser } from '../lib/types/database/user';
-import { User } from '../lib/types/user';
+import { User, UserParams } from '../lib/types/user';
 import { now } from '../lib/utils/date';
-import { DBGuest } from '../types/database/user';
-import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlSelectAllDupeUsers, sqlselectGuests, sqlselectRandomGuestName, sqlselectUserByName, sqlselectUsers, sqltestNickname, sqlupdateLastLogin } from './sql/user';
-
-export async function selectUser(username: string): Promise<DBUser> {
-	const res = await db().query(yesql(sqlselectUserByName)({
-		username: username,
-		last_login_time_limit: new Date(now() - (15 * 60 * 1000))
-	}));
-	return res.rows[0];
-}
-
-export async function checkNicknameExists(nickname: string): Promise<string> {
-	const res = await db().query(yesql(sqltestNickname)({nickname: nickname}));
-	if (res.rows[0]) return res.rows[0].login;
-	return null;
-}
+import { sqlcreateUser, sqldeleteUser, sqleditUser, sqleditUserPassword, sqlLowercaseAllUsers, sqlMergeUserDataPlaylist, sqlMergeUserDataPlaylistContent, sqlMergeUserDataRequested, sqlreassignPlaylistContentToUser, sqlreassignPlaylistToUser, sqlreassignRequestedToUser, sqlSelectAllDupeUsers, sqlselectUsers, sqlupdateLastLogin } from './sql/user';
 
 export function deleteUser(username: string) {
 	return db().query(sqldeleteUser, [username]);
 }
 
-export async function selectUsers(): Promise<DBUser[]> {
-	const res = await db().query(sqlselectUsers, [new Date(now() - (15 * 60 * 1000))]);
-	return res.rows;
-}
-
-export async function selectGuests(): Promise<DBGuest[]> {
-	const res = await db().query(sqlselectGuests);
-	return res.rows;
+export async function selectUsers(params: UserParams = {}): Promise<DBUser[]> {
+	const res = await db().query(sqlselectUsers(params), [
+		new Date(now() - (15 * 60 * 1000))
+	]);
+	return res.rows;	
 }
 
 export function insertUser(user: User) {
@@ -89,12 +71,6 @@ export function reassignToUser(oldUsername: string, username: string) {
 			old_username: oldUsername
 		}))
 	]);
-}
-
-export async function selectRandomGuest(): Promise<string> {
-	const res = await db().query(sqlselectRandomGuestName, [new Date(now() - (15 * 60 * 1000))]);
-	if (res.rows[0]) return res.rows[0].login;
-	return null;
 }
 
 export function updateUserLastLogin(username: string) {

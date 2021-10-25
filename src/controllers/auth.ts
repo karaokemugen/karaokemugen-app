@@ -3,7 +3,7 @@ import logger from '../lib/utils/logger';
 import { SocketIOApp } from '../lib/utils/ws';
 import { checkLogin, resetSecurityCode } from '../services/auth';
 import { fetchAndAddFavorites } from '../services/favorites';
-import { editUser, findAvailableGuest, updateLastLoginName } from '../services/user';
+import { editUser, getAvailableGuest, updateLastLoginName } from '../services/user';
 import { fetchAndUpdateRemoteUser, remoteCheckAuth } from '../services/userOnline';
 import { getState } from '../utils/state';
 import { APIMessage } from './common';
@@ -39,10 +39,10 @@ export default function authController(router: SocketIOApp) {
 
 	router.route('loginGuest', async () => {
 		try {
-			const guest = await findAvailableGuest();
+			const guest = await getAvailableGuest();
 			if (guest) {
-				const token = await checkLogin(guest, null);
-				updateLastLoginName(guest);
+				const token = await checkLogin(guest.login, null);
+				updateLastLoginName(guest.login);
 				return token;
 			} else {
 				throw {code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE')};
