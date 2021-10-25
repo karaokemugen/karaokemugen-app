@@ -102,7 +102,7 @@ export async function editUser(username: string, user: User, avatar: Express.Mul
 		// If we're renaming a user, user.login is going to be set to something different than username
 		user.old_login = username;
 		// Check if login already exists.
-		if (currentUser.nickname !== user.nickname && await checkNicknameExists(user.nickname)) throw {code: 409};
+		if (user.nickname && currentUser.nickname !== user.nickname && await checkNicknameExists(user.nickname)) throw {code: 409};
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
