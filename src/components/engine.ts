@@ -247,8 +247,12 @@ export async function exit(rc = 0, update = false) {
 		logger.warn('mpv error', {service: 'Engine', obj: err});
 		// Non fatal.
 	}
-	if (DBReady	&& getConfig().System.Database.bundledPostgresBinary) await dumpPG();
-	await closeDB();
+	try {
+		if (DBReady	&& getConfig().System.Database.bundledPostgresBinary) await dumpPG();
+		await closeDB();
+	} catch(err) {
+		logger.warn('Shutting down database failed', {service: 'Engine', obj: err});
+	}
 	const c = getConfig();
 	if (getTwitchClient() || (c?.Karaoke?.StreamerMode?.Twitch?.Enabled)) await stopTwitch();
 	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
