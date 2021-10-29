@@ -11,7 +11,6 @@ import logger from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import { downloadFiles } from '../services/download';
-import Sentry from './sentry';
 import { getState } from './state';
 
 // This is only used in cli mode, without a worker available
@@ -86,15 +85,12 @@ export async function applyPatch(patch: string, dir: string) {
 		return computeFileChanges(patch);
 	} catch (err) {
 		logger.warn('Cannot apply patch from server, fallback to other means', {service: 'DiffPatch', obj: err});
-		Sentry.addErrorInfo('patch', patch);
 		try {
 			const rejectedPatch = await fs.readFile(resolve(resolvedPathTemp(), 'patch.rej'), 'utf-8');
-			Sentry.addErrorInfo('rejected', rejectedPatch);
 			logger.debug(`Rejected patch : ${rejectedPatch}`, {service: 'DiffPatch'});
 		} catch(err) {
 			logger.debug(`Could not get rejected patch : ${err}`, { service: 'DiffPatch', obj: err});
 		}
-		Sentry.error(err, 'Warning');
 		throw err;
 	}
 }
