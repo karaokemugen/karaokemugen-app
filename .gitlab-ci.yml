@@ -216,7 +216,6 @@ pkg_mac:
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
   script:
-    - ~/.zshrc
     - rm -Rf release_mac
     - npm install -g electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-6.x.tar.gz | tar xvz
