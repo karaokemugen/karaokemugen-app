@@ -459,7 +459,7 @@ export default function KaraDetail(props: IProps) {
 			</button>
 		);
 
-		const modifyKaraokeButton = context.globalState.settings.data.config.System.Repositories
+		const modifyKaraokeButton = context.globalState.settings.data.config?.System?.Repositories
 			.filter(value => value.Name === kara.repository)[0].MaintainerMode ? (
 				<a href={`/system/karas/${kara.kid}`}>
 					<button type="button" className="btn btn-action" >
