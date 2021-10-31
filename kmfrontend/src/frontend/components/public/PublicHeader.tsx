@@ -64,7 +64,9 @@ function PublicHeader(props: IProps) {
 	};
 
 	const resizeCheck = () => {
-		props.onResize(`${ref.current.scrollHeight}px`);
+		if (ref?.current) {
+			props.onResize(`${ref.current.scrollHeight}px`);
+		}
 	};
 
 	useEffect(() => {
