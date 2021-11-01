@@ -46,7 +46,9 @@ function PlayerBox(props: IProps) {
 	};
 
 	const resizeCheck = () => {
-		props.onResize(`${containerRef.current.scrollHeight}px`);
+		if (containerRef?.current) {
+			props.onResize(`${containerRef.current.scrollHeight}px`);
+		}
 	};
 
 	const getFavorites = async (payload?: string) => {
