@@ -127,10 +127,10 @@
     "@sentry/utils" "6.7.1"
     tslib "^1.9.3"
 
-"@sentry/cli@^1.70.1":
-  version "1.70.1"
-  resolved "https://registry.yarnpkg.com/@sentry/cli/-/cli-1.70.1.tgz#908517b699c0714eff88bedb68c6ea72e94945e8"
-  integrity sha512-pab3nU3rNsq1HKKmJP2ITDl5cGi+QbQ5eLX6ELaeAbN2eAzfndHu2rTqlnjJAKcYQg6l9gFBn8vvY2xAeRJb6Q==
+"@sentry/cli@^1.71.0":
+  version "1.71.0"
+  resolved "https://registry.yarnpkg.com/@sentry/cli/-/cli-1.71.0.tgz#1e33e05d7651b68f501764ab24dce3d5932b195d"
+  integrity sha512-Z8TzH7PkiRfjWSzjXOfPWWp6wxjr+n39Jdrt26OcInVQZM1sx/gZULrDiQZ1L2dy9Fe9AR4SF4nt2/7h2GmLQQ==
   dependencies:
     https-proxy-agent "^5.0.0"
     mkdirp "^0.5.5"
@@ -749,10 +749,10 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-about-window@^1.15.0:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/about-window/-/about-window-1.15.0.tgz#504c3b3988cc64b78b99fad805f4081aba487931"
-  integrity sha512-bLyqvMc9OoHxsQYpm3xRw7v7axI2OMXiK3Qkhi1oimYPOLu60RrpTL5CbOk+RLoBzuYJve8YqZ20/TYgrTus3g==
+about-window@^1.15.2:
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/about-window/-/about-window-1.15.2.tgz#0397216ce0cb6e8a4fa9ba12941e56d481d712b5"
+  integrity sha512-31mDAnLUfKm4uShfMzeEoS6a3nEto2tUt4zZn7qyAKedaTV4p0dGiW1n+YG8vtRh78mZiewghWJmoxDY+lHyYg==
 
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
   version "1.3.7"
