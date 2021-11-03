@@ -208,23 +208,22 @@
             "BODY": "Le dépôt {{repo}} n'a pas pu être migré vers le nouveau système de gestion des dépôts. Le dépôt a ainsi été désactivé, vous pouvez le restaurer en le configurant correctement dans le panneau système. Vous pouvez nous contacter pour de l'aide avec le bouton en haut."
         }
     },
-	"GIT": {
-		"CURRENT_ACTION": "Action Git en cours",
-		"METHODS": {
-			"pull": "Mise à jour",
-			"clone": "Clonage",
-			"checkout": "Validation",
-			"fetch": "Actualisation",
-			"push": "Envoi"
-		},
-		"STAGES": {
-			"resolving": "Résolution des deltas",
-			"receiving": "Réception des données",
-			"updating": "Mise à jour des fichiers"
-		}
-	},
-	"COMMITING_CHANGES": "Réalisation des modifications",
-	"PREPARING_COMMITS": "Préparation des modifications",
+    "GIT": {
+        "CURRENT_ACTION": "Action Git en cours",
+        "METHODS": {
+            "pull": "Mise à jour",
+            "clone": "Clonage",
+            "checkout": "Validation",
+            "fetch": "Actualisation",
+            "push": "Envoi"
+        },
+        "STAGES": {
+            "resolving": "Résolution des deltas",
+            "receiving": "Réception des données",
+            "updating": "Mise à jour des fichiers"
+        }
+    },
+    "PREPARING_COMMITS": "Préparation des modifications",
     "OFFICIAL_WEBSITE": "Site officiel",
     "SUGGEST_SONGS": "Suggérer des chansons !"
 }
