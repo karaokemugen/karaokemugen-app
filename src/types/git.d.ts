@@ -1,3 +1,6 @@
+import { StatusResult } from 'simple-git';
+import { LogResult } from 'simple-git/typings/response';
+
 export type DiffType = 'equal' | 'modify' | 'add' | 'delete'
 
 export interface DiffResult {
@@ -12,3 +15,7 @@ export interface GitOptions {
 	repo: string,
 	dir: string
 }
+
+// For KMFrontend
+export type GitStatusResult = StatusResult;
+export type GitLogResult = LogResult;

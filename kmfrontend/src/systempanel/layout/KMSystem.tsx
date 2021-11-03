@@ -13,6 +13,7 @@ import { displayMessage } from '../../utils/tools';
 import Loading from '../components/Loading';
 import Config from '../pages/Config';
 import Database from '../pages/Database';
+import Git from '../pages/Git';
 import Home from '../pages/Home';
 import KaraHistory from '../pages/Karas/History';
 import KaraBatchEdit from '../pages/Karas/KaraBatchEdit';
@@ -100,6 +101,7 @@ class KMSystem extends Component<unknown, unknown> {
 							<Route path='/system/tags' component={TagsList} />
 
 							<Route path='/system/db' component={Database} />
+							<Route path='/system/git' component={Git} />
 
 							<Route path='/system/users/create' component={UserEdit} />
 							<Route path='/system/users/:userLogin' component={UserEdit} />

@@ -5,6 +5,17 @@ export interface DifferentChecksumReport {
 	kara2: Kara
 }
 
+export interface Change {
+	type: 'new' | 'delete',
+	path: string,
+	uid?: string
+}
+
+export interface Push {
+	commits: Commit[]
+	modifiedMedias: ModifiedMedia[]
+}
+
 // Used for migration to zip-based repositories
 export interface OldRepository {
 	Name: string,
@@ -18,4 +29,17 @@ export interface OldRepository {
 		Tags: string[]
 		Series?: string[]
 	}
+}
+
+export interface Commit {
+	addedFiles: string[],
+	removedFiles: string[],
+	message: string
+}
+
+export interface ModifiedMedia {
+	new: string,
+	old: string,
+	sizeDifference?: boolean,
+	commit: string
 }

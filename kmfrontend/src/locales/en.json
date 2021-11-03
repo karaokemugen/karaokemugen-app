@@ -686,7 +686,21 @@
         "CLASSIC_MODE": {
             "TITLE": "It's your turn to sing!",
             "TEXT": "Click on the Play button to start your song."
-        }
+        },
+		"GIT_DANGEROUS": {
+			"TITLE": "Dangerous actions",
+			"DESCRIPTION": "Welcome to the dangerous actions corner. It appears that you can mess a lot around here. Here's a quick summary of the edits detected :",
+			"STASH": {
+				"BTN": "Stash edits",
+				"DESC": "Put away your edits to reuse them later."
+			},
+			"RESET": {
+				"BTN": "Reset",
+				"DESC": "Delete all the non-pushed edits."
+			},
+			"DONE": "Task done successfully.",
+			"EMPTY": "Nothing was changed!"
+		}
     },
     "SETUP_PAGE": {
         "TITLE": "Setup Wizard",
@@ -744,7 +758,6 @@
     "ADD": "Add",
     "SEARCH_FILTER": "Search filter",
     "REFRESH": "Refresh",
-    "REFRESHING_DATA": "Refreshing data…",
     "CONFIRM_SURE": "Are you sure?",
     "ACTION": "Action",
     "KARA": {
@@ -853,6 +866,7 @@
         "VIEWCOUNTS": "Most played",
         "TAGS": "Tags",
         "DATABASE": "Database",
+		"GIT": "Git",
         "USERS": "Users",
         "UNUSED_FILES": "Unused files",
         "DUPLICATE": "Duplicated",
@@ -1078,8 +1092,38 @@
         "STORAGE_INFO": "There is multiple ways to manage space used by your repositories:",
         "STORAGE_INFO_DELETE": "Like you've seen earlier, you have the ability to remove the unused medias for a month or all the medias. They will be redonwloaded when needed again but this will allow you to free space if you make a long karaoke night recently for example.",
         "STORAGE_INFO_MOVE": "You have also the ability, in the repositories management page, to move the files of a repository somewhere else in an external disk, USB key or a network share, allowing you to free space on your main disk.",
-        "NO_FREE_SPACE": "Not enough disk space to download! Make space on your hard drive and restart the queue."
-    },
+        "NO_FREE_SPACE": "Not enough disk space to download! Make space on your hard drive and restart the queue.",
+		"GIT": {
+			"URL": "Git Repository",
+			"USERNAME": "Git Username",
+			"PASSWORD": "Git Password (or Gitlab/Github token)",
+			"AUTHOR": "Git Identity",
+			"EMAIL": "Git E-Mail"
+		},
+		"FTP": {
+			"HOST": "FTP Host",
+			"PORT": "FTP Port",
+			"USERNAME": "FTP Username",
+			"PASSWORD": "FTP Password",
+			"BASEDIR": "FTP Base Directory"
+		},
+		"GIT_STATUS": "Git status",
+		"GIT_STATUSES": {
+			"CLEAN": "Clean copy",
+			"MODIFIED": "Edited (changes to push)",
+			"CONFLICT": "Conflicts pending (use the resolver)"
+		},
+		"GIT_NOTHING_TO_PUSH": "There is nothing to push.",
+		"GIT_ACTIONS": "Actions",
+		"GIT_DANGEROUS": "Dangerous actions",
+		"GIT_PUSH": "Push",
+		"GIT_PULL": "Pull",
+		"GIT_CONFIRM_PUSH": "Push the following changes?",
+		"GIT_STASHLIST": "Stashes",
+		"GIT_STASH": "You have stashes to apply, those are created automatically when a merge conflict occurs. You can try to restore them or delete them. You should check the <1>Git repository</1> online to see changes that might have caused the conflict.",
+		"GIT_UNSTASH": "Apply",
+		"GIT_DELETE": "Delete"
+	},
     "HOME": {
         "SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
         "KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download medias and view most requested, most played, and karaoke history",
@@ -1141,7 +1185,11 @@
         "ANALYZING_WORKDIR": "Analyzing workdir",
         "UPDATING_GIT_REPO": "Updating repository {{data}}",
         "DOWNLOADING_ZIP": "Downloading database",
-        "EXTRACTING_ZIP": "Extracting database"
+        "EXTRACTING_ZIP": "Extracting database",
+		"COMMITING_CHANGES": "Committing changes",
+		"PREPARING_CHANGES": "Preparing changes",
+        "REFRESHING_DATA": "Refreshing data…",
+        "UPLOADING_FTP": "Uploading to the FTP…"
     },
     "ERROR_CODES": {
         "WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
@@ -1231,6 +1279,14 @@
         "REPO_EDIT_ERROR": "Error editing repository",
         "REPO_GET_UNUSEDTAGS_ERROR": "Error fetching unused tags",
         "REPO_GET_UNUSEDMEDIA_ERROR": "Error fetching unused medias",
+		"REPO_GIT_CHECK_ERROR": "Unable to check git repository status",
+		"REPO_GIT_ABORT_ERROR": "Unable to abort git merge",
+		"REPO_GIT_STASH_ERROR": "Unable to stash your changes",
+		"REPO_GIT_UNSTASH_ERROR": "Unable to pop the stash",
+		"REPO_GIT_UPDATE_ERROR": "Unable to update git repository",
+		"REPO_GIT_GET_COMMITS_ERROR": "Unable to prepare git commits",
+		"REPO_GIT_PUSH_ERROR": "Unable to push git commits",
+		"REPO_GIT_RESET_ERROR": "Unable to reset git repository",
         "SESSION_LIST_ERROR": "Error fetching sessions list",
         "SESSION_CREATION_ERROR": "Error creating session",
         "SESSION_MERGE_ERROR": "Error merging sessions",
@@ -1382,6 +1438,10 @@
             "TITLE": "Database",
             "DESCRIPTION": "Database management tools. Database, database, just living in the database wow wow."
         },
+		"GIT": {
+			"TITLE": "Git Integration",
+			"DESCRIPTION": "Manage Git repositories (push, merge conflicts)"
+		},
         "KARAOKE_LIST": {
             "TITLE": "List of karaoke",
             "DESCRIPTION": "From here you can edit, add or delete karaoke. Usually for karaoke repository maintainers only."

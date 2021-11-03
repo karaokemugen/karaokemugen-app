@@ -31,6 +31,7 @@ class KMMenu extends Component<unknown, unknown> {
 					<Menu.Item key='storage'><Link to='/system/storage'>{i18next.t('MENU.STORAGE')}</Link></Menu.Item>
 					<Menu.Item key='unused'><Link to='/system/unused'>{i18next.t('MENU.UNUSED_FILES')}</Link></Menu.Item>
 					<Menu.Item key='db'><Link to='/system/db'>{i18next.t('MENU.DATABASE')}</Link></Menu.Item>
+					<Menu.Item key='git'><Link to='/system/git'>{i18next.t('MENU.GIT')}</Link></Menu.Item>
 				</Menu.SubMenu>
 				<Menu.SubMenu key="kara-dropdown" title={i18next.t('MENU.KARAS')}>
 					<Menu.Item key='karalist'><Link to='/system/karas'>{i18next.t('MENU.LIST')}</Link></Menu.Item>

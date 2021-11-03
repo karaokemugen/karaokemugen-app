@@ -77,7 +77,21 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 			MaintainerMode: values.MaintainerMode,
 			Path: {
 				Medias: values.PathMedias,
-			}
+			},
+			Git: values.GitURL ? {
+				URL: values.GitURL,
+				Username: values.GitUsername,
+				Password: values.GitPassword,
+				Author: values.GitAuthor,
+				Email: values.GitEmail
+			} : undefined,
+			FTP: values.FTPHost ? {
+				Host: values.FTPHost,
+				Port: values.FTPPort,
+				Username: values.FTPUsername,
+				Password: values.FTPPassword,
+				BaseDir: values.FTPBaseDir
+			} : undefined
 		};
 		this.props.save(repository);
 	};
@@ -106,6 +120,16 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 					MaintainerMode: this.props.repository?.MaintainerMode,
 					BaseDir: this.props.repository?.BaseDir,
 					PathMedias: this.props.repository?.Path.Medias,
+					GitURL: this.props.repository?.Git?.URL,
+					GitUsername: this.props.repository?.Git?.Username,
+					GitPassword: this.props.repository?.Git?.Password,
+					GitAuthor: this.props.repository?.Git?.Author,
+					GitEmail: this.props.repository?.Git?.Email,
+					FTPHost: this.props.repository?.FTP?.Host,
+					FTPPort: this.props.repository?.FTP?.Port,
+					FTPUsername: this.props.repository?.FTP?.Username,
+					FTPPassword: this.props.repository?.FTP?.Password,
+					FTPBaseDir: this.props.repository?.FTP?.BaseDir
 				}}
 				style={{ maxWidth: '900px' }}
 			>
@@ -213,6 +237,100 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				>
 					<FoldersElement openDirectory={true} onChange={(value) => this.formRef.current?.setFieldsValue({ 'PathMedias': value })} />
 				</Form.Item>
+				{this.formRef.current?.getFieldValue('MaintainerMode') ?
+					<>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.GIT.URL')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="GitURL"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.GIT.URL')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.GIT.USERNAME')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="GitUsername"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.GIT.USERNAME')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.GIT.PASSWORD')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="GitPassword"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.GIT.PASSWORD')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.GIT.AUTHOR')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="GitAuthor"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.GIT.AUTHOR')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.GIT.EMAIL')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="GitEmail"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.GIT.EMAIL')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.FTP.HOST')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="FTPHost"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.FTP.HOST')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.FTP.PORT')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="FTPPort"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.FTP.PORT')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.FTP.USERNAME')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="FTPUsername"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.FTP.USERNAME')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.FTP.PASSWORD')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="FTPPassword"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.FTP.PASSWORD')}
+							/>
+						</Form.Item>
+						<Form.Item
+							label={i18next.t('REPOSITORIES.FTP.BASEDIR')}
+							labelCol={{ flex: '0 1 300px' }}
+							name="FTPBaseDir"
+						>
+							<Input
+								placeholder={i18next.t('REPOSITORIES.FTP.BASEDIR')}
+							/>
+						</Form.Item>
+					</>
+					:null}
 				<Form.Item style={{ textAlign: 'right' }}>
 					<Button
 						type='primary'

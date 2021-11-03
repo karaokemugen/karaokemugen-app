@@ -13,7 +13,6 @@ import Task from '../lib/utils/taskManager';
 import { downloadFiles } from '../services/download';
 import { getState } from './state';
 
-// This is only used in cli mode, without a worker available
 async function extractZip(path: string, outDir: string, task: Task): Promise<string>  {
 	let firstDir: string;
 	await extract(path, {
