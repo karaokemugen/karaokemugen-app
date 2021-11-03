@@ -169,7 +169,7 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 
 	// Exiting first run, display full menu.
 	if (oldConfig.App.FirstRun && !config.App.FirstRun) {
-		applyMenu('DEFAULT');		
+		applyMenu('DEFAULT');
 	}
 }
 
@@ -182,6 +182,10 @@ export async function initConfig(argv: any) {
 		publicConfig.Karaoke.StreamerMode.Twitch.OAuth = 'xxxxx';
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
+		for (const repo of publicConfig.System.Repositories) {
+			if (repo.FTP?.Password) repo.FTP.Password = 'xxxxx';
+			if (repo.Git?.Password) repo.Git.Password = 'xxxxx';
+		}
 		logger.debug('Loaded configuration', {service: 'Launcher', obj: publicConfig});
 		const binaries = await checkBinaries(getConfig());
 		setState({binPath: binaries});

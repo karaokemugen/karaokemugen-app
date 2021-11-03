@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { copy } from 'fs-extra';
+import { copy, remove } from 'fs-extra';
 import i18next from 'i18next';
 import clonedeep from 'lodash.clonedeep';
 import { basename,resolve } from 'path';
@@ -13,8 +13,9 @@ import { refreshKaras } from '../lib/dao/kara';
 import { writeKara } from '../lib/dao/karafile';
 import { readAllKaras } from '../lib/services/generation';
 import { DBTag } from '../lib/types/database/tag';
-import { Kara } from '../lib/types/kara';
+import { Kara, KaraFileV4 } from '../lib/types/kara';
 import {DiffChanges, Repository, RepositoryManifest} from '../lib/types/repo';
+import { TagFile } from '../lib/types/tag';
 import {getConfig, resolvedPathRepos} from '../lib/utils/config';
 import {
 	asyncCheckOrMkdir,
@@ -29,14 +30,17 @@ import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
-import {DifferentChecksumReport, OldRepository} from '../types/repo';
+import { emitWS } from '../lib/utils/ws';
+import {Change, Commit, DifferentChecksumReport, ModifiedMedia, OldRepository, Push} from '../types/repo';
 import {backupConfig} from '../utils/config';
 import {pathIsContainedInAnother} from '../utils/files';
+import FTP from '../utils/ftp';
+import Git from '../utils/git';
+import {applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles} from '../utils/patch';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
-import {applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles} from '../utils/zipPatch';
 import { updateMedias } from './downloadUpdater';
-import { getKaras } from './kara';
+import { getAllKaras, getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { addSystemMessage } from './proxyFeeds';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
@@ -81,8 +85,15 @@ export async function addRepo(repo: Repository) {
 	insertRepo(repo);
 	// Let's download zip if it's an online repository
 	if (repo.Online) {
-		if (!repo.MaintainerMode) await updateZipRepo(repo.Name);
-		generateDB();
+		if (repo.MaintainerMode) {
+			if (repo.Git?.URL) updateGitRepo(repo.Name).then(() => generateDB()).catch(() => {
+				logger.warn('Repository was added, but initializing it failed', {service: 'Repo'});
+			});
+		} else {
+			updateZipRepo(repo.Name).then(() => generateDB()).catch(() => {
+				logger.warn('Repository was added, but initializing it failed', {service: 'Repo'});
+			});
+		}
 	}
 	logger.info(`Added ${repo.Name}`, {service: 'Repo'});
 }
@@ -135,16 +146,23 @@ export async function migrateReposToZip() {
 	}
 }
 
-export async function updateAllZipRepos() {
-	const repos = getRepos().filter(r => r.Online && !r.MaintainerMode && r.Enabled);
+export async function updateAllRepos() {
+	const repos = getRepos().filter(r => r.Online && r.Enabled);
 	let doGenerate = false;
 	logger.info('Updating all repositories', {service: 'Repo'});
 	for (const repo of repos) {
 		try {
-			// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
-			if (await updateZipRepo(repo.Name)) doGenerate = true;
+			if (repo.MaintainerMode) {
+				if (repo.Git?.URL) {
+					if (await updateGitRepo(repo.Name)) doGenerate = true;
+				}
+			} else {
+				// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
+				if (await updateZipRepo(repo.Name)) doGenerate = true;
+			}
+
 		} catch(err) {
-			logger.error(`Failed to update zip repository from ${repo.Name}`, {service: 'Repo', object: err});
+			logger.error(`Failed to update repository ${repo.Name}`, {service: 'Repo', obj: err});
 		}
 	}
 	logger.info('Finished updating all repositories', {service: 'Repo'});
@@ -257,49 +275,8 @@ export async function updateZipRepo(name: string) {
 					await writeFullPatchedFiles(JSON.parse(fullFiles.body), repo);
 					changes = computeFileChanges(patch.body);
 				}
-				const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
-				const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
-				const TIDsToDelete = [];
-				const tagPromises = [];
-				for (const match of tagFiles) {
-					if (match.type === 'new') {
-						tagPromises.push(integrateTagFile(resolve(resolvedPathRepos('Tags', name)[0], basename(match.path)), false));
-					} else {
-						// Delete.
-						TIDsToDelete.push(match.uid);
-					}
-				}
-				await Promise.all(tagPromises);
-				const KIDsToDelete = [];
-				const KIDsToUpdate = [];
-				const task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
-				for (const match of karaFiles) {
-					if (match.type === 'new') {
-						KIDsToUpdate.push(await integrateKaraFile(resolve(resolvedPathRepos('Karaokes', name)[0], basename(match.path))));
-					} else {
-						// Delete.
-						KIDsToDelete.push(match.uid);
-					}
-					task.update({value: task.item.value + 1, subtext: match.path});
-				}
-				const deletePromises = [];
-				if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false, {media: true, kara: false}));
-				if (TIDsToDelete.length > 0) {
-					// Let's not remove tags in karas : it's already done anyway
-					deletePromises.push(removeTag(TIDsToDelete, {refresh: false, removeTagInKaras: false, deleteFile: false}));
-				}
-				await Promise.all(deletePromises);
-				task.update({text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0});
-				// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
-				await saveSetting('baseChecksum', await baseChecksum());
+				await applyChanges(changes, repo);
 				await saveSetting(`commit-${repo.Name}`, LatestCommit);
-				if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
-				await Promise.all([
-					updateAllSmartPlaylists(),
-					checkDownloadStatus(KIDsToUpdate)
-				]);
-				task.end();
-				updateRunning = false;
 				return false;
 			} catch (err) {
 				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {service: 'Repo'});
@@ -359,7 +336,258 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 	if (!oldRepo.SendStats && repo.SendStats && DBReady && onlineCheck) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host);
 	}
+	if (repo.Online && !oldRepo.MaintainerMode && repo.MaintainerMode && repo.Git?.URL) {
+		saveSetting(`commit-${name}`, null);
+		updateGitRepo(name).then(() => {
+			if (refresh) generateDB();
+		}).catch(() => {
+			logger.warn('Repository was edited, but updating it failed', {service: 'Repo'});
+		});
+	}
+	if (repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode) {
+		updateZipRepo(name).then(() => {
+			if (refresh) generateDB();
+		});
+	}
+	if (repo.Git) {
+		if (repo.Git.Author !== oldRepo.Git?.Author || repo.Git.Email !== oldRepo.Git?.Email) {
+			const git = await setupGit(repo);
+			await git.configUser(repo.Git.Author, repo.Git.Email);
+		}
+	}
 	logger.info(`Updated ${name}`, {service: 'Repo'});
+}
+
+export async function listRepoStashes(name: string) {
+	const repo = getRepo(name);
+	if (!repo) throw {code: 404};
+	const git = await setupGit(repo);
+	return git.stashList();
+}
+
+export async function unstashInRepo(name: string, stash: number) {
+	const repo = getRepo(name);
+	if (!repo) throw {code: 404};
+	const git = await setupGit(repo);
+	const stashes = await git.stashList();
+	if (stash > stashes.all.length || stash < 0) {
+		throw {message: 'This stash does not exist!', code: 404};
+	}
+	await git.stashPop(stash);
+	if ((await git.status()).conflicted.length > 0) {
+		await git.wipeChanges();
+		throw {message: 'Cannot unstash because of conflicts', code: 500};
+	}
+	const diff = await git.diff();
+	const changes = computeFileChanges(diff);
+	await applyChanges(changes, repo);
+	return true;
+}
+
+export async function dropStashInRepo(name: string, stash: number) {
+	const repo = getRepo(name);
+	if (!repo) throw {code: 404};
+	const git = await setupGit(repo);
+	const stashes = await git.stashList();
+	if (stash > stashes.all.length || stash < 0) {
+		throw {message: 'This stash does not exist!', code: 404};
+	}
+	await git.stashDrop(stash);
+	return true;
+}
+
+export async function resetRepo(name: string) {
+	const repo = getRepo(name);
+	if (!repo) throw {code: 404};
+	const git = await setupGit(repo);
+	return git.reset();
+}
+
+export async function updateGitRepo(name: string) {
+	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
+	updateRunning = true;
+	const repo = getRepo(name);
+	if (!repo.Online || !repo.MaintainerMode) {
+		updateRunning = false;
+		throw 'Repository is not online or is not in Maintainer Mode!';
+	}
+	logger.info(`Update ${repo.Name}: Starting`, {service: 'Repo'});
+	try {
+		const git = await setupGit(repo);
+		if (!await git.isGit()) {
+			logger.debug(`Update ${repo.Name}: not a git repo, cloning now`, {service: 'Repo'});
+			await newGitRepo(repo);
+			await saveSetting('baseChecksum', await baseChecksum());
+			updateRunning = false;
+			return true;
+		} else {
+			logger.debug(`Update ${repo.Name}: is a git repo, pulling`, {service: 'Repo'});
+			await git.fetch();
+			const originalCommit = await git.getCurrentCommit();
+			try {
+				const status = await git.status();
+				if (status.behind === 0) { // Repository is up-to-date
+					logger.debug(`Update ${repo.Name}: repo is up-to-date`, {service: 'Repo'});
+					return false;
+				}
+				if (!status.isClean()) {
+					// Repository is not clean, we'll generate commits and do some magic
+					const push = await generateCommits(repo.Name, true);
+					for (const stash of push.commits) {
+						await git.stash(stash);
+					}
+				}
+				await git.pull();
+				// Once pulled, let's check if we have KM Stashes to
+				const stashes = await git.stashList();
+				const KMStashes = stashes.all.filter(s => s.message.includes('[KMStash]'));
+				// We'll add all stashes to a commit that we'll amend on each stash until we get it right
+				if (KMStashes.length > 0) {
+					let firstCommit = true;
+					let offset = 0;
+					for (const stash of KMStashes) {
+						try {
+							await git.stashPop(stash.id - offset);
+							if ((await git.status()).conflicted.length > 0) {
+								throw 'Cannot unstash: merge conflict';
+							}
+							offset++;
+							await git.addAll();
+							if (firstCommit) {
+								await git.commit('Temp commit');
+								firstCommit = false;
+							} else {
+								await git.commit('Temp commit', { '--amend': null });
+							}
+						} catch (err) {
+							// Stash pop likely failed, we'll leave it be but we need to clean up
+							logger.warn(`Unstashing modification ${stash.id} (${stash.message}) failed`, {
+								service: 'Repo',
+								obj: err
+							});
+							await git.wipeChanges();
+						}
+					}
+					// We cancel the commit we just made so all files in it are now marked as new/modified
+					if (!firstCommit) await git.reset('HEAD~');
+				}
+			} catch(err) {
+				logger.debug(`${repo.Name} pull failed`, {service: 'Repo', obj: err});
+				// This failed miserably because there was a conflict. Or something. We can test this out.
+				const status = await git.status();
+				// Else it means we're having disturbances in the Force.
+				emitWS('gitRepoPullFailed', {
+					...status,
+					repoName: repo.Name
+				});
+				throw 'Pull failed (conflicts)';
+			}
+			const newCommit = await git.getCurrentCommit();
+			const diff = await git.diff(originalCommit, newCommit);
+			const changes = computeFileChanges(diff);
+			await applyChanges(changes, repo);
+			return false;
+		}
+	} catch(err) {
+		logger.error(`Failed to update repo ${repo.Name}: ${err}`, {service: 'Repo', obj: err});
+		sentry.error(err);
+		throw err;
+	} finally {
+		updateRunning = false;
+		logger.info(`Update ${repo.Name}: Finished`, {service: 'Repo'});
+	}
+}
+
+async function applyChanges(changes: Change[], repo: Repository) {
+	const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
+	const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
+	const TIDsToDelete = [];
+	const tagPromises = [];
+	for (const match of tagFiles) {
+		if (match.type === 'new') {
+			tagPromises.push(integrateTagFile(resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)), false));
+		} else {
+			// Delete.
+			TIDsToDelete.push(match.uid);
+		}
+	}
+	await Promise.all(tagPromises);
+	const KIDsToDelete = [];
+	const KIDsToUpdate = [];
+	const task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
+	for (const match of karaFiles) {
+		if (match.type === 'new') {
+			KIDsToUpdate.push(await integrateKaraFile(resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path)), false));
+		} else {
+			// Delete.
+			KIDsToDelete.push(match.uid);
+		}
+		task.update({value: task.item.value + 1, subtext: match.path});
+	}
+	const deletePromises = [];
+	if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false, {media: true, kara: false}));
+	if (TIDsToDelete.length > 0) {
+		// Let's not remove tags in karas : it's already done anyway
+		deletePromises.push(removeTag(TIDsToDelete, {refresh: false, removeTagInKaras: false, deleteFile: false}));
+	}
+	await Promise.all(deletePromises);
+	task.update({text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0});
+	// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
+	await saveSetting('baseChecksum', await baseChecksum());
+	if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
+	await checkDownloadStatus(KIDsToUpdate);
+	await updateAllSmartPlaylists();
+	task.end();
+	updateRunning = false;
+}
+
+export async function checkGitRepoStatus(repoName: string) {
+	const repo = getRepo(repoName);
+	const git = await setupGit(repo);
+	return git.status();
+}
+
+export async function stashGitRepo(repoName: string) {
+	const repo = getRepo(repoName);
+	const git = await setupGit(repo);
+	await git.abortPull();
+	return git.stash();
+}
+
+/** Helper function to setup git in other functions */
+async function setupGit(repo: Repository) {
+	const baseDir = resolve(getState().dataPath, repo.BaseDir);
+	if (!repo.Git) throw 'Git not configured for this repository';
+	const git = new Git({
+		baseDir: baseDir,
+		url: repo.Git.URL,
+		username: repo.Git.Username,
+		password: repo.Git.Password
+	});
+	await git.setup();
+	return git;
+}
+
+export async function newGitRepo(repo: Repository) {
+	//Hello, we're going to lift stuff.
+	//First, let's empty the basedir folder
+	const state = getState();
+	//Only testing first media folder because I'm lazy.
+	const baseDir = resolve(state.dataPath, repo.BaseDir);
+	const mediaDir = resolve(state.dataPath, repo.Path.Medias[0]);
+	if (pathIsContainedInAnother(baseDir, mediaDir)) throw 'Media folder is contained in base dir, move it first!';
+	await remove(baseDir);
+	await asyncCheckOrMkdir(baseDir);
+	const git = await setupGit(repo);
+	await git.clone();
+	git.setRemote().catch();
+	if (repo.AutoMediaDownloads === 'all') updateMedias(repo.Name).catch(e => {
+		if (e?.code === 409) {
+			// Do nothing. It's okay.
+		} else {
+			throw e;
+		}
+	});
 }
 
 export async function compareLyricsChecksums(repo1Name: string, repo2Name: string): Promise<DifferentChecksumReport[]> {
@@ -537,4 +765,352 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 export async function getRepoFreeSpace(repoName: string) {
 	const repo = getRepo(repoName);
 	return getFreeSpace(resolve(getState().dataPath, repo.Path.Medias[0]));
+}
+
+export async function generateCommits(repoName: string, ignoreNoMedia = false) {
+	const task = new Task({
+		text: 'PREPARING_CHANGES',
+		value: 0,
+		total: 100
+	});
+	try {
+		const repo = getRepo(repoName);
+		const git = await setupGit(repo);
+		const status = await git.status();
+		const deletedSongs = status.deleted.filter(f => f.endsWith('kara.json'));
+		const deletedTags = status.deleted.filter(f => f.endsWith('tag.json'));
+		const addedSongs = status.not_added.filter(f => f.endsWith('kara.json'));
+		const modifiedSongs = status.modified.filter(f => f.endsWith('kara.json'));
+		let addedTags = status.not_added.filter(f => f.endsWith('tag.json'));
+		let modifiedTags = status.modified.filter(f => f.endsWith('tag.json'));
+		let modifiedLyrics = status.modified.filter(f => f.endsWith('.ass'));
+		let deletedLyrics = status.deleted.filter(f => f.endsWith('.ass'));
+		let addedLyrics = status.not_added.filter(f => f.endsWith('.ass'));
+		let commits: Commit[] = [];
+		// These are to keep track of if files have been renamed or not
+		const deletedTIDFiles = new Map<string, string>();
+		const deletedKIDFiles = new Map<string, string>();
+		const deletedTIDData = new Map<string, TagFile>();
+		const deletedKIDData = new Map<string, KaraFileV4>();
+
+		task.update({
+			total: deletedSongs.length +
+			deletedTags.length +
+			addedSongs.length +
+			modifiedSongs.length +
+			addedTags.length +
+			modifiedTags.length +
+			modifiedLyrics.length +
+			deletedLyrics.length +
+			addedLyrics.length
+		});
+		let modifiedMedias: ModifiedMedia[] = [];
+
+		// Deleted songs
+		// For deleted songs, not much we can do other than delete them from the index and search for associated deleted lyrics.
+		for (const file of deletedSongs) {
+			const song = basename(file, '.kara.json');
+			const commit: Commit = {
+				addedFiles: [],
+				removedFiles: [],
+				message: `:heavy_minus_sign: :loud_sound: Delete ${song}`
+			};
+			// Find out if we have a deleted lyrics as well (we should have one but you never know, it could be a zxx song!)
+			const lyricsFile = deletedLyrics.find(f => basename(f) === `${song}.ass`);
+			if (lyricsFile) {
+				commit.removedFiles.push(lyricsFile);
+			}
+			commit.removedFiles.push(file);
+			deletedLyrics = deletedLyrics.filter(f => f !== lyricsFile);
+			commits.push(commit);
+			// Let's add the song to the deleted KIDs
+			const karaFile = await git.show(`HEAD:${file}`);
+			const karaFileData: KaraFileV4 = JSON.parse(karaFile);
+			deletedKIDFiles.set(karaFileData.data.kid, file);
+			deletedKIDData.set(karaFileData.data.kid, karaFileData);
+			// We're doing a delete of the file
+			modifiedMedias.push({
+				old: karaFileData.medias[0].filename,
+				new: null,
+				commit: commit.message
+			});
+			task.incr();
+		}
+		// Deleted tags
+		for (const file of deletedTags) {
+			const tag = basename(file, '.tag.json');
+			const commit: Commit = {
+				addedFiles: [],
+				removedFiles: [file],
+				message: `:heavy_minus_sign: :label: Delete ${tag}`
+			};
+			commits.push(commit);
+			// Let's add the tag to the deleted TIDs
+			const tagFile = await git.show(`HEAD:${file}`);
+			const tagFileData: TagFile = JSON.parse(tagFile);
+			deletedTIDFiles.set(tagFileData.tag.tid, file);
+			deletedTIDData.set(tagFileData.tag.tid, tagFileData);
+			task.incr();
+		}
+		// Added songs
+		const [karas, tags] = await Promise.all([
+			getAllKaras(),
+			getTags({})
+		]);
+		for (const file of addedSongs) {
+			const song = basename(file, '.kara.json');
+			const commit: Commit = {
+				addedFiles: [file],
+				removedFiles: [],
+				message: `:heavy_plus_sign: :loud_sound: Add ${song}`
+			};
+			// We need to find out if some tags have been added or modified and add them to our commit
+			const kara = karas.content.find(k => k.karafile === basename(file));
+			if (!kara) {
+				logger.warn(`File "${file}" does not seem to be in database? Skipping`, {service: 'Repo'});
+				continue;
+			}
+			// Let's check if the kara has been renamed and is actually a modified kara.
+			let oldMediaFile = null;
+			let sizeDifference = null;
+			const oldKaraFile = deletedKIDFiles.get(kara.kid);
+			if (oldKaraFile) {
+				// If an oldKarafile is present, then this is a rename.
+				// We have to determine if the media has also been simply renamed or we need to reupload it.
+				const oldMediaSize = deletedKIDData.get(kara.kid).medias[0].filesize;
+				const newMediaSize = kara.mediasize;
+				if (oldMediaSize !== newMediaSize) {
+					// By default this is going to be the same as a rename but with sizeDifference set to true so the ftp is forced to delete the old file and reupload the new one
+					oldMediaFile = kara.mediafile;
+					sizeDifference = true;
+				}
+				if (oldKaraFile !== file) {
+					// This is actually modified kara.
+					commit.message = `:pencil2: :loud_sound: Modify ${song}`;
+					// Let's remove the commit containing our song deletion and add the deletion in this commit
+					commits = commits.filter(c => !c.removedFiles.includes(oldKaraFile));
+					commit.removedFiles = [oldKaraFile];
+					// If the karafile has been modified, chances are the media has been as well.
+					oldMediaFile = deletedKIDData.get(kara.kid).medias[0].filename;
+					// We need to remove from modifiedMedias our delete
+					modifiedMedias = modifiedMedias.filter(m => m.new === null && m.old === oldMediaFile);
+				}
+			}
+			// If oldMediaFile is still null, this is a new media that will be pushed later to the FTP.
+			modifiedMedias.push({
+				old: oldMediaFile,
+				new: kara.mediafile,
+				sizeDifference,
+				commit: commit.message
+			});
+			for (const tid of kara.tid) {
+				const tagfile = tags.content.find(t => t.tid === tid.split('~')[0]).tagfile;
+				const addedTag = addedTags.find(f => basename(f) === tagfile);
+				if (addedTag) {
+					commit.addedFiles.push(addedTag);
+					addedTags = addedTags.filter(f => basename(f) !== tagfile);
+				}
+				// Let's do the same for modified tags. For example if a new song uses a tag previously used else where in another category, then the tag has been modified and should be added with the kara
+				const modifiedTag = modifiedTags.find(f => basename(f) === tagfile);
+				if (modifiedTag) {
+					commit.addedFiles.push(modifiedTag);
+					modifiedTags = modifiedTags.filter(f => basename(f) !== tagfile);
+				}
+			}
+			if (kara.subfile) {
+				const lyricsFile = addedLyrics.find(f => basename(f) === kara.subfile);
+				addedLyrics = addedLyrics.filter(f => f !== lyricsFile);
+				commit.addedFiles.push(lyricsFile);
+			}
+			commits.push(commit);
+			task.incr();
+		}
+		// Modified songs
+		for (const file of modifiedSongs) {
+			const song = basename(file, '.kara.json');
+			const commit: Commit = {
+				addedFiles: [file],
+				removedFiles: [],
+				message: `:pencil2: :loud_sound: Update ${song}`
+			};
+			// Modified songs can be ernamed so we need to find out how it was named before
+			// We need to find out if some tags have been added or modified and add them to our commit
+			const kara = karas.content.find(k => k.karafile === basename(file));
+			if (!kara) {
+				logger.warn(`File "${file}" does not seem to be in database? Skipping`, {service: 'Repo'});
+				continue;
+			}
+			const oldKaraFile = await git.show(`HEAD:${file}`);
+			const oldKara: KaraFileV4 = JSON.parse(oldKaraFile);
+			// Let's check if the kara has a renamed media file or media size.
+			// For example a format change which does not change its basename but its extension.
+			if (oldKara.medias[0].filename !== kara.mediafile) {
+				// This is a simple rename
+				modifiedMedias.push({
+					old: oldKara.medias[0].filename,
+					new: kara.mediafile,
+					sizeDifference: oldKara.medias[0].filesize === kara.mediasize,
+					commit: commit.message
+				});
+			} else {
+				// Names are the same, but filesizes might differ. In that case it's considered a new upload
+				if (oldKara.medias[0].filesize !== kara.mediasize) {
+					modifiedMedias.push({
+						old: null,
+						new: kara.mediafile,
+						commit: commit.message
+					});
+				}
+				// If filesizes are the same, no medias are pushed to the ftp
+			}
+
+			for (const tid of kara.tid) {
+				const tag = tags.content.find(t => t.tid === tid.split('~')[0]);
+				const tagfile = tag.tagfile;
+				const addedTag = addedTags.find(f => basename(f) === tagfile);
+				if (addedTag) {
+					commit.addedFiles.push(addedTag);
+					addedTags = addedTags.filter(f => basename(f) !== tagfile);
+				}
+				// Let's do the same for modified tags. For example if a new song uses a tag previously used else where in another category, then the tag has been modified and should be added with the kara
+				const modifiedTag = modifiedTags.find(f => basename(f) === tagfile);
+				if (modifiedTag) {
+					commit.addedFiles.push(modifiedTag);
+					modifiedTags = modifiedTags.filter(f => basename(f) !== tagfile);
+				}
+			}
+			if (kara.subfile) {
+				// For modified songs, we check first for added lyrics, then for modified lyrics.
+				let lyricsFile = addedLyrics.find(f => basename(f) === kara.subfile);
+				if (lyricsFile) {
+					addedLyrics = addedLyrics.filter(f => f !== lyricsFile);
+					commit.addedFiles.push(lyricsFile);
+				} else {
+					// Checking modified lyrics. If none is found then lyrics have not been modified
+					lyricsFile = modifiedLyrics.find(f => basename(f) === kara.subfile);
+					if (lyricsFile) {
+						modifiedLyrics = modifiedLyrics.filter(f => f !== lyricsFile);
+						commit.addedFiles.push(lyricsFile);
+					}
+				}
+			}
+			commits.push(commit);
+			task.incr();
+		}
+		// Added Tags
+		for (const file of addedTags) {
+			const tag = basename(file, '.tag.json');
+			const commit: Commit = {
+				addedFiles: [file],
+				removedFiles: [],
+				message: `:heavy_plus_sign: :label: Add ${tag}`
+			};
+			commits.push(commit);
+			task.incr();
+		}
+		// Modified Tags
+		for (const file of modifiedTags) {
+			const tag = basename(file, '.tag.json');
+			const commit: Commit = {
+				addedFiles: [file],
+				removedFiles: [],
+				message: `:pencil2: :label: Modify ${tag}`
+			};
+			commits.push(commit);
+			task.incr();
+		}
+		// Modified lyrics (they don't trigger modified songs)
+		for (const file of modifiedLyrics) {
+			const lyrics = basename(file, '.ass');
+			const commit: Commit = {
+				addedFiles: [file],
+				removedFiles: [],
+				message: `:pencil2: :pencil: Modify ${lyrics}`
+			};
+			commits.push(commit);
+			task.incr();
+		}
+		// Deleted lyrics (you never know)
+		for (const file of deletedLyrics) {
+			const lyrics = basename(file, '.ass');
+			const commit: Commit = {
+				addedFiles: [],
+				removedFiles: [file],
+				message: `:heavy_minus_sign: :pencil: Delete ${lyrics}`
+			};
+			commits.push(commit);
+			task.incr();
+		}
+
+		// [nomedia] detection
+		logger.debug(`Preparing ${commits.length} commits`, {service: 'Repo', obj: commits});
+		logger.debug(`You have ${modifiedMedias.length} modified medias`, {service: 'Repo', obj: modifiedMedias});
+		if (commits.length === 0) return;
+		if (modifiedMedias.length === 0 && !ignoreNoMedia) {
+			commits[commits.length-1].message += ' [nomedia]';
+		}
+		return {commits, modifiedMedias};
+	} catch(err) {
+		logger.error('Failed to prepare commits', {service: 'Repo', obj: err});
+		sentry.error(err);
+		throw err;
+	} finally {
+		task.end();
+	}
+}
+
+/** Commit and Push all modifications */
+export async function pushCommits(repoName: string, push: Push, ignoreFTP?: boolean) {
+	const repo = getRepo(repoName);
+	const git = await setupGit(repo);
+	if (!ignoreFTP && push.modifiedMedias.length > 0) {
+		// Before making any commits, we have to send stuff via FTP
+		const ftp = new FTP({repoName: repoName});
+		await ftp.connect();
+		for (const media of push.modifiedMedias) {
+			// New or updated file
+			if (media.old === null || media.old === media.new) {
+				const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
+				await ftp.upload(path[0]);
+			} else if (media.new === null) {
+				// Deleted file
+				await ftp.delete(media.old);
+			} else if (media.new !== media.old) {
+				// Renamed file or new upload with different sizes, let's find out!
+				if (media.sizeDifference) {
+					const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
+					await ftp.upload(path[0]);
+					await ftp.delete(media.old);
+				} else {
+					await ftp.rename(basename(media.old), basename(media.new));
+				}
+			}
+		}
+		await ftp.disconnect();
+	}
+	// Let's work on our commits
+	const task = new Task({
+		text: 'COMMITING_CHANGES',
+		total: push.commits.length
+	});
+	try {
+		for (const commit of push.commits) {
+			if (commit.addedFiles) for (const addedFile of commit.addedFiles) {
+				await git.add(addedFile);
+			}
+			if (commit.removedFiles) for (const removedFile of commit.removedFiles) {
+				await git.rm(removedFile);
+			}
+			await git.commit(commit.message);
+			task.incr();
+		}
+	} catch(err) {
+		throw err;
+	} finally {
+		task.end();
+	}
+
+	// All our commits are hopefully done.
+	await git.push();
+	emitWS('pushComplete', repoName);
 }

@@ -686,7 +686,21 @@
         "CLASSIC_MODE": {
             "TITLE": "C'est à vous de chanter !",
             "TEXT": "Appuyez sur le bouton PLAY pour lancer votre chanson."
-        }
+        },
+		"GIT_DANGEROUS": {
+			"TITLE": "Actions dangereuses",
+			"DESCRIPTION": "Bienvenue dans le carrefour des actions dangereuses. Il paraît qu'on peut y causer des catastrophes. Voici un rappel rapide des fichiers dont une modification a été détectée :",
+			"STASH": {
+				"BTN": "Remiser les modifications",
+				"DESC": "Mettre de côté les modifications pour pouvoir les ressortir plus tard."
+			},
+			"RESET": {
+				"BTN": "Réinitialiser",
+				"DESC": "Supprimer toutes vos modifications non poussées."
+			},
+			"DONE": "Tâche effectuée avec succès.",
+			"EMPTY": "Aucun fichier !"
+		}
     },
     "SETUP_PAGE": {
         "TITLE": "Assistant de démarrage",
@@ -695,7 +709,7 @@
         "ACCOUNT_QUESTION": "Voulez-vous utiliser un compte local (limité à votre ordinateur) ou un compte en ligne (nécessitant Internet) ?",
         "LOCAL_ACCOUNT": "Compte local",
         "ONLINE_ACCOUNT": "Compte en ligne",
-        "ONLINE_ACCOUNT_DESC": "Le compte en ligne permet de :",
+        "ONLINE_ACCOUNT_DESC": "Le compte en ligne permet de :",
         "ONLINE_ACCOUNT_SAVE_INFOS": "Enregistrer vos favoris, avatar et informations de profil pour les retrouver d'un ordinateur à l'autre.",
         "ONLINE_ACCOUNT_LOST_PASSWORD": "Si vous indiquez votre email, vous pourrez retrouver votre mot de passe perdu.",
         "LOCAL_ACCOUNT_DESC": "Vous avez choisi un compte local. Indiquez un nom de compte et un mot de passe ci-dessous :",
@@ -744,7 +758,6 @@
     "ADD": "Ajout",
     "SEARCH_FILTER": "Filtre de recherche",
     "REFRESH": "Actualiser",
-    "REFRESHING_DATA": "Rafraichissement des données…",
     "CONFIRM_SURE": "Êtes-vous sûr ?",
     "ACTION": "Action",
     "KARA": {
@@ -853,6 +866,7 @@
         "VIEWCOUNTS": "Plus joués",
         "TAGS": "Tags",
         "DATABASE": "Base de données",
+		"GIT": "Git",
         "USERS": "Utilisateurs",
         "UNUSED_FILES": "Fichiers inutilisés",
         "DUPLICATE": "Dupliqués",
@@ -1078,7 +1092,37 @@
         "STORAGE_INFO": "Il existe plusieurs moyens de gérer l'espace occupé par vos dépôts :",
         "STORAGE_INFO_DELETE": "Comme présenté plus haut, vous avez la possibilité de retirer les médias soit inutilisés depuis 1 mois ou tous les médias. Ils seront retéléchargés au besoin mais cela permet de libérer de la place si vous avez fait un gros karaoké récemment par exemple.",
         "STORAGE_INFO_MOVE": "Vous avez aussi la possibilité, dans la page de gestion des dépôts, de déplacer les fichiers du dépôt ailleurs sur un disque externe, une clé USB ou un point de partage réseau, ceci afin de libérer votre disque principal.",
-        "NO_FREE_SPACE": "Plus assez d'espace disque pour télécharger ! Faites de la place sur votre disque dur et relancez la file d'attente."
+        "NO_FREE_SPACE": "Plus assez d'espace disque pour télécharger ! Faites de la place sur votre disque dur et relancez la file d'attente.",
+		"GIT": {
+			"URL": "Dépôt Git",
+			"USERNAME": "Nom d'utilisateur Git",
+			"PASSWORD": "Mot de passe Git (ou Token Gitlab/Github)",
+			"AUTHOR": "Identité Git",
+			"EMAIL": "E-Mail Git"
+		},
+		"FTP": {
+			"HOST": "Hôte FTP",
+			"PORT": "Port FTP",
+			"USERNAME": "Nom d'utilisateur FTP",
+			"PASSWORD": "Mot de passe FTP",
+			"BASEDIR": "Répertoire base FTP"
+		},
+		"GIT_STATUS": "Statut Git",
+		"GIT_STATUSES": {
+			"CLEAN": "Copie propre",
+			"MODIFIED": "Modifié (changements à pousser)",
+			"CONFLICT": "Conflits en attente (utilisez le résolveur)"
+		},
+		"GIT_NOTHING_TO_PUSH": "Il n'y a rien à pousser.",
+		"GIT_ACTIONS": "Actions",
+		"GIT_DANGEROUS": "Actions dangereuses",
+		"GIT_PUSH": "Pousser",
+		"GIT_PULL": "Tirer",
+		"GIT_CONFIRM_PUSH": "Pousser les changements suivants ?",
+		"GIT_STASHLIST": "Remises",
+		"GIT_STASH": "Vous avez des entrées de remisage à appliquer, elles sont créées automatiquement lorsqu'il y a des conflits de fusion. Vous pouvez essayer des les restaurer ou les supprimer. Vous devriez regarder le <1>dépôt Git</1> pour voir les modifications qui ont créées les conflits.",
+		"GIT_UNSTASH": "Appliquer",
+		"GIT_DELETE": "Supprimer"
     },
     "HOME": {
         "SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
@@ -1141,7 +1185,11 @@
         "ANALYZING_WORKDIR": "Analyse du répertoire de travail",
         "UPDATING_GIT_REPO": "Mise à jour du dépôt {{data}}",
         "DOWNLOADING_ZIP": "Téléchargement de la base de données",
-        "EXTRACTING_ZIP": "Extraction de la base de données"
+        "EXTRACTING_ZIP": "Extraction de la base de données",
+		"COMMITING_CHANGES": "Inscription des modifications",
+		"PREPARING_CHANGES": "Préparation des modifications",
+        "REFRESHING_DATA": "Rafraichissement des données…",
+        "UPLOADING_FTP": "Envoi sur le FTP…"
     },
     "ERROR_CODES": {
         "WEBAPPMODE_CLOSED_API_MESSAGE": "L'API est désactivé pour le moment",
@@ -1231,6 +1279,14 @@
         "REPO_EDIT_ERROR": "Erreur lors de la modification du dépôt",
         "REPO_GET_UNUSEDTAGS_ERROR": "Erreur lors de la récupération des tags inutilisés",
         "REPO_GET_UNUSEDMEDIA_ERROR": "Erreur lors de la récupération des médias inutilisés",
+		"REPO_GIT_CHECK_ERROR": "Impossible de vérifier l'état du dépôt",
+		"REPO_GIT_ABORT_ERROR": "Impossible d'abandonner le merge",
+		"REPO_GIT_STASH_ERROR": "Impossible de mettre de côté les modifications",
+		"REPO_GIT_UNSTASH_ERROR": "Impossible d'appliquer les modifications",
+		"REPO_GIT_UPDATE_ERROR": "Impossible de mettre à jour le dépôt git",
+		"REPO_GIT_GET_COMMITS_ERROR": "Impossible de préparer les commits",
+		"REPO_GIT_PUSH_ERROR": "Impossible d'envoyer les commits",
+		"REPO_GIT_RESET_ERROR": "Impossible de réinitialiser le dépôt",
         "SESSION_LIST_ERROR": "Erreur lors de la récupération de la liste des sessions",
         "SESSION_CREATION_ERROR": "Erreur lors de la création de la session",
         "SESSION_MERGE_ERROR": "Erreur lors de la fusion des sessions",
@@ -1382,6 +1438,10 @@
             "TITLE": "Base de données",
             "DESCRIPTION": "Outils de gestion de la base de données. Database, database, just living in the database wow wow."
         },
+		"GIT": {
+			"TITLE": "Intégration Git",
+			"DESCRIPTION": "Gérer les dépôts Git (pousser, fusionner les conflits)"
+		},
         "KARAOKE_LIST": {
             "TITLE": "Liste des karaokés",
             "DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés."

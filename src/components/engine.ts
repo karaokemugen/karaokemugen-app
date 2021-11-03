@@ -27,7 +27,7 @@ import { buildAllMediasList,updatePlaylistMedias } from '../services/medias';
 import {initPlayer, quitmpv} from '../services/player';
 import {initPlaylistSystem} from '../services/playlist';
 import { initRemote } from '../services/remote';
-import { checkDownloadStatus, updateAllZipRepos } from '../services/repo';
+import { checkDownloadStatus, updateAllRepos } from '../services/repo';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
 import { initUserSystem } from '../services/user';
@@ -110,7 +110,7 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DB'));
 			await initDBSystem();
 			initStep(i18n.t('INIT_BASEUPDATE'));
-			await updateAllZipRepos();
+			await updateAllRepos();
 			logger.info('Done updating karaoke base', {service: 'Engine'});
 			await exit(0);
 		} catch (err) {
@@ -192,7 +192,7 @@ export async function initEngine() {
 			}
 			// If we are testing, we're awaiting updateAllGitRepos
 			if (state.isTest) {
-				await updateAllZipRepos();
+				await updateAllRepos();
 			}
 			if (state.isTest && !state.opt.noAutoTest) {
 				runTests();
@@ -206,20 +206,14 @@ export async function initEngine() {
 					buildAllMediasList().catch(() => {});
 				}
 			}
-			if (!state.isTest && !conf.App.FirstRun && internet) {
-				updateAllZipRepos();
-			}
-			createImagePreviews(await getKaras({
-				q: 'm:downloaded'
-			}), 'single');
+			// Update everything kara-related
+			updateBase(internet);
 			// Mark all migrations as done for the first run to avoid the user to have to do all the migrations from start
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
-			initFetchPopularSongs();
 			setState({ ready: true });
 			writeStreamFiles();
 			initStep(i18n.t('INIT_DONE'), true);
 			postInit();
-			checkDownloadStatus();
 			initHooks();
 			logger.info(`Karaoke Mugen is ${ready}`, {service: 'Engine'});
 		} catch(err) {
@@ -230,6 +224,19 @@ export async function initEngine() {
 			profile('Init');
 		}
 	}
+}
+
+export async function updateBase(internet: boolean) {
+	const state = getState();
+	const conf = getConfig();
+	if (!state.isTest && !conf.App.FirstRun && internet) {
+		await updateAllRepos();
+	}
+	initFetchPopularSongs();
+	await checkDownloadStatus();
+	createImagePreviews(await getKaras({
+		q: 'm:downloaded'
+	}), 'single');
 }
 
 export async function exit(rc = 0, update = false) {

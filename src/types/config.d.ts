@@ -40,6 +40,7 @@ export interface Config {
 		},
 		ShowAvatarsOnPlaylist?: boolean
 	},
+	// This is needed still for KM Server so we keep this in config type
 	Gitlab?: {
 		Enabled?: boolean,
 		Host?: string,

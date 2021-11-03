@@ -3,7 +3,28 @@ import { Socket } from 'socket.io';
 
 import { APIData } from '../../lib/types/api';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { addRepo, compareLyricsChecksums, copyLyricsRepo,deleteMedias,editRepo, findUnusedMedias, findUnusedTags, getRepo, getRepoFreeSpace, getRepos, movingMediaRepo, removeRepo, updateAllZipRepos } from '../../services/repo';
+import {
+	addRepo,
+	checkGitRepoStatus,
+	compareLyricsChecksums,
+	copyLyricsRepo,
+	deleteMedias, dropStashInRepo,
+	editRepo,
+	findUnusedMedias,
+	findUnusedTags,
+	generateCommits,
+	getRepo,
+	getRepoFreeSpace,
+	getRepos,
+	listRepoStashes,
+	movingMediaRepo,
+	pushCommits,
+	removeRepo, resetRepo,
+	stashGitRepo,
+	unstashInRepo,
+	updateAllRepos,
+	updateGitRepo
+} from '../../services/repo';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -157,10 +178,109 @@ export default function repoController(router: SocketIOApp) {
 			throw {code: err?.code || 500, message: APIMessage(code)};
 		}
 	});
-	router.route('updateAllZipRepos', async (socket: Socket, req: APIData) => {
+	router.route('updateAllRepos', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
-		updateAllZipRepos().catch(err => {
+		try {
+			updateAllRepos();
+		} catch(err) {
 			errMessage(err);
-		});		
+		}
+	});
+
+	router.route('updateRepo', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			await updateGitRepo(req.body.repoName);
+		} catch(err) {
+			const code = 'REPO_GIT_UPDATE_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('stashRepo', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			await stashGitRepo(req.body.repoName);
+		} catch(err) {
+			const code = 'REPO_GIT_STASH_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('checkRepo', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return await checkGitRepoStatus(req.body.repoName);
+		} catch(err) {
+			const code = 'REPO_GIT_CHECK_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('listRepoStashes', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return await listRepoStashes(req.body.repoName);
+		} catch(err) {
+			const code = 'REPO_GIT_CHECK_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('popStash', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return await unstashInRepo(req.body.repoName, req.body.stashId);
+		} catch(err) {
+			const code = 'REPO_GIT_UNSTASH_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('dropStash', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return await dropStashInRepo(req.body.repoName, req.body.stashId);
+		} catch(err) {
+			const code = 'REPO_GIT_UNSTASH_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+
+	router.route('resetRepo', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			await resetRepo(req.body.repoName);
+		} catch(err) {
+			const code = 'REPO_GIT_RESET_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('getCommits', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return await generateCommits(req.body.repoName);
+		} catch(err) {
+			const code = 'REPO_GIT_GET_COMMITS_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
+	});
+	router.route('pushCommits', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			pushCommits(req.body.repoName, req.body.commits);
+		} catch(err) {
+			const code = 'REPO_GIT_PUSH_ERROR';
+			errMessage(code, err);
+			throw {code: err?.code || 500, message: APIMessage(code)};
+		}
 	});
 }

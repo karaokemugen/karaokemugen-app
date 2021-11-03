@@ -12,6 +12,7 @@ import { getConfig } from '../lib/utils/config';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
+import { getPublicConfig } from '../utils/config';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getSessions } from './session';
@@ -99,11 +100,7 @@ async function buildInstanceStats(minimal: boolean) {
 	if (minimal) {
 		conf = { minimal: true };
 	} else {
-		conf = cloneDeep(getConfig());
-		// Delete sensitive info
-		delete conf.App.JwtSecret;
-		delete conf.System.Database;
-		if (conf.Karaoke.StreamerMode.Twitch.OAuth) delete conf.Karaoke.StreamerMode.Twitch.OAuth;
+		conf = cloneDeep(getPublicConfig());
 		const [cpu, mem, gfx, os, disks] = await Promise.all([
 			si.cpu(),
 			si.mem(),
