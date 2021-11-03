@@ -224,6 +224,7 @@
         }
     },
     "PREPARING_COMMITS": "Préparation des modifications",
-    "OFFICIAL_WEBSITE": "Site officiel",
+	"COMMITING_CHANGES": "Réalisation des modifications",
+	"OFFICIAL_WEBSITE": "Site officiel",
     "SUGGEST_SONGS": "Suggérer des chansons !"
 }
