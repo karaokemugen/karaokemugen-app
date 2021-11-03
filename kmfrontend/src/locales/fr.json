@@ -687,20 +687,20 @@
             "TITLE": "C'est à vous de chanter !",
             "TEXT": "Appuyez sur le bouton PLAY pour lancer votre chanson."
         },
-		"GIT_DANGEROUS": {
-			"TITLE": "Actions dangereuses",
-			"DESCRIPTION": "Bienvenue dans le carrefour des actions dangereuses. Il paraît qu'on peut y causer des catastrophes. Voici un rappel rapide des fichiers dont une modification a été détectée :",
-			"STASH": {
-				"BTN": "Remiser les modifications",
-				"DESC": "Mettre de côté les modifications pour pouvoir les ressortir plus tard."
-			},
-			"RESET": {
-				"BTN": "Réinitialiser",
-				"DESC": "Supprimer toutes vos modifications non poussées."
-			},
-			"DONE": "Tâche effectuée avec succès.",
-			"EMPTY": "Aucun fichier !"
-		}
+        "GIT_DANGEROUS": {
+            "TITLE": "Actions dangereuses",
+            "DESCRIPTION": "Bienvenue dans le carrefour des actions dangereuses. Il paraît qu'on peut y causer des catastrophes. Voici un rappel rapide des fichiers dont une modification a été détectée :",
+            "STASH": {
+                "BTN": "Remiser les modifications",
+                "DESC": "Mettre de côté les modifications pour pouvoir les ressortir plus tard."
+            },
+            "RESET": {
+                "BTN": "Réinitialiser",
+                "DESC": "Supprimer toutes vos modifications non poussées."
+            },
+            "DONE": "Tâche effectuée avec succès.",
+            "EMPTY": "Aucun fichier !"
+        }
     },
     "SETUP_PAGE": {
         "TITLE": "Assistant de démarrage",
@@ -845,9 +845,9 @@
         "MISSING_DOWNLOAD_TOOLTIP": "Ce karaoké n'est pas téléchargé, il vous faudra Internet pour le jouer. Vous pouvez cliquer sur Télécharger le média pour l'utiliser hors-ligne.",
         "IN_PROGRESS_DOWNLOAD_TOOLTIP": "Téléchargement en cours",
         "ONLINE_REPOSITORIES": "Certains de vos karaokés proviennent de dépôts distants (le serveur kara.moe par exemple), ces karaokés ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des karaokés mais vous serez en mesure de les modifier ou les supprimer.",
-		"PARENTS": "Parents",
-		"PARENTS_TOOLTIP": "Si un parent est défini, ce karaoké apparaîtra comme une alternative au(x) kara(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des karaokés d'autre dépôts."
-	},
+        "PARENTS": "Parents",
+        "PARENTS_TOOLTIP": "Si un parent est défini, ce karaoké apparaîtra comme une alternative au(x) kara(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des karaokés d'autre dépôts."
+    },
     "MENU": {
         "HOME": "Home",
         "SYSTEM": "Système",
@@ -866,7 +866,7 @@
         "VIEWCOUNTS": "Plus joués",
         "TAGS": "Tags",
         "DATABASE": "Base de données",
-		"GIT": "Git",
+        "GIT": "Git",
         "USERS": "Utilisateurs",
         "UNUSED_FILES": "Fichiers inutilisés",
         "DUPLICATE": "Dupliqués",
@@ -970,7 +970,7 @@
         "AUTHORS_one": "Auteur de karaokés",
         "AUTHORS_other": "Auteurs de karaokés",
         "MISC_one": "Divers",
-		"MISC_other": "Divers",
+        "MISC_other": "Divers",
         "SONGWRITERS_one": "Compositeur",
         "SONGWRITERS_other": "Compositeurs",
         "GROUPS_one": "Groupe",
@@ -1008,7 +1008,7 @@
             "ONLINE_ERRORTRACKING": "Envoi des rapports d'erreurs (via sentry.io)",
             "ONLINE_STATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Server",
             "PLAYER_KEYBOARDMEDIASHORTCUTS": "Piloter le lecteur avec les touches média du clavier",
-			"PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Désactivez si vous voulez que ces touches contrôlent une autre application (iTunes, foobar, etc.)",
+            "PLAYER_KEYBOARDMEDIASHORTCUTS_TOOLTIP": "Désactivez si vous voulez que ces touches contrôlent une autre application (iTunes, foobar, etc.)",
             "PLAYER_HARDWAREDECODING": "Décodage matériel des vidéos",
             "PLAYER_HARDWAREDECODING_TOOLTIP": "Force ou non le décodage matériel du lecteur vidéo. Attention : sur certaines configurations, il se peut que cela pose des problèmes de lecture vidéo. En cas de soucis, passez l'option à \"Désactivé\". Le réglage \"Automatique\" est le plus sûr et \"Forcer\" pas du tout recommandé.",
             "PLAYER_HARDWAREDECODING_OPTIONS": {
@@ -1093,36 +1093,36 @@
         "STORAGE_INFO_DELETE": "Comme présenté plus haut, vous avez la possibilité de retirer les médias soit inutilisés depuis 1 mois ou tous les médias. Ils seront retéléchargés au besoin mais cela permet de libérer de la place si vous avez fait un gros karaoké récemment par exemple.",
         "STORAGE_INFO_MOVE": "Vous avez aussi la possibilité, dans la page de gestion des dépôts, de déplacer les fichiers du dépôt ailleurs sur un disque externe, une clé USB ou un point de partage réseau, ceci afin de libérer votre disque principal.",
         "NO_FREE_SPACE": "Plus assez d'espace disque pour télécharger ! Faites de la place sur votre disque dur et relancez la file d'attente.",
-		"GIT": {
-			"URL": "Dépôt Git",
-			"USERNAME": "Nom d'utilisateur Git",
-			"PASSWORD": "Mot de passe Git (ou Token Gitlab/Github)",
-			"AUTHOR": "Identité Git",
-			"EMAIL": "E-Mail Git"
-		},
-		"FTP": {
-			"HOST": "Hôte FTP",
-			"PORT": "Port FTP",
-			"USERNAME": "Nom d'utilisateur FTP",
-			"PASSWORD": "Mot de passe FTP",
-			"BASEDIR": "Répertoire base FTP"
-		},
-		"GIT_STATUS": "Statut Git",
-		"GIT_STATUSES": {
-			"CLEAN": "Copie propre",
-			"MODIFIED": "Modifié (changements à pousser)",
-			"CONFLICT": "Conflits en attente (utilisez le résolveur)"
-		},
-		"GIT_NOTHING_TO_PUSH": "Il n'y a rien à pousser.",
-		"GIT_ACTIONS": "Actions",
-		"GIT_DANGEROUS": "Actions dangereuses",
-		"GIT_PUSH": "Pousser",
-		"GIT_PULL": "Tirer",
-		"GIT_CONFIRM_PUSH": "Pousser les changements suivants ?",
-		"GIT_STASHLIST": "Remises",
-		"GIT_STASH": "Vous avez des entrées de remisage à appliquer, elles sont créées automatiquement lorsqu'il y a des conflits de fusion. Vous pouvez essayer des les restaurer ou les supprimer. Vous devriez regarder le <1>dépôt Git</1> pour voir les modifications qui ont créées les conflits.",
-		"GIT_UNSTASH": "Appliquer",
-		"GIT_DELETE": "Supprimer"
+        "GIT": {
+            "URL": "Dépôt Git",
+            "USERNAME": "Nom d'utilisateur Git",
+            "PASSWORD": "Mot de passe Git (ou Token Gitlab/Github)",
+            "AUTHOR": "Identité Git",
+            "EMAIL": "E-Mail Git"
+        },
+        "FTP": {
+            "HOST": "Hôte FTP",
+            "PORT": "Port FTP",
+            "USERNAME": "Nom d'utilisateur FTP",
+            "PASSWORD": "Mot de passe FTP",
+            "BASEDIR": "Répertoire base FTP"
+        },
+        "GIT_STATUS": "Statut Git",
+        "GIT_STATUSES": {
+            "CLEAN": "Copie propre",
+            "MODIFIED": "Modifié (changements à pousser)",
+            "CONFLICT": "Conflits en attente (utilisez le résolveur)"
+        },
+        "GIT_NOTHING_TO_PUSH": "Il n'y a rien à pousser.",
+        "GIT_ACTIONS": "Actions",
+        "GIT_DANGEROUS": "Actions dangereuses",
+        "GIT_PUSH": "Pousser",
+        "GIT_PULL": "Tirer",
+        "GIT_CONFIRM_PUSH": "Pousser les changements suivants ?",
+        "GIT_STASHLIST": "Remises",
+        "GIT_STASH": "Vous avez des entrées de remisage à appliquer, elles sont créées automatiquement lorsqu'il y a des conflits de fusion. Vous pouvez essayer des les restaurer ou les supprimer. Vous devriez regarder le <1>dépôt Git</1> pour voir les modifications qui ont créées les conflits.",
+        "GIT_UNSTASH": "Appliquer",
+        "GIT_DELETE": "Supprimer"
     },
     "HOME": {
         "SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
@@ -1186,8 +1186,8 @@
         "UPDATING_GIT_REPO": "Mise à jour du dépôt {{data}}",
         "DOWNLOADING_ZIP": "Téléchargement de la base de données",
         "EXTRACTING_ZIP": "Extraction de la base de données",
-		"COMMITING_CHANGES": "Réalisation des modifications",
-		"PREPARING_CHANGES": "Préparation des modifications",
+        "COMMITING_CHANGES": "Réalisation des modifications",
+        "PREPARING_CHANGES": "Préparation des modifications",
         "REFRESHING_DATA": "Rafraichissement des données…",
         "UPLOADING_FTP": "Envoi sur le FTP…"
     },
@@ -1279,14 +1279,14 @@
         "REPO_EDIT_ERROR": "Erreur lors de la modification du dépôt",
         "REPO_GET_UNUSEDTAGS_ERROR": "Erreur lors de la récupération des tags inutilisés",
         "REPO_GET_UNUSEDMEDIA_ERROR": "Erreur lors de la récupération des médias inutilisés",
-		"REPO_GIT_CHECK_ERROR": "Impossible de vérifier l'état du dépôt",
-		"REPO_GIT_ABORT_ERROR": "Impossible d'abandonner le merge",
-		"REPO_GIT_STASH_ERROR": "Impossible de mettre de côté les modifications",
-		"REPO_GIT_UNSTASH_ERROR": "Impossible d'appliquer les modifications",
-		"REPO_GIT_UPDATE_ERROR": "Impossible de mettre à jour le dépôt git",
-		"REPO_GIT_GET_COMMITS_ERROR": "Impossible de préparer les commits",
-		"REPO_GIT_PUSH_ERROR": "Impossible d'envoyer les commits",
-		"REPO_GIT_RESET_ERROR": "Impossible de réinitialiser le dépôt",
+        "REPO_GIT_CHECK_ERROR": "Impossible de vérifier l'état du dépôt",
+        "REPO_GIT_ABORT_ERROR": "Impossible d'abandonner le merge",
+        "REPO_GIT_STASH_ERROR": "Impossible de mettre de côté les modifications",
+        "REPO_GIT_UNSTASH_ERROR": "Impossible d'appliquer les modifications",
+        "REPO_GIT_UPDATE_ERROR": "Impossible de mettre à jour le dépôt git",
+        "REPO_GIT_GET_COMMITS_ERROR": "Impossible de préparer les commits",
+        "REPO_GIT_PUSH_ERROR": "Impossible d'envoyer les commits",
+        "REPO_GIT_RESET_ERROR": "Impossible de réinitialiser le dépôt",
         "SESSION_LIST_ERROR": "Erreur lors de la récupération de la liste des sessions",
         "SESSION_CREATION_ERROR": "Erreur lors de la création de la session",
         "SESSION_MERGE_ERROR": "Erreur lors de la fusion des sessions",
@@ -1438,10 +1438,10 @@
             "TITLE": "Base de données",
             "DESCRIPTION": "Outils de gestion de la base de données. Database, database, just living in the database wow wow."
         },
-		"GIT": {
-			"TITLE": "Intégration Git",
-			"DESCRIPTION": "Gérer les dépôts Git (pousser, fusionner les conflits)"
-		},
+        "GIT": {
+            "TITLE": "Intégration Git",
+            "DESCRIPTION": "Gérer les dépôts Git (pousser, fusionner les conflits)"
+        },
         "KARAOKE_LIST": {
             "TITLE": "Liste des karaokés",
             "DESCRIPTION": "D'ici vous pouvez éditer, ajouter ou supprimer des karaokés. Habituellement réservé aux mainteneurs de dépôts de karaokés."
