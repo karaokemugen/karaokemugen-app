@@ -317,27 +317,32 @@ function Playlist(props: IProps) {
 		return url;
 	};
 
-	const getPlaylist = async (searchTypeParam?: 'search' | 'recent' | 'requested', orderByLikes?: boolean) => {
+	const getPlaylist = async (searchTypeParam?: 'search' | 'recent' | 'requested', orderByLikesParam?: boolean) => {
 		const criterias: any = {
 			year: 'y',
 			tag: 't',
 		};
 		setPlaylistInProgress(true);
+		let search = searchType;
+		let order = orderByLikes;
 		if (searchTypeParam) {
 			setSearchType(searchTypeParam);
+			search = searchTypeParam;
 			if (data?.infos) data.infos.from = 0;
 			setData(data);
 		} else if (data?.infos?.from === 0) {
 			setSearchType(undefined);
+			search = undefined;
 		}
-		if (orderByLikes !== undefined) {
-			setOrderByLikes(orderByLikes);
+		if (orderByLikesParam !== undefined) {
+			setOrderByLikes(orderByLikesParam);
+			order = orderByLikesParam;
 		}
 		const url: string = getPlaylistUrl();
 		const param: any = {};
 		if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
 			param.plaid = getPlaylistInfo(props.side, context)?.plaid;
-			if (orderByLikes || (orderByLikes === undefined && orderByLikes)) {
+			if (order || (order === undefined && order)) {
 				param.orderByLikes = true;
 			}
 		}
@@ -346,10 +351,10 @@ function Playlist(props: IProps) {
 		param.from = data?.infos?.from > 0 ? data.infos.from : 0;
 		param.size = chunksize;
 		param.blacklist = true;
-		if (searchType) {
-			param.order = searchType === 'search' ? undefined : searchType;
-		} else if (searchType !== 'search') {
-			param.order = searchType;
+		if (search) {
+			param.order = search === 'search' ? undefined : search;
+		} else if (search !== 'search') {
+			param.order = search;
 		}
 		if (searchCriteria && searchValue) {
 			param.q = `${searchCriteria ? criterias[searchCriteria] : ''}:${searchValue}`;
