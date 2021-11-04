@@ -402,7 +402,7 @@ function Playlist(props: IProps) {
 		}
 	};
 
-	const playingUpdate = (dataUpdate: { plaid: string; plc_id: number }) => {
+	const playingUpdate = useCallback((dataUpdate: { plaid: string; plc_id: number }) => {
 		if (!stopUpdate && getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid) {
 			setData((oldData) => {
 				if (oldData) {
@@ -413,6 +413,7 @@ function Playlist(props: IProps) {
 							kara.flag_playing = true;
 							indexPlaying = index;
 							if (goToPlaying) {
+								console.log('scroll?', props.side);
 								scrollToIndex(index);
 								setGotToPlayingAvoidScroll(true);
 							}
@@ -426,7 +427,14 @@ function Playlist(props: IProps) {
 				return oldData;
 			});
 		}
-	};
+	}, [goToPlaying]);
+
+	useEffect(() => {
+		getSocket().on('playingUpdated', playingUpdate);
+		return () => {
+			getSocket().off('playingUpdated', playingUpdate);
+		};
+	}, [goToPlaying]);
 
 	const getPlInfosElement = () => {
 		let plInfos = '';
@@ -884,7 +892,6 @@ function Playlist(props: IProps) {
 		if (context.globalState.auth.isAuthenticated) {
 			initCall();
 		}
-		getSocket().on('playingUpdated', playingUpdate);
 		getSocket().on('favoritesUpdated', favoritesUpdated);
 		getSocket().on('playlistContentsUpdated', playlistContentsUpdatedFromServer);
 		getSocket().on('publicPlaylistEmptied', publicPlaylistEmptied);
@@ -892,7 +899,6 @@ function Playlist(props: IProps) {
 		getSocket().on('playerStatus', updateCounters);
 		window.addEventListener('error', avoidErrorInDnd);
 		return () => {
-			getSocket().off('playingUpdated', playingUpdate);
 			getSocket().off('favoritesUpdated', favoritesUpdated);
 			getSocket().off('playlistContentsUpdated', playlistContentsUpdatedFromServer);
 			getSocket().off('publicPlaylistEmptied', publicPlaylistEmptied);
