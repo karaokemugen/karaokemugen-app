@@ -262,18 +262,20 @@ export async function updateZipRepo(name: string) {
 		logger.debug(`Update ${repo.Name}: ours is ${LocalCommit}, theirs is ${LatestCommit}`, {service: 'Repo'});
 		if (LatestCommit !== LocalCommit) {
 			try {
-				const patch = await HTTP.get(`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(LocalCommit)}`);
+				const patch = await HTTP.get(`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(LocalCommit)}`, {
+					responseType: 'text'
+				});
 				let changes: DiffChanges[];
 				try {
-					changes = await applyPatch(patch.body, repo.BaseDir);
+					changes = await applyPatch(patch.data as string, repo.BaseDir);
 				} catch(err) {
 					// If patch fails, we need to try the other way around and get all modified files
 					// Need to remove .orig files if any
 					await cleanFailedPatch(repo);
 					logger.info('Trying to download full files instead', {service: 'Repo'});
 					const fullFiles = await HTTP.get(`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(LocalCommit)}`);
-					await writeFullPatchedFiles(JSON.parse(fullFiles.body), repo);
-					changes = computeFileChanges(patch.body);
+					await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
+					changes = computeFileChanges(patch.data as string);
 				}
 				await applyChanges(changes, repo);
 				await saveSetting(`commit-${repo.Name}`, LatestCommit);
@@ -714,10 +716,10 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 }
 
 /** Get metadata. Throws if KM Server is not up to date */
-export async function getRepoMetadata(repo: string): Promise<RepositoryManifest> {
+export async function getRepoMetadata(repo: string) {
 	const ret = await HTTP.get(`https://${repo}/api/karas/repository`);
-	if (ret.statusCode === 404) throw false;
-	return JSON.parse(ret.body);
+	if (ret.status === 404) throw false;
+	return ret.data as RepositoryManifest;
 }
 
 /** Find any unused tags in a repository */

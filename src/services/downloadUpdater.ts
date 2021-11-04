@@ -18,9 +18,9 @@ import { checkDownloadStatus } from './repo';
 
 let updateRunning = false;
 
-async function getRemoteMedias(repo: string): Promise<DBMedia[]> {
+async function getRemoteMedias(repo: string) {
 	const res = await HTTP.get(`https://${repo}/api/karas/medias`);
-	return JSON.parse(res.body);
+	return res.data as DBMedia[];
 }
 
 async function listRemoteMedias(repo: string) {

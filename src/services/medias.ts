@@ -13,7 +13,7 @@ import Task from '../lib/utils/taskManager';
 import {Config} from '../types/config';
 import { Media, MediaType } from '../types/medias';
 import { editSetting } from '../utils/config';
-import Downloader from '../utils/downloader';
+import { downloadFiles } from '../utils/downloader';
 
 interface File {
 	basename: string,
@@ -36,7 +36,7 @@ const currentMedias: Partial<Medias> = {};
 
 // This is public but we need a user/pass for webdav
 const KMSite = {
-	url: 'http://mugen.karaokes.moe/medias/',
+	url: 'http://mugen.karaokes.moe/medias',
 	username: 'km',
 	password: 'musubi'
 };
@@ -164,23 +164,16 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 }
 
 async function downloadMedias(files: File[], dir: string, type: MediaType, task: Task) {
-	const list = [];
-	for (const file of files) {
-		list.push({
+	const list = files.map(file => {
+		return {
 			filename: resolve(dir, file.basename),
 			url: `${KMSite.url}/${type}/${encodeURIComponent(file.basename)}`,
 			size: file.size
-		});
-	}
-	const mediaDownloads = new Downloader({
-		task: task,
-		auth: {
-			user: KMSite.username,
-			pass: KMSite.password
-		}
+		};
 	});
-	const fileErrors = await mediaDownloads.download(list);
-	if (fileErrors.length > 0) throw `Error downloading these medias : ${fileErrors.toString()}`;
+	const fileErrors = await downloadFiles(list, task);
+	if (fileErrors.length > 0) throw `Error downloading these medias: ${fileErrors.map(err => basename(err)).toString()}`;
+	task.end();
 }
 
 

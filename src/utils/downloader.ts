@@ -1,123 +1,93 @@
 // Node modules
-import agent from 'agentkeepalive';
-import Queue from 'better-queue';
+import { promise as fastq } from 'fastq';
 import {createWriteStream} from 'fs';
 import {basename} from 'path';
 import prettyBytes from 'pretty-bytes';
+import { Readable } from 'stream';
 
 import HTTP from '../lib/utils/http';
 // KM Imports
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 // Types
-import { DownloadItem, DownloadOpts } from '../types/downloader';
+import { DownloadItem } from '../types/downloader';
 
-/** Downloader class, to download one or more files, complete with a progress bar and crepes. */
+/** Downloader utilities, to download one or more files, complete with ~~a progress bar~~ and crepes. */
 
-export default class Downloader {
-
-	list: DownloadItem[];
-	pos = 0;
-	opts: DownloadOpts;
-	fileErrors: string[] = [];
-	task: Task;
-	onEnd: (this: void, errors: string[]) => void;
-	q: Queue<DownloadItem, never>;
-
-	constructor(opts: DownloadOpts) {
-		this.opts = opts;
-		this.onEnd = null;
-		this.task = this.opts.task;
-		this.q = new Queue(this._queueDownload, {
-			id: 'id',
-			cancelIfRunning: true
+async function fetchFile(dl: DownloadItem, task?: Task) {
+	if (task) task.update({
+		total: dl.size
+	});
+	const writer = createWriteStream(dl.filename);
+	const streamResponse = await HTTP.get<Readable>(dl.url, {
+		responseType: 'stream'
+	});
+	streamResponse.data.pipe(writer, {end: true});
+	// Some trickry while waiting Axios support for onDownloadProgress in Node: https://github.com/axios/axios/pull/4215
+	const interval = setInterval(() => {
+		task.update({
+			value: writer.bytesWritten
 		});
-	}
+	}, 500);
 
-	_queueDownload = (input: DownloadItem, done: (error?: any) => void) => {
-		this._download(input)
-			.then(() => done())
-			.catch((err: Error) => done(err));
-	}
-
-	download = (list: DownloadItem[]): Promise<string[]> => {
-		// Launches download queue
-		this.list = list;
-		list.forEach(item => {
-			this.q.push(item);
-		});
-		return new Promise(resolve => {
-			this.q.on('drain', () => {
-				resolve(this.fileErrors);
+	return new Promise<void>((resolve, reject) => {
+		writer.on('finish', () => {
+			if (task) task.update({
+				value: dl.size
 			});
+			clearInterval(interval);
+			resolve();
 		});
-	}
+		writer.on('error', err => {
+			clearInterval(interval);
+			reject(err);
+		});
+	});
+}
 
-	/** Do the download dance now */
-	_download = async (dl: DownloadItem) => {
-		this.pos++;
-		const options = {
-			// for downloads we need keepalive or else connections can timeout and get stuck. Such is life.
-			agent: {
-				http: new agent(),
-				https: new agent.HttpsAgent()
-			}
-		};
-		let size: string;
-		try {
-			const response = await HTTP.head(dl.url, options);
-			size = response.headers['content-length'];
-		} catch(err) {
-			logger.error(`Error during download of ${basename(dl.filename)} (HEAD)`, {service: 'Download', obj: err});
-			this.fileErrors.push(basename(dl.filename));
-			return;
-		}
-		let prettySize = prettyBytes(+size);
-		if (!prettySize) prettySize = 'size unknown';
-		logger.info(`(${this.pos}/${this.list.length}) Downloading ${basename(dl.filename)} (${prettySize})`, {service: 'Download'});
-		if (this.task) this.task.update({
-			subtext: `${basename(dl.filename)} (${prettySize})`,
-			value: 0,
-			total: +size
-		});
-		// Insert auth in the url string
-		if (this.opts.auth) {
-			const arr = dl.url.split('://');
-			dl.url = `${arr[0]}://${this.opts.auth.user}:${this.opts.auth.pass}@${arr[1]}`;
-		}
-		try {
-			await this._fetchFile(dl, options);
-		} catch(err) {
-			logger.error(`Error during download of ${basename(dl.filename)} (GET)`, {service: 'Download', obj: err});
-			this.fileErrors.push(basename(dl.filename));
-			return;
-		}
+export async function downloadFile(dl: DownloadItem, task?: Task, log_prepend?: string) {
+	try {
+		const response = await HTTP.head(dl.url);
+		dl.size = +response.headers['content-length'];
+	} catch(err) {
+		logger.error(`Error during download of ${basename(dl.filename)} (HEAD)`, {service: 'Download', obj: err});
+		task.end();
+		throw err;
 	}
+	let prettySize = prettyBytes(dl.size);
+	if (!prettySize) prettySize = 'size unknown';
+	logger.info(`${log_prepend ? `${log_prepend} `:''}Downloading ${basename(dl.filename)} (${prettySize})`, {service: 'Download'});
+	if (task) task.update({
+		subtext: `${basename(dl.filename)} (${prettySize})`,
+		value: 0,
+		total: dl.size
+	});
+	try {
+		await fetchFile(dl, task);
+	} catch(err) {
+		logger.error(`Error during download of ${basename(dl.filename)} (GET)`, {service: 'Download', obj: err});
+		task.end();
+		throw err;
+	}
+}
 
-	_fetchFile = (dl: DownloadItem, options: any) => {
-		return new Promise<void>((resolve, reject) => {
-			let size = 0;
-			HTTP.stream.get(dl.url, options)
-				.on('response', (res: Response) => {
-					size = +res.headers['content-length'];
-				})
-				.on('downloadProgress', state => {
-					if (this.task) this.task.update({
-						value: state.transferred
-					});
-				})
-				.on('error', (err: any) => {
-					reject(err);
-				})
-				.on('end', () => {
-					if (this.task) this.task.update({
-						value: size
-					});
-					resolve();
-				})
-				.pipe(createWriteStream(dl.filename));
-		});
-	}
+// the 2 last numbers are index (+ 1) of the task in queue and the length of queue
+const wrappedDownloadFile = (payload: [DownloadItem, Task, number, number]) =>
+	downloadFile(payload[0], payload[1], `(${payload[2]}/${payload[3]})`).catch(err => {
+		// All errors should be captured correctly by handlers in downloadFile but this is like the ultimate safetynet
+		logger.debug(`DL Queue entry ${payload[2]}/${payload[3]} failed`, {service: 'Downloader', obj: err});
+		throw new Error(payload[0].filename);
+	});
+
+export async function downloadFiles(files: DownloadItem[], task?: Task) {
+	const queue = fastq<never, [DownloadItem, Task, number, number], void>(wrappedDownloadFile, 1);
+	const errors: string[] = [];
+	queue.error((err: Error) => {
+		if (err) errors.push(err.message);
+	});
+	files.forEach((dl, i) => queue.push([dl, task, i+1, files.length]));
+	await queue.drained();
+	return errors;
 }
 
 // The crepes are a lie.

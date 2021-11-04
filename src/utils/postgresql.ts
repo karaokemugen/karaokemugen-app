@@ -18,7 +18,7 @@ import logger from '../lib/utils/logger';
 import { PGVersion } from '../types/database';
 import { editSetting } from './config';
 import { expectedPGVersion, pgctlRegex } from './constants';
-import Downloader from './downloader';
+import { downloadFile } from './downloader';
 import sentry from './sentry';
 import {getState, setState} from './state';
 
@@ -363,16 +363,12 @@ export async function checkAndInstallVCRedist() {
 		if (await asyncExists(check.file)) return;
 		// Let's download VC Redist and install it yo.
 		logger.warn('Visual C++ Redistribuable not found, downloading and installing.', {service: 'Postgres'});
-		const downloader = new Downloader({task: null});
 		// Launch downloads
 		const vcRedistPath = resolve(resolvedPathTemp(), 'vcredist.exe');
-		const fileErrors = await downloader.download([
-			{
-				url: check.URL,
-				filename: vcRedistPath
-			}
-		]);
-		if (fileErrors.length > 0) throw fileErrors;
+		await downloadFile({
+			url: check.URL,
+			filename: vcRedistPath
+		});
 		await execa(vcRedistPath, null, {
 			windowsHide: false
 		});

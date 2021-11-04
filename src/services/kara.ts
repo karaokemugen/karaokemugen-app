@@ -167,7 +167,7 @@ export async function fetchPopularSongs() {
 		for (const repo of repos) {
 			try {
 				const res = await HTTP.get(`https://${repo.Name}/api/karas/search?order=requested`);
-				const karas = JSON.parse(res.body);
+				const karas = res.data as any;
 				for (const kara of karas.content) {
 					popularKIDs.set(kara.kid, kara.requested);
 				}
