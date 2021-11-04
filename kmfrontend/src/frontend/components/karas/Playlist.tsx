@@ -392,22 +392,24 @@ function Playlist(props: IProps) {
 	};
 
 	const playingUpdate = (dataUpdate: { plaid: string; plc_id: number }) => {
-		if (!stopUpdate && data && getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid) {
+		if (!stopUpdate && getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid) {
 			setData((oldData) => {
-				let indexPlaying;
-				for (let index = 0; index < oldData.content.length; index++) {
-					const kara = oldData.content[index];
-					if (kara?.plcid === dataUpdate.plc_id) {
-						kara.flag_playing = true;
-						indexPlaying = index;
-						if (goToPlaying) {
-							scrollToIndex(index);
-							setGotToPlayingAvoidScroll(true);
+				if (oldData) {
+					let indexPlaying;
+					for (let index = 0; index < oldData.content.length; index++) {
+						const kara = oldData.content[index];
+						if (kara?.plcid === dataUpdate.plc_id) {
+							kara.flag_playing = true;
+							indexPlaying = index;
+							if (goToPlaying) {
+								scrollToIndex(index);
+								setGotToPlayingAvoidScroll(true);
+							}
+							setPlaying(indexPlaying);
+						} else if (kara?.flag_playing) {
+							kara.flag_playing = false;
+							kara.flag_dejavu = true;
 						}
-						setPlaying(indexPlaying);
-					} else if (kara?.flag_playing) {
-						kara.flag_playing = false;
-						kara.flag_dejavu = true;
 					}
 				}
 				return oldData;
