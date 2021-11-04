@@ -19,8 +19,9 @@ interface Props {
 
 export default function InlineTag(props: Props) {
 	const [showPopup, setShowPopup] = useState(false);
+	const [rightClass, setRightClass] = useState(false);
 	const [count, setCount] = useState(0);
-	const node: any = useRef();
+	const node = useRef<HTMLDivElement>();
 
 	const goToTagSearch = () => {
 		const searchValue = `${props.tag.tid}~${props.tagType}`;
@@ -57,6 +58,16 @@ export default function InlineTag(props: Props) {
 		getTag();
 	}, []);
 
+	useEffect(() => {
+		if (node.current) {
+			if (node.current.getBoundingClientRect().left > Math.round(window.innerWidth / 2)) {
+				setRightClass(true);
+			} else {
+				setRightClass(false);
+			}
+		}
+	}, [showPopup]);
+
 	const context = useContext(GlobalContext);
 
 	return (
@@ -78,7 +89,7 @@ export default function InlineTag(props: Props) {
 				{getTagInLocale(context.globalState.settings.data, props.tag)}
 			</span>
 			{showPopup ? (
-				<div className="tag-popup">
+				<div className={`tag-popup${rightClass ? ' right':''}`}>
 					<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag)}</p>
 					<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', { count: count })}</p>
 					<p className="tag-action">
