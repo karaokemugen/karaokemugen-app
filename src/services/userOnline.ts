@@ -36,14 +36,11 @@ export async function remoteCheckAuth(instance: string, token: string) {
 export async function remoteLogin(username: string, password: string): Promise<string> {
 	const [login, instance] = username.split('@');
 	try {
-		const res = await HTTP.post(`https://${instance}/api/auth/login`, {
-			form: {
-				username: login,
-				password: password
-			}
+		const res = await HTTP.post<Token>(`https://${instance}/api/auth/login`, {
+			username: login,
+			password: password
 		});
-		const body = res.data as any;
-		return body.token;
+		return res.data.token;
 	} catch(err) {
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
@@ -88,10 +85,8 @@ export async function createRemoteUser(user: User) {
 	};
 	try {
 		await HTTP.post(`https://${instance}/api/users`, {
-			form: {
-				login: login,
-				password: user.password
-			}
+			login: login,
+			password: user.password
 		});
 		startSub(login, instance);
 	} catch(err) {
@@ -111,7 +106,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 		const res = await HTTP(`https://${instance}/api/myaccount`, {
 			headers: {
 				authorization: token
-			}			
+			}
 		});
 		return res.data as User;
 	} catch(err) {
