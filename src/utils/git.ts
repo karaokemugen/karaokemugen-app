@@ -71,9 +71,10 @@ export default class Git {
 		const url = this.getFormattedURL();
 		if (!origin) await this.git.addRemote('origin', url);
 		if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
-			console.log('rebuild remote');
-			await this.git.removeRemote('origin');
-			await this.git.addRemote('origin', url);
+			logger.debug(`${this.repoName}: Rebuild remote`, {service: 'Git'});
+			/*await this.git.removeRemote('origin');
+			await this.git.addRemote('origin', url);*/
+			await this.setRemote();
 			await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 		}
 	}
@@ -84,8 +85,7 @@ export default class Git {
 
 	async getCurrentCommit() {
 		const show = await this.git.show();
-		const commit = show.split('\n')[0].split(' ')[1];
-		return commit;
+		return show.split('\n')[0].split(' ')[1];
 	}
 
 	async wipeChanges() {
@@ -163,7 +163,7 @@ export default class Git {
 
 	pull() {
 		logger.debug('Pulling...', {service: 'Git'});
-		return this.git.pull('origin', 'master', ['--rebase']);
+		return this.git.pull(['--rebase']);
 	}
 
 	async push() {
