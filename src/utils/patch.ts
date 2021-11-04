@@ -10,7 +10,7 @@ import { getFilesRecursively } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
-import { downloadFiles } from '../services/download';
+import { downloadFile } from './downloader';
 import { getState } from './state';
 
 async function extractZip(path: string, outDir: string, task: Task): Promise<string>  {
@@ -32,14 +32,14 @@ async function extractZip(path: string, outDir: string, task: Task): Promise<str
 }
 
 export async function downloadAndExtractZip(zipURL: string, outDir: string, repo: string) {
-	logger.debug(`Downloading ${repo} archive`, {service: 'Zip'});
 	const task = new Task({
 		text: 'DOWNLOADING_ZIP',
 		data: repo
 	});
 	try {
+		logger.debug(`Downloading ${repo} archive`, {service: 'Zip'});
 		const target = resolve(resolvedPathTemp(), `base-${repo}.zip`);
-		await downloadFiles(null, [{ filename: target, url: zipURL, id: repo }], task);
+		await downloadFile({ filename: target, url: zipURL }, task, `${repo} zip:`);
 		logger.debug(`Extracting ${repo} archive to ${outDir}`, {service: 'Zip'});
 		const tempDir = resolvedPathTemp();
 		task.update({
@@ -50,7 +50,7 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 		await remove(outDir);
 		await move(resolve(tempDir, dir), outDir);
 	} catch(err) {
-		logger.error(`Unable to download and extract ${repo} zip : ${err}`, {service: 'Zip', obj: err});
+		logger.error(`Unable to download and extract ${repo} zip`, {service: 'Zip', obj: err});
 		throw err;
 	} finally {
 		task.end();

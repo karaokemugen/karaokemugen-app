@@ -14,8 +14,7 @@ import { emit } from '../lib/utils/pubsub';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { KaraDownload, KaraDownloadRequest, QueueStatus } from '../types/download';
-import { DownloadItem } from '../types/downloader';
-import Downloader from '../utils/downloader';
+import { downloadFile } from '../utils/downloader';
 import { getState } from '../utils/state';
 import { getKaras } from './kara';
 import { getRepoFreeSpace } from './repo';
@@ -32,7 +31,6 @@ const downloadQueueOptions = {
 };
 
 let dq: any;
-let downloadTask: Task;
 let downloadedKIDs = new Set();
 
 export function getDownloadQueueStatus() {
@@ -43,19 +41,12 @@ export function getDownloadQueue() {
 	return dq;
 }
 
-function initTask() {
-	downloadTask = new Task({
-		text: 'DOWNLOADING'
-	});
-}
-
 async function emitQueueStatus(status: QueueStatus) {
 	downloadQueueStatus = status;
 	emitWS('downloadQueueStatus', await getDownloads());
 }
 
 function queueDownload(input: KaraDownload, done: any) {
-	logger.info(`Processing download : ${input.name}`, {service: 'Download'});
 	processDownload(input)
 		.then(() => done())
 		.catch(err => done(err));
@@ -89,10 +80,6 @@ export function initDownloadQueue() {
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
 		emit('downloadQueueDrained');
-		if (downloadTask) {
-			downloadTask.end();
-			downloadTask = null;
-		}
 		const karas = await getKaras({
 			q: `k:${Array.from(downloadedKIDs).join(',')}`
 		});
@@ -126,8 +113,8 @@ async function processDownload(download: KaraDownload) {
 			pauseQueue();
 			throw 'No space left on device';
 		}
-		if (!downloadTask) initTask();
-		downloadTask.update({
+		const downloadTask = new Task({
+			text: 'DOWNLOADING',
 			subtext: download.mediafile,
 			value: 0,
 			total: download.size
@@ -143,12 +130,13 @@ async function processDownload(download: KaraDownload) {
 			url: `https://${download.repository}/downloads/medias/${encodeURIComponent(download.mediafile)}`,
 			id: download.name
 		};
-		await downloadFiles(download.uuid, [downloadItem], downloadTask);
+		await downloadFile(downloadItem, downloadTask);
 		await asyncMove(tempMedia, localMedia, {overwrite: true});
 		setDownloadStatus(download.uuid, 'DL_DONE');
 		logger.info(`Media "${download.name}" downloaded`, {service: 'Download'});
 		await updateDownloaded([download.kid], 'DOWNLOADED');
 		emitWS('KIDUpdated', [{kid: download.kid, download_status: 'DOWNLOADED'}]);
+		downloadTask.end();
 		downloadedKIDs.add(download.kid);
 	} catch(err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
@@ -156,24 +144,6 @@ async function processDownload(download: KaraDownload) {
 		updateDownloaded([download.kid], 'MISSING');
 		emitWS('KIDUpdated', [{kid: download.kid, download_status: 'MISSING'}]);
 		throw err;
-	} finally {
-		if (downloadTask) downloadTask.update({
-			subtext: download.name,
-			value: download.size,
-			total: download.size
-		});
-	}
-}
-
-export async function downloadFiles(download_id?: string, list?: DownloadItem[], task?: Task) {
-	const downloader = new Downloader({task: task});
-	// Launch downloads
-	const fileErrors = await downloader.download(list);
-	if (fileErrors.length > 0) {
-		if (download_id) {
-			await setDownloadStatus(download_id, 'DL_FAILED');
-		}
-		throw `Error downloading file : ${fileErrors.toString()}`;
 	}
 }
 
@@ -193,7 +163,7 @@ export async function checkMediaAndDownload(kid: string, mediafile: string, repo
 	let mediaPath: string;
 	try {
 		mediaPath = (await resolveFileInDirs(mediafile, resolvedPathRepos('Medias', repo)))[0];
-	} catch {		
+	} catch {
 		// We're checking only to update files. If the file was never found, we won't try to download it. Else we do.
 		if (updateOnly) return;
 		downloadMedia = true;
