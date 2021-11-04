@@ -7,12 +7,6 @@
 	flex-direction: column;
 	&.JustPlaylist {
 		position: relative;
-		&.fillSpace {
-			height: calc(var(--height) - var(--bottom));
-		}
-	}
-	&.fillSpace {
-		height: var(--height);
 	}
 
 	&[data-mode="admin"] {
@@ -32,9 +26,7 @@
 	display: flex;
 	flex-direction: column;
 	color: white;
-	--top: 0px;
-	--bottom: 0px;
-	--height: 0px;
+	height: calc(100vh - var(--bottom, 0px) - var(--top, 0px));
 	> * {
 		flex: 0 auto;
 	}
@@ -66,7 +58,7 @@
 		}
 	}
 	&.single {
-		margin: calc(var(--top) + 0.1em) 0 var(--bottom);
+		margin: calc(var(--top) + 0.1em) 0 calc(var(--bottom) - 0.4em);
 
 		.KmAppHeaderDecorator {
 			min-height: 4em;
@@ -75,7 +67,7 @@
 		}
 
 		&.hmargin {
-			margin: calc(var(--top) + 0.4em) 0.4em var(--bottom);
+			margin: calc(var(--top) + 0.4em) 0.4em calc(var(--bottom) - 0.4em);
 		}
 	}
 }

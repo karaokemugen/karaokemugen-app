@@ -153,11 +153,11 @@ function Playlist(props: IProps) {
 	};
 
 	const scrollToIndex = useCallback(
-		(index) => {
+		(index: number, smooth = true) => {
 			virtuoso.current?.scrollToIndex({
 				index,
 				align: 'start',
-				behavior: 'smooth',
+				behavior: smooth ? 'smooth':'auto',
 			});
 		},
 		[virtuoso]
@@ -170,9 +170,15 @@ function Playlist(props: IProps) {
 	};
 
 	const initCall = async () => {
-		setGotToPlaying(!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid));
 		setCriteriasOpen(false);
+		if (isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
+			scrollToIndex(0, false);
+		}
 		await getPlaylist();
+		if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
+			scrollToPlaying();
+		}
+		setTimeout(props.clearIndexKaraDetail, 0);
 	};
 
 	const toggleSearchMenu = () => {
@@ -875,13 +881,6 @@ function Playlist(props: IProps) {
 	}, [searchValue]);
 
 	useEffect(() => {
-		if (props.indexKaraDetail) {
-			scrollToIndex(props.indexKaraDetail);
-			props.clearIndexKaraDetail();
-		}
-	}, [data]);
-
-	useEffect(() => {
 		if (context.globalState.auth.isAuthenticated) {
 			initCall();
 		}
@@ -935,7 +934,7 @@ function Playlist(props: IProps) {
 				{playlist?.flag_smart && criteriasOpen ?
 					<CriteriasList tags={props.tags} playlist={playlist} /> : null
 				}
-				{(data?.infos && (data.infos.count === 0 || !data.infos.count)) && !criteriasOpen && isPlaylistInProgress ? (
+				{!data?.infos && !criteriasOpen && isPlaylistInProgress ? (
 					<div className="loader" />
 				) : data && !criteriasOpen ? (
 					<DragDropContext onDragEnd={sortRow}>
@@ -972,6 +971,7 @@ function Playlist(props: IProps) {
 											)}
 										</Draggable>
 									)}
+									initialTopMostItemIndex={props.indexKaraDetail || 0}
 									totalCount={data.infos.count}
 									rangeChanged={scrollHandler}
 									ref={virtuoso}
