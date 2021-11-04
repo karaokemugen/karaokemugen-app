@@ -413,7 +413,6 @@ function Playlist(props: IProps) {
 							kara.flag_playing = true;
 							indexPlaying = index;
 							if (goToPlaying) {
-								console.log('scroll?', props.side);
 								scrollToIndex(index);
 								setGotToPlayingAvoidScroll(true);
 							}
