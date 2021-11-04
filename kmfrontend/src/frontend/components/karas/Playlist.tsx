@@ -84,7 +84,6 @@ function Playlist(props: IProps) {
 	// Avoid scroll event trigger
 	const [goToPlayingAvoidScroll, setGotToPlayingAvoidScroll] = useState<boolean>();
 	const [selectAllKarasChecked, setSelectAllKarasChecked] = useState(false);
-	const [height, setHeight] = useState(0);
 	const [criteriasOpen, setCriteriasOpen] = useState(false);
 	const virtuoso = useRef<any>(null);
 
@@ -171,25 +170,13 @@ function Playlist(props: IProps) {
 	};
 
 	const initCall = async () => {
-		resizeCheck();
 		setGotToPlaying(!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid));
 		setCriteriasOpen(false);
 		await getPlaylist();
 	};
 
-	const resizeCheck = () => {
-		// Calculate empty space for fillSpace cheat.
-		// Virtual lists doesn't expand automatically, or more than needed, so the height is forced by JS calculations
-		// using getBoundingClientRect
-		if (refContainer.current) {
-			const wrapper = refContainer.current.getBoundingClientRect();
-			setHeight(window.innerHeight - wrapper.top);
-		}
-	};
-
 	const toggleSearchMenu = () => {
 		props.toggleSearchMenu();
-		setTimeout(resizeCheck, 0);
 	};
 
 	const debounceClear = useCallback(
@@ -897,7 +884,6 @@ function Playlist(props: IProps) {
 		getSocket().on('publicPlaylistEmptied', publicPlaylistEmptied);
 		getSocket().on('KIDUpdated', KIDUpdated);
 		getSocket().on('playerStatus', updateCounters);
-		window.addEventListener('resize', resizeCheck, { passive: true, capture: true });
 		window.addEventListener('error', avoidErrorInDnd);
 		return () => {
 			getSocket().off('playingUpdated', playingUpdate);
@@ -906,7 +892,6 @@ function Playlist(props: IProps) {
 			getSocket().off('publicPlaylistEmptied', publicPlaylistEmptied);
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
-			window.removeEventListener('resize', resizeCheck);
 			window.removeEventListener('error', avoidErrorInDnd);
 		};
 	}, []);
@@ -967,7 +952,7 @@ function Playlist(props: IProps) {
 									}}
 									// @ts-ignore
 									scrollerRef={provided.innerRef}
-									style={{ height: `calc(${height}px - var(--bottom))` }}
+									style={{ height: '100%' }}
 									itemContent={(index) => (
 										<Draggable
 											isDragDisabled={!sortable}

@@ -28,7 +28,7 @@ function KmAppWrapperDecorator(props: IProps) {
 	};
 
 	useEffect(() => {
-		resizeCheck();
+		setTimeout(resizeCheck, 0);
 	}, [props.bottom, props.top]);
 
 	useEffect(() => {
