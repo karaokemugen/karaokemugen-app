@@ -427,7 +427,7 @@ function PublicPage(props: RouteComponentProps) {
 
 								<KmAppBodyDecorator
 									mode={context?.globalState.settings.data.config?.Frontend?.Mode}
-									extraClass="JustPlaylist fillSpace"
+									extraClass="JustPlaylist"
 								>
 									{view === 'tag' ? (
 										<TagsList tagType={tagType} changeView={changeView} />

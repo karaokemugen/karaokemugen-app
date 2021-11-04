@@ -190,7 +190,7 @@ function AdminPage(props: IProps) {
 					currentPlaylist={playlistList.filter((playlistElem) => playlistElem.flag_current)[0]}
 				/>
 				<ProgressBar />
-				<KmAppBodyDecorator mode="admin" extraClass="fillSpace">
+				<KmAppBodyDecorator mode="admin">
 					{playlistList.length > 0 ? (
 						<Switch>
 							<Route path="/admin/options" component={Options} />
