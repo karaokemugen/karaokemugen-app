@@ -23,6 +23,7 @@ async function fetchFile(dl: DownloadItem, task?: Task) {
 		responseType: 'stream'
 	});
 	streamResponse.data.pipe(writer, {end: true});
+	// Some trickry while waiting Axios support for onDownloadProgress in Node: https://github.com/axios/axios/pull/4215
 	const interval = setInterval(() => {
 		task.update({
 			value: writer.bytesWritten
