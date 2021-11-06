@@ -8,6 +8,28 @@ const cache: Map<string, string> = new Map();
 
 getSocket().on('userUpdated', (login) => cache.delete(login));
 
+export function syncGenerateProfilePicLink(user: User) {
+	if (isRemote()) {
+		if (user?.login.includes('@') && cache.has(user.login)) {
+			// Retrieve cache entry
+			return cache.get(user.login);
+		} else if (user.type === 2) {
+			return `/guests/${slugify(user.login, {
+				lower: true,
+				remove: /['"!,?()]/g
+			})}.jpg`;
+		} else {
+			return blankAvatar;
+		}
+	} else {
+		if (user.avatar_file) {
+			return `/avatars/${user.avatar_file}`;
+		} else {
+			return blankAvatar;
+		}
+	}
+}
+
 export async function generateProfilePicLink(user: User): Promise<string> {
 	if (isRemote()) {
 		if (user?.login.includes('@')) {

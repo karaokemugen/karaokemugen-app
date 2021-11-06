@@ -1,15 +1,14 @@
 import { memo, useEffect, useState } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
-import blankAvatar from '../../assets/blank.png';
-import { generateProfilePicLink } from '../profilePics';
+import { generateProfilePicLink, syncGenerateProfilePicLink } from '../profilePics';
 
 interface IProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 	user: User
 }
 
 function ProfilePicture(props: IProps) {
-	const [url, setUrl] = useState(blankAvatar);
+	const [url, setUrl] = useState(syncGenerateProfilePicLink(props.user));
 
 	const updateUrl = async () => {
 		const newUrl = await generateProfilePicLink(props.user);

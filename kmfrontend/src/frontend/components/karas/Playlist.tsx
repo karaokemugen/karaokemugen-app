@@ -214,15 +214,6 @@ function Playlist(props: IProps) {
 		}
 	};
 
-	const HeightPreservingItem = useCallback(({ children, ...props }: PropsWithChildren<ItemProps>) => {
-		return (
-			// the height is necessary to prevent the item container from collapsing, which confuses Virtuoso measurements
-			<div {...props} style={{ minHeight: 1 }}>
-				{children}
-			</div>
-		);
-	}, []);
-
 	const sortable = useMemo(() => {
 		return (
 			!is_touch_device() &&
@@ -242,6 +233,23 @@ function Playlist(props: IProps) {
 		is_touch_device(),
 		getPlaylistInfo(props.side, context).plaid,
 	]);
+
+	const HeightPreservingItem = useCallback(({ children, ...props }: PropsWithChildren<ItemProps>) => {
+		const ref = useRef<HTMLDivElement>(null);
+		const [height, setHeight] = useState<string>(null);
+
+		useEffect(() => {
+			const realHeight = (ref.current.firstChild as HTMLDivElement).getBoundingClientRect();
+			setHeight(`${realHeight.height}px`);
+		}, [props['data-index']]);
+
+		return (
+			// the height is necessary to prevent the item container from collapsing, which confuses Virtuoso measurements
+			<div {...props} ref={ref} style={{ height: height || props['data-known-size'] || undefined }}>
+				{children}
+			</div>
+		);
+	}, []);
 
 	const Item = useCallback(
 		({ provided, index, isDragging }: { provided: DraggableProvided; index: number; isDragging: boolean }) => {
@@ -979,6 +987,7 @@ function Playlist(props: IProps) {
 									initialTopMostItemIndex={props.indexKaraDetail || 0}
 									totalCount={data.infos.count}
 									rangeChanged={scrollHandler}
+									increaseViewportBy={10}
 									ref={virtuoso}
 								/>
 							)}
