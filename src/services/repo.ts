@@ -1063,56 +1063,62 @@ export async function generateCommits(repoName: string, ignoreNoMedia = false) {
 
 /** Commit and Push all modifications */
 export async function pushCommits(repoName: string, push: Push, ignoreFTP?: boolean) {
-	const repo = getRepo(repoName);
-	const git = await setupGit(repo);
-	if (!ignoreFTP && push.modifiedMedias.length > 0) {
-		// Before making any commits, we have to send stuff via FTP
-		const ftp = new FTP({repoName: repoName});
-		await ftp.connect();
-		for (const media of push.modifiedMedias) {
-			// New or updated file
-			if (media.old === null || media.old === media.new) {
-				const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
-				await ftp.upload(path[0]);
-			} else if (media.new === null) {
-				// Deleted file
-				await ftp.delete(media.old);
-			} else if (media.new !== media.old) {
-				// Renamed file or new upload with different sizes, let's find out!
-				if (media.sizeDifference) {
+	try {
+		const repo = getRepo(repoName);
+		const git = await setupGit(repo);
+		if (!ignoreFTP && push.modifiedMedias.length > 0) {
+			// Before making any commits, we have to send stuff via FTP
+			const ftp = new FTP({repoName: repoName});
+			await ftp.connect();
+			for (const media of push.modifiedMedias) {
+				// New or updated file
+				if (media.old === null || media.old === media.new) {
 					const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
 					await ftp.upload(path[0]);
+				} else if (media.new === null) {
+					// Deleted file
 					await ftp.delete(media.old);
-				} else {
-					await ftp.rename(basename(media.old), basename(media.new));
+				} else if (media.new !== media.old) {
+					// Renamed file or new upload with different sizes, let's find out!
+					if (media.sizeDifference) {
+						const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
+						await ftp.upload(path[0]);
+						await ftp.delete(media.old);
+					} else {
+						await ftp.rename(basename(media.old), basename(media.new));
+					}
 				}
 			}
+			await ftp.disconnect();
 		}
-		await ftp.disconnect();
-	}
-	// Let's work on our commits
-	const task = new Task({
-		text: 'COMMITING_CHANGES',
-		total: push.commits.length
-	});
-	try {
-		for (const commit of push.commits) {
-			if (commit.addedFiles) for (const addedFile of commit.addedFiles) {
-				await git.add(addedFile);
+		// Let's work on our commits
+		const task = new Task({
+			text: 'COMMITING_CHANGES',
+			total: push.commits.length
+		});
+		try {
+			for (const commit of push.commits) {
+				if (commit.addedFiles) for (const addedFile of commit.addedFiles) {
+					await git.add(addedFile);
+				}
+				if (commit.removedFiles) for (const removedFile of commit.removedFiles) {
+					await git.rm(removedFile);
+				}
+				await git.commit(commit.message);
+				task.incr();
 			}
-			if (commit.removedFiles) for (const removedFile of commit.removedFiles) {
-				await git.rm(removedFile);
-			}
-			await git.commit(commit.message);
-			task.incr();
+			// All our commits are hopefully done.
+			await git.push();
+			emitWS('pushComplete', repoName);
+		} catch(err) {
+			throw err;
+		} finally {
+			task.end();
 		}
 	} catch(err) {
-		throw err;
-	} finally {
-		task.end();
+		logger.error(`Pushing to repository ${repoName} failed: ${err}`, {service: 'Repo', obj: err});
+		// No need to throw here, this is called asynchronously.
 	}
 
-	// All our commits are hopefully done.
-	await git.push();
-	emitWS('pushComplete', repoName);
+
 }

@@ -32,7 +32,7 @@ export default class FTP {
 				user: repo.FTP.Username,
 				password: repo.FTP.Password,
 				secure: false, // for now, shut up please.
-				port: repo.FTP.Port
+				port: repo.FTP.Port || 21
 			});
 		} catch(err) {
 			logger.error(`Failed to connect to FTP for repository ${repo.Name}: ${err}`, {service: 'FTP', obj: err});
@@ -91,6 +91,6 @@ export default class FTP {
 	_validateFTPSettings(repo: Repository) {
 		const ftp = repo.FTP;
 		if (!ftp) throw 'FTP not configured';
-		if (!ftp.Port || !ftp.Host || !ftp.Password || !ftp.Username) throw 'Invalid settings in FTP configuration';
+		if (!ftp.Host || !ftp.Password || !ftp.Username) throw 'Invalid settings in FTP configuration';
 	}
 }
