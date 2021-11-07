@@ -121,7 +121,7 @@ class SessionList extends Component<unknown, SessionListState> {
 						}
 					</Row>
 					<Table
-						dataSource={this.state.unused.filter(e => !this.state.tagType || e.types.includes(this.state.tagType))}
+						dataSource={this.state.unused.filter(e => !this.state.tagType || e.types?.includes(this.state.tagType))}
 						columns={this.columns}
 						rowKey='file'
 					/>
