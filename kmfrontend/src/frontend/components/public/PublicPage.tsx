@@ -53,13 +53,12 @@ function PublicPage(props: RouteComponentProps) {
 	const changeView = async (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => {
 		let route;
 		let searchType: 'search' | 'recent' | 'requested' = 'search';
-		if (view === 'home') {
+		if (view === 'home' || context?.globalState.settings.data.config.Frontend?.Mode === 0) {
 			route = '/public';
 		} else if (view === 'tag') {
 			tagType = tagType !== undefined ? tagType : tagType;
 			route = `/public/tags/${tagType}`;
-		}
-		if (view === 'favorites') {
+		} else if (view === 'favorites') {
 			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.favorites);
 			route = '/public/favorites';
 		} else if (view === 'requested') {
@@ -80,7 +79,7 @@ function PublicPage(props: RouteComponentProps) {
 			setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.currentPlaid);
 			route = `/public/playlist/${context.globalState.settings.data.state.currentPlaid}`;
 		}
-		if (indexKaraDetail === undefined) {
+		if (indexKaraDetail === undefined && context?.globalState.settings.data.config.Frontend?.Mode !== 0) {
 			setFilterValue(
 				context.globalDispatch,
 				'',
