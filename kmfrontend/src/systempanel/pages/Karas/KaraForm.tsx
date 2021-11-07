@@ -243,7 +243,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			// Check if user has already started doing input, or if it's an edit of existing kara
 			if (!this.props.kara.kid && this.state.titlesIsTouched !== true && this.formRef.current.isFieldsTouched(['versions', 'series', 'language']) !== true) {
 				this.setState({ titles: parentKara.titles, parentKara });
+				const oldFormFields = this.formRef.current.getFieldsValue(['mediafile', 'subfile']); // Fields to take over to the applied kara
 				this.formRef.current.resetFields();
+				this.formRef.current.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
 			}
 		}
 	}
