@@ -52,9 +52,7 @@ export async function sendPayload(host: string, minimal: boolean) {
 		if (!payload.instance.instance_id) throw 'Could not fetch instance ID';
 		logger.info(`Sending payload to ${host} (${prettyBytes(JSON.stringify(payload).length)})`, {service: 'Stats'});
 		savePayload(payload, host);
-		await HTTP.post(`https://${host}/api/stats`, {
-			json: payload
-		});
+		await HTTP.post(`https://${host}/api/stats`, payload);
 
 		logger.info(`Payload sent successfully to ${host}`, {service: 'Stats'});
 	} catch(err) {
