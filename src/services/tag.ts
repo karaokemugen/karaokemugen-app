@@ -55,7 +55,8 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		if (!tagObj.tid) tagObj.tid = uuidV4();
 		if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
 		const tagfile = tagObj.tagfile;
-		tagObj.modified_at = new Date().toISOString();
+		// Modified_at is not provided if tag is new. if tag data comes from an already known tag, we're not going to modify it
+		if (!tagObj.modified_at) tagObj.modified_at = new Date().toISOString();
 
 		const promises = [
 			insertTag(tagObj),
