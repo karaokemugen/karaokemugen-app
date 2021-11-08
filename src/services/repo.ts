@@ -10,7 +10,7 @@ import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo,selectRepos, updateRepo } from '../dao/repo';
 import {getSettings, refreshAll, saveSetting} from '../lib/dao/database';
 import { refreshKaras } from '../lib/dao/kara';
-import { writeKara } from '../lib/dao/karafile';
+import { parseKara, writeKara } from '../lib/dao/karafile';
 import { readAllKaras } from '../lib/services/generation';
 import { DBTag } from '../lib/types/database/tag';
 import { Kara, KaraFileV4 } from '../lib/types/kara';
@@ -28,6 +28,7 @@ import {
 } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
+import { topologicalSort } from '../lib/utils/objectHelpers';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -516,10 +517,16 @@ async function applyChanges(changes: Change[], repo: Repository) {
 	await Promise.all(tagPromises);
 	const KIDsToDelete = [];
 	const KIDsToUpdate = [];
+	let karas = [];	
 	const task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
 	for (const match of karaFiles) {
 		if (match.type === 'new') {
-			KIDsToUpdate.push(await integrateKaraFile(resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path)), false));
+			const file = resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path));
+			const karaFileData = await parseKara(file);	
+			karas.push({
+				file: file,
+				data: karaFileData
+			});			
 		} else {
 			// Delete.
 			KIDsToDelete.push(match.uid);
@@ -531,6 +538,10 @@ async function applyChanges(changes: Change[], repo: Repository) {
 	if (TIDsToDelete.length > 0) {
 		// Let's not remove tags in karas : it's already done anyway
 		deletePromises.push(removeTag(TIDsToDelete, {refresh: false, removeTagInKaras: false, deleteFile: false}));
+	}
+	karas = topologicalSort(karas);
+	for (const kara of karas) {
+		KIDsToUpdate.push(await integrateKaraFile(kara.file, kara.data, false));
 	}
 	await Promise.all(deletePromises);
 	task.update({text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0});

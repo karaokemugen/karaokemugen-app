@@ -10,11 +10,11 @@ import { selectPlaylistContentsMicro } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKaras, refreshKarasDelete, refreshKarasInsert, refreshKarasUpdate, refreshYears, updateKaraParentSearchVector, updateKaraSearchVector } from '../lib/dao/kara';
-import { getDataFromKaraFile, parseKara, writeKara } from '../lib/dao/karafile';
+import { getDataFromKaraFile, writeKara } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { DBKara } from '../lib/types/database/kara';
-import { Kara, KaraTag } from '../lib/types/kara';
+import { Kara, KaraFileV4, KaraTag } from '../lib/types/kara';
 import { Tag } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName, tagTypes } from '../lib/utils/constants';
@@ -264,8 +264,7 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	profile('RefreshAfterDBChange');
 }
 
-export async function integrateKaraFile(file: string, deleteOldFiles = true): Promise<string> {
-	const karaFileData = await parseKara(file);
+export async function integrateKaraFile(file: string, karaFileData: KaraFileV4, deleteOldFiles = true): Promise<string> {
 	const karaFile = basename(file);
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData, {media: true, lyrics: true});
 	const karaDB = await getKara(karaData.kid, {role: 'admin', username: 'admin'});
