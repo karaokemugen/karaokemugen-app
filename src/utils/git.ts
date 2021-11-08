@@ -58,6 +58,7 @@ export default class Git {
 		return url.href;
 	}
 
+	/** Prepare git instance */
 	async setup() {
 		const gitPath = await which(`git${process.platform === 'win32' ? '.exe':''}`);
 		this.git = simpleGit({
@@ -72,17 +73,17 @@ export default class Git {
 		if (!origin) await this.git.addRemote('origin', url);
 		if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
 			logger.debug(`${this.repoName}: Rebuild remote`, {service: 'Git'});
-			/*await this.git.removeRemote('origin');
-			await this.git.addRemote('origin', url);*/
 			await this.setRemote();
 			await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 		}
 	}
 
+	/** Determine if folder is a git repository */
 	isGit() {
 		return asyncExists(resolve(this.opts.baseDir, '.git'));
 	}
 
+	/** Returns the second word of the first line of a git show to determine latest commit */
 	async getCurrentCommit() {
 		const show = await this.git.show();
 		return show.split('\n')[0].split(' ')[1];
@@ -190,6 +191,8 @@ export default class Git {
 	}
 
 	/** Call this when user */
+	// When user what? Are you drunk? 
+	// It's obviously called when user changes their name/mail.
 	async configUser(author: string, email: string) {
 		await this.git.addConfig('user.name', author);
 		await this.git.addConfig('user.email', email);
@@ -239,29 +242,6 @@ export default class Git {
 		status.created.forEach((s, i) => status.created[i] = s.replace(/"/g, ''));
 		status.deleted.forEach((s, i) => status.deleted[i] = s.replace(/"/g, ''));
 		status.conflicted.forEach((s, i) => status.conflicted[i] = s.replace(/"/g, ''));
-		return status;
-		/**
-		 * Example return, putting this here for reference later, did a quick test and it returned this
-StatusSummary {
-  not_added: [ 'tools/checknew_bakaclub/package.json' ],
-  conflicted: [],
-  created: [],
-  deleted: [],
-  modified: [],
-  renamed: [],
-  files: [
-    FileStatusSummary {
-      path: 'tools/checknew_bakaclub/package.json',
-      index: '?',
-      working_dir: '?'
-    }
-  ],
-  staged: [],
-  ahead: 0,
-  behind: 0,
-  current: 'master',
-  tracking: 'origin/master'
-}
-	*/
+		return status;	
 	}
 }

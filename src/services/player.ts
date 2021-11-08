@@ -10,7 +10,7 @@ import { on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC';
 import {getState,setState} from '../utils/state';
-import { playCurrentSong } from './karaokeEngine';
+import { playCurrentSong } from './karaEngine';
 import {getCurrentSong, getNextSong, getPreviousSong, setPlaying} from './playlist';
 import {startPoll} from './poll';
 

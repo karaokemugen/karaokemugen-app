@@ -13,7 +13,7 @@ import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
-import { playSingleSong } from '../services/karaokeEngine';
+import { playSingleSong } from '../services/karaEngine';
 import { importPlaylist, playlistImported} from '../services/playlist';
 import { addRepo,getRepo } from '../services/repo';
 import { generateAdminPassword } from '../services/user';

@@ -17,7 +17,7 @@ import { errorStep } from '../electron/electronLogger';
 import { getConfig, resolvedPathBackgrounds, resolvedPathBundledBackgrounds, resolvedPathRepos, resolvedPathTemp, setConfig } from '../lib/utils/config';
 import { getAvatarResolution } from '../lib/utils/ffmpeg';
 import { asyncExists, isImageFile, isMediaFile, replaceExt, resolveFileInDirs } from '../lib/utils/files';
-import { playerEnding } from '../services/karaokeEngine';
+import { playerEnding } from '../services/karaEngine';
 import { getSingleMedia } from '../services/medias';
 import { next, prev } from '../services/player';
 import { notificationNextSong } from '../services/playlist';

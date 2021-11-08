@@ -1,7 +1,7 @@
 import { Menu } from 'electron';
 
-import { MenuItemBuilderOptions, MenuLayout } from '../types/electron';
 import { removeNulls } from '../lib/utils/objectHelpers';
+import { MenuItemBuilderOptions, MenuLayout } from '../types/electron';
 import { win } from './electron';
 import editMenu from './menus/edit';
 import fileMenu from './menus/file';
