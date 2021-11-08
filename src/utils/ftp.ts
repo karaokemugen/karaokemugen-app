@@ -49,7 +49,7 @@ export default class FTP {
 
 	async rename(origFile: string, newFile: string) {
 		if (!await asyncExists(newFile)) throw 'File unknown';
-		logger.info(`renaming file "${origFile}" to "${newFile}"`, {service: 'FTP'});
+		logger.info(`Renaming file "${origFile}" to "${newFile}"`, {service: 'FTP'});
 		return this.client.rename(origFile, newFile);
 	}
 

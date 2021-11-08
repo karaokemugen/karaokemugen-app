@@ -249,12 +249,27 @@ export const defaults: Config = {
 			Backgrounds: ['backgrounds'],
 			Bin: 'bin',
 			DB: 'db',
-			Encores: process.platform === 'win32' ? ['encores', 'encores\\KaraokeMugen'] : ['encores', 'encores/KaraokeMugen'],
+			Encores: [
+				'encores',
+				process.platform === 'win32' ?  'encores\\KaraokeMugen' : 'encores/KaraokeMugen'
+			],
 			Import: 'import',
-			Intros: process.platform === 'win32' ? ['intros', 'intros\\KaraokeMugen'] : ['intros', 'intros/KaraokeMugen'],
-			Jingles: process.platform === 'win32' ? ['jingles', 'jingles\\KaraokeMugen'] : ['jingles', 'jingles/KaraokeMugen'],
-			Outros: process.platform === 'win32' ? ['outros', 'outros\\KaraokeMugen'] : ['outros', 'outros/KaraokeMugen'],
-			Sponsors: process.platform === 'win32' ? ['sponsors', 'sponsors\\KaraokeMugen'] : ['sponsors', 'sponsors/KaraokeMugen'],
+			Intros: [
+				'intros',
+				process.platform === 'win32' ? 'intros\\KaraokeMugen' : 'intros/KaraokeMugen'
+			],
+			Jingles: [
+				'jingles',
+				process.platform === 'win32' ? 'jingles\\KaraokeMugen' : 'jingles/KaraokeMugen'
+			],
+			Outros: [
+				'outros',
+				process.platform === 'win32' ? 'outros\\KaraokeMugen' : 'outros/KaraokeMugen'
+			],
+			Sponsors: [
+				'sponsors',
+				process.platform === 'win32' ? 'sponsors\\KaraokeMugen' : 'sponsors/KaraokeMugen'
+			],
 			Temp: 'temp',
 			Previews: 'previews',
 			SessionExports: 'sessionExports',

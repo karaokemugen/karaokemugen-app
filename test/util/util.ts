@@ -5,7 +5,15 @@ import { io } from 'socket.io-client';
 import { DBTag } from '../../src/lib/types/database/tag';
 import { tagTypes, uuidPlusTypeRegexp,uuidRegexp } from '../../src/lib/utils/constants';
 import {Config} from '../../src/types/config';
-import { testSongs } from '../../src/utils/constants';
+
+const testSongs = [
+	'5737c5b2-7ea4-414f-8c92-143838a402f6',
+	'a6108863-0ae9-48ad-adb5-cb703651f6bf',
+	'31f60393-8bd3-4b84-843e-a92d03a1a314',
+	'f99df658-9c61-4ea2-a46c-624a1a4c4768',
+	'495e2635-38a9-42db-bdd0-df4d27329c87',
+	'2581dec1-4f92-4f5a-a3ec-71dd6874b990'
+];
 
 export const socket = io('http://localhost:1337');
 export const usernameAdmin = 'adminTest';
