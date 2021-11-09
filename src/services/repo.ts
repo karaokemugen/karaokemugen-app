@@ -517,16 +517,16 @@ async function applyChanges(changes: Change[], repo: Repository) {
 	await Promise.all(tagPromises);
 	const KIDsToDelete = [];
 	const KIDsToUpdate = [];
-	let karas = [];	
+	let karas = [];
 	const task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
 	for (const match of karaFiles) {
 		if (match.type === 'new') {
 			const file = resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path));
-			const karaFileData = await parseKara(file);	
+			const karaFileData = await parseKara(file);
 			karas.push({
 				file: file,
 				data: karaFileData
-			});			
+			});
 		} else {
 			// Delete.
 			KIDsToDelete.push(match.uid);
@@ -1088,13 +1088,21 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 					await ftp.upload(path[0]);
 				} else if (media.new === null) {
 					// Deleted file
-					await ftp.delete(media.old);
+					try {
+						await ftp.delete(media.old);
+					} catch(err) {
+						logger.warn(`File ${media.old} could not be deleted on FTP`, {service: 'Repo'});
+					}
 				} else if (media.new !== media.old) {
 					// Renamed file or new upload with different sizes, let's find out!
 					if (media.sizeDifference) {
 						const path = await resolveFileInDirs(media.new, resolvedPathRepos('Medias', repoName));
 						await ftp.upload(path[0]);
-						await ftp.delete(media.old);
+						try {
+							await ftp.delete(media.old);
+						} catch(err) {
+							logger.warn(`File ${media.old} could not be deleted on FTP`, {service: 'Repo'});
+						}
 					} else {
 						await ftp.rename(basename(media.old), basename(media.new));
 					}
