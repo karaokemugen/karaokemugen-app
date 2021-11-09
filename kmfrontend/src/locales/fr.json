@@ -600,7 +600,7 @@
             "SMART_SHUFFLE": "Intelligent",
             "SMART_SHUFFLE_DESC": "Mélange en évitant que les chansons longues ou les chansons de la même personne ne se succèdent",
             "BALANCE": "Equitable",
-            "BALANCE_DESC": "Réordonne le passage des chansons du public par groupement d'utilisateurs (A-B-C, A-B-C, etc.)",
+            "BALANCE_DESC": "Réordonne le passage des chansons du public par groupement d'utilisateurs (A-B-C, B-A-C, C-B-A, etc.)",
             "SORTUPVOTES": "Trier par like",
             "SORTUPVOTES_DESC": "Trie par nombre de likes décroissant (les chansons les plus populaires en premier)"
         },

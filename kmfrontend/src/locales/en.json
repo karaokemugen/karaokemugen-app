@@ -600,7 +600,7 @@
             "SMART_SHUFFLE": "Smart",
             "SMART_SHUFFLE_DESC": "Prevents long songs or songs by the same person from following each other",
             "BALANCE": "Balanced",
-            "BALANCE_DESC": "Reorders songs by pools of users (A-B-C, A-B-C, etc.)",
+            "BALANCE_DESC": "Reorders songs by pools of users (A-B-C, B-A-C, C-B-A, etc.)",
             "SORTUPVOTES": "Sort by like",
             "SORTUPVOTES_DESC": "Sort by decreasing number of likes (most popular songs first)"
         },
