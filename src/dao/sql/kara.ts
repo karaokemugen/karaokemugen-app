@@ -102,15 +102,15 @@ ${offsetClause}
 
 export const sqlgetKaraMini = `
 SELECT
-	ak.pk_kid AS kid,
-	ak.titles AS titles,
-	ak.mediafile AS mediafile,
-	ak.karafile AS karafile,
-	ak.subfile AS subfile,
-	ak.duration AS duration,
-	ak.repository as repository
-FROM all_karas AS ak
-WHERE ak.pk_kid = $1
+	pk_kid AS kid,
+	titles AS titles,
+	mediafile AS mediafile,
+	karafile AS karafile,
+	subfile AS subfile,
+	duration AS duration,
+	repository as repository
+FROM kara
+WHERE pk_kid = $1
 `;
 
 export const sqldeleteKara = `
