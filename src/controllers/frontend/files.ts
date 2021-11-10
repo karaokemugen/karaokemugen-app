@@ -6,7 +6,7 @@ import { Socket } from 'socket.io';
 import { v4 as uuidV4 } from 'uuid';
 
 import { APIData } from '../../lib/types/api';
-import { resolvedPathTemp } from '../../lib/utils/config';
+import { resolvedPath } from '../../lib/utils/config';
 import logger from '../../lib/utils/logger';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { openLyricsFile } from '../../services/karaManagement';
@@ -15,7 +15,7 @@ import { runChecklist } from '../middlewares';
 import { requireHTTPAuth, requireValidUser } from '../middlewaresHTTP';
 
 export default function filesController(router: Router) {
-	const upload = multer({ dest: resolvedPathTemp() });
+	const upload = multer({ dest: resolvedPath('Temp') });
 	router.route('/importFile')
 		.post(requireHTTPAuth, requireValidUser, upload.single('file'), (req, res: any) => {
 			res.status(200).send(JSON.stringify(req.file));
@@ -28,7 +28,7 @@ export function filesSocketController(router: SocketIOApp) {
 		try {
 			const extension = req.body.extension ? `.${req.body.extension}` : '';
 			const filename = `${uuidV4()}${extension}`;
-			const fullPath = resolve(resolvedPathTemp(), filename);
+			const fullPath = resolve(resolvedPath('Temp'), filename);
 			await fs.writeFile(fullPath, req.body.buffer);
 			return {
 				filename: fullPath

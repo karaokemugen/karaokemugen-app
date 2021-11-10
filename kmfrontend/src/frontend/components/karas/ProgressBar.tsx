@@ -112,7 +112,7 @@ function ProgressBar() {
 
 		if (data.mediaType || data.currentSong) {
 			setWidth('0');
-			if (data.mediaType === 'background') {
+			if (data.mediaType === 'stop') {
 				setKaraInfoText(i18next.t('KARA_PAUSED_WAITING'));
 				setLength(-1);
 				setAnimate(0);
@@ -136,8 +136,12 @@ function ProgressBar() {
 				setKaraInfoText(i18next.t('SPONSOR_TIME'));
 				setLength(-1);
 				setAnimate(0);
-			} else if (data.mediaType === 'pauseScreen') {
+			} else if (data.mediaType === 'pause') {
 				setKaraInfoText(i18next.t('PAUSE_TIME'));
+				setLength(-1);
+				setAnimate(0);
+			} else if (data.mediaType === 'poll') {
+				setKaraInfoText(i18next.t('VOTE_TIME'));
 				setLength(-1);
 				setAnimate(0);
 			} else if (data.currentSong) {

@@ -36,7 +36,6 @@ interface Record {
 // Transforms dot notation to object and value
 
 const configWithSelectFileInFolder = [
-	'Player.Background',
 	'Playlist.Medias.Intros.File',
 	'Playlist.Medias.Encores.File',
 	'Playlist.Medias.Outros.File'
@@ -100,14 +99,12 @@ class Config extends Component<ConfigProps, ConfigState> {
 	}
 
 	getConfigToSearch(key) {
-		if (key === 'Player.Background') {
-			return 'System.Path.Backgrounds';
-		} else if (key === 'Playlist.Medias.Intros.File') {
-			return 'System.Path.Intros';
+		if (key === 'Playlist.Medias.Intros.File') {
+			return 'System.MediaPath.Intros';
 		} else if (key === 'Playlist.Medias.Encores.File') {
-			return 'System.Path.Encores';
+			return 'System.MediaPath.Encores';
 		} else if (key === 'Playlist.Medias.Outros.File') {
-			return 'System.Path.Outros';
+			return 'System.MediaPath.Outros';
 		}
 	}
 
@@ -182,8 +179,8 @@ class Config extends Component<ConfigProps, ConfigState> {
 								}}
 								defaultValue={record.value}
 							/> :
-							((record.key.includes('System.Binaries') || record.key.includes('System.Path')) ?
-								(Array.isArray(record.value) || record.key.includes('System.Path') ?
+							((record.key.includes('System.Binaries') || record.key.includes('System.Path') || record.key.includes('System.MediaPath')) ?
+								(Array.isArray(record.value) || record.key.includes('System.Path') || record.key.includes('System.MediaPath') ?
 									<FoldersElement keyModal={record.key} value={record.value} openDirectory={true}
 										onChange={(value) => this.saveSetting(record.key, value)} /> :
 									<FoldersElement keyModal={record.key} value={record.value} openFile={true}

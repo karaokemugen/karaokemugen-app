@@ -6,7 +6,7 @@ import { v4 as uuidV4 } from 'uuid';
 
 import { APIMessage } from '../controllers/common';
 import {initDownloads, insertDownloads, selectDownloads, truncateDownload, updateDownload, updateDownloaded} from '../dao/download';
-import {getConfig, resolvedPathRepos, resolvedPathTemp} from '../lib/utils/config';
+import {getConfig, resolvedPath,resolvedPathRepos} from '../lib/utils/config';
 import {asyncMove, resolveFileInDirs} from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
@@ -122,7 +122,7 @@ async function processDownload(download: KaraDownload) {
 		setDownloadStatus(download.uuid, 'DL_RUNNING');
 		updateDownloaded([download.kid], 'DOWNLOADING');
 		emitWS('KIDUpdated', [{kid: download.kid, download_status: 'DOWNLOADING'}]);
-		const tempDir = resolvedPathTemp();
+		const tempDir = resolvedPath('Temp');
 		const localMedia = resolve(resolvedPathRepos('Medias', download.repository)[0], download.mediafile);
 		const tempMedia = resolve(tempDir, download.mediafile);
 		const downloadItem = {

@@ -51,7 +51,7 @@ import {PLImportConstraints} from '../lib/services/playlist';
 import { DBPL } from '../lib/types/database/playlist';
 import { AggregatedCriteria, PlaylistExport, PLC, PLCEditParams } from '../lib/types/playlist';
 import {Token, User} from '../lib/types/user';
-import {getConfig, resolvedPathAvatars} from '../lib/utils/config';
+import {getConfig, resolvedPath} from '../lib/utils/config';
 import {now} from '../lib/utils/date';
 import { asyncExists } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
@@ -1393,8 +1393,8 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 				// User does not exist anymore, replacing it with admin
 				user = await getUser('admin');
 			}
-			avatarfile = resolve(resolvedPathAvatars(), user.avatar_file);
-			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPathAvatars(), 'blank.png');
+			avatarfile = resolve(resolvedPath('Avatars'), user.avatar_file);
+			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPath('Avatars'), 'blank.png');
 		} else {
 			requester = '';
 		}

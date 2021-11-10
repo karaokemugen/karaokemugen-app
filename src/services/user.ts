@@ -24,7 +24,7 @@ import { 	deleteUser,
 	updateUserPassword} from '../dao/user';
 import { DBUser } from '../lib/types/database/user';
 import {User, UserParams} from '../lib/types/user';
-import {getConfig, resolvedPathAvatars,resolvedPathTemp, setConfig} from '../lib/utils/config';
+import {getConfig, resolvedPath, setConfig} from '../lib/utils/config';
 import {asciiRegexp, imageFileTypes} from '../lib/utils/constants';
 import {asyncExists, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
@@ -151,8 +151,8 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		if (!imageFileTypes.includes(fileType.toLowerCase())) throw 'Wrong avatar file type';
 		// Construct the name of the new avatar file with its ID and filetype.
 		const newAvatarFile = `${uuidV4()}.${fileType}`;
-		const newAvatarPath = resolve(resolvedPathAvatars(), newAvatarFile);
-		const oldAvatarPath = resolve(resolvedPathAvatars(), oldImageFile);
+		const newAvatarPath = resolve(resolvedPath('Avatars'), newAvatarFile);
+		const oldAvatarPath = resolve(resolvedPath('Avatars'), oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
 			oldImageFile !== 'blank.png') {
 			try {
@@ -339,7 +339,7 @@ async function updateGuestAvatar(user: DBUser) {
 	}
 	let avatarStats: any = {};
 	try {
-		avatarStats = await fs.stat(resolve(resolvedPathAvatars(), user.avatar_file));
+		avatarStats = await fs.stat(resolve(resolvedPath('Avatars'), user.avatar_file));
 	} catch(err) {
 		// It means one avatar has disappeared, we'll put a 0 size on it so the replacement is triggered later
 		avatarStats.size = 0;
@@ -348,7 +348,7 @@ async function updateGuestAvatar(user: DBUser) {
 	if (avatarStats.size !== bundledAvatarStats.size) {
 		// bundledAvatar is different from the current guest Avatar, replacing it.
 		// Since pkg is fucking up with copy(), we're going to read/write file in order to save it to a temporary directory
-		const tempFile = resolve(resolvedPathTemp(), bundledAvatarFile);
+		const tempFile = resolve(resolvedPath('Temp'), bundledAvatarFile);
 		await copy(bundledAvatarPath, tempFile);
 		editUser(user.login, user, {
 			fieldname: null,
@@ -472,13 +472,13 @@ async function userChecks() {
 async function checkUserAvatars() {
 	logger.debug('Checking if all avatars exist', {service: 'User'});
 	const users = await getUsers();
-	const defaultAvatar = resolve(resolvedPathAvatars(), 'blank.png');
+	const defaultAvatar = resolve(resolvedPath('Avatars'), 'blank.png');
 	for (const user of users) {
 		if (!user.avatar_file) {
 			logger.warn(`User ${user.login} has no avatar file`, {service: 'User'});
 			continue;
 		}
-		const file = resolve(resolvedPathAvatars(), user.avatar_file);
+		const file = resolve(resolvedPath('Avatars'), user.avatar_file);
 		if (!await asyncExists(file)) {
 			await copy(
 				defaultAvatar,
@@ -504,11 +504,11 @@ async function cleanupAvatars() {
 	for (const user of users) {
 		if (!avatars.includes(user.avatar_file)) avatars.push(user.avatar_file);
 	}
-	const avatarFiles = await fs.readdir(resolvedPathAvatars());
+	const avatarFiles = await fs.readdir(resolvedPath('Avatars'));
 	for (const file of avatarFiles) {
 		const avatar = avatars.find(a => a === file);
 		if (!avatar && file !== 'blank.png') {
-			const fullFile = resolve(resolvedPathAvatars(), file);
+			const fullFile = resolve(resolvedPath('Avatars'), file);
 			try {
 				logger.debug(`Deleting old file ${fullFile}`, {service: 'User'});
 				await fs.unlink(fullFile);

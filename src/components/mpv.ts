@@ -1,5 +1,4 @@
 import execa from 'execa';
-import { promises as fs } from 'fs';
 import i18n from 'i18next';
 import debounce from 'lodash.debounce';
 import sample from 'lodash.sample';
@@ -14,9 +13,9 @@ import logger from 'winston';
 
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
-import { getConfig, resolvedPathBackgrounds, resolvedPathBundledBackgrounds, resolvedPathRepos, resolvedPathTemp, setConfig } from '../lib/utils/config';
+import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config';
 import { getAvatarResolution } from '../lib/utils/ffmpeg';
-import { asyncExists, isImageFile, isMediaFile, replaceExt, resolveFileInDirs } from '../lib/utils/files';
+import { asyncExists, replaceExt, resolveFileInDirs } from '../lib/utils/files';
 import { playerEnding } from '../services/karaEngine';
 import { getSingleMedia } from '../services/medias';
 import { next, prev } from '../services/player';
@@ -36,8 +35,10 @@ import Timeout = NodeJS.Timeout;
 import { getSongTitle } from '../lib/services/kara';
 import HTTP from '../lib/utils/http';
 import { profile } from '../lib/utils/logger';
-import { getSongSeriesSingers } from '../services/kara';
-import { editSetting } from '../utils/config';
+import { getBackgroundAndMusic } from '../services/backgrounds';
+import {getSongSeriesSingers} from '../services/kara';
+import { BackgroundType } from '../types/backgrounds';
+import {editSetting} from '../utils/config';
 
 type PlayerType = 'main' | 'monitor';
 
@@ -49,7 +50,7 @@ const playerState: PlayerState = {
 	timeposition: 0,
 	mute: false,
 	currentSong: null,
-	mediaType: 'background',
+	mediaType: 'stop',
 	showSubs: true,
 	onTop: false,
 	fullscreen: false,
@@ -277,8 +278,8 @@ function emitPlayerState() {
 	setState({ player: quickDiff() });
 }
 
-export function switchToPauseScreen() {
-	playerState.mediaType = 'pauseScreen';
+export function switchToPollScreen() {
+	playerState.mediaType = 'poll';
 	emitPlayerState();
 }
 
@@ -352,7 +353,7 @@ class Player {
 			`--volume=${+conf.Player.Volume}`,
 			'--no-config',
 			'--autoload-files=no',
-			`--input-conf=${resolve(resolvedPathTemp(), 'input.conf')}`,
+			`--input-conf=${resolve(resolvedPath('Temp'),'input.conf')}`,
 			'--sub-visibility',
 			'--sub-ass-vsfilter-aspect-compat=no',
 			'--loop-file=no',
@@ -513,7 +514,7 @@ class Player {
 					}
 				}
 				// If we're displaying an image, it means it's the pause inbetween songs
-				if (!playerState.isOperating && playerState.mediaType !== 'background' && playerState.mediaType !== 'pauseScreen' &&
+				if (!playerState.isOperating && playerState.mediaType !== 'stop' && playerState.mediaType !== 'pause' && playerState.mediaType !== 'poll' &&
 					(
 						status.name === 'eof-reached' && status.data === true
 					)
@@ -530,7 +531,7 @@ class Player {
 		// Handle pause/play via external ways
 		this.mpv.on('property-change', (status) => {
 			if (status.name === 'pause' && playerState.playerStatus !== 'stop' && (
-				playerState._playing === status.data || playerState.mediaType === 'background' || playerState.mediaType === 'pauseScreen'
+				playerState._playing === status.data || playerState.mediaType === 'stop' || playerState.mediaType === 'pause' || playerState.mediaType === 'poll'
 			)) {
 				logger.debug(`${status.data ? 'Paused' : 'Resumed'} event triggered on ${this.options.monitor ? 'monitor' : 'main'}`, { service: 'Player' });
 				playerState._playing = !status.data;
@@ -686,26 +687,6 @@ class Players {
 		].filter(x => !!x).join(';');
 	}
 
-	private static async extractAllBackgroundFiles(dirs: string[], music = false): Promise<string[]> {
-		let backgroundFiles = [];
-		for (const resolvedPath of dirs) {
-			backgroundFiles = backgroundFiles.concat(await Players.extractBackgroundFiles(resolvedPath, music));
-		}
-		return backgroundFiles;
-	}
-
-	private static async extractBackgroundFiles(backgroundDir: string, music: boolean): Promise<string[]> {
-		const backgroundFiles = [];
-		const dirListing = await fs.readdir(backgroundDir).catch(err => {
-			logger.error(`Unable to read background folder ${backgroundDir}`, { service: 'mpv', obj: err });
-			throw err;
-		});
-		for (const file of dirListing) {
-			if (music ? isMediaFile(file) : isImageFile(file)) backgroundFiles.push(resolve(backgroundDir, file));
-		}
-		return backgroundFiles;
-	}
-
 	isRunning() {
 		for (const player in this.players) {
 			if (this.players[player].isRunning) {
@@ -779,7 +760,7 @@ class Players {
 	}
 
 	private startBackgroundMusic(tries = 0): void {
-		if (playerState.mediaType === 'pauseScreen' || tries < 40) {
+		if (playerState.mediaType === 'pause' || playerState.mediaType === 'poll' || tries < 40) {
 			// mpv does return loadfile commands when in reality the file is not yet fully loaded
 			// so this function is called when the audio file or the background hasn't fully loaded
 			// we workaround this by waiting the eof-reached property to be false again
@@ -819,57 +800,27 @@ class Players {
 		this.tickProgressBar(Math.round(duration * 100), 1, DI);
 	}
 
-	private async loadBackground() {
-		const conf = getConfig();
-		let backgroundFiles = [];
-		// Test if custom background folder is empty. If it is we use the bundled backgrounds.
-		let backgroundImageFile = '';
-		let backgroundMusicFile = '';
-		if (conf.Player.Background) {
-			backgroundImageFile = resolve(resolvedPathBackgrounds()[0], conf.Player.Background);
-			if (!await asyncExists(backgroundImageFile)) {
-				// Background provided in config file doesn't exist, reverting to default one provided.
-				logger.warn(`Unable to find background file ${backgroundImageFile}, reverting to default one`, { service: 'Player' });
-			} else {
-				backgroundFiles.push(backgroundImageFile);
-			}
-		} else {
-			// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
-			backgroundFiles = await Players.extractAllBackgroundFiles(resolvedPathBackgrounds());
-			// If backgroundFiles is empty, it means no file was found in the directories scanned.
-			// Reverting to original, supplied background :
-			if (backgroundFiles.length === 0) backgroundFiles = await Players.extractAllBackgroundFiles([resolvedPathBundledBackgrounds()]);
-		}
-		backgroundImageFile = sample(backgroundFiles);
-		// First, try to find a "neighbour" mp3
-		if (await asyncExists(replaceExt(backgroundImageFile, '.mp3'))) {
-			backgroundMusicFile = replaceExt(backgroundImageFile, '.mp3');
-		} else {
-			// Otherwise, pick a random media file from the background folder
-			const backgroundMusics = await Players.extractAllBackgroundFiles(resolvedPathBackgrounds(), true);
-			if (backgroundMusics.length > 0) backgroundMusicFile = sample(backgroundMusics);
-		}
-		logger.debug(`Background selected : ${backgroundImageFile}${backgroundMusicFile ? ` (${backgroundMusicFile})` : ''}`, { service: 'Player' });
+	private async loadBackground(type: BackgroundType) {
+		const background = await getBackgroundAndMusic(type);
+		logger.debug(`Background selected : ${background.pictures[0]}${background.music[0] ? ` (${background.music[0]})`:''}`, {service: 'Player'});
 		try {
-			playerState.mediaType = 'background';
+			playerState.mediaType = type as MediaType;
 			playerState.playerStatus = 'stop';
 			playerState.currentSong = undefined;
 			playerState.currentMedia = undefined;
 			playerState._playing = false;
 			playerState.playing = false;
 			emitPlayerState();
-			if (backgroundMusicFile) {
-				await this.exec({
-					command: ['loadfile', backgroundImageFile, 'replace', {
-						'force-media-title': 'Background',
-						'audio-files-set': backgroundMusicFile,
-						aid: '1',
-						'loop-file': 'inf',
-						pause: 'yes'
-					}]
-				});
+			if (background.music[0]) {
+				await this.exec({command: ['loadfile', background.pictures[0], 'replace', {
+					'force-media-title': 'Background',
+					'audio-files-set': background.music[0],
+					aid: '1',
+					'loop-file': 'inf',
+					pause: 'yes'
+				}]});
 			} else {
-				await this.exec({ command: ['loadfile', backgroundImageFile, 'replace', { 'force-media-title': 'Background' }] });
+				await this.exec({command: ['loadfile', background.pictures[0], 'replace', {'force-media-title': 'Background'}]});
 			}
 		} catch (err) {
 			logger.error('Unable to load background', { service: 'Player', obj: err });
@@ -906,7 +857,7 @@ class Players {
 		emitPlayerState();
 		try {
 			await this.bootstrapPlayers();
-			await this.loadBackground();
+			await this.loadBackground('stop');
 			this.displayInfo();
 		} catch (err) {
 			errorStep(i18n.t('ERROR_START_PLAYER'));
@@ -951,7 +902,7 @@ class Players {
 		await this.exec('recreate', [null, true], undefined, true).catch(err => {
 			logger.error('Cannot restart mpv', { service: 'Player', obj: err });
 		});
-		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'background' || playerState.mediaType === 'pauseScreen') {
+		if (playerState.playerStatus === 'stop' || playerState.mediaType === 'stop' || playerState.mediaType === 'pause' || playerState.mediaType === 'poll') {
 			setImmediate(this.loadBackground.bind(this));
 		}
 	}
@@ -1010,8 +961,8 @@ class Players {
 			id3tags = await id3.read(mediaFile);
 		}
 		if (!id3tags?.image) {
-			const defaultImageFile = resolve(resolvedPathTemp(), 'default.jpg');
-			options['external-file'] = defaultImageFile.replaceAll('\\', '/');
+			const defaultImageFile = resolve(resolvedPath('Temp'), 'default.jpg');
+			options['external-file'] = defaultImageFile.replaceAll('\\','/');
 			options['force-window'] = 'yes';
 			options['image-display-duration'] = 'inf';
 			options.vid = '1';
@@ -1102,8 +1053,8 @@ class Players {
 		} else {
 			logger.debug(`No ${mediaType} to play.`, { service: 'Player' });
 			playerState.playerStatus = 'play';
-			await this.loadBackground();
-			logger.debug('No jingle DI', { service: 'Player' });
+			await this.loadBackground('stop');
+			logger.debug('No jingle DI', {service: 'Player'});
 			await this.displayInfo();
 			playerState._playing = true;
 			emitPlayerState();
@@ -1112,7 +1063,7 @@ class Players {
 		}
 	}
 
-	async stop(): Promise<PlayerState> {
+	async stop(type: BackgroundType): Promise<PlayerState> {
 		// on stop do not trigger onEnd event
 		// => setting internal playing = false prevent this behavior
 		logger.debug('Stop event triggered', { service: 'Player' });
@@ -1123,8 +1074,8 @@ class Players {
 		// parts of the code
 		playerState['eof-reached'] = true;
 		playerState.playerStatus = 'stop';
-		await this.loadBackground();
-		logger.debug('Stop DI', { service: 'Player' });
+		await this.loadBackground(type);
+		logger.debug('Stop DI', {service: 'Player'});
 		this.displayInfo();
 		emitPlayerState();
 		setProgressBar(-1);
@@ -1342,7 +1293,7 @@ class Players {
 			const position = nextSong ? '{\\an5}' : '{\\an1}';
 			this.messages.addMessage('DI', position + spoilerString + nextSongString + infos, duration === -1 ? 'infinite' : duration);
 			if (nextSong) {
-				playerState.mediaType = 'pauseScreen';
+				playerState.mediaType = 'pause';
 				try {
 					this.startBackgroundMusic();
 				} catch (err) {

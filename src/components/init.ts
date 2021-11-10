@@ -7,10 +7,12 @@ import {resolve} from 'path';
 import { getPortPromise } from 'portfinder';
 
 import { errorStep, initStep } from '../electron/electronLogger';
-import { configureLocale, getConfig, resolvedPathAvatars, resolvedPathBundledBackgrounds, resolvedPathImport, resolvedPathPreviews, resolvedPathSessionExports, resolvedPathStreamFiles, resolvedPathTemp, setConfig } from '../lib/utils/config';
+import { PathType } from '../lib/types/config';
+import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config';
 import { asyncCheckOrMkdir, asyncCopyAll, asyncExists } from '../lib/utils/files';
 import logger, { configureLogger } from '../lib/utils/logger';
 import { resetSecurityCode } from '../services/auth';
+import { backgroundTypes } from '../services/backgrounds';
 import { migrateReposToZip } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
 import { Config } from '../types/config';
@@ -83,17 +85,17 @@ export async function init() {
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	const tempInput = resolve(resolvedPathTemp(), 'input.conf');
+	const tempInput = resolve(resolvedPath('Temp'), 'input.conf');
 	logger.debug(`Copying input.conf to ${tempInput}`, {service: 'Launcher'});
 	await copy(resolve(state.resourcePath, 'assets/input.conf'), tempInput);
 
-	const bundledBackgrounds = resolvedPathBundledBackgrounds();
+	const bundledBackgrounds = resolvedPath('BundledBackgrounds');
 	logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, {service: 'Launcher'});
 	await asyncCopyAll(resolve(state.resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`);
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
-	logger.debug(`Copying blank.png to ${resolvedPathAvatars()}`, {service: 'Launcher'});
-	await copy(resolve(state.resourcePath, 'assets/blank.png'), resolve(resolvedPathAvatars(), 'blank.png'));
+	logger.debug(`Copying blank.png to ${resolvedPath('Avatars')}`, {service: 'Launcher'});
+	await copy(resolve(state.resourcePath, 'assets/blank.png'), resolve(resolvedPath('Avatars'), 'blank.png'));
 
 	// Gentlemen, start your engines.
 	try {
@@ -112,31 +114,26 @@ async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
 		try {
-			await remove(resolvedPathTemp());
+			await remove(resolvedPath('Temp'));
 		} catch(err) {
 			// Non-fatal
 		}
 		// Emptying bundled backgrounds directory
 		try {
-			await remove(resolvedPathBundledBackgrounds());
+			await remove(resolvedPath('BundledBackgrounds'));
 		} catch(err) {
 			// Non-fatal
 		}
 		// Emptying import directory
 		try {
-			await remove(resolvedPathImport());
+			await remove(resolvedPath('Import'));
 		} catch(err) {
 			// Non-fatal
 		}
 		// Checking paths
 		const checks = [];
-		const paths = config.System.Path;
 		const dataPath = getState().dataPath;
-		for (const item of Object.keys(paths)) {
-			paths[item] && Array.isArray(paths[item])
-				? paths[item].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))))
-				: checks.push(asyncCheckOrMkdir(resolve(dataPath, paths[item])));
-		}
+		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
 		for (const repo of config.System.Repositories) {
 			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir)));
 			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
@@ -147,11 +144,12 @@ async function checkPaths(config: Config) {
 				repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
 			}
 		}
-		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
-		checks.push(asyncCheckOrMkdir(resolvedPathSessionExports()));
-		checks.push(asyncCheckOrMkdir(resolvedPathPreviews()));
-		checks.push(asyncCheckOrMkdir(resolvedPathStreamFiles()));
-		checks.push(asyncCheckOrMkdir(resolvedPathBundledBackgrounds()));
+		for (const type of backgroundTypes) {
+			checks.push(asyncCheckOrMkdir(resolve(resolvedPath('Backgrounds'), type)));
+		}
+		for (const path of Object.keys(getConfig().System.Path)) {
+			checks.push(asyncCheckOrMkdir(resolvedPath(path as PathType)));
+		}
 		await Promise.all(checks);
 		logger.debug('Directory checks complete', {service: 'Launcher'});
 	} catch(err) {

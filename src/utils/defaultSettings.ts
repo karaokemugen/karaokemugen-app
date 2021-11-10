@@ -119,7 +119,6 @@ export const defaults: Config = {
 			},
 			RandomQuotes: true
 		},
-		Background: '',
 		FullScreen: false,
 		AudioDevice: 'auto',
 		Monitor: false,
@@ -244,32 +243,35 @@ export const defaults: Config = {
 					}
 			}
 		],
-		Path: {
-			Avatars: 'avatars',
-			Backgrounds: ['backgrounds'],
-			Bin: 'bin',
-			DB: 'db',
+		MediaPath: {
 			Encores: [
 				'encores',
-				process.platform === 'win32' ?  'encores\\KaraokeMugen' : 'encores/KaraokeMugen'
+				process.platform === 'win32' ? 'encores\\KaraokeMugen' : 'encores/KaraokeMugen'
 			],
-			Import: 'import',
 			Intros: [
 				'intros',
-				process.platform === 'win32' ? 'intros\\KaraokeMugen' : 'intros/KaraokeMugen'
+				process.platform === 'win32' ?  'intros\\KaraokeMugen' : 'intros/KaraokeMugen'
 			],
 			Jingles: [
 				'jingles',
-				process.platform === 'win32' ? 'jingles\\KaraokeMugen' : 'jingles/KaraokeMugen'
+				process.platform === 'win32' ?  'jingles\\KaraokeMugen' : 'jingles/KaraokeMugen'
 			],
 			Outros: [
 				'outros',
-				process.platform === 'win32' ? 'outros\\KaraokeMugen' : 'outros/KaraokeMugen'
+				process.platform === 'win32' ? 				'outros\\KaraokeMugen' : 'outros/KaraokeMugen'
 			],
 			Sponsors: [
 				'sponsors',
 				process.platform === 'win32' ? 'sponsors\\KaraokeMugen' : 'sponsors/KaraokeMugen'
-			],
+			]
+		},
+		Path: {
+			Avatars: 'avatars',
+			Backgrounds: 'backgrounds',
+			BundledBackgrounds: 'bundledBackgrounds',
+			Bin: 'bin',
+			DB: 'db',
+			Import: 'import',
 			Temp: 'temp',
 			Previews: 'previews',
 			SessionExports: 'sessionExports',
@@ -362,14 +364,14 @@ export const configConstraints = {
 	'System.Binaries.Postgres.Windows': {presence: true},
 	'System.Binaries.Postgres.OSX': {presence: true},
 	'System.Path.Avatars': {presence: true},
-	'System.Path.Backgrounds': {arrayOneItemValidator: true},
+	'System.Path.Backgrounds': {presence: true},
 	'System.Path.Bin': {presence: true},
 	'System.Path.DB': {presence: true},
-	'System.Path.Encores': {arrayOneItemValidator: true},
-	'System.Path.Jingles': {arrayOneItemValidator: true},
-	'System.Path.Intros': {arrayOneItemValidator: true},
-	'System.Path.Sponsors': {arrayOneItemValidator: true},
-	'System.Path.Outros': {arrayOneItemValidator: true},
+	'System.MediaPath.Encores': {arrayOneItemValidator: true},
+	'System.MediaPath.Jingles': {arrayOneItemValidator: true},
+	'System.MediaPath.Intros': {arrayOneItemValidator: true},
+	'System.MediaPath.Sponsors': {arrayOneItemValidator: true},
+	'System.MediaPath.Outros': {arrayOneItemValidator: true},
 	'System.Path.Temp': {presence: true},
 	'System.Path.Previews': {presence: true},
 	'System.Path.Import': {presence: true},

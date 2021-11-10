@@ -10,7 +10,7 @@ export interface PlayerState {
 	mute?: boolean,
 	currentSong?: CurrentSong,
 	currentMedia?: Media,
-	mediaType?: 'song' | 'background' | 'pauseScreen' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
+	mediaType?: 'song' | 'stop' | 'pause' | 'poll' | 'Jingles' | 'Sponsors' | 'Encores' | 'Outros' | 'Intros',
 	showSubs?: boolean,
 	onTop?: boolean,
 	fullscreen?: boolean,

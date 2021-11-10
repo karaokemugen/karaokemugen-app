@@ -5,7 +5,7 @@ import { move, remove } from 'fs-extra';
 import { resolve } from 'path';
 
 import { DiffChanges, Repository } from '../lib/types/repo';
-import { resolvedPathTemp } from '../lib/utils/config';
+import { resolvedPath } from '../lib/utils/config';
 import { getFilesRecursively } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
@@ -38,10 +38,10 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 	});
 	try {
 		logger.debug(`Downloading ${repo} archive`, {service: 'Zip'});
-		const target = resolve(resolvedPathTemp(), `base-${repo}.zip`);
+		const target = resolve(resolvedPath('Temp'), `base-${repo}.zip`);
 		await downloadFile({ filename: target, url: zipURL }, task, `${repo} zip:`);
 		logger.debug(`Extracting ${repo} archive to ${outDir}`, {service: 'Zip'});
-		const tempDir = resolvedPathTemp();
+		const tempDir = resolvedPath('Temp');
 		task.update({
 			text: 'EXTRACTING_ZIP',
 			data: repo
@@ -76,7 +76,7 @@ export async function applyPatch(patch: string, dir: string) {
 		const patchProcess = execa(getState().binPath.patch, [
 			'-p1', '-N', '-f',
 			`--directory=${resolve(getState().dataPath, dir)}`,
-			`--reject-file=${resolve(resolvedPathTemp(), 'patch.rej')}`
+			`--reject-file=${resolve(resolvedPath('Temp'), 'patch.rej')}`
 		], {stdio: 'pipe'});
 		patchProcess.stdin.write(`${patch}\n`);
 		patchProcess.stdin.end();
@@ -85,7 +85,7 @@ export async function applyPatch(patch: string, dir: string) {
 	} catch (err) {
 		logger.warn('Cannot apply patch from server, fallback to other means', {service: 'DiffPatch', obj: err});
 		try {
-			const rejectedPatch = await fs.readFile(resolve(resolvedPathTemp(), 'patch.rej'), 'utf-8');
+			const rejectedPatch = await fs.readFile(resolve(resolvedPath('Temp'), 'patch.rej'), 'utf-8');
 			logger.debug(`Rejected patch : ${rejectedPatch}`, {service: 'DiffPatch'});
 		} catch(err) {
 			logger.debug(`Could not get rejected patch : ${err}`, { service: 'DiffPatch', obj: err});

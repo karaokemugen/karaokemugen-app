@@ -5,7 +5,7 @@ import {resolve} from 'path';
 
 import { DBReady } from '../dao/database';
 import { getSongTitle } from '../lib/services/kara';
-import {getConfig, resolvedPathStreamFiles} from '../lib/utils/config';
+import {getConfig, resolvedPath} from '../lib/utils/config';
 import { asyncCheckOrMkdir } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import {getSongSeriesSingers, getSongVersion} from '../services/kara';
@@ -25,15 +25,15 @@ async function writeCurrentSong() {
 	} else {
 		output = i18next.t('NO_KARA_PLAYING');
 	}
-	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'song_name.txt'), output, 'utf-8');
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'song_name.txt'), output, 'utf-8');
 }
 
 async function writeRequester() {
-	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'requester.txt'), getState().player.currentSong?.nickname || '', 'utf-8');
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'requester.txt'), getState().player.currentSong?.nickname || '', 'utf-8');
 }
 
 async function writeURL() {
-	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'km_url.txt'), getState().osURL, 'utf-8');
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'km_url.txt'), getState().osURL, 'utf-8');
 }
 
 async function writeFrontendStatus() {
@@ -50,18 +50,18 @@ async function writeFrontendStatus() {
 			output = 'INTERFACE_CLOSED';
 			break;
 	}
-	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'frontend_status.txt'), i18next.t(output), 'utf-8');
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'frontend_status.txt'), i18next.t(output), 'utf-8');
 }
 
 async function writeKarasInPublicPL() {
 	const {karacount} = await getPlaylistInfo(getState().publicPlaid);
-	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'public_kara_count.txt'),
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'public_kara_count.txt'),
 		karacount.toString(), 'utf-8');
 }
 
 async function writeKarasInCurrentPL() {
 	const {karacount} = await getPlaylistInfo(getState().currentPlaid);
-	await fs.writeFile(resolve(resolvedPathStreamFiles(), 'current_kara_count.txt'),
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'current_kara_count.txt'),
 		karacount.toString(), 'utf-8');
 }
 
@@ -106,7 +106,7 @@ const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
 	if (!getConfig().Karaoke.StreamerMode.Enabled || !getState().ready || !DBReady) return;
 	try {
-		await asyncCheckOrMkdir(resolvedPathStreamFiles());
+		await asyncCheckOrMkdir(resolvedPath('StreamFiles'));
 		if (only) {
 			await fnMap.get(only)();
 		} else {
