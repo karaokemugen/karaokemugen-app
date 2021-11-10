@@ -7,7 +7,7 @@ import { resolve } from 'path';
 import { exit } from '../components/engine';
 import { init, preInit, welcomeToYoukousoKaraokeMugen } from '../components/init';
 import { selectUsers } from '../dao/user';
-import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
+import {getConfig, resolvedPath, setConfig} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
@@ -177,7 +177,7 @@ async function registerIPCEvents() {
 	});
 	ipcMain.on('openFolder', (_event, eventData) => {
 		if (eventData.type === 'streamFiles') {
-			open(resolve(resolvedPathStreamFiles()));
+			open(resolve(resolvedPath('StreamFiles')));
 		}
 	});
 }

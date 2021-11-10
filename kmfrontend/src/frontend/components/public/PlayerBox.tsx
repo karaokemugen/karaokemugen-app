@@ -81,7 +81,7 @@ function PlayerBox(props: IProps) {
 	const refreshPlayerInfos = async (data: PublicPlayerState) => {
 		if (data.mediaType || data.currentSong) {
 			setWidth('0');
-			if (data.mediaType === 'background') {
+			if (data.mediaType === 'stop') {
 				resetBox();
 				setTitle(i18next.t('KARA_PAUSED_WAITING'));
 				setSubtitle(sample(i18next.t('KARA_PAUSED_TAGLINES', { returnObjects: true })));
@@ -111,10 +111,15 @@ function PlayerBox(props: IProps) {
 				setTitle(i18next.t('SPONSOR_TIME'));
 				setSubtitle(sample(i18next.t('SPONSOR_TAGLINES', { returnObjects: true })));
 				if (props.onKaraChange) props.onKaraChange(null);
-			} else if (data.mediaType === 'pauseScreen') {
+			} else if (data.mediaType === 'pause') {
 				resetBox();
 				setTitle(i18next.t('PAUSE_TIME'));
 				setSubtitle(sample(i18next.t('PAUSE_TAGLINES', { returnObjects: true })));
+				if (props.onKaraChange) props.onKaraChange(null);
+			} else if (data.mediaType === 'poll') {
+				resetBox();
+				setTitle(i18next.t('POLL_TIME'));
+				setSubtitle(sample(i18next.t('POLL_TAGLINES', { returnObjects: true })));
 				if (props.onKaraChange) props.onKaraChange(null);
 			} else if (data.currentSong) {
 				const kara = data.currentSong;

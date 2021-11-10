@@ -6,13 +6,13 @@ import {basename, resolve} from 'path';
 import prettyBytes from 'pretty-bytes';
 import {createClient, FileStat} from 'webdav';
 
-import {getConfig, resolvedPathEncores, resolvedPathIntros, resolvedPathJingles, resolvedPathOutros, resolvedPathSponsors} from '../lib/utils/config';
+import {getConfig} from '../lib/utils/config';
 import {asyncCheckOrMkdir, isMediaFile} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import {Config} from '../types/config';
 import { Media, MediaType } from '../types/medias';
-import { editSetting } from '../utils/config';
+import { editSetting, resolvedMediaPath } from '../utils/config';
 import { downloadFiles } from '../utils/downloader';
 
 interface File {
@@ -64,14 +64,6 @@ export async function updatePlaylistMedias() {
 	task.end();
 }
 
-function resolveMediaPath(type: MediaType): string[] {
-	if (type === 'Intros') return resolvedPathIntros();
-	if (type === 'Outros') return resolvedPathOutros();
-	if (type === 'Encores') return resolvedPathEncores();
-	if (type === 'Jingles') return resolvedPathJingles();
-	if (type === 'Sponsors') return resolvedPathSponsors();
-}
-
 async function listRemoteMedias(type: MediaType): Promise<FileStat[]> {
 	const webdavClient = createClient(
 		KMSite.url,
@@ -107,17 +99,17 @@ async function removeFiles(files: string[], dir: string) {
 export async function updateMediasHTTP(type: MediaType, task: Task) {
 	try {
 		const remoteFiles: FileStat[] = await listRemoteMedias(type);
-		const localDir = resolve(resolveMediaPath(type)[0], 'KaraokeMugen/');
+		const localDir = resolve(resolvedMediaPath(type)[0], 'KaraokeMugen/');
 		await asyncCheckOrMkdir(localDir);
 		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)
 		const conf = getConfig();
 		const slash = process.platform === 'win32'
 			? '\\'
 			: '/';
-		if (!conf.System.Path[type].includes(conf.System.Path[type][0] + slash + 'KaraokeMugen')) {
-			conf.System.Path[type].push(conf.System.Path[type][0] + slash + 'KaraokeMugen');
+		if (!conf.System.MediaPath[type].includes(conf.System.MediaPath[type][0] + slash + 'KaraokeMugen')) {
+			conf.System.MediaPath[type].push(conf.System.MediaPath[type][0] + slash + 'KaraokeMugen');
 			const ConfigPart: Partial<Config> = {};
-			ConfigPart.System.Path[type] = conf.System.Path[type];
+			ConfigPart.System.MediaPath[type] = conf.System.MediaPath[type];
 			editSetting(ConfigPart);
 		}
 		const localFiles = await listLocalFiles(localDir);
@@ -179,7 +171,7 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 
 export async function buildMediasList(type: MediaType) {
 	medias[type] = [];
-	for (const resolvedPath of resolveMediaPath(type)) {
+	for (const resolvedPath of resolvedMediaPath(type)) {
 		const files = [];
 		const dirFiles = await fs.readdir(resolvedPath);
 		for (const file of dirFiles) {

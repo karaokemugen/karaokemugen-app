@@ -35,6 +35,7 @@ import {initStats, stopStats} from '../services/stats';
 import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
 import {Config} from '../types/config';
+import { MediaType } from '../types/medias';
 import sentry from '../utils/sentry';
 import { supportedLanguages } from './constants';
 import {configConstraints, defaults} from './defaultSettings';
@@ -225,7 +226,7 @@ export function configureHost() {
 			setState({osURL: `http://${config.Player.Display.ConnectionInfo.Host}${URLPort}`});
 		}
 	}
-	if ((state.player.mediaType === 'background' || state.player.mediaType === 'pauseScreen') && !state.songPoll) {
+	if ((state.player.mediaType === 'stop' || state.player.mediaType === 'pause' || state.player.mediaType === 'poll') && !state.songPoll) {
 		displayInfo();
 	}
 	writeStreamFiles('km_url');
@@ -327,4 +328,8 @@ async function binMissing(binariesPath: any, err: string) {
 			message: error
 		});
 	}
+}
+
+export function resolvedMediaPath(type: MediaType) {
+	return getConfig().System.MediaPath[type].map((path: string) => resolve(getState().dataPath, path));
 }

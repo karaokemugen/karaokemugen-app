@@ -126,8 +126,6 @@ Player:
       Host: '192.168.0.1'  
   # Override mpv's video output driver
   mpvVideoOutput: null
-  # Background file to load
-  Background: null
   # Fullscreen ?
   FullScreen: false
   # Spawn a second monitor window in PIP mode to check what the player is displaying
@@ -264,13 +262,7 @@ System:
       Path:
         Medias:
           - repos/Local/medias
-  Path:
-    # Some paths like Background, karas lyrics medias, etc. can have multiple entries.
-    Avatars: avatars
-    Backgrounds:
-      - backgrounds
-    Bin: bin
-    Import: import
+  MediaPath:
     Jingles:
       - jingles
       - jingles/KaraokeMugen
@@ -281,7 +273,16 @@ System:
       - outros
     Encores:
       - encores
+    Sponsors:
+      - sponsors
+  Path:
+    Avatars: avatars
+    Backgrounds: backgrounds
+    Bin: bin
+    Import: import
     Temp: temp
     Previews: previews
     SessionExports: sessionExports
     DB: db
+    BundledBackgrounds: BundledBackgrounds
+    StreamFiles: streamfiles

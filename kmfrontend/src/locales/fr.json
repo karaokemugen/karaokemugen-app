@@ -516,6 +516,11 @@
         "Buvez un coup !",
         "On revient tout de suite !"
     ],
+	"POLL_TIME": "Vote",
+	"POLL_TAGLINES": [
+		"Votez ! Votez !",
+		"Le choix vous revient."
+	],
     "QUOTA_AVAILABLE": "Vous pouvez de nouveau ajouter des chansons !",
     "SERIE_NAME_MODE": "Affichage des noms des séries",
     "SERIE_NAME_MODE_TOOLTIP": "Change la façon dont les noms de séries sont affichés dans la liste des chansons. Peut être ignoré par les préférences d'un utilisateur",
@@ -871,7 +876,8 @@
         "UNUSED_FILES": "Fichiers inutilisés",
         "DUPLICATE": "Dupliqués",
         "BATCH_EDIT": "Edition en masse de kara/tags",
-        "STORAGE": "Gestion de l'espace disque"
+        "STORAGE": "Gestion de l'espace disque",
+		"BACKGROUNDS": "Fonds d'écran"
     },
     "UNUSED_FILES": {
         "NAME": "Nom",
@@ -1430,6 +1436,10 @@
             "TITLE": "Modifier un dépôt",
             "DESCRIPTION": "Formulaire de modification de dépôt."
         },
+		"BACKGROUNDS": {
+			"TITLE": "Gestion des fonds d'écran",
+			"DESCRIPTION": "Un moyen parmi tant d'autres de personnaliser le lecteur."
+		},
         "UNUSED_FILES": {
             "TITLE": "Fichiers inutilisés",
             "DESCRIPTION": "Vous pouvez lister les fichiers inutiles (utilisés par aucun karaoké) dans vos dépôts d'ici."
@@ -1574,5 +1584,24 @@
         "T5": "Qu'est-il arrivé à mes critères de liste noire de téléchargement ?",
         "P10": "Ils ont été migrés vers des critères de liste noire classique. Cela veut dire que vous ne verrez plus ces chansons blacklistées dans la bibliothèque, comme si vous ne les aviez jamais téléchargées !",
         "P11": "Vous pouvez toujours modifier les critères de liste noire à tout moment."
-    }
+    },
+	"BACKGROUNDS_MGMT": {
+		"EXPL": "Il existe trois catégories de fonds d'écran. Si une catégorie n'a pas de fond associé, un fond d'écran inclus sera utilisé (ceux avec le personnage qui prête son nom à la version de l'application).",
+		"INFO": [
+			"Si vous souhaitez utiliser le même fond d'écran pour 2 catégories différentes (ou plus), vous devez le placer dans les 2 catégories.",
+			"Vous pouvez aussi ajouter de la musique ! De la même façon, chaque catégorie dispose de ses propres musiques.",
+			"Vous pouvez associer un fond d'écran avec une musique en leur donnant le même nom de fichier. Par exemple, fond1.jpg et fond1.mp3 dans la même catégorie seront toujours associés. Autrement si fond2.jpg n'a pas de son avec le même nom, il sera choisi au hasard."
+		],
+        "NEW": "Nouveau fond d'écran ou musique",
+        "CHOOSE_FILE": "Choisir un fichier",
+        "SAVE": "Sauvegarder",
+        "FILE": "Nom du fichier",
+        "PREVIEW": "Aperçu",
+        "CATEGORY": "Catégorie",
+        "TYPE": {
+            "PAUSE": "Pause",
+            "STOP": "Stop",
+            "POLL": "Sondage"
+        }
+	}
 }

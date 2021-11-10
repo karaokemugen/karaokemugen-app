@@ -516,6 +516,11 @@
         "Time to drink!",
         "We'll be right back!"
     ],
+	"POLL_TIME": "Vote",
+	"POLL_TAGLINES": [
+		"Vote! Vote!",
+		"The choice is yours."
+	],
     "QUOTA_AVAILABLE": "You can add songs again now!",
     "SERIE_NAME_MODE": "Series language mode",
     "SERIE_NAME_MODE_TOOLTIP": "Changes the way series names are displayed on the song list. Might be ignored by user preferences",
@@ -871,7 +876,8 @@
         "UNUSED_FILES": "Unused files",
         "DUPLICATE": "Duplicated",
         "BATCH_EDIT": "Batch edit song tags",
-        "STORAGE": "Disk storage management"
+        "STORAGE": "Disk storage management",
+		"BACKGROUNDS": "Backgrounds"
     },
     "UNUSED_FILES": {
         "NAME": "Name",
@@ -1422,6 +1428,10 @@
             "TITLE": "Repositories management",
             "DESCRIPTION": "Repositories are sources of karaoke. Add, enable, or remove repositories from this page."
         },
+		"BACKGROUNDS": {
+			"TITLE": "Backgrounds management",
+			"DESCRIPTION": "Just a mean to customize your player a little bit."
+		},
         "REPOSITORIES_NEW": {
             "TITLE": "Add a repository",
             "DESCRIPTION": "Repository creation form."
@@ -1574,5 +1584,24 @@
         "T5": "What happened to download blacklist criterias?",
         "P10": "They have been migrated to regular blacklist criterias. This means that you won't see those blacklisted songs in your library, as if you had never downloaded them!",
         "P11": "You can still modify blacklist criterias at any time."
-    }
+    },
+	"BACKGROUNDS_MGMT": {
+		"EXPL": "There are 3 categories of backgrounds. If a category doesn't have any background, a bundled one will be used (those with the character that give his name to the app version)",
+		"INFO": [
+			"If you want to use the same background for 2 different categories (or more), you have to place it in each category.",
+			"You can also add music! In the same fashion, each category has its own music.",
+			"You can bind a background to a music by giving it the same name. For example, back1.jpg and back1.mp3 in the same category will always be linked. Otherwise, if back2.jpg doesn't have a sound with the same name, it will be choosed randomly."
+		],
+        "NEW": "New background or music",
+        "CHOOSE_FILE": "Choose a file",
+        "SAVE": "Save",
+        "FILE": "Filename",
+        "PREVIEW": "Preview",
+        "CATEGORY": "Category",
+        "TYPE": {
+            "PAUSE": "Pause",
+            "STOP": "Stop",
+            "POLL": "Poll"
+        }
+	}
 }

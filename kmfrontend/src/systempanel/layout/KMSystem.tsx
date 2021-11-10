@@ -11,6 +11,7 @@ import TasksEvent from '../../TasksEvent';
 import { getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import Loading from '../components/Loading';
+import Background from '../pages/Background';
 import Config from '../pages/Config';
 import Database from '../pages/Database';
 import Git from '../pages/Git';
@@ -84,6 +85,8 @@ class KMSystem extends Component<unknown, unknown> {
 							<Route path='/system/repositories/new' component={RepositoriesEdit} />
 							<Route path='/system/repositories/:name' component={RepositoriesEdit} />
 							<Route path='/system/repositories' component={RepositoriesList} />
+
+							<Route path='/system/backgrounds' component={Background} />
 
 							<Route path='/system/karas/download/queue' component={QueueDownload} />
 							<Route path='/system/karas/download' component={KaraDownload} />

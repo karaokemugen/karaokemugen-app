@@ -10,7 +10,7 @@ import {StringDecoder} from 'string_decoder';
 import tasklist from 'tasklist';
 
 import { errorStep } from '../electron/electronLogger';
-import {getConfig, resolvedPathTemp} from '../lib/utils/config';
+import {getConfig, resolvedPath} from '../lib/utils/config';
 import { asciiRegexp } from '../lib/utils/constants';
 // KM Imports
 import {asyncExists, asyncMove} from '../lib/utils/files';
@@ -364,7 +364,7 @@ export async function checkAndInstallVCRedist() {
 		// Let's download VC Redist and install it yo.
 		logger.warn('Visual C++ Redistribuable not found, downloading and installing.', {service: 'Postgres'});
 		// Launch downloads
-		const vcRedistPath = resolve(resolvedPathTemp(), 'vcredist.exe');
+		const vcRedistPath = resolve(resolvedPath('Temp'), 'vcredist.exe');
 		await downloadFile({
 			url: check.URL,
 			filename: vcRedistPath

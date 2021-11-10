@@ -6,7 +6,7 @@ import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore,so
 import { saveSetting } from '../lib/dao/database';
 import {generateKara, validateNewKara} from '../lib/services/karaCreation';
 import { Kara, NewKara } from '../lib/types/kara';
-import { resolvedPathRepos, resolvedPathTemp } from '../lib/utils/config';
+import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { asyncExists, asyncMove, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
@@ -38,7 +38,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		let mediaDir: string;
 		// If mediafile_orig is present, our user has uploaded a new song
 		if (kara.mediafile_orig) {
-			mediaFile = resolve(resolvedPathTemp(), kara.mediafile);
+			mediaFile = resolve(resolvedPath('Temp'), kara.mediafile);
 			try {
 				mediaFile = (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
 			} catch(err) {
@@ -60,7 +60,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		let subDir: string;
 		if (kara.subfile) {
 			if (kara.subfile_orig) {
-				subFile = resolve(resolvedPathTemp(), kara.subfile);
+				subFile = resolve(resolvedPath('Temp'), kara.subfile);
 				if (oldKara.subfile) {
 					subDir = dirname((await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
 				} else {
@@ -85,7 +85,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		if (!kara.subfile_orig) {
 			if (kara.subfile) {
 				if (!await asyncExists(subFile)) throw {code: 404, msg: `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`};
-				await copy(subFile, resolve(resolvedPathTemp(), kara.subfile), {overwrite: true});
+				await copy(subFile, resolve(resolvedPath('Temp'), kara.subfile), {overwrite: true});
 			}
 		}
 		// Treat files

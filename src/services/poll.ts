@@ -87,7 +87,7 @@ export async function endPoll() {
 		const streamConfig = getConfig().Karaoke.StreamerMode;
 		if (streamConfig.Enabled) {
 			const state = getState();
-			if (state.player.mediaType === 'pauseScreen') displayPoll(winner.index);
+			if (state.player.mediaType === 'poll') displayPoll(winner.index);
 			if (streamConfig.Twitch.Channel) displayPollWinnerTwitch(winner);
 		}
 		pollEnding = true;
@@ -166,7 +166,7 @@ export function addPollVote(index: number, token: Token) {
 	};
 	poll[index - 1].votes++;
 	voters.add(token.username.toLowerCase());
-	if (getState().player.mediaType === 'pauseScreen') displayPoll();
+	if (getState().player.mediaType === 'poll') displayPoll();
 	emitWS('songPollUpdated', poll);
 	return {
 		code: 'POLL_VOTED',
@@ -232,7 +232,7 @@ export async function startPoll(): Promise<boolean> {
 		emitWS('songPollStarted',poll);
 	}
 	timerPoll();
-	if (getState().player.mediaType === 'pauseScreen') displayPoll();
+	if (getState().player.mediaType === 'poll') displayPoll();
 	return true;
 }
 

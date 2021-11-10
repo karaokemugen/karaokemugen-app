@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { Stream } from 'stream';
 
 import { Token, User } from '../lib/types/user';
-import { getConfig, resolvedPathAvatars, resolvedPathTemp } from '../lib/utils/config';
+import { getConfig, resolvedPath } from '../lib/utils/config';
 import { writeStreamToFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
@@ -122,7 +122,7 @@ export async function editRemoteUser(user: User, token: string) {
 	const form = new formData();
 
 	// Create the form data sent as payload to edit remote user
-	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(resolvedPathAvatars(), user.avatar_file)), user.avatar_file);
+	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(resolvedPath('Avatars'), user.avatar_file)), user.avatar_file);
 	form.append('nickname', user.nickname);
 	form.append('bio', user.bio ? user.bio : '');
 	form.append('location', user.location ? user.location : '');
@@ -156,7 +156,7 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 	});
 	let avatarPath: string;
 	try {
-		avatarPath = resolve(resolvedPathTemp(), avatarFile);
+		avatarPath = resolve(resolvedPath('Temp'), avatarFile);
 		await writeStreamToFile(res.data as Stream, avatarPath);
 	} catch(err) {
 		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, {service: 'User', obj: err});

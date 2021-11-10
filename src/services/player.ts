@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import {setTimeout as sleep} from 'timers/promises';
 
-import Players, { switchToPauseScreen } from '../components/mpv';
+import Players, { switchToPollScreen } from '../components/mpv';
 import { APIMessage } from '../controllers/common';
 import { APIMessageType } from '../lib/types/frontend';
 import {getConfig, setConfig} from '../lib/utils/config';
@@ -59,7 +59,7 @@ export async function next() {
 				await stopPlayer(true);
 				if (conf.Karaoke.StreamerMode.PauseDuration > 0) setState({ streamerPause: true });
 				if (conf.Karaoke.Poll.Enabled) {
-					switchToPauseScreen();
+					switchToPollScreen();
 					const poll = await startPoll();
 					if (!poll) {
 						// False returned means startPoll couldn't start a poll
@@ -156,7 +156,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 	if (now || getState().stopping || getState().streamerPause) {
 		logger.info('Karaoke stopping NOW', {service: 'Player'});
 		// No need to stop in streamerPause, we're already stopped, but we'll disable the pause anyway.
-		if (!getState().streamerPause) await mpv.stop();
+		if (!getState().streamerPause) await mpv.stop('pause');
 		setState({ streamerPause: false, randomPlaying: false, stopping: false });
 		stopAddASongMessage();
 		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode) {

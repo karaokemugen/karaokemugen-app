@@ -1,4 +1,6 @@
+import { PathType } from '../lib/types/config';
 import { Repository } from '../lib/types/repo';
+import { MediaType } from './medias';
 import { MpvHardwareDecodingOptions } from './mpvIPC';
 
 export interface Config {
@@ -113,7 +115,6 @@ export interface Config {
 		},
 		StayOnTop?: boolean,
 		FullScreen?: boolean,
-		Background?: string,
 		Screen?: number,
 		AudioDevice?: string,
 		Monitor?: boolean,
@@ -204,23 +205,12 @@ export interface Config {
 				Linux?: string
 			}
 		},
-		Repositories: Repository[]
+		Repositories: Repository[],
+		MediaPath: {
+			[m in MediaType]: string[]			
+		}
 		Path: {
-			Bin?: string,
-			DB?: string,
-			Backgrounds?: string[],
-			Jingles?: string[],
-			Intros?: string[],
-			Outros?: string[],
-			Encores?: string[],
-			Sponsors?: string[],
-			Temp?: string,
-			Previews?: string,
-			SessionExports?: string,
-			Import?: string,
-			Avatars?: string,
-			StreamFiles?: string,
-			Banners?: string
+			[p in PathType]?: string			
 		}
 	}
 }

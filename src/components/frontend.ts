@@ -6,6 +6,7 @@ import {createServer} from 'http';
 import {resolve} from 'path';
 
 import authController from '../controllers/auth';
+import backgroundsController from '../controllers/frontend/backgrounds';
 import downloadController from '../controllers/frontend/download';
 import emulateController from '../controllers/frontend/emulate';
 import favoritesController from '../controllers/frontend/favorites';
@@ -21,7 +22,7 @@ import smartPlaylistsController from '../controllers/frontend/smartPlaylists';
 import tagsController from '../controllers/frontend/tags';
 import testController from '../controllers/frontend/test';
 import userController from '../controllers/frontend/user';
-import {resolvedPathAvatars, resolvedPathPreviews, resolvedPathRepos} from '../lib/utils/config';
+import {resolvedPath, resolvedPathRepos} from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { initWS, SocketIOApp } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
@@ -41,6 +42,7 @@ function apiRouter(ws: SocketIOApp) {
 	authController(ws);
 	downloadController(ws);
 	favoritesController(ws);
+	backgroundsController(ws);
 	miscController(ws);
 	playerController(ws);
 	playlistsController(ws);
@@ -77,11 +79,13 @@ export function initFrontend(): number {
 		});
 
 		//Path to video previews
-		app.use('/previews', express.static(resolvedPathPreviews(), {fallthrough: false}));
+		app.use('/previews', express.static(resolvedPath('Previews'), {fallthrough: false}));
+		//Path to backgrounds
+		app.use('/backgrounds', express.static(resolvedPath('Backgrounds'), {fallthrough: false}));
 		//There's a single /medias path which will list all files in all folders. Pretty handy.
 		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir)));
 		//Path to user avatars
-		app.use('/avatars', express.static(resolvedPathAvatars()));
+		app.use('/avatars', express.static(resolvedPath('Avatars')));
 
 		//Serve session export data
 		app.use('/sessionExports', express.static(resolve(state.dataPath, 'sessionExports/')));
