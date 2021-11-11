@@ -188,6 +188,8 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		// Check if user exists. If it does not, create it.
 		let user: User = await getUser(username, true);
 		if (!user) {
+			// Remove remoteUser's type
+			delete remoteUser.type;
 			await createUser({...remoteUser, password, login: username}, {
 				createRemote: false,
 				noPasswordCheck: true

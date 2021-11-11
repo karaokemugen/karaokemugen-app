@@ -248,10 +248,12 @@ export async function createUser(user: User, opts: UserOpts = {
 	// If nickname is not supplied, guess one
 	user.nickname ||= user.login.includes('@') ? user.login.split('@')[0]:user.login;
 	user = merge(getDefaultUser(), user);
+
 	if (opts.admin) user.type = 0;
 	if (user.type === 2) {
 		user.flag_sendstats = true;
 	}
+	if (!user.type) user.type = 1;
 
 	try {
 		await newUserIntegrityChecks(user).catch(err => {
