@@ -253,7 +253,7 @@ export async function createUser(user: User, opts: UserOpts = {
 	if (user.type === 2) {
 		user.flag_sendstats = true;
 	}
-	if (!user.type) user.type = 1;
+	if (user.type === undefined) user.type = 1;
 
 	try {
 		await newUserIntegrityChecks(user).catch(err => {
