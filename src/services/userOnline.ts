@@ -135,8 +135,7 @@ export async function editRemoteUser(user: User, token: string) {
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
 	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
 	try {
-		const res = await HTTP.put(`https://${instance}/api/users/${login}`, {
-			body: form,
+		const res = await HTTP.put(`https://${instance}/api/users/${login}`, form, {
 			headers: {
 				authorization: token
 			}
