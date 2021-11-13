@@ -268,9 +268,21 @@ function PublicPage(props: RouteComponentProps) {
 	}, [indexKaraDetail]);
 
 	useEffect(() => {
-		initView();
 		getSocket().on('publicPlaylistUpdated', publicPlaylistUpdated);
+		return () => {
+			getSocket().off('publicPlaylistUpdated', publicPlaylistUpdated);
+		};
+	}, [context.globalState.settings.data.state.publicPlaid]);
+
+	useEffect(() => {
 		getSocket().on('playlistInfoUpdated', playlistInfoUpdated);
+		return () => {
+			getSocket().off('playlistInfoUpdated', playlistInfoUpdated);
+		};
+	}, [context.globalState.frontendContext.playlistInfoLeft.plaid, context.globalState.frontendContext.playlistInfoRight.plaid);
+
+	useEffect(() => {
+		initView();
 		getSocket().on('playerStatus', displayClassicModeModal);
 		getSocket().on('songPollStarted', songPollStarted);
 		getSocket().on('songPollEnded', songPollEnded);
@@ -279,8 +291,6 @@ function PublicPage(props: RouteComponentProps) {
 		getSocket().on('userSongPlaysIn', userSongPlaysIn);
 		getSocket().on('nextSong', nextSong);
 		return () => {
-			getSocket().off('publicPlaylistUpdated', publicPlaylistUpdated);
-			getSocket().off('playlistInfoUpdated', playlistInfoUpdated);
 			getSocket().off('playerStatus', displayClassicModeModal);
 			getSocket().off('songPollStarted', songPollStarted);
 			getSocket().off('songPollEnded', songPollEnded);

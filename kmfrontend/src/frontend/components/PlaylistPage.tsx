@@ -27,16 +27,19 @@ export default function PlaylistPage() {
 		});
 	};
 
-	useEffect(updatePlaylist, []);
 	useEffect(() => {
 		getSocket().on('playlistContentsUpdated', updatePlaylist);
 		getSocket().on('currentPlaylistUpdated', updatePlaylist);
-		document.getElementsByTagName('body')[0].className = 'no-scroll';
-		document.title = 'Chibi Playlist';
 		return () => {
 			getSocket().off('playlistContentsUpdated', updatePlaylist);
 			getSocket().off('currentPlaylistUpdated', updatePlaylist);
 		};
+	}, [context.globalState.settings.data.state.currentPlaid]);
+
+	useEffect(() => {
+		updatePlaylist();
+		document.getElementsByTagName('body')[0].className = 'no-scroll';
+		document.title = 'Chibi Playlist';
 	}, []);
 
 	return (

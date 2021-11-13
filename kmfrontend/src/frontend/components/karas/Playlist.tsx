@@ -441,7 +441,7 @@ function Playlist(props: IProps) {
 		return () => {
 			getSocket().off('playingUpdated', playingUpdate);
 		};
-	}, [goToPlaying]);
+	}, [goToPlaying, context.globalState.frontendContext.playlistInfoLeft, context.globalState.frontendContext.playlistInfoRight]);
 
 	const getPlInfosElement = () => {
 		let plInfos = '';
@@ -896,21 +896,26 @@ function Playlist(props: IProps) {
 	}, [searchValue]);
 
 	useEffect(() => {
-		if (context.globalState.auth.isAuthenticated) {
-			initCall();
-		}
 		getSocket().on('favoritesUpdated', favoritesUpdated);
 		getSocket().on('playlistContentsUpdated', playlistContentsUpdatedFromServer);
 		getSocket().on('publicPlaylistEmptied', publicPlaylistEmptied);
 		getSocket().on('KIDUpdated', KIDUpdated);
 		getSocket().on('playerStatus', updateCounters);
-		window.addEventListener('error', avoidErrorInDnd);
 		return () => {
 			getSocket().off('favoritesUpdated', favoritesUpdated);
 			getSocket().off('playlistContentsUpdated', playlistContentsUpdatedFromServer);
 			getSocket().off('publicPlaylistEmptied', publicPlaylistEmptied);
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
+		};
+	}, [context.globalState.frontendContext.playlistInfoLeft, context.globalState.frontendContext.playlistInfoRight]);
+
+	useEffect(() => {
+		if (context.globalState.auth.isAuthenticated) {
+			initCall();
+		}
+		window.addEventListener('error', avoidErrorInDnd);
+		return () => {
 			window.removeEventListener('error', avoidErrorInDnd);
 		};
 	}, []);

@@ -162,18 +162,23 @@ function AdminPage(props: IProps) {
 	};
 
 	useEffect(() => {
+		getSocket().on('playlistInfoUpdated', playlistInfoUpdated);
+		return () => {
+			getSocket().off('playlistInfoUpdated', playlistInfoUpdated);
+		};
+	}, [context.globalState.frontendContext.playlistInfoLeft, context.globalState.frontendContext.playlistInfoRight]);
+
+	useEffect(() => {
 		if (context.globalState.auth.isAuthenticated) {
 			getPlaylistList();
 		}
 		addTags();
 		getSocket().on('playlistsUpdated', getPlaylistList);
-		getSocket().on('playlistInfoUpdated', playlistInfoUpdated);
 		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
 		getSocket().on('operatorNotificationError', operatorNotificationError);
 		getSocket().on('operatorNotificationWarning', operatorNotificationWarning);
 		return () => {
 			getSocket().off('playlistsUpdated', getPlaylistList);
-			getSocket().off('playlistInfoUpdated', playlistInfoUpdated);
 			getSocket().off('operatorNotificationInfo', operatorNotificationInfo);
 			getSocket().off('operatorNotificationError', operatorNotificationError);
 			getSocket().off('operatorNotificationWarning', operatorNotificationWarning);
