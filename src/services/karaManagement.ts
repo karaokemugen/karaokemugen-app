@@ -45,7 +45,7 @@ export async function updateTags(kara: Kara) {
 export async function createKaraInDB(kara: Kara, opts = {refresh: true}) {
 	await insertKara(kara);
 	await Promise.all([
-		updateKaraParents(kara), 
+		updateKaraParents(kara),
 		updateTags(kara)
 	]);
 	if (opts.refresh) {
@@ -59,7 +59,7 @@ export async function editKaraInDB(kara: Kara, opts = {
 }) {
 	profile('editKaraDB');
 	const promises = [
-		updateKara(kara), 
+		updateKara(kara),
 		updateKaraParents(kara)
 	];
 	if (kara.newTags) promises.push(updateTags(kara));
@@ -76,12 +76,12 @@ interface Family {
 	children: DBKara[]
 }
 
-export async function deleteKara(kids: string[], refresh = true, deleteFiles = {media: true, kara: true}) {	
+export async function deleteKara(kids: string[], refresh = true, deleteFiles = {media: true, kara: true}) {
 	const parents: Family[] = [];
 	const karas = await selectAllKaras({
 		q: `k:${kids.join(',')}`,
 	});
-	if (karas.length === 0) throw {code: 404, msg: `Unknown kara IDs in ${kids.join(',')}`};	
+	if (karas.length === 0) throw {code: 404, msg: `Unknown kara IDs in ${kids.join(',')}`};
 	for (const kara of karas) {
 		// Remove files
 		if (kara.download_status === 'DOWNLOADED' && deleteFiles.media) {
@@ -116,8 +116,8 @@ export async function deleteKara(kids: string[], refresh = true, deleteFiles = {
 	// Remove kara from database
 	for (const parent of parents) {
 		await removeParentInKaras(parent.parent, parent.children);
-	}	
-	await deleteKaraDB(karas.map(k => k.kid));		
+	}
+	await deleteKaraDB(karas.map(k => k.kid));
 	if (refresh) {
 		await refreshKarasDelete(karas.map(k => k.kid));
 		refreshTags();
@@ -248,7 +248,7 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	refreshYears();
 	const parentsToUpdate: Set<string> = new Set();
 	for (const kara of karas) {
-		for (const parent of kara.parents) {
+		if (kara.parents) for (const parent of kara.parents) {
 			parentsToUpdate.add(parent);
 		}
 	}
@@ -264,7 +264,7 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	profile('RefreshAfterDBChange');
 }
 
-export async function integrateKaraFile(file: string, karaFileData: KaraFileV4, deleteOldFiles = true): Promise<string> {
+export async function integrateKaraFile(file: string, karaFileData: KaraFileV4, deleteOldFiles = true, refresh = false): Promise<string> {
 	const karaFile = basename(file);
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData, {media: true, lyrics: true});
 	const karaDB = await getKara(karaData.kid, {role: 'admin', username: 'admin'});
@@ -295,7 +295,7 @@ export async function integrateKaraFile(file: string, karaFileData: KaraFileV4, 
 			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize, mediaDownload === 'updateOnly');
 		}
 	} else {
-		await createKaraInDB(karaData, { refresh: false });
+		await createKaraInDB(karaData, { refresh: refresh });
 		if (mediaDownload === 'all') {
 			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
 		}

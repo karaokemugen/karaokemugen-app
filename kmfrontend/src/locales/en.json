@@ -877,7 +877,9 @@
         "DUPLICATE": "Duplicated",
         "BATCH_EDIT": "Batch edit song tags",
         "STORAGE": "Disk storage management",
-		"BACKGROUNDS": "Backgrounds"
+		"BACKGROUNDS": "Backgrounds",
+        "INBOX": "Inbox",
+        "MAINTAINER": "Maintainer"
     },
     "UNUSED_FILES": {
         "NAME": "Name",
@@ -1198,6 +1200,9 @@
         "UPLOADING_FTP": "Uploading to the FTP…"
     },
     "ERROR_CODES": {
+		"INBOX_VIEW_ERROR": "Unable to fetch karaokes from inbox",
+		"DOWNLOAD_KARA_FROM_INBOX_ERROR": "Unable to download karaoke from inbox",
+		"DELETE_KARA_IN_INBOX_ERROR": "Unable to delete karaoke from inbox",
         "WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
         "CRITERIAS_EMPTY_ERROR": "Error emptying list of criteria",
         "CRITERIAS_GET_ERROR": "Criterias could not be viewed",
@@ -1520,6 +1525,10 @@
         "STORAGE": {
             "TITLE": "Disk storage management",
             "DESCRIPTION": "Medias disk storage management"
+        },
+        "INBOX": {
+            "TITLE": "Inbox for karaokes to integrate",
+            "DESCRIPTION": "As maintainer of this karaoke base, your duty is to make this list empty."
         }
     },
     "LOGS": {
@@ -1603,5 +1612,15 @@
             "STOP": "Stop",
             "POLL": "Poll"
         }
-	}
+	},
+    "INBOX": {
+        "NAME": "Karaoke name",
+        "TIMESTAMP": "Timestamp",
+        "TYPE": "Type of request",
+        "LINK_TO_ISSUE": "Link to issue",
+        "ISSUE": "Issue {{number}}",
+        "USER": "User in charge of issue integration",
+        "DOWNLOAD": "Download karaoke",
+        "DELETE": "Are you sure you delete the karaoke from the inbox as well as its files on the server?"
+    }
 }
