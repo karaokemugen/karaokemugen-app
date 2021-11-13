@@ -11,6 +11,7 @@ import downloadController from '../controllers/frontend/download';
 import emulateController from '../controllers/frontend/emulate';
 import favoritesController from '../controllers/frontend/favorites';
 import filesController, { filesSocketController } from '../controllers/frontend/files';
+import inboxController from '../controllers/frontend/inbox';
 import karaController from '../controllers/frontend/kara';
 import miscController from '../controllers/frontend/misc';
 import playerController from '../controllers/frontend/player';
@@ -53,6 +54,7 @@ function apiRouter(ws: SocketIOApp) {
 	pollController(ws);
 	repoController(ws);
 	smartPlaylistsController(ws);
+	inboxController(ws);
 	if (getState().isTest) testController(ws);
 }
 

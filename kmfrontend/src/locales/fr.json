@@ -877,7 +877,9 @@
         "DUPLICATE": "Dupliqués",
         "BATCH_EDIT": "Edition en masse de kara/tags",
         "STORAGE": "Gestion de l'espace disque",
-		"BACKGROUNDS": "Fonds d'écran"
+		"BACKGROUNDS": "Fonds d'écran",
+        "INBOX": "Boîte de réception",
+        "MAINTAINER": "Mainteneur"
     },
     "UNUSED_FILES": {
         "NAME": "Nom",
@@ -1198,6 +1200,9 @@
         "UPLOADING_FTP": "Envoi sur le FTP…"
     },
     "ERROR_CODES": {
+		"INBOX_VIEW_ERROR": "Impossible de récupérer la boite de réception",
+		"DOWNLOAD_KARA_FROM_INBOX_ERROR": "Impossible de récupérer le karaoké de la boîte de réception",
+		"DELETE_KARA_IN_INBOX_ERROR": "Impossible de supprimer le karaoké de la boîte de réception",
         "WEBAPPMODE_CLOSED_API_MESSAGE": "L'API est désactivé pour le moment",
         "CRITERIAS_EMPTY_ERROR": "Erreur lors la suppression des critères",
         "CRITERIAS_GET_ERROR": "Les critères ne peuvent pas être lus",
@@ -1520,6 +1525,10 @@
         "STORAGE": {
             "TITLE": "Gestion de l'espace disque",
             "DESCRIPTION": "Gestion de l'espace disque des medias"
+        },
+        "INBOX": {
+            "TITLE": "Boîte de réception des karaokés à intégrer",
+            "DESCRIPTION": "En tant que mainteneur de cette base de karaokés, votre devoir est de faire en sorte que cette liste soit vide."
         }
     },
     "LOGS": {
@@ -1603,5 +1612,15 @@
             "STOP": "Stop",
             "POLL": "Sondage"
         }
-	}
+	},
+    "INBOX": {
+        "NAME": "Nom du karaoké",
+        "TIMESTAMP": "Horodatage",
+        "TYPE": "Type de demande",
+        "LINK_TO_ISSUE": "Lien vers le ticket",
+        "ISSUE": "Ticket {{number}}",
+        "USER": "Utilisateur en charge de l'intégration du ticket",
+        "DOWNLOAD": "Télécharger le karaoké",
+        "DELETE": "Êtes-vous sûr de supprimer le karaoké de la boite de réception ainsi que ses fichiers sur le serveur ?"
+    }
 }

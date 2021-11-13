@@ -16,6 +16,7 @@ import Config from '../pages/Config';
 import Database from '../pages/Database';
 import Git from '../pages/Git';
 import Home from '../pages/Home';
+import Inbox from '../pages/Inbox';
 import KaraHistory from '../pages/Karas/History';
 import KaraBatchEdit from '../pages/Karas/KaraBatchEdit';
 import KaraDownload from '../pages/Karas/KaraDownload';
@@ -105,6 +106,7 @@ class KMSystem extends Component<unknown, unknown> {
 
 							<Route path='/system/db' component={Database} />
 							<Route path='/system/git' component={Git} />
+							<Route path='/system/inbox' component={Inbox} />
 
 							<Route path='/system/users/create' component={UserEdit} />
 							<Route path='/system/users/:userLogin' component={UserEdit} />
