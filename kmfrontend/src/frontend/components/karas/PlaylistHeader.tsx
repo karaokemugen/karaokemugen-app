@@ -386,7 +386,7 @@ function PlaylistHeader(props: IProps) {
 				</div>
 			) : null}
 			{props.searchMenuOpen ? searchMenu : null}
-			{playlist?.flag_public && !playlist?.flag_current ?
+			{playlist?.flag_public && !playlist?.flag_current && playlist.karacount > 0 ?
 				<p className="playlist-tooltip">
 					<a href="#" onClick={() => {
 						showModal(context.globalDispatch,
