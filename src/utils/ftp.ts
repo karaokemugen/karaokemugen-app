@@ -48,7 +48,6 @@ export default class FTP {
 	}
 
 	async rename(origFile: string, newFile: string) {
-		if (!await asyncExists(newFile)) throw 'File unknown';
 		logger.info(`Renaming file "${origFile}" to "${newFile}"`, {service: 'FTP'});
 		return this.client.rename(origFile, newFile);
 	}
@@ -59,8 +58,8 @@ export default class FTP {
 	}
 
 	async upload(file: string) {
-		if (!await asyncExists(file)) throw 'File unknown';
 		logger.info(`Sending file ${file}`, {service: 'FTP'});
+		if (!await asyncExists(file)) throw `File "${file}" unknown on local folder`;
 		const task = new Task({
 			text: 'UPLOADING_FTP',
 			value: 0,
