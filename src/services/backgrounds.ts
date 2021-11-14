@@ -26,8 +26,8 @@ export async function getBackgroundAndMusic(type: BackgroundType): Promise<Backg
 	};
 }
 
-export async function getBackgroundFiles(type: BackgroundType): Promise<BackgroundList> {
-	const path = type === 'bundled' 
+export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promise<BackgroundList> {
+	const path = type === 'bundled'
 		? resolve(resolvedPath('BundledBackgrounds'))
 		: resolve(resolvedPath('Backgrounds'), type);
 	const files = await fs.readdir(path);
