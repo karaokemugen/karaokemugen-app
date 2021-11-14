@@ -39,6 +39,7 @@ export default class FTP {
 			throw err;
 		}
 		if (repo.FTP.BaseDir) try {
+			logger.info(`Switching to directory ${repo.FTP.BaseDir}`);
 			await this.client.cd(repo.FTP.BaseDir);
 		} catch(err) {
 			logger.error(`Failed to switch to directory ${repo.FTP.BaseDir}: ${err}`, {service: 'FTP', obj: err});
