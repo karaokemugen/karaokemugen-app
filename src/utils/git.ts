@@ -5,11 +5,16 @@ import { DefaultLogFields } from 'simple-git/src/lib/tasks/log';
 import { ListLogLine } from 'simple-git/typings/response';
 import which from 'which';
 
+import { Repository } from '../lib/types/repo';
 import { asyncExists } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { Commit } from '../types/repo';
 
+/** Determine if folder is a git repository */
+export function isGit(repo: Repository) {
+	return asyncExists(resolve(repo.BaseDir, '.git'));
+}
 interface GitOptions {
 	baseDir: string,
 	url?: string,
@@ -76,11 +81,6 @@ export default class Git {
 			await this.setRemote();
 			await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 		}
-	}
-
-	/** Determine if folder is a git repository */
-	isGit() {
-		return asyncExists(resolve(this.opts.baseDir, '.git'));
 	}
 
 	/** Returns the second word of the first line of a git show to determine latest commit */
@@ -191,7 +191,7 @@ export default class Git {
 	}
 
 	/** Call this when user */
-	// When user what? Are you drunk? 
+	// When user what? Are you drunk?
 	// It's obviously called when user changes their name/mail.
 	async configUser(author: string, email: string) {
 		await this.git.addConfig('user.name', author);
@@ -242,6 +242,6 @@ export default class Git {
 		status.created.forEach((s, i) => status.created[i] = s.replace(/"/g, ''));
 		status.deleted.forEach((s, i) => status.deleted[i] = s.replace(/"/g, ''));
 		status.conflicted.forEach((s, i) => status.conflicted[i] = s.replace(/"/g, ''));
-		return status;	
+		return status;
 	}
 }

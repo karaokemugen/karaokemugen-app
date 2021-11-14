@@ -36,7 +36,7 @@ import {Change, Commit, DifferentChecksumReport, ModifiedMedia, OldRepository, P
 import {backupConfig} from '../utils/config';
 import {pathIsContainedInAnother} from '../utils/files';
 import FTP from '../utils/ftp';
-import Git from '../utils/git';
+import Git, { isGit } from '../utils/git';
 import {applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles} from '../utils/patch';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
@@ -416,14 +416,14 @@ export async function updateGitRepo(name: string) {
 	}
 	logger.info(`Update ${repo.Name}: Starting`, {service: 'Repo'});
 	try {
-		const git = await setupGit(repo);
-		if (!await git.isGit()) {
+		if (!await isGit(repo)) {
 			logger.debug(`Update ${repo.Name}: not a git repo, cloning now`, {service: 'Repo'});
 			await newGitRepo(repo);
 			await saveSetting('baseChecksum', await baseChecksum());
 			updateRunning = false;
 			return true;
 		} else {
+			const git = await setupGit(repo);
 			logger.debug(`Update ${repo.Name}: is a git repo, pulling`, {service: 'Repo'});
 			await git.fetch();
 			const originalCommit = await git.getCurrentCommit();
