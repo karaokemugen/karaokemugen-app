@@ -262,7 +262,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							labelCol={{ flex: '0 1 300px' }}
 							name="GitPassword"
 						>
-							<Input
+							<Input type="password"
 								placeholder={i18next.t('REPOSITORIES.GIT.PASSWORD')}
 							/>
 						</Form.Item>
@@ -316,7 +316,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 							labelCol={{ flex: '0 1 300px' }}
 							name="FTPPassword"
 						>
-							<Input
+							<Input type="password"
 								placeholder={i18next.t('REPOSITORIES.FTP.PASSWORD')}
 							/>
 						</Form.Item>
