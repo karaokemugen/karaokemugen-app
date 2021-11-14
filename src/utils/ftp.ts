@@ -25,7 +25,7 @@ export default class FTP {
 		if (!repo) throw 'Unknown repository';
 		this._validateFTPSettings(repo);
 		this.client = new Client();
-		logger.info(`Connecting to FTP for ${repo.Name}`, {obj: repo.FTP, service: 'FTP'});
+		logger.info(`Connecting to FTP for ${repo.Name}`, {service: 'FTP'});
 		try {
 			await this.client.access({
 				host: repo.FTP.Host,
