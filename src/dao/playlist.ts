@@ -281,7 +281,7 @@ export async function selectKarasFromCriterias(plaid: string, smartPlaylistType:
 	let sql = '';
 	const criterias = await selectCriterias(plaid);
 	if (criterias.length === 0) return [];
-	if (smartPlaylistType === 'UNION') {
+	if (smartPlaylistType === 'UNION') {		
 		for (const c of criterias) {
 			if (c.type > 0 && c.type < 1000) {
 				queryArr.push(sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value));
@@ -291,6 +291,7 @@ export async function selectKarasFromCriterias(plaid: string, smartPlaylistType:
 				queryArr.push(sqlselectKarasFromCriterias[c.type](c.value));
 			}
 		}
+		sql = queryArr.join(' UNION ');
 	} else {
 		// INTERSECT
 		// Now the fun begins.
@@ -318,7 +319,7 @@ export async function selectKarasFromCriterias(plaid: string, smartPlaylistType:
 				: ' UNION ' + uniqueKIDsSQL
 			)
 			: uniqueKIDsSQL;
-	}
+	}	
 	const res = await db().query(sql, params);
 	// When INTERSECT, we add all criterias to the songs.
 	if (smartPlaylistType === 'INTERSECT') {
