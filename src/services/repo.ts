@@ -432,7 +432,6 @@ export async function updateGitRepo(name: string) {
 			logger.debug(`Update ${repo.Name}: not a git repo, cloning now`, {service: 'Repo'});
 			await newGitRepo(repo);
 			await saveSetting('baseChecksum', await baseChecksum());
-			updateRunning = false;
 			return true;
 		} else {
 			const git = await setupGit(repo);
@@ -453,7 +452,7 @@ export async function updateGitRepo(name: string) {
 					}
 				}
 				await git.pull();
-				// Once pulled, let's check if we have KM Stashes to
+				// Once pulled, let's check if we have KM Stashes to pop
 				const stashes = await git.stashList();
 				const KMStashes = stashes.all.filter(s => s.message.includes('[KMStash]'));
 				// We'll add all stashes to a commit that we'll amend on each stash until we get it right

@@ -16,6 +16,7 @@ import { Commit } from '../types/repo';
 export function isGit(repo: Repository) {
 	return asyncExists(resolve(repo.BaseDir, '.git'));
 }
+
 interface GitOptions {
 	baseDir: string,
 	url?: string,
