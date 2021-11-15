@@ -13,7 +13,7 @@ import { asyncCheckOrMkdir, asyncCopyAll, asyncExists } from '../lib/utils/files
 import logger, { configureLogger } from '../lib/utils/logger';
 import { resetSecurityCode } from '../services/auth';
 import { backgroundTypes } from '../services/backgrounds';
-import { migrateReposToZip } from '../services/repo';
+import { editRepo, migrateReposToZip } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
 import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
@@ -135,13 +135,20 @@ async function checkPaths(config: Config) {
 		const dataPath = getState().dataPath;
 		checks.push(asyncCheckOrMkdir(resolve(dataPath, 'logs/')));
 		for (const repo of config.System.Repositories) {
-			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir)));
-			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
-			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
-			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
-			checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
-			for (const paths of Object.keys(repo.Path)) {
-				repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
+			try {
+				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'karaokes')));
+				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
+				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
+				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
+				for (const paths of Object.keys(repo.Path)) {
+					repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
+				}
+			} catch(err) {
+				// If there's a problem with these folders, let's disable the repository.
+				editRepo(repo.Name, {
+					...repo,
+					Enabled: false
+				});
 			}
 		}
 		for (const type of backgroundTypes) {
