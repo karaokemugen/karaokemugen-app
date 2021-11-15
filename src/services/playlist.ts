@@ -341,9 +341,17 @@ export async function editPlaylist(plaid: string, playlist: DBPL) {
 	const isBlacklist = plaid === getState().blacklistPlaid;
 	const isWhitelist = plaid === getState().whitelistPlaid;
 
-	if (newPL.flag_smart && newPL.flag_smartlimit) {
-		// Only update if one of those has changed.
-		if (playlist.flag_smartlimit || playlist.smart_limit_number || playlist.smart_limit_order || playlist.smart_limit_type) {
+	if (newPL.flag_smart) {
+		// Only update if : 
+		// - Smart type (AND/OR) has changed
+		// - Smart limit has changed
+		// - Any smart limit option has been set with this change and the PL has the limit enabled
+		if (pl.type_smart !== newPL.type_smart ||
+			pl.flag_smartlimit !== newPL.flag_smartlimit || 
+			(newPL.flag_smartlimit && playlist.smart_limit_number) || 
+			(newPL.flag_smartlimit && playlist.smart_limit_order) || 
+			(newPL.flag_smartlimit && playlist.smart_limit_type)
+		) {
 			needsSmartUpdating = true;
 		}
 	}
