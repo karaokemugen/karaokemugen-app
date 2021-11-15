@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, dialog } from 'electron';
 import {promises as fs} from 'fs';
 import {copy, remove} from 'fs-extra';
 import i18next from 'i18next';
@@ -6,6 +6,7 @@ import open from 'open';
 import {resolve} from 'path';
 import { getPortPromise } from 'portfinder';
 
+import { win } from '../electron/electron';
 import { errorStep, initStep } from '../electron/electronLogger';
 import { PathType } from '../lib/types/config';
 import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config';
@@ -148,6 +149,10 @@ async function checkPaths(config: Config) {
 				editRepo(repo.Name, {
 					...repo,
 					Enabled: false
+				});
+				await dialog.showMessageBox(win, {
+					title: i18next.t('REPO_DISABLED.TITLE'),
+					message: i18next.t('REPO_DISABLED.MESSAGE', {repo: repo.Name})
 				});
 			}
 		}
