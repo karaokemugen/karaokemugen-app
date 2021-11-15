@@ -323,42 +323,54 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 			throw {code: 404, msg: 'Repository unreachable. Did you misspell its name?'};
 		}
 	}
-	await checkRepoPaths(repo);
-	updateRepo(repo, name);
-	//DBReady is needed as this can happen before the database is ready
+	if (repo.Enabled) await checkRepoPaths(repo);
+	updateRepo(repo, name);			
+	// Delay repository actions after edit
+	hookEditedRepo(oldRepo, repo, refresh, onlineCheck).catch();
+	logger.info(`Updated ${name}`, {service: 'Repo'});
+}
+
+async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {
+	let doGenerate = false;
+	if (!oldRepo.SendStats && repo.SendStats && DBReady && onlineCheck) {
+		sendPayload(repo.Name, repo.Name === getConfig().Online.Host).catch();
+	}
+	if (repo.Enabled && repo.Online && !oldRepo.MaintainerMode && repo.MaintainerMode && repo.Git?.URL) {
+		saveSetting(`commit-${repo.Name}`, null);
+		try {
+			await updateGitRepo(repo.Name);			
+		} catch(err) {
+			logger.warn('Repository was edited, but updating it failed', {service: 'Repo'});
+		}				
+		if (refresh) doGenerate = true;
+	}
+	if (repo.Enabled && repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode) {
+		try {
+			await updateZipRepo(repo.Name);
+			if (refresh) doGenerate = true;		
+		} catch(err) {
+			logger.warn('Repository was edited, but updating it failed', {service: 'Repo'});
+		}		
+	}
+	if (repo.Git) {
+		try {
+			await setupGit(repo);				
+		} catch(err) {
+			// Non-fatal. Probably that the repository isn't set
+			logger.warn(`Could not update Git settings for repository : ${err}`, {service: 'Repo', obj: err});
+		}
+	}
+	if (oldRepo.Enabled !== repo.Enabled || refresh && DBReady) {
+		await compareKarasChecksum();
+		doGenerate = true;
+	}	
+	if (doGenerate) await generateDB();
 	if (oldRepo.Path.Medias !== repo.Path.Medias && DBReady && onlineCheck) {
 		getKaras({q: `r:${repo.Name}`}).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
 	}
-	if (oldRepo.Enabled !== repo.Enabled || refresh) {
-		if (DBReady) compareKarasChecksum().then(res => {
-			if (res) generateDB();
-		});
-	}
-	if (!oldRepo.SendStats && repo.SendStats && DBReady && onlineCheck) {
-		sendPayload(repo.Name, repo.Name === getConfig().Online.Host);
-	}
-	if (repo.Online && !oldRepo.MaintainerMode && repo.MaintainerMode && repo.Git?.URL) {
-		saveSetting(`commit-${name}`, null);
-		updateGitRepo(name).then(() => {
-			if (refresh) generateDB();
-		}).catch(() => {
-			logger.warn('Repository was edited, but updating it failed', {service: 'Repo'});
-		});
-	}
-	if (repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode) {
-		updateZipRepo(name).then(() => {
-			if (refresh) generateDB();
-		});
-	}
-	if (repo.Git) {
-		if (repo.Git.Author !== oldRepo.Git?.Author || repo.Git.Email !== oldRepo.Git?.Email) {
-			const git = await setupGit(repo);
-			await git.configUser(repo.Git.Author, repo.Git.Email);
-		}
-	}
-	logger.info(`Updated ${name}`, {service: 'Repo'});
+	
 }
 
 export async function listRepoStashes(name: string) {

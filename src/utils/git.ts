@@ -9,6 +9,7 @@ import { Repository } from '../lib/types/repo';
 import { asyncExists } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import { getRepo } from '../services/repo';
 import { Commit } from '../types/repo';
 
 /** Determine if folder is a git repository */
@@ -81,6 +82,10 @@ export default class Git {
 			await this.setRemote();
 			await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 		}
+		// Set email and stuff
+		// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
+		const repo = getRepo(this.repoName);
+		this.configUser(repo.Git.Author, repo.Git.Email);
 	}
 
 	/** Returns the second word of the first line of a git show to determine latest commit */
