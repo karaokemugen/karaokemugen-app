@@ -4,8 +4,8 @@ import { Migration } from 'postgrator';
 
 import {win} from '../electron/electron';
 import logger from '../lib/utils/logger';
+import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
 import { generateDB } from './database';
-import { migrateBLWLToSmartPLs } from './playlist';
 
 export async function postMigrationTasks(migrations: Migration[], didGeneration: boolean) {
 	let doGenerate = false;

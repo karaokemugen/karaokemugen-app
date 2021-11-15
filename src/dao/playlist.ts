@@ -1,4 +1,3 @@
-import i18next from 'i18next';
 import { QueryResult } from 'pg';
 import { pg as yesql } from 'yesql';
 
@@ -9,7 +8,6 @@ import { Criteria, PLC, PLCParams, UnaggregatedCriteria } from '../lib/types/pla
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { profile } from '../lib/utils/logger';
-import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { getState } from '../utils/state';
 import { sqladdCriteria, sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeleteCriteria, sqldeleteCriteriaForPlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetCriterias, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlselectKarasFromCriterias, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCCriterias, sqlupdatePLCSetPos } from './sql/playlist';
@@ -331,73 +329,6 @@ export async function selectKarasFromCriterias(plaid: string, smartPlaylistType:
 	return res.rows;
 }
 
-export async function migrateBLWLToSmartPLs() {
-	const [BLCSets, BLCs, WL] = await Promise.all([
-		db().query('SELECT * FROM blacklist_criteria_set'),
-		db().query('SELECT * FROM blacklist_criteria'),
-		db().query('SELECT * FROM whitelist')
-	]);
-	// Convert whitelist, that's the easiest part.
-	if (WL.rows.length > 0) {
-		const plaid = await insertPlaylist({
-			name: i18next.t('WHITELIST'),
-			flag_whitelist: true,
-			flag_visible: true,
-			created_at: new Date(),
-			modified_at: new Date(),
-			username: 'admin'
-		});
-		let pos = 0;
-		const songs = WL.rows.map(s => {
-			pos++;
-			return {
-				plaid: plaid,
-				username: 'admin',
-				nickname: 'Dummy Plug System',
-				kid: s.kid,
-				created_at: new Date(),
-				pos: pos,
-				criteria: null
-			};
-		});
-		await insertKaraIntoPlaylist(songs);
-	}
-	// Blacklist(s)
-	for (const set of BLCSets.rows) {
-		const blc = BLCs.rows.filter(e => e.fk_id_blc_set === set.pk_id_blc_set);
-		// No need to import an empty BLC set.
-		if (blc.length === 0) continue;
-		const plaid = await insertPlaylist({
-			...set,
-			flag_current: false,
-			flag_visible: true,
-			flag_blacklist: set.flag_current,
-			flag_smart: true,
-			username: 'admin',
-			type_smart: 'UNION'
-		});
-		await insertCriteria(blc.map(e => {
-			return {
-				plaid: plaid,
-				type: e.type,
-				value: e.value
-			};
-		}));
-	}
-	await updateAllSmartPlaylists();
-	/**
-	 If it all works out :
-	 (uncomment this after the feature is confirmed to work fine)
-	 Like, a few weeks after 6.0 hits.
-	 try {
-		await db().query('DROP TABLE whitelist');
-	 	await db().query('DROP TABLE blacklist_criteria');
-	 	await db().query('DROP TABLE blacklist_criteria_set');
-	 } catch(err) {
-		// Everything is daijokay
-	 }
-	 */
-}
 export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfterInsert[]> {
 	const karas: any[] = karaList.map(kara => ([
 		kara.plaid,

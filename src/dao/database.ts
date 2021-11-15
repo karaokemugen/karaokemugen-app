@@ -13,7 +13,7 @@ import {getConfig} from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
-import { migrations } from '../utils/migrationsBeforePostgrator';
+import { migrateFromDBMigrate } from '../utils/hokutoNoCode';
 import {initPG,isShutdownPG, restorePG} from '../utils/postgresql';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
@@ -63,46 +63,6 @@ export async function initDB() {
 	await connectDB(errorFunction, {superuser: true, db: conf.System.Database.database, log: getState().opt.sql});
 	await db().query('CREATE EXTENSION IF NOT EXISTS unaccent;');
 	await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
-}
-
-/** Remove this in KM 7.0 */
-async function migrateFromDBMigrate() {
-	// Return early if migrations table does not exist
-	let migrationsDone = [];
-	try {
-		const tables = await db().query('SELECT tablename FROM pg_tables WHERE schemaname = \'public\' AND tablename = \'migrations\'');
-		if (tables.rows.length === 0) return;
-		const lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
-		logger.info('Old migration system found, converting...', {service: 'DB'});
-		if (lastMigration.rows.length === 0) {
-			// Migration table empty for whatever reason.
-			await db().query('DROP TABLE migrations;');
-			return;
-		}
-		const id = lastMigration.rows[0].name.replaceAll('/', '').split('-')[0];
-		migrationsDone = migrations.filter(m => m.version <= id);
-	} catch(err) {
-		logger.error('Error preparing migrations', {service: 'DB', obj: err});
-		sentry.error(err);
-		throw err;
-	}
-	try {
-		await db().query(`CREATE TABLE schemaversion (
-			version BIGINT PRIMARY KEY,
-			name TEXT,
-			md5 TEXT,
-			run_at TIMESTAMPTZ
-		);
-		`);
-	} catch(err) {
-		const error = new Error('Migration table already exists');
-		sentry.error(error);
-		throw error;
-	}
-	for (const migration of migrationsDone) {
-		db().query(`INSERT INTO schemaversion VALUES('${migration.version}', '${migration.name}', '${migration.md5}', '${new Date().toISOString()}')`);
-	}
-	await db().query('DROP TABLE migrations;');
 }
 
 async function migrateDB(): Promise<Migration[]> {

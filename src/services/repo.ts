@@ -1,7 +1,5 @@
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
-import i18next from 'i18next';
-import clonedeep from 'lodash.clonedeep';
 import { basename,resolve } from 'path';
 
 import { compareKarasChecksum, DBReady, generateDB } from '../dao/database';
@@ -19,7 +17,6 @@ import { TagFile } from '../lib/types/tag';
 import {getConfig, resolvedPathRepos} from '../lib/utils/config';
 import {
 	asyncCheckOrMkdir,
-	asyncExists,
 	asyncMoveAll,
 	extractAllFiles,
 	getFreeSpace,
@@ -32,8 +29,7 @@ import { topologicalSort } from '../lib/utils/objectHelpers';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
-import {Change, Commit, DifferentChecksumReport, ModifiedMedia, OldRepository, Push} from '../types/repo';
-import {backupConfig} from '../utils/config';
+import {Change, Commit, DifferentChecksumReport, ModifiedMedia, Push} from '../types/repo';
 import {pathIsContainedInAnother} from '../utils/files';
 import FTP from '../utils/ftp';
 import Git, { isGit } from '../utils/git';
@@ -43,7 +39,6 @@ import { getState } from '../utils/state';
 import { updateMedias } from './downloadUpdater';
 import { getAllKaras, getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
-import { addSystemMessage } from './proxyFeeds';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
 import { sendPayload } from './stats';
 import { getTags, integrateTagFile,removeTag } from './tag';
@@ -97,54 +92,6 @@ export async function addRepo(repo: Repository) {
 		}
 	}
 	logger.info(`Added ${repo.Name}`, {service: 'Repo'});
-}
-
-export async function migrateReposToZip() {
-	// Find unmigrated repositories
-	const repos: OldRepository[] = clonedeep((getRepos() as any as OldRepository[]).filter((r) => r.Path.Karas?.length > 0));
-	if (repos.length > 0) {
-		// Create a config backup, just in case
-		await backupConfig();
-	}
-	for (const oldRepo of repos) {
-		// Determine basedir by going up one folder
-		const dir = resolve(getState().dataPath, oldRepo.Path.Karas[0], '..');
-		const newRepo: Repository = {
-			Name: oldRepo.Name,
-			Online: oldRepo.Online,
-			Enabled: oldRepo.Enabled,
-			SendStats: oldRepo.SendStats || true,
-			Path: {
-				Medias: oldRepo.Path.Medias
-			},
-			MaintainerMode: false,
-			AutoMediaDownloads: 'updateOnly',
-			BaseDir: dir
-		};
-		if (await asyncExists(resolve(dir, '.git'))) {
-			// It's a git repo, put maintainer mode on.
-			newRepo.MaintainerMode = true;
-		}
-		const extraPath = newRepo.Online && !newRepo.MaintainerMode
-			? './json'
-			: '';
-		newRepo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, dir, extraPath));
-		await editRepo(newRepo.Name, newRepo, false)
-			.catch(err => {
-				logger.error(`Unable to migrate repo ${oldRepo.Name} to zip-based: ${err}`, {service: 'Repo', obj: err});
-				sentry.error(err);
-				addSystemMessage({
-					type: 'system_error',
-					date: new Date().toString(),
-					dateStr: new Date().toLocaleDateString(),
-					link: '#',
-					html: `<p>${i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.BODY', { repo: oldRepo.Name })}</p>`,
-					title: i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.TITLE')
-				});
-				// Disable the repo and bypass stealth checks
-				updateRepo({...oldRepo, Enabled: false} as any, oldRepo.Name);
-			});
-	}
 }
 
 export async function updateAllRepos() {

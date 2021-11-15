@@ -14,11 +14,12 @@ import { asyncCheckOrMkdir, asyncCopyAll, asyncExists } from '../lib/utils/files
 import logger, { configureLogger } from '../lib/utils/logger';
 import { resetSecurityCode } from '../services/auth';
 import { backgroundTypes } from '../services/backgrounds';
-import { editRepo, migrateReposToZip } from '../services/repo';
+import { editRepo } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
 import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
+import { migrateReposToZip } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { parseArgs, setupFromCommandLineArgs } from './args';
