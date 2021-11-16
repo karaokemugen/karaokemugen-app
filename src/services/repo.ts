@@ -272,7 +272,7 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 		}
 	}
 	if (repo.Enabled) await checkRepoPaths(repo);
-	updateRepo(repo, name);			
+	updateRepo(repo, name);
 	// Delay repository actions after edit
 	hookEditedRepo(oldRepo, repo, refresh, onlineCheck).catch();
 	logger.info(`Updated ${name}`, {service: 'Repo'});
@@ -286,23 +286,23 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	if (repo.Enabled && repo.Online && !oldRepo.MaintainerMode && repo.MaintainerMode && repo.Git?.URL) {
 		saveSetting(`commit-${repo.Name}`, null);
 		try {
-			await updateGitRepo(repo.Name);			
+			await updateGitRepo(repo.Name);
 		} catch(err) {
 			logger.warn('Repository was edited, but updating it failed', {service: 'Repo'});
-		}				
+		}
 		if (refresh) doGenerate = true;
 	}
 	if (repo.Enabled && repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode) {
 		try {
 			await updateZipRepo(repo.Name);
-			if (refresh) doGenerate = true;		
+			if (refresh) doGenerate = true;
 		} catch(err) {
 			logger.warn('Repository was edited, but updating it failed', {service: 'Repo'});
-		}		
+		}
 	}
 	if (repo.Git) {
 		try {
-			await setupGit(repo);				
+			await setupGit(repo);
 		} catch(err) {
 			// Non-fatal. Probably that the repository isn't set
 			logger.warn(`Could not update Git settings for repository : ${err}`, {service: 'Repo', obj: err});
@@ -311,14 +311,14 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	if (oldRepo.Enabled !== repo.Enabled || refresh && DBReady) {
 		await compareKarasChecksum();
 		doGenerate = true;
-	}	
+	}
 	if (doGenerate) await generateDB();
 	if (oldRepo.Path.Medias !== repo.Path.Medias && DBReady && onlineCheck) {
 		getKaras({q: `r:${repo.Name}`}).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
 	}
-	
+
 }
 
 export async function listRepoStashes(name: string) {
@@ -498,7 +498,12 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		// Let's not remove tags in karas : it's already done anyway
 		deletePromises.push(removeTag(TIDsToDelete, {refresh: false, removeTagInKaras: false, deleteFile: false}));
 	}
-	karas = topologicalSort(karas);
+	try {
+		karas = topologicalSort(karas);
+	} catch(err) {
+		logger.error('Topological sort failed', {service: 'Repo', obj: karas});
+		throw err;
+	}
 	for (const kara of karas) {
 		KIDsToUpdate.push(await integrateKaraFile(kara.file, kara.data, false));
 	}
