@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import { move, remove } from 'fs-extra';
 import { resolve } from 'path';
 
+import { initHooks, stopWatchingHooks } from '../lib/dao/hook';
 import { DiffChanges, Repository } from '../lib/types/repo';
 import { resolvedPath } from '../lib/utils/config';
 import { getFilesRecursively } from '../lib/utils/files';
@@ -47,8 +48,10 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 			data: repo
 		});
 		const dir = await extractZip(target, tempDir, task);
+		await stopWatchingHooks();
 		await remove(outDir);
 		await move(resolve(tempDir, dir), outDir);
+		await initHooks();
 	} catch(err) {
 		logger.error(`Unable to download and extract ${repo} zip`, {service: 'Zip', obj: err});
 		throw err;
