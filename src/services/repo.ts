@@ -539,7 +539,8 @@ async function setupGit(repo: Repository) {
 		baseDir: baseDir,
 		url: repo.Git.URL,
 		username: repo.Git.Username,
-		password: repo.Git.Password
+		password: repo.Git.Password,
+		repoName: repo.Name
 	});
 	await git.setup();
 	return git;

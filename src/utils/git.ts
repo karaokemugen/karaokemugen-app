@@ -37,7 +37,6 @@ export default class Git {
 	git: SimpleGit
 	opts: GitOptions
 	task: Task
-	repoName: string
 
 	constructor(opts: GitOptions) {
 		this.opts = {
@@ -52,7 +51,7 @@ export default class Git {
 	progressHandler({method, stage, progress}: SimpleGitProgressEvent) {
 		// Yeah we're redifining the text because we have to use method or else typescript is screaming at me and I don't like its voice.
 		if (this.task) this.task.update({
-			text: `${this.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.'+method)}`,
+			text: `${this.opts.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.'+method)}`,
 			subtext: `${i18next.t('GIT.STAGES.'+stage)}`,
 			value: progress
 		});
@@ -79,13 +78,13 @@ export default class Git {
 		const url = this.getFormattedURL();
 		if (!origin) await this.git.addRemote('origin', url);
 		if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
-			logger.debug(`${this.repoName}: Rebuild remote`, {service: 'Git'});
+			logger.debug(`${this.opts.repoName}: Rebuild remote`, {service: 'Git'});
 			await this.setRemote();
 			await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 		}
 		// Set email and stuff
 		// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
-		const repo = getRepo(this.repoName);
+		const repo = getRepo(this.opts.repoName);
 		this.configUser(repo.Git.Author, repo.Git.Email);
 	}
 
@@ -176,7 +175,7 @@ export default class Git {
 	async push() {
 		logger.debug('Pushing...', {service: 'Git'});
 		this.task = new Task({
-			text: `${this.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.push')}`,
+			text: `${this.opts.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.push')}`,
 			value: 0,
 			total: 100
 		});
@@ -187,7 +186,7 @@ export default class Git {
 	async clone() {
 		logger.debug(`Cloning ${this.opts.url} into ${this.opts.baseDir}`, {service: 'Git'});
 		this.task = new Task({
-			text: `${this.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.clone')}`,
+			text: `${this.opts.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.clone')}`,
 			value: 0,
 			total: 100
 		});
