@@ -2,7 +2,8 @@ import i18next from 'i18next';
 
 import { MenuItemBuilderFunction } from '../../types/electron';
 
-const builder: MenuItemBuilderFunction = () => {
+const builder: MenuItemBuilderFunction = (options) => {
+	const { isMac } = options;
 	return {
 		label: i18next.t('MENU_EDIT'),
 		submenu: [
@@ -14,14 +15,14 @@ const builder: MenuItemBuilderFunction = () => {
 			{ label: i18next.t('MENU_EDIT_PASTE'), role: 'paste' },
 			{ label: i18next.t('MENU_EDIT_DELETE'), role: 'delete' },
 			{ label: i18next.t('MENU_EDIT_SELECT_ALL'), role: 'selectAll' },
-			{ type: 'separator' },
-			{
+			isMac ? { type: 'separator' } : null,
+			isMac ? {
 				label: i18next.t('MENU_EDIT_SPEECH'),
 				submenu: [
 					{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startSpeaking' },
 					{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopSpeaking' }
 				]
-			}
+			} : null
 		]
 	};
 };
