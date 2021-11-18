@@ -31,6 +31,10 @@ export const urls = {
 	contribDoc: () => open(`https://docs.karaokes.moe/${getState().defaultLocale}/contrib-guide/base/`),
 	sendKaraoke: () => open('https://kara.moe/base/import'),
 	reportBug: () => open('https://lab.shelter.moe/karaokemugen/karaokemugen-app/-/issues'),
+	donations: {
+		fr: () => open('https://mugen.karaokes.moe/donations.html'),
+		en: () => open('https://mugen.karaokes.moe/en/donations.html')
+	}
 };
 
 export function openURL(url: string) {

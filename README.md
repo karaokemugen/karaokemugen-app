@@ -241,6 +241,9 @@ For code/development contributions, read the [contributing guide](CONTRIBUTING.m
 
 Everything's there, and if you have questions, you can come to [our Discord](http://karaokes.moe/discord) in the #karaoke_dev channel!
 
+## Donations
+
+We accept donations through Patreon, Liberapay or Paypal directly. If you're interested in helping us pay for our infrastructure and other projects, please donate! [For more information on why we need money and how to donate, see this news article on our site](https://mugen.karaokes.moe/en/2021/11/16/donations.html)
 ## Special thanks
 
 <img src="https://sentry-brand.storage.googleapis.com/sentry-logo-black.png" alt="Sentry full logo" width="125"/>

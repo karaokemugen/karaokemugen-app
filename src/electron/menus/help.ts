@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 
 import { MenuItemBuilderFunction } from '../../types/electron';
+import { getState } from '../../utils/state';
 import { displayAbout, urls } from './';
 
 const builder: MenuItemBuilderFunction = (options) => {
@@ -49,7 +50,12 @@ const builder: MenuItemBuilderFunction = (options) => {
 				click: urls.reportBug
 			},
 			{
-				label: i18next.t('MENU_FILE_ABOUT'),
+				label: i18next.t('MENU_HELP_DONATIONS'),
+				click: getState().defaultLocale === 'fr' ? urls.donations.fr : urls.donations.en,
+				visible: !isMac
+			},
+			{
+				label: i18next.t('MENU_HELP_ABOUT'),
 				click: displayAbout,
 				visible: !isMac
 			}
