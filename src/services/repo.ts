@@ -377,19 +377,19 @@ export async function updateGitRepo(name: string) {
 	logger.info(`Update ${repo.Name}: Starting`, {service: 'Repo'});
 	try {
 		if (!await isGit(repo)) {
-			logger.debug(`Update ${repo.Name}: not a git repo, cloning now`, {service: 'Repo'});
+			logger.info(`Update ${repo.Name}: not a git repo, cloning now`, {service: 'Repo'});
 			await newGitRepo(repo);
 			await saveSetting('baseChecksum', await baseChecksum());
 			return true;
 		} else {
 			const git = await setupGit(repo);
-			logger.debug(`Update ${repo.Name}: is a git repo, pulling`, {service: 'Repo'});
+			logger.info(`Update ${repo.Name}: is a git repo, pulling`, {service: 'Repo'});
 			await git.fetch();
 			const originalCommit = await git.getCurrentCommit();
 			try {
 				const status = await git.status();
 				if (status.behind === 0) { // Repository is up-to-date
-					logger.debug(`Update ${repo.Name}: repo is up-to-date`, {service: 'Repo'});
+					logger.info(`Update ${repo.Name}: repo is up-to-date`, {service: 'Repo'});
 					return false;
 				}
 				if (!status.isClean()) {
@@ -434,7 +434,7 @@ export async function updateGitRepo(name: string) {
 					if (!firstCommit) await git.reset('HEAD~');
 				}
 			} catch(err) {
-				logger.debug(`${repo.Name} pull failed`, {service: 'Repo', obj: err});
+				logger.info(`${repo.Name} pull failed`, {service: 'Repo', obj: err});
 				// This failed miserably because there was a conflict. Or something. We can test this out.
 				const status = await git.status();
 				// Else it means we're having disturbances in the Force.
@@ -873,7 +873,7 @@ export async function generateCommits(repoName: string, ignoreNoMedia = false) {
 					// If the karafile has been modified, chances are the media has been as well.
 					oldMediaFile = deletedKIDData.get(kara.kid).medias[0].filename;
 					// We need to remove from modifiedMedias our delete
-					modifiedMedias = modifiedMedias.filter(m => m.new === null && m.old === oldMediaFile);
+					modifiedMedias = modifiedMedias.filter(m => m.new !== null && m.old !== oldMediaFile);
 				}
 			}
 			// If oldMediaFile is still null, this is a new media that will be pushed later to the FTP.
