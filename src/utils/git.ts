@@ -11,10 +11,11 @@ import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { getRepo } from '../services/repo';
 import { Commit } from '../types/repo';
+import { getState } from './state';
 
 /** Determine if folder is a git repository */
 export function isGit(repo: Repository) {
-	return asyncExists(resolve(repo.BaseDir, '.git'));
+	return asyncExists(resolve(getState().dataPath, repo.BaseDir, '.git'));
 }
 
 interface GitOptions {
