@@ -9,7 +9,7 @@ import { removeParentInKaras } from '../dao/karafile';
 import { selectPlaylistContentsMicro } from '../dao/playlist';
 import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
-import { refreshKaras, refreshKarasDelete, refreshKarasInsert, refreshKarasUpdate, refreshYears, updateKaraParentSearchVector, updateKaraSearchVector } from '../lib/dao/kara';
+import { refreshKaras, refreshKarasDelete, refreshKarasInsert, refreshKarasUpdate, refreshParentSearchVectorTask, refreshYears, updateKaraSearchVector } from '../lib/dao/kara';
 import { getDataFromKaraFile, writeKara } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector} from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
@@ -254,8 +254,8 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	}
 	// If karas is not initialized then we're updating ALL search vectors
 	karas
-		? updateKaraParentSearchVector(Array.from(parentsToUpdate))
-		: updateKaraParentSearchVector();
+		? refreshParentSearchVectorTask(Array.from(parentsToUpdate))
+		: refreshParentSearchVectorTask();
 	if (newTags) {
 		await updateTagSearchVector();
 		refreshTags();
