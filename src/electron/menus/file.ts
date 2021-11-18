@@ -12,8 +12,13 @@ const builder: MenuItemBuilderFunction = (options) => {
 		label: isMac ? 'Karaoke Mugen' : i18next.t('MENU_FILE'),
 		submenu: [
 			{
-				label: i18next.t('MENU_FILE_ABOUT'),
+				label: i18next.t('MENU_HELP_ABOUT'),
 				click: displayAbout,
+				visible: isMac
+			},
+			{
+				label: i18next.t('MENU_HELP_DONATIONS'),
+				click: getState().defaultLocale === 'fr' ? urls.donations.fr : urls.donations.en,
 				visible: isMac
 			},
 			{ type: 'separator', visible: isMac },
