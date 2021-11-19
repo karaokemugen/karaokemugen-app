@@ -52,7 +52,6 @@ const builder: MenuItemBuilderFunction = (options) => {
 			{
 				label: i18next.t('MENU_HELP_DONATIONS'),
 				click: getState().defaultLocale === 'fr' ? urls.donations.fr : urls.donations.en,
-				visible: !isMac
 			},
 			{
 				label: i18next.t('MENU_HELP_ABOUT'),

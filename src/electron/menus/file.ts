@@ -16,11 +16,6 @@ const builder: MenuItemBuilderFunction = (options) => {
 				click: displayAbout,
 				visible: isMac
 			},
-			{
-				label: i18next.t('MENU_HELP_DONATIONS'),
-				click: getState().defaultLocale === 'fr' ? urls.donations.fr : urls.donations.en,
-				visible: isMac
-			},
 			{ type: 'separator', visible: isMac },
 			{
 				label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
