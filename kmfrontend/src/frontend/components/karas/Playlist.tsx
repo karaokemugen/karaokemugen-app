@@ -239,8 +239,10 @@ function Playlist(props: IProps) {
 		const [height, setHeight] = useState<string>(null);
 
 		useEffect(() => {
-			const realHeight = (ref.current.firstChild as HTMLDivElement).getBoundingClientRect();
-			setHeight(`${realHeight.height}px`);
+			if (ref.current.firstChild) {
+				const realHeight = (ref.current.firstChild as HTMLDivElement).getBoundingClientRect();
+				setHeight(`${realHeight.height}px`);
+			}
 		}, [props['data-index']]);
 
 		return (
