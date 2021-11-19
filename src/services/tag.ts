@@ -180,7 +180,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 	}
 }
 
-export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, refresh: true, repoCheck: true }) {
+export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, refresh: true, repoCheck: true, ignoreModifiedAt: false }) {
 	let task: Task;
 	if (!opts.silent) task = new Task({
 		text: 'EDITING_TAG_IN_PROGRESS',
@@ -192,7 +192,7 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		if (!oldTag) throw {code: 404, msg: 'Tag ID unknown'};
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository) throw {code: 409, msg: 'Tag repository cannot be modified. Use copy function instead'};
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
-		tagObj.modified_at = new Date().toISOString();
+		if (!opts.ignoreModifiedAt) tagObj.modified_at = new Date().toISOString();
 		// Try to find old tag
 		let oldTagFiles = [];
 		let oldTagPath: string;
@@ -302,7 +302,7 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 			if (tagDBData.repository === tagFileData.repository && tagDBData.modified_at.toISOString() !== tagFileData.modified_at) {
 				// Only edit if repositories are the same and modified_at are different.
 				// Also refresh is always disabled for editing tags.
-				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true });
+				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true, ignoreModifiedAt: true});
 			}
 			return tagFileData.name;
 		} else {
