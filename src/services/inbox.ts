@@ -93,13 +93,13 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 }
 
 async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
+	const downloadTask = new Task({
+		text: 'DOWNLOADING',
+		subtext: kara.name,
+		value: 0,
+		total: 100,
+	});
 	if (kara.mediafile) {
-		const downloadTask = new Task({
-			text: 'DOWNLOADING',
-			subtext: kara.name,
-			value: 0,
-			total: 100,
-		});
 		const localMedia = resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile);
 		const tempMedia = resolve(resolvedPath('Temp'), kara.mediafile);
 		const downloadItem = {
@@ -107,19 +107,18 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			url: `https://${repoName}/inbox/${encodeURIComponent(kara.name)}/${encodeURIComponent(kara.mediafile)}`,
 			id: kara.name,
 		};
-		console.log(downloadItem.url);
 		try {
 			await downloadFile(downloadItem, downloadTask);
-		} catch(err) {
+		} catch (err) {
 			throw err;
-		} finally {
-			downloadTask.update({
-				value: 100
-			});
-			await sleep(1000);
-			downloadTask.end();
 		}
 		await asyncMove(tempMedia, localMedia, { overwrite: true });
+	} else {
+		downloadTask.update({
+			value: 100
+		});
+		await sleep(1000);
+		downloadTask.end();
 	}
 }
 
