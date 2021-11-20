@@ -8,10 +8,10 @@ import nanamiHeHe from '../../../assets/nanami-hehe2.png';
 import nanamiSearching from '../../../assets/nanami-searching.gif';
 import { commandBackend, getSocket } from '../../../utils/socket';
 
+let timeout;
 
 function SetupLoading(props: RouteComponentProps) {
 	const [tasks, setTasks] = useState<TaskItem[]>([]);
-	let timeout;
 
 	const endSetup = async () => {
 		await commandBackend('updateSettings', {
