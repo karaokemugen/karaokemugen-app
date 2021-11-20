@@ -1,18 +1,21 @@
 import i18next from 'i18next';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 
+import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 function SetupPageStats(props: RouteComponentProps) {
+	const context = useContext(GlobalContext);
 
 	const [error, setError] = useState<string>();
 	const [openDetails, setOpenDetails] = useState(false);
 	const [stats, setStats] = useState<boolean>();
 	const [errorTracking, setErrorTracking] = useState<boolean>();
+	const [userStats, setUserStats] = useState<boolean>();
 
 	const updateStats = async () => {
-		if (errorTracking !== undefined && stats !== undefined) {
+		if (errorTracking !== undefined && stats !== undefined && userStats !== undefined) {
 			await commandBackend('updateSettings', {
 				setting: {
 					Online: {
@@ -21,6 +24,9 @@ function SetupPageStats(props: RouteComponentProps) {
 					},
 				},
 			});
+			const user = context?.globalState.settings.data.user;
+			user.flag_sendstats = userStats;
+			await commandBackend('editMyAccount', user);
 			setError(undefined);
 			props.history.push('/setup/loading');
 		}
@@ -89,6 +95,29 @@ function SetupPageStats(props: RouteComponentProps) {
 				</div>
 			</div>
 			<p>{i18next.t('ONLINE_STATS.CHANGE')}</p>
+			<br />
+			<h3>{i18next.t('MODAL.STATS_MODAL.TITLE')}</h3>
+			<p>{i18next.t('MODAL.STATS_MODAL.DESC')}</p>
+			<p>{i18next.t('MODAL.STATS_MODAL.REFUSE_DESC')}</p>
+			<div className="input-group">
+				<div className="actions">
+					<button
+						className={userStats ? 'on' : ''}
+						type="button"
+						onClick={() => setUserStats(true)}
+					>
+						{i18next.t('YES')}
+					</button>
+					<button
+						className={userStats === false ? 'off' : ''}
+						type="button"
+						onClick={() => setUserStats(false)}
+					>
+						{i18next.t('NO')}
+					</button>
+				</div>
+			</div>
+			<p>{i18next.t('MODAL.STATS_MODAL.CHANGE')}</p>
 			<div className="actions">
 				<label className="error">{error}</label>
 				<button type="button" onClick={updateStats}>
