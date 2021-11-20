@@ -189,7 +189,7 @@
     "@typescript-eslint/eslint-plugin": "4",
     "@typescript-eslint/parser": "4",
     "chai": "^4.3.4",
-    "electron": "^16.0.0",
+    "electron": "^16.0.1",
     "eslint": "7",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",
