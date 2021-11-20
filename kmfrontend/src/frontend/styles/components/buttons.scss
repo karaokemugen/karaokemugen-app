@@ -143,26 +143,11 @@ div > a, h5 > a {
 		display: none;
 	}
 	&.hideSubs {
+		top: -2px;
 		> *:first-child { display: inline-block; }
-		&:hover {
-			> *:first-child { display: none; }
-			> *:last-child { display: unset; }
-		}
-		&:active { // This trick seems broken
-			> *:first-child { display: inline-block; }
-			> *:last-child { display: none; }
-		}
 	}
 	&.showSubs {
 		> *:last-child { display: unset; }
-		&:hover {
-			> *:first-child { display: inline-block; }
-			> *:last-child { display: none; }
-		}
-		&:active { // This trick seems broken
-			> *:first-child { display: none; }
-			> *:last-child { display: unset; }
-		}
 	}
 }
 
