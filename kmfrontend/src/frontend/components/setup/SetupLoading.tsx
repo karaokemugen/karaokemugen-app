@@ -11,6 +11,7 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 
 function SetupLoading(props: RouteComponentProps) {
 	const [tasks, setTasks] = useState<TaskItem[]>([]);
+	let timeout;
 
 	const endSetup = async () => {
 		await commandBackend('updateSettings', {
@@ -25,9 +26,6 @@ function SetupLoading(props: RouteComponentProps) {
 		props.history.push('/welcome');
 	};
 
-	let timeout = setTimeout(async () => endSetup(), 5000);
-
-
 	const isGitUpdateInProgress = (tasks: TaskItem[]) => {
 		for (const i in tasks) {
 			if (tasks[i].text === 'UPDATING_GIT_REPO') {
@@ -39,6 +37,7 @@ function SetupLoading(props: RouteComponentProps) {
 	};
 
 	useEffect(() => {
+		timeout = setTimeout(async () => endSetup(), 5000);
 		getSocket().on('tasksUpdated', isGitUpdateInProgress);
 		return () => {
 			getSocket().off('tasksUpdated', isGitUpdateInProgress);
