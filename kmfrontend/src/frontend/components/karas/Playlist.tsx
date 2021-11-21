@@ -481,8 +481,10 @@ function Playlist(props: IProps) {
 
 	const updateCounters = (event: PublicPlayerState) => {
 		if (getPlaylistInfo(props.side, context)?.flag_current) {
-			setSongsBeforeJingle(event.songsBeforeJingle);
-			setSongsBeforeSponsor(event.songsBeforeSponsor);
+			if (event.songsBeforeJingle && event.songsBeforeSponsor) {
+				setSongsBeforeJingle(event.songsBeforeJingle);
+				setSongsBeforeSponsor(event.songsBeforeSponsor);
+			}
 		} else {
 			setSongsBeforeJingle(undefined);
 			setSongsBeforeSponsor(undefined);
