@@ -29,7 +29,7 @@ class Database extends Component<unknown, unknown> {
 	}
 
 	getCommits = async () => {
-		commandBackend('getCommits', {repoName: 'kara.moe'}).then(console.log, console.warn);
+		commandBackend('getCommits', {repoName: 'kara.moe'});
 	}
 
 	render() {

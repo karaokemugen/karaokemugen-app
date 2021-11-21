@@ -107,7 +107,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				return {label: buildKaraTitle(this.context.globalState.settings.data, kara, true, res.i18n), value: kara.kid};
 			});
 			this.setState({karaSearch});
-			console.log(this.state.karaSearch);
 		} 
 	}
 

@@ -162,9 +162,7 @@ export default function Git() {
 			if (indexInExcludeList >= 0) {
 				excludeList.splice(indexInExcludeList, 1);
 				setExcludeList(excludeList);
-				console.log('remove from exclude', commit);
 			} else {
-				console.log('add to exclude', commit);
 				setExcludeList([...excludeList, commit]);
 			}
 		}
