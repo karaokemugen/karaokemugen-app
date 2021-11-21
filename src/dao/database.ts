@@ -119,7 +119,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 			});
 		}
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
-		sentry.error(err, 'Fatal');
+		if (!isShutdownPG()) sentry.error(err, 'Fatal');
 		throw Error(`Database system initialization failed : ${err}`);
 	}
 	if (!await getInstanceID()) {
