@@ -124,7 +124,6 @@ export default function Git() {
 	const [excludeList, setExcludeList] = useState<number[]>([]);
 	const [gitStatus, setGitStatus] = useState<GitStatusResult & {repoName: string}>();
 	const [loading, setLoading] = useState(false);
-	const [modalLoading, setModalLoading] = useState(false);
 	const [showPushModal, setShowPushModal] = useState(false);
 	const [showActionsModal, setShowActionsModal] = useState(false);
 
@@ -149,7 +148,7 @@ export default function Git() {
 	}, []);
 
 	const pushCommits = useCallback(async () => {
-		setModalLoading(true);
+		setLoading(true);
 		await commandBackend('pushCommits', pendingPush);
 		setShowPushModal(false);
 	}, [pendingPush]);
@@ -178,7 +177,7 @@ export default function Git() {
 	}, []);
 
 	const takeAction = useCallback(async (repoName: string, action: 'stash'|'reset') => {
-		setModalLoading(true);
+		setLoading(true);
 		let failed = false;
 		try {
 			// eslint-disable-next-line default-case
@@ -200,7 +199,7 @@ export default function Git() {
 			// Refresh repos
 			getRepos().then(setRepos);
 		}
-		setModalLoading(false);
+		setLoading(false);
 	}, []);
 
 	useEffect(() => {
@@ -211,7 +210,7 @@ export default function Git() {
 		const listener = (repoName) => {
 			if (repoName === pendingPush.repoName) {
 				setLoading(false);
-				setModalLoading(false);
+				setLoading(false);
 				setPendingPush(null);
 				setShowPushModal(false);
 				// Refresh repos
@@ -294,7 +293,7 @@ export default function Git() {
 				}}
 				onOk={pushCommits}
 				okText={i18next.t('REPOSITORIES.GIT_PUSH')}
-				confirmLoading={modalLoading}
+				confirmLoading={loading}
 				cancelText={i18next.t('CANCEL')}
 			>
 				<ul>
@@ -310,7 +309,7 @@ export default function Git() {
 				footer={null}
 				cancelText={i18next.t('CANCEL')}
 				onCancel={() => {
-					if (modalLoading) return;
+					if (loading) return;
 					setShowActionsModal(false);
 					setGitStatus(null);
 				}}
@@ -336,7 +335,7 @@ export default function Git() {
 				}
 				<p>
 					<Button type="primary" icon={<CloudSyncOutlined />} block
-						loading={modalLoading}
+						loading={loading}
 						onClick={() => takeAction(gitStatus.repoName, 'stash')}
 					>
 						{i18next.t('MODAL.GIT_DANGEROUS.STASH.BTN')}
@@ -345,7 +344,7 @@ export default function Git() {
 				</p>
 				<p>
 					<Button type="primary" icon={<ExceptionOutlined />} block
-						danger loading={modalLoading}
+						danger loading={loading}
 						onClick={() => takeAction(gitStatus.repoName, 'reset')}
 					>
 						{i18next.t('MODAL.GIT_DANGEROUS.RESET.BTN')}
