@@ -10,7 +10,7 @@ import GlobalContext from '../../../store/context';
 import { getTagInLocale, getTagInLocaleList, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
-import { is_touch_device, isModifiable } from '../../../utils/tools';
+import { isModifiable } from '../../../utils/tools';
 
 interface KaraListState {
 	karas: DBKara[];
