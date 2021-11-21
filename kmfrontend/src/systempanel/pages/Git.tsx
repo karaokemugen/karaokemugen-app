@@ -291,7 +291,6 @@ export default function Git() {
 				}}
 				onOk={pushCommits}
 				okText={i18next.t('REPOSITORIES.GIT_PUSH')}
-				confirmLoading={loading}
 				cancelText={i18next.t('CANCEL')}
 			>
 				<ul>
