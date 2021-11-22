@@ -8,6 +8,7 @@ import { app } from 'electron';
 import {bools, hostnameRegexp} from '../lib/utils/constants';
 import {Config} from '../types/config';
 
+/** We don't bundle postgresql on any Linux package, ever. */
 export const dbConfig = process.platform === 'linux'
 	? {
 		bundledPostgresBinary: false,

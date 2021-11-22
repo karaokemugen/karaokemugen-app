@@ -11,8 +11,9 @@ import logger from './lib/utils/logger';
 import sentry from './utils/sentry';
 import {setState} from './utils/state';
 
-dotenv.config();
-sentry.init(process.argv.includes('--strict'));
+/** Welcome to Karaoke Mugen's beginning and end.
+ * Emergency exits are on your left and right.  
+ */
 
 process.on('uncaughtException', (exception: any) => {
 	console.log('Uncaught exception:', exception);
@@ -48,6 +49,9 @@ if (process.platform === 'win32' ) {
 }
 
 // Main app begins here.
+dotenv.config();
+sentry.init(process.argv.includes('--strict'));
+
 let appPath: string;
 // Resources are all the stuff our app uses and is bundled with. mpv config files, default avatar, background, migrations, locales, etc.
 let resourcePath: string;
@@ -72,7 +76,7 @@ if (app.isPackaged) {
 	}
 }
 
-// DataPath is by default appPath + app. This is default when running from source
+// dataPath is appPath + /app. This is default when running from source
 const dataPath = existsSync(resolve(appPath, 'portable'))
 	? resolve(appPath, 'app/')
 	// Rewriting dataPath to point to user home directory

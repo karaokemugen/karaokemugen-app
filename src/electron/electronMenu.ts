@@ -22,7 +22,7 @@ export function initMenu(layout: MenuLayout) {
 		fileMenu(options),
 		// VIEW MENU
 		viewMenu(options),
-		// EDIT MENU (Mac only)
+		// EDIT MENU
 		editMenu(options),
 		// GO TO MENU
 		goToMenu(options),

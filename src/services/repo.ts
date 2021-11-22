@@ -259,7 +259,9 @@ async function newZipRepo(repo: Repository): Promise<string> {
 	return LatestCommit;
 }
 
-/** Edit a repository. Folders will be created if necessary */
+/** Edit a repository. Folders will be created if necessary 
+ * This is another cursed function of Karaoke Mugen.
+*/
 export async function editRepo(name: string, repo: Repository, refresh?: boolean, onlineCheck = true) {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw {code: 404};

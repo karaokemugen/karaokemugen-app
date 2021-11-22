@@ -14,10 +14,7 @@ import logger from 'winston';
 import { selectSongCountForUser,selectSongTimeSpentForUser } from '../dao/playlist';
 import { 	deleteUser,
 	insertUser,
-	lowercaseAllUsers,
-	mergeUserData,
 	reassignToUser,
-	selectAllDupeUsers,
 	selectUsers,
 	updateUser,
 	updateUserLastLogin,
@@ -31,10 +28,10 @@ import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import {UserOpts} from '../types/user';
 import {defaultGuestNames} from '../utils/constants';
+import { lowercaseMigration } from '../utils/hokutoNoCode';
 import sentry from '../utils/sentry';
 import {getState} from '../utils/state';
 import { stopSub } from '../utils/userPubSub';
-import { addToFavorites, getFavorites } from './favorites';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
 
 const userLoginTimes = new Map();
@@ -574,62 +571,4 @@ export async function generateAdminPassword(): Promise<string> {
 		'admin');
 	adminPasswordCache = adminPassword;
 	return adminPassword;
-}
-
-// Remove this in KM 7.0
-export async function lowercaseMigration() {
-	try {
-		// First get list of users with double names
-		const users = await selectAllDupeUsers();
-		if (users.length > 0) {
-			// So we have some users who're the same. Let's make a map
-			const duplicateUsers = new Map();
-			// Regroup users
-			for (const user of users) {
-				if (duplicateUsers.has(user.pk_login.toLowerCase())) {
-					const arr = duplicateUsers.get(user.pk_login.toLowerCase());
-					arr.push(user);
-					duplicateUsers.set(user.pk_login.toLowerCase(), arr);
-				} else {
-					duplicateUsers.set(user.pk_login.toLowerCase(), [user]);
-				}
-			}
-			// Now, let's decide what to do.
-			for (const [login, dupeUsers] of duplicateUsers.entries()) {
-				// First, is it online or local ?
-				if (login.includes('@')) {
-					// This case is simple, we keep the first one and delete the others.
-					// Profile and favorites will be redownloaded anyway.
-					// Remove first element of the users array, we'll keep this one.
-					dupeUsers.shift();
-					for (const user of dupeUsers) {
-						await deleteUser(user.pk_login);
-					}
-				} else {
-					// User is local only
-					// We take the first user since our SQL query should have ordered by number of favorites and last_login_at first.
-					// The only downside to this is the unlucky person who had alot of favorites, and created a second account later and didn't add all the old favorites he had. Poor guy.
-					const mainUser = dupeUsers[0].pk_login;
-					dupeUsers.shift();
-					// We need to merge their data with mainUser
-					for (const user of dupeUsers) {
-						// Special case for favorites since we may break the unique constraint if the two users had the same favorites.
-						const favs = await getFavorites({userFavorites: user.pk_login});
-						const favsToAdd = favs.content.map(f => f.kid);
-						const promises = [
-							mergeUserData(user.pk_login, mainUser),
-							addToFavorites(mainUser, favsToAdd)
-						];
-						await Promise.all(promises);
-						await deleteUser(user.pk_login);
-					}
-				}
-			}
-		}
-		// Let's pray this doesn't catch fire.
-		await lowercaseAllUsers();
-	} catch(err) {
-		logger.error('Unable to lowercase all users', {service: 'User', obj: err});
-		sentry.error(err, 'Warning');
-	}
 }

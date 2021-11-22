@@ -23,7 +23,7 @@ export default class FTP {
 	async connect() {
 		const repo = getRepo(this.opts.repoName);
 		if (!repo) throw 'Unknown repository';
-		this._validateFTPSettings(repo);
+		this.validateFTPSettings(repo);
 		this.client = new Client();
 		logger.info(`Connecting to FTP for ${repo.Name}`, {service: 'FTP'});
 		try {
@@ -88,7 +88,7 @@ export default class FTP {
 		return this.client.close();
 	}
 
-	_validateFTPSettings(repo: Repository) {
+	private validateFTPSettings(repo: Repository) {
 		const ftp = repo.FTP;
 		if (!ftp) throw 'FTP not configured';
 		if (!ftp.Host || !ftp.Password || !ftp.Username) throw 'Invalid settings in FTP configuration';
