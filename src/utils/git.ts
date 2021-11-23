@@ -87,6 +87,8 @@ export default class Git {
 		// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
 		const repo = getRepo(this.opts.repoName);
 		this.configUser(repo.Git.Author, repo.Git.Email);
+		// Avoid crlf conflicts
+		await this.git.addConfig('core.autocrlf', 'true');
 	}
 
 	/** Returns the second word of the first line of a git show to determine latest commit */
