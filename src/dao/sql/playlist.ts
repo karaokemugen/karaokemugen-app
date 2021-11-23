@@ -406,7 +406,7 @@ WHERE pc.fk_id_playlist = :plaid
 	AND pc.fk_login = :username;
 `;
 
-export const sqlgetPlaylistInfo = `
+export const sqlgetPlaylist = (singlePlaylist: boolean, visibleOnly: boolean) => `
 SELECT pk_id_playlist AS plaid,
 	name,
 	karacount,
@@ -428,31 +428,10 @@ SELECT pk_id_playlist AS plaid,
 	fk_login AS username,
 	type_smart
 FROM playlist
-WHERE pk_id_playlist = $1
-`;
-
-export const sqlgetPlaylists = `
-SELECT pk_id_playlist AS plaid,
-	name,
-	karacount,
-	duration,
-	time_left,
-	created_at,
-	modified_at,
-	flag_visible,
-	flag_current,
-	flag_public,
-	flag_whitelist,
-	flag_blacklist,
-	flag_smart,
-	flag_smartlimit,
-	smart_limit_number,
-	smart_limit_order,
-	smart_limit_type,
-	fk_id_plcontent_playing AS plcontent_id_playing,
-	fk_login AS username,
-	type_smart
-FROM playlist
+WHERE 1 = 1
+${singlePlaylist ? ' AND pk_id_playlist = $1 ' : ''}
+${visibleOnly ? ' AND flag_visible = TRUE ' : ''}
+ORDER BY flag_current DESC, flag_public DESC, name
 `;
 
 export const sqlupdatePLCCriterias = `

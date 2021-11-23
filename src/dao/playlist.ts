@@ -1,4 +1,3 @@
-import { QueryResult } from 'pg';
 import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database';
@@ -10,7 +9,7 @@ import { now } from '../lib/utils/date';
 import { profile } from '../lib/utils/logger';
 import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
 import { getState } from '../utils/state';
-import { sqladdCriteria, sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeleteCriteria, sqldeleteCriteriaForPlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetCriterias, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPlaylistInfo, sqlgetPlaylists, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlselectKarasFromCriterias, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCCriterias, sqlupdatePLCSetPos } from './sql/playlist';
+import { sqladdCriteria, sqladdKaraToPlaylist, sqlcountPlaylistUsers, sqlcreatePlaylist, sqldeleteCriteria, sqldeleteCriteriaForPlaylist, sqldeletePlaylist, sqleditPlaylist, sqlemptyPlaylist, sqlgetCriterias, sqlgetMaxPosInPlaylist, sqlgetMaxPosInPlaylistForUser, sqlgetPlaylist, sqlgetPlaylistContents, sqlgetPlaylistContentsMicro, sqlgetPlaylistContentsMini, sqlgetPLCByKIDUser, sqlgetPLCInfo, sqlgetPLCInfoMini, sqlgetSongCountPerUser, sqlgetTimeSpentPerUser, sqlremoveKaraFromPlaylist, sqlreorderPlaylist, sqlselectKarasFromCriterias, sqlsetPlaying, sqlsetPLCAccepted, sqlsetPLCFree, sqlsetPLCFreeBeforePos, sqlsetPLCInvisible, sqlsetPLCRefused, sqlsetPLCVisible, sqlshiftPosInPlaylist, sqltrimPlaylist, sqlupdateFreeOrphanedSongs, sqlupdatePlaylistDuration, sqlupdatePlaylistKaraCount, sqlupdatePlaylistLastEditTime, sqlupdatePLCCriterias, sqlupdatePLCSetPos } from './sql/playlist';
 
 export function updatePLCCriterias(plcs: number[], criterias: Criteria[]) {
 	return db().query(sqlupdatePLCCriterias, [plcs, criterias]);
@@ -207,20 +206,10 @@ export async function selectPLCByKIDAndUser(kid: string, username: string, plaid
 	return res.rows[0];
 }
 
-export async function selectPlaylistInfo(id: string): Promise<DBPL> {
-	const res = await db().query(sqlgetPlaylistInfo, [id]);
-	return res.rows[0];
-}
-
-export async function selectPlaylists(forUser: boolean): Promise<DBPL[]> {
-	const query = sqlgetPlaylists;
-	const order = ' ORDER BY flag_current DESC, flag_public DESC, name';
-	let res: QueryResult;
-	if (forUser) {
-		res = await db().query(query + ' WHERE flag_visible = TRUE ' + order);
-	} else {
-		res = await db().query(query + order);
-	}
+export async function selectPlaylists(visibleOnly?: boolean, singlePlaylist?: string): Promise<DBPL[]> {
+	const res = await db().query(sqlgetPlaylist(
+		singlePlaylist ? true:false,
+		visibleOnly), singlePlaylist ? [singlePlaylist] : undefined);
 	return res.rows;
 }
 

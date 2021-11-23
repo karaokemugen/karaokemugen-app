@@ -21,7 +21,6 @@ import {
 	selectPlaylistContents,
 	selectPlaylistContentsMicro,
 	selectPlaylistContentsMini,
-	selectPlaylistInfo,
 	selectPlaylists,
 	selectPLCByKIDAndUser,
 	selectPLCInfo,
@@ -390,7 +389,8 @@ export async function createPlaylist(pl: DBPL, username: string): Promise<string
 
 /** Get playlist properties */
 export async function getPlaylistInfo(plaid: string, token?: Token) {
-	const pl = await selectPlaylistInfo(plaid);
+	const pl = (await selectPlaylists(false, plaid))[0];
+	// We're testing this here instead of in the above function
 	if (token) {
 		if (token.role === 'admin' || pl.flag_visible) return pl;
 		return null;
