@@ -353,6 +353,8 @@
             "DISPLAY_NICKNAME_TOOLTIP": "Affichage en bas de l'écran au début et à la fin d'une chanson",
             "DISPLAY_AVATAR": "Afficher l'avatar du demandeur",
             "DISPLAY_AVATAR_TOOLTIP": "L'avatar de la personne ayant demandé à karaoké sera affiché au début et à la fin de la chanson, en bas à droite de l'écran.",
+            "DISPLAY_SONGINFO": "Afficher les informations de la chanson",
+            "DISPLAY_SONGINFO_TOOLTIP": "Les informations (titres, série/artistes, etc.) sont affichées au début et à la fin d'une chanson, ainsi que durant les écrans de pause en mode Stream/Classique. Désactivez pour les cacher. Idéal pour les blind tests!",
             "LIVE_COMMENTS": "Commentaires Live",
             "LIVE_COMMENTS_TOOLTIP": "Chat en direct sur la vidéo"
         },

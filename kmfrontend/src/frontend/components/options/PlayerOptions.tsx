@@ -326,34 +326,57 @@ function PlayerOptions(props: IProps) {
 			) : null}
 
 			<div className="settings-line">
-				<label htmlFor="Player.Display.Nickname">
-					<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME')}</span>
+				<label htmlFor="Player.Display.SongInfo">
+					<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_SONGINFO')}</span>
 					<br />
-					<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME_TOOLTIP')}</span>
+					<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_SONGINFO_TOOLTIP')}</span>
 				</label>
 				<div>
 					<Switch
-						idInput="Player.Display.Nickname"
+						idInput="Player.Display.SongInfo"
 						handleChange={onChange}
-						isChecked={config['Player.Display.Nickname']}
+						isChecked={config['Player.Display.SongInfo']}
 					/>
 				</div>
 			</div>
 
-			<div className="settings-line">
-				<label htmlFor="Player.Display.Avatar">
-					<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR')}</span>
-					<br />
-					<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR_TOOLTIP')}</span>
-				</label>
-				<div>
-					<Switch
-						idInput="Player.Display.Avatar"
-						handleChange={onChange}
-						isChecked={config['Player.Display.Avatar']}
-					/>
+			{config['Player.Display.SongInfo'] ? (
+				<div id="connexionInfoSettings" className="settingsGroupPanel">
+					<div className="settings-line">
+						<label htmlFor="Player.Display.Avatar">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR')}</span>
+							<br />
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR_TOOLTIP')}
+							</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.Display.Avatar"
+								handleChange={onChange}
+								isChecked={config['Player.Display.Avatar']}
+							/>
+						</div>
+					</div>
+
+					<div className="settings-line">
+						<label htmlFor="Player.Display.Nickname">
+							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME')}</span>
+							<br />
+							<span className="tooltip">
+								{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME_TOOLTIP')}
+							</span>
+						</label>
+						<div>
+							<Switch
+								idInput="Player.Display.Nickname"
+								handleChange={onChange}
+								isChecked={config['Player.Display.Nickname']}
+							/>
+						</div>
+					</div>
 				</div>
-			</div>
+			) : null}			
 		</>
 	) : null;
 }

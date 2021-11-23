@@ -353,6 +353,8 @@
             "DISPLAY_NICKNAME_TOOLTIP": "Displays at the bottom of the screen at the start and end of a song",
             "DISPLAY_AVATAR": "Display avatar in karaokes",
             "DISPLAY_AVATAR_TOOLTIP": "The song requester's avatar will be displayed at the beginning and the end of the song in the lower right corner of the player's screen.",
+            "DISPLAY_SONGINFO": "Display song information",
+            "DISPLAY_SONGINFO_TOOLTIP": "Information (title, series/singer, etc.) are displayed at the beginning and end of a song, as well as during pause screens in Stream/Classic modes. Disable to hide these, for blind tests for example.",
             "LIVE_COMMENTS": "Live comments",
             "LIVE_COMMENTS_TOOLTIP": "Live video chat"
         },
