@@ -1,3 +1,17 @@
+# v5.1.32 - 23/11/2021
+
+## New features
+
+- In case of a failed patch during an update (and it happens a lot according to our sentry logs), songs will now be individually downloaded if git patches fail to apply (#1122)
+
+## Fixes
+
+- Rejected patch logs are now logged, not only sent to Sentry
+- KM will download VC Redist 2012 for PG10, and VC Redist 2015 for newer versions
+- Base checksum test won't happen if database isn't ready yet
+- Skip online checks when editing a repository to move its medias around
+- Dump errors are now sent to Sentry
+
 # v5.1.30 - 13/10/2021
 
 ## Improvements
