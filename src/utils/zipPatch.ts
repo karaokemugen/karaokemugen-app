@@ -4,8 +4,11 @@ import { promises as fs } from 'fs';
 import { move, remove } from 'fs-extra';
 import { resolve } from 'path';
 
+import { DiffChanges, Repository } from '../lib/types/repo';
 import { resolvedPathTemp } from '../lib/utils/config';
+import { getFilesRecursively } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
+import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import { downloadFiles } from '../services/download';
 import Sentry from './sentry';
@@ -56,27 +59,18 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 	}
 }
 
-const patchRegex = /^a\/.+ b\/(.+)\n(index|new file|deleted file)/m;
-const KTidRegex = /"[kt]id": *"(.+)"/;
-
-function computeFileChanges(patch: string) {
-	const patches = patch.split('diff --git ')
-		.slice(1)
-		.map<{ type: 'new' | 'delete', path: string, uid?: string }>((v) => {
-			const result = v.match(patchRegex);
-			const uid = v.match(KTidRegex);
-			if (!result) {
-				throw new Error('Cannot find diff header, huh.');
-			}
-			return {
-				type: result[2] === 'deleted file' ? 'delete':'new',
-				path: result[1],
-				uid: uid ? uid[1]:undefined
-			};
-		});
-	// Remove delete patches that have a corresponding new entry (renames)
-	const newPatches = patches.filter(p => p.type === 'new');
-	return patches.filter(p => !(p.type === 'delete' && newPatches.findIndex(p2 => p.uid === p2.uid) !== -1));
+export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repository) {
+	const path = resolve(getState().dataPath, repo.BaseDir);
+	const filePromises = [];
+	for (const change of fullFiles) {
+		const file = resolve(path, change.path);
+		if (change.type === 'delete') {
+			filePromises.push(fs.unlink(file));
+		} else {
+			filePromises.push(fs.writeFile(file, change.contents, 'utf-8'));
+		}
+	}
+	await Promise.all(filePromises);
 }
 
 export async function applyPatch(patch: string, dir: string) {
@@ -91,11 +85,12 @@ export async function applyPatch(patch: string, dir: string) {
 		await patchProcess;
 		return computeFileChanges(patch);
 	} catch (err) {
-		logger.warn('Cannot apply patch from server, fallback to zip full 	download', {service: 'DiffPatch', obj: err});
+		logger.warn('Cannot apply patch from server, fallback to other means', {service: 'DiffPatch', obj: err});
 		Sentry.addErrorInfo('patch', patch);
 		try {
 			const rejectedPatch = await fs.readFile(resolve(resolvedPathTemp(), 'patch.rej'), 'utf-8');
 			Sentry.addErrorInfo('rejected', rejectedPatch);
+			logger.debug(`Rejected patch : ${rejectedPatch}`, {service: 'DiffPatch'});
 		} catch(err) {
 			logger.debug(`Could not get rejected patch : ${err}`, { service: 'DiffPatch', obj: err});
 		}
@@ -103,3 +98,17 @@ export async function applyPatch(patch: string, dir: string) {
 		throw err;
 	}
 }
+
+/** Removes all .orig files after a failed patch attempt */
+export async function cleanFailedPatch(repo: Repository) {
+	logger.info('Removing .orig files from repository\'s base dir', {service: 'DiffPatch'});
+	const deletePromises = [];
+	const files = await getFilesRecursively(resolve(getState().dataPath, repo.BaseDir), '.orig');
+	// We want to clean the .orig files. The damaged ones will get replaced anyway.
+	for (const file of files) {
+		deletePromises.push(fs.unlink(file));
+	}
+	await Promise.all(deletePromises);
+	logger.info(`Removed ${files.length} .orig files`, {service: 'DiffPatch'});
+}
+
