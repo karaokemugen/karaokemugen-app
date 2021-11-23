@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 import { APIData } from '../../lib/types/api';
 import { SocketIOApp } from '../../lib/utils/ws';
 import {addDownloads, getDownloadQueueStatus, getDownloads, pauseQueue, startDownloads, wipeDownloads} from '../../services/download';
-import { updateAllMedias } from '../../services/downloadUpdater';
+import { updateAllMedias } from '../../services/downloadMedias';
 import { APIMessage,errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 

@@ -17,9 +17,9 @@ import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/ut
 import { getAvatarResolution } from '../lib/utils/ffmpeg';
 import { asyncExists, replaceExt, resolveFileInDirs } from '../lib/utils/files';
 import { playerEnding } from '../services/karaEngine';
-import { getSingleMedia } from '../services/medias';
 import { next, prev } from '../services/player';
 import { notificationNextSong } from '../services/playlist';
+import { getSingleMedia } from '../services/playlistMedias';
 import { endPoll } from '../services/poll';
 import { MediaType } from '../types/medias';
 import { MpvCommand } from '../types/mpvIPC';

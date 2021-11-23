@@ -37,7 +37,7 @@ import Git, { isGit } from '../utils/git';
 import {applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles} from '../utils/patch';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
-import { updateMedias } from './downloadUpdater';
+import { updateMedias } from './downloadMedias';
 import { getAllKaras, getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
