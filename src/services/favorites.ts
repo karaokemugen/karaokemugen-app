@@ -206,12 +206,14 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			username: username
 		}, username);
 		// Copy karas from everyone listed
+		const addPromises = [];
 		for (const user of params.users) {
 			const userFaves = favs.filter(f => f.username === user);
 			if (userFaves.length > 0) {
-				await addKaraToPlaylist(userFaves.map(f => f.kid), user, plaid, null, true);
+				addPromises.push(addKaraToPlaylist(userFaves.map(f => f.kid), user, plaid, null, true));
 			}
 		}
+		await Promise.all(addPromises);
 		// Shuffle time. First we shuffle with balanced to make sure everyone gets to have some songs in.
 		await shufflePlaylist(plaid, 'balance');
 		// Cut playlist after duration
