@@ -668,7 +668,7 @@ class Players {
 		}
 
 		// Avatar
-		const shouldDisplayAvatar = song.avatar && getConfig().Player.Display.Avatar;
+		const shouldDisplayAvatar = song.avatar && getConfig().Player.Display.SongInfo && getConfig().Player.Display.Avatar;
 		const cropRatio = shouldDisplayAvatar
 			? Math.floor(await getAvatarResolution(song.avatar) * 0.5)
 			: 0;
@@ -1288,10 +1288,15 @@ class Players {
 
 	async displaySongInfo(infos: string, duration = -1, nextSong = false, spoilerAlert = false) {
 		try {
-			const spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
-			const nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
-			const position = nextSong ? '{\\an5}' : '{\\an1}';
-			this.messages.addMessage('DI', position + spoilerString + nextSongString + infos, duration === -1 ? 'infinite' : duration);
+			let spoilerString = '';
+			let nextSongString = '';
+			let position = '';
+			if (getConfig().Player.Display.SongInfo) {
+				spoilerString = spoilerAlert ? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}' : '';
+				nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
+				position = nextSong ? '{\\an5}' : '{\\an1}';
+				this.messages.addMessage('DI', position + spoilerString + nextSongString + infos, duration === -1 ? 'infinite' : duration);
+			}
 			if (nextSong) {
 				playerState.mediaType = 'pause';
 				try {

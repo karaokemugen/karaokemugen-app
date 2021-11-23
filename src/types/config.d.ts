@@ -112,6 +112,7 @@ export interface Config {
 				Message?: string
 			},
 			RandomQuotes?: boolean
+			SongInfo?: boolean
 		},
 		StayOnTop?: boolean,
 		FullScreen?: boolean,

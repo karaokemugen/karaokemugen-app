@@ -115,6 +115,8 @@ Player:
   Display:
     # Show random quotes on pause screens
     RandomQuotes: true
+    # Show song information at the beginning and end of song
+    SongInfo: true
     # Show nickname of the person who requested a song
     Nickname: true
     ConnectionInfo:

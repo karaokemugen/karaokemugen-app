@@ -118,7 +118,8 @@ export const defaults: Config = {
 				Host: null,
 				Message: ''
 			},
-			RandomQuotes: true
+			RandomQuotes: true,
+			SongInfo: true
 		},
 		FullScreen: false,
 		AudioDevice: 'auto',
