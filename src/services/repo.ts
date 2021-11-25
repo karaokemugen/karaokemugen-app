@@ -259,7 +259,7 @@ async function newZipRepo(repo: Repository): Promise<string> {
 	return LatestCommit;
 }
 
-/** Edit a repository. Folders will be created if necessary 
+/** Edit a repository. Folders will be created if necessary
  * This is another cursed function of Karaoke Mugen.
 */
 export async function editRepo(name: string, repo: Repository, refresh?: boolean, onlineCheck = true) {
@@ -534,7 +534,7 @@ export async function stashGitRepo(repoName: string) {
 }
 
 /** Helper function to setup git in other functions */
-async function setupGit(repo: Repository) {
+async function setupGit(repo: Repository, config = true) {
 	const baseDir = resolve(getState().dataPath, repo.BaseDir);
 	if (!repo.Git) throw 'Git not configured for this repository';
 	const git = new Git({
@@ -544,7 +544,7 @@ async function setupGit(repo: Repository) {
 		password: repo.Git.Password,
 		repoName: repo.Name
 	});
-	await git.setup();
+	await git.setup(config);
 	return git;
 }
 
@@ -559,7 +559,7 @@ export async function newGitRepo(repo: Repository) {
 	await stopWatchingHooks();
 	await remove(baseDir);
 	await asyncCheckOrMkdir(baseDir);
-	const git = await setupGit(repo);
+	const git = await setupGit(repo, false);
 	await git.clone();
 	git.setRemote().catch();
 	if (repo.AutoMediaDownloads === 'all') updateMedias(repo.Name).catch(e => {

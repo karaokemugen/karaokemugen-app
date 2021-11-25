@@ -66,29 +66,31 @@ export default class Git {
 	}
 
 	/** Prepare git instance */
-	async setup() {
+	async setup(config = true) {
 		const gitPath = await which(`git${process.platform === 'win32' ? '.exe':''}`);
 		this.git = simpleGit({
 			baseDir: this.opts.baseDir,
 			binary: gitPath,
 			progress: this.progressHandler.bind(this)
 		});
-		// Check if Remote is correctly configured
-		const remotes = await this.git.getRemotes(true);
-		const origin = remotes.find(r => r.name === 'origin');
-		const url = this.getFormattedURL();
-		if (!origin) await this.git.addRemote('origin', url);
-		if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
-			logger.debug(`${this.opts.repoName}: Rebuild remote`, {service: 'Git'});
-			await this.setRemote();
-			await this.git.branch(['--set-upstream-to=origin/master', 'master']);
+		if (config) {
+			// Check if Remote is correctly configured
+			const remotes = await this.git.getRemotes(true);
+			const origin = remotes.find(r => r.name === 'origin');
+			const url = this.getFormattedURL();
+			if (!origin) await this.git.addRemote('origin', url);
+			if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
+				logger.debug(`${this.opts.repoName}: Rebuild remote`, {service: 'Git'});
+				await this.setRemote();
+				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
+			}
+			// Set email and stuff
+			// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
+			const repo = getRepo(this.opts.repoName);
+			this.configUser(repo.Git.Author, repo.Git.Email);
+			// Avoid crlf conflicts
+			await this.git.addConfig('core.autocrlf', 'true');
 		}
-		// Set email and stuff
-		// This is done on each setup because when these are modified in the repo setting, git might not be ready yet.
-		const repo = getRepo(this.opts.repoName);
-		this.configUser(repo.Git.Author, repo.Git.Email);
-		// Avoid crlf conflicts
-		await this.git.addConfig('core.autocrlf', 'true');
 	}
 
 	/** Returns the second word of the first line of a git show to determine latest commit */
