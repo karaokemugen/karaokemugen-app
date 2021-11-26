@@ -54,8 +54,7 @@ export async function downloadFile(dl: DownloadItem, task?: Task, log_prepend?: 
 		task.end();
 		throw err;
 	}
-	let prettySize = prettyBytes(dl.size);
-	if (!prettySize) prettySize = 'size unknown';
+	const prettySize = !isNaN(dl.size) ? prettyBytes(dl.size) : 'size unknown';
 	logger.info(`${log_prepend ? `${log_prepend} `:''}Downloading ${basename(dl.filename)} (${prettySize})`, {service: 'Download'});
 	if (task) task.update({
 		subtext: `${basename(dl.filename)} (${prettySize})`,
