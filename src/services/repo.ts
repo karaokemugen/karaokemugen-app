@@ -757,7 +757,7 @@ export async function generateCommits(repoName: string, ignoreNoMedia = false) {
 	});
 	try {
 		const repo = getRepo(repoName);
-		const git = await setupGit(repo);
+		const git = await setupGit(repo, false);
 		const status = await git.status();
 		const deletedSongs = status.deleted.filter(f => f.endsWith('kara.json'));
 		const deletedTags = status.deleted.filter(f => f.endsWith('tag.json'));
@@ -1045,7 +1045,7 @@ export async function generateCommits(repoName: string, ignoreNoMedia = false) {
 export async function pushCommits(repoName: string, push: Push, ignoreFTP?: boolean) {
 	try {
 		const repo = getRepo(repoName);
-		const git = await setupGit(repo);
+		const git = await setupGit(repo, false);
 		if (!ignoreFTP && push.modifiedMedias.length > 0) {
 			// Before making any commits, we have to send stuff via FTP
 			const ftp = new FTP({repoName: repoName});
