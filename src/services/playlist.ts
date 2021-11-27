@@ -341,14 +341,14 @@ export async function editPlaylist(plaid: string, playlist: DBPL) {
 	const isWhitelist = plaid === getState().whitelistPlaid;
 
 	if (newPL.flag_smart) {
-		// Only update if : 
+		// Only update if :
 		// - Smart type (AND/OR) has changed
 		// - Smart limit has changed
 		// - Any smart limit option has been set with this change and the PL has the limit enabled
 		if (pl.type_smart !== newPL.type_smart ||
-			pl.flag_smartlimit !== newPL.flag_smartlimit || 
-			(newPL.flag_smartlimit && playlist.smart_limit_number) || 
-			(newPL.flag_smartlimit && playlist.smart_limit_order) || 
+			pl.flag_smartlimit !== newPL.flag_smartlimit ||
+			(newPL.flag_smartlimit && playlist.smart_limit_number) ||
+			(newPL.flag_smartlimit && playlist.smart_limit_order) ||
 			(newPL.flag_smartlimit && playlist.smart_limit_type)
 		) {
 			needsSmartUpdating = true;
@@ -711,6 +711,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 				PLCsToFree.push(plc.plcid);
 			}
 			plc.created_at = new Date();
+			plc.plaid = plaid;
 		}
 		// Remove karas already in playlist if allowDuplicates isn't set
 		if (!getConfig().Playlist.AllowDuplicates) {
