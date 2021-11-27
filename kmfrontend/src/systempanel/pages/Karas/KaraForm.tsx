@@ -287,7 +287,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	tagRender = ({ label, value, closable, onClose }) => {
 		return (
-			<Tag closable={closable} onClose={onClose}>
+			<Tag closable={closable} onClose={onClose} style={{whiteSpace: 'normal'}}>
 				<label style={{ cursor: 'pointer' }} onMouseDown={(event) => this.openChildrenModal(event, value)}>{label}</label>
 			</Tag>
 		);
