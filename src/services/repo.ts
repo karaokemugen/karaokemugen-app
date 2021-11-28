@@ -371,6 +371,7 @@ export async function resetRepo(name: string) {
 export async function updateGitRepo(name: string) {
 	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
 	updateRunning = true;
+	if (updateRunning) return;
 	const repo = getRepo(name);
 	if (!repo.Online || !repo.MaintainerMode) {
 		updateRunning = false;
@@ -876,6 +877,13 @@ export async function generateCommits(repoName: string, ignoreNoMedia = false) {
 					oldMediaFile = deletedKIDData.get(kara.kid).medias[0].filename;
 					// We need to remove from modifiedMedias our delete
 					modifiedMedias = modifiedMedias.filter(m => m.new !== null && m.old !== oldMediaFile);
+					// We need to do the same with lyrics
+					// Problems is that lyrics have already been deleted so we're going to pick the ass from the status itself
+					const oldSong = basename(oldKaraFile, '.kara.json');
+					const lyricsFile = status.deleted.find(f => f.includes(`${oldSong}.ass`));
+					if (lyricsFile) {
+						commit.removedFiles.push(lyricsFile);
+					}
 				}
 			}
 			// If oldMediaFile is still null, this is a new media that will be pushed later to the FTP.
