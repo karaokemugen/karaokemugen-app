@@ -371,7 +371,6 @@ export async function resetRepo(name: string) {
 export async function updateGitRepo(name: string) {
 	if (updateRunning) throw 'An update is already on the way, wait for it to finish.';
 	updateRunning = true;
-	if (updateRunning) return;
 	const repo = getRepo(name);
 	if (!repo.Online || !repo.MaintainerMode) {
 		updateRunning = false;
