@@ -84,9 +84,13 @@ function ProfilModal(props: IProps) {
 	};
 
 	const getUser = async () => {
-		const user = await commandBackend('getMyAccount');
-		delete user.password;
-		setUser(user);
+		try {
+			const user = await commandBackend('getMyAccount');
+			delete user.password;
+			setUser(user);
+		} catch (e) {
+			logout(context.globalDispatch);
+		}
 	};
 
 	const profileConvert = () => {
