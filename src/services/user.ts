@@ -7,7 +7,7 @@ import deburr from 'lodash.deburr';
 import merge from 'lodash.merge';
 import {resolve} from 'path';
 import randomstring from 'randomstring';
-import slugify from 'slugify';
+import slugify from 'slug';
 import { v4 as uuidV4 } from 'uuid';
 import logger from 'winston';
 

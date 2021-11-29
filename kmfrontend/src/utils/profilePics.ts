@@ -1,4 +1,4 @@
-import slugify from 'slugify';
+import slugify from 'slug';
 
 import { User } from '../../../src/lib/types/user';
 import blankAvatar from '../assets/blank.png';
