@@ -2,11 +2,10 @@
 import i18next from 'i18next';
 import tmi, { ChatUserstate,Client } from 'tmi.js';
 
-import { getSongTitle } from '../lib/services/kara';
 import { getConfig } from '../lib/utils/config';
 // KM Imports
 import logger, { profile } from '../lib/utils/logger';
-import { getSongSeriesSingers } from '../services/kara';
+import { getSongSeriesSingers, getSongTitle } from '../services/kara';
 import { playerComment } from '../services/player';
 import { getCurrentSong } from '../services/playlist';
 import { addPollVoteIndex } from '../services/poll';

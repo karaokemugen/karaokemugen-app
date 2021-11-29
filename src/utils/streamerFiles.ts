@@ -4,11 +4,10 @@ import debounce from 'lodash.debounce';
 import {resolve} from 'path';
 
 import { DBReady } from '../dao/database';
-import { getSongTitle } from '../lib/services/kara';
 import {getConfig, resolvedPath} from '../lib/utils/config';
 import { asyncCheckOrMkdir } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
-import {getSongSeriesSingers, getSongVersion} from '../services/kara';
+import {getSongSeriesSingers, getSongTitle, getSongVersion} from '../services/kara';
 import {getPlaylistInfo} from '../services/playlist';
 import {StreamFileType} from '../types/streamerFiles';
 import sentry from './sentry';

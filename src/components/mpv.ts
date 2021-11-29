@@ -32,11 +32,10 @@ import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { exit } from './engine';
 import Timeout = NodeJS.Timeout;
-import { getSongTitle } from '../lib/services/kara';
 import HTTP from '../lib/utils/http';
 import { profile } from '../lib/utils/logger';
 import { getBackgroundAndMusic } from '../services/backgrounds';
-import {getSongSeriesSingers} from '../services/kara';
+import {getSongSeriesSingers, getSongTitle} from '../services/kara';
 import { BackgroundType } from '../types/backgrounds';
 import {editSetting} from '../utils/config';
 

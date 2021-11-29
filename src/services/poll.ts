@@ -5,7 +5,6 @@ import sampleSize from 'lodash.samplesize';
 import {setTimeout as sleep} from 'timers/promises';
 
 import { APIMessage } from '../controllers/common';
-import { getSongTitle } from '../lib/services/kara';
 import { Token } from '../lib/types/user';
 import {getConfig} from '../lib/utils/config';
 import {timer} from '../lib/utils/date';
@@ -17,7 +16,7 @@ import { PollItem,PollResults } from '../types/poll';
 import { State } from '../types/state';
 import {getState, setState} from '../utils/state';
 import { sayTwitch } from '../utils/twitch';
-import { getSongSeriesSingers, getSongVersion } from './kara';
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
 import { displayInfo,playerMessage } from './player';
 import {copyKaraToPlaylist, editPLC,getPlaylistContentsMini} from './playlist';
 

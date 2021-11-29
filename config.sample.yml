@@ -117,6 +117,8 @@ Player:
     RandomQuotes: true
     # Show song information at the beginning and end of song
     SongInfo: true
+    # Which language to display song information in
+    SongInfoLanguage: qjr
     # Show nickname of the person who requested a song
     Nickname: true
     ConnectionInfo:

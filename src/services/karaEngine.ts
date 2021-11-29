@@ -1,6 +1,5 @@
 import { APIMessage } from '../controllers/common';
 import { selectPlaylistContentsMicro, updatePlaylistDuration,updatePLCVisible } from '../dao/playlist';
-import { getSongTitle } from '../lib/services/kara';
 import { getConfig } from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
@@ -8,7 +7,7 @@ import { CurrentSong } from '../types/playlist';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import {writeStreamFiles} from '../utils/streamerFiles';
-import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongVersion } from './kara';
+import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
 import {initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer} from './player';
 import { getCurrentSong, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';

@@ -45,7 +45,6 @@ import {
 	updatePLCVisible,
 	updatePos,
 } from '../dao/playlist';
-import { getSongTitle } from '../lib/services/kara';
 import {PLImportConstraints} from '../lib/services/playlist';
 import { DBPL } from '../lib/types/database/playlist';
 import { AggregatedCriteria, PlaylistExport, PLC, PLCEditParams } from '../lib/types/playlist';
@@ -63,7 +62,7 @@ import sentry from '../utils/sentry';
 import {getState,setState} from '../utils/state';
 import {writeStreamFiles} from '../utils/streamerFiles';
 import { checkMediaAndDownload } from './download';
-import { formatKaraList, getKaras, getSongSeriesSingers,getSongVersion} from './kara';
+import { formatKaraList, getKaras, getSongSeriesSingers,getSongTitle,getSongVersion} from './kara';
 import { playPlayer} from './player';
 import { getRepos } from './repo';
 import { addCriteria, blacklistHook, getCriterias, updateAllSmartPlaylists, updateSmartPlaylist, whitelistHook } from './smartPlaylist';

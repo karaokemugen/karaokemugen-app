@@ -112,7 +112,8 @@ export interface Config {
 				Message?: string
 			},
 			RandomQuotes?: boolean
-			SongInfo?: boolean
+			SongInfo?: boolean,
+			SongInfoLanguage?: string
 		},
 		StayOnTop?: boolean,
 		FullScreen?: boolean,
@@ -133,7 +134,7 @@ export interface Config {
 		HardwareDecoding?: MpvHardwareDecodingOptions,
 		KeyboardMediaShortcuts?: boolean,
 		Volume?: number,
-		LiveComments?: boolean
+		LiveComments?: boolean		
 	},
 	Playlist: {
 		AllowDuplicates?: boolean,

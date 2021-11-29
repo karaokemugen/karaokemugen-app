@@ -6,7 +6,6 @@ import { v4 as uuidV4 } from 'uuid';
 import { APIMessage } from '../controllers/common';
 import { selectAllKaras } from '../dao/kara';
 import {autoFillSessionEndedAt,cleanSessions, deleteSession, insertSession, replaceSession,selectSessions, updateSession} from '../dao/session';
-import { getSongTitle } from '../lib/services/kara';
 import { getConfig, resolvedPath } from '../lib/utils/config';
 import { sanitizeFile } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
@@ -14,7 +13,7 @@ import { emitWS } from '../lib/utils/ws';
 import { Session, SessionExports } from '../types/session';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
-import { getSongSeriesSingers, getSongVersion } from './kara';
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
 
 export async function getSessions() {
 	const sessions = await selectSessions();

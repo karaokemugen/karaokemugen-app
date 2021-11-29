@@ -131,12 +131,18 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 
 /** Returns a string with series or singers with their correct i18n.*/
 export function getSongSeriesSingers(kara: DBKara): string {
-	const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
+	const lang = getConfig().Player.Display.SongInfoLanguage ||  convert1LangTo2B(getState().defaultLocale) || 'eng';
 	if (kara.series?.length > 0) {
 		return getTagNameInLanguage(kara.series[0], lang, 'eng');
 	} else {
 		return kara.singers.map(s => s.i18n[lang] || s.i18n['eng'] || s.i18n['qjr']).join(', ');
 	}
+}
+
+/** Get kara's default title */
+export function getSongTitle(kara: DBKara): string {
+	const lang = getConfig().Player.Display.SongInfoLanguage ||  convert1LangTo2B(getState().defaultLocale) || 'eng';
+	return kara.titles[lang] || kara.titles.eng || kara.titles.qjr;
 }
 
 export function getSongVersion(kara: DBKara): string {
