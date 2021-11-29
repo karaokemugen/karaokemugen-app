@@ -66,14 +66,14 @@ export default class Git {
 	}
 
 	/** Prepare git instance */
-	async setup(config = true) {
+	async setup(configChanged = false) {
 		const gitPath = await which(`git${process.platform === 'win32' ? '.exe':''}`);
 		this.git = simpleGit({
 			baseDir: this.opts.baseDir,
 			binary: gitPath,
 			progress: this.progressHandler.bind(this)
 		});
-		if (config) {
+		if (configChanged) {
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
 			const origin = remotes.find(r => r.name === 'origin');

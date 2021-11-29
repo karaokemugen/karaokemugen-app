@@ -304,7 +304,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	}
 	if (repo.Git) {
 		try {
-			await setupGit(repo);
+			await setupGit(repo, true);
 		} catch(err) {
 			// Non-fatal. Probably that the repository isn't set
 			logger.warn(`Could not update Git settings for repository : ${err}`, {service: 'Repo', obj: err});
@@ -534,7 +534,7 @@ export async function stashGitRepo(repoName: string) {
 }
 
 /** Helper function to setup git in other functions */
-async function setupGit(repo: Repository, config = true) {
+async function setupGit(repo: Repository, configChanged = false) {
 	const baseDir = resolve(getState().dataPath, repo.BaseDir);
 	if (!repo.Git) throw 'Git not configured for this repository';
 	const git = new Git({
@@ -544,7 +544,7 @@ async function setupGit(repo: Repository, config = true) {
 		password: repo.Git.Password,
 		repoName: repo.Name
 	});
-	await git.setup(config);
+	await git.setup(configChanged);
 	return git;
 }
 
@@ -559,7 +559,7 @@ export async function newGitRepo(repo: Repository) {
 	await stopWatchingHooks();
 	await remove(baseDir);
 	await asyncCheckOrMkdir(baseDir);
-	const git = await setupGit(repo, false);
+	const git = await setupGit(repo);
 	await git.clone();
 	git.setRemote().catch();
 	if (repo.AutoMediaDownloads === 'all') updateMedias(repo.Name).catch(e => {
@@ -757,7 +757,7 @@ export async function generateCommits(repoName: string, ignoreNoMedia = false) {
 	});
 	try {
 		const repo = getRepo(repoName);
-		const git = await setupGit(repo, false);
+		const git = await setupGit(repo);
 		const status = await git.status();
 		const deletedSongs = status.deleted.filter(f => f.endsWith('kara.json'));
 		const deletedTags = status.deleted.filter(f => f.endsWith('tag.json'));
@@ -1052,7 +1052,7 @@ export async function generateCommits(repoName: string, ignoreNoMedia = false) {
 export async function pushCommits(repoName: string, push: Push, ignoreFTP?: boolean) {
 	try {
 		const repo = getRepo(repoName);
-		const git = await setupGit(repo, false);
+		const git = await setupGit(repo);
 		if (!ignoreFTP && push.modifiedMedias.length > 0) {
 			// Before making any commits, we have to send stuff via FTP
 			const ftp = new FTP({repoName: repoName});
