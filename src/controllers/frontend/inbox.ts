@@ -19,12 +19,13 @@ export default function inboxController(router: SocketIOApp) {
 	});
 	router.route('downloadKaraFromInbox', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'user', 'closed');
-		// This is done async.
-		downloadKaraFromInbox(req.body.inid, req.body.repoName, req.onlineAuthorization).catch((err) => {
+		try {
+			await downloadKaraFromInbox(req.body.inid, req.body.repoName, req.onlineAuthorization);
+		} catch(err) {
 			const code = 'DOWNLOAD_KARA_FROM_INBOX_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
-		});
+		}
 	});
 	router.route('deleteKaraFromInbox', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'user', 'closed');
