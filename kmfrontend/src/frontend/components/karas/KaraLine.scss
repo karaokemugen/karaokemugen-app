@@ -167,6 +167,14 @@ body:not(.touch) {
 				line-height: 1.2;
 			}
 		}
+		.contentDivMobileTags {
+			display: flex;
+			justify-content: space-between;
+			padding: .5em 0;
+			.tagConteneur {
+				margin-left: 0;
+			}
+		}
 	}
 	.infoDiv {
 		display: flex;
@@ -178,14 +186,7 @@ body:not(.touch) {
 		margin-left: auto;
 		display: flex;
 		align-items: flex-end;
-		&.mobile {
-			margin: 0;
-			flex-wrap: wrap;
-			.tag {
-				margin-bottom: 0.4em;
-			}
-			width: 100%;
-		}
+		flex-wrap: wrap;
 		.tag {
 			padding: 0 0.25em;
 			margin-bottom: 0;

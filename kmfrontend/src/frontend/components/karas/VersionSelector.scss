@@ -1,0 +1,59 @@
+@import '../../styles/components/blurred-bg';
+
+.song-list {
+	.song {
+		position: relative;
+		@include blurred-bg;
+		.img-background::before {
+			border-radius: 16px;
+			transition: border-radius,filter 300ms,300ms ease,ease;
+		}
+		margin: 1.5em 1em;
+		.modal-header {
+			align-items: flex-start;
+			position: relative;
+			text-shadow: 2px 2px 2px #000000bf;
+			z-index: 2;
+		}
+		.transparent-btn {
+			padding-right: .5em;
+			.fas.fa-chevron-right {
+				transform: rotate(0);
+				transition: transform 150ms ease;
+			}
+		}
+		.modal-title {
+			display: flex;
+			justify-content: start;
+			align-items: center;
+			.tag {
+				font-size: 1rem;
+			}
+		}
+		transition: margin 300ms ease;
+		.detailsKara {
+			margin: 0;
+			padding: 0;
+			max-height: 0;
+			background-color: black;
+			overflow-y: hidden;
+		}
+		&.open {
+			margin: 1em 0.5em;
+			&:first-child {
+				margin-top: 1em;
+			}
+			.detailsKara {
+				max-height: unset;
+				padding: 1em;
+			}
+			.fas.fa-chevron-right {
+				transform: rotate(90deg);
+			}
+			.img-background::before {
+				border-radius: 0;
+				filter: blur(0px) contrast(70%) brightness(70%) saturate(75%);
+			}
+		}
+	}
+}

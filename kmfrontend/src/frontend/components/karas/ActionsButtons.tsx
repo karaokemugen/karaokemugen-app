@@ -96,18 +96,13 @@ function ActionsButtons(props: IProps) {
 				</button>
 			) : null}
 
-			{(props.scope === 'admin' &&
+			{props.scope === 'admin' &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.library &&
 				oppositePlaylist?.plaid !== nonStandardPlaylists.favorites &&
 				!(
 					playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
 					oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid
-				)) ||
-			(props.scope === 'public' &&
-				context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
-				playlist?.plaid !== context.globalState.settings.data.state.publicPlaid &&
-				playlist?.plaid !== context.globalState.settings.data.state.currentPlaid &&
-				(!props.kara?.public_plc_id || !props.kara?.public_plc_id[0])) ? (
+				) ? (
 					<button
 						title={
 							props.isHeader

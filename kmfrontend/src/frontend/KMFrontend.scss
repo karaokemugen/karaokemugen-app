@@ -2,6 +2,15 @@
 @import '~minireset.css/minireset';
 @import 'styles/variables';
 
+// Virtual element to be probed by KmAppWrapperDecorator to workaround URL bar resizing
+// https://developers.google.com/web/updates/2016/12/url-bar-resizing
+#height-compute {
+	position: absolute;
+	height: 100vh;
+	width: 0;
+	display: none;
+}
+
 body {
 	font-family: Lato, "Helvetica Neue", Cantarell, sans-serif;
 	background: $mugen-background;

@@ -597,7 +597,8 @@
             "FLAG_SENDSTATS": "Utiliser mes favoris et demandes de chansons pour des statistiques",
             "INTERFACE_LANGUAGE": "Langue de l'interface",
             "MAIN_SONG_NAME_LANG": "Préférence d'affichage du nom des chansons",
-            "FALLBACK_SONG_NAME_LANG": "Préférence alternative d'affichage du nom des chansons"
+            "FALLBACK_SONG_NAME_LANG": "Préférence alternative d'affichage du nom des chansons",
+            "FLAG_PARENTSONLY": "Regrouper les chansons par versions"
         },
         "SHUFFLE_MODAL": {
             "TITLE": "Mélanger la liste de lecture",
@@ -854,7 +855,8 @@
         "ONLINE_REPOSITORIES": "Certains de vos karaokés proviennent de dépôts distants (le serveur kara.moe par exemple), ces karaokés ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des karaokés mais vous serez en mesure de les modifier ou les supprimer.",
         "PARENTS": "Parents",
         "CHILDRENS": "Enfants de {{parent}}",
-        "PARENTS_TOOLTIP": "Si un parent est défini, ce karaoké apparaîtra comme une alternative au(x) kara(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des karaokés d'autre dépôts."
+        "PARENTS_TOOLTIP": "Si un parent est défini, ce karaoké apparaîtra comme une alternative au(x) kara(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des karaokés d'autre dépôts.",
+		"VERSION_AVAILABILITY": "Disponible en {{count}} versions."
     },
     "MENU": {
         "HOME": "Home",

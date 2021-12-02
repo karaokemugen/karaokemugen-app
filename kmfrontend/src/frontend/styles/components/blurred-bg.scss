@@ -1,4 +1,5 @@
 @mixin blurred-bg {
+	--img: none;
 	&::before {
 		position: absolute;
 		top: 0;

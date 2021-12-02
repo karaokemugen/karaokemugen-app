@@ -142,7 +142,7 @@ function AdminPage(props: IProps) {
 		setPlaylistList(playlistList);
 	};
 
-	const toggleKaraDetail = async (kara: KaraElement, idPlaylist: string) => {
+	const openKara = async (kara: KaraElement, idPlaylist: string) => {
 		const reason = [];
 		if (kara.criterias) {
 			kara.criterias.map(async (criteria) =>
@@ -210,7 +210,7 @@ function AdminPage(props: IProps) {
 											toggleSearchMenu={toggleSearchMenuLeft}
 											searchMenuOpen={searchMenuOpenLeft}
 											playlistList={playlistList}
-											toggleKaraDetail={toggleKaraDetail}
+											openKara={openKara}
 										/>
 										<Playlist
 											scope="admin"
@@ -219,7 +219,7 @@ function AdminPage(props: IProps) {
 											toggleSearchMenu={toggleSearchMenuRight}
 											searchMenuOpen={searchMenuOpenRight}
 											playlistList={playlistList}
-											toggleKaraDetail={toggleKaraDetail}
+											openKara={openKara}
 										/>
 									</PlaylistMainDecorator>
 								)}

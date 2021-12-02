@@ -4,9 +4,12 @@ import { createElement, Dispatch, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
 
+import { Kara } from '../../../src/lib/types/kara';
 import { Criteria } from '../../../src/lib/types/playlist';
 import nanamiCryPNG from '../assets/nanami-cry.png';
 import nanamiCryWebP from '../assets/nanami-cry.webp';
+import nanamiSingPng from '../assets/nanami-sing.png';
+import nanamiSingWebP from '../assets/nanami-sing.webp';
 import nanamiThinkPng from '../assets/nanami-think.png';
 import nanamiThinkWebP from '../assets/nanami-think.webp';
 import nanamiUmuPng from '../assets/nanami-umu.png';
@@ -17,7 +20,7 @@ import { GlobalContextInterface } from '../store/context';
 import { ShowModal } from '../store/types/modal';
 import { SettingsStoreData } from '../store/types/settings';
 import Modal from './components/Modal';
-import { getTagInLocale } from './kara';
+import { getTagInLocale, getTitleInLocale } from './kara';
 import { commandBackend } from './socket';
 
 let is_touch = window.outerWidth <= 1023;
@@ -236,4 +239,69 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 	}
 	args[0] = `CRITERIA.LABEL.${args[0]}`;
 	return i18next.t(...args);
+}
+
+export function PLCCallback(response, context: GlobalContextInterface, kara: Kara) {
+	if (response && response.code && response.data?.plc) {
+		let message;
+		if (response.data?.plc.time_before_play) {
+			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+			message = (
+				<>
+					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+						song: getTitleInLocale(context.globalState.settings.data, kara.titles),
+					})}
+					<br />
+					{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
+						time: beforePlayTime,
+						date: playTimeDate,
+					})}
+				</>
+			);
+		} else {
+			message = (
+				<>
+					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+						song: getTitleInLocale(context.globalState.settings.data, kara.titles),
+					})}
+				</>
+			);
+		}
+		displayMessage(
+			'success',
+			<div className="toast-with-img">
+				<picture>
+					<source type="image/webp" srcSet={nanamiSingWebP} />
+					<source type="image/png" srcSet={nanamiSingPng} />
+					<img src={nanamiSingPng} alt="Nanami is singing!" />
+				</picture>
+				<span>
+					{message}
+					<br />
+					<button
+						className="btn"
+						onClick={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.data.plc.plcid] })
+								.then(() => {
+									toast.dismiss(response.data.plc.plcid);
+									displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+								})
+								.catch(() => {
+									toast.dismiss(response.data.plc.plcid);
+								});
+						}}
+					>
+						{i18next.t('CANCEL')}
+					</button>
+				</span>
+			</div>,
+			10000,
+			'top-left',
+			response.data.plc.plcid
+		);
+	}
 }

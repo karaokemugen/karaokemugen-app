@@ -78,8 +78,8 @@ export const sqlgetAllKaras = (filterClauses: string[], whereClauses: string, gr
   array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
   count(ak.pk_kid) OVER()::integer AS count,
   array_remove(array_agg(krc.fk_kid_parent), null) AS parents,
-  array_remove(array_agg(krp.fk_kid_child), null) AS children,
-  array_remove((SELECT array_agg(fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(krc.fk_kid_parent), null))), ak.pk_kid) AS siblings
+  array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
+  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(krc.fk_kid_parent), null))), ak.pk_kid) AS siblings
 FROM all_karas AS ak
 LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid
 LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid

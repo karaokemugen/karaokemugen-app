@@ -1,7 +1,7 @@
 import './KaraDetail.scss';
 
 import i18next from 'i18next';
-import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useState } from 'react';
+import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import {createPortal} from 'react-dom';
 import {toast} from 'react-toastify';
 
@@ -13,8 +13,9 @@ import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import {setBgImage} from '../../../store/actions/frontendContext';
 import {closeModal} from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
+import { useDeferredEffect } from '../../../utils/hooks';
 import {
-	buildKaraTitle,
+	buildKaraTitle, computeTagsElements,
 	formatLyrics,
 	getPreviewLink,
 	getTitleInLocale,
@@ -30,6 +31,8 @@ import {
 	secondsTimeSpanToHMS,
 } from '../../../utils/tools';
 import {View} from '../../types/view';
+import MakeFavButton from '../generic/buttons/MakeFavButton';
+import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
 
 interface IProps {
@@ -51,7 +54,6 @@ interface IProps {
 export default function KaraDetail(props: IProps) {
 	const context = useContext(GlobalContext);
 	const [kara, setKara] = useState<DBPLCInfo>();
-	const [isFavorite, setFavorite] = useState(false);
 	const [showVideo, setShowVideo] = useState(false);
 	const [lyrics, setLyrics] = useState<string[]>([]);
 	const [pending, setPending] = useState(false);
@@ -92,9 +94,7 @@ export default function KaraDetail(props: IProps) {
 				data = {kid: kid ? kid : props.kid };
 			}
 			const karaGet = await commandBackend(url, data);
-			await setKara(karaGet);
-			await setFavorite(karaGet.flag_favorites || props.plaid === nonStandardPlaylists.favorites);
-			if (karaGet.subfile) fetchLyrics();
+			setKara(karaGet);
 		} catch (err) {
 			closeModalWithContext();
 		}
@@ -120,7 +120,7 @@ export default function KaraDetail(props: IProps) {
 
 	const fetchLyrics = async () => {
 		try {
-			let response = await commandBackend('getKaraLyrics', {kid: props.kid});
+			let response = await commandBackend('getKaraLyrics', {kid: kara.kid});
 			if (response?.length > 0) {
 				response = formatLyrics(response);
 			}
@@ -130,39 +130,10 @@ export default function KaraDetail(props: IProps) {
 		}
 	};
 
-	const getInlineTag = (e: DBKaraTag, tagType: number) => {
-		return (
-			<InlineTag
-				key={e.tid}
-				scope={props.scope}
-				tag={e}
-				tagType={tagType}
-				className={e.problematic ? 'problematicTag' : 'inlineTag'}
-				changeView={props.changeView}
-			/>
-		);
-	};
-
-	const makeFavorite = () => {
-		if (context.globalState.auth.data.onlineAvailable !== false) {
-			isFavorite
-				? commandBackend('deleteFavorites', {
-					kids: [props.kid],
-				  })
-				: commandBackend('addFavorites', {
-					kids: [props.kid],
-				  });
-			setFavorite(!isFavorite);
-		} else {
-			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
-			return;
-		}
-	};
-
 	const addKara = async () => {
 		const response = await commandBackend('addKaraToPublicPlaylist', {
 			requestedby: context.globalState.auth.data.username,
-			kids: [props.kid],
+			kids: [kara.kid],
 		});
 		if (response && response.code && response.data?.plc) {
 			let message;
@@ -237,16 +208,14 @@ export default function KaraDetail(props: IProps) {
 
 	const placeHeader = (headerEl: ReactNode) => createPortal(headerEl, document.getElementById('menu-supp-root'));
 
-	useEffect(() => {
+	useDeferredEffect(() => {
 		setBg();
+		if (kara?.subfile) fetchLyrics();
 	}, [kara]);
 
 	useEffect(() => {
 		if (props.scope === 'admin' && !is_touch_device()) document.addEventListener('keyup', keyObserverHandler);
 		setBg();
-		if (props.kid || props.plaid) {
-			getKaraDetail();
-		}
 		return () => {
 			if (props.scope === 'admin' && !is_touch_device())
 				document.removeEventListener('keyup', keyObserverHandler);
@@ -268,101 +237,7 @@ export default function KaraDetail(props: IProps) {
 	};
 
 	if (kara) {
-		// Tags in the header
-		const karaTags = [];
-
-		if (kara.langs) {
-			const isMulti = kara.langs.find((e) => e.name.indexOf('mul') > -1);
-			isMulti
-				? karaTags.push(
-					<div key={isMulti.tid} className="tag">
-						{getInlineTag(isMulti, tagTypes.LANGS.type)}
-					</div>
-				  )
-				: karaTags.push(
-					...kara.langs.sort(sortTagByPriority).map((tag) => {
-						return (
-							<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
-								{getInlineTag(tag, tagTypes.LANGS.type)}
-							</div>
-						);
-					})
-				  );
-		}
-		if (kara.songtypes) {
-			karaTags.push(
-				...kara.songtypes.sort(sortTagByPriority).map((tag) => {
-					return (
-						<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
-							{getInlineTag(tag, tagTypes.SONGTYPES.type)}
-							{kara.songorder > 0 ? ' ' + kara.songorder : ''}
-						</div>
-					);
-				})
-			);
-		}
-		for (const type of ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']) {
-			const tagData = tagTypes[type];
-			if (kara[tagData.karajson]) {
-				karaTags.push(
-					...kara[tagData.karajson].sort(sortTagByPriority).map((tag) => {
-						return (
-							<div
-								key={tag.tid}
-								className={`tag ${tagData.color}`}
-								title={tag.short ? tag.short : tag.name}
-							>
-								{getInlineTag(tag, tagData.type)}
-							</div>
-						);
-					})
-				);
-			}
-		}
-
-		// Tags in the page/modal itself (singers, songwriters, creators, karaoke authors)
-		const karaBlockTags = [];
-		for (const type of ['SINGERS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
-			let key = 0;
-			const tagData = tagTypes[type];
-			if (kara[tagData.karajson]?.length > 0) {
-				karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`}
-					key={tagData.karajson}>
-					<i className={`fas fa-fw fa-${tagData.icon}`}/>
-					<div>
-						{i18next.t(`KARA.${type}_BY`)}
-						<span key={`${type}${key}`} className="detailsKaraLineContent"> {' '}
-							{kara[tagData.karajson]
-								.map((e) => getInlineTag(e, tagData.type))
-								.reduce(
-									(acc, x, index, arr): any =>
-										acc === null
-											? [x]
-											: [
-												acc,
-												index + 1 === arr.length ? (
-													<span key={`${type}${key}`}
-									  className={`colored ${tagData.color}`}>
-														{' '}
-														{i18next.t('AND')}{' '}
-													</span>
-												) : (
-													<span key={`${type}${key}`}
-									  className={`colored ${tagData.color}`}>
-																,{' '}
-													</span>
-												),
-												x,
-												  ],
-									null
-								)}
-						</span>
-					</div>
-				</div>
-				);
-				key++;
-			}
-		}
+		const [karaTags, karaBlockTags] = computeTagsElements(kara, props.scope, props.changeView);
 
 		const playTime = kara.time_before_play > 0 ? new Date(Date.now() + kara.time_before_play * 1000) : null;
 		const details = (
@@ -433,24 +308,9 @@ export default function KaraDetail(props: IProps) {
 			</button>
 		);
 
-		const makeFavButton = (
-			<button
-				type="button"
-				onClick={makeFavorite}
-				className={`makeFav btn btn-action${isFavorite ? ' currentFav' : ''}`}
-			>
-				<i className="fas fa-fw fa-star"/>
-				<span>{isFavorite ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}</span>
-			</button>
-		);
+		const makeFavButton = <MakeFavButton kid={kara.kid} />;
 
-		const showVideoButton =
-			isRemote() && !/\./.test(kara.repository) ? null : (
-				<button type="button" className="btn btn-action" onClick={() => setShowVideo(!showVideo)}>
-					<i className="fas fa-fw fa-video"/>
-					<span>{showVideo ? i18next.t('KARA_DETAIL.HIDE_VIDEO') : i18next.t('KARA_DETAIL.SHOW_VIDEO')}</span>
-				</button>
-			);
+		const showVideoButton = <ShowVideoButton togglePreview={() => setShowVideo(!showVideo)} preview={showVideo} repository={kara.repository} />;
 
 		const downloadVideoButton = kara.download_status !== 'MISSING' ? null : (
 			<button type="button" className="btn btn-action" onClick={downloadMedia}>
@@ -463,7 +323,7 @@ export default function KaraDetail(props: IProps) {
 			.filter(value => value.Name === kara.repository)[0].MaintainerMode ? (
 				<a href={`/system/karas/${kara.kid}`}>
 					<button type="button" className="btn btn-action" >
-						
+
 						<i className="fas fa-fw fa-edit"/>
 						<span>{i18next.t('KARA_DETAIL.MODIFY_KARAOKE')}</span>
 					</button>
@@ -591,7 +451,13 @@ export default function KaraDetail(props: IProps) {
 					<div className="detailsKara">
 						<div className="centerButtons">
 							{context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
-							{kara?.public_plc_id?.length >= 1 ? null : addKaraButton}
+							{props.scope === 'public' &&
+							context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
+							props.plaid !== context.globalState.settings.data.state.publicPlaid &&
+							props.plaid !== context.globalState.settings.data.state.currentPlaid &&
+							(!kara?.public_plc_id || !kara?.public_plc_id[0]) ?
+								addKaraButton : null
+							}
 							{showVideoButton}
 						</div>
 						{video}

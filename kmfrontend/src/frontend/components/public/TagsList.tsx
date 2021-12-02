@@ -7,6 +7,7 @@ import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
 import { DBKaraTag, DBYear } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
+import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
@@ -32,11 +33,11 @@ function TagsList(props: IProps) {
 		},
 	});
 
-	const getTags = async () => {
+	const getTags = async (from: number) => {
 		try {
 			const response = await commandBackend('getTags', {
 				type: props.tagType,
-				from: tags.infos.from,
+				from,
 				size: chunksize,
 				filter: context.globalState.frontendContext.filterValue1,
 				stripEmpty: true,
@@ -82,10 +83,8 @@ function TagsList(props: IProps) {
 
 	const loadMoreRows = async ({ endIndex }: ListRange) => {
 		if (isRowLoaded(endIndex)) return;
-		tags.infos.from = Math.floor(endIndex / chunksize) * chunksize;
-		setTags(tags);
 		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => (props.tagType === YEARS.type ? getYears() : getTags()), 1000);
+		timer = setTimeout(() => (props.tagType === YEARS.type ? getYears() : getTags(Math.floor(endIndex / chunksize) * chunksize)), 1000);
 	};
 
 	const openSearch = (tid: string) => {
@@ -147,14 +146,12 @@ function TagsList(props: IProps) {
 		);
 	}, []);
 
-	useEffect(() => {
-		tags.infos.from = 0;
-		setTags(tags);
-		props.tagType === YEARS.type ? getYears() : getTags();
+	useDeferredEffect(() => {
+		props.tagType === YEARS.type ? getYears() : getTags(0);
 	}, [context.globalState.frontendContext.filterValue1]);
 
 	useEffect(() => {
-		props.tagType === YEARS.type ? getYears() : getTags();
+		props.tagType === YEARS.type ? getYears() : getTags(0);
 	}, []);
 
 	return (

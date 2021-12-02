@@ -76,7 +76,6 @@ function LyricsBox(props: IProps) {
 
 	useEffect(() => {
 		getSocket().on('playerStatus', refreshTimePosition);
-		fetchLyrics();
 		return () => {
 			getSocket().off('playerStatus', refreshTimePosition);
 		};
