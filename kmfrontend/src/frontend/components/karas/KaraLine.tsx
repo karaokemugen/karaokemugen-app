@@ -461,7 +461,10 @@ function KaraLine(props: IProps) {
 									<div className="contentDivMobileTags">
 										<div>
 											{kara.children?.length > 0 && context.globalState.settings.data.user.flag_parentsonly ?
-												i18next.t('KARA.VERSION_AVAILABILITY', {count: kara.children.length + 1})
+												<>
+													<i className="far fa-fixed-width fa-list-alt" />
+													&nbsp;{i18next.t('KARA.VERSION_AVAILABILITY', {count: kara.children.length + 1})}
+												</>
 												:null}
 										</div>
 										<div className="tagConteneur">
@@ -573,29 +576,6 @@ function KaraLine(props: IProps) {
 								</div>
 								{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
 							</div>
-							{/*{is_touch_device() ? (
-								<div className="tagConteneur mobile">
-									{kara.versions?.sort(sortTagByPriority).map((t) => (
-										<span className="tag white" key={t.tid}>
-											{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
-										</span>
-									))}
-									{karaTags}
-									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ? (
-										<div className="img-container">
-											<ProfilePicture
-												className={`img-circle${is_touch_device() ? ' mobile' : ''}`}
-												alt="User Pic"
-												user={{
-													login: props.kara.username,
-													avatar_file: props.avatar_file,
-													nickname: props.kara.username,
-												}}
-											/>
-										</div>
-									) : null}
-								</div>
-							) : null}*/}
 						</>
 					)}
 			</div>

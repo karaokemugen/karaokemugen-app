@@ -47,6 +47,9 @@
 				max-height: unset;
 				padding: 1em;
 			}
+			> * {
+				position: relative;
+			}
 			.fas.fa-chevron-right {
 				transform: rotate(90deg);
 			}
