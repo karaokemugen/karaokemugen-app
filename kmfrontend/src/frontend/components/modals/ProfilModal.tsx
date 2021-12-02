@@ -45,7 +45,7 @@ function ProfilModal(props: IProps) {
 	};
 
 	const onClickCheckbox = (event: any) => {
-		user.flag_sendstats = event.target.checked;
+		user[event.target.name] = event.target.checked;
 		setUser(user);
 	};
 
@@ -356,6 +356,7 @@ function ProfilModal(props: IProps) {
 										type="checkbox"
 										defaultChecked={user.flag_sendstats}
 										onChange={onClickCheckbox}
+										name="flag_sendstats"
 									/>
 									<label>{i18next.t('MODAL.PROFILE_MODAL.FLAG_SENDSTATS')}</label>
 								</div>
@@ -416,6 +417,17 @@ function ProfilModal(props: IProps) {
 								>
 									<i className="fas fa-fw fa-upload" /> {i18next.t('FAVORITES_EXPORT')}
 								</button>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_parentsonly}
+										onChange={onClickCheckbox}
+										name="flag_parentsonly"
+									/>
+									<label>{i18next.t('MODAL.PROFILE_MODAL.FLAG_PARENTSONLY')}</label>
+								</div>
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">

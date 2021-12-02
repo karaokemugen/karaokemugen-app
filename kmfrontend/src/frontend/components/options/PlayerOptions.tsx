@@ -70,7 +70,6 @@ function PlayerOptions(props: IProps) {
 	useEffect(() => {
 		getDisplays();
 		getAudioDevices();
-		dotify(context.globalState.settings.data.config);
 	}, []);
 
 	if (config['Player.Display.ConnectionInfo.Host'] === null) config['Player.Display.ConnectionInfo.Host'] = '';

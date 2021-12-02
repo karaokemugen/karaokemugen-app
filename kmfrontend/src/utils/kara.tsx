@@ -1,12 +1,17 @@
-import {ReactFragment} from 'react';
+import i18next from 'i18next';
+import { ReactFragment, ReactNode } from 'react';
 
 import { ASSLine } from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
+import InlineTag from '../frontend/components/karas/InlineTag';
+import { Scope } from '../frontend/types/scope';
+import { ChangeView } from '../frontend/types/view';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../store/actions/frontendContext';
 import { GlobalContextInterface } from '../store/context';
 import { SettingsStoreData } from '../store/types/settings';
 import { getLanguageIn3B, langSupport } from './isoLanguages';
 import { isRemote } from './socket';
+import { tagTypes } from './tagTypes';
 
 export function getTagInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string, i18nParam?: any): string {
 	const i18n = (i18nParam && i18nParam[tag.tid]) ? i18nParam[tag.tid] : tag.i18n;
@@ -199,4 +204,122 @@ export function setOppositePlaylistInfo(side: 'left' | 'right', context: GlobalC
 	side === 'left' ?
 		setPlaylistInfoRight(context.globalDispatch, plaid)
 		: setPlaylistInfoLeft(context.globalDispatch, plaid);
+}
+
+function getInlineTag(e: DBKaraTag, tagType: number, scope: 'admin' | 'public', changeView: ChangeView, i18nParam?: any) {
+	return (
+		<InlineTag
+			key={e.tid}
+			scope={scope}
+			tag={e}
+			tagType={tagType}
+			className={e.problematic ? 'problematicTag' : 'inlineTag'}
+			changeView={changeView}
+			i18nParam={i18nParam}
+		/>
+	);
+}
+
+export function computeTagsElements(kara: DBKara, scope: Scope, changeView: ChangeView, versions = true, i18nParam?: any) {
+	// Tags in the header
+	const karaTags: ReactNode[] = [];
+
+	if (kara.langs) {
+		const isMulti = kara.langs.find((e) => e.name.indexOf('mul') > -1);
+		isMulti
+			? karaTags.push(
+				<div key={isMulti.tid} className="tag">
+					{getInlineTag(isMulti, tagTypes.LANGS.type, scope, changeView, i18nParam)}
+				</div>
+			)
+			: karaTags.push(
+				...kara.langs.sort(sortTagByPriority).map((tag) => {
+					return (
+						<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
+							{getInlineTag(tag, tagTypes.LANGS.type, scope, changeView, i18nParam)}
+						</div>
+					);
+				})
+			);
+	}
+	if (kara.songtypes) {
+		karaTags.push(
+			...kara.songtypes.sort(sortTagByPriority).map((tag) => {
+				return (
+					<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
+						{getInlineTag(tag, tagTypes.SONGTYPES.type, scope, changeView, i18nParam)}
+						{kara.songorder > 0 ? ' ' + kara.songorder : ''}
+					</div>
+				);
+			})
+		);
+	}
+
+	const types = versions ? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']:
+		['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC'];
+
+	for (const type of types) {
+		const tagData = tagTypes[type];
+		if (kara[tagData.karajson]) {
+			karaTags.push(
+				...kara[tagData.karajson].sort(sortTagByPriority).map((tag) => {
+					return (
+						<div
+							key={tag.tid}
+							className={`tag ${tagData.color}`}
+							title={tag.short ? tag.short : tag.name}
+						>
+							{getInlineTag(tag, tagData.type, scope, changeView, i18nParam)}
+						</div>
+					);
+				})
+			);
+		}
+	}
+
+	// Tags in the page/modal itself (singers, songwriters, creators, karaoke authors)
+	const karaBlockTags: ReactNode[] = [];
+	for (const type of ['SINGERS', 'SONGWRITERS', 'CREATORS', 'AUTHORS']) {
+		let key = 0;
+		const tagData = tagTypes[type];
+		if (kara[tagData.karajson]?.length > 0) {
+			karaBlockTags.push(<div className={`detailsKaraLine colored ${tagData.color}`}
+				key={tagData.karajson}>
+				<i className={`fas fa-fw fa-${tagData.icon}`}/>
+				<div>
+					{i18next.t(`KARA.${type}_BY`)}
+					<span key={`${type}${key}`} className="detailsKaraLineContent"> {' '}
+						{kara[tagData.karajson]
+							.map((e) => getInlineTag(e, tagData.type, scope, changeView))
+							.reduce(
+								(acc, x, index, arr): any =>
+									acc === null
+										? [x]
+										: [
+											acc,
+											index + 1 === arr.length ? (
+												<span key={`${type}${key}`}
+														  className={`colored ${tagData.color}`}>
+													{' '}
+													{i18next.t('AND')}{' '}
+												</span>
+											) : (
+												<span key={`${type}${key}`}
+														  className={`colored ${tagData.color}`}>
+																,{' '}
+												</span>
+											),
+											x,
+										],
+								null
+							)}
+					</span>
+				</div>
+			</div>
+			);
+			key++;
+		}
+	}
+
+	return [karaTags, karaBlockTags];
 }

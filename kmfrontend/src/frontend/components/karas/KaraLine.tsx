@@ -26,7 +26,7 @@ import {
 	is_touch_device,
 	isNonStandardPlaylist,
 	nonStandardPlaylists,
-	secondsTimeSpanToHMS,
+	PLCCallback
 } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 import KaraMenuModal from '../modals/KaraMenuModal';
@@ -50,7 +50,7 @@ interface IProps {
 	jingle: boolean;
 	sponsor: boolean;
 	key: Key;
-	toggleKaraDetail: (kara: KaraElement, plaid: string) => void;
+	openKara: (kara: KaraElement, plaid: string) => void;
 	sortable: boolean;
 	draggable: DraggableProvided;
 }
@@ -174,68 +174,7 @@ function KaraLine(props: IProps) {
 			};
 		}
 		const response = await commandBackend(url, data).catch(() => {});
-		if (response && response.code && response.data?.plc) {
-			let message;
-			if (response.data?.plc.time_before_play) {
-				const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
-				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
-				message = (
-					<>
-						{i18next.t(`SUCCESS_CODES.${response.code}`, {
-							song: getTitleInLocale(context.globalState.settings.data, props.kara.titles),
-						})}
-						<br />
-						{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
-							time: beforePlayTime,
-							date: playTimeDate,
-						})}
-					</>
-				);
-			} else {
-				message = (
-					<>
-						{i18next.t(`SUCCESS_CODES.${response.code}`, {
-							song: getTitleInLocale(context.globalState.settings.data, props.kara.titles),
-						})}
-					</>
-				);
-			}
-			displayMessage(
-				'success',
-				<div className="toast-with-img">
-					<picture>
-						<source type="image/webp" srcSet={nanamiSingWebP} />
-						<source type="image/png" srcSet={nanamiSingPng} />
-						<img src={nanamiSingPng} alt="Nanami is singing!" />
-					</picture>
-					<span>
-						{message}
-						<br />
-						<button
-							className="btn"
-							onClick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.data.plc.plcid] })
-									.then(() => {
-										toast.dismiss(response.data.plc.plcid);
-										displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
-									})
-									.catch(() => {
-										toast.dismiss(response.data.plc.plcid);
-									});
-							}}
-						>
-							{i18next.t('CANCEL')}
-						</button>
-					</span>
-				</div>,
-				10000,
-				'top-left',
-				response.data.plc.plcid
-			);
-		}
+		PLCCallback(response, context, props.kara);
 	};
 
 	const transferKara = async (event: any, pos?: number) => {
@@ -460,7 +399,7 @@ function KaraLine(props: IProps) {
 							{is_touch_device() || props.scope === 'public' ? (
 								<div
 									className="contentDiv contentDivMobile"
-									onClick={() => props.toggleKaraDetail(kara, plaid)}
+									onClick={() => props.openKara(kara, plaid)}
 									tabIndex={1}
 								>
 									<div className="contentDivMobileTitle">
@@ -519,7 +458,12 @@ function KaraLine(props: IProps) {
 											{kara.upvotes}
 										</div>
 									) : null}
-									{!is_touch_device() ? (
+									<div className="contentDivMobileTags">
+										<div>
+											{kara.children?.length > 0 && context.globalState.settings.data.user.flag_parentsonly ?
+												i18next.t('KARA.VERSION_AVAILABILITY', {count: kara.children.length + 1})
+												:null}
+										</div>
 										<div className="tagConteneur">
 											{karaTags}
 											{kara.versions?.sort(sortTagByPriority).map((t) => (
@@ -528,12 +472,12 @@ function KaraLine(props: IProps) {
 												</span>
 											))}
 										</div>
-									) : null}
+									</div>
 								</div>
 							) : (
 								<div
 									className="contentDiv"
-									onClick={() => props.toggleKaraDetail(kara, plaid)}
+									onClick={() => props.openKara(kara, plaid)}
 									tabIndex={1}
 								>
 									<div className="disable-select karaTitle">
@@ -580,6 +524,11 @@ function KaraLine(props: IProps) {
 									)}
 								</span>
 							) : null}
+							{props.scope === 'public' ? (
+								<div onClick={() => props.openKara(kara, plaid)} >
+									<i className="fas fa-chevron-right fa-3x" />
+								</div>
+							) : null}
 							<div className="actionDiv">
 								{!is_touch_device() && shouldShowProfile ? (
 									<ProfilePicture
@@ -624,14 +573,14 @@ function KaraLine(props: IProps) {
 								</div>
 								{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
 							</div>
-							{is_touch_device() ? (
+							{/*{is_touch_device() ? (
 								<div className="tagConteneur mobile">
-									{karaTags}
 									{kara.versions?.sort(sortTagByPriority).map((t) => (
 										<span className="tag white" key={t.tid}>
 											{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
 										</span>
 									))}
+									{karaTags}
 									{!(is_touch_device() && scope === 'admin') && shouldShowProfile ? (
 										<div className="img-container">
 											<ProfilePicture
@@ -646,7 +595,7 @@ function KaraLine(props: IProps) {
 										</div>
 									) : null}
 								</div>
-							) : null}
+							) : null}*/}
 						</>
 					)}
 			</div>

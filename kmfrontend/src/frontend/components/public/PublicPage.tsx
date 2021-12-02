@@ -20,6 +20,7 @@ import KmAppHeaderDecorator from '../decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from '../decorators/KmAppWrapperDecorator';
 import KaraDetail from '../karas/KaraDetail';
 import Playlist from '../karas/Playlist';
+import VersionSelector from '../karas/VersionSelector';
 import ClassicModeModal from '../modals/ClassicModeModal';
 import PollModal from '../modals/PollModal';
 import ProfilModal from '../modals/ProfilModal';
@@ -234,7 +235,7 @@ function PublicPage(props: RouteComponentProps) {
 		}
 	};
 
-	const toggleKaraDetail = (kara: KaraElement, _plaid: string, indexKaraDetail: number) => {
+	const openKara = (kara: KaraElement, _plaid: string, indexKaraDetail: number) => {
 		setKara(kara);
 		setIndexKaraDetail(indexKaraDetail);
 	};
@@ -254,16 +255,15 @@ function PublicPage(props: RouteComponentProps) {
 	};
 
 	useEffect(() => {
-		if (indexKaraDetail === undefined) {
-			setFilterValue(
-				context.globalDispatch,
-				'',
-				'left',
-				context.globalState.frontendContext.playlistInfoLeft.plaid
-			);
-		} else {
+		if (indexKaraDetail !== undefined)  {
 			setPlaylistInfoLeft(context.globalDispatch, context.globalState.frontendContext.playlistInfoLeft.plaid);
-			props.history.push(`/public/karaoke/${kara.kid}`);
+			// Show VersionSelector if user has parents/children enabled, that the kara have children and that it is
+			// not a PLC entry.
+			if (context.globalState.settings.data.user.flag_parentsonly && !kara.plcid && kara.children?.length > 0) {
+				props.history.push(`/public/karaokes/${kara.kid}`);
+			} else {
+				props.history.push(`/public/karaoke/${kara.kid}`);
+			}
 		}
 	}, [indexKaraDetail]);
 
@@ -387,6 +387,20 @@ function PublicPage(props: RouteComponentProps) {
 						)}
 					/>
 					<Route
+						path="/public/karaokes/:kid"
+						render={({ match }) => (
+							<VersionSelector
+								kid={kara?.kid || match.params.kid}
+								closeOnPublic={() => {
+									props.history.goBack();
+									setKara(undefined);
+								}}
+								changeView={changeView}
+								scope="public"
+							/>
+						)}
+					/>
+					<Route
 						path={[
 							'/public/search',
 							'/public/playlist/:plaid',
@@ -444,7 +458,7 @@ function PublicPage(props: RouteComponentProps) {
 										<Playlist
 											scope="public"
 											side={'left'}
-											toggleKaraDetail={toggleKaraDetail}
+											openKara={openKara}
 											searchValue={searchValue}
 											searchCriteria={searchCriteria}
 											indexKaraDetail={indexKaraDetail}
@@ -471,7 +485,7 @@ function PublicPage(props: RouteComponentProps) {
 						render={() => (
 							<PublicHomepage
 								changeView={changeView}
-								toggleKaraDetail={toggleKaraDetail}
+								toggleKaraDetail={openKara}
 								activePoll={isPollActive}
 								currentVisible={currentVisible}
 								publicVisible={publicVisible}

@@ -17,11 +17,16 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 		if (!withoutProfile) {
 			try {
 				const user: User = await commandBackend('getMyAccount');
+				const favorites = await commandBackend('getFavorites', { mini: true });
+				const favoritesSet = new Set<string>();
+				for (const kara of favorites) {
+					favoritesSet.add(kara.kid);
+				}
 				i18next.changeLanguage(user.language ? user.language : langSupport);
 				if (!res.state.sentrytest) setSentry(res.state.environment, res.version, res.config, user);
 				dispatch({
 					type: Settings.SETTINGS_SUCCESS,
-					payload: { state: res.state, config: res.config, user: user, version: res.version }
+					payload: { state: res.state, config: res.config, user: user, favorites: favoritesSet, version: res.version }
 				});
 			} catch (e) {
 				logout(dispatch as unknown as Dispatch<LogoutUser>);
@@ -30,7 +35,7 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 			i18next.changeLanguage(langSupport);
 			dispatch({
 				type: Settings.SETTINGS_SUCCESS,
-				payload: { state: res.state, config: res.config, user: {}, version: res.version }
+				payload: { state: res.state, config: res.config, user: {}, favorites: new Set(), version: res.version }
 			});
 		}
 	} catch (error: any) {

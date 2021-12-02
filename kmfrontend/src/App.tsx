@@ -29,21 +29,29 @@ class App extends Component<unknown, AppState> {
 
 	async componentDidMount () {
 		await isAlreadyLogged(this.context.globalDispatch);
-		if (window.location.pathname 
-			&& window.location.pathname !== '/' 
-			&& !window.location.pathname.includes('/public') 
+		if (window.location.pathname
+			&& window.location.pathname !== '/'
+			&& !window.location.pathname.includes('/public')
 			&& this.context.globalState.auth.data.role !== 'admin') {
 			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
 			logout(this.context.globalDispatch);
 		}
 		this.setState({isInitialized: true});
 		getSocket().on('settingsUpdated', this.setSettings);
+		getSocket().on('favoritesUpdated', this.setFavorites);
 		getSocket().on('noFreeSpace', this.warningNoFreeSpace);
 	}
 
 	componentWillUnmount () {
 		getSocket().off('settingsUpdated', this.setSettings);
-		getSocket().on('noFreeSpace', this.warningNoFreeSpace);
+		getSocket().off('favoritesUpdated', this.setFavorites);
+		getSocket().off('noFreeSpace', this.warningNoFreeSpace);
+	}
+
+	setFavorites = username => {
+		if (username === this.context.globalState.auth.data.username) {
+			this.setSettings();
+		}
 	}
 
 	setSettings = () => setSettings(this.context.globalDispatch);

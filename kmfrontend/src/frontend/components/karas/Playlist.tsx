@@ -19,6 +19,7 @@ import { DownloadedStatus } from '../../../../../src/lib/types/database/download
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
+import { useDeferredEffect } from '../../../utils/hooks';
 import { buildKaraTitle, getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { getTagTypeName } from '../../../utils/tagTypes';
@@ -46,7 +47,7 @@ interface IProps {
 	searchMenuOpen?: boolean;
 	playlistList?: PlaylistElem[];
 	toggleSearchMenu?: () => void;
-	toggleKaraDetail: (kara: KaraElement, plaid: string, index?: number) => void;
+	openKara: (kara: KaraElement, plaid: string, index?: number) => void;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
 	indexKaraDetail?: number;
@@ -271,8 +272,8 @@ function Playlist(props: IProps) {
 						deleteCriteria={deleteCriteria}
 						jingle={typeof songsBeforeJingle === 'number' && index === playing + songsBeforeJingle}
 						sponsor={typeof songsBeforeSponsor === 'number' && index === playing + songsBeforeSponsor}
-						toggleKaraDetail={(kara, idPlaylist) => {
-							props.toggleKaraDetail(kara, idPlaylist, index);
+						openKara={(kara, idPlaylist) => {
+							props.openKara(kara, idPlaylist, index);
 						}}
 						sortable={sortable}
 						draggable={provided}
@@ -367,6 +368,7 @@ function Playlist(props: IProps) {
 		param.from = data?.infos?.from > 0 ? data.infos.from : 0;
 		param.size = chunksize;
 		param.blacklist = true;
+		param.parentsOnly = props.scope === 'public' && context.globalState.settings.data.user.flag_parentsonly;
 		if (search) {
 			param.order = search === 'search' ? undefined : search;
 		} else if (search !== 'search') {
@@ -872,7 +874,7 @@ function Playlist(props: IProps) {
 		}
 	};
 
-	useEffect(() => {
+	useDeferredEffect(() => {
 		if (!stopUpdate) {
 			if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) && data) data.infos.from = 0;
 			scrollToIndex(0);
@@ -880,11 +882,11 @@ function Playlist(props: IProps) {
 		}
 	}, [getFilterValue(props.side)]);
 
-	useEffect(() => {
+	useDeferredEffect(() => {
 		getPlaylist(props.searchType);
 	}, [props.searchType]);
 
-	useEffect(() => {
+	useDeferredEffect(() => {
 		initCall();
 		if (
 			props.scope === 'admin' &&
@@ -895,7 +897,7 @@ function Playlist(props: IProps) {
 		}
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
 
-	useEffect(() => {
+	useDeferredEffect(() => {
 		getPlaylist('search');
 	}, [searchValue]);
 
@@ -980,7 +982,7 @@ function Playlist(props: IProps) {
 									}}
 									// @ts-ignore
 									scrollerRef={provided.innerRef}
-									style={{ height: '100%' }}
+									style={{ flex: '1 0 auto' }}
 									itemContent={(index) => (
 										<Draggable
 											isDragDisabled={!sortable}

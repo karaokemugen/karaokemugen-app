@@ -5,12 +5,14 @@ import { useContext, useEffect, useRef, useState } from 'react';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
+import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { View } from '../../types/view';
 
 interface Props {
 	tag: DBKaraTag;
+	i18nParam?: any;
 	className?: string;
 	scope: 'admin' | 'public';
 	tagType: number;
@@ -46,19 +48,16 @@ export default function InlineTag(props: Props) {
 	};
 
 	useEffect(() => {
+		getTag();
 		// add when mounted
 		document.addEventListener('mousedown', handleClick);
 		// return function to be called when unmounted
 		return () => {
 			document.removeEventListener('mousedown', handleClick);
 		};
-	});
-
-	useEffect(() => {
-		getTag();
 	}, []);
 
-	useEffect(() => {
+	useDeferredEffect(() => {
 		if (node.current) {
 			if (node.current.getBoundingClientRect().left > Math.round(window.innerWidth / 2)) {
 				setRightClass(true);
@@ -81,12 +80,14 @@ export default function InlineTag(props: Props) {
 		>
 			<span
 				className={props.className}
-				onClick={() => {
-					if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2)
+				onClick={e => {
+					if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2) {
+						e.stopPropagation();
 						setShowPopup(!showPopup);
+					}
 				}}
 			>
-				{getTagInLocale(context.globalState.settings.data, props.tag)}
+				{getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam)}
 			</span>
 			{showPopup ? (
 				<div className={`tag-popup${rightClass ? ' right':''}`}>
@@ -96,7 +97,7 @@ export default function InlineTag(props: Props) {
 						<button className="btn" onClick={goToTagSearch}>
 							<i className="fas fa-fw fa-search" />
 							{i18next.t('INLINE_TAG.SEARCH', {
-								tag: getTagInLocale(context.globalState.settings.data, props.tag),
+								tag: getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam),
 							})}
 						</button>
 					</p>

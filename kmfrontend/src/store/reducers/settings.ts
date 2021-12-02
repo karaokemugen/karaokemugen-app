@@ -5,6 +5,7 @@ export const initialStateConfig: SettingsStore = {
 		state: undefined,
 		config: undefined,
 		user: undefined,
+		favorites: undefined,
 		version: undefined
 	},
 	error: ''
