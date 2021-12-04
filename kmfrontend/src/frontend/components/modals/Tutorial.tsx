@@ -7,6 +7,7 @@ import { Trans } from 'react-i18next';
 
 import KLogo from '../../../assets/Klogo.png';
 import TutoKaraLine from '../../../assets/tuto_karaline.png';
+import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend } from '../../../utils/socket';
 import { is_large_device } from '../../../utils/tools';
 
@@ -36,12 +37,7 @@ function Tutorial() {
 		}
 	};
 
-	useEffect(() => {
-		window.addEventListener('resize', resize);
-		return () => {
-			window.removeEventListener('resize', resize);
-		};
-	}, []);
+	useResizeListener(resize);
 
 	let slide = <></>;
 	switch (stepIndex) {

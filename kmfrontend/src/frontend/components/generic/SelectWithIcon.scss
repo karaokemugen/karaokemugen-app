@@ -41,9 +41,12 @@
 	padding-left: 0;
 	position: absolute;
 	// left: 0;
-	z-index: 99;
+	z-index: 100;
 	margin: 5px 0 0 0;
 	white-space: nowrap;
+	max-height: calc(var(--maxh, 0px) - 4rem);
+	max-width: calc(var(--maxw, 0px) - 20px);
+	overflow: auto;
 }
 
 .selectWithIcon-menuItem {

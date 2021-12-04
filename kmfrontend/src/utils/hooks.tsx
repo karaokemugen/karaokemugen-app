@@ -32,3 +32,17 @@ export const useDeferredEffect = (effect: EffectCallback, deps?: DependencyList)
 		}
 	}, deps);
 };
+
+/**
+ * Hook to assign a listener to document resizes.
+ *
+ * @param {EventListener} onResize Callback on document resize
+ */
+export const useResizeListener = (onResize: EventListener) => {
+	useEffect(() => {
+		window.addEventListener('resize', onResize, { passive: true });
+		return () => {
+			window.removeEventListener('resize', onResize);
+		};
+	}, [onResize]);
+};

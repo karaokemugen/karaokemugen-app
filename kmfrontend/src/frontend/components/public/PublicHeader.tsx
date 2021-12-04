@@ -9,6 +9,7 @@ import nanamiWebP from '../../../assets/nanami.webp';
 import { logout } from '../../../store/actions/auth';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
+import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
@@ -73,16 +74,16 @@ function PublicHeader(props: IProps) {
 		getSocket().on('quotaAvailableUpdated', updateQuotaAvailable);
 		// This will emit a quotaAvailableUpdated event
 		commandBackend('refreshUserQuotas');
-		window.addEventListener('resize', resizeCheck);
 		props.onResize(`${ref.current.scrollHeight}px`);
 		observer = new ResizeObserver(resizeCheck);
 		observer.observe(document.getElementById('menu-supp-root'));
 		return () => {
 			getSocket().off('quotaAvailableUpdated', updateQuotaAvailable);
-			window.removeEventListener('resize', resizeCheck);
 			observer.disconnect();
 		};
 	}, []);
+
+	useResizeListener(resizeCheck);
 
 	return (
 		<header

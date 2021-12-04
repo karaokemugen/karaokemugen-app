@@ -19,7 +19,7 @@ import { DownloadedStatus } from '../../../../../src/lib/types/database/download
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
-import { useDeferredEffect } from '../../../utils/hooks';
+import { useDeferredEffect, useResizeListener } from '../../../utils/hooks';
 import { buildKaraTitle, getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { getTagTypeName } from '../../../utils/tagTypes';
@@ -920,11 +920,9 @@ function Playlist(props: IProps) {
 		if (context.globalState.auth.isAuthenticated) {
 			initCall();
 		}
-		window.addEventListener('error', avoidErrorInDnd);
-		return () => {
-			window.removeEventListener('error', avoidErrorInDnd);
-		};
 	}, []);
+
+	useResizeListener(avoidErrorInDnd);
 
 	const playlist = getPlaylistInfo(props.side, context);
 	return (

@@ -8,6 +8,7 @@ import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
+import { useResizeListener } from '../../../utils/hooks';
 
 function ProgressBar() {
 	const context = useContext(GlobalContext);
@@ -177,18 +178,18 @@ function ProgressBar() {
 	useEffect(() => {
 		displayProgressBar();
 		getSocket().on('connect', displayProgressBar);
-		window.addEventListener('resize', resizeCheck, { passive: true });
 		if (refP.current) {
 			refP.current.addEventListener('animationiteration', suspendAnimation, { passive: true });
 		}
 		return () => {
 			getSocket().off('connect', displayProgressBar);
-			window.removeEventListener('resize', resizeCheck);
 			if (timeout) {
 				clearTimeout(timeout);
 			}
 		};
 	}, []);
+
+	useResizeListener(resizeCheck);
 
 	return (
 		<div id="progressBar">

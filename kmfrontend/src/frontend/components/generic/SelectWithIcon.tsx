@@ -1,8 +1,9 @@
 import './SelectWithIcon.scss';
 
 import i18next from 'i18next';
-import { Fragment } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Menu, MenuItem, Wrapper } from 'react-aria-menubutton';
+import { useResizeListener } from '../../../utils/hooks';
 
 interface IProps {
 	list: { value: string; label: string; icons?: string[] }[];
@@ -11,6 +12,22 @@ interface IProps {
 }
 
 function SelectWithIcon(props: IProps) {
+	const [maxHeight, setMaxHeight] = useState(0);
+	const [maxWidth, setMaxWidth] = useState(0);
+	const menuRef = useRef<HTMLSpanElement>();
+
+	const onResize = useCallback(() => {
+		if (menuRef.current) {
+			setMaxHeight(visualViewport.height - menuRef.current.getBoundingClientRect().bottom);
+			setMaxWidth(visualViewport.width - menuRef.current.getBoundingClientRect().left);
+		}
+	}, []);
+
+	useResizeListener(onResize);
+	useEffect(() => {
+		onResize();
+	}, []);
+
 	const select =
 		props.value && props.list?.length > 0
 			? props.list.filter((element) => props.value === element.value)[0]
@@ -18,7 +35,7 @@ function SelectWithIcon(props: IProps) {
 	return (
 		<Wrapper onSelection={props.onChange} className="selectWithIcon">
 			<Button className="selectWithIcon-trigger">
-				<span className="selectWithIcon-triggerInnards">
+				<span className="selectWithIcon-triggerInnards" ref={menuRef}>
 					{select?.icons
 						? select.icons.map((icon) => {
 							return (
@@ -35,7 +52,7 @@ function SelectWithIcon(props: IProps) {
 				</span>
 			</Button>
 			<Menu>
-				<div className="selectWithIcon-menu">
+				<div className="selectWithIcon-menu" style={{['--maxh' as any]: `${maxHeight}px`, ['--maxw' as any]: `${maxWidth}px`}}>
 					{props.list.map((element) => (
 						<MenuItem value={element.value} key={element.value} className="selectWithIcon-menuItem">
 							{element.icons
