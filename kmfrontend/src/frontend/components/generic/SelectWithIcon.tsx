@@ -3,6 +3,7 @@ import './SelectWithIcon.scss';
 import i18next from 'i18next';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Menu, MenuItem, Wrapper } from 'react-aria-menubutton';
+
 import { useResizeListener } from '../../../utils/hooks';
 
 interface IProps {

@@ -5,10 +5,10 @@ import { ReactFragment, useContext, useEffect, useRef, useState } from 'react';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
+import { useResizeListener } from '../../../utils/hooks';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
-import { useResizeListener } from '../../../utils/hooks';
 
 function ProgressBar() {
 	const context = useContext(GlobalContext);
