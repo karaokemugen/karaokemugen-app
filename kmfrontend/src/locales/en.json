@@ -518,11 +518,11 @@
         "Time to drink!",
         "We'll be right back!"
     ],
-	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": [
-		"Vote! Vote!",
-		"The choice is yours."
-	],
+    "POLL_TIME": "Vote",
+    "POLL_TAGLINES": [
+        "Vote! Vote!",
+        "The choice is yours."
+    ],
     "QUOTA_AVAILABLE": "You can add songs again now!",
     "SERIE_NAME_MODE": "Series language mode",
     "SERIE_NAME_MODE_TOOLTIP": "Changes the way series names are displayed on the song list. Might be ignored by user preferences",
@@ -695,20 +695,20 @@
             "TITLE": "It's your turn to sing!",
             "TEXT": "Click on the Play button to start your song."
         },
-		"GIT_DANGEROUS": {
-			"TITLE": "Dangerous actions",
-			"DESCRIPTION": "Welcome to the dangerous actions corner. It appears that you can mess a lot around here. Here's a quick summary of the edits detected :",
-			"STASH": {
-				"BTN": "Stash edits",
-				"DESC": "Put away your edits to reuse them later."
-			},
-			"RESET": {
-				"BTN": "Reset",
-				"DESC": "Delete all the non-pushed edits."
-			},
-			"DONE": "Task done successfully.",
-			"EMPTY": "Nothing was changed!"
-		}
+        "GIT_DANGEROUS": {
+            "TITLE": "Dangerous actions",
+            "DESCRIPTION": "Welcome to the dangerous actions corner. It appears that you can mess a lot around here. Here's a quick summary of the edits detected :",
+            "STASH": {
+                "BTN": "Stash edits",
+                "DESC": "Put away your edits to reuse them later."
+            },
+            "RESET": {
+                "BTN": "Reset",
+                "DESC": "Delete all the non-pushed edits."
+            },
+            "DONE": "Task done successfully.",
+            "EMPTY": "Nothing was changed!"
+        }
     },
     "SETUP_PAGE": {
         "TITLE": "Setup Wizard",
@@ -856,7 +856,7 @@
         "PARENTS": "Parents",
         "CHILDRENS": "Childrens of {{parent}}",
         "PARENTS_TOOLTIP": "If a parent is defined, this karaoke will show as alternative to the selected parent karaoke(s). Please mind to select the good repository before filling this array to avoid adding karaokes from other repositories.",
-		"VERSION_AVAILABILITY": "Available in {{count}} versions."
+        "VERSION_AVAILABILITY": "Available in {{count}} versions."
     },
     "MENU": {
         "HOME": "Home",
@@ -876,13 +876,13 @@
         "VIEWCOUNTS": "Most played",
         "TAGS": "Tags",
         "DATABASE": "Database",
-		"GIT": "Git",
+        "GIT": "Git",
         "USERS": "Users",
         "UNUSED_FILES": "Unused files",
         "DUPLICATE": "Duplicated",
         "BATCH_EDIT": "Batch edit song tags",
         "STORAGE": "Disk storage management",
-		"BACKGROUNDS": "Backgrounds",
+        "BACKGROUNDS": "Backgrounds",
         "INBOX": "Inbox",
         "MAINTAINER": "Maintainer"
     },
@@ -1106,37 +1106,37 @@
         "STORAGE_INFO_DELETE": "Like you've seen earlier, you have the ability to remove the unused medias for a month or all the medias. They will be redonwloaded when needed again but this will allow you to free space if you make a long karaoke night recently for example.",
         "STORAGE_INFO_MOVE": "You have also the ability, in the repositories management page, to move the files of a repository somewhere else in an external disk, USB key or a network share, allowing you to free space on your main disk.",
         "NO_FREE_SPACE": "Not enough disk space to download! Make space on your hard drive and restart the queue.",
-		"GIT": {
-			"URL": "Git Repository",
-			"USERNAME": "Git Username",
-			"PASSWORD": "Git Password (or Gitlab/Github token)",
-			"AUTHOR": "Git Identity",
-			"EMAIL": "Git E-Mail"
-		},
-		"FTP": {
-			"HOST": "FTP Host",
-			"PORT": "FTP Port",
-			"USERNAME": "FTP Username",
-			"PASSWORD": "FTP Password",
-			"BASEDIR": "FTP Base Directory"
-		},
-		"GIT_STATUS": "Git status",
-		"GIT_STATUSES": {
-			"CLEAN": "Clean copy",
-			"MODIFIED": "Edited (changes to push)",
-			"CONFLICT": "Conflicts pending (use the resolver)"
-		},
-		"GIT_NOTHING_TO_PUSH": "There is nothing to push.",
-		"GIT_ACTIONS": "Actions",
-		"GIT_DANGEROUS": "Dangerous actions",
-		"GIT_PUSH": "Push",
-		"GIT_PULL": "Pull",
-		"GIT_CONFIRM_PUSH": "Push the following changes?",
-		"GIT_STASHLIST": "Stashes",
-		"GIT_STASH": "You have stashes to apply, those are created automatically when a merge conflict occurs. You can try to restore them or delete them. You should check the <1>Git repository</1> online to see changes that might have caused the conflict.",
-		"GIT_UNSTASH": "Apply",
-		"GIT_DELETE": "Delete"
-	},
+        "GIT": {
+            "URL": "Git Repository",
+            "USERNAME": "Git Username",
+            "PASSWORD": "Git Password (or Gitlab/Github token)",
+            "AUTHOR": "Git Identity",
+            "EMAIL": "Git E-Mail"
+        },
+        "FTP": {
+            "HOST": "FTP Host",
+            "PORT": "FTP Port",
+            "USERNAME": "FTP Username",
+            "PASSWORD": "FTP Password",
+            "BASEDIR": "FTP Base Directory"
+        },
+        "GIT_STATUS": "Git status",
+        "GIT_STATUSES": {
+            "CLEAN": "Clean copy",
+            "MODIFIED": "Edited (changes to push)",
+            "CONFLICT": "Conflicts pending (use the resolver)"
+        },
+        "GIT_NOTHING_TO_PUSH": "There is nothing to push.",
+        "GIT_ACTIONS": "Actions",
+        "GIT_DANGEROUS": "Dangerous actions",
+        "GIT_PUSH": "Push",
+        "GIT_PULL": "Pull",
+        "GIT_CONFIRM_PUSH": "Push the following changes?",
+        "GIT_STASHLIST": "Stashes",
+        "GIT_STASH": "You have stashes to apply, those are created automatically when a merge conflict occurs. You can try to restore them or delete them. You should check the <1>Git repository</1> online to see changes that might have caused the conflict.",
+        "GIT_UNSTASH": "Apply",
+        "GIT_DELETE": "Delete"
+    },
     "HOME": {
         "SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
         "KARAS_DESCRIPTION": "List, edit, and create karaoke data files. You can also download medias and view most requested, most played, and karaoke history",
@@ -1199,15 +1199,15 @@
         "UPDATING_GIT_REPO": "Updating repository {{data}}",
         "DOWNLOADING_ZIP": "Downloading database",
         "EXTRACTING_ZIP": "Extracting database",
-		"COMMITING_CHANGES": "Committing changes",
-		"PREPARING_CHANGES": "Preparing changes",
+        "COMMITING_CHANGES": "Committing changes",
+        "PREPARING_CHANGES": "Preparing changes",
         "REFRESHING_DATA": "Refreshing data…",
         "UPLOADING_FTP": "Uploading to the FTP…"
     },
     "ERROR_CODES": {
-		"INBOX_VIEW_ERROR": "Unable to fetch karaokes from inbox",
-		"DOWNLOAD_KARA_FROM_INBOX_ERROR": "Unable to download karaoke from inbox",
-		"DELETE_KARA_IN_INBOX_ERROR": "Unable to delete karaoke from inbox",
+        "INBOX_VIEW_ERROR": "Unable to fetch karaokes from inbox",
+        "DOWNLOAD_KARA_FROM_INBOX_ERROR": "Unable to download karaoke from inbox",
+        "DELETE_KARA_IN_INBOX_ERROR": "Unable to delete karaoke from inbox",
         "WEBAPPMODE_CLOSED_API_MESSAGE": "API is disabled at the moment",
         "CRITERIAS_EMPTY_ERROR": "Error emptying list of criteria",
         "CRITERIAS_GET_ERROR": "Criterias could not be viewed",
@@ -1295,14 +1295,14 @@
         "REPO_EDIT_ERROR": "Error editing repository",
         "REPO_GET_UNUSEDTAGS_ERROR": "Error fetching unused tags",
         "REPO_GET_UNUSEDMEDIA_ERROR": "Error fetching unused medias",
-		"REPO_GIT_CHECK_ERROR": "Unable to check git repository status",
-		"REPO_GIT_ABORT_ERROR": "Unable to abort git merge",
-		"REPO_GIT_STASH_ERROR": "Unable to stash your changes",
-		"REPO_GIT_UNSTASH_ERROR": "Unable to pop the stash",
-		"REPO_GIT_UPDATE_ERROR": "Unable to update git repository",
-		"REPO_GIT_GET_COMMITS_ERROR": "Unable to prepare git commits",
-		"REPO_GIT_PUSH_ERROR": "Unable to push git commits",
-		"REPO_GIT_RESET_ERROR": "Unable to reset git repository",
+        "REPO_GIT_CHECK_ERROR": "Unable to check git repository status",
+        "REPO_GIT_ABORT_ERROR": "Unable to abort git merge",
+        "REPO_GIT_STASH_ERROR": "Unable to stash your changes",
+        "REPO_GIT_UNSTASH_ERROR": "Unable to pop the stash",
+        "REPO_GIT_UPDATE_ERROR": "Unable to update git repository",
+        "REPO_GIT_GET_COMMITS_ERROR": "Unable to prepare git commits",
+        "REPO_GIT_PUSH_ERROR": "Unable to push git commits",
+        "REPO_GIT_RESET_ERROR": "Unable to reset git repository",
         "SESSION_LIST_ERROR": "Error fetching sessions list",
         "SESSION_CREATION_ERROR": "Error creating session",
         "SESSION_MERGE_ERROR": "Error merging sessions",
@@ -1438,10 +1438,10 @@
             "TITLE": "Repositories management",
             "DESCRIPTION": "Repositories are sources of karaoke. Add, enable, or remove repositories from this page."
         },
-		"BACKGROUNDS": {
-			"TITLE": "Backgrounds management",
-			"DESCRIPTION": "Just a mean to customize your player a little bit."
-		},
+        "BACKGROUNDS": {
+            "TITLE": "Backgrounds management",
+            "DESCRIPTION": "Just a mean to customize your player a little bit."
+        },
         "REPOSITORIES_NEW": {
             "TITLE": "Add a repository",
             "DESCRIPTION": "Repository creation form."
@@ -1458,10 +1458,10 @@
             "TITLE": "Database",
             "DESCRIPTION": "Database management tools. Database, database, just living in the database wow wow."
         },
-		"GIT": {
-			"TITLE": "Git Integration",
-			"DESCRIPTION": "Manage Git repositories (push, merge conflicts)"
-		},
+        "GIT": {
+            "TITLE": "Git Integration",
+            "DESCRIPTION": "Manage Git repositories (push, merge conflicts)"
+        },
         "KARAOKE_LIST": {
             "TITLE": "List of karaoke",
             "DESCRIPTION": "From here you can edit, add or delete karaoke. Usually for karaoke repository maintainers only."
@@ -1599,13 +1599,13 @@
         "P10": "They have been migrated to regular blacklist criterias. This means that you won't see those blacklisted songs in your library, as if you had never downloaded them!",
         "P11": "You can still modify blacklist criterias at any time."
     },
-	"BACKGROUNDS_MGMT": {
-		"EXPL": "There are 3 categories of backgrounds. If a category doesn't have any background, a bundled one will be used (those with the character that give his name to the app version)",
-		"INFO": [
-			"If you want to use the same background for 2 different categories (or more), you have to place it in each category.",
-			"You can also add music! In the same fashion, each category has its own music.",
-			"You can bind a background to a music by giving it the same name. For example, back1.jpg and back1.mp3 in the same category will always be linked. Otherwise, if back2.jpg doesn't have a sound with the same name, it will be choosed randomly."
-		],
+    "BACKGROUNDS_MGMT": {
+        "EXPL": "There are 3 categories of backgrounds. If a category doesn't have any background, a bundled one will be used (those with the character that give his name to the app version).",
+        "INFO": [
+            "If you want to use the same background for 2 different categories (or more), you have to place it in each category.",
+            "You can also add music! In the same fashion, each category has its own music.",
+            "You can bind a background to a music by giving it the same name. For example, back1.jpg and back1.mp3 in the same category will always be linked. Otherwise, if back2.jpg doesn't have a sound with the same name, it will be choosed randomly."
+        ],
         "NEW": "New background or music",
         "CHOOSE_FILE": "Choose a file",
         "SAVE": "Save",
@@ -1617,7 +1617,7 @@
             "STOP": "Stop",
             "POLL": "Poll"
         }
-	},
+    },
     "INBOX": {
         "NAME": "Karaoke name",
         "TIMESTAMP": "Timestamp",
