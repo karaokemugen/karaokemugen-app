@@ -99,25 +99,31 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 		value: 0,
 		total: 100,
 	});
-	if (kara.mediafile) {
-		const localMedia = resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile);
-		const tempMedia = resolve(resolvedPath('Temp'), kara.mediafile);
-		const downloadItem = {
-			filename: tempMedia,
-			url: `https://${repoName}/inbox/${encodeURIComponent(kara.name)}/${encodeURIComponent(kara.mediafile)}`,
-			id: kara.name,
-		};
-		try {
-			await downloadFile(downloadItem, downloadTask);
-		} catch (err) {
-			throw err;
+	try {
+		if (kara.mediafile) {
+			const localMedia = resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile);
+			const tempMedia = resolve(resolvedPath('Temp'), kara.mediafile);
+			const downloadItem = {
+				filename: tempMedia,
+				url: `https://${repoName}/inbox/${encodeURIComponent(kara.name)}/${encodeURIComponent(kara.mediafile)}`,
+				id: kara.name,
+			};
+			try {
+				await downloadFile(downloadItem, downloadTask);
+			} catch (err) {
+				throw err;
+			}
+			await asyncMove(tempMedia, localMedia, { overwrite: true });
+		} else {
+			downloadTask.update({
+				value: 100
+			});
+			await sleep(1000);
 		}
-		await asyncMove(tempMedia, localMedia, { overwrite: true });
-	} else {
-		downloadTask.update({
-			value: 100
-		});
-		await sleep(1000);
+	} catch(err) {
+		logger.error(`Could not download media from inbox: ${err}`, {service: 'Inbox', obj: err});
+		throw err;
+	} finally {
 		downloadTask.end();
 	}
 }
