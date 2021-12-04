@@ -914,7 +914,7 @@ function Playlist(props: IProps) {
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
 		};
-	}, [context.globalState.frontendContext.playlistInfoLeft, context.globalState.frontendContext.playlistInfoRight]);
+	}, [context.globalState.frontendContext.playlistInfoLeft, context.globalState.frontendContext.playlistInfoRight, getFilterValue(props.side), searchValue]);
 
 	useEffect(() => {
 		if (context.globalState.auth.isAuthenticated) {
