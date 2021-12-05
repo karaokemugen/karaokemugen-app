@@ -396,7 +396,7 @@ export async function updateGitRepo(name: string) {
 				}
 				if (!status.isClean()) {
 					// Repository is not clean, we'll generate commits and do some magic
-					const push = await generateCommits(repo.Name, true);
+					const push = await generateCommits(repo.Name);
 					for (const stash of push.commits) {
 						await git.stash(stash);
 					}
@@ -749,7 +749,7 @@ export async function getRepoFreeSpace(repoName: string) {
 	return getFreeSpace(resolve(getState().dataPath, repo.Path.Medias[0]));
 }
 
-export async function generateCommits(repoName: string, ignoreNoMedia = false) {
+export async function generateCommits(repoName: string) {
 	const task = new Task({
 		text: 'PREPARING_CHANGES',
 		value: 0,
@@ -1031,13 +1031,9 @@ export async function generateCommits(repoName: string, ignoreNoMedia = false) {
 			task.incr();
 		}
 
-		// [nomedia] detection
 		logger.debug(`Preparing ${commits.length} commits`, {service: 'Repo', obj: commits});
 		logger.debug(`You have ${modifiedMedias.length} modified medias`, {service: 'Repo', obj: modifiedMedias});
 		if (commits.length === 0) return;
-		if (modifiedMedias.length === 0 && !ignoreNoMedia) {
-			commits[commits.length-1].message += ' [nomedia]';
-		}
 		return {commits, modifiedMedias};
 	} catch(err) {
 		logger.error('Failed to prepare commits', {service: 'Repo', obj: err});
