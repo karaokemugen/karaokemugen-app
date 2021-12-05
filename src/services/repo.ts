@@ -795,7 +795,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [],
-				message: `:heavy_minus_sign: :loud_sound: Delete ${song}`
+				message: `🔥 🎤 Delete ${song}`
 			};
 			// Find out if we have a deleted lyrics as well (we should have one but you never know, it could be a zxx song!)
 			const lyricsFile = deletedLyrics.find(f => basename(f) === `${song}.ass`);
@@ -824,7 +824,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
-				message: `:heavy_minus_sign: :label: Delete ${tag}`
+				message: `🔥 🏷️ Delete ${tag}`
 			};
 			commits.push(commit);
 			// Let's add the tag to the deleted TIDs
@@ -844,7 +844,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
-				message: `:heavy_plus_sign: :loud_sound: Add ${song}`
+				message: `🆕 🎤 Add ${song}`
 			};
 			// We need to find out if some tags have been added or modified and add them to our commit
 			const kara = karas.content.find(k => k.karafile === basename(file));
@@ -868,7 +868,7 @@ export async function generateCommits(repoName: string) {
 				}
 				if (oldKaraFile !== file) {
 					// This is actually modified kara.
-					commit.message = `:pencil2: :loud_sound: Modify ${song}`;
+					commit.message = `📝 🎤 Modify ${song}`;
 					// Let's remove the commit containing our song deletion and add the deletion in this commit
 					commits = commits.filter(c => !c.removedFiles.includes(oldKaraFile));
 					commit.removedFiles = [oldKaraFile];
@@ -920,7 +920,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
-				message: `:pencil2: :loud_sound: Update ${song}`
+				message: `📝 🎤 Update ${song}`
 			};
 			// Modified songs can be ernamed so we need to find out how it was named before
 			// We need to find out if some tags have been added or modified and add them to our commit
@@ -992,7 +992,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
-				message: `:heavy_plus_sign: :label: Add ${tag}`
+				message: `🆕 🏷️ Add ${tag}`
 			};
 			commits.push(commit);
 			task.incr();
@@ -1003,7 +1003,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
-				message: `:pencil2: :label: Modify ${tag}`
+				message: `📝 🏷️ Modify ${tag}`
 			};
 			commits.push(commit);
 			task.incr();
@@ -1014,7 +1014,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [file],
 				removedFiles: [],
-				message: `:pencil2: :pencil: Modify ${lyrics}`
+				message: `📝 ✏️ Modify ${lyrics}`
 			};
 			commits.push(commit);
 			task.incr();
@@ -1025,7 +1025,7 @@ export async function generateCommits(repoName: string) {
 			const commit: Commit = {
 				addedFiles: [],
 				removedFiles: [file],
-				message: `:heavy_minus_sign: :pencil: Delete ${lyrics}`
+				message: `🔥 ✏️ Delete ${lyrics}`
 			};
 			commits.push(commit);
 			task.incr();
