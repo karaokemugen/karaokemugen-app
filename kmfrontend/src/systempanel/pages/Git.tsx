@@ -214,9 +214,9 @@ export default function Git() {
 		const listener = (repoName) => {
 			if (repoName === pendingPush.repoName) {
 				setLoading(false);
-				setLoading(false);
 				setPendingPush(null);
 				setShowPushModal(false);
+				setExcludeList([]);
 				// Refresh repos
 				getRepos().then(setRepos);
 			}
