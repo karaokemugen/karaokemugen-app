@@ -60,7 +60,6 @@ export async function insertTag(tag: Tag) {
 		JSON.stringify(tag.aliases || []),
 		tag.tagfile,
 		tag.repository,
-		tag.modified_at,
 		tag.problematic || false,
 		tag.noLiveDownload || false,
 		tag.priority || 10,
@@ -94,8 +93,8 @@ export async function selectTagByNameAndType(name: string, type: number): Promis
 	return res.rows[0];
 }
 
-export function updateTag(tag: Tag) {
-	return db().query(sqlupdateTag, [
+export async function updateTag(tag: Tag) {
+	await db().query(sqlupdateTag, [
 		tag.name,
 		JSON.stringify(tag.aliases || []),
 		tag.tagfile,
@@ -104,7 +103,6 @@ export function updateTag(tag: Tag) {
 		tag.i18n || {},
 		tag.tid,
 		tag.repository,
-		tag.modified_at,
 		tag.problematic || false,
 		tag.noLiveDownload || false,
 		tag.priority || 10,

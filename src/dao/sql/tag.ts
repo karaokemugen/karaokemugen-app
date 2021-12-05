@@ -20,7 +20,6 @@ SELECT t.pk_tid AS tid,
 	t.i18n,
 	at.karacount AS karacount,
 	t.tagfile,
-	t.modified_at,
 	t.repository,
 	t.problematic,
 	t.nolivedownload AS "noLiveDownload",
@@ -52,7 +51,6 @@ INSERT INTO tag(
 	aliases,
 	tagfile,
 	repository,
-	modified_at,
 	problematic,
 	nolivedownload,
 	priority,
@@ -70,8 +68,7 @@ VALUES(
 	$9,
 	$10,
 	$11,
-	$12,
-	$13
+	$12
 )
 ON CONFLICT (pk_tid) DO UPDATE SET
 	types = $3,
@@ -81,16 +78,15 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 	aliases = $6,
 	tagfile = $7,
 	repository = $8,
-	modified_at = $9,
-	problematic = $10,
-	nolivedownload = $11,
-	priority = $12,
-	karafile_tag = $13
+	problematic = $9,
+	nolivedownload = $10,
+	priority = $11,
+	karafile_tag = $12
 `;
 
 export const sqlupdateKaraTagsTID = `
-UPDATE kara_tag 
-SET fk_tid = $2 
+UPDATE kara_tag
+SET fk_tid = $2
 WHERE fk_tid = $1 AND fk_kid NOT IN (
 	SELECT fk_kid FROM kara_tag WHERE fk_tid = $2
 );
@@ -131,11 +127,10 @@ SET
 	types = $5,
 	i18n = $6,
 	repository = $8,
-	modified_at = $9,
-	problematic = $10,
-	nolivedownload = $11,
-	priority = $12,
-	karafile_tag = $13
+	problematic = $9,
+	nolivedownload = $10,
+	priority = $11,
+	karafile_tag = $12
 WHERE pk_tid = $7;
 `;
 

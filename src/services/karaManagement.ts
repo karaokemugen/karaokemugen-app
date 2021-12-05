@@ -164,8 +164,7 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 			// Modify tag file we just copied to change its repo
 			const newTag: Tag = {
 				...tag,
-				repository: repoName,
-				modified_at: new Date().toISOString()
+				repository: repoName
 			};
 			tasks.push(writeTagFile(newTag, resolvedPathRepos('Tags', repoName)[0]));
 		}

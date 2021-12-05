@@ -55,8 +55,6 @@ export async function addTag(tagObj: Tag, opts = {silent: false, refresh: true})
 		if (!tagObj.tid) tagObj.tid = uuidV4();
 		if (!tagObj.tagfile) tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
 		const tagfile = tagObj.tagfile;
-		// Modified_at is not provided if tag is new. if tag data comes from an already known tag, we're not going to modify it
-		if (!tagObj.modified_at) tagObj.modified_at = new Date().toISOString();
 
 		const promises = [
 			insertTag(tagObj),
@@ -180,7 +178,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 	}
 }
 
-export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, refresh: true, repoCheck: true, ignoreModifiedAt: false }) {
+export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, refresh: true, repoCheck: true, writeFile: true }) {
 	let task: Task;
 	if (!opts.silent) task = new Task({
 		text: 'EDITING_TAG_IN_PROGRESS',
@@ -192,7 +190,6 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 		if (!oldTag) throw {code: 404, msg: 'Tag ID unknown'};
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository) throw {code: 409, msg: 'Tag repository cannot be modified. Use copy function instead'};
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
-		if (!opts.ignoreModifiedAt) tagObj.modified_at = new Date().toISOString();
 		// Try to find old tag
 		let oldTagFiles = [];
 		let oldTagPath: string;
@@ -203,10 +200,11 @@ export async function editTag(tid: string, tagObj: Tag, opts = { silent: false, 
 			// Non fatal, couldn't find old tag file. We're just goign to update it and write the new one.
 			oldTagPath = resolvedPathRepos('Tags', oldTag.repository)[0];
 		}
-		await Promise.all([
-			updateTag(tagObj),
-			writeTagFile(tagObj, oldTagPath)
-		]);
+		const promises = [
+			updateTag(tagObj)
+		];
+		if (opts.writeFile) promises.push(writeTagFile(tagObj, oldTagPath));
+		await Promise.all(promises);
 		const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
 		// Here we only compare the filename, not the full path.
 		// If it has been modified (name field modified) we need to remove the old one.
@@ -299,10 +297,9 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	try {
 		const tagDBData = await getTag(tagFileData.tid);
 		if (tagDBData) {
-			if (tagDBData.repository === tagFileData.repository && tagDBData.modified_at.toISOString() !== tagFileData.modified_at) {
-				// Only edit if repositories are the same and modified_at are different.
-				// Also refresh is always disabled for editing tags.
-				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true, ignoreModifiedAt: true});
+			if (tagDBData.repository === tagFileData.repository) {
+				// Refresh always disabled for editing tags.
+				await editTag(tagFileData.tid, tagFileData, { silent: true, refresh: false, repoCheck: true, writeFile: false});
 			}
 			return tagFileData.name;
 		} else {
@@ -326,17 +323,13 @@ export async function consolidateTagsInRepo(kara: Kara) {
 				if (tag.repository !== kara.repository) {
 					// This might need to be copied
 					tag.repository = kara.repository;
-					const tagObj: Tag = {
-						...tag,
-						modified_at: tag.modified_at.toISOString()
-					};
 					const destPath = resolvedPathRepos('Tags', tag.repository);
-					const tagFile = `${sanitizeFile(tagObj.name)}.${tagObj.tid.substring(0, 8)}.tag.json`;
+					const tagFile = `${sanitizeFile(tag.name)}.${tag.tid.substring(0, 8)}.tag.json`;
 					try {
 						await resolveFileInDirs(tagFile, destPath);
 					} catch {
 						// File doe snot exist, let's write it.
-						copies.push(writeTagFile(tagObj, destPath[0]));
+						copies.push(writeTagFile(tag, destPath[0]));
 					}
 				}
 			}
