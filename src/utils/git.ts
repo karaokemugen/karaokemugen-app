@@ -106,7 +106,11 @@ export default class Git {
 
 	reset(ref?: string) {
 		const options = ref ? [ref] : ['--hard', 'origin/master'];
-		return this.git.reset(options);
+		if (!ref) {
+			return this.git.reset(options).then(this.wipeChanges.bind(this));
+		} else {
+			return this.git.reset(options);
+		}
 	}
 
 	async stashList(): Promise<LogResult> {
