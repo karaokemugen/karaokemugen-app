@@ -153,7 +153,6 @@ export function testTag(tag: DBTag, type: 'short'|'full'|'tag') {
 		}
 	}
 	if (type === 'tag') {
-		expect(tag.modified_at).to.be.a('string');
 		expect(tag.repository).to.be.a('string');
 		expect(tag.tagfile).to.be.a('string');
 		if (tag.karacount) expect(tag.karacount).to.satisfy((karacounts: any) => {
