@@ -75,7 +75,7 @@ body:not(.touch) {
 		border-bottom-left-radius: 0;
 	}
 
-	.list-group-item.marker.green {
+	&.marker.green {
 		border-bottom-color: forestgreen;
 	}
 

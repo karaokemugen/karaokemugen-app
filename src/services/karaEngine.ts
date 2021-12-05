@@ -146,7 +146,7 @@ export async function playCurrentSong(now: boolean) {
 	}
 }
 
-/** This is triggered when player ends its current song 
+/** This is triggered when player ends its current song
  * To those who enter here, give up all hope. This is one of the most cursed functions of Karaoke Mugen next to user online functions and mpv's IPC.
 */
 export async function playerEnding() {
@@ -329,9 +329,7 @@ export async function playerEnding() {
 			return;
 		} else {
 			if (!state.singlePlay) {
-				state.counterToJingle++;
-				state.counterToSponsor++;
-				setState({counterToSponsor: state.counterToSponsor, counterToJingle: state.counterToJingle});
+				setState({counterToSponsor: state.counterToSponsor + 1, counterToJingle: state.counterToJingle + 1});
 			} else {
 				setState({singlePlay: false});
 			}

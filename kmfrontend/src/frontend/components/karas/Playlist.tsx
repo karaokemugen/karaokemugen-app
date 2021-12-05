@@ -259,6 +259,20 @@ function Playlist(props: IProps) {
 			let content: KaraElement;
 			if (data?.content[index]) {
 				content = data.content[index];
+				const jingle =
+					typeof songsBeforeJingle === 'number' && (
+						// Are jingles enabled?
+						context.globalState.settings.data.config.Playlist.Medias.Jingles.Enabled &&
+						// Use modulo to calculate each occurrence
+						(index - (playing + songsBeforeJingle)) % context.globalState.settings.data.config.Playlist.Medias.Jingles.Interval === 0
+					);
+				const sponsor =
+					typeof songsBeforeSponsor === 'number' && (
+						// Are sponsors enabled?
+						context.globalState.settings.data.config.Playlist.Medias.Sponsors.Enabled &&
+						// Use modulo to calculate each occurrence
+						(index - (playing + songsBeforeSponsor)) % context.globalState.settings.data.config.Playlist.Medias.Sponsors.Interval === 0
+					);
 				return (
 					<KaraLine
 						indexInPL={index}
@@ -270,8 +284,8 @@ function Playlist(props: IProps) {
 						checkKara={checkKara}
 						avatar_file={data.avatars[content.username]}
 						deleteCriteria={deleteCriteria}
-						jingle={typeof songsBeforeJingle === 'number' && index === playing + songsBeforeJingle}
-						sponsor={typeof songsBeforeSponsor === 'number' && index === playing + songsBeforeSponsor}
+						jingle={jingle}
+						sponsor={sponsor}
 						openKara={(kara, idPlaylist) => {
 							props.openKara(kara, idPlaylist, index);
 						}}
@@ -291,7 +305,7 @@ function Playlist(props: IProps) {
 				);
 			}
 		},
-		[sortable, playing, data]
+		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle]
 	);
 
 	const noRowsRenderer = useCallback(() => {
@@ -483,8 +497,10 @@ function Playlist(props: IProps) {
 
 	const updateCounters = (event: PublicPlayerState) => {
 		if (getPlaylistInfo(props.side, context)?.flag_current) {
-			if (event.songsBeforeJingle && event.songsBeforeSponsor) {
+			if (typeof event.songsBeforeJingle === 'number') {
 				setSongsBeforeJingle(event.songsBeforeJingle);
+			}
+			if (typeof event.songsBeforeSponsor === 'number') {
 				setSongsBeforeSponsor(event.songsBeforeSponsor);
 			}
 		} else {
