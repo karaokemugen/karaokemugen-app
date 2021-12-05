@@ -149,9 +149,15 @@ export default function Git() {
 
 	const pushCommits = useCallback(async () => {
 		setLoading(true);
+		// Remove ignored commits
+		const excludedMessages = pendingPush.commits.commits.filter((_el, i) => excludeList.includes(i)).map(c => c.message);
+		pendingPush.commits.commits = pendingPush.commits.commits.filter((_el, i) => !excludeList.includes(i));
+		// Remove ignored medias by listing excluded commits messages
+		console.log(excludedMessages);
+		pendingPush.commits.modifiedMedias = pendingPush.commits.modifiedMedias.filter(m => !excludedMessages.includes(m.commit));
 		await commandBackend('pushCommits', pendingPush);
 		setShowPushModal(false);
-	}, [pendingPush]);
+	}, [pendingPush, excludeList]);
 
 	const toggleExclude = useCallback((e: CheckboxChangeEvent) => {
 		const commit = pendingPush.commits.commits.findIndex(el => el.message === e.target.name);
