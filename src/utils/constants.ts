@@ -4,6 +4,8 @@ export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.inges
 
 export const discordClientID = '718211141033263145';
 
+export const playlistMediasURL = 'https://mugen.karaokes.moe/medias';
+
 export const requiredMPVVersion = '>=0.33.0';
 
 export const expectedPGVersion = 13;

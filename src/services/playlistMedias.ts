@@ -13,6 +13,7 @@ import Task from '../lib/utils/taskManager';
 import {Config} from '../types/config';
 import { Media, MediaType } from '../types/medias';
 import { editSetting, resolvedMediaPath } from '../utils/config';
+import { playlistMediasURL } from '../utils/constants';
 import { downloadFiles } from '../utils/downloader';
 
 interface File {
@@ -33,13 +34,6 @@ const medias: Medias = {
 };
 
 const currentMedias: Partial<Medias> = {};
-
-// This is public but we need a user/pass for webdav
-const KMSite = {
-	url: 'http://mugen.karaokes.moe/medias',
-	username: 'km',
-	password: 'musubi'
-};
 
 export async function buildAllMediasList() {
 	const medias = getConfig().Playlist.Medias;
@@ -66,11 +60,7 @@ export async function updatePlaylistMedias() {
 
 async function listRemoteMedias(type: MediaType): Promise<FileStat[]> {
 	const webdavClient = createClient(
-		KMSite.url,
-		{
-			username: KMSite.username,
-			password: KMSite.password
-		}
+		playlistMediasURL
 	);
 	return await webdavClient.getDirectoryContents('/' + type) as FileStat[];
 
@@ -159,7 +149,7 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 	const list = files.map(file => {
 		return {
 			filename: resolve(dir, file.basename),
-			url: `${KMSite.url}/${type}/${encodeURIComponent(file.basename)}`,
+			url: `${playlistMediasURL}/${type}/${encodeURIComponent(file.basename)}`,
 			size: file.size
 		};
 	});
