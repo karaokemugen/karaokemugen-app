@@ -254,8 +254,8 @@ export async function exit(rc = 0, update = false) {
 		logger.warn('mpv error', {service: 'Engine', obj: err});
 		// Non fatal.
 	}
+	if (DBReady	&& getConfig().System.Database.bundledPostgresBinary) await dumpPG().catch();		
 	try {
-		if (DBReady	&& getConfig().System.Database.bundledPostgresBinary) await dumpPG();
 		await closeDB();
 	} catch(err) {
 		logger.warn('Shutting down database failed', {service: 'Engine', obj: err});
