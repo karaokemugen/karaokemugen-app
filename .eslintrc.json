@@ -12,20 +12,11 @@
 		"plugin:you-dont-need-lodash-underscore/compatible",
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended",
-		"plugin:security/recommended"
+		"plugin:security/recommended",
+		"prettier"
 	],
 	"rules": {
-		"brace-style": ["error", "1tbs"],
 		"no-console": 0,
-		"indent": [
-			"error",
-			"tab",
-			{
-				"SwitchCase": 1
-			}
-		],
-		"quotes": ["error", "single"],
-		"semi": ["error", "always"],
 		"no-throw-literal": "off",
 		"no-mixed-spaces-and-tabs": 0,
 		"default-case": 1,
