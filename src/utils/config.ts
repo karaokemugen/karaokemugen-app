@@ -16,7 +16,7 @@ import { errorStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import {RecursivePartial} from '../lib/types';
 import {changeLanguage, configureIDs, getConfig, loadConfigFiles, setConfig, setConfigConstraints,verifyConfig} from '../lib/utils/config';
-import {asyncRequired,relativePath} from '../lib/utils/files';
+import {fileRequired,relativePath} from '../lib/utils/files';
 // KM Imports
 import logger from '../lib/utils/logger';
 import { removeNulls } from '../lib/utils/objectHelpers';
@@ -257,12 +257,12 @@ export function getPublicConfig(removeSystem = true) {
 async function checkBinaries(config: Config): Promise<BinariesConfig> {
 	const binariesPath = configuredBinariesForSystem(config);
 	const requiredBinariesChecks = [];
-	requiredBinariesChecks.push(asyncRequired(binariesPath.ffmpeg));
-	requiredBinariesChecks.push(asyncRequired(binariesPath.patch));
+	requiredBinariesChecks.push(fileRequired(binariesPath.ffmpeg));
+	requiredBinariesChecks.push(fileRequired(binariesPath.patch));
 	if (config.System.Database.bundledPostgresBinary) {
-		requiredBinariesChecks.push(asyncRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
+		requiredBinariesChecks.push(fileRequired(resolve(binariesPath.postgres, binariesPath.postgres_ctl)));
 	}
-	if (!getState().isTest) requiredBinariesChecks.push(asyncRequired(binariesPath.mpv));
+	if (!getState().isTest) requiredBinariesChecks.push(fileRequired(binariesPath.mpv));
 
 	try {
 		await Promise.all(requiredBinariesChecks);

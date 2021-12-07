@@ -5,7 +5,7 @@
 import { promises as fs } from 'fs';
 import parallel from 'p-map';
 
-import { checksum, extractAllFiles } from '../lib/utils/files';
+import { checksum, listAllFiles } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
@@ -69,8 +69,8 @@ export async function baseChecksum(): Promise<string> {
 	profile('baseChecksum');
 	try {
 		const [karaFiles, tagFiles] = await Promise.all([
-			extractAllFiles('Karaokes'),
-			extractAllFiles('Tags')
+			listAllFiles('Karaokes'),
+			listAllFiles('Tags')
 		]);
 		const fileCount = karaFiles.length + tagFiles.length;
 		if (karaFiles.length === 0) return null;

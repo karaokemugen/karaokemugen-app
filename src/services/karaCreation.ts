@@ -7,7 +7,7 @@ import { saveSetting } from '../lib/dao/database';
 import {generateKara, validateNewKara} from '../lib/services/karaCreation';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { asyncExists, asyncMove, resolveFileInDirs } from '../lib/utils/files';
+import { fileExists, smartMove, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
@@ -84,7 +84,7 @@ export async function editKara(kara: Kara, refresh = true) {
 		}
 		if (!kara.subfile_orig) {
 			if (kara.subfile) {
-				if (!await asyncExists(subFile)) throw {code: 404, msg: `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`};
+				if (!await fileExists(subFile)) throw {code: 404, msg: `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`};
 				await copy(subFile, resolve(resolvedPath('Temp'), kara.subfile), {overwrite: true});
 			}
 		}
@@ -92,13 +92,13 @@ export async function editKara(kara: Kara, refresh = true) {
 		newKara = await generateKara(kara, karaDir, mediaDir, subDir, oldKara);
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
-		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await asyncExists(karaFile)) {
+		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await fileExists(karaFile)) {
 			logger.info(`Removing ${karaFile}`, {service: 'KaraGen'});
 			await fs.unlink(karaFile);
 		}
 		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
 			const oldSubFiles = await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository));
-			if (await asyncExists(oldSubFiles[0])) {
+			if (await fileExists(oldSubFiles[0])) {
 				logger.info(`Removing ${oldSubFiles[0]}`, {service: 'KaraGen'});
 				await fs.unlink(oldSubFiles[0]);
 			}
@@ -110,7 +110,7 @@ export async function editKara(kara: Kara, refresh = true) {
 				if (kara.noNewVideo) {
 					const newMediaFile = resolve(resolvedPathRepos('Medias', kara.repository)[0], newKara.data.mediafile);
 					logger.info(`Renaming ${oldMediaFiles[0]} to ${newMediaFile}`, {service: 'KaraGen'});
-					await asyncMove(oldMediaFiles[0], newMediaFile, {overwrite: true});
+					await smartMove(oldMediaFiles[0], newMediaFile, {overwrite: true});
 				} else {
 					logger.info(`Removing ${oldMediaFiles[0]}`, {service: 'KaraGen'});
 					await fs.unlink(oldMediaFiles[0]);

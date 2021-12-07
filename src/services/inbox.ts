@@ -6,7 +6,7 @@ import { baseChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
 import { Inbox } from '../lib/types/inbox';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { asyncMove } from '../lib/utils/files';
+import { smartMove } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
@@ -113,7 +113,7 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			} catch (err) {
 				throw err;
 			}
-			await asyncMove(tempMedia, localMedia, { overwrite: true });
+			await smartMove(tempMedia, localMedia, { overwrite: true });
 		} else {
 			downloadTask.update({
 				value: 100

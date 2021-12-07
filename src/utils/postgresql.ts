@@ -13,7 +13,7 @@ import { errorStep } from '../electron/electronLogger';
 import {getConfig, resolvedPath} from '../lib/utils/config';
 import { asciiRegexp } from '../lib/utils/constants';
 // KM Imports
-import {asyncExists, asyncMove} from '../lib/utils/files';
+import {fileExists, smartMove} from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { PGVersion } from '../types/database';
 import { editSetting } from './config';
@@ -192,7 +192,7 @@ export async function initPGData() {
 			logger.info(`Moving ${pgPath} to ${tempPGPath}`, {service: 'DB'});
 			await remove(tempPGPath).catch(() => {}); //izok
 			await mkdirp(tempPGPath);
-			await asyncMove(pgPath, resolve(tempPGPath, 'postgres'));
+			await smartMove(pgPath, resolve(tempPGPath, 'postgres'));
 			binPath = resolve(tempPGPath, 'postgres', 'bin', 'pg_ctl.exe');
 			logger.debug(`pg binPath: ${binPath}`, {service: 'DB'});
 		}
@@ -271,7 +271,7 @@ export async function initPG(relaunch = true) {
 	if (state.os === 'win32') await checkAndInstallVCRedist();
 	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
-	if (!await asyncExists(pgDataDir)) {
+	if (!await fileExists(pgDataDir)) {
 		// Simple, beautiful.
 		await initPGData();
 	} else {
@@ -360,7 +360,7 @@ export async function checkAndInstallVCRedist() {
 		const check = expectedPGVersion > 10
 			? checks[2015]
 			: checks[2012];
-		if (await asyncExists(check.file)) return;
+		if (await fileExists(check.file)) return;
 		// Let's download VC Redist and install it yo.
 		logger.warn('Visual C++ Redistribuable not found, downloading and installing.', {service: 'Postgres'});
 		// Launch downloads

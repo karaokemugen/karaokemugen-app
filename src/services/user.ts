@@ -23,7 +23,7 @@ import { DBUser } from '../lib/types/database/user';
 import {User, UserParams} from '../lib/types/user';
 import {getConfig, resolvedPath, setConfig} from '../lib/utils/config';
 import {asciiRegexp, imageFileTypes} from '../lib/utils/constants';
-import {asyncExists, detectFileType} from '../lib/utils/files';
+import {fileExists, detectFileType} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import {UserOpts} from '../types/user';
@@ -150,7 +150,7 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 		const newAvatarFile = `${uuidV4()}.${fileType}`;
 		const newAvatarPath = resolve(resolvedPath('Avatars'), newAvatarFile);
 		const oldAvatarPath = resolve(resolvedPath('Avatars'), oldImageFile);
-		if (await asyncExists(oldAvatarPath) &&
+		if (await fileExists(oldAvatarPath) &&
 			oldImageFile !== 'blank.png') {
 			try {
 				await fs.unlink(oldAvatarPath);
@@ -332,7 +332,7 @@ async function updateGuestAvatar(user: DBUser) {
 		remove: /['"!,?()]/g
 	})}.jpg`;
 	const bundledAvatarPath = resolve(getState().resourcePath, 'assets/guestAvatars/', bundledAvatarFile);
-	if (!await asyncExists(bundledAvatarPath)) {
+	if (!await fileExists(bundledAvatarPath)) {
 		// Bundled avatar does not exist for this user, skipping.
 		return false;
 	}
@@ -478,7 +478,7 @@ async function checkUserAvatars() {
 			continue;
 		}
 		const file = resolve(resolvedPath('Avatars'), user.avatar_file);
-		if (!await asyncExists(file)) {
+		if (!await fileExists(file)) {
 			await copy(
 				defaultAvatar,
 				file,

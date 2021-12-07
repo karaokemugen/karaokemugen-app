@@ -12,7 +12,7 @@ import { updateRepo } from '../dao/repo';
 import { deleteUser, lowercaseAllUsers, mergeUserData, selectAllDupeUsers } from '../dao/user';
 import { db } from '../lib/dao/database';
 import { Repository } from '../lib/types/repo';
-import { asyncExists, relativePath } from '../lib/utils/files';
+import { fileExists, relativePath } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { addToFavorites, getFavorites } from '../services/favorites';
 import { addSystemMessage } from '../services/proxyFeeds';
@@ -106,7 +106,7 @@ export async function migrateReposToZip() {
 			AutoMediaDownloads: 'updateOnly',
 			BaseDir: dir
 		};
-		if (await asyncExists(resolve(dir, '.git'))) {
+		if (await fileExists(resolve(dir, '.git'))) {
 			// It's a git repo, put maintainer mode on.
 			newRepo.MaintainerMode = true;
 		}

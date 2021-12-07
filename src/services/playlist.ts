@@ -51,7 +51,7 @@ import { AggregatedCriteria, PlaylistExport, PLC, PLCEditParams } from '../lib/t
 import {Token, User} from '../lib/types/user';
 import {getConfig, resolvedPath} from '../lib/utils/config';
 import {now} from '../lib/utils/date';
-import { asyncExists } from '../lib/utils/files';
+import { fileExists } from '../lib/utils/files';
 import logger, {profile} from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
@@ -1402,7 +1402,7 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 				user = await getUser('admin');
 			}
 			avatarfile = resolve(resolvedPath('Avatars'), user.avatar_file);
-			if (!await asyncExists(avatarfile)) avatarfile = resolve(resolvedPath('Avatars'), 'blank.png');
+			if (!await fileExists(avatarfile)) avatarfile = resolve(resolvedPath('Avatars'), 'blank.png');
 		} else {
 			requester = '';
 		}

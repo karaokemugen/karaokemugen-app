@@ -18,9 +18,9 @@ import { TagFile } from '../lib/types/tag';
 import {getConfig, resolvedPathRepos} from '../lib/utils/config';
 import {
 	asyncCheckOrMkdir,
-	asyncMoveAll,
-	extractAllFiles,
 	getFreeSpace,
+	listAllFiles,
+	moveAll,
 	relativePath,
 	resolveFileInDirs
 } from '../lib/utils/files';
@@ -580,8 +580,8 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 	});
 	try {
 		const [repo1Files, repo2Files] = await Promise.all([
-			extractAllFiles('Karaokes', repo1Name),
-			extractAllFiles('Karaokes', repo2Name)
+			listAllFiles('Karaokes', repo1Name),
+			listAllFiles('Karaokes', repo2Name)
 		]);
 		const [karas1, karas2] = await Promise.all([
 			readAllKaras(repo1Files, false, task),
@@ -682,7 +682,7 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 	try {
 		const [karas, mediaFiles] = await Promise.all([
 			getKaras({}),
-			extractAllFiles('Medias', repo)
+			listAllFiles('Medias', repo)
 		]);
 		const mediasFilesKaras: string[] = karas.content.map(k => k.mediafile);
 		return mediaFiles.filter(file => !mediasFilesKaras.includes(basename(file)));
@@ -731,7 +731,7 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 		const moveTasks = [];
 		for (const dir of repo.Path.Medias) {
 			if (resolve(state.dataPath, dir) === newPath) return;
-			moveTasks.push(asyncMoveAll(resolve(state.dataPath, dir), newPath));
+			moveTasks.push(moveAll(resolve(state.dataPath, dir), newPath));
 		}
 		await Promise.all(moveTasks);
 		repo.Path.Medias = [relativePath(state.dataPath, newPath)];

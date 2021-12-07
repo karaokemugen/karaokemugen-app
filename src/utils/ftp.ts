@@ -3,7 +3,7 @@ import { basename } from 'path';
 import prettyBytes from 'pretty-bytes';
 
 import { Repository } from '../lib/types/repo';
-import { asyncExists } from '../lib/utils/files';
+import { fileExists } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { getRepo } from '../services/repo';
@@ -60,7 +60,7 @@ export default class FTP {
 
 	async upload(file: string) {
 		logger.info(`Sending file ${file}`, {service: 'FTP'});
-		if (!await asyncExists(file)) throw `File "${file}" unknown on local folder`;
+		if (!await fileExists(file)) throw `File "${file}" unknown on local folder`;
 		const task = new Task({
 			text: 'UPLOADING_FTP',
 			value: 0,

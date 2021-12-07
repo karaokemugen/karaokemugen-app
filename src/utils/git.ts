@@ -6,7 +6,7 @@ import { ListLogLine } from 'simple-git/typings/response';
 import which from 'which';
 
 import { Repository } from '../lib/types/repo';
-import { asyncExists } from '../lib/utils/files';
+import { fileExists } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { getRepo } from '../services/repo';
@@ -15,7 +15,7 @@ import { getState } from './state';
 
 /** Determine if folder is a git repository */
 export function isGit(repo: Repository) {
-	return asyncExists(resolve(getState().dataPath, repo.BaseDir, '.git'));
+	return fileExists(resolve(getState().dataPath, repo.BaseDir, '.git'));
 }
 
 interface GitOptions {

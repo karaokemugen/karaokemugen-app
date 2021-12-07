@@ -15,7 +15,7 @@ import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import { getConfig, resolvedPath, resolvedPathRepos, setConfig } from '../lib/utils/config';
 import { getAvatarResolution } from '../lib/utils/ffmpeg';
-import { asyncExists, replaceExt, resolveFileInDirs } from '../lib/utils/files';
+import { fileExists, replaceExt, resolveFileInDirs } from '../lib/utils/files';
 import { playerEnding } from '../services/karaEngine';
 import { next, prev } from '../services/player';
 import { notificationNextSong } from '../services/playlist';
@@ -1017,7 +1017,7 @@ class Players {
 			};
 			const subFile = replaceExt(media.filename, '.ass');
 			logger.debug(`Searching for ${subFile}`, { service: 'Player' });
-			if (await asyncExists(subFile)) {
+			if (await fileExists(subFile)) {
 				options['sub-file'] = subFile;
 				options['sid'] = '1';
 				logger.debug(`Loading ${subFile}`, { service: 'Player' });

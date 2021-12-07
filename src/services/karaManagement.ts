@@ -18,7 +18,7 @@ import { Kara, KaraFileV4, KaraTag } from '../lib/types/kara';
 import { Tag } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName, tagTypes } from '../lib/utils/constants';
-import { asyncExists, resolveFileInDirs } from '../lib/utils/files';
+import { fileExists, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
@@ -318,7 +318,7 @@ export async function openLyricsFile(kid: string) {
 		if (extname(lyricsPath) === '.ass' && mediafile) {
 			for (const repo of resolvedPathRepos('Medias', repository)) {
 				const mediaPath = resolve(repo, mediafile);
-				if (await asyncExists(mediaPath, true)) {
+				if (await fileExists(mediaPath, true)) {
 					const garbageBlock = `[Aegisub Project Garbage]
 Audio File: ${mediaPath}
 ${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}

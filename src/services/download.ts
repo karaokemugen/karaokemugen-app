@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { APIMessage } from '../controllers/common';
 import {initDownloads, insertDownloads, selectDownloads, truncateDownload, updateDownload, updateDownloaded} from '../dao/download';
 import {getConfig, resolvedPath,resolvedPathRepos} from '../lib/utils/config';
-import {asyncMove, resolveFileInDirs} from '../lib/utils/files';
+import {smartMove, resolveFileInDirs} from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
@@ -131,7 +131,7 @@ async function processDownload(download: KaraDownload) {
 			id: download.name
 		};
 		await downloadFile(downloadItem, downloadTask);
-		await asyncMove(tempMedia, localMedia, {overwrite: true});
+		await smartMove(tempMedia, localMedia, {overwrite: true});
 		setDownloadStatus(download.uuid, 'DL_DONE');
 		logger.info(`Media "${download.name}" downloaded`, {service: 'Download'});
 		await updateDownloaded([download.kid], 'DOWNLOADED');

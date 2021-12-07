@@ -10,7 +10,7 @@ import { win } from '../electron/electron';
 import { errorStep, initStep } from '../electron/electronLogger';
 import { PathType } from '../lib/types/config';
 import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config';
-import { asyncCheckOrMkdir, asyncCopyAll, asyncExists } from '../lib/utils/files';
+import { asyncCheckOrMkdir, fileExists } from '../lib/utils/files';
 import logger, { configureLogger } from '../lib/utils/logger';
 import { resetSecurityCode } from '../services/auth';
 import { backgroundTypes } from '../services/backgrounds';
@@ -32,7 +32,7 @@ async function getAppCommitSHA(): Promise<string> {
 	// Set SHA commit hash. This is to display precise version number.
 	let sha: string;
 	const SHAFile = resolve(getState().resourcePath, 'assets/sha.txt');
-	if (await asyncExists(SHAFile)) {
+	if (await fileExists(SHAFile)) {
 		sha = await fs.readFile(SHAFile, 'utf-8');
 		setState({version: {sha: sha.substr(0, 8)}});
 	} else {
@@ -93,7 +93,7 @@ export async function init() {
 
 	const bundledBackgrounds = resolvedPath('BundledBackgrounds');
 	logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, {service: 'Launcher'});
-	await asyncCopyAll(resolve(state.resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`);
+	await copy(resolve(state.resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`, {overwrite: true});
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug(`Copying blank.png to ${resolvedPath('Avatars')}`, {service: 'Launcher'});
