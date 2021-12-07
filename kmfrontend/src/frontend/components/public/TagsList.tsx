@@ -77,7 +77,7 @@ function TagsList(props: IProps) {
 		setTags(response);
 	};
 
-	const isRowLoaded = (index) => {
+	const isRowLoaded = index => {
 		return !!tags?.content[index];
 	};
 
@@ -118,10 +118,10 @@ function TagsList(props: IProps) {
 								{i18next.t('KARAOKE', {
 									count:
 										(tag?.karacount as unknown as { count: number; type: number }[])?.filter(
-											(value) => value.type === props.tagType
+											value => value.type === props.tagType
 										).length > 0
 											? (tag.karacount as unknown as { count: number; type: number }[])?.filter(
-													(value) => value.type === props.tagType
+													value => value.type === props.tagType
 											  )[0].count
 											: 0,
 								})}
@@ -163,7 +163,7 @@ function TagsList(props: IProps) {
 				components={{
 					Item: HeightPreservingItem,
 				}}
-				itemContent={(index) => <Item index={index} />}
+				itemContent={index => <Item index={index} />}
 				totalCount={tags.infos.count}
 				rangeChanged={loadMoreRows}
 			/>

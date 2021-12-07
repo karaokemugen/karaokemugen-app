@@ -201,10 +201,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (state.ready) setSongPoll(config.Karaoke.Poll.Enabled);
 	// Toggling twitch
 	config.Karaoke.StreamerMode.Twitch.Enabled
-		? initTwitch().catch((err) => {
+		? initTwitch().catch(err => {
 				logger.warn('Could not start Twitch chat bot', { service: 'Config', obj: err });
 		  })
-		: stopTwitch().catch((err) => {
+		: stopTwitch().catch(err => {
 				logger.warn('Could not stop Twitch chat bot', { service: 'Config', obj: err });
 		  });
 	// Toggling random song after end message

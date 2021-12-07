@@ -13,7 +13,7 @@ let manualUpdate = false;
 export function initAutoUpdate() {
 	autoUpdater.logger = logger;
 	autoUpdater.autoDownload = false;
-	autoUpdater.on('error', (error) => {
+	autoUpdater.on('error', error => {
 		logger.error('', { service: 'AppUpdate', obj: error });
 		dialog.showMessageBox({
 			type: 'none',

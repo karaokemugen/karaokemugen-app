@@ -79,7 +79,7 @@ export default class Git {
 		if (configChanged) {
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
-			const origin = remotes.find((r) => r.name === 'origin');
+			const origin = remotes.find(r => r.name === 'origin');
 			const url = this.getFormattedURL();
 			if (!origin) await this.git.addRemote('origin', url);
 			if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {

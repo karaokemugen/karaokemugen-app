@@ -96,7 +96,7 @@ function PlaylistCommandsModal(props: IProps) {
 		const playlist = getPlaylistInfo(props.side, context);
 		const playlistList = props
 			.getListToSelect()
-			.filter((pl) => !isNonStandardPlaylist(pl.value) && pl.value !== playlist?.plaid);
+			.filter(pl => !isNonStandardPlaylist(pl.value) && pl.value !== playlist?.plaid);
 		if (playlistList.length === 0) displayMessage('error', i18next.t('MODAL.DELETE_PLAYLIST_MODAL.IMPOSSIBLE'));
 		else showModal(context.globalDispatch, <DeletePlaylistModal side={props.side} playlistList={playlistList} />);
 	};

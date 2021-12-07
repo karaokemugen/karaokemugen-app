@@ -40,7 +40,7 @@ async function fetchFile(dl: DownloadItem, task?: Task) {
 			clearInterval(interval);
 			resolve();
 		});
-		writer.on('error', (err) => {
+		writer.on('error', err => {
 			clearInterval(interval);
 			reject(err);
 		});
@@ -77,7 +77,7 @@ export async function downloadFile(dl: DownloadItem, task?: Task, log_prepend?: 
 
 // the 2 last numbers are index (+ 1) of the task in queue and the length of queue
 const wrappedDownloadFile = (payload: [DownloadItem, Task, number, number]) =>
-	downloadFile(payload[0], payload[1], `(${payload[2]}/${payload[3]})`).catch((err) => {
+	downloadFile(payload[0], payload[1], `(${payload[2]}/${payload[3]})`).catch(err => {
 		// All errors should be captured correctly by handlers in downloadFile but this is like the ultimate safetynet
 		logger.debug(`DL Queue entry ${payload[2]}/${payload[3]} failed`, { service: 'Downloader', obj: err });
 		throw new Error(payload[0].filename);

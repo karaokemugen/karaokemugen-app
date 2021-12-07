@@ -61,7 +61,7 @@ function WelcomePage() {
 	};
 
 	const editActiveSession = async (value: string) => {
-		const sessionsEdit = sessions.filter((session) => session.name === value);
+		const sessionsEdit = sessions.filter(session => session.name === value);
 		let sessionId;
 		if (sessionsEdit.length === 0) {
 			const res = await commandBackend('createSession', { name: value });
@@ -84,10 +84,10 @@ function WelcomePage() {
 	const getNewsFeed = async () => {
 		try {
 			const data: Feed[] = await commandBackend('getNewsFeed', undefined, undefined, 300000);
-			const base = data.find((d) => d.name === 'git_base');
-			const appli = data.find((d) => d.name === 'git_app');
-			const mast = data.find((d) => d.name === 'mastodon');
-			const system = data.find((d) => d.name === 'system');
+			const base = data.find(d => d.name === 'git_base');
+			const appli = data.find(d => d.name === 'git_app');
+			const mast = data.find(d => d.name === 'mastodon');
+			const system = data.find(d => d.name === 'system');
 			const news: News[] = [];
 			if (base?.body && appli?.body) {
 				base.body = JSON.parse(base.body);
@@ -160,7 +160,7 @@ function WelcomePage() {
 	const displayModal = async () => {
 		let migrationsToDo;
 		try {
-			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter((res) => !res.flag_done).length > 0;
+			migrationsToDo = (await commandBackend('getMigrationsFrontend')).filter(res => !res.flag_done).length > 0;
 		} catch (e) {
 			migrationsToDo = false;
 		}
@@ -189,7 +189,7 @@ function WelcomePage() {
 		};
 	}, []);
 
-	const sessionsList = sessions.map((session) => {
+	const sessionsList = sessions.map(session => {
 		return { label: session.name, value: session.name };
 	});
 	return (
@@ -346,7 +346,7 @@ function WelcomePage() {
 									{i18next.t('WELCOME_PAGE.REPOSITORY')}
 								</button>
 								<ul>
-									{repositories.map((repository) => {
+									{repositories.map(repository => {
 										return (
 											<li
 												key={repository.Name}
@@ -374,7 +374,7 @@ function WelcomePage() {
 							<p>{catchphrase}</p>
 						</header>
 						<div>
-							{news.map((article) => {
+							{news.map(article => {
 								return <WelcomePageArticle key={article.date} article={article} />;
 							})}
 						</div>

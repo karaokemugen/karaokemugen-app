@@ -58,7 +58,7 @@ function PollModal(props: IProps) {
 					</ul>
 					<div id="nav-poll" className="modal-body" style={{ height: 3 * poll.length + 'em' }}>
 						<div className="modal-message">
-							{poll.map((kara) => {
+							{poll.map(kara => {
 								return (
 									<button
 										className="btn btn-default tour poll"

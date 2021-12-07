@@ -131,9 +131,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 						path: `${this.getPathForFileSystem(record.value)}${element}`,
 						onlyMedias: true,
 					});
-					files = files.concat(
-						response.contents.filter((elem) => !elem.isDirectory).map((elem) => elem.name)
-					);
+					files = files.concat(response.contents.filter(elem => !elem.isDirectory).map(elem => elem.name));
 				} catch (error) {
 					// Folder don't exist so skip
 				}
@@ -147,7 +145,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 			title: i18next.t('CONFIG.PROPERTY'),
 			dataIndex: 'key',
 			key: 'key',
-			render: (text) => {
+			render: text => {
 				return this.props.properties ? (
 					<span>
 						{i18next.t(`CONFIG.PROPERTIES.${text.toUpperCase().replace(/\./g, '_')}`)}&nbsp;
@@ -173,7 +171,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 				record.key === 'Player.HardwareDecoding' ? (
 					<Select
 						style={{ width: '100%' }}
-						onChange={(value) => {
+						onChange={value => {
 							this.putPlayerCommando(value, 'Player.HardwareDecoding', 'setHwDec');
 						}}
 						value={record.value}
@@ -196,16 +194,16 @@ class Config extends Component<ConfigProps, ConfigState> {
 						<Link to={'/system/repositories'}>{i18next.t('CONFIG.REPOSITORIES_PAGES')}</Link>
 					</label>
 				) : typeof record.value === 'boolean' ? (
-					<Switch onChange={(e) => this.saveSetting(record.key, e)} defaultChecked={record.value} />
+					<Switch onChange={e => this.saveSetting(record.key, e)} defaultChecked={record.value} />
 				) : typeof record.value === 'number' ? (
 					<Input
 						type="number"
 						style={{ maxWidth: '700px' }}
-						onPressEnter={(e) => {
+						onPressEnter={e => {
 							const target = e.target as HTMLInputElement;
 							this.saveSetting(record.key, target.value);
 						}}
-						onBlur={(e) => {
+						onBlur={e => {
 							const target = e.target as HTMLInputElement;
 							this.saveSetting(record.key, target.value);
 						}}
@@ -221,14 +219,14 @@ class Config extends Component<ConfigProps, ConfigState> {
 							keyModal={record.key}
 							value={record.value}
 							openDirectory={true}
-							onChange={(value) => this.saveSetting(record.key, value)}
+							onChange={value => this.saveSetting(record.key, value)}
 						/>
 					) : (
 						<FoldersElement
 							keyModal={record.key}
 							value={record.value}
 							openFile={true}
-							onChange={(value) => this.saveSetting(record.key, value)}
+							onChange={value => this.saveSetting(record.key, value)}
 						/>
 					)
 				) : configWithSelectFileInFolder.includes(record.key) ? (
@@ -236,10 +234,10 @@ class Config extends Component<ConfigProps, ConfigState> {
 						style={{ width: '100%' }}
 						value={record.value}
 						allowClear={true}
-						onChange={(value) => this.saveSetting(record.key, value ? value : null)}
+						onChange={value => this.saveSetting(record.key, value ? value : null)}
 					>
 						{this.state.files[record.key] &&
-							this.state.files[record.key].map((value) => {
+							this.state.files[record.key].map(value => {
 								return (
 									<Select.Option key={Math.random()} value={value}>
 										{value}
@@ -250,11 +248,11 @@ class Config extends Component<ConfigProps, ConfigState> {
 				) : (
 					<Input
 						style={{ maxWidth: '700px' }}
-						onPressEnter={(e) => {
+						onPressEnter={e => {
 							const target = e.target as HTMLInputElement;
 							this.saveSetting(record.key, target.value);
 						}}
-						onBlur={(e) => {
+						onBlur={e => {
 							const target = e.target as HTMLInputElement;
 							this.saveSetting(record.key, target.value);
 						}}
@@ -264,7 +262,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 		},
 	];
 
-	configKeyValue = (data) => {
+	configKeyValue = data => {
 		return Object.entries(dotify(data))
 			.map(([k, v]) => {
 				if (this.props.properties && !this.props.properties.includes(k)) {
@@ -272,7 +270,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 				}
 				return { key: k, value: v, primary: Array.isArray(v) ? v[0] : undefined };
 			})
-			.filter((value) => value);
+			.filter(value => value);
 	};
 
 	configBackup = async () => {
@@ -318,7 +316,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 							<Input.Search
 								placeholder={i18next.t('SEARCH_FILTER')}
 								value={this.state.filter}
-								onChange={(event) => this.setState({ filter: event.target.value })}
+								onChange={event => this.setState({ filter: event.target.value })}
 								enterButton={i18next.t('SEARCH')}
 								style={{ marginBottom: '0.75em' }}
 							/>
@@ -326,7 +324,7 @@ class Config extends Component<ConfigProps, ConfigState> {
 					)}
 					<Table
 						columns={this.columns}
-						dataSource={this.state.config.filter((property) =>
+						dataSource={this.state.config.filter(property =>
 							(property.key as string).toLowerCase().includes(this.state.filter.toLowerCase())
 						)}
 						pagination={false}

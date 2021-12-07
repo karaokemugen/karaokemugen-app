@@ -44,7 +44,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
-		this.setState({ repositoriesValue: res.map((repo) => repo.Name) }, () =>
+		this.setState({ repositoriesValue: res.map(repo => repo.Name) }, () =>
 			this.formRef.current?.setFieldsValue({
 				repository: this.props.tag?.repository
 					? this.props.tag.repository
@@ -55,7 +55,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		);
 	};
 
-	handleSubmit = (values) => {
+	handleSubmit = values => {
 		if (Object.keys(this.state.i18n).length > 0) {
 			values.i18n = this.state.i18n;
 			values.tid = this.props.tag?.tid;
@@ -65,16 +65,16 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 		}
 	};
 
-	handleTagMergeSelection = (value) => {
+	handleTagMergeSelection = value => {
 		this.setState({ mergeSelection: value[1] });
 	};
 
-	handleTagMerge = (e) => {
+	handleTagMerge = e => {
 		this.props.mergeAction(this.props.tag.tid, this.state.mergeSelection);
 	};
 
 	mergeCascaderOption = () => {
-		const options = Object.keys(tagTypes).map((type) => {
+		const options = Object.keys(tagTypes).map(type => {
 			const typeID = tagTypes[type].type;
 
 			const option = {
@@ -97,7 +97,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	};
 
 	mergeCascaderFilter = function (inputValue, path) {
-		return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	};
 
 	render() {
@@ -189,7 +189,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						placeholder={i18next.t('TAGS.TYPES')}
 						showSearch={false}
 					>
-						{Object.keys(tagTypes).map((type) => {
+						{Object.keys(tagTypes).map(type => {
 							const value = tagTypes[type].type;
 							return (
 								<Select.Option key={value} value={value}>
@@ -216,7 +216,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							style={{ maxWidth: '20%', minWidth: '150px' }}
 							placeholder={i18next.t('TAGS.REPOSITORY')}
 						>
-							{this.state.repositoriesValue.map((repo) => {
+							{this.state.repositoriesValue.map(repo => {
 								return (
 									<Select.Option key={repo} value={repo}>
 										{repo}
@@ -238,9 +238,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					labelCol={{ flex: '0 1 300px' }}
 					name="aliases"
 				>
-					<EditableTagGroupAlias
-						onChange={(tags) => this.formRef.current?.setFieldsValue({ aliases: tags })}
-					/>
+					<EditableTagGroupAlias onChange={tags => this.formRef.current?.setFieldsValue({ aliases: tags })} />
 				</Form.Item>
 				<Form.Item
 					labelCol={{ flex: '0 1 300px' }}
@@ -253,7 +251,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					}
 				></Form.Item>
-				<LanguagesList value={this.state.i18n} onChange={(i18n) => this.setState({ i18n })} />
+				<LanguagesList value={this.state.i18n} onChange={i18n => this.setState({ i18n })} />
 				<Form.Item
 					hasFeedback
 					label={
@@ -355,8 +353,8 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 								onChange={(value: string) => this.setState({ repoToCopySong: value })}
 							>
 								{this.state.repositoriesValue
-									.filter((value) => value !== this.props.tag.repository)
-									.map((repo) => {
+									.filter(value => value !== this.props.tag.repository)
+									.map(repo => {
 										return (
 											<Select.Option key={repo} value={repo}>
 												{repo}

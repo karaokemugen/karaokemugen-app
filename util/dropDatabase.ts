@@ -49,7 +49,7 @@ main()
 		console.log('Database wiped');
 		process.exit(0);
 	})
-	.catch((err) => {
+	.catch(err => {
 		console.log(err);
 		process.exit(1);
 	});

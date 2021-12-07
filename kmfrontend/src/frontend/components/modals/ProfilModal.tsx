@@ -143,7 +143,7 @@ function ProfilModal(props: IProps) {
 		}
 	};
 
-	const importAvatar = (e) => {
+	const importAvatar = e => {
 		if (e.target.files?.length > 0) {
 			setCropAvatarModalOpen(true);
 			ReactDOM.render(
@@ -153,7 +153,7 @@ function ProfilModal(props: IProps) {
 		}
 	};
 
-	const saveAvatar = async (avatar) => {
+	const saveAvatar = async avatar => {
 		if (avatar) {
 			user.avatar = avatar;
 			setUser(user);
@@ -336,7 +336,7 @@ function ProfilModal(props: IProps) {
 									value={user.location}
 									options={listCountries()}
 									forceTop={true}
-									onChange={(value) => changeAutocomplete('location', value)}
+									onChange={value => changeAutocomplete('location', value)}
 								/>
 							</div>
 							<div className="profileLine">
@@ -426,7 +426,7 @@ function ProfilModal(props: IProps) {
 									</label>
 								</div>
 								<select name="language" onChange={changeLanguage} defaultValue={user.language}>
-									{languagesSupport.map((lang) => {
+									{languagesSupport.map(lang => {
 										return (
 											<option key={lang} value={lang}>
 												{getLanguagesInLangFromCode(lang)}
@@ -445,7 +445,7 @@ function ProfilModal(props: IProps) {
 										value={user.main_series_lang}
 										options={getListLanguagesInLocale()}
 										forceTop={true}
-										onChange={(value) => changeAutocomplete('main_series_lang', value)}
+										onChange={value => changeAutocomplete('main_series_lang', value)}
 									/>
 								</div>
 							</div>
@@ -459,7 +459,7 @@ function ProfilModal(props: IProps) {
 										value={user.fallback_series_lang}
 										options={getListLanguagesInLocale()}
 										forceTop={true}
-										onChange={(value) => changeAutocomplete('fallback_series_lang', value)}
+										onChange={value => changeAutocomplete('fallback_series_lang', value)}
 									/>
 								</div>
 							</div>

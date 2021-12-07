@@ -190,7 +190,7 @@ export function insertPlayed(kid: string) {
 }
 
 export function insertKaraToRequests(username: string, karaList: string[]) {
-	const karas = karaList.map((kara) => [username, kara, new Date(), getState().currentSessionID]);
+	const karas = karaList.map(kara => [username, kara, new Date(), getState().currentSessionID]);
 	return transaction({ params: karas, sql: sqladdRequested });
 }
 

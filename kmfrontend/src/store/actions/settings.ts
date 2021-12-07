@@ -72,13 +72,13 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 				/.*[n|N]o space left on device.*/,
 			],
 		});
-		Sentry.configureScope((scope) => {
+		Sentry.configureScope(scope => {
 			scope.setUser({
 				username: user?.login,
 			});
 		});
 		if (version.sha)
-			Sentry.configureScope((scope) => {
+			Sentry.configureScope(scope => {
 				scope.setTag('commit', version.sha as string);
 			});
 	}

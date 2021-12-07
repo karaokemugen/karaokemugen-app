@@ -51,7 +51,7 @@ class SessionEdit extends Component<RouteComponentProps<{ seid: string }>, Sessi
 	loadsession = async () => {
 		if (this.props.match.params.seid) {
 			const res = await commandBackend('getSessions');
-			const sessions = res.filter((session) => session.seid === this.props.match.params.seid);
+			const sessions = res.filter(session => session.seid === this.props.match.params.seid);
 			this.setState({ sessions: res, session: sessions[0], save: this.saveUpdate, loadSession: true });
 		} else {
 			this.setState({ session: { ...newsession }, save: this.saveNew, loadSession: true });

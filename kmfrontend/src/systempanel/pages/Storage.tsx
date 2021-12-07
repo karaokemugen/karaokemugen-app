@@ -23,8 +23,8 @@ class Storage extends Component<unknown, StorageState> {
 		const res = await commandBackend('getRepos');
 		const repositories: { name: string; freeSpace: number }[] = await Promise.all(
 			res
-				.filter((repo) => repo.Online)
-				.map(async (repo) => {
+				.filter(repo => repo.Online)
+				.map(async repo => {
 					const freeSpace = await commandBackend('getRepoFreeSpace', { repoName: repo.Name });
 					return { name: repo.Name, freeSpace: prettyBytes(freeSpace) };
 				})

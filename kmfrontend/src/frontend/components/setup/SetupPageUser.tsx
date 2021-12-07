@@ -141,7 +141,7 @@ function SetupPageUser(props: RouteComponentProps) {
 								type="text"
 								defaultValue={login}
 								required
-								onChange={(event) => setLogin(event.target.value)}
+								onChange={event => setLogin(event.target.value)}
 							/>
 						</div>
 						<div className="input-control">
@@ -151,7 +151,7 @@ function SetupPageUser(props: RouteComponentProps) {
 								type="password"
 								required
 								defaultValue={password}
-								onChange={(event) => setPassword(event.target.value)}
+								onChange={event => setPassword(event.target.value)}
 							/>
 						</div>
 						<div className="input-control">
@@ -161,7 +161,7 @@ function SetupPageUser(props: RouteComponentProps) {
 								type="password"
 								required
 								defaultValue={passwordConfirmation}
-								onChange={(event) => setPasswordConfirmation(event.target.value)}
+								onChange={event => setPasswordConfirmation(event.target.value)}
 							/>
 						</div>
 					</div>
@@ -210,7 +210,7 @@ function SetupPageUser(props: RouteComponentProps) {
 										type="text"
 										defaultValue={login}
 										required
-										onChange={(event) => setLogin(event.target.value)}
+										onChange={event => setLogin(event.target.value)}
 									/>
 								</div>
 								<div className="input-control">
@@ -220,7 +220,7 @@ function SetupPageUser(props: RouteComponentProps) {
 										className="input-field"
 										type="text"
 										defaultValue={context?.globalState.settings.data.config?.Online.Host}
-										onChange={(event) => setInstance(event.target.value)}
+										onChange={event => setInstance(event.target.value)}
 									/>
 								</div>
 								<div className="input-control">
@@ -231,7 +231,7 @@ function SetupPageUser(props: RouteComponentProps) {
 										type="password"
 										required
 										defaultValue={password}
-										onChange={(event) => setPassword(event.target.value)}
+										onChange={event => setPassword(event.target.value)}
 									/>
 								</div>
 								<div className="input-control">
@@ -242,7 +242,7 @@ function SetupPageUser(props: RouteComponentProps) {
 										type="password"
 										required
 										defaultValue={passwordConfirmation}
-										onChange={(event) => setPasswordConfirmation(event.target.value)}
+										onChange={event => setPasswordConfirmation(event.target.value)}
 									/>
 								</div>
 							</div>
@@ -258,7 +258,7 @@ function SetupPageUser(props: RouteComponentProps) {
 										type="text"
 										defaultValue={login}
 										required
-										onChange={(event) => setLogin(event.target.value)}
+										onChange={event => setLogin(event.target.value)}
 									/>
 								</div>
 								<div className="input-control">
@@ -268,7 +268,7 @@ function SetupPageUser(props: RouteComponentProps) {
 										className="input-field"
 										type="text"
 										defaultValue={context?.globalState.settings.data.config?.Online.Host}
-										onChange={(event) => setInstance(event.target.value)}
+										onChange={event => setInstance(event.target.value)}
 									/>
 								</div>
 								<div className="input-control">
@@ -279,8 +279,8 @@ function SetupPageUser(props: RouteComponentProps) {
 										type="password"
 										required
 										defaultValue={password}
-										onChange={(event) => setPassword(event.target.value)}
-										onKeyUp={(e) => {
+										onChange={event => setPassword(event.target.value)}
+										onKeyUp={e => {
 											if (e.code === 'Enter') {
 												loginCall();
 											}
@@ -307,7 +307,7 @@ function SetupPageUser(props: RouteComponentProps) {
 									className="input-field"
 									type="text"
 									required
-									onChange={(event) => setSecurityCode(parseInt(event.target.value))}
+									onChange={event => setSecurityCode(parseInt(event.target.value))}
 								/>
 							</div>
 						</div>

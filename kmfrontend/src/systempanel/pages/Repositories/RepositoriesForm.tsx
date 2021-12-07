@@ -64,11 +64,11 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
 		this.setState({
-			repositoriesValue: res.filter((repo) => repo.Name !== this.props.repository.Name).map((repo) => repo.Name),
+			repositoriesValue: res.filter(repo => repo.Name !== this.props.repository.Name).map(repo => repo.Name),
 		});
 	};
 
-	handleSubmit = (values) => {
+	handleSubmit = values => {
 		const repository: Repository = {
 			Name: values.Name,
 			Online: values.Online,
@@ -250,7 +250,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				>
 					<FoldersElement
 						openDirectory={true}
-						onChange={(value) => this.formRef.current?.setFieldsValue({ BaseDir: value })}
+						onChange={value => this.formRef.current?.setFieldsValue({ BaseDir: value })}
 					/>
 				</Form.Item>
 				<Form.Item
@@ -268,7 +268,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 				>
 					<FoldersElement
 						openDirectory={true}
-						onChange={(value) => this.formRef.current?.setFieldsValue({ PathMedias: value })}
+						onChange={value => this.formRef.current?.setFieldsValue({ PathMedias: value })}
 					/>
 				</Form.Item>
 				{this.formRef.current?.getFieldValue('MaintainerMode') ? (
@@ -367,9 +367,9 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 									<Select
 										style={{ maxWidth: '50%', minWidth: '150px' }}
 										placeholder={i18next.t('TAGS.REPOSITORY')}
-										onChange={(value) => this.setState({ compareRepo: value.toString() })}
+										onChange={value => this.setState({ compareRepo: value.toString() })}
 									>
-										{this.state.repositoriesValue.map((repo) => {
+										{this.state.repositoriesValue.map(repo => {
 											return (
 												<Select.Option key={repo} value={repo}>
 													{repo}
@@ -400,7 +400,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						>
 							<FoldersElement
 								openDirectory={true}
-								onChange={(value) => this.setState({ movingMediaPath: value })}
+								onChange={value => this.setState({ movingMediaPath: value })}
 							/>
 						</Form.Item>
 						<Form.Item style={{ textAlign: 'right' }}>

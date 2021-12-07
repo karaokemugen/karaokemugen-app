@@ -77,7 +77,7 @@ async function migrateDB(): Promise<Migration[]> {
 		migrationPattern: migrationDir + '/*.sql',
 		driver: 'pg',
 		database: conf.System.Database.database,
-		execQuery: (query) => db().query(query),
+		execQuery: query => db().query(query),
 		validateChecksums: false,
 	});
 	try {

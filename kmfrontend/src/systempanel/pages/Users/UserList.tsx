@@ -33,7 +33,7 @@ class UserList extends Component<unknown, UserListState> {
 		this.setState({ users: res });
 	};
 
-	delete = async (userLogin) => {
+	delete = async userLogin => {
 		await commandBackend('deleteUser', { username: userLogin }, true);
 		this.refresh();
 		this.setState({ deleteModal: false, user: {} });
@@ -82,7 +82,7 @@ class UserList extends Component<unknown, UserListState> {
 				{ text: i18next.t('USERS.USER'), value: '1' },
 				{ text: i18next.t('USERS.GUEST'), value: '2' },
 			],
-			render: (text) => {
+			render: text => {
 				if (+text === 0) return i18next.t('USERS.ADMIN');
 				if (+text === 1) return i18next.t('USERS.USER');
 				if (+text === 2) return i18next.t('USERS.GUEST');
@@ -120,7 +120,7 @@ class UserList extends Component<unknown, UserListState> {
 			title: i18next.t('USERS.LAST_LOGIN_AT'),
 			dataIndex: 'last_login_at',
 			key: 'last_login_at',
-			render: (date) => new Date(date).toLocaleString(),
+			render: date => new Date(date).toLocaleString(),
 			sorter: (a, b) => a.last_login - b.last_login,
 		},
 		{
@@ -131,7 +131,7 @@ class UserList extends Component<unknown, UserListState> {
 				{ text: i18next.t('USERS.ONLINE'), value: true },
 				{ text: i18next.t('USERS.OFFLINE'), value: false },
 			],
-			render: (text) => <Checkbox disabled defaultChecked={text === true} />,
+			render: text => <Checkbox disabled defaultChecked={text === true} />,
 			filterMultiple: false,
 			onFilter: (value, record) => `${record.flag_logged_in}` === value,
 		},

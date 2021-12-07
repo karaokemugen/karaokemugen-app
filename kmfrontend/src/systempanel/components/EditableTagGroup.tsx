@@ -43,17 +43,17 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		this.setState({ inputVisible: true }, () => this.input.focus());
 	};
 
-	handleClose = (removedTag) => {
-		const tags = this.state.value.filter((tag) => tag.tid !== removedTag.tid || tag.name !== removedTag.name);
+	handleClose = removedTag => {
+		const tags = this.state.value.filter(tag => tag.tid !== removedTag.tid || tag.name !== removedTag.name);
 		this.setState({ value: tags });
 		this.props.onChange && this.props.onChange(tags);
 	};
 
-	handleInputConfirm = (val) => {
+	handleInputConfirm = val => {
 		if (val) {
 			const tags = this.state.value;
-			const tag = this.state.tags.filter((tag) => val === tag.tid)[0];
-			if (tags.filter((tag) => val === tag.tid).length === 0) {
+			const tag = this.state.tags.filter(tag => val === tag.tid)[0];
+			if (tags.filter(tag => val === tag.tid).length === 0) {
 				if (tag?.tid) {
 					tags.push(tag);
 				} else {
@@ -83,16 +83,16 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 	search = (val?: any) => {
 		if (timer[this.props.tagType]) clearTimeout(timer[this.props.tagType]);
 		timer[this.props.tagType] = setTimeout(() => {
-			this.getTags(val, this.props.tagType).then((tags) => {
+			this.getTags(val, this.props.tagType).then(tags => {
 				this.setState({ tags: this.sortByProp(tags, 'text') });
 			});
 		}, 1000);
 	};
 
-	onCheck = (val) => {
+	onCheck = val => {
 		const tags = [];
 		for (const element of val) {
-			const tag = this.state.tags.filter((tag) => element === tag.tid)[0];
+			const tag = this.state.tags.filter(tag => element === tag.tid)[0];
 			tags.push(tag);
 		}
 		this.setState({ value: tags });
@@ -109,12 +109,12 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		}
 	};
 
-	onKeyEnter = (e) => {
+	onKeyEnter = e => {
 		if (e.keyCode === 13) this.handleInputConfirm(this.state.currentVal);
 	};
 
 	getCurrentValue = () => {
-		const tags = this.state.tags.filter((tag) => tag.tid === this.state.currentVal);
+		const tags = this.state.tags.filter(tag => tag.tid === this.state.currentVal);
 		if (tags.length > 0 && tags[0].tid) {
 			return this.getTagLabel(tags[0]);
 		} else {
@@ -122,14 +122,14 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		}
 	};
 
-	getTagLabel = (tag) => {
+	getTagLabel = tag => {
 		const labelI18n = getTagInLocale(this.context?.globalState.settings.data, tag);
 		return `${labelI18n}${labelI18n !== tag.name ? ` (${tag.name})` : ''}`;
 	};
 
 	render() {
 		if (this.props.checkboxes) {
-			const tids = this.state.value.map((tag) => tag.tid);
+			const tids = this.state.value.map(tag => tag.tid);
 			return (
 				<Checkbox.Group value={tids} style={{ width: '100%' }} onChange={this.onCheck}>
 					<Row>
@@ -162,10 +162,10 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 					{this.state.inputVisible && (
 						<Form.Item wrapperCol={{ span: 14 }}>
 							<AutoComplete
-								ref={(input) => (this.input = input)}
+								ref={input => (this.input = input)}
 								onSearch={this.search}
-								onChange={(val) => this.setState({ currentVal: val })}
-								options={this.state.tags.map((tag) => {
+								onChange={val => this.setState({ currentVal: val })}
+								options={this.state.tags.map(tag => {
 									return {
 										value: tag.tid,
 										label: this.getTagLabel(tag),

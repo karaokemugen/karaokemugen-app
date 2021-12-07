@@ -68,7 +68,7 @@ class UserForm extends Component<UserFormProps, UserFormState> {
 					></Alert>
 				) : null}
 				<Form.Item label={i18next.t('USERS.TYPE')} name="type" required={true}>
-					<Select onChange={(value) => this.setState({ type: parseInt(value.toString()) })}>
+					<Select onChange={value => this.setState({ type: parseInt(value.toString()) })}>
 						<Select.Option value="0">{i18next.t('USERS.ADMIN')}</Select.Option>
 						<Select.Option value="1">{i18next.t('USERS.USER')}</Select.Option>
 						<Select.Option value="2">{i18next.t('USERS.GUEST')}</Select.Option>

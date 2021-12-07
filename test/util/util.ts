@@ -158,7 +158,7 @@ export function testTag(tag: DBTag, type: 'short' | 'full' | 'tag') {
 			expect(tag.karacount).to.satisfy((karacounts: any) => {
 				if (karacounts === null) return true;
 				if (Array.isArray(karacounts)) {
-					return karacounts.every((kc) => typeof kc.count === 'number' && typeof kc.type === 'number');
+					return karacounts.every(kc => typeof kc.count === 'number' && typeof kc.type === 'number');
 				}
 				return false;
 			});

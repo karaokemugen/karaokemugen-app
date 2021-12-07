@@ -237,7 +237,7 @@ function Login(props: RouteComponentProps) {
 										autoComplete="username"
 										required
 										autoFocus
-										onChange={(event) => setLogin(event.target.value)}
+										onChange={event => setLogin(event.target.value)}
 									/>
 									{onlineSwitch ? (
 										<>
@@ -248,7 +248,7 @@ function Login(props: RouteComponentProps) {
 												defaultValue={serv}
 												placeholder={i18next.t('INSTANCE_NAME_SHORT')}
 												autoComplete="off"
-												onChange={(event) => setServ(event.target.value)}
+												onChange={event => setServ(event.target.value)}
 											/>
 										</>
 									) : null}
@@ -266,7 +266,7 @@ function Login(props: RouteComponentProps) {
 										defaultValue={password}
 										required
 										placeholder={i18next.t('PASSWORD')}
-										onChange={(event) => setPassword(event.target.value)}
+										onChange={event => setPassword(event.target.value)}
 									/>
 								</div>
 								{activeView === 'signup' ? (
@@ -278,7 +278,7 @@ function Login(props: RouteComponentProps) {
 												className={redBorders}
 												required
 												defaultValue={passwordConfirmation}
-												onChange={(event) => setPasswordConfirmation(event.target.value)}
+												onChange={event => setPasswordConfirmation(event.target.value)}
 												placeholder={i18next.t('PASSWORDCONF')}
 												autoComplete="new-password"
 											/>
@@ -298,7 +298,7 @@ function Login(props: RouteComponentProps) {
 												defaultValue={securityCode}
 												required
 												autoFocus
-												onChange={(event) => setSecurityCode(parseInt(event.target.value))}
+												onChange={event => setSecurityCode(parseInt(event.target.value))}
 												autoComplete="off"
 											/>
 										</div>

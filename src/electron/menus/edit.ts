@@ -2,7 +2,7 @@ import i18next from 'i18next';
 
 import { MenuItemBuilderFunction } from '../../types/electron';
 
-const builder: MenuItemBuilderFunction = (options) => {
+const builder: MenuItemBuilderFunction = options => {
 	const { isMac } = options;
 	return {
 		label: i18next.t('MENU_EDIT'),

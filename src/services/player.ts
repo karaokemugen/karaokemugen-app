@@ -97,7 +97,7 @@ export async function next() {
 						on('songPollResult', () => {
 							// We're not at the end of playlist anymore!
 							getNextSong()
-								.then((kara) => setPlaying(kara.plcid, getState().currentPlaid))
+								.then(kara => setPlaying(kara.plcid, getState().currentPlaid))
 								.catch(() => {});
 						});
 					} catch (err) {

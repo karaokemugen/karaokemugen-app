@@ -69,7 +69,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 		}
 	}
 
-	handleSessionMergeSelection = (value) => {
+	handleSessionMergeSelection = value => {
 		this.setState({ mergeSelection: value[0] });
 	};
 
@@ -78,7 +78,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	};
 
 	mergeCascaderOption = () => {
-		return this.props.sessions.map((session) => {
+		return this.props.sessions.map(session => {
 			return {
 				value: session.seid,
 				label: session.name,
@@ -87,7 +87,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	};
 
 	mergeCascaderFilter = function (inputValue, path) {
-		return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	};
 
 	exportSession = async () => {
@@ -124,7 +124,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 		});
 	};
 
-	onSessionDateChange = async (dates) => {
+	onSessionDateChange = async dates => {
 		this.setState({
 			started_at: dates && dates[0] ? dates[0].format() : null,
 			ended_at: dates && dates[1] ? dates[1].format() : null,
@@ -140,7 +140,7 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 		}
 	};
 
-	handleSubmit = (values) => {
+	handleSubmit = values => {
 		delete values.dates;
 		const session: Session = values;
 		session.seid = this.props.session?.seid;
@@ -256,12 +256,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 								{
 									title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
 									dataIndex: 'lastplayed_at',
-									render: (text) => (text ? new Date(text).toLocaleString() : null),
+									render: text => (text ? new Date(text).toLocaleString() : null),
 								},
 								{
 									title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
 									dataIndex: 'lastrequested_at',
-									render: (text) => (text ? new Date(text).toLocaleString() : null),
+									render: text => (text ? new Date(text).toLocaleString() : null),
 								},
 								{
 									title: i18next.t('SESSIONS.TITLE'),
@@ -285,12 +285,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 								{
 									title: i18next.t('SESSIONS.LAST_PLAYED_AT'),
 									dataIndex: 'lastplayed_at',
-									render: (text) => (text ? new Date(text).toLocaleString() : null),
+									render: text => (text ? new Date(text).toLocaleString() : null),
 								},
 								{
 									title: i18next.t('SESSIONS.LAST_REQUESTED_AT'),
 									dataIndex: 'lastrequested_at',
-									render: (text) => (text ? new Date(text).toLocaleString() : null),
+									render: text => (text ? new Date(text).toLocaleString() : null),
 								},
 								{
 									title: i18next.t('SESSIONS.TITLE'),

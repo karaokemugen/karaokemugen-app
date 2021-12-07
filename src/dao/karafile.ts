@@ -14,7 +14,7 @@ export async function removeParentInKaras(kid: string, karasWithParent: DBKara[]
 		for (const kara of karasWithParent) {
 			logger.info(`Removing in ${kara.karafile}...`, { service: 'Kara' });
 			if (kara.parents) {
-				kara.parents = kara.parents.filter((p) => p !== kid);
+				kara.parents = kara.parents.filter(p => p !== kid);
 				if (kara.parents.length === 0) kara.parents = undefined;
 				kara.modified_at = new Date();
 				await editKara(kara, false);

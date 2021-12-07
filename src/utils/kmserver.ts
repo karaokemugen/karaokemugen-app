@@ -23,10 +23,10 @@ function connectToKMServer() {
 			timeout = undefined;
 			resolve();
 		});
-		socket.on('connect_error', (err) => {
+		socket.on('connect_error', err => {
 			if (timeout) reject(err);
 		});
-		socket.on('disconnect', (reason) => {
+		socket.on('disconnect', reason => {
 			logger.warn('Connection lost with server,', { service: 'KMOnline', obj: reason });
 		});
 	});
@@ -52,7 +52,7 @@ export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout
 		const nodeTimeout = setTimeout(() => {
 			reject(new Error('Request timed out'));
 		}, timeout);
-		socket.emit(name, data, (ack) => {
+		socket.emit(name, data, ack => {
 			clearTimeout(nodeTimeout);
 			ack.err ? reject(ack.data) : resolve(ack.data);
 		});

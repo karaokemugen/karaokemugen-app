@@ -74,7 +74,7 @@ function Modal(props: IProps) {
 										autoFocus
 										className="modal-input"
 										defaultValue={promptText}
-										onChange={(event) => setPromptText(event.target.value)}
+										onChange={event => setPromptText(event.target.value)}
 									/>
 								</div>
 							) : null}

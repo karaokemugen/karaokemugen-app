@@ -85,7 +85,7 @@ function Playlist(props: IProps) {
 
 	const publicPlaylistEmptied = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) {
-			setData((oldData) => {
+			setData(oldData => {
 				for (const kara of oldData.content) {
 					if (kara) {
 						kara.my_public_plc_id = [];
@@ -113,7 +113,7 @@ function Playlist(props: IProps) {
 			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites ||
 			(event.length > 0 && event[0].download_status)
 		) {
-			setData((oldData) => {
+			setData(oldData => {
 				for (const kara of oldData.content) {
 					for (const karaUpdated of event) {
 						if (kara?.kid === karaUpdated.kid) {
@@ -191,7 +191,7 @@ function Playlist(props: IProps) {
 		}
 	};
 
-	const isRowLoaded = (index) => {
+	const isRowLoaded = index => {
 		return !!data?.content[index];
 	};
 
@@ -309,8 +309,8 @@ function Playlist(props: IProps) {
 					<div className="list-group-item karaSuggestion">
 						<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
 						{context?.globalState.settings.data.config.System.Repositories.filter(
-							(value) => value.Enabled && value.Online
-						).map((value) => (
+							value => value.Enabled && value.Online
+						).map(value => (
 							<a key={value.Name} href={`https://${value.Name}/`}>
 								{value.Name}
 							</a>
@@ -422,7 +422,7 @@ function Playlist(props: IProps) {
 	const playingUpdate = useCallback(
 		(dataUpdate: { plaid: string; plc_id: number }) => {
 			if (!stopUpdate && getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid) {
-				setData((oldData) => {
+				setData(oldData => {
 					if (oldData) {
 						let indexPlaying;
 						for (let index = 0; index < oldData.content.length; index++) {
@@ -626,13 +626,13 @@ function Playlist(props: IProps) {
 	};
 
 	const addCheckedKaras = async (_event?: any, pos?: number) => {
-		const listKara = data.content.filter((a) => a?.checked);
+		const listKara = data.content.filter(a => a?.checked);
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		const idsKara = listKara.map((a) => a.kid);
-		const idsKaraPlaylist = listKara.map((a) => String(a.plcid));
+		const idsKara = listKara.map(a => a.kid);
+		const idsKaraPlaylist = listKara.map(a => String(a.plcid));
 		let url = '';
 		let dataApi;
 
@@ -663,7 +663,7 @@ function Playlist(props: IProps) {
 		} else if (getOppositePlaylistInfo(props.side, context).flag_smart) {
 			url = 'addCriterias';
 			dataApi = {
-				criterias: idsKara.map((kid) => {
+				criterias: idsKara.map(kid => {
 					return { type: 1001, value: kid, plaid: getOppositePlaylistInfo(props.side, context).plaid };
 				}),
 			};
@@ -695,7 +695,7 @@ function Playlist(props: IProps) {
 	const deleteCheckedKaras = async () => {
 		let url;
 		let dataApi;
-		const listKara = data.content.filter((a) => a.checked);
+		const listKara = data.content.filter(a => a.checked);
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
@@ -703,10 +703,10 @@ function Playlist(props: IProps) {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites) {
 			url = 'deleteFavorites';
 			dataApi = {
-				kids: listKara.map((a) => a.kid),
+				kids: listKara.map(a => a.kid),
 			};
 		} else if (!getPlaylistInfo(props.side, context)?.flag_smart) {
-			const idsKaraPlaylist = listKara.map((a) => a.plcid);
+			const idsKaraPlaylist = listKara.map(a => a.plcid);
 			url = 'deleteKaraFromPlaylist';
 			dataApi = {
 				plc_ids: idsKaraPlaylist,
@@ -724,24 +724,24 @@ function Playlist(props: IProps) {
 	};
 
 	const deleteCheckedFavorites = async () => {
-		const listKara = data.content.filter((a) => a.checked);
+		const listKara = data.content.filter(a => a.checked);
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
 		await commandBackend('deleteFavorites', {
-			kids: listKara.map((a) => a.kid),
+			kids: listKara.map(a => a.kid),
 		});
 		setSelectAllKarasChecked(false);
 	};
 
 	const acceptCheckedKara = async () => {
-		const listKara = data.content.filter((a) => a.checked);
+		const listKara = data.content.filter(a => a.checked);
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		const idsKaraPlaylist = listKara.map((a) => a.plcid);
+		const idsKaraPlaylist = listKara.map(a => a.plcid);
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_accepted: true,
@@ -750,12 +750,12 @@ function Playlist(props: IProps) {
 	};
 
 	const refuseCheckedKara = async () => {
-		const listKara = data.content.filter((a) => a.checked);
+		const listKara = data.content.filter(a => a.checked);
 		if (listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
-		const idsKaraPlaylist = listKara.map((a) => a.plcid);
+		const idsKaraPlaylist = listKara.map(a => a.plcid);
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_refused: true,
@@ -766,7 +766,7 @@ function Playlist(props: IProps) {
 	const downloadAllMedias = async () => {
 		const response = await commandBackend(getPlaylistUrl(), { plaid: getPlaylistInfo(props.side, context)?.plaid });
 		const karaList: KaraDownloadRequest[] = response.content
-			.filter((kara) => kara.download_status === 'MISSING')
+			.filter(kara => kara.download_status === 'MISSING')
 			.map((kara: KaraElement) => {
 				return {
 					mediafile: kara.mediafile,
@@ -803,11 +803,11 @@ function Playlist(props: IProps) {
 			<div style={{ maxHeight: '200px' }}>
 				{data.content
 					.filter(
-						(e) =>
+						e =>
 							e.criterias[0].value === kara.criterias[0].value &&
 							e.criterias[0].type === kara.criterias[0].type
 					)
-					.map((criteria) => {
+					.map(criteria => {
 						return (
 							<div key={kara.kid}>
 								{buildKaraTitle(
@@ -850,7 +850,7 @@ function Playlist(props: IProps) {
 			const oldIndex = result.source.index;
 			const newIndex = result.destination.index;
 			if (oldIndex !== newIndex) {
-				setData((data) => {
+				setData(data => {
 					// extract plcid based on sorter index
 					const plcid = data.content[oldIndex].plcid;
 
@@ -880,7 +880,7 @@ function Playlist(props: IProps) {
 		[setData]
 	);
 
-	const avoidErrorInDnd = (e) => {
+	const avoidErrorInDnd = e => {
 		if (
 			e.message === 'ResizeObserver loop completed with undelivered notifications.' ||
 			e.message === 'ResizeObserver loop limit exceeded'
@@ -965,7 +965,7 @@ function Playlist(props: IProps) {
 					getPlaylist={getPlaylist}
 					toggleSearchMenu={toggleSearchMenu}
 					searchMenuOpen={props.searchMenuOpen}
-					checkedKaras={data?.content?.filter((a) => a?.checked)}
+					checkedKaras={data?.content?.filter(a => a?.checked)}
 					addRandomKaras={addRandomKaras}
 					downloadAllMedias={downloadAllMedias}
 					criteriasOpen={criteriasOpen}
@@ -989,7 +989,7 @@ function Playlist(props: IProps) {
 								/>
 							)}
 						>
-							{(provided) => (
+							{provided => (
 								<Virtuoso
 									components={{
 										Item: HeightPreservingItem,
@@ -999,16 +999,14 @@ function Playlist(props: IProps) {
 									// @ts-ignore
 									scrollerRef={provided.innerRef}
 									style={{ flex: '1 0 auto' }}
-									itemContent={(index) => (
+									itemContent={index => (
 										<Draggable
 											isDragDisabled={!sortable}
 											draggableId={`${props.side}-${index}`}
 											index={index}
 											key={`${props.side}-${index}`}
 										>
-											{(provided) => (
-												<Item provided={provided} index={index} isDragging={false} />
-											)}
+											{provided => <Item provided={provided} index={index} isDragging={false} />}
 										</Draggable>
 									)}
 									initialTopMostItemIndex={props.indexKaraDetail || 0}

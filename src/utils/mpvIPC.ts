@@ -38,14 +38,14 @@ class Mpv extends EventEmitter {
 			setTimeout(reject, 10000, new Error('Timeout')); // Set timeout to avoid hangs
 			const command = this.genCommand();
 			const program = spawn(...command, { stdio: ['ignore', 'pipe', 'pipe'] });
-			program.once('error', (err) => {
+			program.once('error', err => {
 				reject(err);
 			});
-			program.once('exit', (code) => {
+			program.once('exit', code => {
 				if (code !== 0) reject(new Error(`Mpv process exited with ${code}`));
 				this.destroyConnection(code !== 0);
 			});
-			program.stdout.on('data', (data) => {
+			program.stdout.on('data', data => {
 				const str = data.toString();
 				if (str.match(/Listening to IPC (socket|pipe)/)) {
 					program.stdout.removeAllListeners();
@@ -55,7 +55,7 @@ class Mpv extends EventEmitter {
 					resolve();
 				}
 			});
-			program.stderr.on('data', (data) => {
+			program.stderr.on('data', data => {
 				const str = data.toString();
 				if (str.match(/Could not bind IPC (socket|pipe)/)) {
 					program.stdout.removeAllListeners();
@@ -86,7 +86,7 @@ class Mpv extends EventEmitter {
 		});
 		// Observe hook
 		this.socket.on('data', (data: string) => {
-			data.split('\n').forEach((line) => {
+			data.split('\n').forEach(line => {
 				if (line.length > 0) {
 					const payload = JSON.parse(line);
 					if (payload?.event) {
@@ -129,7 +129,7 @@ class Mpv extends EventEmitter {
 				} else {
 					this.on('output', dataHandler);
 					this.socket.once('error', reject);
-					this.socket.write(`${JSON.stringify(command_with_id)}\n`, 'utf8', (err) => {
+					this.socket.write(`${JSON.stringify(command_with_id)}\n`, 'utf8', err => {
 						if (err) reject(err);
 					});
 				}
@@ -165,7 +165,7 @@ class Mpv extends EventEmitter {
 
 	async stop() {
 		if (!this.isRunning) throw new Error('MPV is not running');
-		await this.ishukan({ command: ['quit'] }).catch((_err) => {
+		await this.ishukan({ command: ['quit'] }).catch(_err => {
 			// Ow. mpv is probably already dying, just destroy the connection
 		});
 		this.destroyConnection(false);
@@ -182,7 +182,7 @@ class Mpv extends EventEmitter {
 		if (this.isRunning) {
 			id = this.observedProperties.length;
 			this.observedProperties.push(property);
-			await this.ishukan({ command: ['observe_property', id, property] }).catch((err) => {
+			await this.ishukan({ command: ['observe_property', id, property] }).catch(err => {
 				delete this.observedProperties[id];
 				throw err;
 			});

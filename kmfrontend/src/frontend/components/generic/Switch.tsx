@@ -15,7 +15,7 @@ interface IProps {
 function Switch(props: IProps) {
 	const checkbox = useRef<HTMLInputElement>();
 
-	const onKeyPress = (e) => {
+	const onKeyPress = e => {
 		e.preventDefault();
 		checkbox.current.click();
 	};

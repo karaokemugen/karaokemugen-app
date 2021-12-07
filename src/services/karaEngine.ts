@@ -41,7 +41,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			'{\\bord2}{\\fscx70}{\\fscy70}{\\b1}' +
 			series +
 			'{\\b0}\\N{\\i1}' +
-			kara.songtypes.map((s) => s.name).join(' ') +
+			kara.songtypes.map(s => s.name).join(' ') +
 			songorder +
 			' - ' +
 			getSongTitle(kara) +
@@ -186,7 +186,7 @@ export async function playerEnding() {
 		// Handle balance
 		if (state.player.mediaType === 'song' && !state.singlePlay && !state.randomPlaying) {
 			const playlist = await selectPlaylistContentsMicro(state.currentPlaid);
-			const previousSongIndex = playlist.findIndex((plc) => plc.flag_playing);
+			const previousSongIndex = playlist.findIndex(plc => plc.flag_playing);
 			if (previousSongIndex >= 0) {
 				const previousSong = playlist[previousSongIndex];
 				state.usersBalance.add(previousSong.username);

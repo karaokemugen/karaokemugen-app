@@ -82,7 +82,7 @@ function UsersModal(props: IProps) {
 			</div>
 			<div id="nav-userlist" className="modal-body">
 				<div className="userlist list-group">
-					{users.map((user) => {
+					{users.map(user => {
 						return (
 							<li
 								key={user.login}

@@ -268,7 +268,7 @@ export async function createUser(
 	if (user.type === undefined) user.type = 1;
 
 	try {
-		await newUserIntegrityChecks(user).catch((err) => {
+		await newUserIntegrityChecks(user).catch(err => {
 			if (user.login.includes('@')) {
 				// If nickname isn't allowed, append something random to it and retry integrity checks
 				user.nickname = `${user.nickname}${randomstring.generate({
@@ -405,7 +405,7 @@ async function updateGuestAvatar(user: DBUser) {
 				renameUser: false,
 				editRemote: false,
 			}
-		).catch((err) => {
+		).catch(err => {
 			logger.error(`Unable to change guest avatar for ${user.login}`, { service: 'User', obj: err });
 		});
 	}
@@ -415,7 +415,7 @@ async function updateGuestAvatar(user: DBUser) {
 async function checkGuestAvatars() {
 	logger.debug('Updating default avatars', { service: 'User' });
 	const guests = await getUsers({ guestOnly: true });
-	guests.forEach((u) => updateGuestAvatar(u));
+	guests.forEach(u => updateGuestAvatar(u));
 }
 
 /** Create default guest accounts */
@@ -424,7 +424,7 @@ async function createDefaultGuests() {
 	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	const guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
-		if (!guests.find((g) => g.login === deburr(guest.toLowerCase()))) guestsToCreate.push(guest);
+		if (!guests.find(g => g.login === deburr(guest.toLowerCase()))) guestsToCreate.push(guest);
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getState().isTest) maxGuests = 1;
@@ -506,7 +506,7 @@ export async function initUserSystem() {
 	// Find admin users.
 	const users = await getUsers();
 	const adminUsers = users
-		.filter((u) => u.type === 0 && u.login !== 'admin')
+		.filter(u => u.type === 0 && u.login !== 'admin')
 		// Sort by last login at in descending order.
 		.sort((a, b) => (a.last_login_at < b.last_login_at ? 1 : -1));
 	logger.debug('Admin users', { service: 'User', obj: JSON.stringify(adminUsers) });
@@ -552,7 +552,7 @@ async function cleanupAvatars() {
 	}
 	const avatarFiles = await fs.readdir(resolvedPath('Avatars'));
 	for (const file of avatarFiles) {
-		const avatar = avatars.find((a) => a === file);
+		const avatar = avatars.find(a => a === file);
 		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPath('Avatars'), file);
 			try {

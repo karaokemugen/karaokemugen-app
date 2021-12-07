@@ -32,7 +32,7 @@ export function stopStats() {
 }
 
 export async function sendAllPayloads() {
-	const repos = getConfig().System.Repositories.filter((r) => r.Online && r.Enabled && r.SendStats);
+	const repos = getConfig().System.Repositories.filter(r => r.Online && r.Enabled && r.SendStats);
 	for (const repo of repos) {
 		const minimal = getConfig().Online.Host !== repo.Name;
 		sendPayload(repo.Name, minimal);
@@ -110,7 +110,7 @@ async function buildInstanceStats(minimal: boolean) {
 			si.diskLayout(),
 		]);
 		let total_disk_size = 0;
-		disks.forEach((d) => {
+		disks.forEach(d => {
 			total_disk_size += d.size;
 		});
 		extraStats = {

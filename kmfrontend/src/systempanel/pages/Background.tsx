@@ -25,10 +25,10 @@ export default function Background() {
 
 	const formatBgList = (bgList: { pictures: string[]; music: string[] }, type: string) => {
 		const result = { pictures: [], music: [] };
-		result.pictures = bgList?.pictures.map((pic) => {
+		result.pictures = bgList?.pictures.map(pic => {
 			return { file: pic, type };
 		});
-		result.music = bgList?.music.map((pic) => {
+		result.music = bgList?.music.map(pic => {
 			return { file: pic, type };
 		});
 		return result;
@@ -76,7 +76,7 @@ export default function Background() {
 		setAddModal(false);
 	};
 
-	const chooseFile = (file) => {
+	const chooseFile = file => {
 		setFile(file);
 		return false;
 	};
@@ -105,7 +105,7 @@ export default function Background() {
 		{
 			title: i18next.t('BACKGROUNDS_MGMT.CATEGORY'),
 			dataIndex: 'type',
-			render: (text) => i18next.t(`BACKGROUNDS_MGMT.TYPE.${text}`),
+			render: text => i18next.t(`BACKGROUNDS_MGMT.TYPE.${text}`),
 		},
 		{
 			title: i18next.t('ACTION'),
@@ -151,7 +151,7 @@ export default function Background() {
 					</Upload>
 					<div style={{ marginTop: '1em' }}>
 						<label>{i18next.t('BACKGROUNDS_MGMT.CATEGORY')}</label>
-						<Select defaultValue="pause" style={{ marginLeft: '1em' }} onChange={(value) => setType(value)}>
+						<Select defaultValue="pause" style={{ marginLeft: '1em' }} onChange={value => setType(value)}>
 							<Select.Option key="pause" value="pause">
 								{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')}
 							</Select.Option>

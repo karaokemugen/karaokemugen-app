@@ -6,7 +6,7 @@ import { getSocket, isRemote } from './socket';
 
 const cache: Map<string, string> = new Map();
 
-getSocket().on('userUpdated', (login) => cache.delete(login));
+getSocket().on('userUpdated', login => cache.delete(login));
 
 export function syncGenerateProfilePicLink(user: User) {
 	if (isRemote()) {
@@ -38,7 +38,7 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 				return cache.get(user.login);
 			}
 			const [login, instance] = user.login.split('@');
-			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login)}`).then((res) =>
+			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login)}`).then(res =>
 				res.json()
 			);
 			if (data.avatar_file) {

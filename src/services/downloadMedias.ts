@@ -28,7 +28,7 @@ async function listRemoteMedias(repo: string) {
 	profile('listRemoteMedias');
 	const remote = await getRemoteMedias(repo);
 	profile('listRemoteMedias');
-	return remote.map((m) => {
+	return remote.map(m => {
 		return {
 			...m,
 			repository: repo,
@@ -48,7 +48,7 @@ async function compareMedias(
 	const mediasPath = resolvedPathRepos('Medias', repo)[0];
 	logger.info('Comparing your medias with the current ones', { service: 'Update' });
 	for (const remoteKara of remoteKaras) {
-		const localFile = localFiles.find((f) => f.basename === remoteKara.mediafile);
+		const localFile = localFiles.find(f => f.basename === remoteKara.mediafile);
 		if (localFile) {
 			if (remoteKara.mediasize !== localFile.size) {
 				updatedFiles.push(remoteKara);
@@ -61,7 +61,7 @@ async function compareMedias(
 
 	if (!updateOnly) {
 		for (const localFile of localFiles) {
-			const remoteFilePresent = remoteKaras.find((remoteKara) => localFile.basename === remoteKara.mediafile);
+			const remoteFilePresent = remoteKaras.find(remoteKara => localFile.basename === remoteKara.mediafile);
 			if (!remoteFilePresent) removedFiles.push(localFile.basename);
 		}
 	}
@@ -95,7 +95,7 @@ async function compareMedias(
 async function downloadMedias(karas: DBMedia[]): Promise<void> {
 	try {
 		await addDownloads(
-			karas.map((k) => {
+			karas.map(k => {
 				return {
 					mediafile: k.mediafile,
 					name: k.mediafile,
@@ -110,7 +110,7 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 		if (err.code === 409) return;
 		throw err;
 	}
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		on('downloadQueueDrained', () => {
 			resolve();
 		});
@@ -148,7 +148,7 @@ async function removeFiles(files: string[], dir: string): Promise<void> {
 
 /** Updates medias for all repositories */
 export async function updateAllMedias() {
-	for (const repo of getConfig().System.Repositories.filter((r) => r.Online && r.Enabled)) {
+	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
 			logger.info(`Updating medias from repository ${repo.Name}`, { service: 'Update' });
 			await updateMedias(repo.Name);

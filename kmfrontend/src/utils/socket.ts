@@ -40,7 +40,7 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 	});
 	return new Promise((resolve, reject) => {
 		if (loading) eventEmitter.emitChange('loading', true);
-		const nodeTimeout = setTimeout((reason) => {
+		const nodeTimeout = setTimeout(reason => {
 			addBreadcrumb({
 				level: Severity.Warning,
 				category: 'commandBackend',

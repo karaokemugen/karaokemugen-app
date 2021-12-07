@@ -56,7 +56,7 @@ async function emitQueueStatus(status: QueueStatus) {
 function queueDownload(input: KaraDownload, done: any) {
 	processDownload(input)
 		.then(() => done())
-		.catch((err) => done(err));
+		.catch(err => done(err));
 }
 
 export async function initDownloader() {
@@ -100,7 +100,7 @@ export async function startDownloads() {
 		const downloads = await selectDownloads(true);
 		try {
 			await internet();
-			downloads.forEach((dl) => dq.push(dl));
+			downloads.forEach(dl => dq.push(dl));
 			logger.info('Download queue starting up', { service: 'Downloader' });
 			emitQueueStatus('started');
 		} catch (err) {
@@ -205,17 +205,15 @@ export async function checkMediaAndDownload(
 
 export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<number> {
 	const currentDls = await getDownloads();
-	downloads = downloads.filter((dl) => {
+	downloads = downloads.filter(dl => {
 		if (
-			currentDls.find(
-				(cdl) => dl.name === cdl.name && (cdl.status === 'DL_RUNNING' || cdl.status === 'DL_PLANNED')
-			)
+			currentDls.find(cdl => dl.name === cdl.name && (cdl.status === 'DL_RUNNING' || cdl.status === 'DL_PLANNED'))
 		)
 			return false;
 		return true;
 	});
 	if (downloads.length === 0) throw { code: 409, msg: 'DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR' };
-	const dls: KaraDownload[] = downloads.map((dl) => {
+	const dls: KaraDownload[] = downloads.map(dl => {
 		logger.debug(`Adding download ${dl.name}`, { service: 'Download' });
 		return {
 			uuid: uuidV4(),
@@ -228,7 +226,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 		};
 	});
 	await insertDownloads(dls);
-	dls.forEach((dl) => dq.push(dl));
+	dls.forEach(dl => dq.push(dl));
 	return dls.length;
 }
 

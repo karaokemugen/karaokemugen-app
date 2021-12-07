@@ -22,7 +22,7 @@ export async function addUpvote(plc_id: number, username: string) {
 		if (plc.plaid !== getState().publicPlaid) throw { code: 403, msg: 'UPVOTE_FAILED' };
 		if (plc.username === username) throw { code: 403, msg: 'UPVOTE_NO_SELF' };
 		const userList = await selectUpvotesByPLC(plc_id);
-		if (userList.some((u) => u.username === username)) throw { code: 403, msg: 'UPVOTE_ALREADY_DONE' };
+		if (userList.some(u => u.username === username)) throw { code: 403, msg: 'UPVOTE_ALREADY_DONE' };
 
 		await insertUpvote(plc_id, username);
 		plc.upvotes++;
@@ -48,7 +48,7 @@ export async function removeUpvote(plc_id: number, username: string) {
 		if (plc.plaid !== getState().publicPlaid) throw { code: 403, msg: 'DOWNVOTE_FAILED' };
 		if (plc.username === username) throw { code: 403, msg: 'DOWNVOTE_NO_SELF' };
 		const userList = await selectUpvotesByPLC(plc_id);
-		const users = userList.map((u) => u.username);
+		const users = userList.map(u => u.username);
 		if (!users.includes(username)) throw { code: 403, msg: 'DOWNVOTE_ALREADY_DONE' };
 		await deleteUpvote(plc_id, username);
 		// Karaokes are not 'un-freed' when downvoted.^
@@ -67,7 +67,7 @@ export async function removeUpvote(plc_id: number, username: string) {
 /** Free song if it's sufficiently upvoted */
 async function tryToFreeKara(plc_id: number, upvotes: number, username: string, plaid: string) {
 	const allUsersList = await getUsers();
-	const onlineUsers = allUsersList.filter((user) => user.flag_logged_in);
+	const onlineUsers = allUsersList.filter(user => user.flag_logged_in);
 	const upvotePercent = (upvotes / onlineUsers.length) * 100;
 	const conf = getConfig();
 	if (

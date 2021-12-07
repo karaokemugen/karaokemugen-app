@@ -10,7 +10,7 @@ export default function Inbox() {
 	const context = useContext(GlobalContext);
 
 	const repoList = context.globalState.settings.data.config?.System?.Repositories.filter(
-		(repo) =>
+		repo =>
 			repo.Online &&
 			repo.MaintainerMode &&
 			repo.Enabled &&
@@ -37,7 +37,7 @@ export default function Inbox() {
 			title: i18next.t('INBOX.DELETE'),
 			okText: i18next.t('YES'),
 			cancelText: i18next.t('NO'),
-			onOk: async (close) => {
+			onOk: async close => {
 				close();
 				await commandBackend('deleteKaraFromInbox', { repoName: repoList[0].Name, inid });
 				getInbox();
@@ -54,7 +54,7 @@ export default function Inbox() {
 			title: i18next.t('INBOX.TIMESTAMP'),
 			dataIndex: 'created_at',
 			key: 'created_at',
-			render: (text) => new Date(text).toLocaleString(),
+			render: text => new Date(text).toLocaleString(),
 		},
 		{
 			title: i18next.t('INBOX.NAME'),
@@ -65,7 +65,7 @@ export default function Inbox() {
 			title: i18next.t('INBOX.TYPE'),
 			dataIndex: 'fix',
 			key: 'fix',
-			render: (text) => (text ? 'Modification' : 'Création'),
+			render: text => (text ? 'Modification' : 'Création'),
 		},
 		{
 			title: i18next.t('INBOX.USER'),
@@ -76,7 +76,7 @@ export default function Inbox() {
 			title: i18next.t('INBOX.LINK_TO_ISSUE'),
 			dataIndex: 'gitlab_issue',
 			key: 'gitlab_issue',
-			render: (text) => (
+			render: text => (
 				<a href={text}>{i18next.t('INBOX.ISSUE', { number: text.split('/')[text.split('/').length - 1] })}</a>
 			),
 		},

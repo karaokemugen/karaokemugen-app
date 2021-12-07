@@ -172,7 +172,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());
 		await updateTagSearchVector();
-		await refreshKarasUpdate(karas.map((k) => k.kid));
+		await refreshKarasUpdate(karas.map(k => k.kid));
 		refreshTags();
 		return tagObj;
 	} catch (err) {
@@ -292,7 +292,7 @@ export async function removeTag(
 		if (opt.deleteFile) removes.push(removeTagFile(tag.tagfile, tag.repository));
 		if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karasToRemoveTagIn));
 	}
-	await Promise.all(removes).catch((err) => {
+	await Promise.all(removes).catch(err => {
 		logger.warn('Failed to remove tag files / tag from kara', { service: 'Tag', obj: err });
 		// Non fatal
 	});
@@ -300,10 +300,10 @@ export async function removeTag(
 		removeTagInStore(tag.tid);
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
-	await deleteTag(tags.map((tag) => tag.tid));
+	await deleteTag(tags.map(tag => tag.tid));
 	emitWS('statsRefresh');
 	if (opt.refresh) {
-		if (karasToRemoveTagIn.length > 0) await refreshKarasUpdate(karasToRemoveTagIn.map((k) => k.kid));
+		if (karasToRemoveTagIn.length > 0) await refreshKarasUpdate(karasToRemoveTagIn.map(k => k.kid));
 		refreshTags();
 	}
 }

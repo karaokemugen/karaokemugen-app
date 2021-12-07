@@ -14,7 +14,7 @@ const debounceMap: Map<string, (login: string, payload: any) => Promise<void>> =
 
 async function listRemoteUsers() {
 	const users = await getUsers({ onlineOnly: true });
-	return users.map((u) => u.login);
+	return users.map(u => u.login);
 }
 
 async function updateUser(login: string, payload: any) {
@@ -42,7 +42,7 @@ async function updateUser(login: string, payload: any) {
 				true,
 				false
 			),
-		]).catch((err) => {
+		]).catch(err => {
 			logger.warn(`Cannot update remote user ${login}`, { service: 'RemoteUser', obj: err });
 		});
 	} else {
@@ -61,15 +61,15 @@ function userDebounceFactory(user) {
 function setupUserWatch(server: string) {
 	const socket = io(`https://${server}`, { multiplex: true });
 	ioMap.set(server, socket);
-	socket.on('user updated', async (payload) => {
+	socket.on('user updated', async payload => {
 		const login = `${payload.user.login}@${server}`;
 		userDebounceFactory(login)(login, payload);
 	});
-	socket.on('user deleted', (user) => {
+	socket.on('user deleted', user => {
 		const login = `${user}@${server}`;
 		try {
 			logger.info(`${login} user was DELETED on remote, delete local account`, { service: 'RemoteUser' });
-			removeUser(login).catch((err) => {
+			removeUser(login).catch(err => {
 				logger.warn(`Cannot remove remote user ${login}`, { service: 'RemoteUser', obj: err });
 			});
 		} catch (err) {
@@ -85,7 +85,7 @@ export function startSub(user: string, server: string) {
 		setupUserWatch(server);
 	}
 	const socket = ioMap.get(server);
-	socket.emit('subscribe user', { body: user }, (res) => {
+	socket.emit('subscribe user', { body: user }, res => {
 		if (res.err) {
 			logger.warn(`Cannot watch user ${user}@${server}`, { service: 'RemoteUser', obj: res });
 			return;

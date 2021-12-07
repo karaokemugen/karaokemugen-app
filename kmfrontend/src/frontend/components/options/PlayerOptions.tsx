@@ -75,7 +75,7 @@ function PlayerOptions(props: IProps) {
 	if (config['Player.Display.ConnectionInfo.Host'] === null) config['Player.Display.ConnectionInfo.Host'] = '';
 	const listAudio = useMemo(
 		() =>
-			audioDevices?.map((device) => (
+			audioDevices?.map(device => (
 				// First element is the internal value, second is the correct label
 				<option key={device[0]} value={device[0]}>
 					&nbsp;
@@ -245,7 +245,7 @@ function PlayerOptions(props: IProps) {
 				</label>
 				<div>
 					<select id="App.Language" onChange={onChange} defaultValue={config['App.Language']}>
-						{languagesSupport.map((lang) => {
+						{languagesSupport.map(lang => {
 							return (
 								<option key={lang} value={lang}>
 									{getLanguagesInLangFromCode(lang)}

@@ -145,7 +145,7 @@ function AdminPage(props: IProps) {
 	const openKara = async (kara: KaraElement, idPlaylist: string) => {
 		const reason = [];
 		if (kara.criterias) {
-			kara.criterias.map(async (criteria) =>
+			kara.criterias.map(async criteria =>
 				reason.push(await decodeCriteriaReason(context.globalState.settings.data, criteria))
 			);
 		}
@@ -192,7 +192,7 @@ function AdminPage(props: IProps) {
 					powerOff={props.powerOff}
 					adminMessage={adminMessage}
 					putPlayerCommando={putPlayerCommando}
-					currentPlaylist={playlistList.filter((playlistElem) => playlistElem.flag_current)[0]}
+					currentPlaylist={playlistList.filter(playlistElem => playlistElem.flag_current)[0]}
 				/>
 				<ProgressBar />
 				<KmAppBodyDecorator mode="admin">

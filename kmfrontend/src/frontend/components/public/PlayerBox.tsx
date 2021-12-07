@@ -62,7 +62,7 @@ function PlayerBox(props: IProps) {
 		}
 	};
 
-	const toggleFavorite = async (event) => {
+	const toggleFavorite = async event => {
 		event.stopPropagation();
 		if (favorites.has(kid)) {
 			await commandBackend('deleteFavorites', {
@@ -127,24 +127,24 @@ function PlayerBox(props: IProps) {
 					kara.series?.length > 0
 						? kara.series
 								.slice(0, 3)
-								.map((e) => getTagInLocale(context?.globalState.settings.data, e))
+								.map(e => getTagInLocale(context?.globalState.settings.data, e))
 								.join(', ') + (kara.series.length > 3 ? '...' : '')
 						: kara.singers
 						? kara.singers
 								.slice(0, 3)
-								.map((e) => e.name)
+								.map(e => e.name)
 								.join(', ') + (kara.singers.length > 3 ? '...' : '')
 						: '';
 				const songtypeText = [...kara.songtypes]
 					.sort(sortTagByPriority)
-					.map((e) => (e.short ? +e.short : e.name))
+					.map(e => (e.short ? +e.short : e.name))
 					.join(' ');
 				const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
 				const karaVersions = (() => {
 					// Tags in the header
 					const typeData = tagTypes['VERSIONS'];
 					if (kara.versions) {
-						return kara[typeData.karajson].sort(sortTagByPriority).map((tag) => {
+						return kara[typeData.karajson].sort(sortTagByPriority).map(tag => {
 							return (
 								<div
 									key={tag.tid}

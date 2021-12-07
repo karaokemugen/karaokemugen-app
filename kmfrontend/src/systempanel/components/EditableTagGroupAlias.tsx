@@ -27,7 +27,7 @@ export default class EditableTagGroupAlias extends Component<EditableTagGroupPro
 		this.setState({ inputVisible: true }, () => this.input.focus());
 	};
 
-	handleInputConfirmAlias = (val) => {
+	handleInputConfirmAlias = val => {
 		let tags = this.state.value;
 		if (val && tags.indexOf(val) === -1) {
 			tags = [...tags, val];
@@ -39,8 +39,8 @@ export default class EditableTagGroupAlias extends Component<EditableTagGroupPro
 		this.props.onChange && this.props.onChange(tags);
 	};
 
-	handleCloseAlias = (removedTag) => {
-		const tags = this.state.value.filter((tag) => tag !== removedTag);
+	handleCloseAlias = removedTag => {
+		const tags = this.state.value.filter(tag => tag !== removedTag);
 		this.setState({ value: tags });
 		this.props.onChange && this.props.onChange(tags);
 	};
@@ -49,7 +49,7 @@ export default class EditableTagGroupAlias extends Component<EditableTagGroupPro
 		const { value, inputVisible } = this.state;
 		return (
 			<div>
-				{value.map((tag) => (
+				{value.map(tag => (
 					<Tag
 						style={{ marginBottom: '8px' }}
 						key={tag}
@@ -62,8 +62,8 @@ export default class EditableTagGroupAlias extends Component<EditableTagGroupPro
 				{inputVisible && (
 					<Form.Item wrapperCol={{ span: 10 }}>
 						<Input
-							ref={(input) => (this.input = input)}
-							onChange={(e) => this.setState({ currentVal: e.target.value })}
+							ref={input => (this.input = input)}
+							onChange={e => this.setState({ currentVal: e.target.value })}
 						/>
 						<Button
 							style={{ marginTop: '10px' }}

@@ -17,7 +17,7 @@ class Loading extends Component<unknown, unknown> {
 		eventEmitter.removeChangeListener('loading', this.setLoading);
 	}
 
-	setLoading = (loading) => {
+	setLoading = loading => {
 		this.setState({ loading });
 	};
 

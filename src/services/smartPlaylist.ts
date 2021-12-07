@@ -68,11 +68,11 @@ export async function updateAllSmartPlaylists(skipBlacklist = false, skipWhiteli
 	const pls = await getPlaylists({ role: 'admin', username: 'admin' });
 	const updatePromises = [];
 	// We need to update the whitelist first if it's smart, then the blacklist, then all others.
-	const wl = pls.find((p) => p.flag_whitelist && p.flag_smart);
+	const wl = pls.find(p => p.flag_whitelist && p.flag_smart);
 	if (wl && !skipWhitelist) await updateSmartPlaylist(wl.plaid);
-	const bl = pls.find((p) => p.flag_blacklist && p.flag_smart);
+	const bl = pls.find(p => p.flag_blacklist && p.flag_smart);
 	if (bl && !skipBlacklist) await updateSmartPlaylist(bl.plaid);
-	for (const pl of pls.filter((p) => p.flag_smart && !p.flag_whitelist && !p.flag_blacklist)) {
+	for (const pl of pls.filter(p => p.flag_smart && !p.flag_whitelist && !p.flag_blacklist)) {
 		updatePromises.push(updateSmartPlaylist(pl.plaid));
 	}
 	await Promise.all(updatePromises);
@@ -115,9 +115,9 @@ export async function updateSmartPlaylist(plaid: string) {
 
 	// We compare what we have in the playlist and what we have in the generated list, removing and adding songs without changing the order.
 
-	const removedSongs = plc.filter((pc) => !list.find((l) => l.kid === pc.kid));
-	const addedSongs = list.filter((l) => !plc.find((pc) => pc.kid === l.kid));
-	const sameSongs = list.filter((l) => plc.find((pc) => pc.kid === l.kid));
+	const removedSongs = plc.filter(pc => !list.find(l => l.kid === pc.kid));
+	const addedSongs = list.filter(l => !plc.find(pc => pc.kid === l.kid));
+	const sameSongs = list.filter(l => plc.find(pc => pc.kid === l.kid));
 
 	// We need to run through the addedSongs part and consolidate it
 	// Because getKarasFromCriterias will give us the same song several times if it's from an UNION.
@@ -137,7 +137,7 @@ export async function updateSmartPlaylist(plaid: string) {
 		sameMap.set(song.kid, criterias);
 	}
 	// Now that we aggregated, we need to compare.
-	const modifiedSongs = plc.filter((pc) => {
+	const modifiedSongs = plc.filter(pc => {
 		const songCriterias = sameMap.get(pc.kid);
 		// No more criterias exist, it means the song got deleted by another criteria
 		if (!songCriterias) return false;
@@ -151,7 +151,7 @@ export async function updateSmartPlaylist(plaid: string) {
 	if (removedSongs.length > 0)
 		try {
 			await removeKaraFromPlaylist(
-				removedSongs.map((s) => s.plcid),
+				removedSongs.map(s => s.plcid),
 				{ role: 'admin', username: 'admin' },
 				false,
 				true
@@ -162,7 +162,7 @@ export async function updateSmartPlaylist(plaid: string) {
 	if (addedSongs.length > 0)
 		try {
 			await addKaraToPlaylist(
-				addedSongs.map((s) => s.kid),
+				addedSongs.map(s => s.kid),
 				pl.username,
 				plaid,
 				undefined,
@@ -257,7 +257,7 @@ export async function addCriteria(cs: Criteria[]) {
 						code: 400,
 						msg: `Criteria type mismatch : type ${c.type} can occur only once in a smart playlist.`,
 					};
-				const opposingC = cs.find((crit) => {
+				const opposingC = cs.find(crit => {
 					// Find the C type 1003 (shorter than) when we add a 1002 C (longer than) and vice versa.
 					return crit.plaid === c.plaid && crit.type === (c.type === 1002 ? 1003 : 1002);
 				});
@@ -268,7 +268,7 @@ export async function addCriteria(cs: Criteria[]) {
 						throw { code: 409, msg: { code: 'C_SHORTER_THAN_CONFLICT' } };
 					}
 				}
-				const existingC = cs.find((crit) => crit.type === c.type && crit.plaid === c.plaid);
+				const existingC = cs.find(crit => crit.type === c.type && crit.plaid === c.plaid);
 				if (existingC) {
 					// Replace the one
 					await deleteCriteria(existingC);
@@ -326,7 +326,7 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 		// No need to do anything, values have been modified if necessary
 	}
 	// Filter all nulls
-	return cList.filter((blc) => blc !== null);
+	return cList.filter(blc => blc !== null);
 }
 
 export async function createProblematicSmartPlaylist() {

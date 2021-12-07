@@ -134,7 +134,7 @@ function PlaylistModal(props: IProps) {
 								autoFocus
 								className="modal-input"
 								defaultValue={name}
-								onChange={(event) => setName(event.target.value)}
+								onChange={event => setName(event.target.value)}
 							/>
 						</div>
 						<div>

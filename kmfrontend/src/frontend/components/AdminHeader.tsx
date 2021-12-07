@@ -46,7 +46,7 @@ function AdminHeader(props: IProps) {
 		const pow = 0.76;
 		val = val / base;
 		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
-		setStatusPlayer((oldState) => {
+		setStatusPlayer(oldState => {
 			const state = { ...oldState };
 			return merge(state, data);
 		});
@@ -124,8 +124,8 @@ function AdminHeader(props: IProps) {
 		};
 	}, []);
 
-	const setVolume = (event) => {
-		setStatusPlayer((oldState) => {
+	const setVolume = event => {
+		setStatusPlayer(oldState => {
 			const state = { ...oldState };
 			state.volume = event.target.value;
 			return state;
@@ -367,7 +367,7 @@ function AdminHeader(props: IProps) {
 						<li>
 							<a
 								href={`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`}
-								onClick={(e) => {
+								onClick={e => {
 									e.preventDefault();
 									props.history.push(
 										`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`
@@ -447,7 +447,7 @@ function AdminHeader(props: IProps) {
 						<li className="buttonsMobileMenu">
 							<a
 								href="#"
-								onClick={(event) => {
+								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
 								}}
@@ -461,7 +461,7 @@ function AdminHeader(props: IProps) {
 						<li className="buttonsMobileMenu">
 							<a
 								href="#"
-								onClick={(event) => {
+								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
 								}}
@@ -475,7 +475,7 @@ function AdminHeader(props: IProps) {
 						<li className="buttonsMobileMenuSmaller">
 							<a
 								href="#"
-								onClick={(event) => {
+								onClick={event => {
 									props.putPlayerCommando(event);
 									setDropDownMenu(!dropDownMenu);
 								}}
@@ -498,7 +498,7 @@ function AdminHeader(props: IProps) {
 							{statusPlayer?.stopping || statusPlayer?.streamerPause ? (
 								<a
 									href="#"
-									onClick={(event) => {
+									onClick={event => {
 										props.putPlayerCommando(event);
 										setDropDownMenu(!dropDownMenu);
 									}}
@@ -511,7 +511,7 @@ function AdminHeader(props: IProps) {
 							) : (
 								<a
 									href="#"
-									onClick={(event) => {
+									onClick={event => {
 										props.putPlayerCommando(event);
 										setDropDownMenu(!dropDownMenu);
 									}}

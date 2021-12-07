@@ -103,7 +103,7 @@ async function getPGVersion(): Promise<PGVersion> {
 /** Set a particular config value in bundled postgreSQL server config */
 function setConfig(config: string, setting: string, value: any): string {
 	const pgConfArr = config.split('\n');
-	const found = pgConfArr.some((l) => l.startsWith(`${setting}=`));
+	const found = pgConfArr.some(l => l.startsWith(`${setting}=`));
 	if (!found) {
 		pgConfArr.push(`${setting}=${value}`);
 	} else {

@@ -145,7 +145,7 @@ export async function selectMaxPosInPlaylist(id: string): Promise<number> {
 
 export function replacePlaylist(playlist: PLC[]) {
 	let newpos = 0;
-	const karaList = playlist.map((kara) => [++newpos, kara.plcid]);
+	const karaList = playlist.map(kara => [++newpos, kara.plcid]);
 	return transaction({ sql: sqlupdatePLCSetPos, params: karaList });
 }
 
@@ -292,7 +292,7 @@ export async function selectMaxPosInPlaylistForUser(plaid: string, username: str
 }
 
 export function insertCriteria(cList: Criteria[]) {
-	const c = cList.map((cItem) => [cItem.value, cItem.type, cItem.plaid]);
+	const c = cList.map(cItem => [cItem.value, cItem.type, cItem.plaid]);
 	return transaction({ params: c, sql: sqladdCriteria });
 }
 
@@ -390,7 +390,7 @@ export async function selectKarasFromCriterias(
 }
 
 export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfterInsert[]> {
-	const karas: any[] = karaList.map((kara) => [
+	const karas: any[] = karaList.map(kara => [
 		kara.plaid,
 		kara.username,
 		kara.nickname,

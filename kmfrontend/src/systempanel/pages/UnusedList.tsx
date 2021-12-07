@@ -29,14 +29,14 @@ class SessionList extends Component<unknown, SessionListState> {
 
 	refresh = async () => {
 		const res = await commandBackend('getRepos');
-		this.setState({ repository: res[0].Name, repositories: res.map((value) => value.Name) });
+		this.setState({ repository: res[0].Name, repositories: res.map(value => value.Name) });
 	};
 
 	getTags = async () => {
 		const res = await commandBackend('getUnusedTags', { name: this.state.repository }, undefined, 60000);
 		this.setState({
 			unused: res
-				? res.map((value) => {
+				? res.map(value => {
 						return { name: value.name, types: value.types, file: value.tagfile, tid: value.tid };
 				  })
 				: [],
@@ -47,30 +47,30 @@ class SessionList extends Component<unknown, SessionListState> {
 		const res = await commandBackend('getUnusedMedias', { name: this.state.repository }, undefined, 600000);
 		this.setState({
 			unused: res
-				? res.map((value) => {
+				? res.map(value => {
 						return { file: value };
 				  })
 				: [],
 		});
 	};
 
-	changeType = async (value) => {
+	changeType = async value => {
 		this.setState({ tagType: value });
 	};
 
 	deleteMedia = async (file: string) => {
 		try {
 			await commandBackend('deleteMediaFile', { file: file, repo: this.state.repository });
-			this.setState({ unused: this.state.unused.filter((item) => item.file !== file) });
+			this.setState({ unused: this.state.unused.filter(item => item.file !== file) });
 		} catch (err) {
 			// already display
 		}
 	};
 
-	deleteTag = async (tid) => {
+	deleteTag = async tid => {
 		try {
 			await commandBackend('deleteTag', { tids: [tid] });
-			this.setState({ unused: this.state.unused.filter((item) => item.tid !== tid) });
+			this.setState({ unused: this.state.unused.filter(item => item.tid !== tid) });
 		} catch (err) {
 			// already display
 		}
@@ -89,7 +89,7 @@ class SessionList extends Component<unknown, SessionListState> {
 							<Col style={{ paddingRight: '5em' }}>
 								<label style={{ paddingRight: '15px' }}>{i18next.t('UNUSED_FILES.REPOSITORY')}</label>
 								<Select style={{ width: 150 }} defaultValue={this.state.repository}>
-									{this.state.repositories.map((repo) => {
+									{this.state.repositories.map(repo => {
 										return (
 											<Select.Option key={repo} value={repo}>
 												{repo}
@@ -138,7 +138,7 @@ class SessionList extends Component<unknown, SessionListState> {
 					</Row>
 					<Table
 						dataSource={this.state.unused.filter(
-							(e) => !this.state.tagType || e.types?.includes(this.state.tagType)
+							e => !this.state.tagType || e.types?.includes(this.state.tagType)
 						)}
 						columns={this.columns}
 						rowKey="file"
@@ -158,7 +158,7 @@ class SessionList extends Component<unknown, SessionListState> {
 			title: i18next.t('UNUSED_FILES.TYPE'),
 			dataIndex: 'types',
 			key: 'types',
-			render: (types) => types && types.map((t) => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', '),
+			render: types => types && types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', '),
 		},
 		{
 			title: i18next.t('UNUSED_FILES.FILE'),

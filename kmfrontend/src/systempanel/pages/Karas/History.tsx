@@ -57,7 +57,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			title: i18next.t('TAG_TYPES.LANGS_other'),
 			dataIndex: 'langs',
 			key: 'langs',
-			render: (langs) =>
+			render: langs =>
 				getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18n).join(', '),
 		},
 		{
@@ -67,7 +67,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			render: (series, record) =>
 				series && series.length > 0
 					? series
-							.map((serie) =>
+							.map(serie =>
 								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18n)
 							)
 							.join(', ')
@@ -88,26 +88,26 @@ class KaraList extends Component<unknown, KaraListState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),
 			dataIndex: 'versions',
 			key: 'versions',
-			render: (versions) =>
+			render: versions =>
 				getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18n).join(', '),
 		},
 		{
 			title: i18next.t('KARA.PLAYED'),
 			dataIndex: 'played',
 			key: 'played',
-			render: (played) => played,
+			render: played => played,
 		},
 		{
 			title: i18next.t('KARA.PLAYED_AT'),
 			dataIndex: 'lastplayed_at',
 			key: 'lastplayed_at',
-			render: (played_at) => new Date(played_at).toLocaleString(),
+			render: played_at => new Date(played_at).toLocaleString(),
 			defaultSortOrder: 'descend',
 			sorter: (a, b) => a.lastplayed_at - b.lastplayed_at,
 		},

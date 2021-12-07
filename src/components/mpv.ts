@@ -435,7 +435,7 @@ class Player {
 
 		// Testing if string exists or is not empty
 		if (conf.Player.ExtraCommandLine?.length > 0) {
-			conf.Player.ExtraCommandLine.split(' ').forEach((e) => mpvArgs.push(e));
+			conf.Player.ExtraCommandLine.split(' ').forEach(e => mpvArgs.push(e));
 		}
 
 		let socket: string;
@@ -490,7 +490,7 @@ class Player {
 					playerState.currentSong.infos,
 					-1,
 					false,
-					playerState.currentSong?.misc?.some((t) => t.name === 'Spoiler')
+					playerState.currentSong?.misc?.some(t => t.name === 'Spoiler')
 				);
 			} else if (
 				position >= Math.floor(playerState.currentSong.duration / 2) - 4 &&
@@ -521,7 +521,7 @@ class Player {
 
 	private bindEvents() {
 		if (!this.options.monitor) {
-			this.mpv.on('property-change', (status) => {
+			this.mpv.on('property-change', status => {
 				if (status.name !== 'playback-time') {
 					logger.debug('mpv status', { service: 'Player', obj: status });
 					playerState[status.name] = status.data;
@@ -554,7 +554,7 @@ class Player {
 			});
 		}
 		// Handle pause/play via external ways
-		this.mpv.on('property-change', (status) => {
+		this.mpv.on('property-change', status => {
 			if (
 				status.name === 'pause' &&
 				playerState.playerStatus !== 'stop' &&
@@ -581,7 +581,7 @@ class Player {
 			}
 		});
 		// Handle client messages (skip/go-back)
-		this.mpv.on('client-message', async (message) => {
+		this.mpv.on('client-message', async message => {
 			if (typeof message.args === 'object') {
 				try {
 					if (message.args[0] === 'skip') {
@@ -648,14 +648,14 @@ class Player {
 			},
 			{
 				retries: 3,
-				onFailedAttempt: (error) => {
+				onFailedAttempt: error => {
 					logger.warn(
 						`Failed to start mpv, attempt ${error.attemptNumber}, trying ${error.retriesLeft} more times...`,
 						{ service: 'Player', obj: error }
 					);
 				},
 			}
-		).catch((err) => {
+		).catch(err => {
 			logger.error('Cannot start MPV', { service: 'Player', obj: err });
 			sentry.error(err, 'Fatal');
 			throw err;
@@ -736,10 +736,10 @@ class Players {
 					song.duration
 				}),W-(W*29/300),NAN)':y=H-(H*29/200)[vo]`,
 			]
-				.filter((x) => !!x)
+				.filter(x => !!x)
 				.join(';');
 		}
-		return [audio, avatar || '[vid1]null[vo]'].filter((x) => !!x).join(';');
+		return [audio, avatar || '[vid1]null[vo]'].filter(x => !!x).join(';');
 	}
 
 	isRunning() {
@@ -921,7 +921,7 @@ class Players {
 		playerState.volume = conf.Player.Volume;
 		playerState.monitorEnabled = conf.Player.Monitor;
 		const audioDevices = await getMpvAudioOutputs();
-		const audioDevicesList = audioDevices.map((ad) => ad[0]);
+		const audioDevicesList = audioDevices.map(ad => ad[0]);
 		if (!audioDevicesList.includes(getConfig().Player.AudioDevice)) {
 			setConfig({ Player: { AudioDevice: 'auto' } });
 		}
@@ -943,7 +943,7 @@ class Players {
 		if (this.players.main.isRunning || this.players.monitor?.isRunning) {
 			// needed to wait for lock release
 			// eslint-disable-next-line no-return-await
-			return await this.exec('destroy').catch((err) => {
+			return await this.exec('destroy').catch(err => {
 				// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
 				logger.warn('Failed to quit mpv', { service: 'Player', obj: err });
 			});
@@ -970,7 +970,7 @@ class Players {
 				delete this.players.monitor;
 			}
 		}
-		await this.exec('recreate', [null, true], undefined, true).catch((err) => {
+		await this.exec('recreate', [null, true], undefined, true).catch(err => {
 			logger.error('Cannot restart mpv', { service: 'Player', obj: err });
 		});
 		if (
@@ -995,8 +995,8 @@ class Players {
 		let onlineMedia = false;
 		const loadPromises = [
 			Players.genLavfiComplex(song)
-				.then((res) => (options['lavfi-complex'] = res))
-				.catch((err) => {
+				.then(res => (options['lavfi-complex'] = res))
+				.catch(err => {
 					logger.error('Cannot compute lavfi-complex filter, disabling avatar display', {
 						service: 'Player',
 						obj: err,
@@ -1005,23 +1005,23 @@ class Players {
 					options['lavfi-complex'] = '[aid1]loudnorm[ao]';
 				}),
 			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repository))
-				.then((res) => (subFile = res[0]))
-				.catch((err) => {
+				.then(res => (subFile = res[0]))
+				.catch(err => {
 					logger.debug('Error while resolving subs path', { service: 'Player', obj: err });
 					logger.warn(`Subs NOT FOUND : ${song.subfile}`, { service: 'Player' });
 					subFile = '';
 				}),
 			resolveFileInDirs(song.mediafile, resolvedPathRepos('Medias', song.repository))
-				.then((res) => (mediaFile = res[0]))
-				.catch(async (err) => {
+				.then(res => (mediaFile = res[0]))
+				.catch(async err => {
 					logger.debug('Error while resolving media path', { service: 'Player', obj: err });
 					logger.warn(`Media NOT FOUND : ${song.mediafile}`, { service: 'Player' });
 					await resolveMediaURL(song.mediafile, song.repository)
-						.then((res) => {
+						.then(res => {
 							onlineMedia = true;
 							mediaFile = res;
 						})
-						.catch((err) => {
+						.catch(err => {
 							mediaFile = '';
 							throw new Error(
 								`No media source for ${song.mediafile} (tried in ${resolvedPathRepos(
@@ -1060,13 +1060,13 @@ class Players {
 			if (this.messages) this.messages.removeMessage('poll');
 			await retry(() => this.exec({ command: ['loadfile', mediaFile, 'replace', options] }), {
 				retries: 3,
-				onFailedAttempt: (error) => {
+				onFailedAttempt: error => {
 					logger.warn(
 						`Failed to play song, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`,
 						{ service: 'Player' }
 					);
 				},
-			}).catch((err) => {
+			}).catch(err => {
 				logger.error('Unable to load media', { service: 'Player', obj: err });
 				throw err;
 			});
@@ -1118,7 +1118,7 @@ class Players {
 				playerState.currentMedia = media;
 				await retry(() => this.exec({ command: ['loadfile', media.filename, 'replace', options] }), {
 					retries: 3,
-					onFailedAttempt: (error) => {
+					onFailedAttempt: error => {
 						logger.warn(
 							`Failed to play ${mediaType}, attempt ${error.attemptNumber}, trying ${error.retriesLeft} times more...`,
 							{ service: 'Player' }
@@ -1349,7 +1349,7 @@ class Players {
 	}
 
 	async setHwDec(method: string) {
-		await this.exec({ command: ['set_property', 'hwdec', method] }).catch((err) => {
+		await this.exec({ command: ['set_property', 'hwdec', method] }).catch(err => {
 			logger.error('Unable to set hwdec method', { service: 'Player', obj: err });
 			sentry.error(err);
 			throw err;
@@ -1360,7 +1360,7 @@ class Players {
 	tickDisplay() {
 		this.exec({
 			command: ['expand-properties', 'osd-overlay', 1, 'ass-events', this.messages?.getText() || ''],
-		}).catch((err) => {
+		}).catch(err => {
 			//Non-fatal. Maybe. Don't sue me.
 			logger.warn('Unable to tick display', { service: 'Player', obj: err });
 		});

@@ -67,7 +67,7 @@ export default class FTP {
 			value: 0,
 			total: 100, // Initial value, will be updated later
 		});
-		this.client.trackProgress((info) => {
+		this.client.trackProgress(info => {
 			task.update({
 				subtext: `${this.opts.repoName}: ${info.name} - ${prettyBytes(info.bytes)} / ${prettyBytes(
 					info.bytesOverall

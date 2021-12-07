@@ -111,10 +111,10 @@ function CriteriasList(props: IProps) {
 	}, []);
 
 	const types: number[] = [];
-	criterias.forEach((element) => {
+	criterias.forEach(element => {
 		if (!types.includes(element.type)) types.push(element.type);
 	});
-	const tagsFiltered = props.tags ? props.tags.filter((obj) => obj.type.includes(criteriaType)) : [];
+	const tagsFiltered = props.tags ? props.tags.filter(obj => obj.type.includes(criteriaType)) : [];
 	return (
 		<div className="criteriasContainer">
 			<div className="criterias-line">
@@ -169,12 +169,12 @@ function CriteriasList(props: IProps) {
 			<div className="criteriasDescription">{i18next.t('CRITERIA.CRITERIA_DESC')}</div>
 			<div className="criterias-input">
 				<select
-					onChange={(e) => {
+					onChange={e => {
 						setCriteriaType(Number(e.target.value));
 						setCriteriaVal('');
 					}}
 				>
-					{listTypeCriteria.map((value) => {
+					{listTypeCriteria.map(value => {
 						return (
 							<option key={value} value={value}>
 								{i18next.t(`CRITERIA.CRITERIA_TYPE_${value}`)}
@@ -202,7 +202,7 @@ function CriteriasList(props: IProps) {
 						<Autocomplete
 							value={criteriaVal}
 							options={tagsFiltered}
-							onChange={(value) => setCriteriaVal(value)}
+							onChange={value => setCriteriaVal(value)}
 						/>
 					) : (
 						<input
@@ -212,8 +212,8 @@ function CriteriasList(props: IProps) {
 								[1002, 1003].includes(criteriaType) ? 'mm:ss' : ''
 							}`}
 							className="input-blc"
-							onChange={(e) => setCriteriaVal(e.target.value)}
-							onKeyPress={(e) => {
+							onChange={e => setCriteriaVal(e.target.value)}
+							onKeyPress={e => {
 								if (e.key === 'Enter') addCriteria();
 							}}
 						/>
@@ -223,7 +223,7 @@ function CriteriasList(props: IProps) {
 					</button>
 				</div>
 			</div>
-			{types.map((type) => {
+			{types.map(type => {
 				let typeLabel;
 				if (type === 0) {
 					typeLabel = i18next.t('DETAILS.YEAR');
@@ -235,7 +235,7 @@ function CriteriasList(props: IProps) {
 				return (
 					<Fragment key={type}>
 						<div className="list-group-item liType">{typeLabel}</div>
-						{criterias.map((criteria) => {
+						{criterias.map(criteria => {
 							return criteria.type === type ? (
 								<div key={criteria.value} className="list-group-item liTag">
 									<div className="actionDiv">

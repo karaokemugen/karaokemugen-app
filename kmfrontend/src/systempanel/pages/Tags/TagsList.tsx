@@ -50,7 +50,7 @@ class TagsList extends Component<unknown, TagsListState> {
 		}
 	};
 
-	delete = async (tid) => {
+	delete = async tid => {
 		try {
 			this.setState({ deleteModal: false, tag: undefined });
 			await commandBackend('deleteTag', { tids: [tid] }, true);
@@ -60,7 +60,7 @@ class TagsList extends Component<unknown, TagsListState> {
 		}
 	};
 
-	changeType = async (value) => {
+	changeType = async value => {
 		this.setState({ type: value }, () => {
 			localStorage.setItem('typeTagList', value ? value : '');
 			this.refresh();
@@ -78,7 +78,7 @@ class TagsList extends Component<unknown, TagsListState> {
 					<div style={{ display: 'flex', marginBottom: '1em' }}>
 						<Input.Search
 							placeholder={i18next.t('SEARCH_FILTER')}
-							onChange={(event) => (this.filter = event.target.value)}
+							onChange={event => (this.filter = event.target.value)}
 							enterButton={i18next.t('SEARCH')}
 							onSearch={this.refresh}
 						/>
@@ -122,17 +122,17 @@ class TagsList extends Component<unknown, TagsListState> {
 		{
 			title: i18next.t('TAGS.NAME'),
 			dataIndex: 'name',
-			render: (name) => name,
+			render: name => name,
 		},
 		{
 			title: i18next.t('TAGS.TYPES'),
 			dataIndex: 'types',
-			render: (types) => types.map((t) => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', '),
+			render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', '),
 		},
 		{
 			title: i18next.t('TAGS.I18N'),
 			dataIndex: 'i18n',
-			render: (i18n_names) => {
+			render: i18n_names => {
 				const names = [];
 				for (const lang in i18n_names) {
 					const name = i18n_names[lang];

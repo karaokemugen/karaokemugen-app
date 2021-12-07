@@ -79,40 +79,40 @@ export function buildKaraTitle(
 	onlyText?: boolean,
 	i18nParam?: any
 ): string | ReactFragment {
-	const isMulti = data?.langs.find((e) => e.name.indexOf('mul') > -1);
+	const isMulti = data?.langs.find(e => e.name.indexOf('mul') > -1);
 	if (data?.langs && isMulti) {
 		data.langs = [isMulti];
 	}
 	const serieText =
 		data?.series?.length > 0
-			? data.series.map((e) => getTagInLocale(settings, e, i18nParam)).join(', ') +
+			? data.series.map(e => getTagInLocale(settings, e, i18nParam)).join(', ') +
 			  (data.series.length > 3 ? '...' : '')
 			: data?.singers
 			? data.singers
 					.slice(0, 3)
-					.map((e) => e.name)
+					.map(e => e.name)
 					.join(', ') + (data.singers.length > 3 ? '...' : '')
 			: '';
 	const langsText = data?.langs
-		.map((e) => e.name)
+		.map(e => e.name)
 		.join(', ')
 		.toUpperCase();
 	const songtypeText = data?.songtypes
 		.sort(sortTagByPriority)
-		.map((e) => (e.short ? +e.short : e.name))
+		.map(e => (e.short ? +e.short : e.name))
 		.join(' ');
 	const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
 	if (onlyText) {
 		const versions = data?.versions
 			?.sort(sortTagByPriority)
-			.map((t) => `[${getTagInLocale(settings, t, i18nParam)}]`);
+			.map(t => `[${getTagInLocale(settings, t, i18nParam)}]`);
 		const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
 		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${getTitleInLocale(
 			settings,
 			data.titles
 		)} ${version}`;
 	} else {
-		const versions = data?.versions?.sort(sortTagByPriority).map((t) => (
+		const versions = data?.versions?.sort(sortTagByPriority).map(t => (
 			<span className="tag inline white" key={t.tid}>
 				{getTagInLocale(settings, t, i18nParam)}
 			</span>
@@ -173,7 +173,7 @@ export function formatLyrics(lyrics: ASSLine[]) {
 		for (const lyric of lyrics) {
 			if (lyric.fullText) {
 				const newFullText = lyric.fullText
-					.map((value) => {
+					.map(value => {
 						// Crush down tags
 						const tags = value.tags.reduce((acc, tagCollec) => {
 							const newK = (acc.k || 0) + (tagCollec.k || tagCollec.kf || tagCollec.ko || 0);
@@ -278,7 +278,7 @@ export function computeTagsElements(
 	const karaTags: ReactNode[] = [];
 
 	if (kara.langs) {
-		const isMulti = kara.langs.find((e) => e.name.indexOf('mul') > -1);
+		const isMulti = kara.langs.find(e => e.name.indexOf('mul') > -1);
 		isMulti
 			? karaTags.push(
 					<div key={isMulti.tid} className="tag">
@@ -286,7 +286,7 @@ export function computeTagsElements(
 					</div>
 			  )
 			: karaTags.push(
-					...kara.langs.sort(sortTagByPriority).map((tag) => {
+					...kara.langs.sort(sortTagByPriority).map(tag => {
 						return (
 							<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
 								{getInlineTag(tag, tagTypes.LANGS.type, scope, changeView, i18nParam)}
@@ -297,7 +297,7 @@ export function computeTagsElements(
 	}
 	if (kara.songtypes) {
 		karaTags.push(
-			...kara.songtypes.sort(sortTagByPriority).map((tag) => {
+			...kara.songtypes.sort(sortTagByPriority).map(tag => {
 				return (
 					<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
 						{getInlineTag(tag, tagTypes.SONGTYPES.type, scope, changeView, i18nParam)}
@@ -316,7 +316,7 @@ export function computeTagsElements(
 		const tagData = tagTypes[type];
 		if (kara[tagData.karajson]) {
 			karaTags.push(
-				...kara[tagData.karajson].sort(sortTagByPriority).map((tag) => {
+				...kara[tagData.karajson].sort(sortTagByPriority).map(tag => {
 					return (
 						<div key={tag.tid} className={`tag ${tagData.color}`} title={tag.short ? tag.short : tag.name}>
 							{getInlineTag(tag, tagData.type, scope, changeView, i18nParam)}
@@ -341,7 +341,7 @@ export function computeTagsElements(
 						<span key={`${type}${key}`} className="detailsKaraLineContent">
 							{' '}
 							{kara[tagData.karajson]
-								.map((e) => getInlineTag(e, tagData.type, scope, changeView))
+								.map(e => getInlineTag(e, tagData.type, scope, changeView))
 								.reduce(
 									(acc, x, index, arr): any =>
 										acc === null

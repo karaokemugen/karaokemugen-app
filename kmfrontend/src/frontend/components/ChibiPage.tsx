@@ -64,7 +64,7 @@ function ChibiPage() {
 		return sendIPC(namecommand);
 	};
 
-	const setVolume = (event) => {
+	const setVolume = event => {
 		const state = { ...statusPlayer };
 		state.volume = event.target.value;
 		setStatusPlayer(state);
@@ -167,7 +167,7 @@ function ChibiPage() {
 						<AdminButtons
 							putPlayerCommando={putPlayerCommando}
 							statusPlayer={statusPlayer}
-							currentPlaylist={playlistList.find((playlistElem) => playlistElem.flag_current)}
+							currentPlaylist={playlistList.find(playlistElem => playlistElem.flag_current)}
 						/>
 						<button
 							title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}

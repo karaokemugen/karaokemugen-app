@@ -84,7 +84,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		}
 	}
 
-	changeFilter = (event) => {
+	changeFilter = event => {
 		this.setState({ filter: event.target.value, currentPage: 0 }, () => {
 			localStorage.setItem('karaDownloadFilter', this.state.filter);
 		});
@@ -174,7 +174,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		this.setState({ karasQueue: res });
 	};
 
-	handleTableChange = (pagination) => {
+	handleTableChange = pagination => {
 		this.setState({
 			currentPage: pagination.current,
 			currentPageSize: pagination.pageSize,
@@ -184,7 +184,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		setTimeout(this.getKaras, 10);
 	};
 
-	handleFilterTagSelection = (value) => {
+	handleFilterTagSelection = value => {
 		let t = '';
 		if (value && value[1]) t = 't:' + value[1] + '~' + value[0];
 
@@ -196,7 +196,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	};
 
 	filterTagCascaderOption = () => {
-		const options = Object.keys(tagTypes).map((type) => {
+		const options = Object.keys(tagTypes).map(type => {
 			const typeID = tagTypes[type].type;
 
 			const option = {
@@ -204,7 +204,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 				label: i18next.t(`TAG_TYPES.${type}_other`),
 				children: [],
 			};
-			for (const tag of this.state.tags.filter((tag) => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
+			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
 				option.children.push({
 					value: tag.tid,
 					label: getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag),
@@ -219,9 +219,9 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		return this.state.tags
 			.filter(
 				(tag, index, self) =>
-					tag.types.includes(tagTypes.GROUPS.type) && index === self.findIndex((t) => t.tid === tag.tid)
+					tag.types.includes(tagTypes.GROUPS.type) && index === self.findIndex(t => t.tid === tag.tid)
 			)
-			.map((tag) => {
+			.map(tag => {
 				return {
 					value: tag.tid,
 					label: tag.name,
@@ -230,7 +230,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 	};
 
 	FilterTagCascaderFilter = function (inputValue, path) {
-		return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	};
 
 	// START karas download queue
@@ -250,16 +250,16 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 		}).catch(() => {});
 	};
 
-	isLocalKara = (kara) => {
-		const karaLocal = this.state.karas.find((item) => item.kid === kara.kid);
+	isLocalKara = kara => {
+		const karaLocal = this.state.karas.find(item => item.kid === kara.kid);
 		return karaLocal.download_status === 'DOWNLOADED';
 	};
 
-	isQueuedKara = (kara) => {
-		return this.state.karasQueue.find((item) => item.name === kara.name);
+	isQueuedKara = kara => {
+		return this.state.karasQueue.find(item => item.name === kara.name);
 	};
 
-	showPreview = (kara) => {
+	showPreview = kara => {
 		this.setState({ preview: `https://${kara.repository}/downloads/medias/${encodeURIComponent(kara.mediafile)}` });
 		document.addEventListener('keyup', this.closeVideo);
 	};
@@ -285,7 +285,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								<Input.Search
 									placeholder={i18next.t('SEARCH_FILTER')}
 									value={this.state.filter}
-									onChange={(event) => this.changeFilter(event)}
+									onChange={event => this.changeFilter(event)}
 									enterButton={i18next.t('SEARCH')}
 									onSearch={this.getKaras}
 								/>
@@ -352,7 +352,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								<Select
 									allowClear
 									style={{ width: '90%' }}
-									onChange={(value) => this.handleFilterTagSelection([tagTypes.GROUPS, value])}
+									onChange={value => this.handleFilterTagSelection([tagTypes.GROUPS, value])}
 									placeholder={i18next.t('KARA.TAG_GROUP_FILTER')}
 									key={'tid'}
 									options={this.getGroupsTags()}
@@ -367,7 +367,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								<label>
 									{i18next.t('KARA.QUEUE_LABEL_SONGS', {
 										numberSongs: this.state.karasQueue.filter(
-											(kara) => kara.status !== 'DL_DONE' && kara.status !== 'DL_FAILED'
+											kara => kara.status !== 'DL_DONE' && kara.status !== 'DL_FAILED'
 										).length,
 									})}
 								</label>
@@ -457,7 +457,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			title: i18next.t('TAG_TYPES.LANGS_other'),
 			dataIndex: 'langs',
 			key: 'langs',
-			render: (langs) => {
+			render: langs => {
 				return getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ');
 			},
 		},
@@ -468,7 +468,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			render: (series, record) => {
 				return series && series.length > 0
 					? series
-							.map((serie) =>
+							.map(serie =>
 								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)
 							)
 							.join(', ')
@@ -498,7 +498,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			title: i18next.t('TAG_TYPES.FAMILIES_other'),
 			dataIndex: 'families',
 			key: 'families',
-			render: (families) => {
+			render: families => {
 				return getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(
 					', '
 				);
@@ -508,13 +508,13 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),
 			dataIndex: 'versions',
 			key: 'versions',
-			render: (versions) =>
+			render: versions =>
 				getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18nTag).join(', '),
 		},
 		{

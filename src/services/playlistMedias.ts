@@ -102,7 +102,7 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 		const addedFiles: FileStat[] = [];
 		const updatedFiles: FileStat[] = [];
 		for (const remoteFile of remoteFiles) {
-			const filePresent = localFiles.some((localFile) => {
+			const filePresent = localFiles.some(localFile => {
 				if (localFile.basename === remoteFile.basename) {
 					if (localFile.size !== remoteFile.size) updatedFiles.push(remoteFile);
 					return true;
@@ -112,7 +112,7 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			if (!filePresent) addedFiles.push(remoteFile);
 		}
 		for (const localFile of localFiles) {
-			const filePresent = remoteFiles.some((remoteFile) => {
+			const filePresent = remoteFiles.some(remoteFile => {
 				return localFile.basename === remoteFile.basename;
 			});
 			if (!filePresent) removedFiles.push(localFile);
@@ -124,7 +124,7 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 		const filesToDownload = addedFiles.concat(updatedFiles);
 		if (removedFiles.length > 0)
 			await removeFiles(
-				removedFiles.map((f) => f.basename),
+				removedFiles.map(f => f.basename),
 				localDir
 			);
 		if (filesToDownload.length > 0) {
@@ -148,7 +148,7 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 }
 
 async function downloadMedias(files: File[], dir: string, type: MediaType, task: Task) {
-	const list = files.map((file) => {
+	const list = files.map(file => {
 		return {
 			filename: resolve(dir, file.basename),
 			url: `${playlistMediasURL}/${type}/${encodeURIComponent(file.basename)}`,
@@ -157,7 +157,7 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 	});
 	const fileErrors = await downloadFiles(list, task);
 	if (fileErrors.length > 0)
-		throw `Error downloading these medias: ${fileErrors.map((err) => basename(err)).toString()}`;
+		throw `Error downloading these medias: ${fileErrors.map(err => basename(err)).toString()}`;
 	task.end();
 }
 
@@ -207,7 +207,7 @@ export function getSingleMedia(type: MediaType): Media | null {
 		media = configCandidate || sample(currentMedias[type]);
 	}
 	// Let's remove the series of the jingle we just selected so it won't be picked again next time.
-	if (!fromConfig) currentMedias[type] = currentMedias[type].filter((m) => m.series !== media.series);
+	if (!fromConfig) currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
 	logger.info(`${type} time !`, { service: 'Player' });
 	return media;
 }

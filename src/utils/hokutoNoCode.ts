@@ -63,7 +63,7 @@ export async function lowercaseMigration() {
 					for (const user of dupeUsers) {
 						// Special case for favorites since we may break the unique constraint if the two users had the same favorites.
 						const favs = await getFavorites({ userFavorites: user.pk_login });
-						const favsToAdd = favs.content.map((f) => f.kid);
+						const favsToAdd = favs.content.map(f => f.kid);
 						const promises = [mergeUserData(user.pk_login, mainUser), addToFavorites(mainUser, favsToAdd)];
 						await Promise.all(promises);
 						await deleteUser(user.pk_login);
@@ -83,7 +83,7 @@ export async function lowercaseMigration() {
 export async function migrateReposToZip() {
 	// Find unmigrated repositories
 	const repos: OldRepository[] = cloneDeep(
-		(getRepos() as any as OldRepository[]).filter((r) => r.Path.Karas?.length > 0)
+		(getRepos() as any as OldRepository[]).filter(r => r.Path.Karas?.length > 0)
 	);
 	if (repos.length > 0) {
 		// Create a config backup, just in case
@@ -110,7 +110,7 @@ export async function migrateReposToZip() {
 		}
 		const extraPath = newRepo.Online && !newRepo.MaintainerMode ? './json' : '';
 		newRepo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, dir, extraPath));
-		await editRepo(newRepo.Name, newRepo, false).catch((err) => {
+		await editRepo(newRepo.Name, newRepo, false).catch(err => {
 			logger.error(`Unable to migrate repo ${oldRepo.Name} to zip-based: ${err}`, { service: 'Repo', obj: err });
 			Sentry.error(err);
 			addSystemMessage({
@@ -144,7 +144,7 @@ export async function migrateFromDBMigrate() {
 			return;
 		}
 		const id = lastMigration.rows[0].name.replaceAll('/', '').split('-')[0];
-		migrationsDone = migrations.filter((m) => m.version <= id);
+		migrationsDone = migrations.filter(m => m.version <= id);
 	} catch (err) {
 		logger.error('Error preparing migrations', { service: 'DB', obj: err });
 		Sentry.error(err);
@@ -191,7 +191,7 @@ export async function migrateBLWLToSmartPLs() {
 			username: 'admin',
 		});
 		let pos = 0;
-		const songs = WL.rows.map((s) => {
+		const songs = WL.rows.map(s => {
 			pos++;
 			return {
 				plaid: plaid,
@@ -207,7 +207,7 @@ export async function migrateBLWLToSmartPLs() {
 	}
 	// Blacklist(s)
 	for (const set of BLCSets.rows) {
-		const blc = BLCs.rows.filter((e) => e.fk_id_blc_set === set.pk_id_blc_set);
+		const blc = BLCs.rows.filter(e => e.fk_id_blc_set === set.pk_id_blc_set);
 		// No need to import an empty BLC set.
 		if (blc.length === 0) continue;
 		const plaid = await insertPlaylist({
@@ -220,7 +220,7 @@ export async function migrateBLWLToSmartPLs() {
 			type_smart: 'UNION',
 		});
 		await insertCriteria(
-			blc.map((e) => ({
+			blc.map(e => ({
 				plaid: plaid,
 				type: e.type,
 				value: e.value,

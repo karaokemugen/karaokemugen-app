@@ -34,7 +34,7 @@ export function initFetchPopularSongs() {
 /* Returns an array of unknown karaokes. If array is empty, all songs in "karas" are present in database */
 export async function isAllKaras(karas: string[]): Promise<string[]> {
 	const allKaras = await selectAllKIDs();
-	return karas.filter((kid) => !allKaras.includes(kid));
+	return karas.filter(kid => !allKaras.includes(kid));
 }
 
 export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara> {
@@ -134,7 +134,7 @@ export function getSongSeriesSingers(kara: DBKara): string {
 	if (kara.series?.length > 0) {
 		return getTagNameInLanguage(kara.series[0], lang, 'eng');
 	} else {
-		return kara.singers.map((s) => s.i18n[lang] || s.i18n['eng'] || s.i18n['qjr']).join(', ');
+		return kara.singers.map(s => s.i18n[lang] || s.i18n['eng'] || s.i18n['qjr']).join(', ');
 	}
 }
 
@@ -146,7 +146,7 @@ export function getSongTitle(kara: DBKara): string {
 
 export function getSongVersion(kara: DBKara): string {
 	if (kara.versions?.length > 0) {
-		const versions = kara.versions.map((v) => {
+		const versions = kara.versions.map(v => {
 			const lang = convert1LangTo2B(getState().defaultLocale) || 'eng';
 			return `[${v.i18n[lang] || v.i18n?.eng || v.i18n?.qjr || v.name}]`;
 		});
@@ -168,7 +168,7 @@ export async function fetchPopularSongs() {
 			profile('initPopularSongs');
 			throw err;
 		}
-		const repos = conf.System.Repositories.filter((r) => r.Enabled && r.Online);
+		const repos = conf.System.Repositories.filter(r => r.Enabled && r.Online);
 		for (const repo of repos) {
 			try {
 				const res = await HTTP.get(`https://${repo.Name}/api/karas/search?order=requested`);

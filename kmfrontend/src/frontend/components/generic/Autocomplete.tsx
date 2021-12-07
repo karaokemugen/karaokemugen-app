@@ -26,7 +26,7 @@ function Autocomplete(props: IProps) {
 
 	let temp: string | any[] = '';
 	if (selectedValue) {
-		temp = options.filter((o) => o.value === selectedValue);
+		temp = options.filter(o => o.value === selectedValue);
 		if (temp.length) temp = temp[0].label;
 	}
 	const [searchValue, setSearchValue] = useState(temp);
@@ -95,7 +95,7 @@ function Autocomplete(props: IProps) {
 	};
 
 	const filteredOptions = () =>
-		options.filter((o) => {
+		options.filter(o => {
 			return (
 				String(o.label)
 					.toLowerCase()

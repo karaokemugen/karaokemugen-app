@@ -43,7 +43,7 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 		}
 	};
 
-	delete = async (tid) => {
+	delete = async tid => {
 		try {
 			this.setState({ deleteModal: false, tag: undefined });
 			await commandBackend('deleteTag', { tids: [tid] }, true);
@@ -85,17 +85,17 @@ class TagsDuplicate extends Component<unknown, TagsListState> {
 		{
 			title: i18next.t('TAGS.NAME'),
 			dataIndex: 'name',
-			render: (name) => name,
+			render: name => name,
 		},
 		{
 			title: i18next.t('TAGS.TYPES'),
 			dataIndex: 'types',
-			render: (types) => types.map((t) => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', '),
+			render: types => types.map(t => i18next.t(`TAG_TYPES.${getTagTypeName(t)}_other`)).join(', '),
 		},
 		{
 			title: i18next.t('TAGS.I18N'),
 			dataIndex: 'i18n',
-			render: (i18n_names) => {
+			render: i18n_names => {
 				const names = [];
 				for (const lang in i18n_names) {
 					const name = i18n_names[lang];

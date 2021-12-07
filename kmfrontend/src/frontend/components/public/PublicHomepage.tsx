@@ -77,7 +77,7 @@ function PublicHomepage(props: IProps) {
 						show={true}
 						currentVisible={props.currentVisible}
 						goToCurrentPL={() => props.changeView('currentPlaylist')}
-						onKaraChange={(kid) => setCurrentKid(kid)}
+						onKaraChange={kid => setCurrentKid(kid)}
 					/>
 					{is_touch_device() ? <LyricsBox kid={currentKid} mobile /> : null}
 					<div className="home-actions">
@@ -114,7 +114,7 @@ function PublicHomepage(props: IProps) {
 									{i18next.t('PUBLIC_HOMEPAGE.REQUESTED_KARAOKES')}
 								</button>
 								<h3 className="subtitle">{i18next.t('PUBLIC_HOMEPAGE.EXPLORE')}</h3>
-								{Object.keys(tagTypes).map((type) => {
+								{Object.keys(tagTypes).map(type => {
 									if ([1, 2, 4, 5].includes(tagTypes[type].type)) {
 										return (
 											<button
@@ -137,7 +137,7 @@ function PublicHomepage(props: IProps) {
 								</button>
 								{othersMenu ? (
 									<>
-										{Object.keys(tagTypes).map((type) => {
+										{Object.keys(tagTypes).map(type => {
 											if (![1, 2, 4, 5].includes(tagTypes[type].type)) {
 												return (
 													<button

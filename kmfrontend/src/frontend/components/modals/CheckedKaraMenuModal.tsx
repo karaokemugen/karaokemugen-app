@@ -40,7 +40,7 @@ function CheckedKaraMenuModal(props: IProps) {
 		}
 		try {
 			await commandBackend('editPLC', {
-				plc_ids: props.checkedKaras.map((a) => a.plcid),
+				plc_ids: props.checkedKaras.map(a => a.plcid),
 				flag_free: true,
 			});
 			setEffectFree(true);
@@ -53,7 +53,7 @@ function CheckedKaraMenuModal(props: IProps) {
 	const changeVisibilityKaraOn = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: props.checkedKaras.map((a) => a.plcid),
+				plc_ids: props.checkedKaras.map(a => a.plcid),
 				flag_visible: true,
 			});
 			setEffectVisibility(true);
@@ -66,7 +66,7 @@ function CheckedKaraMenuModal(props: IProps) {
 	const changeVisibilityKaraOff = () => {
 		try {
 			commandBackend('editPLC', {
-				plc_ids: props.checkedKaras.map((a) => a.plcid),
+				plc_ids: props.checkedKaras.map(a => a.plcid),
 				flag_visible: false,
 			});
 			setEffectVisibility(true);
@@ -79,7 +79,7 @@ function CheckedKaraMenuModal(props: IProps) {
 	const makeFavorite = () => {
 		try {
 			commandBackend('addFavorites', {
-				kids: props.checkedKaras.map((a) => a.kid),
+				kids: props.checkedKaras.map(a => a.kid),
 			});
 			setEffectFavorite(true);
 			setTimeout(props.closeKaraMenu, 350);
@@ -92,7 +92,7 @@ function CheckedKaraMenuModal(props: IProps) {
 		const playlist = getPlaylistInfo(props.side, context);
 		try {
 			commandBackend('addCriterias', {
-				criterias: props.checkedKaras.map((a) => {
+				criterias: props.checkedKaras.map(a => {
 					return { type: 1001, value: a.kid, plaid: playlist.plaid };
 				}),
 			});
@@ -107,7 +107,7 @@ function CheckedKaraMenuModal(props: IProps) {
 		const playlist = getPlaylistInfo(props.side, context);
 		try {
 			commandBackend('addCriterias', {
-				criterias: props.checkedKaras.map((a) => {
+				criterias: props.checkedKaras.map(a => {
 					return { type: 1001, value: a.kid, plaid: playlist.plaid };
 				}),
 			});
@@ -153,7 +153,7 @@ function CheckedKaraMenuModal(props: IProps) {
 					<a
 						href="#"
 						onContextMenu={onRightClickTransfer}
-						onClick={(event) => {
+						onClick={event => {
 							props.transferKara(event);
 							props.closeKaraMenu();
 						}}

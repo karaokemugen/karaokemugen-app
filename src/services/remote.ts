@@ -92,7 +92,7 @@ async function broadcastForward(body) {
 		.then(() => {
 			errCount = 0;
 		})
-		.catch((err) => {
+		.catch(err => {
 			logger.warn('Failed to remote broadcast', { service: 'Remote', obj: err });
 			if (errCount !== -1) errCount++;
 			if (errCount >= 5) {

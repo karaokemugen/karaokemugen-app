@@ -95,7 +95,7 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			dataIndex: 'Path.Medias',
 			key: 'path_medias',
 			render: (_text, record: Repository) =>
-				record.Path.Medias.map((item) => {
+				record.Path.Medias.map(item => {
 					return (
 						<div className="pathFolders" key={item}>
 							{item}

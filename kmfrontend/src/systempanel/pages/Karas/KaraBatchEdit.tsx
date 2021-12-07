@@ -44,7 +44,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 	async componentDidMount() {
 		const tags = await commandBackend('getTags');
 		const playlists = await commandBackend('getPlaylists');
-		const options = Object.keys(tagTypes).map((type) => {
+		const options = Object.keys(tagTypes).map(type => {
 			const typeID = tagTypes[type].type;
 
 			const option = {
@@ -65,7 +65,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 	}
 
 	FilterTagCascaderFilter = function (inputValue, path) {
-		return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	};
 
 	changePlaylist = async (plaid: string) => {
@@ -109,7 +109,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 								onChange={this.changePlaylist}
 								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
 							>
-								{this.state.playlists.map((playlist) => {
+								{this.state.playlists.map(playlist => {
 									return (
 										<Select.Option key={playlist.plaid} value={playlist.plaid}>
 											{playlist.name}
@@ -140,9 +140,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 								options={this.state.tags}
 								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
 								showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
-								onChange={(value) =>
-									this.setState({ tid: value[1] as string, type: value[0] as number })
-								}
+								onChange={value => this.setState({ tid: value[1] as string, type: value[0] as number })}
 							/>
 						</Col>
 						<Col flex={1}>
@@ -165,7 +163,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			title: i18next.t('TAG_TYPES.LANGS_other'),
 			dataIndex: 'langs',
 			key: 'langs',
-			render: (langs) => {
+			render: langs => {
 				return getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ');
 			},
 		},
@@ -176,7 +174,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			render: (series, record: DBKara) => {
 				return (
 					series
-						.map((serie) =>
+						.map(serie =>
 							getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)
 						)
 						.join(', ') ||
@@ -205,7 +203,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			title: i18next.t('TAG_TYPES.FAMILIES_other'),
 			dataIndex: 'families',
 			key: 'families',
-			render: (families) => {
+			render: families => {
 				return getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(
 					', '
 				);
@@ -215,13 +213,13 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),
 			dataIndex: 'versions',
 			key: 'versions',
-			render: (versions) =>
+			render: versions =>
 				getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18nTag).join(', '),
 		},
 		{

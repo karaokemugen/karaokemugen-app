@@ -4,7 +4,7 @@ import { MenuItemBuilderFunction } from '../../types/electron';
 import { getState } from '../../utils/state';
 import { displayAbout, urls } from './';
 
-const builder: MenuItemBuilderFunction = (options) => {
+const builder: MenuItemBuilderFunction = options => {
 	const { isMac } = options;
 	return {
 		label: i18next.t('MENU_HELP'),

@@ -60,7 +60,7 @@ export function drop(event) {
 	sendIPC('droppedFiles', {
 		username: username,
 		onlineToken,
-		files: Array.from(event.dataTransfer.files).map((file) => (file as any).path),
+		files: Array.from(event.dataTransfer.files).map(file => (file as any).path),
 	});
 }
 

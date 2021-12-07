@@ -32,8 +32,8 @@ on('stateUpdated', (state: State) => {
 async function displayPoll(winner?: number) {
 	const data = getPoll({ role: 'admin', username: 'admin' });
 	let maxVotes = 0;
-	data.poll.forEach((s) => (maxVotes = maxVotes + s.votes));
-	const votes = data.poll.map((kara) => {
+	data.poll.forEach(s => (maxVotes = maxVotes + s.votes));
+	const votes = data.poll.map(kara => {
 		let percentage = (kara.votes / maxVotes) * 100;
 		let boldWinnerOpen = '';
 		let boldWinnerClose = '';
@@ -51,7 +51,7 @@ async function displayPoll(winner?: number) {
 		return `${boldWinnerOpen}${
 			kara.index
 		}. ${percentageStr}% : ${kara.langs[0].name.toUpperCase()} - ${series} - ${kara.songtypes
-			.map((s) => s.name)
+			.map(s => s.name)
 			.join(' ')}${songorder} - ${getSongTitle(kara)}${version}${boldWinnerClose}`;
 	});
 	const voteMessage = winner ? i18n.t('VOTE_MESSAGE_SCREEN_WINNER') : i18n.t('VOTE_MESSAGE_SCREEN');
@@ -112,9 +112,9 @@ export function stopPoll() {
 /** Get poll results once a poll has ended */
 export async function getPollResults(): Promise<PollResults> {
 	logger.debug('Getting poll results', { service: 'Poll' });
-	const maxVotes = Math.max(...poll.map((choice) => choice.votes));
+	const maxVotes = Math.max(...poll.map(choice => choice.votes));
 	// We check if winner isn't the only one...
-	const winners = poll.filter((c) => +c.votes === +maxVotes);
+	const winners = poll.filter(c => +c.votes === +maxVotes);
 	const winner = sample(winners);
 	const state = getState();
 	const plaid = getState().currentPlaid;
@@ -131,7 +131,7 @@ export async function getPollResults(): Promise<PollResults> {
 
 	const version = getSongVersion(winner);
 	const kara = `${winner.series ? winner.series[0]?.name : winner.singers[0]?.name} - ${winner.songtypes
-		.map((s) => s.name)
+		.map(s => s.name)
 		.join(' ')}${winner.songorder ? winner.songorder : ''} - ${getSongTitle(winner)}${version}`;
 	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, { service: 'Poll' });
 	return {
@@ -209,11 +209,11 @@ export async function startPoll(): Promise<boolean> {
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.POLL_PUBLIC_PL_EMPTY'));
 			return false;
 		}
-		availableKaras = pubpl.filter((k) => !curpl.map((ktr) => ktr.kid).includes(k.kid));
+		availableKaras = pubpl.filter(k => !curpl.map(ktr => ktr.kid).includes(k.kid));
 	} else {
 		const pl = await getPlaylistContentsMini(getState().publicPlaid);
-		const currentKara = pl.find((plc) => plc.flag_playing === true);
-		availableKaras = pl.filter((plc) => plc.pos > currentKara.pos);
+		const currentKara = pl.find(plc => plc.flag_playing === true);
+		availableKaras = pl.filter(plc => plc.pos > currentKara.pos);
 	}
 
 	let pollChoices = conf.Karaoke.Poll.Choices;

@@ -31,7 +31,7 @@ export default function KaraReviews(props: Props) {
 
 	const fetchTimeRemaining = async () => {
 		const playlistList: DBPL[] = await commandBackend('getPlaylists');
-		setTimeRemaining(playlistList.find((pl) => pl?.flag_current).time_left);
+		setTimeRemaining(playlistList.find(pl => pl?.flag_current).time_left);
 	};
 
 	useEffect(() => {
@@ -73,15 +73,15 @@ export default function KaraReviews(props: Props) {
 				plc_ids: [queue[0].plcid],
 				flag_accepted: true,
 			});
-			setAccepted((acc) => acc + 1);
+			setAccepted(acc => acc + 1);
 		} else {
 			await commandBackend('editPLC', {
 				plc_ids: [queue[0].plcid],
 				flag_refused: true,
 			});
-			setRefused((ref) => ref + 1);
+			setRefused(ref => ref + 1);
 		}
-		setQueue((oldQueue) => oldQueue.slice(1));
+		setQueue(oldQueue => oldQueue.slice(1));
 	};
 
 	useEffect(() => {

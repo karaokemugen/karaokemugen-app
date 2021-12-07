@@ -27,7 +27,7 @@ export async function updateDownloaded(kids: string[], value: DownloadedStatus) 
 }
 
 export function insertDownloads(downloads: KaraDownload[]) {
-	const dls = downloads.map((dl) => [dl.name, dl.size, 'DL_PLANNED', dl.uuid, dl.repository, dl.mediafile, dl.kid]);
+	const dls = downloads.map(dl => [dl.name, dl.size, 'DL_PLANNED', dl.uuid, dl.repository, dl.mediafile, dl.kid]);
 	logger.debug('Running transaction', { service: 'Download DAO' });
 	return transaction({ sql: sqlinsertDownload, params: dls });
 }

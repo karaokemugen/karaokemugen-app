@@ -40,7 +40,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 		this.loadrepository();
 	}
 
-	saveNew = async (repository) => {
+	saveNew = async repository => {
 		try {
 			await commandBackend('addRepo', repository, true);
 			this.props.history.push('/system/repositories');
@@ -49,7 +49,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 		}
 	};
 
-	saveUpdate = async (repository) => {
+	saveUpdate = async repository => {
 		try {
 			await commandBackend(
 				'editRepo',
@@ -153,7 +153,7 @@ class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, 
 							})}
 						</p>
 						<p style={{ fontWeight: 'bold' }}>
-							{this.state.report?.map((kara) => kara.kara1.subfile.slice(0, -4))}
+							{this.state.report?.map(kara => kara.kara1.subfile.slice(0, -4))}
 						</p>
 						<p>
 							{i18next.t('REPOSITORIES.CONFIRM_SURE', {

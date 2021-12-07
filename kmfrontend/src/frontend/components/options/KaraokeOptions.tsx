@@ -494,7 +494,7 @@ function KaraokeOptions(props: IProps) {
 								{isElectron() ? (
 									<a
 										href="#"
-										onClick={(e) => {
+										onClick={e => {
 											e.preventDefault();
 											sendIPC('openFolder', { type: 'streamFiles' });
 										}}
@@ -787,7 +787,7 @@ function KaraokeOptions(props: IProps) {
 							);
 						})}
 						<div>
-							<input value={mysterySongLabel} onChange={(e) => setMysterySongLabel(e.target.value)} />
+							<input value={mysterySongLabel} onChange={e => setMysterySongLabel(e.target.value)} />
 							<button type="button" className="btn btn-default" onClick={addMysterySongLabel}>
 								{i18next.t('SETTINGS.KARAOKE.LABELS_MYSTERY_SONGS_ADD')}
 							</button>

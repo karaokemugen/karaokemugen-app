@@ -137,9 +137,9 @@ export async function deleteKara(kids: string[], refresh = true, deleteFiles = {
 	for (const parent of parents) {
 		await removeParentInKaras(parent.parent, parent.children);
 	}
-	await deleteKaraDB(karas.map((k) => k.kid));
+	await deleteKaraDB(karas.map(k => k.kid));
 	if (refresh) {
-		await refreshKarasDelete(karas.map((k) => k.kid));
+		await refreshKarasDelete(karas.map(k => k.kid));
 		refreshTags();
 		refreshYears();
 		updateAllSmartPlaylists();
@@ -158,8 +158,8 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		// Determine repository indexes so we know if we should edit our current database to change the kara's repository inside
 		// Repositories are ordered by priority so if destination repo is lower, we don't edit the song in database.
 		const repos = getRepos();
-		const oldRepoIndex = repos.findIndex((r) => r.Name === oldRepoName);
-		const newRepoIndex = repos.findIndex((r) => r.Name === repoName);
+		const oldRepoIndex = repos.findIndex(r => r.Name === oldRepoName);
+		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
 		// If the new repo has priority, edit kara so the database uses it.
 		if (newRepoIndex < oldRepoIndex) tasks.push(editKara(kara));
 		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), kara));
@@ -260,11 +260,11 @@ export async function refreshKarasAfterDBChange(
 	logger.debug('Refreshing DB after kara change', { service: 'DB' });
 	await updateKaraSearchVector();
 	if (action === 'ADD') {
-		await refreshKarasInsert(karas.map((k) => k.kid));
+		await refreshKarasInsert(karas.map(k => k.kid));
 	} else if (action === 'UPDATE') {
-		await refreshKarasUpdate(karas.map((k) => k.kid));
+		await refreshKarasUpdate(karas.map(k => k.kid));
 	} else if (action === 'DELETE') {
-		await refreshKarasDelete(karas.map((k) => k.kid));
+		await refreshKarasDelete(karas.map(k => k.kid));
 	} else if (action === 'ALL') {
 		await refreshKaras();
 	}
@@ -372,7 +372,7 @@ ${!mediafile.match(audioFileRegexp) ? `Video File: ${mediaPath}` : ''}
 
 					let content: string = await fs.readFile(lyricsPath, { encoding: 'utf8' });
 					const blocks = content.split(/(?:\n)(?=^\[)/gm);
-					const index = blocks.findIndex((block) => block.startsWith('[Aegisub Project Garbage]'));
+					const index = blocks.findIndex(block => block.startsWith('[Aegisub Project Garbage]'));
 					if (index >= 0) {
 						// replace the existing garbage
 						blocks[index] = garbageBlock;

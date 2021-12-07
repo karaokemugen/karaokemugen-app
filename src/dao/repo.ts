@@ -10,7 +10,7 @@ export function selectRepos() {
 
 export function insertRepo(repo: Repository) {
 	const repos = getConfig().System.Repositories;
-	const i = repos.findIndex((r) => r.Name === repo.Name);
+	const i = repos.findIndex(r => r.Name === repo.Name);
 	if (i > 0) throw 'Repository with this name already exists';
 	repos.push(repo);
 	editSetting({ System: { Repositories: repos } });
@@ -22,10 +22,10 @@ export function updateRepo(repo: Repository, name: string) {
 	const conf = getConfig();
 	const repos = conf.System.Repositories;
 	if (repo.Name !== name) {
-		const i = repos.findIndex((r) => r.Name === repo.Name);
+		const i = repos.findIndex(r => r.Name === repo.Name);
 		if (i > 0) throw 'Repository with this new name already exists';
 	}
-	const i = repos.findIndex((r) => r.Name === name);
+	const i = repos.findIndex(r => r.Name === name);
 	if (DBReady) {
 		// Reset the last commit setting in DB for the repo (for both names)
 		saveSetting(`commit-${name}`, null);
@@ -38,7 +38,7 @@ export function updateRepo(repo: Repository, name: string) {
 
 export function deleteRepo(name: string) {
 	const repos = getConfig().System.Repositories;
-	const repoIndex = repos.findIndex((r) => r.Name === name);
+	const repoIndex = repos.findIndex(r => r.Name === name);
 	repos[repoIndex] = null;
 	// Reset the last commit setting in DB for the repo
 	saveSetting(`commit-${name}`, null);

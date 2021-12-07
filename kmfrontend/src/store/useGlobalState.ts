@@ -6,7 +6,7 @@ import ModalReducer from './reducers/modal';
 import SettingsReducer, { initialStateConfig } from './reducers/settings';
 
 // combine reducers ala Redux: each can handle its own slice
-const combineReducers = (slices) => (prevState, action) =>
+const combineReducers = slices => (prevState, action) =>
 	// I like to use array.reduce, you can also just write a for..in loop
 	Object.keys(slices).reduce(
 		(nextState, nextProp) => ({

@@ -80,7 +80,7 @@ export default function InlineTag(props: Props) {
 		>
 			<span
 				className={props.className}
-				onClick={(e) => {
+				onClick={e => {
 					if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2) {
 						e.stopPropagation();
 						setShowPopup(!showPopup);

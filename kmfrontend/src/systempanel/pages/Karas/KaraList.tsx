@@ -71,12 +71,12 @@ class KaraList extends Component<unknown, KaraListState> {
 		localStorage.setItem('karaFilter', event.target.value);
 	}
 
-	confirmDeleteKara = (kara) => {
+	confirmDeleteKara = kara => {
 		Modal.confirm({
 			title: i18next.t('KARA.DELETE_KARA'),
 			okText: i18next.t('YES'),
 			cancelText: i18next.t('NO'),
-			onOk: (close) => {
+			onOk: close => {
 				close();
 				this.deleteKaras([kara.kid]);
 			},
@@ -91,12 +91,12 @@ class KaraList extends Component<unknown, KaraListState> {
 		});
 		await commandBackend('deleteKaras', { kids: kids }, true);
 		this.setState({
-			karasRemoving: this.state.karasRemoving.filter((value) => !kids.includes(value)),
-			karas: this.state.karas.filter((value) => !kids.includes(value.kid)),
+			karasRemoving: this.state.karasRemoving.filter(value => !kids.includes(value)),
+			karas: this.state.karas.filter(value => !kids.includes(value.kid)),
 		});
 	};
 
-	handleTableChange = (pagination) => {
+	handleTableChange = pagination => {
 		this.setState({
 			currentPage: pagination.current,
 			currentPageSize: pagination.pageSize,
@@ -112,7 +112,7 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	filterTagCascaderOption = () => {
-		const options = Object.keys(tagTypes).map((type) => {
+		const options = Object.keys(tagTypes).map(type => {
 			const typeID = tagTypes[type].type;
 
 			const option = {
@@ -120,7 +120,7 @@ class KaraList extends Component<unknown, KaraListState> {
 				label: i18next.t(`TAG_TYPES.${type}_other`),
 				children: [],
 			};
-			for (const tag of this.state.tags.filter((tag) => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
+			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
 				option.children.push({
 					value: tag.tid,
 					label: getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag),
@@ -132,10 +132,10 @@ class KaraList extends Component<unknown, KaraListState> {
 	};
 
 	filterTagCascaderFilter = function (inputValue, path) {
-		return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
 	};
 
-	handleFilterTagSelection = (value) => {
+	handleFilterTagSelection = value => {
 		let t = '';
 		if (value && value[1]) t = 't:' + value[1] + '~' + value[0];
 
@@ -146,14 +146,14 @@ class KaraList extends Component<unknown, KaraListState> {
 	};
 
 	confirmDeleteAllVisibleKara = () => {
-		const karaDeletable = this.state.karas.filter((kara) => isModifiable(this.context, kara.repository));
+		const karaDeletable = this.state.karas.filter(kara => isModifiable(this.context, kara.repository));
 		Modal.confirm({
 			title: i18next.t('KARA.DELETE_KARA_TITLE', { count: karaDeletable.length }),
 			okText: i18next.t('YES'),
 			cancelText: i18next.t('NO'),
-			onOk: (close) => {
+			onOk: close => {
 				close();
-				if (karaDeletable.length > 0) this.deleteKaras(karaDeletable.map((value) => value.kid));
+				if (karaDeletable.length > 0) this.deleteKaras(karaDeletable.map(value => value.kid));
 			},
 		});
 	};
@@ -167,7 +167,7 @@ class KaraList extends Component<unknown, KaraListState> {
 				</Layout.Header>
 				<Layout.Content>
 					{this.context.globalState.settings.data.config.System.Repositories.findIndex(
-						(repo) => repo.Online && !repo.MaintainerMode
+						repo => repo.Online && !repo.MaintainerMode
 					) !== -1 ? (
 						<Alert
 							type="info"
@@ -181,7 +181,7 @@ class KaraList extends Component<unknown, KaraListState> {
 							<Input.Search
 								placeholder={i18next.t('SEARCH_FILTER')}
 								value={this.state.filter}
-								onChange={(event) => this.changeFilter(event)}
+								onChange={event => this.changeFilter(event)}
 								enterButton={i18next.t('SEARCH')}
 								onSearch={this.refresh}
 							/>
@@ -230,7 +230,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			title: i18next.t('TAG_TYPES.LANGS_other'),
 			dataIndex: 'langs',
 			key: 'langs',
-			render: (langs) =>
+			render: langs =>
 				getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', '),
 		},
 		{
@@ -240,7 +240,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			render: (series, record: DBKara) =>
 				series && series.length > 0
 					? series
-							.map((serie) =>
+							.map(serie =>
 								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)
 							)
 							.join(', ')
@@ -267,20 +267,20 @@ class KaraList extends Component<unknown, KaraListState> {
 			title: i18next.t('TAG_TYPES.FAMILIES_other'),
 			dataIndex: 'families',
 			key: 'families',
-			render: (families) =>
+			render: families =>
 				getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(', '),
 		},
 		{
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: (titles) => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),
 			dataIndex: 'versions',
 			key: 'versions',
-			render: (versions) =>
+			render: versions =>
 				getTagInLocaleList(
 					this.context.globalState.settings.data,
 					versions.sort(sortTagByPriority),

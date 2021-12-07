@@ -91,7 +91,7 @@ function SetupPageRepo(props: RouteComponentProps) {
 						<input
 							className="input-field"
 							value={repositoryFolder}
-							onChange={(event) => setRepositoryFolder(event.target.value)}
+							onChange={event => setRepositoryFolder(event.target.value)}
 						/>
 						<div className="actions">
 							{isElectron() ? (

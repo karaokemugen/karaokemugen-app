@@ -210,7 +210,7 @@ export function isNonStandardPlaylist(plaid: string) {
 }
 
 export function isModifiable(context: GlobalContextInterface, repoName: string): boolean {
-	const repo = context.globalState.settings.data.config.System.Repositories.find((r) => r.Name === repoName);
+	const repo = context.globalState.settings.data.config.System.Repositories.find(r => r.Name === repoName);
 	return repo.MaintainerMode || !repo.Online;
 }
 
@@ -293,7 +293,7 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: Kar
 					<br />
 					<button
 						className="btn"
-						onClick={(e) => {
+						onClick={e => {
 							e.preventDefault();
 							e.stopPropagation();
 							commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.data.plc.plcid] })

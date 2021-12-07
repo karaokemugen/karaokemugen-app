@@ -62,7 +62,7 @@ function AdminMessageModal() {
 						<div className="dest-duration">
 							<select
 								name="destination"
-								onChange={(e) => setDestination(e.target.value as 'screen' | 'users' | 'all')}
+								onChange={e => setDestination(e.target.value as 'screen' | 'users' | 'all')}
 							>
 								<option value="screen">{i18next.t('ADMIN_MESSAGE.CL_SCREEN')}</option>
 								<option value="users">{i18next.t('ADMIN_MESSAGE.CL_USERS')}</option>
@@ -74,14 +74,14 @@ function AdminMessageModal() {
 								min="0"
 								className="duration"
 								placeholder={i18next.t('ADMIN_MESSAGE.DURATION')}
-								onChange={(e) => setDuration(Number(e.target.value) * 1000)}
+								onChange={e => setDuration(Number(e.target.value) * 1000)}
 							/>
 						</div>
 						<input
 							type="text"
 							className="message"
 							placeholder={i18next.t('ADMIN_MESSAGE.MESSAGE')}
-							onChange={(e) => setMessage(e.target.value)}
+							onChange={e => setMessage(e.target.value)}
 						/>
 						<button className="btn btn-default confirm" onClick={onClick}>
 							{message.length === 0 ? (

@@ -31,14 +31,14 @@ function SelectWithIcon(props: IProps) {
 
 	const select =
 		props.value && props.list?.length > 0
-			? props.list.filter((element) => props.value === element.value)[0]
+			? props.list.filter(element => props.value === element.value)[0]
 			: undefined;
 	return (
 		<Wrapper onSelection={props.onChange} className="selectWithIcon">
 			<Button className="selectWithIcon-trigger">
 				<span className="selectWithIcon-triggerInnards" ref={menuRef}>
 					{select?.icons
-						? select.icons.map((icon) => {
+						? select.icons.map(icon => {
 								return (
 									<Fragment key={icon}>
 										<i className={`fas ${icon}`} />
@@ -57,10 +57,10 @@ function SelectWithIcon(props: IProps) {
 					className="selectWithIcon-menu"
 					style={{ ['--maxh' as any]: `${maxHeight}px`, ['--maxw' as any]: `${maxWidth}px` }}
 				>
-					{props.list.map((element) => (
+					{props.list.map(element => (
 						<MenuItem value={element.value} key={element.value} className="selectWithIcon-menuItem">
 							{element.icons
-								? element.icons.map((icon) => {
+								? element.icons.map(icon => {
 										return (
 											<Fragment key={icon}>
 												<i className={`fas ${icon}`} />

@@ -56,7 +56,7 @@ function PlaylistHeader(props: IProps) {
 	const [activeFilterUUID, setActiveFilterUUID] = useState('');
 	const [orderByLikes, setOrderByLikes] = useState(false);
 	const [activeFilter, setActiveFilter] = useState<'search' | 'recent' | 'requested'>('search');
-	const [tags, setTags] = useState(props.tags.filter((tag) => tag.type.includes(2)) || []);
+	const [tags, setTags] = useState(props.tags.filter(tag => tag.type.includes(2)) || []);
 
 	const getKarasList = (activeFilter: 'search' | 'recent' | 'requested', orderByLikes = false) => {
 		setActiveFilter(activeFilter);
@@ -89,7 +89,7 @@ function PlaylistHeader(props: IProps) {
 	};
 
 	const getListToSelect = () => {
-		return props.playlistList.map((playlist) => {
+		return props.playlistList.map(playlist => {
 			return {
 				value: playlist?.plaid,
 				label: playlist?.name,
@@ -158,7 +158,7 @@ function PlaylistHeader(props: IProps) {
 	};
 
 	let timer;
-	const changeFilterValue = (e) => {
+	const changeFilterValue = e => {
 		if (timer) clearTimeout(timer);
 		timer = setTimeout(
 			() => setFilterValue(context.globalDispatch, e.target.value, props.side, playlist?.plaid),
@@ -167,7 +167,7 @@ function PlaylistHeader(props: IProps) {
 	};
 
 	useEffect(() => {
-		setTags(props.tags?.filter((tag) => tag.type.includes(tagType)));
+		setTags(props.tags?.filter(tag => tag.type.includes(tagType)));
 	}, [props.tags.length]);
 
 	const playlist = getPlaylistInfo(props.side, context);
@@ -201,7 +201,7 @@ function PlaylistHeader(props: IProps) {
 				/>
 				<button
 					title={i18next.t('KARA_MENU.KARA_COMMANDS')}
-					onClick={(event) => {
+					onClick={event => {
 						karaMenu ? closeKaraMenu() : openKaraMenu(event);
 					}}
 					className={'btn btn-action showPlaylistCommands karaLineButton' + (karaMenu ? ' btn-primary' : '')}
@@ -228,8 +228,8 @@ function PlaylistHeader(props: IProps) {
 						</div>
 						<select
 							className="filterElement filterTags"
-							onChange={(e) => {
-								setTags(props.tags.filter((tag) => tag.type.includes(parseInt(e.target.value))));
+							onChange={e => {
+								setTags(props.tags.filter(tag => tag.type.includes(parseInt(e.target.value))));
 								setTagType(parseInt(e.target.value));
 								setActiveFilterUUID('');
 							}}
@@ -306,7 +306,7 @@ function PlaylistHeader(props: IProps) {
 					<div className="dropdown">
 						<button
 							title={i18next.t('ADVANCED.PLAYLIST_COMMANDS')}
-							onClick={(event) => {
+							onClick={event => {
 								playlistCommands ? closePlaylistCommands() : openPlaylistCommands(event);
 							}}
 							className={
@@ -378,9 +378,9 @@ function PlaylistHeader(props: IProps) {
 				<div className="panel-heading mobile">
 					<select
 						value={playlist?.plaid}
-						onChange={(e) => setPlaylistInfo(props.side, context, e.target.value)}
+						onChange={e => setPlaylistInfo(props.side, context, e.target.value)}
 					>
-						{props.playlistList?.map((playlist) => {
+						{props.playlistList?.map(playlist => {
 							return (
 								<option key={playlist?.plaid} value={playlist?.plaid}>
 									{playlist?.name}
@@ -392,9 +392,9 @@ function PlaylistHeader(props: IProps) {
 					<i className="fas fa-arrow-right" />
 					<select
 						value={oppositePlaylist?.plaid}
-						onChange={(e) => setOppositePlaylistInfo(props.side, context, e.target.value)}
+						onChange={e => setOppositePlaylistInfo(props.side, context, e.target.value)}
 					>
-						{props.playlistList?.map((playlist) => {
+						{props.playlistList?.map(playlist => {
 							return (
 								<option key={playlist?.plaid} value={playlist?.plaid}>
 									{playlist?.name}

@@ -30,7 +30,7 @@ export async function setPlaylistInfoLeft(dispatch: Dispatch<PlaylistInfo>, plai
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
 		plaid =
 			cookie !== null &&
-			(isNonStandardPlaylist(cookie) || playlistList.find((playlist) => playlist.plaid === cookie))
+			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie))
 				? cookie
 				: nonStandardPlaylists.library;
 	}
@@ -48,9 +48,9 @@ export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, pla
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
 		plaid =
 			cookie !== null &&
-			(isNonStandardPlaylist(cookie) || playlistList.find((playlist) => playlist.plaid === cookie))
+			(isNonStandardPlaylist(cookie) || playlistList.find(playlist => playlist.plaid === cookie))
 				? cookie
-				: playlistList.find((playlist) => playlist.flag_current).plaid;
+				: playlistList.find(playlist => playlist.flag_current).plaid;
 	}
 	const playlist = await getPlaylistInfo(plaid);
 	localStorage.setItem('mugenPlVal2', playlist.plaid);

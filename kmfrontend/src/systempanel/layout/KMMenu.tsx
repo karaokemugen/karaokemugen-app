@@ -12,7 +12,7 @@ function KMMenu() {
 
 	const haveMaintainerModeRepo =
 		context.globalState.settings.data.config?.System?.Repositories.filter(
-			(repo) => repo.Online && repo.MaintainerMode && repo.Enabled
+			repo => repo.Online && repo.MaintainerMode && repo.Enabled
 		).length > 0;
 
 	return (

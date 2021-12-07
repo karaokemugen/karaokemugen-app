@@ -4,7 +4,7 @@ import { getConfig, setConfig } from '../../lib/utils/config';
 import { MenuItemBuilderFunction } from '../../types/electron';
 import { updateChibiPlayerWindow, updateChibiPlaylistWindow } from '../electron';
 
-const builder: MenuItemBuilderFunction = (options) => {
+const builder: MenuItemBuilderFunction = options => {
 	const { layout } = options;
 	const isReduced = layout === 'REDUCED';
 	return {

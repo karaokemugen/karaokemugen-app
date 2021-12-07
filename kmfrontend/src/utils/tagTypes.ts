@@ -100,5 +100,5 @@ export const YEARS = {
 };
 
 export function getTagTypeName(type: number): string {
-	return Object.keys(tagTypes).find((t) => tagTypes[t].type === type);
+	return Object.keys(tagTypes).find(t => tagTypes[t].type === type);
 }

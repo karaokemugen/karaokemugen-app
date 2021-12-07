@@ -140,7 +140,7 @@ function PublicPage(props: RouteComponentProps) {
 	const getPlaylistList = async () => {
 		try {
 			const playlistsList = await commandBackend('getPlaylists');
-			playlistsList.forEach((playlist) => {
+			playlistsList.forEach(playlist => {
 				if (playlist.flag_public) {
 					setPublicVisible(playlist.flag_visible);
 				}
@@ -229,7 +229,7 @@ function PublicPage(props: RouteComponentProps) {
 		setIndexKaraDetail(indexKaraDetail);
 	};
 
-	const changeFilterValue = (e) => {
+	const changeFilterValue = e => {
 		if (timerFilter) clearTimeout(timerFilter);
 		timerFilter = setTimeout(
 			() =>
@@ -322,7 +322,7 @@ function PublicPage(props: RouteComponentProps) {
 		<>
 			<PublicHeader
 				openModal={(type: string) => props.history.push(`/public/${type}`)}
-				onResize={(top) => setTop(top)}
+				onResize={top => setTop(top)}
 				changeView={changeView}
 				currentView={view}
 				currentVisible={currentVisible}
@@ -333,7 +333,7 @@ function PublicPage(props: RouteComponentProps) {
 				show={view !== 'home'}
 				currentVisible={currentVisible}
 				goToCurrentPL={() => changeView('currentPlaylist')}
-				onResize={(bottom) => setBottom(bottom)}
+				onResize={bottom => setBottom(bottom)}
 			/>
 			<KmAppWrapperDecorator
 				single

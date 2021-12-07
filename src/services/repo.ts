@@ -101,7 +101,7 @@ export async function addRepo(repo: Repository) {
 }
 
 export async function updateAllRepos() {
-	const repos = getRepos().filter((r) => r.Online && r.Enabled);
+	const repos = getRepos().filter(r => r.Online && r.Enabled);
 	let doGenerate = false;
 	logger.info('Updating all repositories', { service: 'Repo' });
 	for (const repo of repos) {
@@ -191,7 +191,7 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 	}
 	await Promise.all(deletePromises);
 	updateDownloaded(
-		karas.content.map((k) => k.kid),
+		karas.content.map(k => k.kid),
 		'MISSING'
 	);
 }
@@ -266,7 +266,7 @@ async function newZipRepo(repo: Repository): Promise<string> {
 	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo.Name);
 	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
 	if (repo.AutoMediaDownloads === 'all')
-		updateMedias(repo.Name).catch((e) => {
+		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {
 				// Do nothing. It's okay.
 			} else {
@@ -333,8 +333,8 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	}
 	if (doGenerate) await generateDB();
 	if (oldRepo.Path.Medias !== repo.Path.Medias && DBReady && onlineCheck) {
-		getKaras({ q: `r:${repo.Name}` }).then((karas) => {
-			checkDownloadStatus(karas.content.map((k) => k.kid));
+		getKaras({ q: `r:${repo.Name}` }).then(karas => {
+			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
 	}
 }
@@ -421,7 +421,7 @@ export async function updateGitRepo(name: string) {
 				await git.pull();
 				// Once pulled, let's check if we have KM Stashes to pop
 				const stashes = await git.stashList();
-				const KMStashes = stashes.all.filter((s) => s.message.includes('[KMStash]'));
+				const KMStashes = stashes.all.filter(s => s.message.includes('[KMStash]'));
 				// We'll add all stashes to a commit that we'll amend on each stash until we get it right
 				if (KMStashes.length > 0) {
 					let firstCommit = true;
@@ -480,8 +480,8 @@ export async function updateGitRepo(name: string) {
 }
 
 async function applyChanges(changes: Change[], repo: Repository) {
-	const tagFiles = changes.filter((f) => f.path.endsWith('.tag.json'));
-	const karaFiles = changes.filter((f) => f.path.endsWith('.kara.json'));
+	const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
+	const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
 	const TIDsToDelete = [];
 	const tagPromises = [];
 	for (const match of tagFiles) {
@@ -582,7 +582,7 @@ export async function newGitRepo(repo: Repository) {
 	await git.clone();
 	git.setRemote().catch();
 	if (repo.AutoMediaDownloads === 'all')
-		updateMedias(repo.Name).catch((e) => {
+		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {
 				// Do nothing. It's okay.
 			} else {
@@ -610,8 +610,8 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 		type KaraMap = Map<string, Kara>;
 		const karas1Map: KaraMap = new Map();
 		const karas2Map: KaraMap = new Map();
-		karas1.forEach((k) => karas1Map.set(k.kid, k));
-		karas2.forEach((k) => karas2Map.set(k.kid, k));
+		karas1.forEach(k => karas1Map.set(k.kid, k));
+		karas2.forEach(k => karas2Map.set(k.kid, k));
 		const differentChecksums = [];
 		for (const kara1 of karas1Map.values()) {
 			const kara2 = karas2Map.get(kara1.kid);
@@ -711,8 +711,8 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 	});
 	try {
 		const [karas, mediaFiles] = await Promise.all([getKaras({}), listAllFiles('Medias', repo)]);
-		const mediasFilesKaras: string[] = karas.content.map((k) => k.mediafile);
-		return mediaFiles.filter((file) => !mediasFilesKaras.includes(basename(file)));
+		const mediasFilesKaras: string[] = karas.content.map(k => k.mediafile);
+		return mediaFiles.filter(file => !mediasFilesKaras.includes(basename(file)));
 	} catch (err) {
 		if (err?.code === 404) throw err;
 		sentry.error(err);
@@ -734,7 +734,7 @@ export async function findUnusedTags(repo: string): Promise<DBTag[]> {
 	if (!getRepo(repo)) throw { code: 404 };
 	try {
 		const tags = await getTags({});
-		const tagsToDelete = tags.content.filter((t) => !t.karacount && t.repository === repo);
+		const tagsToDelete = tags.content.filter(t => !t.karacount && t.repository === repo);
 		// Return all valid tags
 		return tagsToDelete;
 	} catch (err) {
@@ -786,15 +786,15 @@ export async function generateCommits(repoName: string) {
 		const repo = getRepo(repoName);
 		const git = await setupGit(repo);
 		const status = await git.status();
-		const deletedSongs = status.deleted.filter((f) => f.endsWith('kara.json'));
-		const deletedTags = status.deleted.filter((f) => f.endsWith('tag.json'));
-		const addedSongs = status.not_added.filter((f) => f.endsWith('kara.json'));
-		const modifiedSongs = status.modified.filter((f) => f.endsWith('kara.json'));
-		let addedTags = status.not_added.filter((f) => f.endsWith('tag.json'));
-		let modifiedTags = status.modified.filter((f) => f.endsWith('tag.json'));
-		let modifiedLyrics = status.modified.filter((f) => f.endsWith('.ass'));
-		let deletedLyrics = status.deleted.filter((f) => f.endsWith('.ass'));
-		let addedLyrics = status.not_added.filter((f) => f.endsWith('.ass'));
+		const deletedSongs = status.deleted.filter(f => f.endsWith('kara.json'));
+		const deletedTags = status.deleted.filter(f => f.endsWith('tag.json'));
+		const addedSongs = status.not_added.filter(f => f.endsWith('kara.json'));
+		const modifiedSongs = status.modified.filter(f => f.endsWith('kara.json'));
+		let addedTags = status.not_added.filter(f => f.endsWith('tag.json'));
+		let modifiedTags = status.modified.filter(f => f.endsWith('tag.json'));
+		let modifiedLyrics = status.modified.filter(f => f.endsWith('.ass'));
+		let deletedLyrics = status.deleted.filter(f => f.endsWith('.ass'));
+		let addedLyrics = status.not_added.filter(f => f.endsWith('.ass'));
 		let commits: Commit[] = [];
 		// These are to keep track of if files have been renamed or not
 		const deletedTIDFiles = new Map<string, string>();
@@ -826,12 +826,12 @@ export async function generateCommits(repoName: string) {
 				message: `🔥 🎤 Delete ${song}`,
 			};
 			// Find out if we have a deleted lyrics as well (we should have one but you never know, it could be a zxx song!)
-			const lyricsFile = deletedLyrics.find((f) => basename(f) === `${song}.ass`);
+			const lyricsFile = deletedLyrics.find(f => basename(f) === `${song}.ass`);
 			if (lyricsFile) {
 				commit.removedFiles.push(lyricsFile);
 			}
 			commit.removedFiles.push(file);
-			deletedLyrics = deletedLyrics.filter((f) => f !== lyricsFile);
+			deletedLyrics = deletedLyrics.filter(f => f !== lyricsFile);
 			commits.push(commit);
 			// Let's add the song to the deleted KIDs
 			const karaFile = await git.show(`HEAD:${file}`);
@@ -872,7 +872,7 @@ export async function generateCommits(repoName: string) {
 				message: `🆕 🎤 Add ${song}`,
 			};
 			// We need to find out if some tags have been added or modified and add them to our commit
-			const kara = karas.content.find((k) => k.karafile === basename(file));
+			const kara = karas.content.find(k => k.karafile === basename(file));
 			if (!kara) {
 				logger.warn(`File "${file}" does not seem to be in database? Skipping`, { service: 'Repo' });
 				continue;
@@ -895,16 +895,16 @@ export async function generateCommits(repoName: string) {
 					// This is actually modified kara.
 					commit.message = `📝 🎤 Modify ${song}`;
 					// Let's remove the commit containing our song deletion and add the deletion in this commit
-					commits = commits.filter((c) => !c.removedFiles.includes(oldKaraFile));
+					commits = commits.filter(c => !c.removedFiles.includes(oldKaraFile));
 					commit.removedFiles = [oldKaraFile];
 					// If the karafile has been modified, chances are the media has been as well.
 					oldMediaFile = deletedKIDData.get(kara.kid).medias[0].filename;
 					// We need to remove from modifiedMedias our delete
-					modifiedMedias = modifiedMedias.filter((m) => m.new !== null && m.old !== oldMediaFile);
+					modifiedMedias = modifiedMedias.filter(m => m.new !== null && m.old !== oldMediaFile);
 					// We need to do the same with lyrics
 					// Problems is that lyrics have already been deleted so we're going to pick the ass from the status itself
 					const oldSong = basename(oldKaraFile, '.kara.json');
-					const lyricsFile = status.deleted.find((f) => f.includes(`${oldSong}.ass`));
+					const lyricsFile = status.deleted.find(f => f.includes(`${oldSong}.ass`));
 					if (lyricsFile) {
 						commit.removedFiles.push(lyricsFile);
 					}
@@ -918,22 +918,22 @@ export async function generateCommits(repoName: string) {
 				commit: commit.message,
 			});
 			for (const tid of kara.tid) {
-				const tagfile = tags.content.find((t) => t.tid === tid.split('~')[0]).tagfile;
-				const addedTag = addedTags.find((f) => basename(f) === tagfile);
+				const tagfile = tags.content.find(t => t.tid === tid.split('~')[0]).tagfile;
+				const addedTag = addedTags.find(f => basename(f) === tagfile);
 				if (addedTag) {
 					commit.addedFiles.push(addedTag);
-					addedTags = addedTags.filter((f) => basename(f) !== tagfile);
+					addedTags = addedTags.filter(f => basename(f) !== tagfile);
 				}
 				// Let's do the same for modified tags. For example if a new song uses a tag previously used else where in another category, then the tag has been modified and should be added with the kara
-				const modifiedTag = modifiedTags.find((f) => basename(f) === tagfile);
+				const modifiedTag = modifiedTags.find(f => basename(f) === tagfile);
 				if (modifiedTag) {
 					commit.addedFiles.push(modifiedTag);
-					modifiedTags = modifiedTags.filter((f) => basename(f) !== tagfile);
+					modifiedTags = modifiedTags.filter(f => basename(f) !== tagfile);
 				}
 			}
 			if (kara.subfile) {
-				const lyricsFile = addedLyrics.find((f) => basename(f) === kara.subfile);
-				addedLyrics = addedLyrics.filter((f) => f !== lyricsFile);
+				const lyricsFile = addedLyrics.find(f => basename(f) === kara.subfile);
+				addedLyrics = addedLyrics.filter(f => f !== lyricsFile);
 				commit.addedFiles.push(lyricsFile);
 			}
 			commits.push(commit);
@@ -949,7 +949,7 @@ export async function generateCommits(repoName: string) {
 			};
 			// Modified songs can be ernamed so we need to find out how it was named before
 			// We need to find out if some tags have been added or modified and add them to our commit
-			const kara = karas.content.find((k) => k.karafile === basename(file));
+			const kara = karas.content.find(k => k.karafile === basename(file));
 			if (!kara) {
 				logger.warn(`File "${file}" does not seem to be in database? Skipping`, { service: 'Repo' });
 				continue;
@@ -979,31 +979,31 @@ export async function generateCommits(repoName: string) {
 			}
 
 			for (const tid of kara.tid) {
-				const tag = tags.content.find((t) => t.tid === tid.split('~')[0]);
+				const tag = tags.content.find(t => t.tid === tid.split('~')[0]);
 				const tagfile = tag.tagfile;
-				const addedTag = addedTags.find((f) => basename(f) === tagfile);
+				const addedTag = addedTags.find(f => basename(f) === tagfile);
 				if (addedTag) {
 					commit.addedFiles.push(addedTag);
-					addedTags = addedTags.filter((f) => basename(f) !== tagfile);
+					addedTags = addedTags.filter(f => basename(f) !== tagfile);
 				}
 				// Let's do the same for modified tags. For example if a new song uses a tag previously used else where in another category, then the tag has been modified and should be added with the kara
-				const modifiedTag = modifiedTags.find((f) => basename(f) === tagfile);
+				const modifiedTag = modifiedTags.find(f => basename(f) === tagfile);
 				if (modifiedTag) {
 					commit.addedFiles.push(modifiedTag);
-					modifiedTags = modifiedTags.filter((f) => basename(f) !== tagfile);
+					modifiedTags = modifiedTags.filter(f => basename(f) !== tagfile);
 				}
 			}
 			if (kara.subfile) {
 				// For modified songs, we check first for added lyrics, then for modified lyrics.
-				let lyricsFile = addedLyrics.find((f) => basename(f) === kara.subfile);
+				let lyricsFile = addedLyrics.find(f => basename(f) === kara.subfile);
 				if (lyricsFile) {
-					addedLyrics = addedLyrics.filter((f) => f !== lyricsFile);
+					addedLyrics = addedLyrics.filter(f => f !== lyricsFile);
 					commit.addedFiles.push(lyricsFile);
 				} else {
 					// Checking modified lyrics. If none is found then lyrics have not been modified
-					lyricsFile = modifiedLyrics.find((f) => basename(f) === kara.subfile);
+					lyricsFile = modifiedLyrics.find(f => basename(f) === kara.subfile);
 					if (lyricsFile) {
-						modifiedLyrics = modifiedLyrics.filter((f) => f !== lyricsFile);
+						modifiedLyrics = modifiedLyrics.filter(f => f !== lyricsFile);
 						commit.addedFiles.push(lyricsFile);
 					}
 				}

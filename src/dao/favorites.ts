@@ -16,7 +16,7 @@ export async function selectFavoritesMicro(params: KaraParams) {
 }
 
 export function deleteFavorites(fList: string[], username: string) {
-	const karas = fList.map((kara) => [kara, username]);
+	const karas = fList.map(kara => [kara, username]);
 	return transaction({ params: karas, sql: sqlremoveFavorites });
 }
 
@@ -25,6 +25,6 @@ export function truncateFavorites(username: string) {
 }
 
 export function insertFavorites(karaList: string[], username: string) {
-	const karas = karaList.map((kara) => [kara, username]);
+	const karas = karaList.map(kara => [kara, username]);
 	return transaction({ params: karas, sql: sqlinsertFavorites });
 }

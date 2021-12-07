@@ -15,7 +15,7 @@ interface IProps {
 
 function mapDrives(drives: { mount: string; label: string }[]) {
 	return {
-		contents: drives.map<ListingElement>((d) => {
+		contents: drives.map<ListingElement>(d => {
 			return { name: d.mount, isDirectory: true, drive: d.label };
 		}),
 		fullPath: '',
@@ -43,7 +43,7 @@ type ListingElement = { name: string; isDirectory: boolean; back?: boolean; driv
 type Listing = ListingElement[];
 
 function computeListing(listing: Listing, path: string, seeFiles: boolean): Listing {
-	const filteredListing = seeFiles ? listing : listing.filter((el) => el.isDirectory);
+	const filteredListing = seeFiles ? listing : listing.filter(el => el.isDirectory);
 	if (path === '/' || path === '') {
 		return filteredListing; // as is
 	} else {
@@ -103,7 +103,7 @@ export default function FileSystem(props: IProps) {
 				</div>
 			}
 			dataSource={listing}
-			renderItem={(item) =>
+			renderItem={item =>
 				!item.isDirectory && !props.seeFiles ? null : (
 					<List.Item>
 						<Button

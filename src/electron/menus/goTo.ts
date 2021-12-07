@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import { MenuItemBuilderFunction } from '../../types/electron';
 import { urls } from '.';
 
-const builder: MenuItemBuilderFunction = (options) => {
+const builder: MenuItemBuilderFunction = options => {
 	const { isMac, layout } = options;
 	if (layout === 'REDUCED') {
 		return null;

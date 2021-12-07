@@ -53,7 +53,7 @@ export async function manageFavoriteInInstanceBatch(
 	kids: string[],
 	token: string
 ) {
-	await Promise.all(kids.map((kid) => manageFavoriteInInstance(action, username, kid, token)));
+	await Promise.all(kids.map(kid => manageFavoriteInInstance(action, username, kid, token)));
 }
 
 export async function addToFavorites(username: string, kids: string[], onlineToken?: string, updateRemote = true) {
@@ -83,7 +83,7 @@ export async function convertToRemoteFavorites(username: string, token: string) 
 		username: username,
 		userFavorites: username,
 	});
-	const localFavorites = favorites.content.map((fav) => fav.kid);
+	const localFavorites = favorites.content.map(fav => fav.kid);
 	if (localFavorites.length > 0) {
 		await manageFavoriteInInstanceBatch('POST', username, localFavorites, token);
 	}
@@ -135,15 +135,15 @@ export async function exportFavorites(username: string) {
 			version: 1,
 			description: 'Karaoke Mugen Favorites List File',
 		},
-		Favorites: favs.content.map((k) => {
+		Favorites: favs.content.map(k => {
 			// Only the kid property is mandatory, the rest is just decoration so the person can know which song is which in the file
 			return {
 				kid: k.kid,
 				titles: k.titles,
 				songorder: k.songorder,
-				serie: k.series.map((s) => s.name).join(' '),
-				songtype: k.songtypes.map((s) => s.name).join(' '),
-				language: k.langs.map((s) => s.name).join(' '),
+				serie: k.series.map(s => s.name).join(' '),
+				songtype: k.songtypes.map(s => s.name).join(' '),
+				language: k.langs.map(s => s.name).join(' '),
 			};
 		}),
 	};
@@ -161,21 +161,21 @@ export async function importFavorites(
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File')
 		throw { code: 400, msg: 'Not a favorites list' };
 	if (!Array.isArray(favs.Favorites)) throw { code: 400, msg: 'Favorites item is not an array' };
-	if (favs.Favorites.some((f) => !new RegExp(uuidRegexp).test(f.kid)))
+	if (favs.Favorites.some(f => !new RegExp(uuidRegexp).test(f.kid)))
 		throw { code: 400, msg: 'One item in the favorites list is not a UUID' };
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {
 		if (emptyBefore) {
 			await truncateFavorites(username);
 		}
-		const favorites = favs.Favorites.map((f) => f.kid);
+		const favorites = favs.Favorites.map(f => f.kid);
 		const [karasUnknown, userFavorites] = await Promise.all([
 			isAllKaras(favorites),
 			getFavorites({ userFavorites: username }),
 		]);
 		// Removing favorites already added
-		const mappedUserFavorites = userFavorites.content.map((uf) => uf.kid);
-		const favoritesToAdd = favorites.filter((f) => !mappedUserFavorites.includes(f));
+		const mappedUserFavorites = userFavorites.content.map(uf => uf.kid);
+		const favoritesToAdd = favorites.filter(f => !mappedUserFavorites.includes(f));
 		if (favoritesToAdd.length > 0) await addToFavorites(username, favoritesToAdd, token, updateRemote);
 		emitWS('favoritesUpdated', username);
 		return { karasUnknown: karasUnknown };
@@ -199,7 +199,7 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 				userFavorites: user,
 			});
 			for (const f of favs.content) {
-				if (!faves.find((fav) => fav.kid === f.kid))
+				if (!faves.find(fav => fav.kid === f.kid))
 					faves.push({
 						kid: f.kid,
 						username: user,
@@ -212,7 +212,7 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 
 export async function createAutoMix(params: AutoMixParams, username: string): Promise<AutoMixPlaylistInfo> {
 	profile('AutoMix');
-	params.users = params.users.map((u) => u.toLowerCase());
+	params.users = params.users.map(u => u.toLowerCase());
 	try {
 		const favs = await getAllFavorites(params.users);
 		if (favs.length === 0) throw { code: 404, msg: 'AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS' };
@@ -228,11 +228,11 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		// Copy karas from everyone listed
 		const addPromises = [];
 		for (const user of params.users) {
-			const userFaves = favs.filter((f) => f.username === user);
+			const userFaves = favs.filter(f => f.username === user);
 			if (userFaves.length > 0) {
 				addPromises.push(
 					addKaraToPlaylist(
-						userFaves.map((f) => f.kid),
+						userFaves.map(f => f.kid),
 						user,
 						plaid,
 						null,

@@ -125,7 +125,7 @@ export async function postInit() {
 }
 
 function registerKMProtocol() {
-	protocol.registerStringProtocol('km', (req) => {
+	protocol.registerStringProtocol('km', req => {
 		const args = req.url.substr(5).split('/');
 		handleProtocol(args);
 	});
@@ -231,7 +231,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 		if (!getState().ready) return;
 		if (!username) {
 			const users = await selectUsers();
-			const adminUsersOnline = users.filter((u) => u.type === 0 && u.login !== 'admin');
+			const adminUsersOnline = users.filter(u => u.type === 0 && u.login !== 'admin');
 			// We have no other choice but to pick only the first one
 			username = adminUsersOnline[0]?.login;
 			if (!username) {

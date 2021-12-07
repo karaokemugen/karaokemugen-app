@@ -53,7 +53,7 @@ export default function LanguagesList(props: IProps) {
 	}
 	return (
 		<>
-			{Object.keys(i18n).map((langKey) => (
+			{Object.keys(i18n).map(langKey => (
 				<Row key={langKey} style={{ maxWidth: '65%', minWidth: '150px' }}>
 					<Col style={{ width: '80%' }}>
 						<Form.Item
@@ -70,7 +70,7 @@ export default function LanguagesList(props: IProps) {
 								autoFocus={inputToFocus === langKey}
 								value={i18n[langKey]}
 								placeholder={i18next.t('TAGS.I18N_NAME')}
-								onChange={(event) => setValueLanguage(event.target.value, langKey)}
+								onChange={event => setValueLanguage(event.target.value, langKey)}
 							/>
 						</Form.Item>
 					</Col>
@@ -93,9 +93,9 @@ export default function LanguagesList(props: IProps) {
 						showSearch
 						optionFilterProp="children"
 						autoFocus={selectVisible}
-						onChange={(value) => addLang(value)}
+						onChange={value => addLang(value)}
 					>
-						{languages.map((lang) => (
+						{languages.map(lang => (
 							<Select.Option key={lang.value} value={lang.value}>
 								{lang.label} ({lang.value.toUpperCase()})
 							</Select.Option>

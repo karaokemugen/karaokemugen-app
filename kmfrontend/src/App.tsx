@@ -50,7 +50,7 @@ class App extends Component<unknown, AppState> {
 		getSocket().off('noFreeSpace', this.warningNoFreeSpace);
 	}
 
-	setFavorites = (username) => {
+	setFavorites = username => {
 		if (username === this.context.globalState.auth.data.username) {
 			this.setSettings();
 		}

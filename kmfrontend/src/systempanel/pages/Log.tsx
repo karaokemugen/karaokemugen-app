@@ -29,7 +29,7 @@ class Log extends Component<unknown, LogState> {
 		this.refresh().then(() => {
 			if (this.context.globalState.settings?.data.state) {
 				if (!isRemote()) {
-					getSocket().on('log', (log) => {
+					getSocket().on('log', log => {
 						const logs = [...this.state.log];
 						logs.push(log);
 						this.setState({ log: logs });
@@ -53,7 +53,7 @@ class Log extends Component<unknown, LogState> {
 		if (res) this.setState({ log: res });
 	};
 
-	setLevel = (level) => {
+	setLevel = level => {
 		this.setState({ level, log: [] }, this.refresh);
 	};
 

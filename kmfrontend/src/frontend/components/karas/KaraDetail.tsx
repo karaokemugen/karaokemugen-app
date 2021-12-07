@@ -125,7 +125,7 @@ export default function KaraDetail(props: IProps) {
 			if (response?.length > 0) {
 				response = formatLyrics(response);
 			}
-			setLyrics(response?.map((value) => value.text) || []);
+			setLyrics(response?.map(value => value.text) || []);
 		} catch (e) {
 			// already display
 		}
@@ -176,7 +176,7 @@ export default function KaraDetail(props: IProps) {
 						<br />
 						<button
 							className="btn"
-							onClick={(e) => {
+							onClick={e => {
 								e.preventDefault();
 								e.stopPropagation();
 								commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.data.plc.plcid] })
@@ -332,7 +332,7 @@ export default function KaraDetail(props: IProps) {
 			);
 
 		const modifyKaraokeButton = context.globalState.settings.data.config?.System?.Repositories.filter(
-			(value) => value.Name === kara.repository
+			value => value.Name === kara.repository
 		)[0].MaintainerMode ? (
 			<a href={`/system/karas/${kara.kid}`}>
 				<button type="button" className="btn btn-action">
@@ -353,7 +353,7 @@ export default function KaraDetail(props: IProps) {
 				autoPlay={true}
 				loop={true}
 				playsInline={true}
-				onLoadStart={(e) => (e.currentTarget.volume = 0.5)}
+				onLoadStart={e => (e.currentTarget.volume = 0.5)}
 				className={`modal-video${props.scope === 'public' ? ' public' : ''}`}
 			/>
 		) : null;

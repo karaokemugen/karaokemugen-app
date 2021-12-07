@@ -82,7 +82,7 @@ export async function removeSession(seid: string) {
 
 export async function findSession(seid: string): Promise<Session> {
 	const sessions = await selectSessions();
-	return sessions.find((s) => s.seid === seid);
+	return sessions.find(s => s.seid === seid);
 }
 
 export async function mergeSessions(seid1: string, seid2: string): Promise<Session> {
@@ -220,23 +220,23 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			],
 			alwaysQuote: true,
 		});
-		const recordsPlayed = played.map((k) => {
+		const recordsPlayed = played.map(k => {
 			return {
 				played_at: k.lastplayed_at.toLocaleString(),
 				seriesinger: getSongSeriesSingers(k),
 				version: getSongVersion(k),
-				songtype: k.songtypes.map((s) => s.name).join(', '),
+				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: getSongTitle(k),
 				kid: k.kid,
 			};
 		});
-		const recordsRequested = requested.map((k) => {
+		const recordsRequested = requested.map(k => {
 			return {
 				requested_at: k.lastrequested_at.toLocaleString(),
 				seriesinger: getSongSeriesSingers(k),
 				version: getSongVersion(k),
-				songtype: k.songtypes.map((s) => s.name).join(', '),
+				songtype: k.songtypes.map(s => s.name).join(', '),
 				order: k.songorder ? k.songorder : '',
 				title: getSongTitle(k),
 				kid: k.kid,
@@ -253,7 +253,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		}
 		const recordsPlayedCount = recordsPlayed
 			.filter((e, pos) => {
-				return recordsPlayed.findIndex((i) => i.kid === e.kid) === pos;
+				return recordsPlayed.findIndex(i => i.kid === e.kid) === pos;
 			})
 			.map((k: any) => {
 				const kara = Object.assign({}, k);
@@ -264,7 +264,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 			});
 		const recordsRequestedCount = recordsRequested
 			.filter((e, pos) => {
-				return recordsRequested.findIndex((i) => i.kid === e.kid) === pos;
+				return recordsRequested.findIndex(i => i.kid === e.kid) === pos;
 			})
 			.map((k: any) => {
 				const kara = Object.assign({}, k);

@@ -203,7 +203,7 @@ function KaraLine(props: IProps) {
 		const data = props.kara;
 
 		if (data.langs && (props.scope === 'public' || is_touch_device())) {
-			const isMulti = data.langs.find((e) => e.name.indexOf('mul') > -1);
+			const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
 			isMulti
 				? karaTags.push(
 						<div key={isMulti.tid} className="tag">
@@ -246,7 +246,7 @@ function KaraLine(props: IProps) {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(
-					...data[typeData.karajson].sort(sortTagByPriority).map((tag) => {
+					...data[typeData.karajson].sort(sortTagByPriority).map(tag => {
 						return (
 							<div
 								key={tag.tid}
@@ -264,7 +264,7 @@ function KaraLine(props: IProps) {
 				);
 			}
 		}
-		return karaTags.filter((el) => !!el);
+		return karaTags.filter(el => !!el);
 	})();
 
 	const isProblematic = () => {
@@ -279,8 +279,8 @@ function KaraLine(props: IProps) {
 
 	const getSerieOrSingers = (data: KaraElement) => {
 		return data.series && data.series.length > 0
-			? data.series.map((e) => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ')
-			: data.singers.map((e) => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ');
+			? data.series.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ')
+			: data.singers.map(e => getTagInLocale(context?.globalState.settings.data, e, props.i18nTag)).join(', ');
 	};
 
 	const openKaraMenu = (event: MouseEvent) => {
@@ -426,7 +426,7 @@ function KaraLine(props: IProps) {
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
 												tags: problematic
-													.map((t) =>
+													.map(t =>
 														getTagInLocale(
 															context?.globalState.settings.data,
 															t,
@@ -473,7 +473,7 @@ function KaraLine(props: IProps) {
 									</div>
 									<div className="tagConteneur">
 										{karaTags}
-										{kara.versions?.sort(sortTagByPriority).map((t) => (
+										{kara.versions?.sort(sortTagByPriority).map(t => (
 											<span className="tag white" key={t.tid}>
 												{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
 											</span>
@@ -497,7 +497,7 @@ function KaraLine(props: IProps) {
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
 												tags: problematic
-													.map((t) =>
+													.map(t =>
 														getTagInLocale(
 															context?.globalState.settings.data,
 															t,
@@ -563,7 +563,7 @@ function KaraLine(props: IProps) {
 								{scope === 'admin' ? (
 									<button
 										title={i18next.t('KARA_MENU.KARA_COMMANDS')}
-										onClick={(event) => {
+										onClick={event => {
 											karaMenu ? closeKaraMenu() : openKaraMenu(event);
 										}}
 										className={

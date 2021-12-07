@@ -26,12 +26,12 @@ class SessionList extends Component<unknown, SessionListState> {
 		this.setState({ sessions: res });
 	};
 
-	deleteSession = async (session) => {
+	deleteSession = async session => {
 		await commandBackend('deleteSession', { seid: session.seid });
 		this.refresh();
 	};
 
-	exportSession = async (session) => {
+	exportSession = async session => {
 		const exportSession: SessionExports = await commandBackend('exportSession', { seid: session.seid });
 		Modal.info({
 			title: i18next.t('SESSIONS.SESSION_EXPORTED_TITLE'),
@@ -103,14 +103,14 @@ class SessionList extends Component<unknown, SessionListState> {
 			title: i18next.t('SESSIONS.STARTED_AT'),
 			dataIndex: 'started_at',
 			key: 'started_at',
-			render: (date) => new Date(date).toLocaleString(),
+			render: date => new Date(date).toLocaleString(),
 			sorter: (a, b) => a.started_at - b.started_at,
 		},
 		{
 			title: i18next.t('SESSIONS.ENDED_AT'),
 			dataIndex: 'ended_at',
 			key: 'ended_at',
-			render: (date) => (date ? new Date(date).toLocaleString() : null),
+			render: date => (date ? new Date(date).toLocaleString() : null),
 			sorter: (a, b) => a.ended_at - b.ended_at,
 		},
 		{

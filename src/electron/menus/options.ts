@@ -5,7 +5,7 @@ import { MenuItemBuilderFunction } from '../../types/electron';
 import { getState } from '../../utils/state';
 import { urls } from './';
 
-const builder: MenuItemBuilderFunction = (options) => {
+const builder: MenuItemBuilderFunction = options => {
 	const { isMac, layout } = options;
 	const isReduced = layout === 'REDUCED';
 	if (isReduced) {

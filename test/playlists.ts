@@ -377,7 +377,7 @@ describe('Playlists', () => {
 		const token = await getToken('adminTest2');
 		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPublicPlaylistID });
 		// Our PLCID should be in first position now
-		const plc: DBPLC = data.content.find((plc) => plc.plcid === currentPLCID);
+		const plc: DBPLC = data.content.find(plc => plc.plcid === currentPLCID);
 		expect(plc.upvotes).to.be.at.least(1);
 		expect(plc.flag_upvoted).to.be.true;
 	});
@@ -391,7 +391,7 @@ describe('Playlists', () => {
 		const token = await getToken('adminTest2');
 		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPublicPlaylistID });
 		// Our PLCID should be in first position now
-		const plc: DBPLC = data.content.find((plc) => plc.plcid === currentPLCID);
+		const plc: DBPLC = data.content.find(plc => plc.plcid === currentPLCID);
 		expect(plc.upvotes).to.be.at.below(1);
 		expect(plc.flag_upvoted).to.be.false;
 	});
@@ -418,7 +418,7 @@ describe('Playlists', () => {
 
 	it('Get list of playlists AFTER deleting playlist', async () => {
 		const data = await commandBackend(token, 'getPlaylists');
-		const plIDs = data.map((pl) => pl.plaid);
+		const plIDs = data.map(pl => pl.plaid);
 		expect(plIDs).to.not.include(publicPlaylistID);
 	});
 
@@ -435,7 +435,7 @@ describe('Playlists', () => {
 	it('Get list of karaokes in a playlist and see if flag_whitelisted is true', async () => {
 		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPlaylistID });
 		expect(data.content.length).to.be.at.least(1);
-		const plc = data.content.find((plc) => plc.kid === whitelistedKID);
+		const plc = data.content.find(plc => plc.kid === whitelistedKID);
 		expect(plc.flag_whitelisted).to.be.true;
 	});
 
@@ -483,8 +483,8 @@ describe('Playlists', () => {
 			],
 		};
 		await commandBackend(token, 'addCriterias', data);
-		return new Promise((resolve) => {
-			socket.on('playlistContentsUpdated', (plaid) => {
+		return new Promise(resolve => {
+			socket.on('playlistContentsUpdated', plaid => {
 				if (plaid === newBlacklistPlaylistID) {
 					socket.off('playlistContentsUpdated');
 					resolve(true);
@@ -515,8 +515,8 @@ describe('Playlists', () => {
 				},
 			],
 		});
-		return new Promise((resolve) => {
-			socket.on('playlistContentsUpdated', (plaid) => {
+		return new Promise(resolve => {
+			socket.on('playlistContentsUpdated', plaid => {
 				if (plaid === newBlacklistPlaylistID) {
 					socket.off('playlistContentsUpdated');
 					resolve();

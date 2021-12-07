@@ -38,8 +38,8 @@ async function getRepos(): Promise<Repo[]> {
 	const repos: Repository[] = await commandBackend('getRepos');
 	return Promise.all(
 		repos
-			.filter((repo) => repo.Online && repo.MaintainerMode && repo.Enabled && repo.Git?.URL)
-			.map(async (repo) => {
+			.filter(repo => repo.Online && repo.MaintainerMode && repo.Enabled && repo.Git?.URL)
+			.map(async repo => {
 				const gitStatus: GitStatusResult = await commandBackend('checkRepo', { repoName: repo.Name });
 				const stashes: GitLogResult = await commandBackend('listRepoStashes', { repoName: repo.Name });
 				let label = i18next.t('REPOSITORIES.GIT_STATUSES.CLEAN');
@@ -123,7 +123,7 @@ function ExpandStashes(props: RenderExpandIconProps<Repo>) {
 	return props.expandable ? (
 		<Button
 			icon={props.expanded ? <DownOutlined /> : <RightOutlined />}
-			onClick={(e) => props.onExpand(props.record, e)}
+			onClick={e => props.onExpand(props.record, e)}
 			type="primary"
 		>
 			{i18next.t('REPOSITORIES.GIT_STASHLIST')}
@@ -165,12 +165,12 @@ export default function Git() {
 		// Remove ignored commits
 		const excludedMessages = pendingPush.commits.commits
 			.filter((_el, i) => excludeList.includes(i))
-			.map((c) => c.message);
+			.map(c => c.message);
 		pendingPush.commits.commits = pendingPush.commits.commits.filter((_el, i) => !excludeList.includes(i));
 		// Remove ignored medias by listing excluded commits messages
 		console.log(excludedMessages);
 		pendingPush.commits.modifiedMedias = pendingPush.commits.modifiedMedias.filter(
-			(m) => !excludedMessages.includes(m.commit)
+			m => !excludedMessages.includes(m.commit)
 		);
 		await commandBackend('pushCommits', pendingPush);
 		setShowPushModal(false);
@@ -178,7 +178,7 @@ export default function Git() {
 
 	const toggleExclude = useCallback(
 		(e: CheckboxChangeEvent) => {
-			const commit = pendingPush.commits.commits.findIndex((el) => el.message === e.target.name);
+			const commit = pendingPush.commits.commits.findIndex(el => el.message === e.target.name);
 			if (commit === -1) {
 				throw new Error('An unknown commit was excluded');
 			} else {
@@ -231,7 +231,7 @@ export default function Git() {
 	}, []);
 
 	useEffect(() => {
-		const listener = (repoName) => {
+		const listener = repoName => {
 			if (repoName === pendingPush.repoName) {
 				setLoading(false);
 				setPendingPush(null);
@@ -312,7 +312,7 @@ export default function Git() {
 					dataSource={repos}
 					columns={columns}
 					expandable={{
-						expandedRowRender: (record) => (
+						expandedRowRender: record => (
 							<MemoStashList
 								stashList={record.stashes}
 								repo={record.repo}
@@ -325,11 +325,11 @@ export default function Git() {
 								setLoading={setLoading}
 							/>
 						),
-						rowExpandable: (record) => record.stashes.total > 0,
+						rowExpandable: record => record.stashes.total > 0,
 						expandIcon: ExpandStashes,
 						defaultExpandAllRows: true,
 					}}
-					rowKey={(rec) => rec.repo.Name}
+					rowKey={rec => rec.repo.Name}
 				/>
 			</Layout.Content>
 			<Modal
@@ -345,7 +345,7 @@ export default function Git() {
 				cancelText={i18next.t('CANCEL')}
 			>
 				<ul>
-					{pendingPush?.commits?.commits?.map((commit) => (
+					{pendingPush?.commits?.commits?.map(commit => (
 						<li key={commit.message}>
 							<Checkbox defaultChecked={true} name={commit.message} onChange={toggleExclude}>
 								{commit.message}

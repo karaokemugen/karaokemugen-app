@@ -32,7 +32,7 @@ function PublicHeader(props: IProps) {
 	const [quotaLeft, setQuotaLeft] = useState<number>();
 	const ref = useRef<HTMLElement>();
 
-	const toggleProfileModal = (e) => {
+	const toggleProfileModal = e => {
 		e.preventDefault();
 		setDropDownMenu(false);
 		if (context.globalState.auth.data.onlineAvailable !== false) {
@@ -42,13 +42,13 @@ function PublicHeader(props: IProps) {
 		}
 	};
 
-	const toggleUsersModal = (e) => {
+	const toggleUsersModal = e => {
 		e.preventDefault();
 		setDropDownMenu(false);
 		props.openModal('users');
 	};
 
-	const goToFavorites = (e) => {
+	const goToFavorites = e => {
 		e.preventDefault();
 		setDropDownMenu(false);
 		props.changeView('favorites');
@@ -95,7 +95,7 @@ function PublicHeader(props: IProps) {
 				<a
 					href="/public"
 					className="nanamin-logo"
-					onClick={(e) => {
+					onClick={e => {
 						e.preventDefault();
 						props.changeView('home');
 					}}
@@ -174,7 +174,7 @@ function PublicHeader(props: IProps) {
 							<div className="link">
 								<a
 									href="/login"
-									onClick={(e) => {
+									onClick={e => {
 										e.preventDefault();
 										logout(context.globalDispatch);
 									}}

@@ -21,7 +21,7 @@ function PublicFixedMenu(props: IProps) {
 			{props.currentVisible ? (
 				<a
 					className="green"
-					onClick={(event) => {
+					onClick={event => {
 						event.preventDefault();
 						props.changeView('currentPlaylist');
 					}}
@@ -35,7 +35,7 @@ function PublicFixedMenu(props: IProps) {
 				context.globalState.settings.data.state.publicPlaid ? (
 				<a
 					className="orange"
-					onClick={(event) => {
+					onClick={event => {
 						event.preventDefault();
 						props.changeView('publicPlaylist');
 					}}
@@ -47,7 +47,7 @@ function PublicFixedMenu(props: IProps) {
 			{context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
 				<a
 					className="blue"
-					onClick={(event) => {
+					onClick={event => {
 						event.preventDefault();
 						props.changeView('search');
 					}}

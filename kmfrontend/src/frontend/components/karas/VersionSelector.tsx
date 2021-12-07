@@ -43,8 +43,8 @@ export default function VersionSelector(props: Props) {
 	const [showVideo, setShowVideo] = useState(false);
 	const context = useContext(GlobalContext);
 
-	const openKara = useCallback((index) => {
-		setIndexOpened((oldIndex) => {
+	const openKara = useCallback(index => {
+		setIndexOpened(oldIndex => {
 			if (oldIndex === index) return -1;
 			else return index;
 		});
@@ -52,10 +52,10 @@ export default function VersionSelector(props: Props) {
 	}, []);
 
 	const refreshKaras = useCallback(
-		(updated) => {
+		updated => {
 			for (const k of updated) {
-				if (karas.findIndex((dbk) => dbk.kid === k.kid) !== -1) {
-					fetchKaras(props.kid).then((res) => {
+				if (karas.findIndex(dbk => dbk.kid === k.kid) !== -1) {
+					fetchKaras(props.kid).then(res => {
 						setI18n(res.i18n);
 						setKaras(res.karas);
 					});
@@ -74,7 +74,7 @@ export default function VersionSelector(props: Props) {
 	}, [karas]);
 
 	useEffect(() => {
-		fetchKaras(props.kid).then((res) => {
+		fetchKaras(props.kid).then(res => {
 			setI18n(res.i18n);
 			setKaras(res.karas);
 		});
@@ -125,7 +125,7 @@ export default function VersionSelector(props: Props) {
 															context.globalState.settings.data,
 															kara.titles
 														)}
-														{kara.versions?.sort(sortTagByPriority).map((t) => (
+														{kara.versions?.sort(sortTagByPriority).map(t => (
 															<span className="tag white inline" key={t.tid}>
 																{getTagInLocale(
 																	context?.globalState.settings.data,
@@ -147,7 +147,7 @@ export default function VersionSelector(props: Props) {
 												<div className="buttons">
 													{kara.my_public_plc_id.length > 0 ? (
 														<button
-															onClick={(e) => {
+															onClick={e => {
 																e.stopPropagation();
 																commandBackend('deleteKaraFromPlaylist', {
 																	plc_ids: kara.my_public_plc_id,
@@ -159,7 +159,7 @@ export default function VersionSelector(props: Props) {
 														</button>
 													) : (
 														<button
-															onClick={async (e) => {
+															onClick={async e => {
 																e.stopPropagation();
 																const res = await commandBackend(
 																	'addKaraToPublicPlaylist',
@@ -200,7 +200,7 @@ export default function VersionSelector(props: Props) {
 													autoPlay={true}
 													loop={true}
 													playsInline={true}
-													onLoadStart={(e) => (e.currentTarget.volume = 0.5)}
+													onLoadStart={e => (e.currentTarget.volume = 0.5)}
 													className={`modal-video${
 														props.scope === 'public' ? ' public' : ''
 													}`}

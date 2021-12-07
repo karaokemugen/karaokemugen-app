@@ -158,7 +158,7 @@ function KaraMenuModal(props: IProps) {
 					<a
 						href="#"
 						onContextMenu={onRightClickTransfer}
-						onClick={(event) => {
+						onClick={event => {
 							props.transferKara(event);
 							props.closeKaraMenu();
 						}}

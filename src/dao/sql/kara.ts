@@ -103,7 +103,7 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.pk_ki
 ${joinClauses.join('')}
 ${additionalFrom.join('')}
 WHERE true
-  ${filterClauses.map((clause) => 'AND (' + clause + ')').reduce((a, b) => a + ' ' + b, '')}
+  ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => a + ' ' + b, '')}
   ${whereClauses}
 GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable ${groupClauseEnd}
 ${havingClause}

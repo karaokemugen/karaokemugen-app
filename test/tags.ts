@@ -87,8 +87,8 @@ describe('Tags', () => {
 	it('Get tag list with our two tags', async () => {
 		const data = await commandBackend(token, 'getTags');
 		const tags: DBTag[] = data.content;
-		expect(tags.some((t) => t.tid === tag1.tid)).to.be.true;
-		expect(tags.some((t) => t.tid === tag2.tid)).to.be.true;
+		expect(tags.some(t => t.tid === tag1.tid)).to.be.true;
+		expect(tags.some(t => t.tid === tag2.tid)).to.be.true;
 	});
 	it('Get single tag', async () => {
 		const data = await commandBackend(token, 'getTag', { tid: tag1.tid });
@@ -109,7 +109,7 @@ describe('Tags', () => {
 		expect(data.content.length).to.be.greaterThan(1);
 		for (const tag of data.content) {
 			testTag(tag, 'tag');
-			const dupeTag = data.content.find((t) => t.tid !== tag.tid && t.name === tag.name);
+			const dupeTag = data.content.find(t => t.tid !== tag.tid && t.name === tag.name);
 			expect(dupeTag.name).to.be.a('string');
 		}
 	});

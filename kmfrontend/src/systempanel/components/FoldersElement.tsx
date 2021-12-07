@@ -138,9 +138,9 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 											checked={this.props.value[0] === element}
 											onChange={() => {
 												const value = (this.state.value as string[])
-													.filter((val) => val === element)
+													.filter(val => val === element)
 													.concat(
-														(this.state.value as string[]).filter((val) => val !== element)
+														(this.state.value as string[]).filter(val => val !== element)
 													);
 												this.setState({ value: value });
 												this.props.onChange && this.props.onChange(value);
@@ -201,7 +201,7 @@ export default class FoldersElement extends Component<FoldersElementProps, Folde
 				>
 					{this.state.visibleModal ? (
 						<FileSystem
-							saveValueModal={(value) => this.setState({ newValueModal: value })}
+							saveValueModal={value => this.setState({ newValueModal: value })}
 							fileRequired={
 								this.state.keyModal?.includes('System.Binaries.ffmpeg') ||
 								this.state.keyModal?.includes('System.Binaries.Player')

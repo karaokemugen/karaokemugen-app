@@ -66,18 +66,14 @@ function OnlineProfileModal(props: IProps) {
 							{props.type === 'convert' ? (
 								<>
 									<label>{i18next.t('INSTANCE_NAME')}</label>
-									<input
-										type="text"
-										value={loginServ}
-										onChange={(e) => setLoginServ(e.target.value)}
-									/>
+									<input type="text" value={loginServ} onChange={e => setLoginServ(e.target.value)} />
 								</>
 							) : null}
 							<label>{i18next.t('PROFILE_PASSWORD_AGAIN')}</label>
 							<input
 								type="password"
 								placeholder={i18next.t('PASSWORD')}
-								onChange={(e) => setPassword(e.target.value)}
+								onChange={e => setPassword(e.target.value)}
 							/>
 						</div>
 						<button className="btn btn-default confirm" onClick={onClick}>
