@@ -58,6 +58,10 @@ export default function Inbox() {
 			title: i18next.t('INBOX.TIMESTAMP'),
 			dataIndex: 'created_at',
 			key: 'created_at',
+			sorter: ((a, b) =>
+				new Date(a.created_at).valueOf() - new Date(b.created_at).valueOf()) as unknown as boolean,
+			sortDirections: ['ascend' as const, 'descend' as const, 'ascend' as const],
+			defaultSortOrder: 'ascend' as const,
 			render: text => new Date(text).toLocaleString(),
 		},
 		{
