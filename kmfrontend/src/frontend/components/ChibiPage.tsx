@@ -174,7 +174,7 @@ function ChibiPage() {
 							id="showSubs"
 							data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
 							className={`btn btn-dark subtitleButton ${
-								statusPlayer?.showSubs ? 'showSubs' : 'hideSubs'
+								statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'
 							}`}
 							onClick={putPlayerCommando}
 						>

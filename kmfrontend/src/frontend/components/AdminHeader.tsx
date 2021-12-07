@@ -321,7 +321,7 @@ function AdminHeader(props: IProps) {
 				title={i18next.t(statusPlayer?.showSubs ? 'HIDE_SUBS' : 'SHOW_SUBS')}
 				id="showSubs"
 				data-namecommand={statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}
-				className={`btn btn-dark subtitleButton ${statusPlayer?.showSubs ? 'showSubs' : 'hideSubs'}`}
+				className={`btn btn-dark subtitleButton ${statusPlayer?.showSubs ? 'hideSubs' : 'showSubs'}`}
 				onClick={props.putPlayerCommando}
 			>
 				<span className="fa-stack">
