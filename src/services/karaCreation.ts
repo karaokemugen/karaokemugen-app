@@ -7,7 +7,7 @@ import { saveSetting } from '../lib/dao/database';
 import {generateKara, validateNewKara} from '../lib/services/karaCreation';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { fileExists, smartMove, resolveFileInDirs } from '../lib/utils/files';
+import { fileExists, resolveFileInDirs,smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';

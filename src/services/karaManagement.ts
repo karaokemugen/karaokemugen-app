@@ -253,7 +253,7 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	}
 	// If karas is not initialized then we're updating ALL search vectors
 	karas
-		? refreshParentSearchVectorTask(Array.from(parentsToUpdate))
+		? refreshParentSearchVectorTask([...parentsToUpdate])
 		: refreshParentSearchVectorTask();
 	if (newTags) {
 		await updateTagSearchVector();

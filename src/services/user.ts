@@ -23,7 +23,7 @@ import { DBUser } from '../lib/types/database/user';
 import {User, UserParams} from '../lib/types/user';
 import {getConfig, resolvedPath, setConfig} from '../lib/utils/config';
 import {asciiRegexp, imageFileTypes} from '../lib/utils/constants';
-import {fileExists, detectFileType} from '../lib/utils/files';
+import {detectFileType,fileExists} from '../lib/utils/files';
 import {emitWS} from '../lib/utils/ws';
 import {Config} from '../types/config';
 import {UserOpts} from '../types/user';

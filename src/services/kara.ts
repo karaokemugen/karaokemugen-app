@@ -183,7 +183,7 @@ export async function fetchPopularSongs() {
 			}
 		}
 		await truncateOnlineRequested();
-		const kidRequested = Array.from(popularKIDs.entries());
+		const kidRequested = [...popularKIDs.entries()];
 		await insertOnlineRequested(kidRequested);
 	} catch(err) {
 		// Non fatal

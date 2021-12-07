@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { APIMessage } from '../controllers/common';
 import {initDownloads, insertDownloads, selectDownloads, truncateDownload, updateDownload, updateDownloaded} from '../dao/download';
 import {getConfig, resolvedPath,resolvedPathRepos} from '../lib/utils/config';
-import {smartMove, resolveFileInDirs} from '../lib/utils/files';
+import {resolveFileInDirs,smartMove} from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import { emit } from '../lib/utils/pubsub';
@@ -81,7 +81,7 @@ export function initDownloadQueue() {
 		emitQueueStatus('stopped');
 		emit('downloadQueueDrained');
 		const karas = await getKaras({
-			q: `k:${Array.from(downloadedKIDs).join(',')}`
+			q: `k:${[...downloadedKIDs].join(',')}`
 		});
 		downloadedKIDs = new Set();
 		createImagePreviews(karas, 'single');

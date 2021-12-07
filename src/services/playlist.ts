@@ -1117,7 +1117,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 		emitWS('playlistsUpdated');
 		return {
 			plaid: plaid,
-			reposUnknown: Array.from(unknownRepos)
+			reposUnknown: [...unknownRepos]
 		};
 	} catch(err) {
 		logger.error('Import failed', {service: 'Playlist', obj: err});
