@@ -17,9 +17,9 @@ When trying to work on a new feature or issue, remember there are two main branc
 - `master` should be used when fixing bugs in the currently running version of Karaoke Mugen. Your fix will be included in the next "bugfix" release.
 - `next` should be used when adding new features or fixing non-urgent bugs.
 
-`master` is regularly merged within `next` when we make bugfixes on it. `next` is merged back on `master` only when doing major release versions.
+Bugfixes should happen on `next` first, unless it only affects `master` versions. `master` is regularly merged within `next` when we make bugfixes on it. `next` is merged back on `master` only when doing major release versions.
 
-So if you want to work  on a new feature for example, create a branch from `next`.
+So if you want to work  on a new feature for example, create a branch or merge request from `next`.
 
 ## Coding
 
@@ -45,6 +45,6 @@ When starting work on an issue, **DO NOT** use the "Create merge request" button
 
 ### Merging
 
-Once your work is ready, remove the `WIP` label at the beginning of the merge request title and add a comment to tell maintainers this is ready to merge.
+Once your work is ready, mark the MR as "Ready" and add a comment to tell maintainers this is ready to merge. (or tell us on Discord)
 
 Maintainers will usually merge by squashing the commits inside the branch unless explicitely stated otherwise.
