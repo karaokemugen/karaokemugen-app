@@ -135,7 +135,14 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos, pc.created_at DESC
 `;
 
-export const sqlgetPlaylistContents = (filterClauses: string[], whereClause: string, orderClause: string, limitClause: string, offsetClause: string, additionalFrom: string) => `
+export const sqlgetPlaylistContents = (
+	filterClauses: string[],
+	whereClause: string,
+	orderClause: string,
+	limitClause: string,
+	offsetClause: string,
+	additionalFrom: string
+) => `
 SELECT
   ak.pk_kid AS kid,
   ak.titles AS titles,
@@ -216,7 +223,7 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
 ${additionalFrom}
 WHERE pc.fk_id_playlist = :plaid
-  ${filterClauses.map(clause => 'AND (' + clause + ')').join(' ')}
+  ${filterClauses.map((clause) => 'AND (' + clause + ')').join(' ')}
   ${whereClause}
 GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
 ORDER BY ${orderClause}
@@ -389,7 +396,6 @@ LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 WHERE  pc.pk_id_plcontent = ANY ($1)
 GROUP BY pl.fk_id_plcontent_playing, pc.fk_kid, ak.titles, ak.mediasize, ak.mediafile, ak.repository, pc.nickname, pc.fk_login, pc.pk_id_plcontent, pc.fk_id_playlist, ak.tags
 `;
-
 
 export const sqlgetPLCByKIDUser = `
 SELECT
@@ -641,7 +647,7 @@ export const sqlselectKarasFromCriterias = {
 	INNER JOIN kara k ON k.download_status = '${value}'
 	WHERE c.type = 1006
 	AND   k.pk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
-	`
+	`,
 };
 
 export const sqlremoveKaraFromPlaylist = `

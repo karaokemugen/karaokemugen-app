@@ -15,12 +15,12 @@ export function requireHTTPAuth(req: any, res: any, next: any) {
 export function requireValidUser(req: any, res: any, next: any) {
 	req.authToken = req.token;
 	checkValidUser(req.token)
-		.then(user => {
+		.then((user) => {
 			req.user = user;
 			next();
 		})
-		.catch(err => {
-			logger.error(`Error checking user : ${JSON.stringify(req.token)}`, {service: 'API', obj: err});
+		.catch((err) => {
+			logger.error(`Error checking user : ${JSON.stringify(req.token)}`, { service: 'API', obj: err });
 			res.status(403).json(APIMessage('USER_UNKNOWN'));
 		});
 }

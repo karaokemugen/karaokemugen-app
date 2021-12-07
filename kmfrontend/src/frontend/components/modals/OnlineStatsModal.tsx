@@ -42,11 +42,7 @@ function OnlineStatsModal() {
 							<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
 						</div>
 						<div className="text">
-							<a
-								className="btn-link"
-								type="button"
-								onClick={() => setOpenDetails(!openDetails)}
-							>
+							<a className="btn-link" type="button" onClick={() => setOpenDetails(!openDetails)}>
 								{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
 							</a>
 							{openDetails ? (
@@ -105,11 +101,7 @@ function OnlineStatsModal() {
 						</div>
 					</div>
 					<div className="modal-footer">
-						<button
-							type="button"
-							className="btn btn-action btn-default ok"
-							onClick={() => onClick()}
-						>
+						<button type="button" className="btn btn-action btn-default ok" onClick={() => onClick()}>
 							{i18next.t('ONLINE_STATS.CONFIRM')}
 						</button>
 					</div>

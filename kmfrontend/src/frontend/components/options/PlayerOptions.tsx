@@ -32,8 +32,8 @@ function PlayerOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value) && !e.target.value.includes('.')
-					? Number(e.target.value)
-					: e.target.value;
+				? Number(e.target.value)
+				: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -52,8 +52,8 @@ function PlayerOptions(props: IProps) {
 			e.target.type === 'checkbox'
 				? e.target.checked
 				: Number(e.target.value) && !e.target.value.includes('.')
-					? Number(e.target.value)
-					: e.target.value;
+				? Number(e.target.value)
+				: e.target.value;
 		if (value === 'true') {
 			value = true;
 		} else if (value === 'false') {
@@ -345,9 +345,7 @@ function PlayerOptions(props: IProps) {
 						<label htmlFor="Player.Display.Avatar">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR')}</span>
 							<br />
-							<span className="tooltip">
-								{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR_TOOLTIP')}
-							</span>
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_AVATAR_TOOLTIP')}</span>
 						</label>
 						<div>
 							<Switch
@@ -362,9 +360,7 @@ function PlayerOptions(props: IProps) {
 						<label htmlFor="Player.Display.Nickname">
 							<span className="title">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME')}</span>
 							<br />
-							<span className="tooltip">
-								{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME_TOOLTIP')}
-							</span>
+							<span className="tooltip">{i18next.t('SETTINGS.PLAYER.DISPLAY_NICKNAME_TOOLTIP')}</span>
 						</label>
 						<div>
 							<Switch
@@ -375,7 +371,7 @@ function PlayerOptions(props: IProps) {
 						</div>
 					</div>
 				</div>
-			) : null}			
+			) : null}
 		</>
 	) : null;
 }

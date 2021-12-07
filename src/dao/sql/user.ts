@@ -6,7 +6,8 @@ export const sqlreassignPlaylistToUser = 'UPDATE playlist SET fk_login = :userna
 
 export const sqlreassignRequestedToUser = 'UPDATE requested SET fk_login = :username WHERE fk_login = :old_username;';
 
-export const sqlreassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
+export const sqlreassignPlaylistContentToUser =
+	'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
 
 export const sqlselectUsers = (params: UserParams) => `
 SELECT
@@ -15,7 +16,9 @@ SELECT
 	u.nickname,
 	u.avatar_file,
 	u.last_login_at,
-	${params.full ? `
+	${
+		params.full
+			? `
 		u.password,
 		u.bio,
 		u.url,
@@ -27,7 +30,9 @@ SELECT
 		u.location AS location,
 		u.language AS language,
 		u.flag_parentsonly AS flag_parentsonly,
-	` : ''}
+	`
+			: ''
+	}
 	(CASE WHEN :last_login_time_limit < u.last_login_at
 		THEN TRUE
 		ELSE FALSE

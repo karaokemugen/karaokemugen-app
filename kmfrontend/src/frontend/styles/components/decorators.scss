@@ -1,4 +1,4 @@
-@import "../../styles/variables";
+@import '../../styles/variables';
 
 .KmAppBodyDecorator {
 	overflow: hidden;
@@ -9,7 +9,7 @@
 		position: relative;
 	}
 
-	&[data-mode="admin"] {
+	&[data-mode='admin'] {
 		.contentDivMobile {
 			flex-basis: 60%;
 		}
@@ -143,7 +143,7 @@
 		}
 	}
 
-	&[data-mode="admin"] {
+	&[data-mode='admin'] {
 		.header-group.controls {
 			flex: auto;
 			text-align: center;
@@ -153,7 +153,7 @@
 		}
 	}
 
-	&[data-mode="public"] {
+	&[data-mode='public'] {
 		.btn.favorites.on {
 			color: orangered;
 		}

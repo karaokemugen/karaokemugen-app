@@ -14,24 +14,24 @@ const builder: MenuItemBuilderFunction = (options) => {
 			{
 				label: i18next.t('MENU_TOOLS_LOGS'),
 				accelerator: 'CmdOrCtrl+L',
-				click: urls.logs
+				click: urls.logs,
 			},
 			{
 				label: i18next.t('MENU_TOOLS_DOWNLOADS'),
 				accelerator: 'CmdOrCtrl+D',
-				click: urls.download
+				click: urls.download,
 			},
 			{
 				label: i18next.t('MENU_TOOLS_KARAOKES'),
 				accelerator: 'CmdOrCtrl+K',
-				click: urls.karas
+				click: urls.karas,
 			},
 			{
 				label: i18next.t('MENU_TOOLS_DATABASE'),
 				accelerator: 'CmdOrCtrl+B',
-				click: urls.database
+				click: urls.database,
 			},
-		]
+		],
 	};
 };
 

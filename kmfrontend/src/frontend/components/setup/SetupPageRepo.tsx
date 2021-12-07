@@ -20,7 +20,9 @@ function SetupPageRepo(props: RouteComponentProps) {
 	};
 
 	const repository = context?.globalState.settings.data.config?.System.Repositories[0].Path.Medias[0];
-	const path = `${getPathForFileSystem(repository)}${context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository}`;
+	const path = `${getPathForFileSystem(repository)}${
+		context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository
+	}`;
 
 	const [repositoryFolder, setRepositoryFolder] = useState(path);
 	const [error, setError] = useState<string>();
@@ -48,9 +50,8 @@ function SetupPageRepo(props: RouteComponentProps) {
 			context?.globalState.settings.data.config?.System.Repositories[0].Name
 		) {
 			const repository = context?.globalState.settings.data.config?.System.Repositories[0].Path.Medias[0];
-			const path = `${getPathForFileSystem(repository)}${context.globalState.settings.data.state.os === 'win32' ?
-				repository.replace(/\//g, '\\')
-				: repository
+			const path = `${getPathForFileSystem(repository)}${
+				context.globalState.settings.data.state.os === 'win32' ? repository.replace(/\//g, '\\') : repository
 			}`;
 			if (repositoryFolder !== path) {
 				try {
@@ -81,12 +82,7 @@ function SetupPageRepo(props: RouteComponentProps) {
 				</p>
 				<p>
 					{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_DESC_1')}
-					<strong>
-						{
-							context?.globalState.settings.data.config?.System.Repositories[0]
-								.Name
-						}
-					</strong>
+					<strong>{context?.globalState.settings.data.config?.System.Repositories[0].Name}</strong>
 					{i18next.t('SETUP_PAGE.DEFAULT_REPOSITORY_DESC_2')}
 				</p>
 				<div className="input-group">

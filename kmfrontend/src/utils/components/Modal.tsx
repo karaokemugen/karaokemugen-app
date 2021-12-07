@@ -13,7 +13,7 @@ interface IProps {
 	message: any;
 	forceSmall: boolean | undefined;
 	callback: (param?: boolean | string) => void;
-	abortCallback?: boolean
+	abortCallback?: boolean;
 }
 
 function Modal(props: IProps) {
@@ -40,7 +40,6 @@ function Modal(props: IProps) {
 		closeModal(context.globalDispatch);
 	};
 
-
 	const keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.code === 'Enter') {
 			confirmModal();
@@ -65,23 +64,28 @@ function Modal(props: IProps) {
 					<div className="modal-header">
 						<h4 className="modal-title">{props.title}</h4>
 					</div>
-					{props.type === 'prompt' || (props.message && props.message !== '') ?
+					{props.type === 'prompt' || (props.message && props.message !== '') ? (
 						<div className="modal-body">
 							<div className="modal-message">{props.message}</div>
-							{props.type === 'prompt' ?
+							{props.type === 'prompt' ? (
 								<div className="form">
-									<input type="text" autoFocus className="modal-input" defaultValue={promptText}
-										onChange={(event) => setPromptText(event.target.value)} />
-								</div> : null
-							}
-						</div> : null
-					}
+									<input
+										type="text"
+										autoFocus
+										className="modal-input"
+										defaultValue={promptText}
+										onChange={(event) => setPromptText(event.target.value)}
+									/>
+								</div>
+							) : null}
+						</div>
+					) : null}
 					<div className="modal-footer">
-						{props.type === 'confirm' || props.type === 'prompt' ?
+						{props.type === 'confirm' || props.type === 'prompt' ? (
 							<button type="button" className="btn btn-action btn-primary other" onClick={abortModal}>
 								<i className="fas fa-times" /> {i18next.t('NO')}
-							</button> : null
-						}
+							</button>
+						) : null}
 						<button type="button" className="btn btn-action btn-default ok" onClick={confirmModal}>
 							<i className="fas fa-check" /> {i18next.t('YES')}
 						</button>

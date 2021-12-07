@@ -20,17 +20,16 @@ export async function remoteCheckAuth(instance: string, token: string) {
 	try {
 		const res = await HTTP.get(`https://${instance}/api/auth/check`, {
 			headers: {
-				authorization: token
-			}
+				authorization: token,
+			},
 		});
 		return res.data;
-	} catch(err) {
+	} catch (err) {
 		if ([403, 401].includes(err.response?.status)) return false;
-		logger.debug('Got error when check auth', {service: 'RemoteUser', obj: err});
+		logger.debug('Got error when check auth', { service: 'RemoteUser', obj: err });
 		throw err;
 	}
 }
-
 
 /** Function called when you enter a login/password and login contains an @. We're checking login/password pair against KM Server  */
 export async function remoteLogin(username: string, password: string): Promise<string> {
@@ -38,14 +37,14 @@ export async function remoteLogin(username: string, password: string): Promise<s
 	try {
 		const res = await HTTP.post<Token>(`https://${instance}/api/auth/login`, {
 			username: login,
-			password: password
+			password: password,
 		});
 		return res.data.token;
-	} catch(err) {
+	} catch (err) {
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
 		if (err.statusCode === 401) throw 'Unauthorized';
-		logger.debug(`Got error when connecting user ${username}`, {service: 'RemoteUser', obj: err});
+		logger.debug(`Got error when connecting user ${username}`, { service: 'RemoteUser', obj: err });
 		return null;
 	}
 }
@@ -55,7 +54,7 @@ export async function resetRemotePassword(user: string) {
 	try {
 		await HTTP.post(`https://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
-		logger.error(`Could not trigger reset password for ${user}`, {service: 'RemoteUser', obj: err});
+		logger.error(`Could not trigger reset password for ${user}`, { service: 'RemoteUser', obj: err });
 		throw err;
 	}
 }
@@ -65,12 +64,12 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 	try {
 		const user = await HTTP.get(`https://${instance}/api/users/${login}`);
 		return user.data as User;
-	} catch(err) {
-		logger.debug('Got error when trying to get an online user', {service: 'RemoteUser', obj: err});
+	} catch (err) {
+		logger.debug('Got error when trying to get an online user', { service: 'RemoteUser', obj: err });
 		throw {
 			code: 500,
 			msg: 'USER_GET_ERROR_ONLINE',
-			message: err
+			message: err,
 		};
 	}
 }
@@ -78,23 +77,24 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 /** Create a user on KM Server */
 export async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
-	if (await getARemoteUser(login, instance)) throw {
-		code: 409,
-		msg: 'USER_ALREADY_EXISTS_ONLINE',
-		message: `User already exists on ${instance} or incorrect password`
-	};
+	if (await getARemoteUser(login, instance))
+		throw {
+			code: 409,
+			msg: 'USER_ALREADY_EXISTS_ONLINE',
+			message: `User already exists on ${instance} or incorrect password`,
+		};
 	try {
 		await HTTP.post(`https://${instance}/api/users`, {
 			login: login,
-			password: user.password
+			password: user.password,
 		});
 		startSub(login, instance);
-	} catch(err) {
-		logger.debug(`Got error when create remote user ${login}`, {service: 'RemoteUser', obj: err});
+	} catch (err) {
+		logger.debug(`Got error when create remote user ${login}`, { service: 'RemoteUser', obj: err });
 		throw {
 			code: 500,
 			msg: 'USER_CREATE_ERROR_ONLINE',
-			message: err
+			message: err,
 		};
 	}
 }
@@ -105,12 +105,12 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 	try {
 		const res = await HTTP(`https://${instance}/api/myaccount`, {
 			headers: {
-				authorization: token
-			}
+				authorization: token,
+			},
 		});
 		return res.data as User;
-	} catch(err) {
-		logger.error(`Got error when get remote user ${username}`, {service: 'RemoteUser', obj: err});
+	} catch (err) {
+		logger.error(`Got error when get remote user ${username}`, { service: 'RemoteUser', obj: err });
 		throw err;
 	}
 }
@@ -122,7 +122,12 @@ export async function editRemoteUser(user: User, token: string) {
 	const form = new formData();
 
 	// Create the form data sent as payload to edit remote user
-	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(resolvedPath('Avatars'), user.avatar_file)), user.avatar_file);
+	if (user.avatar_file !== 'blank.png')
+		form.append(
+			'avatarfile',
+			createReadStream(resolve(resolvedPath('Avatars'), user.avatar_file)),
+			user.avatar_file
+		);
 	form.append('nickname', user.nickname);
 	form.append('bio', user.bio ? user.bio : '');
 	form.append('location', user.location ? user.location : '');
@@ -137,11 +142,11 @@ export async function editRemoteUser(user: User, token: string) {
 	try {
 		const res = await HTTP.put(`https://${instance}/api/users/${login}`, form, {
 			headers: {
-				authorization: token
-			}
+				authorization: token,
+			},
 		});
 		return res.data;
-	} catch(err) {
+	} catch (err) {
 		sentry.error(err);
 		throw `Remote update failed : ${err}`;
 	}
@@ -151,14 +156,14 @@ export async function editRemoteUser(user: User, token: string) {
 export async function fetchRemoteAvatar(instance: string, avatarFile: string): Promise<string> {
 	// If this stops working, use got() and a stream: true property again
 	const res = await HTTP.get(`https://${instance}/avatars/${avatarFile}`, {
-		responseType: 'stream'
+		responseType: 'stream',
 	});
 	let avatarPath: string;
 	try {
 		avatarPath = resolve(resolvedPath('Temp'), avatarFile);
 		await writeStreamToFile(res.data as Stream, avatarPath);
-	} catch(err) {
-		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, {service: 'User', obj: err});
+	} catch (err) {
+		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, { service: 'User', obj: err });
 		throw err;
 	}
 	return avatarPath;
@@ -171,7 +176,12 @@ export function getUsersFetched() {
 }
 
 /** Login as online user on KM Server and fetch profile data, avatar, favorites and such and upserts them in local database */
-export async function fetchAndUpdateRemoteUser(username: string, password: string, onlineToken?: string, force?: boolean): Promise<User> {
+export async function fetchAndUpdateRemoteUser(
+	username: string,
+	password: string,
+	onlineToken?: string,
+	force?: boolean
+): Promise<User> {
 	// We try to login to KM Server using the provided login password.
 	// If login is successful, we get user profile data and create user if it doesn't exist already in our local database.
 	// If it exists, we edit the user instead.
@@ -181,7 +191,7 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		let remoteUser: User;
 		try {
 			remoteUser = await getRemoteUser(username, onlineToken);
-		} catch(err) {
+		} catch (err) {
 			if (err.statusCode !== 401 && err.statusCode !== 403) sentry.error(err);
 			throw err;
 		}
@@ -190,10 +200,13 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 		if (!user) {
 			// Remove remoteUser's type
 			delete remoteUser.type;
-			await createUser({...remoteUser, password, login: username}, {
-				createRemote: false,
-				noPasswordCheck: true
-			});
+			await createUser(
+				{ ...remoteUser, password, login: username },
+				{
+					createRemote: false,
+					noPasswordCheck: true,
+				}
+			);
 			const [login, instance] = username.split('@');
 			startSub(login, instance);
 		}
@@ -203,12 +216,13 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 			let avatarPath: string;
 			try {
 				avatarPath = await fetchRemoteAvatar(username.split('@')[1], remoteUser.avatar_file);
-			} catch(err) {
+			} catch (err) {
 				sentry.error(err);
 			}
-			if (avatarPath) avatar_file = {
-				path: avatarPath
-			};
+			if (avatarPath)
+				avatar_file = {
+					path: avatarPath,
+				};
 		}
 		// Checking if user has already been fetched during this session or not
 		if (force || !usersFetched.has(username)) {
@@ -219,24 +233,24 @@ export async function fetchAndUpdateRemoteUser(username: string, password: strin
 					...remoteUser,
 					password: password,
 					login: username,
-					type: undefined
+					type: undefined,
 				},
 				avatar_file,
 				'admin',
-				{ editRemote: false, noPasswordCheck: true	}
+				{ editRemote: false, noPasswordCheck: true }
 			);
 			user = response.user;
 		}
 		user = {
 			...user,
-			onlineToken: onlineToken
+			onlineToken: onlineToken,
 		};
 		return user;
 	} else {
 		// Online token was not provided : KM Server might be offline
 		// We'll try to find user in local database. If failure return an error
 		const user = await getUser(username, true);
-		if (!user) throw {code: 'USER_LOGIN_ERROR'};
+		if (!user) throw { code: 'USER_LOGIN_ERROR' };
 		return user;
 	}
 }
@@ -247,7 +261,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
 	// Verify that no local user exists with the name we're going to rename it to
-	if (await getUser(username)) throw {code: 409, msg: 'User already exists locally, delete it first.'};
+	if (await getUser(username)) throw { code: 409, msg: 'User already exists locally, delete it first.' };
 	// Verify that password matches with online before proceeding
 	const onlineToken = await remoteLogin(token.username, password);
 	// Renaming user locally
@@ -255,27 +269,27 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 	user.login = username;
 	await editUser(token.username, user, null, 'admin', {
 		editRemote: false,
-		renameUser: true
+		renameUser: true,
 	});
 	await HTTP(`https://${instance}/api/users`, {
 		method: 'DELETE',
 		headers: {
-			authorization: onlineToken
-		}
+			authorization: onlineToken,
+		},
 	});
 	emitWS('userUpdated', token.username);
 	return {
-		token: createJwtToken(user.login, token.role)
+		token: createJwtToken(user.login, token.role),
 	};
 }
 
 /** Converting a local account to a online one.	*/
-export async function convertToRemoteUser(token: Token, password: string , instance: string): Promise<Tokens> {
+export async function convertToRemoteUser(token: Token, password: string, instance: string): Promise<Tokens> {
 	token.username = token.username.toLowerCase();
-	if (token.username === 'admin') throw {code: 'ADMIN_CONVERT_ERROR'};
+	if (token.username === 'admin') throw { code: 'ADMIN_CONVERT_ERROR' };
 	const user = await getUser(token.username, true);
-	if (!user) throw {msg: 'UNKNOWN_CONVERT_ERROR'};
-	if (!await checkPassword(user, password)) throw {msg: 'PASSWORD_CONVERT_ERROR'};
+	if (!user) throw { msg: 'UNKNOWN_CONVERT_ERROR' };
+	if (!(await checkPassword(user, password))) throw { msg: 'PASSWORD_CONVERT_ERROR' };
 	user.login = `${token.username}@${instance}`;
 	user.password = password;
 	try {
@@ -283,16 +297,16 @@ export async function convertToRemoteUser(token: Token, password: string , insta
 		const remoteUserToken = await remoteLogin(user.login, password);
 		await editUser(token.username, user, null, token.role, {
 			editRemote: false,
-			renameUser: true
+			renameUser: true,
 		});
 		await convertToRemoteFavorites(user.login, remoteUserToken);
 		emitWS('userUpdated', user.login);
 		return {
 			onlineToken: remoteUserToken,
-			token: createJwtToken(user.login, token.role)
+			token: createJwtToken(user.login, token.role),
 		};
-	} catch(err) {
+	} catch (err) {
 		if (err.msg !== 'USER_ALREADY_EXISTS_ONLINE' && err?.details?.message?.code !== 'ENOTFOUND') sentry.error(err);
-		throw {msg: err.msg || 'USER_CONVERT_ERROR', details: err};
+		throw { msg: err.msg || 'USER_CONVERT_ERROR', details: err };
 	}
 }

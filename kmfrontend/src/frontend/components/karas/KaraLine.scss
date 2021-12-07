@@ -170,7 +170,7 @@ body:not(.touch) {
 		.contentDivMobileTags {
 			display: flex;
 			justify-content: space-between;
-			padding: .5em 0;
+			padding: 0.5em 0;
 			@media screen and (max-width: $mugen-breakpoint-small) {
 				flex-direction: column;
 				align-items: flex-start;

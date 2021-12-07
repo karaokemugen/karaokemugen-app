@@ -139,11 +139,14 @@ function Autocomplete(props: IProps) {
 					onChange={handleSearchChange}
 					onKeyUp={handleSearchKeyUp}
 				/>
-				{filteredOptions().length > 0 ?
+				{filteredOptions().length > 0 ? (
 					<ul
 						className="UI-autocomplete-options"
 						style={{
-							top: node.current && props.forceTop ? node.current.getBoundingClientRect().top - 30 : undefined,
+							top:
+								node.current && props.forceTop
+									? node.current.getBoundingClientRect().top - 30
+									: undefined,
 						}}
 					>
 						<div className="UI-autocomplete-options-wrapper">
@@ -158,8 +161,8 @@ function Autocomplete(props: IProps) {
 								</li>
 							))}
 						</div>
-					</ul> : null
-				}
+					</ul>
+				) : null}
 			</div>
 		</div>
 	);

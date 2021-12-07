@@ -11,7 +11,10 @@ import { LogoutUser } from '../types/auth';
 import { Settings, SettingsFailure, SettingsSuccess } from '../types/settings';
 import { logout } from './auth';
 
-export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsFailure>, withoutProfile?: boolean): Promise<void> {
+export async function setSettings(
+	dispatch: Dispatch<SettingsSuccess | SettingsFailure>,
+	withoutProfile?: boolean
+): Promise<void> {
 	try {
 		const res = await commandBackend('getSettings');
 		if (!withoutProfile) {
@@ -26,7 +29,13 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 				if (!res.state.sentrytest) setSentry(res.state.environment, res.version, res.config, user);
 				dispatch({
 					type: Settings.SETTINGS_SUCCESS,
-					payload: { state: res.state, config: res.config, user: user, favorites: favoritesSet, version: res.version }
+					payload: {
+						state: res.state,
+						config: res.config,
+						user: user,
+						favorites: favoritesSet,
+						version: res.version,
+					},
 				});
 			} catch (e) {
 				logout(dispatch as unknown as Dispatch<LogoutUser>);
@@ -35,15 +44,15 @@ export async function setSettings(dispatch: Dispatch<SettingsSuccess | SettingsF
 			i18next.changeLanguage(langSupport);
 			dispatch({
 				type: Settings.SETTINGS_SUCCESS,
-				payload: { state: res.state, config: res.config, user: {}, favorites: new Set(), version: res.version }
+				payload: { state: res.state, config: res.config, user: {}, favorites: new Set(), version: res.version },
 			});
 		}
 	} catch (error: any) {
 		dispatch({
 			type: Settings.SETTINGS_FAILURE,
 			payload: {
-				error: error
-			}
+				error: error,
+			},
 		});
 		throw error;
 	}
@@ -60,16 +69,17 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 				'Request failed with status code',
 				'Request aborted',
 				'ResizeObserver loop limit exceeded',
-				/.*[n|N]o space left on device.*/
-			]
+				/.*[n|N]o space left on device.*/,
+			],
 		});
 		Sentry.configureScope((scope) => {
 			scope.setUser({
-				username: user?.login
+				username: user?.login,
 			});
 		});
-		if (version.sha) Sentry.configureScope((scope) => {
-			scope.setTag('commit', version.sha as string);
-		});
+		if (version.sha)
+			Sentry.configureScope((scope) => {
+				scope.setTag('commit', version.sha as string);
+			});
 	}
 }

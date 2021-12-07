@@ -1,24 +1,24 @@
 export interface Settings {
-	baseChecksum?: string,
-	lastGeneration?: number
+	baseChecksum?: string;
+	lastGeneration?: number;
 }
 
 export interface Query {
-	sql: string,
-	params?: any[][]
+	sql: string;
+	params?: any[][];
 }
 
 export interface LangClause {
-	main: string
-	fallback: string
+	main: string;
+	fallback: string;
 }
 
 export interface WhereClause {
-	sql: string[],
-	params: Record<string,unknown>
+	sql: string[];
+	params: Record<string, unknown>;
 }
 
 export interface PGVersion {
-	data: number,
-	bin: number
+	data: number;
+	bin: number;
 }

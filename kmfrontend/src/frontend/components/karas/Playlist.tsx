@@ -2,16 +2,7 @@ import './Playlist.scss';
 
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
-import {
-	Fragment,
-	PropsWithChildren,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
+import { Fragment, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { DragDropContext, Draggable, DraggableProvided, Droppable, DropResult } from 'react-beautiful-dnd';
 import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
 
@@ -158,7 +149,7 @@ function Playlist(props: IProps) {
 			virtuoso.current?.scrollToIndex({
 				index,
 				align: 'start',
-				behavior: smooth ? 'smooth':'auto',
+				behavior: smooth ? 'smooth' : 'auto',
 			});
 		},
 		[virtuoso]
@@ -260,19 +251,21 @@ function Playlist(props: IProps) {
 			if (data?.content[index]) {
 				content = data.content[index];
 				const jingle =
-					typeof songsBeforeJingle === 'number' && (
-						// Are jingles enabled?
-						context.globalState.settings.data.config.Playlist.Medias.Jingles.Enabled &&
-						// Use modulo to calculate each occurrence
-						(index - (playing + songsBeforeJingle)) % context.globalState.settings.data.config.Playlist.Medias.Jingles.Interval === 0
-					);
+					typeof songsBeforeJingle === 'number' &&
+					// Are jingles enabled?
+					context.globalState.settings.data.config.Playlist.Medias.Jingles.Enabled &&
+					// Use modulo to calculate each occurrence
+					(index - (playing + songsBeforeJingle)) %
+						context.globalState.settings.data.config.Playlist.Medias.Jingles.Interval ===
+						0;
 				const sponsor =
-					typeof songsBeforeSponsor === 'number' && (
-						// Are sponsors enabled?
-						context.globalState.settings.data.config.Playlist.Medias.Sponsors.Enabled &&
-						// Use modulo to calculate each occurrence
-						(index - (playing + songsBeforeSponsor)) % context.globalState.settings.data.config.Playlist.Medias.Sponsors.Interval === 0
-					);
+					typeof songsBeforeSponsor === 'number' &&
+					// Are sponsors enabled?
+					context.globalState.settings.data.config.Playlist.Medias.Sponsors.Enabled &&
+					// Use modulo to calculate each occurrence
+					(index - (playing + songsBeforeSponsor)) %
+						context.globalState.settings.data.config.Playlist.Medias.Sponsors.Interval ===
+						0;
 				return (
 					<KaraLine
 						indexInPL={index}
@@ -312,21 +305,19 @@ function Playlist(props: IProps) {
 		return (
 			<>
 				{getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
-					props.scope === 'admin' ?
-					(
-						<div className="list-group-item karaSuggestion">
-							<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
-							{context?.globalState.settings.data.config.System.Repositories.filter(
-								(value) => value.Enabled && value.Online
-							).map((value) => (
-								<a key={value.Name} href={`https://${value.Name}/`}>
-									{value.Name}
-								</a>
-							))}
-							<a href="https://suggest.karaokes.moe">suggest.karaokes.moe</a>
-						</div>
-					) : null
-				}
+				props.scope === 'admin' ? (
+					<div className="list-group-item karaSuggestion">
+						<div>{i18next.t('KARA_SUGGESTION_NOT_FOUND')}</div>
+						{context?.globalState.settings.data.config.System.Repositories.filter(
+							(value) => value.Enabled && value.Online
+						).map((value) => (
+							<a key={value.Name} href={`https://${value.Name}/`}>
+								{value.Name}
+							</a>
+						))}
+						<a href="https://suggest.karaokes.moe">suggest.karaokes.moe</a>
+					</div>
+				) : null}
 			</>
 		);
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
@@ -428,38 +419,45 @@ function Playlist(props: IProps) {
 		}
 	};
 
-	const playingUpdate = useCallback((dataUpdate: { plaid: string; plc_id: number }) => {
-		if (!stopUpdate && getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid) {
-			setData((oldData) => {
-				if (oldData) {
-					let indexPlaying;
-					for (let index = 0; index < oldData.content.length; index++) {
-						const kara = oldData.content[index];
-						if (kara?.plcid === dataUpdate.plc_id) {
-							kara.flag_playing = true;
-							indexPlaying = index;
-							if (goToPlaying) {
-								scrollToIndex(index);
-								setGotToPlayingAvoidScroll(true);
+	const playingUpdate = useCallback(
+		(dataUpdate: { plaid: string; plc_id: number }) => {
+			if (!stopUpdate && getPlaylistInfo(props.side, context)?.plaid === dataUpdate.plaid) {
+				setData((oldData) => {
+					if (oldData) {
+						let indexPlaying;
+						for (let index = 0; index < oldData.content.length; index++) {
+							const kara = oldData.content[index];
+							if (kara?.plcid === dataUpdate.plc_id) {
+								kara.flag_playing = true;
+								indexPlaying = index;
+								if (goToPlaying) {
+									scrollToIndex(index);
+									setGotToPlayingAvoidScroll(true);
+								}
+								setPlaying(indexPlaying);
+							} else if (kara?.flag_playing) {
+								kara.flag_playing = false;
+								kara.flag_dejavu = true;
 							}
-							setPlaying(indexPlaying);
-						} else if (kara?.flag_playing) {
-							kara.flag_playing = false;
-							kara.flag_dejavu = true;
 						}
 					}
-				}
-				return oldData;
-			});
-		}
-	}, [goToPlaying]);
+					return oldData;
+				});
+			}
+		},
+		[goToPlaying]
+	);
 
 	useEffect(() => {
 		getSocket().on('playingUpdated', playingUpdate);
 		return () => {
 			getSocket().off('playingUpdated', playingUpdate);
 		};
-	}, [goToPlaying, context.globalState.frontendContext.playlistInfoLeft, context.globalState.frontendContext.playlistInfoRight]);
+	}, [
+		goToPlaying,
+		context.globalState.frontendContext.playlistInfoLeft,
+		context.globalState.frontendContext.playlistInfoRight,
+	]);
 
 	const getPlInfosElement = () => {
 		let plInfos = '';
@@ -468,11 +466,12 @@ function Playlist(props: IProps) {
 				data.infos.count +
 				' karas' +
 				(!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid) &&
-					getPlaylistInfo(props.side, context)?.duration
+				getPlaylistInfo(props.side, context)?.duration
 					? ` ~ ${is_touch_device() ? 'dur.' : i18next.t('DETAILS.DURATION')} ` +
-					secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.duration, 'hm') +
-					` / ${secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.time_left, 'hm')} ${is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')
-					} `
+					  secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.duration, 'hm') +
+					  ` / ${secondsTimeSpanToHMS(getPlaylistInfo(props.side, context)?.time_left, 'hm')} ${
+							is_touch_device() ? 're.' : i18next.t('DURATION_REMAINING')
+					  } `
 					: '');
 		}
 		return plInfos;
@@ -601,7 +600,7 @@ function Playlist(props: IProps) {
 							commandBackend('addKaraToPlaylist', {
 								kids: karaList,
 								plaid: getOppositePlaylistInfo(props.side, context).plaid,
-							}).catch(() => { });
+							}).catch(() => {});
 						},
 						''
 					);
@@ -623,7 +622,7 @@ function Playlist(props: IProps) {
 			kids: karaList,
 			requestedby: context.globalState.auth.data.username,
 			plaid: getOppositePlaylistInfo(props.side, context).plaid,
-		}).catch(() => { });
+		}).catch(() => {});
 	};
 
 	const addCheckedKaras = async (_event?: any, pos?: number) => {
@@ -746,7 +745,7 @@ function Playlist(props: IProps) {
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_accepted: true,
-		}).catch(() => { });
+		}).catch(() => {});
 		setSelectAllKarasChecked(false);
 	};
 
@@ -760,7 +759,7 @@ function Playlist(props: IProps) {
 		await commandBackend('editPLC', {
 			plc_ids: idsKaraPlaylist,
 			flag_refused: true,
-		}).catch(() => { });
+		}).catch(() => {});
 		setSelectAllKarasChecked(false);
 	};
 
@@ -777,7 +776,7 @@ function Playlist(props: IProps) {
 					repository: kara.repository,
 				};
 			});
-		if (karaList.length > 0) commandBackend('addDownloads', { downloads: karaList }).catch(() => { });
+		if (karaList.length > 0) commandBackend('addDownloads', { downloads: karaList }).catch(() => {});
 	};
 
 	const onChangeTags = (type: number | string, value: string) => {
@@ -930,7 +929,12 @@ function Playlist(props: IProps) {
 			getSocket().off('KIDUpdated', KIDUpdated);
 			getSocket().off('playerStatus', updateCounters);
 		};
-	}, [context.globalState.frontendContext.playlistInfoLeft, context.globalState.frontendContext.playlistInfoRight, getFilterValue(props.side), searchValue]);
+	}, [
+		context.globalState.frontendContext.playlistInfoLeft,
+		context.globalState.frontendContext.playlistInfoRight,
+		getFilterValue(props.side),
+		searchValue,
+	]);
 
 	useEffect(() => {
 		if (context.globalState.auth.isAuthenticated) {
@@ -969,9 +973,7 @@ function Playlist(props: IProps) {
 				/>
 			) : null}
 			<div id={'playlist' + props.side} className="playlistContainer" ref={refContainer}>
-				{playlist?.flag_smart && criteriasOpen ?
-					<CriteriasList tags={props.tags} playlist={playlist} /> : null
-				}
+				{playlist?.flag_smart && criteriasOpen ? <CriteriasList tags={props.tags} playlist={playlist} /> : null}
 				{!data?.infos && !criteriasOpen && isPlaylistInProgress ? (
 					<div className="loader" />
 				) : data && !criteriasOpen ? (
@@ -1018,11 +1020,10 @@ function Playlist(props: IProps) {
 							)}
 						</Droppable>
 					</DragDropContext>
-				) : null
-				}
+				) : null}
 			</div>
 			<div className="plFooter">
-				{!criteriasOpen ?
+				{!criteriasOpen ? (
 					<div className="plBrowse btn-group">
 						<button
 							type="button"
@@ -1060,8 +1061,7 @@ function Playlist(props: IProps) {
 							<i className="fas fa-chevron-down" />
 						</button>
 					</div>
-					: null
-				}
+				) : null}
 				<div className="plInfos">{getPlInfosElement()}</div>
 				{checkedKaras > 0 ? (
 					<div className="plQuota selection">

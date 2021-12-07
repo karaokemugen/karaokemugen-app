@@ -1,20 +1,20 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
-import {DBPLC} from '../../../../../src/types/database/playlist';
-import {closeModal} from '../../../store/actions/modal';
-import GlobalContext, {GlobalContextInterface} from '../../../store/context';
-import {getPlaylistInfo} from '../../../utils/kara';
-import {commandBackend} from '../../../utils/socket';
+import { DBPLC } from '../../../../../src/types/database/playlist';
+import { closeModal } from '../../../store/actions/modal';
+import GlobalContext, { GlobalContextInterface } from '../../../store/context';
+import { getPlaylistInfo } from '../../../utils/kara';
+import { commandBackend } from '../../../utils/socket';
 import KaraDetail from './KaraDetail';
 
 interface Props {
-	side: 'left' | 'right'
+	side: 'left' | 'right';
 }
 
 interface CompactKara {
-	kid: string,
-	plcid: number
+	kid: string;
+	plcid: number;
 }
 
 export default function KaraReviews(props: Props) {
@@ -31,7 +31,7 @@ export default function KaraReviews(props: Props) {
 
 	const fetchTimeRemaining = async () => {
 		const playlistList: DBPL[] = await commandBackend('getPlaylists');
-		setTimeRemaining(playlistList.find(pl => pl?.flag_current).time_left);
+		setTimeRemaining(playlistList.find((pl) => pl?.flag_current).time_left);
 	};
 
 	useEffect(() => {
@@ -47,10 +47,10 @@ export default function KaraReviews(props: Props) {
 				setEnd(true);
 				break;
 			}
-			const res: { content: DBPLC[], infos: { count: number } } = await commandBackend('getPlaylistContents', {
+			const res: { content: DBPLC[]; infos: { count: number } } = await commandBackend('getPlaylistContents', {
 				plaid: playlist.plaid,
 				from: localI * 20,
-				size: 20
+				size: 20,
 			});
 			if (res.infos.count === 0) {
 				closeModal(context.globalDispatch);
@@ -58,7 +58,7 @@ export default function KaraReviews(props: Props) {
 			}
 			for (const kara of res.content) {
 				if (!(kara.flag_accepted || kara.flag_refused)) {
-					karaokes.push({kid: kara.kid, plcid: kara.plcid});
+					karaokes.push({ kid: kara.kid, plcid: kara.plcid });
 				}
 			}
 			localI++;
@@ -71,17 +71,17 @@ export default function KaraReviews(props: Props) {
 		if (accepted) {
 			await commandBackend('editPLC', {
 				plc_ids: [queue[0].plcid],
-				flag_accepted: true
+				flag_accepted: true,
 			});
-			setAccepted(acc => acc + 1);
+			setAccepted((acc) => acc + 1);
 		} else {
 			await commandBackend('editPLC', {
 				plc_ids: [queue[0].plcid],
-				flag_refused: true
+				flag_refused: true,
 			});
-			setRefused(ref => ref + 1);
+			setRefused((ref) => ref + 1);
 		}
-		setQueue(oldQueue => oldQueue.slice(1));
+		setQueue((oldQueue) => oldQueue.slice(1));
 	};
 
 	useEffect(() => {
@@ -96,22 +96,25 @@ export default function KaraReviews(props: Props) {
 		}
 	}, [queue]);
 
-	return queue.length >= 1 ? <KaraDetail
-		kid={queue[0].kid}
-		playlistcontentId={queue[0].plcid}
-		scope="admin"
-		karoulette={{
-			next: nextKaraoke,
-			accepted,
-			refused,
-			timeRemaining
-		}}
-	/> :
+	return queue.length >= 1 ? (
+		<KaraDetail
+			kid={queue[0].kid}
+			playlistcontentId={queue[0].plcid}
+			scope="admin"
+			karoulette={{
+				next: nextKaraoke,
+				accepted,
+				refused,
+				timeRemaining,
+			}}
+		/>
+	) : (
 		<div className="modal modalPage">
 			<div className="modal-dialog">
 				<div className="modal-content">
-					<div className="loader"/>
+					<div className="loader" />
 				</div>
 			</div>
-		</div>;
+		</div>
+	);
 }

@@ -84,7 +84,10 @@ function TagsList(props: IProps) {
 	const loadMoreRows = async ({ endIndex }: ListRange) => {
 		if (isRowLoaded(endIndex)) return;
 		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => (props.tagType === YEARS.type ? getYears() : getTags(Math.floor(endIndex / chunksize) * chunksize)), 1000);
+		timer = setTimeout(
+			() => (props.tagType === YEARS.type ? getYears() : getTags(Math.floor(endIndex / chunksize) * chunksize)),
+			1000
+		);
 	};
 
 	const openSearch = (tid: string) => {
@@ -118,7 +121,7 @@ function TagsList(props: IProps) {
 											(value) => value.type === props.tagType
 										).length > 0
 											? (tag.karacount as unknown as { count: number; type: number }[])?.filter(
-												(value) => value.type === props.tagType
+													(value) => value.type === props.tagType
 											  )[0].count
 											: 0,
 								})}

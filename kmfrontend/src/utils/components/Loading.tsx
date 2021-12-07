@@ -1,7 +1,7 @@
 import './Loading.scss';
 
 import i18next from 'i18next';
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { isElectron } from '../electron';
 
@@ -19,13 +19,12 @@ function Loading() {
 
 	return (
 		<div className="loading-container">
-			{
-				showLoadingText ?
-					<>
-						<span className="header">{i18next.t('LOADING')}</span>
-						<span>{isElectron() ? i18next.t('LOADING_SUBTITLE_ELECTRON') : i18next.t('LOADING_SUBTITLE')}</span>
-					</> : null
-			}
+			{showLoadingText ? (
+				<>
+					<span className="header">{i18next.t('LOADING')}</span>
+					<span>{isElectron() ? i18next.t('LOADING_SUBTITLE_ELECTRON') : i18next.t('LOADING_SUBTITLE')}</span>
+				</>
+			) : null}
 		</div>
 	);
 }

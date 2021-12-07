@@ -64,43 +64,44 @@ function CriteriasList(props: IProps) {
 		getCriterias();
 	};
 
-	const editTypeSmart = (e: any) => editPlaylist({
-		type_smart: e.target.checked ? 'UNION' : 'INTERSECT'
-	});
+	const editTypeSmart = (e: any) =>
+		editPlaylist({
+			type_smart: e.target.checked ? 'UNION' : 'INTERSECT',
+		});
 
 	const editFlagSmartLimit = (e: any) => {
 		setFlagSmartLimit(e.target.checked);
 		editPlaylist({
-			flag_smartlimit: e.target.checked
+			flag_smartlimit: e.target.checked,
 		});
 	};
 
 	const editSmartLimitNumber = (e: any) => {
-		const limitNumber = Number(e.target.value) && Number(e.target.value) !== 0 ?
-			Number(e.target.value) : 0;
-		const flag = Number(e.target.value) && Number(e.target.value) !== 0 ?
-			props.playlist.flag_smartlimit : false;
+		const limitNumber = Number(e.target.value) && Number(e.target.value) !== 0 ? Number(e.target.value) : 0;
+		const flag = Number(e.target.value) && Number(e.target.value) !== 0 ? props.playlist.flag_smartlimit : false;
 		setFlagSmartLimit(flag);
 		setSmartLimitNumber(limitNumber);
 		editPlaylist({
 			smart_limit_number: limitNumber,
-			flag_smartlimit: flag
+			flag_smartlimit: flag,
 		});
 	};
 
-	const editSmartLimitOrder = (e: any) => editPlaylist({
-		smart_limit_order: e.target.value
-	});
+	const editSmartLimitOrder = (e: any) =>
+		editPlaylist({
+			smart_limit_order: e.target.value,
+		});
 
-	const editSmartLimitType = (e: any) => editPlaylist({
-		smart_limit_type: e.target.value
-	});
+	const editSmartLimitType = (e: any) =>
+		editPlaylist({
+			smart_limit_type: e.target.value,
+		});
 
 	const editPlaylist = async (data: any) => {
 		await commandBackend('editPlaylist', {
 			...data,
 			name: props.playlist.name,
-			plaid: props.playlist.plaid
+			plaid: props.playlist.plaid,
 		});
 		setSettings(context.globalDispatch);
 	};
@@ -132,40 +133,36 @@ function CriteriasList(props: IProps) {
 				<Trans
 					i18nKey="CRITERIA.PLAYLIST_DURATION"
 					components={{
-						1: <input
-							type="checkbox"
-							checked={flagSmartLimit}
-							onChange={editFlagSmartLimit}
-						/>,
-						2: <input
-							type="number"
-							value={smartLimitNumber}
-							data-exclude="true"
-							min={0}
-							onChange={editSmartLimitNumber}
-						/>,
-						3: <select
-							onChange={editSmartLimitType}
-							defaultValue={props.playlist.smart_limit_type}
-						>
-							<option key='duration' value='duration'>
-								{i18next.t('CRITERIA.PLAYLIST_DURATION_TYPE_MINUTES')}
-							</option>
-							<option key='songs' value='songs'>
-								{i18next.t('CRITERIA.PLAYLIST_DURATION_TYPE_SONGS')}
-							</option>
-						</select>,
-						4: <select
-							onChange={editSmartLimitOrder}
-							defaultValue={props.playlist.smart_limit_order}
-						>
-							<option key='newest' value='newest'>
-								{i18next.t('CRITERIA.PLAYLIST_DURATION_ORDER_MORE_RECENT')}
-							</option>
-							<option key='oldest' value='oldest'>
-								{i18next.t('CRITERIA.PLAYLIST_DURATION_ORDER_LESS_RECENT')}
-							</option>
-						</select>
+						1: <input type="checkbox" checked={flagSmartLimit} onChange={editFlagSmartLimit} />,
+						2: (
+							<input
+								type="number"
+								value={smartLimitNumber}
+								data-exclude="true"
+								min={0}
+								onChange={editSmartLimitNumber}
+							/>
+						),
+						3: (
+							<select onChange={editSmartLimitType} defaultValue={props.playlist.smart_limit_type}>
+								<option key="duration" value="duration">
+									{i18next.t('CRITERIA.PLAYLIST_DURATION_TYPE_MINUTES')}
+								</option>
+								<option key="songs" value="songs">
+									{i18next.t('CRITERIA.PLAYLIST_DURATION_TYPE_SONGS')}
+								</option>
+							</select>
+						),
+						4: (
+							<select onChange={editSmartLimitOrder} defaultValue={props.playlist.smart_limit_order}>
+								<option key="newest" value="newest">
+									{i18next.t('CRITERIA.PLAYLIST_DURATION_ORDER_MORE_RECENT')}
+								</option>
+								<option key="oldest" value="oldest">
+									{i18next.t('CRITERIA.PLAYLIST_DURATION_ORDER_LESS_RECENT')}
+								</option>
+							</select>
+						),
 					}}
 				/>
 			</div>
@@ -211,7 +208,9 @@ function CriteriasList(props: IProps) {
 						<input
 							type="text"
 							value={criteriaVal}
-							placeholder={`${i18next.t('CRITERIA.ADD')} ${[1002, 1003].includes(criteriaType) ? 'mm:ss' : ''}`}
+							placeholder={`${i18next.t('CRITERIA.ADD')} ${
+								[1002, 1003].includes(criteriaType) ? 'mm:ss' : ''
+							}`}
 							className="input-blc"
 							onChange={(e) => setCriteriaVal(e.target.value)}
 							onKeyPress={(e) => {
@@ -224,57 +223,55 @@ function CriteriasList(props: IProps) {
 					</button>
 				</div>
 			</div>
-			{
-				types.map((type) => {
-					let typeLabel;
-					if (type === 0) {
-						typeLabel = i18next.t('DETAILS.YEAR');
-					} else if (type > 1000) {
-						typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${type}`);
-					} else {
-						typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}_other`);
-					}
-					return (
-						<Fragment key={type}>
-							<div className="list-group-item liType">{typeLabel}</div>
-							{criterias.map((criteria) => {
-								return criteria.type === type ? (
-									<div key={criteria.value} className="list-group-item liTag">
-										<div className="actionDiv">
-											<button
-												title={i18next.t('CRITERIA.DELETE')}
-												name="deleteCriteria"
-												className="btn btn-action deleteCriteria"
-												onClick={() => deleteCriteria(criteria)}
-											>
-												<i className="fas fa-eraser"></i>
-											</button>
-										</div>
-										{criteria.type !== 1006 ? (
-											<div className="contentDiv">
-												{criteria.type === 1001
-													? buildKaraTitle(
+			{types.map((type) => {
+				let typeLabel;
+				if (type === 0) {
+					typeLabel = i18next.t('DETAILS.YEAR');
+				} else if (type > 1000) {
+					typeLabel = i18next.t(`CRITERIA.CRITERIA_TYPE_${type}`);
+				} else {
+					typeLabel = i18next.t(`TAG_TYPES.${getTagTypeName(type)}_other`);
+				}
+				return (
+					<Fragment key={type}>
+						<div className="list-group-item liType">{typeLabel}</div>
+						{criterias.map((criteria) => {
+							return criteria.type === type ? (
+								<div key={criteria.value} className="list-group-item liTag">
+									<div className="actionDiv">
+										<button
+											title={i18next.t('CRITERIA.DELETE')}
+											name="deleteCriteria"
+											className="btn btn-action deleteCriteria"
+											onClick={() => deleteCriteria(criteria)}
+										>
+											<i className="fas fa-eraser"></i>
+										</button>
+									</div>
+									{criteria.type !== 1006 ? (
+										<div className="contentDiv">
+											{criteria.type === 1001
+												? buildKaraTitle(
 														context.globalState.settings.data,
 														Array.isArray(criteria.value)
 															? criteria.value[0]
 															: criteria.value,
 														true
-													)
-													: criteria.value_i18n
-														? criteria.value_i18n
-														: [1002, 1003].includes(criteria.type)
-															? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
-															: criteria.value}
-											</div>
-										) : null}
-									</div>
-								) : null;
-							})}
-						</Fragment>
-					);
-				})
-			}
-		</div >
+												  )
+												: criteria.value_i18n
+												? criteria.value_i18n
+												: [1002, 1003].includes(criteria.type)
+												? secondsTimeSpanToHMS(criteria.value, 'mm:ss')
+												: criteria.value}
+										</div>
+									) : null}
+								</div>
+							) : null;
+						})}
+					</Fragment>
+				);
+			})}
+		</div>
 	);
 }
 

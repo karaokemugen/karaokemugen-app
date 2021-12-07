@@ -39,13 +39,13 @@ function SelectWithIcon(props: IProps) {
 				<span className="selectWithIcon-triggerInnards" ref={menuRef}>
 					{select?.icons
 						? select.icons.map((icon) => {
-							return (
-								<Fragment key={icon}>
-									<i className={`fas ${icon}`} />
-									&nbsp;
-								</Fragment>
-							);
-						})
+								return (
+									<Fragment key={icon}>
+										<i className={`fas ${icon}`} />
+										&nbsp;
+									</Fragment>
+								);
+						  })
 						: null}
 					<span className="selectWithIcon-label">
 						{props.value ? select?.label : i18next.t('SELECT_PLACEHOLDER')}
@@ -53,18 +53,21 @@ function SelectWithIcon(props: IProps) {
 				</span>
 			</Button>
 			<Menu>
-				<div className="selectWithIcon-menu" style={{['--maxh' as any]: `${maxHeight}px`, ['--maxw' as any]: `${maxWidth}px`}}>
+				<div
+					className="selectWithIcon-menu"
+					style={{ ['--maxh' as any]: `${maxHeight}px`, ['--maxw' as any]: `${maxWidth}px` }}
+				>
 					{props.list.map((element) => (
 						<MenuItem value={element.value} key={element.value} className="selectWithIcon-menuItem">
 							{element.icons
 								? element.icons.map((icon) => {
-									return (
-										<Fragment key={icon}>
-											<i className={`fas ${icon}`} />
-											&nbsp;
-										</Fragment>
-									);
-								})
+										return (
+											<Fragment key={icon}>
+												<i className={`fas ${icon}`} />
+												&nbsp;
+											</Fragment>
+										);
+								  })
 								: null}
 							<span className="selectWithIcon-label">{element.label}</span>
 						</MenuItem>

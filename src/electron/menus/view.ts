@@ -14,8 +14,8 @@ const builder: MenuItemBuilderFunction = () => {
 			{ label: i18next.t('MENU_VIEW_ZOOMIN'), role: 'zoomIn' },
 			{ label: i18next.t('MENU_VIEW_ZOOMOUT'), role: 'zoomOut' },
 			{ type: 'separator' },
-			{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' }
-		]
+			{ label: i18next.t('MENU_VIEW_FULLSCREEN'), role: 'togglefullscreen' },
+		],
 	};
 };
 

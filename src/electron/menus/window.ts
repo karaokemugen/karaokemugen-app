@@ -17,9 +17,9 @@ const builder: MenuItemBuilderFunction = (options) => {
 				type: 'checkbox',
 				checked: getConfig().GUI.OpenInElectron,
 				click: () => {
-					setConfig({GUI: {OpenInElectron: !getConfig().GUI.OpenInElectron}});
+					setConfig({ GUI: { OpenInElectron: !getConfig().GUI.OpenInElectron } });
 				},
-				visible: !isReduced
+				visible: !isReduced,
 			},
 			{
 				label: i18next.t('MENU_OPTIONS_CHIBIPLAYER'),
@@ -28,9 +28,9 @@ const builder: MenuItemBuilderFunction = (options) => {
 				checked: getConfig().GUI.ChibiPlayer.Enabled,
 				click: () => {
 					updateChibiPlayerWindow(!getConfig().GUI.ChibiPlayer.Enabled);
-					setConfig({GUI: {ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled }}});
+					setConfig({ GUI: { ChibiPlayer: { Enabled: !getConfig().GUI.ChibiPlayer.Enabled } } });
 				},
-				visible: !isReduced
+				visible: !isReduced,
 			},
 			{
 				label: i18next.t('MENU_OPTIONS_CHIBIPLAYLIST'),
@@ -39,11 +39,11 @@ const builder: MenuItemBuilderFunction = (options) => {
 				checked: getConfig().GUI.ChibiPlaylist.Enabled,
 				click: () => {
 					updateChibiPlaylistWindow(!getConfig().GUI.ChibiPlaylist.Enabled);
-					setConfig({GUI: {ChibiPlaylist: { Enabled: !getConfig().GUI.ChibiPlaylist.Enabled }}});
+					setConfig({ GUI: { ChibiPlaylist: { Enabled: !getConfig().GUI.ChibiPlaylist.Enabled } } });
 				},
-				visible: !isReduced
-			}
-		]
+				visible: !isReduced,
+			},
+		],
 	};
 };
 

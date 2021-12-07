@@ -4,10 +4,10 @@ import logger from '../lib/utils/logger';
 export function APIMessage(code: string, data?: any): APIMessageType {
 	return {
 		code: code,
-		data: data
+		data: data,
 	};
 }
 
 export function errMessage(code: string, message?: any) {
-	logger.error(`${code}`, {service: 'API', obj: message});
+	logger.error(`${code}`, { service: 'API', obj: message });
 }

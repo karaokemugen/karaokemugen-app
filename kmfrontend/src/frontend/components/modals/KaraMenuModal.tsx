@@ -86,10 +86,10 @@ function KaraMenuModal(props: IProps) {
 	const makeFavorite = () => {
 		kara?.flag_favorites
 			? commandBackend('deleteFavorites', {
-				kids: [kara?.kid],
+					kids: [kara?.kid],
 			  })
 			: commandBackend('addFavorites', {
-				kids: [kara?.kid],
+					kids: [kara?.kid],
 			  });
 		setEffectFavorite(true);
 		setTimeout(props.closeKaraMenu, 350);

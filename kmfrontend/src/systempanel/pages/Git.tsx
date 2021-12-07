@@ -5,9 +5,11 @@ import {
 	ControlOutlined,
 	DownOutlined,
 	ExceptionOutlined,
-	PullRequestOutlined,	ReloadOutlined,
-	RightOutlined} from '@ant-design/icons';
-import { Button, Checkbox, Divider, Layout, List,Modal, Table } from 'antd';
+	PullRequestOutlined,
+	ReloadOutlined,
+	RightOutlined,
+} from '@ant-design/icons';
+import { Button, Checkbox, Divider, Layout, List, Modal, Table } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import i18next from 'i18next';
 import { RenderExpandIconProps } from 'rc-table/lib/interface';
@@ -15,28 +17,29 @@ import { Dispatch, memo, useCallback, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import { Repository } from '../../../../src/lib/types/repo';
-import { GitLogResult,GitStatusResult } from '../../../../src/types/git';
+import { GitLogResult, GitStatusResult } from '../../../../src/types/git';
 import { Commit, ModifiedMedia } from '../../../../src/types/repo';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 
 interface PendingPush {
-	commits: {commits: Commit[], modifiedMedias: ModifiedMedia[]}
-	repoName: string
+	commits: { commits: Commit[]; modifiedMedias: ModifiedMedia[] };
+	repoName: string;
 }
 
 interface Repo {
-	repo: Repository
-	label: string,
-	conflicts: boolean,
-	stashes: GitLogResult
+	repo: Repository;
+	label: string;
+	conflicts: boolean;
+	stashes: GitLogResult;
 }
 
 async function getRepos(): Promise<Repo[]> {
 	const repos: Repository[] = await commandBackend('getRepos');
 	return Promise.all(
-		repos.filter(repo => repo.Online && repo.MaintainerMode && repo.Enabled && repo.Git?.URL)
-			.map(async repo => {
+		repos
+			.filter((repo) => repo.Online && repo.MaintainerMode && repo.Enabled && repo.Git?.URL)
+			.map(async (repo) => {
 				const gitStatus: GitStatusResult = await commandBackend('checkRepo', { repoName: repo.Name });
 				const stashes: GitLogResult = await commandBackend('listRepoStashes', { repoName: repo.Name });
 				let label = i18next.t('REPOSITORIES.GIT_STATUSES.CLEAN');
@@ -52,49 +55,59 @@ async function getRepos(): Promise<Repo[]> {
 }
 
 function StashList(props: {
-	stashList: GitLogResult,
-	repo: Repository,
-	loading: boolean,
-	setLoading: Dispatch<boolean>
-	refreshRepo: () => void
+	stashList: GitLogResult;
+	repo: Repository;
+	loading: boolean;
+	setLoading: Dispatch<boolean>;
+	refreshRepo: () => void;
 }) {
 	return (
 		<>
 			<p>
 				<Trans
 					i18nKey="REPOSITORIES.GIT_STASH"
-					components={{1: <a href={props.repo.Git.URL} target="_blank" />}}
+					components={{ 1: <a href={props.repo.Git.URL} target="_blank" /> }}
 				/>
 			</p>
 			<List
 				dataSource={[...props.stashList.all]}
 				renderItem={(item, index) => (
 					<List.Item
-						actions={[<Button
-							type="primary"
-							icon={<PullRequestOutlined />}
-							loading={props.loading}
-							onClick={() => {
-								props.setLoading(true);
-								commandBackend('popStash', {repoName: props.repo.Name, stashId: index}, false, 120000)
-									.then(props.refreshRepo);
-							}}
-						>
-							{i18next.t('REPOSITORIES.GIT_UNSTASH')}
-						</Button>,
-						<Button
-							type="primary"
-							danger
-							icon={<ExceptionOutlined />}
-							loading={props.loading}
-							onClick={() => {
-								props.setLoading(true);
-								commandBackend('dropStash', {repoName: props.repo.Name, stashId: index}, false, 120000)
-									.then(props.refreshRepo);
-							}}
-						>
-							{i18next.t('REPOSITORIES.GIT_DELETE')}
-						</Button>]}
+						actions={[
+							<Button
+								type="primary"
+								icon={<PullRequestOutlined />}
+								loading={props.loading}
+								onClick={() => {
+									props.setLoading(true);
+									commandBackend(
+										'popStash',
+										{ repoName: props.repo.Name, stashId: index },
+										false,
+										120000
+									).then(props.refreshRepo);
+								}}
+							>
+								{i18next.t('REPOSITORIES.GIT_UNSTASH')}
+							</Button>,
+							<Button
+								type="primary"
+								danger
+								icon={<ExceptionOutlined />}
+								loading={props.loading}
+								onClick={() => {
+									props.setLoading(true);
+									commandBackend(
+										'dropStash',
+										{ repoName: props.repo.Name, stashId: index },
+										false,
+										120000
+									).then(props.refreshRepo);
+								}}
+							>
+								{i18next.t('REPOSITORIES.GIT_DELETE')}
+							</Button>,
+						]}
 					>
 						{item.message}
 					</List.Item>
@@ -107,41 +120,41 @@ function StashList(props: {
 const MemoStashList = memo(StashList);
 
 function ExpandStashes(props: RenderExpandIconProps<Repo>) {
-	return props.expandable ?
+	return props.expandable ? (
 		<Button
-			icon={props.expanded ? <DownOutlined />:<RightOutlined />}
-			onClick={e => props.onExpand(props.record, e)}
+			icon={props.expanded ? <DownOutlined /> : <RightOutlined />}
+			onClick={(e) => props.onExpand(props.record, e)}
 			type="primary"
 		>
 			{i18next.t('REPOSITORIES.GIT_STASHLIST')}
 		</Button>
-		: null;
+	) : null;
 }
 
 export default function Git() {
 	const [repos, setRepos] = useState<Repo[]>([]);
 	const [pendingPush, setPendingPush] = useState<PendingPush>();
 	const [excludeList, setExcludeList] = useState<number[]>([]);
-	const [gitStatus, setGitStatus] = useState<GitStatusResult & {repoName: string}>();
+	const [gitStatus, setGitStatus] = useState<GitStatusResult & { repoName: string }>();
 	const [loading, setLoading] = useState(false);
 	const [showPushModal, setShowPushModal] = useState(false);
 	const [showActionsModal, setShowActionsModal] = useState(false);
 
 	const generateCommits = useCallback(async (repoName: string) => {
 		setLoading(true);
-		const commits = await commandBackend('getCommits', {repoName}).catch(() => null);
+		const commits = await commandBackend('getCommits', { repoName }).catch(() => null);
 		if (!commits) {
 			displayMessage('info', i18next.t('REPOSITORIES.GIT_NOTHING_TO_PUSH'));
 			setLoading(false);
 		} else {
-			setPendingPush({repoName, commits});
+			setPendingPush({ repoName, commits });
 			setShowPushModal(true);
 		}
 	}, []);
 
 	const updateRepo = useCallback(async (repoName: string) => {
 		setLoading(true);
-		await commandBackend('updateRepo', {repoName}).catch(() => null);
+		await commandBackend('updateRepo', { repoName }).catch(() => null);
 		setLoading(false);
 		// Refresh repos
 		getRepos().then(setRepos);
@@ -150,37 +163,44 @@ export default function Git() {
 	const pushCommits = useCallback(async () => {
 		setLoading(true);
 		// Remove ignored commits
-		const excludedMessages = pendingPush.commits.commits.filter((_el, i) => excludeList.includes(i)).map(c => c.message);
+		const excludedMessages = pendingPush.commits.commits
+			.filter((_el, i) => excludeList.includes(i))
+			.map((c) => c.message);
 		pendingPush.commits.commits = pendingPush.commits.commits.filter((_el, i) => !excludeList.includes(i));
 		// Remove ignored medias by listing excluded commits messages
 		console.log(excludedMessages);
-		pendingPush.commits.modifiedMedias = pendingPush.commits.modifiedMedias.filter(m => !excludedMessages.includes(m.commit));
+		pendingPush.commits.modifiedMedias = pendingPush.commits.modifiedMedias.filter(
+			(m) => !excludedMessages.includes(m.commit)
+		);
 		await commandBackend('pushCommits', pendingPush);
 		setShowPushModal(false);
 	}, [pendingPush, excludeList]);
 
-	const toggleExclude = useCallback((e: CheckboxChangeEvent) => {
-		const commit = pendingPush.commits.commits.findIndex(el => el.message === e.target.name);
-		if (commit === -1) {
-			throw new Error('An unknown commit was excluded');
-		} else {
-			const indexInExcludeList = excludeList.indexOf(commit);
-			if (indexInExcludeList >= 0) {
-				excludeList.splice(indexInExcludeList, 1);
-				setExcludeList(excludeList);
+	const toggleExclude = useCallback(
+		(e: CheckboxChangeEvent) => {
+			const commit = pendingPush.commits.commits.findIndex((el) => el.message === e.target.name);
+			if (commit === -1) {
+				throw new Error('An unknown commit was excluded');
 			} else {
-				setExcludeList([...excludeList, commit]);
+				const indexInExcludeList = excludeList.indexOf(commit);
+				if (indexInExcludeList >= 0) {
+					excludeList.splice(indexInExcludeList, 1);
+					setExcludeList(excludeList);
+				} else {
+					setExcludeList([...excludeList, commit]);
+				}
 			}
-		}
-	}, [pendingPush, excludeList]);
+		},
+		[pendingPush, excludeList]
+	);
 
 	const showDangerousActions = useCallback(async (repoName: string) => {
 		const git: GitStatusResult = await commandBackend('checkRepo', { repoName });
-		setGitStatus({...git, repoName});
+		setGitStatus({ ...git, repoName });
 		setShowActionsModal(true);
 	}, []);
 
-	const takeAction = useCallback(async (repoName: string, action: 'stash'|'reset') => {
+	const takeAction = useCallback(async (repoName: string, action: 'stash' | 'reset') => {
 		setLoading(true);
 		let failed = false;
 		try {
@@ -227,38 +247,59 @@ export default function Git() {
 		};
 	}, [pendingPush]);
 
-	const columns = [{
-		title: i18next.t('REPOSITORIES.NAME'),
-		dataIndex: ['repo', 'Name'],
-		key: 'name'
-	}, {
-		title: i18next.t('REPOSITORIES.GIT_STATUS'),
-		dataIndex: 'label',
-		key: 'label'
-	}, {
-		title: i18next.t('REPOSITORIES.GIT_ACTIONS'),
-		key: 'push',
-		render: (_text, record) => {
-			return (<>
-				<Button type="primary" danger icon={<ControlOutlined />} loading={loading}
-					onClick={() => {
-						showDangerousActions(record.repo.Name);
-					}}>
-					{i18next.t('REPOSITORIES.GIT_DANGEROUS')}
-				</Button>
-				<Divider type="vertical" />
-				<Button type="primary" icon={<CloudUploadOutlined />} loading={loading}
-					onClick={() => generateCommits(record.repo.Name)} disabled={record.conflicts}>
-					{i18next.t('REPOSITORIES.GIT_PUSH')}
-				</Button>
-				<Divider type="vertical" />
-				<Button type="primary" icon={<CloudDownloadOutlined />} loading={loading}
-					onClick={() => updateRepo(record.repo.Name)} disabled={record.conflicts}>
-					{i18next.t('REPOSITORIES.GIT_PULL')}
-				</Button>
-			</>);
-		}
-	}];
+	const columns = [
+		{
+			title: i18next.t('REPOSITORIES.NAME'),
+			dataIndex: ['repo', 'Name'],
+			key: 'name',
+		},
+		{
+			title: i18next.t('REPOSITORIES.GIT_STATUS'),
+			dataIndex: 'label',
+			key: 'label',
+		},
+		{
+			title: i18next.t('REPOSITORIES.GIT_ACTIONS'),
+			key: 'push',
+			render: (_text, record) => {
+				return (
+					<>
+						<Button
+							type="primary"
+							danger
+							icon={<ControlOutlined />}
+							loading={loading}
+							onClick={() => {
+								showDangerousActions(record.repo.Name);
+							}}
+						>
+							{i18next.t('REPOSITORIES.GIT_DANGEROUS')}
+						</Button>
+						<Divider type="vertical" />
+						<Button
+							type="primary"
+							icon={<CloudUploadOutlined />}
+							loading={loading}
+							onClick={() => generateCommits(record.repo.Name)}
+							disabled={record.conflicts}
+						>
+							{i18next.t('REPOSITORIES.GIT_PUSH')}
+						</Button>
+						<Divider type="vertical" />
+						<Button
+							type="primary"
+							icon={<CloudDownloadOutlined />}
+							loading={loading}
+							onClick={() => updateRepo(record.repo.Name)}
+							disabled={record.conflicts}
+						>
+							{i18next.t('REPOSITORIES.GIT_PULL')}
+						</Button>
+					</>
+				);
+			},
+		},
+	];
 
 	return (
 		<>
@@ -271,18 +312,22 @@ export default function Git() {
 					dataSource={repos}
 					columns={columns}
 					expandable={{
-						expandedRowRender: record => <MemoStashList
-							stashList={record.stashes}
-							repo={record.repo}
-							refreshRepo={() => {
-								getRepos().then(setRepos).then(() => setLoading(false));
-							}}
-							loading={loading}
-							setLoading={setLoading}
-						/>,
-						rowExpandable: record => record.stashes.total > 0,
+						expandedRowRender: (record) => (
+							<MemoStashList
+								stashList={record.stashes}
+								repo={record.repo}
+								refreshRepo={() => {
+									getRepos()
+										.then(setRepos)
+										.then(() => setLoading(false));
+								}}
+								loading={loading}
+								setLoading={setLoading}
+							/>
+						),
+						rowExpandable: (record) => record.stashes.total > 0,
 						expandIcon: ExpandStashes,
-						defaultExpandAllRows: true
+						defaultExpandAllRows: true,
 					}}
 					rowKey={(rec) => rec.repo.Name}
 				/>
@@ -300,9 +345,11 @@ export default function Git() {
 				cancelText={i18next.t('CANCEL')}
 			>
 				<ul>
-					{pendingPush?.commits?.commits?.map(commit => (
+					{pendingPush?.commits?.commits?.map((commit) => (
 						<li key={commit.message}>
-							<Checkbox defaultChecked={true} name={commit.message} onChange={toggleExclude}>{commit.message}</Checkbox>
+							<Checkbox defaultChecked={true} name={commit.message} onChange={toggleExclude}>
+								{commit.message}
+							</Checkbox>
 						</li>
 					))}
 				</ul>
@@ -318,26 +365,23 @@ export default function Git() {
 				}}
 				visible={showActionsModal}
 			>
+				<p>{i18next.t('MODAL.GIT_DANGEROUS.DESCRIPTION')}</p>
+				{gitStatus?.files?.length > 0 ? (
+					<ul>
+						{gitStatus?.files?.map((file, i) => (
+							<li key={i.toString()}>{file.path}</li>
+						))}
+					</ul>
+				) : (
+					<ul>
+						<li>{i18next.t('MODAL.GIT_DANGEROUS.EMPTY')}</li>
+					</ul>
+				)}
 				<p>
-					{i18next.t('MODAL.GIT_DANGEROUS.DESCRIPTION')}
-				</p>
-				{
-					gitStatus?.files?.length > 0 ?
-						<ul>
-							{gitStatus?.files?.map((file, i) => (
-								<li key={i.toString()}>
-									{file.path}
-								</li>
-							))}
-						</ul>
-						: <ul>
-							<li>
-								{i18next.t('MODAL.GIT_DANGEROUS.EMPTY')}
-							</li>
-						</ul>
-				}
-				<p>
-					<Button type="primary" icon={<CloudSyncOutlined />} block
+					<Button
+						type="primary"
+						icon={<CloudSyncOutlined />}
+						block
 						loading={loading}
 						onClick={() => takeAction(gitStatus.repoName, 'stash')}
 					>
@@ -346,8 +390,12 @@ export default function Git() {
 					<span>{i18next.t('MODAL.GIT_DANGEROUS.STASH.DESC')}</span>
 				</p>
 				<p>
-					<Button type="primary" icon={<ExceptionOutlined />} block
-						danger loading={loading}
+					<Button
+						type="primary"
+						icon={<ExceptionOutlined />}
+						block
+						danger
+						loading={loading}
 						onClick={() => takeAction(gitStatus.repoName, 'reset')}
 					>
 						{i18next.t('MODAL.GIT_DANGEROUS.RESET.BTN')}

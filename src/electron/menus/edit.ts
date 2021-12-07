@@ -16,14 +16,16 @@ const builder: MenuItemBuilderFunction = (options) => {
 			{ label: i18next.t('MENU_EDIT_DELETE'), role: 'delete' },
 			{ label: i18next.t('MENU_EDIT_SELECT_ALL'), role: 'selectAll' },
 			isMac ? { type: 'separator' } : null,
-			isMac ? {
-				label: i18next.t('MENU_EDIT_SPEECH'),
-				submenu: [
-					{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startSpeaking' },
-					{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopSpeaking' }
-				]
-			} : null
-		]
+			isMac
+				? {
+						label: i18next.t('MENU_EDIT_SPEECH'),
+						submenu: [
+							{ label: i18next.t('MENU_EDIT_STARTSPEECH'), role: 'startSpeaking' },
+							{ label: i18next.t('MENU_EDIT_STOPSPEECH'), role: 'stopSpeaking' },
+						],
+				  }
+				: null,
+		],
 	};
 };
 

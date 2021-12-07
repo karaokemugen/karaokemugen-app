@@ -65,7 +65,7 @@ function ProgressBar() {
 			const futurTimeSec = (length * futurTimeX) / barInnerwidth;
 			if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
 				setWidth(e.pageX);
-				commandBackend('sendPlayerCommand', { command: 'goTo', options: futurTimeSec }).catch(() => { });
+				commandBackend('sendPlayerCommand', { command: 'goTo', options: futurTimeSec }).catch(() => {});
 			}
 		}
 	};
@@ -76,8 +76,7 @@ function ProgressBar() {
 
 	const resizeCheck = () => {
 		if (refP?.current) {
-			const offset =
-				refP.current.getBoundingClientRect().width - refCont.current.getBoundingClientRect().width;
+			const offset = refP.current.getBoundingClientRect().width - refCont.current.getBoundingClientRect().width;
 			if (offset > 0) {
 				setAnimate(-offset - 5);
 				setDuration(Math.round(offset * 0.05));
@@ -94,10 +93,7 @@ function ProgressBar() {
 		const element = refBar.current;
 		if (element && data.timeposition) {
 			const newWidth =
-				(element.offsetWidth * 10000 * (data.timeposition + refreshTime / 1000)) /
-				length /
-				10000 +
-				'px';
+				(element.offsetWidth * 10000 * (data.timeposition + refreshTime / 1000)) / length / 10000 + 'px';
 
 			if (length !== 0) {
 				setWidth(newWidth);
@@ -207,9 +203,7 @@ function ProgressBar() {
 				ref={refBar}
 			>
 				<div className="actualTime">
-					{timePosition > 0 &&
-						length > 0 &&
-						secondsTimeSpanToHMS(Math.round(timePosition), 'mm:ss')}
+					{timePosition > 0 && length > 0 && secondsTimeSpanToHMS(Math.round(timePosition), 'mm:ss')}
 				</div>
 				<div
 					className={`karaTitle${animate !== 0 ? ' animate' : ''}${animationPause ? ' pause' : ''}`}
@@ -223,11 +217,7 @@ function ProgressBar() {
 				</div>
 
 				<div className="remainTime">
-					{length > 0 &&
-						`-${secondsTimeSpanToHMS(
-							Math.round(length - timePosition),
-							'mm:ss'
-						)}`}
+					{length > 0 && `-${secondsTimeSpanToHMS(Math.round(length - timePosition), 'mm:ss')}`}
 				</div>
 			</div>
 			<div id="progressBarColor" style={{ width: width }} />

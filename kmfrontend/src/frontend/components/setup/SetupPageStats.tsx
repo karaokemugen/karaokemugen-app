@@ -36,11 +36,7 @@ function SetupPageStats(props: RouteComponentProps) {
 		<section className="step step-choice">
 			<p>{i18next.t('ONLINE_STATS.INTRO')}</p>
 			<p>
-				<a
-					className="btn-link"
-					type="button"
-					onClick={() => setOpenDetails(!openDetails)}
-				>
+				<a className="btn-link" type="button" onClick={() => setOpenDetails(!openDetails)}>
 					{i18next.t('ONLINE_STATS.DETAILS.TITLE')}
 				</a>
 				{openDetails ? (
@@ -59,18 +55,10 @@ function SetupPageStats(props: RouteComponentProps) {
 			<p>{i18next.t('ONLINE_STATS.QUESTION')}</p>
 			<div className="input-group">
 				<div className="actions">
-					<button
-						className={stats ? 'on' : ''}
-						type="button"
-						onClick={() => setStats(true)}
-					>
+					<button className={stats ? 'on' : ''} type="button" onClick={() => setStats(true)}>
 						{i18next.t('YES')}
 					</button>
-					<button
-						className={stats === false ? 'off' : ''}
-						type="button"
-						onClick={() => setStats(false)}
-					>
+					<button className={stats === false ? 'off' : ''} type="button" onClick={() => setStats(false)}>
 						{i18next.t('NO')}
 					</button>
 				</div>
@@ -78,11 +66,7 @@ function SetupPageStats(props: RouteComponentProps) {
 			<p>{i18next.t('ONLINE_STATS.ERROR')}</p>
 			<div className="input-group">
 				<div className="actions">
-					<button
-						className={errorTracking ? 'on' : ''}
-						type="button"
-						onClick={() => setErrorTracking(true)}
-					>
+					<button className={errorTracking ? 'on' : ''} type="button" onClick={() => setErrorTracking(true)}>
 						{i18next.t('YES')}
 					</button>
 					<button
@@ -101,11 +85,7 @@ function SetupPageStats(props: RouteComponentProps) {
 			<p>{i18next.t('MODAL.STATS_MODAL.REFUSE_DESC')}</p>
 			<div className="input-group">
 				<div className="actions">
-					<button
-						className={userStats ? 'on' : ''}
-						type="button"
-						onClick={() => setUserStats(true)}
-					>
+					<button className={userStats ? 'on' : ''} type="button" onClick={() => setUserStats(true)}>
 						{i18next.t('YES')}
 					</button>
 					<button

@@ -80,7 +80,7 @@ export default function InlineTag(props: Props) {
 		>
 			<span
 				className={props.className}
-				onClick={e => {
+				onClick={(e) => {
 					if (props.scope === 'public' && context?.globalState.settings.data.config?.Frontend?.Mode === 2) {
 						e.stopPropagation();
 						setShowPopup(!showPopup);
@@ -90,7 +90,7 @@ export default function InlineTag(props: Props) {
 				{getTagInLocale(context.globalState.settings.data, props.tag, props.i18nParam)}
 			</span>
 			{showPopup ? (
-				<div className={`tag-popup${rightClass ? ' right':''}`}>
+				<div className={`tag-popup${rightClass ? ' right' : ''}`}>
 					<p className="tag-name">{getTagInLocale(context.globalState.settings.data, props.tag)}</p>
 					<p className="tag-stat">{i18next.t('INLINE_TAG.COUNT', { count: count })}</p>
 					<p className="tag-action">

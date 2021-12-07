@@ -57,14 +57,14 @@ function Tutorial() {
 							<p className="caption-left">
 								<Trans
 									i18nKey="MODAL.TUTORIAL.TITLE_CLICK"
-									components={{ 1: !isLargeDevice ? <span /> : <span style={{display: 'none'}} /> }}
+									components={{ 1: !isLargeDevice ? <span /> : <span style={{ display: 'none' }} /> }}
 								/>
 								<br />
 								<Trans
 									i18nKey="MODAL.TUTORIAL.PLAY_BUTTONS"
 									components={{
 										1: <i className="fas fa-fw fa-play" />,
-										3: !isLargeDevice ? <span /> : <span style={{display: 'none'}} /> ,
+										3: !isLargeDevice ? <span /> : <span style={{ display: 'none' }} />,
 										5: <i className="fas fa-fw fa-play-circle" />,
 									}}
 								/>

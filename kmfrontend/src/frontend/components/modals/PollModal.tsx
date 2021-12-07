@@ -54,10 +54,7 @@ function PollModal(props: IProps) {
 						>
 							<i className="fas fa-times"></i>
 						</button>
-						<span
-							className="timer"
-							style={{ transition: `width ${timeLeft}`, width: width }}
-						></span>
+						<span className="timer" style={{ transition: `width ${timeLeft}`, width: width }}></span>
 					</ul>
 					<div id="nav-poll" className="modal-body" style={{ height: 3 * poll.length + 'em' }}>
 						<div className="modal-message">
@@ -69,8 +66,7 @@ function PollModal(props: IProps) {
 										value={kara.index}
 										onClick={postSong}
 										style={{
-											backgroundColor:
-												'hsl(' + Math.floor(Math.random() * 256) + ',20%, 26%)',
+											backgroundColor: 'hsl(' + Math.floor(Math.random() * 256) + ',20%, 26%)',
 										}}
 									>
 										{buildKaraTitle(context.globalState.settings.data, kara, true)}

@@ -14,24 +14,24 @@ const builder: MenuItemBuilderFunction = (options) => {
 			{
 				label: i18next.t('MENU_GOTO_HOME'),
 				accelerator: 'CmdOrCtrl+H',
-				click: urls.home
+				click: urls.home,
 			},
 			{
 				label: i18next.t('MENU_GOTO_OPERATOR'),
 				accelerator: 'CmdOrCtrl+O',
-				click: urls.operator
+				click: urls.operator,
 			},
 			{
 				label: i18next.t('MENU_GOTO_SYSTEM'),
 				accelerator: 'CmdOrCtrl+S',
-				click: urls.system
+				click: urls.system,
 			},
 			{
 				label: i18next.t('MENU_GOTO_PUBLIC'),
 				accelerator: 'CmdOrCtrl+P',
-				click: urls.public
+				click: urls.public,
 			},
-		]
+		],
 	};
 };
 

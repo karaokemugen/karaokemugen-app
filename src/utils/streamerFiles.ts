@@ -1,24 +1,26 @@
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import debounce from 'lodash.debounce';
-import {resolve} from 'path';
+import { resolve } from 'path';
 
 import { DBReady } from '../dao/database';
-import {getConfig, resolvedPath} from '../lib/utils/config';
+import { getConfig, resolvedPath } from '../lib/utils/config';
 import { asyncCheckOrMkdir } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
-import {getSongSeriesSingers, getSongTitle, getSongVersion} from '../services/kara';
-import {getPlaylistInfo} from '../services/playlist';
-import {StreamFileType} from '../types/streamerFiles';
+import { getSongSeriesSingers, getSongTitle, getSongVersion } from '../services/kara';
+import { getPlaylistInfo } from '../services/playlist';
+import { StreamFileType } from '../types/streamerFiles';
 import sentry from './sentry';
-import {getState} from './state';
+import { getState } from './state';
 
 async function writeCurrentSong() {
 	let output: string;
 	const song = getState().player.currentSong;
 	const media = getState().player.currentMedia;
 	if (song) {
-		output = `${getSongSeriesSingers(song)}\n${song.songtypes.map(s => s.name).join(' ')}${(!song.songorder || song.songorder === 0) ? '':song.songorder.toString()} - ${getSongTitle(song)} ${getSongVersion(song)}`;
+		output = `${getSongSeriesSingers(song)}\n${song.songtypes.map((s) => s.name).join(' ')}${
+			!song.songorder || song.songorder === 0 ? '' : song.songorder.toString()
+		} - ${getSongTitle(song)} ${getSongVersion(song)}`;
 	} else if (media) {
 		output = getState().player.mediaType;
 	} else {
@@ -28,7 +30,11 @@ async function writeCurrentSong() {
 }
 
 async function writeRequester() {
-	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'requester.txt'), getState().player.currentSong?.nickname || '', 'utf-8');
+	await fs.writeFile(
+		resolve(resolvedPath('StreamFiles'), 'requester.txt'),
+		getState().player.currentSong?.nickname || '',
+		'utf-8'
+	);
 }
 
 async function writeURL() {
@@ -53,15 +59,13 @@ async function writeFrontendStatus() {
 }
 
 async function writeKarasInPublicPL() {
-	const {karacount} = await getPlaylistInfo(getState().publicPlaid);
-	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'public_kara_count.txt'),
-		karacount.toString(), 'utf-8');
+	const { karacount } = await getPlaylistInfo(getState().publicPlaid);
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'public_kara_count.txt'), karacount.toString(), 'utf-8');
 }
 
 async function writeKarasInCurrentPL() {
-	const {karacount} = await getPlaylistInfo(getState().currentPlaid);
-	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'current_kara_count.txt'),
-		karacount.toString(), 'utf-8');
+	const { karacount } = await getPlaylistInfo(getState().currentPlaid);
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'current_kara_count.txt'), karacount.toString(), 'utf-8');
 }
 
 /* format seconds to Hour Minute Second */
@@ -86,12 +90,15 @@ function secondsTimeSpanToHMS(s: number, format: string) {
 }
 
 async function writeTimeRemaining() {
-	const {time_left} = await getPlaylistInfo(getState().currentPlaid);
-	await fs.writeFile(resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'time_remaining_in_current_playlist.txt'),
-		secondsTimeSpanToHMS(time_left, 'hm'), 'utf-8');
+	const { time_left } = await getPlaylistInfo(getState().currentPlaid);
+	await fs.writeFile(
+		resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'time_remaining_in_current_playlist.txt'),
+		secondsTimeSpanToHMS(time_left, 'hm'),
+		'utf-8'
+	);
 }
 
-const debounceSettings: [number, {maxWait: number, leading: boolean}] = [1500, { maxWait: 3000, leading: true }];
+const debounceSettings: [number, { maxWait: number; leading: boolean }] = [1500, { maxWait: 3000, leading: true }];
 const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 	['song_name', debounce(writeCurrentSong, ...debounceSettings)],
 	['requester', debounce(writeRequester, ...debounceSettings)],
@@ -99,7 +106,7 @@ const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 	['frontend_state', debounce(writeFrontendStatus, ...debounceSettings)],
 	['current_kara_count', debounce(writeKarasInCurrentPL, ...debounceSettings)],
 	['public_kara_count', debounce(writeKarasInPublicPL, ...debounceSettings)],
-	['time_remaining_in_current_playlist', debounce(writeTimeRemaining, ...debounceSettings)]
+	['time_remaining_in_current_playlist', debounce(writeTimeRemaining, ...debounceSettings)],
 ]);
 
 export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
@@ -116,7 +123,7 @@ export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
 			await Promise.all(promises);
 		}
 	} catch (err) {
-		logger.warn('Cannot write stream files', {service: 'StreamFiles', obj: err});
+		logger.warn('Cannot write stream files', { service: 'StreamFiles', obj: err });
 		sentry.error(err, 'Warning');
 	}
 }

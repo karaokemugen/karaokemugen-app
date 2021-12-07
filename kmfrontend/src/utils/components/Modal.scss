@@ -23,13 +23,13 @@
 	overflow-y: auto;
 }
 
-.modal[type=prompt] .modal-body {
+.modal[type='prompt'] .modal-body {
 	padding: 0;
 }
 
 .modal .modal-content {
 	color: #eee;
-	background-color:#3a3c45;
+	background-color: #3a3c45;
 	border-radius: 8px;
 }
 .modal .modal-footer {
@@ -40,7 +40,7 @@
 	padding: 0.5em;
 	> button {
 		order: 0;
-		margin-left: .25em;
+		margin-left: 0.25em;
 	}
 	> .modal-help {
 		flex-grow: 1;
@@ -89,7 +89,7 @@
 	position: absolute;
 }
 .modal.modalPage .modal-body > div {
-	padding: .25em;
+	padding: 0.25em;
 	text-align: center;
 }
 .modal.modalPage .modal-body div.text {
@@ -97,7 +97,7 @@
 	line-height: 1.6em;
 	margin: 1em;
 }
-.modal.modalPage .modal-body div.text br{
+.modal.modalPage .modal-body div.text br {
 	line-height: 2.6em;
 }
 .modalPage .modal-message div:not(.selectWithIcon-menu):not(.selectWithIcon-menuItem) {
@@ -108,7 +108,8 @@
 	}
 }
 
-.nav>li>a:focus, .nav>li>a:hover {
+.nav > li > a:focus,
+.nav > li > a:hover {
 	border-top: none;
 	text-decoration: none;
 	background-color: #4b4b4b;
@@ -154,7 +155,6 @@
 	overflow: hidden;
 }
 
-
 .modal button.confirm {
 	height: 100%;
 	width: 100%;
@@ -197,7 +197,7 @@
 	padding: 1em 0;
 	justify-content: start;
 	.modal-title {
-		margin-left: .25em;
+		margin-left: 0.25em;
 	}
 }
 
@@ -233,7 +233,9 @@
 		&.active {
 			> a {
 				background-color: darken($mugen-nav-background, 10);
-				&:focus, &:active:focus, &:hover {
+				&:focus,
+				&:active:focus,
+				&:hover {
 					background-color: darken($mugen-nav-background, 10);
 				}
 			}

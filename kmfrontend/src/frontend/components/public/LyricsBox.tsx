@@ -22,7 +22,9 @@ interface IProps {
 
 function LyricsBox(props: IProps) {
 	const [lyrics, setLyrics] = useState<ASSLine[]>([]);
-	const [showLyrics, setShowLyrics] = useState<LyricsStatus>(is_touch_device() ? LyricsStatus.hide : LyricsStatus.compact);
+	const [showLyrics, setShowLyrics] = useState<LyricsStatus>(
+		is_touch_device() ? LyricsStatus.hide : LyricsStatus.compact
+	);
 	const [timePosition, setTimePosition] = useState(-1);
 
 	const genClasses = (lyric: ASSLine) => {
@@ -85,14 +87,8 @@ function LyricsBox(props: IProps) {
 		<div className={`lyrics-box${props.mobile ? ' mobile' : ''}`}>
 			<div
 				className="toggle"
-				onClick={() => setShowLyrics(showLyrics === LyricsStatus.full
-					? LyricsStatus.hide
-					: showLyrics + 1)
-				}
-				onKeyPress={() => setShowLyrics(showLyrics === LyricsStatus.full
-					? LyricsStatus.hide
-					: showLyrics + 1)
-				}
+				onClick={() => setShowLyrics(showLyrics === LyricsStatus.full ? LyricsStatus.hide : showLyrics + 1)}
+				onKeyPress={() => setShowLyrics(showLyrics === LyricsStatus.full ? LyricsStatus.hide : showLyrics + 1)}
 				tabIndex={0}
 			>
 				{LyricsBox.i18nText(showLyrics)}
@@ -107,10 +103,10 @@ function LyricsBox(props: IProps) {
 								<div className={classes} key={index}>
 									{val.fullText && classes === 'current'
 										? val.fullText.map((block, index) => (
-											<span key={index} className={genBlockClasses(block, val)}>
-												{block.text}
-											</span>
-										))
+												<span key={index} className={genBlockClasses(block, val)}>
+													{block.text}
+												</span>
+										  ))
 										: val.text.replace(/\\N/g, ' ')}
 								</div>
 							);

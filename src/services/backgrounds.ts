@@ -1,6 +1,6 @@
-import {promises as fs} from 'fs';
+import { promises as fs } from 'fs';
 import sample from 'lodash.sample';
-import {resolve} from 'path';
+import { resolve } from 'path';
 
 import { resolvedPath } from '../lib/utils/config';
 import { audioFileRegexp, imageFileRegexp } from '../lib/utils/constants';
@@ -16,24 +16,23 @@ export async function getBackgroundAndMusic(type: BackgroundType): Promise<Backg
 	if (files.pictures.length === 0) files = await getBackgroundFiles('bundled');
 	const backgroundImageFile = sample(files.pictures);
 	// First, try to find a "neighbour" mp3
-	let backgroundMusicFile = files.music.find(f => f === replaceExt(backgroundImageFile, '.mp3'));
-	if (!backgroundMusicFile && files.music.length > 0)  {
+	let backgroundMusicFile = files.music.find((f) => f === replaceExt(backgroundImageFile, '.mp3'));
+	if (!backgroundMusicFile && files.music.length > 0) {
 		backgroundMusicFile = sample(files.music);
 	}
 	return {
 		pictures: [backgroundImageFile],
-		music: [backgroundMusicFile]
+		music: [backgroundMusicFile],
 	};
 }
 
 export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promise<BackgroundList> {
-	const path = type === 'bundled'
-		? resolve(resolvedPath('BundledBackgrounds'))
-		: resolve(resolvedPath('Backgrounds'), type);
+	const path =
+		type === 'bundled' ? resolve(resolvedPath('BundledBackgrounds')) : resolve(resolvedPath('Backgrounds'), type);
 	const files = await fs.readdir(path);
 	return {
-		pictures: files.filter(f => f.match(imageFileRegexp)).map(f => resolve(path, f)),
-		music: files.filter(f => f.match(audioFileRegexp)).map(f => resolve(path, f))
+		pictures: files.filter((f) => f.match(imageFileRegexp)).map((f) => resolve(path, f)),
+		music: files.filter((f) => f.match(audioFileRegexp)).map((f) => resolve(path, f)),
 	};
 }
 

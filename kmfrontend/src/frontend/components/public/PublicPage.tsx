@@ -109,14 +109,10 @@ function PublicPage(props: RouteComponentProps) {
 		} else if (props.location.pathname.includes('/public/favorites')) {
 			changeView('favorites');
 		} else if (props.location.pathname.includes('/public/tags')) {
-			const tagType = Number(
-				props.location.pathname.substring(props.location.pathname.lastIndexOf('/') + 1)
-			);
+			const tagType = Number(props.location.pathname.substring(props.location.pathname.lastIndexOf('/') + 1));
 			changeView('tag', tagType);
 		} else if (props.location.pathname.includes('/public/playlist')) {
-			const idPlaylist = props.location.pathname.substring(
-				props.location.pathname.lastIndexOf('/') + 1
-			);
+			const idPlaylist = props.location.pathname.substring(props.location.pathname.lastIndexOf('/') + 1);
 			if (idPlaylist === context.globalState.settings.data.state.publicPlaid) {
 				changeView('publicPlaylist');
 			} else if (idPlaylist === context.globalState.settings.data.state.currentPlaid) {
@@ -160,10 +156,7 @@ function PublicPage(props: RouteComponentProps) {
 	const songPollStarted = () => {
 		if (context.globalState.auth.isAuthenticated) {
 			setPollActive(true);
-			showModal(
-				context.globalDispatch,
-				<PollModal hasVoted={() => setPollActive(false)} />
-			);
+			showModal(context.globalDispatch, <PollModal hasVoted={() => setPollActive(false)} />);
 		}
 	};
 
@@ -222,11 +215,7 @@ function PublicPage(props: RouteComponentProps) {
 		if (data.stopping !== undefined) setPlayerStopping(data.stopping);
 		if (data.playerStatus === 'stop') setPlayerStopped(true);
 		else if (typeof data.playerStatus === 'string') setPlayerStopped(false);
-		if (
-			playerStopped &&
-			data.currentRequester === context.globalState.auth.data.username &&
-			!classicModeModal
-		) {
+		if (playerStopped && data.currentRequester === context.globalState.auth.data.username && !classicModeModal) {
 			showModal(context.globalDispatch, <ClassicModeModal />);
 			setClassicModeModal(true);
 		} else if (!playerStopped && classicModeModal) {
@@ -255,7 +244,7 @@ function PublicPage(props: RouteComponentProps) {
 	};
 
 	useEffect(() => {
-		if (indexKaraDetail !== undefined)  {
+		if (indexKaraDetail !== undefined) {
 			setPlaylistInfoLeft(context.globalDispatch, context.globalState.frontendContext.playlistInfoLeft.plaid);
 			// Show VersionSelector if user has parents/children enabled, that the kara have children and that it is
 			// not a PLC entry.
@@ -279,7 +268,10 @@ function PublicPage(props: RouteComponentProps) {
 		return () => {
 			getSocket().off('playlistInfoUpdated', playlistInfoUpdated);
 		};
-	}, [context.globalState.frontendContext.playlistInfoLeft.plaid, context.globalState.frontendContext.playlistInfoRight.plaid]);
+	}, [
+		context.globalState.frontendContext.playlistInfoLeft.plaid,
+		context.globalState.frontendContext.playlistInfoRight.plaid,
+	]);
 
 	useEffect(() => {
 		initView();
@@ -349,26 +341,18 @@ function PublicPage(props: RouteComponentProps) {
 				bottom={bottom}
 				view={view}
 				hmagrin={
-					!['favorites', 'publicPlaylist', 'currentPlaylist', 'tag', 'search'].includes(
-						view
-					) && kara === undefined
+					!['favorites', 'publicPlaylist', 'currentPlaylist', 'tag', 'search'].includes(view) &&
+					kara === undefined
 				}
 			>
 				<Switch>
 					<Route
 						path="/public/user"
-						render={() => (
-							<ProfilModal
-								scope="public"
-								closeProfileModal={() => props.history.goBack()}
-							/>
-						)}
+						render={() => <ProfilModal scope="public" closeProfileModal={() => props.history.goBack()} />}
 					/>
 					<Route
 						path="/public/users"
-						render={() => (
-							<UsersModal scope="public" closeModal={() => props.history.goBack()} />
-						)}
+						render={() => <UsersModal scope="public" closeModal={() => props.history.goBack()} />}
 					/>
 					<Route
 						path="/public/karaoke/:kid"
@@ -413,13 +397,7 @@ function PublicPage(props: RouteComponentProps) {
 									<button
 										className="btn"
 										type="button"
-										onClick={() =>
-											changeView(
-												view === 'search' && searchCriteria
-													? 'tag'
-													: 'home'
-											)
-										}
+										onClick={() => changeView(view === 'search' && searchCriteria ? 'tag' : 'home')}
 									>
 										<i className="fas fa-arrow-left" />
 									</button>
@@ -437,9 +415,7 @@ function PublicPage(props: RouteComponentProps) {
 											onClick={() =>
 												showModal(
 													context.globalDispatch,
-													<PollModal
-														hasVoted={() => setPollActive(false)}
-													/>
+													<PollModal hasVoted={() => setPollActive(false)} />
 												)
 											}
 										>
@@ -464,15 +440,11 @@ function PublicPage(props: RouteComponentProps) {
 											indexKaraDetail={indexKaraDetail}
 											clearIndexKaraDetail={() => setIndexKaraDetail(undefined)}
 											searchType={
-												props.location.pathname.includes(
-													'/public/search/requested'
-												)
+												props.location.pathname.includes('/public/search/requested')
 													? 'requested'
-													: props.location.pathname.includes(
-														'/public/search/history'
-													)
-														? 'recent'
-														: searchType
+													: props.location.pathname.includes('/public/search/history')
+													? 'recent'
+													: searchType
 											}
 										/>
 									)}

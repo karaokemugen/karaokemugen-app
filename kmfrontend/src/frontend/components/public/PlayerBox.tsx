@@ -2,7 +2,7 @@ import './PlayerBox.scss';
 
 import i18next from 'i18next';
 import sample from 'lodash.sample';
-import { ReactFragment,RefObject, useContext, useEffect, useRef, useState } from 'react';
+import { ReactFragment, RefObject, useContext, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
@@ -32,8 +32,8 @@ function PlayerBox(props: IProps) {
 	const [kid, setKid] = useState('');
 	const [favorites, setFavorites] = useState(new Set<string>());
 	const [karaVersions, setKaraVersions] = useState<ReactFragment>();
-	const ref:RefObject<HTMLDivElement> = useRef();
-	const containerRef:RefObject<HTMLDivElement> = useRef();
+	const ref: RefObject<HTMLDivElement> = useRef();
+	const containerRef: RefObject<HTMLDivElement> = useRef();
 
 	const resetBox = () => {
 		setTitle(i18next.t('KARA_PAUSED_WAITING'));
@@ -126,15 +126,15 @@ function PlayerBox(props: IProps) {
 				const serieText =
 					kara.series?.length > 0
 						? kara.series
-							.slice(0, 3)
-							.map((e) => getTagInLocale(context?.globalState.settings.data, e))
-							.join(', ') + (kara.series.length > 3 ? '...' : '')
+								.slice(0, 3)
+								.map((e) => getTagInLocale(context?.globalState.settings.data, e))
+								.join(', ') + (kara.series.length > 3 ? '...' : '')
 						: kara.singers
-							? kara.singers
+						? kara.singers
 								.slice(0, 3)
 								.map((e) => e.name)
 								.join(', ') + (kara.singers.length > 3 ? '...' : '')
-							: '';
+						: '';
 				const songtypeText = [...kara.songtypes]
 					.sort(sortTagByPriority)
 					.map((e) => (e.short ? +e.short : e.name))
@@ -207,8 +207,7 @@ function PlayerBox(props: IProps) {
 			observer.observe(containerRef.current);
 			resizeCheck();
 		} else {
-			if (context.globalState.auth.data.role !== 'guest')
-				getSocket().on('favoritesUpdated', getFavorites);
+			if (context.globalState.auth.data.role !== 'guest') getSocket().on('favoritesUpdated', getFavorites);
 		}
 		return () => {
 			getSocket().off('connect', getFirstPlayerInfos);
@@ -216,8 +215,7 @@ function PlayerBox(props: IProps) {
 			if (observer) {
 				observer.disconnect();
 			} else {
-				if (context.globalState.auth.data.role !== 'guest')
-					getSocket().off('favoritesUpdated', getFavorites);
+				if (context.globalState.auth.data.role !== 'guest') getSocket().off('favoritesUpdated', getFavorites);
 			}
 		};
 	}, []);
@@ -264,17 +262,12 @@ function PlayerBox(props: IProps) {
 					<h4 className="series">{subtitle}</h4>
 				</div>
 			)}
-			{props.mode === 'homepage' &&
-				length !== 0 &&
-				context.globalState.auth.data.role !== 'guest' ?
-				(
-					<button className="btn favorites" onClick={toggleFavorite}>
-						<i className="fas fa-fw fa-star" />
-						{favorites.has(kid)
-							? i18next.t('KARA_MENU.FAV_DEL')
-							: i18next.t('KARA_MENU.FAV')}
-					</button>
-				) : null}
+			{props.mode === 'homepage' && length !== 0 && context.globalState.auth.data.role !== 'guest' ? (
+				<button className="btn favorites" onClick={toggleFavorite}>
+					<i className="fas fa-fw fa-star" />
+					{favorites.has(kid) ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}
+				</button>
+			) : null}
 			{length !== 0 ? (
 				<>
 					{props.mode !== 'fixed' ? (

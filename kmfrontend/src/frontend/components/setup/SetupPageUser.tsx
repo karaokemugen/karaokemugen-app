@@ -201,9 +201,7 @@ function SetupPageUser(props: RouteComponentProps) {
 					{onlineAction === 'create' ? (
 						<div>
 							<div className="input-group">
-								<p className="text-danger">
-									{i18next.t('SETUP_PAGE.CREATE_ONLINE_ACCOUNT_DESC')}
-								</p>
+								<p className="text-danger">{i18next.t('SETUP_PAGE.CREATE_ONLINE_ACCOUNT_DESC')}</p>
 								<div className="input-control">
 									<label>{i18next.t('USERNAME')}</label>
 									<input
@@ -221,10 +219,7 @@ function SetupPageUser(props: RouteComponentProps) {
 										key="instance"
 										className="input-field"
 										type="text"
-										defaultValue={
-											context?.globalState.settings.data.config?.Online
-												.Host
-										}
+										defaultValue={context?.globalState.settings.data.config?.Online.Host}
 										onChange={(event) => setInstance(event.target.value)}
 									/>
 								</div>
@@ -272,10 +267,7 @@ function SetupPageUser(props: RouteComponentProps) {
 										key="instance"
 										className="input-field"
 										type="text"
-										defaultValue={
-											context?.globalState.settings.data.config?.Online
-												.Host
-										}
+										defaultValue={context?.globalState.settings.data.config?.Online.Host}
 										onChange={(event) => setInstance(event.target.value)}
 									/>
 								</div>
@@ -300,8 +292,7 @@ function SetupPageUser(props: RouteComponentProps) {
 					) : null}
 				</section>
 			) : null}
-			{accountType === 'local' ||
-				(accountType === 'online' && onlineAction !== null) ?
+			{accountType === 'local' || (accountType === 'online' && onlineAction !== null) ? (
 				<section className="step step-3">
 					{!isElectron() ? (
 						<div className="input-group">
@@ -323,17 +314,18 @@ function SetupPageUser(props: RouteComponentProps) {
 					) : null}
 					<div className="actions">
 						<label className="error">{error}</label>
-						{accountType === 'online' &&
-							onlineAction === 'login' ?
+						{accountType === 'online' && onlineAction === 'login' ? (
 							<button type="button" onClick={loginCall}>
 								{i18next.t('LOG_IN')}
-							</button> :
+							</button>
+						) : (
 							<button type="button" onClick={signup}>
 								{i18next.t('SIGN_UP')}
 							</button>
-						}
+						)}
 					</div>
-				</section> : null}
+				</section>
+			) : null}
 		</form>
 	);
 }

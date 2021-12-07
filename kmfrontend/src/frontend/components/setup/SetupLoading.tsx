@@ -20,8 +20,8 @@ function SetupLoading(props: RouteComponentProps) {
 					FirstRun: false,
 				},
 			},
-		}).catch(() => { });
-		await commandBackend('startPlayer').catch(() => { });
+		}).catch(() => {});
+		await commandBackend('startPlayer').catch(() => {});
 		sessionStorage.setItem('dlQueueRestart', 'true');
 		props.history.push('/welcome');
 	};
@@ -70,13 +70,9 @@ function SetupLoading(props: RouteComponentProps) {
 						{item.percentage < 100 ? (
 							<>
 								<div className="ip--progress-bar-container">
-									<div
-										className="ip--progress-bar"
-										style={{ width: `${item.percentage}%` }}
-									></div>
+									<div className="ip--progress-bar" style={{ width: `${item.percentage}%` }}></div>
 									<div className="ip--progress-text">
-										{i18next.t(`TASKS.${item.subtext}`) !==
-											`TASKS.${item.subtext}`
+										{i18next.t(`TASKS.${item.subtext}`) !== `TASKS.${item.subtext}`
 											? i18next.t(`TASKS.${item.subtext}`)
 											: item.subtext}
 									</div>
@@ -84,11 +80,11 @@ function SetupLoading(props: RouteComponentProps) {
 							</>
 						) : null}
 						<div className="ip--nanami">
-							{item.percentage < 100 &&
-								!window.matchMedia('(prefers-reduced-motion: reduce)').matches ?
+							{item.percentage < 100 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? (
 								<img src={nanamiSearching} alt="Nanamin" />
-								: <img src={nanamiHeHe} alt="Nanamin" />
-							}
+							) : (
+								<img src={nanamiHeHe} alt="Nanamin" />
+							)}
 						</div>
 					</>
 				);

@@ -70,17 +70,17 @@ function AdminHeader(props: IProps) {
 
 	const saveOperatorAdd = (songVisibility: boolean) => {
 		const data = expand('Playlist.MysterySongs.AddedSongVisibilityAdmin', songVisibility);
-		commandBackend('updateSettings', { setting: data }).catch(() => { });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	const changePublicInterfaceMode = (value: number) => {
 		const data = expand('Frontend.Mode', value);
-		commandBackend('updateSettings', { setting: data }).catch(() => { });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	const changeLiveComments = (liveComments: boolean) => {
 		const data = expand('Player.LiveComments', liveComments);
-		commandBackend('updateSettings', { setting: data }).catch(() => { });
+		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
 	const play = (event: any) => {
@@ -96,7 +96,7 @@ function AdminHeader(props: IProps) {
 				'confirm',
 				i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }),
 				'',
-				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => { })
+				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {})
 			);
 		} else {
 			props.putPlayerCommando(event);
@@ -180,7 +180,6 @@ function AdminHeader(props: IProps) {
 									},
 								]}
 							/>
-
 						</li>
 						<li title={i18next.t('SETTINGS.INTERFACE.WEBAPPMODE_TOOLTIP')}>
 							<label>
@@ -214,7 +213,7 @@ function AdminHeader(props: IProps) {
 								]}
 							/>
 						</li>
-						{context?.globalState.settings.data.config?.Karaoke?.StreamerMode?.Twitch?.Enabled ?
+						{context?.globalState.settings.data.config?.Karaoke?.StreamerMode?.Twitch?.Enabled ? (
 							<li title={i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS_TOOLTIP')}>
 								<label>
 									{i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS')}
@@ -227,19 +226,18 @@ function AdminHeader(props: IProps) {
 											label: i18next.t('YES'),
 											active: context?.globalState.settings.data.config?.Player?.LiveComments,
 											activeColor: '#3c5c00',
-											onClick: () => changeLiveComments(true)
+											onClick: () => changeLiveComments(true),
 										},
 										{
 											label: i18next.t('NO'),
 											active: !context?.globalState.settings.data.config?.Player?.LiveComments,
 											activeColor: '#880500',
-											onClick: () => changeLiveComments(false)
+											onClick: () => changeLiveComments(false),
 										},
 									]}
 								/>
-
-							</li> : null
-						}
+							</li>
+						) : null}
 					</ul>
 				) : null}
 			</div>
@@ -361,11 +359,7 @@ function AdminHeader(props: IProps) {
 				) : null}
 			</button>
 			<div className="dropdown">
-				<button
-					className="btn btn-dark klogo"
-					type="button"
-					onClick={() => setDropDownMenu(!dropDownMenu)}
-				>
+				<button className="btn btn-dark klogo" type="button" onClick={() => setDropDownMenu(!dropDownMenu)}>
 					<img src={KLogo} alt="Karaoke Mugen logo" />
 				</button>
 				{dropDownMenu ? (

@@ -1,44 +1,33 @@
 {
-  "compilerOptions": {
-    "sourceMap": true,
-    "inlineSources": true,
-    "sourceRoot": "/",
-    "target": "es6",
-    "jsx": "react-jsx",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "declaration": false,
-    "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": true,
-    "removeComments": true,
-    "strictNullChecks": false,
-    "outDir": "build",
-    "types": [],
-    "lib": [
-      "es6",
-      "es7",
-      "dom",
-      "es2018.promise"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true
-  },
-  "exclude": [
-    "dist",
-    "build",
-    "node_modules"
-  ],
-  "include": [
-    "src"
-  ]
+	"compilerOptions": {
+		"sourceMap": true,
+		"inlineSources": true,
+		"sourceRoot": "/",
+		"target": "es6",
+		"jsx": "react-jsx",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"declaration": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": true,
+		"removeComments": true,
+		"strictNullChecks": false,
+		"outDir": "build",
+		"types": [],
+		"lib": ["es6", "es7", "dom", "es2018.promise"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true
+	},
+	"exclude": ["dist", "build", "node_modules"],
+	"include": ["src"]
 }

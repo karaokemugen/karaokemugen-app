@@ -1,6 +1,6 @@
 // This code doesn't know it yet but it's already dead.
 // More seriously, we're centralizing all code bound to be removed at some point due to various migrations through KM's versions.
-// 
+//
 // When removing code here, remember to go see if all functions called are still useful.
 
 import i18next from 'i18next';
@@ -62,12 +62,9 @@ export async function lowercaseMigration() {
 					// We need to merge their data with mainUser
 					for (const user of dupeUsers) {
 						// Special case for favorites since we may break the unique constraint if the two users had the same favorites.
-						const favs = await getFavorites({userFavorites: user.pk_login});
-						const favsToAdd = favs.content.map(f => f.kid);
-						const promises = [
-							mergeUserData(user.pk_login, mainUser),
-							addToFavorites(mainUser, favsToAdd)
-						];
+						const favs = await getFavorites({ userFavorites: user.pk_login });
+						const favsToAdd = favs.content.map((f) => f.kid);
+						const promises = [mergeUserData(user.pk_login, mainUser), addToFavorites(mainUser, favsToAdd)];
 						await Promise.all(promises);
 						await deleteUser(user.pk_login);
 					}
@@ -76,17 +73,18 @@ export async function lowercaseMigration() {
 		}
 		// Let's pray this doesn't catch fire.
 		await lowercaseAllUsers();
-	} catch(err) {
-		logger.error('Unable to lowercase all users', {service: 'User', obj: err});
+	} catch (err) {
+		logger.error('Unable to lowercase all users', { service: 'User', obj: err });
 		Sentry.error(err, 'Warning');
 	}
 }
 
-
 /** Migrate from old repos to zip/git repos with maintainer mode. Remove in KM 7.0 */
 export async function migrateReposToZip() {
 	// Find unmigrated repositories
-	const repos: OldRepository[] = cloneDeep((getRepos() as any as OldRepository[]).filter((r) => r.Path.Karas?.length > 0));
+	const repos: OldRepository[] = cloneDeep(
+		(getRepos() as any as OldRepository[]).filter((r) => r.Path.Karas?.length > 0)
+	);
 	if (repos.length > 0) {
 		// Create a config backup, just in case
 		await backupConfig();
@@ -100,35 +98,32 @@ export async function migrateReposToZip() {
 			Enabled: oldRepo.Enabled,
 			SendStats: oldRepo.SendStats || true,
 			Path: {
-				Medias: oldRepo.Path.Medias
+				Medias: oldRepo.Path.Medias,
 			},
 			MaintainerMode: false,
 			AutoMediaDownloads: 'updateOnly',
-			BaseDir: dir
+			BaseDir: dir,
 		};
 		if (await fileExists(resolve(dir, '.git'))) {
 			// It's a git repo, put maintainer mode on.
 			newRepo.MaintainerMode = true;
 		}
-		const extraPath = newRepo.Online && !newRepo.MaintainerMode
-			? './json'
-			: '';
+		const extraPath = newRepo.Online && !newRepo.MaintainerMode ? './json' : '';
 		newRepo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, dir, extraPath));
-		await editRepo(newRepo.Name, newRepo, false)
-			.catch(err => {
-				logger.error(`Unable to migrate repo ${oldRepo.Name} to zip-based: ${err}`, {service: 'Repo', obj: err});
-				Sentry.error(err);
-				addSystemMessage({
-					type: 'system_error',
-					date: new Date().toString(),
-					dateStr: new Date().toLocaleDateString(),
-					link: '#',
-					html: `<p>${i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.BODY', { repo: oldRepo.Name })}</p>`,
-					title: i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.TITLE')
-				});
-				// Disable the repo and bypass stealth checks
-				updateRepo({...oldRepo, Enabled: false} as any, oldRepo.Name);
+		await editRepo(newRepo.Name, newRepo, false).catch((err) => {
+			logger.error(`Unable to migrate repo ${oldRepo.Name} to zip-based: ${err}`, { service: 'Repo', obj: err });
+			Sentry.error(err);
+			addSystemMessage({
+				type: 'system_error',
+				date: new Date().toString(),
+				dateStr: new Date().toLocaleDateString(),
+				link: '#',
+				html: `<p>${i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.BODY', { repo: oldRepo.Name })}</p>`,
+				title: i18next.t('SYSTEM_MESSAGES.ZIP_MIGRATION_FAILED.TITLE'),
 			});
+			// Disable the repo and bypass stealth checks
+			updateRepo({ ...oldRepo, Enabled: false } as any, oldRepo.Name);
+		});
 	}
 }
 
@@ -137,19 +132,21 @@ export async function migrateFromDBMigrate() {
 	// Return early if migrations table does not exist
 	let migrationsDone = [];
 	try {
-		const tables = await db().query('SELECT tablename FROM pg_tables WHERE schemaname = \'public\' AND tablename = \'migrations\'');
+		const tables = await db().query(
+			"SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = 'migrations'"
+		);
 		if (tables.rows.length === 0) return;
 		const lastMigration = await db().query('SELECT * FROM migrations ORDER BY id DESC LIMIT 1');
-		logger.info('Old migration system found, converting...', {service: 'DB'});
+		logger.info('Old migration system found, converting...', { service: 'DB' });
 		if (lastMigration.rows.length === 0) {
 			// Migration table empty for whatever reason.
 			await db().query('DROP TABLE migrations;');
 			return;
 		}
 		const id = lastMigration.rows[0].name.replaceAll('/', '').split('-')[0];
-		migrationsDone = migrations.filter(m => m.version <= id);
-	} catch(err) {
-		logger.error('Error preparing migrations', {service: 'DB', obj: err});
+		migrationsDone = migrations.filter((m) => m.version <= id);
+	} catch (err) {
+		logger.error('Error preparing migrations', { service: 'DB', obj: err });
 		Sentry.error(err);
 		throw err;
 	}
@@ -161,13 +158,17 @@ export async function migrateFromDBMigrate() {
 			run_at TIMESTAMPTZ
 		);
 		`);
-	} catch(err) {
+	} catch (err) {
 		const error = new Error('Migration table already exists');
 		Sentry.error(error);
 		throw error;
 	}
 	for (const migration of migrationsDone) {
-		db().query(`INSERT INTO schemaversion VALUES('${migration.version}', '${migration.name}', '${migration.md5}', '${new Date().toISOString()}')`);
+		db().query(
+			`INSERT INTO schemaversion VALUES('${migration.version}', '${migration.name}', '${
+				migration.md5
+			}', '${new Date().toISOString()}')`
+		);
 	}
 	await db().query('DROP TABLE migrations;');
 }
@@ -177,7 +178,7 @@ export async function migrateBLWLToSmartPLs() {
 	const [BLCSets, BLCs, WL] = await Promise.all([
 		db().query('SELECT * FROM blacklist_criteria_set'),
 		db().query('SELECT * FROM blacklist_criteria'),
-		db().query('SELECT * FROM whitelist')
+		db().query('SELECT * FROM whitelist'),
 	]);
 	// Convert whitelist, that's the easiest part.
 	if (WL.rows.length > 0) {
@@ -187,10 +188,10 @@ export async function migrateBLWLToSmartPLs() {
 			flag_visible: true,
 			created_at: new Date(),
 			modified_at: new Date(),
-			username: 'admin'
+			username: 'admin',
 		});
 		let pos = 0;
-		const songs = WL.rows.map(s => {
+		const songs = WL.rows.map((s) => {
 			pos++;
 			return {
 				plaid: plaid,
@@ -199,14 +200,14 @@ export async function migrateBLWLToSmartPLs() {
 				kid: s.kid,
 				created_at: new Date(),
 				pos: pos,
-				criteria: null
+				criteria: null,
 			};
 		});
 		await insertKaraIntoPlaylist(songs);
 	}
 	// Blacklist(s)
 	for (const set of BLCSets.rows) {
-		const blc = BLCs.rows.filter(e => e.fk_id_blc_set === set.pk_id_blc_set);
+		const blc = BLCs.rows.filter((e) => e.fk_id_blc_set === set.pk_id_blc_set);
 		// No need to import an empty BLC set.
 		if (blc.length === 0) continue;
 		const plaid = await insertPlaylist({
@@ -216,22 +217,24 @@ export async function migrateBLWLToSmartPLs() {
 			flag_blacklist: set.flag_current,
 			flag_smart: true,
 			username: 'admin',
-			type_smart: 'UNION'
+			type_smart: 'UNION',
 		});
-		await insertCriteria(blc.map(e => ({
-			plaid: plaid,
-			type: e.type,
-			value: e.value
-		})));
+		await insertCriteria(
+			blc.map((e) => ({
+				plaid: plaid,
+				type: e.type,
+				value: e.value,
+			}))
+		);
 	}
 	await updateAllSmartPlaylists();
 	try {
 		await db().query('DROP TABLE whitelist');
-	 	await db().query('DROP TABLE blacklist_criteria');
-	 	await db().query('DROP TABLE blacklist_criteria_set');
-	} catch(err) {
+		await db().query('DROP TABLE blacklist_criteria');
+		await db().query('DROP TABLE blacklist_criteria_set');
+	} catch (err) {
 		// Everything is daijokay
-	}	 
+	}
 }
 
 // Contains migration list from before we switchted from db-migrate to postgrator.
@@ -395,5 +398,5 @@ const migrations = [
 		version: 20200331095154,
 		name: 'addModifiedAtToTagsAndSeries',
 		md5: 'da270f39fcaf4612517ee996d8dd0ea2',
-	}
+	},
 ];

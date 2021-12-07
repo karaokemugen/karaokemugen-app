@@ -31,7 +31,7 @@ LEFT JOIN all_tags at ON at.pk_tid = t.pk_tid
 ${additionnalFrom.join()}
 ${joinClauses}
 WHERE 1 = 1
-  ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+  ${filterClauses.map((clause) => 'AND (' + clause + ')').reduce((a, b) => a + ' ' + b, '')}
   ${typeClauses}
   ${stripClause}
   ${probClause}

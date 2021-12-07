@@ -3,8 +3,10 @@ import { FrontendContextAction, FrontendContextStore } from '../types/frontendCo
 export default function (state: FrontendContextStore, action): FrontendContextStore {
 	switch (action.type) {
 		case FrontendContextAction.FILTER_VALUE:
-			if ((action.payload.side === 'left' && action.payload.filterValue !== state.filterValue1) ||
-				(action.payload.side === 'right' && action.payload.filterValue !== state.filterValue2)) {
+			if (
+				(action.payload.side === 'left' && action.payload.filterValue !== state.filterValue1) ||
+				(action.payload.side === 'right' && action.payload.filterValue !== state.filterValue2)
+			) {
 				if (action.payload.side === 'left') {
 					return { ...state, filterValue1: action.payload.filterValue };
 				} else {

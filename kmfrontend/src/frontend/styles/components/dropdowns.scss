@@ -12,7 +12,7 @@
 .dropdown-menu > li > a {
 	display: inline-block;
 	width: 100%;
-	padding: .2rem .5rem;
+	padding: 0.2rem 0.5rem;
 	color: #eee;
 	// Ant Design overrides
 	transition: none;
@@ -20,7 +20,7 @@
 }
 
 .dropdown-menu > li > a i {
-	margin-right: .5em;
+	margin-right: 0.5em;
 }
 .dropdown-menu > li:hover > a {
 	background-color: $mugen-select-focus;

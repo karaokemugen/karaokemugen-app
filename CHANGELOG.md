@@ -2,178 +2,178 @@
 
 ## New features
 
-- In case of a failed patch during an update (and it happens a lot according to our sentry logs), songs will now be individually downloaded if git patches fail to apply (#1122)
+-   In case of a failed patch during an update (and it happens a lot according to our sentry logs), songs will now be individually downloaded if git patches fail to apply (#1122)
 
 ## Fixes
 
-- Rejected patch logs are now logged, not only sent to Sentry
-- KM will download VC Redist 2012 for PG10, and VC Redist 2015 for newer versions
-- Base checksum test won't happen if database isn't ready yet
-- Skip online checks when editing a repository to move its medias around
-- Dump errors are now sent to Sentry
+-   Rejected patch logs are now logged, not only sent to Sentry
+-   KM will download VC Redist 2012 for PG10, and VC Redist 2015 for newer versions
+-   Base checksum test won't happen if database isn't ready yet
+-   Skip online checks when editing a repository to move its medias around
+-   Dump errors are now sent to Sentry
 
 # v5.1.30 - 13/10/2021
 
 ## Improvements
 
-- Discord activity now shows URLs to Karaoke Mugen website, and your remote access if enabled.
+-   Discord activity now shows URLs to Karaoke Mugen website, and your remote access if enabled.
 
 ## Fixes
 
-- [hotfix] Online users were not created properly due to Server API new behaviour.
-- CSS Imports fixes in Frontend
-- Rework move medias
+-   [hotfix] Online users were not created properly due to Server API new behaviour.
+-   CSS Imports fixes in Frontend
+-   Rework move medias
 
 # v5.1.29 - 10/09/2021
 
 ## Fixes
 
-- Microsoft Visual C++ Redistribuable will now be downloaded and installed by KM if it's missing. (#1105)
-- Failed patches are now reported to sentry so we can debug what's wrong
-- Failure to delete local users after they've been deleted from KM Server is now properly handled
-- Merging tags now takes the full tag information into account
+-   Microsoft Visual C++ Redistribuable will now be downloaded and installed by KM if it's missing. (#1105)
+-   Failed patches are now reported to sentry so we can debug what's wrong
+-   Failure to delete local users after they've been deleted from KM Server is now properly handled
+-   Merging tags now takes the full tag information into account
 
 ## Misc
 
-- Extracting zip files is now made in Electron's main thread instead of a separate worker.
+-   Extracting zip files is now made in Electron's main thread instead of a separate worker.
 
 # v5.1.27 - 26/09/2021
 
 ## Improvements
 
-- Chibi playlist can now be resized
-- Toast is dismissed when deleting a song from a playlist
-- Filter isn't cleared anymore when going back from a song's detail page to the song list
-- Upgraded various backend dependencies
-- `--test` argument is now iignored for packaged apps
+-   Chibi playlist can now be resized
+-   Toast is dismissed when deleting a song from a playlist
+-   Filter isn't cleared anymore when going back from a song's detail page to the song list
+-   Upgraded various backend dependencies
+-   `--test` argument is now iignored for packaged apps
 
 ## Fixes
 
-- Fixed double guest errors when creating them
-- Added logs when initPGData fails.
-- (Hopefully) fix for PostgreSQL start up/init issues on paths with non ASCII characters
-- (Hopefully) fix for online accounts profile information being reset sometimes
-- (Hopefully) fix for multiple updates run during setup causing the repository update mechanism to hiccup
-- Fix media check-and-download when the media already exists
-- Prevent media updater from trying to delete non-media file
+-   Fixed double guest errors when creating them
+-   Added logs when initPGData fails.
+-   (Hopefully) fix for PostgreSQL start up/init issues on paths with non ASCII characters
+-   (Hopefully) fix for online accounts profile information being reset sometimes
+-   (Hopefully) fix for multiple updates run during setup causing the repository update mechanism to hiccup
+-   Fix media check-and-download when the media already exists
+-   Prevent media updater from trying to delete non-media file
 
 # v5.1.23 - 22/08/2021
 
 ## New features
 
-- Media keys usage can now be enabled/disabled in the system panel's system preferences.
-- Added Japanese Romaji language for tags
-- Stopped using loudnorm on pause/intermission music provided by the user.
+-   Media keys usage can now be enabled/disabled in the system panel's system preferences.
+-   Added Japanese Romaji language for tags
+-   Stopped using loudnorm on pause/intermission music provided by the user.
 
 ## Fixes
 
-- Prevent streamer files writing from being executed when app isn't ready yet
-- Fixed "Change interface" button in system panel not displaying properly
-- Fixed downloaded status icon update in operator panel.
-- Removed sentry error report if updateMedias is already running
-- Fixed moving media folder in repositories
-- Fixed ssetup always running repository move even if not asked to
-- getKaras API can now be used with restricted interface mode
-- Caught some frontend errors
-- Fixed streamer files not able to write themselves because folders weren't created properly sometimes
-- Fixed some edge cases where windows weren't properly closed on app exit.
-- Fixed cases for weird characters in filenames (thanks Japan)
-- Fixed database dump fail log
+-   Prevent streamer files writing from being executed when app isn't ready yet
+-   Fixed "Change interface" button in system panel not displaying properly
+-   Fixed downloaded status icon update in operator panel.
+-   Removed sentry error report if updateMedias is already running
+-   Fixed moving media folder in repositories
+-   Fixed ssetup always running repository move even if not asked to
+-   getKaras API can now be used with restricted interface mode
+-   Caught some frontend errors
+-   Fixed streamer files not able to write themselves because folders weren't created properly sometimes
+-   Fixed some edge cases where windows weren't properly closed on app exit.
+-   Fixed cases for weird characters in filenames (thanks Japan)
+-   Fixed database dump fail log
 
 ## Other
 
-- Removed i18n tag validator and lang validator in preparation for 6.x
+-   Removed i18n tag validator and lang validator in preparation for 6.x
 
 # v5.1.21 - 24/07/2021
 
 ## Fixes
 
-- Removed sentry warning when removing non existing tag files
-- Fix missing delete button when wanting to remove several songs at once in operator panel
-- Fix displaying quota time
-- Fix displaying quota message when restricted interface
-- Fix adding songs made possible when restricted interface
-- Removed textArea in karaform for comments
-- Fixed regexp for detecting if path is a Windows drive letter root
-- Fixed KM-APP-1P4
+-   Removed sentry warning when removing non existing tag files
+-   Fix missing delete button when wanting to remove several songs at once in operator panel
+-   Fix displaying quota time
+-   Fix displaying quota message when restricted interface
+-   Fix adding songs made possible when restricted interface
+-   Removed textArea in karaform for comments
+-   Fixed regexp for detecting if path is a Windows drive letter root
+-   Fixed KM-APP-1P4
 
 # v5.1.20 - 19/07/2021
 
 ## New features
 
-- Add instant play on public playlists (#1034)
-- Database is now dumped on exit as well so we can better upgrade PostgreSQL later in 6.0
+-   Add instant play on public playlists (#1034)
+-   Database is now dumped on exit as well so we can better upgrade PostgreSQL later in 6.0
 
 ## Fixes
 
-- Fix remote not self-destructing correctly in some cases (KM-APP-1NG)
-- Fix file browser on system panel when not using electron (#1059)
-- Fix adding all songs from playlist to playlist (#1060)
-- Menus on the operator panel are now exclusive (only one can be opened at once) (#1061)
-- Fix playlist buttons not being updated after public playlist change (#1062)
-- Fix searches in whitelist
-- Fix "time before song plays" unaccuracy
-- Fix race condition bug when updating repositories
-- Fix guests with non-ASCII characters
-- Prevent users from creating accounts with non-ASCII characters
-- Prevent multiple generations happening at hte same time
-- Prevent users from creating a repository at the root of a windows drive
-- Better quit sequence when auto-updating (to allow later PostgreSQL upgrade)
-- Fix keyboard shortcut conflict in menus
-- Fix delete playlist modal
-- "Select all" buttons no longer just inverts selection
-- Better explanation of what the "allow duplicates" option does
-- Removed mentions of shortener in privacy policy as it's not usable anymore
-- Removed mentions of msvcp/cr120.dll to detect if VC++ redist is installed on windows systems (it wasn't always working)
-- Fixed URLs to kara.moe
+-   Fix remote not self-destructing correctly in some cases (KM-APP-1NG)
+-   Fix file browser on system panel when not using electron (#1059)
+-   Fix adding all songs from playlist to playlist (#1060)
+-   Menus on the operator panel are now exclusive (only one can be opened at once) (#1061)
+-   Fix playlist buttons not being updated after public playlist change (#1062)
+-   Fix searches in whitelist
+-   Fix "time before song plays" unaccuracy
+-   Fix race condition bug when updating repositories
+-   Fix guests with non-ASCII characters
+-   Prevent users from creating accounts with non-ASCII characters
+-   Prevent multiple generations happening at hte same time
+-   Prevent users from creating a repository at the root of a windows drive
+-   Better quit sequence when auto-updating (to allow later PostgreSQL upgrade)
+-   Fix keyboard shortcut conflict in menus
+-   Fix delete playlist modal
+-   "Select all" buttons no longer just inverts selection
+-   Better explanation of what the "allow duplicates" option does
+-   Removed mentions of shortener in privacy policy as it's not usable anymore
+-   Removed mentions of msvcp/cr120.dll to detect if VC++ redist is installed on windows systems (it wasn't always working)
+-   Fixed URLs to kara.moe
 
 # v5.1.17 - 04/07/2021
 
 ## New features
 
-- Added Groquik guest account
+-   Added Groquik guest account
 
 ## Fixes
 
-- Don't check media presence anymore in demo mode
-- Better logging of configuration before checking for binaries presence
-- Fixed settings store wipe on fetch error when trying to update a repository
-- Fixed songs order when mass adding these to playlists (#1052)
-- Fixed some english translations
-- Fixed display of delete button in media lists in system panel
-- Fixed movingMediaRepo errors
-- Fixed getRemoteData errors
-- Removed some useless logs
-- Fixed addDownloads errors
+-   Don't check media presence anymore in demo mode
+-   Better logging of configuration before checking for binaries presence
+-   Fixed settings store wipe on fetch error when trying to update a repository
+-   Fixed songs order when mass adding these to playlists (#1052)
+-   Fixed some english translations
+-   Fixed display of delete button in media lists in system panel
+-   Fixed movingMediaRepo errors
+-   Fixed getRemoteData errors
+-   Removed some useless logs
+-   Fixed addDownloads errors
 
 # v5.1.15 - 21/06/2021
 
 ## Fixes
 
-- Allow local repositories to have their songs modified/deleted
-- Stopped sending sentry errors for invalid playlists import
-- Fixed double generation when cloning new repository
-- Consolidate Repository action now becomes Moving Medias in setup and in repository pages because consolidate repositories is now vintage.
+-   Allow local repositories to have their songs modified/deleted
+-   Stopped sending sentry errors for invalid playlists import
+-   Fixed double generation when cloning new repository
+-   Consolidate Repository action now becomes Moving Medias in setup and in repository pages because consolidate repositories is now vintage.
 
 # v5.1.14 - 20/06/2021
 
 ## Fixes
 
-- Fix URL displayed on player screen not having the port
-- Added checks for adding blacklist criterias with wrong numbers as values
-- Fix generation aborting because all folders aren't properly created.
+-   Fix URL displayed on player screen not having the port
+-   Added checks for adding blacklist criterias with wrong numbers as values
+-   Fix generation aborting because all folders aren't properly created.
 
 # v5.1.13 - 17/06/2021
 
 ## Hotfix
 
-- Fix on playing mp3s from http sources
+-   Fix on playing mp3s from http sources
 
 # v5.1.12 - 17/06/2021
 
 ## Hotfix
 
-- A migration bug kept KM from being able to update the repositories properly to the new format
+-   A migration bug kept KM from being able to update the repositories properly to the new format
 
 # v5.1.11 - 17/06/2021
 
@@ -189,8 +189,8 @@ As a result, Karaoke Mugen will now download your repositories entirely if empty
 
 Medias will be downloaded separately, as you need them :
 
-- When you add a song to the current playlist, it'll be downloaded in the background.
-- If you play a song from the library directly, and if it hasn't been downloaded, it'll be streamed directly from the repository's server.
+-   When you add a song to the current playlist, it'll be downloaded in the background.
+-   If you play a song from the library directly, and if it hasn't been downloaded, it'll be streamed directly from the repository's server.
 
 There are ways for you now to see how much space a repository takes on your hard drive, and clean up unused songs manually or in bulk.
 
@@ -198,136 +198,135 @@ Since we're basing this work on git (we have Karaoke Mugen Server create a diff 
 
 ## New features
 
-- A blacklist criteria set "Safe for karaoke" is now created automatically the first time you start Karaoke Mugen. It contains all problematic tags like R18, Spoilers and Epilepsy. You can use it or not :) (#1013)
-- You can now have music during pauses in your karaokes sessions. (#938)
-  - Put any audio file in the `backgrounds` folder.
-  - If the audio file has the same name as a particular background image, it'll be played when that background image appears.
-  - If a background image has no audio file associated, it'll select a random music from the folder
-- A new option "Use my favorites and song requests for stats" has been added to user profiles (#950)
-- A new option "Location" has been added to user profiles to define where you are in the world. This is for the KoE (Karaoke On Earth) project (#951)
-- Some improvements have been made for Twitch streamers :
-  - The pause screen now has a progress bar (#967)
-  - The pause screen can now be paused for a longer time if you need to, by hitting the Stop button in the player controls (#990)
-  - The Twitch chat now has a `!song` command to display the current song being played (#996)
-  - A new window containing the currently playing song and the next ones can be opened and captured via OBS to display on your stream layout (#998)
-  - Karaoke Mugen now writes some useful information in text files so you can read them through OBS Studio or similar to get useful information. These are located in the `streamFiles` directory (#997) :
-    - Current song name
-	  - URL to access your karaoke session
-	  - Interface status (opened/closed/restricted)
-	  - Number of songs in the current and public playlists
-	  - Time remaining in the current playlist
-- There is a new comment field in karaoke information (maintainers only) (#1012)
+-   A blacklist criteria set "Safe for karaoke" is now created automatically the first time you start Karaoke Mugen. It contains all problematic tags like R18, Spoilers and Epilepsy. You can use it or not :) (#1013)
+-   You can now have music during pauses in your karaokes sessions. (#938)
+    -   Put any audio file in the `backgrounds` folder.
+    -   If the audio file has the same name as a particular background image, it'll be played when that background image appears.
+    -   If a background image has no audio file associated, it'll select a random music from the folder
+-   A new option "Use my favorites and song requests for stats" has been added to user profiles (#950)
+-   A new option "Location" has been added to user profiles to define where you are in the world. This is for the KoE (Karaoke On Earth) project (#951)
+-   Some improvements have been made for Twitch streamers :
+    -   The pause screen now has a progress bar (#967)
+    -   The pause screen can now be paused for a longer time if you need to, by hitting the Stop button in the player controls (#990)
+    -   The Twitch chat now has a `!song` command to display the current song being played (#996)
+    -   A new window containing the currently playing song and the next ones can be opened and captured via OBS to display on your stream layout (#998)
+    -   Karaoke Mugen now writes some useful information in text files so you can read them through OBS Studio or similar to get useful information. These are located in the `streamFiles` directory (#997) :
+        -   Current song name
+        -   URL to access your karaoke session
+        -   Interface status (opened/closed/restricted)
+        -   Number of songs in the current and public playlists
+        -   Time remaining in the current playlist
+-   There is a new comment field in karaoke information (maintainers only) (#1012)
 
 ## Improvements
 
-- Settings are better explained on the options screen (#1026)
-- More songs are displayed in the public song library on mobile (#1015)
-- Added a warning on user profiles when email is empty (#1002)
-- All API documentation can now be found at [here](http://api.karaokes.moe/app) and is made with @nuxt/content. As a result, all old Apidoc comments have been removed from the app's source code. (#805)
-- The "About" window has been fully translated (#857)
-- Song list in system panel can now be filtered by tags (#945)
-- Song list in system panel now has a bulk delete option (#945)
-- Requester is added to stats sent to Karaoke Mugen Server (only if the user has opted in for its requests to be used for stats) (#949)
-- The unused tags/medias list now has a "Delete" button in front of each entry. (#976)
-- Some unused localized strings have been removed (#978)
-- Navigation in the operator panel has been improved (#989)
-- Improved sentry reports for frontend errors (#994)
-- The user list in the operator page can now be closed with the ESC key (#1010)
-- The border has been increased to 2 on the player's font for song info (#1011)
-- You can now use the ENTER key to submit the form on the login in setup page (#1018)
-- Tags are a little smaller in the player progress bar (#1021)
-- Bulk actions are now available in the blacklist view (#909)
+-   Settings are better explained on the options screen (#1026)
+-   More songs are displayed in the public song library on mobile (#1015)
+-   Added a warning on user profiles when email is empty (#1002)
+-   All API documentation can now be found at [here](http://api.karaokes.moe/app) and is made with @nuxt/content. As a result, all old Apidoc comments have been removed from the app's source code. (#805)
+-   The "About" window has been fully translated (#857)
+-   Song list in system panel can now be filtered by tags (#945)
+-   Song list in system panel now has a bulk delete option (#945)
+-   Requester is added to stats sent to Karaoke Mugen Server (only if the user has opted in for its requests to be used for stats) (#949)
+-   The unused tags/medias list now has a "Delete" button in front of each entry. (#976)
+-   Some unused localized strings have been removed (#978)
+-   Navigation in the operator panel has been improved (#989)
+-   Improved sentry reports for frontend errors (#994)
+-   The user list in the operator page can now be closed with the ESC key (#1010)
+-   The border has been increased to 2 on the player's font for song info (#1011)
+-   You can now use the ENTER key to submit the form on the login in setup page (#1018)
+-   Tags are a little smaller in the player progress bar (#1021)
+-   Bulk actions are now available in the blacklist view (#909)
 
 ## Fixes
 
-- Fixed OBS not capturing the KM window properly if it's hidden behind other windows/minimized
-- Fixed the "Select All" button on operator panel (#1019)
-- Fixed scroll in library (#1014)
-- Fixed volume button state on startup (#1016)
-- Blacklist criterias: Several fixes have been made (#909)
-  - Can't have "Longer than" and "Shorter than" at the same time, or even several of them.
-  - Can't have a "Shorter than" bigger than the "Longer than" criterias anymore
-  - The blacklist view explains a bit better how it's created from the current BLC set
-  - The reason why a song is blacklisted is now displayed in the karaoke info window
-- When running a packaged version, the first command-line argument is no longer ignored (#986)
-- Some SQL migrations now have a `if exists` clause for drops (#988)
-- Fixed some DB errors during shutdown (#991)
-- The remote is now properly reinitialized after some settings changes (#992)
-- Fixed some error popups (#993)
-- Fixed song list position in public interface when you come back from the karaoke detail page
-- Fixed Socket not initialized properly when remote is being enabled (#1006)
+-   Fixed OBS not capturing the KM window properly if it's hidden behind other windows/minimized
+-   Fixed the "Select All" button on operator panel (#1019)
+-   Fixed scroll in library (#1014)
+-   Fixed volume button state on startup (#1016)
+-   Blacklist criterias: Several fixes have been made (#909)
+    -   Can't have "Longer than" and "Shorter than" at the same time, or even several of them.
+    -   Can't have a "Shorter than" bigger than the "Longer than" criterias anymore
+    -   The blacklist view explains a bit better how it's created from the current BLC set
+    -   The reason why a song is blacklisted is now displayed in the karaoke info window
+-   When running a packaged version, the first command-line argument is no longer ignored (#986)
+-   Some SQL migrations now have a `if exists` clause for drops (#988)
+-   Fixed some DB errors during shutdown (#991)
+-   The remote is now properly reinitialized after some settings changes (#992)
+-   Fixed some error popups (#993)
+-   Fixed song list position in public interface when you come back from the karaoke detail page
+-   Fixed Socket not initialized properly when remote is being enabled (#1006)
 
 ## Other
 
-- For users using Karaoke Mugen from its git/source code, the minimal MPV version required is now 0.33 (#1008)
-- The `https://kara.moe` URL has been disabled since it only worked when on the same network. It's replaced by the Remote system (with codes like `abcd.kara.moe`) which is now stable. Plus it was confusing (#1003)
-- Some playlist specific code has been moved to the KM shared library so we can use it for a new exciting feature on Karaoke Mugen Server (#1005)
-- Dependencies have been updated
+-   For users using Karaoke Mugen from its git/source code, the minimal MPV version required is now 0.33 (#1008)
+-   The `https://kara.moe` URL has been disabled since it only worked when on the same network. It's replaced by the Remote system (with codes like `abcd.kara.moe`) which is now stable. Plus it was confusing (#1003)
+-   Some playlist specific code has been moved to the KM shared library so we can use it for a new exciting feature on Karaoke Mugen Server (#1005)
+-   Dependencies have been updated
 
 # v5.0.37 - 09/05/2021
 
 ## Fixes
 
-- Fixed reset password for local account (a72066a)
-- Change discord link in init page (1c024ad)
+-   Fixed reset password for local account (a72066a)
+-   Change discord link in init page (1c024ad)
 
 # v5.0.36 - 09/05/2021
 
 ## Fixes
 
-- Fixed a weird case when adding a song to a current playlist with autoplay on, and the kara added isn't the last one in the playlist, but the currently playing song is the last one. Yes, complicated and stuff. That's why we have users : to test our app for bugs. (6f9723672)
-- Fixed a few minor web interface errors (5be0121d2 53b4a2bd4)
-- Added more breadcrumbs (logs) to Sentry on the web interface (68f711149)
-- Fixed i18n input field length in tag submission form (45d63c4c)
+-   Fixed a weird case when adding a song to a current playlist with autoplay on, and the kara added isn't the last one in the playlist, but the currently playing song is the last one. Yes, complicated and stuff. That's why we have users : to test our app for bugs. (6f9723672)
+-   Fixed a few minor web interface errors (5be0121d2 53b4a2bd4)
+-   Added more breadcrumbs (logs) to Sentry on the web interface (68f711149)
+-   Fixed i18n input field length in tag submission form (45d63c4c)
 
 ## Misc
 
-- Upgraded backend dependencies (62dd5c1b)
+-   Upgraded backend dependencies (62dd5c1b)
 
 # v5.0.33 - 25/04/2021
 
 ## Improvements
 
-- There's now a warning if your email's left blank when you update your profile. Without any email, you won't be able to reset your password if you forget it.
-  - You can still ask for a password reset in exchange for 50 000 Karaoke Points(*)
-  - (*) Feature not yet implemented.
+-   There's now a warning if your email's left blank when you update your profile. Without any email, you won't be able to reset your password if you forget it.
+    -   You can still ask for a password reset in exchange for 50 000 Karaoke Points(\*)
+    -   (\*) Feature not yet implemented.
 
 ## Fixes
 
-- "We have resolved some bugs and improved stability to make your karaoke experience even better."
-  - Seriously though...
-- The "Consolidate repository" feature is now fixed.
-- Some english translations were missing in the app
-- There was a rare case when a minor functionality would prevent mpv from loading up files
-- Blacklist generation will work as intended even if no set is current.
-  - How it did happen is beyond us.
-- Some fixes were made on some success modals
-- We've added more logs to Sentry for frontend-related issues.
-
+-   "We have resolved some bugs and improved stability to make your karaoke experience even better."
+    -   Seriously though...
+-   The "Consolidate repository" feature is now fixed.
+-   Some english translations were missing in the app
+-   There was a rare case when a minor functionality would prevent mpv from loading up files
+-   Blacklist generation will work as intended even if no set is current.
+    -   How it did happen is beyond us.
+-   Some fixes were made on some success modals
+-   We've added more logs to Sentry for frontend-related issues.
 
 # v5.0.32 - 16/04/2021
 
 ## Improvements
 
-- In case of migration errors, migrations already applied are now logged.
-- Display original name between parenthesis when search serie in kara form
+-   In case of migration errors, migrations already applied are now logged.
+-   Display original name between parenthesis when search serie in kara form
 
 ## Fixes
 
-- Fixed stop causing pauseScreen to disappear (#990)
-- Fixed stopAfter toast appearing when trying to stop (pause) the pauseScreen (#990)
-- Fixed command-line processing ignoring the first argument (#986)
-- Fixed some migrations for some people (#988) Don't ask how it happened, we don't even know. Karaoke Mugen is like magic sometimes. Or a child who grew up too quickly :(
+-   Fixed stop causing pauseScreen to disappear (#990)
+-   Fixed stopAfter toast appearing when trying to stop (pause) the pauseScreen (#990)
+-   Fixed command-line processing ignoring the first argument (#986)
+-   Fixed some migrations for some people (#988) Don't ask how it happened, we don't even know. Karaoke Mugen is like magic sometimes. Or a child who grew up too quickly :(
 
 # v5.0.31 "Poppy Partagée" - 14/04/2021
 
 ## Important notice
 
-*clears throat* Karaoke Mugen 5.0 introduces a brand new singing experience for y'all! It contains a fully reworked public interface, which aims for ease of use and efficiency.
+_clears throat_ Karaoke Mugen 5.0 introduces a brand new singing experience for y'all! It contains a fully reworked public interface, which aims for ease of use and efficiency.
 
 It also provides an easy way to share your karaoke with friends with **kara.moe subdomains** (example https://wxyz.kara.moe).
 
-- Usernames are now **case-insensitive** (#770). Karaoke Mugen will detect name conflicts in your user database and eventually fixes them automatically or asking you to do something about. In any case, the accounts with conflictual names will be automatically renamed with suffixes.
+-   Usernames are now **case-insensitive** (#770). Karaoke Mugen will detect name conflicts in your user database and eventually fixes them automatically or asking you to do something about. In any case, the accounts with conflictual names will be automatically renamed with suffixes.
 
 ## New features
 
@@ -357,30 +356,30 @@ It can be enabled in Settings -> Karaoke. It will generate a token kept by Karao
 
 The tokens expire after 10 days of non-use, but you can ask an administrator of the server to promote your token into a permanent, customized one like Axel.kara.moe.
 
-*In order to save bandwidth, some karaoke thumbnails or profile pictures may not be available for remote users, but this will not prevent them from adding these songs.*
+_In order to save bandwidth, some karaoke thumbnails or profile pictures may not be available for remote users, but this will not prevent them from adding these songs._
 
 ### New public interface (#804, #739, #551)
 
 A brand new public interface is available with Karaoke Mugen 5.0. Our goal was to make the user experience better while providing more search tools and exploring capabilities.
 
-- The current song lyrics are available on the home page
-  - The current line is highlighted in yellow
+-   The current song lyrics are available on the home page
+    -   The current line is highlighted in yellow
 
 ![Lyrics Box](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/49f8517028bc3550e72631a7370fb154/Peek_31-12-2020_00-07.gif)
 
-- The top progress bar has been replaced by a new bottom bar
+-   The top progress bar has been replaced by a new bottom bar
 
 ![Bottom bar](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/43a3b9e5a235e9c3789b1efef43cc7d2/image.png)
 
-- Homepage is now featuring a "now playing" box
+-   Homepage is now featuring a "now playing" box
 
 ![Player Box](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/8cc3b9e6d90d1bb9c6b2b16468c2962f/Capture_d_écran_2020-11-11_à_22.00.58.png)
 
-- You can now explore tags by category
+-   You can now explore tags by category
 
 ![Tags List](https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/e9696536c20526808ada84b13520c085/Capture_d_écran_2020-11-11_à_21.57.50.png)
 
-- Popular songs are now fetched from your configured repositories instead of checking on your local database. You can disable this (#872)
+-   Popular songs are now fetched from your configured repositories instead of checking on your local database. You can disable this (#872)
 
 ### New shuffle modes (#772)
 
@@ -396,9 +395,9 @@ You can now sort a playlist by its number of likes from your guests. The playlis
 
 When having a public and current playlist side by side in the operator page, you can accept or refuse songs in the suggestion playlist.
 
-- Accepted songs are copied into the current playlist and marked as free (thus freeing quota for the users who requested them)
-- Refused songs just sit there. Refusing a song frees it for the user who requested it, but since the song is in the public playlist the song will not be requested ever again.
-- Playlist can be viewed sorted by number of likes. Unaccepted/unrefused songs are shown first, then accepted then refused songs.
+-   Accepted songs are copied into the current playlist and marked as free (thus freeing quota for the users who requested them)
+-   Refused songs just sit there. Refusing a song frees it for the user who requested it, but since the song is in the public playlist the song will not be requested ever again.
+-   Playlist can be viewed sorted by number of likes. Unaccepted/unrefused songs are shown first, then accepted then refused songs.
 
 ### Sessions exports (#773)
 
@@ -414,224 +413,223 @@ It can be enabled in the Window menu.
 
 ## Breaking changes
 
-- API is now **using a socket.io** interface, however `POST /api/command` with `{cmd: 'GetKaras', body: {body: {from: 0, size: 400}}}` can be used to send commands without establishing a socket.io command (#666).
-  - This new API will be documented later, we lack workforce to do so right now.
-- database.json config file is now merged with config.yml in `System.Database` object, see config sample (#746)
-  - Karaoke Mugen should handle this change automatically for you and merge the two files
+-   API is now **using a socket.io** interface, however `POST /api/command` with `{cmd: 'GetKaras', body: {body: {from: 0, size: 400}}}` can be used to send commands without establishing a socket.io command (#666).
+    -   This new API will be documented later, we lack workforce to do so right now.
+-   database.json config file is now merged with config.yml in `System.Database` object, see config sample (#746)
+    -   Karaoke Mugen should handle this change automatically for you and merge the two files
 
 ## Improvements
 
-- Downloads are now made 3 at a time, not one at a time, to speed up big download queues (#910)
-- Security code begone! The security code still exists when you're using a browser, but when using the app's electron browser, it will communicate with the app directly to get it and authenticate you. (#891)
-- When creating automixes, the songs' requesters are now the ones who had that song in their favorites (#897)
-- In streamer mode, stopping the player during a pause will disable pause time (allowing you to manually play the song once you're ready to sing again.) (#890)
-- The player window now has borders! (you can disable them like it was before) (#889)
-- Player window will stop resizing itself depending on the aspect ratio of the video (#888)
-- In classic/streamer mode, the "Next song" text isn't underlined anymore. Apparently it was a crime against mankind to do so (#886)
-- You can now bulk-add songs to your favorites, the white or black list from the operator panel. (#853)
-- Blacklist criterias panel is now explained (#867)
-- You can now see the download queue (#862)
-- KM will now ask you if you want to resume pending download on startup if there are any, instead of resuming them automatically like it did before (#852)
-- The tutorial has been revamped to be shorter and easier to understand (#839)
-- The search engine can now understand exclusion (-word) and group ("group of words") operators.
-- (Admin interface) Rename, set as current/public have been merged into a single "Edit playlist" button (#832)
-  - The create playlist screen also allows you to set a playlist as public and/or current.
-- Users now receive notifications when they can add songs again (when their quota becomes positive, #764).
-- Upgrade from KM 3.2 works again (#798)
-- When users upvote a song, it cannot be deleted by the original requester anymore (#803)
-- Thumbnails are generated for each song now (for the public interface, #800)
-- System panel navigation has been reworked with a new home page (#724)
-- Tag names are now uniform against all our applications (#678)
-- Player is now configured to have [loudnorm](https://ffmpeg.org/ffmpeg-filters.html#loudnorm) normalization (bd2964bd) instead of replay gain calculation.
-- Circled avatars aren't created by KM now but instead are automatically generated at playtime by lavfi filters (fb99c6ec)
-- The stats/sentry consent is part of the setup procedure now (#830)
-- Fingerprinting has been disabled. It allowed to recognize browsers/devices to keep them from unlogging and relogging as random guests to get new ones. Problem is a lot of browsers now keep the fingerprintjs library from working correctly for privacy/tracking reasons, so we stopped using it (#893)
-- Database rework! We reworked how songs are stored and accessed in the database, making adding/editing/removing karaokes and tags will be much faster for karaoke database maintainers. It also allows you to edit your song library during a karaoke as it won't conflict with users accessing it (#884 #882)
-- All window modals have been reworked and are more beautiful. (#881)
-- Admin messages can now coexist with the other messages (Go to kara.moe, song informations, b2e2bc52)
-- You can now delete a song with the flag_playing attribute set as long as it's not currently playing (#917)
+-   Downloads are now made 3 at a time, not one at a time, to speed up big download queues (#910)
+-   Security code begone! The security code still exists when you're using a browser, but when using the app's electron browser, it will communicate with the app directly to get it and authenticate you. (#891)
+-   When creating automixes, the songs' requesters are now the ones who had that song in their favorites (#897)
+-   In streamer mode, stopping the player during a pause will disable pause time (allowing you to manually play the song once you're ready to sing again.) (#890)
+-   The player window now has borders! (you can disable them like it was before) (#889)
+-   Player window will stop resizing itself depending on the aspect ratio of the video (#888)
+-   In classic/streamer mode, the "Next song" text isn't underlined anymore. Apparently it was a crime against mankind to do so (#886)
+-   You can now bulk-add songs to your favorites, the white or black list from the operator panel. (#853)
+-   Blacklist criterias panel is now explained (#867)
+-   You can now see the download queue (#862)
+-   KM will now ask you if you want to resume pending download on startup if there are any, instead of resuming them automatically like it did before (#852)
+-   The tutorial has been revamped to be shorter and easier to understand (#839)
+-   The search engine can now understand exclusion (-word) and group ("group of words") operators.
+-   (Admin interface) Rename, set as current/public have been merged into a single "Edit playlist" button (#832)
+    -   The create playlist screen also allows you to set a playlist as public and/or current.
+-   Users now receive notifications when they can add songs again (when their quota becomes positive, #764).
+-   Upgrade from KM 3.2 works again (#798)
+-   When users upvote a song, it cannot be deleted by the original requester anymore (#803)
+-   Thumbnails are generated for each song now (for the public interface, #800)
+-   System panel navigation has been reworked with a new home page (#724)
+-   Tag names are now uniform against all our applications (#678)
+-   Player is now configured to have [loudnorm](https://ffmpeg.org/ffmpeg-filters.html#loudnorm) normalization (bd2964bd) instead of replay gain calculation.
+-   Circled avatars aren't created by KM now but instead are automatically generated at playtime by lavfi filters (fb99c6ec)
+-   The stats/sentry consent is part of the setup procedure now (#830)
+-   Fingerprinting has been disabled. It allowed to recognize browsers/devices to keep them from unlogging and relogging as random guests to get new ones. Problem is a lot of browsers now keep the fingerprintjs library from working correctly for privacy/tracking reasons, so we stopped using it (#893)
+-   Database rework! We reworked how songs are stored and accessed in the database, making adding/editing/removing karaokes and tags will be much faster for karaoke database maintainers. It also allows you to edit your song library during a karaoke as it won't conflict with users accessing it (#884 #882)
+-   All window modals have been reworked and are more beautiful. (#881)
+-   Admin messages can now coexist with the other messages (Go to kara.moe, song informations, b2e2bc52)
+-   You can now delete a song with the flag_playing attribute set as long as it's not currently playing (#917)
 
 ## Fixes
 
-- Time before a song is going to play is now correctly displaying the right time (#912)
-- "Next song is..." notifications are disabled if the playlist is set as non visible (#896)
-- Playing a song from the library when the current playlist is near the end does not trigger a outro/encore jingle anymore (#908)
-- Telling if a user is connected to your karaoke session is now clearer (#906)
-- Fixed playlist outro triggered even though another song is due to play. This happened when you moved around a song from the playlsit to the end, after the currently last song (#905)
-- Karaoke and tag metadata can now contain | (pipe) characters (#844)
-- Editing a kara repository was creating errors (#780)
-  - Copying a karaoke to a new repo updates correctly the database (#778)
-- In French, "Genres" are now "Thèmes" (#802)
-- The "next" button was greyed out if you added a song when the last song was playing (#806)
-- Karaokes with missing tags are now not included in generation (#797)
-- In the karaoke creation form, hitting "Enter" in a tag input is no longer submitting the form (and thus creating a karaoke into database) (#789)
-- Karaoke tags are always in the same order now (#786)
-- Some typos were corrected in French locales (a8eab177)
+-   Time before a song is going to play is now correctly displaying the right time (#912)
+-   "Next song is..." notifications are disabled if the playlist is set as non visible (#896)
+-   Playing a song from the library when the current playlist is near the end does not trigger a outro/encore jingle anymore (#908)
+-   Telling if a user is connected to your karaoke session is now clearer (#906)
+-   Fixed playlist outro triggered even though another song is due to play. This happened when you moved around a song from the playlsit to the end, after the currently last song (#905)
+-   Karaoke and tag metadata can now contain | (pipe) characters (#844)
+-   Editing a kara repository was creating errors (#780)
+    -   Copying a karaoke to a new repo updates correctly the database (#778)
+-   In French, "Genres" are now "Thèmes" (#802)
+-   The "next" button was greyed out if you added a song when the last song was playing (#806)
+-   Karaokes with missing tags are now not included in generation (#797)
+-   In the karaoke creation form, hitting "Enter" in a tag input is no longer submitting the form (and thus creating a karaoke into database) (#789)
+-   Karaoke tags are always in the same order now (#786)
+-   Some typos were corrected in French locales (a8eab177)
 
 ## Notes, misc
 
-- Removed option to disallow duplicates of the same series/singer in a playlist.
-- Removed option to display visualization effects during audio-only karaokes. This wasn't very nice-looking and caused issues with some songs. (#934)
-- New icon for macOS 11 Big Sur (#856)
-- Upgraded ffmpeg toolset to 4.3.2 and mpv media player to 0.33.1 (with libass fixes, #826)
-- Upgraded to Typescript 4.0 (#784)
-- Karaoke Mugen 5.0 isn't generating Karaoke Mugen <3.x series files anymore (#738)
-- appPath detection has been reworked (#747)
-- CLI toolset is now using commander instead of minimist (#748)
-- Bootstrap dependency was removed (#739)
-
+-   Removed option to disallow duplicates of the same series/singer in a playlist.
+-   Removed option to display visualization effects during audio-only karaokes. This wasn't very nice-looking and caused issues with some songs. (#934)
+-   New icon for macOS 11 Big Sur (#856)
+-   Upgraded ffmpeg toolset to 4.3.2 and mpv media player to 0.33.1 (with libass fixes, #826)
+-   Upgraded to Typescript 4.0 (#784)
+-   Karaoke Mugen 5.0 isn't generating Karaoke Mugen <3.x series files anymore (#738)
+-   appPath detection has been reworked (#747)
+-   CLI toolset is now using commander instead of minimist (#748)
+-   Bootstrap dependency was removed (#739)
 
 # v4.1.16 "Ôgi Observatrice" - 11/10/2020
 
 ## Fixes
 
-- Allow login again if online account password has changed (51362a0f)
-- Fix typos in tutorial (thanks @minirop) (b022e2ef)
-- Fix shortener communication when KM Server is offline (b1523fbe)
+-   Allow login again if online account password has changed (51362a0f)
+-   Fix typos in tutorial (thanks @minirop) (b022e2ef)
+-   Fix shortener communication when KM Server is offline (b1523fbe)
 
 # v4.1.15 "Ôgi Observatrice" - 05/10/2020
 
 ## New featuers
 
-- Users are now notified when their quota becomes greater than 0 (when they can add songs again) (3ad268ec)
-- Users can't remove a song they added anymore if it's been upvoted (d1759dd1)
+-   Users are now notified when their quota becomes greater than 0 (when they can add songs again) (3ad268ec)
+-   Users can't remove a song they added anymore if it's been upvoted (d1759dd1)
 
 ## Improvements
 
-- Favorites are now reuploaded to KM Server on login (595b3419)
-- "Genre" tag type is now "Theme" in french (83610d3c)
-- Preparations under the hood for file/data manipulation functions (#497)
-- Added app version to database to prepare for a better handling of app updates (#801)
-- Changelog is now included in binary builds (9e9157f0)
+-   Favorites are now reuploaded to KM Server on login (595b3419)
+-   "Genre" tag type is now "Theme" in french (83610d3c)
+-   Preparations under the hood for file/data manipulation functions (#497)
+-   Added app version to database to prepare for a better handling of app updates (#801)
+-   Changelog is now included in binary builds (9e9157f0)
 
 ## Fixes
 
-- Fixed online auth not rejecting your online token if it's incorrect. This will force you to login again if your online token were invalid. It fixes favorites and profiles not being updated (and failing silently) (f6abbc20 ce2df5a8 9393181e)
-- Fixed outros being played after every random song if enabled (37732b5d)
-- Added error logging to when kara/tags can't be integrated (951f661c)
-- Fixed mpv version check when unknown (assume it's the latest version) (e4f98674)
-- Fixed copying kara to another repository not updating database properly (0bb60424)
+-   Fixed online auth not rejecting your online token if it's incorrect. This will force you to login again if your online token were invalid. It fixes favorites and profiles not being updated (and failing silently) (f6abbc20 ce2df5a8 9393181e)
+-   Fixed outros being played after every random song if enabled (37732b5d)
+-   Added error logging to when kara/tags can't be integrated (951f661c)
+-   Fixed mpv version check when unknown (assume it's the latest version) (e4f98674)
+-   Fixed copying kara to another repository not updating database properly (0bb60424)
 
 # v4.1.12 "Ôgi Observatrice" - 21/09/2020
 
 ## Improvements
 
-- mpv's subs loading has been improved (94f7a0e3)
-- URL shortener (kara.moe) now communicates through websockets with KM App (#759)
-- Karaoke files now have sorted TIDs for each tag category (#786)
-- Updated core dependencies
+-   mpv's subs loading has been improved (94f7a0e3)
+-   URL shortener (kara.moe) now communicates through websockets with KM App (#759)
+-   Karaoke files now have sorted TIDs for each tag category (#786)
+-   Updated core dependencies
 
 ## Fixes
 
-- Fixing tag downloads during karaoke downloads (8f8503c2)
-- Songs now are properly removed from generation when they have errors/missing tags, making it so redownloading them from the server works (#797)
-- Fixed upgrading from Karaoke Mugen 3.x apps (990687da)
-- Added stats payload to Sentry when an error is detected during upload (7fcdc52b 858dfcff)
-- Fixed some error reporting issues (2cc6619c 4000b7b9 227b384b d7ea15db)
-- Added a specific error message when sub format is unknown in kara edit/add form (4e3f1cc6)
+-   Fixing tag downloads during karaoke downloads (8f8503c2)
+-   Songs now are properly removed from generation when they have errors/missing tags, making it so redownloading them from the server works (#797)
+-   Fixed upgrading from Karaoke Mugen 3.x apps (990687da)
+-   Added stats payload to Sentry when an error is detected during upload (7fcdc52b 858dfcff)
+-   Fixed some error reporting issues (2cc6619c 4000b7b9 227b384b d7ea15db)
+-   Added a specific error message when sub format is unknown in kara edit/add form (4e3f1cc6)
 
 # v4.1.10 "Ôgi Observatrice" - 03/09/2020
 
 ## Fixes
 
-- Downgraded Axios on frontend dependencies as it made it impossible to remove songs. A better fix will come later. (e32830247)
-- Songs with invalid data are now properly skipped during generation (bd1229f5f)
+-   Downgraded Axios on frontend dependencies as it made it impossible to remove songs. A better fix will come later. (e32830247)
+-   Songs with invalid data are now properly skipped during generation (bd1229f5f)
 
 # v4.1.9 "Ôgi Observatrice" - 30/08/2020
 
 ## Improvements
 
-- Updated frontend dependencies (62e06f69)
-- Updated backend dependencies (46e7c24d 7cfdcdfc)
-- Made some code cleanups (c9776ed5 86466b89 f41f311f aaf48dd1)
-- Init screen's logs now automatically scroll (4852489a)
+-   Updated frontend dependencies (62e06f69)
+-   Updated backend dependencies (46e7c24d 7cfdcdfc)
+-   Made some code cleanups (c9776ed5 86466b89 f41f311f aaf48dd1)
+-   Init screen's logs now automatically scroll (4852489a)
 
 ## Fixes
 
-- Added postgres-contrib to .deb package dependencies since tsvector isn't in all PostgreSQL distributions on Linux (would you believe that, Linux has too many distributions and cases to think of when packaging your app!) (b735714a)
-- Made some adjustments to Axios interceptors to avoid weird UI errors with API (e137d444)
-- The changeAdminPassword utility now uses bcrypt (cb184a6a)
-- Do not report to Sentry if media file can't be found (0eab2a9c)
-- Do not report to Sentry if there's a query error during database shutdown when the app is quitting (d6d5e64f)
-- Do not report to Sentry if avatar unlink doesn't work for some reason (1e8d3a78)
-- Avoid crash if no tip to display is found (4faf2b36)
-- Fix switching account to admin in login modal (a9e454d7)
-- Fix "Author" field filling in song suggestion issue (77754686)
-- Moved security code generation to pre-init stage so clicking on the menu will display it correctly (fabdf484 4c4ead00)
-- Only fetch player status when logged in (b735714a)
-- Better interception of "user already exists online" errors (986fde85)
-- Avoid DB query error in case a played / requested song is added twice to the database at the exact same time (how it happened in the first place is beyond me, but your code is like your child, they can do surprising stuff sometimes, like you didn't think your cat would be stupid enough to fall in a chimney but yes, he did.) (215a11f3)
-- Avoid sending stats payload if instance ID isn't set (Did I tell you about my cat and the neighbor's chimney?) (1a446b83)
+-   Added postgres-contrib to .deb package dependencies since tsvector isn't in all PostgreSQL distributions on Linux (would you believe that, Linux has too many distributions and cases to think of when packaging your app!) (b735714a)
+-   Made some adjustments to Axios interceptors to avoid weird UI errors with API (e137d444)
+-   The changeAdminPassword utility now uses bcrypt (cb184a6a)
+-   Do not report to Sentry if media file can't be found (0eab2a9c)
+-   Do not report to Sentry if there's a query error during database shutdown when the app is quitting (d6d5e64f)
+-   Do not report to Sentry if avatar unlink doesn't work for some reason (1e8d3a78)
+-   Avoid crash if no tip to display is found (4faf2b36)
+-   Fix switching account to admin in login modal (a9e454d7)
+-   Fix "Author" field filling in song suggestion issue (77754686)
+-   Moved security code generation to pre-init stage so clicking on the menu will display it correctly (fabdf484 4c4ead00)
+-   Only fetch player status when logged in (b735714a)
+-   Better interception of "user already exists online" errors (986fde85)
+-   Avoid DB query error in case a played / requested song is added twice to the database at the exact same time (how it happened in the first place is beyond me, but your code is like your child, they can do surprising stuff sometimes, like you didn't think your cat would be stupid enough to fall in a chimney but yes, he did.) (215a11f3)
+-   Avoid sending stats payload if instance ID isn't set (Did I tell you about my cat and the neighbor's chimney?) (1a446b83)
 
 # v4.1.8 "Ôgi Observatrice" - 23/08/2020
 
 ## New features
 
-- Added a way to copy tags from one repository to another
-- Added a message if trying to add a repository through km:// protocol if it already exists
+-   Added a way to copy tags from one repository to another
+-   Added a message if trying to add a repository through km:// protocol if it already exists
 
 ## Improvements
 
-- When adding random songs, the tag/filter is now taken into account
-- Adjustments were made to the system panel's config page
+-   When adding random songs, the tag/filter is now taken into account
+-   Adjustments were made to the system panel's config page
 
 ## Fixes
 
-- Fixed double quotes (') searches
-- Fixed song search when words is null
-- Fixed search with accents
-- Fixed frontend sending undefined in searchType to API
-- Fixed switching account to administrator during the setup onboarding
-- Fixed Sentry.io answer display on the modal asking you about it after setup
-- Better file/protocol handling on startup
-- Fixed file handler to not pick files starting with --
-- Fixed noLiveDownload in lowercase in tag files
+-   Fixed double quotes (') searches
+-   Fixed song search when words is null
+-   Fixed search with accents
+-   Fixed frontend sending undefined in searchType to API
+-   Fixed switching account to administrator during the setup onboarding
+-   Fixed Sentry.io answer display on the modal asking you about it after setup
+-   Better file/protocol handling on startup
+-   Fixed file handler to not pick files starting with --
+-   Fixed noLiveDownload in lowercase in tag files
 
 # v4.1.7 "Ôgi Observatrice" - 17/08/2020
 
 ## Fixes
 
-- Fixed search for " ' and accents
+-   Fixed search for " ' and accents
 
 # v4.1.6 "Ôgi Observatrice" - 16/08/2020
 
 ## New features
 
-- Sessions can now have a end time. A warning is displayed on the operator screen when a session is near its end (warning time is configurable) (#765)
-- Songs can now be moved in a playlist and placed right after the currently playing song with one click (okay, two) (#763)
-- Karafun files can now be imported when they only contain metadata information, not video/song blobs (#733)
-- Added a filter field in system panel's configuration page (#730)
-- Some tags now have a "problematic" flag (Spoiler, Adults only and Epilepsy) which should allow you to recognize karaokes using them more easily in the list (#695)
-- Playlists can be inverted between left and right if you select the same playlist in the opposite panel
+-   Sessions can now have a end time. A warning is displayed on the operator screen when a session is near its end (warning time is configurable) (#765)
+-   Songs can now be moved in a playlist and placed right after the currently playing song with one click (okay, two) (#763)
+-   Karafun files can now be imported when they only contain metadata information, not video/song blobs (#733)
+-   Added a filter field in system panel's configuration page (#730)
+-   Some tags now have a "problematic" flag (Spoiler, Adults only and Epilepsy) which should allow you to recognize karaokes using them more easily in the list (#695)
+-   Playlists can be inverted between left and right if you select the same playlist in the opposite panel
 
 ## Improvements
 
-- Search is now much faster thanks to the us of text search vectors in PostgreSQL (#774)
-- When adding a new repository, folders are all pre-filled to make it much easier (#771)
-- Polls now work if you're at the last song of a playlist (#753)
-- Configuration validation is now more complete and will prevent some errors (#750)
-- When KM's network port is busy, it uses a new one but won't save it to config file if it's not your first time running the app (#745)
-- Added check for PostgreSQL version when running the bundled one (#743)
-- Cleaned some database code (#742)
-- A lot of unit tests have been added (about 80) to better test for regressions when developping (#706)
-- Updated menu code to make it slicker and rearranged some items
+-   Search is now much faster thanks to the us of text search vectors in PostgreSQL (#774)
+-   When adding a new repository, folders are all pre-filled to make it much easier (#771)
+-   Polls now work if you're at the last song of a playlist (#753)
+-   Configuration validation is now more complete and will prevent some errors (#750)
+-   When KM's network port is busy, it uses a new one but won't save it to config file if it's not your first time running the app (#745)
+-   Added check for PostgreSQL version when running the bundled one (#743)
+-   Cleaned some database code (#742)
+-   A lot of unit tests have been added (about 80) to better test for regressions when developping (#706)
+-   Updated menu code to make it slicker and rearranged some items
 
 ## Fixes
 
-- Language order in filenames are now fixed when editing / creating songs (#767)
-- When using a filter on the library, using the "Add all songs" button now takes the filter into account (#762)
-- Fixed some series' name display bug (#757)
-- Mastodon toots are now displayed correctly (#754)
-- Fixed password reset (local and online) mechanisms (#768)
-- Do not error out anymore during tag updates if the old tag can't be found anymore
-- Fixed searching songs by year
-- Fixed BLC set copy not regenerating blacklist
-- Fixed BLC set exports
-- Fixed generation for tags without any types
-- Fixed some tasks not being ended correctly (file download, media download and repository consolidation tasks)
-- Fixed locales for consolidation task
-- Fixed player stop button with single play
-- Fixed series languages mode synchronization between instances for online account
+-   Language order in filenames are now fixed when editing / creating songs (#767)
+-   When using a filter on the library, using the "Add all songs" button now takes the filter into account (#762)
+-   Fixed some series' name display bug (#757)
+-   Mastodon toots are now displayed correctly (#754)
+-   Fixed password reset (local and online) mechanisms (#768)
+-   Do not error out anymore during tag updates if the old tag can't be found anymore
+-   Fixed searching songs by year
+-   Fixed BLC set copy not regenerating blacklist
+-   Fixed BLC set exports
+-   Fixed generation for tags without any types
+-   Fixed some tasks not being ended correctly (file download, media download and repository consolidation tasks)
+-   Fixed locales for consolidation task
+-   Fixed player stop button with single play
+-   Fixed series languages mode synchronization between instances for online account
 
 # v4.0.15 "Ôgi Obscure" - 26/07/2020
 
@@ -639,125 +637,125 @@ We've made improvements and fixed bugs to make your Karaoke Mugen experience eve
 
 ## New features
 
-- We are more compliant to Human Interface Guidelines for menu in Mac OS X #723
-- Add frontend notifications for non-API triggered events #744
-- Better explanation for delete account modal popup #735
-- Rework login modal display
+-   We are more compliant to Human Interface Guidelines for menu in Mac OS X #723
+-   Add frontend notifications for non-API triggered events #744
+-   Better explanation for delete account modal popup #735
+-   Rework login modal display
 
 ## Fixes
 
-- Various fixes about Blacklist criterias display
-- Various fixes about poll and stream mode
-- Fix gif import for avatar file
-- Stats and ErrorTracking are now not fill by default in modal
-- Fix change page size in system's kara list
-- Reset lavfi-complex on audio-only files to remove seek lag #628
-- Fix memory leak on computing playlist media
-- Fix delete user with requested songs
-- Fix server display in login modal
-- Forbid @ character in login modal
-- Playlist: Upvote songs by adding them now doesn't display an error anymore
-- Electron: fix missing binaries message box #737
+-   Various fixes about Blacklist criterias display
+-   Various fixes about poll and stream mode
+-   Fix gif import for avatar file
+-   Stats and ErrorTracking are now not fill by default in modal
+-   Fix change page size in system's kara list
+-   Reset lavfi-complex on audio-only files to remove seek lag #628
+-   Fix memory leak on computing playlist media
+-   Fix delete user with requested songs
+-   Fix server display in login modal
+-   Forbid @ character in login modal
+-   Playlist: Upvote songs by adding them now doesn't display an error anymore
+-   Electron: fix missing binaries message box #737
 
 # v4.0.13 "Ôgi Obscure" - 17/07/2020
 
 Version numbering has changed :
 
-- Major number version (here, 4) will change whenever we release a new version with additional features and change the character in the version's name
-- Middle number version (here, first 0) will change whenever we release an official, stable version of Karaoke Mugen to the public. It'll contain bugfixes and small improvements over the previous version but won't introduce big changes. It changes the second part of the version name.
-- Minor version number is subject to change more often. People on master and next branches will get a new minor version every sunday. These are usually automated.
+-   Major number version (here, 4) will change whenever we release a new version with additional features and change the character in the version's name
+-   Middle number version (here, first 0) will change whenever we release an official, stable version of Karaoke Mugen to the public. It'll contain bugfixes and small improvements over the previous version but won't introduce big changes. It changes the second part of the version name.
+-   Minor version number is subject to change more often. People on master and next branches will get a new minor version every sunday. These are usually automated.
 
 You can find more info in issue #675
 
 ## New features
 
-- Public/Private mode has been removed. From now on, playlists can have both current/public flags at once.
-  - To get the old "public" behavior, have two playlists, one with the current flag and the other with the public flag.
-  - To get the old "private" behavior, have one playlist with both current and public flags set.
-- Operator UI has been overhauled and simplified (#704).
-  - Less useless notifications
-  - The "stop" button now defaults to stop after the current song ends. Press it again to stop the karaoke now.
-  - Options have been moved to the K button
-  - Current time and time remaining for a song are displayed in the progress bar
-  - Jingles and sponsors now appear in the current playlist so the operator can tell when they're going to happen.
-  - Playlist and Karaoke options are now in contextual menus inside the wrench icon
-  - Filters can be reset
-  - Previous & next song buttons are now greyed out if you're at the beginning or end of playlist. Play is greyed out as well if nothing is in the current playlist
-  - Application settings have been moved out from the operator settings page. They're now in the system panel.
-  - Some options have been simplified or removed.
-- You can now play songs directly from the song library without having to add it to a playlist first (#697)
-- After a playlist ends, Karaoke Mugen can play random songs until someone adds a new song to the playlist (kind of like an attract mode) (#698)
-- Already present in 3.2.2 but this is an important change : A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asking you questions about accounts and where to download your songs (#661)
-- Playlists created from Karaoke Mugen Live or another Karaoke Mugen App can be given to the download page to download all songs in it that you don't have yet (#600)
-- Sample songs are now only downloaded if the user wants them (#658)
-- Series are now tags as well. This doesn't impact the end-user, but allowed us to clean more than 1500 lines of code since series and tags were treated separately but were basically the same kind of information related to a song. This should also speed up querying songs from the database (#629)
-- When you view a different playlist than the current one and hit the play button, a warning will appear to tell you the playlist you're viewing isn't the one that's going to be played. (#634)
-- Tips and tricks are displayed during the init phase to give you something to read (#674)
-- We now use [Sentry.io](https://sentry.io) to have errors reported to us automatically when they happen. Since this has privacy issues, this can be disabled. Just like for Stats Uploads, you will be asked if you want to allow that or not when updating. (#676 #709)
-- Generation during init phase now has a progressbar (#693)
-- Karaoke groups are now better displayed on the download page so you can more easily find them and add them to your download queue directly (#646)
-- Playlists now has icons depending on their type in the selection list (#612)
-- Karaoke Mugen can now handle different kind of files if you drag & drop them into its window or if you associate Karaoke Mugen to th em in your OS so you only need to double-click on them (#689 #600):
-  - `.kara.json` files will be played directly (if they exist in your database)
-  - `.karabundle` files will add a karaoke to your database. It's an efficient way to download individual songs from the web.
-  - `.kmplaylist` files will add a playlist to your database. **If some songs are not in your database, they will be downloaded.**
-  - `.kmfavorites` files will replace your favorites with the ones in the file
-  - `.kmblcset` will add a new set of blacklist criterias to your list (more info below)
-- Added blacklist criterias sets : you can now create different sets of blacklist criterias and switch from one to the other depending on where you're doing your karaoke. Example, between friends, at a wedding, at an anime convention, etc.
-- Discord Rich Presence has been added. You can now proudly display what you're singing on in your Discord profile status! This can be disabled. (#685)
-- Security code can now be copied to your clipboard in its dialog box (#670)
-- Song info popup can now be closed by clicking elsewhere on the screen (#641)
-- Added a tool in system panel to compare two repositories and check if lyrics are different between the two if there are identical songs, and allow to update them. This will help song base maintainers to keep multiple repositories with the same songs in sync (#681)
-- Added a tool in system panel to show tags with the same name but different types, which could be merged into the same tag. This will help song base maintainers when a singer is also a songwriter but has different identifiers in the database, for example (#672)
-- Added a tool in system panel to add/remove a specific tag from a list of songs (#655)
-- A database dump is automatically created on startup, allowing you to restore it in case of problems. This will also allow us to upgrade the database software (postgresql) later more easily. (#648)
-- A queue has been added to heavy database actions like generations and refreshes, thus avoiding weird behaviors when multiple tasks are triggered at the same time (#639 #638)
-- Added a validate button to the database page in system panel to only validate changed files without triggering a generation (#635)
-- A details button is available to display song details in the download window (#632)
-- Switched database migration tool from db-migrate to postgrator, allowing us to trigger specific tasks when a user updates Karaoke Mugen to the latest version. For example the fact that series are now tags will tell you the app needs to update your songs and ask you if you want that to happen or not (#627)
-- All system panel messages are now translated in French (and English of course) (#621)
-- Hardware acceleration is now enabled by dafault in auto-safe mode to allow hardware decoding of videos in the most standard cases. You can disable it in case it doesn't work right for you or force it enabled for all videos (not recommended) (#703)
-- A new option setting allows you to add extra arguments to mpv's command line, for advanced users only (#703)
-- The public interface now lets you easily vote for a song already present in the public playlist when you browse the main song list (#714 #713)
-- You can now use media keys on your keyboard if it has them (stop, previous, next, and play/pause) to control Karaoke Mugen (not on macOS due to a bug in Electron 9.x) (#718)
+-   Public/Private mode has been removed. From now on, playlists can have both current/public flags at once.
+    -   To get the old "public" behavior, have two playlists, one with the current flag and the other with the public flag.
+    -   To get the old "private" behavior, have one playlist with both current and public flags set.
+-   Operator UI has been overhauled and simplified (#704).
+    -   Less useless notifications
+    -   The "stop" button now defaults to stop after the current song ends. Press it again to stop the karaoke now.
+    -   Options have been moved to the K button
+    -   Current time and time remaining for a song are displayed in the progress bar
+    -   Jingles and sponsors now appear in the current playlist so the operator can tell when they're going to happen.
+    -   Playlist and Karaoke options are now in contextual menus inside the wrench icon
+    -   Filters can be reset
+    -   Previous & next song buttons are now greyed out if you're at the beginning or end of playlist. Play is greyed out as well if nothing is in the current playlist
+    -   Application settings have been moved out from the operator settings page. They're now in the system panel.
+    -   Some options have been simplified or removed.
+-   You can now play songs directly from the song library without having to add it to a playlist first (#697)
+-   After a playlist ends, Karaoke Mugen can play random songs until someone adds a new song to the playlist (kind of like an attract mode) (#698)
+-   Already present in 3.2.2 but this is an important change : A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asking you questions about accounts and where to download your songs (#661)
+-   Playlists created from Karaoke Mugen Live or another Karaoke Mugen App can be given to the download page to download all songs in it that you don't have yet (#600)
+-   Sample songs are now only downloaded if the user wants them (#658)
+-   Series are now tags as well. This doesn't impact the end-user, but allowed us to clean more than 1500 lines of code since series and tags were treated separately but were basically the same kind of information related to a song. This should also speed up querying songs from the database (#629)
+-   When you view a different playlist than the current one and hit the play button, a warning will appear to tell you the playlist you're viewing isn't the one that's going to be played. (#634)
+-   Tips and tricks are displayed during the init phase to give you something to read (#674)
+-   We now use [Sentry.io](https://sentry.io) to have errors reported to us automatically when they happen. Since this has privacy issues, this can be disabled. Just like for Stats Uploads, you will be asked if you want to allow that or not when updating. (#676 #709)
+-   Generation during init phase now has a progressbar (#693)
+-   Karaoke groups are now better displayed on the download page so you can more easily find them and add them to your download queue directly (#646)
+-   Playlists now has icons depending on their type in the selection list (#612)
+-   Karaoke Mugen can now handle different kind of files if you drag & drop them into its window or if you associate Karaoke Mugen to th em in your OS so you only need to double-click on them (#689 #600):
+    -   `.kara.json` files will be played directly (if they exist in your database)
+    -   `.karabundle` files will add a karaoke to your database. It's an efficient way to download individual songs from the web.
+    -   `.kmplaylist` files will add a playlist to your database. **If some songs are not in your database, they will be downloaded.**
+    -   `.kmfavorites` files will replace your favorites with the ones in the file
+    -   `.kmblcset` will add a new set of blacklist criterias to your list (more info below)
+-   Added blacklist criterias sets : you can now create different sets of blacklist criterias and switch from one to the other depending on where you're doing your karaoke. Example, between friends, at a wedding, at an anime convention, etc.
+-   Discord Rich Presence has been added. You can now proudly display what you're singing on in your Discord profile status! This can be disabled. (#685)
+-   Security code can now be copied to your clipboard in its dialog box (#670)
+-   Song info popup can now be closed by clicking elsewhere on the screen (#641)
+-   Added a tool in system panel to compare two repositories and check if lyrics are different between the two if there are identical songs, and allow to update them. This will help song base maintainers to keep multiple repositories with the same songs in sync (#681)
+-   Added a tool in system panel to show tags with the same name but different types, which could be merged into the same tag. This will help song base maintainers when a singer is also a songwriter but has different identifiers in the database, for example (#672)
+-   Added a tool in system panel to add/remove a specific tag from a list of songs (#655)
+-   A database dump is automatically created on startup, allowing you to restore it in case of problems. This will also allow us to upgrade the database software (postgresql) later more easily. (#648)
+-   A queue has been added to heavy database actions like generations and refreshes, thus avoiding weird behaviors when multiple tasks are triggered at the same time (#639 #638)
+-   Added a validate button to the database page in system panel to only validate changed files without triggering a generation (#635)
+-   A details button is available to display song details in the download window (#632)
+-   Switched database migration tool from db-migrate to postgrator, allowing us to trigger specific tasks when a user updates Karaoke Mugen to the latest version. For example the fact that series are now tags will tell you the app needs to update your songs and ask you if you want that to happen or not (#627)
+-   All system panel messages are now translated in French (and English of course) (#621)
+-   Hardware acceleration is now enabled by dafault in auto-safe mode to allow hardware decoding of videos in the most standard cases. You can disable it in case it doesn't work right for you or force it enabled for all videos (not recommended) (#703)
+-   A new option setting allows you to add extra arguments to mpv's command line, for advanced users only (#703)
+-   The public interface now lets you easily vote for a song already present in the public playlist when you browse the main song list (#714 #713)
+-   You can now use media keys on your keyboard if it has them (stop, previous, next, and play/pause) to control Karaoke Mugen (not on macOS due to a bug in Electron 9.x) (#718)
 
 ## Improvements
 
-- Passwords are now stored in a more secure way (salted bcrypt instead of SHA256) (#701).
-  - As an improvement to account security, changing your password from KM Server or another KM App instance will automatically log you out of other instances, as KM Server now stores the last time your password has been modified.
-- User role is now checked when making requests to the API, so that users who lost their admin status can't keep it forever (#588)
-- Migrated system panel from antd framework v3 to v4, resulting in better visuals and cleaner code (#610 #593)
-- Total repositories size is now displayed in the download page (#626)
-- Installer will stop deleting everything in the app folder on update (#640)
-- Groups are now displayed as checkboxes in karaoke edit/add form. (#647)
-- Anime and video game karaokes are now better differentiated in lists (#643)
-- For debug purposes, calls to the internet are better logged (#656 #644)
-- When downloading/updating all songs from a repository, a notification will appear to show you what it's doing (#660)
-- System panel's dark mode is now complete (#663)
-- Singers and series auto-complete is now a bit faster in system panel's karaoke creation tool (#662)
-- SQL code is better organized in the app's source code (#688)
-- When changing a repository's priority (moving it in the list) a timer will only validate your changes and regenerate your database after a bit (#687)
-- The MPV component has been rewritten using our own IPC implementation, because of many issues with node-mpv. We've seen with the node-mpv author to fix some issues with some patches. (#684 #711 #719)
-- Init phase has been a bit reworked when you display logs (#683)
-- Unit tests are now started at the end of the app's launch, speeding up continuous integration cycle (#633)
-- API error codes have been normalized. Karaoke Mugen can be a teapot now. (#716)
-- Logs are handled in a better way and are now more colorfun (#715)
-- The 404 Not Found page has been reworked.
+-   Passwords are now stored in a more secure way (salted bcrypt instead of SHA256) (#701).
+    -   As an improvement to account security, changing your password from KM Server or another KM App instance will automatically log you out of other instances, as KM Server now stores the last time your password has been modified.
+-   User role is now checked when making requests to the API, so that users who lost their admin status can't keep it forever (#588)
+-   Migrated system panel from antd framework v3 to v4, resulting in better visuals and cleaner code (#610 #593)
+-   Total repositories size is now displayed in the download page (#626)
+-   Installer will stop deleting everything in the app folder on update (#640)
+-   Groups are now displayed as checkboxes in karaoke edit/add form. (#647)
+-   Anime and video game karaokes are now better differentiated in lists (#643)
+-   For debug purposes, calls to the internet are better logged (#656 #644)
+-   When downloading/updating all songs from a repository, a notification will appear to show you what it's doing (#660)
+-   System panel's dark mode is now complete (#663)
+-   Singers and series auto-complete is now a bit faster in system panel's karaoke creation tool (#662)
+-   SQL code is better organized in the app's source code (#688)
+-   When changing a repository's priority (moving it in the list) a timer will only validate your changes and regenerate your database after a bit (#687)
+-   The MPV component has been rewritten using our own IPC implementation, because of many issues with node-mpv. We've seen with the node-mpv author to fix some issues with some patches. (#684 #711 #719)
+-   Init phase has been a bit reworked when you display logs (#683)
+-   Unit tests are now started at the end of the app's launch, speeding up continuous integration cycle (#633)
+-   API error codes have been normalized. Karaoke Mugen can be a teapot now. (#716)
+-   Logs are handled in a better way and are now more colorfun (#715)
+-   The 404 Not Found page has been reworked.
 
 ## Fixes
 
-- Fixed database dead locks in some situations (#708)
-- Stopped publishing your IP too often for the URL shortener (#710)
-- Fixed long lyrics display in kara detail info (#712)
-- Creating a karaoke for repository A with a tag existing only in repository B now creates the tag in repository A too (#682)
-- Creating a karaoke with 3x or more the same tag (which didn't exist before) now works (#671)
-- The list of playlists is now properly refreshed on login (#654)
-- Selecting folders now works properly (#653)
-- Fixed crash when KM Server is down (#652)
-- Fixed failure to import MKV files (#651)
-- Fixed changing primary folder of a repository (#650)
-- Fixed song info popup with a # in its name, and search with singer if series is not present (#649)
-- Fixes locales by using non-breaking spaces
+-   Fixed database dead locks in some situations (#708)
+-   Stopped publishing your IP too often for the URL shortener (#710)
+-   Fixed long lyrics display in kara detail info (#712)
+-   Creating a karaoke for repository A with a tag existing only in repository B now creates the tag in repository A too (#682)
+-   Creating a karaoke with 3x or more the same tag (which didn't exist before) now works (#671)
+-   The list of playlists is now properly refreshed on login (#654)
+-   Selecting folders now works properly (#653)
+-   Fixed crash when KM Server is down (#652)
+-   Fixed failure to import MKV files (#651)
+-   Fixed changing primary folder of a repository (#650)
+-   Fixed song info popup with a # in its name, and search with singer if series is not present (#649)
+-   Fixes locales by using non-breaking spaces
 
 # v3.2.2 "Nadia Navigatrice" - 23/05/2020
 
@@ -765,38 +763,38 @@ This is a bugfix release with a few features added
 
 ## New features
 
-- A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asking you questions about accounts and where to download your songs (#661)
-- An automatic dump of the database in SQL format is made at startup (only if you use the bundled postgresql) (#648)
-- You can quit a video preview by hitting the esc key on your keyboard now (#637)
+-   A setup page has been added for those using Karaoke Mugen for the first time. It works as a setup wizard asking you questions about accounts and where to download your songs (#661)
+-   An automatic dump of the database in SQL format is made at startup (only if you use the bundled postgresql) (#648)
+-   You can quit a video preview by hitting the esc key on your keyboard now (#637)
 
 ## Improvements
 
-- Songtypes are now always displayed, if there are several ones for a song (24632e19, d4ad66ce)
-- Made seeking in mp3 files a bit faster. (#628)
-- Help menu is now "Help" not "?" (#665)
-- Downloads now show a "Preparing downloads" task popup to keep you updated on what's going on (#660)
-- Song family is now displayed on the songs list and repository on songs, tags and series list page to better identify songs (#643)
-- All requests now display user-agent so we have a clearer view of which KM versions are used (#644)
-- Added a queue for database intensive tasks like refreshes and generation to avoid multiple triggers (#639)
+-   Songtypes are now always displayed, if there are several ones for a song (24632e19, d4ad66ce)
+-   Made seeking in mp3 files a bit faster. (#628)
+-   Help menu is now "Help" not "?" (#665)
+-   Downloads now show a "Preparing downloads" task popup to keep you updated on what's going on (#660)
+-   Song family is now displayed on the songs list and repository on songs, tags and series list page to better identify songs (#643)
+-   All requests now display user-agent so we have a clearer view of which KM versions are used (#644)
+-   Added a queue for database intensive tasks like refreshes and generation to avoid multiple triggers (#639)
 
 ## Fixes
 
-- Fix downloading lots of songs at once by sending only one request (f2de124d)
-- Fix removing old kara file when downloading songs (f04e8c5a)
-- Fix KM folder being wiped during reinstalls/updates (77f5e849)
-- Fix kara edit/creation form to accepts MKVs (741ccfae)
-- Fix more info on Wikipedia in some rare cases (with #, or serie not present) (#649)
-- (possible) Fix for login/auth errors with KM Server (5ad9654b)
-- Fix change primary direction in a repository (2626a9bf)
-- Fix consolidate repository (86f41292)
-- Tags with no types are now ignored instead of added to the "Misc." category. This is useful when we add new tag types but they're not fully understood by the app (f22f7fe3)
-- Fixed display kara in session list (e2153723)
-- Fixed for if autoUpdate menu should be displayed or not (06f13869)
-- Using move instead of rename when editing a song's filename to avoid cross filesystem issues (#659)
-- Fixed display error for the reset password page (e990f78a)
-- Fixed refresh playlistList after login (29ec1ae6)
-- Fixed adding multiple folders via Electron window (#653)
-- Fixed tag file removal when editing/replacing/removing tags (25bd121e)
+-   Fix downloading lots of songs at once by sending only one request (f2de124d)
+-   Fix removing old kara file when downloading songs (f04e8c5a)
+-   Fix KM folder being wiped during reinstalls/updates (77f5e849)
+-   Fix kara edit/creation form to accepts MKVs (741ccfae)
+-   Fix more info on Wikipedia in some rare cases (with #, or serie not present) (#649)
+-   (possible) Fix for login/auth errors with KM Server (5ad9654b)
+-   Fix change primary direction in a repository (2626a9bf)
+-   Fix consolidate repository (86f41292)
+-   Tags with no types are now ignored instead of added to the "Misc." category. This is useful when we add new tag types but they're not fully understood by the app (f22f7fe3)
+-   Fixed display kara in session list (e2153723)
+-   Fixed for if autoUpdate menu should be displayed or not (06f13869)
+-   Using move instead of rename when editing a song's filename to avoid cross filesystem issues (#659)
+-   Fixed display error for the reset password page (e990f78a)
+-   Fixed refresh playlistList after login (29ec1ae6)
+-   Fixed adding multiple folders via Electron window (#653)
+-   Fixed tag file removal when editing/replacing/removing tags (25bd121e)
 
 # v3.2.1 "Nadia Nostalgique" - 01/05/2020
 
@@ -804,37 +802,37 @@ This is a bugfix release with a few plot twists.
 
 ## New features
 
-- A confirmation modal will pop up if you try to start playback even though the current playlist is not on screen. This is made to avoid mistakes (and because it was seriously misleading). (#634)
+-   A confirmation modal will pop up if you try to start playback even though the current playlist is not on screen. This is made to avoid mistakes (and because it was seriously misleading). (#634)
 
 ## Improvements
 
-- Song download page now has a link for each song so you can check them out individually (#632)
-- In case of database errors, the resulting error and SQL query that triggered it is correctly displayed (2242ddba)
-- Ultrastar2ass now works for real. Updated to 1.0.12
-- kfn-to-ass is updated to 1.0.9 (Karafun imports)
-- In case of a database launch error, display error in logs (bef1448c)
-- Singers are now sorted in song filenames (847a5c29, 808e38b2)
-- Text is properly centered on init page now (d8ea6185)
-- When encountering an unknown error during init, a proper message will be displayed (4bf802d4)
-- Generation now works without any series or tags in base (fb6428bc)
-- .kara.json files won't be modified anymore during generation, only during validation (`--validate` option) (df79073f and a few others)
-- Tags are now sorted in a karaoke line (353192a0)
-- Throw an error when the created serie name already exist (67cc8c41)
+-   Song download page now has a link for each song so you can check them out individually (#632)
+-   In case of database errors, the resulting error and SQL query that triggered it is correctly displayed (2242ddba)
+-   Ultrastar2ass now works for real. Updated to 1.0.12
+-   kfn-to-ass is updated to 1.0.9 (Karafun imports)
+-   In case of a database launch error, display error in logs (bef1448c)
+-   Singers are now sorted in song filenames (847a5c29, 808e38b2)
+-   Text is properly centered on init page now (d8ea6185)
+-   When encountering an unknown error during init, a proper message will be displayed (4bf802d4)
+-   Generation now works without any series or tags in base (fb6428bc)
+-   .kara.json files won't be modified anymore during generation, only during validation (`--validate` option) (df79073f and a few others)
+-   Tags are now sorted in a karaoke line (353192a0)
+-   Throw an error when the created serie name already exist (67cc8c41)
 
 ## Fixes
 
-- When changing a song year, remove all group years and re-add them properly (77b2b2cf)
-- Fix avatar not being displayed on screen during audio only songs if visualization effects were disabled (77514ed5)
-- `--generate` now properly sets/compares base checksum (c14ed607)
-- SD Nanamin is now showing the proper surprised face when an error is shown on the init screen (29511ffa)
-- Fixed editing a song without a video (again) (d881e05d)
-- The AppImage for Linux now works. Thanks @amoethyst and @zeograd for the help (8d28cbd6, a4c8bec4)
-- Disabled electron's auto download because it conflicted with our code (eee54248)
-- Subchecksum errors are properly reported when in strict mode (4c05cf76)
-- Uncaught Exception / Unhandled Rejection Errors are now displayed correctly (06d46c77)
-- mpv should really restart now if you killed it. YOU MONSTER (1903710c)
-- Connection to KM Server now has a 5 second timeout (3c1ec94e)
-- Fix set volume to not trigger mute/unmute button (b013fcc9)
+-   When changing a song year, remove all group years and re-add them properly (77b2b2cf)
+-   Fix avatar not being displayed on screen during audio only songs if visualization effects were disabled (77514ed5)
+-   `--generate` now properly sets/compares base checksum (c14ed607)
+-   SD Nanamin is now showing the proper surprised face when an error is shown on the init screen (29511ffa)
+-   Fixed editing a song without a video (again) (d881e05d)
+-   The AppImage for Linux now works. Thanks @amoethyst and @zeograd for the help (8d28cbd6, a4c8bec4)
+-   Disabled electron's auto download because it conflicted with our code (eee54248)
+-   Subchecksum errors are properly reported when in strict mode (4c05cf76)
+-   Uncaught Exception / Unhandled Rejection Errors are now displayed correctly (06d46c77)
+-   mpv should really restart now if you killed it. YOU MONSTER (1903710c)
+-   Connection to KM Server now has a 5 second timeout (3c1ec94e)
+-   Fix set volume to not trigger mute/unmute button (b013fcc9)
 
 # v3.2.0 "Nadia Naturiste" - 04/04/2020
 
@@ -842,57 +840,57 @@ This is a major release with almost only UX features and improvements, so you sh
 
 ## New features
 
-- The app now uses Electron for a better user experience on all
-platforms (#533)
-  - All links are opened in Electron by default, but you can disable this behavior in the application's menu (#581)
-  - A new command flag `--cli` has been added to launch the app without any GUI (for non-interactive operations like updates or generation, or for use on Raspberry Pi (#575)
-  - Player progress bar is now visible in the Dock (macOS) or taskbar (Windows) (#572)
-  - A initialization page with optional logs is shown at startup (#568)
-  - Karaoke Mugen is now packaged in these formats :
-    - macOS: .dmg for easy install
-    - Windows: portable (.zip) and .exe installer
-    - Linux: appImage
-  - There is an auto-update system in place which will download updates and install them on startup (unless told not to) or when manually told to. (#7)
-  - The Visual C++ Redistribuable 2013 is now included during install on Windows, and installed if it appears you lack some vital DLL files for PostgreSQL (#595)
-  - Errors will open a system dialog box
-  - When prompted to select a folder or file (in config page, in repositories pages) a Open File system dialog will be used if you're visiting these pages using the electron app instead of a browser. If you're in a browser, a HTML5 browser will be used
-- Multiple repository management for songs (#549)
-  - Songs are now organized in repositories.
-  - You can have multiple repositories in your Karaoke Mugen
-  - By default you have a "kara.moe" repository and a "Local" one. The Local one is for your own songs that you don't necessarily want to share with the community through kara.moe.
-  - You can add, remove, or edit repositories, if for example someone adds a new song database completely foreign to kara.moe.
-  - Repositories can be enabled or disabled depending on the situation. A disabled repository won't be taken into account when generating database or updating stuff.
-  - A "Consolidate repository" button allows to move repositories' contents to a new folder (like on a external hard drive) (#569)
-- Users are notified when their song is going to play as soon as they add it (#564)
-- When streaming Karaoke Mugen to twitch, song polls will be sent to the twitch chat as well so users can vote for it as soon as it is happening, to avoid polls ending sooner without users being able to vote for it due to stream lag (#602)
-- Tags and series are now checked when running a song database update. Previously they were not checked, which meant that unless you download a song which used them, you wouldn't get the new data (#616)
-- A new "tasks" system allows you to quickly see which background tasks are running on Karaoke Mugen : media updates, downloads, database generation, etc. Tasks are visible on the system panel and the welcome screen
+-   The app now uses Electron for a better user experience on all
+    platforms (#533)
+    -   All links are opened in Electron by default, but you can disable this behavior in the application's menu (#581)
+    -   A new command flag `--cli` has been added to launch the app without any GUI (for non-interactive operations like updates or generation, or for use on Raspberry Pi (#575)
+    -   Player progress bar is now visible in the Dock (macOS) or taskbar (Windows) (#572)
+    -   A initialization page with optional logs is shown at startup (#568)
+    -   Karaoke Mugen is now packaged in these formats :
+        -   macOS: .dmg for easy install
+        -   Windows: portable (.zip) and .exe installer
+        -   Linux: appImage
+    -   There is an auto-update system in place which will download updates and install them on startup (unless told not to) or when manually told to. (#7)
+    -   The Visual C++ Redistribuable 2013 is now included during install on Windows, and installed if it appears you lack some vital DLL files for PostgreSQL (#595)
+    -   Errors will open a system dialog box
+    -   When prompted to select a folder or file (in config page, in repositories pages) a Open File system dialog will be used if you're visiting these pages using the electron app instead of a browser. If you're in a browser, a HTML5 browser will be used
+-   Multiple repository management for songs (#549)
+    -   Songs are now organized in repositories.
+    -   You can have multiple repositories in your Karaoke Mugen
+    -   By default you have a "kara.moe" repository and a "Local" one. The Local one is for your own songs that you don't necessarily want to share with the community through kara.moe.
+    -   You can add, remove, or edit repositories, if for example someone adds a new song database completely foreign to kara.moe.
+    -   Repositories can be enabled or disabled depending on the situation. A disabled repository won't be taken into account when generating database or updating stuff.
+    -   A "Consolidate repository" button allows to move repositories' contents to a new folder (like on a external hard drive) (#569)
+-   Users are notified when their song is going to play as soon as they add it (#564)
+-   When streaming Karaoke Mugen to twitch, song polls will be sent to the twitch chat as well so users can vote for it as soon as it is happening, to avoid polls ending sooner without users being able to vote for it due to stream lag (#602)
+-   Tags and series are now checked when running a song database update. Previously they were not checked, which meant that unless you download a song which used them, you wouldn't get the new data (#616)
+-   A new "tasks" system allows you to quickly see which background tasks are running on Karaoke Mugen : media updates, downloads, database generation, etc. Tasks are visible on the system panel and the welcome screen
 
 ## Improvements
 
-- Initialization is now faster since we're checking file modification dates instead of contents to decide if we need to generate or not (#563)
-- Generation is faster as duplicate SID/TID/KIDs check is now done with maps instead of arrays
-- Audio visualizer on audio-only songs is now smaller and in a corner of the screen to give more room to artwork (#559)
-- Various improvements have been made to the system panel, especially its navigation and to download manager (#579)
-- mpv (player) logs have been moved to the logs/ directory (#574)
-- Logs are in JSON format now which allows a standardized display in the control panel logs. Logs are now updated in real time on that page (#567)
-- Login is now shared between the system panel and frontend (#594)
-- You can modify songs without medias (#604)
-- Rework of operator tutorial and public tutorial (1130eb69, be5413a8)
+-   Initialization is now faster since we're checking file modification dates instead of contents to decide if we need to generate or not (#563)
+-   Generation is faster as duplicate SID/TID/KIDs check is now done with maps instead of arrays
+-   Audio visualizer on audio-only songs is now smaller and in a corner of the screen to give more room to artwork (#559)
+-   Various improvements have been made to the system panel, especially its navigation and to download manager (#579)
+-   mpv (player) logs have been moved to the logs/ directory (#574)
+-   Logs are in JSON format now which allows a standardized display in the control panel logs. Logs are now updated in real time on that page (#567)
+-   Login is now shared between the system panel and frontend (#594)
+-   You can modify songs without medias (#604)
+-   Rework of operator tutorial and public tutorial (1130eb69, be5413a8)
 
 ## Fixes
 
-- Fix playlist not working if a user added a song to it before, and does not exist anymore or has been converted from local to online. Thanks @Yom for finding this.
-- Fix download of songs with # or % in their names.
-- Fix download page not showing songs if you change filter while being on a page other than the first one. Now page view is reset when you change filters. Thanks @Cattenize for spotting this and writing an issue! (#620)
-- Fix issues with playlist medias updates through git (encores, intros, outros, etc.) by using a HTTP download system instead of using git, which tended to block the main thread and make the app unresponsive for a bit while it decompressed files (#582)
-- Fix getLucky button in PC display in public page (10351b73)
-- Fix get blacklist criterias from public (6a0fcbe3)
-- Fix bug display alias and i18n in system panel (90ce22d3)
-- Fix create playlist require to refresh (a5f11ef5)
-- Fix welcome page loading when kara.moe is down (e910db1c)
-- Fix autocomplete tags with alias when create or edit a kara (457a41a2)
-- Fix force language in profil modal (b1047ae8)
+-   Fix playlist not working if a user added a song to it before, and does not exist anymore or has been converted from local to online. Thanks @Yom for finding this.
+-   Fix download of songs with # or % in their names.
+-   Fix download page not showing songs if you change filter while being on a page other than the first one. Now page view is reset when you change filters. Thanks @Cattenize for spotting this and writing an issue! (#620)
+-   Fix issues with playlist medias updates through git (encores, intros, outros, etc.) by using a HTTP download system instead of using git, which tended to block the main thread and make the app unresponsive for a bit while it decompressed files (#582)
+-   Fix getLucky button in PC display in public page (10351b73)
+-   Fix get blacklist criterias from public (6a0fcbe3)
+-   Fix bug display alias and i18n in system panel (90ce22d3)
+-   Fix create playlist require to refresh (a5f11ef5)
+-   Fix welcome page loading when kara.moe is down (e910db1c)
+-   Fix autocomplete tags with alias when create or edit a kara (457a41a2)
+-   Fix force language in profil modal (b1047ae8)
 
 # v3.1.2 "Mitsuha Matinale" - 12/03/2020
 
@@ -900,13 +898,13 @@ This is a bugfix release
 
 ## Fixes
 
-- Added msvcp120.dll to files checked with other binaries (necessary for Postgresql) (c2492d85)
-- Updated ultrastar2ass to 1.0.11, toyunda2ass to 1.0.12 (0f25eff7, 80375c75)
-- Updated node-mpv-km to 2.0.2 to remove rogue console.log (9b4674a1)
-- Fix playlist medias list creation on startup not happening if no internet is available (9d0aa945)
-- Fix base update errors with songs with no updated media to download (19221c4b)
-- Fix encore/outro message time (cad586e3)
-- Made song integration synchronous again after download to avoid weird behavior near end of download queue (88f68235)
+-   Added msvcp120.dll to files checked with other binaries (necessary for Postgresql) (c2492d85)
+-   Updated ultrastar2ass to 1.0.11, toyunda2ass to 1.0.12 (0f25eff7, 80375c75)
+-   Updated node-mpv-km to 2.0.2 to remove rogue console.log (9b4674a1)
+-   Fix playlist medias list creation on startup not happening if no internet is available (9d0aa945)
+-   Fix base update errors with songs with no updated media to download (19221c4b)
+-   Fix encore/outro message time (cad586e3)
+-   Made song integration synchronous again after download to avoid weird behavior near end of download queue (88f68235)
 
 # v3.1.1 "Mitsuha Mélancolique" - 06/03/2020
 
@@ -914,41 +912,41 @@ This is a minor release containing fixes AND new features.
 
 ## New Features
 
-- Songs with the "Spoiler" tag will get a red SPOILER WARNING above its details when the song starts on screen (96d3dafb, a67c2e80, d7d1dc2c and aa84a0b4)
-- Admin account password is no longer displayed in terminal or tutorial (d5971b98)
-- The player and profile modal will now display rounded avatars (#590 and a few other commits)
-- Jingles and sponsors can now be disabled completely (instead of you having to set them to 0 to disable) (31f76202 and 943823c5)
-- You can now add a message being shown on screen during encore/outros/intros (511ec410)
+-   Songs with the "Spoiler" tag will get a red SPOILER WARNING above its details when the song starts on screen (96d3dafb, a67c2e80, d7d1dc2c and aa84a0b4)
+-   Admin account password is no longer displayed in terminal or tutorial (d5971b98)
+-   The player and profile modal will now display rounded avatars (#590 and a few other commits)
+-   Jingles and sponsors can now be disabled completely (instead of you having to set them to 0 to disable) (31f76202 and 943823c5)
+-   You can now add a message being shown on screen during encore/outros/intros (511ec410)
 
 ## Improvements
 
-- Profile modal now has a close button (1d3e2c5c)
-- ultrastar2ass has been upgraded to 1.0.9
-- toyunda2ass has been upgraded to 1.0.10
-- Downloading lots of songs should be faster now :
-  - The next song is downloaded as soon as the first one is downloaded. Integration of songs is done asynchronously (98868a04)
-  - Instead of downloading tag, series, karas and ass files separately, they're downloaded in one bundle and separated again aftar download (#562)
-- The enter key can now be used to login (58ec5d14)
-- Song suggestions (when you can't find what you're looking for) now ask for more information because we were tired of getting useless demands for songs we did have no clue what they were (#560)
-- Deciding to run KM on another port than the default 1337 one is only decided on first run of the app. If the port is busy and it's not the first time you run KM, it'll throw an error (9eaccd60)
+-   Profile modal now has a close button (1d3e2c5c)
+-   ultrastar2ass has been upgraded to 1.0.9
+-   toyunda2ass has been upgraded to 1.0.10
+-   Downloading lots of songs should be faster now :
+    -   The next song is downloaded as soon as the first one is downloaded. Integration of songs is done asynchronously (98868a04)
+    -   Instead of downloading tag, series, karas and ass files separately, they're downloaded in one bundle and separated again aftar download (#562)
+-   The enter key can now be used to login (58ec5d14)
+-   Song suggestions (when you can't find what you're looking for) now ask for more information because we were tired of getting useless demands for songs we did have no clue what they were (#560)
+-   Deciding to run KM on another port than the default 1337 one is only decided on first run of the app. If the port is busy and it's not the first time you run KM, it'll throw an error (9eaccd60)
 
 ## Fixes
 
-- Fix karaoke stopping after intro if sponsors are disabled or non-existant (f6e09d84)
-- Importing favorites is now fixed (650ce09a)
-- Reworked playlist reordering so it takes into account songs not available in database anymore (5798d60b)
-- When tags or songs have disappeared from database but are still in the app's blacklist criterias, they are now completely removed from output but still kept in database. (b8d32f04 and e62f0fe4)
-- Fixed bug in blacklist criteria search (8360154b)
-- "Look for application software updates" was ignored in config, this is fixed now (e2e577d1)
-- Various fixes to tutorial (cce04418)
-- Songs should be displayed correctly now in blacklist criterias (aaf44844)
-- Various fixes to specific login/account issues (ff0d6466, bba4aebc)
-- Fix system panel behaviour with unusual host/port combinations (df82b603)
-- Fix issues with playlist medias updates through git (encores, intros, outros, etc.) (cd9fd878)
-  - This is a temporary fix : the issue (#582) is resolved entirely in the future 3.2.0 version.
-- Various fixes with Safari on operator interface.
-- Download manager now lists remote tags instead of local ones which caused issues when your database was nearly empty (8d98227f, 0b334eb6, 319c88a5 and f607e7ae)
-- Various fixes to download manager
+-   Fix karaoke stopping after intro if sponsors are disabled or non-existant (f6e09d84)
+-   Importing favorites is now fixed (650ce09a)
+-   Reworked playlist reordering so it takes into account songs not available in database anymore (5798d60b)
+-   When tags or songs have disappeared from database but are still in the app's blacklist criterias, they are now completely removed from output but still kept in database. (b8d32f04 and e62f0fe4)
+-   Fixed bug in blacklist criteria search (8360154b)
+-   "Look for application software updates" was ignored in config, this is fixed now (e2e577d1)
+-   Various fixes to tutorial (cce04418)
+-   Songs should be displayed correctly now in blacklist criterias (aaf44844)
+-   Various fixes to specific login/account issues (ff0d6466, bba4aebc)
+-   Fix system panel behaviour with unusual host/port combinations (df82b603)
+-   Fix issues with playlist medias updates through git (encores, intros, outros, etc.) (cd9fd878)
+    -   This is a temporary fix : the issue (#582) is resolved entirely in the future 3.2.0 version.
+-   Various fixes with Safari on operator interface.
+-   Download manager now lists remote tags instead of local ones which caused issues when your database was nearly empty (8d98227f, 0b334eb6, 319c88a5 and f607e7ae)
+-   Various fixes to download manager
 
 # v3.1.0 "Mitsuha Mélodramatique" - 17/01/2020
 
@@ -956,53 +954,53 @@ This is a major release.
 
 ## New Features
 
-- The config page in the System Panel is improved, allowing you to change all settings, even some internal ones, paths, etc. (#533)
-- Sessions can now be flagged as private if you want to avoid sending them over to Karaoke Mugen Server (#543)
-- Added a `--noPlayer` option to avoid starting the player along with KM when you only want to manage your karaoke database. (#541)
-- Added a QuickStart setting which equals `--noBaseCheck`. This allows you to bypass the karaoke base verification to save some time on startup when you're absolutely certain nothing has changed. (#541)
-- When the current song nears its end, a message appears on users' devices to tell them what the next song is (#537)
-- When adding a song, the message also gives you how long before it should be playing (#536)
-- This version of Karaoke Mugen does not generate Kara V3 files anymore when creating new karaokes (yes this is a new feature) (#534)
-- Download page now has a filter to only show missing or updated songs (#532)
-- Download page now has a clean all button (956711e6)
-- Playlists now have three new medias in addition of intros and jingles : (#531)
-  - Outros are played at the very end of the playlist
-  - Encores are played before the last song plays
-  - Sponsors are played every interval you have set
-  - We offer a few of those in our git repos, they will be downloaded automagically by Karaoke Mugen.
-- KM is now bundled with a `portable` file. If this file exists, KM will store everything in the `app` folder, just like before. If not, KM will store all its data files in the user's home folder : `$HOME/KaraokeMugen` (#525)
-- User avatars are now displayed next to the songs they added in playlist (#423)
-- System panel is now translated in french and english (#263)
-- Improve system panel's config page (#486)
-- The karaoke submission form now accepts a new karaoke format, karaWin files (.kar). The files will be converted to the ASS format on import. (#550)
-- A repository property is added to tag and series files automatically for now in preparation for 3.2's multi-repo (e57ca80a)
-- Dropped compatibility for Windows 32 bit OSes (219eaf53)
+-   The config page in the System Panel is improved, allowing you to change all settings, even some internal ones, paths, etc. (#533)
+-   Sessions can now be flagged as private if you want to avoid sending them over to Karaoke Mugen Server (#543)
+-   Added a `--noPlayer` option to avoid starting the player along with KM when you only want to manage your karaoke database. (#541)
+-   Added a QuickStart setting which equals `--noBaseCheck`. This allows you to bypass the karaoke base verification to save some time on startup when you're absolutely certain nothing has changed. (#541)
+-   When the current song nears its end, a message appears on users' devices to tell them what the next song is (#537)
+-   When adding a song, the message also gives you how long before it should be playing (#536)
+-   This version of Karaoke Mugen does not generate Kara V3 files anymore when creating new karaokes (yes this is a new feature) (#534)
+-   Download page now has a filter to only show missing or updated songs (#532)
+-   Download page now has a clean all button (956711e6)
+-   Playlists now have three new medias in addition of intros and jingles : (#531)
+    -   Outros are played at the very end of the playlist
+    -   Encores are played before the last song plays
+    -   Sponsors are played every interval you have set
+    -   We offer a few of those in our git repos, they will be downloaded automagically by Karaoke Mugen.
+-   KM is now bundled with a `portable` file. If this file exists, KM will store everything in the `app` folder, just like before. If not, KM will store all its data files in the user's home folder : `$HOME/KaraokeMugen` (#525)
+-   User avatars are now displayed next to the songs they added in playlist (#423)
+-   System panel is now translated in french and english (#263)
+-   Improve system panel's config page (#486)
+-   The karaoke submission form now accepts a new karaoke format, karaWin files (.kar). The files will be converted to the ASS format on import. (#550)
+-   A repository property is added to tag and series files automatically for now in preparation for 3.2's multi-repo (e57ca80a)
+-   Dropped compatibility for Windows 32 bit OSes (219eaf53)
 
 ## Improvements
 
-- The swipe movement to switch from the song list to the playlists in mobile view has been deprecated in favor of a button, as it was causing too many misuses (#547)
-- Player (mpv) is now restarted if it's been closed by mistake or voluntarily by the user whenever an action requiring it is made (#540)
-- The frontend's and system's APIs have been merged into one, just so we could create more bugs (#539)
-- Upgraded all dependencies, notably Got (HTTP client) to version 10 (#535)
-- Frontend is now written in typescript, yay. (#528)
-- Downloader has been rewritten with async functions and a queue system (#511)
-- Logged in users now is a scrollable list in frontend (#476)
-- If you login in operator page without an operator account, add a modal to propose to change the type of account (2ad52c9a)
-- Changed display for tablets (cfeb689a, 934dcfa8, f35b3245)
-- Changed buttons order in playlist's header and in a song for admin (3be92d61)
-- Changed login modal in operator page (817ef98b)
-- Removed drag&drop useless refresh (747c78e5)
-- Playlist is now refreshed when resized (#548)
-- Kara creation now include long tag automagic support (#555)
+-   The swipe movement to switch from the song list to the playlists in mobile view has been deprecated in favor of a button, as it was causing too many misuses (#547)
+-   Player (mpv) is now restarted if it's been closed by mistake or voluntarily by the user whenever an action requiring it is made (#540)
+-   The frontend's and system's APIs have been merged into one, just so we could create more bugs (#539)
+-   Upgraded all dependencies, notably Got (HTTP client) to version 10 (#535)
+-   Frontend is now written in typescript, yay. (#528)
+-   Downloader has been rewritten with async functions and a queue system (#511)
+-   Logged in users now is a scrollable list in frontend (#476)
+-   If you login in operator page without an operator account, add a modal to propose to change the type of account (2ad52c9a)
+-   Changed display for tablets (cfeb689a, 934dcfa8, f35b3245)
+-   Changed buttons order in playlist's header and in a song for admin (3be92d61)
+-   Changed login modal in operator page (817ef98b)
+-   Removed drag&drop useless refresh (747c78e5)
+-   Playlist is now refreshed when resized (#548)
+-   Kara creation now include long tag automagic support (#555)
 
 ## Fixes
 
-- Display shutdown popup only when disconnect is cause by transport error (0276f4e6)
-- Fix Filter by tag + search a value now work (c50dd0c4)
-- Fix add Random Karas in operator page (1d85f6c0)
-- Users now cannot remove a song from a playlist while that same song is playing and the player is effectively playing it. (#556)
-- The Omega character is now translated as O in filenames (e5379db7)
-- Suggestion issue template now adds the right suggestion tag to gitlab issues (103aa8de)
+-   Display shutdown popup only when disconnect is cause by transport error (0276f4e6)
+-   Fix Filter by tag + search a value now work (c50dd0c4)
+-   Fix add Random Karas in operator page (1d85f6c0)
+-   Users now cannot remove a song from a playlist while that same song is playing and the player is effectively playing it. (#556)
+-   The Omega character is now translated as O in filenames (e5379db7)
+-   Suggestion issue template now adds the right suggestion tag to gitlab issues (103aa8de)
 
 # v3.0.2 "Leafa Langoureuse" - 09/01/2020
 
@@ -1010,47 +1008,46 @@ This is a bugfix release
 
 ## Improvements
 
-- Security code can't be used anymore to reset your local password. If you lost your password, use the security code to create a new admin account (c7dad84b)
-- Poll winner is sent to Twitch chat when available (df5d27f1)
-- Config settings are correctly updated when displaying the settings page (d7acf199)
-- When in restricted mode, the frontend will display a modal only on mobile (fad65274)
-- Quotes are not being removed anymore during searches. So "May'n" won't search for "May" and "n" anymore. (49cbc80d)
-- Add a message to check if the song is not available for download before make a suggestion (95db6039)
-- Now use checkAuth route to verify authorization in frontend (824f8b7d)
-- Remove use of swipe in mobile for add Kara and change view (#547 - 735b3851, c8cdf0ba, 6756e3c2, b3e2c9b9)
-- Icon to tell the difference between mystery karas and others is now clickable (925374eb)
-- Add search aliases or locales in serie field on kara page (429458e1, d0ea6b3f)
+-   Security code can't be used anymore to reset your local password. If you lost your password, use the security code to create a new admin account (c7dad84b)
+-   Poll winner is sent to Twitch chat when available (df5d27f1)
+-   Config settings are correctly updated when displaying the settings page (d7acf199)
+-   When in restricted mode, the frontend will display a modal only on mobile (fad65274)
+-   Quotes are not being removed anymore during searches. So "May'n" won't search for "May" and "n" anymore. (49cbc80d)
+-   Add a message to check if the song is not available for download before make a suggestion (95db6039)
+-   Now use checkAuth route to verify authorization in frontend (824f8b7d)
+-   Remove use of swipe in mobile for add Kara and change view (#547 - 735b3851, c8cdf0ba, 6756e3c2, b3e2c9b9)
+-   Icon to tell the difference between mystery karas and others is now clickable (925374eb)
+-   Add search aliases or locales in serie field on kara page (429458e1, d0ea6b3f)
 
 ## Fixes
 
-- Fix autoplay setting not working as intended (f0f2f18c)
-- When downloading a song, tags or series could have needed to be removed if their filename were different, but it throwed an error if the file didn't exist anymore, which could happen inbetween database refreshes. Now the error won't throw anymore, just display in debug logs (77af237b)
-- Fix samples' TV Series tag. (3bbf5eb2)
-- Fix nickname can't be empty error when modifying password (1a4ae993)
-- Fix admin tutorial (030c3069)
-- Fix issues when playlists are set to invisible (6c2bf0b5)
-- When downloading songs, tags/series are now correctly deleted when their name has changed (0751bcf1)
-- Toyunda2ASS has been updated to 1.0.8 - correctly detects CRLF line breaks now (0eec58af)
-- Percentages in poll votes are now rounded to two decimal digits (e8e3f6c7)
-- Polls should work pollfectly now. (84bf4818)
-- When going from the kara list to a filtered list (applying a filter) the scroll placement is reset (af79e412)
-- Remaining time of a playlist is now correctly updated (32698f3c)
-- No more flickering when scroll in a playlist (ee38366a)
-- Fix scroll on user list in profile modal (#476)
-- Fix add an ip for Host in system panel config page (f2f01947)
-- Fix modals on small screen (9cbe227e, 2eed7ef4, 5fdb1997)
-- Fix initial render for playlist (8b1ece19, 92c73fa5)
-- Fix favorites display in public page (12b67a1b)
-- Fix alignement ro playing karaoke in start of a playlist (08b17f43)
-- Fix open the login modal when logout (013a421f)
-- Fix spam of toast when page was hidden (e6ac7ca7)
-- Fix restricted mode (d738745b, 158d7ff2)
-- Fix songtype display in mobile when title is multiline (631daded)
-- Fix wrong color display for buttons in karaDetail (daddc90f)
-- Fix help modal display (a1975f83)
-- Fix update songs in download page (7c92302e)
-- Fix filter songs in download page (12d13b1d)
-
+-   Fix autoplay setting not working as intended (f0f2f18c)
+-   When downloading a song, tags or series could have needed to be removed if their filename were different, but it throwed an error if the file didn't exist anymore, which could happen inbetween database refreshes. Now the error won't throw anymore, just display in debug logs (77af237b)
+-   Fix samples' TV Series tag. (3bbf5eb2)
+-   Fix nickname can't be empty error when modifying password (1a4ae993)
+-   Fix admin tutorial (030c3069)
+-   Fix issues when playlists are set to invisible (6c2bf0b5)
+-   When downloading songs, tags/series are now correctly deleted when their name has changed (0751bcf1)
+-   Toyunda2ASS has been updated to 1.0.8 - correctly detects CRLF line breaks now (0eec58af)
+-   Percentages in poll votes are now rounded to two decimal digits (e8e3f6c7)
+-   Polls should work pollfectly now. (84bf4818)
+-   When going from the kara list to a filtered list (applying a filter) the scroll placement is reset (af79e412)
+-   Remaining time of a playlist is now correctly updated (32698f3c)
+-   No more flickering when scroll in a playlist (ee38366a)
+-   Fix scroll on user list in profile modal (#476)
+-   Fix add an ip for Host in system panel config page (f2f01947)
+-   Fix modals on small screen (9cbe227e, 2eed7ef4, 5fdb1997)
+-   Fix initial render for playlist (8b1ece19, 92c73fa5)
+-   Fix favorites display in public page (12b67a1b)
+-   Fix alignement ro playing karaoke in start of a playlist (08b17f43)
+-   Fix open the login modal when logout (013a421f)
+-   Fix spam of toast when page was hidden (e6ac7ca7)
+-   Fix restricted mode (d738745b, 158d7ff2)
+-   Fix songtype display in mobile when title is multiline (631daded)
+-   Fix wrong color display for buttons in karaDetail (daddc90f)
+-   Fix help modal display (a1975f83)
+-   Fix update songs in download page (7c92302e)
+-   Fix filter songs in download page (12d13b1d)
 
 # v3.0.1 "Leafa Loyale" - 13/12/2019
 
@@ -1058,41 +1055,41 @@ This is a bugfix release.
 
 ## Improvements
 
-- Described where is the security code in the admin intro d71a5889
-- Bumped taskCounter from 5 to 100 during batch downloads so KM doesn't stop downloading every now and then db989b9e
-- Added proper error messages for login in operator panel c7fbb20f
-- Added proper error messages when using wrong security code in login window 46c9f81a
-- Ensures mpv is running before issuing any command, restarts it if it's not present 473dc256
-- Added close button for automix modal 0ea139aa
-- Added i18n for playlists names af4565b5
-- Added modal for delete criteria from blacklist 2dae9632, 3c636e7c, f5dd39de
-- Changed songs display order 4aa306fa
+-   Described where is the security code in the admin intro d71a5889
+-   Bumped taskCounter from 5 to 100 during batch downloads so KM doesn't stop downloading every now and then db989b9e
+-   Added proper error messages for login in operator panel c7fbb20f
+-   Added proper error messages when using wrong security code in login window 46c9f81a
+-   Ensures mpv is running before issuing any command, restarts it if it's not present 473dc256
+-   Added close button for automix modal 0ea139aa
+-   Added i18n for playlists names af4565b5
+-   Added modal for delete criteria from blacklist 2dae9632, 3c636e7c, f5dd39de
+-   Changed songs display order 4aa306fa
 
 ## Fixes
 
-- Fixed avatar fetching for online users d68c8748
-- Fixed API documentation 48ccf953
-- Fixed moving songs from one playlist to the other e1f6bd89
-- Fixed playlist buttons not refreshed when you change the other side in operator window 7ae4e647
-- Fixed adding blacklist criterias with enter 8c7a7228
-- Fixed like button on karas 653fe77d, 512901b5
-- Fixed free button 91b855f3
-- Fixed convert and delete online profile 80ac08f9
-- Fixed import playlist 3a829eda, daf52009, 6407261d
-- Fixed right click transfer button 4fdf9c0f, 80ac390e
-- Fixed right click add button from public playlist to current playlist de2a88a8
-- Fixed blue color display change for playing kara b629c8a0
-- Fixed mute button bfb64a44
-- Fixed open login modal after log out a9349c54
-- Fixed error display for patch kara a263013f
-- Fixed right click add button for multiple karas in admin page 7ff87aa2, 9c45a866
-- Fixed export playlist button d2a3e85f
-- Fixed change visibility of a kara twice without close details da546927
-- Fixed buttons display in playlist header 26c9af11
-- Fixed nickname is now mandatory 871fb6b4, 101befe3
-- Fixed switch to another playlist when delete one f4e895fa
-- Fixed input display in rename playlist modal 17ee2a0c
-- Fixed blacklist criterias tags display 88a338ae
+-   Fixed avatar fetching for online users d68c8748
+-   Fixed API documentation 48ccf953
+-   Fixed moving songs from one playlist to the other e1f6bd89
+-   Fixed playlist buttons not refreshed when you change the other side in operator window 7ae4e647
+-   Fixed adding blacklist criterias with enter 8c7a7228
+-   Fixed like button on karas 653fe77d, 512901b5
+-   Fixed free button 91b855f3
+-   Fixed convert and delete online profile 80ac08f9
+-   Fixed import playlist 3a829eda, daf52009, 6407261d
+-   Fixed right click transfer button 4fdf9c0f, 80ac390e
+-   Fixed right click add button from public playlist to current playlist de2a88a8
+-   Fixed blue color display change for playing kara b629c8a0
+-   Fixed mute button bfb64a44
+-   Fixed open login modal after log out a9349c54
+-   Fixed error display for patch kara a263013f
+-   Fixed right click add button for multiple karas in admin page 7ff87aa2, 9c45a866
+-   Fixed export playlist button d2a3e85f
+-   Fixed change visibility of a kara twice without close details da546927
+-   Fixed buttons display in playlist header 26c9af11
+-   Fixed nickname is now mandatory 871fb6b4, 101befe3
+-   Fixed switch to another playlist when delete one f4e895fa
+-   Fixed input display in rename playlist modal 17ee2a0c
+-   Fixed blacklist criterias tags display 88a338ae
 
 # v3.0.0 "Leafa Lumineuse" - 29/11/2019
 
@@ -1102,80 +1099,80 @@ Many things have changed, both in database schemas, code base, frontend, and eve
 
 ## New Features
 
-- A banner will be displayed on the welcome screen to signal there is a new Karaoke Mugen version and that you should upgrade (#7)
-- All guest accounts now have specific avatars. For fun. (#392)
-- Karaoke data files (.kara) are now on version 4 and are named .kara.json. (#341)
-  - Karaoke Mugen 3.x is not compatible with Karaoke files version 3 or below. This means you'll need to update your Karaoke Base for Karaoke Mugen 3.x.
-  - If you have songs you have not uploaded to the Karaoke Base, please contact us so we can help you convert your files.
-- Streamer mode with Twitch integration (#447)
-  - Song poll results can be displayed on the player's wallpaper inbetween songs.
-  - Twitch users can vote from chat for which song to play next
-  - Added a configurable pause time in between songs.
-- Song tags have been completely reworked (#443)
-  - Tags (languages, songwriters, singers, creators, etc.) are now files in the Karaoke Base, which means they're not tied to the application's version anymore. Anyone can add its own tags if need be.
-  - New tag types : Misc (formerly "Tags"), Genres, Origins, Platforms and Families
-  - New tags have been added to the Karaoke Base as a result : Fanworks for dojin songs/videos
-  - WARNING : As a result, blacklists criterias relying on tags won't be valid anymore and are going to be removed from your blacklist criterias. You can readd them later.
-- Mystery karaoke toggle (#441)
-  - You can flag a song as visible or invisible. Invisible songs will be marked as ??? to the public, which means they won't know in advance what that song is in the playlist. Good for surprises and troll songs.
-  - You can add mystery labels, which are shown randomly in place of the real song's name in a song slot to users. This is troll ammo.
-  - You can make it so admins or users added songs are automatically marked as invisible (or not)
-- Classic Karaoke Mode (#432)
-  - In Karaoke Classic mode, a pause is made in between songs, and the person who requested the song (or admin, or after a time period has elapsed) can hit play on its device. This is a mode for those who prefer a classic karaoke box experience where each user takes the microphone to sing on the song they asked for.
-- New features for Download manager :
-  - Blacklist system to keep the Download manager to automatically download some songs. Manual download is still possible (#427)
-  - A "Update All" button to update existing songs and download all songs missing from your database. See above for the blacklist feature. (#426)
-  - Advanced search (via tags/series) (#425)
-- Session management on welcome screen (#390)
-  - You can now name individual karaoke sessions when starting one with friends or during events. It'll allow you to filter song history to see, for example, which songs were played during Epitanime 2020 or Jonetsu 5555. Sessions are just groups for stats but can be helpful for other purposes later.
-  - Session data can be exported as CSV (#508)
-- QR Code has been removed (why is it a new feature?) (#451)
-- Users can now select which language for series names they tend to prefer (just like an admin can). This setting is saved to your online account. (#440)
-- New, updated sample songs included with every release (#452)
-- Battle-tested with Node 12 (#439)
-- Karaoke Mugen is now coded with TypeScript, for better debugging and safer programming :) (#437 #391)
-- For MugenPi users (or those who don't want to look at the console screen), logs are now available in the System Control Panel (#434)
-- Live changes to the database (editing a song) won't trigger a new generation on next app startup (#433)
-- Admins can restrict song additions by users to one song per series or singer to avoid people trying to force their favorite series or singer by adding all its songs (#431)
-- A new (shy) look for the frontend has been achieved with the React rewrite (#430 #300)
-- Suggesting a song to be added to the karaoke base now generates an issue on our Gitlab (configurable) (#422)
-- An intro video is played at the beginning of a playlist if you're starting on the first song. If a sponsor jingle file is present (Beginning with `Sponsor - `) it will be played right after. (#482)
-- The karaoke submission form now accepts new karaoke formats in addition of ASS. The files will be converted to the ASS format on import. New formats supported are :
-  - Toyunda files (.txt) (#463)
-  - UltraStar files (.txt) (#31)
-  - Karafun files (.kfn) (#471)
-- Dark theme for the system panel (#468)
-- Settings in the options panel now have tooltips to explain what they do (#460)
-- Login modal in public and admin interface now has toggles for online/local accounts and password reset feature. (#489)
-- Database can be restored from the karaokemugen.sql file in the application's directory (#509)
+-   A banner will be displayed on the welcome screen to signal there is a new Karaoke Mugen version and that you should upgrade (#7)
+-   All guest accounts now have specific avatars. For fun. (#392)
+-   Karaoke data files (.kara) are now on version 4 and are named .kara.json. (#341)
+    -   Karaoke Mugen 3.x is not compatible with Karaoke files version 3 or below. This means you'll need to update your Karaoke Base for Karaoke Mugen 3.x.
+    -   If you have songs you have not uploaded to the Karaoke Base, please contact us so we can help you convert your files.
+-   Streamer mode with Twitch integration (#447)
+    -   Song poll results can be displayed on the player's wallpaper inbetween songs.
+    -   Twitch users can vote from chat for which song to play next
+    -   Added a configurable pause time in between songs.
+-   Song tags have been completely reworked (#443)
+    -   Tags (languages, songwriters, singers, creators, etc.) are now files in the Karaoke Base, which means they're not tied to the application's version anymore. Anyone can add its own tags if need be.
+    -   New tag types : Misc (formerly "Tags"), Genres, Origins, Platforms and Families
+    -   New tags have been added to the Karaoke Base as a result : Fanworks for dojin songs/videos
+    -   WARNING : As a result, blacklists criterias relying on tags won't be valid anymore and are going to be removed from your blacklist criterias. You can readd them later.
+-   Mystery karaoke toggle (#441)
+    -   You can flag a song as visible or invisible. Invisible songs will be marked as ??? to the public, which means they won't know in advance what that song is in the playlist. Good for surprises and troll songs.
+    -   You can add mystery labels, which are shown randomly in place of the real song's name in a song slot to users. This is troll ammo.
+    -   You can make it so admins or users added songs are automatically marked as invisible (or not)
+-   Classic Karaoke Mode (#432)
+    -   In Karaoke Classic mode, a pause is made in between songs, and the person who requested the song (or admin, or after a time period has elapsed) can hit play on its device. This is a mode for those who prefer a classic karaoke box experience where each user takes the microphone to sing on the song they asked for.
+-   New features for Download manager :
+    -   Blacklist system to keep the Download manager to automatically download some songs. Manual download is still possible (#427)
+    -   A "Update All" button to update existing songs and download all songs missing from your database. See above for the blacklist feature. (#426)
+    -   Advanced search (via tags/series) (#425)
+-   Session management on welcome screen (#390)
+    -   You can now name individual karaoke sessions when starting one with friends or during events. It'll allow you to filter song history to see, for example, which songs were played during Epitanime 2020 or Jonetsu 5555. Sessions are just groups for stats but can be helpful for other purposes later.
+    -   Session data can be exported as CSV (#508)
+-   QR Code has been removed (why is it a new feature?) (#451)
+-   Users can now select which language for series names they tend to prefer (just like an admin can). This setting is saved to your online account. (#440)
+-   New, updated sample songs included with every release (#452)
+-   Battle-tested with Node 12 (#439)
+-   Karaoke Mugen is now coded with TypeScript, for better debugging and safer programming :) (#437 #391)
+-   For MugenPi users (or those who don't want to look at the console screen), logs are now available in the System Control Panel (#434)
+-   Live changes to the database (editing a song) won't trigger a new generation on next app startup (#433)
+-   Admins can restrict song additions by users to one song per series or singer to avoid people trying to force their favorite series or singer by adding all its songs (#431)
+-   A new (shy) look for the frontend has been achieved with the React rewrite (#430 #300)
+-   Suggesting a song to be added to the karaoke base now generates an issue on our Gitlab (configurable) (#422)
+-   An intro video is played at the beginning of a playlist if you're starting on the first song. If a sponsor jingle file is present (Beginning with `Sponsor - `) it will be played right after. (#482)
+-   The karaoke submission form now accepts new karaoke formats in addition of ASS. The files will be converted to the ASS format on import. New formats supported are :
+    -   Toyunda files (.txt) (#463)
+    -   UltraStar files (.txt) (#31)
+    -   Karafun files (.kfn) (#471)
+-   Dark theme for the system panel (#468)
+-   Settings in the options panel now have tooltips to explain what they do (#460)
+-   Login modal in public and admin interface now has toggles for online/local accounts and password reset feature. (#489)
+-   Database can be restored from the karaokemugen.sql file in the application's directory (#509)
 
 ## Improvements
 
-- System panel's code dependencies are now up to date (#445)
-- Playlist information is updated more often on screen so a device coming back from sleep mode can get an updated version of the page sooner (#416)
-- Search engine in playlists now looks for the song requester as well. (#448)
-- Quotations (" and ') are now taken into account during search (#446)
-- Karaoke Mugen's API has been split in smaller chunks for easier debugging and programming.
-- A lot of code is now shared between Karaoke Mugen App and Server via the Karaoke Mugen Shared Library (#402) saving us a lot of time
-- Importing playlists is now safer thanks to a code rewrite by using constraints instead of tests (#329)
-- Preview videos are not generated anymore. It was costly and took a hell lot of time. Now full media files are served instead (#457)
-- Updated mpv version to 0.29.1.
-- Karaoke base updates now go through the Download Manager and should easier to handle.
-- When editing a karaoke in the system UI, tags and series are checked for differences between the old and new karaoke to avoid triggering useless refreshes.
-- Added a message in case MS Visual Studio C++ 2013 redist is not installed (Windows only) (#492)
-- Karaoke Mugen behaves better when mpv has been shutdown outside of KM (#491)
-- Added `--dumpDB` and `--restoreDB` command-line arguments.
+-   System panel's code dependencies are now up to date (#445)
+-   Playlist information is updated more often on screen so a device coming back from sleep mode can get an updated version of the page sooner (#416)
+-   Search engine in playlists now looks for the song requester as well. (#448)
+-   Quotations (" and ') are now taken into account during search (#446)
+-   Karaoke Mugen's API has been split in smaller chunks for easier debugging and programming.
+-   A lot of code is now shared between Karaoke Mugen App and Server via the Karaoke Mugen Shared Library (#402) saving us a lot of time
+-   Importing playlists is now safer thanks to a code rewrite by using constraints instead of tests (#329)
+-   Preview videos are not generated anymore. It was costly and took a hell lot of time. Now full media files are served instead (#457)
+-   Updated mpv version to 0.29.1.
+-   Karaoke base updates now go through the Download Manager and should easier to handle.
+-   When editing a karaoke in the system UI, tags and series are checked for differences between the old and new karaoke to avoid triggering useless refreshes.
+-   Added a message in case MS Visual Studio C++ 2013 redist is not installed (Windows only) (#492)
+-   Karaoke Mugen behaves better when mpv has been shutdown outside of KM (#491)
+-   Added `--dumpDB` and `--restoreDB` command-line arguments.
 
 ## Fixes
 
-- Toggling lyrics/song title display on mobile now works properly (#414)
-- Videos aren't weboptimized again even if you don't change anything about it in the edit song form (#436)
-- Toots from Mastodon are now displayed proper on the welcome screen's feed (#429)
-- Fix KM not allowing you to login your online account if a local account with the same nickname exists in your database. (#466)
-- When working with several karaoke/media/lyrics folders, edited karas will be placed in the original folders they belong to instead of the
-first one in the list.
-- i18n fields in series edit page in control panel are now automatically validated, no need to fiddle with them anymore (#505)
-- .ass files are now properly deleted when editing a kara (#490)
+-   Toggling lyrics/song title display on mobile now works properly (#414)
+-   Videos aren't weboptimized again even if you don't change anything about it in the edit song form (#436)
+-   Toots from Mastodon are now displayed proper on the welcome screen's feed (#429)
+-   Fix KM not allowing you to login your online account if a local account with the same nickname exists in your database. (#466)
+-   When working with several karaoke/media/lyrics folders, edited karas will be placed in the original folders they belong to instead of the
+    first one in the list.
+-   i18n fields in series edit page in control panel are now automatically validated, no need to fiddle with them anymore (#505)
+-   .ass files are now properly deleted when editing a kara (#490)
 
 # v2.5.3 "Konata Kimono" - 30/06/2019
 
@@ -1183,8 +1180,8 @@ This is a bugfix release.
 
 ## Fixes
 
-- Fixed Downloads submenu in the system panel not working with V4 kara format in KM Server (28236d09)
-- Fixed toggleOnTop setting not working (770cc4bd)
+-   Fixed Downloads submenu in the system panel not working with V4 kara format in KM Server (28236d09)
+-   Fixed toggleOnTop setting not working (770cc4bd)
 
 # v2.5.2 "Konata 4-Koma" - 22/05/2019
 
@@ -1192,18 +1189,18 @@ This is a bugfix release.
 
 ## Enhancements
 
-- You can now force the admin password to be changed (in case you forgot it, or are running a unattended setup) with the `--forceAdminPassword <password>` flag.
+-   You can now force the admin password to be changed (in case you forgot it, or are running a unattended setup) with the `--forceAdminPassword <password>` flag.
 
 ## Fixes
 
-- Fixed file resolver when using multiple folders for karas, series, medias or lyrics files (c2e5eacf)
-- Fixed mpv auto restart method (3ca3b6c7)
-- Fixed wallpaper not appearing anymore at the end of a song if "stop after current song" has been pressed (7330ed8a)
-- Fixed retrying to play song if loading media failed due to mpv hiccup (7f3da9ba)
-- Web interface will now request english translations from server if your browser is not set to a known locale (61082963)
-- Media files are not weboptimized anymore if you don't modify them in the karaoke edit form (4ee094bc)
-- Catch errors when switching to the next song in a playing playlist (35a86966)
-- Partly fixed edit user form errors (523a7120)
+-   Fixed file resolver when using multiple folders for karas, series, medias or lyrics files (c2e5eacf)
+-   Fixed mpv auto restart method (3ca3b6c7)
+-   Fixed wallpaper not appearing anymore at the end of a song if "stop after current song" has been pressed (7330ed8a)
+-   Fixed retrying to play song if loading media failed due to mpv hiccup (7f3da9ba)
+-   Web interface will now request english translations from server if your browser is not set to a known locale (61082963)
+-   Media files are not weboptimized anymore if you don't modify them in the karaoke edit form (4ee094bc)
+-   Catch errors when switching to the next song in a playing playlist (35a86966)
+-   Partly fixed edit user form errors (523a7120)
 
 # v2.5.1 "Konata Kiffante" - 06/05/2019
 
@@ -1211,16 +1208,16 @@ This is a bugfix release.
 
 ## Fixes
 
-- Added notice to type in your full username on system panel login page (463b62e8)
-- Fixed tag add/remove on blacklist criterias list ( de6611d4 )
-- Fixed import/export favorites from admin interface ( f2ee577e, c76941c7, 7ae9b9b9 )
-- Fixed import favorites from public interface ( 0222d592 )
-- Fixed blacklist criterias import from an older SQLite database ( 0785947 )
-- Fixed downloads not being started automatically on app startup  ( 87d68d9e )
-- Fixed public/private switch ( df949195 )
-- Fixed online profile updates ( 20a24b1e )
-- Fixed suggestion mail modal box ( 6503c363 )
-- Fixed errors with multi-series karaokes ( bfbe9eed )
+-   Added notice to type in your full username on system panel login page (463b62e8)
+-   Fixed tag add/remove on blacklist criterias list ( de6611d4 )
+-   Fixed import/export favorites from admin interface ( f2ee577e, c76941c7, 7ae9b9b9 )
+-   Fixed import favorites from public interface ( 0222d592 )
+-   Fixed blacklist criterias import from an older SQLite database ( 0785947 )
+-   Fixed downloads not being started automatically on app startup ( 87d68d9e )
+-   Fixed public/private switch ( df949195 )
+-   Fixed online profile updates ( 20a24b1e )
+-   Fixed suggestion mail modal box ( 6503c363 )
+-   Fixed errors with multi-series karaokes ( bfbe9eed )
 
 # v2.5.0 "Konata Karaokiste" - 30/04/2019
 
@@ -1228,48 +1225,48 @@ This is a major release.
 
 ## New features
 
-- Songs can now be downloaded individually from a Karaoke Mugen Server (like `kara.moe`) instead of updating the complete karaoke base every time. Go to the Karas -> Downloads submenu in the system panel. This feature is still in beta and we would love feedback (#339)
-- Users can now create online accounts on a Karaoke Mugen Server, which means favorites and profile info are stored online and not on the local Karaoke Mugen application. Online accounts are enabled by default. To create/login using local accounts, remove the `kara.moe` part of the Server field on the login/new account form (#303)
-- Added tag CREDITLESS for creditless songs (#382)
-- Added tag COVER for cover songs (#393)
-- Added tag DRAMA for songs from TV drama shows (#393)
-- Added tag WIIU for songs from Nintendo Wii U games
-- Added tag FANDUB for fandubbed videos (#418)
-- Already present since 2.4.1 : Stats are now uploaded periodically to Karaoke Mugen Server (if the instance admin agrees) (#377)
+-   Songs can now be downloaded individually from a Karaoke Mugen Server (like `kara.moe`) instead of updating the complete karaoke base every time. Go to the Karas -> Downloads submenu in the system panel. This feature is still in beta and we would love feedback (#339)
+-   Users can now create online accounts on a Karaoke Mugen Server, which means favorites and profile info are stored online and not on the local Karaoke Mugen application. Online accounts are enabled by default. To create/login using local accounts, remove the `kara.moe` part of the Server field on the login/new account form (#303)
+-   Added tag CREDITLESS for creditless songs (#382)
+-   Added tag COVER for cover songs (#393)
+-   Added tag DRAMA for songs from TV drama shows (#393)
+-   Added tag WIIU for songs from Nintendo Wii U games
+-   Added tag FANDUB for fandubbed videos (#418)
+-   Already present since 2.4.1 : Stats are now uploaded periodically to Karaoke Mugen Server (if the instance admin agrees) (#377)
 
 ## Improvements
 
-- Configuration storage has been completely revamped and is now a YAML file instead of the old INI format. Your old configuration file will be automatically imported at launch (#355)
-- Favorites are now handled in a simpler way. Favorites playlists are no longer used, instead Favorites are stored on a separate table in database. You can safely delete any favorites playlist after upgrading to 2.5.0 (#389)
-- Karaoke Mugen now uses a PostgreSQL database instead of a SQLite3 one, leading to cleaner code and faster response times. Your old SQLite3 database will be imported at launch (#379)
-- (Already present since 2.4.1) Initialization catchphrases(tm) are now displayed on the welcome screen (#375)
-- MP3 playback is now more dynamic with some visualization effects (#349)
-- Those who requested a song will now see their avatar next to the song information on screen at the start and end of a song. (#283)
-- Downloadable groups can now be filtered / blacklisted
-- New guest names and catchphrases!
-- Transitions between songs are now shorter as we do not reload the karaoke background image at end of song
-- Blacklist is now regenerated after a database generation to keep it consistent
-- New option `--noBaseCheck` to disable data file checks to save time (when you're sure the base has not changed)
-- New option `--reset` to reset user data. WARNING : this wipes users, stats, playlists, etc.
-- Configuration is not updated anymore in real time if you modify the config file while Karaoke Mugen is running (it caused too many problems). You'll need to modify the config file while Karaoke Mugen is stopped for your changes to take effect.
-- All communication with Karaoke Mugen Server is now done in HTTPS.
-- Executable file has been greatly reduced by replacing some packages with simpler, lighter versions with similar functionality
-- Preview generation should be more consistent now
-- When creating a new karaoke, mp4 videos are web-optimized automatically
-- Karaoke operators can now add several random karaokes to the current playlist by pressing a button on the admin interface, to fill a playlist for example (#392).
-- Users can now add a song more than once in a playlist (if the required setting is enabled) (#388)
+-   Configuration storage has been completely revamped and is now a YAML file instead of the old INI format. Your old configuration file will be automatically imported at launch (#355)
+-   Favorites are now handled in a simpler way. Favorites playlists are no longer used, instead Favorites are stored on a separate table in database. You can safely delete any favorites playlist after upgrading to 2.5.0 (#389)
+-   Karaoke Mugen now uses a PostgreSQL database instead of a SQLite3 one, leading to cleaner code and faster response times. Your old SQLite3 database will be imported at launch (#379)
+-   (Already present since 2.4.1) Initialization catchphrases(tm) are now displayed on the welcome screen (#375)
+-   MP3 playback is now more dynamic with some visualization effects (#349)
+-   Those who requested a song will now see their avatar next to the song information on screen at the start and end of a song. (#283)
+-   Downloadable groups can now be filtered / blacklisted
+-   New guest names and catchphrases!
+-   Transitions between songs are now shorter as we do not reload the karaoke background image at end of song
+-   Blacklist is now regenerated after a database generation to keep it consistent
+-   New option `--noBaseCheck` to disable data file checks to save time (when you're sure the base has not changed)
+-   New option `--reset` to reset user data. WARNING : this wipes users, stats, playlists, etc.
+-   Configuration is not updated anymore in real time if you modify the config file while Karaoke Mugen is running (it caused too many problems). You'll need to modify the config file while Karaoke Mugen is stopped for your changes to take effect.
+-   All communication with Karaoke Mugen Server is now done in HTTPS.
+-   Executable file has been greatly reduced by replacing some packages with simpler, lighter versions with similar functionality
+-   Preview generation should be more consistent now
+-   When creating a new karaoke, mp4 videos are web-optimized automatically
+-   Karaoke operators can now add several random karaokes to the current playlist by pressing a button on the admin interface, to fill a playlist for example (#392).
+-   Users can now add a song more than once in a playlist (if the required setting is enabled) (#388)
 
 ## Fixes
 
-- Fixed song search so it now also searches in series names aliases (#387)
-- Fixed Karaoke Mugen allowing users to put commas in series names (#386)
-- Fixed Karaoke Mugen adding you as an author to a karaoke you're editing if there's no author already in metadata info (#385)
-- Fixed series name not translated with user's browser's locale in control panel (#384)
-- Fixed background listing taking non-image files into account in the `app/background` directory, which could cause mpv to crash.
-- Fixed delete button hidden behind menu in mobile public playlist view (#399)
-- When the interface is in restricted mode, a modal pops up to explain to the user that it cannot add songs anymore. (#404)
-- Guests don't see the favorites button anymore (#415)
-- Direct3D is not the default output video driver for mpv anymore on Windows.
+-   Fixed song search so it now also searches in series names aliases (#387)
+-   Fixed Karaoke Mugen allowing users to put commas in series names (#386)
+-   Fixed Karaoke Mugen adding you as an author to a karaoke you're editing if there's no author already in metadata info (#385)
+-   Fixed series name not translated with user's browser's locale in control panel (#384)
+-   Fixed background listing taking non-image files into account in the `app/background` directory, which could cause mpv to crash.
+-   Fixed delete button hidden behind menu in mobile public playlist view (#399)
+-   When the interface is in restricted mode, a modal pops up to explain to the user that it cannot add songs anymore. (#404)
+-   Guests don't see the favorites button anymore (#415)
+-   Direct3D is not the default output video driver for mpv anymore on Windows.
 
 # v2.4.2 "Juri Joueuse" - 13/12/2018
 
@@ -1277,68 +1274,68 @@ This is a bug fix release.
 
 ## Improvements
 
-- Issues created automatically when a user makes a song suggestion in Karaoke Mugen App now contain a more polite message, as well as the user's nickname
-- Media renaming now doesn't abort if a file is not found
+-   Issues created automatically when a user makes a song suggestion in Karaoke Mugen App now contain a more polite message, as well as the user's nickname
+-   Media renaming now doesn't abort if a file is not found
 
 ## Fixes
 
-- Fixed importing playlists
-- Fixed all jingles playing at once if interval is set to 0
-- Fixed using filters in a song list when you're not at the top of the list
-- Stats are now properly sent on startup
+-   Fixed importing playlists
+-   Fixed all jingles playing at once if interval is set to 0
+-   Fixed using filters in a song list when you're not at the top of the list
+-   Stats are now properly sent on startup
 
 # v2.4.1 "Juri Joviale" - 28/11/2018
 
 ## New features
 
-- Stats are now uploaded periodically to Karaoke Mugen Server (if the instance admin agrees) (#377)
-- A media renaming procedure is available in the system panel / database tab to allow people to rename all their media files and avoid redownloading them all. (#376)
-- Initialization catchphrases(tm) are now displayed on the welcome screen (#375)
+-   Stats are now uploaded periodically to Karaoke Mugen Server (if the instance admin agrees) (#377)
+-   A media renaming procedure is available in the system panel / database tab to allow people to rename all their media files and avoid redownloading them all. (#376)
+-   Initialization catchphrases(tm) are now displayed on the welcome screen (#375)
 
 ## Fixes
 
-- Drag & Dropping songs within a playlist sometimes didn't work as expected. Song positions are now fixed (#375)
-- Fixed automix creation
-- Monitor window isn't synced anymore with the main player, as this would cause weird behaviors on many videos when the monitor tries to play catch up.
-- Weird error messages about invalid configuration won't appear anymore (#373)
+-   Drag & Dropping songs within a playlist sometimes didn't work as expected. Song positions are now fixed (#375)
+-   Fixed automix creation
+-   Monitor window isn't synced anymore with the main player, as this would cause weird behaviors on many videos when the monitor tries to play catch up.
+-   Weird error messages about invalid configuration won't appear anymore (#373)
 
 # v2.4.0 "Juri Judicieuse" - 06/11/2018
 
 ## New features
 
-- Configuration can be edited by hand from control panel. Not all configuration items are editable. (#338)
-- Karaoke Mugen is now fully compatible (and even requires) Node 10 (#307)
-- The welcome screen now displays what's new on the karaoke base and site's RSS feeds (#343)
-- Our new logo, designed by @Sedeto, has been added to the welcome screen!
+-   Configuration can be edited by hand from control panel. Not all configuration items are editable. (#338)
+-   Karaoke Mugen is now fully compatible (and even requires) Node 10 (#307)
+-   The welcome screen now displays what's new on the karaoke base and site's RSS feeds (#343)
+-   Our new logo, designed by @Sedeto, has been added to the welcome screen!
 
 ## Improvements
 
-- Songs can now be freed from the current playlist
-- Progress when generating database or updating base files from the control panel is now displayed on the control panel itself (#348)
-- Generation's progress is now displayed in the console.
-- Public interface is reloaded when the webapp mode (open, restricted or closed) changes. (#357)
-- TAG_VOICELESS has been removed in favor of the language code ZXX which is "No linguistic content" (#366)
-- Special language names (FR, JAP, ANG...) in files is now obsolete in favor of ISO639-2B codes. This is for better consistency. (#365)
-- The `series.json` file is not used anymore. Instead, series data is read from the new `series/` folder with its `.series.json` files (#364)
-- Series' international names are now searchable in control panel (#362)
-- When two KIDs are in conflict in your karaoke base, Karaoke Mugen will now tell you which ones are causing the conflict (#361)
-- In the karaoke submission form, tags have been replaced by checkboxes for misc tags. (#359)
-- Icons and names have been changed for consistency on the welcome screen (#356)
-- Your data files are now checked on startup to decide if a generation is needed or not. (#354)
-- Series are displayed in a more concise way in case of AMVs. (#350)
-- Karaoke and series lists in control panel are now properly paginated. Page position and searches are remembered when coming back to the list after editing/creating a karaoke (#342)
-- When creating/editing a language, a text box allows to search for a language code.
+-   Songs can now be freed from the current playlist
+-   Progress when generating database or updating base files from the control panel is now displayed on the control panel itself (#348)
+-   Generation's progress is now displayed in the console.
+-   Public interface is reloaded when the webapp mode (open, restricted or closed) changes. (#357)
+-   TAG_VOICELESS has been removed in favor of the language code ZXX which is "No linguistic content" (#366)
+-   Special language names (FR, JAP, ANG...) in files is now obsolete in favor of ISO639-2B codes. This is for better consistency. (#365)
+-   The `series.json` file is not used anymore. Instead, series data is read from the new `series/` folder with its `.series.json` files (#364)
+-   Series' international names are now searchable in control panel (#362)
+-   When two KIDs are in conflict in your karaoke base, Karaoke Mugen will now tell you which ones are causing the conflict (#361)
+-   In the karaoke submission form, tags have been replaced by checkboxes for misc tags. (#359)
+-   Icons and names have been changed for consistency on the welcome screen (#356)
+-   Your data files are now checked on startup to decide if a generation is needed or not. (#354)
+-   Series are displayed in a more concise way in case of AMVs. (#350)
+-   Karaoke and series lists in control panel are now properly paginated. Page position and searches are remembered when coming back to the list after editing/creating a karaoke (#342)
+-   When creating/editing a language, a text box allows to search for a language code.
 
 ## Fixes
 
-- Download problems when updating your base files should be fixed now. Really. (#332)
-- Download groups weren't saved properly in .kara files when saving one from the kara submission form (#367)
-- Fixed hardsub video submission with the control panel's form
-- Fixed adding series without aliases
-- Fixed Smart Shuffle
-- Fixed deleting favorites
-- Fixed editing series not updating i18n data
-- Fixed search field in control panel not registering the last character typed
+-   Download problems when updating your base files should be fixed now. Really. (#332)
+-   Download groups weren't saved properly in .kara files when saving one from the kara submission form (#367)
+-   Fixed hardsub video submission with the control panel's form
+-   Fixed adding series without aliases
+-   Fixed Smart Shuffle
+-   Fixed deleting favorites
+-   Fixed editing series not updating i18n data
+-   Fixed search field in control panel not registering the last character typed
 
 # v2.3.2 "Ichika Imperturbable" - 03/09/2018
 
@@ -1346,8 +1343,8 @@ This is a bugfix release.
 
 ## Fixes
 
-- Fix searching through series original names
-- Fix kara/media/sub files not being renamed properly when edited
+-   Fix searching through series original names
+-   Fix kara/media/sub files not being renamed properly when edited
 
 # v2.3.1 "Ichika Insouciante" - 22/08/2018
 
@@ -1357,26 +1354,26 @@ This is a bugfix release.
 
 ## Improvements
 
-- Searches now take the original series' name into account too.
-- Karas in error are not added to the database anymore
-- Audio files are now accepted in the karaoke add form.
-- Various speedups in karaoke and playlist content list display thanks to @Jaerdoster's mad SQL skills
-- Added a XBOXONE tag for songs.
-- mpv does not try to autoload external files anymore, resulting in better performance if your media files are on a network storage.
+-   Searches now take the original series' name into account too.
+-   Karas in error are not added to the database anymore
+-   Audio files are now accepted in the karaoke add form.
+-   Various speedups in karaoke and playlist content list display thanks to @Jaerdoster's mad SQL skills
+-   Added a XBOXONE tag for songs.
+-   mpv does not try to autoload external files anymore, resulting in better performance if your media files are on a network storage.
 
 ## Fixes
 
-- The karaoke base update button now works.
-- Editing a hardsubbed karaoke now works.
-- Filenames are better sanitized when editing/adding new karaokes
-- Searching in playlists now work again.
-- Fixed some possible SQL injections.
-- When a media is missing, getting karaoke details does not fail anymore
-- Fixed some english translations
-- Fixed jingles not playing at all
-- Fixed log spam on OSX about config file being changed
-- Fixed config file being accidentally overwritten with a new one
-- Songs are now correctly removed automatically from the public playlist once played.
+-   The karaoke base update button now works.
+-   Editing a hardsubbed karaoke now works.
+-   Filenames are better sanitized when editing/adding new karaokes
+-   Searching in playlists now work again.
+-   Fixed some possible SQL injections.
+-   When a media is missing, getting karaoke details does not fail anymore
+-   Fixed some english translations
+-   Fixed jingles not playing at all
+-   Fixed log spam on OSX about config file being changed
+-   Fixed config file being accidentally overwritten with a new one
+-   Songs are now correctly removed automatically from the public playlist once played.
 
 # v2.3.0 "Ichika Idolâtrice" - 14/08/2018
 
@@ -1386,78 +1383,78 @@ We will only cover changes from rc1 to finale here :
 
 ## Enhancements
 
-- "Update from Shelter" button now returns a message immediately inviting you to check the console for progress
-- "Connection lost" message now displays a cool noise effect
-- Database is now more optimized and should make actions involving playlists faster
+-   "Update from Shelter" button now returns a message immediately inviting you to check the console for progress
+-   "Connection lost" message now displays a cool noise effect
+-   Database is now more optimized and should make actions involving playlists faster
 
 ## Fixes
 
-- #328 Progress bar during updates should scale properly to the window and not display "Infinity" anymore
-- Filter panel on karaoke list now displays properly on Safari iOS
-- Config file should not be overwritten anymore (hopefully)
-- Fixed updating series and displaying karaoke lists and tags in control panel
-- Fixed the "Stop after current song" button
+-   #328 Progress bar during updates should scale properly to the window and not display "Infinity" anymore
+-   Filter panel on karaoke list now displays properly on Safari iOS
+-   Config file should not be overwritten anymore (hopefully)
+-   Fixed updating series and displaying karaoke lists and tags in control panel
+-   Fixed the "Stop after current song" button
 
 # v2.3.0-rc1 "Ichika Immergée" - 08/08/2018
 
 ## New exciting features(tm)
 
-- #118 Karaoke Mugen can generate .kara files for you if you fill out a form in the control panel, making it much easier to create karaoke files for the Karaoke Mugen base.
-- #325 There is now a link to help users suggest a series they think should be in the Karaoke Mugen database
-- #340 In addition of the usual view and favorites view, users can get a new "Most recent songs" view with the last 200 songs added in the database (ordered by creation date)
-- #120 Users can now navigate through the song list by tags (language, singer, etc.) year, and series.
-- #305 A smarter shuffle is available for those with big playlists.
-  - It should spread long and short songs to avoid too many long songs following each other
-  - Songs added by one user won't be following each other and will be spread through the playlist
-- #334 The series database can be managed from the control panel. This updates the `series.json` file
-- #324 Karaoke operators can now free songs manually
-- #153 A "more information" link has been added to songs' info panel. It allows you to get more information on a particular series or singer.
-- #152 You can add a song multiple times in the current playlist now (optional)
+-   #118 Karaoke Mugen can generate .kara files for you if you fill out a form in the control panel, making it much easier to create karaoke files for the Karaoke Mugen base.
+-   #325 There is now a link to help users suggest a series they think should be in the Karaoke Mugen database
+-   #340 In addition of the usual view and favorites view, users can get a new "Most recent songs" view with the last 200 songs added in the database (ordered by creation date)
+-   #120 Users can now navigate through the song list by tags (language, singer, etc.) year, and series.
+-   #305 A smarter shuffle is available for those with big playlists.
+    -   It should spread long and short songs to avoid too many long songs following each other
+    -   Songs added by one user won't be following each other and will be spread through the playlist
+-   #334 The series database can be managed from the control panel. This updates the `series.json` file
+-   #324 Karaoke operators can now free songs manually
+-   #153 A "more information" link has been added to songs' info panel. It allows you to get more information on a particular series or singer.
+-   #152 You can add a song multiple times in the current playlist now (optional)
 
 ## Enhancements
 
-- #336 The web interface will fade to black and display a message when Karaoke Mugen isn't running anymore
-- #330 Buttons have been normalized throughout the web interface
-- #322 Many optimizations have been made through the code, making it also simpler to read.
-- #321 The temp folder is cleaned at startup.
-- #320 Users' login time is not updated in real time anymore to avoid stressing out the database
-- The `userdata.sqlite3` file is backuped before a new generation is made.
-- #139 PIP Slider in web interface now has percentage values displayed
+-   #336 The web interface will fade to black and display a message when Karaoke Mugen isn't running anymore
+-   #330 Buttons have been normalized throughout the web interface
+-   #322 Many optimizations have been made through the code, making it also simpler to read.
+-   #321 The temp folder is cleaned at startup.
+-   #320 Users' login time is not updated in real time anymore to avoid stressing out the database
+-   The `userdata.sqlite3` file is backuped before a new generation is made.
+-   #139 PIP Slider in web interface now has percentage values displayed
 
 ## Fixes
 
-- #326 Songs cannot be added anymore if they are present in the blacklist
-- #317 Catching SQLITE_BUSY error messages from background jobs during database maintenance mode
-- Engine asks if player is ready before issuing any commands.
+-   #326 Songs cannot be added anymore if they are present in the blacklist
+-   #317 Catching SQLITE_BUSY error messages from background jobs during database maintenance mode
+-   Engine asks if player is ready before issuing any commands.
 
 # v2.2.3 "Haruhi Hyperactive" - 16/07/2018
 
 ## Fixes
 
-- #332 Fixes an issue some (many) people had with the in-app karaoke base updater, where downloads would get stalled and the app hanged. Writing a complete download system with retries and error handling is difficult, and the issue isn't showing for a lot of people.
-- Fixes a big issue with database (re)generation regarding series, which would causes mismatches between a series in the karaoke list and what's going to be played.
-- Karaoke Mugen shouldn't hang anymore when trying to generate a database without any kara files present
-- Quotes in series names are properly inserted in database now
-- FTP downloads for updater now has a retry system
-- Medias are now downloaded before subs
+-   #332 Fixes an issue some (many) people had with the in-app karaoke base updater, where downloads would get stalled and the app hanged. Writing a complete download system with retries and error handling is difficult, and the issue isn't showing for a lot of people.
+-   Fixes a big issue with database (re)generation regarding series, which would causes mismatches between a series in the karaoke list and what's going to be played.
+-   Karaoke Mugen shouldn't hang anymore when trying to generate a database without any kara files present
+-   Quotes in series names are properly inserted in database now
+-   FTP downloads for updater now has a retry system
+-   Medias are now downloaded before subs
 
 # v2.2.2 "Haruhi Hibernante" - 03/07/2018
 
 ## Fixes
 
-- #311 AutoPlay mode is now working again, for real.
-- #333 Preview generation has been fixed, and won't be canceled on the first video it cannot generate preview for.
-- #331 Admin tutorial now checks for `appFirstRun` in addition of `admpwd`
-- Media files are now moved from the import folder to the medias folder when doing a mass import.
+-   #311 AutoPlay mode is now working again, for real.
+-   #333 Preview generation has been fixed, and won't be canceled on the first video it cannot generate preview for.
+-   #331 Admin tutorial now checks for `appFirstRun` in addition of `admpwd`
+-   Media files are now moved from the import folder to the medias folder when doing a mass import.
 
 ## Enhancements
 
-- New tag for songs : TAG_3DS
-- #335 When using the second video monitor (second mpv), it wasn't synchronized with the first one when you used arrow keys to navigate in the first mpv video. Note that this could potentially lead to video lags on the second mpv window, but since it's just a monitor, we didn't think it would be much of an issue. Please give us feedback about this.
-- Default video directory is now `medias`
-- Samples have been updated with a `medias` folder.
-- Samples now include a `series.json` sample file
-- macOS releases are now in `.tar.gz` instead of `zip` to keep permissions intact.
+-   New tag for songs : TAG_3DS
+-   #335 When using the second video monitor (second mpv), it wasn't synchronized with the first one when you used arrow keys to navigate in the first mpv video. Note that this could potentially lead to video lags on the second mpv window, but since it's just a monitor, we didn't think it would be much of an issue. Please give us feedback about this.
+-   Default video directory is now `medias`
+-   Samples have been updated with a `medias` folder.
+-   Samples now include a `series.json` sample file
+-   macOS releases are now in `.tar.gz` instead of `zip` to keep permissions intact.
 
 # v2.2.1 "Haruhi Hypnotisante" - 19/06/2018
 
@@ -1467,26 +1464,26 @@ This version is also known as "Just Haruhi"
 
 In preparation for **July 1st 2018** when the videos folder will be renamed to "medias", your videos folder will be renamed automatically after this date if :
 
-- Your config has the default `app/data/videos`
-- That folder exists
-- The `medias` folder does not exist.
+-   Your config has the default `app/data/videos`
+-   That folder exists
+-   The `medias` folder does not exist.
 
 If any of these conditions are not met, proceed as usual, your configuration and folder structure won't be modified.
 
 ## Enhancements
 
-- `userdata.sqlite3` is backupped before running integrity checks so you can recover from a bad karaoke database generation that would have wiped out your playlists, favorites, and other data.
-- Added TAG_WII
-- Added TAG_SATURN
-- Config file change message is now debug only.
+-   `userdata.sqlite3` is backupped before running integrity checks so you can recover from a bad karaoke database generation that would have wiped out your playlists, favorites, and other data.
+-   Added TAG_WII
+-   Added TAG_SATURN
+-   Config file change message is now debug only.
 
 ## Fixes
 
-- The .kara generation tool has been fixed. Also, if a .kara's subfile has `dummy.ass` it won't trigger a subtitle extraction on its .mkv file anymore. Some .mkvs have hardsubs, yes.
-- Blacklisting series now work correctly.
-- When triggering the player's play method, make sure it is ready before.
-- #316 Base updater should handle connection timeouts better.
-- Fixed database generation when using `--generate` without any database existing.
+-   The .kara generation tool has been fixed. Also, if a .kara's subfile has `dummy.ass` it won't trigger a subtitle extraction on its .mkv file anymore. Some .mkvs have hardsubs, yes.
+-   Blacklisting series now work correctly.
+-   When triggering the player's play method, make sure it is ready before.
+-   #316 Base updater should handle connection timeouts better.
+-   Fixed database generation when using `--generate` without any database existing.
 
 # v2.2.0 "Haruhi Hagiographique" - 04/06/2018
 
@@ -1496,110 +1493,110 @@ Changes from v2.2-rc1 to v2.2 :
 
 ## Bonus features
 
-- #314 Karaoke Mugen can optionally publish its public and local IP to `kara.moe` to allow people to type a shorter URL in order to access the instance from the local network. `kara.moe` will redirect to your local instance.
-- #312 A monitor window can be spawned for the player, allowing you, karaoke session operator, to see what the others see on the big screen where your main window is.
-- Added new guest names and quotes
-- Karaoke Mugen will check during startup if all guests exist. If not, new guests will be added to the user list. So you won't miss on new updates!
-- Added the "Duo" tag for karaokes meant to be sung by two people.
-- Added a demo mode for online demonstrations (passwords can't be changed and mpv is not controllable)
-- .ass files are now read directly by mpv and not by Karaoke Mugen then passed to mpv anymore.
+-   #314 Karaoke Mugen can optionally publish its public and local IP to `kara.moe` to allow people to type a shorter URL in order to access the instance from the local network. `kara.moe` will redirect to your local instance.
+-   #312 A monitor window can be spawned for the player, allowing you, karaoke session operator, to see what the others see on the big screen where your main window is.
+-   Added new guest names and quotes
+-   Karaoke Mugen will check during startup if all guests exist. If not, new guests will be added to the user list. So you won't miss on new updates!
+-   Added the "Duo" tag for karaokes meant to be sung by two people.
+-   Added a demo mode for online demonstrations (passwords can't be changed and mpv is not controllable)
+-   .ass files are now read directly by mpv and not by Karaoke Mugen then passed to mpv anymore.
 
 ## Fixes
 
-- #313 Control panel's user list now displays dates correctly
-- Better error handling for mpv thanks to node-mpv new features
-- Database generation from the control panel now works again
-- Removed useless code in initial database creation. The `appFirstRun` setting will be overriden to 1 if `userdata.sqlite3` is missing.
-- Searches containing quotes (') now return results
-- Blank series data is created if it exists in a .kara file but not in the `series.json` file. This allows you to search for that series even if it's not in the JSON file. NOTE : this throws an error in strict mode.
+-   #313 Control panel's user list now displays dates correctly
+-   Better error handling for mpv thanks to node-mpv new features
+-   Database generation from the control panel now works again
+-   Removed useless code in initial database creation. The `appFirstRun` setting will be overriden to 1 if `userdata.sqlite3` is missing.
+-   Searches containing quotes (') now return results
+-   Blank series data is created if it exists in a .kara file but not in the `series.json` file. This allows you to search for that series even if it's not in the JSON file. NOTE : this throws an error in strict mode.
 
 # v2.2-rc1 "Haruhi Hargneuse" - 24/05/2018
 
 This version requires your attention on the following points :
 
-- `PathMedias` setting for storing media files replaces `PathVideos`
-- Videos will be stored in a `medias` folder, not `videos` anymore starting July 1st 2018
-- .kara format is going to be version 3 from now on, which means older versions of Karaoke Mugen won't be able to import the [Karaoke Base](https://lab.shelter.moe/karaokemugen/bases/karaokebase) beyond July 1st 2018
+-   `PathMedias` setting for storing media files replaces `PathVideos`
+-   Videos will be stored in a `medias` folder, not `videos` anymore starting July 1st 2018
+-   .kara format is going to be version 3 from now on, which means older versions of Karaoke Mugen won't be able to import the [Karaoke Base](https://lab.shelter.moe/karaokemugen/bases/karaokebase) beyond July 1st 2018
 
 ## New Shiny Features
 
-- #302 As a regular user, you can now remove your own submissions from the current/public playlist, in case you added a song by mistake for instance.
-- #288 Alternative series names have been overhauled. We now have a database of series' names depending on language. Admins can select which way series should be displayed:
-  - As they are originally (use japanese titles for japanese shows, etc.)
-  - According to the song's language (use japanese titles for japanese songs, english titles for english songs, etc.)
-  - According to Karaoke Mugen's language (uses system locale to determine which language to use. Defaults back to english and then original name)
-  - According to the user's language (uses your browser's language to determine which language to use. Defaults back to english adn then original name)
-- #282 Support for audio-only karaokes
-  - You can create karaokes with mp3+ass files, for songs which do not have any video available anywhere on the Internets.
-  - Supported formats are mp3, m4a and ogg.
-  - Your file should have a cover art metadata. If it does it'll be used as background. If not KM's default background will be used.
-  - Enjoy your long versions of songs :)
-  - As a result KM's .kara format evolves to version 3. Version 2 can still be imported safely in KM 2.1 and below. Version 3 can only be imported in 2.2 and higher.
-  - `videos` folder now becomes the `medias` folder. To help with this.
-- #279 Song history can now be viewed in the control panel (administration).
-  - This is a list of most viewed songs.
-- #273 You can import/export your favorites.
-  - Useful when you go from one karaoke session to the other, carry your favorites on your phone anywhere and import them in the KM instance you're using!
-- #233 Song rankings can now be viewed in the control panel. This is a list of most requested songs (not necessarily viewed)
-- #109 Adding songs can now be limited to either number of songs or time.
-  - For example you can give users 5 minutes of karaoke each.
-  - Adding songs longer than their time left is not allowed.
-  - Just like with songs, time is given back once the song is freed or is being played on screen.
-- #79 Public vote mode can be enabled and offers a poll to users on their devices with 4 songs to choose from.
-  - Songs are taken from the public/suggestions playlist.
-  - Poll lasts 30 seconds and the winner song is added to the current playlist.
-  - If two or more songs are the highest in votes, a random one is chosen among them.
-  - Another poll is created.
-  - This is perfect if you want to have your users participate in the current playlist creation or if you want to just lean back and enjoy karaoke with friends without worrying about the playlist (create an AutoMix and make it a public playlist, then enable this mode)
+-   #302 As a regular user, you can now remove your own submissions from the current/public playlist, in case you added a song by mistake for instance.
+-   #288 Alternative series names have been overhauled. We now have a database of series' names depending on language. Admins can select which way series should be displayed:
+    -   As they are originally (use japanese titles for japanese shows, etc.)
+    -   According to the song's language (use japanese titles for japanese songs, english titles for english songs, etc.)
+    -   According to Karaoke Mugen's language (uses system locale to determine which language to use. Defaults back to english and then original name)
+    -   According to the user's language (uses your browser's language to determine which language to use. Defaults back to english adn then original name)
+-   #282 Support for audio-only karaokes
+    -   You can create karaokes with mp3+ass files, for songs which do not have any video available anywhere on the Internets.
+    -   Supported formats are mp3, m4a and ogg.
+    -   Your file should have a cover art metadata. If it does it'll be used as background. If not KM's default background will be used.
+    -   Enjoy your long versions of songs :)
+    -   As a result KM's .kara format evolves to version 3. Version 2 can still be imported safely in KM 2.1 and below. Version 3 can only be imported in 2.2 and higher.
+    -   `videos` folder now becomes the `medias` folder. To help with this.
+-   #279 Song history can now be viewed in the control panel (administration).
+    -   This is a list of most viewed songs.
+-   #273 You can import/export your favorites.
+    -   Useful when you go from one karaoke session to the other, carry your favorites on your phone anywhere and import them in the KM instance you're using!
+-   #233 Song rankings can now be viewed in the control panel. This is a list of most requested songs (not necessarily viewed)
+-   #109 Adding songs can now be limited to either number of songs or time.
+    -   For example you can give users 5 minutes of karaoke each.
+    -   Adding songs longer than their time left is not allowed.
+    -   Just like with songs, time is given back once the song is freed or is being played on screen.
+-   #79 Public vote mode can be enabled and offers a poll to users on their devices with 4 songs to choose from.
+    -   Songs are taken from the public/suggestions playlist.
+    -   Poll lasts 30 seconds and the winner song is added to the current playlist.
+    -   If two or more songs are the highest in votes, a random one is chosen among them.
+    -   Another poll is created.
+    -   This is perfect if you want to have your users participate in the current playlist creation or if you want to just lean back and enjoy karaoke with friends without worrying about the playlist (create an AutoMix and make it a public playlist, then enable this mode)
 
 ## Enhancements
 
-- #304 Search fields now includes who added the song in a playlist
-- #297 Small tweaks made to the welcome page
-- #291 Jingle information is now displayed in the UI's song bar when a jingle is playing
-- #290 ASS files are no longer stored in the database.
-  - This should make database generation much faster
-  - Modifying an ASS file (to test stuff while making karaokes) will have an immediate effect now.
-- #288 Search/filtering is now done in SQL, which greatly improves speeds
-- #285 Config file is now validated and ignored if there are mistakes anywhere
+-   #304 Search fields now includes who added the song in a playlist
+-   #297 Small tweaks made to the welcome page
+-   #291 Jingle information is now displayed in the UI's song bar when a jingle is playing
+-   #290 ASS files are no longer stored in the database.
+    -   This should make database generation much faster
+    -   Modifying an ASS file (to test stuff while making karaokes) will have an immediate effect now.
+-   #288 Search/filtering is now done in SQL, which greatly improves speeds
+-   #285 Config file is now validated and ignored if there are mistakes anywhere
 
 ## Fixes
 
-- #299 Better handling of how Karaoke Mugen is shut down regarding database access (should remove any SQLITE_BUSY errors)
-- #295 Forbidden messages won't be displayed anymore on first login
-- #311 Autoplay/Repeat playlist now behave correctly
+-   #299 Better handling of how Karaoke Mugen is shut down regarding database access (should remove any SQLITE_BUSY errors)
+-   #295 Forbidden messages won't be displayed anymore on first login
+-   #311 Autoplay/Repeat playlist now behave correctly
 
 # v2.1.2 "Gabriel Gênante" - 16/05/2018
 
 ## Information
 
-- Minimum required NodeJS version is now 8.4.0. This does not affect you if you use the packaged, binary versions of Karaoke Mugen
+-   Minimum required NodeJS version is now 8.4.0. This does not affect you if you use the packaged, binary versions of Karaoke Mugen
 
 ## Fixes
 
-- #40 Lowered number of files processed simultaneously during generation. Linux users won't need to modify their max number of file descriptors with `ulimit`
-- Fixed favorites list not being displayed properly
-- A proper error message is displayed when trying to add a song already present in the playlist
-- #298 Jingles list is now properly created. You won't run out of jingles anymore!
-- #293 Song list sort order has been modified a little (music videos are now properly sorted)
+-   #40 Lowered number of files processed simultaneously during generation. Linux users won't need to modify their max number of file descriptors with `ulimit`
+-   Fixed favorites list not being displayed properly
+-   A proper error message is displayed when trying to add a song already present in the playlist
+-   #298 Jingles list is now properly created. You won't run out of jingles anymore!
+-   #293 Song list sort order has been modified a little (music videos are now properly sorted)
 
 ## Enhancements
 
-- #294 Karaoke Mugen now exits after karaoke base update is done.
-- #296 "Press key on exit" is only displayed if there's an error.
+-   #294 Karaoke Mugen now exits after karaoke base update is done.
+-   #296 "Press key on exit" is only displayed if there's an error.
 
 ## Features removed
 
-- #7 We pulled a Sony on you and removed the software updater. It wasn't working to begin with and needed separate development efforts. If someone's up for it...
+-   #7 We pulled a Sony on you and removed the software updater. It wasn't working to begin with and needed separate development efforts. If someone's up for it...
 
 # v2.1.1 "Gabriel Grivoise" - 03/05/2018
 
 ## Fixes
 
-- The Magical Girl tag is now properly displayed
-- A bug in the function checking if a user is allowed to add a karaoke has been fixed
-- Importing playlists has been fixed
-- #289 Throttled the commands sent to the player to avoid flooding it when user purposefully clicks like an idiot everywhere at high speeds.
+-   The Magical Girl tag is now properly displayed
+-   A bug in the function checking if a user is allowed to add a karaoke has been fixed
+-   Importing playlists has been fixed
+-   #289 Throttled the commands sent to the player to avoid flooding it when user purposefully clicks like an idiot everywhere at high speeds.
 
 # v2.1.0 "Gabriel Glamoureuse" - 18/04/2018
 
@@ -1609,87 +1606,85 @@ Changes sinces 2.1-rc1 :
 
 ## Enhancements
 
-- Added a new tag for songs difficult to sing : TAG_HARDMODE
-- #287 When using the "stop after current song" button, hitting the Play button will play the next song, not the one you stopped at.
-- #253 Rearranged options panel
-- #284 Removed admin password change since it's not used anymore
-- #281 Songs are now properly ordered by types in lists (Opening first, then insert songs, then endings)
-- Added more log messages
-- Added some tasks before exiting the app (close database and mpv properly)
+-   Added a new tag for songs difficult to sing : TAG_HARDMODE
+-   #287 When using the "stop after current song" button, hitting the Play button will play the next song, not the one you stopped at.
+-   #253 Rearranged options panel
+-   #284 Removed admin password change since it's not used anymore
+-   #281 Songs are now properly ordered by types in lists (Opening first, then insert songs, then endings)
+-   Added more log messages
+-   Added some tasks before exiting the app (close database and mpv properly)
 
 ## Fixes
 
-- #270 Fixed duplicate kara information panel when opening and closing it quickly.
-- #277 Fixed (hopefully) app slowdown under high load
-- Fixed some admin tutorial messages
-- #274 Songwriter is now a searchable item in karaoke lists
-- Fixed song quotas per user not being updated properly
-- Fixed song copy from one playlist to another
-- Tweaked french translation a little
-- #276 Fixed private/public mode switches
-- Link to documentation is now correct in welcome screen
+-   #270 Fixed duplicate kara information panel when opening and closing it quickly.
+-   #277 Fixed (hopefully) app slowdown under high load
+-   Fixed some admin tutorial messages
+-   #274 Songwriter is now a searchable item in karaoke lists
+-   Fixed song quotas per user not being updated properly
+-   Fixed song copy from one playlist to another
+-   Tweaked french translation a little
+-   #276 Fixed private/public mode switches
+-   Link to documentation is now correct in welcome screen
 
 ## Delayed
 
-- #7 Auto-updater for the app has been moved to v2.2 as we still have some work to do and it's a little tricky.
-
+-   #7 Auto-updater for the app has been moved to v2.2 as we still have some work to do and it's a little tricky.
 
 # v2.1-rc1 "Gabriel Glandeuse" - 05/04/2018
 
 Due to the many changes in this version, you're advised to read the `config.ini.sample` file or the docs to find out about new settings.
 
-You're also advised to read [the documentation](http://mugen.karaokes.moe/docs/
-).
+You're also advised to read [the documentation](http://mugen.karaokes.moe/docs/).
 [API documentation](http://mugen.karaokes.moe/apidoc/) has also been updated.
 
 Contributors for this version : @Aeden, @AxelTerizaki, @bcourtine, @Kmeuh, @mirukyu, @spokeek, @Ziassan
 
 ## Known bugs
 
-- Software updates (#7) are not working properly yet. This will be fixed in the final release. In the meantime it has been disabled.
+-   Software updates (#7) are not working properly yet. This will be fixed in the final release. In the meantime it has been disabled.
 
 ## New features
 
-- #223 An interactive tutorial has been added for admins and users. A welcome screen has also been added, and the app will open a browser on startup.
-- #101 Video previews can be generated (if you switch the setting on) for users to check what the karaoke video looks like on their device.
-- #115 Added a user system to better manage permissions and create new features
-- #127 Remade the control panel in ReactJS and added new features inside
-- #150 Viewcounts can be reset in the control panel.
-- #247 Users can be managed from the control panel.
-- #151 Songs in lists now change colors if they're soon to be played, or have been played recently
-- #167 In public mode, song suggestions can be "liked" by users so the admin can get a better idea of what the public wants. Songs which receive enough "likes" don't count anymore in a user's quota.
-- #199 Added a favorites system. Users can add/remove favorite karaokes and add karas from that list.
-- #202 Public interface can now be closed down or limited by an admin to disallow adding new karaokes, for example.
-- #214 Current playlist now scrolls and follows the currently playing karaoke
-- #228 In private mode, makes sure people who didn't request many songs get priority
-- #234 `--validate` command-line argument to only validate .kara files (avoid generating database)
-- Many command-line arguments have been added. Run `yarn start --help` to get a list.
-- #238 A bunch of new tags have been added to the file format
-- #240 `config.ini` is now reloaded if modified outside of the app while it's running
-- #248 Updating the karaoke base from Shelter can now be done within the app's control panel, or via commandline with the `--updateBase` argument.
-- #252 Wallpaper will now be changed once per version
-- #266 Added a button in control panel to backup your config.ini file (creates a config.ini.backup file)
+-   #223 An interactive tutorial has been added for admins and users. A welcome screen has also been added, and the app will open a browser on startup.
+-   #101 Video previews can be generated (if you switch the setting on) for users to check what the karaoke video looks like on their device.
+-   #115 Added a user system to better manage permissions and create new features
+-   #127 Remade the control panel in ReactJS and added new features inside
+-   #150 Viewcounts can be reset in the control panel.
+-   #247 Users can be managed from the control panel.
+-   #151 Songs in lists now change colors if they're soon to be played, or have been played recently
+-   #167 In public mode, song suggestions can be "liked" by users so the admin can get a better idea of what the public wants. Songs which receive enough "likes" don't count anymore in a user's quota.
+-   #199 Added a favorites system. Users can add/remove favorite karaokes and add karas from that list.
+-   #202 Public interface can now be closed down or limited by an admin to disallow adding new karaokes, for example.
+-   #214 Current playlist now scrolls and follows the currently playing karaoke
+-   #228 In private mode, makes sure people who didn't request many songs get priority
+-   #234 `--validate` command-line argument to only validate .kara files (avoid generating database)
+-   Many command-line arguments have been added. Run `yarn start --help` to get a list.
+-   #238 A bunch of new tags have been added to the file format
+-   #240 `config.ini` is now reloaded if modified outside of the app while it's running
+-   #248 Updating the karaoke base from Shelter can now be done within the app's control panel, or via commandline with the `--updateBase` argument.
+-   #252 Wallpaper will now be changed once per version
+-   #266 Added a button in control panel to backup your config.ini file (creates a config.ini.backup file)
 
 ## Enhancements
 
-- #201 Generating karaoke database is now faster and simpler
-- #218 Jingles are all played before being shuffled again to avoid repeats
-- #219 .kara files are now verified before being imported into a database
-- #226 The app has been entirely rewritten in ES2015+, meaning it's simpler to read and code for
-- #231 Config files have been reorganized. `config.ini.default` isn't needed anymore by the app to start up.
-- #239 "Play after" feature has been fixed.
-- #246 mpv is now restarted at once if the karaoke isn't running.
-- #261 Log files are now in their own directories
-- #267 Quotes are now ignored when doing searches
+-   #201 Generating karaoke database is now faster and simpler
+-   #218 Jingles are all played before being shuffled again to avoid repeats
+-   #219 .kara files are now verified before being imported into a database
+-   #226 The app has been entirely rewritten in ES2015+, meaning it's simpler to read and code for
+-   #231 Config files have been reorganized. `config.ini.default` isn't needed anymore by the app to start up.
+-   #239 "Play after" feature has been fixed.
+-   #246 mpv is now restarted at once if the karaoke isn't running.
+-   #261 Log files are now in their own directories
+-   #267 Quotes are now ignored when doing searches
 
 ## Fixes
 
-- #217 Obsolete blacklist criterias can now be deleted.
-- #227 Long titles now fit in playlists
-- #236 Viewcounts are now kept even after a database regeneration
-- #251 Karaoke Mugen's URL font on connection info display during play/stop mode has been enlarged as it was difficult to read from afar.
-- #260 .kara files' `datemodif` information is now written correctly.
-- #244 Lyrics panel in kara information can now be closed.
+-   #217 Obsolete blacklist criterias can now be deleted.
+-   #227 Long titles now fit in playlists
+-   #236 Viewcounts are now kept even after a database regeneration
+-   #251 Karaoke Mugen's URL font on connection info display during play/stop mode has been enlarged as it was difficult to read from afar.
+-   #260 .kara files' `datemodif` information is now written correctly.
+-   #244 Lyrics panel in kara information can now be closed.
 
 # v2.0.7 - 17/02/2018
 
@@ -1699,7 +1694,7 @@ Hé ben non c'était pas la dernière version la 2.0.6 vous y avez cru hein ?
 
 ## Correctifs
 
-- Fix bug introduit dans la 2.0.6 empêchant d'initialiser la base au lancement.
+-   Fix bug introduit dans la 2.0.6 empêchant d'initialiser la base au lancement.
 
 # v2.0.6 - 15/02/2018
 
@@ -1707,161 +1702,161 @@ Dernière version (fort probablement) avant le passage à la 2.1.
 
 ## Correctifs
 
-- En cas de changement de base de données de karaokés, l'application ne plante plus comme une otarie bourrée à la bière au lancement. (Relancer une seconde fois fonctionnait)
-- Les tests d'intégrité en cas de changement de base de données / régénération sont désormais tous executés. Cela pouvait causer des playlists mélangées.
-- Les options sont désormais correctement enregistrées même lorsqu'elles sont vides.
+-   En cas de changement de base de données de karaokés, l'application ne plante plus comme une otarie bourrée à la bière au lancement. (Relancer une seconde fois fonctionnait)
+-   Les tests d'intégrité en cas de changement de base de données / régénération sont désormais tous executés. Cela pouvait causer des playlists mélangées.
+-   Les options sont désormais correctement enregistrées même lorsqu'elles sont vides.
 
 # v2.0.5 - 01/12/2017
 
 ## Améliorations
 
-- Ajout d'une option `--generate` à la ligne de commande pour forcer une génération de la base et quitter.
+-   Ajout d'une option `--generate` à la ligne de commande pour forcer une génération de la base et quitter.
 
 ## Correctifs
 
-- Faire glisser à gauche sur l'interface mobile ne rajoute plus le kara ! Seulement à droite.
-- Fix des samples
-- Fix en cas de kara absent d'une génération sur l'autre de la base.
+-   Faire glisser à gauche sur l'interface mobile ne rajoute plus le kara ! Seulement à droite.
+-   Fix des samples
+-   Fix en cas de kara absent d'une génération sur l'autre de la base.
 
 # v2.0.4 - 20/11/2017
 
-- Fix des jingles qui ne se jouent plus si on change l'intervalle entre deux jingles et que cet intervalle devient plus petit que le compteur actuel
-- Déploiement continu des nouvelles versions via gitlab
+-   Fix des jingles qui ne se jouent plus si on change l'intervalle entre deux jingles et que cet intervalle devient plus petit que le compteur actuel
+-   Déploiement continu des nouvelles versions via gitlab
 
 # v2.0.3 - 12/11/2017
 
-- Fix de la réécriture de karas durant la génération
-- Fix de l'erreur `OnLog is not a function` du calcul de gain des jingles
+-   Fix de la réécriture de karas durant la génération
+-   Fix de l'erreur `OnLog is not a function` du calcul de gain des jingles
 
 # v2.0.2 - 12/11/2017
 
-- #221 Fix en cas d'absence de jingle (cela arrêtait la lecture)
+-   #221 Fix en cas d'absence de jingle (cela arrêtait la lecture)
 
 # v2.0.1 - 11/11/2017
 
-- Traduction de certains commentaires de code
-- #201 Nouveau système de génération de base de données, plus souple, moins de code.
-- Readme anglais/français
+-   Traduction de certains commentaires de code
+-   #201 Nouveau système de génération de base de données, plus souple, moins de code.
+-   Readme anglais/français
 
 # v2.0 "Finé Fantastique" - 06/11/2017
 
 ## Améliorations
 
-- Possibilité d'annuler un kara en cours d'ajout depuis la version mobile
-- Favicon !
-- Le titre de la fenêtre affiche désormais "Karaoke Mugen"
-- Le temps total et restant d'une playlist est désormais indiqué en HH:MM plutôt qu'en HH:MM:SS
+-   Possibilité d'annuler un kara en cours d'ajout depuis la version mobile
+-   Favicon !
+-   Le titre de la fenêtre affiche désormais "Karaoke Mugen"
+-   Le temps total et restant d'une playlist est désormais indiqué en HH:MM plutôt qu'en HH:MM:SS
 
 ## Corrections
 
-- Messages d'erreur plus clairs
-- Vider une playlist met à jour le temps restant de celle-ci
-- #187 Les paramètres plein écran et toujours au dessus sont maintenant plus clairs.
-- Le volume ne change plus subitement après un redémarrage
-- Le temps restant d'un kara est mieux calculé
+-   Messages d'erreur plus clairs
+-   Vider une playlist met à jour le temps restant de celle-ci
+-   #187 Les paramètres plein écran et toujours au dessus sont maintenant plus clairs.
+-   Le volume ne change plus subitement après un redémarrage
+-   Le temps restant d'un kara est mieux calculé
 
 ## Développement
 
-- Ajout d'une doc complète de l'API : http://mugen.karaokes.moe/apidoc
+-   Ajout d'une doc complète de l'API : http://mugen.karaokes.moe/apidoc
 
 # v2.0 Release Candidate 1 "Finé Fiévreuse" - 25/10/2017
 
 ## Améliorations
 
-- #181 Karaoké Mugen peut désormais passer des jingles vidéo entre X karaokés !
-  - Déposez de courtes vidéos dans le dossier `app/jingles` (ou tout autre dossier de votre choix via le paramètre `PathJingles` de votre fichier `config.ini`)
-  - Réglez le paramètre "Intervalle entre les jingles" dans l'interface ou modifiez `EngineJinglesInterval` pour définir le nombre de chansons qui doivent passer avant qu'un jingle ne passe (20 chansons par défaut, soit environ 30 minutes de karaoké)
-  - Les jingles ne sont pas affichés dans la playlist !
-  - Leur gain audio est calculé au démarrage de l'app (#185)
-- #180 Le QR Code est maintenant affiché en surimpression par le lecteur vidéo
-  - Démarrage du coup plus rapide car pas de fichier image à modifier.
-  - Déposez des fonds d'écran dans le dossier `app/backgrounds` et Karaoke Mugen en prendra aléatoirement un pour l'afficher entre deux chansons.
-- #182 Dans l'affichage des playlists, le temps restant de celle-ci s'affiche désormais en bas à droite.
-- #172 Les fichiers de log sont maintenant nommés avec la date du jour.
-- #175 Les chemins spécifiés dans le fichier `config.ini` peuvent maintenant être multiples.
-  - Karaoke Mugen ira chercher dans chaque dossier (karas, paroles, vidéos, fonds d'écran
-, jingles...) tous les fichiers s'y trouvant. Par exemple si vous avez trois dossiers de vidéos listés, Karaoke Mugen vérifiera la présence de vidéo dans chaque dossier avant d'abandonner.
-  - Pour indiquer plusieurs dossiers, il faut séparer leurs chemins par des pipes `|`. `Alt Droit + 6` sur un clavier AZERTY. Exemple : `app/data/videos|D:/mesvideostest`
-  - Les chemins seront traités dans l'ordre. Si une même vidéo (par exemple) existe dans deux dossiers, c'est celle du premier dossier listé qui sera prise en priorité
-- #174 Ajout d'un paramètre `EngineAutoPlay` (Lecture Automatique) qui lance la lecture automatiquement dés qu'un karaoké est ajouté, si celui est sur stop.
-  - Pour toujours plus de KARAOKE INFINI.
-- #174 Ajout d'un paramètre `EngineRepeatPlaylist` (Répéter la playlist courante)
-  - Cela permet de relancer celle-ci automatiquement lorsqu'on arrive au dernier morceau.
-- #137 Nouvelle fonction Lire Ensuite.
-  - Un clic droit sur le bouton d'ajout d'un kara permet de l'insérer pile après la chanson en cours !
-- #179 Boutons de navigation "retour en haut/en bas/kara en cours" ajoutés
-- #196 Personnalisation des infos affichées en bas de l'écran durant les pauses/jingles
-  - `EngineDisplayConnectionInfo` : Affiche ou non les infos de connexion (défaut : 1)
-  - `EngineDisplayConnectionInfoQRCode` : Affiche ou non le QR Code (défaut : 1)
-  - `EngineDisplayConnectionInfoHost` : Force une adresse IP/nom d'hôte pour l'URL de connexion (défaut : vide)
-  - `EngineDisplayConnectionInfoMessage` : Ajoute un message avant celui avec l'URL. Par exemple pour indiquer un réseau Wifi auquel se connecter au préalable.
-  - Les informations de connexion sont réaffichées à 50% de la chanson en cours pendant 8 secondes
-- #195 Les informations de la chanson sont maintenant affichées aussi à la fin de la chanson en cours
-- Il est désormais possible d'indiquer à Karaoke Mugen un chemin web (HTTP) pour récupérer les vidéos s'il ne les trouve pas dans vos dossiers.
-  - Si vous êtes sur un réseau local ou que vos vidéos sont hébergées sur Internet, vous pouvez spécifier `PathVideosHTTP=http://monsiteweb.com/videos` pour que Karaoke Mugen streame les vidéos. Cela ne les télécharge pas définitivement sur votre disque dur !
-- #189 Des openings ou endings spécifiques peuvent être recherchés désormais.
-- La recherche prend en compte l'auteur du karaoké
-- #184 Le temps de passage d'un karaoké dans la liste de lecture courante est indiqué (genre "dans 25 minutes")
-- Les karas dans la liste publique/de suggestions sont supprimés dés qu'ils sont joués en courante.
-- #135 L'interface est traduite en anglais et français et se base sur la langue de votre navigateur. On a posé les bases pour une traduction en d'autres langues
-- #197 Bouton aller au début/en fin de playlist et aller au kara en cours de lecture
-- #204 Nouveau critère de blacklist (nom de la série)
-- #92 Une limite de chansons par utilisateur a été mise en place.
-  - Une fois définie, la limite empêche les gens d'ajouter un karaoké s'ils ont déjà ajouté trop de chansons. Une fois les chansons de l'utilisateur passées, il peut en ajouter de nouvelles.
+-   #181 Karaoké Mugen peut désormais passer des jingles vidéo entre X karaokés !
+    -   Déposez de courtes vidéos dans le dossier `app/jingles` (ou tout autre dossier de votre choix via le paramètre `PathJingles` de votre fichier `config.ini`)
+    -   Réglez le paramètre "Intervalle entre les jingles" dans l'interface ou modifiez `EngineJinglesInterval` pour définir le nombre de chansons qui doivent passer avant qu'un jingle ne passe (20 chansons par défaut, soit environ 30 minutes de karaoké)
+    -   Les jingles ne sont pas affichés dans la playlist !
+    -   Leur gain audio est calculé au démarrage de l'app (#185)
+-   #180 Le QR Code est maintenant affiché en surimpression par le lecteur vidéo
+    -   Démarrage du coup plus rapide car pas de fichier image à modifier.
+    -   Déposez des fonds d'écran dans le dossier `app/backgrounds` et Karaoke Mugen en prendra aléatoirement un pour l'afficher entre deux chansons.
+-   #182 Dans l'affichage des playlists, le temps restant de celle-ci s'affiche désormais en bas à droite.
+-   #172 Les fichiers de log sont maintenant nommés avec la date du jour.
+-   #175 Les chemins spécifiés dans le fichier `config.ini` peuvent maintenant être multiples.
+    -   Karaoke Mugen ira chercher dans chaque dossier (karas, paroles, vidéos, fonds d'écran
+        , jingles...) tous les fichiers s'y trouvant. Par exemple si vous avez trois dossiers de vidéos listés, Karaoke Mugen vérifiera la présence de vidéo dans chaque dossier avant d'abandonner.
+    -   Pour indiquer plusieurs dossiers, il faut séparer leurs chemins par des pipes `|`. `Alt Droit + 6` sur un clavier AZERTY. Exemple : `app/data/videos|D:/mesvideostest`
+    -   Les chemins seront traités dans l'ordre. Si une même vidéo (par exemple) existe dans deux dossiers, c'est celle du premier dossier listé qui sera prise en priorité
+-   #174 Ajout d'un paramètre `EngineAutoPlay` (Lecture Automatique) qui lance la lecture automatiquement dés qu'un karaoké est ajouté, si celui est sur stop.
+    -   Pour toujours plus de KARAOKE INFINI.
+-   #174 Ajout d'un paramètre `EngineRepeatPlaylist` (Répéter la playlist courante)
+    -   Cela permet de relancer celle-ci automatiquement lorsqu'on arrive au dernier morceau.
+-   #137 Nouvelle fonction Lire Ensuite.
+    -   Un clic droit sur le bouton d'ajout d'un kara permet de l'insérer pile après la chanson en cours !
+-   #179 Boutons de navigation "retour en haut/en bas/kara en cours" ajoutés
+-   #196 Personnalisation des infos affichées en bas de l'écran durant les pauses/jingles
+    -   `EngineDisplayConnectionInfo` : Affiche ou non les infos de connexion (défaut : 1)
+    -   `EngineDisplayConnectionInfoQRCode` : Affiche ou non le QR Code (défaut : 1)
+    -   `EngineDisplayConnectionInfoHost` : Force une adresse IP/nom d'hôte pour l'URL de connexion (défaut : vide)
+    -   `EngineDisplayConnectionInfoMessage` : Ajoute un message avant celui avec l'URL. Par exemple pour indiquer un réseau Wifi auquel se connecter au préalable.
+    -   Les informations de connexion sont réaffichées à 50% de la chanson en cours pendant 8 secondes
+-   #195 Les informations de la chanson sont maintenant affichées aussi à la fin de la chanson en cours
+-   Il est désormais possible d'indiquer à Karaoke Mugen un chemin web (HTTP) pour récupérer les vidéos s'il ne les trouve pas dans vos dossiers.
+    -   Si vous êtes sur un réseau local ou que vos vidéos sont hébergées sur Internet, vous pouvez spécifier `PathVideosHTTP=http://monsiteweb.com/videos` pour que Karaoke Mugen streame les vidéos. Cela ne les télécharge pas définitivement sur votre disque dur !
+-   #189 Des openings ou endings spécifiques peuvent être recherchés désormais.
+-   La recherche prend en compte l'auteur du karaoké
+-   #184 Le temps de passage d'un karaoké dans la liste de lecture courante est indiqué (genre "dans 25 minutes")
+-   Les karas dans la liste publique/de suggestions sont supprimés dés qu'ils sont joués en courante.
+-   #135 L'interface est traduite en anglais et français et se base sur la langue de votre navigateur. On a posé les bases pour une traduction en d'autres langues
+-   #197 Bouton aller au début/en fin de playlist et aller au kara en cours de lecture
+-   #204 Nouveau critère de blacklist (nom de la série)
+-   #92 Une limite de chansons par utilisateur a été mise en place.
+    -   Une fois définie, la limite empêche les gens d'ajouter un karaoké s'ils ont déjà ajouté trop de chansons. Une fois les chansons de l'utilisateur passées, il peut en ajouter de nouvelles.
 
 ## Corrections
 
-- #75 Utilisation d'un nouveau module d'accès à la base de données SQLite permettant de gérer les migrations et les promesses.
-- #191 Les pseudos contenant { } sont maintenant correctement affichés à l'écran
-- Optimisations de la génération de la base de données
-  - La génération de la base de données ne réécrit plus inutilement les .kara (uniquement s'il y a des modifications apportées, vidéo changée, etc.)
-  - Ajout de profiling sur les différentes étapes pour voir lesquelles prennent du temps
-  - Les tests d'intégrité de la base utilisateur utilisent maintenant une transaction et sont bien plus rapides si vous avez beaucoup de playlists ou de karas blacklistés.
-  - Les fichiers de paroles vides (vidéos hardsubbées, etc.) ne sont plus écrits dans la base.
-  - Tests en cas de bases de données mal formées pour déclencher une regénération si besoin
-- #169 Fix du fichier log inexistant
-- #178 Les champs de saisie des critères de blacklist sont désormais pleinement utilisables, en toutes circonstances (même durant les horaires de nuit)
-- #177 Le scrolling sur iPad/iPhone/iTouch est maintenant plus fluide
-- #114 Les critères de blacklist sont maintenant correctement mis à jour lors d'une régénération e la base.
-- Plus de type "inutilisé" parmi les critères de blacklist !
-- Quelques fix d'interfaces au niveau des critères de blacklist (notamment #192)
-- #193 Les changements de mot de passe devraient mieux se passer désormais.
-- #186 Les tests d'intégrité de la base utilisateur sont réalisés à chaque lancement si la base karas et utilisateur n'ont pas été générées en même temps.
-- #183 La recherche des noms de série alternatives marche de nouveau correctement
-- Un message est affiché quand les paroles ne sont pas affichables dans l'interface
-- #205 #206 "Tags" devient "Métadonnées" dans l'interface
-- #194 Soucis de scrolling en cas de karas avec plusieurs lignes corrigé
-- #207 Les langues sont traduites dans la liste des critères d'une blacklist
-- #208 Le critère "tag par nom" n'est plus sensible à la casse
-- #210 La blacklist se rafraichit désormais correctement
-- #213 Les paramètres "AlwaysOnTop" et "Fullscreen" sont désormais bien affichés sur l'interface par rapport à la réalité du terrain.
-- #212 Le QRCode est maintenant en haut de l'écran pour éviter que des lignes trop longues en bas ne s'affichent dessus
-- #211 La suppression multiple d'éléments de la whitelist fonctionne de nouveau
-- #209 On peut de nouveau ajouter plusieurs karaokés d'un coup à la blacklist
-- #190 La suppresion de plusieurs karaokés devrait être plus rapide
+-   #75 Utilisation d'un nouveau module d'accès à la base de données SQLite permettant de gérer les migrations et les promesses.
+-   #191 Les pseudos contenant { } sont maintenant correctement affichés à l'écran
+-   Optimisations de la génération de la base de données
+    -   La génération de la base de données ne réécrit plus inutilement les .kara (uniquement s'il y a des modifications apportées, vidéo changée, etc.)
+    -   Ajout de profiling sur les différentes étapes pour voir lesquelles prennent du temps
+    -   Les tests d'intégrité de la base utilisateur utilisent maintenant une transaction et sont bien plus rapides si vous avez beaucoup de playlists ou de karas blacklistés.
+    -   Les fichiers de paroles vides (vidéos hardsubbées, etc.) ne sont plus écrits dans la base.
+    -   Tests en cas de bases de données mal formées pour déclencher une regénération si besoin
+-   #169 Fix du fichier log inexistant
+-   #178 Les champs de saisie des critères de blacklist sont désormais pleinement utilisables, en toutes circonstances (même durant les horaires de nuit)
+-   #177 Le scrolling sur iPad/iPhone/iTouch est maintenant plus fluide
+-   #114 Les critères de blacklist sont maintenant correctement mis à jour lors d'une régénération e la base.
+-   Plus de type "inutilisé" parmi les critères de blacklist !
+-   Quelques fix d'interfaces au niveau des critères de blacklist (notamment #192)
+-   #193 Les changements de mot de passe devraient mieux se passer désormais.
+-   #186 Les tests d'intégrité de la base utilisateur sont réalisés à chaque lancement si la base karas et utilisateur n'ont pas été générées en même temps.
+-   #183 La recherche des noms de série alternatives marche de nouveau correctement
+-   Un message est affiché quand les paroles ne sont pas affichables dans l'interface
+-   #205 #206 "Tags" devient "Métadonnées" dans l'interface
+-   #194 Soucis de scrolling en cas de karas avec plusieurs lignes corrigé
+-   #207 Les langues sont traduites dans la liste des critères d'une blacklist
+-   #208 Le critère "tag par nom" n'est plus sensible à la casse
+-   #210 La blacklist se rafraichit désormais correctement
+-   #213 Les paramètres "AlwaysOnTop" et "Fullscreen" sont désormais bien affichés sur l'interface par rapport à la réalité du terrain.
+-   #212 Le QRCode est maintenant en haut de l'écran pour éviter que des lignes trop longues en bas ne s'affichent dessus
+-   #211 La suppression multiple d'éléments de la whitelist fonctionne de nouveau
+-   #209 On peut de nouveau ajouter plusieurs karaokés d'un coup à la blacklist
+-   #190 La suppresion de plusieurs karaokés devrait être plus rapide
 
 ## Développement
 
-- Passage à Babel/ES2015+ tout doucement. (Nécessite Node8)
-- **Modification d'API** : Les messages de réponse de l'API ont été complètement revus, consultez la documentation pour plus d'informations.
-- #135 Les retours de l'API ont été normalisés. Une doc plus précise et complète va bientôt être disponible
+-   Passage à Babel/ES2015+ tout doucement. (Nécessite Node8)
+-   **Modification d'API** : Les messages de réponse de l'API ont été complètement revus, consultez la documentation pour plus d'informations.
+-   #135 Les retours de l'API ont été normalisés. Une doc plus précise et complète va bientôt être disponible
 
 ## Mettre à jour
 
 ### Versions binaires
 
-- Soon(tm)
+-   Soon(tm)
 
 ### Version source
 
-- Récupérer le dernier code source
+-   Récupérer le dernier code source
 
 ```sh
 git fetch
 git checkout v2.0-rc1
 ```
 
-- Mettre à jour les packages
+-   Mettre à jour les packages
 
 ```sh
 yarn install
@@ -1879,42 +1874,42 @@ npm install -g yarn
 
 ## Améliorations
 
-- #130 Le bouton "J'ai de la chance !" piochera désormais dans le résultat de votre recherche. Par exemple si vous tapez "Naruto" il prendra au hasard un OP/ED de Naruto.
-- #134 Ajouter une selection deselectionne les karas selectionnés (une modification selectionnée par nos soins)
-- #138 Lors d'un changement de paramètre nécessitant un redémarrage du lecteur, celui-ci redémarrera à la fin de la chanson en cours (par exemple changer d'écran ne peut pas être fait à la volée)
-- #144 L'export de liste de lecture (et l'import) prend désormais en compte où vous en étiez dans la liste de lecture
-- #146 L'administrateur peut maintenant afficher des messages à l'écran du karaoké ou sur les interfaces des utilisateurs (ou les deux). L'affichage à l'écran supporte les tags ASS.
-- #164 L'application refusera de démarrer si vous n'avez pas mpv 0.25 d'installé sur votre système. Cela ne concerne que les cas où vous fournissez votre propre mpv à Karaoke Mugen.
-- #143 Les paramètres pour spécifier les binaires de mpv selon votre OS (`BinPlayerOSX`, `BinPlayerWindows` et `BinPlayerLinux`) sont désormais bien pris en compte
-- #145 Lors du premier lancement, ce sont cinq karaokés aléatoires qui sont ajoutés à la liste de lecture courante, pas juste les 5 premiers.
-- #73 Le fond d'écran quand un karaoké n'est pas actif est maintenant personnalisable ! Spécifiez son nom avec l'option `PlayerBackground` dans votre fichier `config.ini`. Les fonds d'écran doivent être déposés dans le dossier `app/backgrounds`
-- #62 La génération ne foutra plus en l'air vos .kara en cas d'erreur inattendue.
-- #154 Lors de la génération, les fichiers cachés sont ignorés.
-- #131 Utiliser la molette quand la souris passe sur la fenêtre du lecteur monte ou descend le son au lieu d'avancer/reculer dans la vidéo.
-- #165 Sous macOS, le fichier de log reste dans le dossier de Karaoke Mugen (avant il allait dans le dossier home de l'utilisateur)
-- #60 La génération de la base de données affiche désormais sa progression pour éviter de vous faire baliser lorsque que votre ordinateur est trop lent.
-- Le lecteur vidéo sous macOS gére bien mieux le plein écran (utilisation de `--no-native-fs`)
-- Les informations à l'écran lorsqu'un karaoké n'est pas en cours sont écrites plus clairement, et le QR Code mieux dimensionné
-- Les listes de lecture sont maintenant triées par nom
-- L'interface est désormais totalement en thème sombre
+-   #130 Le bouton "J'ai de la chance !" piochera désormais dans le résultat de votre recherche. Par exemple si vous tapez "Naruto" il prendra au hasard un OP/ED de Naruto.
+-   #134 Ajouter une selection deselectionne les karas selectionnés (une modification selectionnée par nos soins)
+-   #138 Lors d'un changement de paramètre nécessitant un redémarrage du lecteur, celui-ci redémarrera à la fin de la chanson en cours (par exemple changer d'écran ne peut pas être fait à la volée)
+-   #144 L'export de liste de lecture (et l'import) prend désormais en compte où vous en étiez dans la liste de lecture
+-   #146 L'administrateur peut maintenant afficher des messages à l'écran du karaoké ou sur les interfaces des utilisateurs (ou les deux). L'affichage à l'écran supporte les tags ASS.
+-   #164 L'application refusera de démarrer si vous n'avez pas mpv 0.25 d'installé sur votre système. Cela ne concerne que les cas où vous fournissez votre propre mpv à Karaoke Mugen.
+-   #143 Les paramètres pour spécifier les binaires de mpv selon votre OS (`BinPlayerOSX`, `BinPlayerWindows` et `BinPlayerLinux`) sont désormais bien pris en compte
+-   #145 Lors du premier lancement, ce sont cinq karaokés aléatoires qui sont ajoutés à la liste de lecture courante, pas juste les 5 premiers.
+-   #73 Le fond d'écran quand un karaoké n'est pas actif est maintenant personnalisable ! Spécifiez son nom avec l'option `PlayerBackground` dans votre fichier `config.ini`. Les fonds d'écran doivent être déposés dans le dossier `app/backgrounds`
+-   #62 La génération ne foutra plus en l'air vos .kara en cas d'erreur inattendue.
+-   #154 Lors de la génération, les fichiers cachés sont ignorés.
+-   #131 Utiliser la molette quand la souris passe sur la fenêtre du lecteur monte ou descend le son au lieu d'avancer/reculer dans la vidéo.
+-   #165 Sous macOS, le fichier de log reste dans le dossier de Karaoke Mugen (avant il allait dans le dossier home de l'utilisateur)
+-   #60 La génération de la base de données affiche désormais sa progression pour éviter de vous faire baliser lorsque que votre ordinateur est trop lent.
+-   Le lecteur vidéo sous macOS gére bien mieux le plein écran (utilisation de `--no-native-fs`)
+-   Les informations à l'écran lorsqu'un karaoké n'est pas en cours sont écrites plus clairement, et le QR Code mieux dimensionné
+-   Les listes de lecture sont maintenant triées par nom
+-   L'interface est désormais totalement en thème sombre
 
 ## Correctifs
 
-- #133 Le paramètre "Toujours au dessus" fonctionne désormais normalement
-- #136 Fixes d'interface et francisation de nombreux éléments texte encore en anglais
-- #140 Revue du CSS de l'interface
-- #129 Optimisation de la base de données pour ne plus ajouter d'ASS vides en cas de hardsubs.
-- #148 L'initialisation de certaines pages de la webapp se passe mieux
-- Lors de la génération de la base de données, le champ "series" d'un .kara est maintenant pris en compte correctement
-- De nombreux, nombreux correctifs d'interface.
-- L'import de grandes playlists fonctionne désormais normalement
-- Le lecteur s'arrête normalement si la liste de lecture courante est vide et qu'on essaye de la jouer.
-- Lorsque la base de données est vide, le Dummy Plug s'active pour vous ajouter 5 karaokés au hasard de votre base. Il n'y aura plus de message d'erreur si vous avez moins de 5 karaokés, voire pas de karaoké du tout.
+-   #133 Le paramètre "Toujours au dessus" fonctionne désormais normalement
+-   #136 Fixes d'interface et francisation de nombreux éléments texte encore en anglais
+-   #140 Revue du CSS de l'interface
+-   #129 Optimisation de la base de données pour ne plus ajouter d'ASS vides en cas de hardsubs.
+-   #148 L'initialisation de certaines pages de la webapp se passe mieux
+-   Lors de la génération de la base de données, le champ "series" d'un .kara est maintenant pris en compte correctement
+-   De nombreux, nombreux correctifs d'interface.
+-   L'import de grandes playlists fonctionne désormais normalement
+-   Le lecteur s'arrête normalement si la liste de lecture courante est vide et qu'on essaye de la jouer.
+-   Lorsque la base de données est vide, le Dummy Plug s'active pour vous ajouter 5 karaokés au hasard de votre base. Il n'y aura plus de message d'erreur si vous avez moins de 5 karaokés, voire pas de karaoké du tout.
 
 ## Problèmes connus
 
-- Sous certaines configurations macOS, un warning de type `UnhandledPromiseRejection` peut apparaître au changement de chansons, nous sommes sur le coup. Ce message n'empêche en aucun cas d'utiliser l'application.
-- Si vous avez des critères de blacklist assez divers, certains peuvent être éronnés après une regénération de votre base. Pensez à les vérifier après chaque génération ! Voir l'issue #114
+-   Sous certaines configurations macOS, un warning de type `UnhandledPromiseRejection` peut apparaître au changement de chansons, nous sommes sur le coup. Ce message n'empêche en aucun cas d'utiliser l'application.
+-   Si vous avez des critères de blacklist assez divers, certains peuvent être éronnés après une regénération de votre base. Pensez à les vérifier après chaque génération ! Voir l'issue #114
 
 # v2.0 Beta 1 "Finé Flegmatique" - 18/09/2017
 

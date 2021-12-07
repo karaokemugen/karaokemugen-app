@@ -6,14 +6,13 @@ import { useEffect, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
 
-
 export interface ElementBackgroundList {
-	file: string,
-	type: 'pause' | 'stop' | 'poll'
+	file: string;
+	type: 'pause' | 'stop' | 'poll';
 }
 export interface BackgroundList {
-	pictures: ElementBackgroundList[],
-	music: ElementBackgroundList[]
+	pictures: ElementBackgroundList[];
+	music: ElementBackgroundList[];
 }
 
 export default function Background() {
@@ -24,12 +23,12 @@ export default function Background() {
 
 	const acceptFilesFormat = '.jpg, .jpeg, .png, .mp3';
 
-	const formatBgList = (bgList: { pictures: string[], music: string[] }, type: string) => {
+	const formatBgList = (bgList: { pictures: string[]; music: string[] }, type: string) => {
 		const result = { pictures: [], music: [] };
-		result.pictures = bgList?.pictures.map(pic => {
+		result.pictures = bgList?.pictures.map((pic) => {
 			return { file: pic, type };
 		});
-		result.music = bgList?.music.map(pic => {
+		result.music = bgList?.music.map((pic) => {
 			return { file: pic, type };
 		});
 		return result;
@@ -86,82 +85,86 @@ export default function Background() {
 		getBgList();
 	}, []);
 
-	const columns = [{
-		title: i18next.t('BACKGROUNDS_MGMT.FILE'),
-		dataIndex: 'file',
-		key: 'file'
-	},
-	{
-		title: i18next.t('BACKGROUNDS_MGMT.PREVIEW'),
-		render: (_text, record) => {
-			return <Image
-				width={200}
-				src={`/backgrounds/${record.type}/${basename(record.file.replace(/\\/g, '/'))}`}
-			/>;
-		}
-	},
-	{
-		title: i18next.t('BACKGROUNDS_MGMT.CATEGORY'),
-		dataIndex: 'type',
-		render: (text) => i18next.t(`BACKGROUNDS_MGMT.TYPE.${text}`)
-	},
-	{
-		title: i18next.t('ACTION'),
-		render: (text_, record) =>
-			<Button type="primary" danger icon={<DeleteOutlined />} onClick={
-				() => deleteBg(record)
-			} />
-	}];
+	const columns = [
+		{
+			title: i18next.t('BACKGROUNDS_MGMT.FILE'),
+			dataIndex: 'file',
+			key: 'file',
+		},
+		{
+			title: i18next.t('BACKGROUNDS_MGMT.PREVIEW'),
+			render: (_text, record) => {
+				return (
+					<Image
+						width={200}
+						src={`/backgrounds/${record.type}/${basename(record.file.replace(/\\/g, '/'))}`}
+					/>
+				);
+			},
+		},
+		{
+			title: i18next.t('BACKGROUNDS_MGMT.CATEGORY'),
+			dataIndex: 'type',
+			render: (text) => i18next.t(`BACKGROUNDS_MGMT.TYPE.${text}`),
+		},
+		{
+			title: i18next.t('ACTION'),
+			render: (text_, record) => (
+				<Button type="primary" danger icon={<DeleteOutlined />} onClick={() => deleteBg(record)} />
+			),
+		},
+	];
 
-	return (<>
-		<Layout.Header>
-			<div className='title'>{i18next.t('HEADERS.BACKGROUNDS.TITLE')}</div>
-			<div className='description'>{i18next.t('HEADERS.BACKGROUNDS.DESCRIPTION')}</div>
-		</Layout.Header>
-		<Layout.Content>
-			<p>{i18next.t('BACKGROUNDS_MGMT.EXPL')}</p>
-			<Alert
-				type="info"
-				showIcon
-				message={
-					<ul>
-						{i18next.t<string[]>('BACKGROUNDS_MGMT.INFO', { returnObjects: true })
-							?.map((info, i) => (<li key={i}>{info}</li>))}
-					</ul>
-				}
-			/>
-			<Button style={{ margin: '0.75em' }} type='primary' onClick={openModal}>
-				{i18next.t('BACKGROUNDS_MGMT.NEW')}
-				<PlusOutlined />
-			</Button>
-			<Table
-				dataSource={bgList?.pictures}
-				columns={columns}
-				rowKey='file'
-			/>
-			<Modal
-				title={i18next.t('BACKGROUNDS_MGMT.NEW')}
-				visible={addModal}
-				onOk={addBg}
-				okText={i18next.t('BACKGROUNDS_MGMT.SAVE')}
-				onCancel={closeModal}
-			>
-				<Upload accept={acceptFilesFormat} beforeUpload={chooseFile} fileList={file ? [file] : []}>
-					<Button icon={<UploadOutlined />}>{i18next.t('BACKGROUNDS_MGMT.CHOOSE_FILE')}</Button>
-				</Upload>
-				<div style={{ marginTop: '1em' }}>
-					<label>{i18next.t('BACKGROUNDS_MGMT.CATEGORY')}</label>
-					<Select
-						defaultValue='pause'
-						style={{ marginLeft: '1em' }}
-						onChange={value => setType(value)}
-					>
-						<Select.Option key='pause' value='pause'>{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')}</Select.Option>
-						<Select.Option key='stop' value='stop'>{i18next.t('BACKGROUNDS_MGMT.TYPE.STOP')}</Select.Option>
-						<Select.Option key='poll' value='poll'>{i18next.t('BACKGROUNDS_MGMT.TYPE.POLL')}</Select.Option>
-					</Select>
-				</div>
-			</Modal>
-		</Layout.Content>
-	</>);
+	return (
+		<>
+			<Layout.Header>
+				<div className="title">{i18next.t('HEADERS.BACKGROUNDS.TITLE')}</div>
+				<div className="description">{i18next.t('HEADERS.BACKGROUNDS.DESCRIPTION')}</div>
+			</Layout.Header>
+			<Layout.Content>
+				<p>{i18next.t('BACKGROUNDS_MGMT.EXPL')}</p>
+				<Alert
+					type="info"
+					showIcon
+					message={
+						<ul>
+							{i18next.t<string[]>('BACKGROUNDS_MGMT.INFO', { returnObjects: true })?.map((info, i) => (
+								<li key={i}>{info}</li>
+							))}
+						</ul>
+					}
+				/>
+				<Button style={{ margin: '0.75em' }} type="primary" onClick={openModal}>
+					{i18next.t('BACKGROUNDS_MGMT.NEW')}
+					<PlusOutlined />
+				</Button>
+				<Table dataSource={bgList?.pictures} columns={columns} rowKey="file" />
+				<Modal
+					title={i18next.t('BACKGROUNDS_MGMT.NEW')}
+					visible={addModal}
+					onOk={addBg}
+					okText={i18next.t('BACKGROUNDS_MGMT.SAVE')}
+					onCancel={closeModal}
+				>
+					<Upload accept={acceptFilesFormat} beforeUpload={chooseFile} fileList={file ? [file] : []}>
+						<Button icon={<UploadOutlined />}>{i18next.t('BACKGROUNDS_MGMT.CHOOSE_FILE')}</Button>
+					</Upload>
+					<div style={{ marginTop: '1em' }}>
+						<label>{i18next.t('BACKGROUNDS_MGMT.CATEGORY')}</label>
+						<Select defaultValue="pause" style={{ marginLeft: '1em' }} onChange={(value) => setType(value)}>
+							<Select.Option key="pause" value="pause">
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')}
+							</Select.Option>
+							<Select.Option key="stop" value="stop">
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.STOP')}
+							</Select.Option>
+							<Select.Option key="poll" value="poll">
+								{i18next.t('BACKGROUNDS_MGMT.TYPE.POLL')}
+							</Select.Option>
+						</Select>
+					</div>
+				</Modal>
+			</Layout.Content>
+		</>
+	);
 }

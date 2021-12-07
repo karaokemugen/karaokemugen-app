@@ -99,20 +99,11 @@ function CropAvatarModal(props: IProps) {
 						<h4 className="modal-title">{i18next.t('MODAL.CROP_AVATAR_MODAL.TITLE')}</h4>
 					</ul>
 					<div className="modal-body">
-						<ReactCrop
-							src={imageSource}
-							crop={crop}
-							onImageLoaded={setImageRef}
-							onChange={setCrop}
-						/>
+						<ReactCrop src={imageSource} crop={crop} onImageLoaded={setImageRef} onChange={setCrop} />
 					</div>
 					<div className="modal-footer">
 						<em className="modal-help">{i18next.t('MODAL.CROP_AVATAR_MODAL.HELP')}</em>
-						<button
-							type="button"
-							className="btn btn-action btn-primary other"
-							onClick={closeModal}
-						>
+						<button type="button" className="btn btn-action btn-primary other" onClick={closeModal}>
 							<i className="fas fa-times" /> {i18next.t('CANCEL')}
 						</button>
 						<button type="button" className="btn btn-action btn-default ok" onClick={saveAvatar}>

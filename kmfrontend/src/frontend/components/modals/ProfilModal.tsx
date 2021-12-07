@@ -60,11 +60,7 @@ function ProfilModal(props: IProps) {
 	};
 
 	const updateUser = async () => {
-		if (
-			user.nickname &&
-			((user.password && user.password === user.passwordConfirmation) ||
-				!user.password)
-		) {
+		if (user.nickname && ((user.password && user.password === user.passwordConfirmation) || !user.password)) {
 			setNicknameMandatory('');
 			setPasswordDifferent('');
 			try {
@@ -96,18 +92,12 @@ function ProfilModal(props: IProps) {
 	const profileConvert = () => {
 		showModal(
 			context.globalDispatch,
-			<OnlineProfileModal
-				type="convert"
-				loginServ={context?.globalState.settings.data.config?.Online.Host}
-			/>
+			<OnlineProfileModal type="convert" loginServ={context?.globalState.settings.data.config?.Online.Host} />
 		);
 	};
 
 	const profileDelete = () => {
-		showModal(
-			context.globalDispatch,
-			<OnlineProfileModal type="delete" loginServ={user.login?.split('@')[1]} />
-		);
+		showModal(context.globalDispatch, <OnlineProfileModal type="delete" loginServ={user.login?.split('@')[1]} />);
 	};
 
 	const favImport = (event: any) => {
@@ -206,7 +196,6 @@ function ProfilModal(props: IProps) {
 	useEffect(() => {
 		if (user) updateAvatar();
 	}, [user?.avatar]);
-
 
 	useEffect(() => {
 		getUser();
@@ -436,11 +425,7 @@ function ProfilModal(props: IProps) {
 										{i18next.t('MODAL.PROFILE_MODAL.INTERFACE_LANGUAGE')}
 									</label>
 								</div>
-								<select
-									name="language"
-									onChange={changeLanguage}
-									defaultValue={user.language}
-								>
+								<select name="language" onChange={changeLanguage} defaultValue={user.language}>
 									{languagesSupport.map((lang) => {
 										return (
 											<option key={lang} value={lang}>
@@ -497,38 +482,40 @@ function ProfilModal(props: IProps) {
 									<i className="fas fa-fw fa-exclamation-triangle" />
 									{i18next.t('MODAL.PROFILE_MODAL.DANGEROUS_ACTIONS')}
 									<i
-										className={`fas fa-fw ${dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'}`}
+										className={`fas fa-fw ${
+											dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'
+										}`}
 									/>
 								</button>
 								{dangerousActions ? (
 									<div>
 										{context?.globalState.settings.data.config?.Online.Users &&
-											logInfos?.username !== 'admin' ?
-											(
-												logInfos?.onlineToken ?
-													(
-														<button
-															type="button"
-															className="btn btn-danger profileDelete"
-															onClick={profileDelete}
-														>
-															<i className="fas fa-fw fa-retweet" />{' '}
-															{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
-														</button>
-													) : (
-														<button
-															type="button"
-															className="btn btn-primary profileConvert"
-															onClick={profileConvert}
-														>
-															<i className="fas fa-fw fa-retweet" />{' '}
-															{i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
-														</button>
-													)
-											) : null}
+										logInfos?.username !== 'admin' ? (
+											logInfos?.onlineToken ? (
+												<button
+													type="button"
+													className="btn btn-danger profileDelete"
+													onClick={profileDelete}
+												>
+													<i className="fas fa-fw fa-retweet" />{' '}
+													{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
+												</button>
+											) : (
+												<button
+													type="button"
+													className="btn btn-primary profileConvert"
+													onClick={profileConvert}
+												>
+													<i className="fas fa-fw fa-retweet" />{' '}
+													{i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
+												</button>
+											)
+										) : null}
 										<button
 											type="button"
-											className={`btn profileDelete ${logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'}`}
+											className={`btn profileDelete ${
+												logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'
+											}`}
 											onClick={deleteAccount}
 										>
 											<i className="fas fa-fw fa-trash-alt" />{' '}

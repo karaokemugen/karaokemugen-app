@@ -1,6 +1,6 @@
 // Node modules
 import internet from 'internet-available';
-import {xml2json} from 'xml-js';
+import { xml2json } from 'xml-js';
 
 import HTTP from '../lib/utils/http';
 // KM Imports
@@ -13,16 +13,16 @@ import { getState, setState } from '../utils/state';
 const feeds = [
 	{
 		name: 'git_base',
-		url: 'https://lab.shelter.moe/karaokemugen/bases/karaokebase/tags?feed_token=dCGJUCzzHWNTqCp1FraN&format=atom'
+		url: 'https://lab.shelter.moe/karaokemugen/bases/karaokebase/tags?feed_token=dCGJUCzzHWNTqCp1FraN&format=atom',
 	},
 	{
 		name: 'git_app',
-		url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/tags?feed_token=dCGJUCzzHWNTqCp1FraN&format=atom'
+		url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/tags?feed_token=dCGJUCzzHWNTqCp1FraN&format=atom',
 	},
 	{
 		name: 'mastodon',
-		url: 'https://shelter.moe/users/KaraokeMugen.rss'
-	}
+		url: 'https://shelter.moe/users/KaraokeMugen.rss',
+	},
 ];
 
 /** Get Karaoke Mugen main news feeds */
@@ -33,8 +33,11 @@ export async function getFeeds() {
 		for (const feed of feeds) {
 			feedPromises.push(fetchFeed(feed.url, feed.name));
 		}
-	} catch(err) {
-		logger.warn('This instance is not connected to the internets, cannot get online feeds', {service: 'Feed', obj: err});
+	} catch (err) {
+		logger.warn('This instance is not connected to the internets, cannot get online feeds', {
+			service: 'Feed',
+			obj: err,
+		});
 	}
 	feedPromises.push(fetchSystemMessages());
 	return Promise.all(feedPromises);
@@ -44,22 +47,24 @@ export async function getFeeds() {
 async function fetchSystemMessages(): Promise<Feed> {
 	return {
 		name: 'system',
-		body: JSON.stringify(getState().systemMessages)
+		body: JSON.stringify(getState().systemMessages),
 	};
 }
 
 export function addSystemMessage(message: SystemMessage) {
-	setState({systemMessages: [...getState().systemMessages, message]});
+	setState({ systemMessages: [...getState().systemMessages, message] });
 }
 
 /** Fetch and process a RSS feed */
 async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
 		const response = await HTTP.get(url);
-		const feed = JSON.parse(xml2json(response.data as any, {compact: true}));
+		const feed = JSON.parse(xml2json(response.data as any, { compact: true }));
 		// For Mastodon, we filter out UnJourUnKaraoke toots because we don't want to be spammed.
 		if (name === 'mastodon') {
-			feed.rss.channel.item = feed.rss.channel.item.filter((item: any) => !item.description._text.includes('UnJourUnKaraoke'));
+			feed.rss.channel.item = feed.rss.channel.item.filter(
+				(item: any) => !item.description._text.includes('UnJourUnKaraoke')
+			);
 		} else {
 			feed.feed.entry.forEach((element: any) => {
 				element.content._text = element.content._text.replace(/href="\//g, 'href="https://lab.shelter.moe/');
@@ -67,13 +72,13 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 		}
 		return {
 			name: name,
-			body: JSON.stringify(feed)
+			body: JSON.stringify(feed),
 		};
-	} catch(err) {
-		logger.error(`Unable to fetch feed ${name}`, {service: 'Feeds', obj: err});
+	} catch (err) {
+		logger.error(`Unable to fetch feed ${name}`, { service: 'Feeds', obj: err });
 		return {
 			name: name,
-			body: null
+			body: null,
 		};
 	}
 }

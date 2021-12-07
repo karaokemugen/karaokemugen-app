@@ -14,27 +14,27 @@ const builder: MenuItemBuilderFunction = (options) => {
 			{
 				label: i18next.t('MENU_HELP_ABOUT'),
 				click: displayAbout,
-				visible: isMac
+				visible: isMac,
 			},
 			{ type: 'separator', visible: isMac },
 			{
 				label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
 				accelerator: 'CmdOrCtrl+T',
 				visible: isMac && !isReduced,
-				click: urls.operatorOptions
+				click: urls.operatorOptions,
 			},
 			{
 				label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG_OSX'),
 				accelerator: 'CmdOrCtrl+G',
 				visible: isMac && !isReduced,
-				click: urls.systemOptions
+				click: urls.systemOptions,
 			},
 			!isReduced && isMac ? { type: 'separator' } : null,
 			{
 				// Updater menu disabled on macs until we can sign our code
 				label: i18next.t('MENU_FILE_UPDATE'),
 				visible: !isMac && !getState().forceDisableAppUpdate,
-				click: checkForUpdates
+				click: checkForUpdates,
 			},
 			{ role: 'services', visible: isMac && !isReduced },
 			{
@@ -44,17 +44,17 @@ const builder: MenuItemBuilderFunction = (options) => {
 				submenu: [
 					{
 						label: i18next.t('MENU_FILE_IMPORT_PLAYLIST'),
-						click: importFile
+						click: importFile,
 					},
 					{
 						label: i18next.t('MENU_FILE_IMPORT_FAVORITES'),
-						click: importFile
+						click: importFile,
 					},
 					{
 						label: i18next.t('MENU_FILE_IMPORT_KARABUNDLE'),
-						click: importFile
+						click: importFile,
 					},
-				]
+				],
 			},
 			{ type: 'separator', visible: !isReduced },
 			{
@@ -62,9 +62,9 @@ const builder: MenuItemBuilderFunction = (options) => {
 				accelerator: 'CmdOrCtrl+Q',
 				click: () => {
 					exit();
-				}
-			}
-		]
+				},
+			},
+		],
 	};
 };
 

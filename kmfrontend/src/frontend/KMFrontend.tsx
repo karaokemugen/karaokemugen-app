@@ -52,15 +52,24 @@ function KMFrontend() {
 		});
 
 		if (context?.globalState.settings.data.user?.flag_sendstats === null) {
-			callModal(context.globalDispatch, 'confirm', i18next.t('MODAL.STATS_MODAL.TITLE'), <>
-				{i18next.t('MODAL.STATS_MODAL.DESC')}
-				<br />
-				<br />
-				{i18next.t('MODAL.STATS_MODAL.REFUSE_DESC')}
-				<br />
-				<br />
-				{i18next.t('MODAL.STATS_MODAL.CHANGE')}
-			</>, updateUser, '', undefined, true);
+			callModal(
+				context.globalDispatch,
+				'confirm',
+				i18next.t('MODAL.STATS_MODAL.TITLE'),
+				<>
+					{i18next.t('MODAL.STATS_MODAL.DESC')}
+					<br />
+					<br />
+					{i18next.t('MODAL.STATS_MODAL.REFUSE_DESC')}
+					<br />
+					<br />
+					{i18next.t('MODAL.STATS_MODAL.CHANGE')}
+				</>,
+				updateUser,
+				'',
+				undefined,
+				true
+			);
 		}
 
 		if (!context?.globalState.settings.data.user?.flag_tutorial_done && window.location.pathname === '/admin') {
@@ -68,28 +77,30 @@ function KMFrontend() {
 		}
 	}, []);
 
-	return (
-		shutdownPopup ?
-			<ShutdownModal close={() => setShutdownPopup(false)} /> :
-			context.globalState.settings.data.config ?
-				<div className={is_touch_device() ? 'touch' : ''}>
-					<Switch>
-						<Route path="/setup" component={SetupPage} />
-						<Route path="/migrate" component={MigratePage} />
-						<Route path="/welcome" component={WelcomePage} />
-						<Route path="/admin" render={() => <AdminPage
-							powerOff={isElectron() ? undefined : powerOff} />} />
-						<Route path="/chibi" exact component={ChibiPage} />
-						<Route path="/chibiPlaylist" exact component={PlaylistPage} />
-						<Route path="/public" component={PublicPage} />
-						<Route exact path="/">{context.globalState.auth.data.role === 'admin' ?
-							<Redirect to="/welcome" /> : <Redirect to="/public" />
-						}</Route>
-						<Route component={NotFoundPage} />
-					</Switch>
-					<a id="downloadAnchorElem" />
-				</div> : null
-	);
+	return shutdownPopup ? (
+		<ShutdownModal close={() => setShutdownPopup(false)} />
+	) : context.globalState.settings.data.config ? (
+		<div className={is_touch_device() ? 'touch' : ''}>
+			<Switch>
+				<Route path="/setup" component={SetupPage} />
+				<Route path="/migrate" component={MigratePage} />
+				<Route path="/welcome" component={WelcomePage} />
+				<Route path="/admin" render={() => <AdminPage powerOff={isElectron() ? undefined : powerOff} />} />
+				<Route path="/chibi" exact component={ChibiPage} />
+				<Route path="/chibiPlaylist" exact component={PlaylistPage} />
+				<Route path="/public" component={PublicPage} />
+				<Route exact path="/">
+					{context.globalState.auth.data.role === 'admin' ? (
+						<Redirect to="/welcome" />
+					) : (
+						<Redirect to="/public" />
+					)}
+				</Route>
+				<Route component={NotFoundPage} />
+			</Switch>
+			<a id="downloadAnchorElem" />
+		</div>
+	) : null;
 }
 
 export default KMFrontend;

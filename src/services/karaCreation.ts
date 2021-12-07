@@ -1,24 +1,24 @@
 import { promises as fs } from 'fs';
 import { copy } from 'fs-extra';
-import {basename, dirname, resolve} from 'path';
+import { basename, dirname, resolve } from 'path';
 
-import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore,sortKaraStore } from '../dao/dataStore';
+import { addKaraToStore, editKaraInStore, getStoreChecksum, removeKaraInStore, sortKaraStore } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
-import {generateKara, validateNewKara} from '../lib/services/karaCreation';
+import { generateKara, validateNewKara } from '../lib/services/karaCreation';
 import { Kara, NewKara } from '../lib/types/kara';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
-import { fileExists, resolveFileInDirs,smartMove } from '../lib/utils/files';
+import { fileExists, resolveFileInDirs, smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
-import {getKara} from './kara';
+import { getKara } from './kara';
 import { createKaraInDB, editKaraInDB } from './karaManagement';
 import { consolidateTagsInRepo } from './tag';
 
 export async function editKara(kara: Kara, refresh = true) {
 	const task = new Task({
 		text: 'EDITING_SONG',
-		subtext: kara.karafile
+		subtext: kara.karafile,
 	});
 	let newKara: NewKara;
 	let karaFile: string;
@@ -28,41 +28,43 @@ export async function editKara(kara: Kara, refresh = true) {
 		const validationErrors = validateNewKara(kara);
 		if (validationErrors) throw validationErrors;
 		if (kara.parents.includes(kara.kid)) throw 'Did you just try to make a song its own parent?';
-	} catch(err) {
-		throw {code: 400, msg: err};
+	} catch (err) {
+		throw { code: 400, msg: err };
 	}
 	try {
 		profile('editKaraFile');
-		const oldKara = await getKara(kara.kid, {role: 'admin', username: 'admin'});
+		const oldKara = await getKara(kara.kid, { role: 'admin', username: 'admin' });
 		let mediaFile: string;
 		let mediaDir: string;
 		// If mediafile_orig is present, our user has uploaded a new song
 		if (kara.mediafile_orig) {
 			mediaFile = resolve(resolvedPath('Temp'), kara.mediafile);
 			try {
-				mediaFile = (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
-			} catch(err) {
+				mediaFile = (
+					await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository))
+				)[0];
+			} catch (err) {
 				// File probably doesn't exist.
-				logger.warn(`Media file ${oldKara.mediafile} does not exist, ignoring.`, {service: 'KaraGen'});
+				logger.warn(`Media file ${oldKara.mediafile} does not exist, ignoring.`, { service: 'KaraGen' });
 			}
 		} else {
 			try {
 				mediaFile = (await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', kara.repository)))[0];
 				mediaDir = dirname(mediaFile);
-			} catch(err) {
+			} catch (err) {
 				mediaDir = resolvedPathRepos('Medias', kara.repository)[0];
 			}
 		}
-		mediaFile
-			? mediaDir = dirname(mediaFile)
-			: mediaDir = resolvedPathRepos('Medias', kara.repository)[0];
+		mediaFile ? (mediaDir = dirname(mediaFile)) : (mediaDir = resolvedPathRepos('Medias', kara.repository)[0]);
 		let subFile = kara.subfile;
 		let subDir: string;
 		if (kara.subfile) {
 			if (kara.subfile_orig) {
 				subFile = resolve(resolvedPath('Temp'), kara.subfile);
 				if (oldKara.subfile) {
-					subDir = dirname((await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]);
+					subDir = dirname(
+						(await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository)))[0]
+					);
 				} else {
 					subDir = resolvedPathRepos('Lyrics', kara.repository)[0];
 				}
@@ -84,44 +86,61 @@ export async function editKara(kara: Kara, refresh = true) {
 		}
 		if (!kara.subfile_orig) {
 			if (kara.subfile) {
-				if (!await fileExists(subFile)) throw {code: 404, msg: `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`};
-				await copy(subFile, resolve(resolvedPath('Temp'), kara.subfile), {overwrite: true});
+				if (!(await fileExists(subFile)))
+					throw {
+						code: 404,
+						msg: `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`,
+					};
+				await copy(subFile, resolve(resolvedPath('Temp'), kara.subfile), { overwrite: true });
 			}
 		}
 		// Treat files
 		newKara = await generateKara(kara, karaDir, mediaDir, subDir, oldKara);
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
-		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && await fileExists(karaFile)) {
-			logger.info(`Removing ${karaFile}`, {service: 'KaraGen'});
+		if (newKara.file.toLowerCase() !== karaFile.toLowerCase() && (await fileExists(karaFile))) {
+			logger.info(`Removing ${karaFile}`, { service: 'KaraGen' });
 			await fs.unlink(karaFile);
 		}
-		if (newKara.data.subfile && oldKara.subfile && newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()) {
+		if (
+			newKara.data.subfile &&
+			oldKara.subfile &&
+			newKara.data.subfile.toLowerCase() !== oldKara.subfile.toLowerCase()
+		) {
 			const oldSubFiles = await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', kara.repository));
 			if (await fileExists(oldSubFiles[0])) {
-				logger.info(`Removing ${oldSubFiles[0]}`, {service: 'KaraGen'});
+				logger.info(`Removing ${oldSubFiles[0]}`, { service: 'KaraGen' });
 				await fs.unlink(oldSubFiles[0]);
 			}
 		}
 		// Testing if we managed to get a mediaFile earlier, like, if the old mediaFile existed on disk.
 		if (mediaFile && newKara.data.mediafile.toLowerCase() !== oldKara.mediafile.toLowerCase()) {
 			try {
-				const oldMediaFiles = await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', kara.repository));
+				const oldMediaFiles = await resolveFileInDirs(
+					oldKara.mediafile,
+					resolvedPathRepos('Medias', kara.repository)
+				);
 				if (kara.noNewVideo) {
-					const newMediaFile = resolve(resolvedPathRepos('Medias', kara.repository)[0], newKara.data.mediafile);
-					logger.info(`Renaming ${oldMediaFiles[0]} to ${newMediaFile}`, {service: 'KaraGen'});
-					await smartMove(oldMediaFiles[0], newMediaFile, {overwrite: true});
+					const newMediaFile = resolve(
+						resolvedPathRepos('Medias', kara.repository)[0],
+						newKara.data.mediafile
+					);
+					logger.info(`Renaming ${oldMediaFiles[0]} to ${newMediaFile}`, { service: 'KaraGen' });
+					await smartMove(oldMediaFiles[0], newMediaFile, { overwrite: true });
 				} else {
-					logger.info(`Removing ${oldMediaFiles[0]}`, {service: 'KaraGen'});
+					logger.info(`Removing ${oldMediaFiles[0]}`, { service: 'KaraGen' });
 					await fs.unlink(oldMediaFiles[0]);
 				}
-			} catch(err) {
-				logger.warn(`Unable to remove/rename old mediafile ${oldKara.mediafile}`, {service: 'KaraGen', obj: err});
+			} catch (err) {
+				logger.warn(`Unable to remove/rename old mediafile ${oldKara.mediafile}`, {
+					service: 'KaraGen',
+					obj: err,
+				});
 				// Non-fatal
 			}
 		}
-	} catch(err) {
-		logger.error('Error while editing kara', {service: 'KaraGen', obj: err});
+	} catch (err) {
+		logger.error('Error while editing kara', { service: 'KaraGen', obj: err });
 		if (!err.msg) {
 			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 			if (newKara) sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
@@ -142,13 +161,10 @@ export async function editKara(kara: Kara, refresh = true) {
 		newKara.data.karafile = basename(newKara.file);
 		// Update in database
 		profile('editKaraFile');
-		await Promise.all([
-			editKaraInDB(newKara.data, { refresh: refresh }),
-			consolidateTagsInRepo(newKara.data)
-		]);
-	} catch(err) {
+		await Promise.all([editKaraInDB(newKara.data, { refresh: refresh }), consolidateTagsInRepo(newKara.data)]);
+	} catch (err) {
 		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
-		logger.warn(errMsg, {service: 'KaraGen', obj: err});
+		logger.warn(errMsg, { service: 'KaraGen', obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
 		sentry.error(err, 'Warning');
@@ -161,7 +177,7 @@ export async function editKara(kara: Kara, refresh = true) {
 export async function createKara(kara: Kara) {
 	const task = new Task({
 		text: 'CREATING_SONG',
-		subtext: kara.titles['eng']
+		subtext: kara.titles['eng'],
 	});
 	let newKara: NewKara;
 	// Validation here, processing stuff later
@@ -169,16 +185,21 @@ export async function createKara(kara: Kara) {
 	try {
 		const validationErrors = validateNewKara(kara);
 		if (validationErrors) throw validationErrors;
-	} catch(err) {
-		throw {code: 400, msg: err};
+	} catch (err) {
+		throw { code: 400, msg: err };
 	}
 	try {
-		newKara = await generateKara(kara, resolvedPathRepos('Karaokes', kara.repository)[0], resolvedPathRepos('Medias', kara.repository)[0], resolvedPathRepos('Lyrics', kara.repository)[0]);
+		newKara = await generateKara(
+			kara,
+			resolvedPathRepos('Karaokes', kara.repository)[0],
+			resolvedPathRepos('Medias', kara.repository)[0],
+			resolvedPathRepos('Lyrics', kara.repository)[0]
+		);
 		await addKaraToStore(newKara.file);
 		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());
-	} catch(err) {
-		logger.error('Error while creating kara', {service: 'KaraGen', obj: err});
+	} catch (err) {
+		logger.error('Error while creating kara', { service: 'KaraGen', obj: err });
 		if (!err.msg) {
 			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 			if (newKara) sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
@@ -189,14 +210,11 @@ export async function createKara(kara: Kara) {
 	}
 	try {
 		newKara.data.karafile = basename(newKara.file);
-		await Promise.all([
-			createKaraInDB(newKara.data),
-			consolidateTagsInRepo(newKara.data)
-		]);
+		await Promise.all([createKaraInDB(newKara.data), consolidateTagsInRepo(newKara.data)]);
 		return newKara;
-	} catch(err) {
+	} catch (err) {
 		const errMsg = `.kara.json file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
-		logger.warn(errMsg, {service: 'KaraGen', obj: err});
+		logger.warn(errMsg, { service: 'KaraGen', obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.addErrorInfo('newKara', JSON.stringify(newKara, null, 2));
 		sentry.error(err, 'Warning');

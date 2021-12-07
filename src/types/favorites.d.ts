@@ -1,27 +1,27 @@
-import {KaraParams} from '../lib/types/kara';
+import { KaraParams } from '../lib/types/kara';
 
 interface FavExportContent {
-	kid: string
+	kid: string;
 }
 
 export interface Favorite {
-	kid: string,
-	username: string
+	kid: string;
+	username: string;
 }
 export interface FavExport {
 	Header: {
-		description: string,
-		version: number
-	},
-	Favorites: FavExportContent[]
+		description: string;
+		version: number;
+	};
+	Favorites: FavExportContent[];
 }
 
 export interface AutoMixPlaylistInfo {
-	plaid: string,
-	playlist_name: string
+	plaid: string;
+	playlist_name: string;
 }
 
 export interface AutoMixParams {
-	users: string[],
-	duration: number
+	users: string[];
+	duration: number;
 }

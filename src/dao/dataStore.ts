@@ -12,7 +12,7 @@ import sentry from '../utils/sentry';
 
 const dataStore = {
 	karas: new Map(),
-	tags: new Map()
+	tags: new Map(),
 };
 
 export async function addKaraToStore(file: string) {
@@ -34,10 +34,14 @@ export function sortTagsStore() {
 }
 
 export function getStoreChecksum() {
-	const store = JSON.stringify({
-		karas: [...dataStore.karas.entries()],
-		tags: [...dataStore.tags.entries()]
-	}, null, 2);
+	const store = JSON.stringify(
+		{
+			karas: [...dataStore.karas.entries()],
+			tags: [...dataStore.tags.entries()],
+		},
+		null,
+		2
+	);
 	return checksum(store);
 }
 
@@ -68,17 +72,14 @@ async function processDataFile(file: string, task?: Task) {
 export async function baseChecksum(): Promise<string> {
 	profile('baseChecksum');
 	try {
-		const [karaFiles, tagFiles] = await Promise.all([
-			listAllFiles('Karaokes'),
-			listAllFiles('Tags')
-		]);
+		const [karaFiles, tagFiles] = await Promise.all([listAllFiles('Karaokes'), listAllFiles('Tags')]);
 		const fileCount = karaFiles.length + tagFiles.length;
 		if (karaFiles.length === 0) return null;
-		logger.info(`Found ${karaFiles.length} karas and ${tagFiles.length} tags`, {service: 'Store'});
+		logger.info(`Found ${karaFiles.length} karas and ${tagFiles.length} tags`, { service: 'Store' });
 		const task = new Task({
 			text: 'DATASTORE_UPDATE',
 			value: 0,
-			total: fileCount
+			total: fileCount,
 		});
 		const files = [].concat(karaFiles, tagFiles);
 		dataStore.karas.clear();
@@ -88,13 +89,13 @@ export async function baseChecksum(): Promise<string> {
 		};
 		await parallel(files, mapper, {
 			stopOnError: false,
-			concurrency: 32
+			concurrency: 32,
 		});
 		sortKaraStore();
 		sortTagsStore();
 		task.end();
 		const checksum = getStoreChecksum();
-		logger.debug(`Store checksum : ${checksum}`, {service: 'Store'});
+		logger.debug(`Store checksum : ${checksum}`, { service: 'Store' });
 		// Use this only when debugging store
 		/**
 		  	const store = JSON.stringify({
@@ -104,8 +105,8 @@ export async function baseChecksum(): Promise<string> {
 		await fs.writeFile(resolve(getState().dataPath, `store-${Date.now()}.json`), store, 'utf-8');
 		*/
 		return checksum;
-	} catch(err) {
-		logger.warn('Unable to browse through your data files', {service: 'Store', obj: err});
+	} catch (err) {
+		logger.warn('Unable to browse through your data files', { service: 'Store', obj: err });
 		sentry.error(err, 'Warning');
 	} finally {
 		profile('baseChecksum');

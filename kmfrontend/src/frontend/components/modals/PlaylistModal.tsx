@@ -121,7 +121,7 @@ function PlaylistModal(props: IProps) {
 						<h4 className="modal-title">
 							{props.mode === 'edit'
 								? i18next.t('MODAL.PLAYLIST_MODAL.EDIT_PLAYLIST', {
-									playlist: playlist?.name,
+										playlist: playlist?.name,
 								  })
 								: i18next.t('MODAL.PLAYLIST_MODAL.CREATE_PLAYLIST')}
 						</h4>

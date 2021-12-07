@@ -1,6 +1,6 @@
 export interface DownloadItem {
-	url: string,
-	filename: string,
-	size?: number,
-	id?: string,
+	url: string;
+	filename: string;
+	size?: number;
+	id?: string;
 }

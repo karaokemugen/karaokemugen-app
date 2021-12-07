@@ -2,7 +2,7 @@ import { dialog } from 'electron';
 import i18next from 'i18next';
 import { Migration } from 'postgrator';
 
-import {win} from '../electron/electron';
+import { win } from '../electron/electron';
 import logger from '../lib/utils/logger';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
 import { generateDB } from './database';
@@ -22,26 +22,26 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 				await dialog.showMessageBox(win, {
 					type: 'info',
 					title: i18next.t('NO_KARAOKE_MODE_ANYMORE.TITLE'),
-					message: i18next.t('NO_KARAOKE_MODE_ANYMORE.MESSAGE')
+					message: i18next.t('NO_KARAOKE_MODE_ANYMORE.MESSAGE'),
 				});
 				break;
 			// 5.0 migrations
 			case 'addPriorityToTags':
 				if (!didGeneration) doGenerate = true;
-				logger.info('Migration adding priority to tags detected, forcing generation', {service: 'DB'});
+				logger.info('Migration adding priority to tags detected, forcing generation', { service: 'DB' });
 				break;
 			// 6.0 migrations
 			case 'addTitlesToKara':
 				if (!didGeneration) doGenerate = true;
-				logger.info('Migration adding titles to karas detected, forcing generation', {service: 'DB'});
+				logger.info('Migration adding titles to karas detected, forcing generation', { service: 'DB' });
 				break;
 			case 'smartPlaylistsAndBLWLRework':
-				logger.info('Migrating blacklist and whitelist to smart playlists', {service: 'DB'});
+				logger.info('Migrating blacklist and whitelist to smart playlists', { service: 'DB' });
 				await migrateBLWLToSmartPLs();
 				break;
 			case 'addKaraParents':
 				if (!didGeneration) doGenerate = true;
-				logger.info('Migration adding parents to karas detected, forcing generation', {service: 'DB'});
+				logger.info('Migration adding parents to karas detected, forcing generation', { service: 'DB' });
 				break;
 			default:
 		}

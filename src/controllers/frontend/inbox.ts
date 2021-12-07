@@ -21,7 +21,7 @@ export default function inboxController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'user', 'closed');
 		try {
 			await downloadKaraFromInbox(req.body.inid, req.body.repoName, req.onlineAuthorization);
-		} catch(err) {
+		} catch (err) {
 			const code = 'DOWNLOAD_KARA_FROM_INBOX_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };

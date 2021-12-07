@@ -10,8 +10,8 @@ import { getState } from './state';
 let rpc: discordRPC.Client;
 
 interface ActivityData {
-	title: string,
-	source: string
+	title: string;
+	source: string;
 }
 
 // Sanitize text for processing in Discord (32-128 chars min-max)
@@ -33,7 +33,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 		let activity: string;
 		let activityDetail = 'Zzz...';
 		if (activityType === 'idle') {
-			activity = sample(i18next.t('DISCORD.IDLING', {returnObjects: true}));
+			activity = sample(i18next.t('DISCORD.IDLING', { returnObjects: true }));
 		}
 		if (activityType === 'song') {
 			activity = activityData.title;
@@ -42,11 +42,13 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 		const buttons = [];
 		if (getState().remoteAccess && 'host' in getState().remoteAccess) {
 			buttons.push({
-				label: i18next.t('SUGGEST_SONGS'), url: getState().osURL
+				label: i18next.t('SUGGEST_SONGS'),
+				url: getState().osURL,
 			});
 		}
 		buttons.push({
-			label: i18next.t('OFFICIAL_WEBSITE'), url: 'https://karaokes.moe'
+			label: i18next.t('OFFICIAL_WEBSITE'),
+			url: 'https://karaokes.moe',
 		});
 		await rpc.setActivity({
 			details: sanitizeText(activity),
@@ -57,9 +59,9 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			smallImageKey: activityType === 'song' ? 'play' : 'pause',
 			smallImageText: `Version ${getState().version.number} - ${getState().version.name}`,
 			instance: false,
-			buttons: buttons
+			buttons: buttons,
 		});
-	} catch(err) {
+	} catch (err) {
 		// Non-fatal
 	}
 }
@@ -68,7 +70,7 @@ export async function stopDiscordRPC() {
 	if (rpc) {
 		try {
 			await rpc.destroy();
-		} catch(err) {
+		} catch (err) {
 			//Non fatal
 		}
 		rpc = null;
@@ -93,22 +95,21 @@ function stopCheckingDiscordRPC() {
 	intervalIDDiscordRPCSetup = undefined;
 }
 
-
 export function setupDiscordRPC() {
 	try {
 		if (rpc || !getConfig().Online.Discord.DisplayActivity) return;
 		rpc = new discordRPC.Client({ transport: 'ipc' });
 
 		rpc.on('ready', () => {
-			setDiscordActivity('idle');			
+			setDiscordActivity('idle');
 			stopCheckingDiscordRPC();
 			// activity can only be set every 15 seconds
-		});	
+		});
 		rpc.login({ clientId: discordClientID }).catch(() => {
 			stopDiscordRPC();
 			if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
 		});
-	} catch(err) {
-		logger.error('Failed to setup Discord Rich Presence', {service: 'Discord', obj: err});
+	} catch (err) {
+		logger.error('Failed to setup Discord Rich Presence', { service: 'Discord', obj: err });
 	}
 }

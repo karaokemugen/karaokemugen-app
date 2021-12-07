@@ -1,16 +1,25 @@
 import { pg as yesql } from 'yesql';
 
-import {db, paramWords} from '../lib/dao/database';
+import { db, paramWords } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
 import { DBTag } from '../lib/types/database/tag';
-import { Tag, TagAndType,TagParams } from '../lib/types/tag';
+import { Tag, TagAndType, TagParams } from '../lib/types/tag';
 import { uuidRegexp } from '../lib/utils/constants';
-import { sqldeleteTag,sqldeleteTagsByKara, sqlgetAllTags, sqlgetTagByNameAndType, sqlinsertKaraTags, sqlinsertTag, sqlupdateKaraTagsTID, sqlupdateTag } from './sql/tag';
+import {
+	sqldeleteTag,
+	sqldeleteTagsByKara,
+	sqlgetAllTags,
+	sqlgetTagByNameAndType,
+	sqlinsertKaraTags,
+	sqlinsertTag,
+	sqlupdateKaraTagsTID,
+	sqlupdateTag,
+} from './sql/tag';
 
 export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildTagClauses(params.filter)
-		: {sql: [], params: {}, additionalFrom: []};
+		: { sql: [], params: {}, additionalFrom: [] };
 	const typeClauses = params.type ? ` AND t.types @> ARRAY[${params.type}]` : '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -36,7 +45,18 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 		if (!params.tid.match(uuidRegexp)) throw 'Invalid TID';
 		whereClause = `AND t.pk_tid = '${params.tid}'`;
 	}
-	const query = sqlgetAllTags(filterClauses.sql, typeClauses, limitClause, offsetClause, orderClause, filterClauses.additionalFrom, joinClauses, stripClause, probClause, whereClause);
+	const query = sqlgetAllTags(
+		filterClauses.sql,
+		typeClauses,
+		limitClause,
+		offsetClause,
+		orderClause,
+		filterClauses.additionalFrom,
+		joinClauses,
+		stripClause,
+		probClause,
+		whereClause
+	);
 	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
@@ -45,8 +65,10 @@ function buildTagClauses(words: string): WhereClause {
 	const sql = ['t.tag_search_vector @@ query'];
 	return {
 		sql: sql,
-		params: {tsquery: paramWords(words).join(' & ')},
-		additionalFrom: [', to_tsquery(\'public.unaccent_conf\', :tsquery) as query, ts_rank_cd(t.tag_search_vector, query) as relevance']
+		params: { tsquery: paramWords(words).join(' & ') },
+		additionalFrom: [
+			", to_tsquery('public.unaccent_conf', :tsquery) as query, ts_rank_cd(t.tag_search_vector, query) as relevance",
+		],
 	};
 }
 
@@ -63,33 +85,29 @@ export async function insertTag(tag: Tag) {
 		tag.problematic || false,
 		tag.noLiveDownload || false,
 		tag.priority || 10,
-		tag.karafile_tag || null
+		tag.karafile_tag || null,
 	]);
 }
 
 export function updateKaraTagsTID(oldTID: string, newTID: string) {
-	return db().query(sqlupdateKaraTagsTID, [
-		oldTID,
-		newTID
-	]);
+	return db().query(sqlupdateKaraTagsTID, [oldTID, newTID]);
 }
 
 export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 	await db().query(sqldeleteTagsByKara, [kid]);
 	for (const tag of tags) {
-		await db().query(yesql(sqlinsertKaraTags)({
-			kid: kid,
-			tid: tag.tid,
-			type: tag.type
-		}));
+		await db().query(
+			yesql(sqlinsertKaraTags)({
+				kid: kid,
+				tid: tag.tid,
+				type: tag.type,
+			})
+		);
 	}
 }
 
 export async function selectTagByNameAndType(name: string, type: number): Promise<DBTag> {
-	const res = await db().query(sqlgetTagByNameAndType, [
-		name,
-		[type]
-	]);
+	const res = await db().query(sqlgetTagByNameAndType, [name, [type]]);
 	return res.rows[0];
 }
 
@@ -106,7 +124,7 @@ export async function updateTag(tag: Tag) {
 		tag.problematic || false,
 		tag.noLiveDownload || false,
 		tag.priority || 10,
-		tag.karafile_tag || null
+		tag.karafile_tag || null,
 	]);
 }
 

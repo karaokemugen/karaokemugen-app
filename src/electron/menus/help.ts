@@ -12,42 +12,42 @@ const builder: MenuItemBuilderFunction = (options) => {
 		submenu: [
 			{
 				label: i18next.t('MENU_HELP_GUIDE'),
-				click: urls.helpGuide
+				click: urls.helpGuide,
 			},
 			{
 				label: i18next.t('MENU_HELP_WEBSITE'),
-				click: urls.website
+				click: urls.website,
 			},
 			{
 				label: i18next.t('MENU_HELP_TWITTER'),
-				click: urls.twitter
+				click: urls.twitter,
 			},
 			{
 				label: i18next.t('MENU_HELP_DISCORD'),
-				click: urls.discord
+				click: urls.discord,
 			},
 			{
 				label: i18next.t('MENU_HELP_GITLAB'),
-				click: urls.gitlab
+				click: urls.gitlab,
 			},
-			{ type: 'separator'},
+			{ type: 'separator' },
 			{
 				label: i18next.t('MENU_HELP_CHANGELOG'),
-				click: urls.changelog
+				click: urls.changelog,
 			},
-			{ type: 'separator'},
+			{ type: 'separator' },
 			{
 				label: i18next.t('MENU_HELP_CONTRIB_DOC'),
-				click: urls.contribDoc
+				click: urls.contribDoc,
 			},
 			{
 				label: i18next.t('MENU_HELP_SEND_KARAOKE'),
-				click: urls.sendKaraoke
+				click: urls.sendKaraoke,
 			},
-			{ type: 'separator'},
+			{ type: 'separator' },
 			{
 				label: i18next.t('MENU_HELP_REPORT_BUG'),
-				click: urls.reportBug
+				click: urls.reportBug,
 			},
 			{
 				label: i18next.t('MENU_HELP_DONATIONS'),
@@ -56,9 +56,9 @@ const builder: MenuItemBuilderFunction = (options) => {
 			{
 				label: i18next.t('MENU_HELP_ABOUT'),
 				click: displayAbout,
-				visible: !isMac
-			}
-		]
+				visible: !isMac,
+			},
+		],
 	};
 };
 

@@ -14,12 +14,12 @@ function RestartDownloadsModal() {
 	};
 
 	const deleteQueue = () => {
-		commandBackend('deleteDownloads').catch(() => { });
+		commandBackend('deleteDownloads').catch(() => {});
 		closeModalWithContext();
 	};
 
 	const startQueue = () => {
-		commandBackend('startDownloadQueue').catch(() => { });
+		commandBackend('startDownloadQueue').catch(() => {});
 		closeModalWithContext();
 	};
 
@@ -55,9 +55,7 @@ function RestartDownloadsModal() {
 							<button className="btn btn-default" type="button" onClick={startQueue}>
 								<i className="fas fa-fw fa-download fa-2x" />
 								<div className="btn-large-container">
-									<div className="title">
-										{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.CONTINUE')}
-									</div>
+									<div className="title">{i18next.t('MODAL.RESTART_DOWNLOADS_MODAL.CONTINUE')}</div>
 								</div>
 							</button>
 						</div>

@@ -116,11 +116,7 @@ function PublicHeader(props: IProps) {
 					<div className={`quota-bar${quotaLeft <= 5 ? ' exhaust' : ''}`}>
 						{quotaType === 1 ? i18next.t('QUOTA_KARA') : i18next.t('QUOTA_TIME')}
 						&nbsp;:&nbsp;
-						{quotaLeft === -1
-							? '∞'
-							: quotaType === 2
-								? secondsTimeSpanToHMS(quotaLeft, 'ms')
-								: quotaLeft}
+						{quotaLeft === -1 ? '∞' : quotaType === 2 ? secondsTimeSpanToHMS(quotaLeft, 'ms') : quotaLeft}
 					</div>
 				) : null}
 				<div className="profile-btn">
@@ -138,18 +134,14 @@ function PublicHeader(props: IProps) {
 								<div className="info">
 									{i18next.t('QUOTA_KARA')}
 									&nbsp;:&nbsp;
-									<span className="data">
-										{quotaLeft === -1 ? '∞' : quotaLeft}
-									</span>
+									<span className="data">{quotaLeft === -1 ? '∞' : quotaLeft}</span>
 								</div>
 							) : null}
 							{quotaType === 2 ? (
 								<div className="info">
 									<div className="title">{i18next.t('QUOTA_TIME')}&nbsp;:&nbsp;</div>
 									<div className="data">
-										{quotaLeft === -1
-											? '∞'
-											: secondsTimeSpanToHMS(quotaLeft, 'ms')}
+										{quotaLeft === -1 ? '∞' : secondsTimeSpanToHMS(quotaLeft, 'ms')}
 									</div>
 								</div>
 							) : null}

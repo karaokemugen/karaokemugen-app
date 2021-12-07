@@ -32,12 +32,7 @@ function PlaylistCommandsModal(props: IProps) {
 	const openShuffleModal = () => {
 		props.closePlaylistCommands();
 		const playlist = getPlaylistInfo(props.side, context);
-		showModal(
-			context.globalDispatch,
-			<ShuffleModal
-				idPlaylist={playlist?.plaid}
-			/>
-		);
+		showModal(context.globalDispatch, <ShuffleModal idPlaylist={playlist?.plaid} />);
 	};
 
 	const startFavMix = async () => {
@@ -288,13 +283,13 @@ function PlaylistCommandsModal(props: IProps) {
 			{!isNonStandardPlaylist(playlist?.plaid) ||
 			props.criteriasOpen ||
 			playlist?.plaid === context.globalState.settings.data.state.whitelistPlaid ? (
-					<li>
-						<a href="#" onClick={deleteAllKaras} className="danger-hover">
-							<i className="fas fa-fw fa-eraser" />
-							{i18next.t('ADVANCED.EMPTY_LIST')}
-						</a>
-					</li>
-				) : null}
+				<li>
+					<a href="#" onClick={deleteAllKaras} className="danger-hover">
+						<i className="fas fa-fw fa-eraser" />
+						{i18next.t('ADVANCED.EMPTY_LIST')}
+					</a>
+				</li>
+			) : null}
 			{!isNonStandardPlaylist(playlist?.plaid) ? (
 				<>
 					<li>

@@ -33,22 +33,20 @@ export const urls = {
 	reportBug: () => open('https://lab.shelter.moe/karaokemugen/karaokemugen-app/-/issues'),
 	donations: {
 		fr: () => open('https://mugen.karaokes.moe/donations.html'),
-		en: () => open('https://mugen.karaokes.moe/en/donations.html')
-	}
+		en: () => open('https://mugen.karaokes.moe/en/donations.html'),
+	},
 };
 
 export function openURL(url: string) {
 	const base = 'http://localhost';
 	const port = getState().frontendPort;
 	const fullUrl = `${base}:${port}${url}`;
-	getConfig().GUI.OpenInElectron
-		? win?.loadURL(fullUrl)
-		: open(fullUrl);
+	getConfig().GUI.OpenInElectron ? win?.loadURL(fullUrl) : open(fullUrl);
 }
 
 export async function checkForUpdates() {
 	setManualUpdate(true);
-	logger.info('Checking for updates manually', {service: 'AppUpdate'});
+	logger.info('Checking for updates manually', { service: 'AppUpdate' });
 	await autoUpdater.checkForUpdates().catch(() => {
 		// Handled in electronAutoUpadte.ts
 	});
@@ -57,7 +55,7 @@ export async function checkForUpdates() {
 
 export async function importFile() {
 	const files = await dialog.showOpenDialog({
-		properties: ['openFile', 'multiSelections']
+		properties: ['openFile', 'multiSelections'],
 	});
 	if (!files.canceled) {
 		for (const file of files.filePaths) {
@@ -74,15 +72,16 @@ export function displayAbout() {
 			icon_path: resolve(getState().resourcePath, 'build/icon.png'),
 			product_name: `Karaoke Mugen\n${version.name}`,
 			bug_link_text: i18next.t('ABOUT.BUG_REPORT'),
-			bug_report_url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
+			bug_report_url:
+				'https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=',
 			homepage: 'https://mugen.karaokes.moe',
 			description: versionSHA,
 			copyright: i18next.t('ABOUT.COPYRIGHT'),
 			use_version_info: true,
 			css_path: resolve(getState().resourcePath, 'build/electronAboutWindow.css'),
 			win_options: {
-				title: i18next.t('ABOUT.TITLE')
-			}
+				title: i18next.t('ABOUT.TITLE'),
+			},
 		});
 	}
 }

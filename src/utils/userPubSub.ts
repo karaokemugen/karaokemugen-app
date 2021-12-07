@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 
 import { DBUser } from '../lib/types/database/user';
 import logger from '../lib/utils/logger';
-import {importFavorites} from '../services/favorites';
+import { importFavorites } from '../services/favorites';
 import { editUser, getUser, getUsers, removeUser } from '../services/user';
 import { Favorite } from '../types/stats';
 
@@ -13,8 +13,8 @@ const ioMap: Map<string, Socket> = new Map();
 const debounceMap: Map<string, (login: string, payload: any) => Promise<void>> = new Map();
 
 async function listRemoteUsers() {
-	const users = await getUsers({onlineOnly: true});
-	return users.map(u => u.login);
+	const users = await getUsers({ onlineOnly: true });
+	return users.map((u) => u.login);
 }
 
 async function updateUser(login: string, payload: any) {
@@ -27,16 +27,22 @@ async function updateUser(login: string, payload: any) {
 			password: undefined,
 			avatar_file: undefined,
 			login: user.login,
-			type: user.type
+			type: user.type,
 		};
 		logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
 		Promise.all([
 			editUser(login, user, null, 'admin'),
-			importFavorites({
-				Header: { version: 1, description: 'Karaoke Mugen Favorites List File' },
-				Favorites: favorites
-			}, login, undefined, true, false)
-		]).catch(err => {
+			importFavorites(
+				{
+					Header: { version: 1, description: 'Karaoke Mugen Favorites List File' },
+					Favorites: favorites,
+				},
+				login,
+				undefined,
+				true,
+				false
+			),
+		]).catch((err) => {
 			logger.warn(`Cannot update remote user ${login}`, { service: 'RemoteUser', obj: err });
 		});
 	} else {
@@ -59,11 +65,11 @@ function setupUserWatch(server: string) {
 		const login = `${payload.user.login}@${server}`;
 		userDebounceFactory(login)(login, payload);
 	});
-	socket.on('user deleted', user => {
+	socket.on('user deleted', (user) => {
 		const login = `${user}@${server}`;
 		try {
 			logger.info(`${login} user was DELETED on remote, delete local account`, { service: 'RemoteUser' });
-			removeUser(login).catch(err => {
+			removeUser(login).catch((err) => {
 				logger.warn(`Cannot remove remote user ${login}`, { service: 'RemoteUser', obj: err });
 			});
 		} catch (err) {
@@ -79,7 +85,7 @@ export function startSub(user: string, server: string) {
 		setupUserWatch(server);
 	}
 	const socket = ioMap.get(server);
-	socket.emit('subscribe user', { body: user }, res => {
+	socket.emit('subscribe user', { body: user }, (res) => {
 		if (res.err) {
 			logger.warn(`Cannot watch user ${user}@${server}`, { service: 'RemoteUser', obj: res });
 			return;
@@ -87,7 +93,9 @@ export function startSub(user: string, server: string) {
 		if (res.data === false) {
 			const name = `${user}@${server}`;
 			try {
-				logger.info(`User ${name} doesn't exist anymore on remote, delete local version.`, { service: 'RemoteUser' });
+				logger.info(`User ${name} doesn't exist anymore on remote, delete local version.`, {
+					service: 'RemoteUser',
+				});
 				// It's okay if the local version is already deleted.
 				removeUser(name).catch(() => {});
 			} catch (err) {

@@ -6,7 +6,7 @@ import { commandBackend } from '../../../../utils/socket';
 import { displayMessage } from '../../../../utils/tools';
 
 interface Props {
-	kid: string
+	kid: string;
 }
 
 export default function MakeFavButton(props: Props) {
@@ -18,11 +18,11 @@ export default function MakeFavButton(props: Props) {
 		if (context.globalState.auth.data.onlineAvailable !== false) {
 			isFavorite
 				? commandBackend('deleteFavorites', {
-					kids: [props.kid],
-				})
+						kids: [props.kid],
+				  })
 				: commandBackend('addFavorites', {
-					kids: [props.kid],
-				});
+						kids: [props.kid],
+				  });
 		} else {
 			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
 			return;
@@ -35,7 +35,7 @@ export default function MakeFavButton(props: Props) {
 			onClick={makeFavorite}
 			className={`makeFav btn btn-action${isFavorite ? ' currentFav' : ''}`}
 		>
-			<i className="fas fa-fw fa-star"/>
+			<i className="fas fa-fw fa-star" />
 			<span>{isFavorite ? i18next.t('KARA_MENU.FAV_DEL') : i18next.t('KARA_MENU.FAV')}</span>
 		</button>
 	);

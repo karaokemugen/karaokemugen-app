@@ -8,7 +8,7 @@ interface IProps {
 
 function KmAppBodyDecorator(props: IProps) {
 	return (
-		<div className={`KmAppBodyDecorator${props.extraClass ? ` ${props.extraClass}`:''}`} data-mode={props.mode}>
+		<div className={`KmAppBodyDecorator${props.extraClass ? ` ${props.extraClass}` : ''}`} data-mode={props.mode}>
 			{props.children}
 		</div>
 	);

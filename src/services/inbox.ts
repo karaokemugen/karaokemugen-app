@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
-import {setTimeout as sleep} from 'timers/promises';
+import { setTimeout as sleep } from 'timers/promises';
 
 import { baseChecksum } from '../dao/dataStore';
 import { saveSetting } from '../lib/dao/database';
@@ -40,7 +40,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 	const repo = getRepo(repoName);
 	if (!repo) throw { code: 404 };
 	let kara: Inbox;
-	logger.info(`Downloading song ${inid} from inbox at ${repoName}`, {service: 'Inbox'});
+	logger.info(`Downloading song ${inid} from inbox at ${repoName}`, { service: 'Inbox' });
 	try {
 		const res = await HTTP.get(`https://${repoName}/api/inbox/${inid}`, {
 			headers: {
@@ -70,11 +70,19 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 	}
 	const karaFile = resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.kara.file);
 	// Yes, we're actually reordering this in order for karas to be in the right order when written. For some reason Axios sorts JSON responses? Or is it KM Server? Who knows? Where is Carmen San Diego?
-	await fs.writeFile(karaFile, JSON.stringify({
-		header: kara.kara.data.header,
-		medias: kara.kara.data.medias,
-		data: kara.kara.data.data
-	}, null, 2), 'utf-8');
+	await fs.writeFile(
+		karaFile,
+		JSON.stringify(
+			{
+				header: kara.kara.data.header,
+				medias: kara.kara.data.medias,
+				data: kara.kara.data.data,
+			},
+			null,
+			2
+		),
+		'utf-8'
+	);
 	saveSetting('baseChecksum', await baseChecksum());
 	await integrateKaraFile(karaFile, kara.kara.data, true, true);
 	updateAllSmartPlaylists();
@@ -89,7 +97,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 	} catch (err) {
 		logger.warn(`Unable to mark kara from inbox  as downloaded : ${err}`, { service: 'Inbox', obj: err });
 	}
-	logger.info(`Song ${kara.kara.data.data.titles.eng} from inbox at ${repoName} downloaded`, {service: 'Inbox'});
+	logger.info(`Song ${kara.kara.data.data.titles.eng} from inbox at ${repoName} downloaded`, { service: 'Inbox' });
 }
 
 async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
@@ -116,12 +124,12 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			await smartMove(tempMedia, localMedia, { overwrite: true });
 		} else {
 			downloadTask.update({
-				value: 100
+				value: 100,
 			});
 			await sleep(1000);
 		}
-	} catch(err) {
-		logger.error(`Could not download media from inbox: ${err}`, {service: 'Inbox', obj: err});
+	} catch (err) {
+		logger.error(`Could not download media from inbox: ${err}`, { service: 'Inbox', obj: err });
 		throw err;
 	} finally {
 		downloadTask.end();

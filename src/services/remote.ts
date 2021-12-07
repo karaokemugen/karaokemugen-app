@@ -21,8 +21,8 @@ async function startRemote(): Promise<RemoteSuccess> {
 			body: {
 				InstanceID: await getInstanceID(),
 				version: getState().version.number,
-				token: remoteToken
-			}
+				token: remoteToken,
+			},
 		});
 		if (result.err && result.reason === 'INVALID_TOKEN') {
 			// Ask for a new token by deleting the invalid one
@@ -37,11 +37,17 @@ async function startRemote(): Promise<RemoteSuccess> {
 		}
 	} catch (err) {
 		if (err?.message?.code === 'UNKNOWN_COMMAND') {
-			logger.warn(`${getConfig().Online.Host} doesn't support remote access, maybe try a different online server`,
-				{service: 'Remote', obj: err});
+			logger.warn(
+				`${getConfig().Online.Host} doesn't support remote access, maybe try a different online server`,
+				{ service: 'Remote', obj: err }
+			);
 		} else if (err?.message?.code === 'OUTDATED_CLIENT') {
-			logger.warn(`${getConfig().Online.Host} and your application doesn't have compatible versions of KMFrontend, cannot start remote.`,
-				{service: 'Remote', obj: err});
+			logger.warn(
+				`${
+					getConfig().Online.Host
+				} and your application doesn't have compatible versions of KMFrontend, cannot start remote.`,
+				{ service: 'Remote', obj: err }
+			);
 		} else {
 			sentry.error(err, 'Warning');
 		}
@@ -55,20 +61,20 @@ function removeRemote() {
 }
 
 async function stopRemote() {
-	await commandKMServer<Record<never,never>>('remote stop', {body: {}});
+	await commandKMServer<Record<never, never>>('remote stop', { body: {} });
 	removeRemote();
 }
 
 async function restartRemote() {
 	// TODO: Add config check to see if restart is necessary
 	try {
-		logger.debug('Reconnection...', {serivce: 'Remote'});
+		logger.debug('Reconnection...', { serivce: 'Remote' });
 		const data = await startRemote();
-		logger.info('Remote was RESTARTED', {service: 'Remote', obj: data});
+		logger.info('Remote was RESTARTED', { service: 'Remote', obj: data });
 		setState({ remoteAccess: data });
 		configureHost();
 	} catch (e) {
-		logger.warn('Remote is UNAVAILABLE', {service: 'Remote', obj: e});
+		logger.warn('Remote is UNAVAILABLE', { service: 'Remote', obj: e });
 	}
 }
 
@@ -81,28 +87,30 @@ async function proxy(ev: string, data: APIDataProxied, ack: (res) => void) {
 async function broadcastForward(body) {
 	if (errCount === -1) return;
 	commandKMServer('remote broadcast', {
-		body
-	}).then(() => {
-		errCount = 0;
-	}).catch(err => {
-		logger.warn('Failed to remote broadcast', {service: 'Remote', obj: err});
-		if (errCount !== -1) errCount++;
-		if (errCount >= 5) {
-			logger.warn('The remote broadcast failed 5 times in a row, restart remote');
-			errCount = -1;
-			getKMServerSocket().disconnect();
-			setTimeout(() => {
-				getKMServerSocket().connect();
-			}, 2500).unref();
-		}
-	});
+		body,
+	})
+		.then(() => {
+			errCount = 0;
+		})
+		.catch((err) => {
+			logger.warn('Failed to remote broadcast', { service: 'Remote', obj: err });
+			if (errCount !== -1) errCount++;
+			if (errCount >= 5) {
+				logger.warn('The remote broadcast failed 5 times in a row, restart remote');
+				errCount = -1;
+				getKMServerSocket().disconnect();
+				setTimeout(() => {
+					getKMServerSocket().connect();
+				}, 2500).unref();
+			}
+		});
 }
 
 export async function destroyRemote() {
 	try {
 		await stopRemote();
 	} catch (err) {
-		logger.error('Cannot stop remote', {service: 'Remote'});
+		logger.error('Cannot stop remote', { service: 'Remote' });
 	}
 	// Remove all subscriptions
 	if (getKMServerSocket()) {
@@ -111,7 +119,7 @@ export async function destroyRemote() {
 		getKMServerSocket().off('disconnect', removeRemote);
 	}
 	getWS().off('broadcast', broadcastForward);
-	logger.info('Remote is STOPPED', {service: 'Remote'});
+	logger.info('Remote is STOPPED', { service: 'Remote' });
 	setState({ remoteAccess: null });
 	configureHost();
 }
@@ -126,7 +134,7 @@ export async function initRemote() {
 		getWS().on('broadcast', broadcastForward);
 		// Strip token from public output to avoid leaks
 		delete data.token;
-		logger.info('Remote is READY', {service: 'Remote', obj: data});
+		logger.info('Remote is READY', { service: 'Remote', obj: data });
 		setState({ remoteAccess: data });
 		configureHost();
 	} catch (err) {

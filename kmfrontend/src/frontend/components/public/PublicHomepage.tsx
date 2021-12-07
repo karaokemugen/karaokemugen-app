@@ -52,21 +52,21 @@ function PublicHomepage(props: IProps) {
 				</div>
 				<div>
 					{context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
-						context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 1
+					context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 1
 						? i18next.t('PUBLIC_HOMEPAGE.QUOTA_KARA_DESCRIPTION', {
-							count: context.globalState.settings.data.config?.Karaoke?.Quota?.Songs,
-						})
+								count: context.globalState.settings.data.config?.Karaoke?.Quota?.Songs,
+						  })
 						: null}
 				</div>
 				<div>
 					{context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
-						context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 2
+					context?.globalState.settings.data.config?.Karaoke?.Quota.Type === 2
 						? i18next.t('PUBLIC_HOMEPAGE.QUOTA_TIME_DESCRIPTION', {
-							time: secondsTimeSpanToHMS(
-								context.globalState.settings.data.config?.Karaoke?.Quota?.Time,
-								'ms'
-							),
-						})
+								time: secondsTimeSpanToHMS(
+									context.globalState.settings.data.config?.Karaoke?.Quota?.Time,
+									'ms'
+								),
+						  })
 						: null}
 				</div>
 			</div>
@@ -87,17 +87,12 @@ function PublicHomepage(props: IProps) {
 							</button>
 						) : null}
 						{props.publicVisible &&
-							context.globalState.settings.data.state.currentPlaid !==
-							context.globalState.settings.data.state.publicPlaid ?
-							(
-								<button
-									className="action green"
-									onClick={() => props.changeView('publicPlaylist')}
-								>
-									<i className="fas fa-fw fa-tasks" />{' '}
-									{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
-								</button>
-							) : null}
+						context.globalState.settings.data.state.currentPlaid !==
+							context.globalState.settings.data.state.publicPlaid ? (
+							<button className="action green" onClick={() => props.changeView('publicPlaylist')}>
+								<i className="fas fa-fw fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
+							</button>
+						) : null}
 						{context?.globalState.auth.data.role !== 'guest' ? (
 							<button className="action yellow" onClick={() => props.changeView('favorites')}>
 								<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}
@@ -114,10 +109,7 @@ function PublicHomepage(props: IProps) {
 								<button className="action purple" onClick={() => props.changeView('history')}>
 									<i className="fas fa-fw fa-clock" /> {i18next.t('PUBLIC_HOMEPAGE.NEW_KARAOKES')}
 								</button>
-								<button
-									className="action orange"
-									onClick={() => props.changeView('requested')}
-								>
+								<button className="action orange" onClick={() => props.changeView('requested')}>
 									<i className="fas fa-fw fa-fire" />{' '}
 									{i18next.t('PUBLIC_HOMEPAGE.REQUESTED_KARAOKES')}
 								</button>
@@ -139,17 +131,8 @@ function PublicHomepage(props: IProps) {
 								<button className="action" onClick={() => props.changeView('tag', YEARS.type)}>
 									<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS.YEAR')}
 								</button>
-								<button
-									className="action"
-									onClick={() => setOthersMenu(!othersMenu)}
-								>
-									<i
-										className={
-											othersMenu
-												? 'fa fa-fw fa-arrow-up'
-												: 'fa fa-fw fa-arrow-down'
-										}
-									/>
+								<button className="action" onClick={() => setOthersMenu(!othersMenu)}>
+									<i className={othersMenu ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'} />
 									{i18next.t('PUBLIC_HOMEPAGE.OTHERS')}
 								</button>
 								{othersMenu ? (
@@ -159,9 +142,7 @@ function PublicHomepage(props: IProps) {
 												return (
 													<button
 														className={`action ${tagTypes[type].color}`}
-														onClick={() =>
-															props.changeView('tag', tagTypes[type].type)
-														}
+														onClick={() => props.changeView('tag', tagTypes[type].type)}
 														key={`tag-${tagTypes[type].type}`}
 													>
 														<i className={`fas fa-fw fa-${tagTypes[type].icon}`} />{' '}

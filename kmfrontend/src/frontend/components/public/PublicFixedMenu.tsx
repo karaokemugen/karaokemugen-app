@@ -31,20 +31,19 @@ function PublicFixedMenu(props: IProps) {
 				</a>
 			) : null}
 			{props.publicVisible &&
-				context.globalState.settings.data.state.currentPlaid !==
-				context.globalState.settings.data.state.publicPlaid ?
-				(
-					<a
-						className="orange"
-						onClick={(event) => {
-							event.preventDefault();
-							props.changeView('publicPlaylist');
-						}}
-					>
-						<i className="fas fa-fw fa-globe fa-2x" />
-						{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
-					</a>
-				) : null}
+			context.globalState.settings.data.state.currentPlaid !==
+				context.globalState.settings.data.state.publicPlaid ? (
+				<a
+					className="orange"
+					onClick={(event) => {
+						event.preventDefault();
+						props.changeView('publicPlaylist');
+					}}
+				>
+					<i className="fas fa-fw fa-globe fa-2x" />
+					{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
+				</a>
+			) : null}
 			{context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
 				<a
 					className="blue"

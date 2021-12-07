@@ -43,10 +43,16 @@ function SetupPage() {
 				<div className="main">
 					<Switch>
 						<Route path="/setup/loading" component={SetupLoading} />
-						<Route path="/setup/stats" component={SetupPageStats}/>
+						<Route path="/setup/stats" component={SetupPageStats} />
 						<Route path="/setup/repo" component={SetupPageRepo} />
 						<Route path="/setup/user" component={SetupPageUser} />
-						<Redirect to={context?.globalState.settings.data.user.login !== 'admin' ? '/setup/repo' : '/setup/user'} />
+						<Redirect
+							to={
+								context?.globalState.settings.data.user.login !== 'admin'
+									? '/setup/repo'
+									: '/setup/user'
+							}
+						/>
 					</Switch>
 				</div>
 			</div>

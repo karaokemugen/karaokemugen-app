@@ -13,7 +13,6 @@ interface IProps {
 }
 
 function KmAppWrapperDecorator(props: IProps) {
-
 	const [barOffset, setBarOffset] = useState('0');
 
 	const listener = () => {
@@ -34,7 +33,11 @@ function KmAppWrapperDecorator(props: IProps) {
 			className={`KmAppWrapperDecorator${props.single ? ' single' : ''}${
 				props.hmagrin !== false ? ' hmargin' : ''
 			}${props.chibi ? ' chibi' : ''}`}
-			style={{ ['--top' as any]: props.top, ['--bar-offset' as any]: barOffset, ['--bottom' as any]: props.bottom }}
+			style={{
+				['--top' as any]: props.top,
+				['--bar-offset' as any]: barOffset,
+				['--bottom' as any]: props.bottom,
+			}}
 		>
 			{props.children}
 		</div>

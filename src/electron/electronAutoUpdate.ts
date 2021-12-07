@@ -6,7 +6,7 @@ import { exit } from '../components/engine';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import sentry from '../utils/sentry';
-import {win} from './electron';
+import { win } from './electron';
 
 let manualUpdate = false;
 
@@ -14,67 +14,68 @@ export function initAutoUpdate() {
 	autoUpdater.logger = logger;
 	autoUpdater.autoDownload = false;
 	autoUpdater.on('error', (error) => {
-		logger.error('', {service: 'AppUpdate', obj: error});
+		logger.error('', { service: 'AppUpdate', obj: error });
 		dialog.showMessageBox({
 			type: 'none',
 			title: i18next.t('ERROR'),
-			message: error === null ? 'unknown' : (error.stack || error).toString()
+			message: error === null ? 'unknown' : (error.stack || error).toString(),
 		});
 	});
 	autoUpdater.on('update-available', async () => {
-		logger.info('Update detected', {service: 'AppUpdate'});
+		logger.info('Update detected', { service: 'AppUpdate' });
 		const buttonIndex = await dialog.showMessageBox(win, {
 			type: 'info',
 			title: i18next.t('UPDATE_FOUND'),
 			message: i18next.t('UPDATE_PROMPT'),
 			buttons: [i18next.t('YES'), i18next.t('NO')],
-			cancelId: 1
+			cancelId: 1,
 		});
 		if (buttonIndex.response === 0) {
 			try {
 				await autoUpdater.downloadUpdate();
-			} catch(err) {
+			} catch (err) {
 				sentry.error(err);
 				await dialog.showMessageBox(win, {
 					type: 'info',
 					title: i18next.t('UPDATE_FOUND'),
-					message: i18next.t('UPDATE_ERROR') + err
+					message: i18next.t('UPDATE_ERROR') + err,
 				});
 			}
 		}
 	});
 
 	autoUpdater.on('update-not-available', () => {
-		logger.info('Update not available', {service: 'AppUpdate'});
-		if (manualUpdate) dialog.showMessageBox({
-			title: i18next.t('UPDATE_NOT_AVAILABLE'),
-			message: i18next.t('CURRENT_VERSION_OK')
-		});
+		logger.info('Update not available', { service: 'AppUpdate' });
+		if (manualUpdate)
+			dialog.showMessageBox({
+				title: i18next.t('UPDATE_NOT_AVAILABLE'),
+				message: i18next.t('CURRENT_VERSION_OK'),
+			});
 	});
 
 	autoUpdater.on('update-downloaded', async () => {
-		logger.info('Update downloaded', {service: 'AppUpdate'});
+		logger.info('Update downloaded', { service: 'AppUpdate' });
 		await dialog.showMessageBox(win, {
 			title: i18next.t('UPDATE_DOWNLOADED'),
-			message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING')
+			message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING'),
 		});
 		try {
 			await exit(0, true);
 			autoUpdater.quitAndInstall();
-		} catch(err) {
+		} catch (err) {
 			sentry.error(err);
-			logger.error('Failed to quit and install', {service: 'AppUpdate', obj: err});
+			logger.error('Failed to quit and install', { service: 'AppUpdate', obj: err });
 		}
 	});
 
 	if (getConfig().Online.Updates.App && process.platform !== 'darwin') {
 		try {
-			logger.info('Checking for updates and notify', {service: 'AppUpdate'});
+			logger.info('Checking for updates and notify', { service: 'AppUpdate' });
 			autoUpdater.checkForUpdatesAndNotify();
-		} catch(err) {
+		} catch (err) {
 			//Non fatal, just report it
 			sentry.error(err, 'Warning');
-			logger.warn('Unable to check for app updates', {service: 'AppUpdate', obj: err});
+			logger.warn('Unable to check for app updates', { service: 'AppUpdate', obj: err });
 		}
 	}
 }

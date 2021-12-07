@@ -34,7 +34,8 @@ function Switch(props: IProps) {
 			<span
 				data-text-on={props.onLabel ? props.onLabel : 'ON'}
 				data-text-off={props.offLabel ? props.offLabel : 'OFF'}
-				className="switch-ui--control">
+				className="switch-ui--control"
+			>
 				<span />
 			</span>
 		</label>

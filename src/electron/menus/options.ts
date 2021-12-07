@@ -21,21 +21,21 @@ const builder: MenuItemBuilderFunction = (options) => {
 				checked: getConfig().Online.Updates.App,
 				visible: !getState().forceDisableAppUpdate,
 				click: () => {
-					setConfig({Online: {Updates: { App: !getConfig().Online.Updates.App}}});
-				}
+					setConfig({ Online: { Updates: { App: !getConfig().Online.Updates.App } } });
+				},
 			},
 			!isReduced ? { type: 'separator' } : null,
 			{
 				label: i18next.t('MENU_OPTIONS_OPERATORCONFIG'),
 				accelerator: 'CmdOrCtrl+T',
-				click: urls.operatorOptions
+				click: urls.operatorOptions,
 			},
 			{
 				label: i18next.t('MENU_OPTIONS_SYSTEMCONFIG'),
 				accelerator: 'CmdOrCtrl+G',
-				click: urls.systemOptions
+				click: urls.systemOptions,
 			},
-		]
+		],
 	};
 };
 

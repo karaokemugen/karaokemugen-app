@@ -18,8 +18,8 @@ export default function backgroundsController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
 			return await addBackgroundFile(req.body.type, req.body.file);
-		} catch(err) {
-			throw {code: 500};
+		} catch (err) {
+			throw { code: 500 };
 		}
 	});
 

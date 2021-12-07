@@ -12,7 +12,7 @@ for (const kara of p.parents) {
 	let karaParentData = '';
 	try {
 		karaParentData = fs.readFileSync(path.resolve(kpath, kara.karaParent));
-	} catch(err) {
+	} catch (err) {
 		console.log(kara.karaParent, 'not found');
 		continue;
 	}
@@ -22,7 +22,7 @@ for (const kara of p.parents) {
 		let karaChildData = '';
 		try {
 			karaChildData = fs.readFileSync(path.resolve(kpath, child));
-		} catch(err) {
+		} catch (err) {
 			console.log(child, 'not found');
 			continue;
 		}
@@ -31,16 +31,14 @@ for (const kara of p.parents) {
 			if (!karaChild.data.parents.includes(kid)) karaChild.data.parents.push(kid);
 		} else {
 			karaChild.data.parents = [kid];
-			const ordered = Object.keys(karaChild.data).sort().reduce(
-				(obj, key) => {
-				  obj[key] = karaChild.data[key];
-				  return obj;
-				},
-				{}
-			  );
-			karaChild.data = {...ordered};
+			const ordered = Object.keys(karaChild.data)
+				.sort()
+				.reduce((obj, key) => {
+					obj[key] = karaChild.data[key];
+					return obj;
+				}, {});
+			karaChild.data = { ...ordered };
 		}
 		fs.writeFileSync(path.resolve(kpath, child), JSON.stringify(karaChild, null, 2));
 	}
 }
-
