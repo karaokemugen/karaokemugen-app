@@ -218,13 +218,11 @@ export async function migrateBLWLToSmartPLs() {
 			username: 'admin',
 			type_smart: 'UNION'
 		});
-		await insertCriteria(blc.map(e => {
-			return {
-				plaid: plaid,
-				type: e.type,
-				value: e.value
-			};
-		}));
+		await insertCriteria(blc.map(e => ({
+			plaid: plaid,
+			type: e.type,
+			value: e.value
+		})));
 	}
 	await updateAllSmartPlaylists();
 	try {
