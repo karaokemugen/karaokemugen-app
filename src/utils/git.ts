@@ -180,8 +180,13 @@ export default class Git {
 			value: 0,
 			total: 100,
 		});
-		await this.git.push('origin', 'master');
-		this.task.end();
+		try {
+			await this.git.push('origin', 'master');
+		} catch (err) {
+			throw err;
+		} finally {
+			this.task.end();
+		}
 	}
 
 	async clone() {
@@ -191,9 +196,14 @@ export default class Git {
 			value: 0,
 			total: 100,
 		});
-		const ret = await this.git.clone(this.opts.url, '.');
-		this.task.end();
-		return ret;
+		try {
+			const ret = await this.git.clone(this.opts.url, '.');
+			return ret;
+		} catch (err) {
+			throw err;
+		} finally {
+			this.task.end();
+		}
 	}
 
 	/** Call this when user */
