@@ -1125,7 +1125,8 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 				await git.commit(commit.message);
 				task.incr();
 			}
-			// All our commits are hopefully done.
+			// All our commits are hopefully done. Just inc ase we'll update repository now.
+			await updateGitRepo(repoName);
 			await git.push();
 			emitWS('pushComplete', repoName);
 		} catch (err) {
