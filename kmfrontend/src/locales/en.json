@@ -1102,10 +1102,11 @@
 		"GIT_STATUS": "Git status",
 		"GIT_STATUSES": {
 			"CLEAN": "Clean copy",
+			"BEHIND": "Commits à récupérer",
 			"MODIFIED": "Edited (changes to push)",
 			"CONFLICT": "Conflicts pending (use the resolver)"
 		},
-		"GIT_NOTHING_TO_PUSH": "There is nothing to push.",
+		"GIT_NOTHING_TO_PUSH": "No commit was generated, we'll try to push previous commits that have failed.",
 		"GIT_ACTIONS": "Actions",
 		"GIT_DANGEROUS": "Dangerous actions",
 		"GIT_PUSH": "Push",

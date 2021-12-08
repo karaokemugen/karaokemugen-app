@@ -1104,10 +1104,11 @@
 		"GIT_STATUS": "Statut Git",
 		"GIT_STATUSES": {
 			"CLEAN": "Copie propre",
+			"BEHIND": "Commits à récupérer",
 			"MODIFIED": "Modifié (changements à pousser)",
 			"CONFLICT": "Conflits en attente (utilisez le résolveur)"
 		},
-		"GIT_NOTHING_TO_PUSH": "Il n'y a rien à pousser.",
+		"GIT_NOTHING_TO_PUSH": "Aucun commit n'a été généré, la pousse se référera à des commits précédents qui auraient foirés.",
 		"GIT_ACTIONS": "Actions",
 		"GIT_DANGEROUS": "Actions dangereuses",
 		"GIT_PUSH": "Pousser",

@@ -43,7 +43,10 @@ async function getRepos(): Promise<Repo[]> {
 				const gitStatus: GitStatusResult = await commandBackend('checkRepo', { repoName: repo.Name });
 				const stashes: GitLogResult = await commandBackend('listRepoStashes', { repoName: repo.Name });
 				let label = i18next.t('REPOSITORIES.GIT_STATUSES.CLEAN');
-				if (gitStatus.files.length > 0) {
+				if (gitStatus.behind > 0) {
+					label = i18next.t('REPOSITORIES.GIT_STATUSES.BEHIND');
+				}
+				if (gitStatus.files.length > 0 || gitStatus.ahead > 0) {
 					label = i18next.t('REPOSITORIES.GIT_STATUSES.MODIFIED');
 				}
 				if (gitStatus.conflicted.length > 0) {
@@ -144,8 +147,10 @@ export default function Git() {
 		setLoading(true);
 		const commits = await commandBackend('getCommits', { repoName }).catch(() => null);
 		if (!commits) {
+			const dummyPush = { commits: [], modifiedMedias: [] };
+			setPendingPush({ repoName, commits: dummyPush });
+			await commandBackend('pushCommits', { repoName, commits: dummyPush });
 			displayMessage('info', i18next.t('REPOSITORIES.GIT_NOTHING_TO_PUSH'));
-			setLoading(false);
 		} else {
 			setPendingPush({ repoName, commits });
 			setShowPushModal(true);
