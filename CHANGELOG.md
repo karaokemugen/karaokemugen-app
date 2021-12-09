@@ -1,3 +1,23 @@
+# v6.0.x - xx/xx/202x
+
+## New features
+
+-   You can choose your mpv output audio device (#968)
+-   You can now upload custom backgrounds for the player (along with music!, #899, #785)
+-   You can hide more elements from the player OSD (song informations #1143, quotes #1080)
+-   You can create "smart" playlists which will update automatically based on criteria you define (#809)
+-   In streamer mode, Twitch messages will be shown in "Nico nico douga" fashion (#1023)
+-   Songs are now grouped, a song will be presented with each version for you to choose (#935)
+
+## Karaoke Mugen Studio
+
+Karaoke Mugen Studio is a set of features intended at contributors and maintainers:
+
+-   The karaoke list now shows an "Edit lyrics" button, opening the associated program (e.g Aegisub, #1084).
+-   Repositories can have hooks, automated "scripts" that will for example, add Hololive creator tag for any Hololive-affiliated singer (#948).
+-   The karaoke inbox can be displayed in the app and the karaokes downloaded (#1086).
+-   You can push/pull Git-enabled repositories, along with uploading videos to FTP (#1085).
+
 # v5.1.32 - 23/11/2021
 
 ## New features
