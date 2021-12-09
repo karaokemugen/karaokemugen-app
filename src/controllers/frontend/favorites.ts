@@ -44,9 +44,11 @@ export default function favoritesController(router: SocketIOApp) {
 		}
 	});
 	router.route('getFavorites', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'user', 'closed');
+		await runChecklist(socket, req, 'guest', 'closed');
 		try {
-			if (req?.body?.mini) {
+			if (req.token.role === 'guest') {
+				return [];
+			} else if (req?.body?.mini) {
 				return await selectFavoritesMicro({
 					username: req.token.username.toLowerCase(),
 					from: +req.body?.from || 0,

@@ -13,7 +13,8 @@ import { logout } from './auth';
 
 export async function setSettings(
 	dispatch: Dispatch<SettingsSuccess | SettingsFailure>,
-	withoutProfile?: boolean
+	withoutProfile?: boolean,
+	tryAgain = false
 ): Promise<void> {
 	try {
 		const res = await commandBackend('getSettings');
@@ -54,7 +55,11 @@ export async function setSettings(
 				error: error,
 			},
 		});
-		throw error;
+		if (tryAgain) {
+			throw error;
+		} else {
+			return setSettings(dispatch, withoutProfile, true);
+		}
 	}
 }
 
