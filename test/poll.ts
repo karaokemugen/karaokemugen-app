@@ -9,7 +9,7 @@ describe('Song Poll', () => {
 	});
 	it('Get current poll status', async () => {
 		const data = await commandBackend(token, 'getPoll', undefined, true);
-		expect(data.message.code).to.be.equal('POLL_NOT_ACTIVE');
+		expect(data.code).to.be.equal(425);
 	});
 
 	it('Set poll', async () => {
