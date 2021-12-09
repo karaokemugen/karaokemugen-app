@@ -690,8 +690,8 @@
 		"POLL": {
 			"VOTE": "Time to vote!",
 			"VOTED": "Voted!",
-			"VOTES_one": "{{count}} vote",
-			"VOTES_other": "{{count}} votes",
+			"VOTES_one": "{{count}} vote ({{percent}}%)",
+			"VOTES_other": "{{count}} votes ({{percent}}%)",
 			"REMAINING_one": "{{count}} second left",
 			"REMAINING_other": "{{count}} seconds left"
 		}

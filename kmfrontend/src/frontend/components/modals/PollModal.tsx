@@ -16,6 +16,7 @@ function PollModal() {
 	const [timeLeft, setTimeLeft] = useState<number>();
 	const [voted, setVoted] = useState<number>(-1);
 	const [totalVotes, setTotalVotes] = useState(0);
+	const [maxVotes, setMaxVotes] = useState(-1);
 	const [poll, setPoll] = useState<PollItem[]>([]);
 	const interval = useRef<NodeJS.Timeout>();
 
@@ -56,6 +57,7 @@ function PollModal() {
 
 	useEffect(() => {
 		setTotalVotes(poll.reduce((acc, x) => acc + x.votes, 0));
+		setMaxVotes(poll.reduce((acc, x) => (x.votes > acc && x.votes !== 0 ? x.votes : acc), -1));
 	}, [poll]);
 
 	return (
@@ -78,6 +80,7 @@ function PollModal() {
 					<div className="modal-body">
 						<div>{i18next.t('MODAL.POLL.REMAINING', { count: Math.floor(timeLeft / 1000) })}</div>
 						{poll.map(kara => {
+							const grayed = voted !== -1 && voted !== kara.index;
 							return (
 								<button
 									className="btn btn-default fluid"
@@ -86,14 +89,20 @@ function PollModal() {
 									onClick={postSong}
 									style={{
 										backgroundColor: `hsl(${colorPalette[kara.index % colorPalette.length]}, ${
-											voted !== -1 && voted !== kara.index ? '0' : '25'
-										}%, 20%)`,
+											grayed ? '0' : '25'
+										}%, ${grayed ? '20' : '30'}%)`,
 									}}
 								>
 									<div className="karaTitle">
 										{buildKaraTitle(context.globalState.settings.data, kara, false)}
+										{maxVotes === kara.votes ? <i className="fas fa-fw fa-star" /> : null}
 									</div>
-									<div>{i18next.t('MODAL.POLL.VOTES', { count: kara.votes })}</div>
+									<div>
+										{i18next.t('MODAL.POLL.VOTES', {
+											count: kara.votes,
+											percent: totalVotes === 0 ? 0 : Math.floor((kara.votes / totalVotes) * 100),
+										})}
+									</div>
 								</button>
 							);
 						})}
