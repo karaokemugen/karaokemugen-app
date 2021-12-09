@@ -202,38 +202,40 @@ export async function editTag(
 		if (opts.repoCheck && oldTag.repository !== tagObj.repository)
 			throw { code: 409, msg: 'Tag repository cannot be modified. Use copy function instead' };
 		tagObj.tagfile = `${sanitizeFile(tagObj.name)}.${tid.substring(0, 8)}.tag.json`;
-		// Try to find old tag
-		let oldTagFiles = [];
-		let oldTagPath: string;
-		try {
-			oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
-			oldTagPath = dirname(oldTagFiles[0]);
-		} catch (err) {
-			// Non fatal, couldn't find old tag file. We're just goign to update it and write the new one.
-			oldTagPath = resolvedPathRepos('Tags', oldTag.repository)[0];
-		}
-		const promises = [updateTag(tagObj)];
-		if (opts.writeFile) promises.push(writeTagFile(tagObj, oldTagPath));
-		await Promise.all(promises);
-		const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
-		// Here we only compare the filename, not the full path.
-		// If it has been modified (name field modified) we need to remove the old one.
-		if (oldTag.tagfile !== tagObj.tagfile) {
+		await updateTag(tagObj);
+		if (opts.writeFile) {
+			// Try to find old tag
+			let oldTagFiles = [];
+			let oldTagPath: string;
 			try {
-				await fs.unlink(oldTagFiles[0]);
+				oldTagFiles = await resolveFileInDirs(oldTag.tagfile, resolvedPathRepos('Tags', oldTag.repository));
+				oldTagPath = dirname(oldTagFiles[0]);
 			} catch (err) {
-				//Non fatal. Can be triggered if the tag file has already been removed.
+				// Non fatal, couldn't find old tag file. We're just goign to update it and write the new one.
+				oldTagPath = resolvedPathRepos('Tags', oldTag.repository)[0];
 			}
+			// FS stuff
+			const promises = [];
+			promises.push(writeTagFile(tagObj, oldTagPath));
+			if (oldTag.tagfile !== tagObj.tagfile) {
+				promises.push(
+					fs.unlink(oldTagFiles[0]).catch(() => {
+						//Non fatal. Can be triggered if the tag file has already been removed.
+					})
+				);
+			}
+			await Promise.all(promises);
+			const newTagFiles = await resolveFileInDirs(tagObj.tagfile, resolvedPathRepos('Tags', tagObj.repository));
+			// If the old and new paths are different, it means we copied it to a new repository
+			if (oldTagFiles[0] && oldTagFiles[0] !== newTagFiles[0]) {
+				await addTagToStore(newTagFiles[0]);
+				removeTagInStore(oldTagFiles[0]);
+			} else {
+				await editTagInStore(newTagFiles[0]);
+			}
+			sortTagsStore();
+			saveSetting('baseChecksum', getStoreChecksum());
 		}
-		// If the old and new paths are different, it means we copied it to a new repository
-		if (oldTagFiles[0] && oldTagFiles[0] !== newTagFiles[0]) {
-			await addTagToStore(newTagFiles[0]);
-			removeTagInStore(oldTagFiles[0]);
-		} else {
-			await editTagInStore(newTagFiles[0]);
-		}
-		sortTagsStore();
-		saveSetting('baseChecksum', getStoreChecksum());
 		if (opts.refresh) {
 			const karasToUpdate = await getKarasWithTags([oldTag]);
 			await updateTagSearchVector();
