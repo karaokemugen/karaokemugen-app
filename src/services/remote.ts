@@ -66,9 +66,9 @@ async function stopRemote() {
 }
 
 async function restartRemote() {
-	// TODO: Add config check to see if restart is necessary
+	if (!getConfig().Online.Remote) return;
 	try {
-		logger.debug('Reconnection...', { serivce: 'Remote' });
+		logger.debug('Reconnection...', { service: 'Remote' });
 		const data = await startRemote();
 		logger.info('Remote was RESTARTED', { service: 'Remote', obj: data });
 		setState({ remoteAccess: data });

@@ -508,7 +508,6 @@
 	"SERIE_NAME_MODE_ORIGINAL": "Original title",
 	"SERIE_NAME_MODE_ADMIN": "Host's language",
 	"SERIE_NAME_MODE_USER": "User's language",
-	"POLLTITLE": "Time to vote!",
 	"POLLENDED": "{{kara}} wins with {{votes}} votes!",
 	"REMOTE_URL": "Remote access URL",
 	"REMOTE_STATUS": {
@@ -687,6 +686,14 @@
 			},
 			"DONE": "Task done successfully.",
 			"EMPTY": "Nothing was changed!"
+		},
+		"POLL": {
+			"VOTE": "Time to vote!",
+			"VOTED": "Voted!",
+			"VOTES_one": "{{count}} vote",
+			"VOTES_other": "{{count}} votes",
+			"REMAINING_one": "{{count}} second left",
+			"REMAINING_other": "{{count}} seconds left"
 		}
 	},
 	"SETUP_PAGE": {

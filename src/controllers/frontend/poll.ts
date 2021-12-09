@@ -13,8 +13,12 @@ export default function pollController(router: SocketIOApp) {
 		try {
 			return getPoll(req.token);
 		} catch (err) {
-			errMessage(err.msg);
-			throw { code: 425, message: APIMessage(err.msg) };
+			if (err.code === 425) {
+				throw { code: 425 };
+			} else {
+				errMessage(err.msg);
+				throw { code: 500, message: APIMessage(err.msg) };
+			}
 		}
 	});
 	router.route('votePoll', async (socket: Socket, req: APIData) => {

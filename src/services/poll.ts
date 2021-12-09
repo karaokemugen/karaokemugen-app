@@ -11,7 +11,7 @@ import logger from '../lib/utils/logger';
 import { emit, on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
 import { DBPLC } from '../types/database/playlist';
-import { PollItem, PollResults } from '../types/poll';
+import { PollItem, PollObject, PollResults } from '../types/poll';
 import { State } from '../types/state';
 import { getState, setState } from '../utils/state';
 import { sayTwitch } from '../utils/twitch';
@@ -268,7 +268,7 @@ async function displayPollTwitch() {
 }
 
 /** Get current poll options */
-export function getPoll(token: Token) {
+export function getPoll(token: Token): PollObject {
 	if (poll.length === 0)
 		throw {
 			code: 425,

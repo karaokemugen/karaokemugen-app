@@ -510,7 +510,6 @@
 	"SERIE_NAME_MODE_ORIGINAL": "Nom original / interne",
 	"SERIE_NAME_MODE_ADMIN": "Selon la langue de votre ordinateur",
 	"SERIE_NAME_MODE_USER": "Selon la langue de l'utilisateur",
-	"POLLTITLE": "À vous de voter !",
 	"POLLENDED": "{{kara}} remporte le vote avec {{votes}} voix !",
 	"REMOTE_URL": "Adresse d'accès à distance",
 	"REMOTE_STATUS": {
@@ -689,6 +688,14 @@
 			},
 			"DONE": "Tâche effectuée avec succès.",
 			"EMPTY": "Aucun fichier !"
+		},
+		"POLL": {
+			"VOTE": "À vous de voter !",
+			"VOTED": "A voté !",
+			"VOTES_one": "{{count}} vote",
+			"VOTES_other": "{{count}} votes",
+			"REMAINING_one": "{{count}} seconde restante",
+			"REMAINING_other": "{{count}} secondes restantes"
 		}
 	},
 	"SETUP_PAGE": {

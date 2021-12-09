@@ -98,6 +98,7 @@ function PublicPage(props: RouteComponentProps) {
 	};
 
 	const initView = async () => {
+		await refreshPoll();
 		if (context?.globalState.settings.data.config?.Frontend?.Mode !== 0) await getPlaylistList();
 		if (props.location.pathname.includes('/public/search/requested')) {
 			changeView('requested');
@@ -153,10 +154,23 @@ function PublicPage(props: RouteComponentProps) {
 		}
 	};
 
+	const refreshPoll = async () => {
+		try {
+			const poll = await commandBackend('getPoll');
+			if (poll) {
+				setPollActive(true);
+			}
+		} catch (err) {
+			if ((err as { code: number }).code === 425) {
+				setPollActive(false);
+			}
+		}
+	};
+
 	const songPollStarted = () => {
 		if (context.globalState.auth.isAuthenticated) {
 			setPollActive(true);
-			showModal(context.globalDispatch, <PollModal hasVoted={() => setPollActive(false)} />);
+			showModal(context.globalDispatch, <PollModal />);
 		}
 	};
 
@@ -412,12 +426,7 @@ function PublicPage(props: RouteComponentProps) {
 									{isPollActive ? (
 										<button
 											className="btn btn-default showPoll"
-											onClick={() =>
-												showModal(
-													context.globalDispatch,
-													<PollModal hasVoted={() => setPollActive(false)} />
-												)
-											}
+											onClick={() => showModal(context.globalDispatch, <PollModal />)}
 										>
 											<i className="fas fa-chart-line" />
 										</button>
@@ -461,12 +470,7 @@ function PublicPage(props: RouteComponentProps) {
 								activePoll={isPollActive}
 								currentVisible={currentVisible}
 								publicVisible={publicVisible}
-								openPoll={() =>
-									showModal(
-										context.globalDispatch,
-										<PollModal hasVoted={() => setPollActive(false)} />
-									)
-								}
+								openPoll={() => showModal(context.globalDispatch, <PollModal />)}
 							/>
 						)}
 					/>
