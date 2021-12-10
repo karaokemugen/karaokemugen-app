@@ -92,6 +92,7 @@
 	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "System preferences…",
 	"MENU_OPTIONS_CHIBIPLAYER": "Show Chibi Player",
 	"MENU_OPTIONS_CHIBIPLAYLIST": "Show detached playlist",
+	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Copy link to detached playlist",
 	"ERROR": "Error",
 	"YES": "Yes",
 	"NO": "No",

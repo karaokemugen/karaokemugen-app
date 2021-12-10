@@ -1,7 +1,10 @@
+import { clipboard } from 'electron';
 import i18next from 'i18next';
 
 import { getConfig, setConfig } from '../../lib/utils/config';
+import { generateAdminPassword } from '../../services/user';
 import { MenuItemBuilderFunction } from '../../types/electron';
+import { getState } from '../../utils/state';
 import { updateChibiPlayerWindow, updateChibiPlaylistWindow } from '../electron';
 
 const builder: MenuItemBuilderFunction = options => {
@@ -40,6 +43,16 @@ const builder: MenuItemBuilderFunction = options => {
 				click: () => {
 					updateChibiPlaylistWindow(!getConfig().GUI.ChibiPlaylist.Enabled);
 					setConfig({ GUI: { ChibiPlaylist: { Enabled: !getConfig().GUI.ChibiPlaylist.Enabled } } });
+				},
+				visible: !isReduced,
+			},
+			{
+				label: i18next.t('MENU_OPTIONS_CHIBIPLAYLIST_LINK'),
+				click: async () => {
+					const state = getState();
+					clipboard.writeText(
+						`http://localhost:${state.frontendPort}/chibiPlaylist?admpwd=${await generateAdminPassword()}`
+					);
 				},
 				visible: !isReduced,
 			},
