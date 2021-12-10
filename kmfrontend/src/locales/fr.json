@@ -838,6 +838,7 @@
 		"DELETE_ALL_TOOLTIP": "Supprimer tout les karaokés affichés en une seule fois",
 		"DELETE_KARA_TITLE": "Vous allez supprimer les {{count}} karaokés affichés, êtes-vous sûr ?",
 		"DELETE_MEDIA_TOOLTIP": "Supprimer le média du karaoké",
+		"UPLOAD_MEDIA_TOOLTIP": "Renvoyer le média du karaoké",
 		"MISSING_DOWNLOAD_TOOLTIP": "Ce karaoké n'est pas téléchargé, il vous faudra Internet pour le jouer. Vous pouvez cliquer sur Télécharger le média pour l'utiliser hors-ligne.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Téléchargement en cours",
 		"ONLINE_REPOSITORIES": "Certains de vos karaokés proviennent de dépôts distants (le serveur kara.moe par exemple), ces karaokés ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des karaokés mais vous serez en mesure de les modifier ou les supprimer.",
@@ -1194,6 +1195,7 @@
 		"UPLOADING_FTP": "Envoi sur le FTP…"
 	},
 	"ERROR_CODES": {
+		"UNKNOWN_COMMAND": "Commande inconnue (API)",
 		"INBOX_VIEW_ERROR": "Impossible de récupérer la boite de réception",
 		"DOWNLOAD_KARA_FROM_INBOX_ERROR": "Impossible de récupérer le karaoké de la boîte de réception",
 		"DELETE_KARA_IN_INBOX_ERROR": "Impossible de supprimer le karaoké de la boîte de réception",
@@ -1277,6 +1279,7 @@
 		"POLL_LIST_ERROR": "Erreur lors de la récupération du sondage",
 		"POLL_NOT_ACTIVE": "Aucun sondage en cours",
 		"POLL_USER_ALREADY_VOTED": "Vous avez déjà voté",
+		"REPO_UPLOAD_MEDIA_ERROR": "Impossible d'envoyer le média sur le dépôt",
 		"REPO_LIST_ERROR": "Erreur lors de la récupération de la liste des dépôts",
 		"REPO_CREATE_ERROR": "Erreur lors de la création du dépôt",
 		"REPO_GET_ERROR": "Erreur lors de la récupération du dépôt",

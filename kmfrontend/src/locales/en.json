@@ -836,6 +836,7 @@
 		"DELETE_ALL_TOOLTIP": "Remove all displayed karaokes at once",
 		"DELETE_KARA_TITLE": "You're going to remove the {{count}} displayed karaokes, are you sure?",
 		"DELETE_MEDIA_TOOLTIP": "Delete the karaoke media",
+		"UPLOAD_MEDIA_TOOLTIP": "Re-upload karaoke media",
 		"MISSING_DOWNLOAD_TOOLTIP": "This karaoke is not downloaded, you will need Internet in order to play it. You can make it work offline by downloading the media.",
 		"IN_PROGRESS_DOWNLOAD_TOOLTIP": "Download in progress",
 		"ONLINE_REPOSITORIES": "Some of your karaokes are from remote repositories (kara.moe server for example), these karaokes are not editable through this interface, to make sure that the repositories stays in sync. You can check the \"Maintainer mode\" checkbox in the repository settings, you will not receive any updates anymore but you will be able to edit or delete karaokes.",
@@ -1192,6 +1193,7 @@
 		"UPLOADING_FTP": "Uploading to the FTP…"
 	},
 	"ERROR_CODES": {
+		"UNKNOWN_COMMAND": "Unknown command (API)",
 		"INBOX_VIEW_ERROR": "Unable to fetch karaokes from inbox",
 		"DOWNLOAD_KARA_FROM_INBOX_ERROR": "Unable to download karaoke from inbox",
 		"DELETE_KARA_IN_INBOX_ERROR": "Unable to delete karaoke from inbox",
@@ -1275,6 +1277,7 @@
 		"POLL_LIST_ERROR": "Error listing current poll",
 		"POLL_NOT_ACTIVE": "No poll is currently running",
 		"POLL_USER_ALREADY_VOTED": "You have already voted",
+		"REPO_UPLOAD_MEDIA_ERROR": "Error sending media to the repository",
 		"REPO_LIST_ERROR": "Error fetching repositories list",
 		"REPO_CREATE_ERROR": "Error creating repository",
 		"REPO_GET_ERROR": "Error fetching repository",

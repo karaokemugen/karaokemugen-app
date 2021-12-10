@@ -1,4 +1,4 @@
-import { ClearOutlined, DeleteOutlined, EditOutlined, FontColorsOutlined } from '@ant-design/icons';
+import { ClearOutlined, DeleteOutlined, EditOutlined, FontColorsOutlined, UploadOutlined } from '@ant-design/icons';
 import { Alert, Button, Cascader, Col, Input, Layout, Modal, Row, Table } from 'antd';
 import i18next from 'i18next';
 import { Component } from 'react';
@@ -308,6 +308,24 @@ class KaraList extends Component<unknown, KaraListState> {
 			),
 			key: 'action',
 			render: (_text, record: DBKara) => {
+				let deleteMediaButton: JSX.Element = (
+					<Button
+						type="primary"
+						danger
+						title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
+						icon={<ClearOutlined />}
+						onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
+					/>
+				);
+				let uploadMediaButton: JSX.Element = (
+					<Button
+						type="primary"
+						danger
+						title={i18next.t('KARA.UPLOAD_MEDIA_TOOLTIP')}
+						icon={<UploadOutlined />}
+						onClick={() => commandBackend('uploadMedia', { kid: record.kid })}
+					/>
+				);
 				if (isModifiable(this.context, record.repository)) {
 					const editLink: JSX.Element = (
 						<Link to={`/system/karas/${record.kid}`} style={{ marginRight: '0.75em' }}>
@@ -333,25 +351,25 @@ class KaraList extends Component<unknown, KaraListState> {
 							onClick={async () => commandBackend('openLyricsFile', { kid: record.kid })}
 						/>
 					);
+					if (record.download_status !== 'DOWNLOADED') {
+						uploadMediaButton = null;
+						deleteMediaButton = null;
+					}
 					return (
 						<div style={{ display: 'flex' }}>
 							{editLink}
 							{deleteButton}
 							{LyricsButton}
+							{deleteMediaButton}
+							{uploadMediaButton}
 						</div>
 					);
-				} else if (record.download_status === 'DOWNLOADED') {
-					return (
-						<Button
-							type="primary"
-							danger
-							title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
-							icon={<ClearOutlined />}
-							onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
-						/>
-					);
 				} else {
-					return null;
+					if (record.download_status === 'DOWNLOADED') {
+						return <div style={{ display: 'flex' }}>{deleteMediaButton}</div>;
+					} else {
+						return null;
+					}
 				}
 			},
 		},

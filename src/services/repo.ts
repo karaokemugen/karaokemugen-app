@@ -38,7 +38,7 @@ import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFi
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { updateMedias } from './downloadMedias';
-import { getAllKaras, getKaras } from './kara';
+import { getAllKaras, getKara, getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
 import { sendPayload } from './stats';
@@ -1067,6 +1067,15 @@ export async function generateCommits(repoName: string) {
 	} finally {
 		task.end();
 	}
+}
+
+export async function uploadMedia(kid: string) {
+	const kara = await getKara(kid, { role: 'admin', username: 'admin' });
+	const repo = getRepo(kara.repository);
+	const ftp = new FTP({ repoName: repo.Name });
+	await ftp.connect();
+	const path = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', repo.Name));
+	await ftp.upload(path[0]);
 }
 
 /** Commit and Push all modifications */

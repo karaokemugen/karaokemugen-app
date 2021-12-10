@@ -25,6 +25,7 @@ import {
 	unstashInRepo,
 	updateAllRepos,
 	updateGitRepo,
+	uploadMedia,
 } from '../../services/repo';
 import { APIMessage, errMessage } from '../common';
 import { runChecklist } from '../middlewares';
@@ -270,6 +271,16 @@ export default function repoController(router: SocketIOApp) {
 			return await generateCommits(req.body.repoName);
 		} catch (err) {
 			const code = 'REPO_GIT_GET_COMMITS_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+	router.route('uploadMedia', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			await uploadMedia(req.body.kid);
+		} catch (err) {
+			const code = 'REPO_UPLOAD_MEDIA_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}

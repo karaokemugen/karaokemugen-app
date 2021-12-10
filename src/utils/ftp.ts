@@ -78,6 +78,7 @@ export default class FTP {
 		});
 		try {
 			await this.client.uploadFrom(file, basename(file));
+			logger.info(`File "${file}" uploaded!`, { service: 'FTP' });
 		} catch (err) {
 			logger.error(`Failed to send file ${basename(file)}: ${err}`, { service: 'FTP', obj: err });
 		} finally {
