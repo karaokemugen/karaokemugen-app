@@ -75,7 +75,8 @@
 		"DOWNLOAD_ALL": "Télécharger tout"
 	},
 	"KARA_MENU": {
-		"TRANSFER_SELECT_KARA": "Transférer les chansons sélectionnées - clic droit les transfére après la chanson en cours",
+		"TRANSFER_SELECT_KARA": "Transférer les chansons sélectionnées",
+		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "Transférer après la chanson en cours",
 		"FAV": "Ajouter aux favoris",
 		"FAV_DEL": "Retirer des favoris",
 		"KARA_COMMANDS": "Commandes sur une chanson",
@@ -96,7 +97,8 @@
 		"BLACKLISTED": "Ajouté !",
 		"ADD_WHITELIST": "Ajouter à la liste blanche",
 		"WHITELISTED": "Ajouté !",
-		"TRANSFER_KARA": "Transférer cette chanson en face - clic droit la transfère après la chanson en cours",
+		"TRANSFER_KARA": "Transférer cette chanson en face",
+		"TRANSFER_KARA_AFTER_PLAYING": "Transférer en face après la chanson en cours",
 		"MOVE_KARA": "Déplacer après la chanson en cours"
 	},
 	"KAROULETTE": {

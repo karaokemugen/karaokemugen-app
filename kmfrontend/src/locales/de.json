@@ -96,7 +96,8 @@
 		"DOWNLOAD_ALL": "Alle herunterladen"
 	},
 	"KARA_MENU": {
-		"TRANSFER_SELECT_KARA": "Ausgewählten Song transferieren - Rechtsklicken um ihn nach dem aktuellen Song einzufügen",
+		"TRANSFER_SELECT_KARA": "Ausgewählten Song transferieren",
+		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "Transferieren um ihn nach dem aktuellen Song einzufügen",
 		"FAV": "Zu Favoriten hinzufügen",
 		"FAV_DEL": "Von Favoriten entfernen",
 		"KARA_COMMANDS": "Song Befehle",
@@ -111,7 +112,8 @@
 		"ADD_BLACKLIST": "Zur Blacklist hinzufügen",
 		"ADD_WHITELIST": "Zur Whitelist hinzufügen",
 		"WHITELISTED": "Zur Whitelist hinzugefügt!",
-		"TRANSFER_KARA": "Diesen Song übernehmen - Rechtsklicken um ihn nach dem aktuellen Song einzufügen",
+		"TRANSFER_KARA": "Diesen Song übernehmen",
+		"TRANSFER_KARA_AFTER_PLAYING": "Diesen um ihn nach dem aktuellen Song einfügen",
 		"MOVE_KARA": "Nach aktuellen Song verschieben",
 		"VISIBLE_OFF_SHORT": "Ausblenden",
 		"PLAY_LIBRARY": "Jetzt abspielen",

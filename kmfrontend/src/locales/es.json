@@ -66,7 +66,8 @@
 	},
 	"KARA_MENU": {
 		"MOVE_KARA": "Reproducir después de la canción actual",
-		"TRANSFER_KARA": "Transferir esta canción - Click derecho para transferir después de la canción actual",
+		"TRANSFER_KARA": "Transferir esta canción",
+		"TRANSFER_KARA_AFTER_PLAYING": "Transferir después de la canción actual",
 		"ADD_BLACKLIST": "Añadir a lista negra",
 		"SHOWN": "Visible!",
 		"HIDDEN": "Ocultada!",
@@ -83,7 +84,8 @@
 		"KARA_COMMANDS": "Comandos de canción",
 		"FAV_DEL": "Borrar de favoritos",
 		"FAV": "Añadir a favoritos",
-		"TRANSFER_SELECT_KARA": "Transferir canciones seleccionadas - click derecho para transferir después de la canción actual"
+		"TRANSFER_SELECT_KARA": "Transferir canciones seleccionadas",
+		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "Transferir después de la canción actual"
 	},
 	"ADVANCED": {
 		"DOWNLOAD_ALL": "Descargar todos",

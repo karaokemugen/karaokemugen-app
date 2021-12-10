@@ -50,13 +50,6 @@ function KaraMenuModal(props: IProps) {
 		}
 	};
 
-	const onRightClickTransfer = (e: any) => {
-		e.preventDefault();
-		e.stopPropagation();
-		props.transferKara(e, -1);
-		props.closeKaraMenu();
-	};
-
 	const freeKara = () => {
 		try {
 			commandBackend('editPLC', {
@@ -157,15 +150,29 @@ function KaraMenuModal(props: IProps) {
 				<li>
 					<a
 						href="#"
-						onContextMenu={onRightClickTransfer}
 						onClick={event => {
 							props.transferKara(event);
 							props.closeKaraMenu();
 						}}
 					>
-						<i className="fas fa-fw fa-exchange-alt" />
+						<i className={`fas fa-fw fa-long-arrow-alt-${props.side === 'left' ? 'right' : 'left'}`} />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_KARA')}
+					</a>
+				</li>
+			) : null}
+			{!isNonStandardPlaylist(oppositePlaylist.plaid) && !isNonStandardPlaylist(playlist.plaid) ? (
+				<li>
+					<a
+						href="#"
+						onClick={event => {
+							props.transferKara(event, -1);
+							props.closeKaraMenu();
+						}}
+					>
+						<i className="fas fa-fw fa-exchange-alt" />
+						&nbsp;
+						{i18next.t('KARA_MENU.TRANSFER_KARA_AFTER_PLAYING')}
 					</a>
 				</li>
 			) : null}

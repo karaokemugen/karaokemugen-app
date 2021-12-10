@@ -26,13 +26,6 @@ function CheckedKaraMenuModal(props: IProps) {
 	const [effectFree, setEffectFree] = useState(false);
 	const [effectVisibility, setEffectVisibility] = useState(false);
 
-	const onRightClickTransfer = (e: any) => {
-		e.preventDefault();
-		e.stopPropagation();
-		props.transferKara(e, -1);
-		props.closeKaraMenu();
-	};
-
 	const freeKara = async () => {
 		if (props.checkedKaras.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
@@ -152,15 +145,29 @@ function CheckedKaraMenuModal(props: IProps) {
 				<li>
 					<a
 						href="#"
-						onContextMenu={onRightClickTransfer}
 						onClick={event => {
 							props.transferKara(event);
 							props.closeKaraMenu();
 						}}
 					>
-						<i className="fas fa-fw fa-exchange-alt" />
+						<i className={`fas fa-fw fa-long-arrow-alt-${props.side === 'left' ? 'right' : 'left'}`} />
 						&nbsp;
 						{i18next.t('KARA_MENU.TRANSFER_SELECT_KARA')}
+					</a>
+				</li>
+			) : null}
+			{!isNonStandardPlaylist(oppositePlaylist.plaid) && !isNonStandardPlaylist(playlist.plaid) ? (
+				<li>
+					<a
+						href="#"
+						onClick={event => {
+							props.transferKara(event, -1);
+							props.closeKaraMenu();
+						}}
+					>
+						<i className="fas fa-fw fa-exchange-alt" />
+						&nbsp;
+						{i18next.t('KARA_MENU.TRANSFER_SELECT_KARA_AFTER_PLAYING')}
 					</a>
 				</li>
 			) : null}

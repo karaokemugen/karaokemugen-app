@@ -74,7 +74,8 @@
 		"DOWNLOAD_ALL": "Download all"
 	},
 	"KARA_MENU": {
-		"TRANSFER_SELECT_KARA": "Transfer selected songs - right click to transfer it after the currently playing song",
+		"TRANSFER_SELECT_KARA": "Transfer selected songs",
+		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "Transfer it after the currently playing song",
 		"FAV": "Add to favorites",
 		"FAV_DEL": "Delete from favorites",
 		"KARA_COMMANDS": "Song commands",
@@ -95,7 +96,8 @@
 		"BLACKLISTED": "Blacklisted!",
 		"ADD_WHITELIST": "Add to whitelist",
 		"WHITELISTED": "Whitelisted!",
-		"TRANSFER_KARA": "Transfer this song - right click to transfer it after the currently playing song",
+		"TRANSFER_KARA": "Transfer this song ",
+		"TRANSFER_KARA_AFTER_PLAYING": "Transfer it after the currently playing song",
 		"MOVE_KARA": "Move after current song"
 	},
 	"KAROULETTE": {
