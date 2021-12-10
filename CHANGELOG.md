@@ -4,19 +4,66 @@
 
 -   You can choose your mpv output audio device (#968)
 -   You can now upload custom backgrounds for the player (along with music!, #899, #785)
--   You can hide more elements from the player OSD (song informations #1143, quotes #1080)
 -   You can create "smart" playlists which will update automatically based on criteria you define (#809)
 -   In streamer mode, Twitch messages will be shown in "Nico nico douga" fashion (#1023)
--   Songs are now grouped, a song will be presented with each version for you to choose (#935)
+-   Songs are now grouped (configurable in user panel), a song will be presented with each version for you to choose (#935)
+-   The public playlist will show a "Review songs" panel, it allows to see each karaoke in detail before deciding to accept/refuse (#1022)
 
-## Karaoke Mugen Studio
+### Karaoke Mugen Studio
 
 Karaoke Mugen Studio is a set of features intended at contributors and maintainers:
 
 -   The karaoke list now shows an "Edit lyrics" button, opening the associated program (e.g Aegisub, #1084).
 -   Repositories can have hooks, automated "scripts" that will for example, add Hololive creator tag for any Hololive-affiliated singer (#948).
--   The karaoke inbox can be displayed in the app and the karaokes downloaded (#1086).
+-   The karaoke inbox can be displayed in the app, maintainers can download karaokes and integrate them in the database (#1086).
 -   You can push/pull Git-enabled repositories, along with uploading videos to FTP (#1085).
+-   There is an "Edit karaoke" in KaraDetail entries (#1055)
+
+## Improvements
+
+-   There is now multiple lines in the current playlist for sponsors and jingles (#1134)
+-   You can switch the interface language in the user settings (#1050)
+-   Songs now have internationalized titles (#847)
+-   There is now "Japanese" and "Japanese - Romaji" in language preferences (#850)
+-   You can hide more elements from the player OSD (song informations #1143, quotes #1080)
+-   `Player.SongInfoLanguage` config key allow power users to force a locale for song information displayed on the screen (#1149)
+-   The zip/patch repository system was improved with a file download fallback (#1122)
+
+## Fixes
+
+-   There is no more layout shift in Welcome Page (#1141)
+-   The show/hide subtitles was reworked to avoid weird icon display (#1135)
+-   The favorites stats consent is included in setup pages (#1125)
+-   The app should start if a media path is not available (#1137)
+-   The inline tag popout should be displayed correctly (#1069)
+-   The progress bars and player statuses should be updating properly after wake-up on mobile devices (#1079)
+-   Fix bottom margins on public interface (#1067)
+-   Fix player scaling on HiDPI displays (09b80a54)
+-   Users with online accounts were randomly reset, this shouldn't happen anymore (#1092)
+-   Before setup, the menu bar is displaying a limited set of options (#1081)
+-   Media probes shouldn't be done anymore on outdated media files (#1151)
+-   Merging two tags when both are present in a karaoke should work properly now (#1107)
+-   You can resume karaokes when you have an empty current playlist (#1101)
+-   The zip/patch mechanism shouldn't try to update disabled repositories (#1115)
+-   The moving process of karaokes in a list should be more stable (#1103)
+
+## Misc
+
+-   The code is now formatted with Prettier. Developers, please install the pre-commit hook with `yarn husky install` (should be done automatically on installation, #1114)
+-   DAO functions names, user functions and resolved paths were refactored (#1119, 21cb29e0, #1089)
+-   Medias update now uses the standard downloaded classes (#1120)
+-   got was replaced by axios (#1099)
+-   react-virtualized was replaced by react-virtuoso, react-sortable-hoc was replaced by react-beautiful-dnd (#954)
+-   Electron was updated to version 15.x (#1100)
+-   PostgreSQL was updated to version 13, the migration should happen automatically with backups done on the app start since version 5 (#488)
+-   Progressively, the frontend is being converted to React functional components (#911)
+-   Demo mode was removed (#1082)
+-   The app is translated in more languages thanks to [Weblate](https://hosted.weblate.org/projects/karaoke-mugen/)
+-   The following configuration keys were removed and/or moved: (#1057)
+    -   `Frontend.GeneratePreviews` was removed and is always true
+    -   `Frontend.AuthExpireTime` was removed
+    -   `Frontend.Port` was moved in `System.FrontendPort`
+    -   `Karaoke.Display` was moved in `Player.Display`
 
 # v5.1.32 - 23/11/2021
 
