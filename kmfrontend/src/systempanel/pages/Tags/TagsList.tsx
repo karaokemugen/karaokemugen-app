@@ -1,8 +1,8 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Divider, Input, Layout, Modal, Select, Table, Tag, Tooltip } from 'antd';
 import i18next from 'i18next';
-import { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
@@ -10,115 +10,59 @@ import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes } from '../../../utils/tagTypes';
 import { is_touch_device, isModifiable } from '../../../utils/tools';
 
-interface TagsListState {
-	tags: DBTag[];
-	tag?: DBTag;
-	deleteModal: boolean;
-	type?: number;
-}
+function TagsList() {
+	const context = useContext(GlobalContext);
+	const [searchParams, setSearchParams] = useSearchParams();
 
-class TagsList extends Component<unknown, TagsListState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>;
-	filter: string;
+	const [filter, setFilter] = useState('');
+	const [tags, setTags] = useState<DBTag[]>([]);
+	const [tag, setTag] = useState<DBTag>();
+	const [deleteModal, setDeleteModal] = useState(false);
+	const [typeTag, setTypeTag] = useState(
+		searchParams.get('type')
+			? parseInt(searchParams.get('type'))
+			: localStorage.getItem('typeTagList')
+			? parseInt(localStorage.getItem('typeTagList'))
+			: undefined
+	);
 
-	constructor(props) {
-		super(props);
-		this.filter = '';
-		this.state = {
-			tags: [],
-			deleteModal: false,
-			type:
-				window.location.search.indexOf('type=') !== -1
-					? parseInt(window.location.search.split('=')[1])
-					: localStorage.getItem('typeTagList')
-					? parseInt(localStorage.getItem('typeTagList'))
-					: undefined,
-		};
-	}
-
-	componentDidMount() {
-		this.refresh();
-	}
-
-	refresh = async () => {
+	const refresh = async () => {
 		try {
-			const res = await commandBackend('getTags', { filter: this.filter, type: this.state.type });
-			this.setState({ tags: res.content });
+			const res = await commandBackend('getTags', { filter, type: typeTag });
+			setTags(res.content);
 		} catch (e) {
 			//already display
 		}
 	};
 
-	delete = async tid => {
+	const resetDelete = () => {
+		setDeleteModal(false);
+		setTag(undefined);
+	};
+
+	const deleteTag = async tid => {
 		try {
-			this.setState({ deleteModal: false, tag: undefined });
+			resetDelete();
 			await commandBackend('deleteTag', { tids: [tid] }, true);
-			this.refresh();
+			refresh();
 		} catch (err) {
-			this.setState({ deleteModal: false, tag: undefined });
+			resetDelete();
 		}
 	};
 
-	changeType = async value => {
-		this.setState({ type: value }, () => {
-			localStorage.setItem('typeTagList', value ? value : '');
-			this.refresh();
-		});
-	};
+	const changeType = value => setTypeTag(value);
 
-	render() {
-		return (
-			<>
-				<Layout.Header>
-					<div className="title">{i18next.t('HEADERS.TAG_LIST.TITLE')}</div>
-					<div className="description">{i18next.t('HEADERS.TAG_LIST.DESCRIPTION')}</div>
-				</Layout.Header>
-				<Layout.Content>
-					<div style={{ display: 'flex', marginBottom: '1em' }}>
-						<Input.Search
-							placeholder={i18next.t('SEARCH_FILTER')}
-							onChange={event => (this.filter = event.target.value)}
-							enterButton={i18next.t('SEARCH')}
-							onSearch={this.refresh}
-						/>
-						<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
-						<Select
-							allowClear={true}
-							style={{ width: 300 }}
-							onChange={this.changeType}
-							defaultValue={this.state.type}
-						>
-							{Object.entries(tagTypes).map(([key, value]) => {
-								return (
-									<Select.Option key={value.type} value={value.type}>
-										{i18next.t(`TAG_TYPES.${key}_other`)}
-									</Select.Option>
-								);
-							})}
-						</Select>
-					</div>
-					<Table dataSource={this.state.tags} columns={this.columns} rowKey="tid" />
-					<Modal
-						title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
-						visible={this.state.deleteModal}
-						onOk={() => this.delete(this.state.tag.tid)}
-						onCancel={() => this.setState({ deleteModal: false, tag: undefined })}
-						okText={i18next.t('YES')}
-						cancelText={i18next.t('NO')}
-					>
-						<p>
-							{i18next.t('TAGS.DELETE_TAG_CONFIRM')} <b>{this.state.tag?.name}</b>
-						</p>
-						<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
-						<p>{i18next.t('CONFIRM_SURE')}</p>
-					</Modal>
-				</Layout.Content>
-			</>
-		);
-	}
+	useEffect(() => {
+		setSearchParams({ type: typeTag.toString() });
+		localStorage.setItem('typeTagList', typeTag ? typeTag.toString() : '');
+		refresh();
+	}, [typeTag]);
 
-	columns = [
+	useEffect(() => {
+		refresh();
+	}, []);
+
+	const columns = [
 		{
 			title: i18next.t('TAGS.NAME'),
 			dataIndex: 'name',
@@ -164,7 +108,7 @@ class TagsList extends Component<unknown, TagsListState> {
 		{
 			title: i18next.t('ACTION'),
 			render: (_text, record) =>
-				isModifiable(this.context, record.repository) ? (
+				isModifiable(context, record.repository) ? (
 					<span>
 						<Link to={`/system/tags/${record.tid}`}>
 							<Button type="primary" icon={<EditOutlined />} />
@@ -174,12 +118,59 @@ class TagsList extends Component<unknown, TagsListState> {
 							type="primary"
 							danger
 							icon={<DeleteOutlined />}
-							onClick={() => this.setState({ deleteModal: true, tag: record })}
+							onClick={() => {
+								setDeleteModal(true);
+								setTag(record);
+							}}
 						/>
 					</span>
 				) : null,
 		},
 	];
+
+	return (
+		<>
+			<Layout.Header>
+				<div className="title">{i18next.t('HEADERS.TAG_LIST.TITLE')}</div>
+				<div className="description">{i18next.t('HEADERS.TAG_LIST.DESCRIPTION')}</div>
+			</Layout.Header>
+			<Layout.Content>
+				<div style={{ display: 'flex', marginBottom: '1em' }}>
+					<Input.Search
+						placeholder={i18next.t('SEARCH_FILTER')}
+						onChange={event => setFilter(event.target.value)}
+						enterButton={i18next.t('SEARCH')}
+						onSearch={refresh}
+					/>
+					<label style={{ marginLeft: '2em', paddingRight: '1em' }}>{i18next.t('TAGS.TYPES')} :</label>
+					<Select allowClear={true} style={{ width: 300 }} onChange={changeType} defaultValue={typeTag}>
+						{Object.entries(tagTypes).map(([key, value]) => {
+							return (
+								<Select.Option key={value.type} value={value.type}>
+									{i18next.t(`TAG_TYPES.${key}_other`)}
+								</Select.Option>
+							);
+						})}
+					</Select>
+				</div>
+				<Table dataSource={tags} columns={columns} rowKey="tid" />
+				<Modal
+					title={i18next.t('TAGS.TAG_DELETED_CONFIRM')}
+					visible={deleteModal}
+					onOk={() => deleteTag(tag.tid)}
+					onCancel={resetDelete}
+					okText={i18next.t('YES')}
+					cancelText={i18next.t('NO')}
+				>
+					<p>
+						{i18next.t('TAGS.DELETE_TAG_CONFIRM')} <b>{tag?.name}</b>
+					</p>
+					<p>{i18next.t('TAGS.DELETE_TAG_MESSAGE')}</p>
+					<p>{i18next.t('CONFIRM_SURE')}</p>
+				</Modal>
+			</Layout.Content>
+		</>
+	);
 }
 
 export default TagsList;

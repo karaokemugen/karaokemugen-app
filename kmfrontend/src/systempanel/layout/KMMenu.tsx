@@ -2,13 +2,14 @@ import { HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Menu } from 'antd';
 import i18next from 'i18next';
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { logout } from '../../store/actions/auth';
 import GlobalContext from '../../store/context';
 
 function KMMenu() {
 	const context = useContext(GlobalContext);
+	const navigate = useNavigate();
 
 	const haveMaintainerModeRepo =
 		context.globalState.settings.data.config?.System?.Repositories.filter(
@@ -112,7 +113,7 @@ function KMMenu() {
 			</Menu.Item>
 			<Menu.Item key="change" style={{ display: 'block' }}>
 				{/* The <Button href="..."> component has broken CSS */}
-				<Button icon={<HomeOutlined />} onClick={() => window.location.assign('/welcome')}>
+				<Button icon={<HomeOutlined />} onClick={() => navigate('/welcome')}>
 					{i18next.t('CHANGE_INTERFACE')}
 				</Button>
 			</Menu.Item>

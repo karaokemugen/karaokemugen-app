@@ -1,13 +1,14 @@
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import GlobalContext from '../../../store/context';
 import { isElectron } from '../../../utils/electron';
 import { commandBackend } from '../../../utils/socket';
 
-function SetupPageRepo(props: RouteComponentProps) {
+function SetupPageRepo() {
 	const context = useContext(GlobalContext);
+	const navigate = useNavigate();
 
 	const getPathForFileSystem = (value: string) => {
 		const state = context.globalState.settings.data.state;
@@ -112,7 +113,7 @@ function SetupPageRepo(props: RouteComponentProps) {
 						type="button"
 						onClick={async () => {
 							await movingMedia();
-							props.history.push('/setup/stats');
+							navigate('/setup/stats');
 						}}
 					>
 						{i18next.t('SETUP_PAGE.SAVE_PARAMETER')}
@@ -123,4 +124,4 @@ function SetupPageRepo(props: RouteComponentProps) {
 	);
 }
 
-export default withRouter(SetupPageRepo);
+export default SetupPageRepo;

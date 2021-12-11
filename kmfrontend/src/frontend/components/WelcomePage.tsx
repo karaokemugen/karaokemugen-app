@@ -3,6 +3,7 @@ import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Repository } from '../../../../src/lib/types/repo';
 import { DBStats } from '../../../../src/types/database/database';
@@ -23,6 +24,9 @@ import WelcomePageArticle from './WelcomePageArticle';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
+	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+
 	const [news, setNews] = useState<News[]>([]);
 	const [sessions, setSessions] = useState<Session[]>([]);
 	const [activeSession, setActiveSession] = useState<Session>();
@@ -165,7 +169,7 @@ function WelcomePage() {
 			migrationsToDo = false;
 		}
 		if (migrationsToDo) {
-			window.location.assign('/migrate');
+			navigate('/migrate');
 		} else if (
 			context?.globalState.settings.data.config?.Online.Stats === undefined ||
 			context?.globalState.settings.data.config?.Online.ErrorTracking === undefined
@@ -262,57 +266,45 @@ function WelcomePage() {
 					<section className="tiles-panel">
 						{context?.globalState.settings.data.user?.flag_tutorial_done ? (
 							<article className="tile-manage">
-								<button
-									type="button"
-									onClick={() => window.location.assign('/admin' + window.location.search)}
-								>
+								<button type="button" onClick={() => navigate('/admin' + window.location.search)}>
 									<i className="fas fa-fw fa-list" />
 									<span>{i18next.t('WELCOME_PAGE.KARAMANAGER')}</span>
 								</button>
 							</article>
 						) : (
 							<article className="tile-tutorial">
-								<button
-									type="button"
-									onClick={() => window.location.assign('/admin' + window.location.search)}
-								>
+								<button type="button" onClick={() => navigate('/admin' + window.location.search)}>
 									<i className="fas fa-fw fa-hand-point-right" />
 									<span>{i18next.t('WELCOME_PAGE.GETSTARTED')}</span>
 								</button>
 							</article>
 						)}
 						<article className="tile-system">
-							<button type="button" onClick={() => window.location.assign('/system')}>
+							<button type="button" onClick={() => navigate('/system')}>
 								<i className="fas fa-fw fa-cog" />
 								<span>{i18next.t('WELCOME_PAGE.ADMINISTRATION')}</span>
 							</button>
 						</article>
 						<article className="tile-system">
-							<button
-								type="button"
-								onClick={() => window.location.assign('/public' + window.location.search)}
-							>
+							<button type="button" onClick={() => navigate('/public' + window.location.search)}>
 								<i className="fas fa-fw fa-user" />
 								<span>{i18next.t('WELCOME_PAGE.PUBLIC')}</span>
 							</button>
 						</article>
 						<article className="tile-help">
-							<button
-								type="button"
-								onClick={() => window.location.assign('https://mugen.karaokes.moe/docs/')}
-							>
+							<button type="button" onClick={() => navigate('https://mugen.karaokes.moe/docs/')}>
 								<i className="fas fa-fw fa-question-circle" />
 								<span>{i18next.t('WELCOME_PAGE.HELP')}</span>
 							</button>
 						</article>
 						<article className="tile-download">
-							<button type="button" onClick={() => window.location.assign('/system/karas/download')}>
+							<button type="button" onClick={() => navigate('/system/karas/download')}>
 								<i className="fas fa-fw fa-download" />
 								<span>{i18next.t('WELCOME_PAGE.DOWNLOAD')}</span>
 							</button>
 						</article>
 						<article className="tile-logs">
-							<button type="button" onClick={() => window.location.assign('/system/log')}>
+							<button type="button" onClick={() => navigate('/system/log')}>
 								<i className="fas fa-fw fa-terminal" />
 								<span>{i18next.t('WELCOME_PAGE.LOGS')}</span>
 							</button>
@@ -324,15 +316,15 @@ function WelcomePage() {
 									{i18next.t('WELCOME_PAGE.STATS')}
 								</label>
 								<ul>
-									<li onClick={() => window.location.assign('/system/karas')}>
+									<li onClick={() => navigate('/system/karas')}>
 										<strong>{i18next.t('WELCOME_PAGE.STATS_KARAS')}</strong>
 										<span>{stats?.karas}</span>
 									</li>
-									<li onClick={() => window.location.assign('/system/tags?type=1')}>
+									<li onClick={() => navigate('/system/tags?type=1')}>
 										<strong>{i18next.t('WELCOME_PAGE.STATS_SERIES')}</strong>
 										<span>{stats?.series}</span>
 									</li>
-									<li onClick={() => window.location.assign('/system/tags')}>
+									<li onClick={() => navigate('/system/tags')}>
 										<strong>{i18next.t('WELCOME_PAGE.STATS_TAGS')}</strong>
 										<span>{stats?.tags}</span>
 									</li>
@@ -341,7 +333,7 @@ function WelcomePage() {
 						</article>
 						<article className="tile-repositories">
 							<blockquote>
-								<button type="button" onClick={() => window.location.assign('/system/repositories')}>
+								<button type="button" onClick={() => navigate('/system/repositories')}>
 									<i className="fas fa-fw fa-network-wired" />
 									{i18next.t('WELCOME_PAGE.REPOSITORY')}
 								</button>
@@ -351,9 +343,7 @@ function WelcomePage() {
 											<li
 												key={repository.Name}
 												className={repository.Enabled ? '' : 'disabled'}
-												onClick={() =>
-													window.location.assign(`/system/repositories/${repository.Name}`)
-												}
+												onClick={() => navigate(`/system/repositories/${repository.Name}`)}
 											>
 												<i
 													className={`fas fa-fw ${

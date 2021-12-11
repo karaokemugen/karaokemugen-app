@@ -1,12 +1,13 @@
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
-function SetupPageStats(props: RouteComponentProps) {
+function SetupPageStats() {
 	const context = useContext(GlobalContext);
+	const navigate = useNavigate();
 
 	const [error, setError] = useState<string>();
 	const [openDetails, setOpenDetails] = useState(false);
@@ -28,7 +29,7 @@ function SetupPageStats(props: RouteComponentProps) {
 			user.flag_sendstats = userStats;
 			await commandBackend('editMyAccount', user);
 			setError(undefined);
-			props.history.push('/setup/loading');
+			navigate('/setup/loading');
 		}
 	};
 
@@ -108,4 +109,4 @@ function SetupPageStats(props: RouteComponentProps) {
 	);
 }
 
-export default withRouter(SetupPageStats);
+export default SetupPageStats;

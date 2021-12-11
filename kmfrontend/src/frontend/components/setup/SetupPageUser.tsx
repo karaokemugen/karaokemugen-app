@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { setAuthentifactionInformation } from '../../../store/actions/auth';
 import GlobalContext from '../../../store/context';
@@ -9,8 +9,9 @@ import { langSupport } from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { displayMessage } from '../../../utils/tools';
 
-function SetupPageUser(props: RouteComponentProps) {
+function SetupPageUser() {
 	const context = useContext(GlobalContext);
+	const navigate = useNavigate();
 
 	const [accountType, setAccountType] = useState<'local' | 'online'>();
 	const [onlineAction, setOnlineAction] = useState<'create' | 'login'>();
@@ -85,7 +86,7 @@ function SetupPageUser(props: RouteComponentProps) {
 			});
 			setAuthentifactionInformation(context.globalDispatch, infos);
 			setError(undefined);
-			props.history.push('/setup/repo');
+			navigate('/setup/repo');
 		} catch (err: any) {
 			const error = err?.message?.code ? i18next.t(`ERROR_CODES.${err.message.code}`) : JSON.stringify(err);
 			setError(error);
@@ -330,4 +331,4 @@ function SetupPageUser(props: RouteComponentProps) {
 	);
 }
 
-export default withRouter(SetupPageUser);
+export default SetupPageUser;

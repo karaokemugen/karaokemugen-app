@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import merge from 'lodash.merge';
 import { useContext, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { PublicPlayerState } from '../../../../src/types/state';
 import nanamiSingPng from '../../assets/nanami-sing.png';
@@ -16,6 +17,8 @@ import ProgressBar from './karas/ProgressBar';
 
 function ChibiPage() {
 	const context = useContext(GlobalContext);
+	const [searchParams] = useSearchParams();
+
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
 	const [playlistList, setPlaylistList] = useState<PlaylistElem[]>([]);
 
@@ -71,15 +74,9 @@ function ChibiPage() {
 	};
 
 	const displayChibiPage = async () => {
-		if (
-			new URL(window.location.toString()).searchParams.has('admpwd') &&
-			!context.globalState.auth.isAuthenticated
-		) {
-			await login(
-				'admin',
-				new URL(window.location.toString()).searchParams.get('admpwd'),
-				context.globalDispatch
-			);
+		const admpwd = searchParams.get('admpwd');
+		if (admpwd && !context.globalState.auth.isAuthenticated) {
+			await login('admin', admpwd, context.globalDispatch);
 		}
 		if (context.globalState.auth.isAuthenticated) {
 			getSocket().on('playerStatus', playerUpdate);

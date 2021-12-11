@@ -2,7 +2,7 @@ import './KMFrontend.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import GlobalContext from '../store/context';
 import { isElectron } from '../utils/electron';
@@ -20,6 +20,8 @@ import WelcomePage from './components/WelcomePage';
 
 function KMFrontend() {
 	const context = useContext(GlobalContext);
+	const location = useLocation();
+
 	const [shutdownPopup, setShutdownPopup] = useState(false);
 
 	const updateUser = async (flag_sendstats: boolean) => {
@@ -72,7 +74,7 @@ function KMFrontend() {
 			);
 		}
 
-		if (!context?.globalState.settings.data.user?.flag_tutorial_done && window.location.pathname === '/admin') {
+		if (!context?.globalState.settings.data.user?.flag_tutorial_done && location.pathname === '/admin') {
 			startIntro();
 		}
 	}, []);
@@ -81,23 +83,20 @@ function KMFrontend() {
 		<ShutdownModal close={() => setShutdownPopup(false)} />
 	) : context.globalState.settings.data.config ? (
 		<div className={is_touch_device() ? 'touch' : ''}>
-			<Switch>
-				<Route path="/setup" component={SetupPage} />
-				<Route path="/migrate" component={MigratePage} />
-				<Route path="/welcome" component={WelcomePage} />
-				<Route path="/admin" render={() => <AdminPage powerOff={isElectron() ? undefined : powerOff} />} />
-				<Route path="/chibi" exact component={ChibiPage} />
-				<Route path="/chibiPlaylist" exact component={PlaylistPage} />
-				<Route path="/public" component={PublicPage} />
-				<Route exact path="/">
-					{context.globalState.auth.data.role === 'admin' ? (
-						<Redirect to="/welcome" />
-					) : (
-						<Redirect to="/public" />
-					)}
-				</Route>
-				<Route component={NotFoundPage} />
-			</Switch>
+			<Routes>
+				<Route path="/setup/*" element={<SetupPage />} />
+				<Route path="/migrate" element={<MigratePage />} />
+				<Route path="/welcome" element={<WelcomePage />} />
+				<Route path="/admin/*" element={<AdminPage powerOff={isElectron() ? undefined : powerOff} />} />
+				<Route path="/chibiPlaylist" element={<PlaylistPage />} />
+				<Route path="/chibi" element={<ChibiPage />} />
+				<Route path="/public/*" element={<PublicPage />} />
+				<Route
+					path="/"
+					element={<Navigate to={context.globalState.auth.data.role === 'admin' ? '/welcome' : '/public'} />}
+				/>
+				<Route path="*" element={<NotFoundPage />} />
+			</Routes>
 			<a id="downloadAnchorElem" />
 		</div>
 	) : null;

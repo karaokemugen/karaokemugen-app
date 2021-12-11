@@ -3,7 +3,7 @@ import '../../styles/start/SetupPage.scss';
 
 import i18next from 'i18next';
 import { useContext } from 'react';
-import { Redirect, Route, Switch, withRouter } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router';
 
 import logo from '../../../assets/Logo-final-fond-transparent.png';
 import GlobalContext from '../../../store/context';
@@ -41,23 +41,28 @@ function SetupPage() {
 					</nav>
 				</div>
 				<div className="main">
-					<Switch>
-						<Route path="/setup/loading" component={SetupLoading} />
-						<Route path="/setup/stats" component={SetupPageStats} />
-						<Route path="/setup/repo" component={SetupPageRepo} />
-						<Route path="/setup/user" component={SetupPageUser} />
-						<Redirect
-							to={
-								context?.globalState.settings.data.user.login !== 'admin'
-									? '/setup/repo'
-									: '/setup/user'
+					<Routes>
+						<Route path="/loading" element={<SetupLoading />} />
+						<Route path="/stats" element={<SetupPageStats />} />
+						<Route path="/repo" element={<SetupPageRepo />} />
+						<Route path="/user" element={<SetupPageUser />} />
+						<Route
+							path="*"
+							element={
+								<Navigate
+									to={
+										context?.globalState.settings.data.user.login !== 'admin'
+											? '/setup/repo'
+											: '/setup/user'
+									}
+								/>
 							}
 						/>
-					</Switch>
+					</Routes>
 				</div>
 			</div>
 		</div>
 	);
 }
 
-export default withRouter(SetupPage);
+export default SetupPage;

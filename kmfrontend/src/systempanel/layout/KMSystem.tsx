@@ -5,7 +5,7 @@ import enUS from 'antd/es/locale/en_US';
 import frFR from 'antd/es/locale/fr_FR';
 import i18next from 'i18next';
 import { Component } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import TasksEvent from '../../TasksEvent';
 import { getSocket } from '../../utils/socket';
@@ -70,50 +70,49 @@ class KMSystem extends Component<unknown, unknown> {
 					<Layout>
 						<Loading />
 						<TasksEvent limit={5} />
-						<Switch>
-							<Redirect from="/system/km" to="/system/home" />
-							<Redirect from="/system" exact to="/system/home" />
-							<Route path="/system/home" component={Home} />
+						<Routes>
+							<Route path="/home" element={<Home />} />
+							<Route path="/log" element={<Log />} />
+							<Route path="/options" element={<Options />} />
+							<Route path="/config" element={<Config />} />
+							<Route path="/storage" element={<Storage />} />
+							<Route path="/unused" element={<UnusedList />} />
+							<Route path="/backgrounds" element={<Background />} />
 
-							<Route path="/system/log" component={Log} />
-							<Route path="/system/options" component={Options} />
-							<Route path="/system/config" component={Config} />
-							<Route path="/system/storage" component={Storage} />
-							<Route path="/system/unused" component={UnusedList} />
+							<Route path="/sessions/new" element={<SessionsEdit />} />
+							<Route path="/sessions/:seid" element={<SessionsEdit />} />
+							<Route path="/sessions" element={<SessionsList />} />
 
-							<Route path="/system/sessions/new" component={SessionsEdit} />
-							<Route path="/system/sessions/:seid" component={SessionsEdit} />
-							<Route path="/system/sessions" component={SessionsList} />
+							<Route path="/repositories/new" element={<RepositoriesEdit />} />
+							<Route path="/repositories/:name" element={<RepositoriesEdit />} />
+							<Route path="/repositories" element={<RepositoriesList />} />
 
-							<Route path="/system/repositories/new" component={RepositoriesEdit} />
-							<Route path="/system/repositories/:name" component={RepositoriesEdit} />
-							<Route path="/system/repositories" component={RepositoriesList} />
+							<Route path="/karas/download/queue" element={<QueueDownload />} />
+							<Route path="/karas/download" element={<KaraDownload />} />
+							<Route path="/karas/create" element={<KaraEdit />} />
+							<Route path="/karas/history" element={<KaraHistory />} />
+							<Route path="/karas/ranking" element={<KaraRanking />} />
+							<Route path="/karas/viewcounts" element={<KaraViewcounts />} />
+							<Route path="/karas/batch" element={<KaraBatchEdit />} />
+							<Route path="/karas/:kid" element={<KaraEdit />} />
+							<Route path="/karas" element={<KaraList />} />
 
-							<Route path="/system/backgrounds" component={Background} />
+							<Route path="/tags/duplicate" element={<TagsDuplicate />} />
+							<Route path="/tags/new" element={<TagsEdit />} />
+							<Route path="/tags/:tid" element={<TagsEdit />} />
+							<Route path="/tags" element={<TagsList />} />
 
-							<Route path="/system/karas/download/queue" component={QueueDownload} />
-							<Route path="/system/karas/download" component={KaraDownload} />
-							<Route path="/system/karas/create" component={KaraEdit} />
-							<Route path="/system/karas/history" component={KaraHistory} />
-							<Route path="/system/karas/ranking" component={KaraRanking} />
-							<Route path="/system/karas/viewcounts" component={KaraViewcounts} />
-							<Route path="/system/karas/batch" component={KaraBatchEdit} />
-							<Route path="/system/karas/:kid" component={KaraEdit} />
-							<Route path="/system/karas" component={KaraList} />
+							<Route path="/db" element={<Database />} />
+							<Route path="/git" element={<Git />} />
+							<Route path="/inbox" element={<Inbox />} />
 
-							<Route path="/system/tags/duplicate" component={TagsDuplicate} />
-							<Route path="/system/tags/new" component={TagsEdit} />
-							<Route path="/system/tags/:tid" component={TagsEdit} />
-							<Route path="/system/tags" component={TagsList} />
+							<Route path="/users/create" element={<UserEdit />} />
+							<Route path="/users/:username" element={<UserEdit />} />
+							<Route path="/users" element={<UserList />} />
 
-							<Route path="/system/db" component={Database} />
-							<Route path="/system/git" component={Git} />
-							<Route path="/system/inbox" component={Inbox} />
-
-							<Route path="/system/users/create" component={UserEdit} />
-							<Route path="/system/users/:userLogin" component={UserEdit} />
-							<Route path="/system/users" component={UserList} />
-						</Switch>
+							<Route path="/km" element={<Navigate to="/system/home" />} />
+							<Route path="*" element={<Navigate to="/system/home" />} />
+						</Routes>
 					</Layout>
 				</Layout>
 			</ConfigProvider>

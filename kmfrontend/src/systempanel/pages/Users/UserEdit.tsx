@@ -1,16 +1,11 @@
 import { Layout } from 'antd';
 import i18next from 'i18next';
-import { Component } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { User } from '../../../../../src/lib/types/user';
 import { commandBackend } from '../../../utils/socket';
 import UserForm from './UserForm';
-
-interface UserEditState {
-	user: User;
-	save: (user: User) => void;
-}
 
 const newUser = {
 	type: 1,
@@ -19,62 +14,55 @@ const newUser = {
 	nickname: null,
 };
 
-class UserEdit extends Component<RouteComponentProps<{ userLogin: string }>, UserEditState> {
-	state = {
-		user: null,
-		save: () => {},
-	};
+function UserEdit() {
+	const navigate = useNavigate();
+	const { username } = useParams();
 
-	componentDidMount() {
-		this.loadUser();
-	}
+	const [user, setUser] = useState<User>();
+	const [save, setSave] = useState<(user: User) => void>();
 
-	saveNew = async user => {
+	const saveNew = async user => {
 		await commandBackend('createUser', user, true);
-		this.props.history.push('/system/users');
+		navigate('/system/users');
 	};
 
-	saveUpdate = async user => {
+	const saveUpdate = async user => {
 		await commandBackend('editUser', user, true);
-		this.props.history.push('/system/users');
+		navigate('/system/users');
 	};
 
-	loadUser = async () => {
-		if (this.props.match.params.userLogin) {
+	const loadUser = async () => {
+		if (username) {
 			try {
-				const res = await commandBackend('getUser', { username: this.props.match.params.userLogin });
-				this.setState({ user: res, save: this.saveUpdate });
+				const res = await commandBackend('getUser', { username });
+				setUser(res);
+				setSave(saveUpdate);
 			} catch (e) {
 				// already display
 			}
 		} else {
-			this.setState({ user: { ...newUser }, save: this.saveNew });
+			setUser({ ...newUser });
+			setSave(saveNew);
 		}
 	};
 
-	render() {
-		return (
-			<>
-				<Layout.Header>
-					<div className="title">
-						{i18next.t(
-							this.props.match.params.userLogin ? 'HEADERS.USER_EDIT.TITLE' : 'HEADERS.USER_NEW.TITLE'
-						)}
-					</div>
-					<div className="description">
-						{i18next.t(
-							this.props.match.params.userLogin
-								? 'HEADERS.USER_EDIT.DESCRIPTION'
-								: 'HEADERS.USER_NEW.DESCRIPTION'
-						)}
-					</div>
-				</Layout.Header>
-				<Layout.Content>
-					{this.state.user && <UserForm user={this.state.user} save={this.state.save} />}
-				</Layout.Content>
-			</>
-		);
-	}
+	useEffect(() => {
+		loadUser();
+	}, []);
+
+	return (
+		<>
+			<Layout.Header>
+				<div className="title">
+					{i18next.t(username ? 'HEADERS.USER_EDIT.TITLE' : 'HEADERS.USER_NEW.TITLE')}
+				</div>
+				<div className="description">
+					{i18next.t(username ? 'HEADERS.USER_EDIT.DESCRIPTION' : 'HEADERS.USER_NEW.DESCRIPTION')}
+				</div>
+			</Layout.Header>
+			<Layout.Content>{user && <UserForm user={user} save={save} />}</Layout.Content>
+		</>
+	);
 }
 
-export default withRouter(UserEdit);
+export default UserEdit;

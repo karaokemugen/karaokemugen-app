@@ -33,8 +33,8 @@ class UserList extends Component<unknown, UserListState> {
 		this.setState({ users: res });
 	};
 
-	delete = async userLogin => {
-		await commandBackend('deleteUser', { username: userLogin }, true);
+	delete = async username => {
+		await commandBackend('deleteUser', { username }, true);
 		this.refresh();
 		this.setState({ deleteModal: false, user: {} });
 	};

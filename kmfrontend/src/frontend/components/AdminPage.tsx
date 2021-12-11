@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
-import { Route, Switch } from 'react-router';
+import { Route, Routes } from 'react-router';
 
 import { DBKaraTag, DBYear } from '../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../src/lib/types/database/tag';
@@ -197,11 +197,11 @@ function AdminPage(props: IProps) {
 				<ProgressBar />
 				<KmAppBodyDecorator mode="admin">
 					{playlistList.length > 0 ? (
-						<Switch>
-							<Route path="/admin/options" component={Options} />
+						<Routes>
+							<Route path="/options/*" element={<Options />} />
 							<Route
-								path="/admin"
-								render={() => (
+								path="*"
+								element={
 									<PlaylistMainDecorator>
 										<Playlist
 											scope="admin"
@@ -222,9 +222,9 @@ function AdminPage(props: IProps) {
 											openKara={openKara}
 										/>
 									</PlaylistMainDecorator>
-								)}
+								}
 							/>
-						</Switch>
+						</Routes>
 					) : null}
 				</KmAppBodyDecorator>
 			</KmAppWrapperDecorator>

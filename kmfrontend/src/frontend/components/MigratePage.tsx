@@ -3,7 +3,7 @@ import '../styles/start/MigratePage.scss';
 
 import i18next from 'i18next';
 import { Fragment, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { MigrationsFrontend } from '../../../../src/types/database/migrationsFrontend';
 import logo from '../../assets/Logo-final-fond-transparent.png';
@@ -19,7 +19,7 @@ export default function MigratePage() {
 		BulldozerVideos,
 	};
 
-	const history = useHistory();
+	const navigate = useNavigate();
 
 	const [migrations, setMigrations] = useState<MigrationsFrontend[]>([]);
 
@@ -28,13 +28,13 @@ export default function MigratePage() {
 			commandBackend('getMigrationsFrontend').then(res => {
 				const migrationsToDo: MigrationsFrontend[] = res.filter(el => !el.flag_done);
 				if (migrationsToDo.length === 0) {
-					history.push('/welcome');
+					navigate('/welcome');
 				} else {
 					setMigrations(migrationsToDo);
 				}
 			});
 		} catch (e) {
-			history.push('/welcome');
+			navigate('/welcome');
 		}
 	};
 

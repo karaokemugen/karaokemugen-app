@@ -1,18 +1,11 @@
 import { Layout } from 'antd';
 import i18next from 'i18next';
-import { Component } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Session } from '../../../../../src/types/session';
 import { commandBackend } from '../../../utils/socket';
 import SessionForm from './SessionsForm';
-
-interface SessionEditState {
-	session: Session;
-	sessions: Session[];
-	save: (session: Session) => void;
-	loadSession: boolean;
-}
 
 const newsession: Session = {
 	name: null,
@@ -21,73 +14,63 @@ const newsession: Session = {
 	ended_at: null,
 };
 
-class SessionEdit extends Component<RouteComponentProps<{ seid: string }>, SessionEditState> {
-	state = {
-		session: null,
-		sessions: [],
-		save: () => {},
-		loadSession: false,
-	};
+function SessionEdit() {
+	const navigate = useNavigate();
+	const { seid } = useParams();
 
-	componentDidMount() {
-		this.loadsession();
-	}
+	const [session, setSession] = useState<Session>();
+	const [sessions, setSessions] = useState<Session[]>([]);
+	const [save, setSave] = useState<(session: Session) => void>();
 
-	saveNew = async (session: Session) => {
+	const saveNew = async (session: Session) => {
 		await commandBackend('createSession', session, true);
-		this.props.history.push('/system/sessions');
+		navigate('/system/sessions');
 	};
 
-	saveUpdate = async (session: Session) => {
+	const saveUpdate = async (session: Session) => {
 		await commandBackend('editSession', session, true);
-		this.props.history.push('/system/sessions');
+		navigate('/system/sessions');
 	};
 
-	handleSessionMerge = async (seid1: string, seid2: string) => {
+	const handleSessionMerge = async (seid1: string, seid2: string) => {
 		await commandBackend('mergeSessions', { seid1: seid1, seid2: seid2 }, true);
-		this.props.history.push('/system/sessions/');
+		navigate('/system/sessions/');
 	};
 
-	loadsession = async () => {
-		if (this.props.match.params.seid) {
+	const loadsession = async () => {
+		if (seid) {
 			const res = await commandBackend('getSessions');
-			const sessions = res.filter(session => session.seid === this.props.match.params.seid);
-			this.setState({ sessions: res, session: sessions[0], save: this.saveUpdate, loadSession: true });
+			const actualSession = res.filter(session => session.seid === seid);
+			setSessions(res);
+			setSession(actualSession[0]);
+			setSave(saveUpdate);
 		} else {
-			this.setState({ session: { ...newsession }, save: this.saveNew, loadSession: true });
+			setSession({ ...newsession });
+			setSave(saveNew);
 		}
 	};
 
-	render() {
-		return (
-			<>
-				<Layout.Header>
-					<div className="title">
-						{i18next.t(
-							this.props.match.params.seid ? 'HEADERS.SESSIONS_EDIT.TITLE' : 'HEADERS.SESSIONS_NEW.TITLE'
-						)}
-					</div>
-					<div className="description">
-						{i18next.t(
-							this.props.match.params.seid
-								? 'HEADERS.SESSIONS_EDIT.DESCRIPTION'
-								: 'HEADERS.SESSIONS_NEW.DESCRIPTION'
-						)}
-					</div>
-				</Layout.Header>
-				<Layout.Content>
-					{this.state.loadSession && (
-						<SessionForm
-							session={this.state.session}
-							sessions={this.state.sessions}
-							save={this.state.save}
-							mergeAction={this.handleSessionMerge}
-						/>
-					)}
-				</Layout.Content>
-			</>
-		);
-	}
+	useEffect(() => {
+		loadsession();
+	}, []);
+
+	return (
+		<>
+			<Layout.Header>
+				<div className="title">
+					{i18next.t(seid ? 'HEADERS.SESSIONS_EDIT.TITLE' : 'HEADERS.SESSIONS_NEW.TITLE')}
+				</div>
+				<div className="description">
+					{i18next.t(seid ? 'HEADERS.SESSIONS_EDIT.DESCRIPTION' : 'HEADERS.SESSIONS_NEW.DESCRIPTION')}
+				</div>
+			</Layout.Header>
+			<Layout.Content>
+				{save && (
+					<SessionForm session={session} sessions={sessions} save={save} mergeAction={handleSessionMerge} />
+				)}
+			</Layout.Content>
+		</>
+	);
 }
 
-export default withRouter(SessionEdit);
+export default SessionEdit;

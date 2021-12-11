@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { TaskItem } from '../../../../../src/lib/types/taskItem';
 import logoBig from '../../../assets/Logo-fond-transp.png';
@@ -10,7 +10,8 @@ import { commandBackend, getSocket } from '../../../utils/socket';
 
 let timeout;
 
-function SetupLoading(props: RouteComponentProps) {
+function SetupLoading() {
+	const navigate = useNavigate();
 	const [tasks, setTasks] = useState<TaskItem[]>([]);
 
 	const endSetup = async () => {
@@ -23,7 +24,7 @@ function SetupLoading(props: RouteComponentProps) {
 		}).catch(() => {});
 		await commandBackend('startPlayer').catch(() => {});
 		sessionStorage.setItem('dlQueueRestart', 'true');
-		props.history.push('/welcome');
+		navigate('/welcome');
 	};
 
 	const isGitUpdateInProgress = (tasks: TaskItem[]) => {
@@ -93,4 +94,4 @@ function SetupLoading(props: RouteComponentProps) {
 	);
 }
 
-export default withRouter(SetupLoading);
+export default SetupLoading;

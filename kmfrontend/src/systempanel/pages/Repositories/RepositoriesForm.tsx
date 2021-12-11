@@ -14,7 +14,6 @@ interface RepositoriesFormProps {
 	save: any;
 	movingMedia: (movingMediaPath: string) => void;
 	compareLyrics: (repo: string) => void;
-	copyLyrics: (report: string) => void;
 }
 
 interface RepositoriesFormState {

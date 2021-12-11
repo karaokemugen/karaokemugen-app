@@ -2,7 +2,7 @@ import './Login.scss';
 
 import i18next from 'i18next';
 import { FormEvent, useContext, useEffect, useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { User } from '../../../../src/lib/types/user';
 import logo from '../../assets/Logo-fond-transp.png';
@@ -18,8 +18,11 @@ interface UserApi extends User {
 	role: 'admin' | 'user';
 }
 
-function Login(props: RouteComponentProps) {
+function Login() {
 	const context = useContext(GlobalContext);
+	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+
 	const [redBorders, setRedBorders] = useState('');
 	const [errorBackground, setErrorBackground] = useState('');
 	const [serv, setServ] = useState(
@@ -35,7 +38,6 @@ function Login(props: RouteComponentProps) {
 	const [passwordConfirmation, setPasswordConfirmation] = useState<string>();
 	const [securityCode, setSecurityCode] = useState<number>();
 
-	const admpwd = window.location.search.indexOf('admpwd') !== -1 ? window.location.search.split('=')[1] : undefined;
 	const isAdminPath = lastLocation && lastLocation !== '/' && !lastLocation.includes('/public');
 
 	const loginCall = async (username: string | undefined, password?: string, securityCode?: number) => {
@@ -72,9 +74,9 @@ function Login(props: RouteComponentProps) {
 						async (securityCodeString: string) => {
 							await loginAction(username, password, context.globalDispatch, parseInt(securityCodeString));
 							if (lastLocation) {
-								props.history.replace(lastLocation);
+								navigate(lastLocation);
 							} else {
-								props.history.replace('/');
+								navigate('/');
 							}
 						},
 						undefined,
@@ -83,9 +85,9 @@ function Login(props: RouteComponentProps) {
 				}
 			} else {
 				if (lastLocation) {
-					props.history.replace(lastLocation);
+					navigate(lastLocation);
 				} else {
-					props.history.replace('/');
+					navigate('/');
 				}
 			}
 		} catch (err) {
@@ -167,14 +169,15 @@ function Login(props: RouteComponentProps) {
 	};
 
 	useEffect(() => {
+		const admpwd = searchParams.get('admpwd');
 		if (admpwd && !context.globalState.auth.data.token) {
 			loginCall('admin', admpwd);
 		}
 		if (context.globalState.auth.isAuthenticated) {
 			if (lastLocation) {
-				props.history.replace(lastLocation);
+				navigate(lastLocation);
 			} else {
-				props.history.replace('/');
+				navigate('/');
 			}
 		}
 	}, []);
@@ -328,4 +331,4 @@ function Login(props: RouteComponentProps) {
 	);
 }
 
-export default withRouter(Login);
+export default Login;

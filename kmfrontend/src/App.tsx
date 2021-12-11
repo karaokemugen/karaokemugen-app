@@ -1,6 +1,6 @@
 import i18next from 'i18next';
-import { Component, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { lazy, Suspense, useContext, useEffect, useState } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import { isAlreadyLogged, logout } from './store/actions/auth';
@@ -15,76 +15,68 @@ const KMSystem = lazy(() => import('./systempanel/layout/KMSystem'));
 const KMFrontend = lazy(() => import('./frontend/KMFrontend'));
 const Login = lazy(() => import('./utils/components/Login'));
 
-interface AppState {
-	isInitialized: boolean;
-}
+function App() {
+	const context = useContext(GlobalContext);
+	const location = useLocation();
+	const [initialized, setInitialized] = useState(false);
 
-class App extends Component<unknown, AppState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>;
-
-	state = {
-		isInitialized: false,
-	};
-
-	async componentDidMount() {
-		await isAlreadyLogged(this.context.globalDispatch);
-		if (
-			window.location.pathname &&
-			window.location.pathname !== '/' &&
-			!window.location.pathname.includes('/public') &&
-			this.context.globalState.auth.data.role !== 'admin'
-		) {
-			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
-			logout(this.context.globalDispatch);
-		}
-		this.setState({ isInitialized: true });
-		getSocket().on('settingsUpdated', this.setSettings);
-		getSocket().on('favoritesUpdated', this.setFavorites);
-		getSocket().on('noFreeSpace', this.warningNoFreeSpace);
-	}
-
-	componentWillUnmount() {
-		getSocket().off('settingsUpdated', this.setSettings);
-		getSocket().off('favoritesUpdated', this.setFavorites);
-		getSocket().off('noFreeSpace', this.warningNoFreeSpace);
-	}
-
-	setFavorites = username => {
-		if (username === this.context.globalState.auth.data.username) {
-			this.setSettings();
+	const setFavorites = username => {
+		if (username === context.globalState.auth.data.username) {
+			setSettingsStore();
 		}
 	};
 
-	setSettings = () => setSettings(this.context.globalDispatch);
+	const setSettingsStore = () => setSettings(context.globalDispatch);
 
-	warningNoFreeSpace = () => {
+	const warningNoFreeSpace = () => {
 		displayMessage('warning', i18next.t('REPOSITORIES.NO_FREE_SPACE'), 0);
 	};
 
-	render() {
-		return (
-			<>
-				<div id="root">
-					{this.state.isInitialized ? (
-						<Router>
-							<Suspense fallback={<Loading />}>
-								<Switch>
-									<Route path="/login" component={Login} />
-									<PrivateRoute path="/system" component={KMSystem} />
-									<PrivateRoute component={KMFrontend} />
-								</Switch>
-							</Suspense>
-							<ToastContainer icon={false} theme={'colored'} />
-						</Router>
-					) : (
-						<Loading />
-					)}
-				</div>
-				<div id="modal">{this.context.globalState.modal.modal}</div>
-			</>
-		);
-	}
+	useEffect(() => {
+		isAlreadyLogged(context.globalDispatch).then(() => {
+			if (
+				location.pathname &&
+				location.pathname !== '/' &&
+				!location.pathname.includes('/public') &&
+				context.globalState.auth.data.role &&
+				context.globalState.auth.data.role !== 'admin'
+			) {
+				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
+				logout(context.globalDispatch);
+			}
+			setInitialized(true);
+			getSocket().on('settingsUpdated', setSettingsStore);
+			getSocket().on('favoritesUpdated', setFavorites);
+			getSocket().on('noFreeSpace', warningNoFreeSpace);
+		});
+		return () => {
+			getSocket().off('settingsUpdated', setSettingsStore);
+			getSocket().off('favoritesUpdated', setFavorites);
+			getSocket().off('noFreeSpace', warningNoFreeSpace);
+		};
+	}, []);
+
+	return (
+		<>
+			<div id="root">
+				{initialized ? (
+					<>
+						<Suspense fallback={<Loading />}>
+							<Routes>
+								<Route path="/login" element={<Login />} />
+								<Route path="/system/*" element={<PrivateRoute component={<KMSystem />} />} />
+								<Route path="*" element={<PrivateRoute component={<KMFrontend />} />} />
+							</Routes>
+						</Suspense>
+						<ToastContainer icon={false} theme={'colored'} />
+					</>
+				) : (
+					<Loading />
+				)}
+			</div>
+			<div id="modal">{context.globalState.modal.modal}</div>
+		</>
+	);
 }
 
 export default App;

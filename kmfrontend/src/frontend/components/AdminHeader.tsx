@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import merge from 'lodash.merge';
 import { useContext, useEffect, useState } from 'react';
 import { render } from 'react-dom';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 import { CurrentSong } from '../../../../src/types/playlist';
 import { PublicPlayerState } from '../../../../src/types/state';
@@ -18,7 +18,7 @@ import ProfilModal from './modals/ProfilModal';
 import Tutorial from './modals/Tutorial';
 import UsersModal from './modals/UsersModal';
 
-interface IProps extends RouteComponentProps {
+interface IProps {
 	currentPlaylist: PlaylistElem;
 	powerOff: (() => void) | undefined;
 	adminMessage: () => void;
@@ -30,6 +30,8 @@ function AdminHeader(props: IProps) {
 	const [dropDownSettings, setDropDownSettings] = useState(false);
 	const [dropDownMenu, setDropDownMenu] = useState(false);
 	const [statusPlayer, setStatusPlayer] = useState<PublicPlayerState>();
+	const location = useLocation();
+	const navigate = useNavigate();
 
 	const closeDropdownMenu = (e: MouseEvent) => {
 		if (!(e.target as Element).closest('.klogo') && !(e.target as Element).closest('.dropdown-menu')) {
@@ -134,11 +136,11 @@ function AdminHeader(props: IProps) {
 
 	return (
 		<KmAppHeaderDecorator mode="admin">
-			{props.location.pathname.includes('/options') ? (
+			{location.pathname.includes('/options') ? (
 				<button
 					title={i18next.t('BACK_PLAYLISTS')}
 					className="btn btn-default"
-					onClick={() => props.history.push('/admin')}
+					onClick={() => navigate('/admin')}
 				>
 					<i className="fas fa-fw fa-long-arrow-alt-left" />
 				</button>
@@ -366,16 +368,14 @@ function AdminHeader(props: IProps) {
 					<ul className="dropdown-menu">
 						<li>
 							<a
-								href={`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`}
+								href={`/admin${location.pathname.includes('/options') ? '' : '/options'}`}
 								onClick={e => {
 									e.preventDefault();
-									props.history.push(
-										`/admin${props.location.pathname.includes('/options') ? '' : '/options'}`
-									);
+									navigate(`/admin${location.pathname.includes('/options') ? '' : '/options'}`);
 									setDropDownMenu(!dropDownMenu);
 								}}
 							>
-								{props.location.pathname.includes('/options') ? (
+								{location.pathname.includes('/options') ? (
 									<>
 										<i className="fas fa-fw fa-list-ul" />
 										&nbsp;{i18next.t('CL_PLAYLISTS')}
@@ -530,4 +530,4 @@ function AdminHeader(props: IProps) {
 	);
 }
 
-export default withRouter(AdminHeader);
+export default AdminHeader;

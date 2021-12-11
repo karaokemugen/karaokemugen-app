@@ -1,6 +1,7 @@
 import { Button, Cascader, Col, Layout, Radio, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
 import { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
@@ -98,9 +99,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 				<Layout.Content>
 					<Row justify="space-between" style={{ flexWrap: 'nowrap' }}>
 						<Col flex={'15%'}>
-							<a href={`${window.location.origin}/admin`}>
-								{i18next.t('KARA.BATCH_EDIT.CREATE_PLAYLIST')}
-							</a>
+							<Link to="/admin">{i18next.t('KARA.BATCH_EDIT.CREATE_PLAYLIST')}</Link>
 						</Col>
 						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_PLAYLIST')}</label>

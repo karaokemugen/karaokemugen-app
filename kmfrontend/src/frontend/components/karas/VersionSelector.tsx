@@ -1,6 +1,7 @@
 import './VersionSelector.scss';
 
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { KaraList } from '../../../../../src/lib/types/kara';
@@ -42,6 +43,8 @@ export default function VersionSelector(props: Props) {
 	const [indexOpened, setIndexOpened] = useState(-1);
 	const [showVideo, setShowVideo] = useState(false);
 	const context = useContext(GlobalContext);
+	const params = useParams();
+	const id = props.kid ? props.kid : params.kid;
 
 	const openKara = useCallback(index => {
 		setIndexOpened(oldIndex => {
@@ -55,7 +58,7 @@ export default function VersionSelector(props: Props) {
 		updated => {
 			for (const k of updated) {
 				if (karas.findIndex(dbk => dbk.kid === k.kid) !== -1) {
-					fetchKaras(props.kid).then(res => {
+					fetchKaras(id).then(res => {
 						setI18n(res.i18n);
 						setKaras(res.karas);
 					});
@@ -74,11 +77,11 @@ export default function VersionSelector(props: Props) {
 	}, [karas]);
 
 	useEffect(() => {
-		fetchKaras(props.kid).then(res => {
+		fetchKaras(id).then(res => {
 			setI18n(res.i18n);
 			setKaras(res.karas);
 		});
-	}, [props.kid]);
+	}, [id]);
 
 	return (
 		<div>

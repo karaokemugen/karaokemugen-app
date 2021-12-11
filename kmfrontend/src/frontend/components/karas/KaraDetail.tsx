@@ -3,9 +3,10 @@ import './KaraDetail.scss';
 import i18next from 'i18next';
 import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import { DBKaraTag, lastplayed_ago } from '../../../../../src/lib/types/database/kara';
+import { lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
 import nanamiSingPng from '../../../assets/nanami-sing.png';
@@ -20,17 +21,10 @@ import {
 	formatLyrics,
 	getPreviewLink,
 	getTitleInLocale,
-	sortTagByPriority,
 } from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
-import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import {
-	displayMessage,
-	is_touch_device,
-	isNonStandardPlaylist,
-	nonStandardPlaylists,
-	secondsTimeSpanToHMS,
-} from '../../../utils/tools';
+import { YEARS } from '../../../utils/tagTypes';
+import { displayMessage, is_touch_device, isNonStandardPlaylist, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
@@ -58,6 +52,8 @@ export default function KaraDetail(props: IProps) {
 	const [showVideo, setShowVideo] = useState(false);
 	const [lyrics, setLyrics] = useState<string[]>([]);
 	const [pending, setPending] = useState(false);
+	const params = useParams();
+	const id = props.kid ? props.kid : params.kid;
 
 	const keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.key === 'Escape' && !document.getElementById('video')) {
@@ -92,7 +88,7 @@ export default function KaraDetail(props: IProps) {
 				data = { plaid: props.plaid, plc_id: props.playlistcontentId };
 			} else {
 				url = 'getKara';
-				data = { kid: kid ? kid : props.kid };
+				data = { kid: kid ? kid : id };
 			}
 			const karaGet = await commandBackend(url, data);
 			setKara(karaGet);
@@ -229,12 +225,12 @@ export default function KaraDetail(props: IProps) {
 	}, []);
 
 	useEffect(() => {
-		if (props.kid) {
+		if (id) {
 			setShowVideo(false);
 			setPending(false);
 			getKaraDetail();
 		}
-	}, [props.kid]);
+	}, [id]);
 
 	const karoulette_submit = (accepted: boolean) => {
 		setPending(true);
