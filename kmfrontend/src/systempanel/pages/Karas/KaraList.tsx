@@ -315,6 +315,7 @@ class KaraList extends Component<unknown, KaraListState> {
 						title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
 						icon={<ClearOutlined />}
 						onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
+						style={{ marginRight: '0.75em' }}
 					/>
 				);
 				let uploadMediaButton: JSX.Element = (
@@ -349,6 +350,7 @@ class KaraList extends Component<unknown, KaraListState> {
 							icon={<FontColorsOutlined />}
 							title={i18next.t('KARA.LYRICS_FILE')}
 							onClick={async () => commandBackend('openLyricsFile', { kid: record.kid })}
+							style={{ marginRight: '0.75em' }}
 						/>
 					);
 					if (record.download_status !== 'DOWNLOADED') {
