@@ -13,7 +13,7 @@ function TagEdit() {
 
 	const [tag, setTag] = useState<DBTag>();
 	const [tags, setTags] = useState<DBTag[]>([]);
-	const [save, setSave] = useState<(tag: DBTag) => void>();
+	const [loaded, setLoaded] = useState(false);
 
 	const saveNew = async (tag: DBTag) => {
 		try {
@@ -47,13 +47,11 @@ function TagEdit() {
 				res = await commandBackend('getTags');
 				setTags(res.content);
 				setTag(tagData);
-				setSave(saveUpdate);
 			} catch (e) {
 				// already display
 			}
-		} else {
-			setSave(saveNew);
 		}
+		setLoaded(true);
 	};
 
 	const handleCopy = async (tid, repo) => {
@@ -74,8 +72,14 @@ function TagEdit() {
 				</div>
 			</Layout.Header>
 			<Layout.Content>
-				{save && (
-					<TagsForm tag={tag} tags={tags} save={save} mergeAction={handleTagMerge} handleCopy={handleCopy} />
+				{loaded && (
+					<TagsForm
+						tag={tag}
+						tags={tags}
+						save={tid ? saveUpdate : saveNew}
+						mergeAction={handleTagMerge}
+						handleCopy={handleCopy}
+					/>
 				)}
 			</Layout.Content>
 		</>

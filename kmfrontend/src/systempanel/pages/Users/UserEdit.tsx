@@ -19,7 +19,6 @@ function UserEdit() {
 	const { username } = useParams();
 
 	const [user, setUser] = useState<User>();
-	const [save, setSave] = useState<(user: User) => void>();
 
 	const saveNew = async user => {
 		await commandBackend('createUser', user, true);
@@ -36,13 +35,11 @@ function UserEdit() {
 			try {
 				const res = await commandBackend('getUser', { username });
 				setUser(res);
-				setSave(saveUpdate);
 			} catch (e) {
 				// already display
 			}
 		} else {
 			setUser({ ...newUser });
-			setSave(saveNew);
 		}
 	};
 
@@ -60,7 +57,7 @@ function UserEdit() {
 					{i18next.t(username ? 'HEADERS.USER_EDIT.DESCRIPTION' : 'HEADERS.USER_NEW.DESCRIPTION')}
 				</div>
 			</Layout.Header>
-			<Layout.Content>{user && <UserForm user={user} save={save} />}</Layout.Content>
+			<Layout.Content>{user && <UserForm user={user} save={username ? saveUpdate : saveNew} />}</Layout.Content>
 		</>
 	);
 }

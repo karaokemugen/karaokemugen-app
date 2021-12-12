@@ -20,7 +20,6 @@ function SessionEdit() {
 
 	const [session, setSession] = useState<Session>();
 	const [sessions, setSessions] = useState<Session[]>([]);
-	const [save, setSave] = useState<(session: Session) => void>();
 
 	const saveNew = async (session: Session) => {
 		await commandBackend('createSession', session, true);
@@ -43,10 +42,8 @@ function SessionEdit() {
 			const actualSession = res.filter(session => session.seid === seid);
 			setSessions(res);
 			setSession(actualSession[0]);
-			setSave(saveUpdate);
 		} else {
 			setSession({ ...newsession });
-			setSave(saveNew);
 		}
 	};
 
@@ -65,8 +62,13 @@ function SessionEdit() {
 				</div>
 			</Layout.Header>
 			<Layout.Content>
-				{save && (
-					<SessionForm session={session} sessions={sessions} save={save} mergeAction={handleSessionMerge} />
+				{session && (
+					<SessionForm
+						session={session}
+						sessions={sessions}
+						save={seid ? saveUpdate : saveNew}
+						mergeAction={handleSessionMerge}
+					/>
 				)}
 			</Layout.Content>
 		</>

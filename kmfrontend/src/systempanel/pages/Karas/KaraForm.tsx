@@ -144,7 +144,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.setState({ repositoriesValue: res.map(repo => repo.Name) }, () =>
 			this.formRef.current.setFieldsValue({
 				repository:
-					this.props.kara.repository ||
+					this.props.kara?.repository ||
 					(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
 			})
 		);
@@ -184,8 +184,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	getKaraToSend = values => {
 		const kara: Kara = values;
-		kara.karafile = this.props.kara.karafile;
-		kara.kid = this.props.kara.kid;
+		kara.karafile = this.props.kara?.karafile;
+		kara.kid = this.props.kara?.kid;
 		kara.mediafile_orig = this.state.mediafile_orig;
 		kara.subfile_orig = this.state.subfile_orig;
 		kara.titles = this.state.titles;
@@ -312,7 +312,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (parentKara && parentKara.kid === kid) {
 			// Check if user has already started doing input, or if it's an edit of existing kara
 			if (
-				!this.props.kara.kid &&
+				!this.props.kara?.kid &&
 				this.state.titlesIsTouched !== true &&
 				this.formRef.current.isFieldsTouched(['versions', 'series', 'language']) !== true
 			) {
@@ -351,30 +351,30 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				onFinish={this.handleSubmit}
 				className="kara-form"
 				initialValues={{
-					series: this.props.kara.series || this.state.parentKara?.series,
-					songtypes: this.props.kara.songtypes || this.state.parentKara?.songtypes,
-					songorder: this.props.kara.songorder || this.state.parentKara?.songorder,
-					langs: this.props.kara.langs || this.state.parentKara?.langs,
-					year: this.props.kara.year || this.state.parentKara?.year || new Date().getFullYear(),
-					singers: this.props.kara.singers || this.state.parentKara?.singers,
-					songwriters: this.props.kara.songwriters || this.state.parentKara?.songwriters,
-					creators: this.props.kara.creators || this.state.parentKara?.creators,
-					authors: this.props.kara.authors || this.state.parentKara?.authors,
-					families: this.props.kara.families || this.state.parentKara?.families,
-					platforms: this.props.kara.platforms || this.state.parentKara?.platforms,
-					genres: this.props.kara.genres || this.state.parentKara?.genres,
-					origins: this.props.kara.origins || this.state.parentKara?.origins,
-					misc: this.props.kara.misc || this.state.parentKara?.misc,
-					groups: this.props.kara.groups || this.state.parentKara?.groups,
-					versions: this.props.kara.versions || this.state.parentKara?.versions,
-					comment: this.props.kara.comment || null,
-					ignoreHooks: this.props.kara.ignoreHooks || false,
-					repository: this.props.kara.repository || this.state.parentKara?.repository || null,
+					series: this.props.kara?.series || this.state.parentKara?.series,
+					songtypes: this.props.kara?.songtypes || this.state.parentKara?.songtypes,
+					songorder: this.props.kara?.songorder || this.state.parentKara?.songorder,
+					langs: this.props.kara?.langs || this.state.parentKara?.langs,
+					year: this.props.kara?.year || this.state.parentKara?.year || new Date().getFullYear(),
+					singers: this.props.kara?.singers || this.state.parentKara?.singers,
+					songwriters: this.props.kara?.songwriters || this.state.parentKara?.songwriters,
+					creators: this.props.kara?.creators || this.state.parentKara?.creators,
+					authors: this.props.kara?.authors || this.state.parentKara?.authors,
+					families: this.props.kara?.families || this.state.parentKara?.families,
+					platforms: this.props.kara?.platforms || this.state.parentKara?.platforms,
+					genres: this.props.kara?.genres || this.state.parentKara?.genres,
+					origins: this.props.kara?.origins || this.state.parentKara?.origins,
+					misc: this.props.kara?.misc || this.state.parentKara?.misc,
+					groups: this.props.kara?.groups || this.state.parentKara?.groups,
+					versions: this.props.kara?.versions || this.state.parentKara?.versions,
+					comment: this.props.kara?.comment || null,
+					ignoreHooks: this.props.kara?.ignoreHooks || false,
+					repository: this.props.kara?.repository || this.state.parentKara?.repository || null,
 					created_at: this.state.created_at,
 					modified_at: this.state.modified_at,
-					mediafile: this.props.kara.mediafile,
-					subfile: this.props.kara.subfile,
-					parents: this.props.kara.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
+					mediafile: this.props.kara?.mediafile,
+					subfile: this.props.kara?.subfile,
+					parents: this.props.kara?.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
 				}}
 			>
 				<Form.Item
@@ -847,7 +847,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="created_at"
 				>
 					<label>
-						{this.props.kara.created_at ? new Date(this.props.kara.created_at).toLocaleString() : null}
+						{this.props.kara?.created_at ? new Date(this.props.kara?.created_at).toLocaleString() : null}
 					</label>
 				</Form.Item>
 				<Form.Item
@@ -857,7 +857,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="modified_at"
 				>
 					<label>
-						{this.props.kara.modified_at ? new Date(this.props.kara.modified_at).toLocaleString() : null}
+						{this.props.kara?.modified_at ? new Date(this.props.kara?.modified_at).toLocaleString() : null}
 					</label>
 				</Form.Item>
 				<Form.Item>
@@ -869,7 +869,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					</Button>
 				</Form.Item>
 				<Divider />
-				{this.state.repositoriesValue && this.props.kara.repository ? (
+				{this.state.repositoriesValue && this.props.kara?.repository ? (
 					<>
 						<Form.Item
 							hasFeedback
@@ -882,7 +882,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 								onChange={(value: string) => this.setState({ repoToCopySong: value })}
 							>
 								{this.state.repositoriesValue
-									.filter(value => value !== this.props.kara.repository)
+									.filter(value => value !== this.props.kara?.repository)
 									.map(this.mapRepoToSelectOption)}
 							</Select>
 						</Form.Item>
@@ -892,7 +892,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 								disabled={!this.state.repoToCopySong}
 								type="primary"
 								danger
-								onClick={() => this.props.handleCopy(this.props.kara.kid, this.state.repoToCopySong)}
+								onClick={() => this.props.handleCopy(this.props.kara?.kid, this.state.repoToCopySong)}
 							>
 								{i18next.t('KARA.COPY_SONG')}
 							</Button>

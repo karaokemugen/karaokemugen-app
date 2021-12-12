@@ -13,7 +13,7 @@ function KaraEdit() {
 	const { kid } = useParams();
 
 	const [kara, setKara] = useState<DBKara>();
-	const [save, setSave] = useState<(kara: any) => Promise<void>>();
+	const [loaded, setLoaded] = useState(false);
 
 	const saveNew = async kara => {
 		try {
@@ -40,10 +40,8 @@ function KaraEdit() {
 		if (kid) {
 			const res = await commandBackend('getKara', { kid }, true);
 			setKara(res);
-			setSave(saveUpdate);
-		} else {
-			setSave(saveNew);
 		}
+		setLoaded(true);
 	};
 
 	const handleCopy = async (kid, repo) => {
@@ -65,7 +63,9 @@ function KaraEdit() {
 					{i18next.t(kid ? 'HEADERS.KARAOKE_EDIT.DESCRIPTION' : 'HEADERS.KARAOKE_NEW.DESCRIPTION')}
 				</div>
 			</Layout.Header>
-			<Layout.Content>{save && <KaraForm kara={kara} save={save} handleCopy={handleCopy} />}</Layout.Content>
+			<Layout.Content>
+				{loaded && <KaraForm kara={kara} save={kid ? saveUpdate : saveNew} handleCopy={handleCopy} />}
+			</Layout.Content>
 		</>
 	);
 }

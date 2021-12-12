@@ -27,7 +27,6 @@ function RepositoriesEdit() {
 	const { name } = useParams();
 
 	const [repository, setRepository] = useState<Repository>();
-	const [save, setSave] = useState<(repository: Repository) => void>();
 	const [report, setReport] = useState<DifferentChecksumReport[]>();
 	const [selectedRepo, setSelectedRepo] = useState<string>();
 
@@ -60,10 +59,8 @@ function RepositoriesEdit() {
 		if (name) {
 			const res = await commandBackend('getRepo', { name });
 			setRepository(res);
-			setSave(saveUpdate);
 		} else {
 			setRepository({ ...newrepository });
-			setSave(saveNew);
 		}
 	};
 
@@ -113,7 +110,7 @@ function RepositoriesEdit() {
 				{repository && (
 					<RepositoryForm
 						repository={repository}
-						save={save}
+						save={name ? saveUpdate : saveNew}
 						movingMedia={movingMedia}
 						compareLyrics={compareLyrics}
 					/>
