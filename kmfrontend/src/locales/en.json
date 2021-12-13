@@ -1619,5 +1619,10 @@
 		"USER": "User in charge of issue integration",
 		"DOWNLOAD": "Download karaoke",
 		"DELETE": "Are you sure you delete the karaoke from the inbox as well as its files on the server?"
+	},
+	"ABOUT": {
+		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",
+		"CONTRIBUTORS": "The karaokes were created by awesome people, like <contrib/> for example.",
+		"DONATORS": "Thanks to <donators/> for their donations to Karaoke Mugen"
 	}
 }

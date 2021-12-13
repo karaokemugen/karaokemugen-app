@@ -104,8 +104,6 @@
 	"UPDATE_DOWNLOADED": "Mise à jour téléchargée",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "L'installation de la mise à jour va démarrer…",
 	"ABOUT": {
-		"BUG_REPORT": "Signaler une erreur",
-		"COPYRIGHT": "Par l'équipe de développement de Karaoke Mugen, sous licence MIT",
 		"TITLE": "À propos de Karaoke Mugen"
 	},
 	"REPO_DISABLED": {

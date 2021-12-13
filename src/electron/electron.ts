@@ -28,6 +28,7 @@ import { createMenu } from './electronMenu';
 export let win: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
 export let chibiPlaylistWindow: Electron.BrowserWindow;
+export let aboutWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
@@ -452,5 +453,34 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 		);
 	} else {
 		chibiPlaylistWindow?.destroy();
+	}
+}
+
+export async function showAbout() {
+	if (aboutWindow?.focusable) {
+		aboutWindow.focus();
+	} else {
+		const state = getState();
+		aboutWindow = new BrowserWindow({
+			width: 700,
+			height: 450,
+			show: false,
+			backgroundColor: '#36393f',
+			webPreferences: {
+				nodeIntegration: true,
+				contextIsolation: false,
+			},
+			resizable: false,
+			icon: resolve(state.resourcePath, 'build/icon.png'),
+			title: i18next.t('ABOUT.TITLE'),
+		});
+		aboutWindow.on('ready-to-show', () => {
+			aboutWindow.show();
+		});
+		aboutWindow.on('close', () => {
+			aboutWindow.destroy();
+			aboutWindow = undefined;
+		});
+		aboutWindow.loadURL(`http://localhost:${state.frontendPort}/about?admpwd=${await generateAdminPassword()}`);
 	}
 }

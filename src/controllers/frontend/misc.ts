@@ -82,6 +82,10 @@ export default function miscController(router: SocketIOApp) {
 			state: getPublicState(req.user?.type === 0),
 		};
 	});
+	router.route('getElectronVersions', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'guest', 'closed', { optionalAuth: true });
+		return { ...process.versions };
+	});
 	router.route('updateSettings', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {

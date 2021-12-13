@@ -28,6 +28,7 @@ Karaoke Mugen Studio is a set of features intended at contributors and maintaine
 -   You can hide more elements from the player OSD (song informations #1143, quotes #1080)
 -   `Player.SongInfoLanguage` config key allow power users to force a locale for song information displayed on the screen (#1149)
 -   The zip/patch repository system was improved with a file download fallback (#1122)
+-   The About page was refactored and includes donator list from our Patreon (thanks donators!)
 
 ## Fixes
 

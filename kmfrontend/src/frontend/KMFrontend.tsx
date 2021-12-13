@@ -8,6 +8,7 @@ import GlobalContext from '../store/context';
 import { isElectron } from '../utils/electron';
 import { commandBackend, getSocket } from '../utils/socket';
 import { callModal, is_touch_device, startIntro } from '../utils/tools';
+import About from './components/About';
 import AdminPage from './components/AdminPage';
 import ChibiPage from './components/ChibiPage';
 import MigratePage from './components/MigratePage';
@@ -91,6 +92,7 @@ function KMFrontend() {
 				<Route path="/chibiPlaylist" element={<PlaylistPage />} />
 				<Route path="/chibi" element={<ChibiPage />} />
 				<Route path="/public/*" element={<PublicPage />} />
+				<Route path="/about" element={<About />} />
 				<Route
 					path="/"
 					element={<Navigate to={context.globalState.auth.data.role === 'admin' ? '/welcome' : '/public'} />}

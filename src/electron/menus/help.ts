@@ -2,7 +2,8 @@ import i18next from 'i18next';
 
 import { MenuItemBuilderFunction } from '../../types/electron';
 import { getState } from '../../utils/state';
-import { displayAbout, urls } from './';
+import { showAbout } from '../electron';
+import { urls } from './';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac } = options;
@@ -55,7 +56,7 @@ const builder: MenuItemBuilderFunction = options => {
 			},
 			{
 				label: i18next.t('MENU_HELP_ABOUT'),
-				click: displayAbout,
+				click: showAbout,
 				visible: !isMac,
 			},
 		],

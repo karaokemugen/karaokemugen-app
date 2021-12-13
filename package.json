@@ -76,7 +76,6 @@
   "dependencies": {
     "@sentry/electron": "^2.5.4",
     "@sentry/node": "^6.15.0",
-    "about-window": "^1.15.2",
     "agentkeepalive": "^4.1.4",
     "ass-compiler": "^0.1.4",
     "async-await-parallel": "^1.0.0",

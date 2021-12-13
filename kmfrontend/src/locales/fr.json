@@ -1621,5 +1621,10 @@
 		"USER": "Utilisateur en charge de l'intégration du ticket",
 		"DOWNLOAD": "Télécharger le karaoké",
 		"DELETE": "Êtes-vous sûr de supprimer le karaoké de la boite de réception ainsi que ses fichiers sur le serveur ?"
+	},
+	"ABOUT": {
+		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",
+		"CONTRIBUTORS": "Les karaokés ont été créés par des gens géniaux, comme par exemple <contrib/>.",
+		"DONATORS": "Merci à <donators/> pour leur don à Karaoke Mugen"
 	}
 }

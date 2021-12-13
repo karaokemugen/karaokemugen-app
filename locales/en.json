@@ -104,8 +104,6 @@
 	"UPDATE_DOWNLOADED": "Update downloaded",
 	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karoake Mugen will restart to install the update…",
 	"ABOUT": {
-		"BUG_REPORT": "Report a bug",
-		"COPYRIGHT": "by Karaoke Mugen Dev Team, under MIT license",
 		"TITLE": "About Karaoke Mugen"
 	},
 	"REPO_DISABLED": {
