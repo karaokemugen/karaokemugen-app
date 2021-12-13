@@ -146,7 +146,6 @@ export async function editRemoteUser(user: User, token: string) {
 		return res.data;
 	} catch (err) {
 		sentry.error(err);
-		console.error(err);
 		throw `Remote update failed : ${err}`;
 	}
 }
