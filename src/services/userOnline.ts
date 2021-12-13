@@ -140,14 +140,13 @@ export async function editRemoteUser(user: User, token: string) {
 	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
 	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
 	try {
-		const res = await HTTP.put(`https://${instance}/api/users/${login}`, form, {
-			headers: {
-				authorization: token,
-			},
+		const res = await HTTP.patch(`https://${instance}/api/users/${login}`, form, {
+			headers: form.getHeaders({ authorization: token }),
 		});
 		return res.data;
 	} catch (err) {
 		sentry.error(err);
+		console.error(err);
 		throw `Remote update failed : ${err}`;
 	}
 }
