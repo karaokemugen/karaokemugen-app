@@ -449,7 +449,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 							{i18next.t('KARA.LYRICS_FILE')}
 						</Button>
 					</Upload>
-					{this.state.subfile?.length > 0 && (
+					{this.state.subfile?.length > 0 && this.props.kara?.kid && (
 						<div style={{ marginTop: '1em' }}>
 							<OpenLyricsFileButton kara={this.props.kara} />
 						</div>
