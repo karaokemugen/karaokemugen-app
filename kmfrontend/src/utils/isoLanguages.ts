@@ -30,7 +30,7 @@ export function getLanguageIn3B(code) {
 	return languages.alpha2ToAlpha3B(code);
 }
 
-export function listCountries(): { value: string; text: string }[] {
+export function listCountries(): { value: string; label: string }[] {
 	const listCountries = [];
 	for (const [key, value] of Object.entries(isoCountriesLanguages.getCountries(langSupport))) {
 		listCountries.push({ value: key, label: value });

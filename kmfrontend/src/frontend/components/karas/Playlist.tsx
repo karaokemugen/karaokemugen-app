@@ -34,7 +34,6 @@ let timer: any;
 interface IProps {
 	scope: 'admin' | 'public';
 	side: 'left' | 'right';
-	tags?: Tag[];
 	searchMenuOpen?: boolean;
 	playlistList?: PlaylistElem[];
 	toggleSearchMenu?: () => void;
@@ -960,7 +959,6 @@ function Playlist(props: IProps) {
 					deleteCheckedFavorites={deleteCheckedFavorites}
 					refuseCheckedKara={refuseCheckedKara}
 					acceptCheckedKara={acceptCheckedKara}
-					tags={props.tags}
 					onChangeTags={onChangeTags}
 					getPlaylist={getPlaylist}
 					toggleSearchMenu={toggleSearchMenu}
@@ -973,7 +971,7 @@ function Playlist(props: IProps) {
 				/>
 			) : null}
 			<div id={'playlist' + props.side} className="playlistContainer" ref={refContainer}>
-				{playlist?.flag_smart && criteriasOpen ? <CriteriasList tags={props.tags} playlist={playlist} /> : null}
+				{playlist?.flag_smart && criteriasOpen ? <CriteriasList playlist={playlist} /> : null}
 				{!data?.infos && !criteriasOpen && isPlaylistInProgress ? (
 					<div className="loader" />
 				) : data && !criteriasOpen ? (

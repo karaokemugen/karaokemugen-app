@@ -1,7 +1,7 @@
 import './ProfilModal.scss';
 
 import i18next from 'i18next';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
@@ -10,6 +10,7 @@ import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
+import { useLocalSearch } from '../../../utils/hooks';
 import {
 	getLanguagesInLangFromCode,
 	getListLanguagesInLocale,
@@ -207,6 +208,16 @@ function ProfilModal(props: IProps) {
 
 	const logInfos = context?.globalState.auth.data;
 
+	const countries = useMemo(listCountries, []);
+	const [countryQuery, setCountryQuery] = useState('');
+	const queriedCountries = useLocalSearch(countries, countryQuery);
+
+	const languages = useMemo(getListLanguagesInLocale, []);
+	const [mainLanguageQuery, setMainLanguageQuery] = useState('');
+	const [fallbackLanguageQuery, setFallbackLanguageQuery] = useState('');
+	const queriedMainLanguages = useLocalSearch(languages, mainLanguageQuery);
+	const queriedFallbackLanguages = useLocalSearch(languages, fallbackLanguageQuery);
+
 	if (!context?.globalState.settings.data.config?.Online.Users && logInfos?.username.includes('@')) {
 		setTimeout(function () {
 			displayMessage(
@@ -334,8 +345,9 @@ function ProfilModal(props: IProps) {
 								</div>
 								<Autocomplete
 									value={user.location}
-									options={listCountries()}
+									options={queriedCountries}
 									forceTop={true}
+									onType={setCountryQuery}
 									onChange={value => changeAutocomplete('location', value)}
 								/>
 							</div>
@@ -443,8 +455,9 @@ function ProfilModal(props: IProps) {
 								<div>
 									<Autocomplete
 										value={user.main_series_lang}
-										options={getListLanguagesInLocale()}
+										options={queriedMainLanguages}
 										forceTop={true}
+										onType={setMainLanguageQuery}
 										onChange={value => changeAutocomplete('main_series_lang', value)}
 									/>
 								</div>
@@ -457,8 +470,9 @@ function ProfilModal(props: IProps) {
 								<div>
 									<Autocomplete
 										value={user.fallback_series_lang}
-										options={getListLanguagesInLocale()}
+										options={queriedFallbackLanguages}
 										forceTop={true}
+										onType={setFallbackLanguageQuery}
 										onChange={value => changeAutocomplete('fallback_series_lang', value)}
 									/>
 								</div>

@@ -8,6 +8,7 @@ import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { Criteria } from '../../../../../src/lib/types/playlist';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
+import { useTagSearch } from '../../../utils/hooks';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
@@ -19,7 +20,6 @@ import Switch from '../generic/Switch';
 const listTypeCriteria = [1002, 1003, 1004, 1005, 1006];
 
 interface IProps {
-	tags: Tag[] | undefined;
 	playlist: DBPL;
 }
 
@@ -114,7 +114,9 @@ function CriteriasList(props: IProps) {
 	criterias.forEach(element => {
 		if (!types.includes(element.type)) types.push(element.type);
 	});
-	const tagsFiltered = props.tags ? props.tags.filter(obj => obj.type.includes(criteriaType)) : [];
+
+	const [tags, tagSearch] = useTagSearch(criteriaType, context);
+
 	return (
 		<div className="criteriasContainer">
 			<div className="criterias-line">
@@ -171,6 +173,7 @@ function CriteriasList(props: IProps) {
 				<select
 					onChange={e => {
 						setCriteriaType(Number(e.target.value));
+						tagSearch('', Number(e.target.value));
 						setCriteriaVal('');
 					}}
 				>
@@ -198,10 +201,11 @@ function CriteriasList(props: IProps) {
 							className="input-blc"
 							disabled
 						/>
-					) : tagsFiltered.length > 0 ? (
+					) : criteriaType < 999 ? (
 						<Autocomplete
 							value={criteriaVal}
-							options={tagsFiltered}
+							options={tags}
+							onType={tagSearch}
 							onChange={value => setCriteriaVal(value)}
 						/>
 					) : (

@@ -2,7 +2,7 @@ import '../styles/start/Start.scss';
 import '../styles/start/WelcomePage.scss';
 
 import i18next from 'i18next';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Repository } from '../../../../src/lib/types/repo';
@@ -14,6 +14,7 @@ import { logout } from '../../store/actions/auth';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import TasksEvent from '../../TasksEvent';
+import { useLocalSearch } from '../../utils/hooks';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { News } from '../types/news';
 import Autocomplete from './generic/Autocomplete';
@@ -66,17 +67,14 @@ function WelcomePage() {
 
 	const editActiveSession = async (value: string) => {
 		const sessionsEdit = sessions.filter(session => session.name === value);
-		let sessionId;
 		if (sessionsEdit.length === 0) {
-			const res = await commandBackend('createSession', { name: value });
-			sessionId = res;
+			await commandBackend('createSession', { name: value });
 			const sessionsList = await commandBackend('getSessions');
 			setSessions(sessionsList);
 			setActiveSession(sessionsList.filter((valueSession: Session) => valueSession.active)[0]);
 		} else {
 			setActiveSession(sessionsEdit[0]);
-			sessionId = sessionsEdit[0].seid;
-			commandBackend('activateSession', { seid: sessionId });
+			commandBackend('activateSession', { seid: sessionsEdit[0].seid });
 		}
 	};
 
@@ -193,9 +191,15 @@ function WelcomePage() {
 		};
 	}, []);
 
-	const sessionsList = sessions.map(session => {
-		return { label: session.name, value: session.name };
-	});
+	const sessionsList = useMemo(
+		() =>
+			sessions.map(session => {
+				return { label: session.name, value: session.name };
+			}),
+		[sessions]
+	);
+	const [sessionQuery, setSessionQuery] = useState('');
+	const queriedList = useLocalSearch(sessionsList, sessionQuery);
 	return (
 		<div className="start-page">
 			<div className="wrapper welcome">
@@ -244,7 +248,8 @@ function WelcomePage() {
 									<label>{i18next.t('WELCOME_PAGE.ACTIVE_SESSION')}</label>
 									<Autocomplete
 										value={activeSession?.name}
-										options={sessionsList}
+										options={queriedList}
+										onType={setSessionQuery}
 										onChange={editActiveSession}
 										acceptNewValues={true}
 									/>

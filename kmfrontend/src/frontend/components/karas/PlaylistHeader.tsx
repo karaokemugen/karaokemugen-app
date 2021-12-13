@@ -1,12 +1,13 @@
 import './PlaylistHeader.scss';
 
 import i18next from 'i18next';
-import { MouseEvent as MouseEventReact, useContext, useEffect, useState } from 'react';
+import { MouseEvent as MouseEventReact, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import { setFilterValue } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
+import { useTagSearch } from '../../../utils/hooks';
 import {
 	getOppositePlaylistInfo,
 	getPlaylistInfo,
@@ -16,7 +17,6 @@ import {
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, isNonStandardPlaylist, nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
-import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 import SelectWithIcon from '../generic/SelectWithIcon';
 import CheckedKaraMenuModal from '../modals/CheckedKaraMenuModal';
@@ -26,7 +26,6 @@ import KaraReviews from './KaraReviews';
 
 interface IProps {
 	side: 'left' | 'right';
-	tags: Tag[];
 	playlistList: PlaylistElem[];
 	searchMenuOpen?: boolean;
 	checkedKaras: KaraElement[];
@@ -56,7 +55,6 @@ function PlaylistHeader(props: IProps) {
 	const [activeFilterUUID, setActiveFilterUUID] = useState('');
 	const [orderByLikes, setOrderByLikes] = useState(false);
 	const [activeFilter, setActiveFilter] = useState<'search' | 'recent' | 'requested'>('search');
-	const [tags, setTags] = useState(props.tags.filter(tag => tag.type.includes(2)) || []);
 
 	const getKarasList = (activeFilter: 'search' | 'recent' | 'requested', orderByLikes = false) => {
 		setActiveFilter(activeFilter);
@@ -166,9 +164,7 @@ function PlaylistHeader(props: IProps) {
 		);
 	};
 
-	useEffect(() => {
-		setTags(props.tags?.filter(tag => tag.type.includes(tagType)));
-	}, [props.tags.length]);
+	const [tags, tagSearch] = useTagSearch(tagType, context);
 
 	const playlist = getPlaylistInfo(props.side, context);
 	const oppositePlaylist = getOppositePlaylistInfo(props.side, context);
@@ -212,93 +208,95 @@ function PlaylistHeader(props: IProps) {
 		</div>
 	) : null;
 
-	const searchMenu =
-		tags?.length > 0 ? (
-			<div className="searchMenuContainer">
-				{playlist?.plaid === nonStandardPlaylists.library ? (
-					<div className="filterContainer">
-						<div
-							className="filterButton"
-							onClick={() => {
-								setActiveFilterUUID('');
-								props.onChangeTags(tagType, '');
-							}}
-						>
-							<i className="fas fa-eraser" /> <span>{i18next.t('CLEAR_FILTER')}</span>
-						</div>
-						<select
-							className="filterElement filterTags"
-							onChange={e => {
-								setTags(props.tags.filter(tag => tag.type.includes(parseInt(e.target.value))));
-								setTagType(parseInt(e.target.value));
-								setActiveFilterUUID('');
-							}}
-							value={tagType}
-						>
-							{Object.entries(tagTypes).map(([key, value]) => (
-								<option key={value.type} value={value.type}>
-									{i18next.t(`TAG_TYPES.${key}_other`)}
-								</option>
-							))}
-							<option key={YEARS.type} value={YEARS.type}>
-								{i18next.t('DETAILS.YEAR')}
-							</option>
-						</select>
-						<div className="filterElement filterTagsOptions">
-							<Autocomplete value={activeFilterUUID || ''} options={tags} onChange={onChangeTags} />
-						</div>
-					</div>
-				) : null}
+	const searchMenu = (
+		<div className="searchMenuContainer">
+			{playlist?.plaid === nonStandardPlaylists.library ? (
 				<div className="filterContainer">
 					<div
-						tabIndex={0}
-						className={'filterElement ' + (activeFilter === 'search' ? 'filterElementActive' : '')}
-						onClick={() => getKarasList('search')}
-						onKeyPress={() => getKarasList('search')}
+						className="filterButton"
+						onClick={() => {
+							setActiveFilterUUID('');
+							props.onChangeTags(tagType, '');
+						}}
 					>
-						<i
-							className={`fas fa-fw ${
-								!isNonStandardPlaylist(playlist?.plaid) ? 'fa-list-ol' : 'fa-sort-alpha-down'
-							}`}
-						/>{' '}
-						{i18next.t('VIEW_STANDARD')}
+						<i className="fas fa-eraser" /> <span>{i18next.t('CLEAR_FILTER')}</span>
 					</div>
-					{playlist?.plaid === nonStandardPlaylists.library ? (
-						<>
-							<div
-								tabIndex={0}
-								className={'filterElement ' + (activeFilter === 'recent' ? 'filterElementActive' : '')}
-								onClick={() => getKarasList('recent')}
-								onKeyPress={() => getKarasList('recent')}
-							>
-								<i className="far fa-clock" /> {i18next.t('VIEW_RECENT')}
-							</div>
-							<div
-								tabIndex={0}
-								className={
-									'filterElement ' + (activeFilter === 'requested' ? 'filterElementActive' : '')
-								}
-								onClick={() => getKarasList('requested')}
-								onKeyPress={() => getKarasList('requested')}
-							>
-								<i className="fas fa-fire" /> {i18next.t('VIEW_POPULAR')}
-							</div>
-						</>
-					) : null}
-					{!isNonStandardPlaylist(playlist?.plaid) ? (
+					<select
+						className="filterElement filterTags"
+						onChange={e => {
+							setTagType(parseInt(e.target.value));
+							tagSearch('', parseInt(e.target.value));
+							setActiveFilterUUID('');
+						}}
+						value={tagType}
+					>
+						{Object.entries(tagTypes).map(([key, value]) => (
+							<option key={value.type} value={value.type}>
+								{i18next.t(`TAG_TYPES.${key}_other`)}
+							</option>
+						))}
+						<option key={YEARS.type} value={YEARS.type}>
+							{i18next.t('DETAILS.YEAR')}
+						</option>
+					</select>
+					<div className="filterElement filterTagsOptions">
+						<Autocomplete
+							value={activeFilterUUID || ''}
+							options={tags}
+							onType={tagSearch}
+							onChange={onChangeTags}
+						/>
+					</div>
+				</div>
+			) : null}
+			<div className="filterContainer">
+				<div
+					tabIndex={0}
+					className={'filterElement ' + (activeFilter === 'search' ? 'filterElementActive' : '')}
+					onClick={() => getKarasList('search')}
+					onKeyPress={() => getKarasList('search')}
+				>
+					<i
+						className={`fas fa-fw ${
+							!isNonStandardPlaylist(playlist?.plaid) ? 'fa-list-ol' : 'fa-sort-alpha-down'
+						}`}
+					/>{' '}
+					{i18next.t('VIEW_STANDARD')}
+				</div>
+				{playlist?.plaid === nonStandardPlaylists.library ? (
+					<>
 						<div
 							tabIndex={0}
-							className={'filterElement ' + (orderByLikes ? 'filterElementActive' : '')}
-							onClick={() => getKarasList(undefined, true)}
-							onKeyPress={() => getKarasList(undefined, true)}
-							title={i18next.t('VIEW_LIKES_TOOLTIP')}
+							className={'filterElement ' + (activeFilter === 'recent' ? 'filterElementActive' : '')}
+							onClick={() => getKarasList('recent')}
+							onKeyPress={() => getKarasList('recent')}
 						>
-							<i className="fas fa-thumbs-up" /> {i18next.t('VIEW_LIKES')}
+							<i className="far fa-clock" /> {i18next.t('VIEW_RECENT')}
 						</div>
-					) : null}
-				</div>
+						<div
+							tabIndex={0}
+							className={'filterElement ' + (activeFilter === 'requested' ? 'filterElementActive' : '')}
+							onClick={() => getKarasList('requested')}
+							onKeyPress={() => getKarasList('requested')}
+						>
+							<i className="fas fa-fire" /> {i18next.t('VIEW_POPULAR')}
+						</div>
+					</>
+				) : null}
+				{!isNonStandardPlaylist(playlist?.plaid) ? (
+					<div
+						tabIndex={0}
+						className={'filterElement ' + (orderByLikes ? 'filterElementActive' : '')}
+						onClick={() => getKarasList(undefined, true)}
+						onKeyPress={() => getKarasList(undefined, true)}
+						title={i18next.t('VIEW_LIKES_TOOLTIP')}
+					>
+						<i className="fas fa-thumbs-up" /> {i18next.t('VIEW_LIKES')}
+					</div>
+				) : null}
 			</div>
-		) : null;
+		</div>
+	);
 	return (
 		<>
 			<div className="panel-heading plDashboard">

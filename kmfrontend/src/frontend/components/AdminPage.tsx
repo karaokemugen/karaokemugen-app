@@ -31,7 +31,6 @@ function AdminPage(props: IProps) {
 	const [searchMenuOpenLeft, setSearchMenuOpenLeft] = useState(false);
 	const [searchMenuOpenRight, setSearchMenuOpenRight] = useState(false);
 	const [playlistList, setPlaylistList] = useState([]);
-	const [tags, setTags] = useState([]);
 
 	const operatorNotificationInfo = (data: { code: string; data: string }) =>
 		displayMessage('info', i18next.t(data.code, { data: data }));
@@ -111,15 +110,6 @@ function AdminPage(props: IProps) {
 		});
 	};
 
-	const addTags = async () => {
-		try {
-			const [tags, years] = await Promise.all([parseTags(), parseYears()]);
-			setTags(tags.concat(years));
-		} catch (e) {
-			// already display
-		}
-	};
-
 	const getPlaylistList = async () => {
 		const playlistList: PlaylistElem[] = await commandBackend('getPlaylists');
 		let kmStats;
@@ -172,7 +162,6 @@ function AdminPage(props: IProps) {
 		if (context.globalState.auth.isAuthenticated) {
 			getPlaylistList();
 		}
-		addTags();
 		getSocket().on('playlistsUpdated', getPlaylistList);
 		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
 		getSocket().on('operatorNotificationError', operatorNotificationError);
@@ -206,7 +195,6 @@ function AdminPage(props: IProps) {
 										<Playlist
 											scope="admin"
 											side={'left'}
-											tags={tags}
 											toggleSearchMenu={toggleSearchMenuLeft}
 											searchMenuOpen={searchMenuOpenLeft}
 											playlistList={playlistList}
@@ -215,7 +203,6 @@ function AdminPage(props: IProps) {
 										<Playlist
 											scope="admin"
 											side={'right'}
-											tags={tags}
 											toggleSearchMenu={toggleSearchMenuRight}
 											searchMenuOpen={searchMenuOpenRight}
 											playlistList={playlistList}
