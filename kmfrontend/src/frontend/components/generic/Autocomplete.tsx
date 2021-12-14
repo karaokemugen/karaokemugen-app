@@ -87,7 +87,6 @@ function Autocomplete(props: IProps) {
 	}, [focus]); // exécuté au démarrage puis en cas de mise à jour de focus
 
 	useEffect(() => {
-		console.log(props.options, props.options.find);
 		if (typeof props.value === 'string' && props.options instanceof Array && props.value !== selectedValue) {
 			setSelectedValue(props.value);
 			setSearchValue(props.options.find(opt => opt.value === props.value)?.label || '');

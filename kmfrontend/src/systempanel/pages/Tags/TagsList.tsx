@@ -53,7 +53,7 @@ function TagsList() {
 	const changeType = value => setTypeTag(value);
 
 	useEffect(() => {
-		setSearchParams({ type: typeTag.toString() });
+		setSearchParams(typeTag ? { type: typeTag.toString() } : {});
 		localStorage.setItem('typeTagList', typeTag ? typeTag.toString() : '');
 		refresh();
 	}, [typeTag]);
