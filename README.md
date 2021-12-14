@@ -4,8 +4,8 @@
 
 ![presentation](img/presentation.png)
 
-Master branch: [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) -
-Next branch: [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next) [![Requirements Status](https://requires.io/github/AxelTerizaki/karaokemugen-app/requirements.svg?branch=master)](https://requires.io/github/AxelTerizaki/karaokemugen-app/requirements/?branch=master)
+Master branch: [![pipeline status](https://gitlab.com/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://gitlab.com/karaokemugen/karaokemugen-app/commits/master) -
+Next branch: [![pipeline status](https://gitlab.com/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://gitlab.com/karaokemugen/karaokemugen-app/commits/next) [![Requirements Status](https://requires.io/github/AxelTerizaki/karaokemugen-app/requirements.svg?branch=master)](https://requires.io/github/AxelTerizaki/karaokemugen-app/requirements/?branch=master)
 
 Project: ![Last commit](https://img.shields.io/github/last-commit/AxelTerizaki/karaokemugen-app.svg) ![Latest version](https://img.shields.io/github/tag/karaoke-mugen/karaokemugen-app.svg) ![License](https://img.shields.io/github/license/karaoke-mugen/karaokemugen-app.svg) ![Size](https://img.shields.io/github/repo-size/karaoke-mugen/karaokemugen-app.svg) ![Commits since release on next](https://img.shields.io/github/commits-since/axelterizaki/karaokemugen-app/release/next)
 
@@ -37,7 +37,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 -   **Complete metadata structure for songs**: Singers, songwriters, creators, authors, languages, categorization tags...
     -   Complete **filter system** and **search engine** based on the aforementionned metadata.
 -   **System Panel** to configure Karaoke Mugen:
-    -   **Multi-karaoke repositories support**: You can add as many repositories you want. Karaoke Mugen has 2 "official repositories": the [otaku base](https://lab.shelter.moe/karaokemugen/bases/karaokebase) and the [world base](https://lab.shelter.moe/karaokemugen/bases/karaokebase-world)
+    -   **Multi-karaoke repositories support**: You can add as many repositories you want. Karaoke Mugen has 2 "official repositories": the [otaku base](https://gitlab.com/karaokemugen/bases/karaokebase) and the [world base](https://gitlab.com/karaokemugen/bases/karaokebase-world)
     -   **Configure** application behaviour and **view logs**
     -   **Manage** your song library (add, remove, edit...)
     -   **View stats** like most played or requested songs
@@ -55,7 +55,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
 
 -   See the **[install](#install)** section below
 -   **Launch the app** (see the **[launch](#launch)** section below). You will be prompted with some questions and you will need to create an account (online or local).
--   Karaoke Mugen will update its database on startup with the default karaoke repository. You can alternatively create your own repositories and karaokes. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/bases/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/).
+-   Karaoke Mugen will update its database on startup with the default karaoke repository. You can alternatively create your own repositories and karaokes. See the [karaoke base repository](https://gitlab.com/karaokemugen/bases/karaokebase) and [documentation](http://docs.karaokes.moe/en/user-guide/manage/).
 -   Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and **have fun**!
 
 Medias are downloaded on the go, but you can pre-download everything (beware, it's several hundred gigabytes big!) if you're preparing a karaoke event in a place without reliable Internet for example.
@@ -250,7 +250,7 @@ We accept donations through Patreon, Liberapay or Paypal directly. If you're int
 
 Thanks to the [Sentry error tracking](https://sentry.io/welcome?utm_source=KaraokeMugen) solution, the app is self-reporting its errors to maintainers to help them to fix issues.<br/>
 
-<img src="https://lab.shelter.moe/karaokemugen/karaokemugen-app/uploads/dba8fa95d7b4f1fac5e5877c72257f36/image.png" alt="BrowserStack full logo" width="125" />
+<img src="https://gitlab.com/karaokemugen/karaokemugen-app/uploads/dba8fa95d7b4f1fac5e5877c72257f36/image.png" alt="BrowserStack full logo" width="125" />
 
 Thanks to the [BrowserStack testing solution](https://browserstack.com), we can be sure that our interfaces will run just fine on each device.
 

@@ -13,11 +13,11 @@ import { getState, setState } from '../utils/state';
 const feeds = [
 	{
 		name: 'git_base',
-		url: 'https://lab.shelter.moe/karaokemugen/bases/karaokebase/tags?feed_token=dCGJUCzzHWNTqCp1FraN&format=atom',
+		url: 'https://gitlab.com/karaokemugen/bases/karaokebase/-/tags?feed_token=L1P1ToueksLoKyCbTTjh&format=atom',
 	},
 	{
 		name: 'git_app',
-		url: 'https://lab.shelter.moe/karaokemugen/karaokemugen-app/tags?feed_token=dCGJUCzzHWNTqCp1FraN&format=atom',
+		url: 'https://gitlab.com/karaokemugen/karaokemugen-app/-/tags?feed_token=L1P1ToueksLoKyCbTTjh&format=atom',
 	},
 	{
 		name: 'mastodon',
@@ -67,7 +67,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			);
 		} else {
 			feed.feed.entry.forEach((element: any) => {
-				element.content._text = element.content._text.replace(/href="\//g, 'href="https://lab.shelter.moe/');
+				element.content._text = element.content._text.replace(/href="\//g, 'href="https://gitlab.com/');
 			});
 		}
 		return {
