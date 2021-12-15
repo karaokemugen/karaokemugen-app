@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from 'react';
 import GlobalContext from '../../../store/context';
 import { isElectron, sendIPC } from '../../../utils/electron';
 import { commandBackend } from '../../../utils/socket';
-import { dotify, expand } from '../../../utils/tools';
+import { displayMessage, dotify, expand } from '../../../utils/tools';
 import Switch from '../generic/Switch';
 import RemoteStatus from './RemoteStatus';
 
@@ -37,11 +37,52 @@ function KaraokeOptions(props: IProps) {
 		commandBackend('updateSettings', { setting: data }).catch(() => {});
 	};
 
+	const parseTwitch = () => {
+		const input = document.getElementById('Karaoke.StreamerMode.Twitch.OAuth') as unknown as HTMLInputElement;
+		let value = input.value;
+		if (value.startsWith('oauth:')) {
+			// remove oauth: as it's added by the chat library
+			value = value.slice(6);
+		}
+		fetch('https://id.twitch.tv/oauth2/validate', {
+			headers: { Authorization: `Bearer ${value}` },
+		})
+			.then(
+				res => res.json(),
+				() => {
+					displayMessage('error', 'jsp');
+				}
+			)
+			.then(data => {
+				if (data.login) {
+					commandBackend('updateSettings', {
+						setting: {
+							Karaoke: {
+								StreamerMode: {
+									Twitch: {
+										OAuth: value,
+										Channel: data.login,
+									},
+								},
+							},
+						},
+					}).then(() => {
+						displayMessage(
+							'success',
+							i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_SUCCESS', { login: data.login })
+						);
+					});
+				} else {
+					displayMessage('error', i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_ERROR'));
+				}
+			});
+	};
+
 	const onChange = (e: any) => {
 		let value =
 			e.target.type === 'checkbox'
 				? e.target.checked
-				: Number(e.target.value)
+				: !isNaN(Number(e.target.value))
 				? Number(e.target.value)
 				: e.target.value;
 		if (value === 'true') {
@@ -50,7 +91,7 @@ function KaraokeOptions(props: IProps) {
 			value = false;
 		}
 		config[e.target.id] = value;
-		if (e.target.type !== 'number' || Number(e.target.value)) props.onChange(e);
+		if (e.target.type !== 'number' || !isNaN(Number(e.target.value))) props.onChange(e);
 	};
 
 	useEffect(() => {
@@ -514,6 +555,7 @@ function KaraokeOptions(props: IProps) {
 							</label>
 							<div>
 								<input
+									min={0}
 									type="number"
 									data-exclude="true"
 									id="Karaoke.StreamerMode.PauseDuration"
@@ -540,7 +582,7 @@ function KaraokeOptions(props: IProps) {
 						{config['Karaoke.StreamerMode.Twitch.Enabled'] ? (
 							<div id="twitchSettings" className="settingsGroupPanel">
 								<div className="settings-line">
-									<a href="https://twitchapps.com/tmi/">
+									<a href="https://twitchapps.com/tmi/" target="_blank">
 										{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN_GET')}
 									</a>
 								</div>
@@ -555,9 +597,11 @@ function KaraokeOptions(props: IProps) {
 											type="password"
 											data-exclude="true"
 											id="Karaoke.StreamerMode.Twitch.OAuth"
-											onChange={onChange}
-											value={config['Karaoke.StreamerMode.Twitch.OAuth']}
+											defaultValue={config['Karaoke.StreamerMode.Twitch.OAuth']}
 										/>
+										<button className="btn" onClick={parseTwitch}>
+											{i18next.t('LOG_IN')}
+										</button>
 									</div>
 								</div>
 								<div className="settings-line">
@@ -566,13 +610,7 @@ function KaraokeOptions(props: IProps) {
 											{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_CHANNEL')}
 										</span>
 									</label>
-									<div>
-										<input
-											id="Karaoke.StreamerMode.Twitch.Channel"
-											onChange={onChange}
-											value={config['Karaoke.StreamerMode.Twitch.Channel']}
-										/>
-									</div>
+									<div>{config['Karaoke.StreamerMode.Twitch.Channel']}</div>
 								</div>
 							</div>
 						) : null}
