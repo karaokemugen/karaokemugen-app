@@ -409,8 +409,8 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 	const conf = getConfig();
 	if (show) {
 		chibiPlaylistWindow = new BrowserWindow({
-			width: conf.GUI.ChibiPlaylist.Height,
-			height: conf.GUI.ChibiPlaylist.Width,
+			width: conf.GUI.ChibiPlaylist.Width,
+			height: conf.GUI.ChibiPlaylist.Height,
 			x: conf.GUI.ChibiPlaylist.PositionX,
 			y: conf.GUI.ChibiPlaylist.PositionY,
 			show: false,
