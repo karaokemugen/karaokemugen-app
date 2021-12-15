@@ -3,7 +3,9 @@
 //
 // When removing code here, remember to go see if all functions called are still useful.
 
+import { promises as fs } from 'fs';
 import i18next from 'i18next';
+import { dump as yamlDump, load as yamlLoad } from 'js-yaml';
 import { cloneDeep } from 'lodash';
 import { resolve } from 'path';
 
@@ -22,6 +24,55 @@ import { OldRepository } from '../types/repo';
 import { backupConfig } from './config';
 import Sentry from './sentry';
 import { getState } from './state';
+
+/** Config clean #1057 */
+// Remove this in KM 7.0
+export async function renameConfigKeys(argv: any) {
+	const { appPath, dataPath } = getState();
+	let configFile = argv.config || 'config.yml';
+	const dataConfigFile = resolve(dataPath, configFile);
+	const appConfigFile = resolve(appPath, configFile);
+	if (await fileExists(appConfigFile)) {
+		configFile = appConfigFile;
+	} else if (await fileExists(dataConfigFile)) {
+		configFile = dataConfigFile;
+	} else if (argv.config) {
+		// If a custom file name is provided but we were unable to load it from app or data dirs, we're throwing here :
+		throw new Error(`File ${argv.config} not found in either app or data folders`);
+	} else {
+		// No custom file specified, we're going to use dataDir by default
+		configFile = dataConfigFile;
+	}
+	const content = await fs.readFile(configFile, 'utf-8');
+	const parsedContent: any = yamlLoad(content);
+	let modified = false;
+	// Move Karaoke.Display to Player.Display
+	if (parsedContent.Karaoke.Display) {
+		parsedContent.Player = { ...parsedContent.Player, Display: parsedContent.Karaoke.Display };
+		delete parsedContent.Karaoke.Display;
+		modified = true;
+	}
+	// Move Frontend.Port to System.FrontendPort
+	if (parsedContent.Frontend.Port) {
+		parsedContent.System = { ...parsedContent.System, FrontendPort: parsedContent.Frontend.Port };
+		delete parsedContent.Frontend.Port;
+		modified = true;
+	}
+	// Delete Frontend.GeneratePreviews
+	if (parsedContent.Frontend.GeneratePreviews) {
+		delete parsedContent.Frontend.GeneratePreviews;
+		modified = true;
+	}
+	// Delete Frontend.AuthExpireTime
+	if (parsedContent.Frontend.AuthExpireTime) {
+		delete parsedContent.Frontend.AuthExpireTime;
+		modified = true;
+	}
+	if (modified) {
+		const newConfig = yamlDump(parsedContent);
+		await fs.writeFile(configFile, newConfig, 'utf-8');
+	}
+}
 
 /** Lowercase all users. Remove in KM 7.0 */
 // Remove this in KM 7.0

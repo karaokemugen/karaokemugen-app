@@ -19,7 +19,7 @@ import { generateAdminPassword } from '../services/user';
 import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
-import { migrateReposToZip } from '../utils/hokutoNoCode';
+import { migrateReposToZip, renameConfigKeys } from '../utils/hokutoNoCode';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { parseArgs, setupFromCommandLineArgs } from './args';
@@ -65,6 +65,7 @@ export async function preInit() {
 	logger.debug(`argv: ${JSON.stringify(process.argv)}`, { service: 'Launcher' });
 	logger.debug(`Locale : ${state.defaultLocale}`, { service: 'Launcher' });
 	logger.debug(`OS : ${state.os}`, { service: 'Launcher' });
+	await renameConfigKeys(argv);
 	await initConfig(argv);
 	// Test if network ports are available
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);
