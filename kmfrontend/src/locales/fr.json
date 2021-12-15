@@ -1127,7 +1127,8 @@
 		"GIT_STASHLIST": "Remises",
 		"GIT_STASH": "Vous avez des entrées de remisage à appliquer, elles sont créées automatiquement lorsqu'il y a des conflits de fusion. Vous pouvez essayer des les restaurer ou les supprimer. Vous devriez regarder le <1>dépôt Git</1> pour voir les modifications qui ont créées les conflits.",
 		"GIT_UNSTASH": "Appliquer",
-		"GIT_DELETE": "Supprimer"
+		"GIT_DELETE": "Supprimer",
+		"GIT_CUSTOM_MESSAGE": "Message personnalisé"
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",

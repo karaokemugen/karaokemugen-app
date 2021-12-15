@@ -1125,7 +1125,8 @@
 		"GIT_STASHLIST": "Stashes",
 		"GIT_STASH": "You have stashes to apply, those are created automatically when a merge conflict occurs. You can try to restore them or delete them. You should check the <1>Git repository</1> online to see changes that might have caused the conflict.",
 		"GIT_UNSTASH": "Apply",
-		"GIT_DELETE": "Delete"
+		"GIT_DELETE": "Delete",
+		"GIT_CUSTOM_MESSAGE": "Custom message"
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",

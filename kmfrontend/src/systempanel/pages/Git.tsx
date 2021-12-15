@@ -4,12 +4,12 @@ import {
 	CloudUploadOutlined,
 	ControlOutlined,
 	DownOutlined,
+	EditOutlined,
 	ExceptionOutlined,
 	PullRequestOutlined,
-	ReloadOutlined,
 	RightOutlined,
 } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Layout, List, Modal, Table } from 'antd';
+import { Button, Checkbox, Divider, Input, Layout, List, Modal, Table } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import i18next from 'i18next';
 import { RenderExpandIconProps } from 'rc-table/lib/interface';
@@ -22,8 +22,10 @@ import { Commit, ModifiedMedia } from '../../../../src/types/repo';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 
+type CommitWithComment = Commit & { comment: string };
+
 interface PendingPush {
-	commits: { commits: Commit[]; modifiedMedias: ModifiedMedia[] };
+	commits: { commits: CommitWithComment[]; modifiedMedias: ModifiedMedia[] };
 	repoName: string;
 }
 
@@ -171,9 +173,17 @@ export default function Git() {
 		const excludedMessages = pendingPush.commits.commits
 			.filter((_el, i) => excludeList.includes(i))
 			.map(c => c.message);
-		pendingPush.commits.commits = pendingPush.commits.commits.filter((_el, i) => !excludeList.includes(i));
+		pendingPush.commits.commits = pendingPush.commits.commits
+			.filter((_el, i) => !excludeList.includes(i))
+			// Concatenate auto-generated messages
+			.map(c => {
+				return {
+					...c,
+					message: `${c.message} ${c.comment}`.trim(),
+					comment: undefined,
+				};
+			});
 		// Remove ignored medias by listing excluded commits messages
-		console.log(excludedMessages);
 		pendingPush.commits.modifiedMedias = pendingPush.commits.modifiedMedias.filter(
 			m => !excludedMessages.includes(m.commit)
 		);
@@ -189,8 +199,9 @@ export default function Git() {
 			} else {
 				const indexInExcludeList = excludeList.indexOf(commit);
 				if (indexInExcludeList >= 0) {
-					excludeList.splice(indexInExcludeList, 1);
-					setExcludeList(excludeList);
+					const newExcludeList = [...excludeList];
+					newExcludeList.splice(indexInExcludeList, 1);
+					setExcludeList(newExcludeList);
 				} else {
 					setExcludeList([...excludeList, commit]);
 				}
@@ -350,10 +361,41 @@ export default function Git() {
 				cancelText={i18next.t('CANCEL')}
 			>
 				<ul>
-					{pendingPush?.commits?.commits?.map(commit => (
+					{pendingPush?.commits?.commits?.map((commit, i) => (
 						<li key={commit.message}>
 							<Checkbox defaultChecked={true} name={commit.message} onChange={toggleExclude}>
-								{commit.message}
+								<span>{commit.message}</span>
+								{typeof commit.comment === 'string' ? (
+									<Input
+										placeholder={i18next.t('REPOSITORIES.GIT_CUSTOM_MESSAGE')}
+										disabled={excludeList.includes(i)}
+										onChange={e => {
+											setPendingPush(pPush => {
+												const commits = [...pPush.commits.commits];
+												commits[i] = {
+													...commits[i],
+													comment: e.target.value,
+												};
+												return { ...pPush, commits: { ...pPush.commits, commits } };
+											});
+										}}
+									/>
+								) : (
+									<Button
+										icon={<EditOutlined />}
+										disabled={excludeList.includes(i)}
+										onClick={() => {
+											setPendingPush(pPush => {
+												const commits = [...pPush.commits.commits];
+												commits[i] = {
+													...commits[i],
+													comment: '',
+												};
+												return { ...pPush, commits: { ...pPush.commits, commits } };
+											});
+										}}
+									/>
+								)}
 							</Checkbox>
 						</li>
 					))}
