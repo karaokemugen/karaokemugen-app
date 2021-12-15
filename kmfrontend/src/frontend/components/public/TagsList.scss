@@ -1,7 +1,10 @@
 @import '../../styles/variables';
 
 .tags-list {
-	height: 100%;
+	display: inline-flex;
+	position: relative;
+	flex: 1 0 auto;
+	flex-direction: column;
 	div.tags-item {
 		padding: 1em;
 		background-color: $mugen-playlist-odd;

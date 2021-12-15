@@ -140,15 +140,6 @@ function TagsList(props: IProps) {
 		[tags?.infos.to]
 	);
 
-	const HeightPreservingItem = useCallback(({ children, ...props }: PropsWithChildren<ItemProps>) => {
-		return (
-			// the height is necessary to prevent the item container from collapsing, which confuses Virtuoso measurements
-			<div {...props} style={{ minHeight: props['data-known-size'] || undefined }}>
-				{children}
-			</div>
-		);
-	}, []);
-
 	useDeferredEffect(() => {
 		props.tagType === YEARS.type ? getYears() : getTags(0);
 	}, [context.globalState.frontendContext.filterValue1]);
@@ -160,9 +151,7 @@ function TagsList(props: IProps) {
 	return (
 		<div className="tags-list">
 			<Virtuoso
-				components={{
-					Item: HeightPreservingItem,
-				}}
+				style={{ flex: '1 0 auto' }}
 				itemContent={index => <Item index={index} />}
 				totalCount={tags.infos.count}
 				rangeChanged={loadMoreRows}
