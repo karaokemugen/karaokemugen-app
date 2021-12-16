@@ -31,8 +31,8 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 		type === 'bundled' ? resolve(resolvedPath('BundledBackgrounds')) : resolve(resolvedPath('Backgrounds'), type);
 	const files = await fs.readdir(path);
 	return {
-		pictures: files.filter(f => f.match(imageFileRegexp)).map(f => resolve(path, f)),
-		music: files.filter(f => f.match(audioFileRegexp)).map(f => resolve(path, f)),
+		pictures: files.filter(f => imageFileRegexp.test(f)).map(f => resolve(path, f)),
+		music: files.filter(f => audioFileRegexp.test(f)).map(f => resolve(path, f)),
 	};
 }
 
