@@ -97,7 +97,7 @@ function UsersModal(props: IProps) {
 										<div>
 											<i className="fas fa-fw fa-link" />
 											{userDetails?.url ? (
-												<a href={userDetails.url} target="_blank">
+												<a href={userDetails.url} rel="noreferrer" target="_blank">
 													{userDetails.url}
 												</a>
 											) : null}
