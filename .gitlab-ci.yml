@@ -1,4 +1,4 @@
-image: axelterizaki/karaokemugen-ci:node-16-phppg
+limage: axelterizaki/karaokemugen-ci:node-16-phppg
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -6,7 +6,8 @@ variables:
 
 sast:
   variables:
-    SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util
+    SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util, packages
+    CI_DEBUG_TRACE: 'true'
   stage: test
 
 include:
