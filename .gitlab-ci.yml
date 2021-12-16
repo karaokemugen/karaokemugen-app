@@ -4,8 +4,14 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   ELECTRON_CACHE: .cache/electron
 
+sast:
+  variables:
+    SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util
+  stage: test
+
 include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
 
 workflow:
   rules:
