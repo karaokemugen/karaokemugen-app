@@ -247,7 +247,7 @@ describe('Playlists', () => {
 		expect(data.PlaylistContents.length).to.be.at.least(1);
 		for (const plc of data.PlaylistContents) {
 			expect(plc.created_at).to.be.a('string');
-			expect(plc.kid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+			expect(plc.kid).to.be.a('string').and.match(uuidRegexp);
 			expect(plc.username).to.be.a('string');
 			expect(plc.nickname).to.be.a('string');
 			expect(plc.pos).to.be.a('number');
@@ -310,7 +310,7 @@ describe('Playlists', () => {
 			expect(pl.flag_public).to.be.a('boolean');
 			expect(pl.karacount).to.be.a('number').and.at.least(0);
 			expect(pl.name).to.be.a('string');
-			expect(pl.plaid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+			expect(pl.plaid).to.be.a('string').and.match(uuidRegexp);
 			expect(pl.plcontent_id_playing).to.be.a('number').and.at.least(0);
 			expect(pl.time_left).to.be.a('number').and.at.least(0);
 			expect(pl.username).to.be.a('string');

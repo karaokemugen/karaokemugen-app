@@ -92,7 +92,7 @@ export function testKara(kara: any, details: TestDetails) {
 	if (details.plcDetail) expect(kara.kara_created_at).to.be.a('string');
 	if (details.plcDetail) expect(kara.kara_modified_at).to.be.a('string');
 	expect(kara.karafile).to.be.a('string');
-	expect(kara.kid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+	expect(kara.kid).to.be.a('string').and.match(uuidRegexp);
 	if (details.kara || details.plcDetail)
 		expect(kara.lastplayed_ago).to.satisfy((e: any) => typeof e === 'string' || e === null);
 	if (details.kara) expect(kara.lastrequested_at).to.satisfy((e: any) => typeof e === 'string' || e === null);
@@ -114,7 +114,7 @@ export function testKara(kara: any, details: TestDetails) {
 		expect(kara.nickname).to.be.a('string');
 	}
 	expect(kara.played).to.be.a('number').and.at.least(0);
-	if (details.plcDetail) expect(kara.plaid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+	if (details.plcDetail) expect(kara.plaid).to.be.a('string').and.match(uuidRegexp);
 	if (details.plc) expect(kara.plcid).to.be.a('number').and.at.least(0);
 	if (details.plc) expect(kara.pos).to.be.a('number').and.at.least(0);
 	expect(kara.requested).to.be.a('number').and.at.least(0);
@@ -123,7 +123,7 @@ export function testKara(kara: any, details: TestDetails) {
 	if (details.kara) {
 		expect(kara.tid).to.be.an('array');
 		for (const tid of kara.tid) {
-			if (tid) expect(tid).to.be.a('string').and.match(new RegExp(uuidPlusTypeRegexp));
+			if (tid) expect(tid).to.be.a('string').and.match(uuidPlusTypeRegexp);
 		}
 	}
 	if (details.plcDetail) expect(kara.time_before_play).to.be.a('number');
@@ -138,7 +138,7 @@ export function testTag(tag: DBTag, type: 'short' | 'full' | 'tag') {
 	expect(tag.problematic).to.be.a('boolean');
 	if (tag.noLiveDownload) expect(tag.noLiveDownload).to.be.a('boolean');
 	expect(tag.short).to.satisfy((val: any) => typeof val === 'string' || val === null);
-	expect(tag.tid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+	expect(tag.tid).to.be.a('string').and.match(uuidRegexp);
 	if (type === 'full' || type === 'tag') {
 		if (tag.aliases) expect(tag.aliases).to.satisfy((e: any) => e === undefined || Array.isArray(e));
 		expect(tag.i18n).to.be.an('object');

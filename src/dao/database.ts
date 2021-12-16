@@ -126,7 +126,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 	}
 	if (!(await getInstanceID())) {
 		// Some interesting people actually copy/paste what's in the sample config file so we're going to be extra nice with them even though we shouldn't and set it correctly if the config's instanceID is wrong.
-		conf.App.InstanceID && new RegExp(uuidRegexp).test(conf.App.InstanceID)
+		conf.App.InstanceID && uuidRegexp.test(conf.App.InstanceID)
 			? setInstanceID(conf.App.InstanceID)
 			: setInstanceID(uuidV4());
 	}

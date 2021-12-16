@@ -44,7 +44,7 @@ import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smart
 import { sendPayload } from './stats';
 import { getTags, integrateTagFile, removeTag } from './tag';
 
-const windowsDriveRootRegexp = new RegExp(/^[a-zA-Z]:\\$/);
+const windowsDriveRootRegexp = /^[a-zA-Z]:\\$/;
 
 let updateRunning = false;
 

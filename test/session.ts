@@ -39,7 +39,7 @@ describe('Sessions', () => {
 			expect(s.played).to.be.a('number').and.at.least(0);
 			expect(s.requested).to.be.a('number').and.at.least(0);
 			expect(s.private).to.be.a('boolean');
-			expect(s.seid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+			expect(s.seid).to.be.a('string').and.match(uuidRegexp);
 			expect(s.started_at).to.be.a('string');
 		}
 		initialSession = data[0];

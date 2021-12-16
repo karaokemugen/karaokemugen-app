@@ -161,7 +161,7 @@ export async function importFavorites(
 	if (favs.Header.description !== 'Karaoke Mugen Favorites List File')
 		throw { code: 400, msg: 'Not a favorites list' };
 	if (!Array.isArray(favs.Favorites)) throw { code: 400, msg: 'Favorites item is not an array' };
-	if (favs.Favorites.some(f => !new RegExp(uuidRegexp).test(f.kid)))
+	if (favs.Favorites.some(f => !uuidRegexp.test(f.kid)))
 		throw { code: 400, msg: 'One item in the favorites list is not a UUID' };
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {

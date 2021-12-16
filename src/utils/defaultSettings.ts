@@ -270,7 +270,7 @@ const endOfPlaylistActions = ['random', 'repeat', 'none'];
 export const configConstraints = {
 	'App.FirstRun': { inclusion: bools },
 	'App.QuickStart': { inclusion: bools },
-	// 'App.InstanceID': {presence: true, format: new RegExp(uuidRegexp)}, // Broken on regular installations since InstanceID is stored in database
+	// 'App.InstanceID': {presence: true, format: uuidRegexp}, // Broken on regular installations since InstanceID is stored in database
 	'Online.Stats': { boolUndefinedValidator: true },
 	'Online.ErrorTracking': { boolUndefinedValidator: true },
 	'Online.Host': { presence: true, format: hostnameRegexp },

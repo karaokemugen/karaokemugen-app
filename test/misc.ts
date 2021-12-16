@@ -15,11 +15,11 @@ describe('Main', () => {
 		expect(data).to.have.property('state');
 		expect(data).to.have.property('version');
 		expect(data.state.appPath).to.be.a('string');
-		expect(data.state.currentPlaid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+		expect(data.state.currentPlaid).to.be.a('string').and.match(uuidRegexp);
 		expect(data.state.dataPath).to.be.a('string');
 		expect(data.state.environment).to.satisfy((e: any) => e === undefined || typeof e === 'string');
 		expect(data.state.os).to.be.a('string');
-		expect(data.state.publicPlaid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+		expect(data.state.publicPlaid).to.be.a('string').and.match(uuidRegexp);
 		expect(data.state.sentryTest).to.satisfy((e: any) => e === undefined || typeof e === 'boolean');
 		expect(data.state.supportedLyrics).to.be.a('array');
 		expect(data.state.supportedMedias).to.be.a('array');
