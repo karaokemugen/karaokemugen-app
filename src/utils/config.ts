@@ -302,6 +302,10 @@ export function getPublicConfig(removeSystem = true) {
 	const publicSettings = cloneDeep(getConfig());
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.System.Database;
+	for (const repo of publicSettings.System.Repositories) {
+		delete repo.Git?.Password;
+		delete repo.FTP?.Password;
+	}
 	if (removeSystem) delete publicSettings.System;
 	else delete publicSettings.System.Binaries;
 	delete publicSettings.Karaoke.StreamerMode.Twitch.OAuth;
