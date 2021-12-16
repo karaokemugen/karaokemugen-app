@@ -2,24 +2,21 @@
 
 // https://github.com/bryanwoods/autolink-js
 (function () {
-	let autoLink,
-		slice = [].slice;
+	const slice = [].slice;
 
-	autoLink = function () {
-		let callback, k, linkAttributes, option, options, pattern, v;
-		options = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-		pattern =
+	const autoLink = function () {
+		const options = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+		const pattern =
 			/(^|[\s\n]|<[A-Za-z]*\/?>)((?:https?|ftp):\/\/[-A-Z0-9+\u0026\u2019@#/%?=()~_|!:,.;]*[-A-Z0-9+\u0026@#/%=~()_|])/gi;
 		if (!(options.length > 0)) {
 			return this.replace(pattern, '$1<a href="$2">$2</a>');
 		}
-		option = options[0];
-		callback = option['callback'];
-		linkAttributes = (function () {
-			let results;
-			results = [];
-			for (k in option) {
-				v = option[k];
+		const option = options[0];
+		const callback = option['callback'];
+		const linkAttributes = (function () {
+			const results = [];
+			for (const k in option) {
+				const v = option[k];
 				if (k !== 'callback') {
 					results.push(' ' + k + "='" + v + "'");
 				}
@@ -89,8 +86,7 @@ ipcRenderer.on('techTip', (event, data) => {
 	timeout = setTimeout(askTip, data.duration);
 });
 ipcRenderer.on('tasksUpdated', (event, data) => {
-	if (Object.keys(data).length > 0) {
-		const task = data[Object.keys(data)[0]];
+	for (const task of data) {
 		if (task?.text === 'GENERATING') {
 			setProgressBar(task.percentage, task.subtext);
 		}

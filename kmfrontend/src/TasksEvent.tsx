@@ -16,12 +16,10 @@ function TasksEvent(props: IProps) {
 	const [i, setI] = useState(0);
 
 	const updateTasks = (tasks: TaskItem[]) => {
-		const t = tasks;
-		for (const i in tasks) {
-			t[i] = tasks[i];
-			t[i].time = new Date().getTime();
+		for (const task of tasks) {
+			task.time = new Date().getTime();
 		}
-		setTasks(t);
+		setTasks(tasks);
 	};
 
 	useEffect(() => {
@@ -32,15 +30,10 @@ function TasksEvent(props: IProps) {
 		};
 	}, []);
 
-	const t = [];
 	let tCount = 0;
-	for (const task of tasks) {
-		t.push(task);
-	}
-
 	return (
 		<div className={props.isWelcomePage ? 'welcome-page-tasks-wrapper' : 'tasksEvent-wrapper'}>
-			{t.map((item, index) => {
+			{tasks.map((item, index) => {
 				if (tCount >= props.limit)
 					// no more than 3 tasks displayed
 					return null;

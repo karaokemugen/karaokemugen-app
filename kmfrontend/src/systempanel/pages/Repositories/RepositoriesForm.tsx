@@ -49,8 +49,8 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 	}
 
 	isZipUpdateInProgress = (tasks: TaskItem[]) => {
-		for (const i in tasks) {
-			if (['EXTRACTING_ZIP', 'DOWNLOADING_ZIP'].includes(tasks[i].text)) {
+		for (const task of tasks) {
+			if (['EXTRACTING_ZIP', 'DOWNLOADING_ZIP'].includes(task.text)) {
 				this.setState({ zipUpdateInProgress: true });
 				clearTimeout(this.timeout);
 				this.timeout = setTimeout(() => {

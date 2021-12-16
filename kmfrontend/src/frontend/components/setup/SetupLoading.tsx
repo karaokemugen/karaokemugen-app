@@ -45,17 +45,13 @@ function SetupLoading() {
 		};
 	}, []);
 
-	const t = [];
 	let tCount = 0;
-	for (const i in tasks) {
-		t.push(tasks[i]);
-	}
 	return (
 		<section className="step step-choice loading">
 			<div className="ip--top">
 				<img className="ip--logo" src={logoBig} alt="Karaoke Mugen" />
 			</div>
-			{t.map((item: TaskItem) => {
+			{tasks.map((item: TaskItem) => {
 				if (tCount >= 1)
 					// no more than 3 tasks displayed
 					return null;
