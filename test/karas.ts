@@ -68,7 +68,7 @@ describe('Karas information', () => {
 	it('Get complete list of PARENTS ONLY karaokes', async () => {
 		const data = await commandBackend(token, 'getKaras', { parentsOnly: true, size: 10 });
 		expect(data.content).to.have.lengthOf(10);
-		expect(data.infos.count).to.have.length.below(karasCount);
+		expect(data.infos.count).to.be.lessThan(karasCount);
 	});
 
 	it('Get song info from database', async () => {
