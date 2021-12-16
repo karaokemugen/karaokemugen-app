@@ -16,7 +16,6 @@ include:
 
 workflow:
   rules:
-    - if: '$CI_COMMIT_BRANCH == "testCI"'
     - if: $CI_COMMIT_TAG
     - if: '$CI_COMMIT_BRANCH == "master"'
     - if: '$CI_COMMIT_BRANCH == "next"'
@@ -118,8 +117,6 @@ deploy_kmremote:
 pkg_linux:
   stage: package
   image: electronuserland/builder:latest
-  tags:
-    - amd64
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -137,6 +134,7 @@ pkg_linux:
     - build-react
     - test
   script:
+    - yarn install
     - rm -Rf release_linux
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
@@ -156,10 +154,6 @@ pkg_linux:
 pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
-  tags:
-    # This must be run on a linux-only host. Weirdly this fails badly on Windows hosts.
-    - linux
-    - amd64
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -177,6 +171,7 @@ pkg_win:
     - build-react
     - test
   script:
+    - yarn install
     - rm -Rf release_win
     - npm install -g electron-builder
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
@@ -227,6 +222,7 @@ pkg_mac:
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
   script:
+    - yarn install
     - rm -Rf release_mac
     - npm install -g electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-6.x.tar.gz | tar xvz
