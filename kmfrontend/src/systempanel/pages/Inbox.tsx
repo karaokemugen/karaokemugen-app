@@ -22,8 +22,12 @@ export default function Inbox() {
 
 	const getInbox = async () => {
 		if (repoList.length > 0) {
-			const res = await commandBackend('getInbox', { repoName: repoList[0].Name });
-			setInbox(res);
+			try {
+				const res = await commandBackend('getInbox', { repoName: repoList[0].Name });
+				setInbox(res);
+			} catch (e) {
+				// already display
+			}
 		}
 	};
 
