@@ -23,8 +23,12 @@ function FavMixModal(props: IProps) {
 		if (duration === 0 || userList.filter(value => value.flag_logged_in).length === 0) return;
 		const userlistStr = userList.filter(value => value.flag_logged_in).map(value => value.login);
 		const data = { duration: duration !== 0 ? duration : 200, users: userlistStr };
-		const res = await commandBackend('createAutomix', data);
-		setPlaylistInfo(props.side, context, res.plaid);
+		try {
+			const res = await commandBackend('createAutomix', data);
+			setPlaylistInfo(props.side, context, res.plaid);
+		} catch (e) {
+			// already display
+		}
 		closeModalWithContext();
 	};
 
