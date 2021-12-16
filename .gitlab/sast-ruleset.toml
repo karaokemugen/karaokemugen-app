@@ -9,13 +9,19 @@
     disable = true
     [eslint.ruleset.identifier]
       type = "eslint_rule_id"
-      value = "security/detect-object-injection"
+      value = "security/detect-non-literal-fs-filename"
 
   [[eslint.ruleset]]
     disable = true
     [eslint.ruleset.identifier]
       type = "cwe"
       value = "185"
+
+  [[eslint.ruleset]]
+    disable = true
+    [eslint.ruleset.identifier]
+      type = "cwe"
+      value = "94"
 
   [[eslint.ruleset]]
     disable = true
