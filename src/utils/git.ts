@@ -127,7 +127,7 @@ export default class Git {
 	}
 
 	diff(fromCommit?: string, toCommit?: string) {
-		const options = ['-p', '--minimal', '--no-renames', '-U0'];
+		const options = ['-p', '--minimal', '--no-renames', '-U0', '--ignore-cr-at-eol'];
 		if (fromCommit && toCommit) options.push(`${fromCommit}..${toCommit}`);
 		return this.git.diff(options);
 	}
