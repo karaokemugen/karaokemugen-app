@@ -1125,17 +1125,16 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 		};
 		let flag_playingDetected = false;
 		const users = new Map();
-		for (const index in playlist.PlaylistContents) {
-			const kara = playlist.PlaylistContents[index];
+		for (const kara of playlist.PlaylistContents) {
 			kara.username = kara.username.toLowerCase();
 			let user: User = users.get(kara.username);
 			if (!user) {
 				user = await getUser(kara.username);
 				if (!user) {
 					// If user isn't found locally, replacing it with admin user
-					playlist.PlaylistContents[index].username = kara.username = 'admin';
+					kara.username = kara.username = 'admin';
 					user = await getUser('admin');
-					playlist.PlaylistContents[index].nickname = user.nickname;
+					kara.nickname = user.nickname;
 				}
 				users.set(user.login, user);
 			}
