@@ -47,24 +47,24 @@ export async function renameConfigKeys(argv: any) {
 	const parsedContent: any = yamlLoad(content);
 	let modified = false;
 	// Move Karaoke.Display to Player.Display
-	if (parsedContent.Karaoke.Display) {
+	if (parsedContent.Karaoke?.Display) {
 		parsedContent.Player = { ...parsedContent.Player, Display: parsedContent.Karaoke.Display };
 		delete parsedContent.Karaoke.Display;
 		modified = true;
 	}
 	// Move Frontend.Port to System.FrontendPort
-	if (parsedContent.Frontend.Port) {
+	if (parsedContent.Frontend?.Port) {
 		parsedContent.System = { ...parsedContent.System, FrontendPort: parsedContent.Frontend.Port };
 		delete parsedContent.Frontend.Port;
 		modified = true;
 	}
 	// Delete Frontend.GeneratePreviews
-	if (parsedContent.Frontend.GeneratePreviews) {
+	if (parsedContent.Frontend?.GeneratePreviews) {
 		delete parsedContent.Frontend.GeneratePreviews;
 		modified = true;
 	}
 	// Delete Frontend.AuthExpireTime
-	if (parsedContent.Frontend.AuthExpireTime) {
+	if (parsedContent.Frontend?.AuthExpireTime) {
 		delete parsedContent.Frontend.AuthExpireTime;
 		modified = true;
 	}
