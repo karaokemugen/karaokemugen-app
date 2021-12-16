@@ -14,6 +14,12 @@
   [[eslint.ruleset]]
     disable = true
     [eslint.ruleset.identifier]
+      type = "eslint_rule_id"
+      value = "security/detect-non-literal-regexp"
+
+  [[eslint.ruleset]]
+    disable = true
+    [eslint.ruleset.identifier]
       type = "cwe"
       value = "185"
 
@@ -28,3 +34,21 @@
     [eslint.ruleset.identifier]
       type = "cwe"
       value = "22"
+
+  [[semgrep.ruleset]]
+    disable = true
+    [semgrep.ruleset.identifier]
+      type = "eslint_rule_id"
+      value = "security/detect-object-injection"
+
+  [[semgrep.ruleset]]
+    disable = true
+    [semgrep.ruleset.identifier]
+      type = "eslint_rule_id"
+      value = "security/detect-non-literal-fs-filename"
+
+  [[semgrep.ruleset]]
+    disable = true
+    [semgrep.ruleset.identifier]
+      type = "eslint_rule_id"
+      value = "security/detect-non-literal-regexp"
