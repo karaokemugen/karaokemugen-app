@@ -28,7 +28,11 @@ export default function Inbox() {
 	};
 
 	const downloadKaraFromInbox = async (inid: string) => {
-		await commandBackend('downloadKaraFromInbox', { repoName: repoList[0].Name, inid });
+		try {
+			await commandBackend('downloadKaraFromInbox', { repoName: repoList[0].Name, inid });
+		} catch (e) {
+			// already display
+		}
 		getInbox();
 	};
 
