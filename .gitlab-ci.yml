@@ -1,4 +1,4 @@
-limage: axelterizaki/karaokemugen-ci:node-16-phppg
+image: axelterizaki/karaokemugen-ci:node-16-phppg
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
