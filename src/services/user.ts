@@ -49,13 +49,13 @@ export async function getAvailableGuest() {
 export function createJwtToken(username: string, role: string, config?: Config): string {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
-	return encode({ username, iat: timestamp, role }, conf.App.JwtSecret);
+	return encode({ username, iat: timestamp, role }, conf.App.JwtSecret, 'HS256');
 }
 
 /** Decode token to see if it matches */
 export function decodeJwtToken(token: string, config?: Config) {
 	const conf = config || getConfig();
-	return decode(token, conf.App.JwtSecret);
+	return decode(token, conf.App.JwtSecret, false, 'HS256');
 }
 
 /** To avoid flooding database UPDATEs, only update login time every 5 minute for a user */
