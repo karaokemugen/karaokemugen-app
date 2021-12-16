@@ -34,8 +34,8 @@ function TasksEvent(props: IProps) {
 
 	const t = [];
 	let tCount = 0;
-	for (const i in tasks) {
-		t.push(tasks[i]);
+	for (const task of tasks) {
+		t.push(task);
 	}
 
 	return (
