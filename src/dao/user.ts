@@ -71,6 +71,10 @@ export async function updateUser(user: User): Promise<User> {
 				location: user.location,
 				flag_parentsonly: user.flag_parentsonly,
 				language: user.language,
+				flag_public: user.flag_public,
+				flag_displayfavorites: user.flag_displayfavorites,
+				social_networks: user.social_networks,
+				banner: user.banner,
 			})
 		)
 	).rows[0];

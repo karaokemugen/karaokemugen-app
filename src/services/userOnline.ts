@@ -4,14 +4,14 @@ import { resolve } from 'path';
 import { Stream } from 'stream';
 
 import { Token, User } from '../lib/types/user';
-import { getConfig, resolvedPath } from '../lib/utils/config';
+import { resolvedPath } from '../lib/utils/config';
 import { writeStreamToFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { SingleToken, Tokens } from '../types/user';
 import sentry from '../utils/sentry';
-import { startSub } from '../utils/userPubSub';
+import { startSub, stopSub } from '../utils/userPubSub';
 import { convertToRemoteFavorites } from './favorites';
 import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user';
 
@@ -116,37 +116,45 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 }
 
 /** Edit online user's profile, including avatar. */
-export async function editRemoteUser(user: User, token: string) {
+export async function editRemoteUser(user: User, token: string, avatar = true) {
 	// Fetch remote token
 	const [login, instance] = user.login.split('@');
-	const form = new formData();
 
-	// Create the form data sent as payload to edit remote user
-	if (user.avatar_file !== 'blank.png')
-		form.append(
-			'avatarfile',
-			createReadStream(resolve(resolvedPath('Avatars'), user.avatar_file)),
-			user.avatar_file
-		);
-	form.append('nickname', user.nickname);
-	form.append('bio', user.bio ? user.bio : '');
-	form.append('location', user.location ? user.location : '');
-	if (typeof user.flag_sendstats === 'boolean') form.append('flag_sendstats', user.flag_sendstats.toString());
-	if (typeof user.flag_parentsonly === 'boolean') form.append('flag_parentsonly', user.flag_parentsonly.toString());
-	form.append('email', user.email ? user.email : '');
-	form.append('url', user.url ? user.url : '');
-	form.append('language', user.language ? user.language : getConfig().App.Language);
-	if (user.password) form.append('password', user.password);
-	if (user.main_series_lang) form.append('main_series_lang', user.main_series_lang);
-	if (user.fallback_series_lang) form.append('fallback_series_lang', user.fallback_series_lang);
+	await stopSub(login, instance);
+
 	try {
-		const res = await HTTP.patch(`https://${instance}/api/users/${login}`, form, {
-			headers: form.getHeaders({ authorization: token }),
-		});
+		if (user.avatar_file !== 'blank.png' && avatar) {
+			const form = new formData();
+			form.append(
+				'avatarfile',
+				createReadStream(resolve(resolvedPath('Avatars'), user.avatar_file)),
+				user.avatar_file
+			);
+			await HTTP.patch(`https://${instance}/api/users/${login}`, form, {
+				headers: form.getHeaders({ authorization: token }),
+			});
+		}
+		const res = await HTTP.patch(
+			`https://${instance}/api/users/${login}`,
+			{
+				...user,
+				// Removing non-supported properties on App
+				banner: undefined,
+				pk_login: undefined,
+				login: undefined,
+				type: undefined,
+				roles: undefined,
+			},
+			{
+				headers: { authorization: token },
+			}
+		);
 		return res.data;
 	} catch (err) {
 		sentry.error(err);
 		throw `Remote update failed : ${err}`;
+	} finally {
+		startSub(login, instance);
 	}
 }
 

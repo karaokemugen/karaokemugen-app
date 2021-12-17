@@ -41,7 +41,12 @@ function ProfilModal(props: IProps) {
 	const [dangerousActions, setDangerousActions] = useState(false);
 
 	const onChange = (event: any) => {
-		user[event.target.name] = event.target.value;
+		if (event.target.name.includes('.')) {
+			const split = event.target.name.split('.');
+			user[split[0]][split[1]] = event.target.value;
+		} else {
+			user[event.target.name] = event.target.value;
+		}
 		setUser(user);
 	};
 
@@ -234,7 +239,7 @@ function ProfilModal(props: IProps) {
 			<div className={`modal-header${props.scope === 'public' ? ' public-modal' : ''}`}>
 				{props.scope === 'public' ? (
 					<button className="closeModal" type="button" onClick={() => closeModalWithContext()}>
-						<i className="fas fa-arrow-left" />
+						<i className="fas fa-fw fa-arrow-left" />
 					</button>
 				) : null}
 				<h4 className="modal-title">{i18next.t('PROFILE')}</h4>
@@ -245,7 +250,14 @@ function ProfilModal(props: IProps) {
 				) : null}
 			</div>
 			<div id="nav-profil" className="modal-body">
-				<div className="profileContent">
+				<form
+					onSubmit={async e => {
+						e.preventDefault();
+						await updateUser();
+						closeModalWithContext();
+					}}
+					className="profileContent"
+				>
 					<div className="profileHeader">
 						<ProfilePicture user={user} className="img-circle avatar" />
 						<div>
@@ -340,7 +352,7 @@ function ProfilModal(props: IProps) {
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-map-marked-alt" />
+									<i className="fas fa-fw fa-map-marked-alt" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.LOCATION')}</label>
 								</div>
 								<Autocomplete
@@ -349,18 +361,68 @@ function ProfilModal(props: IProps) {
 									forceTop={true}
 									onType={setCountryQuery}
 									onChange={value => changeAutocomplete('location', value)}
+									styleInclude
 								/>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<input
-										type="checkbox"
-										defaultChecked={user.flag_sendstats}
-										onChange={onClickCheckbox}
-										name="flag_sendstats"
-									/>
-									<label>{i18next.t('MODAL.PROFILE_MODAL.FLAG_SENDSTATS')}</label>
+									<i className="fab fa-fw fa-discord" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.DISCORD')}</label>
 								</div>
+								<input
+									name="social_networks.discord"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.DISCORD_PLACEHOLDER')}
+									defaultValue={user.social_networks.discord}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fab fa-fw fa-twitter" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITTER')}</label>
+								</div>
+								<input
+									name="social_networks.twitter"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITTER_PLACEHOLDER')}
+									defaultValue={user.social_networks.twitter}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fab fa-fw fa-instagram" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>
+								</div>
+								<input
+									name="social_networks.instagram"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.INSTAGRAM_PLACEHOLDER')}
+									defaultValue={user.social_networks.instagram}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fab fa-fw fa-twitch" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITCH')}</label>
+								</div>
+								<input
+									name="social_networks.twitch"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITCH_PLACEHOLDER')}
+									defaultValue={user.social_networks.twitch}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
@@ -419,17 +481,6 @@ function ProfilModal(props: IProps) {
 									<i className="fas fa-fw fa-upload" /> {i18next.t('FAVORITES_EXPORT')}
 								</button>
 							</div>
-							<div className="profileLine">
-								<div className="profileLabel">
-									<input
-										type="checkbox"
-										defaultChecked={user.flag_parentsonly}
-										onChange={onClickCheckbox}
-										name="flag_parentsonly"
-									/>
-									<label>{i18next.t('MODAL.PROFILE_MODAL.FLAG_PARENTSONLY')}</label>
-								</div>
-							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-language" />
@@ -477,15 +528,62 @@ function ProfilModal(props: IProps) {
 									/>
 								</div>
 							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_sendstats}
+										onChange={onClickCheckbox}
+										name="flag_sendstats"
+										id="flag_sendstats"
+									/>
+									<label htmlFor="flag_sendstats">
+										{i18next.t('MODAL.PROFILE_MODAL.FLAG_SENDSTATS')}
+									</label>
+								</div>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_parentsonly}
+										onChange={onClickCheckbox}
+										name="flag_parentsonly"
+										id="flag_parentsonly"
+									/>
+									<label htmlFor="flag_parentsonly">
+										{i18next.t('MODAL.PROFILE_MODAL.FLAG_PARENTSONLY')}
+									</label>
+								</div>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_public}
+										onChange={onClickCheckbox}
+										name="flag_public"
+										id="flag_public"
+									/>
+									<label htmlFor="flag_public">{i18next.t('MODAL.PROFILE_MODAL.FLAG_PUBLIC')}</label>
+								</div>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_displayfavorites}
+										onChange={onClickCheckbox}
+										name="flag_displayfavorites"
+										id="flag_displayfavorites"
+									/>
+									<label htmlFor="flag_displayfavorites">
+										{i18next.t('MODAL.PROFILE_MODAL.FLAG_DISPLAYFAVORITES')}
+									</label>
+								</div>
+							</div>
 							<div className="profileButtonLine">
-								<button
-									type="button"
-									className="btn btn-action btn-save"
-									onClick={async () => {
-										await updateUser();
-										closeModalWithContext();
-									}}
-								>
+								<button type="submit" className="btn btn-action btn-save">
 									{i18next.t('SUBMIT')}
 								</button>
 								<button
@@ -540,7 +638,7 @@ function ProfilModal(props: IProps) {
 							</div>
 						</div>
 					) : null}
-				</div>
+				</form>
 			</div>
 		</div>
 	) : null;

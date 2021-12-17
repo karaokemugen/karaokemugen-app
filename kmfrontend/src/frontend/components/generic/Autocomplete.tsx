@@ -18,6 +18,7 @@ interface IProps {
 	onChange: (value: string) => void;
 	onType?: (query: string) => void;
 	forceTop?: boolean;
+	styleInclude?: boolean;
 }
 
 function Autocomplete(props: IProps) {
@@ -25,7 +26,7 @@ function Autocomplete(props: IProps) {
 
 	const node: any = useRef();
 	const [placeholder, setPlaceholder] = useState(props.placeholder || undefined);
-	const [selectedValue, setSelectedValue] = useState(props.value || '');
+	const [selectedValue, setSelectedValue] = useState('');
 	const [searchValue, setSearchValue] = useState('');
 
 	const searchInputRef: any = useRef();
@@ -116,7 +117,7 @@ function Autocomplete(props: IProps) {
 			<div className="UI-autocomplete-input" data-focus={focus ? 'true' : 'false'}>
 				<input
 					type="text"
-					data-exclude={true}
+					data-exclude={!props.styleInclude}
 					ref={searchInputRef}
 					value={searchValue}
 					placeholder={placeholder}

@@ -582,7 +582,19 @@
 			"INTERFACE_LANGUAGE": "Langue de l'interface",
 			"MAIN_SONG_NAME_LANG": "Préférence d'affichage du nom des chansons",
 			"FALLBACK_SONG_NAME_LANG": "Préférence alternative d'affichage du nom des chansons",
-			"FLAG_PARENTSONLY": "Regrouper les chansons par versions"
+			"FLAG_PARENTSONLY": "Regrouper les chansons par versions",
+			"FLAG_PUBLIC": "Partager son profil",
+			"FLAG_DISPLAYFAVORITES": "Partager ses favoris",
+			"SOCIAL_NETWORKS": {
+				"TWITTER": "Twitter",
+				"TWITTER_PLACEHOLDER": "@KaraokeMugen",
+				"TWITCH": "Twitch",
+				"TWITCH_PLACEHOLDER": "KaraokeLive",
+				"INSTAGRAM": "Instagram",
+				"INSTAGRAM_PLACEHOLDER": "karaokemugen",
+				"DISCORD": "Discord",
+				"DISCORD_PLACEHOLDER": "Karak#1423"
+			}
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Mélanger la liste de lecture",

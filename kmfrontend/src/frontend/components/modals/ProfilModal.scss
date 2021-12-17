@@ -73,7 +73,6 @@
 		div.profileLabel {
 			font-size: 1.25rem;
 			line-height: 1.25rem;
-			padding: 0.5rem;
 			min-width: 25%;
 			text-align: start;
 			display: flex;
@@ -93,6 +92,10 @@
 		input[type='password'] {
 			text-align: left;
 			padding: 0.5rem;
+			border: solid 1px gray;
+			&:focus {
+				border: solid 1px gainsboro;
+			}
 		}
 		> select {
 			flex-grow: 1;
@@ -150,5 +153,11 @@
 	.redBorders {
 		border: #ee111180 solid;
 		border-width: 0 0 0 5px;
+	}
+}
+
+#profilModal.modal {
+	.profileContent {
+		padding: 1em;
 	}
 }

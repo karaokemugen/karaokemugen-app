@@ -110,7 +110,13 @@ export function stopSub(user: string, server: string) {
 		return;
 	}
 	const socket = ioMap.get(server);
-	socket.emit('unsubscribe user', user);
+	return new Promise((resolve, reject) => {
+		try {
+			socket.emit('unsubscribe user', user, resolve);
+		} catch (err) {
+			reject(err);
+		}
+	});
 }
 
 export async function subRemoteUsers() {

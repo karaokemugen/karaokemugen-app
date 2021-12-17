@@ -92,6 +92,8 @@ export async function editUser(
 	try {
 		if (!username) throw { code: 401, msg: 'USER_NOT_PROVIDED' };
 		username = username.toLowerCase();
+		// Banner are not editable through the app
+		if (opts.editRemote) delete user.banner;
 		const currentUser = await getUser(username, true);
 		if (!currentUser) throw { code: 404, msg: 'USER_NOT_EXISTS' };
 		if (currentUser.type === 2 && role !== 'admin') throw { code: 403, msg: 'GUESTS_CANNOT_EDIT' };
@@ -129,7 +131,8 @@ export async function editUser(
 			if (updatedUser.login.includes('@') && opts.editRemote && +getConfig().Online.Users)
 				KMServerResponse = await editRemoteUser(
 					{ ...updatedUser, password: user.password || undefined },
-					opts.editRemote
+					opts.editRemote,
+					!!avatar?.path
 				);
 		} catch (err) {
 			logger.warn('Cannot push user changes to remote', { service: 'RemoteUser', obj: err });

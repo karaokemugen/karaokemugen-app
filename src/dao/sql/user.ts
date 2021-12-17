@@ -30,6 +30,10 @@ SELECT
 		u.location AS location,
 		u.language AS language,
 		u.flag_parentsonly AS flag_parentsonly,
+		u.flag_public,
+		u.flag_displayfavorites,
+		u.social_networks,
+		u.banner,
 	`
 			: ''
 	}
@@ -95,7 +99,11 @@ UPDATE users SET
 	location = :location,
 	flag_sendstats = :flag_sendstats,
 	flag_parentsonly = :flag_parentsonly,
-	language = :language
+	language = :language,
+	flag_public = :flag_public,
+    flag_displayfavorites = :flag_displayfavorites,
+    social_networks = :social_networks,
+    banner = :banner
 WHERE pk_login = :old_login
 RETURNING pk_login as login, *;
 `;
