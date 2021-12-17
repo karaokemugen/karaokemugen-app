@@ -179,7 +179,7 @@ export default function Git() {
 			.map(c => {
 				return {
 					...c,
-					message: `${c.message} ${c.comment}`.trim(),
+					message: `${c.message} ${c.comment || ''}`.trim(),
 					comment: undefined,
 				};
 			});
