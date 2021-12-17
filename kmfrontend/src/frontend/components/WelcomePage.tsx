@@ -297,7 +297,7 @@ function WelcomePage() {
 							</button>
 						</article>
 						<article className="tile-help">
-							<button type="button" onClick={() => navigate('https://mugen.karaokes.moe/docs/')}>
+							<button type="button" onClick={() => window.open('https://docs.karaokes.moe/')}>
 								<i className="fas fa-fw fa-question-circle" />
 								<span>{i18next.t('WELCOME_PAGE.HELP')}</span>
 							</button>
