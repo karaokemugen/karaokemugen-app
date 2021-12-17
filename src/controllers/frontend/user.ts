@@ -14,7 +14,12 @@ export default function userController(router: SocketIOApp) {
 	router.route('getUsers', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			return await getUsers();
+			if (req.token.role === 'admin') {
+				return await getUsers();
+			} else {
+				const users = await getUsers();
+				return users.filter(x => x.flag_public);
+			}
 		} catch (err) {
 			const code = 'USER_LIST_ERROR';
 			errMessage(code, err);
@@ -55,8 +60,9 @@ export default function userController(router: SocketIOApp) {
 	router.route('getUser', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
-			const userdata = await getUser(req.body.username, req.token.role === 'admin');
+			const userdata = await getUser(req.body.username, true);
 			delete userdata.password;
+			if (!userdata.flag_public && req.token.role !== 'admin') throw { code: 403 };
 			if (!userdata) throw { code: 404 };
 			return userdata;
 		} catch (err) {

@@ -94,22 +94,68 @@ function UsersModal(props: IProps) {
 								</div>
 								{userDetails?.login === user.login ? (
 									<div className="userDetails">
-										<div>
-											<i className="fas fa-fw fa-link" />
-											{userDetails?.url ? (
+										{userDetails?.url ? (
+											<div>
+												<i className="fas fa-fw fa-link" />
 												<a href={userDetails.url} rel="noreferrer" target="_blank">
 													{userDetails.url}
 												</a>
-											) : null}
-										</div>
-										<div>
-											<i className="fas fa-fw fa-leaf" />
-											{userDetails?.bio || ''}
-										</div>
-										<div>
-											<i className="fas fa-fw fa-globe" />
-											{getCountryName(userDetails?.location) || ''}
-										</div>
+											</div>
+										) : null}
+										{userDetails?.bio ? (
+											<div>
+												<i className="fas fa-fw fa-pen" />
+												{userDetails.bio}
+											</div>
+										) : null}
+										{userDetails?.location ? (
+											<div>
+												<i className="fas fa-fw fa-globe" />
+												{getCountryName(userDetails.location)}
+											</div>
+										) : null}
+										{userDetails?.social_networks.discord ? (
+											<div>
+												<i className="fab fa-fw fa-discord" />
+												{userDetails.social_networks.discord}
+											</div>
+										) : null}
+										{userDetails?.social_networks.twitter ? (
+											<div>
+												<i className="fab fa-fw fa-twitter" />
+												<a
+													href={`https://twitter.com/${userDetails.social_networks.twitter}`}
+													rel="noreferrer"
+													target="_blank"
+												>
+													{userDetails.social_networks.twitter}
+												</a>
+											</div>
+										) : null}
+										{userDetails?.social_networks.instagram ? (
+											<div>
+												<i className="fab fa-fw fa-instagram" />
+												<a
+													href={`https://instagram.com/${userDetails.social_networks.instagram}`}
+													rel="noreferrer"
+													target="_blank"
+												>
+													{userDetails.social_networks.instagram}
+												</a>
+											</div>
+										) : null}
+										{userDetails?.social_networks.twitch ? (
+											<div>
+												<i className="fab fa-fw fa-twitch" />
+												<a
+													href={`https://twitch.tv/${userDetails.social_networks.twitch}`}
+													rel="noreferrer"
+													target="_blank"
+												>
+													{userDetails.social_networks.twitch}
+												</a>
+											</div>
+										) : null}
 									</div>
 								) : null}
 							</li>
