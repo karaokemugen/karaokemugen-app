@@ -14,6 +14,7 @@ import {
 	updateDownloaded,
 } from '../dao/download';
 import { getConfig, resolvedPath, resolvedPathRepos } from '../lib/utils/config';
+import { downloadFile } from '../lib/utils/downloader';
 import { resolveFileInDirs, smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
@@ -21,7 +22,6 @@ import { emit } from '../lib/utils/pubsub';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { KaraDownload, KaraDownloadRequest, QueueStatus } from '../types/download';
-import { downloadFile } from '../utils/downloader';
 import { getState } from '../utils/state';
 import { getKaras } from './kara';
 import { getRepoFreeSpace } from './repo';

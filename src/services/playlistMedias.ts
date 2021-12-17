@@ -7,6 +7,7 @@ import prettyBytes from 'pretty-bytes';
 import { createClient, FileStat } from 'webdav';
 
 import { getConfig } from '../lib/utils/config';
+import { downloadFiles } from '../lib/utils/downloader';
 import { asyncCheckOrMkdir, isMediaFile } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
@@ -14,7 +15,6 @@ import { Config } from '../types/config';
 import { Media, MediaType } from '../types/medias';
 import { editSetting, resolvedMediaPath } from '../utils/config';
 import { playlistMediasURL } from '../utils/constants';
-import { downloadFiles } from '../utils/downloader';
 
 interface File {
 	basename: string;

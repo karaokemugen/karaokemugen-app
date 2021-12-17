@@ -12,13 +12,13 @@ import tasklist from 'tasklist';
 import { errorStep } from '../electron/electronLogger';
 import { getConfig, resolvedPath } from '../lib/utils/config';
 import { asciiRegexp } from '../lib/utils/constants';
+import { downloadFile } from '../lib/utils/downloader';
 // KM Imports
 import { fileExists, smartMove } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { PGVersion } from '../types/database';
 import { editSetting } from './config';
 import { expectedPGVersion, pgctlRegex } from './constants';
-import { downloadFile } from './downloader';
 import sentry from './sentry';
 import { getState, setState } from './state';
 
