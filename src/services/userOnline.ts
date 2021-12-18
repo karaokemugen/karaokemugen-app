@@ -139,6 +139,7 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 			{
 				...user,
 				// Removing non-supported properties on App
+				avatar_file: undefined,
 				banner: undefined,
 				pk_login: undefined,
 				login: undefined,
