@@ -57,7 +57,7 @@
 		"SONG_SEARCH_SHORT": "Suchen",
 		"OTHERS": "Andere…",
 		"RESTRICTED_DESCRIPTION": "Karaoke ist in eingeschränktem Modus, es können keine neuen Songs hinzugefügt werden.",
-		"HELLO": "Hallo",
+		"HELLO": "Hallo {{name}}!",
 		"SONG_SEARCH": "Song suchen"
 	},
 	"VERSION": "Version",

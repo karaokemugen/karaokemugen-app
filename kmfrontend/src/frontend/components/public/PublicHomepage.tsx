@@ -42,8 +42,7 @@ function PublicHomepage(props: IProps) {
 		<>
 			<div className="hello-bar">
 				<span>
-					{`${i18next.t('PUBLIC_HOMEPAGE.HELLO')} ${context.globalState.settings.data.user.nickname}`}
-					&nbsp;!
+					{i18next.t('PUBLIC_HOMEPAGE.HELLO', { name: context.globalState.settings.data.user.nickname })}
 				</span>
 				<div className="warning">
 					{context?.globalState.settings.data.config?.Frontend?.Mode === 1

@@ -275,7 +275,7 @@
 		"SHOW_LYRICS": "Mostrar letra",
 		"NEXT": "Siguiente",
 		"NOW_PLAYING": "Reproduciendo ahora",
-		"HELLO": "Hola",
+		"HELLO": "Hola {{user}}!",
 		"QUOTA_TIME_DESCRIPTION": "Solo puedes sugerir {{time}} de tiempo de canción. Podrás sugerir más cuando el operador haya aceptado o rechazado tu sugerencia o cuando tu canción se reproduzca en la pantalla.",
 		"QUOTA_KARA_DESCRIPTION_one": "Solo puedes sugerir {{count}} canción. Serás capaz de sugerir canciones una vez que el operador haya aceptado o rechazado tu sugerencia, o cuando tu canción se reproduzca en la pantalla.",
 		"QUOTA_KARA_DESCRIPTION_other": "Solo puedes sugerir {{count}} canciones. Serás capaz de sugerir canciones una vez que el operador haya aceptado o rechazado tu sugerencia, o cuando tu canción se reproduzca en la pantalla.",

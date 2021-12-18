@@ -169,7 +169,7 @@
 		"QUOTA_KARA_DESCRIPTION_one": "You can only suggest {{count}} song. You'll be able to suggest songs again once the operator has accepted or refused your suggestion or when your song is played on screen.",
 		"QUOTA_KARA_DESCRIPTION_other": "You can only suggest {{count}} songs. You will be able to suggest again once the operator has added (or not added) your suggestion or when your song is played back on the screen.",
 		"QUOTA_TIME_DESCRIPTION": "You can only suggest {{time}} of song time. You will be able to suggest more once the operator has accepted or refused your suggestion or when your song is played on screen.",
-		"HELLO": "Hello",
+		"HELLO": "Hello {{name}}!",
 		"NOW_PLAYING": "Now playing",
 		"NEXT": "Next",
 		"SHOW_LYRICS": "Show Lyrics",
