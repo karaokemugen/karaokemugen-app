@@ -11,7 +11,7 @@ variables:
 sast:
   variables:
     SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util, packages
-    SECRET_DETECTION_EXCLUDED_PATHS: doc, spec, test, tests, .md, node_modules, yarn.lock
+    SECRET_DETECTION_EXCLUDED_PATHS: doc, spec, test, tests, .md, node_modules, yarn.lock, kmfrontend/node_modules
   stage: test
 include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
