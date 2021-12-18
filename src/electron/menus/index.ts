@@ -28,6 +28,7 @@ export const urls = {
 	contribDoc: () => open(`https://docs.karaokes.moe/${getState().defaultLocale}/contrib-guide/base/`),
 	sendKaraoke: () => open('https://kara.moe/base/import'),
 	reportBug: () => open('https://gitlab.com/karaokemugen/karaokemugen-app/-/issues'),
+	translations: () => open('https://hosted.weblate.org/projects/karaoke-mugen/'),
 	donations: {
 		fr: () => open('https://mugen.karaokes.moe/donations.html'),
 		en: () => open('https://mugen.karaokes.moe/en/donations.html'),

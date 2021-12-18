@@ -51,6 +51,10 @@ const builder: MenuItemBuilderFunction = options => {
 				click: urls.reportBug,
 			},
 			{
+				label: i18next.t('MENU_HELP_TRANSLATION'),
+				click: urls.translations,
+			},
+			{
 				label: i18next.t('MENU_HELP_DONATIONS'),
 				click: getState().defaultLocale === 'fr' ? urls.donations.fr : urls.donations.en,
 			},
