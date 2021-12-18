@@ -1,7 +1,7 @@
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { Alert, Button, Image, Layout, Modal, Select, Table, Upload } from 'antd';
 import i18next from 'i18next';
-import { basename } from 'path';
+import { basename } from 'path-browserify';
 import { useEffect, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
