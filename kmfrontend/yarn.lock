@@ -2126,10 +2126,10 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@karaokemugen/i18n-iso-languages@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@karaokemugen/i18n-iso-languages/-/i18n-iso-languages-3.1.0.tgz#da75927fd176aafe9b677cb106c044b9f24266c3"
-  integrity sha512-ShRXPh/A/f9xaal+Rm/IlMC4XbIUsrfGrsGw+jvARZoZkUzahSuvlU1xdEMZP9LKHqARmBX9RtjM9U0nN+EFag==
+"@karaokemugen/i18n-iso-languages@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@karaokemugen/i18n-iso-languages/-/i18n-iso-languages-3.1.1.tgz#6984beaef255ded1138a2c3f75682453c9f4049a"
+  integrity sha512-OIXe9ATdtpS/TWSoQK+jDNA8zO1WrjK8aoKq3DA7kXIB4MPc3uKAcah02SZE0+Kgna9zc/nn4VGWIInJ84xSTw==
 
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
