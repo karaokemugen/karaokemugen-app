@@ -1,100 +1,50 @@
 import './TagsList.scss';
 
 import i18next from 'i18next';
-import React, { Component } from 'react';
-import { AutoSizer, CellMeasurer, CellMeasurerCache, Index, IndexRange, InfiniteLoader, List, ListRowProps } from 'react-virtualized';
+import { PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
+import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
 
 import { DBKaraTag, DBYear } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
-import { getSerieLanguage, getTagInLocale } from '../../../utils/kara';
+import { useDeferredEffect } from '../../../utils/hooks';
+import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { tagTypes, YEARS } from '../../../utils/tagTypes';
-import { eventEmitter } from '../../../utils/tools';
+import { YEARS } from '../../../utils/tagTypes';
 import { View } from '../../types/view';
 
 interface IProps {
 	tagType: number;
-	changeView: (
-		view: View,
-		tagType?: number,
-		searchValue?: string,
-		searchCriteria?: 'year' | 'tag'
-	) => void;
+	changeView: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
 }
 
-interface IState {
-	tags: TagsElem;
-	forceUpdate: boolean;
-	filterValue: string;
-	scrollToIndex: number;
-}
-
-interface TagsElem {
-	content: DBTag[];
-	infos: {
-		count: number,
-		from: number,
-		to: number
-	}
-}
-
-const _cache = new CellMeasurerCache({ defaultHeight: 80, fixedWidth: true });
 const chunksize = 100;
 let timer: any;
 
-class TagsList extends Component<IProps, IState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
-
-	state = {
-		tags: {
-			content: [],
-			infos: {
-				count: 0,
-				from: 0,
-				to: 0
-			}
+function TagsList(props: IProps) {
+	const context = useContext(GlobalContext);
+	const [forceUpdate, setForceUpdate] = useState(false);
+	const [tags, setTags] = useState({
+		content: [],
+		infos: {
+			count: 0,
+			from: 0,
+			to: 0,
 		},
-		forceUpdate: false,
-		filterValue: '',
-		scrollToIndex: -1
-	};
+	});
 
-	componentDidMount() {
-		this.props.tagType === YEARS.type ? this.getYears() : this.getTags();
-		eventEmitter.addChangeListener('playlistContentsUpdatedFromClient', this.playlistContentsUpdatedFromClient);
-	}
-
-	componentWillUnmount() {
-		eventEmitter.removeChangeListener('playlistContentsUpdatedFromClient', this.playlistContentsUpdatedFromClient);
-	}
-
-	playlistContentsUpdatedFromClient = async () => {
-		const tags = this.state.tags;
-		tags.infos.from = 0;
-		this.setState({ filterValue: this.context.globalState.frontendContext.filterValue1, tags, scrollToIndex: 0 });
-		this.props.tagType === YEARS.type ? this.getYears() : this.getTags();
-	}
-
-	tagsListForceRefresh = () => {
-		this.setState({ forceUpdate: !this.state.forceUpdate });
-		_cache.clearAll();
-	}
-
-	async getTags() {
+	const getTags = async (from: number) => {
 		try {
-			const response = await commandBackend('getTags',
-				{
-					type: this.props.tagType,
-					from: this.state.tags.infos.from,
-					size: chunksize,
-					filter: this.state.filterValue,
-					stripEmpty: true
-				});
+			const response = await commandBackend('getTags', {
+				type: props.tagType,
+				from,
+				size: chunksize,
+				filter: context.globalState.frontendContext.filterValue1,
+				stripEmpty: true,
+			});
 			let data;
 			if (response.infos?.from > 0) {
-				data = this.state.tags;
+				data = tags;
 				if (response.infos.from < data.content.length) {
 					for (let index = 0; index < response.content.length; index++) {
 						data.content[response.infos.from + index] = response.content[index];
@@ -112,111 +62,102 @@ class TagsList extends Component<IProps, IState> {
 			} else {
 				data = response;
 			}
-			this.setState({ tags: data, scrollToIndex: -1 });
-			this.tagsListForceRefresh();
+			setTags(data);
+			setForceUpdate(!forceUpdate);
 		} catch (e) {
 			// already display
 		}
-	}
+	};
 
-	async getYears() {
+	const getYears = async () => {
 		const response = await commandBackend('getYears');
 		response.content = response.content.map((val: DBYear) => {
 			return { tid: val.year, name: val.year, type: [0], karacount: [{ type: 0, count: val.karacount }] };
 		});
-		this.setState({ tags: response, scrollToIndex: -1 });
-	}
+		setTags(response);
+	};
 
+	const isRowLoaded = index => {
+		return !!tags?.content[index];
+	};
 
-	isRowLoaded = ({ index }: Index) => {
-		return Boolean(this.state.tags.content[index]);
-	}
-
-	loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
-		const data = this.state.tags;
-		data.infos.from = Math.floor(stopIndex / chunksize) * chunksize;
-		this.setState({ tags: data });
+	const loadMoreRows = async ({ endIndex }: ListRange) => {
+		if (isRowLoaded(endIndex)) return;
 		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => this.props.tagType === YEARS.type ? this.getYears() : this.getTags(), 1000);
-	}
+		timer = setTimeout(
+			() => (props.tagType === YEARS.type ? getYears() : getTags(Math.floor(endIndex / chunksize) * chunksize)),
+			1000
+		);
+	};
 
-	openSearch = (tid: string) => {
+	const openSearch = (tid: string) => {
 		let searchValue = tid;
-		if (this.props.tagType !== YEARS.type) searchValue = `${searchValue}~${this.props.tagType}`;
-		this.props.changeView('search', this.props.tagType, searchValue, this.props.tagType === YEARS.type ? 'year' : 'tag');
-	}
+		if (props.tagType !== YEARS.type) searchValue = `${searchValue}~${props.tagType}`;
+		props.changeView('search', props.tagType, searchValue, props.tagType === YEARS.type ? 'year' : 'tag');
+	};
 
-	rowRenderer = ({ index, isScrolling, key, parent, style }: ListRowProps) => {
-		let tag: DBTag;
-		if (this.state.tags?.content[index]) {
-			tag = this.state.tags.content[index];
-			return (
-				<CellMeasurer
-					cache={_cache}
-					columnIndex={0}
-					key={key}
-					parent={parent}
-					rowIndex={index}
-				>
-					<div className={`tags-item${index % 2 === 0 ? ' even' : ''}`} tabIndex={0}
-						key={tag.tid} style={style} onClick={() => this.openSearch(tag.tid)}>
-						<div className="title">{
-							this.props.tagType === YEARS.type ?
-								tag.name :
-								(this.props.tagType === tagTypes.SERIES.type ?
-									getSerieLanguage(this.context.globalState.settings.data, tag as unknown as DBKaraTag, 'eng') :
-									getTagInLocale(tag as unknown as DBKaraTag))
-						}</div>
+	const Item = useCallback(
+		({ index }: { index: number }) => {
+			let tag: DBTag;
+			if (tags?.content[index]) {
+				tag = tags.content[index];
+				return (
+					<div
+						className={`tags-item${index % 2 === 0 ? ' even' : ''}`}
+						tabIndex={0}
+						key={tag.tid}
+						onClick={() => openSearch(tag.tid)}
+					>
+						<div className="title">
+							{props.tagType === YEARS.type
+								? tag.name
+								: getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag)}
+						</div>
 						<div className="karacount">
 							<em>
 								{i18next.t('KARAOKE', {
-									count: (tag?.karacount as unknown as Array<{ count: number, type: number }>)
-										?.filter(value => value.type === this.props.tagType).length > 0 ?
-										(tag.karacount as unknown as Array<{ count: number, type: number }>)
-											?.filter(value => value.type === this.props.tagType)[0].count
-										: 0
+									count:
+										(tag?.karacount as unknown as { count: number; type: number }[])?.filter(
+											value => value.type === props.tagType
+										).length > 0
+											? (tag.karacount as unknown as { count: number; type: number }[])?.filter(
+													value => value.type === props.tagType
+											  )[0].count
+											: 0,
 								})}
 							</em>
 						</div>
 					</div>
-				</CellMeasurer>
-			);
-		} else {
-			return <div className="tags-item" key={key} style={style}>
-				{i18next.t('LOADING')}
-			</div>;
-		}
-	}
+				);
+			} else {
+				return (
+					<div className="tags-item" key={index}>
+						{i18next.t('LOADING')}
+					</div>
+				);
+			}
+		},
+		[tags?.infos.to]
+	);
 
-	render() {
-		return (
-			<div className="tags-list">
-				<InfiniteLoader
-					isRowLoaded={this.isRowLoaded}
-					loadMoreRows={this.loadMoreRows}
-					rowCount={this.state.tags.infos.count}>
-					{({ onRowsRendered, registerChild }) => (
-						<AutoSizer>
-							{({ height, width }) => {
-								return (
-									<List
-										{...[this.state.forceUpdate]}
-										ref={registerChild}
-										onRowsRendered={onRowsRendered}
-										rowCount={this.state.tags.infos.count}
-										rowHeight={_cache.rowHeight}
-										rowRenderer={this.rowRenderer}
-										height={height}
-										width={width}
-										scrollToIndex={this.state.scrollToIndex}
-									/>);
-							}}
-						</AutoSizer>
-					)}
-				</InfiniteLoader>
-			</div>
-		);
-	}
+	useDeferredEffect(() => {
+		props.tagType === YEARS.type ? getYears() : getTags(0);
+	}, [context.globalState.frontendContext.filterValue1]);
+
+	useEffect(() => {
+		props.tagType === YEARS.type ? getYears() : getTags(0);
+	}, []);
+
+	return (
+		<div className="tags-list">
+			<Virtuoso
+				style={{ flex: '1 0 auto' }}
+				itemContent={index => <Item index={index} />}
+				totalCount={tags.infos.count}
+				rangeChanged={loadMoreRows}
+			/>
+		</div>
+	);
 }
 
 export default TagsList;

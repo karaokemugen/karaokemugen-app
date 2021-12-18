@@ -1,7 +1,6 @@
-
 export interface Tag {
-	type: Array<number|string>;
+	type: Array<number | string>;
 	value: string;
 	label: string;
-	karacount: Array<{count:number, type:number}>;
+	karacount: { count: number; type: number }[];
 }

@@ -1,16 +1,16 @@
-import { ClearOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Alert, Button, Cascader, Col, Divider, Input, Layout, Modal, Row, Table } from 'antd';
+import { ClearOutlined, DeleteOutlined, EditOutlined, FontColorsOutlined, UploadOutlined } from '@ant-design/icons';
+import { Alert, Button, Cascader, Col, Input, Layout, Modal, Row, Table } from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import GlobalContext from '../../../store/context';
-import { getSerieLanguage, getTagInLocale, getTagInLocaleList, sortTagByPriority } from '../../../utils/kara';
+import { getTagInLocale, getTagInLocaleList, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
-import { is_touch_device, isModifiable } from '../../../utils/tools';
+import { isModifiable } from '../../../utils/tools';
 
 interface KaraListState {
 	karas: DBKara[];
@@ -27,7 +27,7 @@ interface KaraListState {
 
 class KaraList extends Component<unknown, KaraListState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props) {
 		super(props);
@@ -41,7 +41,7 @@ class KaraList extends Component<unknown, KaraListState> {
 			totalCount: 0,
 			tags: [],
 			tagOptions: [],
-			tagFilter: ''
+			tagFilter: '',
 		};
 	}
 
@@ -51,14 +51,19 @@ class KaraList extends Component<unknown, KaraListState> {
 	}
 
 	refresh = async () => {
-		const res = await commandBackend('getKaras', {
-			filter: this.state.filter,
-			q: this.state.tagFilter,
-			from: (this.state.currentPage - 1) * this.state.currentPageSize,
-			size: this.state.currentPageSize
-		}, undefined, 300000);
+		const res = await commandBackend(
+			'getKaras',
+			{
+				filter: this.state.filter,
+				q: this.state.tagFilter,
+				from: (this.state.currentPage - 1) * this.state.currentPageSize,
+				size: this.state.currentPageSize,
+			},
+			undefined,
+			300000
+		);
 		this.setState({ karas: res.content, i18nTag: res.i18n, totalCount: res.infos.count });
-	}
+	};
 
 	changeFilter(event) {
 		this.setState({ filter: event.target.value, currentPage: 1 });
@@ -66,32 +71,32 @@ class KaraList extends Component<unknown, KaraListState> {
 		localStorage.setItem('karaFilter', event.target.value);
 	}
 
-	confirmDeleteKara = (kara) => {
+	confirmDeleteKara = kara => {
 		Modal.confirm({
 			title: i18next.t('KARA.DELETE_KARA'),
 			okText: i18next.t('YES'),
 			cancelText: i18next.t('NO'),
-			onOk: (close) => {
+			onOk: close => {
 				close();
 				this.deleteKaras([kara.kid]);
-			}
+			},
 		});
-	}
+	};
 
 	deleteKaras = async (kids: string[]) => {
 		const karasRemoving = this.state.karasRemoving;
 		karasRemoving.push(...kids);
 		this.setState({
-			karasRemoving: karasRemoving
+			karasRemoving: karasRemoving,
 		});
 		await commandBackend('deleteKaras', { kids: kids }, true);
 		this.setState({
 			karasRemoving: this.state.karasRemoving.filter(value => !kids.includes(value)),
-			karas: this.state.karas.filter(value => !kids.includes(value.kid))
+			karas: this.state.karas.filter(value => !kids.includes(value.kid)),
 		});
-	}
+	};
 
-	handleTableChange = (pagination) => {
+	handleTableChange = pagination => {
 		this.setState({
 			currentPage: pagination.current,
 			currentPageSize: pagination.pageSize,
@@ -112,34 +117,33 @@ class KaraList extends Component<unknown, KaraListState> {
 
 			const option = {
 				value: typeID,
-				label: i18next.t(`TAG_TYPES.${type}`),
-				children: []
+				label: i18next.t(`TAG_TYPES.${type}_other`),
+				children: [],
 			};
 			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
 				option.children.push({
 					value: tag.tid,
-					label: getTagInLocale(tag as unknown as DBKaraTag),
+					label: getTagInLocale(this.context?.globalState.settings.data, tag as unknown as DBKaraTag),
 				});
 			}
 			return option;
 		});
 		this.setState({ tagOptions: options });
-	}
+	};
 
 	filterTagCascaderFilter = function (inputValue, path) {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
-	}
+	};
 
-	handleFilterTagSelection = (value) => {
+	handleFilterTagSelection = value => {
 		let t = '';
-		if (value && value[1])
-			t = 't:' + value[1] + '~' + value[0];
+		if (value && value[1]) t = 't:' + value[1] + '~' + value[0];
 
 		this.setState({ tagFilter: t, currentPage: 0 }, () => {
 			localStorage.setItem('karaPage', '1');
 			setTimeout(this.refresh, 10);
 		});
-	}
+	};
 
 	confirmDeleteAllVisibleKara = () => {
 		const karaDeletable = this.state.karas.filter(kara => isModifiable(this.context, kara.repository));
@@ -147,24 +151,31 @@ class KaraList extends Component<unknown, KaraListState> {
 			title: i18next.t('KARA.DELETE_KARA_TITLE', { count: karaDeletable.length }),
 			okText: i18next.t('YES'),
 			cancelText: i18next.t('NO'),
-			onOk: (close) => {
+			onOk: close => {
 				close();
 				if (karaDeletable.length > 0) this.deleteKaras(karaDeletable.map(value => value.kid));
-			}
+			},
 		});
-	}
+	};
 
 	render() {
 		return (
 			<>
 				<Layout.Header>
-					<div className='title'>{i18next.t('HEADERS.KARAOKE_LIST.TITLE')}</div>
-					<div className='description'>{i18next.t('HEADERS.KARAOKE_LIST.DESCRIPTION')}</div>
+					<div className="title">{i18next.t('HEADERS.KARAOKE_LIST.TITLE')}</div>
+					<div className="description">{i18next.t('HEADERS.KARAOKE_LIST.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
-					{this.context.globalState.settings.data.config.System.Repositories.findIndex(repo => repo.Online && !repo.MaintainerMode) !== -1 ?
-						<Alert type="info" showIcon style={{ marginBottom: '10px' }}
-							message={i18next.t('KARA.ONLINE_REPOSITORIES')} /> : null}
+					{this.context.globalState.settings.data.config.System.Repositories.findIndex(
+						repo => repo.Online && !repo.MaintainerMode
+					) !== -1 ? (
+						<Alert
+							type="info"
+							showIcon
+							style={{ marginBottom: '10px' }}
+							message={i18next.t('KARA.ONLINE_REPOSITORIES')}
+						/>
+					) : null}
 					<Row>
 						<Col flex={3} style={{ marginRight: '10px' }}>
 							<Input.Search
@@ -176,16 +187,23 @@ class KaraList extends Component<unknown, KaraListState> {
 							/>
 						</Col>
 						<Col flex={1}>
-							<Cascader style={{ width: '90%' }} options={this.state.tagOptions}
-								showSearch={{ filter: this.filterTagCascaderFilter, matchInputWidth: false }}
-								onChange={this.handleFilterTagSelection} placeholder={i18next.t('KARA.TAG_FILTER')} />
+							<Cascader
+								style={{ width: '90%' }}
+								options={this.state.tagOptions}
+								showSearch={{
+									filter: this.filterTagCascaderFilter,
+									matchInputWidth: false,
+								}}
+								onChange={this.handleFilterTagSelection}
+								placeholder={i18next.t('KARA.TAG_FILTER')}
+							/>
 						</Col>
 					</Row>
 					<Table
 						onChange={this.handleTableChange}
 						dataSource={this.state.karas}
 						columns={this.columns}
-						rowKey='kid'
+						rowKey="kid"
 						pagination={{
 							position: ['topRight', 'bottomRight'],
 							current: this.state.currentPage || 1,
@@ -198,72 +216,166 @@ class KaraList extends Component<unknown, KaraListState> {
 								return i18next.t('KARA.SHOWING', { from: from, to: to, total: total });
 							},
 							total: this.state.totalCount,
-							showQuickJumper: true
+							showQuickJumper: true,
 						}}
+						childrenColumnName="childrenColumnName"
 					/>
 				</Layout.Content>
 			</>
 		);
 	}
 
-	columns = [{
-		title: i18next.t('KARA.LANGUAGES'),
-		dataIndex: 'langs',
-		key: 'langs',
-		render: langs => getTagInLocaleList(langs, this.state.i18nTag).join(', ')
-	}, {
-		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
-		dataIndex: 'series',
-		key: 'series',
-		render: (series, record: DBKara) => (series && series.length > 0) ?
-			series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ')
-			: getTagInLocaleList(record.singers, this.state.i18nTag).join(', ')
-	}, {
-		title: i18next.t('KARA.SONGTYPES'),
-		dataIndex: 'songtypes',
-		key: 'songtypes',
-		render: (songtypes, record) => getTagInLocaleList(songtypes.sort(sortTagByPriority), this.state.i18nTag).join(', ') + ' ' + (record.songorder || '')
-	}, {
-		title: i18next.t('KARA.FAMILIES'),
-		dataIndex: 'families',
-		key: 'families',
-		render: (families) => getTagInLocaleList(families, this.state.i18nTag).join(', ')
-	}, {
-		title: i18next.t('KARA.TITLE'),
-		dataIndex: 'title',
-		key: 'title'
-	}, {
-		title: i18next.t('TAG_TYPES.VERSIONS', { count: 2 }),
-		dataIndex: 'versions',
-		key: 'versions',
-		render: (versions) => getTagInLocaleList(versions.sort(sortTagByPriority), this.state.i18nTag).join(', ')
-	}, {
-		title: i18next.t('KARA.REPOSITORY'),
-		dataIndex: 'repository',
-		key: 'repository'
-	}, {
-		title: <span><Button title={i18next.t('KARA.DELETE_ALL_TOOLTIP')} type="default"
-			onClick={this.confirmDeleteAllVisibleKara}><DeleteOutlined /></Button>{i18next.t('ACTION')}
-		</span>,
-		key: 'action',
-		render: (_text, record: DBKara) => isModifiable(this.context, record.repository) ? (<span>
-			<Link to={`/system/karas/${record.kid}`}>
-				<Button type="primary" icon={<EditOutlined />} />
-			</Link>
-			{!is_touch_device() ? <Divider type="vertical" /> : null}
-			<Button type="primary" danger loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
-				icon={<DeleteOutlined />} onClick={() => this.confirmDeleteKara(record)} />
-		</span>) :
-			(record.download_status === 'DOWNLOADED' ?
-				<Button
-					type="primary"
-					danger
-					title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
-					icon={<ClearOutlined />}
-					onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
-				/> : null
-			)
-	}];
+	columns = [
+		{
+			title: i18next.t('TAG_TYPES.LANGS_other'),
+			dataIndex: 'langs',
+			key: 'langs',
+			render: langs =>
+				getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', '),
+		},
+		{
+			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
+			dataIndex: 'series',
+			key: 'series',
+			render: (series, record: DBKara) =>
+				series && series.length > 0
+					? series
+							.map(serie =>
+								getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)
+							)
+							.join(', ')
+					: getTagInLocaleList(
+							this.context.globalState.settings.data,
+							record.singers,
+							this.state.i18nTag
+					  ).join(', '),
+		},
+		{
+			title: i18next.t('TAG_TYPES.SONGTYPES_other'),
+			dataIndex: 'songtypes',
+			key: 'songtypes',
+			render: (songtypes, record) =>
+				getTagInLocaleList(
+					this.context.globalState.settings.data,
+					songtypes.sort(sortTagByPriority),
+					this.state.i18nTag
+				).join(', ') +
+				' ' +
+				(record.songorder || ''),
+		},
+		{
+			title: i18next.t('TAG_TYPES.FAMILIES_other'),
+			dataIndex: 'families',
+			key: 'families',
+			render: families =>
+				getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(', '),
+		},
+		{
+			title: i18next.t('KARA.TITLE'),
+			dataIndex: 'titles',
+			key: 'titles',
+			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
+		},
+		{
+			title: i18next.t('TAG_TYPES.VERSIONS_other'),
+			dataIndex: 'versions',
+			key: 'versions',
+			render: versions =>
+				getTagInLocaleList(
+					this.context.globalState.settings.data,
+					versions.sort(sortTagByPriority),
+					this.state.i18nTag
+				).join(', '),
+		},
+		{
+			title: i18next.t('KARA.REPOSITORY'),
+			dataIndex: 'repository',
+			key: 'repository',
+		},
+		{
+			title: (
+				<span>
+					{i18next.t('ACTION')}
+					<Button
+						title={i18next.t('KARA.DELETE_ALL_TOOLTIP')}
+						type="default"
+						onClick={this.confirmDeleteAllVisibleKara}
+						style={{ marginLeft: '1em' }}
+					>
+						<DeleteOutlined />
+					</Button>
+				</span>
+			),
+			key: 'action',
+			render: (_text, record: DBKara) => {
+				let deleteMediaButton: JSX.Element = (
+					<Button
+						type="primary"
+						danger
+						title={i18next.t('KARA.DELETE_MEDIA_TOOLTIP')}
+						icon={<ClearOutlined />}
+						onClick={() => commandBackend('deleteMedias', { kids: [record.kid] }, true)}
+						style={{ marginRight: '0.75em' }}
+					/>
+				);
+				let uploadMediaButton: JSX.Element = (
+					<Button
+						type="primary"
+						danger
+						title={i18next.t('KARA.UPLOAD_MEDIA_TOOLTIP')}
+						icon={<UploadOutlined />}
+						onClick={() => commandBackend('uploadMedia', { kid: record.kid })}
+					/>
+				);
+				if (isModifiable(this.context, record.repository)) {
+					const editLink: JSX.Element = (
+						<Link to={`/system/karas/${record.kid}`} style={{ marginRight: '0.75em' }}>
+							<Button type="primary" icon={<EditOutlined />} title={i18next.t('KARA.EDIT_KARA')} />
+						</Link>
+					);
+					const deleteButton: JSX.Element = (
+						<Button
+							type="primary"
+							danger
+							loading={this.state.karasRemoving.indexOf(record.kid) >= 0}
+							icon={<DeleteOutlined />}
+							title={i18next.t('KARA.DELETE_KARA')}
+							onClick={() => this.confirmDeleteKara(record)}
+							style={{ marginRight: '0.75em' }}
+						/>
+					);
+					const LyricsButton: JSX.Element = (
+						<Button
+							type="primary"
+							icon={<FontColorsOutlined />}
+							title={i18next.t('KARA.LYRICS_FILE')}
+							onClick={async () => commandBackend('openLyricsFile', { kid: record.kid })}
+							style={{ marginRight: '0.75em' }}
+						/>
+					);
+					if (record.download_status !== 'DOWNLOADED') {
+						uploadMediaButton = null;
+						deleteMediaButton = null;
+					}
+					return (
+						<div style={{ display: 'flex' }}>
+							{editLink}
+							{deleteButton}
+							{LyricsButton}
+							{deleteMediaButton}
+							{uploadMediaButton}
+						</div>
+					);
+				} else {
+					if (record.download_status === 'DOWNLOADED') {
+						return <div style={{ display: 'flex' }}>{deleteMediaButton}</div>;
+					} else {
+						return null;
+					}
+				}
+			},
+		},
+	];
 }
 
 export default KaraList;

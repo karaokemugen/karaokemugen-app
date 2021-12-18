@@ -1,7 +1,7 @@
 import 'react-image-crop/dist/ReactCrop.css';
 
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom';
 import ReactCrop, { Crop } from 'react-image-crop';
 
@@ -12,46 +12,23 @@ interface IProps {
 	saveAvatar: (avatar?) => void;
 }
 
-interface IState {
-	imageRef?: any;
-	imageSource: any;
-	crop: Crop;
+function CropAvatarModal(props: IProps) {
+	const [imageRef, setImageRef] = useState<HTMLImageElement>();
+	const [imageSource, setImageSource] = useState<string>();
+	const [crop, setCrop] = useState<Crop>({
+		unit: '%' as const,
+		width: 100,
+		height: undefined,
+		aspect: 1,
+		x: 0,
+		y: 0,
+	});
 
-}
+	const reader = new FileReader();
+	reader.addEventListener('load', () => setImageSource(reader.result as string));
+	reader.readAsDataURL(props.src);
 
-class CropAvatarModal extends Component<IProps, IState> {
-
-	state = {
-		crop: {
-			unit: '%' as const,
-			width: 100,
-			height: undefined,
-			aspect: 1,
-			x: 0,
-			y: 0
-		},
-		imageRef: undefined,
-		imageSource: undefined
-	}
-
-	componentDidMount() {
-		const reader = new FileReader();
-		reader.addEventListener('load', () =>
-			this.setState({ imageSource: reader.result })
-		);
-		reader.readAsDataURL(this.props.src);
-	}
-
-	onImageLoaded = imageRef => {
-		this.setState({ imageRef });
-	};
-
-	onCropChange = (crop) => {
-		this.setState({ crop });
-	};
-
-
-	getCroppedImg(image, crop) {
+	const getCroppedImg = (image, crop) => {
 		const canvas = document.createElement('canvas');
 		const scaleX = image.naturalWidth / image.width;
 		const scaleY = image.naturalHeight / image.height;
@@ -71,7 +48,7 @@ class CropAvatarModal extends Component<IProps, IState> {
 			crop.height
 		);
 
-		return new Promise((resolve) => {
+		return new Promise(resolve => {
 			canvas.toBlob(blob => {
 				if (!blob) {
 					//reject(new Error('Canvas is empty'));
@@ -81,70 +58,62 @@ class CropAvatarModal extends Component<IProps, IState> {
 				resolve(blob);
 			}, 'image/jpeg');
 		});
-	}
+	};
 
-	saveAvatar = async () => {
-		if (this.state.imageRef && this.state.crop.width && this.state.crop.height) {
-			const croppedImageUrl = await this.getCroppedImg(this.state.imageRef, this.state.crop);
+	const saveAvatar = async () => {
+		if (imageRef && crop.width && crop.height) {
+			const croppedImageUrl = await getCroppedImg(imageRef, crop);
 			if (croppedImageUrl) {
 				if (isRemote()) {
-					const response = await commandBackend('importfile', {extension: 'jpg', buffer: croppedImageUrl});
-					this.props.saveAvatar({path: response.filename});
+					const response = await commandBackend('importFile', { extension: 'jpg', buffer: croppedImageUrl });
+					props.saveAvatar({ path: response.filename });
 				} else {
 					const formData = new FormData();
-					formData.append('file', croppedImageUrl as any);	
-					const response = await fetch('/api/importfile', {
+					formData.append('file', croppedImageUrl as any);
+					const response = await fetch('/api/importFile', {
 						method: 'POST',
 						body: formData,
 						headers: {
 							authorization: localStorage.getItem('kmToken'),
-							onlineAuthorization: localStorage.getItem('kmOnlineToken')
-						}
+							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
+						},
 					});
-					this.props.saveAvatar(await response.json());
+					props.saveAvatar(await response.json());
 				}
-				this.closeModal();
+				closeModal();
 			}
 		}
 	};
 
-
-	closeModal = () => {
+	const closeModal = () => {
 		const element = document.getElementById('import-avatar');
 		if (element) ReactDOM.unmountComponentAtNode(element);
-		this.props.saveAvatar();
-	}
+		props.saveAvatar();
+	};
 
-	render() {
-		return (
-			<div className="modal modalPage">
-				<div className="modal-dialog">
-					<div className="modal-content">
-						<ul className="modal-header">
-							<h4 className="modal-title">{i18next.t('MODAL.CROP_AVATAR_MODAL.TITLE')}</h4>
-						</ul>
-						<div className="modal-body">
-							<ReactCrop
-								src={this.state.imageSource}
-								crop={this.state.crop}
-								onImageLoaded={this.onImageLoaded}
-								onChange={this.onCropChange}
-							/>
-						</div>
-						<div className="modal-footer">
-							<em className="modal-help">{i18next.t('MODAL.CROP_AVATAR_MODAL.HELP')}</em>
-							<button type="button" className="btn btn-action btn-primary other" onClick={this.closeModal}>
-								<i className="fas fa-times" /> {i18next.t('CANCEL')}
-							</button>
-							<button type="button" className="btn btn-action btn-default ok" onClick={this.saveAvatar}>
-								<i className="fas fa-check" /> {i18next.t('SUBMIT')}
-							</button>
-						</div>
+	return (
+		<div className="modal modalPage">
+			<div className="modal-dialog">
+				<div className="modal-content">
+					<ul className="modal-header">
+						<h4 className="modal-title">{i18next.t('MODAL.CROP_AVATAR_MODAL.TITLE')}</h4>
+					</ul>
+					<div className="modal-body">
+						<ReactCrop src={imageSource} crop={crop} onImageLoaded={setImageRef} onChange={setCrop} />
+					</div>
+					<div className="modal-footer">
+						<em className="modal-help">{i18next.t('MODAL.CROP_AVATAR_MODAL.HELP')}</em>
+						<button type="button" className="btn btn-action btn-primary other" onClick={closeModal}>
+							<i className="fas fa-times" /> {i18next.t('CANCEL')}
+						</button>
+						<button type="button" className="btn btn-action btn-default ok" onClick={saveAvatar}>
+							<i className="fas fa-check" /> {i18next.t('SUBMIT')}
+						</button>
 					</div>
 				</div>
-			</div >
-		);
-	}
+			</div>
+		</div>
+	);
 }
 
 export default CropAvatarModal;

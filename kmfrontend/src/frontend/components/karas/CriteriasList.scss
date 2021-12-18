@@ -1,0 +1,90 @@
+@import '../../styles/variables';
+
+.criteriasContainer {
+	height: 100%;
+	overflow-y: scroll;
+	> *:last-child {
+		margin-bottom: 2em;
+	}
+}
+
+.criterias-line {
+	margin: 1em;
+	display: flex;
+	align-items: center;
+
+	.criterias-type-smart-label {
+		margin-top: 0.5em;
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+	}
+
+	input {
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+		border: 0;
+		box-shadow: none;
+		font-size: 1rem;
+		background-color: #5a5a5a;
+		outline: none;
+		color: #ccc;
+	}
+
+	input[type='number'] {
+		width: 5em;
+	}
+
+	select {
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+	}
+}
+
+.criteriasDescription {
+	margin: 1em;
+	font-weight: bold;
+}
+
+.criterias-input {
+	margin: 1em;
+
+	select {
+		margin-bottom: 1em;
+	}
+
+	.criteriasValContainer {
+		display: flex;
+		> .input-blc {
+			font-weight: bold;
+			border: $mugen-btn-border;
+			padding: 10px !important;
+		}
+		> .UI-autocomplete {
+			flex-grow: 1;
+		}
+		> .btn:last-child {
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+		}
+		.btn-action.deleteCriteria {
+			border: solid 1px #828282;
+			background-color: #393939;
+			width: auto;
+			height: auto;
+			color: white;
+			display: inline-block;
+		}
+	}
+}
+
+.list-group-item.liTag {
+	min-height: auto;
+}
+
+.list-group-item.liTag > .actionDiv {
+	padding: 0;
+}
+.list-group-item.liTag > div {
+	padding-top: 0;
+	padding-bottom: 0;
+}

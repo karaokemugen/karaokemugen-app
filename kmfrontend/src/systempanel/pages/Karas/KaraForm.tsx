@@ -1,40 +1,45 @@
 import { QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Divider, Form, Input, InputNumber, message, Select, Tooltip, Upload } from 'antd';
+import {
+	Button,
+	Checkbox,
+	Divider,
+	Form,
+	Input,
+	InputNumber,
+	message,
+	Modal,
+	Select,
+	Tag,
+	Tooltip,
+	Upload,
+} from 'antd';
 import { FormInstance } from 'antd/lib/form';
+import { SelectValue } from 'antd/lib/select';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component, createRef } from 'react';
 
-import { DBTag } from '../../../../../src/lib/types/database/tag';
+import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { Kara } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
-import { getTagInLocale } from '../../../utils/kara';
+import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
+import { getTagTypeName } from '../../../utils/tagTypes';
 import EditableTagGroup from '../../components/EditableTagGroup';
+import LanguagesList from '../../components/LanguagesList';
+import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 
 interface KaraFormProps {
-	kara: Kara;
+	kara: Kara | Record<string, never>;
 	save: any;
 	handleCopy: (kid, repo) => void;
 }
 
 interface KaraFormState {
+	titles: Record<string, string>;
+	titlesIsTouched: boolean;
 	serieSingersRequired: boolean;
 	subfile: any[];
 	mediafile: any[];
-	singers: DBTag[];
-	authors: DBTag[];
-	misc: DBTag[];
-	series: DBTag[];
-	creators: DBTag[];
-	songwriters: DBTag[];
-	groups: DBTag[];
-	songtypes: DBTag[];
-	langs: DBTag[];
-	families?: DBTag[];
-	genres?: DBTag[];
-	platforms?: DBTag[];
-	origins?: DBTag[];
-	versions?: DBTag[];
 	created_at?: Date;
 	modified_at?: Date;
 	repositoriesValue: string[];
@@ -42,125 +47,149 @@ interface KaraFormState {
 	mediafile_orig: string;
 	subfile_orig: string;
 	comment?: string;
+	karaSearch: { label: string; value: string }[];
+	parentKara: Kara;
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
-	formRef = React.createRef<FormInstance>();
-	static contextType = GlobalContext
-	context: React.ContextType<typeof GlobalContext>
+	formRef = createRef<FormInstance>();
+	static contextType = GlobalContext;
+	context: React.ContextType<typeof GlobalContext>;
+	timer: NodeJS.Timeout;
 
 	constructor(props) {
 		super(props);
-		const kara = this.props.kara;
+		const kara = this.props.kara || {};
 		this.getRepositories();
 		this.state = {
+			titles: kara?.titles ? kara.titles : { eng: '' },
+			titlesIsTouched: false,
 			serieSingersRequired: false,
-			subfile: kara?.subfile
+			subfile: kara.subfile
 				? [
-					{
-						uid: -1,
-						name: kara.subfile,
-						status: 'done'
-					}
-				]
+						{
+							uid: -1,
+							name: kara.subfile,
+							status: 'done',
+						},
+				  ]
 				: [],
-			mediafile: kara?.mediafile
+			mediafile: kara.mediafile
 				? [
-					{
-						uid: -1,
-						name: kara.mediafile,
-						status: 'done'
-					}
-				]
+						{
+							uid: -1,
+							name: kara.mediafile,
+							status: 'done',
+						},
+				  ]
 				: [],
-			singers: this.getTagArray(kara?.singers),
-			authors: this.getTagArray(kara?.authors),
-			misc: this.getTagArray(kara?.misc),
-			series: this.getTagArray(kara?.series),
-			creators: this.getTagArray(kara?.creators),
-			songwriters: this.getTagArray(kara?.songwriters),
-			groups: this.getTagArray(kara?.groups),
-			songtypes: this.getTagArray(kara?.songtypes),
-			langs: this.getTagArray(kara?.langs),
-			families: this.getTagArray(kara?.families),
-			platforms: this.getTagArray(kara?.platforms),
-			genres: this.getTagArray(kara?.genres),
-			origins: this.getTagArray(kara?.origins),
-			versions: this.getTagArray(kara?.versions),
-			created_at: kara?.created_at ? kara.created_at : new Date(),
-			modified_at: kara?.modified_at ? kara.modified_at : new Date(),
+			created_at: kara.created_at || new Date(),
+			modified_at: kara.modified_at || new Date(),
 			repositoriesValue: null,
 			repoToCopySong: null,
 			mediafile_orig: null,
 			subfile_orig: null,
-			comment: kara?.comment ? kara.comment : undefined
+			comment: kara.comment,
+			karaSearch: [],
+			parentKara: null,
 		};
 	}
 
 	componentDidMount() {
 		this.formRef.current.validateFields();
-		this.onChangeSingersSeries(this.state.series, 'singers');
-		this.onChangeSingersSeries(this.state.singers, 'series');
+		this.getParents();
 	}
 
-	getTagArray(value) {
-		if (value) {
-			return value.map(element => {
-				return [element.tid, getTagInLocale(element), element.name];
+	getParents = async () => {
+		if (this.formRef.current.getFieldValue('parents') !== null) {
+			const parents: string[] = this.formRef.current.getFieldValue('parents');
+			const res = await commandBackend('getKaras', { q: `k:${parents.join()}` });
+			const karaSearch = res.content.map(kara => {
+				return {
+					label: buildKaraTitle(this.context.globalState.settings.data, kara, true, res.i18n),
+					value: kara.kid,
+				};
 			});
-		} else {
-			return [];
+			this.setState({ karaSearch });
 		}
-	}
+	};
 
-	getTagObject(value) {
-		if (value) {
-			return value.map(element => {
-				if (element.length === 3) {
-					return { tid: element[0], name: element[2] };
-				} else if (element.length === 2) {
-					return { tid: element[0], name: element[1] };
-				} else {
-					return null;
-				}
+	openChildrenModal = async (event, kid: string) => {
+		event.stopPropagation();
+		event.preventDefault();
+		const parent: DBKara = await commandBackend('getKara', { kid });
+		if (parent.children.length > 0) {
+			const childrens = await commandBackend('getKaras', { q: `k:${parent.children.join()}` });
+			Modal.info({
+				title: i18next.t('KARA.CHILDRENS', {
+					parent: buildKaraTitle(this.context.globalState.settings.data, parent, true),
+				}),
+				content: (
+					<ul>
+						{childrens.content?.map(kara => (
+							<a href={`/system/karas/${kara.kid}`}>
+								<li key={kara.kid}>
+									{buildKaraTitle(this.context.globalState.settings.data, kara, true, childrens.i18n)}
+								</li>
+							</a>
+						))}
+					</ul>
+				),
 			});
-		} else {
-			return [];
 		}
-	}
+	};
 
 	getRepositories = async () => {
 		const res = await commandBackend('getRepos');
 		this.setState({ repositoriesValue: res.map(repo => repo.Name) }, () =>
 			this.formRef.current.setFieldsValue({
-				repository: this.props.kara?.repository ? this.props.kara.repository :
-					(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null)
+				repository:
+					this.props.kara?.repository ||
+					(this.state.repositoriesValue ? this.state.repositoriesValue[0] : null),
 			})
 		);
 	};
 
-	handleSubmit = (values) => {
+	previewHooks = async () => {
+		const data = await commandBackend(
+			'previewHooks',
+			this.getKaraToSend(this.formRef.current.getFieldsValue()),
+			false,
+			300000
+		);
+		Modal.info({
+			title: i18next.t('KARA.PREVIEW_HOOKS_MODAL'),
+			content: (
+				<ul>
+					{data?.map(tag => (
+						<li key={tag.tid} title={tag.tagfile}>
+							{getTagInLocale(this.context?.globalState.settings.data, tag)} (
+							{i18next.t(`TAG_TYPES.${getTagTypeName(tag.types[0])}_other`)})
+						</li>
+					))}
+				</ul>
+			),
+		});
+	};
+
+	handleSubmit = values => {
+		if (!this.state.titles || Object.keys(this.state.titles).length === 0) {
+			message.error(i18next.t('KARA.TITLE_REQUIRED'));
+		} else if (!this.state.titles.eng) {
+			message.error(i18next.t('KARA.TITLE_ENG_REQUIRED'));
+		} else {
+			this.props.save(this.getKaraToSend(values));
+		}
+	};
+
+	getKaraToSend = values => {
 		const kara: Kara = values;
 		kara.karafile = this.props.kara?.karafile;
 		kara.kid = this.props.kara?.kid;
 		kara.mediafile_orig = this.state.mediafile_orig;
 		kara.subfile_orig = this.state.subfile_orig;
-		kara.series = this.getTagObject(kara.series);
-		kara.singers = this.getTagObject(kara.singers);
-		kara.authors = this.getTagObject(kara.authors);
-		kara.misc = this.getTagObject(kara.misc);
-		kara.creators = this.getTagObject(kara.creators);
-		kara.songwriters = this.getTagObject(kara.songwriters);
-		kara.groups = this.getTagObject(kara.groups);
-		kara.langs = this.getTagObject(kara.langs);
-		kara.families = this.getTagObject(kara.families);
-		kara.platforms = this.getTagObject(kara.platforms);
-		kara.genres = this.getTagObject(kara.genres);
-		kara.origins = this.getTagObject(kara.origins);
-		kara.songtypes = this.getTagObject(kara.songtypes);
-		kara.versions = this.getTagObject(kara.versions);
-
-		this.props.save(kara);
+		kara.titles = this.state.titles;
+		return kara;
 	};
 
 	isMediaFile = (filename: string): boolean => {
@@ -176,8 +205,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	onMediaUploadChange = info => {
-		let fileList = info.fileList;
-		fileList = fileList.slice(-1);
+		const fileList = info.fileList.slice(-1);
 		this.setState({ mediafile: fileList });
 		if (info.file.status === 'uploading') {
 			this.formRef.current.setFieldsValue({ mediafile: null });
@@ -201,8 +229,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	onSubUploadChange = info => {
-		let fileList = info.fileList;
-		fileList = fileList.slice(-1);
+		const fileList = info.fileList.slice(-1);
 		this.setState({ subfile: fileList });
 		if (info.file.status === 'uploading') {
 			this.formRef.current.setFieldsValue({ subfile: null });
@@ -224,485 +251,654 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		}
 	};
 
-	onChangeSingersSeries = (tags, type) => {
-		this.setState({ serieSingersRequired: (!tags || tags.length === 0) && this.formRef.current.getFieldValue(type).length === 0 }, () => {
-			this.formRef.current.validateFields(['series']);
-			this.formRef.current.validateFields(['singers']);
+	onChangeSingersSeries = () => {
+		this.setState(
+			{
+				serieSingersRequired:
+					this.formRef.current.getFieldValue('singers')?.length === 0 &&
+					this.formRef.current.getFieldValue('series')?.length === 0,
+			},
+			() => {
+				this.formRef.current.validateFields(['series']);
+				this.formRef.current.validateFields(['singers']);
+			}
+		);
+	};
+
+	search = value => {
+		if (this.timer) clearTimeout(this.timer);
+		this.timer = setTimeout(async () => {
+			const karas = await commandBackend('getKaras', {
+				q: this.formRef.current.getFieldValue('repository')
+					? `r:${this.formRef.current.getFieldValue('repository')}`
+					: '',
+				filter: value,
+				size: 50,
+			}).catch(() => {
+				return { content: [] };
+			});
+			if (karas.content) {
+				this.setState({
+					karaSearch: karas.content
+						.filter(k => k.kid !== this.props.kara?.kid)
+						.map(k => {
+							return {
+								label: buildKaraTitle(this.context.globalState.settings.data, k, true, karas.i18n),
+								value: k.kid,
+							};
+						}),
+				});
+			}
+		}, 1000);
+	};
+
+	onParentKaraChange = async (event: SelectValue) => {
+		if (event && event[0] && !event[1]) {
+			await this.applyFieldsFromKara(event[0] as string);
+		}
+	};
+
+	applyFieldsFromKara = async (kid: string) => {
+		const karas = await commandBackend('getKaras', {
+			q:
+				(this.formRef.current.getFieldValue('repository')
+					? `r:${this.formRef.current.getFieldValue('repository')}!`
+					: '!') +
+				'k:' +
+				kid,
+			size: 1,
 		});
-	}
+		const parentKara = karas && (karas.content[0] as DBKara);
+		if (parentKara && parentKara.kid === kid) {
+			// Check if user has already started doing input, or if it's an edit of existing kara
+			if (
+				!this.props.kara?.kid &&
+				this.state.titlesIsTouched !== true &&
+				this.formRef.current.isFieldsTouched(['versions', 'series', 'language']) !== true
+			) {
+				this.setState({ titles: parentKara.titles, parentKara });
+				const oldFormFields = this.formRef.current.getFieldsValue(['mediafile', 'subfile']); // Fields to take over to the applied kara
+				this.formRef.current.resetFields();
+				this.formRef.current.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
+			}
+		}
+	};
 
 	submitHandler(e) {
 		e.key === 'Enter' && e.preventDefault();
 	}
 
+	mapRepoToSelectOption = (repo: string) => (
+		<Select.Option key={repo} value={repo}>
+			{repo}
+		</Select.Option>
+	);
+
+	tagRender = ({ label, value, closable, onClose }) => {
+		return (
+			<Tag closable={closable} onClose={onClose} style={{ whiteSpace: 'normal' }}>
+				<label style={{ cursor: 'pointer' }} onMouseDown={event => this.openChildrenModal(event, value)}>
+					{label}
+				</label>
+			</Tag>
+		);
+	};
+
 	render() {
 		return (
-			<Form ref={this.formRef} onFinish={this.handleSubmit} className="kara-form"
+			<Form
+				ref={this.formRef}
+				onFinish={this.handleSubmit}
+				className="kara-form"
 				initialValues={{
-					title: this.props.kara?.title, series: this.state.series,
-					songtypes: this.state.songtypes, songorder: this.props.kara?.songorder,
-					langs: this.state.langs, year: this.props.kara?.year || 2010,
-					singers: this.state.singers, songwriters: this.state.songwriters,
-					creators: this.state.creators, authors: this.state.authors,
-					families: this.state.families, platforms: this.state.platforms,
-					genres: this.state.genres, origins: this.state.origins,
-					misc: this.state.misc, groups: this.state.groups, versions: this.state.versions,
-					comment: this.props.kara?.comment ? this.props.kara.comment : null,
-					repository: this.props.kara?.repository ? this.props.kara.repository : null,
-					created_at: this.state.created_at, modified_at: this.state.modified_at,
-					mediafile: this.props.kara?.mediafile, subfile: this.props.kara?.subfile
-				}}>
+					series: this.props.kara?.series || this.state.parentKara?.series,
+					songtypes: this.props.kara?.songtypes || this.state.parentKara?.songtypes,
+					songorder: this.props.kara?.songorder || this.state.parentKara?.songorder,
+					langs: this.props.kara?.langs || this.state.parentKara?.langs,
+					year: this.props.kara?.year || this.state.parentKara?.year || new Date().getFullYear(),
+					singers: this.props.kara?.singers || this.state.parentKara?.singers,
+					songwriters: this.props.kara?.songwriters || this.state.parentKara?.songwriters,
+					creators: this.props.kara?.creators || this.state.parentKara?.creators,
+					authors: this.props.kara?.authors || this.state.parentKara?.authors,
+					families: this.props.kara?.families || this.state.parentKara?.families,
+					platforms: this.props.kara?.platforms || this.state.parentKara?.platforms,
+					genres: this.props.kara?.genres || this.state.parentKara?.genres,
+					origins: this.props.kara?.origins || this.state.parentKara?.origins,
+					misc: this.props.kara?.misc || this.state.parentKara?.misc,
+					groups: this.props.kara?.groups || this.state.parentKara?.groups,
+					versions: this.props.kara?.versions || this.state.parentKara?.versions,
+					comment: this.props.kara?.comment || null,
+					ignoreHooks: this.props.kara?.ignoreHooks || false,
+					repository: this.props.kara?.repository || this.state.parentKara?.repository || null,
+					created_at: this.state.created_at,
+					modified_at: this.state.modified_at,
+					mediafile: this.props.kara?.mediafile,
+					subfile: this.props.kara?.subfile,
+					parents: this.props.kara?.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
+				}}
+			>
 				<Form.Item
 					label={
-						<span>{i18next.t('KARA.MEDIA_FILE')}&nbsp;
+						<span>
+							{i18next.t('KARA.MEDIA_FILE')}&nbsp;
 							<Tooltip
-								title={i18next.t('KARA.MEDIA_FILE_TOOLTIP',
-									{ formats: this.context.globalState.settings.data.state?.supportedMedias?.join(', ') })}>
+								title={i18next.t('KARA.MEDIA_FILE_TOOLTIP', {
+									formats: this.context.globalState.settings.data.state?.supportedMedias?.join(', '),
+								})}
+							>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 12 }}
 					name="mediafile"
-					rules={[{
-						required: true,
-						message: i18next.t('KARA.MEDIA_REQUIRED')
-					}]}
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.MEDIA_REQUIRED'),
+						},
+					]}
 				>
 					<Upload
 						headers={{
 							authorization: localStorage.getItem('kmToken'),
-							onlineAuthorization: localStorage.getItem('kmOnlineToken')
+							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 						}}
-						action="/api/importfile"
+						action="/api/importFile"
 						accept="video/*,audio/*,.mkv"
 						multiple={false}
 						onChange={this.onMediaUploadChange}
 						fileList={this.state.mediafile}
 					>
 						<Button>
-							<UploadOutlined />{i18next.t('KARA.MEDIA_FILE')}
+							<UploadOutlined />
+							{i18next.t('KARA.MEDIA_FILE')}
 						</Button>
 					</Upload>
 				</Form.Item>
 				<Form.Item
 					label={
-						<span>{i18next.t('KARA.LYRICS_FILE')}&nbsp;
+						<span>
+							{i18next.t('KARA.LYRICS_FILE')}&nbsp;
 							<Tooltip
-								title={i18next.t('KARA.LYRICS_FILE_TOOLTIP',
-									{ formats: this.context.globalState.settings.data.state?.supportedLyrics?.join(', ') })}>
+								title={i18next.t('KARA.LYRICS_FILE_TOOLTIP', {
+									formats: this.context.globalState.settings.data.state?.supportedLyrics?.join(', '),
+								})}
+							>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 12 }}
 					name="subfile"
 				>
 					<Upload
 						headers={{
 							authorization: localStorage.getItem('kmToken'),
-							onlineAuthorization: localStorage.getItem('kmOnlineToken')
+							onlineAuthorization: localStorage.getItem('kmOnlineToken'),
 						}}
-						action="/api/importfile"
+						action="/api/importFile"
 						multiple={false}
 						onChange={this.onSubUploadChange}
 						fileList={this.state.subfile}
 					>
 						<Button>
-							<UploadOutlined />{i18next.t('KARA.LYRICS_FILE')}
+							<UploadOutlined />
+							{i18next.t('KARA.LYRICS_FILE')}
 						</Button>
 					</Upload>
+					{this.state.subfile?.length > 0 && this.props.kara?.kid && (
+						<div style={{ marginTop: '1em' }}>
+							<OpenLyricsFileButton kara={this.props.kara} />
+						</div>
+					)}
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('KARA.PARENTS')}&nbsp;
+							<Tooltip title={i18next.t('KARA.PARENTS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 8 }}
+					name="parents"
+				>
+					<Select
+						showSearch
+						mode="multiple"
+						onSearch={this.search}
+						onChange={this.onParentKaraChange}
+						showArrow={false}
+						filterOption={false}
+						options={this.state.karaSearch}
+						tagRender={this.tagRender}
+					/>
 				</Form.Item>
 				<Form.Item
 					hasFeedback
 					label={
-						<span>{i18next.t('KARA.TITLE')}&nbsp;
+						<span>
+							{i18next.t('KARA.TITLE')}&nbsp;
 							<Tooltip title={i18next.t('KARA.TITLE_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
-					wrapperCol={{ span: 8 }}
-					rules={[{
-						required: true,
-						message: i18next.t('KARA.TITLE_REQUIRED')
-					}]}
-					name="title"
-				>
-					<Input
-						placeholder={i18next.t('KARA.TITLE')}
-						onKeyPress={this.submitHandler}
-					/>
-				</Form.Item>
+					labelCol={{ flex: '0 1 220px' }}
+				></Form.Item>
+				<LanguagesList
+					value={this.state.titles}
+					onFieldIsTouched={isFieldTouched =>
+						this.state.titlesIsTouched !== true && this.setState({ titlesIsTouched: isFieldTouched })
+					}
+					onChange={titles => this.setState({ titles })}
+				/>
 				<Form.Item
-					label={(
-						<span>{i18next.t('TAG_TYPES.VERSIONS', { count: 2 })}&nbsp;
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.VERSIONS_other')}&nbsp;
 							<Tooltip title={i18next.t('KARA.VERSIONS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
-					)}
-					labelCol={{ flex: '0 1 200px' }}
+					}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="versions"
 				>
 					<EditableTagGroup
 						tagType={14}
 						checkboxes={true}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ versions: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ versions: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
 					label={
-						<span>{i18next.t('KARA.SERIES')}&nbsp;
+						<span>
+							{i18next.t('TAG_TYPES.SERIES_other')}&nbsp;
 							<Tooltip title={i18next.t('KARA.SERIES_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 14 }}
-					rules={[{
-						required: this.state.serieSingersRequired,
-						message: i18next.t('KARA.SERIES_SINGERS_REQUIRED')
-					}]}
+					rules={[
+						{
+							required: this.state.serieSingersRequired,
+							message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
+						},
+					]}
 					name="series"
 				>
 					<EditableTagGroup
 						tagType={1}
-						search={'tag'}
 						onChange={tags => {
 							this.formRef.current.setFieldsValue({ series: tags });
-							this.onChangeSingersSeries(tags, 'singers');
-						}
-						}
+							this.onChangeSingersSeries();
+						}}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('KARA.SONGTYPES')}
-					labelCol={{ flex: '0 1 200px' }}
+					label={i18next.t('TAG_TYPES.SONGTYPES_other')}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10, offset: 0 }}
 					name="songtypes"
-					rules={[{
-						required: true,
-						message: i18next.t('KARA.TYPE_REQUIRED')
-					}]}
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.TYPE_REQUIRED'),
+						},
+					]}
 				>
 					<EditableTagGroup
 						tagType={3}
 						checkboxes={true}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ songtypes: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ songtypes: tags })}
 					/>
 				</Form.Item>
 
-				<Form.Item hasFeedback
-					label={(
-						<span>{i18next.t('KARA.ORDER')}&nbsp;
+				<Form.Item
+					hasFeedback
+					label={
+						<span>
+							{i18next.t('KARA.ORDER')}&nbsp;
 							<Tooltip title={i18next.t('KARA.ORDER_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
-					)}
-					labelCol={{ flex: '0 1 200px' }}
+					}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 1 }}
 					name="songorder"
 				>
-					<InputNumber
-						min={0}
-						style={{ width: '100%' }}
-						onPressEnter={this.submitHandler}
-					/>
+					<InputNumber min={0} style={{ width: '100%' }} onPressEnter={this.submitHandler} />
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('KARA.LANGUAGES')}
-					labelCol={{ flex: '0 1 200px' }}
+					label={i18next.t('TAG_TYPES.LANGS_other')}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
-					rules={[{
-						required: true,
-						message: i18next.t('KARA.LANGUAGES_REQUIRED')
-					}]}
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.LANGUAGES_REQUIRED'),
+						},
+					]}
 					name="langs"
 				>
 					<EditableTagGroup
 						tagType={5}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ langs: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ langs: tags })}
 					/>
 				</Form.Item>
-				<Form.Item hasFeedback
-					label={(
-						<span>{i18next.t('KARA.YEAR')}&nbsp;
+				<Form.Item
+					hasFeedback
+					label={
+						<span>
+							{i18next.t('KARA.YEAR')}&nbsp;
 							<Tooltip title={i18next.t('KARA.YEAR_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
-					)}
-					labelCol={{ flex: '0 1 200px' }}
+					}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 2 }}
 					name="year"
 				>
-					<InputNumber required={true}
+					<InputNumber
+						required={true}
 						min={0}
-						placeholder='Year'
+						placeholder="Year"
 						style={{ width: '100%' }}
 						onPressEnter={this.submitHandler}
 					/>
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.SINGERS_BY')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
-					rules={[{
-						required: this.state.serieSingersRequired,
-						message: i18next.t('KARA.SERIES_SINGERS_REQUIRED')
-					}]}
+					rules={[
+						{
+							required: this.state.serieSingersRequired,
+							message: i18next.t('KARA.SERIES_SINGERS_REQUIRED'),
+						},
+					]}
 					name="singers"
 				>
 					<EditableTagGroup
 						tagType={2}
-						search={'tag'}
-						onChange={(tags) => {
+						onChange={tags => {
 							this.formRef.current.setFieldsValue({ singer: tags });
-							this.onChangeSingersSeries(tags, 'series');
-						}
-						}
+							this.onChangeSingersSeries();
+						}}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={(
-						<span>{i18next.t('KARA.SONGWRITERS_BY')}&nbsp;
+					label={
+						<span>
+							{i18next.t('KARA.SONGWRITERS_BY')}&nbsp;
 							<Tooltip title={i18next.t('KARA.SONGWRITERS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
-					)}
-					labelCol={{ flex: '0 1 200px' }}
+					}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
 					name="songwriters"
 				>
 					<EditableTagGroup
 						tagType={8}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ songwriters: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ songwriters: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={(
-						<span>{i18next.t('KARA.CREATORS_BY')}&nbsp;
+					label={
+						<span>
+							{i18next.t('KARA.CREATORS_BY')}&nbsp;
 							<Tooltip title={i18next.t('KARA.CREATORS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
-					)}
-					labelCol={{ flex: '0 1 200px' }}
+					}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
 					name="creators"
 				>
 					<EditableTagGroup
 						tagType={4}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ creators: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ creators: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={(
-						<span>{i18next.t('KARA.AUTHORS_BY')}&nbsp;
+					label={
+						<span>
+							{i18next.t('KARA.AUTHORS_BY')}&nbsp;
 							<Tooltip title={i18next.t('KARA.KARA_AUTHORS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
-					)}
-					labelCol={{ flex: '0 1 200px' }}
+					}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 6 }}
-					rules={[{
-						required: true,
-						message: i18next.t('KARA.KARA_AUTHORS_REQUIRED')
-					}]}
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.KARA_AUTHORS_REQUIRED'),
+						},
+					]}
 					name="authors"
 				>
 					<EditableTagGroup
 						tagType={6}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ author: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ author: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('KARA.FAMILIES')}
-					labelCol={{ flex: '0 1 200px' }}
+					label={i18next.t('TAG_TYPES.FAMILIES_other')}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="families"
 				>
 					<EditableTagGroup
 						tagType={10}
 						checkboxes={true}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ families: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ families: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('KARA.PLATFORMS')}
-					labelCol={{ flex: '0 1 200px' }}
+					label={i18next.t('TAG_TYPES.PLATFORMS_other')}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="platforms"
 				>
 					<EditableTagGroup
 						tagType={13}
 						checkboxes={true}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ platforms: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ platforms: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('KARA.GENRES')}
-					labelCol={{ flex: '0 1 200px' }}
+					label={i18next.t('TAG_TYPES.GENRES_other')}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="genres"
 				>
 					<EditableTagGroup
 						tagType={12}
 						checkboxes={true}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ genres: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ genres: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('KARA.ORIGINS')}
-					labelCol={{ flex: '0 1 200px' }}
+					label={i18next.t('TAG_TYPES.ORIGINS_other')}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="origins"
 				>
 					<EditableTagGroup
 						tagType={11}
 						checkboxes={true}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ origins: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ origins: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={i18next.t('KARA.MISC')}
-					labelCol={{ flex: '0 1 200px' }}
+					label={i18next.t('TAG_TYPES.MISC_other')}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="misc"
 				>
 					<EditableTagGroup
 						tagType={7}
 						checkboxes={true}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ misc: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ misc: tags })}
 					/>
 				</Form.Item>
 				<Form.Item
-					label={(
-						<span>{i18next.t('KARA.GROUPS')}&nbsp;
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.GROUPS_other')}&nbsp;
 							<Tooltip title={i18next.t('KARA.GROUPS_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
-					)}
-					labelCol={{ flex: '0 1 200px' }}
+					}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 10 }}
 					name="groups"
 				>
 					<EditableTagGroup
 						tagType={9}
 						checkboxes={true}
-						search={'tag'}
-						onChange={(tags) => this.formRef.current.setFieldsValue({ groups: tags })}
+						onChange={tags => this.formRef.current.setFieldsValue({ groups: tags })}
 					/>
 				</Form.Item>
-				{this.state.repositoriesValue ?
+				{this.state.repositoriesValue ? (
 					<Form.Item
 						label={i18next.t('KARA.REPOSITORY')}
-						labelCol={{ flex: '0 1 200px' }}
+						labelCol={{ flex: '0 1 220px' }}
 						wrapperCol={{ span: 3 }}
-						rules={[{
-							required: true,
-							message: i18next.t('KARA.REPOSITORY_REQUIRED')
-						}]}
+						rules={[
+							{
+								required: true,
+								message: i18next.t('KARA.REPOSITORY_REQUIRED'),
+							},
+						]}
 						name="repository"
 					>
-						<Select disabled={this.props.kara?.repository !== undefined} placeholder={i18next.t('KARA.REPOSITORY')}>
-							{this.state.repositoriesValue.map(repo => {
-								return <Select.Option key={repo} value={repo}>{repo}</Select.Option>;
-							})
-							}
+						<Select
+							disabled={this.props.kara?.repository !== undefined}
+							placeholder={i18next.t('KARA.REPOSITORY')}
+						>
+							{this.state.repositoriesValue.map(this.mapRepoToSelectOption)}
 						</Select>
-					</Form.Item> : null
-				}
+					</Form.Item>
+				) : null}
 				<Form.Item
 					hasFeedback
 					label={
-						<span>{i18next.t('KARA.COMMENT')}&nbsp;
+						<span>
+							{i18next.t('KARA.COMMENT')}&nbsp;
 							<Tooltip title={i18next.t('KARA.COMMENT_TOOLTIP')}>
 								<QuestionCircleOutlined />
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 8 }}
-					rules={[{
-						required: false
-					}]}
+					rules={[
+						{
+							required: false,
+						},
+					]}
 					name="comment"
 				>
-					<Input
-						placeholder={i18next.t('KARA.COMMENT')}
-						onKeyPress={this.submitHandler}
-					/>
+					<Input placeholder={i18next.t('KARA.COMMENT')} onKeyPress={this.submitHandler} />
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('KARA.IGNOREHOOKS')}&nbsp;
+							<Tooltip title={i18next.t('KARA.IGNOREHOOKS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					valuePropName="checked"
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 8 }}
+					rules={[
+						{
+							required: false,
+						},
+					]}
+					name="ignoreHooks"
+				>
+					<Checkbox />
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.CREATED_AT')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 8 }}
 					name="created_at"
 				>
-					<label>{this.props.kara?.created_at ? new Date(this.props.kara.created_at).toLocaleString() : null}</label>
+					<label>
+						{this.props.kara?.created_at ? new Date(this.props.kara?.created_at).toLocaleString() : null}
+					</label>
 				</Form.Item>
 				<Form.Item
 					label={i18next.t('KARA.MODIFIED_AT')}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 220px' }}
 					wrapperCol={{ span: 8 }}
 					name="modified_at"
 				>
-					<label>{this.props.kara?.modified_at ? new Date(this.props.kara.modified_at).toLocaleString() : null}</label>
+					<label>
+						{this.props.kara?.modified_at ? new Date(this.props.kara?.modified_at).toLocaleString() : null}
+					</label>
 				</Form.Item>
-				<Form.Item
-					wrapperCol={{ span: 8, offset: 5 }}
-				>
-					<Button type='primary' htmlType='submit' className='login-form-button'>{i18next.t('SUBMIT')}</Button>
+				<Form.Item>
+					<Button style={{ marginLeft: '14em', marginRight: '9em' }} onClick={this.previewHooks}>
+						{i18next.t('KARA.PREVIEW_HOOKS')}
+					</Button>
+					<Button type="primary" htmlType="submit">
+						{i18next.t('SUBMIT')}
+					</Button>
 				</Form.Item>
 				<Divider />
-				{this.state.repositoriesValue && this.props.kara?.repository ?
-					<React.Fragment>
-						<Form.Item hasFeedback
+				{this.state.repositoriesValue && this.props.kara?.repository ? (
+					<>
+						<Form.Item
+							hasFeedback
 							label={i18next.t('KARA.REPOSITORY')}
-							labelCol={{ flex: '0 1 200px' }}
+							labelCol={{ flex: '0 1 220px' }}
 							wrapperCol={{ span: 8 }}
 						>
-							<Select placeholder={i18next.t('KARA.REPOSITORY')} onChange={(value: string) => this.setState({ repoToCopySong: value })}>
-								{this.state.repositoriesValue.filter(value => value !== this.props.kara.repository).map(repo => {
-									return <Select.Option key={repo} value={repo}>{repo}</Select.Option>;
-								})
-								}
+							<Select
+								placeholder={i18next.t('KARA.REPOSITORY')}
+								onChange={(value: string) => this.setState({ repoToCopySong: value })}
+							>
+								{this.state.repositoriesValue
+									.filter(value => value !== this.props.kara?.repository)
+									.map(this.mapRepoToSelectOption)}
 							</Select>
 						</Form.Item>
 
-						<Form.Item
-							wrapperCol={{ span: 8, offset: 3 }}
-							style={{ textAlign: 'right' }}
-						>
-							<Button disabled={!this.state.repoToCopySong} type="primary" danger
-								onClick={() => this.props.handleCopy(this.props.kara.kid, this.state.repoToCopySong)}>
+						<Form.Item wrapperCol={{ span: 8, offset: 3 }} style={{ textAlign: 'right' }}>
+							<Button
+								disabled={!this.state.repoToCopySong}
+								type="primary"
+								danger
+								onClick={() => this.props.handleCopy(this.props.kara?.kid, this.state.repoToCopySong)}
+							>
 								{i18next.t('KARA.COPY_SONG')}
 							</Button>
 						</Form.Item>
-					</React.Fragment> : null
-				}
+					</>
+				) : null}
 			</Form>
 		);
 	}

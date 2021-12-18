@@ -1,210 +1,228 @@
 import './ProgressBar.scss';
 
 import i18next from 'i18next';
-import React, { Component, createRef } from 'react';
+import { ReactFragment, useContext, useEffect, useRef, useState } from 'react';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
+import { useResizeListener } from '../../../utils/hooks';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
-interface IProps {
-	lyrics?: boolean;
-}
+function ProgressBar() {
+	const context = useContext(GlobalContext);
+	const [mouseDown, setMouseDown] = useState(false);
+	const [playerStatus, setPlayerStatus] = useState<string>();
+	const [karaInfoText, setKaraInfoText] = useState<string | ReactFragment>(i18next.t('KARA_PAUSED_WAITING'));
+	const [length, setLength] = useState(-1);
+	const [width, setWidth] = useState('0');
+	const [timePosition, setTimePosition] = useState(0);
+	const [animate, setAnimate] = useState(0);
+	const [duration, setDuration] = useState(0);
+	const [animationPause, setAnimationPause] = useState(false);
 
-interface IState {
-	mouseDown: boolean;
-	refreshTime: number;
-	playerStatus?: string;
-	karaInfoText: string | React.ReactFragment;
-	length: number;
-	width: string;
-	timePosition: number;
-	animate: number;
-	duration: number;
-	animationPause: boolean;
-}
+	// Int (ms) : time unit between every call
+	const refreshTime = 1000;
+	const refBar = useRef<HTMLDivElement>();
+	const refCont = useRef<HTMLDivElement>();
+	const refP = useRef<HTMLParagraphElement>();
+	let timeout: NodeJS.Timeout;
 
-class ProgressBar extends Component<IProps, IState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
-
-	constructor(props: IProps) {
-		super(props);
-		this.state = {
-			mouseDown: false,
-			// Int (ms) : time unit between every call
-			refreshTime: 1000,
-			karaInfoText: i18next.t('KARA_PAUSED_WAITING'),
-			length: -1,
-			width: '0',
-			timePosition: 0,
-			animate: 0,
-			duration: 0,
-			animationPause: false
-		};
-	}
-
-	refBar = createRef<HTMLDivElement>();
-	refCont = createRef<HTMLDivElement>();
-	refP = createRef<HTMLParagraphElement>();
-	timeout: NodeJS.Timeout
-
-	mouseDown = (e: any) => {
-		if (this.state.playerStatus && this.state.playerStatus !== 'stop' && this.state.length !== -1) {
-			this.setState({ mouseDown: true, width: e.pageX });
+	const mouseDownAction = (e: any) => {
+		if (playerStatus && playerStatus !== 'stop' && length !== -1) {
+			setMouseDown(true);
+			setWidth(e.pageX);
 		}
 	};
 
-	mouseMove = (e: any) => {
-		if (this.state.mouseDown) {
-			this.setState({ width: e.pageX });
+	const mouseMove = (e: any) => {
+		if (mouseDown) {
+			setWidth(e.pageX);
 		}
 	};
 
-	mouseOut = () => {
-		if (this.state.mouseDown) {
-			this.setState({ mouseDown: false });
+	const mouseOut = () => {
+		if (mouseDown) {
+			setMouseDown(false);
 		}
 	};
 
-	suspendAnimation = () => {
-		if (!this.state.animationPause) {
-			this.setState({ animationPause: true });
-			this.timeout = setTimeout(() => {
-				this.setState({ animationPause: false });
+	const suspendAnimation = () => {
+		if (!animationPause) {
+			setAnimationPause(true);
+			timeout = setTimeout(() => {
+				setAnimationPause(false);
 			}, 3000);
 		}
-	}
+	};
 
-	async componentDidMount() {
-		if (this.context.globalState.auth.isAuthenticated) {
-			try {
-				const result = await commandBackend('getPlayerStatus');
-				this.refreshPlayerInfos(result);
-			} catch (e) {
-				// already display
-			}
-		}
-		getSocket().on('playerStatus', this.refreshPlayerInfos);
-		window.addEventListener('resize', this.resizeCheck, { passive: true });
-		if (this.refP.current) {
-			this.refP.current.addEventListener('animationiteration', this.suspendAnimation, { passive: true });
-		}
-	}
-
-	componentWillUnmount() {
-		getSocket().off('playerStatus', this.refreshPlayerInfos);
-		window.removeEventListener('resize', this.resizeCheck);
-		if (this.timeout) {
-			clearTimeout(this.timeout);
-		}
-	}
-
-	goToPosition(e: any) {
+	const goToPosition = (e: any) => {
 		const karaInfo = document.getElementById('karaInfo');
 		if (karaInfo) {
 			const barInnerwidth = karaInfo.offsetWidth;
 			const futurTimeX = e.pageX - karaInfo.offsetLeft;
-			const futurTimeSec = this.state.length * futurTimeX / barInnerwidth;
+			const futurTimeSec = (length * futurTimeX) / barInnerwidth;
 			if (!isNaN(futurTimeSec) && futurTimeSec >= 0) {
-				this.setState({ width: e.pageX });
+				setWidth(e.pageX);
 				commandBackend('sendPlayerCommand', { command: 'goTo', options: futurTimeSec }).catch(() => {});
 			}
 		}
-	}
-
-	karaInfoClick = (e: any) => {
-		this.goToPosition(e);
 	};
 
-	resizeCheck = () => {
-		if (this.refP?.current) {
-			const offset = this.refP.current.getBoundingClientRect().width - this.refCont.current.getBoundingClientRect().width;
+	const karaInfoClick = (e: any) => {
+		goToPosition(e);
+	};
+
+	const resizeCheck = () => {
+		if (refP?.current) {
+			const offset = refP.current.getBoundingClientRect().width - refCont.current.getBoundingClientRect().width;
 			if (offset > 0) {
-				this.setState({ animate: -offset - 5, duration: Math.round(offset * 0.05) });
+				setAnimate(-offset - 5);
+				setDuration(Math.round(offset * 0.05));
 			} else {
-				this.setState({ animate: 0 });
+				setAnimate(0);
 			}
 		}
-	}
+	};
 
 	/**
-	* refresh the player infos
-	*/
-	refreshPlayerInfos = async (data: PublicPlayerState) => {
-		const element = this.refBar.current;
+	 * refresh the player infos
+	 */
+	const refreshPlayerInfos = async (data: PublicPlayerState) => {
+		const element = refBar.current;
 		if (element && data.timeposition) {
-			const newWidth = element.offsetWidth *
-				10000 * (data.timeposition + this.state.refreshTime / 1000) / this.state.length / 10000 + 'px';
+			const newWidth =
+				(element.offsetWidth * 10000 * (data.timeposition + refreshTime / 1000)) / length / 10000 + 'px';
 
-			if (this.state.length !== 0) {
-				this.setState({ width: newWidth, timePosition: data.timeposition });
+			if (length !== 0) {
+				setWidth(newWidth);
+				setTimePosition(data.timeposition);
 			}
 		}
 		if (data.playerStatus) {
 			if (data.playerStatus === 'stop') {
-				this.setState({ width: '0' });
+				setWidth('0');
 			}
-			this.setState({ playerStatus: data.playerStatus });
+			setPlayerStatus(data.playerStatus);
 		}
 
 		if (data.mediaType || data.currentSong) {
-			this.setState({ width: '0' });
-			if (data.mediaType === 'background') {
-				this.setState({ karaInfoText: i18next.t('KARA_PAUSED_WAITING'), length: -1, animate: 0 });
+			setWidth('0');
+			if (data.mediaType === 'stop') {
+				setKaraInfoText(i18next.t('KARA_PAUSED_WAITING'));
+				setLength(-1);
+				setAnimate(0);
 			} else if (data.mediaType === 'Jingles') {
-				this.setState({ karaInfoText: i18next.t('JINGLE_TIME'), length: -1, animate: 0 });
+				setKaraInfoText(i18next.t('JINGLE_TIME'));
+				setLength(-1);
+				setAnimate(0);
 			} else if (data.mediaType === 'Intros') {
-				this.setState({ karaInfoText: i18next.t('INTRO_TIME'), length: -1, animate: 0 });
+				setKaraInfoText(i18next.t('INTRO_TIME'));
+				setLength(-1);
+				setAnimate(0);
 			} else if (data.mediaType === 'Outros') {
-				this.setState({ karaInfoText: i18next.t('OUTRO_TIME'), length: -1, animate: 0 });
+				setKaraInfoText(i18next.t('OUTRO_TIME'));
+				setLength(-1);
+				setAnimate(0);
 			} else if (data.mediaType === 'Encores') {
-				this.setState({ karaInfoText: i18next.t('ENCORES_TIME'), length: -1, animate: 0 });
+				setKaraInfoText(i18next.t('ENCORES_TIME'));
+				setLength(-1);
+				setAnimate(0);
 			} else if (data.mediaType === 'Sponsors') {
-				this.setState({ karaInfoText: i18next.t('SPONSOR_TIME'), length: -1, animate: 0 });
-			} else if (data.mediaType === 'pauseScreen') {
-				this.setState({ karaInfoText: i18next.t('PAUSE_TIME'), length: -1, animate: 0 });
+				setKaraInfoText(i18next.t('SPONSOR_TIME'));
+				setLength(-1);
+				setAnimate(0);
+			} else if (data.mediaType === 'pause') {
+				setKaraInfoText(i18next.t('PAUSE_TIME'));
+				setLength(-1);
+				setAnimate(0);
+			} else if (data.mediaType === 'poll') {
+				setKaraInfoText(i18next.t('VOTE_TIME'));
+				setLength(-1);
+				setAnimate(0);
 			} else if (data.currentSong) {
 				const kara = data.currentSong;
-				const karaInfo = buildKaraTitle(this.context.globalState.settings.data, kara);
-
-				this.setState({ karaInfoText: karaInfo, length: kara.duration }, this.resizeCheck);
+				const karaInfo = buildKaraTitle(context.globalState.settings.data, kara);
+				setKaraInfoText(karaInfo);
+				setLength(kara.duration);
 			}
 		}
 	};
 
-	render() {
-		return (
-			<div id="progressBar">
-				<div
-					id="karaInfo"
-					onDragStart={() => {
-						return false;
-					}}
-					draggable={false}
-					onClick={this.karaInfoClick}
-					onMouseDown={this.mouseDown} onMouseUp={() => this.setState({ mouseDown: false })}
-					onMouseMove={this.mouseMove} onMouseOut={this.mouseOut}
-					ref={this.refBar}
-				>
-					<div className="actualTime">{this.state.timePosition > 0 && this.state.length > 0 && secondsTimeSpanToHMS(Math.round(this.state.timePosition), 'mm:ss')}</div>
-					<div className={`karaTitle${this.state.animate !== 0 ? ' animate' : ''}${this.state.animationPause ? ' pause':''}`}
-						style={{
-							['--offset' as any]: `${this.state.animate}px`,
-							['--duration' as any]: `${this.state.duration}s`
-						}}
-						ref={this.refCont}>
-						<p ref={this.refP}>{this.state.karaInfoText}</p>
-					</div>
+	const displayProgressBar = async () => {
+		if (context.globalState.auth.isAuthenticated) {
+			try {
+				const result = await commandBackend('getPlayerStatus');
+				refreshPlayerInfos(result);
+			} catch (e) {
+				// already display
+			}
+		}
+	};
 
-					<div className="remainTime">{this.state.length > 0 && `-${secondsTimeSpanToHMS(Math.round(this.state.length - this.state.timePosition), 'mm:ss')}`}</div>
+	useEffect(() => {
+		if (length > 0) {
+			resizeCheck();
+		}
+		getSocket().on('playerStatus', refreshPlayerInfos);
+		return () => {
+			getSocket().off('playerStatus', refreshPlayerInfos);
+		};
+	}, [length]);
+
+	useEffect(() => {
+		displayProgressBar();
+		getSocket().on('connect', displayProgressBar);
+		if (refP.current) {
+			refP.current.addEventListener('animationiteration', suspendAnimation, { passive: true });
+		}
+		return () => {
+			getSocket().off('connect', displayProgressBar);
+			if (timeout) {
+				clearTimeout(timeout);
+			}
+		};
+	}, []);
+
+	useResizeListener(resizeCheck);
+
+	return (
+		<div id="progressBar">
+			<div
+				id="karaInfo"
+				onDragStart={() => {
+					return false;
+				}}
+				draggable={false}
+				onClick={karaInfoClick}
+				onMouseDown={mouseDownAction}
+				onMouseUp={() => setMouseDown(false)}
+				onMouseMove={mouseMove}
+				onMouseOut={mouseOut}
+				ref={refBar}
+			>
+				<div className="actualTime">
+					{timePosition > 0 && length > 0 && secondsTimeSpanToHMS(Math.round(timePosition), 'mm:ss')}
 				</div>
-				<div id="progressBarColor" style={{ width: this.state.width }} />
+				<div
+					className={`karaTitle${animate !== 0 ? ' animate' : ''}${animationPause ? ' pause' : ''}`}
+					style={{
+						['--offset' as any]: `${animate}px`,
+						['--duration' as any]: `${duration}s`,
+					}}
+					ref={refCont}
+				>
+					<p ref={refP}>{karaInfoText}</p>
+				</div>
+
+				<div className="remainTime">
+					{length > 0 && `-${secondsTimeSpanToHMS(Math.round(length - timePosition), 'mm:ss')}`}
+				</div>
 			</div>
-		);
-	}
+			<div id="progressBarColor" style={{ width: width }} />
+		</div>
+	);
 }
 
 export default ProgressBar;

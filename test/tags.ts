@@ -1,6 +1,6 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import { readFileSync } from 'fs';
-import {resolve} from 'path';
+import { resolve } from 'path';
 
 import { DBTag } from '../src/lib/types/database/tag';
 import { TagFile } from '../src/lib/types/tag';
@@ -19,10 +19,10 @@ describe('Tags', () => {
 		noLiveDownload: true,
 		aliases: ['sup'],
 		i18n: {
-			'fre': 'Mon super tag'
+			fre: 'Mon super tag',
 		},
 		repository: 'Local',
-		types: [8]
+		types: [8],
 	};
 	const tag2: any = {
 		name: 'My mega tag',
@@ -31,11 +31,11 @@ describe('Tags', () => {
 		noLiveDownload: true,
 		aliases: ['meg'],
 		i18n: {
-			'fre': 'Mon mega tag',
-			'eng': 'My mega tag can\'t be this cute'
+			fre: 'Mon mega tag',
+			eng: "My mega tag can't be this cute",
 		},
 		repository: 'Local',
-		types: [2]
+		types: [2],
 	};
 	it('Get tag list', async () => {
 		const data = await commandBackend(token, 'getTags');
@@ -48,7 +48,7 @@ describe('Tags', () => {
 	});
 	it('Get tag list for type 5', async () => {
 		const data = await commandBackend(token, 'getTags', {
-			type: 5
+			type: 5,
 		});
 		const tags: DBTag[] = data.content;
 		for (const tag of tags) {
@@ -57,7 +57,7 @@ describe('Tags', () => {
 	});
 	it('Get tag list with filter Toei', async () => {
 		const data = await commandBackend(token, 'getTags', {
-			filter: 'Toei'
+			filter: 'Toei',
 		});
 		expect(data.content.length).to.have.greaterThan(0);
 	});
@@ -91,7 +91,7 @@ describe('Tags', () => {
 		expect(tags.some(t => t.tid === tag2.tid)).to.be.true;
 	});
 	it('Get single tag', async () => {
-		const data = await commandBackend(token, 'getTag', {tid: tag1.tid});
+		const data = await commandBackend(token, 'getTag', { tid: tag1.tid });
 		testTag(data, 'tag');
 	});
 	it('Edit tag', async () => {
@@ -99,11 +99,13 @@ describe('Tags', () => {
 		await commandBackend(token, 'editTag', tag1);
 	});
 	it('Get single tag after edit', async () => {
-		const data = await commandBackend(token, 'getTag', {tid: tag1.tid});
+		const data = await commandBackend(token, 'getTag', { tid: tag1.tid });
 		expect(data.name).to.be.equal(tag2.name);
 	});
 	it('List duplicate tags', async () => {
-		const data = await commandBackend(token, 'getDuplicateTags');
+		const data = await commandBackend(token, 'getTags', {
+			duplicates: true,
+		});
 		expect(data.content.length).to.be.greaterThan(1);
 		for (const tag of data.content) {
 			testTag(tag, 'tag');
@@ -115,14 +117,14 @@ describe('Tags', () => {
 	let tagToDelete: DBTag;
 
 	it('Merge tags', async () => {
-		const data = await commandBackend(token, 'mergeTags', {tid1: tag1.tid, tid2: tag2.tid});
+		const data = await commandBackend(token, 'mergeTags', { tid1: tag1.tid, tid2: tag2.tid });
 		expect(data.code).to.be.equal(200);
 		expect(data.message.data.types).to.include(tag1.types[0]);
 		expect(data.message.data.types).to.include(tag2.types[0]);
 		tagToDelete = data.message.data;
 	});
 	it('Delete tag', async () => {
-		const data = await commandBackend(token, 'deleteTag', {tids: [tagToDelete.tid]});
+		const data = await commandBackend(token, 'deleteTag', { tids: [tagToDelete.tid] });
 		expect(data.code).to.be.equal(200);
 	});
 });
@@ -132,7 +134,7 @@ function testTagFile(tag: TagFile, tagData: DBTag) {
 	// Sue me if it bites us in the ass later.
 	expect(tag.header.description).to.be.equal('Karaoke Mugen Tag File');
 	expect(tag.header.version).to.be.a('number').and.at.least(1);
-	if (tag.tag.aliases) expect(tag.tag.aliases).to.satisfy((e:any) => e === undefined || Array.isArray(e));
+	if (tag.tag.aliases) expect(tag.tag.aliases).to.satisfy((e: any) => e === undefined || Array.isArray(e));
 	expect(tag.tag.name).to.be.a('string').and.equal(tagData.name);
 	if (tag.tag.problematic) expect(tag.tag.problematic).to.be.a('boolean').and.equal(tagData.problematic);
 	if (tag.tag.noLiveDownload) expect(tag.tag.noLiveDownload).to.be.a('boolean').and.equal(tagData.noLiveDownload);

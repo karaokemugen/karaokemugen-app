@@ -1,55 +1,57 @@
-import { app, BrowserWindow, dialog,ipcMain, Menu,protocol } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, protocol } from 'electron';
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
 
 import { exit } from '../components/engine';
-import { listUsers } from '../dao/user';
-import { main, preInit } from '../index';
-import {getConfig, resolvedPathStreamFiles, setConfig} from '../lib/utils/config';
+import { init, preInit, welcomeToYoukousoKaraokeMugen } from '../components/init';
+import { selectUsers } from '../dao/user';
+import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
-import { emit } from '../lib/utils/pubsub';
 import { testJSON } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
-import { importSet } from '../services/blacklist';
 import { importFavorites } from '../services/favorites';
 import { isAllKaras } from '../services/kara';
-import { playSingleSong } from '../services/karaokeEngine';
-import { importPlaylist, playlistImported} from '../services/playlist';
-import { addRepo,getRepo } from '../services/repo';
+import { playSingleSong } from '../services/karaEngine';
+import { importPlaylist, playlistImported } from '../services/playlist';
+import { addRepo, getRepo } from '../services/repo';
 import { generateAdminPassword } from '../services/user';
-import { welcomeToYoukousoKaraokeMugen } from '../services/welcome';
+import { MenuLayout } from '../types/electron';
 import { detectKMFileTypes } from '../utils/files';
-import { getState,setState } from '../utils/state';
+import { getState, setState } from '../utils/state';
 import { tip } from '../utils/tips';
 import { initAutoUpdate } from './electronAutoUpdate';
 import { emitIPC } from './electronLogger';
-import { getMenu,initMenu } from './electronMenu';
+import { createMenu } from './electronMenu';
 
 export let win: Electron.BrowserWindow;
 export let chibiPlayerWindow: Electron.BrowserWindow;
 export let chibiPlaylistWindow: Electron.BrowserWindow;
+export let aboutWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
 export function startElectron() {
-	setState({electron: app ? true : false });
+	setState({ electron: app ? true : false });
 	// Fix bug that makes the web views not updating if they're hidden behind other windows.
 	// It's better for streamers who capture the web interface through OBS.
-	app.commandLine.appendSwitch('disable-features','CalculateNativeWinOcclusion');
+	app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 	// This is called when Electron finished initializing
 	app.on('ready', async () => {
 		try {
 			await preInit();
-		} catch(err) {
+		} catch (err) {
 			console.log(err);
 			// This is usually very much fatal.
-			emit('initError', err);
-			return;
+			throw err;
 		}
 		// Register km:// protocol for internal use only.
-		registerKMProtocol();
+		try {
+			registerKMProtocol();
+		} catch (err) {
+			logger.warn('KM protocol could not be registered!', { obj: err, service: 'Electron' });
+		}
 		// Create electron window with init screen
 		if (!getState().opt.cli) await initElectronWindow();
 		// Once init page is ready, or if we're in cli mode we start running init operations
@@ -83,15 +85,13 @@ export function startElectron() {
 	// Also allows to get us the files we need.
 	if (!app.requestSingleInstanceLock()) process.exit();
 	app.on('second-instance', (_event, args) => {
-		if (args[args.length-1] === '--kill') {
+		if (args[args.length - 1] === '--kill') {
 			exit(0);
 		} else {
 			focusWindow();
-			const file = args[args.length-1];
+			const file = args[args.length - 1];
 			if (file && file !== '.' && !file.startsWith('--')) {
-				file.startsWith('km://')
-					? handleProtocol(file.substr(5).split('/'))
-					: handleFile(file);
+				file.startsWith('km://') ? handleProtocol(file.substr(5).split('/')) : handleFile(file);
 			}
 		}
 	});
@@ -116,6 +116,11 @@ export async function postInit() {
 		if (getConfig().GUI.ChibiPlaylist.Enabled) {
 			updateChibiPlaylistWindow(true);
 		}
+		if (getConfig().App.FirstRun) {
+			applyMenu('REDUCED');
+		} else {
+			applyMenu('DEFAULT');
+		}
 	}
 	initDone = true;
 }
@@ -129,9 +134,9 @@ function registerKMProtocol() {
 
 async function initMain() {
 	try {
-		await main();
-	} catch(err) {
-		logger.error('Error during launch', {service: 'Launcher', obj: err});
+		await init();
+	} catch (err) {
+		logger.error('Error during launch', { service: 'Launcher', obj: err });
 		// We only throw if in cli mode. In UI mode throwing would exit the app immediately without allowing users to read the error message
 		if (getState().opt.cli) throw err;
 	}
@@ -155,28 +160,32 @@ async function registerIPCEvents() {
 	});
 	ipcMain.on('setChibiPlayerAlwaysOnTop', (_event, _eventData) => {
 		setChibiPlayerAlwaysOnTop(!getConfig().GUI.ChibiPlayer.AlwaysOnTop);
-		setConfig({GUI:{ChibiPlayer:{ AlwaysOnTop: !getConfig().GUI.ChibiPlayer.AlwaysOnTop }}});
+		setConfig({ GUI: { ChibiPlayer: { AlwaysOnTop: !getConfig().GUI.ChibiPlayer.AlwaysOnTop } } });
 	});
 	ipcMain.on('closeChibiPlayer', (_event, _eventData) => {
 		updateChibiPlayerWindow(false);
-		setConfig({GUI: {ChibiPlayer: { Enabled: false }}});
-		applyMenu();
+		setConfig({ GUI: { ChibiPlayer: { Enabled: false } } });
+		if (getConfig().App.FirstRun) {
+			applyMenu('REDUCED');
+		} else {
+			applyMenu('DEFAULT');
+		}
 	});
 	ipcMain.on('focusMainWindow', (_event, _eventData) => {
 		focusWindow();
 	});
 	ipcMain.on('openFolder', (_event, eventData) => {
 		if (eventData.type === 'streamFiles') {
-			open(resolve(resolvedPathStreamFiles()));
+			open(resolve(resolvedPath('StreamFiles')));
 		}
 	});
 }
 
 export async function handleProtocol(args: string[]) {
 	try {
-		logger.info(`Received protocol uri km://${args.join('/')}`, {service: 'ProtocolHandler'});
+		logger.info(`Received protocol uri km://${args.join('/')}`, { service: 'ProtocolHandler' });
 		if (!getState().ready) return;
-		switch(args[0]) {
+		switch (args[0]) {
 			case 'addRepo':
 				const repoName = args[1];
 				const repo = getRepo(repoName);
@@ -184,7 +193,7 @@ export async function handleProtocol(args: string[]) {
 					const buttons = await dialog.showMessageBox({
 						type: 'none',
 						title: i18next.t('UNKNOWN_REPOSITORY_ADD.TITLE'),
-						message: `${i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE', {repoName: repoName})}`,
+						message: `${i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE', { repoName: repoName })}`,
 						buttons: [i18next.t('YES'), i18next.t('NO')],
 					});
 					if (buttons.response === 0) {
@@ -197,58 +206,49 @@ export async function handleProtocol(args: string[]) {
 							MaintainerMode: false,
 							BaseDir: `repos/${repoName}/json`,
 							Path: {
-								Medias: [`repos/${repoName}/medias`]
-							}
+								Medias: [`repos/${repoName}/medias`],
+							},
 						});
 					}
 				} else {
 					await dialog.showMessageBox({
 						type: 'none',
 						title: i18next.t('REPOSITORY_ALREADY_EXISTS.TITLE'),
-						message: `${i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE', {repoName: repoName})}`
+						message: `${i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE', { repoName: repoName })}`,
 					});
 				}
 				break;
 			default:
 				throw 'Unknown protocol';
 		}
-	} catch(err) {
-		logger.error(`Unknown command : ${args.join('/')}`, {service: 'ProtocolHandler'});
+	} catch (err) {
+		logger.error(`Unknown command : ${args.join('/')}`, { service: 'ProtocolHandler' });
 	}
 }
 
 export async function handleFile(file: string, username?: string, onlineToken?: string) {
 	try {
-		logger.info(`Received file path ${file}`, {service: 'FileHandler'});
+		logger.info(`Received file path ${file}`, { service: 'FileHandler' });
 		if (!getState().ready) return;
 		if (!username) {
-			const users = await listUsers();
+			const users = await selectUsers();
 			const adminUsersOnline = users.filter(u => u.type === 0 && u.login !== 'admin');
 			// We have no other choice but to pick only the first one
 			username = adminUsersOnline[0]?.login;
 			if (!username) {
 				username = 'admin';
-				logger.warn('Could not find a username, switching to admin by default', {service: 'FileHandler'});
+				logger.warn('Could not find a username, switching to admin by default', { service: 'FileHandler' });
 			}
 		}
 		const rawData = await fs.readFile(resolve(file), 'utf-8');
 		if (!testJSON(rawData)) {
-			logger.debug(`File ${file} is not JSON, ignoring`, {service: 'FileHandler'});
+			logger.debug(`File ${file} is not JSON, ignoring`, { service: 'FileHandler' });
 			return;
 		}
 		const data = JSON.parse(rawData);
 		const KMFileType = detectKMFileTypes(data);
-		const url = `http://localhost:${getConfig().Frontend.Port}/admin`;
-		switch(KMFileType) {
-			case 'Karaoke Mugen BLC Set File':
-				await importSet(data);
-				if (win && !win.webContents.getURL().includes('/admin')) {
-					win.loadURL(url);
-					win.webContents.on('did-finish-load', () => emitWS('BLCSetsUpdated'));
-				} else {
-					emitWS('BLCSetsUpdated');
-				}
-				break;
+		const url = `http://localhost:${getConfig().System.FrontendPort}/admin`;
+		switch (KMFileType) {
 			case 'Karaoke Mugen Favorites List File':
 				if (!username) throw 'Unable to find a user to import the file to';
 				await importFavorites(data, username, onlineToken);
@@ -279,20 +279,18 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 				//Unrecognized, ignoring
 				throw 'Filetype not recognized';
 		}
-	} catch(err) {
-		logger.error(`Could not handle ${file}`, {service: 'Electron', obj: err});
+	} catch (err) {
+		logger.error(`Could not handle ${file}`, { service: 'Electron', obj: err });
 	}
 }
 
-export function applyMenu() {
-	initMenu();
-	const menu = Menu.buildFromTemplate(getMenu());
-	process.platform === 'darwin' ? Menu.setApplicationMenu(menu):win.setMenu(menu);
+export function applyMenu(layout: MenuLayout) {
+	createMenu(layout);
 }
 
 async function initElectronWindow() {
 	await createWindow();
-	applyMenu();
+	applyMenu('REDUCED');
 }
 
 async function createWindow() {
@@ -311,9 +309,9 @@ async function createWindow() {
 	});
 	// and load the index.html of the app.
 	if (initDone) {
-		win.loadURL(await welcomeToYoukousoKaraokeMugen());
+		win?.loadURL(await welcomeToYoukousoKaraokeMugen());
 	} else {
-		win.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
+		win?.loadURL(`file://${resolve(state.resourcePath, 'initpage/index.html')}`);
 	}
 
 	win.once('ready-to-show', () => {
@@ -337,9 +335,7 @@ async function createWindow() {
 }
 
 function openLink(url: string) {
-	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') !== -1
-		? win.loadURL(url)
-		: open(url);
+	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : open(url);
 }
 
 export function setProgressBar(number: number) {
@@ -376,7 +372,7 @@ export async function updateChibiPlayerWindow(show: boolean) {
 			backgroundColor: '#36393f',
 			webPreferences: {
 				nodeIntegration: true,
-				contextIsolation: false
+				contextIsolation: false,
 			},
 			icon: resolve(state.resourcePath, 'build/icon.png'),
 		});
@@ -386,16 +382,19 @@ export async function updateChibiPlayerWindow(show: boolean) {
 		});
 		chibiPlayerWindow.on('moved', () => {
 			const pos = chibiPlayerWindow.getPosition();
-			setConfig({ GUI: {
-				ChibiPlayer: {
-					PositionX: pos[0],
-					PositionY: pos[1]
-				}
-			}});
+			setConfig({
+				GUI: {
+					ChibiPlayer: {
+						PositionX: pos[0],
+						PositionY: pos[1],
+					},
+				},
+			});
 		});
 		// Apparently it can be destroyed even though we just created it, perhaps if KM gets killed early during startup, who knows.
 		// Sometimes I wonder what our users are doing.
-		if (chibiPlayerWindow) await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
+		if (chibiPlayerWindow)
+			await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
 	} else {
 		chibiPlayerWindow?.destroy();
 	}
@@ -410,15 +409,15 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 	const conf = getConfig();
 	if (show) {
 		chibiPlaylistWindow = new BrowserWindow({
-			width: conf.GUI.ChibiPlaylist.Height,
-			height: conf.GUI.ChibiPlaylist.Width,
+			width: conf.GUI.ChibiPlaylist.Width,
+			height: conf.GUI.ChibiPlaylist.Height,
 			x: conf.GUI.ChibiPlaylist.PositionX,
 			y: conf.GUI.ChibiPlaylist.PositionY,
 			show: false,
 			backgroundColor: '#36393f',
 			webPreferences: {
 				nodeIntegration: true,
-				contextIsolation: false
+				contextIsolation: false,
 			},
 			resizable: true,
 			icon: resolve(state.resourcePath, 'build/icon.png'),
@@ -429,24 +428,59 @@ export async function updateChibiPlaylistWindow(show: boolean) {
 		});
 		chibiPlaylistWindow.on('resized', () => {
 			const size = chibiPlaylistWindow.getSize();
-			setConfig({ GUI: {
-				ChibiPlaylist: {
-					Width: size[0],
-					Height: size[1]
-				}
-			}});
+			setConfig({
+				GUI: {
+					ChibiPlaylist: {
+						Width: size[0],
+						Height: size[1],
+					},
+				},
+			});
 		});
 		chibiPlaylistWindow.on('moved', () => {
 			const pos = chibiPlaylistWindow.getPosition();
-			setConfig({ GUI: {
-				ChibiPlaylist: {
-					PositionX: pos[0],
-					PositionY: pos[1]
-				}
-			}});
+			setConfig({
+				GUI: {
+					ChibiPlaylist: {
+						PositionX: pos[0],
+						PositionY: pos[1],
+					},
+				},
+			});
 		});
-		await chibiPlaylistWindow.loadURL(`http://localhost:${port}/chibiPlaylist?admpwd=${await generateAdminPassword()}`);
+		await chibiPlaylistWindow.loadURL(
+			`http://localhost:${port}/chibiPlaylist?admpwd=${await generateAdminPassword()}`
+		);
 	} else {
 		chibiPlaylistWindow?.destroy();
+	}
+}
+
+export async function showAbout() {
+	if (aboutWindow?.focusable) {
+		aboutWindow.focus();
+	} else {
+		const state = getState();
+		aboutWindow = new BrowserWindow({
+			width: 700,
+			height: 450,
+			show: false,
+			backgroundColor: '#36393f',
+			webPreferences: {
+				nodeIntegration: true,
+				contextIsolation: false,
+			},
+			resizable: false,
+			icon: resolve(state.resourcePath, 'build/icon.png'),
+			title: i18next.t('ABOUT.TITLE'),
+		});
+		aboutWindow.on('ready-to-show', () => {
+			aboutWindow.show();
+		});
+		aboutWindow.on('close', () => {
+			aboutWindow.destroy();
+			aboutWindow = undefined;
+		});
+		aboutWindow.loadURL(`http://localhost:${state.frontendPort}/about?admpwd=${await generateAdminPassword()}`);
 	}
 }

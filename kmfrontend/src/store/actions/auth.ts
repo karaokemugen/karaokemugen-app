@@ -5,20 +5,22 @@ import { Token } from '../../../../src/lib/types/user';
 import { commandBackend, setAuthorization } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import { AuthAction, IAuthentifactionInformation, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
+import { PlaylistInfo } from '../types/frontendContext';
 import { SettingsFailure, SettingsSuccess } from '../types/settings';
+import { setPlaylistInfoLeft, setPlaylistInfoRight } from './frontendContext';
 import { setSettings } from './settings';
 
 export async function login(
 	username: string,
 	password: string,
-	dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure>,
+	dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | PlaylistInfo>,
 	securityCode?: number
 ): Promise<string> {
 	try {
 		const info: IAuthentifactionInformation = await commandBackend(username ? 'login' : 'loginGuest', {
 			username,
 			password,
-			securityCode
+			securityCode,
 		});
 
 		// Store data, should be managed in a service and item should be enum and not string
@@ -26,18 +28,20 @@ export async function login(
 		localStorage.setItem('kmOnlineToken', info.onlineToken);
 		setAuthorization(info.token, info.onlineToken);
 		displayMessage('info', i18next.t('LOG_SUCCESS', { name: info.username }));
+		setPlaylistInfoLeft(dispatch);
+		setPlaylistInfoRight(dispatch);
 		dispatch({
 			type: AuthAction.LOGIN_SUCCESS,
-			payload: info
+			payload: info,
 		});
 		await setSettings(dispatch);
 		return info.role;
-	} catch (error) {
+	} catch (error: any) {
 		dispatch({
 			type: AuthAction.LOGIN_FAILURE,
 			payload: {
-				error: error?.message ? error?.message : error?.toString()
-			}
+				error: error?.message ? error?.message : error?.toString(),
+			},
 		});
 		throw error;
 	}
@@ -49,11 +53,14 @@ export function logout(dispatch: Dispatch<LogoutUser>): void {
 	setAuthorization(null, null);
 
 	dispatch({
-		type: AuthAction.LOGOUT_USER
+		type: AuthAction.LOGOUT_USER,
 	});
 }
 
-export function setAuthentifactionInformation(dispatch: Dispatch<LoginSuccess | SettingsSuccess | SettingsFailure>, data: IAuthentifactionInformation) {
+export function setAuthentifactionInformation(
+	dispatch: Dispatch<LoginSuccess | SettingsSuccess | SettingsFailure>,
+	data: IAuthentifactionInformation
+) {
 	// Store data, should be managed in a service and item should be enum and not string
 	localStorage.setItem('kmToken', data.token);
 	localStorage.setItem('kmOnlineToken', data.onlineToken);
@@ -65,13 +72,15 @@ export function setAuthentifactionInformation(dispatch: Dispatch<LoginSuccess | 
 			username: data.username,
 			role: data.role,
 			token: data.token,
-			onlineToken: data.onlineToken
-		}
+			onlineToken: data.onlineToken,
+		},
 	});
 	setSettings(dispatch);
 }
 
-export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | LogoutUser>) {
+export async function isAlreadyLogged(
+	dispatch: Dispatch<LoginSuccess | LoginFailure | SettingsSuccess | SettingsFailure | LogoutUser | PlaylistInfo>
+) {
 	const kmToken = localStorage.getItem('kmToken');
 	const kmOnlineToken = localStorage.getItem('kmOnlineToken');
 	setAuthorization(kmToken, kmOnlineToken);
@@ -79,6 +88,8 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
 	if (kmToken) {
 		try {
 			const verification: Token = await commandBackend('checkAuth', undefined, false, 30000);
+			setPlaylistInfoLeft(dispatch);
+			setPlaylistInfoRight(dispatch);
 			dispatch({
 				type: AuthAction.LOGIN_SUCCESS,
 				payload: {
@@ -86,17 +97,17 @@ export async function isAlreadyLogged(dispatch: Dispatch<LoginSuccess | LoginFai
 					role: verification.role,
 					token: kmToken,
 					onlineToken: kmOnlineToken,
-					onlineAvailable: verification.onlineAvailable
-				}
+					onlineAvailable: verification.onlineAvailable,
+				},
 			});
 			await setSettings(dispatch);
-		} catch (error) {
+		} catch (error: any) {
 			logout(dispatch);
 			dispatch({
 				type: AuthAction.LOGIN_FAILURE,
 				payload: {
-					error: error
-				}
+					error: error,
+				},
 			});
 			await setSettings(dispatch, true);
 		}

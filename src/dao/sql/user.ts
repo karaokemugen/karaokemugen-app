@@ -1,72 +1,53 @@
 // SQL queries for user manipulation
 
-export const sqltestNickname = `
-SELECT pk_login AS login
-FROM users
-WHERE nickname = :nickname
-`;
+import { UserParams } from '../../lib/types/user';
 
 export const sqlreassignPlaylistToUser = 'UPDATE playlist SET fk_login = :username WHERE fk_login = :old_username;';
 
 export const sqlreassignRequestedToUser = 'UPDATE requested SET fk_login = :username WHERE fk_login = :old_username;';
 
-export const sqlreassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
+export const sqlreassignPlaylistContentToUser =
+	'UPDATE playlist_content SET fk_login = :username WHERE fk_login = :old_username;';
 
-export const sqlselectUserByName = `
+export const sqlselectUsers = (params: UserParams) => `
 SELECT
-	u.type AS type,
+	u.type,
 	u.pk_login AS login,
-	u.password AS password,
-	u.nickname AS nickname,
-	u.avatar_file AS avatar_file,
-	u.bio AS bio,
-	u.url AS url,
-	u.email AS email,
-	u.last_login_at AS last_login_at,
+	u.nickname,
+	u.avatar_file,
+	u.last_login_at,
+	${
+		params.full
+			? `
+		u.password,
+		u.bio,
+		u.url,
+		u.email,
+		u.main_series_lang AS main_series_lang,
+		u.fallback_series_lang AS fallback_series_lang,
+		u.flag_tutorial_done AS flag_tutorial_done,
+		u.flag_sendstats AS flag_sendstats,
+		u.location AS location,
+		u.language AS language,
+		u.flag_parentsonly AS flag_parentsonly,
+		u.flag_public,
+		u.flag_displayfavorites,
+		u.social_networks,
+		u.banner,
+	`
+			: ''
+	}
 	(CASE WHEN :last_login_time_limit < u.last_login_at
 		THEN TRUE
 		ELSE FALSE
-    END)  AS flag_online,
-	u.series_lang_mode AS series_lang_mode,
-	u.main_series_lang AS main_series_lang,
-	u.fallback_series_lang AS fallback_series_lang,
-	u.flag_tutorial_done AS flag_tutorial_done,
-	u.flag_sendstats AS flag_sendstats,
-	u.location AS location
+    END)  AS flag_logged_in
 FROM users AS u
-WHERE u.pk_login = :username
-`;
-
-export const sqlselectRandomGuestName = `
-SELECT pk_login AS login
-FROM users
-WHERE type = 2
-	AND ($1 > last_login_at)
-ORDER BY RANDOM() LIMIT 1;
-`;
-
-export const sqlselectGuests = `
-SELECT
-	u.nickname AS nickname,
-	u.pk_login AS login,
-	u.avatar_file AS avatar_file
-FROM users AS u
-WHERE u.type = 2;
-`;
-
-export const sqlselectUsers = `
-SELECT
-	u.type AS type,
-	u.avatar_file AS avatar_file,
-	u.pk_login AS login,
-	u.nickname AS nickname,
-	u.last_login_at AS last_login_at,
-	(CASE WHEN $1 < u.last_login_at
-		THEN TRUE
-		ELSE FALSE
-    END)  AS flag_online
-FROM users AS u
-ORDER BY flag_online DESC, u.nickname
+WHERE 1 = 1
+${params.singleUser ? ' AND u.pk_login = :username' : ''}
+${params.singleNickname ? ' AND u.nickname = :nickname' : ''}
+${params.guestOnly || params.randomGuest ? ' AND u.type = 2' : ''}
+${params.randomGuest ? ' AND (:last_login_time_limit > u.last_login_at)' : ''}
+${params.randomGuest ? ' ORDER BY RANDOM() LIMIT 1' : ''}
 `;
 
 export const sqldeleteUser = `
@@ -82,7 +63,8 @@ INSERT INTO users(
 	nickname,
 	last_login_at,
 	flag_tutorial_done,
-	flag_sendstats
+	flag_sendstats,
+	language
 )
 VALUES (
 	:type,
@@ -91,7 +73,8 @@ VALUES (
 	:nickname,
 	:last_login_at,
 	:flag_tutorial_done,
-	:flag_sendstats
+	:flag_sendstats,
+	:language
 );
 `;
 
@@ -110,12 +93,17 @@ UPDATE users SET
 	email = :email,
 	url = :url,
 	type = :type,
-	series_lang_mode = :series_lang_mode,
 	main_series_lang = :main_series_lang,
 	fallback_series_lang = :fallback_series_lang,
 	flag_tutorial_done = :flag_tutorial_done,
 	location = :location,
-	flag_sendstats = :flag_sendstats
+	flag_sendstats = :flag_sendstats,
+	flag_parentsonly = :flag_parentsonly,
+	language = :language,
+	flag_public = :flag_public,
+    flag_displayfavorites = :flag_displayfavorites,
+    social_networks = :social_networks,
+    banner = :banner
 WHERE pk_login = :old_login
 RETURNING pk_login as login, *;
 `;

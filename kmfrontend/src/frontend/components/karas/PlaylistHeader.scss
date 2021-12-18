@@ -1,10 +1,10 @@
 @import '../../styles/variables';
 
 .searchMenuContainer {
-	background-color: #1E2124;
-    border: solid #b3b3b3;
-    border-width: 1px 0;
-    z-index: 10;
+	background-color: #1e2124;
+	border: solid #b3b3b3;
+	border-width: 1px 0;
+	z-index: 10;
 }
 .filterContainer {
 	display: flex;
@@ -12,7 +12,7 @@
 
 	.filterButton {
 		cursor: pointer;
-		padding: .5em;
+		padding: 0.5em;
 		background-color: crimson;
 		@media (max-width: $mugen-breakpoint-small) {
 			span {
@@ -24,7 +24,7 @@
 	.filterElement {
 		flex: 1;
 		text-align: center;
-		padding: .25em;
+		padding: 0.25em;
 		cursor: pointer;
 	}
 
@@ -40,14 +40,14 @@
 			&:before {
 				pointer-events: none;
 				display: inline-block;
-				font-family: "Font Awesome 5 Free";
-				content: "\f0d7";
+				font-family: 'Font Awesome 5 Free';
+				content: '\f0d7';
 				position: absolute;
-				right: .5em;
+				right: 0.5em;
 				top: 50%;
 				transform: translateY(-50%);
 				z-index: 10;
-				font-weight:bold;
+				font-weight: bold;
 			}
 			input {
 				padding: 0.5em;
@@ -57,17 +57,17 @@
 	}
 
 	.filterElementActive {
-		background-color:#416081;
+		background-color: #416081;
 		font-weight: bold;
 	}
 
 	@media (max-width: $mugen-breakpoint-smaller) {
 		flex-wrap: wrap;
 		.filterTags {
-			flex:1;
+			flex: 1;
 		}
 		.filterTagsOptions {
-			flex:auto;
+			flex: auto;
 			width: 100%;
 		}
 	}
@@ -79,15 +79,16 @@
 	cursor: pointer;
 }
 
-.showPlaylistCommands:hover, .showPlaylistCommands.btn-primary {
+.showPlaylistCommands:hover,
+.showPlaylistCommands.btn-primary {
 	opacity: 1;
 }
 
 .showPlaylistCommands:after {
-	content: "";
+	content: '';
 	display: inline-block;
 	position: relative;
-	top: .75em;
+	top: 0.75em;
 	border-color: currentColor transparent transparent;
 	border-width: 5px;
 	border-style: solid;
@@ -99,7 +100,7 @@
 }
 
 .showPoll {
-	background-color:#9c5600;
+	background-color: #9c5600;
 }
 
 .plSearch {
@@ -111,7 +112,7 @@
 	background-color: #454545b3;
 	input {
 		font-weight: bold;
-		font-family: "Font Awesome 5 Free", Lato, sans-serif;
+		font-family: 'Font Awesome 5 Free', Lato, sans-serif;
 		border: 1px solid transparent;
 		border-radius: 4px;
 	}
@@ -151,13 +152,13 @@
 }
 
 .plFooter {
-	opacity: .93;
+	opacity: 0.93;
 	position: absolute;
 	bottom: 0;
 	z-index: 10040;
 	display: flex;
 	button {
-		font-size: .75em;
+		font-size: 0.75em;
 	}
 	button.btn-active {
 		background-color: $mugen-btn-primary-background;
@@ -176,16 +177,16 @@
 .plBrowse .goToPlaying > i {
 	color: #6caae4;
 }
-.plInfos, .plBrowse {
-	background-color: darken(map-get($mugen-colors, "blue"), 20);
+.plInfos,
+.plBrowse {
+	background-color: darken(map-get($mugen-colors, 'blue'), 20);
 	float: right;
-	padding: .25em;
+	padding: 0.25em;
 }
 .plQuota {
-	background-color: darken(map-get($mugen-colors, "green"), 10);
-	padding: .25em;
+	background-color: darken(map-get($mugen-colors, 'green'), 10);
+	padding: 0.25em;
 	&.selection {
 		float: right;
 	}
 }
-

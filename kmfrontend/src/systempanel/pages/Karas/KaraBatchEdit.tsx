@@ -1,10 +1,11 @@
-import { Button, Cascader, Col, Layout, Radio, Row,Select, Table } from 'antd';
+import { Button, Cascader, Col, Layout, Radio, Row, Select, Table } from 'antd';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
-import { getSerieLanguage,getTagInLocaleList } from '../../../utils/kara';
+import { getTagInLocale, getTagInLocaleList, getTitleInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 
@@ -17,19 +18,19 @@ interface PlaylistElem {
 	flag_visible?: boolean;
 }
 interface KaraBatchEditState {
-	karas: DBKara[],
-	tags: any,
-	tid?: string,
-	playlists: PlaylistElem[],
-	plaid?: string,
-	action?: 'add' | 'remove',
-	type?: number
+	karas: DBKara[];
+	tags: any;
+	tid?: string;
+	playlists: PlaylistElem[];
+	plaid?: string;
+	action?: 'add' | 'remove';
+	type?: number;
 	i18nTag: { [key: string]: { [key: string]: string } };
 }
 
 class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
+	context: React.ContextType<typeof GlobalContext>;
 
 	constructor(props) {
 		super(props);
@@ -37,7 +38,7 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			karas: [],
 			tags: [],
 			playlists: [],
-			i18nTag: {}
+			i18nTag: {},
 		};
 	}
 
@@ -49,8 +50,8 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 
 			const option = {
 				value: typeID,
-				label: i18next.t(`TAG_TYPES.${type}`),
-				children: []
+				label: i18next.t(`TAG_TYPES.${type}_other`),
+				children: [],
 			};
 			for (const tag of tags.content) {
 				if (tag.types.length && tag.types.indexOf(typeID) >= 0)
@@ -64,19 +65,18 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 		this.setState({ tags: options, playlists: playlists });
 	}
 
-
 	FilterTagCascaderFilter = function (inputValue, path) {
 		return path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
-	}
+	};
 
 	changePlaylist = async (plaid: string) => {
 		try {
-			const karas = await commandBackend('getPlaylistContents', {plaid});
+			const karas = await commandBackend('getPlaylistContents', { plaid });
 			this.setState({ plaid: plaid, karas: karas.content, i18nTag: karas.i18n });
 		} catch (e) {
 			// already display
 		}
-	}
+	};
 
 	batchEdit = () => {
 		if (this.state.plaid && this.state.action && this.state.tid) {
@@ -84,47 +84,63 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 				plaid: this.state.plaid,
 				action: this.state.action,
 				tid: this.state.tid,
-				type: this.state.type
+				type: this.state.type,
 			});
 		}
-	}
+	};
 
 	render() {
 		return (
 			<>
 				<Layout.Header>
-					<div className='title'>{i18next.t('HEADERS.KARATAG_BATCH_EDIT.TITLE')}</div>
-					<div className='description'>{i18next.t('HEADERS.KARATAG_BATCH_EDIT.DESCRIPTION')}</div>
+					<div className="title">{i18next.t('HEADERS.KARATAG_BATCH_EDIT.TITLE')}</div>
+					<div className="description">{i18next.t('HEADERS.KARATAG_BATCH_EDIT.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
 					<Row justify="space-between" style={{ flexWrap: 'nowrap' }}>
 						<Col flex={'15%'}>
-							<a href={`${window.location.origin}/admin`}>{i18next.t('KARA.BATCH_EDIT.CREATE_PLAYLIST')}</a>
+							<Link to="/admin">{i18next.t('KARA.BATCH_EDIT.CREATE_PLAYLIST')}</Link>
 						</Col>
-						<Col flex={4} style={{ display: 'flex', flexDirection: 'column'}}>
+						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_PLAYLIST')}</label>
-							<Select style={{ maxWidth: '20%', minWidth: '150px' }} onChange={this.changePlaylist}
-								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}>
+							<Select
+								style={{ maxWidth: '20%', minWidth: '150px' }}
+								onChange={this.changePlaylist}
+								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
+							>
 								{this.state.playlists.map(playlist => {
-									return <Select.Option key={playlist.plaid} value={playlist.plaid}>{playlist.name}</Select.Option>;
-								})
-								}
+									return (
+										<Select.Option key={playlist.plaid} value={playlist.plaid}>
+											{playlist.name}
+										</Select.Option>
+									);
+								})}
 							</Select>
 						</Col>
-						<Col flex={4} style={{display: 'flex', flexDirection: 'column'}}>
+						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_ACTION')}</label>
-							<Radio checked={this.state.action === 'add'} onChange={() => this.setState({ action: 'add' })}>
+							<Radio
+								checked={this.state.action === 'add'}
+								onChange={() => this.setState({ action: 'add' })}
+							>
 								{i18next.t('KARA.BATCH_EDIT.ADD_TAG')}
 							</Radio>
-							<Radio checked={this.state.action === 'remove'} onChange={() => this.setState({ action: 'remove' })}>
+							<Radio
+								checked={this.state.action === 'remove'}
+								onChange={() => this.setState({ action: 'remove' })}
+							>
 								{i18next.t('KARA.BATCH_EDIT.REMOVE_TAG')}
 							</Radio>
 						</Col>
-						<Col flex={4} style={{ display: 'flex', flexDirection: 'column'}}>
+						<Col flex={4} style={{ display: 'flex', flexDirection: 'column' }}>
 							<label>{i18next.t('KARA.BATCH_EDIT.SELECT_TAG')}</label>
-							<Cascader style={{maxWidth: '250px'}} options={this.state.tags} placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
+							<Cascader
+								style={{ maxWidth: '250px' }}
+								options={this.state.tags}
+								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
 								showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
-								onChange={(value) => this.setState({ tid: value[1] as string, type: value[0] as number })} />
+								onChange={value => this.setState({ tid: value[1] as string, type: value[0] as number })}
+							/>
 						</Col>
 						<Col flex={1}>
 							<Button onClick={this.batchEdit}>{i18next.t('KARA.BATCH_EDIT.EDIT')}</Button>
@@ -133,57 +149,84 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 					<Table
 						dataSource={this.state.karas}
 						columns={this.columns}
-						rowKey='kid'
+						rowKey="kid"
+						childrenColumnName="childrenColumnName"
 					/>
 				</Layout.Content>
 			</>
 		);
 	}
 
-	columns = [{
-		title: i18next.t('KARA.LANGUAGES'),
-		dataIndex: 'langs',
-		key: 'langs',
-		render: langs => {
-			return getTagInLocaleList(langs, this.state.i18nTag).join(', ');
-		}
-	}, {
-		title: `${i18next.t('KARA.SERIES')} / ${i18next.t('KARA.SINGERS_BY')}`,
-		dataIndex: 'series',
-		key: 'series',
-		render: (series, record: DBKara) => {
-			return series.map(serie => getSerieLanguage(this.context.globalState.settings.data, serie, record.langs[0].name, this.state.i18nTag)).join(', ')
-				|| getTagInLocaleList(record.singers, this.state.i18nTag).join(', ');
-		}
-	}, {
-		title: i18next.t('KARA.SONGTYPES'),
-		dataIndex: 'songtypes',
-		key: 'songtypes',
-		render: (songtypes, record) => {
-			const songorder = record.songorder || '';
-			return getTagInLocaleList(songtypes, this.state.i18nTag).join(', ') + ' ' + songorder || '';
-		}
-	}, {
-		title: i18next.t('KARA.FAMILIES'),
-		dataIndex: 'families',
-		key: 'families',
-		render: (families) => {
-			return getTagInLocaleList(families, this.state.i18nTag).join(', ');
-		}
-	}, {
-		title: i18next.t('KARA.TITLE'),
-		dataIndex: 'title',
-		key: 'title'
-	}, {
-		title: i18next.t('TAG_TYPES.VERSIONS', {count : 2}),
-		dataIndex: 'versions',
-		key: 'versions',
-		render: (versions) => getTagInLocaleList(versions, this.state.i18nTag).join(', ')
-	}, {
-		title: i18next.t('KARA.REPOSITORY'),
-		dataIndex: 'repository',
-		key: 'repository'
-	}];
+	columns = [
+		{
+			title: i18next.t('TAG_TYPES.LANGS_other'),
+			dataIndex: 'langs',
+			key: 'langs',
+			render: langs => {
+				return getTagInLocaleList(this.context.globalState.settings.data, langs, this.state.i18nTag).join(', ');
+			},
+		},
+		{
+			title: `${i18next.t('TAG_TYPES.SERIES_other')} / ${i18next.t('KARA.SINGERS_BY')}`,
+			dataIndex: 'series',
+			key: 'series',
+			render: (series, record: DBKara) => {
+				return (
+					series
+						.map(serie =>
+							getTagInLocale(this.context?.globalState.settings.data, serie, this.state.i18nTag)
+						)
+						.join(', ') ||
+					getTagInLocaleList(this.context.globalState.settings.data, record.singers, this.state.i18nTag).join(
+						', '
+					)
+				);
+			},
+		},
+		{
+			title: i18next.t('TAG_TYPES.SONGTYPES_other'),
+			dataIndex: 'songtypes',
+			key: 'songtypes',
+			render: (songtypes, record) => {
+				const songorder = record.songorder || '';
+				return (
+					getTagInLocaleList(this.context.globalState.settings.data, songtypes, this.state.i18nTag).join(
+						', '
+					) +
+						' ' +
+						songorder || ''
+				);
+			},
+		},
+		{
+			title: i18next.t('TAG_TYPES.FAMILIES_other'),
+			dataIndex: 'families',
+			key: 'families',
+			render: families => {
+				return getTagInLocaleList(this.context.globalState.settings.data, families, this.state.i18nTag).join(
+					', '
+				);
+			},
+		},
+		{
+			title: i18next.t('KARA.TITLE'),
+			dataIndex: 'titles',
+			key: 'titles',
+			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
+		},
+		{
+			title: i18next.t('TAG_TYPES.VERSIONS_other'),
+			dataIndex: 'versions',
+			key: 'versions',
+			render: versions =>
+				getTagInLocaleList(this.context.globalState.settings.data, versions, this.state.i18nTag).join(', '),
+		},
+		{
+			title: i18next.t('KARA.REPOSITORY'),
+			dataIndex: 'repository',
+			key: 'repository',
+		},
+	];
 }
 
 export default KaraBatchEdit;

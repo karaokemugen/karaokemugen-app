@@ -1,4 +1,4 @@
-export const sqlselectDownloads = `
+export const sqlselectDownloads = (pending: boolean) => `
 SELECT name,
 	size,
 	status,
@@ -8,20 +8,7 @@ SELECT name,
 	mediafile,
 	fk_kid AS kid
 FROM download
-ORDER BY started_at DESC
-`;
-
-export const sqlselectPendingDownloads = `
-SELECT name,
-	size,
-	status,
-	pk_uuid as uuid,
-	started_at,
-	repository,
-	mediafile,
-	fk_kid AS kid
-FROM download
-WHERE status = 'DL_PLANNED'
+${pending ? "WHERE status = 'DL_PLANNED'" : ''}
 ORDER BY started_at DESC
 `;
 

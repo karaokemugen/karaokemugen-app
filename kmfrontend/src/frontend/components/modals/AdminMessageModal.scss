@@ -2,21 +2,21 @@
 	.dest-duration {
 		display: flex;
 		justify-content: space-evenly;
-		margin-bottom: .5em;
+		margin-bottom: 0.5em;
 
-		input[type="number"].duration {
+		input[type='number'].duration {
 			background-color: #343434;
 			color: white;
 			border-radius: 0.5em;
 			border: 1px solid #fafafa70;
-			padding: 0 .5em;
+			padding: 0 0.5em;
 			&:focus {
 				box-shadow: 0 1px 0 0 #546e7a;
 			}
 		}
 	}
 
-	input[type="text"].message {
+	input[type='text'].message {
 		height: 2em;
 	}
 }

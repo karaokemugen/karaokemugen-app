@@ -1,24 +1,28 @@
-import { ReactNodeArray } from 'prop-types';
-import React, { Component } from 'react';
+import { ReactNodeArray } from 'react';
 
 interface IProps {
-	currentSide: number;
+	children: ReactNodeArray;
 }
 
-class PlaylistMainDecorator extends Component<IProps, unknown> {
-	render() {
-		return (
-			<div className="PlaylistMainDecorator">
-				<div className="playlist-main" id="playlist" data-side={this.props.currentSide}>
-					{(this.props.children as ReactNodeArray).map ? (this.props.children as ReactNodeArray).map((node: any, index: number) => {
+export default function PlaylistMainDecorator(props: IProps) {
+	return (
+		<div className="PlaylistMainDecorator">
+			<div className="playlist-main">
+				{props.children.map ? (
+					props.children.map((node: any, index: number) => {
 						const i = index + 1;
-						return <div key={index} className="panel" id={'panel' + i}>{node}</div>;
-					}) : <div key={1} className="panel" id='panel1'>{this.props.children}</div>
-					}
-				</div>
+						return (
+							<div key={index} className="panel" id={'panel' + i}>
+								{node}
+							</div>
+						);
+					})
+				) : (
+					<div key={1} className="panel" id="panel1">
+						{props.children}
+					</div>
+				)}
 			</div>
-		);
-	}
+		</div>
+	);
 }
-
-export default PlaylistMainDecorator;

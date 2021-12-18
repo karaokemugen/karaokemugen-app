@@ -1,0 +1,35 @@
+.about-page {
+	padding: 1em;
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	> p {
+		margin: 0.5em 0;
+	}
+	.awesome-person {
+		font-weight: bold;
+		color: scale-color(#26aacc, $lightness: 40%);
+	}
+	.app-presentation {
+		img {
+			max-width: 250px;
+		}
+	}
+	.technical-stuff {
+		width: 100%;
+		.version {
+			display: flex;
+			> div:first-child {
+				width: 45%;
+				text-align: right;
+			}
+			> div.separator {
+				flex-grow: 0;
+				width: 1em;
+			}
+		}
+	}
+}

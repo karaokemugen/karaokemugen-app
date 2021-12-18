@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-	<title>Karaoke Mugen</title>
-    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-	<meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-	<link rel="stylesheet" type="text/css" href="initpage.css">
-  </head>
-  <body>
-  	<div class="initpage--wrapper" data-loading="true" data-display-log="false">
-  		<main class="ip--main">
-			<div class="ip--top">
-				<img class="ip--logo" src='./public/km-logo.png' alt="Karaoke Mugen" />
-				<div class="ip--logs-panel">
-					<ul class="ip--logs"></ul>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Karaoke Mugen</title>
+		<!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+		<meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+		<link rel="stylesheet" type="text/css" href="initpage.css" />
+	</head>
+	<body>
+		<div class="initpage--wrapper" data-loading="true" data-display-log="false">
+			<main class="ip--main">
+				<div class="ip--top">
+					<img class="ip--logo" src="./public/km-logo.png" alt="Karaoke Mugen" />
+					<div class="ip--logs-panel">
+						<ul class="ip--logs"></ul>
+					</div>
 				</div>
-			</div>
-			<div class="ip--message"></div>
-			<div class="ip--loading-dots"></div>
-			<div class="ip--progress-bar-container">
-				<div class="ip--progress-bar"></div>
-				<div class="ip--progress-text"></div>
-			</div>
-			<div class="ip--nanami">
-				<img src="./public/nanami-hehe2.png" alt="Nanamin">
-				<div class="ip--protip">
-					<div class="title"></div>
-					<div class="content"></div>
+				<div class="ip--message"></div>
+				<div class="ip--loading-dots"></div>
+				<div class="ip--progress-bar-container">
+					<div class="ip--progress-bar"></div>
+					<div class="ip--progress-text"></div>
 				</div>
-			</div>
-			<div class="ip-error"></div>
-			<button class="ip--button-logs">Logs</button>
-		</main>
-	</div>
-  </body>
-  <script src="initpage.js"></script>
+				<div class="ip--nanami">
+					<img src="./public/nanami-hehe2.png" alt="Nanamin" />
+					<div class="ip--protip">
+						<div class="title"></div>
+						<div class="content"></div>
+					</div>
+				</div>
+				<div class="ip-error"></div>
+				<button class="ip--button-logs">Logs</button>
+			</main>
+		</div>
+	</body>
+	<script src="initpage.js"></script>
 </html>

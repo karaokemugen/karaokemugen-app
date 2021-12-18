@@ -1,4 +1,4 @@
-import slugify from 'slugify';
+import slugify from 'slug';
 
 import { User } from '../../../src/lib/types/user';
 import blankAvatar from '../assets/blank.png';
@@ -6,7 +6,29 @@ import { getSocket, isRemote } from './socket';
 
 const cache: Map<string, string> = new Map();
 
-getSocket().on('userUpdated', (login) => cache.delete(login));
+getSocket().on('userUpdated', login => cache.delete(login));
+
+export function syncGenerateProfilePicLink(user: User) {
+	if (isRemote()) {
+		if (user?.login.includes('@') && cache.has(user.login)) {
+			// Retrieve cache entry
+			return cache.get(user.login);
+		} else if (user.type === 2) {
+			return `/guests/${slugify(user.login, {
+				lower: true,
+				remove: /['"!,?()]/g,
+			})}.jpg`;
+		} else {
+			return blankAvatar;
+		}
+	} else {
+		if (user.avatar_file) {
+			return `/avatars/${user.avatar_file}`;
+		} else {
+			return blankAvatar;
+		}
+	}
+}
 
 export async function generateProfilePicLink(user: User): Promise<string> {
 	if (isRemote()) {
@@ -16,8 +38,9 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 				return cache.get(user.login);
 			}
 			const [login, instance] = user.login.split('@');
-			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login)}`)
-				.then(res => res.json());
+			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login)}`).then(res =>
+				res.json()
+			);
 			if (data.avatar_file) {
 				const url = `https://${instance}/avatars/${data.avatar_file}`;
 				cache.set(user.login, url);
@@ -29,7 +52,7 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 		} else if (user.type === 2) {
 			return `/guests/${slugify(user.login, {
 				lower: true,
-				remove: /['"!,?()]/g
+				remove: /['"!,?()]/g,
 			})}.jpg`;
 		} else {
 			return blankAvatar;

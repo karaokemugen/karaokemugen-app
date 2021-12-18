@@ -1,14 +1,14 @@
 @import '../../styles/variables';
 
 #profilModal {
-    .avatar {
-        border: none;
-        box-shadow: 0 2px 5px 0 #00000029, 0 1px 8px 0 #00000029, 0 3px 5px -1px #00000029;
-    }
+	.avatar {
+		border: none;
+		box-shadow: 0 2px 5px 0 #00000029, 0 1px 8px 0 #00000029, 0 3px 5px -1px #00000029;
+	}
 
-    .avatarButton {
-        margin-top: .75em;
-    }
+	.avatarButton {
+		margin-top: 0.75em;
+	}
 
 	.profileData {
 		display: flex;
@@ -25,14 +25,14 @@
 			flex-direction: column;
 			align-items: flex-start;
 			button {
-				margin-bottom: .5em;
+				margin-bottom: 0.5em;
 			}
 		}
-		margin: .5em;
+		margin: 0.5em;
 		button {
 			margin-right: 1.5em;
 			> i:first-child {
-				margin-right: .25em;
+				margin-right: 0.25em;
 			}
 		}
 		button.btn-save {
@@ -47,7 +47,7 @@
 		}
 	}
 
-    .profileData .profileLine {
+	.profileData .profileLine {
 		display: flex;
 		justify-content: space-between;
 		@media screen and (max-width: $mugen-breakpoint-small) {
@@ -56,16 +56,16 @@
 		}
 		align-items: center;
 		width: 100%;
-		padding: .6em 0;
+		padding: 0.6em 0;
 		a {
 			color: inherit;
 		}
 		.btn {
-			margin: .25em;
+			margin: 0.25em;
 			text-align: center;
 		}
-		input[type="password"]:first-child {
-			margin-bottom: .5em;
+		input[type='password']:first-child {
+			margin-bottom: 0.5em;
 		}
 		div.dualInput {
 			flex-grow: 1;
@@ -73,26 +73,29 @@
 		div.profileLabel {
 			font-size: 1.25rem;
 			line-height: 1.25rem;
-			padding: .5rem;
 			min-width: 25%;
 			text-align: start;
 			display: flex;
 			align-items: center;
-            i {
+			i {
 				flex-shrink: 0;
 			}
-            &.warning {
-                color: goldenrod;
-                div {
+			&.warning {
+				color: goldenrod;
+				div {
 					flex-shrink: 1;
 					margin-left: 0.25em;
 				}
-            }
-
+			}
 		}
-		input[type="text"], input[type="password"] {
+		input[type='text'],
+		input[type='password'] {
 			text-align: left;
-			padding: .5rem;
+			padding: 0.5rem;
+			border: solid 1px gray;
+			&:focus {
+				border: solid 1px gainsboro;
+			}
 		}
 		> select {
 			flex-grow: 1;
@@ -103,52 +106,58 @@
 		padding: 1em 0.5em;
 	}
 
-    .profileContent {
-        display: flex;
+	.profileContent {
+		display: flex;
 		flex-direction: column;
-    }
+	}
 
 	.profileContent .profileHeader {
 		display: flex;
-		margin-bottom: .5em;
+		margin-bottom: 0.5em;
 		align-items: center;
 		justify-content: center;
 		text-align: left;
 	}
 
-    .profileContent .img-circle {
-        width: 100%;
+	.profileContent .img-circle {
+		width: 100%;
 		height: auto;
-        max-width: 5rem;
-        border-radius: 15%;
+		max-width: 5rem;
+		border-radius: 15%;
 		margin-right: 1em;
-    }
+	}
 
-    .profileContent p {
-        font-size: 1.5rem;
-        line-height: 1.5rem;
+	.profileContent p {
+		font-size: 1.5rem;
+		line-height: 1.5rem;
 		word-break: break-word;
-    }
+	}
 
-    .profileData .profileLine .profileLabel label {
-        // align-items: flex-start;
-		margin-left: .25em;
-    }
+	.profileData .profileLine .profileLabel label {
+		// align-items: flex-start;
+		margin-left: 0.25em;
+	}
 
-    .favExport,
-    .favImport {
-        line-height: 2.42;
-        font-family: inherit;
-        width: 100%;
+	.favExport,
+	.favImport {
+		line-height: 2.42;
+		font-family: inherit;
+		width: 100%;
 		font-size: 1em;
-    }
+	}
 
-    .nickname {
-        font-size: 1.5em;
-    }
+	.nickname {
+		font-size: 1.5em;
+	}
 
-    .redBorders {
-        border: #ee111180 solid;
-        border-width: 0 0 0 5px;
-    }
+	.redBorders {
+		border: #ee111180 solid;
+		border-width: 0 0 0 5px;
+	}
+}
+
+#profilModal.modal {
+	.profileContent {
+		padding: 1em;
+	}
 }

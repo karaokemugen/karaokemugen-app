@@ -1,31 +1,5 @@
 // SQL for kara management
 
-export const sqladdKaraToPlaylist = `
-INSERT INTO playlist_content(
-	fk_id_playlist,
-	fk_login,
-	nickname,
-	fk_kid,
-	created_at,
-	pos,
-	flag_free,
-	flag_visible,
-	flag_refused,
-	flag_accepted
-) VALUES(
-	$1,
-	$2,
-	$3,
-	$4,
-	$5,
-	$6,
-	$7,
-	$8,
-	$9,
-	$10
-) RETURNING pk_id_plcontent AS plc_id, fk_kid AS kid, pos, fk_login AS username
-`;
-
 export const sqladdViewcount = `
 INSERT INTO played(
 	fk_kid,
@@ -54,26 +28,38 @@ VALUES(
 ) ON CONFLICT DO NOTHING;
 `;
 
-export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, groupClauses: string, orderClauses: string, havingClause: string, limitClause: string, offsetClause: string, additionalFrom: string[], selectRequested: string, groupClauseEnd: string, joinClauses: string[]) => `SELECT
+export const sqlgetAllKaras = (
+	filterClauses: string[],
+	whereClauses: string,
+	groupClauses: string,
+	orderClauses: string,
+	havingClause: string,
+	limitClause: string,
+	offsetClause: string,
+	additionalFrom: string[],
+	selectRequested: string,
+	groupClauseEnd: string,
+	joinClauses: string[]
+) => `SELECT
   ak.pk_kid AS kid,
-  ak.title AS title,
+  ak.titles AS titles,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
-  COALESCE(ak.singers, '[]'::jsonb) AS singers,
-  COALESCE(ak.songtypes, '[]'::jsonb) AS songtypes,
-  COALESCE(ak.creators, '[]'::jsonb) AS creators,
-  COALESCE(ak.songwriters, '[]'::jsonb) AS songwriters,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 3)') AS songtypes,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 4)') AS creators,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 8)') AS songwriters,
   ak.year AS year,
-  COALESCE(ak.languages, '[]'::jsonb) AS langs,
-  COALESCE(ak.authors, '[]'::jsonb) AS authors,
-  COALESCE(ak.groups, '[]'::jsonb) AS groups,
-  COALESCE(ak.misc, '[]'::jsonb) AS misc,
-  COALESCE(ak.origins, '[]'::jsonb) AS origins,
-  COALESCE(ak.platforms, '[]'::jsonb) AS platforms,
-  COALESCE(ak.families, '[]'::jsonb) AS families,
-  COALESCE(ak.genres, '[]'::jsonb) AS genres,
-  COALESCE(ak.series, '[]'::jsonb) AS series,
-  COALESCE(ak.versions, '[]'::jsonb) AS versions,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 5)') AS langs,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 6)') AS authors,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 9)') AS groups,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 7)') AS misc,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 11)') AS origins,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 13)') AS platforms,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 10)') AS families,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 12)') AS genres,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -82,9 +68,9 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   ak.mediasize AS mediasize,
-  ak.subchecksum AS subchecksum,
   ak.download_status AS download_status,
   ak.comment AS comment,
+  ak.ignore_hooks AS ignoreHooks,
   COUNT(p.*)::integer AS played,
   ${selectRequested}
   (CASE WHEN :dejavu_time < MAX(p.played_at)
@@ -102,8 +88,13 @@ export const sqlgetAllKaras = (filterClauses: string[], typeClauses: string, gro
   array_remove(array_agg(DISTINCT pc.pk_id_plcontent), null) AS public_plc_id,
   (CASE WHEN COUNT(up.*) > 0 THEN TRUE ELSE FALSE END) as flag_upvoted,
   array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
-  count(ak.pk_kid) OVER()::integer AS count
+  count(ak.pk_kid) OVER()::integer AS count,
+  array_remove(array_agg(krc.fk_kid_parent), null) AS parents,
+  array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
+  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(krc.fk_kid_parent), null))), ak.pk_kid) AS siblings
 FROM all_karas AS ak
+LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid
+LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
 LEFT OUTER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid AND pc.fk_id_playlist = :publicPlaylist_id
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = ak.pk_kid AND pc_self.fk_id_playlist = :publicPlaylist_id AND pc_self.fk_login = :username
@@ -112,67 +103,38 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.pk_ki
 ${joinClauses.join('')}
 ${additionalFrom.join('')}
 WHERE true
-  ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-  ${typeClauses}
-GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.title, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc, ak.genres, ak.families, ak.platforms, ak.origins, ak.versions, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.groups, ak.series, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.subchecksum, ak.download_status ${groupClauseEnd}
+  ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => a + ' ' + b, '')}
+  ${whereClauses}
+GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable ${groupClauseEnd}
 ${havingClause}
-ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.title
+ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
 ${limitClause}
 ${offsetClause}
 `;
 
 export const sqlgetKaraMini = `
 SELECT
-	ak.pk_kid AS kid,
-	ak.title AS title,
-	ak.mediafile AS mediafile,
-	ak.karafile AS karafile,
-	ak.subfile AS subfile,
-	ak.duration AS duration,
-	ak.repository as repository
-FROM all_karas AS ak
-WHERE ak.pk_kid = $1
+	pk_kid AS kid,
+	titles AS titles,
+	mediafile AS mediafile,
+	karafile AS karafile,
+	subfile AS subfile,
+	duration AS duration,
+	repository as repository
+FROM kara
+WHERE pk_kid = $1
 `;
 
 export const sqldeleteKara = `
 DELETE FROM kara WHERE pk_kid = ANY ($1);
 `;
 
-export const sqlremoveKaraFromPlaylist = `
-DELETE FROM playlist_content
-WHERE pk_id_plcontent IN ($plcid)
-`;
-
-export const sqlgetSongCountPerUser = `
-SELECT COUNT(1)::integer AS count
-FROM playlist_content AS pc
-WHERE pc.fk_login = $2
-	AND pc.fk_id_playlist = $1
-	AND pc.flag_free = FALSE
-`;
-
-export const sqlgetTimeSpentPerUser = `
-SELECT COALESCE(SUM(k.duration),0)::integer AS time_spent
-FROM kara AS k
-INNER JOIN playlist_content AS pc ON pc.fk_kid = k.pk_kid
-WHERE pc.fk_login = $2
-	AND pc.fk_id_playlist = $1
-	AND pc.flag_free = FALSE
-`;
-
-export const sqlupdateFreeOrphanedSongs = `
-UPDATE playlist_content SET
-	flag_free = TRUE
-WHERE created_at <= $1;
-`;
-
 export const sqlupdateKara = `
 UPDATE kara SET
-	title = :title,
+	titles = :titles,
 	year = :year,
 	songorder = :songorder,
 	mediafile = :mediafile,
-	subchecksum = :subchecksum,
 	mediasize = :mediasize,
 	subfile = :subfile,
 	duration = :duration,
@@ -180,13 +142,14 @@ UPDATE kara SET
 	loudnorm = :loudnorm,
 	modified_at = :modified_at,
 	karafile = :karafile,
-	comment = :comment
+	comment = :comment,
+	ignore_hooks = :ignoreHooks
 WHERE pk_kid = :kid
 `;
 
 export const sqlinsertKara = `
 INSERT INTO kara(
-	title,
+	titles,
 	year,
 	songorder,
 	mediafile,
@@ -196,16 +159,16 @@ INSERT INTO kara(
 	loudnorm,
 	modified_at,
 	created_at,
-	subchecksum,
 	karafile,
 	pk_kid,
 	repository,
 	mediasize,
 	download_status,
-	comment
+	comment,
+	ignore_hooks
 )
 VALUES(
-	:title,
+	:titles,
 	:year,
 	:songorder,
 	:mediafile,
@@ -215,13 +178,13 @@ VALUES(
 	:loudnorm,
 	:modified_at,
 	:created_at,
-	:subchecksum,
 	:karafile,
 	:kid,
 	:repository,
 	:mediasize,
 	:download_status,
-	:comment
+	:comment,
+	:ignoreHooks
 );
 `;
 
@@ -233,3 +196,16 @@ FROM all_karas ak;
 `;
 
 export const sqlTruncateOnlineRequested = 'TRUNCATE online_requested';
+
+export const sqldeleteChildrenKara = 'DELETE FROM kara_relation WHERE fk_kid_child = $1';
+
+export const sqlinsertChildrenParentKara = `
+INSERT INTO kara_relation(
+	fk_kid_parent,
+	fk_kid_child
+)
+VALUES(
+	:parent_kid,
+	:child_kid
+);
+`;

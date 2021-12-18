@@ -17,7 +17,7 @@
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		padding: .5em .5em 1em;
+		padding: 0.5em 0.5em 1em;
 		background-color: $mugen-background;
 		z-index: 99;
 		&::before {
@@ -33,7 +33,8 @@
 		z-index: 0;
 		border-radius: 15px;
 	}
-	&:hover > .first > p.next, > .first > p.next:focus {
+	&:hover > .first > p.next,
+	> .first > p.next:focus {
 		color: aliceblue;
 		transform: scale(1.25);
 	}
@@ -46,7 +47,7 @@
 			flex-grow: 1;
 		}
 		p.next {
-			transition: color,transform ease 100ms,200ms;
+			transition: color, transform ease 100ms, 200ms;
 		}
 	}
 	> .title {
@@ -72,14 +73,14 @@
 				font-size: 1.1em;
 				text-overflow: ellipsis;
 			}
-			margin-bottom: .5em;
+			margin-bottom: 0.5em;
 		}
 	}
 	> .timers {
 		display: flex;
 		justify-content: space-between;
 		flex-direction: row;
-		margin-bottom: .5em;
+		margin-bottom: 0.5em;
 		> div {
 			width: min-content;
 			@include shadow;
@@ -87,29 +88,29 @@
 	}
 	.progress-bar-container {
 		background-color: black;
-		opacity: .5;
+		opacity: 0.5;
 		height: 1em;
 		border-radius: 15px;
 		> .progress-bar {
 			height: 100%;
-			transition: width linear .5s;
+			transition: width linear 0.5s;
 			background-color: white;
 			border-radius: inherit;
 		}
 	}
 	.favorites {
-		background-color: darken(map-get($mugen-colors, "yellow"), 10);
+		background-color: darken(map-get($mugen-colors, 'yellow'), 10);
 		width: max-content;
-		margin: .5em 0;
+		margin: 0.5em 0;
 		text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
 		box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 		transition: background-color 200ms linear;
 		border: 0;
 		> i {
-			margin-right: .25em;
+			margin-right: 0.25em;
 		}
 		&:hover {
-			background-color: darken(map-get($mugen-colors, "yellow"), 15);
+			background-color: darken(map-get($mugen-colors, 'yellow'), 15);
 		}
 	}
 	&.fixed {
@@ -130,4 +131,3 @@
 		}
 	}
 }
-

@@ -15,24 +15,24 @@
 	position: relative;
 	border-bottom: $mugen-btn-border;
 	border-top: $mugen-btn-border;
-	background-color: #1E2124;
+	background-color: #1e2124;
 	cursor: grab;
 
 	&:hover {
 		#progressBarColor {
-			background-color: darken(map-get($mugen-colors, "blue"), 10);
+			background-color: darken(map-get($mugen-colors, 'blue'), 10);
 		}
 	}
 	&:active {
 		cursor: grabbing;
 		#progressBarColor {
-			background-color: darken(map-get($mugen-colors, "blue"), 15);
+			background-color: darken(map-get($mugen-colors, 'blue'), 15);
 		}
 	}
 
 	#progressBarColor {
 		position: absolute;
-		background-color: darken(map-get($mugen-colors, "blue"), 5);
+		background-color: darken(map-get($mugen-colors, 'blue'), 5);
 		border-bottom: solid 1px #595959;
 		z-index: 0;
 		left: 0;
