@@ -8,7 +8,7 @@
     "antd": "4.17.3",
     "dompurify": "^2.3.4",
     "i18next": "^21.6.2",
-    "iso-countries-languages": "^0.3.0",
+    "@hotosm/iso-countries-languages": "^1.1.2",
     "lodash.debounce": "^4.0.8",
     "lodash.difference": "^4.5.0",
     "lodash.sample": "^4.2.1",

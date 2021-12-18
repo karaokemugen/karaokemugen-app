@@ -1,5 +1,5 @@
+import { getCountries } from '@hotosm/iso-countries-languages';
 import languages from '@karaokemugen/i18n-iso-languages';
-import isoCountriesLanguages from 'iso-countries-languages';
 
 languages.registerLocale(require('@karaokemugen/i18n-iso-languages/langs/fr.json'));
 languages.registerLocale(require('@karaokemugen/i18n-iso-languages/langs/en.json'));
@@ -32,14 +32,14 @@ export function getLanguageIn3B(code) {
 
 export function listCountries(): { value: string; label: string }[] {
 	const listCountries = [];
-	for (const [key, value] of Object.entries(isoCountriesLanguages.getCountries(langSupport))) {
+	for (const [key, value] of Object.entries(getCountries(langSupport))) {
 		listCountries.push({ value: key, label: value });
 	}
 	return listCountries;
 }
 
 export function getCountryName(code: string): string | undefined {
-	for (const [key, value] of Object.entries(isoCountriesLanguages.getCountries(langSupport))) {
+	for (const [key, value] of Object.entries(getCountries(langSupport))) {
 		if (key === code) {
 			return value as string;
 		}

@@ -1920,6 +1920,13 @@
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.15.4.tgz#ecda5712b61ac852c760d8b3c79c96adca5554e5"
   integrity sha512-eYm8vijH/hpzr/6/1CJ/V/Eb1xQFW2nnUKArb3z+yUWv7HTwj6M7SP957oMjfZjAHU6qpoNc2wQvIxBLWYa/Jg==
 
+"@hotosm/iso-countries-languages@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-1.1.2.tgz#06d751c36f787dae2e172650657e9bcea3cf6f0f"
+  integrity sha512-BmjgzRGwKt0eaUNTNo3LghX5gaa0jVJUbcA4t8iKesvOotoWJiioGvIcWnFTiNBKeEh+0TibFWqUuJx1kmIo3g==
+  dependencies:
+    prettier "^2.0.5"
+
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.2"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.9.2.tgz#68be55c737023009dfc5fe245d51181bb6476914"
@@ -6516,11 +6523,6 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-iso-countries-languages@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/iso-countries-languages/-/iso-countries-languages-0.3.0.tgz#c5f5325fa23e831753e6d9dca18f3ae9519f284c"
-  integrity sha512-DFiVhxSc9yJtk1FgBF07kafc7Np8otbDgjDsmM5xcljn8evda6izPmTrhE8b09+uoPGm/IEF1t4E/gHm03yAjw==
-
 isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
@@ -8634,6 +8636,11 @@ prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha1-IZMqVJ9eUv/ZqCf1cOBL5iqX2lQ=
+
+prettier@^2.0.5:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.5.1.tgz#fff75fa9d519c54cf0fce328c1017d94546bc56a"
+  integrity sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==
 
 pretty-bytes@^5.3.0:
   version "5.5.0"
