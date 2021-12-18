@@ -33,11 +33,19 @@ class Storage extends Component<unknown, StorageState> {
 	};
 
 	deleteOldRepoMedias = async (name: string) => {
-		await commandBackend('deleteOldRepoMedias', { name });
+		try {
+			await commandBackend('deleteOldRepoMedias', { name }, true, 300000);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	deleteAllRepoMedias = async (name: string) => {
-		await commandBackend('deleteAllRepoMedias', { name });
+		try {
+			await commandBackend('deleteAllRepoMedias', { name }, true, 300000);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	render() {
