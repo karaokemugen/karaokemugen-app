@@ -354,6 +354,7 @@ export function closeAllWindows() {
 	win?.hide();
 	chibiPlayerWindow?.destroy();
 	chibiPlaylistWindow?.destroy();
+	aboutWindow?.destroy();
 }
 
 export async function updateChibiPlayerWindow(show: boolean) {
