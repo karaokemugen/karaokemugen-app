@@ -142,6 +142,7 @@ export default function VersionSelector(props: Props) {
 															scope={tagsScope}
 															changeView={props.changeView}
 															tagType={kara.series[0] ? 1 : 2}
+															i18nParam={i18n}
 														/>
 													</h5>
 												</div>
