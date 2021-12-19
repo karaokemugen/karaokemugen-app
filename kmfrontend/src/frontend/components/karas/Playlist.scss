@@ -9,9 +9,7 @@
 		border: 0.5em solid darken($mugen-background, 20);
 	}
 	@media screen and (max-width: $mugen-breakpoint-large) {
-		.panel {
-			height: 100%;
-		}
+		flex-direction: column;
 		#panel2 {
 			display: none;
 		}
