@@ -1,5 +1,6 @@
 import './VersionSelector.scss';
 
+import i18next from 'i18next';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -96,10 +97,7 @@ export default function VersionSelector(props: Props) {
 						</h4>
 					</div>
 					<div className="modal-body">
-						<p>
-							Cette chanson est disponible en {karas.length} versions, choisissez celle que vous voulez et
-							ajoutez-là à la playlist ou à vos favoris.
-						</p>
+						<p>{i18next.t('PUBLIC_HOMEPAGE.KARA_VERSIONS', { length: karas.length })}</p>
 						<div className={`song-list${indexOpened >= 0 ? ' open' : ''}`}>
 							{karas.map((kara, index) => {
 								const tagsScope = index === indexOpened ? props.scope : 'admin';
@@ -144,6 +142,7 @@ export default function VersionSelector(props: Props) {
 															scope={tagsScope}
 															changeView={props.changeView}
 															tagType={kara.series[0] ? 1 : 2}
+															i18nParam={i18n}
 														/>
 													</h5>
 												</div>

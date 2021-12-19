@@ -69,7 +69,7 @@
     "Themio <themio@protonmail.ch>"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=14"
   },
   "license": "MIT",
   "private": true,

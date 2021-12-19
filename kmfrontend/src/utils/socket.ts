@@ -89,10 +89,6 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 	});
 }
 
-socket.on('error', err => {
-	displayMessage('error', i18next.t(`ERROR_CODES.${err.code}`, { repo: err.data?.repo.Name, err: err.data?.err }));
-});
-
 export function getSocket() {
 	return socket;
 }

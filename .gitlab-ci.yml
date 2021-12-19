@@ -171,7 +171,7 @@ pkg_win:
   script:
     - yarn install
     - rm -Rf release_win
-    - npm install -g electron-builder@22.11.11
+    - npm install -g electron-builder
     - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key
       | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
