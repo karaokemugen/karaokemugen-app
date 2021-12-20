@@ -513,111 +513,6 @@ function KaraokeOptions(props: IProps) {
 					</div>
 				</div>
 				<div className="settings-line">
-					<label htmlFor="Karaoke.StreamerMode.Enabled">
-						<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE')}</span>
-						<br />
-						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE_TOOLTIP')}</span>
-					</label>
-					<div>
-						<Switch
-							idInput="Karaoke.StreamerMode.Enabled"
-							handleChange={onChange}
-							isChecked={config['Karaoke.StreamerMode.Enabled']}
-							disabled={config['Karaoke.ClassicMode']}
-						/>
-					</div>
-				</div>
-				{config['Karaoke.StreamerMode.Enabled'] ? (
-					<div id="streamSettings" className="settingsGroupPanel">
-						<div className="settings-line">
-							<p>
-								{i18next.t('SETTINGS.KARAOKE.STREAMER_MODE_LABEL')}&nbsp;
-								{isElectron() ? (
-									<a
-										href="#"
-										onClick={e => {
-											e.preventDefault();
-											sendIPC('openFolder', { type: 'streamFiles' });
-										}}
-									>
-										{i18next.t('SETTINGS.KARAOKE.OPEN_STREAMER_FILES')}
-									</a>
-								) : null}
-							</p>
-						</div>
-						<div className="settings-line">
-							<label htmlFor="Karaoke.StreamerMode.PauseDuration">
-								<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_PAUSE_DURATION')}</span>
-								<br />
-								<span className="tooltip">
-									{i18next.t('SETTINGS.KARAOKE.STREAM_PAUSE_DURATION_TOOLTIP')}
-								</span>
-							</label>
-							<div>
-								<input
-									min={0}
-									type="number"
-									data-exclude="true"
-									id="Karaoke.StreamerMode.PauseDuration"
-									placeholder="20"
-									onChange={onChange}
-									value={config['Karaoke.StreamerMode.PauseDuration']}
-								/>
-							</div>
-						</div>
-						<div className="settings-line">
-							<label htmlFor="Karaoke.StreamerMode.Twitch.Enabled">
-								<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH')}</span>
-								<br />
-								<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_TOOLTIP')}</span>
-							</label>
-							<div>
-								<Switch
-									idInput="Karaoke.StreamerMode.Twitch.Enabled"
-									handleChange={onChange}
-									isChecked={config['Karaoke.StreamerMode.Twitch.Enabled']}
-								/>
-							</div>
-						</div>
-						{config['Karaoke.StreamerMode.Twitch.Enabled'] ? (
-							<div id="twitchSettings" className="settingsGroupPanel">
-								<div className="settings-line">
-									<a href="https://twitchapps.com/tmi/" target="_blank">
-										{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN_GET')}
-									</a>
-								</div>
-								<div className="settings-line">
-									<label htmlFor="Karaoke.StreamerMode.Twitch.OAuth">
-										<span className="title">
-											{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN')}
-										</span>
-									</label>
-									<div>
-										<input
-											type="password"
-											data-exclude="true"
-											id="Karaoke.StreamerMode.Twitch.OAuth"
-											defaultValue={config['Karaoke.StreamerMode.Twitch.OAuth']}
-										/>
-										<button className="btn" onClick={parseTwitch}>
-											{i18next.t('LOG_IN')}
-										</button>
-									</div>
-								</div>
-								<div className="settings-line">
-									<label htmlFor="Karaoke.StreamerMode.Twitch.Channel">
-										<span className="title">
-											{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_CHANNEL')}
-										</span>
-									</label>
-									<div>{config['Karaoke.StreamerMode.Twitch.Channel']}</div>
-								</div>
-							</div>
-						) : null}
-					</div>
-				) : null}
-
-				<div className="settings-line">
 					<label htmlFor="Karaoke.MinutesBeforeSessionEndsWarning">
 						<span className="title">
 							{i18next.t('SETTINGS.KARAOKE.MINUTES_BEFORE_SESSION_ENDS_WARNING')}
@@ -686,6 +581,113 @@ function KaraokeOptions(props: IProps) {
 									value={config['Karaoke.Poll.Timeout']}
 								/>
 							</div>
+						</div>
+					</div>
+				) : null}
+
+				<div className="settings-line subCategoryGroupPanel">
+					{i18next.t('SETTINGS.KARAOKE.STREAM_SETTINGS')}
+				</div>
+
+				<div className="settings-line">
+					<p>
+						{i18next.t('SETTINGS.KARAOKE.STREAMER_MODE_LABEL')}&nbsp;
+						{isElectron() ? (
+							<a
+								href="#"
+								onClick={e => {
+									e.preventDefault();
+									sendIPC('openFolder', { type: 'streamFiles' });
+								}}
+							>
+								{i18next.t('SETTINGS.KARAOKE.OPEN_STREAMER_FILES')}
+							</a>
+						) : null}
+					</p>
+				</div>
+
+				<div className="settings-line">
+					<label htmlFor="Karaoke.StreamerMode.Enabled">
+						<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE')}</span>
+						<br />
+						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_MODE_TOOLTIP')}</span>
+					</label>
+					<div>
+						<Switch
+							idInput="Karaoke.StreamerMode.Enabled"
+							handleChange={onChange}
+							isChecked={config['Karaoke.StreamerMode.Enabled']}
+							disabled={config['Karaoke.ClassicMode']}
+						/>
+					</div>
+				</div>
+				{config['Karaoke.StreamerMode.Enabled'] ? (
+					<div id="streamSettings" className="settingsGroupPanel">
+						<div className="settings-line">
+							<label htmlFor="Karaoke.StreamerMode.PauseDuration">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_PAUSE_DURATION')}</span>
+								<br />
+								<span className="tooltip">
+									{i18next.t('SETTINGS.KARAOKE.STREAM_PAUSE_DURATION_TOOLTIP')}
+								</span>
+							</label>
+							<div>
+								<input
+									min={0}
+									type="number"
+									data-exclude="true"
+									id="Karaoke.StreamerMode.PauseDuration"
+									placeholder="20"
+									onChange={onChange}
+									value={config['Karaoke.StreamerMode.PauseDuration']}
+								/>
+							</div>
+						</div>
+					</div>
+				) : null}
+
+				<div className="settings-line">
+					<label htmlFor="Karaoke.StreamerMode.Twitch.Enabled">
+						<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH')}</span>
+						<br />
+						<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_TOOLTIP')}</span>
+					</label>
+					<div>
+						<Switch
+							idInput="Karaoke.StreamerMode.Twitch.Enabled"
+							handleChange={onChange}
+							isChecked={config['Karaoke.StreamerMode.Twitch.Enabled']}
+						/>
+					</div>
+				</div>
+				{config['Karaoke.StreamerMode.Twitch.Enabled'] ? (
+					<div id="twitchSettings" className="settingsGroupPanel">
+						<div className="settings-line">
+							<a href="https://twitchapps.com/tmi/" target="_blank">
+								{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN_GET')}
+							</a>
+						</div>
+						<div className="settings-line">
+							<label htmlFor="Karaoke.StreamerMode.Twitch.OAuth">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN')}</span>
+							</label>
+							<div>
+								<input
+									type="password"
+									data-exclude="true"
+									id="Karaoke.StreamerMode.Twitch.OAuth"
+									defaultValue={config['Karaoke.StreamerMode.Twitch.OAuth']}
+								/>
+								<button className="btn" onClick={parseTwitch}>
+									{i18next.t('LOG_IN')}
+								</button>
+							</div>
+						</div>
+						<div className="settings-line">
+							<label htmlFor="Karaoke.StreamerMode.Twitch.Channel">
+								<span className="title">{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_CHANNEL')}</span>
+							</label>
+							<div>{config['Karaoke.StreamerMode.Twitch.Channel']}</div>
 						</div>
 					</div>
 				) : null}
