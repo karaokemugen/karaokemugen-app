@@ -384,7 +384,8 @@ export default function Git() {
 									<Button
 										icon={<EditOutlined />}
 										disabled={excludeList.includes(i)}
-										onClick={() => {
+										onClick={e => {
+											e.stopPropagation();
 											setPendingPush(pPush => {
 												const commits = [...pPush.commits.commits];
 												commits[i] = {
