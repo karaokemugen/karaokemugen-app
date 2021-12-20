@@ -7,6 +7,7 @@ const propertiesToDisplay = [
 	'Online.Users',
 	'Online.Discord.DisplayActivity',
 	'Online.Stats',
+	'Online.FetchPopularSongs',
 	'Online.ErrorTracking',
 	'Player.HardwareDecoding',
 	'Player.ProgressBarDock',

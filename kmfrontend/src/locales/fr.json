@@ -363,7 +363,8 @@
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
-			"QUOTA_SETTINGS": "Limites",
+			"QUOTA_SETTINGS": "Limitations",
+			"QUOTA_SETTINGS_TOOLTIP": "Ajuster les restrictions d'ajout visant le public.",
 			"QUOTA_TYPE": "Limiter l'ajout de chanson par les utilisateurs",
 			"QUOTA_TYPE_TOOLTIP": "Le quota permet d'éviter que les utilisateurs n'ajoutent trop de chansons à la fois",
 			"TIME_BY_USER": "Temps par utilisateur",
@@ -388,6 +389,7 @@
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Afficher un message régulier de demande d'ajout de chanson à l'écran en lecture aléatoire",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "Le message sera affiché au milieu de l'écran lorsque Karaoke Mugen jouera des chansons aléatoires, invitant les utilisateurs à ajouter des chansons",
 			"MEDIAS_SETTINGS": "Intermissions",
+			"MEDIAS_SETTINGS_TOOLTIP": "Intros, Sponsors, Jingles, Encores et Outros",
 			"PLAYLIST_INTRO_VIDEOS": "Vidéo d'intro de liste de lecture",
 			"PLAYLIST_INTRO_VIDEOS_TOOLTIP": "Les intro vidéo sont jouées uniquement une fois si vous lancez la première chanson d'une liste de lecture, sont suivies d'une vidéo sponsor si disponible dans les jingles.",
 			"PLAYLIST_OUTRO_VIDEOS": "Vidéo d'outro de liste de lecture",
@@ -416,7 +418,9 @@
 			"LABELS_MYSTERY_SONGS_ADD": "Ajouter",
 			"LABELS_MYSTERY_SONGS_DELETE": "Supprimer",
 			"SESSION_SETTINGS": "Modes de karaoké",
+			"SESSION_SETTINGS_TOOLTIP": "Vote du public, Karaoké \"Classique\"",
 			"STREAM_SETTINGS": "Options de stream",
+			"STREAM_SETTINGS_TOOLTIP": "Pause entre les chansons, chat Twitch",
 			"STREAM_MODE": "Pause Stream",
 			"STREAM_MODE_TOOLTIP": "Une pause (dont vous pouvez choisir la durée) sera faite entre chaque chanson.",
 			"STREAMER_MODE_LABEL": "Karaoke Mugen met à disposition des fichiers texte que vous pouvez utiliser dans votre logiciel de streaming, pour créer un overlay personnalisé.",
@@ -439,7 +443,9 @@
 			"ENABLE_AUTOBALANCE": "Activer l'équilibrage automatique de la liste de lecture",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "La liste de lecture sera réorganisée régulièrement pour que les requêtes des utilisateurs passent à tour de rôle.",
 			"ONLINE_SETTINGS": "En ligne",
+			"ONLINE_SETTINGS_TOOLTIP": "Connectez votre karaoké à Internet pour laisser le monde vous suggérer des chansons !",
 			"MYSTERY_SONG_SETTINGS": "Chanson mystère",
+			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Cacher des ajouts au public, pour les surprises.",
 			"HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
 			"HIDE_INVISIBLE_SONGS_TOOLTIP": "La façon dont les chansons mystère sont affichées au public. Pour faire des surprises !",
 			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Ne pas afficher",
@@ -450,13 +456,12 @@
 			"SONGPOLLCHOICES_TOOLTIP": "Chaque choix sera selectionné depuis la liste de suggestions",
 			"SONGPOLLTIMEOUT": "Durée du sondage public",
 			"SONGPOLLTIMEOUT_TOOLTIP": "En secondes. C'est mieux s'il est inférieur au temps de pause du mode Stream !",
-			"FETCH_POPULAR_SONGS": "Récupérer les chansons populaires depuis vos dépôts en ligne",
-			"FETCH_POPULAR_SONGS_TOOLTIP": "Si désactivé, les chansons populaires seront calculées uniquement depuis votre application Karaoke Mugen",
 			"REMOTE": "Permettre l'accès à distance (<code>.kara.moe)",
 			"REMOTE_TOOLTIP": "Activez ceci pour permettre à vos amis de proposer des chansons pour votre karaoké !"
 		},
 		"PLAYLIST": {
 			"PLAYLIST_SETTINGS": "Listes de lecture",
+			"PLAYLIST_SETTINGS_TOOLTIP": "Choisir le comportement des listes de lecture, autoriser les doublons, choisir l'action en fin de liste.",
 			"ENDOFPLAYLISTACTION": {
 				"NAME": "Que faire en fin de liste de lecture",
 				"TOOLTIP": "Plusieurs options sont disponibles. Dans le cas de l'aléatoire, des chansons de votre bibliothèque seront jouées au hasard en fin de liste de lecture. La liste de lecture peut reprendre si vous avez activé l'AutoPlay et si quelqu'un ajoute une nouvelle chanson.",
@@ -1043,6 +1048,8 @@
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Mise à jour automatique des sponsors",
 			"ONLINE_USERS": "Autoriser l'inscription des utilisateurs en ligne",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Afficher votre activité de Karaoke Mugen sur votre profil Discord",
+			"ONLINE_FETCHPOPULARSONGS": "Récupérer les chansons populaires depuis vos dépôts en ligne",
+			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "Si désactivé, les chansons populaires seront calculées uniquement depuis votre application Karaoke Mugen",
 			"PLAYER_PROGRESSBARDOCK": "Barre de progression de la lecture dans le Dock/Barre des tâches"
 		}
 	},

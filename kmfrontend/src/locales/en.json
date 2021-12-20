@@ -363,7 +363,8 @@
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoke",
-			"QUOTA_SETTINGS": "Quota",
+			"QUOTA_SETTINGS": "Limitations",
+			"QUOTA_SETTINGS_TOOLTIP": "Tune the restrictions towards the public.",
 			"QUOTA_TYPE": "Quota type",
 			"QUOTA_TYPE_TOOLTIP": "Quota helps prevent users from adding too many songs at once",
 			"TIME_BY_USER": "Time per user",
@@ -386,6 +387,7 @@
 			"ALLOW_DUPLICATES": "Allow duplicate songs in playlists",
 			"ALLOW_DUPLICATES_TOOLTIP": "With this option, a playlist can contain the same song twice (or more). Only operators can add the same song more than once to a playlist. The song can be added again only if it has already been played before.",
 			"MEDIAS_SETTINGS": "Medias",
+			"MEDIAS_SETTINGS_TOOLTIP": "Intros, Sponsors, Jingles, Encores and Outros",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE": "Display an on-screen message regularly to invite users to add a song when randomly playing after playlist end",
 			"PLAYLIST_RANDOMSONGSAFTERENDMESSAGE_TOOLTIP": "The message will be displayed at the center of the screen when Karaoke Mugen will play random songs, inviting users to add songs to the playlist",
 			"PLAYLIST_INTRO_VIDEOS": "Playlist intro video",
@@ -416,7 +418,9 @@
 			"LABELS_MYSTERY_SONGS_ADD": "Add",
 			"LABELS_MYSTERY_SONGS_DELETE": "Remove",
 			"SESSION_SETTINGS": "Karaoke modes",
+			"SESSION_SETTINGS_TOOLTIP": "\"Classic\" karaoke, poll from public",
 			"STREAM_SETTINGS": "Stream options",
+			"STREAM_SETTINGS_TOOLTIP": "Pause between songs, Twitch chat",
 			"STREAM_MODE": "Stream Pause",
 			"STREAM_MODE_TOOLTIP": "A pause (with a configurable duration) will happen between each song.",
 			"STREAMER_MODE_LABEL": "Karaoke Mugen is writing text files that you can use in your streaming software, to create a custom overlay.",
@@ -439,7 +443,9 @@
 			"ENABLE_AUTOBALANCE": "Enable playlist auto balancing",
 			"ENABLE_AUTOBALANCE_TOOLTIP": "The playlist will be reorganized regularly so that user requests take turns.",
 			"ONLINE_SETTINGS": "Online",
+			"ONLINE_SETTINGS_TOOLTIP": "Connect your karaoke to the Internet to let the world choose songs for you!",
 			"MYSTERY_SONG_SETTINGS": "Mystery songs",
+			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Hide songs from the public, for surprises!",
 			"HIDE_INVISIBLE_SONGS": "Mystery songs display as",
 			"HIDE_INVISIBLE_SONGS_TOOLTIP": "The way mystery songs are displayed to the public. Best for surprises!",
 			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Don't display",
@@ -450,13 +456,12 @@
 			"SONGPOLLCHOICES_TOOLTIP": "Each choice will be selected from the suggestion playlist",
 			"SONGPOLLTIMEOUT": "Public poll duration",
 			"SONGPOLLTIMEOUT_TOOLTIP": "In seconds. It's better if it's lower than the Stream mode's pause timer!",
-			"FETCH_POPULAR_SONGS": "Fetch popular songs from your online repositories",
-			"FETCH_POPULAR_SONGS_TOOLTIP": "If disabled, popular songs will be calculated from your Karaoke Mugen app",
 			"REMOTE": "Allow remote access (<code>.kara.moe)",
 			"REMOTE_TOOLTIP": "Enable this to allow your friends to suggest songs on your karaoke session!"
 		},
 		"PLAYLIST": {
 			"PLAYLIST_SETTINGS": "Playlists",
+			"PLAYLIST_SETTINGS_TOOLTIP": "Change the behavior of playlists, allow duplicates, choose the end-of-playlist action.",
 			"ENDOFPLAYLISTACTION": {
 				"NAME": "End of playlist action",
 				"TOOLTIP": "If you choose Random Songs, they'll be picked from your song library. Combined with AutoPlay, your playlist can resume as soon as someone adds a new song.",
@@ -1040,6 +1045,8 @@
 			"ONLINE_UPDATES_MEDIAS_ENCORES": "Auto-update encores",
 			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Auto-update sponsors",
 			"ONLINE_USERS": "Allow online user registration & login",
+			"ONLINE_FETCHPOPULARSONGS": "Fetch popular songs from your online repositories",
+			"ONLINE_FETCHPOPULARSONGS_TOOLTIP": "If disabled, popular songs will be calculated from your Karaoke Mugen app",
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Show Karaoke Mugen activity on your Discord profile",
 			"PLAYER_PROGRESSBARDOCK": "Player progress bar in Dock / Taskbar"
 		}
