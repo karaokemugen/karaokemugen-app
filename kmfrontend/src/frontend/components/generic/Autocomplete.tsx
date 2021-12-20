@@ -17,7 +17,6 @@ interface IProps {
 	acceptNewValues?: boolean;
 	onChange: (value: string) => void;
 	onType?: (query: string) => void;
-	forceTop?: boolean;
 	styleInclude?: boolean;
 }
 
@@ -127,15 +126,7 @@ function Autocomplete(props: IProps) {
 					onKeyUp={handleSearchKeyUp}
 				/>
 				{(options.length < 75 || searchValue.length >= 3) && focus ? (
-					<ul
-						className="UI-autocomplete-options"
-						style={{
-							top:
-								node.current && props.forceTop
-									? node.current.getBoundingClientRect().top - 30
-									: undefined,
-						}}
-					>
+					<ul className="UI-autocomplete-options">
 						<div className="UI-autocomplete-options-wrapper">
 							{options.map((o, index) => (
 								<li
