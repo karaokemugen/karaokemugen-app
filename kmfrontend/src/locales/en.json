@@ -1639,10 +1639,22 @@
 		"TIMESTAMP": "Timestamp",
 		"TYPE": "Type of request",
 		"LINK_TO_ISSUE": "Link to issue",
+		"CONTACT_INFOS": "Author contact informations",
 		"ISSUE": "Issue {{number}}",
 		"USER": "User in charge of issue integration",
 		"DOWNLOAD": "Download karaoke",
-		"DELETE": "Are you sure you delete the karaoke from the inbox as well as its files on the server?"
+		"DELETE": "Are you sure you delete the karaoke from the inbox as well as its files on the server?",
+		"CONTACT_INFOS_MODAL": {
+			"USERNAME": "Username: ",
+			"MAIL": "Email: ",
+			"URL": "Website: ",
+			"SOCIAL_NETWORKS": {
+				"TWITTER": "Twitter: ",
+				"TWITCH": "Twitch: ",
+				"INSTAGRAM": "Instagram: ",
+				"DISCORD": "Discord: "
+			}
+		}
 	},
 	"ABOUT": {
 		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",

@@ -97,7 +97,7 @@ function UsersModal(props: IProps) {
 										{userDetails?.url ? (
 											<div>
 												<i className="fas fa-fw fa-link" />
-												<a href={userDetails.url} rel="noreferrer" target="_blank">
+												<a href={userDetails.url} rel="noreferrer noopener" target="_blank">
 													{userDetails.url}
 												</a>
 											</div>
@@ -125,7 +125,7 @@ function UsersModal(props: IProps) {
 												<i className="fab fa-fw fa-twitter" />
 												<a
 													href={`https://twitter.com/${userDetails.social_networks.twitter}`}
-													rel="noreferrer"
+													rel="noreferrer noopener"
 													target="_blank"
 												>
 													{userDetails.social_networks.twitter}
@@ -137,7 +137,7 @@ function UsersModal(props: IProps) {
 												<i className="fab fa-fw fa-instagram" />
 												<a
 													href={`https://instagram.com/${userDetails.social_networks.instagram}`}
-													rel="noreferrer"
+													rel="noreferrer noopener"
 													target="_blank"
 												>
 													{userDetails.social_networks.instagram}
@@ -149,7 +149,7 @@ function UsersModal(props: IProps) {
 												<i className="fab fa-fw fa-twitch" />
 												<a
 													href={`https://twitch.tv/${userDetails.social_networks.twitch}`}
-													rel="noreferrer"
+													rel="noreferrer noopener"
 													target="_blank"
 												>
 													{userDetails.social_networks.twitch}

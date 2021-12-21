@@ -750,7 +750,7 @@ function KaraokeOptions(props: IProps) {
 					{config['Karaoke.StreamerMode.Twitch.Enabled'] ? (
 						<div id="twitchSettings" className="settingsGroupPanel">
 							<div className="settings-line">
-								<a href="https://twitchapps.com/tmi/" target="_blank">
+								<a href="https://twitchapps.com/tmi/" rel="noreferrer noopener" target="_blank">
 									{i18next.t('SETTINGS.KARAOKE.STREAM_TWITCH_OAUTH_TOKEN_GET')}
 								</a>
 							</div>
