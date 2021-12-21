@@ -493,16 +493,20 @@ describe('Playlists', () => {
 		});
 	}
 
-	it(`Add a blacklist criteria (song ${bannedKID})`, async () => {
-		return requestAddCriteria();
+	it(`Add a blacklist criteria (song ${bannedKID}) and list karaokes (find one)`, () => {
+		return new Promise(resolve => {
+			socket.on('playlistContentsUpdated', plaid => {
+				if (plaid === newBlacklistPlaylistID) {
+					socket.off('playlistContentsUpdated');
+					resolve(requestBlacklist());
+				}
+			});
+			requestAddCriteria();
+		});
 	});
 
 	it('Get list of blacklist criterias', async () => {
 		return requestBlacklistCriterias(newBlacklistPlaylistID);
-	});
-
-	it('Get blacklist', async () => {
-		await requestBlacklist();
 	});
 
 	it('Delete a blacklist criteria', async () => {
