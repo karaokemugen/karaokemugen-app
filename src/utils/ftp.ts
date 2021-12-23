@@ -81,6 +81,7 @@ export default class FTP {
 			logger.info(`File "${file}" uploaded!`, { service: 'FTP' });
 		} catch (err) {
 			logger.error(`Failed to send file ${basename(file)}: ${err}`, { service: 'FTP', obj: err });
+			throw err;
 		} finally {
 			// Stop tracking progress
 			this.client.trackProgress();

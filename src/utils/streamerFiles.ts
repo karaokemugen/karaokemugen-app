@@ -110,7 +110,7 @@ const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 ]);
 
 export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
-	if (!getConfig().Karaoke.StreamerMode.Enabled || !getState().ready || !DBReady) return;
+	if (!getState().ready || !DBReady) return;
 	try {
 		await asyncCheckOrMkdir(resolvedPath('StreamFiles'));
 		if (only) {

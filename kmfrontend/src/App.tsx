@@ -46,15 +46,20 @@ function App() {
 			}
 			setInitialized(true);
 			getSocket().on('settingsUpdated', setSettingsStore);
-			getSocket().on('favoritesUpdated', setFavorites);
 			getSocket().on('noFreeSpace', warningNoFreeSpace);
 		});
 		return () => {
 			getSocket().off('settingsUpdated', setSettingsStore);
-			getSocket().off('favoritesUpdated', setFavorites);
 			getSocket().off('noFreeSpace', warningNoFreeSpace);
 		};
 	}, []);
+
+	useEffect(() => {
+		getSocket().on('favoritesUpdated', setFavorites);
+		return () => {
+			getSocket().off('favoritesUpdated', setFavorites);
+		};
+	}, [context.globalState.auth.data.username]);
 
 	return (
 		<>

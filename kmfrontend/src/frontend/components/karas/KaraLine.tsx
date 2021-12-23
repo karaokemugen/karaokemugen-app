@@ -461,7 +461,8 @@ function KaraLine(props: IProps) {
 								<div className="contentDivMobileTags">
 									<div>
 										{kara.children?.length > 0 &&
-										context.globalState.settings.data.user.flag_parentsonly ? (
+										context.globalState.settings.data.user.flag_parentsonly &&
+										props.scope === 'public' ? (
 											<>
 												<i className="far fa-fixed-width fa-list-alt" />
 												&nbsp;

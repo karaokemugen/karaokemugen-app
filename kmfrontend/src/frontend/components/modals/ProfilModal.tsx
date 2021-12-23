@@ -358,7 +358,6 @@ function ProfilModal(props: IProps) {
 								<Autocomplete
 									value={user.location}
 									options={queriedCountries}
-									forceTop={true}
 									onType={setCountryQuery}
 									onChange={value => changeAutocomplete('location', value)}
 									styleInclude
@@ -507,7 +506,6 @@ function ProfilModal(props: IProps) {
 									<Autocomplete
 										value={user.main_series_lang}
 										options={queriedMainLanguages}
-										forceTop={true}
 										onType={setMainLanguageQuery}
 										onChange={value => changeAutocomplete('main_series_lang', value)}
 									/>
@@ -522,7 +520,6 @@ function ProfilModal(props: IProps) {
 									<Autocomplete
 										value={user.fallback_series_lang}
 										options={queriedFallbackLanguages}
-										forceTop={true}
 										onType={setFallbackLanguageQuery}
 										onChange={value => changeAutocomplete('fallback_series_lang', value)}
 									/>

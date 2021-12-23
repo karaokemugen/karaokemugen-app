@@ -103,14 +103,16 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	getParents = async () => {
 		if (this.formRef.current.getFieldValue('parents') !== null) {
 			const parents: string[] = this.formRef.current.getFieldValue('parents');
-			const res = await commandBackend('getKaras', { q: `k:${parents.join()}` });
-			const karaSearch = res.content.map(kara => {
-				return {
-					label: buildKaraTitle(this.context.globalState.settings.data, kara, true, res.i18n),
-					value: kara.kid,
-				};
-			});
-			this.setState({ karaSearch });
+			if (parents.length > 0) {
+				const res = await commandBackend('getKaras', { q: `k:${parents.join()}` });
+				const karaSearch = res.content.map(kara => {
+					return {
+						label: buildKaraTitle(this.context.globalState.settings.data, kara, true, res.i18n),
+						value: kara.kid,
+					};
+				});
+				this.setState({ karaSearch });
+			}
 		}
 	};
 
