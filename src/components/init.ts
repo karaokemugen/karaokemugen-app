@@ -65,7 +65,7 @@ export async function preInit() {
 	logger.debug(`argv: ${JSON.stringify(process.argv)}`, { service: 'Launcher' });
 	logger.debug(`Locale : ${state.defaultLocale}`, { service: 'Launcher' });
 	logger.debug(`OS : ${state.os}`, { service: 'Launcher' });
-	await renameConfigKeys(argv);
+	await renameConfigKeys(argv).catch(() => {});
 	await initConfig(argv);
 	// Test if network ports are available
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);
