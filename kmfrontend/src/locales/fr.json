@@ -359,7 +359,7 @@
 			"DISPLAY_SONGINFO": "Afficher les informations de la chanson",
 			"DISPLAY_SONGINFO_TOOLTIP": "Les informations (titres, série/artistes, etc.) sont affichées au début et à la fin d'une chanson, ainsi que durant les écrans de pause en mode Stream/Classique. Désactivez pour les cacher. Idéal pour les blind tests !",
 			"LIVE_COMMENTS": "Commentaires Live",
-			"LIVE_COMMENTS_TOOLTIP": "Chat en direct sur la vidéo"
+			"LIVE_COMMENTS_TOOLTIP": "Les messages de votre chat seront affichés sur le lecteur (configurez bien l'AutoMod)."
 		},
 		"KARAOKE": {
 			"LABEL": "Karaoké",
