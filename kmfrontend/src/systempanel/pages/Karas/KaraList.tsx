@@ -360,10 +360,10 @@ class KaraList extends Component<unknown, KaraListState> {
 					return (
 						<div style={{ display: 'flex' }}>
 							{editLink}
-							{deleteButton}
 							{LyricsButton}
-							{deleteMediaButton}
 							{uploadMediaButton}
+							{deleteMediaButton}
+							{deleteButton}
 						</div>
 					);
 				} else {

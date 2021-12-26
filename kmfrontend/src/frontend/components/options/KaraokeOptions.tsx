@@ -778,6 +778,22 @@ function KaraokeOptions(props: IProps) {
 								</label>
 								<div>{config['Karaoke.StreamerMode.Twitch.Channel']}</div>
 							</div>
+							<div className="settings-line">
+								<label htmlFor="Player.LiveComments">
+									<span className="title">{i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS')}</span>
+									<br />
+									<span className="tooltip">
+										{i18next.t('SETTINGS.PLAYER.LIVE_COMMENTS_TOOLTIP')}
+									</span>
+								</label>
+								<div>
+									<Switch
+										idInput="Player.LiveComments"
+										handleChange={onChange}
+										isChecked={config['Player.LiveComments']}
+									/>
+								</div>
+							</div>
 						</div>
 					) : null}
 				</div>
@@ -796,21 +812,6 @@ function KaraokeOptions(props: IProps) {
 					<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.ONLINE_SETTINGS_TOOLTIP')}</span>
 				</div>
 				<div className="settings-group">
-					{/*<div className="settings-line">
-						<label htmlFor="Online.FetchPopularSongs">
-							<span className="title">{i18next.t('SETTINGS.KARAOKE.FETCH_POPULAR_SONGS')}</span>
-							<br />
-							<span className="tooltip">{i18next.t('SETTINGS.KARAOKE.FETCH_POPULAR_SONGS_TOOLTIP')}</span>
-						</label>
-						<div>
-							<Switch
-								idInput="Online.FetchPopularSongs"
-								handleChange={onChange}
-								isChecked={config['Online.FetchPopularSongs']}
-							/>
-						</div>
-					</div>*/}
-
 					<div className="settings-line">
 						<label htmlFor="Online.Remote">
 							<span className="title">{i18next.t('SETTINGS.KARAOKE.REMOTE')}</span>
