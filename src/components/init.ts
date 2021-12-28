@@ -116,23 +116,9 @@ export async function init() {
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
-		try {
-			await remove(resolvedPath('Temp'));
-		} catch (err) {
-			// Non-fatal
-		}
-		// Emptying bundled backgrounds directory
-		try {
-			await remove(resolvedPath('BundledBackgrounds'));
-		} catch (err) {
-			// Non-fatal
-		}
-		// Emptying import directory
-		try {
-			await remove(resolvedPath('Import'));
-		} catch (err) {
-			// Non-fatal
-		}
+		await remove(resolvedPath('Temp')).catch();
+		await remove(resolvedPath('BundledBackgrounds')).catch();
+		await remove(resolvedPath('Import')).catch();
 		// Checking paths
 		const checks = [];
 		const dataPath = getState().dataPath;
@@ -143,8 +129,8 @@ async function checkPaths(config: Config) {
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'lyrics')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'tags')));
 				checks.push(asyncCheckOrMkdir(resolve(dataPath, repo.BaseDir, 'hooks')));
-				for (const paths of Object.keys(repo.Path)) {
-					repo.Path[paths].forEach((dir: string) => checks.push(asyncCheckOrMkdir(resolve(dataPath, dir))));
+				for (const path of repo.Path.Medias) {
+					await asyncCheckOrMkdir(resolve(dataPath, path));
 				}
 			} catch (err) {
 				// If there's a problem with these folders, let's disable the repository.
