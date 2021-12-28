@@ -918,7 +918,9 @@ export async function generateCommits(repoName: string) {
 				commit: commit.message,
 			});
 			for (const tid of kara.tid) {
-				const tagfile = tags.content.find(t => t.tid === tid.split('~')[0]).tagfile;
+				const tag = tags.content.find(t => t.tid === tid.split('~')[0]);
+				if (!tag) throw `Tag ${tid} not found in database. Please regenerate and try again`;
+				const tagfile = tag.tagfile;
 				const addedTag = addedTags.find(f => basename(f) === tagfile);
 				if (addedTag) {
 					commit.addedFiles.push(addedTag);
