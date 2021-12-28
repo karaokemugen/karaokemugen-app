@@ -6,8 +6,6 @@ import { DraggableProvided } from 'react-beautiful-dnd';
 import { toast } from 'react-toastify';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
-import nanamiSingPng from '../../../assets/nanami-sing.png';
-import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
