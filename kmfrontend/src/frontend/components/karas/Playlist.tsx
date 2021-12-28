@@ -297,7 +297,7 @@ function Playlist(props: IProps) {
 				);
 			}
 		},
-		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle]
+		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle, checkedKaras]
 	);
 
 	const noRowsRenderer = useCallback(() => {
