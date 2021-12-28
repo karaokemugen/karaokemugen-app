@@ -550,10 +550,19 @@
     "@types/node" "*"
     "@types/pg" "*"
 
-"@types/pg@*", "@types/pg@^8.6.2":
+"@types/pg@*":
   version "8.6.2"
   resolved "https://registry.yarnpkg.com/@types/pg/-/pg-8.6.2.tgz#eba3df3287eae69b374479eda94a569d72b9ae15"
   integrity sha512-UbLp6B77Papo68M7jKXJHTqd3pBjodCsCE1WzsjSxeYtdxcOfpAk5NemXbuLaLhmlAbapIHJCBdv39UpiG4dsg==
+  dependencies:
+    "@types/node" "*"
+    pg-protocol "*"
+    pg-types "^2.2.0"
+
+"@types/pg@^8.6.3":
+  version "8.6.3"
+  resolved "https://registry.yarnpkg.com/@types/pg/-/pg-8.6.3.tgz#eacfd5954752dd64d93d71d639e8c5b1f3bd3f22"
+  integrity sha512-P0RrXJcw1hPS+KF0nBCC3FEEdZBfRsHbYtAzbY2QTc0gC4jFQvjQxIKXs0X/NgPhPI4DbAzdeW7WMCjaWjT7Pg==
   dependencies:
     "@types/node" "*"
     pg-protocol "*"
@@ -2683,10 +2692,17 @@ i18next-scanner@^3.1.0:
     vinyl "^2.2.0"
     vinyl-fs "^3.0.1"
 
-i18next@*, i18next@^21.0.1, i18next@^21.6.2:
+i18next@*, i18next@^21.0.1:
   version "21.6.2"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-21.6.2.tgz#3bfc35fc3ac32541a2a5b80f1dc5306c994dd14f"
   integrity sha512-S1zSTrs2lgPH8iG68pMWh3P7OzQMcs3+Qr5F39JTyGbe/xl5cW4cF8MTPKSy6F25tFTcKBq915IoEZUWewkldg==
+  dependencies:
+    "@babel/runtime" "^7.12.0"
+
+i18next@^21.6.4:
+  version "21.6.4"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-21.6.4.tgz#4da52a429094112b33d4383b5f44aa4890dcb081"
+  integrity sha512-pk0Utxtq5g//Q9ONQ0w3+PRSwOFJ7+m4rAekhHHg1Xql0KcUjJU7DzmzweGy6DsrIQ1GM/t57wLeeGuyGKtjTg==
   dependencies:
     "@babel/runtime" "^7.12.0"
 
@@ -3086,10 +3102,10 @@ lilconfig@2.0.4:
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.0.4.tgz#f4507d043d7058b380b6a8f5cb7bcd4b34cee082"
   integrity sha512-bfTIN7lEsiooCocSISTWXkiWJkRqtL9wYtYy+8EK3Y41qh3mpwPU0ycTOgjdY9ErwXCc8QyrQp82bdL0Xkm9yA==
 
-lint-staged@^12.1.3:
-  version "12.1.3"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-12.1.3.tgz#a16e885c0a5e77de9cf559724d29a10348670e68"
-  integrity sha512-ajapdkaFxx+MVhvq6xQRg9zCnCLz49iQLJZP7+w8XaA3U4B35Z9xJJGq9vxmWo73QTvJLG+N2NxhjWiSexbAWQ==
+lint-staged@^12.1.4:
+  version "12.1.4"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-12.1.4.tgz#a92ec8509f13018caaafade61d515c2d5873316e"
+  integrity sha512-RgDz9nsFsE0/5eL9Vat0AvCuk0+j5mEuzBIVfrRH5FRtt5wibYe8zTjZs2nuqLFrLAGQGYnj8+HJxolcj08i/A==
   dependencies:
     cli-truncate "^3.1.0"
     colorette "^2.0.16"
@@ -4693,10 +4709,10 @@ slice-ansi@^5.0.0:
     ansi-styles "^6.0.0"
     is-fullwidth-code-point "^4.0.0"
 
-slug@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/slug/-/slug-5.1.1.tgz#8552534bde2f564d1167672530613fbea15e87c7"
-  integrity sha512-QPbRRFNK6AMY4ubNCZ/2Wx/JnLO7YQnjEOgA4ptgcyMzL4SjnwkRVp1Kkp7cigF2eP2FNVAhRjBeRkd6wWZzbg==
+slug@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/slug/-/slug-5.2.0.tgz#92f478dc01eedb6cd14def4c4cfe702409612204"
+  integrity sha512-jMCvtl7B2iF+2YUNeSo88iVy+wSGX2Jlfj6Hi7RvaQNTPiqJ8BYJAB6XaurEQiiVGN3gIj6u6IZvaG4Ang5brw==
 
 socket.io-adapter@~2.3.3:
   version "2.3.3"
