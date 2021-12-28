@@ -631,7 +631,7 @@ function Playlist(props: IProps) {
 			return;
 		}
 		const idsKara = listKara.map(a => a.kid);
-		const idsKaraPlaylist = listKara.map(a => String(a.plcid));
+		const idsKaraPlaylist = listKara.map(a => a.plcid);
 		let url = '';
 		let dataApi;
 
