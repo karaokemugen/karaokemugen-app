@@ -173,13 +173,21 @@ function KaraLine(props: IProps) {
 				kids: [props.kara.kid],
 			};
 		}
-		const response = await commandBackend(url, data).catch(() => {});
-		PLCCallback(response, context, props.kara);
+		try {
+			const response = await commandBackend(url, data);
+			PLCCallback(response, context, props.kara);
+		} catch (e) {
+			throw e;
+		}
 	};
 
 	const transferKara = async (event: any, pos?: number) => {
-		await addKara(event, pos);
-		deleteKara();
+		try {
+			await addKara(event, pos);
+			deleteKara();
+		} catch (e) {
+			// already display
+		}
 	};
 
 	const checkKara = () => {
