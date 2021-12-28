@@ -49,6 +49,7 @@ interface KaraFormState {
 	comment?: string;
 	karaSearch: { label: string; value: string }[];
 	parentKara: Kara;
+	errors: string[];
 }
 
 class KaraForm extends Component<KaraFormProps, KaraFormState> {
@@ -92,6 +93,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			comment: kara.comment,
 			karaSearch: [],
 			parentKara: null,
+			errors: [],
 		};
 	}
 
@@ -175,6 +177,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	handleSubmit = values => {
+		this.setState({ errors: [] });
 		if (!this.state.titles || Object.keys(this.state.titles).length === 0) {
 			message.error(i18next.t('KARA.TITLE_REQUIRED'));
 		} else if (!this.state.titles.eng) {
@@ -192,6 +195,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		kara.subfile_orig = this.state.subfile_orig;
 		kara.titles = this.state.titles;
 		return kara;
+	};
+
+	handleSubmitFailed = ({ values, errorFields }) => {
+		this.setState({ errors: errorFields.map(value => value.errors).reduce((acc, val) => acc.concat(val), []) });
 	};
 
 	isMediaFile = (filename: string): boolean => {
@@ -351,6 +358,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			<Form
 				ref={this.formRef}
 				onFinish={this.handleSubmit}
+				onFinishFailed={this.handleSubmitFailed}
 				className="kara-form"
 				initialValues={{
 					series: this.props.kara?.series || this.state.parentKara?.series,
@@ -862,6 +870,13 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						{this.props.kara?.modified_at ? new Date(this.props.kara?.modified_at).toLocaleString() : null}
 					</label>
 				</Form.Item>
+				<div style={{ marginLeft: '220px', marginBottom: '1em' }}>
+					{this.state.errors.map(error => (
+						<div key={error}>
+							<label className="ant-form-item-explain-error">{error}</label>
+						</div>
+					))}
+				</div>
 				<Form.Item>
 					<Button style={{ marginLeft: '14em', marginRight: '9em' }} onClick={this.previewHooks}>
 						{i18next.t('KARA.PREVIEW_HOOKS')}
