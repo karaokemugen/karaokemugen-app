@@ -364,7 +364,6 @@ export default function Git() {
 					{pendingPush?.commits?.commits?.map((commit, i) => (
 						<li key={commit.message}>
 							<Checkbox defaultChecked={true} name={commit.message} onChange={toggleExclude}>
-								<span>{commit.message}</span>
 								{typeof commit.comment === 'string' ? (
 									<Input
 										placeholder={i18next.t('REPOSITORIES.GIT_CUSTOM_MESSAGE')}
@@ -383,6 +382,7 @@ export default function Git() {
 								) : (
 									<Button
 										icon={<EditOutlined />}
+										style={{ marginRight: '0.5em' }}
 										disabled={excludeList.includes(i)}
 										onClick={e => {
 											e.stopPropagation();
@@ -397,6 +397,7 @@ export default function Git() {
 										}}
 									/>
 								)}
+								<span>{commit.message}</span>
 							</Checkbox>
 						</li>
 					))}
