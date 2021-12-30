@@ -164,6 +164,8 @@ class SessionList extends Component<unknown, SessionListState> {
 			title: i18next.t('UNUSED_FILES.FILE'),
 			dataIndex: 'file',
 			key: 'file',
+			sorter: (a, b) => a.file.localeCompare(b.file),
+			defaultSortOrder: 'ascend' as const,
 		},
 		{
 			title: i18next.t('ACTION'),
