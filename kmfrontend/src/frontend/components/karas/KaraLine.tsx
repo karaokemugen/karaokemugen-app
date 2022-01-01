@@ -208,46 +208,6 @@ function KaraLine(props: IProps) {
 		const karaTags: JSX.Element[] = [];
 		const data = props.kara;
 
-		if (data.langs && (props.scope === 'public' || is_touch_device())) {
-			const isMulti = data.langs.find(e => e.name.indexOf('mul') > -1);
-			isMulti
-				? karaTags.push(
-						<div key={isMulti.tid} className="tag">
-							{getTagInLocale(context?.globalState.settings.data, isMulti)}
-						</div>
-				  )
-				: karaTags.push(
-						...data.langs.sort(sortTagByPriority).map((tag, i) => {
-							if (i === 0) return undefined;
-							return (
-								<div
-									key={tag.tid}
-									className="tag green"
-									title={getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
-								>
-									{getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
-								</div>
-							);
-						})
-				  );
-		}
-		if (data.songtypes && (props.scope === 'public' || is_touch_device())) {
-			karaTags.push(
-				...data.songtypes.sort(sortTagByPriority).map((tag, i) => {
-					if (i === 0) return undefined;
-					return (
-						<div
-							key={tag.tid}
-							className="tag green"
-							title={getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
-						>
-							{getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
-							{data.songorder > 0 ? ' ' + data.songorder : ''}
-						</div>
-					);
-				})
-			);
-		}
 		for (const type of ['FAMILIES', 'PLATFORMS', 'ORIGINS', 'MISC']) {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
