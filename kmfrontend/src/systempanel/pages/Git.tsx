@@ -147,7 +147,7 @@ export default function Git() {
 
 	const generateCommits = useCallback(async (repoName: string) => {
 		setLoading(true);
-		const commits = await commandBackend('getCommits', { repoName }).catch(() => null);
+		const commits = await commandBackend('getCommits', { repoName }, false, 600000).catch(() => null);
 		if (!commits) {
 			const dummyPush = { commits: [], modifiedMedias: [] };
 			setPendingPush({ repoName, commits: dummyPush });
