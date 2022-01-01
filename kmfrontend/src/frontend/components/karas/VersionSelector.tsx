@@ -55,6 +55,19 @@ export default function VersionSelector(props: Props) {
 		setShowVideo(false);
 	}, []);
 
+	const addKara = async (e, kara) => {
+		try {
+			e.stopPropagation();
+			const res = await commandBackend('addKaraToPublicPlaylist', {
+				requestedby: context.globalState.auth.data.username,
+				kids: [kara.kid],
+			});
+			PLCCallback(res, context, kara);
+		} catch (e) {
+			// already display
+		}
+	};
+
 	const refreshKaras = useCallback(
 		updated => {
 			for (const k of updated) {
@@ -161,18 +174,7 @@ export default function VersionSelector(props: Props) {
 														</button>
 													) : (
 														<button
-															onClick={async e => {
-																e.stopPropagation();
-																const res = await commandBackend(
-																	'addKaraToPublicPlaylist',
-																	{
-																		requestedby:
-																			context.globalState.auth.data.username,
-																		kids: [kara.kid],
-																	}
-																);
-																PLCCallback(res, context, kara);
-															}}
+															onClick={e => addKara(e, kara)}
 															className="btn btn-primary"
 														>
 															<i className="fas fa-plus" />
