@@ -904,7 +904,7 @@ function Playlist(props: IProps) {
 	}, [props.searchType]);
 
 	useDeferredEffect(() => {
-		setData(undefined);
+		setData(null);
 		if (
 			props.scope === 'admin' &&
 			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
@@ -916,7 +916,7 @@ function Playlist(props: IProps) {
 
 	useDeferredEffect(() => {
 		initCall();
-	}, [data === undefined]);
+	}, [data === null]);
 
 	useDeferredEffect(() => {
 		getPlaylist('search');
