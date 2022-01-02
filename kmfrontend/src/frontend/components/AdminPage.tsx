@@ -9,7 +9,7 @@ import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { getTagInLocale } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { decodeCriteriaReason, displayMessage } from '../../utils/tools';
+import { decodeCriteriaReason, displayMessage, startIntro } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import { Tag } from '../types/tag';
 import AdminHeader from './AdminHeader';
@@ -161,6 +161,9 @@ function AdminPage(props: IProps) {
 	useEffect(() => {
 		if (context.globalState.auth.isAuthenticated) {
 			getPlaylistList();
+		}
+		if (!context?.globalState.settings.data.user?.flag_tutorial_done) {
+			startIntro();
 		}
 		getSocket().on('playlistsUpdated', getPlaylistList);
 		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
