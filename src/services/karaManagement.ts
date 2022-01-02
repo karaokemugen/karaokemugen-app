@@ -82,7 +82,12 @@ interface Family {
 	children: DBKara[];
 }
 
-export async function deleteKara(kids: string[], refresh = true, deleteFiles = { media: true, kara: true }) {
+export async function deleteKara(
+	kids: string[],
+	refresh = true,
+	deleteFiles = { media: true, kara: true },
+	batch = false
+) {
 	const parents: Family[] = [];
 	const karas = await selectAllKaras({
 		q: `k:${kids.join(',')}`,
@@ -133,9 +138,11 @@ export async function deleteKara(kids: string[], refresh = true, deleteFiles = {
 			});
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
-	// Remove kara from database
-	for (const parent of parents) {
-		await removeParentInKaras(parent.parent, parent.children);
+	// Remove kara from database only if not in a batch
+	if (!batch) {
+		for (const parent of parents) {
+			await removeParentInKaras(parent.parent, parent.children);
+		}
 	}
 	await deleteKaraDB(karas.map(k => k.kid));
 	if (refresh) {
