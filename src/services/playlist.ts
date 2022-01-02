@@ -752,7 +752,7 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 		const PLCsToFree: number[] = [];
 		let plcs = await getPLCInfoMini(plc_ids);
 		for (const plcid of plc_ids) {
-			if (!plcs.find(plc => plc.plcid === plcid)) throw { code: 404, msg: `PLC ${plcid} does not exist` };
+			if (!plcs.find(plc => plc.plcid === +plcid)) throw { code: 404, msg: `PLC ${plcid} does not exist` };
 		}
 		for (const plc of plcs) {
 			// If source is public playlist and destination current playlist, free up PLCs from the public playlist.

@@ -29,10 +29,6 @@ class Database extends Component<unknown, unknown> {
 			.catch(() => {});
 	};
 
-	getCommits = async () => {
-		commandBackend('getCommits', { repoName: 'kara.moe' });
-	};
-
 	render() {
 		return (
 			<>
@@ -65,14 +61,6 @@ class Database extends Component<unknown, unknown> {
 							</Button>
 						</Col>
 						<Col flex="auto">{i18next.t('DATABASE.UPDATE_REPOS_DESCRIPTION')}</Col>
-					</Row>
-					<Row justify="space-between" style={{ marginTop: '1.5em', flexWrap: 'nowrap' }}>
-						<Col flex="22em">
-							<Button type="primary" onClick={this.getCommits} style={{ width: '19em' }}>
-								Get commits
-							</Button>
-						</Col>
-						<Col flex="auto">See console for output</Col>
 					</Row>
 					<Row justify="space-between" style={{ marginTop: '1.5em', flexWrap: 'nowrap' }}>
 						<Col flex="22em">

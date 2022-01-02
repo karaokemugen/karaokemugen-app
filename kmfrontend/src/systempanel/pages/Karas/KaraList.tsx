@@ -325,6 +325,7 @@ class KaraList extends Component<unknown, KaraListState> {
 						title={i18next.t('KARA.UPLOAD_MEDIA_TOOLTIP')}
 						icon={<UploadOutlined />}
 						onClick={() => commandBackend('uploadMedia', { kid: record.kid })}
+						style={{ marginRight: '0.75em' }}
 					/>
 				);
 				if (isModifiable(this.context, record.repository)) {

@@ -85,11 +85,13 @@ function Playlist(props: IProps) {
 	const publicPlaylistEmptied = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) {
 			setData(oldData => {
-				for (const kara of oldData.content) {
-					if (kara) {
-						kara.my_public_plc_id = [];
-						kara.public_plc_id = [];
-						kara.flag_upvoted = false;
+				if (oldData) {
+					for (const kara of oldData.content) {
+						if (kara) {
+							kara.my_public_plc_id = [];
+							kara.public_plc_id = [];
+							kara.flag_upvoted = false;
+						}
 					}
 				}
 				return oldData;
@@ -113,27 +115,29 @@ function Playlist(props: IProps) {
 			(event.length > 0 && event[0].download_status)
 		) {
 			setData(oldData => {
-				for (const kara of oldData.content) {
-					for (const karaUpdated of event) {
-						if (kara?.kid === karaUpdated.kid) {
-							if (karaUpdated.plc_id) {
-								kara.public_plc_id = karaUpdated.plc_id;
-								if (!karaUpdated.plc_id[0]) {
-									kara.my_public_plc_id = [];
+				if (oldData) {
+					for (const kara of oldData.content) {
+						for (const karaUpdated of event) {
+							if (kara?.kid === karaUpdated.kid) {
+								if (karaUpdated.plc_id) {
+									kara.public_plc_id = karaUpdated.plc_id;
+									if (!karaUpdated.plc_id[0]) {
+										kara.my_public_plc_id = [];
+									}
 								}
-							}
-							if (
-								(karaUpdated.username === context.globalState.auth.data.username &&
-									karaUpdated.flag_upvoted === false) ||
-								karaUpdated.flag_upvoted === true
-							) {
-								kara.flag_upvoted = karaUpdated.flag_upvoted;
-							}
-							if (karaUpdated.requester === context.globalState.auth.data.username) {
-								kara.my_public_plc_id = karaUpdated.plc_id;
-							}
-							if (karaUpdated.download_status) {
-								kara.download_status = karaUpdated.download_status;
+								if (
+									(karaUpdated.username === context.globalState.auth.data.username &&
+										karaUpdated.flag_upvoted === false) ||
+									karaUpdated.flag_upvoted === true
+								) {
+									kara.flag_upvoted = karaUpdated.flag_upvoted;
+								}
+								if (karaUpdated.requester === context.globalState.auth.data.username) {
+									kara.my_public_plc_id = karaUpdated.plc_id;
+								}
+								if (karaUpdated.download_status) {
+									kara.download_status = karaUpdated.download_status;
+								}
 							}
 						}
 					}
@@ -297,7 +301,7 @@ function Playlist(props: IProps) {
 				);
 			}
 		},
-		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle]
+		[sortable, playing, data, songsBeforeSponsor, songsBeforeJingle, checkedKaras]
 	);
 
 	const noRowsRenderer = useCallback(() => {
@@ -631,7 +635,7 @@ function Playlist(props: IProps) {
 			return;
 		}
 		const idsKara = listKara.map(a => a.kid);
-		const idsKaraPlaylist = listKara.map(a => String(a.plcid));
+		const idsKaraPlaylist = listKara.map(a => a.plcid);
 		let url = '';
 		let dataApi;
 
