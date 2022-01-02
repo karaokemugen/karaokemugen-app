@@ -978,7 +978,7 @@
 		"NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
 		"PRIORITY": "Priorité à l'affichage",
-		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10.",
+		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 cache l'affichage du tag sur l'interface publique",
 		"COPY_TAG": "Copier le tag vers un autre dépôt"
 	},
 	"TAG_TYPES": {

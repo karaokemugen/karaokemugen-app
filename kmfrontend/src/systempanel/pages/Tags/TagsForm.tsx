@@ -265,7 +265,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					wrapperCol={{ span: 2 }}
 					name="priority"
 				>
-					<InputNumber required={true} min={0} placeholder="Priority" style={{ width: '100%' }} />
+					<InputNumber required={true} min={-1} placeholder="Priority" style={{ width: '100%' }} />
 				</Form.Item>
 				<Form.Item
 					label={

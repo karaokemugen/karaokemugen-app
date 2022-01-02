@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 
 import { DBPLC } from '../../../../src/types/database/playlist';
 import GlobalContext from '../../store/context';
-import { getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../utils/kara';
+import { getTagInLocale, getTitleInLocale, sortAndHideTags } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { tagTypes } from '../../utils/tagTypes';
 import PlayerBox from './public/PlayerBox';
@@ -71,8 +71,7 @@ export default function PlaylistPage() {
 									.map(e => e.name)
 									.join(', ') + (kara.singers.length > 3 ? '...' : '')
 							: '';
-					const songtypeText = [...kara.songtypes]
-						.sort(sortTagByPriority)
+					const songtypeText = sortAndHideTags(kara.songtypes)
 						.map(e => (e.short ? +e.short : e.name))
 						.join(' ');
 					const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
@@ -80,7 +79,7 @@ export default function PlaylistPage() {
 						// Tags in the header
 						const typeData = tagTypes['VERSIONS'];
 						if (kara.versions) {
-							return kara[typeData.karajson].sort(sortTagByPriority).map(tag => {
+							return sortAndHideTags(kara[typeData.karajson]).map(tag => {
 								return (
 									<div
 										key={tag.tid}

@@ -15,7 +15,7 @@ import {
 	getPlaylistInfo,
 	getTagInLocale,
 	getTitleInLocale,
-	sortTagByPriority,
+	sortAndHideTags,
 } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
@@ -212,7 +212,7 @@ function KaraLine(props: IProps) {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(
-					...data[typeData.karajson].sort(sortTagByPriority).map(tag => {
+					...sortAndHideTags(data[typeData.karajson]).map(tag => {
 						return (
 							<div
 								key={tag.tid}
@@ -428,7 +428,7 @@ function KaraLine(props: IProps) {
 									</div>
 									<div className="tagConteneur">
 										{karaTags}
-										{props.kara.versions?.sort(sortTagByPriority).map(t => (
+										{sortAndHideTags(props.kara.versions).map(t => (
 											<span className="tag white" key={t.tid}>
 												{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
 											</span>

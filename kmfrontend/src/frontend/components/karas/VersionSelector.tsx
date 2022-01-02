@@ -12,7 +12,7 @@ import {
 	getPreviewLink,
 	getTagInLocale,
 	getTitleInLocale,
-	sortTagByPriority,
+	sortAndHideTags,
 } from '../../../utils/kara';
 import { commandBackend, getSocket, isRemote } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
@@ -139,7 +139,7 @@ export default function VersionSelector(props: Props) {
 															context.globalState.settings.data,
 															kara.titles
 														)}
-														{kara.versions?.sort(sortTagByPriority).map(t => (
+														{sortAndHideTags(kara.versions).map(t => (
 															<span className="tag white inline" key={t.tid}>
 																{getTagInLocale(
 																	context?.globalState.settings.data,
