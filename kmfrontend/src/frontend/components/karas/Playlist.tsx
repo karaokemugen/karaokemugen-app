@@ -23,7 +23,6 @@ import {
 	secondsTimeSpanToHMS,
 } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
-import { Tag } from '../../types/tag';
 import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
@@ -905,7 +904,7 @@ function Playlist(props: IProps) {
 	}, [props.searchType]);
 
 	useDeferredEffect(() => {
-		initCall();
+		setData(undefined);
 		if (
 			props.scope === 'admin' &&
 			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
@@ -914,6 +913,10 @@ function Playlist(props: IProps) {
 			props.toggleSearchMenu && props.toggleSearchMenu();
 		}
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
+
+	useDeferredEffect(() => {
+		initCall();
+	}, [data === undefined]);
 
 	useDeferredEffect(() => {
 		getPlaylist('search');
