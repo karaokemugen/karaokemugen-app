@@ -9,7 +9,6 @@ export const sqlgetAllTags = (
 	additionnalFrom: string[],
 	joinClauses: string,
 	stripClause: string,
-	probClause: string,
 	whereClause: string
 ) => `
 SELECT t.pk_tid AS tid,
@@ -21,7 +20,6 @@ SELECT t.pk_tid AS tid,
 	at.karacount AS karacount,
 	t.tagfile,
 	t.repository,
-	t.problematic,
 	t.nolivedownload AS "noLiveDownload",
 	t.priority,
 	t.karafile_tag,
@@ -34,7 +32,6 @@ WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => a + ' ' + b, '')}
   ${typeClauses}
   ${stripClause}
-  ${probClause}
   ${whereClause}
 ORDER BY name ${orderClauses}
 ${limitClause}
@@ -51,7 +48,6 @@ INSERT INTO tag(
 	aliases,
 	tagfile,
 	repository,
-	problematic,
 	nolivedownload,
 	priority,
 	karafile_tag
@@ -67,8 +63,7 @@ VALUES(
 	$8,
 	$9,
 	$10,
-	$11,
-	$12
+	$11
 )
 ON CONFLICT (pk_tid) DO UPDATE SET
 	types = $3,
@@ -78,10 +73,9 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 	aliases = $6,
 	tagfile = $7,
 	repository = $8,
-	problematic = $9,
-	nolivedownload = $10,
-	priority = $11,
-	karafile_tag = $12
+	nolivedownload = $9,
+	priority = $10,
+	karafile_tag = $11
 `;
 
 export const sqlupdateKaraTagsTID = `
@@ -127,10 +121,9 @@ SET
 	types = $5,
 	i18n = $6,
 	repository = $8,
-	problematic = $9,
-	nolivedownload = $10,
-	priority = $11,
-	karafile_tag = $12
+	nolivedownload = $9,
+	priority = $10,
+	karafile_tag = $11
 WHERE pk_tid = $7;
 `;
 

@@ -32,10 +32,13 @@ import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { exit } from './engine';
 import Timeout = NodeJS.Timeout;
+import { DBKaraTag } from '../lib/types/database/kara';
 import HTTP from '../lib/utils/http';
+import { convert1LangTo2B } from '../lib/utils/langs';
 import { profile } from '../lib/utils/logger';
 import { getBackgroundAndMusic } from '../services/backgrounds';
 import { getSongSeriesSingers, getSongTitle } from '../services/kara';
+import { getTagNameInLanguage } from '../services/tag';
 import { BackgroundType } from '../types/backgrounds';
 import { editSetting } from '../utils/config';
 
@@ -486,11 +489,12 @@ class Player {
 				this.control.displaySongInfo(playerState.currentSong.infos);
 			} else if (position <= 8 && playerState.mediaType === 'song') {
 				// Display informations if timeposition is 8 seconds after start of song
+				console.log(playerState.currentSong);
 				this.control.displaySongInfo(
 					playerState.currentSong.infos,
 					-1,
 					false,
-					playerState.currentSong?.misc?.some(t => t.name === 'Spoiler')
+					playerState.currentSong?.warnings
 				);
 			} else if (
 				position >= Math.floor(playerState.currentSong.duration / 2) - 4 &&
@@ -1385,20 +1389,31 @@ class Players {
 		}
 	}
 
-	async displaySongInfo(infos: string, duration = -1, nextSong = false, spoilerAlert = false) {
+	async displaySongInfo(infos: string, duration = -1, nextSong = false, warnings?: DBKaraTag[]) {
 		try {
-			let spoilerString = '';
+			console.log(warnings);
+			let warningString = '';
 			let nextSongString = '';
 			let position = '';
 			if (getConfig().Player.Display.SongInfo) {
-				spoilerString = spoilerAlert
-					? '{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ SPOILER WARNING ⚠{\\b0}\\N{\\c&HFFFFFF&}'
-					: '';
+				if (warnings) {
+					const lang =
+						getConfig().Player.Display.SongInfoLanguage ||
+						convert1LangTo2B(getState().defaultLocale) ||
+						'eng';
+					const warningArr = warnings.map(t => {
+						return getTagNameInLanguage(t, lang, 'eng');
+					});
+					warningString =
+						'{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ' +
+						warningArr.join(', ') +
+						'⚠{\\b0}\\N{\\c&HFFFFFF&}';
+				}
 				nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
 				position = nextSong ? '{\\an5}' : '{\\an1}';
 				this.messages.addMessage(
 					'DI',
-					position + spoilerString + nextSongString + infos,
+					position + warningString + nextSongString + infos,
 					duration === -1 ? 'infinite' : duration
 				);
 			}
@@ -1414,7 +1429,7 @@ class Players {
 				if (getState().streamerPause && getConfig().Karaoke.StreamerMode.PauseDuration > 0) {
 					this.progressBar(
 						getConfig().Karaoke.StreamerMode.PauseDuration,
-						position + spoilerString + nextSongString + infos
+						position + warningString + nextSongString + infos
 					);
 				}
 			}

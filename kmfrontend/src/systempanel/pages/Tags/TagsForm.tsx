@@ -116,7 +116,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						? this.state.repositoriesValue[0]
 						: null,
 					aliases: this.props.tag?.aliases,
-					problematic: this.props.tag?.problematic,
 					noLiveDownload: this.props.tag?.noLiveDownload,
 					priority: this.props.tag?.priority ? this.props.tag?.priority : 10,
 					karafile_tag: this.props.tag?.karafile_tag,
@@ -267,21 +266,6 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					name="priority"
 				>
 					<InputNumber required={true} min={0} placeholder="Priority" style={{ width: '100%' }} />
-				</Form.Item>
-				<Form.Item
-					label={
-						<span>
-							{i18next.t('TAGS.PROBLEMATIC')}&nbsp;
-							<Tooltip title={i18next.t('TAGS.PROBLEMATIC_TOOLTIP')}>
-								<QuestionCircleOutlined />
-							</Tooltip>
-						</span>
-					}
-					labelCol={{ flex: '0 1 300px' }}
-					valuePropName="checked"
-					name="problematic"
-				>
-					<Checkbox />
 				</Form.Item>
 				<Form.Item
 					label={

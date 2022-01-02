@@ -90,6 +90,12 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 		color: 'white',
 		karajson: 'versions',
 	},
+	WARNINGS: {
+		icon: 'exclamation-triangle',
+		type: 15,
+		color: 'red',
+		karajson: 'warnings',
+	},
 };
 
 Object.freeze(tagTypes);

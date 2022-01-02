@@ -521,7 +521,33 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		deletePromises.push(removeTag(TIDsToDelete, { refresh: false, removeTagInKaras: false, deleteFile: false }));
 	}
 	try {
+		console.log(
+			JSON.stringify(
+				karas.map(k => {
+					return {
+						file: k.file,
+						kid: k.data.data.kid,
+						parents: k.data.data.parents,
+					};
+				}),
+				null,
+				2
+			)
+		);
 		karas = topologicalSort(karas);
+		console.log(
+			JSON.stringify(
+				karas.map(k => {
+					return {
+						file: k.file,
+						kid: k.data.data.kid,
+						parents: k.data.data.parents,
+					};
+				}),
+				null,
+				2
+			)
+		);
 	} catch (err) {
 		logger.error('Topological sort failed', { service: 'Repo', obj: karas });
 		throw err;
