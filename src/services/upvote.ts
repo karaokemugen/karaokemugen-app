@@ -9,7 +9,7 @@ import { getUsers, updateSongsLeft } from './user';
 
 /** (Up|Down)vote a song. */
 export function vote(plc_id: number, username: string, downvote: boolean) {
-	if (downvote) return deleteUpvote(plc_id, username);
+	if (downvote) return removeUpvote(plc_id, username);
 	return addUpvote(plc_id, username);
 }
 
