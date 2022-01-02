@@ -135,7 +135,6 @@ export function testKara(kara: any, details: TestDetails) {
 
 export function testTag(tag: DBTag, type: 'short' | 'full' | 'tag') {
 	expect(tag.name).to.be.a('string');
-	expect(tag.problematic).to.be.a('boolean');
 	if (tag.noLiveDownload) expect(tag.noLiveDownload).to.be.a('boolean');
 	expect(tag.short).to.satisfy((val: any) => typeof val === 'string' || val === null);
 	expect(tag.tid).to.be.a('string').and.match(uuidRegexp);

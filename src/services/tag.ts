@@ -141,7 +141,6 @@ export async function mergeTags(tid1: string, tid2: string) {
 			short: tag1.short,
 			aliases: aliases,
 			repository: tag1.repository,
-			problematic: tag1.problematic || tag2.problematic,
 			noLiveDownload: tag1.noLiveDownload || tag2.noLiveDownload,
 			karafile_tag: tag1.karafile_tag || tag2.karafile_tag,
 			priority: tag1.priority,

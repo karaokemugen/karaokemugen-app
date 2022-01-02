@@ -330,7 +330,7 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 }
 
 export async function createProblematicSmartPlaylist() {
-	const tags = await getTags({ problematic: true });
+	const tags = await getTags({ type: 15 });
 	const plaid = await insertPlaylist({
 		name: i18next.t('PROBLEMATIC_SONGS'),
 		created_at: new Date(),

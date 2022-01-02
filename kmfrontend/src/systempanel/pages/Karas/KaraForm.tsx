@@ -375,6 +375,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					genres: this.props.kara?.genres || this.state.parentKara?.genres,
 					origins: this.props.kara?.origins || this.state.parentKara?.origins,
 					misc: this.props.kara?.misc || this.state.parentKara?.misc,
+					warnings: this.props.kara?.warnings || this.state.parentKara?.warnings,
 					groups: this.props.kara?.groups || this.state.parentKara?.groups,
 					versions: this.props.kara?.versions || this.state.parentKara?.versions,
 					comment: this.props.kara?.comment || null,
@@ -766,6 +767,18 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						tagType={7}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ misc: tags })}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={i18next.t('TAG_TYPES.WARNINGS_other')}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 10 }}
+					name="warnings"
+				>
+					<EditableTagGroup
+						tagType={15}
+						checkboxes={true}
+						onChange={tags => this.formRef.current.setFieldsValue({ warnings: tags })}
 					/>
 				</Form.Item>
 				<Form.Item

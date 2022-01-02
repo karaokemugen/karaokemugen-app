@@ -260,7 +260,7 @@ function getInlineTag(
 			scope={scope}
 			tag={e}
 			tagType={tagType}
-			className={e.problematic ? 'problematicTag' : 'inlineTag'}
+			className={tagType === 15 ? 'problematicTag' : 'inlineTag'}
 			changeView={changeView}
 			i18nParam={i18nParam}
 		/>
