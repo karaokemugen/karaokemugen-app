@@ -489,7 +489,6 @@ class Player {
 				this.control.displaySongInfo(playerState.currentSong.infos);
 			} else if (position <= 8 && playerState.mediaType === 'song') {
 				// Display informations if timeposition is 8 seconds after start of song
-				console.log(playerState.currentSong);
 				this.control.displaySongInfo(
 					playerState.currentSong.infos,
 					-1,
@@ -1391,7 +1390,6 @@ class Players {
 
 	async displaySongInfo(infos: string, duration = -1, nextSong = false, warnings?: DBKaraTag[]) {
 		try {
-			console.log(warnings);
 			let warningString = '';
 			let nextSongString = '';
 			let position = '';
