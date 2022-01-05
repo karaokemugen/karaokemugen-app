@@ -71,6 +71,7 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 			});
 		return user.body;
 	} catch(err) {
+		if ([404].includes(err.response?.statusCode)) return null;
 		logger.debug('Got error when trying to get an online user', {service: 'RemoteUser', obj: err});
 		throw {
 			code: 500,
