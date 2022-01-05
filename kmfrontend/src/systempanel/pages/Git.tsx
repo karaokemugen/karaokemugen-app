@@ -66,6 +66,28 @@ function StashList(props: {
 	setLoading: Dispatch<boolean>;
 	refreshRepo: () => void;
 }) {
+	const popStash = index => {
+		try {
+			props.setLoading(true);
+			commandBackend('popStash', { repoName: props.repo.Name, stashId: index }, false, 120000).then(
+				props.refreshRepo
+			);
+		} catch (e) {
+			// already display
+		}
+	};
+
+	const dropStash = index => {
+		try {
+			props.setLoading(true);
+			commandBackend('dropStash', { repoName: props.repo.Name, stashId: index }, false, 120000).then(
+				props.refreshRepo
+			);
+		} catch (e) {
+			// already display
+		}
+	};
+
 	return (
 		<>
 			<p>
@@ -83,15 +105,7 @@ function StashList(props: {
 								type="primary"
 								icon={<PullRequestOutlined />}
 								loading={props.loading}
-								onClick={() => {
-									props.setLoading(true);
-									commandBackend(
-										'popStash',
-										{ repoName: props.repo.Name, stashId: index },
-										false,
-										120000
-									).then(props.refreshRepo);
-								}}
+								onClick={() => popStash(index)}
 							>
 								{i18next.t('REPOSITORIES.GIT_UNSTASH')}
 							</Button>,
@@ -100,15 +114,7 @@ function StashList(props: {
 								danger
 								icon={<ExceptionOutlined />}
 								loading={props.loading}
-								onClick={() => {
-									props.setLoading(true);
-									commandBackend(
-										'dropStash',
-										{ repoName: props.repo.Name, stashId: index },
-										false,
-										120000
-									).then(props.refreshRepo);
-								}}
+								onClick={() => dropStash(index)}
 							>
 								{i18next.t('REPOSITORIES.GIT_DELETE')}
 							</Button>,
