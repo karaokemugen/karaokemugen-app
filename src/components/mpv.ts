@@ -1394,7 +1394,7 @@ class Players {
 			let nextSongString = '';
 			let position = '';
 			if (getConfig().Player.Display.SongInfo) {
-				if (warnings) {
+				if (warnings?.length > 0) {
 					const lang =
 						getConfig().Player.Display.SongInfoLanguage ||
 						convert1LangTo2B(getState().defaultLocale) ||
@@ -1405,7 +1405,7 @@ class Players {
 					warningString =
 						'{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ' +
 						warningArr.join(', ') +
-						'⚠{\\b0}\\N{\\c&HFFFFFF&}';
+						' ⚠{\\b0}\\N{\\c&HFFFFFF&}';
 				}
 				nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
 				position = nextSong ? '{\\an5}' : '{\\an1}';
