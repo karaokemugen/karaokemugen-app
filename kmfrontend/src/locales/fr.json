@@ -445,7 +445,7 @@
 			"ONLINE_SETTINGS": "En ligne",
 			"ONLINE_SETTINGS_TOOLTIP": "Connectez votre karaoké à Internet pour laisser le monde vous suggérer des chansons !",
 			"MYSTERY_SONG_SETTINGS": "Chanson mystère",
-			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Cacher des ajouts au public, pour les surprises.",
+			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Cacher des ajouts au public, pour les surprises !",
 			"HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
 			"HIDE_INVISIBLE_SONGS_TOOLTIP": "La façon dont les chansons mystère sont affichées au public. Pour faire des surprises !",
 			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Ne pas afficher",
@@ -496,7 +496,9 @@
 		"Les préparatifs sont en cours !"
 	],
 	"JINGLE_TIME": "Instant jingle !",
-	"JINGLE_TAGLINES": ["On revient !"],
+	"JINGLE_TAGLINES": [
+		"On revient !"
+	],
 	"INTRO_TIME": "Introduction",
 	"INTRO_TAGLINES": [
 		"C'est parti !",
@@ -506,15 +508,32 @@
 		"*se racle la gorge*"
 	],
 	"OUTRO_TIME": "Fin",
-	"OUTRO_TAGLINES": ["C'est fini :(", "Merci à tous !"],
+	"OUTRO_TAGLINES": [
+		"C'est fini :(",
+		"Merci à tous !"
+	],
 	"ENCORES_TIME": "Encore ! Encore !",
-	"ENCORES_TAGLINES": ["Bon, c'est bien parce que c'est vous…", "P'tite dèr ?", "Dernière chanson, on donne tout !"],
+	"ENCORES_TAGLINES": [
+		"Bon, c'est bien parce que c'est vous…",
+		"P'tite dèr ?",
+		"Dernière chanson, on donne tout !"
+	],
 	"SPONSOR_TIME": "LA PUB !",
-	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "Et merci pour l'argent."],
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa…",
+		"Et merci pour l'argent."
+	],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": ["On respire !", "Buvez un coup !", "On revient tout de suite !"],
+	"PAUSE_TAGLINES": [
+		"On respire !",
+		"Buvez un coup !",
+		"On revient tout de suite !"
+	],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": ["Votez ! Votez !", "Le choix vous revient."],
+	"POLL_TAGLINES": [
+		"Votez ! Votez !",
+		"Le choix vous revient."
+	],
 	"QUOTA_AVAILABLE": "Vous pouvez de nouveau ajouter des chansons !",
 	"SERIE_NAME_MODE": "Affichage des noms des séries",
 	"SERIE_NAME_MODE_TOOLTIP": "Change la façon dont les noms de séries sont affichés dans la liste des chansons. Peut être ignoré par les préférences d'un utilisateur",
