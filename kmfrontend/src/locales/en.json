@@ -976,7 +976,7 @@
 		"NOLIVEDOWNLOAD": "Disallow on Live/Web Downloads",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Songs with this tag won't be able to be downloaded on Karaoke Mugen Server from the web interface, or visible on Live",
 		"PRIORITY": "Display priority",
-		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default. -1 hides the tag from being displayed in public interface",
+		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default. -1 hides the tag from being displayed in public and operator interface",
 		"COPY_TAG": "Copy tag to another repository"
 	},
 	"TAG_TYPES": {
