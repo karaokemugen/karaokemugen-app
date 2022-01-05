@@ -1,5 +1,75 @@
 {
 	"YES": "Ya",
 	"NO": "Tidak",
-	"NEXT_SONG": "Lagu selanjutnya"
+	"NEXT_SONG": "Lagu selanjutnya",
+	"SELECT_PLACEHOLDER": "Pilih sebuah daftar putar",
+	"AND": "dan",
+	"SEARCH": "Cari",
+	"SUBMIT": "Simpan",
+	"CANCEL": "Batal",
+	"NOT_FOUND_PAGE": {
+		"404": "Tersesat di Karaoke Mugen?",
+		"404_2": "Jangan panik, kami bisa membantumu.",
+		"404_3": "Kamu di sini",
+		"404_4": "Pergi ke beranda"
+	},
+	"LOGIN_MANDATORY": "Daftar diwajibkan",
+	"PASSWORD_MANDATORY": "Kata sandi diwajibkan",
+	"SECURITY_CODE_MANDATORY": "Kode keamanan wajib untuk membuat akun operator",
+	"PASSWORD_DIFFERENT": "Kata sandi tidak sama",
+	"DETAILS": {
+		"DURATION": "Durasi",
+		"YEAR": "Tahun"
+	},
+	"DURATION_REMAINING": "tersisa",
+	"VERSION": "Versi",
+	"SHUTDOWN": "Matikan Karaoke Mugen",
+	"SHUTDOWN_POPUP": "Koneksi dengan Karaoke Mugen terputus",
+	"CHANGE_INTERFACE": "Ubah tampilan",
+	"MUTE_UNMUTE": "Bisu/batal bisu",
+	"SHOW_SUBS": "Tampilkan lirik di layar",
+	"HIDE_SUBS": "Sembunyikan lirik di layar",
+	"OPTIONS": "Pilihan",
+	"STOP_AFTER": "Berhenti setelah lagu saat ini",
+	"STOP_NOW": "Berhenti SEKARANG (Berbahaya!)",
+	"REWIND": "Putar ulang rekaman",
+	"PREVIOUS_SONG": "Lagu sebelumnya",
+	"PLAY_PAUSE": "Main/Jeda",
+	"PASSWORD": "Kata sandi (minimal 8 karakter)",
+	"PASSWORDCONF": "Konfirmasi kata sandi",
+	"NEW_PASSWORD": "Kata Sandi Baru",
+	"VOLUME_LEVEL": "Atur volume",
+	"PLAYLISTS": {
+		"LIBRARY": "Pustaka",
+		"FAVORITES": "Favorit"
+	},
+	"WEBAPPMODE_CLOSED_MESSAGE": "Tampilan ditutup, mohon tunggu.",
+	"INLINE_TAG": {
+		"COUNT_one": "{{count}} karaoke",
+		"COUNT_other": "{{count}} karaoke",
+		"SEARCH": "Karaoke dengan {{tag}}"
+	},
+	"ADMIN_HEADER": {
+		"QUICK_ACCESS": "Akses cepat"
+	},
+	"MESSAGE": "Pesan",
+	"PLAYLIST_HEADER": {
+		"FILTERS": "Filter",
+		"ACTIVE_FILTER": "Filter aktif",
+		"EDIT_CRITERIAS": "Sunting kriteria"
+	},
+	"ADVANCED": {
+		"PLAYLIST_COMMANDS": "Perintah daftar putar",
+		"ADD_ALL": "Tambahkan semua lagu ke daftar lain",
+		"ADD_RANDOM": "Tambah lagu acak",
+		"EMPTY_LIST": "Daftar putar kosong",
+		"DELETE": "Hapus daftar putar",
+		"EDIT": "Sunting daftar putar",
+		"EXPORT": "Ekspor daftar putar",
+		"ADD": "Tambah daftar putar baru",
+		"AUTOMIX": "Buat sebuah oto-campur",
+		"IMPORT": "Impor daftar putar",
+		"SHUFFLE": "Acak/Urut…",
+		"DOWNLOAD_ALL": "Unduh semua"
+	}
 }
