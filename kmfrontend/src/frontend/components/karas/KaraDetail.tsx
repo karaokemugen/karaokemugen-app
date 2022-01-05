@@ -14,6 +14,7 @@ import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
+import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { useDeferredEffect } from '../../../utils/hooks';
 import {
 	buildKaraTitle,
@@ -276,7 +277,17 @@ export default function KaraDetail(props: IProps) {
 					</div>
 				) : null}
 				<div className="detailsKaraLine">
-					<span>
+					{kara.nickname ? (
+						<ProfilePicture
+							className="img-circle"
+							user={{
+								login: kara.username,
+								type: kara.user_type,
+								nickname: kara.nickname,
+							}}
+						/>
+					) : null}
+					<div>
 						{props.playlistcontentId ? i18next.t('KARA_DETAIL.ADDED') : i18next.t('KARA_DETAIL.CREATED')}
 						{kara.created_at ? (
 							<>
@@ -290,7 +301,7 @@ export default function KaraDetail(props: IProps) {
 								<span className="boldDetails">{kara.nickname}</span>
 							</>
 						) : null}
-					</span>
+					</div>
 				</div>
 				{karaBlockTags}
 				<div className="detailsKaraLine">

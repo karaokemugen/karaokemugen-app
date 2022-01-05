@@ -2,7 +2,7 @@ import slugify from 'slug';
 
 import { User } from '../../../src/lib/types/user';
 import blankAvatar from '../assets/blank.png';
-import { getSocket, isRemote } from './socket';
+import { commandBackend, getSocket, isRemote } from './socket';
 
 const cache: Map<string, string> = new Map();
 
@@ -31,12 +31,11 @@ export function syncGenerateProfilePicLink(user: User) {
 }
 
 export async function generateProfilePicLink(user: User): Promise<string> {
-	if (isRemote()) {
+	// Retrieve cache entry
+	if (cache.has(user.login)) {
+		return cache.get(user.login);
+	} else if (isRemote()) {
 		if (user?.login.includes('@')) {
-			// Retrieve cache entry
-			if (cache.has(user.login)) {
-				return cache.get(user.login);
-			}
 			const [login, instance] = user.login.split('@');
 			const data: User = await fetch(`https://${instance}/api/users/${encodeURIComponent(login)}`).then(res =>
 				res.json()
@@ -61,7 +60,10 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 		if (user.avatar_file) {
 			return `/avatars/${user.avatar_file}`;
 		} else {
-			return blankAvatar;
+			const data: User = await commandBackend('getUser', { username: user.login });
+			const path = `/avatars/${data.avatar_file}`;
+			cache.set(user.login, path);
+			return path;
 		}
 	}
 }
