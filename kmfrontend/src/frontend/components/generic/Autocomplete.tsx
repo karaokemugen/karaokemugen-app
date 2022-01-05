@@ -94,7 +94,7 @@ function Autocomplete(props: IProps) {
 	}, [props.value, props.options]); // properly reflect value changes by prop mutation
 
 	const handleClick = (e: any) => {
-		if (node.current.contains(e.target)) {
+		if (node.current?.contains(e.target)) {
 			// inside click
 			return;
 		}

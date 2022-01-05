@@ -975,12 +975,10 @@
 		"LANG_ERROR": "Un tag doit avoir au moins un nom par langue.",
 		"REPOSITORY": "Dépôt",
 		"REPOSITORY_REQUIRED": "Le dépôt est obligatoire",
-		"PROBLEMATIC": "Problématique",
-		"PROBLEMATIC_TOOLTIP": "Ce tag est-il problématique ? Est-ce un tag qu'on voudra probablement bannir ? Cela permet de marquer plus facilement les chansons à problèmes dans l'interface opérateur/publique. Par exemple R18, Spoiler ou Épilepsie",
 		"NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
 		"PRIORITY": "Priorité à l'affichage",
-		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10.",
+		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 cache l'affichage du tag sur l'interface publique",
 		"COPY_TAG": "Copier le tag vers un autre dépôt"
 	},
 	"TAG_TYPES": {
@@ -1011,7 +1009,9 @@
 		"SERIES_one": "Série",
 		"SERIES_other": "Séries",
 		"VERSIONS_one": "Version",
-		"VERSIONS_other": "Versions"
+		"VERSIONS_other": "Versions",
+		"WARNINGS_one": "Warning",
+		"WARNINGS_other": "Warnings"
 	},
 	"CONFIG": {
 		"PROPERTY": "Propriété",

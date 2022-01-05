@@ -39,7 +39,7 @@ export default function InlineTag(props: Props) {
 	};
 
 	const handleClick = (e: any) => {
-		if (node.current.contains(e.target)) {
+		if (node.current?.contains(e.target)) {
 			// inside click
 			return;
 		}

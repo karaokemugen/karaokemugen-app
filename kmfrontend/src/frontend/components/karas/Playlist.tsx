@@ -23,7 +23,6 @@ import {
 	secondsTimeSpanToHMS,
 } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
-import { Tag } from '../../types/tag';
 import CriteriasList from './CriteriasList';
 import KaraLine from './KaraLine';
 import PlaylistHeader from './PlaylistHeader';
@@ -198,11 +197,13 @@ function Playlist(props: IProps) {
 		return !!data?.content[index];
 	};
 
-	const scrollHandler = async ({ endIndex }: ListRange) => {
+	const scrollHandler = async ({ startIndex, endIndex }: ListRange) => {
 		clearScrollToIndex();
-		if (isRowLoaded(endIndex)) return;
+		if (isRowLoaded(startIndex)) return;
 		else if (!isPlaylistInProgress) {
-			data.infos.from = Math.floor(endIndex / chunksize) * chunksize;
+			data.infos.from = Math.floor(startIndex / chunksize) * chunksize;
+			data.infos.to =
+				data.infos.from + (Math.ceil(endIndex / chunksize) - Math.floor(startIndex / chunksize)) * chunksize;
 			setData(data);
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(getPlaylist, 1000);
@@ -374,7 +375,7 @@ function Playlist(props: IProps) {
 
 		param.filter = getFilterValue(props.side);
 		param.from = data?.infos?.from > 0 ? data.infos.from : 0;
-		param.size = chunksize;
+		param.size = data?.infos?.from > 0 && data?.infos?.to > 0 ? data.infos.to - data.infos.from : chunksize;
 		param.blacklist = true;
 		param.parentsOnly = props.scope === 'public' && context.globalState.settings.data.user.flag_parentsonly;
 		if (search) {
@@ -905,7 +906,7 @@ function Playlist(props: IProps) {
 	}, [props.searchType]);
 
 	useDeferredEffect(() => {
-		initCall();
+		setData(null);
 		if (
 			props.scope === 'admin' &&
 			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
@@ -914,6 +915,10 @@ function Playlist(props: IProps) {
 			props.toggleSearchMenu && props.toggleSearchMenu();
 		}
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
+
+	useDeferredEffect(() => {
+		initCall();
+	}, [data === null]);
 
 	useDeferredEffect(() => {
 		getPlaylist('search');

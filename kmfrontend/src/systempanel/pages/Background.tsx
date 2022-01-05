@@ -6,9 +6,11 @@ import { useEffect, useState } from 'react';
 
 import { commandBackend } from '../../utils/socket';
 
+export type BackgroundType = 'pause' | 'stop' | 'poll';
+
 export interface ElementBackgroundList {
 	file: string;
-	type: 'pause' | 'stop' | 'poll';
+	type: BackgroundType;
 }
 export interface BackgroundList {
 	pictures: ElementBackgroundList[];
@@ -19,7 +21,7 @@ export default function Background() {
 	const [bgList, setBgList] = useState<BackgroundList>();
 	const [addModal, setAddModal] = useState(false);
 	const [file, setFile] = useState();
-	const [type, setType] = useState<'pause' | 'stop' | 'poll'>('pause');
+	const [type, setType] = useState<BackgroundType>('pause');
 
 	const acceptFilesFormat = '.jpg, .jpeg, .png, .mp3';
 
@@ -151,7 +153,11 @@ export default function Background() {
 					</Upload>
 					<div style={{ marginTop: '1em' }}>
 						<label>{i18next.t('BACKGROUNDS_MGMT.CATEGORY')}</label>
-						<Select defaultValue="pause" style={{ marginLeft: '1em' }} onChange={value => setType(value)}>
+						<Select
+							defaultValue="pause"
+							style={{ marginLeft: '1em' }}
+							onChange={(value: BackgroundType) => setType(value)}
+						>
 							<Select.Option key="pause" value="pause">
 								{i18next.t('BACKGROUNDS_MGMT.TYPE.PAUSE')}
 							</Select.Option>

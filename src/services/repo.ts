@@ -514,7 +514,8 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		task.update({ value: task.item.value + 1, subtext: match.path });
 	}
 	const deletePromises = [];
-	if (KIDsToDelete.length > 0) deletePromises.push(deleteKara(KIDsToDelete, false, { media: true, kara: false }));
+	if (KIDsToDelete.length > 0)
+		deletePromises.push(deleteKara(KIDsToDelete, false, { media: true, kara: false }, true));
 	if (TIDsToDelete.length > 0) {
 		// Let's not remove tags in karas : it's already done anyway
 		deletePromises.push(removeTag(TIDsToDelete, { refresh: false, removeTagInKaras: false, deleteFile: false }));

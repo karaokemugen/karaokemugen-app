@@ -973,12 +973,10 @@
 		"LANG_ERROR": "A tag must have at least one translated name.",
 		"REPOSITORY": "Repository",
 		"REPOSITORY_REQUIRED": "Repository is mandatory",
-		"PROBLEMATIC": "Problematic",
-		"PROBLEMATIC_TOOLTIP": "Is this tag problematic? Should it be a tag you'd want to warn users about? This helps mark some songs more easily in the operator/public interface. For example R18, Spoiler, or Epilepsy",
 		"NOLIVEDOWNLOAD": "Disallow on Live/Web Downloads",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Songs with this tag won't be able to be downloaded on Karaoke Mugen Server from the web interface, or visible on Live",
 		"PRIORITY": "Display priority",
-		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default.",
+		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default. -1 hides the tag from being displayed in public interface",
 		"COPY_TAG": "Copy tag to another repository"
 	},
 	"TAG_TYPES": {
@@ -1009,7 +1007,9 @@
 		"SERIES_one": "Series",
 		"SERIES_other": "Series",
 		"VERSIONS_one": "Version",
-		"VERSIONS_other": "Versions"
+		"VERSIONS_other": "Versions",
+		"WARNINGS_one": "Warning",
+		"WARNINGS_other": "Warnings"
 	},
 	"CONFIG": {
 		"PROPERTY": "Property",

@@ -7,7 +7,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import GlobalContext from '../store/context';
 import { isElectron } from '../utils/electron';
 import { commandBackend, getSocket } from '../utils/socket';
-import { callModal, is_touch_device, startIntro } from '../utils/tools';
+import { callModal, is_touch_device } from '../utils/tools';
 import About from './components/About';
 import AdminPage from './components/AdminPage';
 import ChibiPage from './components/ChibiPage';
@@ -73,10 +73,6 @@ function KMFrontend() {
 				undefined,
 				true
 			);
-		}
-
-		if (!context?.globalState.settings.data.user?.flag_tutorial_done && location.pathname === '/admin') {
-			startIntro();
 		}
 	}, []);
 

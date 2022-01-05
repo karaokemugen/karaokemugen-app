@@ -26,7 +26,6 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 	const orderClause = '';
 	let stripClause = '';
 	let joinClauses = '';
-	let probClause = '';
 	let whereClause = '';
 	if (params.from > 0) offsetClause = `OFFSET ${params.from} `;
 	if (params.size > 0) limitClause = `LIMIT ${params.size} `;
@@ -39,7 +38,6 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 		 `;
 		stripClause = ' AND karacounttype::int2 > 0';
 	}
-	if (params.problematic) probClause = ' AND t.problematic = TRUE';
 	if (params.duplicates) whereClause = ' AND t.name IN (SELECT name FROM tag GROUP BY name HAVING COUNT(name) > 1)';
 	if (params.tid) {
 		if (!params.tid.match(uuidRegexp)) throw 'Invalid TID';
@@ -54,7 +52,6 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 		filterClauses.additionalFrom,
 		joinClauses,
 		stripClause,
-		probClause,
 		whereClause
 	);
 	const res = await db().query(yesql(query)(filterClauses.params));
@@ -82,7 +79,6 @@ export async function insertTag(tag: Tag) {
 		JSON.stringify(tag.aliases || []),
 		tag.tagfile,
 		tag.repository,
-		tag.problematic || false,
 		tag.noLiveDownload || false,
 		tag.priority || 10,
 		tag.karafile_tag || null,
@@ -121,7 +117,6 @@ export async function updateTag(tag: Tag) {
 		tag.i18n || {},
 		tag.tid,
 		tag.repository,
-		tag.problematic || false,
 		tag.noLiveDownload || false,
 		tag.priority || 10,
 		tag.karafile_tag || null,

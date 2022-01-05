@@ -15,7 +15,6 @@ describe('Tags', () => {
 	const tag1: any = {
 		name: 'My super tag',
 		short: 'SUPER',
-		problematic: false,
 		noLiveDownload: true,
 		aliases: ['sup'],
 		i18n: {
@@ -27,7 +26,6 @@ describe('Tags', () => {
 	const tag2: any = {
 		name: 'My mega tag',
 		short: 'MEGA',
-		problematic: false,
 		noLiveDownload: true,
 		aliases: ['meg'],
 		i18n: {
@@ -136,7 +134,6 @@ function testTagFile(tag: TagFile, tagData: DBTag) {
 	expect(tag.header.version).to.be.a('number').and.at.least(1);
 	if (tag.tag.aliases) expect(tag.tag.aliases).to.satisfy((e: any) => e === undefined || Array.isArray(e));
 	expect(tag.tag.name).to.be.a('string').and.equal(tagData.name);
-	if (tag.tag.problematic) expect(tag.tag.problematic).to.be.a('boolean').and.equal(tagData.problematic);
 	if (tag.tag.noLiveDownload) expect(tag.tag.noLiveDownload).to.be.a('boolean').and.equal(tagData.noLiveDownload);
 	if (tag.tag.short) expect(tag.tag.short).to.be.a('string').and.equal(tagData.short);
 	expect(tag.tag.i18n).to.be.an('object');

@@ -27,7 +27,7 @@ export async function editKara(kara: Kara, refresh = true) {
 	try {
 		const validationErrors = validateNewKara(kara);
 		if (validationErrors) throw validationErrors;
-		if (kara.parents.includes(kara.kid)) throw 'Did you just try to make a song its own parent?';
+		if (kara.parents && kara.parents.includes(kara.kid)) throw 'Did you just try to make a song its own parent?';
 	} catch (err) {
 		throw { code: 400, msg: err };
 	}

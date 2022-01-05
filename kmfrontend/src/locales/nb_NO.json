@@ -265,8 +265,7 @@
 		"MERGE_WITH": "Flett med",
 		"MERGE_WITH_BUTTON": "Flett!",
 		"MERGE_ABOUT": "Om flettingsprosessen",
-		"TAG_DELETED_CONFIRM": "Bekreft sletting av etikett",
-		"PROBLEMATIC": "Problematisk"
+		"TAG_DELETED_CONFIRM": "Bekreft sletting av etikett"
 	},
 	"SESSIONS": {
 		"MERGE_WITH_BUTTON": "Flett!",

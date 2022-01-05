@@ -161,7 +161,7 @@ export default function Git() {
 
 	const updateRepo = useCallback(async (repoName: string) => {
 		setLoading(true);
-		await commandBackend('updateRepo', { repoName }).catch(() => null);
+		await commandBackend('updateRepo', { repoName }, false, 300000).catch(() => null);
 		setLoading(false);
 		// Refresh repos
 		getRepos().then(setRepos);

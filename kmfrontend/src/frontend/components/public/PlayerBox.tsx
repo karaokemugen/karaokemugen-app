@@ -7,7 +7,7 @@ import ResizeObserver from 'resize-observer-polyfill';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
 import GlobalContext from '../../../store/context';
-import { getPreviewLink, getTagInLocale, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
+import { getPreviewLink, getTagInLocale, getTitleInLocale, sortAndHideTags } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { secondsTimeSpanToHMS } from '../../../utils/tools';
@@ -135,8 +135,7 @@ function PlayerBox(props: IProps) {
 								.map(e => e.name)
 								.join(', ') + (kara.singers.length > 3 ? '...' : '')
 						: '';
-				const songtypeText = [...kara.songtypes]
-					.sort(sortTagByPriority)
+				const songtypeText = sortAndHideTags(kara.songtypes)
 					.map(e => (e.short ? +e.short : e.name))
 					.join(' ');
 				const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
@@ -144,7 +143,7 @@ function PlayerBox(props: IProps) {
 					// Tags in the header
 					const typeData = tagTypes['VERSIONS'];
 					if (kara.versions) {
-						return kara[typeData.karajson].sort(sortTagByPriority).map(tag => {
+						return sortAndHideTags(kara[typeData.karajson]).map(tag => {
 							return (
 								<div
 									key={tag.tid}

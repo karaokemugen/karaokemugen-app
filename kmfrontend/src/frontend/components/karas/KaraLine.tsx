@@ -15,7 +15,7 @@ import {
 	getPlaylistInfo,
 	getTagInLocale,
 	getTitleInLocale,
-	sortTagByPriority,
+	sortAndHideTags,
 } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
@@ -208,15 +208,15 @@ function KaraLine(props: IProps) {
 		const karaTags: JSX.Element[] = [];
 		const data = props.kara;
 
-		for (const type of ['FAMILIES', 'PLATFORMS', 'ORIGINS', 'MISC']) {
+		for (const type of ['FAMILIES', 'PLATFORMS', 'ORIGINS', 'MISC', 'WARNINGS']) {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(
-					...data[typeData.karajson].sort(sortTagByPriority).map(tag => {
+					...sortAndHideTags(data[typeData.karajson]).map(tag => {
 						return (
 							<div
 								key={tag.tid}
-								className={`tag ${typeData.color}${tag.problematic ? ' problematicTag' : ''}`}
+								className={`tag ${typeData.color}${type === 'WARNINGS' ? ' problematicTag' : ''}`}
 								title={getTagInLocale(context?.globalState.settings.data, tag, props.i18nTag)}
 							>
 								{props.scope === 'admin' && !is_touch_device()
@@ -232,16 +232,6 @@ function KaraLine(props: IProps) {
 		}
 		return karaTags.filter(el => !!el);
 	})();
-
-	const isProblematic = () => {
-		const problematic: DBKaraTag[] = [];
-		for (const tagType of Object.keys(tagTypes)) {
-			if ((props.kara[tagType.toLowerCase()] as unknown as DBKaraTag[])?.length > 0) {
-				problematic.push(...props.kara[tagType.toLowerCase()].filter((t: DBKaraTag) => t.problematic));
-			}
-		}
-		return problematic;
-	};
 
 	const getSerieOrSingers = (data: KaraElement) => {
 		return data.series && data.series.length > 0
@@ -287,28 +277,25 @@ function KaraLine(props: IProps) {
 		return null;
 	};
 
-	const problematic = isProblematic();
 	const karaTitle = buildKaraTitle(context.globalState.settings.data, props.kara, false, props.i18nTag);
 	const karaSerieOrSingers = getSerieOrSingers(props.kara);
-	const kara = props.kara;
-	const scope = props.scope;
 	const plaid = getPlaylistInfo(props.side, context).plaid;
 	const shouldShowProfile =
 		context.globalState.settings.data.config.Frontend?.ShowAvatarsOnPlaylist && props.avatar_file;
 	return (
 		<div {...props.draggable.draggableProps} ref={props.draggable.innerRef}>
 			<div
-				className={`list-group-item${kara.flag_playing ? ' currentlyplaying' : ''}${
-					kara.flag_dejavu ? ' dejavu' : ''
+				className={`list-group-item${props.kara.flag_playing ? ' currentlyplaying' : ''}${
+					props.kara.flag_dejavu ? ' dejavu' : ''
 				}
 				${props.indexInPL % 2 === 0 ? ' list-group-item-even' : ''} ${
-					(props.jingle || props.sponsor) && scope === 'admin' ? ' marker' : ''
+					(props.jingle || props.sponsor) && props.scope === 'admin' ? ' marker' : ''
 				}
-				${props.sponsor && scope === 'admin' ? ' green' : ''}${props.side === 'right' ? ' side-right' : ''}`}
+				${props.sponsor && props.scope === 'admin' ? ' green' : ''}${props.side === 'right' ? ' side-right' : ''}`}
 			>
-				{scope === 'public' &&
-				kara.username !== context.globalState.auth.data.username &&
-				kara.flag_visible === false ? (
+				{props.scope === 'public' &&
+				props.kara.username !== context.globalState.auth.data.username &&
+				props.kara.flag_visible === false ? (
 					<div className="contentDiv">
 						<div>
 							{
@@ -326,7 +313,7 @@ function KaraLine(props: IProps) {
 				) : (
 					<>
 						<div className="infoDiv">
-							{scope === 'admin' &&
+							{props.scope === 'admin' &&
 							(isNonStandardPlaylist(plaid) ||
 								(getPlaylistInfo(props.side, context)?.flag_public &&
 									!getPlaylistInfo(props.side, context)?.flag_current)) ? (
@@ -338,7 +325,7 @@ function KaraLine(props: IProps) {
 									<i className="fas fa-play" />
 								</button>
 							) : null}
-							{scope === 'admin' &&
+							{props.scope === 'admin' &&
 							!isNonStandardPlaylist(plaid) &&
 							!(
 								getPlaylistInfo(props.side, context)?.flag_public &&
@@ -352,7 +339,7 @@ function KaraLine(props: IProps) {
 									<i className="fas fa-play-circle" />
 								</button>
 							) : null}
-							{scope === 'admin' && !isNonStandardPlaylist(plaid) && !kara.flag_visible ? (
+							{props.scope === 'admin' && !isNonStandardPlaylist(plaid) && !props.kara.flag_visible ? (
 								<button
 									type="button"
 									className={'btn btn-action btn-primary'}
@@ -365,7 +352,7 @@ function KaraLine(props: IProps) {
 						{is_touch_device() || props.scope === 'public' ? (
 							<div
 								className="contentDiv contentDivMobile"
-								onClick={() => props.openKara(kara, plaid)}
+								onClick={() => props.openKara(props.kara, plaid)}
 								tabIndex={1}
 							>
 								<div className="contentDivMobileTitle">
@@ -373,25 +360,26 @@ function KaraLine(props: IProps) {
 										className="tag inline green"
 										title={getTagInLocale(
 											context?.globalState.settings.data,
-											kara.langs[0],
+											props.kara.langs[0],
 											props.i18nTag
 										)}
 									>
-										{kara.langs[0].short?.toUpperCase() || kara.langs[0].name.toUpperCase()}
+										{props.kara.langs[0].short?.toUpperCase() ||
+											props.kara.langs[0].name.toUpperCase()}
 									</span>
-									{kara.flag_dejavu && !kara.flag_playing ? (
+									{props.kara.flag_dejavu && !props.kara.flag_playing ? (
 										<i
 											className="fas fa-fw fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}
-									{getTitleInLocale(context.globalState.settings.data, kara.titles)}
+									{getTitleInLocale(context.globalState.settings.data, props.kara.titles)}
 									{downloadIcon()}
-									{problematic.length > 0 ? (
+									{props.kara.warnings.length > 0 ? (
 										<i
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
-												tags: problematic
+												tags: props.kara.warnings
 													.map(t =>
 														getTagInLocale(
 															context?.globalState.settings.data,
@@ -409,38 +397,38 @@ function KaraLine(props: IProps) {
 										className="tag inline green"
 										title={getTagInLocale(
 											context?.globalState.settings.data,
-											kara.songtypes[0],
+											props.kara.songtypes[0],
 											props.i18nTag
 										)}
 									>
-										{kara.songtypes[0].short?.toUpperCase() || kara.songtypes[0].name}{' '}
-										{kara.songorder}
+										{props.kara.songtypes[0].short?.toUpperCase() || props.kara.songtypes[0].name}{' '}
+										{props.kara.songorder}
 									</span>
 									{karaSerieOrSingers}
 								</div>
-								{kara.upvotes && props.scope === 'admin' ? (
+								{props.kara.upvotes && props.scope === 'admin' ? (
 									<div className="upvoteCount">
 										<i className="fas fa-thumbs-up" />
-										{kara.upvotes}
+										{props.kara.upvotes}
 									</div>
 								) : null}
 								<div className="contentDivMobileTags">
 									<div>
-										{kara.children?.length > 0 &&
+										{props.kara.children?.length > 0 &&
 										context.globalState.settings.data.user.flag_parentsonly &&
 										props.scope === 'public' ? (
 											<>
 												<i className="far fa-fixed-width fa-list-alt" />
 												&nbsp;
 												{i18next.t('KARA.VERSION_AVAILABILITY', {
-													count: kara.children.length + 1,
+													count: props.kara.children.length + 1,
 												})}
 											</>
 										) : null}
 									</div>
 									<div className="tagConteneur">
 										{karaTags}
-										{kara.versions?.sort(sortTagByPriority).map(t => (
+										{sortAndHideTags(props.kara.versions).map(t => (
 											<span className="tag white" key={t.tid}>
 												{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
 											</span>
@@ -449,9 +437,9 @@ function KaraLine(props: IProps) {
 								</div>
 							</div>
 						) : (
-							<div className="contentDiv" onClick={() => props.openKara(kara, plaid)} tabIndex={1}>
+							<div className="contentDiv" onClick={() => props.openKara(props.kara, plaid)} tabIndex={1}>
 								<div className="disable-select karaTitle">
-									{kara.flag_dejavu && !kara.flag_playing ? (
+									{props.kara.flag_dejavu && !props.kara.flag_playing ? (
 										<i
 											className="fas fa-fw fa-history dejavu-icon"
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
@@ -459,11 +447,11 @@ function KaraLine(props: IProps) {
 									) : null}
 									{karaTitle}
 									{downloadIcon()}
-									{problematic.length > 0 ? (
+									{props.kara.warnings.length > 0 ? (
 										<i
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
-												tags: problematic
+												tags: props.kara.warnings
 													.map(t =>
 														getTagInLocale(
 															context?.globalState.settings.data,
@@ -475,19 +463,19 @@ function KaraLine(props: IProps) {
 											})}
 										/>
 									) : null}
-									{kara.upvotes && props.scope === 'admin' ? (
+									{props.kara.upvotes && props.scope === 'admin' ? (
 										<div className="upvoteCount" title={i18next.t('KARA_DETAIL.UPVOTE_NUMBER')}>
 											<i className="fas fa-thumbs-up" />
-											{kara.upvotes}
+											{props.kara.upvotes}
 										</div>
 									) : null}
 									<div className="tagConteneur">{karaTags}</div>
 								</div>
 							</div>
 						)}
-						{scope === 'admin' ? (
+						{props.scope === 'admin' ? (
 							<span className="checkboxKara" onClick={checkKara}>
-								{kara.checked ? (
+								{props.kara.checked ? (
 									<i className="far fa-check-square"></i>
 								) : (
 									<i className="far fa-square"></i>
@@ -495,7 +483,7 @@ function KaraLine(props: IProps) {
 							</span>
 						) : null}
 						{props.scope === 'public' ? (
-							<div onClick={() => props.openKara(kara, plaid)}>
+							<div onClick={() => props.openKara(props.kara, plaid)}>
 								<i className="fas fa-chevron-right fa-3x" />
 							</div>
 						) : null}
@@ -518,7 +506,7 @@ function KaraLine(props: IProps) {
 									<ActionsButtons
 										side={props.side}
 										scope={props.scope}
-										kara={kara}
+										kara={props.kara}
 										addKara={addKara}
 										deleteKara={deleteKara}
 										deleteFavorite={deleteFavorite}
@@ -527,7 +515,7 @@ function KaraLine(props: IProps) {
 										acceptKara={acceptKara}
 									/>
 								) : null}
-								{scope === 'admin' ? (
+								{props.scope === 'admin' ? (
 									<button
 										title={i18next.t('KARA_MENU.KARA_COMMANDS')}
 										onClick={event => {
@@ -546,11 +534,11 @@ function KaraLine(props: IProps) {
 					</>
 				)}
 			</div>
-			{props.sponsor && props.jingle && scope === 'admin' ? (
+			{props.sponsor && props.jingle && props.scope === 'admin' ? (
 				<div className="marker-label green">{i18next.t('KARA_DETAIL.JINGLE_SPONSOR')}</div>
-			) : props.jingle && scope === 'admin' ? (
+			) : props.jingle && props.scope === 'admin' ? (
 				<div className="marker-label">{i18next.t('KARA_DETAIL.JINGLE')}</div>
-			) : props.sponsor && scope === 'admin' ? (
+			) : props.sponsor && props.scope === 'admin' ? (
 				<div className="marker-label green">{i18next.t('KARA_DETAIL.SPONSOR')}</div>
 			) : (
 				''
