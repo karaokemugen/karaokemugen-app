@@ -375,7 +375,7 @@ function KaraLine(props: IProps) {
 									) : null}
 									{getTitleInLocale(context.globalState.settings.data, props.kara.titles)}
 									{downloadIcon()}
-									{props.kara.warnings.length > 0 ? (
+									{props.kara.warnings?.length > 0 ? (
 										<i
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
@@ -447,7 +447,7 @@ function KaraLine(props: IProps) {
 									) : null}
 									{karaTitle}
 									{downloadIcon()}
-									{props.kara.warnings.length > 0 ? (
+									{props.kara.warnings?.length > 0 ? (
 										<i
 											className="fas fa-fw fa-exclamation-triangle problematic"
 											title={i18next.t('KARA.PROBLEMATIC_TOOLTIP', {
