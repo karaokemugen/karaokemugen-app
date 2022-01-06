@@ -10,7 +10,7 @@ export const requiredMPVVersion = '>=0.33.0';
 
 export const expectedPGVersion = 13;
 
-export const supportedLanguages = ['en', 'fr', 'es'];
+export const supportedLanguages = ['en', 'fr', 'es', 'id'];
 
 /** Default guest names used to fill up the database */
 export const defaultGuestNames = [
