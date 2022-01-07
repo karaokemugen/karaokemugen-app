@@ -788,6 +788,8 @@
 		"TITLE_TOOLTIP": "Si vous ne le connaissez pas, mettez le nom de la série. Dans le cas d'une version alternative, nommez votre titre ainsi : 'Mon titre ~ Disco vers.' par exemple",
 		"TITLE_REQUIRED": "Un titre est obligatoire",
 		"TITLE_ENG_REQUIRED": "Le titre anglais est obligatoire",
+		"ALIASES": "Alias",
+		"ALIASES_TOOLTIP": "Noms courts ou alternatifs, utilisés pour la recherche.",
 		"SERIES_TOOLTIP": "Série TV, nom de film, de jeu vidéo, etc.",
 		"TYPE_REQUIRED": "Un type de chanson est obligatoire",
 		"ORDER": "Numéro de chanson",

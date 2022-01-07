@@ -7,7 +7,7 @@ import { Component, createRef } from 'react';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
-import EditableTagGroupAlias from '../../components/EditableTagGroupAlias';
+import EditableGroupAlias from '../../components/EditableGroupAlias';
 import LanguagesList from '../../components/LanguagesList';
 
 interface TagsFormProps {
@@ -237,7 +237,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 					labelCol={{ flex: '0 1 300px' }}
 					name="aliases"
 				>
-					<EditableTagGroupAlias onChange={tags => this.formRef.current?.setFieldsValue({ aliases: tags })} />
+					<EditableGroupAlias onChange={tags => this.formRef.current?.setFieldsValue({ aliases: tags })} />
 				</Form.Item>
 				<Form.Item
 					labelCol={{ flex: '0 1 300px' }}
