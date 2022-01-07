@@ -637,6 +637,7 @@ export const sqlselectKarasFromCriterias = {
 	FROM playlist_criteria c
 	INNER JOIN tag t ON unaccent(t.name) ILIKE ('%' || unaccent('${value}') || '%')
 	INNER JOIN kara_tag kt ON t.pk_tid = kt.fk_tid
+	LEFT JOIN kara k ON k.pk_kid = kt.fk_kid
 	WHERE c.type = 1005
 	AND   kt.fk_kid NOT IN (select fk_kid from playlist_content where fk_id_playlist = $2)
 	AND   fk_id_playlist = $1
