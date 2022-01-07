@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { setAuthentifactionInformation } from '../../../store/actions/auth';
+import { setAuthenticationInformation } from '../../../store/actions/auth';
 import GlobalContext from '../../../store/context';
 import { isElectron } from '../../../utils/electron';
 import { langSupport } from '../../../utils/isoLanguages';
@@ -84,7 +84,7 @@ function SetupPageUser() {
 				password: password,
 				securityCode: securityCode,
 			});
-			setAuthentifactionInformation(context.globalDispatch, infos);
+			setAuthenticationInformation(context.globalDispatch, infos);
 			setError(undefined);
 			navigate('/setup/repo');
 		} catch (err: any) {

@@ -57,7 +57,7 @@ export function logout(dispatch: Dispatch<LogoutUser>): void {
 	});
 }
 
-export function setAuthentifactionInformation(
+export function setAuthenticationInformation(
 	dispatch: Dispatch<LoginSuccess | SettingsSuccess | SettingsFailure>,
 	data: IAuthentifactionInformation
 ) {

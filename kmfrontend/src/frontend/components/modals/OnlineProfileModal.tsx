@@ -3,7 +3,7 @@ import './OnlineProfileModal.scss';
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
 
-import { setAuthentifactionInformation } from '../../../store/actions/auth';
+import { setAuthenticationInformation } from '../../../store/actions/auth';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
@@ -31,7 +31,7 @@ function OnlineProfileModal(props: IProps) {
 		const user = context.globalState.auth.data;
 		user.token = response.message.data.token;
 		user.onlineToken = response.message.data.onlineToken;
-		setAuthentifactionInformation(context.globalDispatch, user);
+		setAuthenticationInformation(context.globalDispatch, user);
 		closeModal(context.globalDispatch);
 	};
 
