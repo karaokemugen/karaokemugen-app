@@ -31,6 +31,7 @@ import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '../types/repo';
+import { adminToken } from '../utils/constants';
 import { pathIsContainedInAnother } from '../utils/files';
 import FTP from '../utils/ftp';
 import Git, { isGit } from '../utils/git';
@@ -1073,7 +1074,7 @@ export async function generateCommits(repoName: string) {
 }
 
 export async function uploadMedia(kid: string) {
-	const kara = await getKara(kid, { role: 'admin', username: 'admin' });
+	const kara = await getKara(kid, adminToken);
 	const repo = getRepo(kara.repository);
 	const ftp = new FTP({ repoName: repo.Name });
 	await ftp.connect();

@@ -10,6 +10,7 @@ import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { fileExists, resolveFileInDirs, smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getKara } from './kara';
 import { createKaraInDB, editKaraInDB } from './karaManagement';
@@ -33,7 +34,7 @@ export async function editKara(kara: Kara, refresh = true) {
 	}
 	try {
 		profile('editKaraFile');
-		const oldKara = await getKara(kara.kid, { role: 'admin', username: 'admin' });
+		const oldKara = await getKara(kara.kid, adminToken);
 		let mediaFile: string;
 		let mediaDir: string;
 		// If mediafile_orig is present, our user has uploaded a new song

@@ -2,7 +2,7 @@ import merge from 'lodash.merge';
 import { Socket } from 'socket.io';
 
 import { APIData } from '../lib/types/api';
-import { Role, User } from '../lib/types/user';
+import { OldJWTToken, Role, User } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
 import { userTypes } from '../lib/utils/constants';
 import logger from '../lib/utils/logger';
@@ -59,7 +59,7 @@ function checkAuthPresence(data: APIData) {
 	}
 }
 
-export async function checkValidUser(token: { username: string; role: string }): Promise<User> {
+export async function checkValidUser(token: OldJWTToken): Promise<User> {
 	// If user is remote, see if we have a remote token ready.
 	token.username = token.username.toLowerCase();
 	const user = await getUser(token.username);

@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { Dispatch } from 'react';
 
-import { Token } from '../../../../src/lib/types/user';
+import { OldTokenResponse } from '../../../../src/lib/types/user';
 import { commandBackend, setAuthorization } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
 import { AuthAction, IAuthentifactionInformation, LoginFailure, LoginSuccess, LogoutUser } from '../types/auth';
@@ -87,7 +87,7 @@ export async function isAlreadyLogged(
 
 	if (kmToken) {
 		try {
-			const verification: Token = await commandBackend('checkAuth', undefined, false, 30000);
+			const verification: OldTokenResponse = await commandBackend('checkAuth', undefined, false, 30000);
 			setPlaylistInfoLeft(dispatch);
 			setPlaylistInfoRight(dispatch);
 			dispatch({

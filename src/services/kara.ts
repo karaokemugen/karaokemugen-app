@@ -14,12 +14,13 @@ import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
 import { ASSLine } from '../lib/types/ass';
 import { DBKara, DBKaraBase } from '../lib/types/database/kara';
 import { KaraList, KaraParams, YearList } from '../lib/types/kara';
-import { Token } from '../lib/types/user';
+import { JWTTokenWithRoles, OldJWTToken } from '../lib/types/user';
 import { ASSToLyrics } from '../lib/utils/ass';
 import { getConfig } from '../lib/utils/config';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
 import logger, { profile } from '../lib/utils/logger';
+import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getTagNameInLanguage } from './tag';
@@ -37,7 +38,7 @@ export async function isAllKaras(karas: string[]): Promise<string[]> {
 	return karas.filter(kid => !allKaras.includes(kid));
 }
 
-export async function getKara(kid: string, token: Token, lang?: string): Promise<DBKara> {
+export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRoles, lang?: string): Promise<DBKara> {
 	profile('getKaraInfo');
 	if (!kid) throw { code: 400 };
 	try {
@@ -89,7 +90,7 @@ export async function getYears(): Promise<YearList> {
 
 export function getAllKaras(): Promise<KaraList> {
 	// Simple function to return all karaokes, compatibility with KM Server
-	return getKaras({ from: 0, size: 99999999, token: { username: 'admin', role: 'admin' } });
+	return getKaras({ from: 0, size: 99999999, token: adminToken });
 }
 
 export async function getKaras(params: KaraParams): Promise<KaraList> {

@@ -1,5 +1,7 @@
 // Karaoke Mugen App Constants
 
+import { OldJWTToken } from '../lib/types/user';
+
 export const sentryDSN = 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806';
 
 export const discordClientID = '718211141033263145';
@@ -271,3 +273,10 @@ export const logo = `
 
 export const mpvRegex = /mpv ([A-Za-z0-9.]+)/;
 export const pgctlRegex = /pg_ctl \(PostgreSQL\) ([A-Za-z0-9.]+)/;
+
+export const adminToken: OldJWTToken = {
+	username: 'admin',
+	role: 'admin',
+	iat: new Date().getTime().toString(),
+	passwordLastModifiedAt: new Date().getTime().toString(),
+};
