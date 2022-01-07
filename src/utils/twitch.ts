@@ -86,7 +86,7 @@ function listenChat(chat: Client) {
 			if (getConfig().Player.LiveComments) {
 				// We need to strip emotes first
 				msg = stripEmotes(msg, context);
-				playerComment(msg);
+				if (msg.length < 100) playerComment(msg);
 			}
 		}
 	});
