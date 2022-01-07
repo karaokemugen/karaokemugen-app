@@ -482,11 +482,6 @@ function KaraLine(props: IProps) {
 								)}
 							</span>
 						) : null}
-						{props.scope === 'public' ? (
-							<div onClick={() => props.openKara(props.kara, plaid)}>
-								<i className="fas fa-chevron-right fa-3x" />
-							</div>
-						) : null}
 						<div className="actionDiv">
 							{!is_touch_device() && shouldShowProfile ? (
 								<ProfilePicture
@@ -531,6 +526,11 @@ function KaraLine(props: IProps) {
 							</div>
 							{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
 						</div>
+						{props.scope === 'public' ? (
+							<div className="chevron" onClick={() => props.openKara(props.kara, plaid)}>
+								<i className="fas fa-chevron-right fa-3x" />
+							</div>
+						) : null}
 					</>
 				)}
 			</div>
