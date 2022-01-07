@@ -902,10 +902,6 @@ function Playlist(props: IProps) {
 	}, [getFilterValue(props.side)]);
 
 	useDeferredEffect(() => {
-		getPlaylist(props.searchType);
-	}, [props.searchType]);
-
-	useDeferredEffect(() => {
 		setData(null);
 		if (
 			props.scope === 'admin' &&
