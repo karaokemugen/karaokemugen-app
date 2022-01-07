@@ -179,11 +179,7 @@
 			"DISPLAY_SONGINFO_TOOLTIP": "Informasi (judul, serial, penyanyi, dll.) ditampilkan saat awal dan akhir lagu, juga saat layar jeda di mode Siar/Klasik. Matikan untuk menyembunyikannya, untuk uji buta contohnya.",
 			"LIVE_COMMENTS": "Komentar langsung"
 		},
-		"SYSTEMPANEL_TIP": {
-			"QUESTION": "Kamu tidak bisa menemukan pilihan yang kamu cari?",
-			"RESPONSE": "Beberapa pilihan sekarang ada di ",
-			"LINK": "bilah sistem"
-		}
+		"SYSTEMPANEL_TIP": "Kamu tidak bisa menemukan pilihan yang kamu cari? <2>Beberapa pilihan sekarang ada di <3>bilah sistem</3>.</2>"
 	},
 	"KARA_MENU": {
 		"TRANSFER_SELECT_KARA": "Pindah lagu yang dipilih",

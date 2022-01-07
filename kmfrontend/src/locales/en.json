@@ -311,12 +311,7 @@
 	"QUOTA_TIME": "Time left",
 	"QUOTA_KARA": "Songs left",
 	"SETTINGS": {
-		"SYSTEMPANEL_TIP": {
-			"QUESTION": "You can't find the options you seek?",
-			"RESPONSE": "Some options are now in the ",
-			"LINK": "system panel",
-			"AFTER_LINK": "."
-		},
+		"SYSTEMPANEL_TIP": "You can't find the options you seek? <2>Some options are now in the <3>system panel</3>.</2>",
 		"PLAYER": {
 			"LABEL": "Player",
 			"WINDOW_SETTINGS": "Window",

@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import { useEffect } from 'react';
+import { Trans } from 'react-i18next';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router';
 
 import { commandBackend } from '../../../utils/socket';
@@ -68,12 +69,13 @@ function Options() {
 					</Routes>
 
 					<div className="settings-line systempanel-tooltip">
-						{i18next.t('SETTINGS.SYSTEMPANEL_TIP.QUESTION')}
-						<strong>
-							{i18next.t('SETTINGS.SYSTEMPANEL_TIP.RESPONSE')}
-							<a href="/system/options">{i18next.t('SETTINGS.SYSTEMPANEL_TIP.LINK')}</a>
-							{i18next.t('SETTINGS.SYSTEMPANEL_TIP.AFTER_LINK')}
-						</strong>
+						<Trans
+							i18nKey="SETTINGS.SYSTEMPANEL_TIP"
+							components={{
+								2: <strong />,
+								3: <a href="/system/options"></a>,
+							}}
+						/>
 					</div>
 				</div>
 			</div>
