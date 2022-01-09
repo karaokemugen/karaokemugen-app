@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, Checkbox, Col, Form, Row, Tag } from 'antd';
+import { AutoComplete, Button, Checkbox, Col, Form, FormInstance, Row, Tag } from 'antd';
 import i18next from 'i18next';
 import { Component } from 'react';
 
@@ -7,11 +7,14 @@ import { DBKaraTag } from '../../../../src/lib/types/database/kara';
 import GlobalContext from '../../store/context';
 import { getTagInLocale } from '../../utils/kara';
 import { commandBackend } from '../../utils/socket';
+import { CreateTagModal } from './CreateTagModal';
+
 interface EditableTagGroupProps {
 	onChange: any;
 	checkboxes?: boolean;
 	tagType?: number;
 	value?: any[];
+	form?: FormInstance;
 }
 
 interface EditableTagGroupState {
@@ -19,6 +22,7 @@ interface EditableTagGroupState {
 	value: string[];
 	inputVisible: boolean;
 	currentVal: any;
+	createModal: boolean;
 }
 
 const timer: NodeJS.Timeout[] = [];
@@ -37,6 +41,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 		inputVisible: false,
 		tags: [],
 		currentVal: undefined,
+		createModal: false,
 	};
 
 	showInput = () => {
@@ -165,6 +170,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 								ref={input => (this.input = input)}
 								onSearch={this.search}
 								onChange={val => this.setState({ currentVal: val })}
+								onSelect={val => this.handleInputConfirm(val)}
 								options={this.state.tags.map(tag => {
 									return {
 										value: tag.tid,
@@ -177,9 +183,11 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 							<Button
 								style={{ marginTop: '10px' }}
 								type="primary"
-								onClick={() => this.handleInputConfirm(this.state.currentVal)}
+								onClick={() => {
+									this.setState({ createModal: true });
+								}}
 							>
-								{i18next.t('ADD')}
+								{i18next.t('MODAL.CREATE_TAG.OPEN')}
 							</Button>
 						</Form.Item>
 					)}
@@ -188,6 +196,20 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 							<PlusOutlined /> {i18next.t('ADD')}
 						</Tag>
 					)}
+					{this.state.createModal ? (
+						<CreateTagModal
+							initialTagTypes={[this.props.tagType]}
+							initialName={this.getCurrentValue()}
+							onClose={() => {
+								this.setState({ createModal: false });
+							}}
+							onCreate={tag => {
+								this.setState({ tags: [...this.state.tags, tag as unknown as DBKaraTag] });
+								this.handleInputConfirm(tag.tid);
+							}}
+							repo={this.props.form.getFieldValue('repository')}
+						/>
+					) : null}
 				</div>
 			);
 		}

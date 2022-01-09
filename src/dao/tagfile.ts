@@ -1,3 +1,4 @@
+import { formatKaraV4 } from '../lib/dao/karafile';
 import { DBKara } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { tagTypes } from '../lib/utils/constants';
@@ -20,7 +21,9 @@ export async function removeTagInKaras(tag: DBTagMini, karasWithTag: DBKara[]) {
 				if (karaWithTag[type]) karaWithTag[type] = karaWithTag[type].filter((t: DBTag) => t.tid !== tag.tid);
 			}
 			karaWithTag.modified_at = new Date();
-			await editKara(karaWithTag, false);
+			await editKara({
+				kara: formatKaraV4(karaWithTag),
+			});
 		}
 	} catch (err) {
 		throw err;

@@ -5,6 +5,24 @@ export interface tagType {
 	karajson: string;
 }
 
+export const tagTypesKaraFileV4Order = [
+	'AUTHORS',
+	'CREATORS',
+	'FAMILIES',
+	'GENRES',
+	'GROUPS',
+	'LANGS',
+	'MISC',
+	'ORIGINS',
+	'PLATFORMS',
+	'SERIES',
+	'SINGERS',
+	'SONGTYPES',
+	'SONGWRITERS',
+	'VERSIONS',
+	'WARNINGS',
+];
+
 export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 	SONGTYPES: {
 		icon: 'tasks',

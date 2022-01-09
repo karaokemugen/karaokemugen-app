@@ -714,6 +714,10 @@
 			"VOTES_other": "{{count}} votes ({{percent}}%)",
 			"REMAINING_one": "{{count}} seconde restante",
 			"REMAINING_other": "{{count}} secondes restantes"
+		},
+		"CREATE_TAG": {
+			"OPEN": "Créer un tag",
+			"TITLE": "Création de tag rapide"
 		}
 	},
 	"SETUP_PAGE": {
@@ -778,6 +782,7 @@
 		"MEDIA_FILE": "Fichier média",
 		"MEDIA_FILE_TOOLTIP": "Formats de fichier acceptés : {{formats}}",
 		"MEDIA_REQUIRED": "Le fichier média est obligatoire",
+		"MEDIA_IN_PROCESS": "Le fichier média est en cours d'intégration, merci d'attendre la notification de succès du traitement.",
 		"LYRICS_FILE": "Fichier de sous-titres",
 		"LYRICS_FILE_TOOLTIP": "Format de fichier accepté : {{formats}}",
 		"LYRICS_FILE_OPEN": "Ouvrir le fichier",
