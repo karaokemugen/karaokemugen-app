@@ -712,6 +712,10 @@
 			"VOTES_other": "{{count}} votes ({{percent}}%)",
 			"REMAINING_one": "{{count}} second left",
 			"REMAINING_other": "{{count}} seconds left"
+		},
+		"CREATE_TAG": {
+			"OPEN": "Create a tag",
+			"TITLE": "Quick tag create"
 		}
 	},
 	"SETUP_PAGE": {
@@ -776,6 +780,7 @@
 		"MEDIA_FILE": "Media file",
 		"MEDIA_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"MEDIA_REQUIRED": "Media file is mandatory",
+		"MEDIA_IN_PROCESS": "The media file is being integrated, please wait for the notification of successful processing.",
 		"LYRICS_FILE": "Lyrics file",
 		"LYRICS_FILE_TOOLTIP": "Supported file formats: {{formats}}",
 		"LYRICS_FILE_OPEN": "Open file",

@@ -15,11 +15,12 @@ import { deleteTag, insertTag, selectAllTags, selectTagByNameAndType, updateKara
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKarasUpdate } from '../lib/dao/kara';
+import { formatKaraV4 } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
-import { IDQueryResult, Kara } from '../lib/types/kara';
+import { IDQueryResult } from '../lib/types/kara';
 import { Tag, TagParams } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
@@ -28,6 +29,7 @@ import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
+import { KaraFileV4 } from './../lib/types/kara.d';
 import { getKaras } from './kara';
 import { editKara } from './karaCreation';
 import { refreshKarasAfterDBChange } from './karaManagement';
@@ -76,6 +78,7 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 		saveSetting('baseChecksum', getStoreChecksum());
 
 		if (opts.refresh) {
+			console.log('prout');
 			await updateTagSearchVector();
 			refreshTags();
 		}
@@ -334,17 +337,17 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	}
 }
 
-export async function consolidateTagsInRepo(kara: Kara) {
+export async function consolidateTagsInRepo(kara: KaraFileV4) {
 	profile('consolidateTagsInRepo');
 	const copies = [];
 	for (const tagType of Object.keys(tagTypes)) {
-		if (kara[tagType]) {
-			for (const karaTag of kara[tagType]) {
+		if (kara.data.tags[tagType]) {
+			for (const karaTag of kara.data.tags[tagType]) {
 				const tag = await getTag(karaTag.tid);
 				if (!tag) continue;
-				if (tag.repository !== kara.repository) {
+				if (tag.repository !== kara.data.repository) {
 					// This might need to be copied
-					tag.repository = kara.repository;
+					tag.repository = kara.data.repository;
 					const destPath = resolvedPathRepos('Tags', tag.repository);
 					const tagFile = `${sanitizeFile(tag.name)}.${tag.tid.substring(0, 8)}.tag.json`;
 					try {
@@ -391,7 +394,9 @@ async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, 
 				kara[type].push(newTag);
 			}
 		}
-		await editKara(kara, false);
+		await editKara({
+			kara: formatKaraV4(kara),
+		});
 	}
 	return modifiedKaras;
 }
