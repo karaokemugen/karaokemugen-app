@@ -41,9 +41,9 @@ function AdminPage(props: IProps) {
 
 	const playlistInfoUpdated = async (plaid: string) => {
 		await getPlaylistList();
-		if (context.globalState.frontendContext.playlistInfoLeft.plaid === plaid)
+		if (context.globalState.frontendContext?.playlistInfoLeft?.plaid === plaid)
 			setPlaylistInfoLeft(context.globalDispatch, plaid);
-		if (context.globalState.frontendContext.playlistInfoRight.plaid === plaid)
+		if (context.globalState.frontendContext?.playlistInfoRight?.plaid === plaid)
 			setPlaylistInfoRight(context.globalDispatch, plaid);
 	};
 
