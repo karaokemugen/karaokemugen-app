@@ -311,12 +311,7 @@
 	"QUOTA_TIME": "Temps restant",
 	"QUOTA_KARA": "Karaokés restants",
 	"SETTINGS": {
-		"SYSTEMPANEL_TIP": {
-			"QUESTION": "Vous ne trouvez pas ce que vous cherchez ?",
-			"RESPONSE": "Certaines options se trouvent dans le ",
-			"LINK": "panneau système",
-			"AFTER_LINK": "."
-		},
+		"SYSTEMPANEL_TIP": "Vous ne trouvez pas ce que vous cherchez ? <2>Certaines options se trouvent dans le <3>panneau système</3>.</2>",
 		"PLAYER": {
 			"LABEL": "Lecteur",
 			"WINDOW_SETTINGS": "Fenêtre",
@@ -445,7 +440,7 @@
 			"ONLINE_SETTINGS": "En ligne",
 			"ONLINE_SETTINGS_TOOLTIP": "Connectez votre karaoké à Internet pour laisser le monde vous suggérer des chansons !",
 			"MYSTERY_SONG_SETTINGS": "Chanson mystère",
-			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Cacher des ajouts au public, pour les surprises.",
+			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Cacher des ajouts au public, pour les surprises !",
 			"HIDE_INVISIBLE_SONGS": "Affichage des chansons mystère comme",
 			"HIDE_INVISIBLE_SONGS_TOOLTIP": "La façon dont les chansons mystère sont affichées au public. Pour faire des surprises !",
 			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Ne pas afficher",
@@ -793,6 +788,8 @@
 		"TITLE_TOOLTIP": "Si vous ne le connaissez pas, mettez le nom de la série. Dans le cas d'une version alternative, nommez votre titre ainsi : 'Mon titre ~ Disco vers.' par exemple",
 		"TITLE_REQUIRED": "Un titre est obligatoire",
 		"TITLE_ENG_REQUIRED": "Le titre anglais est obligatoire",
+		"ALIASES": "Alias",
+		"ALIASES_TOOLTIP": "Noms courts ou alternatifs, utilisés pour la recherche.",
 		"SERIES_TOOLTIP": "Série TV, nom de film, de jeu vidéo, etc.",
 		"TYPE_REQUIRED": "Un type de chanson est obligatoire",
 		"ORDER": "Numéro de chanson",
@@ -978,7 +975,7 @@
 		"NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
 		"PRIORITY": "Priorité à l'affichage",
-		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 cache l'affichage du tag sur l'interface publique",
+		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 cache l'affichage du tag sur l'interface publique et opérateur",
 		"COPY_TAG": "Copier le tag vers un autre dépôt"
 	},
 	"TAG_TYPES": {

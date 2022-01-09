@@ -3,12 +3,14 @@ import { alpha2ToAlpha3B, getAlpha3BCode, getName, getNames, registerLocale } fr
 import en from '@karaokemugen/i18n-iso-languages/langs/en.json';
 import es from '@karaokemugen/i18n-iso-languages/langs/es.json';
 import fr from '@karaokemugen/i18n-iso-languages/langs/fr.json';
+import id from '@karaokemugen/i18n-iso-languages/langs/id.json';
 
 registerLocale(fr);
 registerLocale(en);
 registerLocale(es);
+registerLocale(id);
 
-export const languagesSupport = ['en', 'fr', 'es'];
+export const languagesSupport = ['en', 'fr', 'es', 'id'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
 export const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 

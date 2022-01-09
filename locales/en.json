@@ -146,7 +146,7 @@
 			"Classic Karaoke mode emulates what you find in japanese karaoke booths or during karaoke contests at anime events : a pause is madebetween each song and the next song's title and requester are displayed on screen!",
 			"Does your karaoke session end soon? Switch the interface to restricted mode: users won't be able to add songs anymore but will be able to see what's coming next.",
 			"Need to send a message to your public? The message option will show a text on their mobile devices and/or on the karaoke screen!",
-			"When you search, you can type \"-word\" to exclude karaokes containing that word (whether it's in the tile, the series, the singers, etc.) from your search results.",
+			"When you search, you can type \"-word\" to exclude karaokes containing that word (whether it's in the title, the series, the singers, etc.) from your search results.",
 			"You can accept or refuse songs in the public playlist. To do this, display the public and current playlist side by side.",
 			"Accepting a public suggestion gives back song quota to the user who requested it, and adds the song in the current playlist!",
 			"Refusing a public suggestion gives back song quota to the user who requested it, and keeps the song in the public playlist so it can't be requested again!",
@@ -167,7 +167,7 @@
 			"RTFMs (no)",
 			"idles!",
 			"does absolutely nothing",
-			"at a con (in its head)",
+			"at a con (in their head)",
 			"watches trains pass"
 		]
 	},

@@ -7,7 +7,7 @@
     "@sentry/react": "^6.16.1",
     "antd": "4.18.2",
     "dompurify": "^2.3.4",
-    "i18next": "^21.6.4",
+    "i18next": "^21.6.5",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "lodash.debounce": "^4.0.8",
     "lodash.difference": "^4.5.0",
@@ -27,9 +27,9 @@
     "react-toastify": "^8.1.0",
     "react-virtuoso": "^2.4.0",
     "resize-observer-polyfill": "^1.5.1",
-    "sass": "^1.45.2",
-    "slugify": "^1.6.4",
-    "socket.io-client": "4.4.0"
+    "sass": "^1.46.0",
+    "slugify": "^1.6.5",
+    "socket.io-client": "4.4.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",

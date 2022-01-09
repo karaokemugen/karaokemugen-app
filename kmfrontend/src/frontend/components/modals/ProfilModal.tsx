@@ -5,7 +5,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
-import { logout, setAuthentifactionInformation } from '../../../store/actions/auth';
+import { logout, setAuthenticationInformation } from '../../../store/actions/auth';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
@@ -74,7 +74,7 @@ function ProfilModal(props: IProps) {
 
 				const data: IAuthentifactionInformation = context.globalState.auth.data;
 				data.onlineToken = response.data.onlineToken;
-				setAuthentifactionInformation(context.globalDispatch, data);
+				setAuthenticationInformation(context.globalDispatch, data);
 			} catch (e) {
 				// already display
 			}

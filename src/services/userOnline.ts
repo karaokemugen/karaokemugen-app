@@ -3,7 +3,7 @@ import { createReadStream } from 'fs-extra';
 import { resolve } from 'path';
 import { Stream } from 'stream';
 
-import { Token, User } from '../lib/types/user';
+import { OldJWTToken, TokenResponseWithRoles, User } from '../lib/types/user';
 import { resolvedPath } from '../lib/utils/config';
 import { writeStreamToFile } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
@@ -35,7 +35,7 @@ export async function remoteCheckAuth(instance: string, token: string) {
 export async function remoteLogin(username: string, password: string): Promise<string> {
 	const [login, instance] = username.split('@');
 	try {
-		const res = await HTTP.post<Token>(`https://${instance}/api/auth/login`, {
+		const res = await HTTP.post<TokenResponseWithRoles>(`https://${instance}/api/auth/login`, {
 			username: login,
 			password: password,
 		});
@@ -264,7 +264,7 @@ export async function fetchAndUpdateRemoteUser(
 }
 
 /** Converts a online user to a local one by removing its online account from KM Server */
-export async function removeRemoteUser(token: Token, password: string): Promise<SingleToken> {
+export async function removeRemoteUser(token: OldJWTToken, password: string): Promise<SingleToken> {
 	token.username = token.username.toLowerCase();
 	const instance = token.username.split('@')[1];
 	const username = token.username.split('@')[0];
@@ -292,7 +292,7 @@ export async function removeRemoteUser(token: Token, password: string): Promise<
 }
 
 /** Converting a local account to a online one.	*/
-export async function convertToRemoteUser(token: Token, password: string, instance: string): Promise<Tokens> {
+export async function convertToRemoteUser(token: OldJWTToken, password: string, instance: string): Promise<Tokens> {
 	token.username = token.username.toLowerCase();
 	if (token.username === 'admin') throw { code: 'ADMIN_CONVERT_ERROR' };
 	const user = await getUser(token.username, true);

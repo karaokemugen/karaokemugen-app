@@ -136,7 +136,7 @@
 		"CRITERIA_TYPE_1003": "Shorter than (mm:ss)",
 		"CRITERIA_TYPE_1004": "Title contains",
 		"CRITERIA_TYPE_1005": "Tag contains",
-		"CRITERIA_TYPE_1006": "Hide unavailable songs offline",
+		"CRITERIA_TYPE_1006": "Hide songs not available offline",
 		"LABEL": {
 			"TAG": "The karaokes {{verb}} {{tag}} are on the blacklist.",
 			"TAG_VERBS": {
@@ -311,12 +311,7 @@
 	"QUOTA_TIME": "Time left",
 	"QUOTA_KARA": "Songs left",
 	"SETTINGS": {
-		"SYSTEMPANEL_TIP": {
-			"QUESTION": "You can't find the options you seek?",
-			"RESPONSE": "Some options are now in the ",
-			"LINK": "system panel",
-			"AFTER_LINK": "."
-		},
+		"SYSTEMPANEL_TIP": "You can't find the options you seek? <2>Some options are now in the <3>system panel</3>.</2>",
 		"PLAYER": {
 			"LABEL": "Player",
 			"WINDOW_SETTINGS": "Window",
@@ -791,6 +786,8 @@
 		"TITLE_TOOLTIP": "If you don't know, put the name of the series here as well",
 		"TITLE_REQUIRED": "Please enter a song title",
 		"TITLE_ENG_REQUIRED": "Please enter a english song title",
+		"ALIASES": "Aliases",
+		"ALIASES_TOOLTIP": "Short names or alternative names, used for search.",
 		"SERIES_TOOLTIP": "TV series, movie title, video game title, etc.",
 		"SERIES_SINGERS_REQUIRED": "Series or Singer cannot be empty in the same time.",
 		"TYPE_REQUIRED": "Song type is mandatory",
@@ -976,7 +973,7 @@
 		"NOLIVEDOWNLOAD": "Disallow on Live/Web Downloads",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Songs with this tag won't be able to be downloaded on Karaoke Mugen Server from the web interface, or visible on Live",
 		"PRIORITY": "Display priority",
-		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default. -1 hides the tag from being displayed in public interface",
+		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default. -1 hides the tag from being displayed in public and operator interface",
 		"COPY_TAG": "Copy tag to another repository"
 	},
 	"TAG_TYPES": {

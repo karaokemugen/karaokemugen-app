@@ -24,6 +24,7 @@ import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName } from '../../../utils/tagTypes';
+import EditableGroupAlias from '../../components/EditableGroupAlias';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
@@ -386,6 +387,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					mediafile: this.props.kara?.mediafile,
 					subfile: this.props.kara?.subfile,
 					parents: this.props.kara?.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
+					titles_aliases: this.props.kara?.titles_aliases || this.state.parentKara?.titles_aliases,
 				}}
 			>
 				<Form.Item
@@ -509,6 +511,22 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					}
 					onChange={titles => this.setState({ titles })}
 				/>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('KARA.ALIASES')}&nbsp;
+							<Tooltip title={i18next.t('KARA.ALIASES_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					name="titles_aliases"
+				>
+					<EditableGroupAlias
+						onChange={aliases => this.formRef.current?.setFieldsValue({ titles_aliases: aliases })}
+					/>
+				</Form.Item>
 				<Form.Item
 					label={
 						<span>

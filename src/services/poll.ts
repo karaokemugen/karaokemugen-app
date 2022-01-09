@@ -4,7 +4,7 @@ import sampleSize from 'lodash.samplesize';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { APIMessage } from '../controllers/common';
-import { Token } from '../lib/types/user';
+import { OldJWTToken } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
 import { timer } from '../lib/utils/date';
 import logger from '../lib/utils/logger';
@@ -13,6 +13,7 @@ import { emitWS } from '../lib/utils/ws';
 import { DBPLC } from '../types/database/playlist';
 import { PollItem, PollObject, PollResults } from '../types/poll';
 import { State } from '../types/state';
+import { adminToken } from '../utils/constants';
 import { getState, setState } from '../utils/state';
 import { sayTwitch } from '../utils/twitch';
 import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
@@ -30,7 +31,7 @@ on('stateUpdated', (state: State) => {
 });
 
 async function displayPoll(winner?: number) {
-	const data = getPoll({ role: 'admin', username: 'admin' });
+	const data = getPoll(adminToken);
 	let maxVotes = 0;
 	data.poll.forEach(s => (maxVotes = maxVotes + s.votes));
 	const votes = data.poll.map(kara => {
@@ -146,6 +147,8 @@ export function addPollVoteIndex(index: number, nickname: string) {
 		addPollVote(index, {
 			username: nickname,
 			role: 'guest',
+			iat: new Date().getTime().toString(),
+			passwordLastModifiedAt: new Date().getTime().toString(),
 		});
 		return 'POLL_VOTED';
 	} catch (err) {
@@ -154,7 +157,7 @@ export function addPollVoteIndex(index: number, nickname: string) {
 }
 
 /** Add a vote to a poll option */
-export function addPollVote(index: number, token: Token) {
+export function addPollVote(index: number, token: OldJWTToken) {
 	if (poll.length === 0 || pollEnding)
 		throw {
 			code: 425,
@@ -268,7 +271,7 @@ async function displayPollTwitch() {
 }
 
 /** Get current poll options */
-export function getPoll(token: Token): PollObject {
+export function getPoll(token: OldJWTToken): PollObject {
 	if (poll.length === 0)
 		throw {
 			code: 425,

@@ -4,6 +4,7 @@ import { getConfig } from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { CurrentSong } from '../types/playlist';
+import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { writeStreamFiles } from '../utils/streamerFiles';
@@ -15,7 +16,7 @@ import { startPoll } from './poll';
 /** Play a song from the library, different from when playing the current song in the playlist */
 export async function playSingleSong(kid?: string, randomPlaying = false) {
 	try {
-		const kara = await getKara(kid, { username: 'admin', role: 'admin' });
+		const kara = await getKara(kid, adminToken);
 		if (!kara) throw { code: 404, msg: 'KID not found' };
 
 		if (!randomPlaying) {
@@ -80,7 +81,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 export async function playRandomSongAfterPlaylist() {
 	try {
 		const karas = await getKaras({
-			token: { username: 'admin', role: 'admin' },
+			token: adminToken,
 			random: 1,
 			blacklist: true,
 		});
@@ -268,7 +269,7 @@ export async function playerEnding() {
 			return;
 		}
 		// Testing for position before last to play an encore
-		const pl = await getPlaylistInfo(state.currentPlaid, { username: 'admin', role: 'admin' });
+		const pl = await getPlaylistInfo(state.currentPlaid, adminToken);
 		logger.debug(
 			`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaid} - Playlist ID: ${pl?.plaid}`,
 			{ service: 'Player' }

@@ -1,6 +1,6 @@
 import randomstring from 'randomstring';
 
-import { Role, Token, User } from '../lib/types/user';
+import { OldTokenResponse, Role, User } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import { getState, setState } from '../utils/state';
@@ -9,7 +9,7 @@ import { checkPassword, createJwtToken, getUser, updateLastLoginName } from './u
 import { fetchAndUpdateRemoteUser } from './userOnline';
 
 /** Check login and authenticates users */
-export async function checkLogin(username: string, password: string): Promise<Token> {
+export async function checkLogin(username: string, password: string): Promise<OldTokenResponse> {
 	const conf = getConfig();
 	let user: User = {};
 	let onlineToken: string;

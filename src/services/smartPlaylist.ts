@@ -17,6 +17,7 @@ import { uuidRegexp } from '../lib/utils/constants';
 import logger, { profile } from '../lib/utils/logger';
 import { isNumber } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
+import { adminToken } from '../utils/constants';
 import Sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { downloadStatuses } from './download';
@@ -65,7 +66,7 @@ export async function emptyCriterias(plaid: string) {
 export async function updateAllSmartPlaylists(skipBlacklist = false, skipWhitelist = false) {
 	profile('updateAllSmartPlaylists');
 	logger.info('Updating all smart playlists...', { service: 'SmartPlaylist' });
-	const pls = await getPlaylists({ role: 'admin', username: 'admin' });
+	const pls = await getPlaylists(adminToken);
 	const updatePromises = [];
 	// We need to update the whitelist first if it's smart, then the blacklist, then all others.
 	const wl = pls.find(p => p.flag_whitelist && p.flag_smart);
@@ -152,7 +153,7 @@ export async function updateSmartPlaylist(plaid: string) {
 		try {
 			await removeKaraFromPlaylist(
 				removedSongs.map(s => s.plcid),
-				{ role: 'admin', username: 'admin' },
+				adminToken,
 				false,
 				true
 			);
@@ -319,7 +320,7 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 		}
 		if (cList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
-			const kara = await getKara(cList[i].value, { role: 'admin', username: 'admin' }, lang);
+			const kara = await getKara(cList[i].value, adminToken, lang);
 			// If it doesn't exist anymore, remove the entry with null.
 			kara ? (cList[i].value = kara) : (cList[i] = null);
 		}

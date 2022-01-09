@@ -2,7 +2,9 @@ import '../App.scss';
 
 import { ConfigProvider, Layout } from 'antd';
 import enUS from 'antd/es/locale/en_US';
+import esES from 'antd/es/locale/es_ES';
 import frFR from 'antd/es/locale/fr_FR';
+import idID from 'antd/es/locale/id_ID';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -60,9 +62,22 @@ class KMSystem extends Component<unknown, unknown> {
 	operatorNotificationWarning = (data: { code: string; data: string }) =>
 		displayMessage('warning', i18next.t(data.code, { data: data }));
 
+	getLocale() {
+		let locale = enUS;
+		if (navigator.languages[0].includes('fr')) {
+			locale = frFR;
+		} else if (navigator.languages[0].includes('es')) {
+			locale = esES;
+		} else if (navigator.languages[0].includes('id')) {
+			locale = idID;
+		}
+		return locale;
+	}
+
 	render() {
+		const locale = this.getLocale();
 		return (
-			<ConfigProvider locale={navigator.languages[0].includes('fr') ? frFR : enUS}>
+			<ConfigProvider locale={locale}>
 				<Layout>
 					<Layout.Sider>
 						<KMMenu />

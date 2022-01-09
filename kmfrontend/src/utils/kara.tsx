@@ -310,8 +310,8 @@ export function computeTagsElements(
 	}
 
 	const types = versions
-		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC']
-		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC'];
+		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC', 'WARNINGS']
+		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC', 'WARNINGS'];
 
 	for (const type of types) {
 		const tagData = tagTypes[type];

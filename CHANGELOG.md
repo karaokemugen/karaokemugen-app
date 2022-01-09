@@ -22,7 +22,7 @@ Karaoke Mugen Studio is a set of features intended at contributors and maintaine
 ## Improvements
 
 -   There is now multiple lines in the current playlist for sponsors and jingles (#1134)
--   You can switch the interface language in the user settings (#1050)
+-   You can switch the interface language in the user settings (#1050). For the moment, only French and English are fully implemented. Spanish and Indonesian are partially implemented. You can contribute to the translation on https://hosted.weblate.org/projects/karaoke-mugen/.
 -   Songs now have internationalized titles (#847)
 -   There is now "Japanese" and "Japanese - Romaji" in language preferences (#850)
 -   You can hide more elements from the player OSD (song informations #1143, quotes #1080)

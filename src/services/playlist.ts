@@ -46,7 +46,7 @@ import {
 import { PLImportConstraints } from '../lib/services/playlist';
 import { DBPL } from '../lib/types/database/playlist';
 import { AggregatedCriteria, PlaylistExport, PLC, PLCEditParams } from '../lib/types/playlist';
-import { Token, User } from '../lib/types/user';
+import { OldJWTToken, User } from '../lib/types/user';
 import { getConfig, resolvedPath } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { fileExists } from '../lib/utils/files';
@@ -56,6 +56,7 @@ import { check } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
 import { DBPLC, DBPLCKID } from '../types/database/playlist';
 import { CurrentSong, Pos, ShuffleMethods } from '../types/playlist';
+import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { writeStreamFiles } from '../utils/streamerFiles';
@@ -76,7 +77,7 @@ import { getUser, updateSongsLeft } from './user';
 
 /** Test if basic playlists exist */
 export async function testPlaylists() {
-	const pls = await getPlaylists({ role: 'admin', username: 'admin' });
+	const pls = await getPlaylists(adminToken);
 	const currentPL = pls.find(pl => pl.flag_current);
 	const publicPL = pls.find(pl => pl.flag_public);
 	const whitePL = pls.find(pl => pl.flag_whitelist);
@@ -410,7 +411,7 @@ export async function createPlaylist(pl: DBPL, username: string): Promise<string
 }
 
 /** Get playlist properties */
-export async function getPlaylistInfo(plaid: string, token?: Token) {
+export async function getPlaylistInfo(plaid: string, token?: OldJWTToken) {
 	const pl = (await selectPlaylists(false, plaid))[0];
 	// We're testing this here instead of in the above function
 	if (token) {
@@ -421,7 +422,7 @@ export async function getPlaylistInfo(plaid: string, token?: Token) {
 }
 
 /** Get all playlists properties */
-export async function getPlaylists(token: Token) {
+export async function getPlaylists(token: OldJWTToken) {
 	profile('getPlaylists');
 	const ret = await selectPlaylists(token.role !== 'admin');
 	profile('getPlaylists');
@@ -436,7 +437,7 @@ export function getPlaylistContentsMini(plaid: string) {
 /** Get playlist contents */
 export async function getPlaylistContents(
 	plaid: string,
-	token: Token,
+	token: OldJWTToken,
 	filter: string,
 	lang: string,
 	from = 0,
@@ -473,7 +474,7 @@ export async function getPlaylistContents(
 }
 
 /** Get song information from a particular PLC */
-export async function getKaraFromPlaylist(plc_id: number, token: Token) {
+export async function getKaraFromPlaylist(plc_id: number, token: OldJWTToken) {
 	const kara = await getPLCInfo(plc_id, token.role === 'user', token.username.toLowerCase());
 	if (!kara) throw { code: 404, msg: 'PLCID unknown' };
 	return kara;
@@ -824,7 +825,12 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 }
 
 /** Remove song from a playlist */
-export async function removeKaraFromPlaylist(plc_ids: number[], token: Token, refresh = true, ignorePlaying = false) {
+export async function removeKaraFromPlaylist(
+	plc_ids: number[],
+	token: OldJWTToken,
+	refresh = true,
+	ignorePlaying = false
+) {
 	profile('deleteKara');
 	// If we get a single song, it's a user deleting it (most probably)
 	try {
@@ -885,7 +891,7 @@ export async function removeKaraFromPlaylist(plc_ids: number[], token: Token, re
 				emitWS('playlistContentsUpdated', plaid);
 				emitWS('playlistInfoUpdated', plaid);
 			}
-			const pl = await getPlaylistInfo(plaid, { role: 'admin', username: 'admin' });
+			const pl = await getPlaylistInfo(plaid, adminToken);
 			if (pl.flag_public || pl.flag_current) {
 				for (const username of usersNeedingUpdate.values()) {
 					updateSongsLeft(username);
@@ -933,7 +939,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 		throw { code: 400, msg: 'flag_playing cannot be set to multiple songs at once' };
 	if (params.flag_free === false) throw { code: 400, msg: 'flag_free cannot be unset!' };
 	const plcs = await getPLCInfoMini(plc_ids);
-	const pls = await getPlaylists({ username: 'admin', role: 'admin' });
+	const pls = await getPlaylists(adminToken);
 	if (params.flag_playing && plc_ids.length > 1) {
 		throw { code: 409, msg: 'Only one PLCID can be set as playing, do you want to destroy the universe?' };
 	}
@@ -999,7 +1005,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 		await Promise.all([updatePLCAccepted(plc_ids, false), updatePLCRefused(plc_ids, true)]);
 	}
 	if (PLCsToDeleteFromCurrent.length > 0) {
-		removeKaraFromPlaylist(PLCsToDeleteFromCurrent, { role: 'admin', username: 'admin' }).catch(() => {});
+		removeKaraFromPlaylist(PLCsToDeleteFromCurrent, adminToken).catch(() => {});
 	}
 	if (params.flag_refused === false) {
 		await updatePLCRefused(plc_ids, params.flag_refused);

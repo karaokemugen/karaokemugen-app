@@ -30,6 +30,7 @@ import { fileExists, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
+import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
@@ -155,7 +156,7 @@ export async function deleteKara(
 
 export async function copyKaraToRepo(kid: string, repoName: string) {
 	try {
-		const kara = await getKara(kid, { role: 'admin', username: 'admin' });
+		const kara = await getKara(kid, adminToken);
 		if (!kara) throw { code: 404 };
 		const repo = getRepo(repoName);
 		if (!repo) throw { code: 404 };
@@ -223,7 +224,7 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 			service: 'Kara',
 		});
 		for (const plc of pl) {
-			const kara = await getKara(plc.kid, { username: 'admin', role: 'admin' });
+			const kara = await getKara(plc.kid, adminToken);
 			if (!kara) {
 				logger.warn(`Batch tag edit : kara ${plc.kid} unknown. Ignoring.`, { service: 'Kara' });
 				continue;
@@ -301,7 +302,7 @@ export async function integrateKaraFile(
 ): Promise<string> {
 	const karaFile = basename(file);
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData, { media: true, lyrics: true });
-	const karaDB = await getKara(karaData.kid, { role: 'admin', username: 'admin' });
+	const karaDB = await getKara(karaData.kid, adminToken);
 	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
 	if (karaDB) {
 		await editKaraInDB(karaData, { refresh: false });
@@ -366,7 +367,7 @@ export async function deleteMediaFile(file: string, repo: string) {
 
 export async function openLyricsFile(kid: string) {
 	try {
-		const { subfile, repository, mediafile } = await getKara(kid, { role: 'admin', username: 'admin' });
+		const { subfile, repository, mediafile } = await getKara(kid, adminToken);
 		const lyricsPath = resolve(resolvedPathRepos('Lyrics', repository)[0], subfile);
 		if (extname(lyricsPath) === '.ass' && mediafile) {
 			for (const repo of resolvedPathRepos('Medias', repository)) {

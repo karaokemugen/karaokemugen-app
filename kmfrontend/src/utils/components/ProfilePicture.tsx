@@ -1,9 +1,9 @@
-import { memo, useEffect, useState } from 'react';
+import { ImgHTMLAttributes, memo, useEffect, useState } from 'react';
 
 import { User } from '../../../../src/lib/types/user';
 import { generateProfilePicLink, syncGenerateProfilePicLink } from '../profilePics';
 
-interface IProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface IProps extends ImgHTMLAttributes<HTMLImageElement> {
 	user: User;
 }
 
