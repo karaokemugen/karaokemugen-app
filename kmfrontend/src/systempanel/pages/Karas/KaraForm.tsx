@@ -220,8 +220,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			],
 			data: {
 				comment: kara.comment || undefined,
-				created_at: this.props.kara?.modified_at
-					? new Date(this.props.kara?.modified_at).toISOString()
+				created_at: this.props.kara?.created_at
+					? new Date(this.props.kara?.created_at).toISOString()
 					: new Date().toISOString(),
 				ignoreHooks: kara.ignoreHooks,
 				kid: this.props.kara?.kid || UUIDv4(),
