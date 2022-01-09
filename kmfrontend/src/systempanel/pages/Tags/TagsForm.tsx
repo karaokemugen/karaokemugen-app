@@ -261,11 +261,11 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 							</Tooltip>
 						</span>
 					}
-					labelCol={{ flex: '0 1 200px' }}
+					labelCol={{ flex: '0 1 300px' }}
 					wrapperCol={{ span: 2 }}
 					name="priority"
 				>
-					<InputNumber required={true} min={-1} placeholder="Priority" style={{ width: '100%' }} />
+					<InputNumber required={true} min={-2} placeholder="0" style={{ width: '100%' }} />
 				</Form.Item>
 				<Form.Item
 					label={

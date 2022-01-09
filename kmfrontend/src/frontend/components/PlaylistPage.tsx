@@ -71,7 +71,7 @@ export default function PlaylistPage() {
 									.map(e => e.name)
 									.join(', ') + (kara.singers.length > 3 ? '...' : '')
 							: '';
-					const songtypeText = sortAndHideTags(kara.songtypes)
+					const songtypeText = sortAndHideTags(kara.songtypes, 'public')
 						.map(e => (e.short ? +e.short : e.name))
 						.join(' ');
 					const songorderText = kara.songorder > 0 ? ' ' + kara.songorder : '';
@@ -79,7 +79,7 @@ export default function PlaylistPage() {
 						// Tags in the header
 						const typeData = tagTypes['VERSIONS'];
 						if (kara.versions) {
-							return sortAndHideTags(kara[typeData.karajson]).map(tag => {
+							return sortAndHideTags(kara[typeData.karajson], 'public').map(tag => {
 								return (
 									<div
 										key={tag.tid}

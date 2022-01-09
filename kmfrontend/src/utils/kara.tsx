@@ -67,8 +67,10 @@ export function sortTagByPriority(a: any, b: any) {
 	return a.priority < b.priority ? 1 : a.name.localeCompare(b.name);
 }
 
-export function sortAndHideTags(tags: any[]) {
-	return tags?.length > 0 ? tags.filter(tag => tag.priority !== -1).sort(sortTagByPriority) : [];
+export function sortAndHideTags(tags: any[], scope: Scope = 'public') {
+	return tags?.length > 0
+		? tags.filter(scope === 'public' ? tag => tag.priority >= 0 : tag => tag.priority >= -1).sort(sortTagByPriority)
+		: [];
 }
 
 /**
@@ -287,7 +289,7 @@ export function computeTagsElements(
 					</div>
 			  )
 			: karaTags.push(
-					...sortAndHideTags(kara.langs).map(tag => {
+					...sortAndHideTags(kara.langs, scope).map(tag => {
 						return (
 							<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
 								{getInlineTag(tag, tagTypes.LANGS.type, scope, changeView, i18nParam)}
@@ -298,7 +300,7 @@ export function computeTagsElements(
 	}
 	if (kara.songtypes) {
 		karaTags.push(
-			...sortAndHideTags(kara.songtypes).map(tag => {
+			...sortAndHideTags(kara.songtypes, scope).map(tag => {
 				return (
 					<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
 						{getInlineTag(tag, tagTypes.SONGTYPES.type, scope, changeView, i18nParam)}
@@ -317,7 +319,7 @@ export function computeTagsElements(
 		const tagData = tagTypes[type];
 		if (kara[tagData.karajson]) {
 			karaTags.push(
-				...sortAndHideTags(kara[tagData.karajson]).map(tag => {
+				...sortAndHideTags(kara[tagData.karajson], scope).map(tag => {
 					return (
 						<div key={tag.tid} className={`tag ${tagData.color}`} title={tag.short ? tag.short : tag.name}>
 							{getInlineTag(tag, tagData.type, scope, changeView, i18nParam)}
