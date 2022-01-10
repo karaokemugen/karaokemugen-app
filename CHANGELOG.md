@@ -1,10 +1,12 @@
-# v6.0.x - xx/xx/202x
+# v6.0.38 - 15/01/2022
 
 ## New features
 
+-   Song information can be hidden by the player options, for blind tests for example (#1143)
 -   You can choose your mpv output audio device (#968)
 -   You can now upload custom backgrounds for the player (along with music!, #899, #785)
 -   You can create "smart" playlists which will update automatically based on criteria you define (#809)
+    -   This is like the blacklist system, but it's not limited to just blacklists. You can now create smart lists with anything, like all songs with the "Hololive" tag for example.
 -   In streamer mode, Twitch messages will be shown in "Nico nico douga" fashion (#1023)
 -   Songs are now grouped (configurable in user panel), a song will be presented with each version for you to choose (#935)
 -   The public playlist will show a "Review songs" panel, it allows to see each karaoke in detail before deciding to accept/refuse (#1022)
@@ -15,16 +17,22 @@ Karaoke Mugen Studio is a set of features intended at contributors and maintaine
 
 -   The karaoke list now shows an "Edit lyrics" button, opening the associated program (e.g Aegisub, #1084).
 -   Repositories can have hooks, automated "scripts" that will for example, add Hololive creator tag for any Hololive-affiliated singer (#948).
--   The karaoke inbox can be displayed in the app, maintainers can download karaokes and integrate them in the database (#1086).
--   You can push/pull Git-enabled repositories, along with uploading videos to FTP (#1085).
+-   The karaoke inbox can be displayed in the app, maintainers can download karaokes and integrate them in the database (#1086 #1171).
+-   You can push/pull Git-enabled repositories, along with uploading videos to FTP (#1085 #1153 #1152 #1158).
 -   There is an "Edit karaoke" in KaraDetail entries (#1055)
 
 ## Improvements
 
+-   A new tag type `warning` has been added. It has the "Adult Only", "Epilepsy" and "Spoiler" tags in it. The new tag type allows us to simplify some code. All tags in this type will display a warning on the player screen and in the library/playlists (#1175)
+-   Karaoke creation form is now better, faster, stronger (and uses less code) (#1159)
+-   Options in operator panel have been reworked a little (#1157 #1166 #1156)
+-   "Transfer song to playlist after current song" and "Transfer song to the end of playlist" are now properly separate options in song context menu on operator panel (#1154)
+-   A new option `SongInfoLanguage` under `Player.Display` section has been added in config. It allows you to select another language for the player to display song information as, if it's different from your OS's locale **and you really care about that because you're a weeb who likes displaying songs on the player screen in kana or romaji instead of your OS's locale**. (#1149)
 -   There is now multiple lines in the current playlist for sponsors and jingles (#1134)
 -   You can switch the interface language in the user settings (#1050). For the moment, only French and English are fully implemented. Spanish and Indonesian are partially implemented. You can contribute to the translation on https://hosted.weblate.org/projects/karaoke-mugen/.
 -   Songs now have internationalized titles (#847)
 -   There is now "Japanese" and "Japanese - Romaji" in language preferences (#850)
+    -   Titles can now have aliases, since certain songs are known differently sometimes, unrelated to any language. This'll help people find songs via the search engine (#1168)
 -   You can hide more elements from the player OSD (song informations #1143, quotes #1080)
 -   `Player.SongInfoLanguage` config key allow power users to force a locale for song information displayed on the screen (#1149)
 -   The zip/patch repository system was improved with a file download fallback (#1122)
@@ -32,7 +40,11 @@ Karaoke Mugen Studio is a set of features intended at contributors and maintaine
 
 ## Fixes
 
+-   Outdated media will not trigger an ffmpeg analysis anymore (#1151)
+-   Fixed tag autocomplete system in the operator panel (#1163)
+-   Time remaining in a playlist is now properly computed when there's no song currently playing set (#1160)
 -   There is no more layout shift in Welcome Page (#1141)
+-   App is now launchable even if one of your repositories is not reachable on disk (#1137)
 -   The show/hide subtitles was reworked to avoid weird icon display (#1135)
 -   The favorites stats consent is included in setup pages (#1125)
 -   The app should start if a media path is not available (#1137)
@@ -50,6 +62,7 @@ Karaoke Mugen Studio is a set of features intended at contributors and maintaine
 
 ## Misc
 
+-   Tags can have a `-1` priority to be hidden from public, and `-2` to be hidden everywhere.
 -   The code is now formatted with Prettier. Developers, please install the pre-commit hook with `yarn husky install` (should be done automatically on installation, #1114)
 -   DAO functions names, user functions and resolved paths were refactored (#1119, 21cb29e0, #1089)
 -   Medias update now uses the standard downloaded classes (#1120)
