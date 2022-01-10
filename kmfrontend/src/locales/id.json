@@ -498,7 +498,19 @@
 	"BULLDOZER_VIDEOS": {
 		"TITLE": "Perubahan penting ke pengelola media dan repositori",
 		"P1": "Repositori dan media berubah banyak mulai dari versi Karaoke Mugen ini.",
-		"P2": "Pembaruan repositori sekarang dikelola lewat Git. Ini berarti entah yang mana lagu yang kamu sudah unduh sebelumnya, kamu sekarang memiliki akses ke basis data penuh karaoke."
+		"P2": "Pembaruan repositori sekarang dikelola lewat Git. Ini berarti entah yang mana lagu yang kamu sudah unduh sebelumnya, kamu sekarang memiliki akses ke basis data penuh karaoke.",
+		"L4": "Menghapus hanya media yang belum diputar dalam sebulan terakhir (secara baku)",
+		"P7": "Kamu masih bisa mengunduh terlebih dahulu setiap media dari pengelola unduhan.",
+		"T4": "Apakah ada yang perlu saya lakukan?",
+		"T3": "Bagaimana jika saya harus membuat sesi karaoke di suatu tempat tanpa akses internet?",
+		"T5": "Apa yang terjadi dengan unduhan kriteria daftar hitam?",
+		"P9": "Ada juga opsi baru, per repositori, yang mencegah Karaoke Mugen mengunduh media yang diperbarui saat pemulaian. Misalnya, jika sebuah media sudah ada di penyimpanan komputer kamu, tetapi telah diperbarui di repositori kamu, versi baru akan diunduh secara otomatis.",
+		"P10": "Mereka telah dimigrasikan ke kriteria daftar hitam biasa. Ini berarti kamu tidak akan melihat lagu yang masuk daftar hitam itu di perpustakaan kamu, seolah-olah kamu belum pernah mengunduhnya!",
+		"P6": "Dari bilah sistem, item baru \"Pengelola ruang diska\" tersedia. Melalui itu kamu bisa:",
+		"L3": "Menghapus setiap media dari sebuah repositori jika kamu membutuhkan ruang diska dalam keadaan darurat",
+		"P8": "Sebenarnya, tidak ada : Karaoke Mugen memastikan bahwa repositori daring kamu telah dikonversi agar kompatibel dengan sistem pembaruan baru. Media yang kamu unduh akan tetap ada di sana dan kamu dapat menghapus yang tidak digunakan kapan saja jika kamu perlu mengosongkan ruang diska.",
+		"P11": "Kamu masih bisa menyunting kriteria daftar hitam kapan saja.",
+		"T2": "Apa yang harus saya lakukan jika kehabisan ruang?"
 	},
 	"TAG_TYPES": {
 		"WARNINGS_other": "Peringatan"
@@ -528,5 +540,56 @@
 	"MIGRATE": {
 		"TITLE": "Migrasi",
 		"CONTINUE": "Lanjut."
+	},
+	"BACKGROUNDS_MGMT": {
+		"NEW": "Latar belakang atau musik baru",
+		"CHOOSE_FILE": "Pilih berkas",
+		"SAVE": "Simpan",
+		"TYPE": {
+			"STOP": "Berhenti",
+			"POLL": "Jajak pendapat",
+			"PAUSE": "Jeda"
+		},
+		"INFO": [
+			"Jika kamu ingin menggunakan latar belakang yang sama untuk 2 kategori (atau lebih) yang berbeda, kamu harus menaruhnya di setiap kategori.",
+			"Kamu juga bisa menambahkan musik! Dengan cara yang sama, setiap kategori memiliki musiknya masing-masing.",
+			"Kamu bisa mengikat sebuah latar belakang ke sebuah musik dengan memberikannya nama yang sama. Misalnya, mus1k.jpg dan mus1k.mp3 di kategori yang sama akan selalu tertaut. Jika tidak, jika mus2k.jpg tidak memiliki suara dengan nama yang sama, itu akan dipilih secara acak."
+		],
+		"EXPL": "Ada 3 kategori latar belakang. Jika suatu kategori tidak memiliki latar belakang apa pun, kategori yang dibundel akan digunakan (kategori dengan karakter yang memberikan namanya ke versi aplikasi).",
+		"FILE": "Nama berkas",
+		"PREVIEW": "Pratinjau",
+		"CATEGORY": "Kategori"
+	},
+	"INBOX": {
+		"NAME": "Nama karaoke",
+		"CONTACT_INFOS": "Informasi kontak pembuat",
+		"ISSUE": "Isu {{number}}",
+		"LINK_TO_ISSUE": "Tautan ke isu",
+		"USER": "Pengguna yang bertanggung jawab atas integrasi isu",
+		"DOWNLOAD": "Unduh karaoke",
+		"CONTACT_INFOS_MODAL": {
+			"URL": "Situs Web: ",
+			"SOCIAL_NETWORKS": {
+				"TWITTER": "Twitter: ",
+				"INSTAGRAM": "Instagram: ",
+				"DISCORD": "Discord: ",
+				"TWITCH": "Twitch: "
+			},
+			"USERNAME": "Nama pengguna: ",
+			"MAIL": "Surel: "
+		},
+		"TIMESTAMP": "Tanda waktu",
+		"TYPE": "Jenis permintaan"
+	},
+	"ABOUT": {
+		"CONTRIBUTORS": "Karaoke dibuat oleh orang-orang yang hebat, seperti <contrib/> misalnya.",
+		"DONATORS": "Terima kasih kepada <donators/> untuk donasinya ke Karaoke Mugen",
+		"DESCRIPTION": "Pemutar karaoke dan pengelola pesta, antar teman atau di publik. Dilisensikan MIT."
+	},
+	"SETUP_PAGE": {
+		"SAVE_PARAMETER": "Simpan"
+	},
+	"CONFIG": {
+		"SAVE": "Simpan"
 	}
 }
