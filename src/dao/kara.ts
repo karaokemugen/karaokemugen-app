@@ -35,7 +35,7 @@ export async function updateKara(kara: Kara) {
 			mediasize: kara.mediasize,
 			subfile: kara.subfile,
 			titles: kara.titles,
-			titles_aliases: JSON.stringify(kara.titles_aliases),
+			titles_aliases: JSON.stringify(kara.titles_aliases || []),
 			year: kara.year,
 			songorder: kara.songorder || null,
 			duration: kara.duration,
@@ -50,13 +50,14 @@ export async function updateKara(kara: Kara) {
 }
 
 export async function insertKara(kara: Kara) {
+	console.log(JSON.stringify(kara, null, 2));
 	await db().query(
 		yesql(sqlinsertKara)({
 			karafile: kara.karafile,
 			mediafile: kara.mediafile,
 			subfile: kara.subfile,
 			titles: kara.titles,
-			titles_aliases: kara.titles_aliases,
+			titles_aliases: JSON.stringify(kara.titles_aliases || []),
 			year: kara.year,
 			songorder: kara.songorder || null,
 			duration: kara.duration,
