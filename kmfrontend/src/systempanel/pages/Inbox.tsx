@@ -19,6 +19,8 @@ export default function Inbox() {
 			repo.Name === context.globalState.auth.data.username.split('@')[1]
 	);
 
+	if (repoList.length === 0) throw i18next.t('INBOX.NO_REPOSITORY_ENABLED');
+
 	const instance = repoList[0].Name;
 
 	const [inbox, setInbox] = useState([]);

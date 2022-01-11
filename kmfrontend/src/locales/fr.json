@@ -1658,7 +1658,8 @@
 				"INSTAGRAM": "Instagram : ",
 				"DISCORD": "Discord : "
 			}
-		}
+		},
+		"NO_REPOSITORY_ENABLED": "Pas de dépôt en ligne activé en mode mainteneur"
 	},
 	"ABOUT": {
 		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",
