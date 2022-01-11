@@ -50,7 +50,6 @@ export async function updateKara(kara: Kara) {
 }
 
 export async function insertKara(kara: Kara) {
-	console.log(JSON.stringify(kara, null, 2));
 	await db().query(
 		yesql(sqlinsertKara)({
 			karafile: kara.karafile,

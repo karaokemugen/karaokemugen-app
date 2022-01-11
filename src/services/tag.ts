@@ -77,7 +77,6 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 		saveSetting('baseChecksum', getStoreChecksum());
 
 		if (opts.refresh) {
-			console.log('prout');
 			await updateTagSearchVector();
 			refreshTags();
 		}
