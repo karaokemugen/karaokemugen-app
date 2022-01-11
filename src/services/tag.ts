@@ -11,7 +11,7 @@ import {
 	sortKaraStore,
 	sortTagsStore,
 } from '../dao/dataStore';
-import { deleteTag, insertTag, selectAllTags, selectTagByNameAndType, updateKaraTagsTID, updateTag } from '../dao/tag';
+import { deleteTag, insertTag, selectAllTags, updateKaraTagsTID, updateTag } from '../dao/tag';
 import { removeTagInKaras } from '../dao/tagfile';
 import { saveSetting } from '../lib/dao/database';
 import { refreshKarasUpdate } from '../lib/dao/kara';
@@ -20,7 +20,6 @@ import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
-import { IDQueryResult } from '../lib/types/kara';
 import { Tag, TagParams } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
@@ -95,15 +94,6 @@ export async function addTag(tagObj: Tag, opts = { silent: false, refresh: true 
 export async function getTag(tid: string, ..._: any) {
 	const tags = await selectAllTags({ tid: tid });
 	return tags[0];
-}
-
-export async function getOrAddTagID(tagObj: Tag): Promise<IDQueryResult> {
-	const tag = await selectTagByNameAndType(tagObj.name, tagObj.types[0]);
-	if (tag) return { id: tag.tid, new: false };
-	// This modifies tagObj.
-	// I hate mutating objects.
-	await addTag(tagObj, { silent: false, refresh: false });
-	return { id: tagObj.tid, new: true };
 }
 
 export function getTagNameInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string): string {

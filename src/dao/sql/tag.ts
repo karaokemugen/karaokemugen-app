@@ -101,16 +101,6 @@ VALUES(
 );
 `;
 
-export const sqlgetTagByNameAndType = `
-SELECT
-	name,
-	pk_tid AS tid,
-	types
-FROM tag
-WHERE name = $1
-  AND types @> $2
-;`;
-
 export const sqlupdateTag = `
 UPDATE tag
 SET
