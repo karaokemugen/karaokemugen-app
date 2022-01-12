@@ -1114,7 +1114,7 @@
 		"SENDSTATS": "Send statistics",
 		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
 		"AUTO_MEDIA_DOWNLOADS": "Automatically download videos",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you check this so that the videos are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a karaoke!",
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you enable this so that the medias are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a karaoke!",
 		"AUTO_MEDIA_DOWNLOADS_NONE": "None",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Update only",
 		"AUTO_MEDIA_DOWNLOADS_ALL": "All",
