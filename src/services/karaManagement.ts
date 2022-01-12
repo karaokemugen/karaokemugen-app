@@ -18,7 +18,7 @@ import {
 	refreshYears,
 	updateKaraSearchVector,
 } from '../lib/dao/kara';
-import { getDataFromKaraFile, writeKara } from '../lib/dao/karafile';
+import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
 import { DBKara } from '../lib/types/database/kara';
@@ -169,7 +169,12 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const oldRepoIndex = repos.findIndex(r => r.Name === oldRepoName);
 		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
 		// If the new repo has priority, edit kara so the database uses it.
-		if (newRepoIndex < oldRepoIndex) tasks.push(editKara(kara));
+		if (newRepoIndex < oldRepoIndex)
+			tasks.push(
+				editKara({
+					kara: formatKaraV4(kara),
+				})
+			);
 		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), kara));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
 		tasks.push(
@@ -242,15 +247,14 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 				kara[tagType].push(tag);
 			}
 			if (modified) {
-				await editKara(kara, false);
+				await editKara({
+					kara: formatKaraV4(kara),
+				});
 			} else {
 				logger.info(`Batch edit tag : skipping ${kara.karafile} since no actions taken`, { service: 'Kara' });
 			}
 			task.incr();
 		}
-		await refreshKaras();
-		refreshTags();
-		refreshYears();
 		logger.info('Batch tag edit finished', { service: 'Kara' });
 	} catch (err) {
 		logger.info('Batch tag edit failed', { service: 'Kara', obj: err });

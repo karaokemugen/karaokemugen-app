@@ -714,6 +714,10 @@
 			"VOTES_other": "{{count}} votes ({{percent}}%)",
 			"REMAINING_one": "{{count}} seconde restante",
 			"REMAINING_other": "{{count}} secondes restantes"
+		},
+		"CREATE_TAG": {
+			"OPEN": "Créer un tag",
+			"TITLE": "Création de tag rapide"
 		}
 	},
 	"SETUP_PAGE": {
@@ -778,6 +782,7 @@
 		"MEDIA_FILE": "Fichier média",
 		"MEDIA_FILE_TOOLTIP": "Formats de fichier acceptés : {{formats}}",
 		"MEDIA_REQUIRED": "Le fichier média est obligatoire",
+		"MEDIA_IN_PROCESS": "Le fichier média est en cours d'intégration, merci d'attendre la notification de succès du traitement.",
 		"LYRICS_FILE": "Fichier de sous-titres",
 		"LYRICS_FILE_TOOLTIP": "Format de fichier accepté : {{formats}}",
 		"LYRICS_FILE_OPEN": "Ouvrir le fichier",
@@ -975,7 +980,7 @@
 		"NOLIVEDOWNLOAD": "Interdire sur Live/Téléchargements web",
 		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
 		"PRIORITY": "Priorité à l'affichage",
-		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 cache l'affichage du tag sur l'interface publique et opérateur",
+		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 masque les tags sur l'interface publique, -2 le masque partout (il sera toujours utilisé pour la recherche).",
 		"COPY_TAG": "Copier le tag vers un autre dépôt"
 	},
 	"TAG_TYPES": {
@@ -1090,7 +1095,7 @@
 		"SENDSTATS": "Envoyer des statistiques",
 		"SENDSTATS_TOOLTIP": "Chansons jouées, demandées, et sessions",
 		"AUTO_MEDIA_DOWNLOADS": "Télécharger automatiquement les vidéos",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Si votre connexion est trop lente, nous vous recommandons de cocher ceci afin que les vidéos soient téléchargées au préalable. C'est aussi recommandé pour les utilisations en convention ou pour les streams afin d'éviter les erreurs potentielles en plein milieu d'un karaoké !",
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Si votre connexion est trop lente, nous vous recommandons d'activer ceci afin que les médias soient téléchargées au préalable. C'est aussi recommandé pour les utilisations en convention ou pour les streams afin d'éviter les erreurs potentielles en plein milieu d'un karaoké !",
 		"AUTO_MEDIA_DOWNLOADS_NONE": "Aucun",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Mise à jour uniquement",
 		"AUTO_MEDIA_DOWNLOADS_ALL": "Tous",
@@ -1653,7 +1658,8 @@
 				"INSTAGRAM": "Instagram : ",
 				"DISCORD": "Discord : "
 			}
-		}
+		},
+		"NO_REPOSITORY_ENABLED": "Pas de dépôt en ligne activé en mode mainteneur"
 	},
 	"ABOUT": {
 		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",

@@ -342,8 +342,8 @@ function PublicPage() {
 			getSocket().off('playlistInfoUpdated', playlistInfoUpdated);
 		};
 	}, [
-		context.globalState.frontendContext.playlistInfoLeft.plaid,
-		context.globalState.frontendContext.playlistInfoRight.plaid,
+		context.globalState.frontendContext?.playlistInfoLeft?.plaid,
+		context.globalState.frontendContext?.playlistInfoRight?.plaid,
 	]);
 
 	useEffect(() => {

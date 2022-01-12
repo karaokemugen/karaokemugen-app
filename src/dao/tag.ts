@@ -9,7 +9,6 @@ import {
 	sqldeleteTag,
 	sqldeleteTagsByKara,
 	sqlgetAllTags,
-	sqlgetTagByNameAndType,
 	sqlinsertKaraTags,
 	sqlinsertTag,
 	sqlupdateKaraTagsTID,
@@ -100,11 +99,6 @@ export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 			})
 		);
 	}
-}
-
-export async function selectTagByNameAndType(name: string, type: number): Promise<DBTag> {
-	const res = await db().query(sqlgetTagByNameAndType, [name, [type]]);
-	return res.rows[0];
 }
 
 export async function updateTag(tag: Tag) {

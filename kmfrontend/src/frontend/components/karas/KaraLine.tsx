@@ -212,7 +212,7 @@ function KaraLine(props: IProps) {
 			const typeData = tagTypes[type];
 			if (data[typeData.karajson]) {
 				karaTags.push(
-					...sortAndHideTags(data[typeData.karajson]).map(tag => {
+					...sortAndHideTags(data[typeData.karajson], props.scope).map(tag => {
 						return (
 							<div
 								key={tag.tid}
@@ -428,7 +428,7 @@ function KaraLine(props: IProps) {
 									</div>
 									<div className="tagConteneur">
 										{karaTags}
-										{sortAndHideTags(props.kara.versions).map(t => (
+										{sortAndHideTags(props.kara.versions, props.scope).map(t => (
 											<span className="tag white" key={t.tid}>
 												{getTagInLocale(context?.globalState.settings.data, t, props.i18nTag)}
 											</span>

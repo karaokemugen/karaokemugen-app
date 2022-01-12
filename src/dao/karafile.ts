@@ -1,3 +1,4 @@
+import { formatKaraV4 } from '../lib/dao/karafile';
 import { DBKara } from '../lib/types/database/kara';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
@@ -17,7 +18,9 @@ export async function removeParentInKaras(kid: string, karasWithParent: DBKara[]
 				kara.parents = kara.parents.filter(p => p !== kid);
 				if (kara.parents.length === 0) kara.parents = undefined;
 				kara.modified_at = new Date();
-				await editKara(kara, false);
+				await editKara({
+					kara: formatKaraV4(kara),
+				});
 			}
 		}
 	} catch (err) {

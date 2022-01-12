@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { previewHooks } from '../../lib/services/karaCreation';
+import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreation';
 import { APIData } from '../../lib/types/api';
 import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
@@ -41,6 +41,17 @@ export default function karaController(router: SocketIOApp) {
 			return { code: 200, message: APIMessage('KARA_CREATED') };
 		} catch (err) {
 			const code = 'KARA_CREATED_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+	router.route('processUploadedMedia', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			const mediaInfo = await processUploadedMedia(req.body.filename, req.body.origFilename);
+			return mediaInfo;
+		} catch (err) {
+			const code = 'UPLOADED_MEDIA_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}

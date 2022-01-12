@@ -17,13 +17,14 @@ import { FormInstance } from 'antd/lib/form';
 import { SelectValue } from 'antd/lib/select';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
+import { v4 as UUIDv4 } from 'uuid';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
-import { Kara } from '../../../../../src/lib/types/kara';
+import { Kara, KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { getTagTypeName } from '../../../utils/tagTypes';
+import { getTagTypeName, tagTypes, tagTypesKaraFileV4Order } from '../../../utils/tagTypes';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import EditableTagGroup from '../../components/EditableTagGroup';
 import LanguagesList from '../../components/LanguagesList';
@@ -41,12 +42,11 @@ interface KaraFormState {
 	serieSingersRequired: boolean;
 	subfile: any[];
 	mediafile: any[];
-	created_at?: Date;
-	modified_at?: Date;
+	mediafileIsTouched: boolean;
+	subfileIsTouched: boolean;
+	mediaInfo?: MediaInfo;
 	repositoriesValue: string[];
 	repoToCopySong: string;
-	mediafile_orig: string;
-	subfile_orig: string;
 	comment?: string;
 	karaSearch: { label: string; value: string }[];
 	parentKara: Kara;
@@ -85,12 +85,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						},
 				  ]
 				: [],
-			created_at: kara.created_at || new Date(),
-			modified_at: kara.modified_at || new Date(),
+			mediafileIsTouched: false,
+			subfileIsTouched: false,
+			mediaInfo: {} as unknown as MediaInfo, // Has to be defined for reactive things
 			repositoriesValue: null,
 			repoToCopySong: null,
-			mediafile_orig: null,
-			subfile_orig: null,
 			comment: kara.comment,
 			karaSearch: [],
 			parentKara: null,
@@ -179,7 +178,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	handleSubmit = values => {
 		this.setState({ errors: [] });
-		if (!this.state.titles || Object.keys(this.state.titles).length === 0) {
+		if (this.state.mediafileIsTouched && !this.state.mediaInfo?.filename) {
+			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
+		} else if (!this.state.titles || Object.keys(this.state.titles).length === 0) {
 			message.error(i18next.t('KARA.TITLE_REQUIRED'));
 		} else if (!this.state.titles.eng) {
 			message.error(i18next.t('KARA.TITLE_ENG_REQUIRED'));
@@ -190,12 +191,72 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	getKaraToSend = values => {
 		const kara: Kara = values;
-		kara.karafile = this.props.kara?.karafile;
-		kara.kid = this.props.kara?.kid;
-		kara.mediafile_orig = this.state.mediafile_orig;
-		kara.subfile_orig = this.state.subfile_orig;
-		kara.titles = this.state.titles;
-		return kara;
+		const mediaVersionArr = this.state.titles.eng.split(' ~ ');
+		const mediaVersion =
+			mediaVersionArr.length > 1 ? mediaVersionArr[mediaVersionArr.length - 1].replace(' Vers', '') : 'Default';
+		// Convert Kara to KaraFileV4
+		const KaraFile: KaraFileV4 = {
+			header: {
+				version: 4,
+				description: 'Karaoke Mugen Karaoke Data File',
+			},
+			medias: [
+				{
+					version: mediaVersion,
+					filename: this.state.mediaInfo.filename || this.props.kara?.mediafile,
+					audiogain: this.state.mediaInfo.gain || this.props.kara?.gain,
+					loudnorm: this.state.mediaInfo.loudnorm || this.props.kara?.loudnorm,
+					filesize: this.state.mediaInfo.size || this.props.kara?.mediasize,
+					duration: this.state.mediaInfo.duration || this.props.kara?.duration,
+					default: true,
+					lyrics: [
+						{
+							filename: kara.subfile,
+							default: true,
+							version: 'Default',
+						},
+					],
+				},
+			],
+			data: {
+				comment: kara.comment || undefined,
+				created_at: this.props.kara?.created_at
+					? new Date(this.props.kara?.created_at).toISOString()
+					: new Date().toISOString(),
+				ignoreHooks: kara.ignoreHooks,
+				kid: this.props.kara?.kid || UUIDv4(),
+				modified_at: new Date().toISOString(),
+				parents: kara.parents?.length > 0 ? kara.parents : undefined,
+				repository: kara.repository,
+				songorder: kara.songorder ? kara.songorder : undefined,
+				tags: Object.fromEntries(
+					tagTypesKaraFileV4Order // Get tagtypes
+						.map(t => tagTypes[t].karajson) // Iterate through them to get the good value
+						.map(t => {
+							// Find the good things
+							if (kara[t] instanceof Array && kara[t].length > 0) {
+								return [t, kara[t].map(t2 => t2.tid)];
+							} else {
+								return [t, undefined];
+							}
+						})
+				) as unknown as any,
+				titles: this.state.titles,
+				titles_aliases: kara.titles_aliases?.length > 0 ? kara.titles_aliases : undefined,
+				title: this.state.titles.eng,
+				year: kara.year,
+			},
+		};
+		if (this.props.kara) {
+			// If it's an edit
+			return {
+				kara: KaraFile,
+				modifiedLyrics: this.state.subfileIsTouched,
+				modifiedMedia: this.state.mediafileIsTouched,
+			};
+		} else {
+			return KaraFile;
+		}
 	};
 
 	handleSubmitFailed = ({ values, errorFields }) => {
@@ -214,26 +275,35 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		);
 	};
 
-	onMediaUploadChange = info => {
+	onMediaUploadChange = async info => {
 		const fileList = info.fileList.slice(-1);
 		this.setState({ mediafile: fileList });
 		if (info.file.status === 'uploading') {
 			this.formRef.current.setFieldsValue({ mediafile: null });
-			this.setState({ mediafile_orig: null });
 		} else if (info.file.status === 'done') {
 			if (this.isMediaFile(info.file.name)) {
-				this.formRef.current.setFieldsValue({ mediafile: info.file.response.filename });
-				this.setState({ mediafile_orig: info.file.response.originalname });
+				this.setState({ mediafileIsTouched: true });
+				const mediaInfo: MediaInfo = await commandBackend(
+					'processUploadedMedia',
+					{
+						origFilename: info.file.response.originalname,
+						filename: info.file.response.filename,
+					},
+					false,
+					15000
+				);
+				this.setState({ mediaInfo });
+				this.formRef.current.setFieldsValue({ mediafile: mediaInfo.filename });
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
 				this.formRef.current.setFieldsValue({ mediafile: null });
 				message.error(i18next.t('KARA.ADD_FILE_MEDIA_ERROR', { name: info.file.name }));
 				info.file.status = 'error';
-				this.setState({ mediafile: [], mediafile_orig: null });
+				this.setState({ mediafile: [] });
 			}
 		} else if (info.file.status === 'error' || info.file.status === 'removed') {
 			this.formRef.current.setFieldsValue({ mediafile: null });
-			this.setState({ mediafile: [], mediafile_orig: null });
+			this.setState({ mediafile: [] });
 		}
 		this.formRef.current.validateFields();
 	};
@@ -243,21 +313,20 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.setState({ subfile: fileList });
 		if (info.file.status === 'uploading') {
 			this.formRef.current.setFieldsValue({ subfile: null });
-			this.setState({ subfile_orig: null });
 		} else if (info.file.status === 'done') {
 			if (this.isSubFile(info.file.name)) {
+				this.setState({ subfileIsTouched: true });
 				this.formRef.current.setFieldsValue({ subfile: info.file.response.filename });
-				this.setState({ subfile_orig: info.file.response.originalname });
 				message.success(i18next.t('KARA.ADD_FILE_SUCCESS', { name: info.file.name }));
 			} else {
 				this.formRef.current.setFieldsValue({ subfile: null });
 				message.error(i18next.t('KARA.ADD_FILE_LYRICS_ERROR', { name: info.file.name }));
 				info.file.status = 'error';
-				this.setState({ subfile: [], subfile_orig: null });
+				this.setState({ subfile: [] });
 			}
 		} else if (info.file.status === 'error' || info.file.status === 'removed') {
 			this.formRef.current.setFieldsValue({ subfile: null });
-			this.setState({ subfile: [], subfile_orig: null });
+			this.setState({ subfile: [] });
 		}
 	};
 
@@ -279,8 +348,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (this.timer) clearTimeout(this.timer);
 		this.timer = setTimeout(async () => {
 			const karas = await commandBackend('getKaras', {
-				q: this.formRef.current.getFieldValue('repository')
-					? `r:${this.formRef.current.getFieldValue('repository')}`
+				q: this.formRef.current?.getFieldValue('repository')
+					? `r:${this.formRef.current?.getFieldValue('repository')}`
 					: '',
 				filter: value,
 				size: 50,
@@ -311,8 +380,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	applyFieldsFromKara = async (kid: string) => {
 		const karas = await commandBackend('getKaras', {
 			q:
-				(this.formRef.current.getFieldValue('repository')
-					? `r:${this.formRef.current.getFieldValue('repository')}!`
+				(this.formRef.current?.getFieldValue('repository') || ''
+					? `r:${this.formRef.current?.getFieldValue('repository') || ''}!`
 					: '!') +
 				'k:' +
 				kid,
@@ -379,11 +448,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					warnings: this.props.kara?.warnings || this.state.parentKara?.warnings,
 					groups: this.props.kara?.groups || this.state.parentKara?.groups,
 					versions: this.props.kara?.versions || this.state.parentKara?.versions,
-					comment: this.props.kara?.comment || null,
+					comment: this.props.kara?.comment || '',
 					ignoreHooks: this.props.kara?.ignoreHooks || false,
 					repository: this.props.kara?.repository || this.state.parentKara?.repository || null,
-					created_at: this.state.created_at,
-					modified_at: this.state.modified_at,
 					mediafile: this.props.kara?.mediafile,
 					subfile: this.props.kara?.subfile,
 					parents: this.props.kara?.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
@@ -468,6 +535,27 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</div>
 					)}
 				</Form.Item>
+				{this.state.repositoriesValue ? (
+					<Form.Item
+						label={i18next.t('KARA.REPOSITORY')}
+						labelCol={{ flex: '0 1 220px' }}
+						wrapperCol={{ span: 3 }}
+						rules={[
+							{
+								required: true,
+								message: i18next.t('KARA.REPOSITORY_REQUIRED'),
+							},
+						]}
+						name="repository"
+					>
+						<Select
+							disabled={this.props.kara?.repository !== undefined}
+							placeholder={i18next.t('KARA.REPOSITORY')}
+						>
+							{this.state.repositoriesValue.map(this.mapRepoToSelectOption)}
+						</Select>
+					</Form.Item>
+				) : null}
 				<Form.Item
 					label={
 						<span>
@@ -541,6 +629,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="versions"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={14}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ versions: tags })}
@@ -566,6 +655,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="series"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={1}
 						onChange={tags => {
 							this.formRef.current.setFieldsValue({ series: tags });
@@ -586,6 +676,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					]}
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={3}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ songtypes: tags })}
@@ -621,6 +712,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="langs"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={5}
 						onChange={tags => this.formRef.current.setFieldsValue({ langs: tags })}
 					/>
@@ -660,6 +752,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="singers"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={2}
 						onChange={tags => {
 							this.formRef.current.setFieldsValue({ singer: tags });
@@ -681,6 +774,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="songwriters"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={8}
 						onChange={tags => this.formRef.current.setFieldsValue({ songwriters: tags })}
 					/>
@@ -699,6 +793,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="creators"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={4}
 						onChange={tags => this.formRef.current.setFieldsValue({ creators: tags })}
 					/>
@@ -723,6 +818,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="authors"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={6}
 						onChange={tags => this.formRef.current.setFieldsValue({ author: tags })}
 					/>
@@ -734,6 +830,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="families"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={10}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ families: tags })}
@@ -746,6 +843,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="platforms"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={13}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ platforms: tags })}
@@ -758,6 +856,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="genres"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={12}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ genres: tags })}
@@ -770,6 +869,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="origins"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={11}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ origins: tags })}
@@ -782,6 +882,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="misc"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={7}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ misc: tags })}
@@ -794,6 +895,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="warnings"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={15}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ warnings: tags })}
@@ -813,32 +915,12 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					name="groups"
 				>
 					<EditableTagGroup
+						form={this.formRef.current}
 						tagType={9}
 						checkboxes={true}
 						onChange={tags => this.formRef.current.setFieldsValue({ groups: tags })}
 					/>
 				</Form.Item>
-				{this.state.repositoriesValue ? (
-					<Form.Item
-						label={i18next.t('KARA.REPOSITORY')}
-						labelCol={{ flex: '0 1 220px' }}
-						wrapperCol={{ span: 3 }}
-						rules={[
-							{
-								required: true,
-								message: i18next.t('KARA.REPOSITORY_REQUIRED'),
-							},
-						]}
-						name="repository"
-					>
-						<Select
-							disabled={this.props.kara?.repository !== undefined}
-							placeholder={i18next.t('KARA.REPOSITORY')}
-						>
-							{this.state.repositoriesValue.map(this.mapRepoToSelectOption)}
-						</Select>
-					</Form.Item>
-				) : null}
 				<Form.Item
 					hasFeedback
 					label={

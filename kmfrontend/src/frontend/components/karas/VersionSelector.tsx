@@ -139,7 +139,7 @@ export default function VersionSelector(props: Props) {
 															context.globalState.settings.data,
 															kara.titles
 														)}
-														{sortAndHideTags(kara.versions).map(t => (
+														{sortAndHideTags(kara.versions, 'public').map(t => (
 															<span className="tag white inline" key={t.tid}>
 																{getTagInLocale(
 																	context?.globalState.settings.data,
