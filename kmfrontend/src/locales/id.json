@@ -875,7 +875,7 @@
 	},
 	"PAUSE_TIME": "Jeda",
 	"VIEW_LIKES": "Suka",
-	"KARA_SUGGESTION_NOT_FOUND": "Tidak bisa menemukan lagu favorit kamu?  Periksa repositori daring telah dikonfigurasi kamu dan juga situs saran jika keinginan kamu belum terkabulkan:",
+	"KARA_SUGGESTION_NOT_FOUND": "Tidak bisa menemukan lagu favorit kamu? Periksa repositori daring telah dikonfigurasi kamu dan juga situs saran jika keinginan kamu belum terkabulkan:",
 	"PL_MULTIPLE_ADDED": "Tambah {{count}} lagu",
 	"SECURITY_CODE": "Kode keamanan",
 	"TAGS": {
