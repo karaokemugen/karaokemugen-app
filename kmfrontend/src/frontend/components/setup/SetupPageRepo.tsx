@@ -71,6 +71,7 @@ function SetupPageRepo() {
 				}
 			}
 		}
+		commandBackend('updateAllRepos');
 	};
 
 	return (
