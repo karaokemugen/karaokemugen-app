@@ -20,7 +20,13 @@ export default function About() {
 
 	useEffect(() => {
 		fetch('https://mugen.karaokes.moe/downloads/donators.json').then(async d => {
-			setDonators(shuffle(await d.json()));
+			const donators = await d.json();
+			donators.push(
+				...(await fetch('https://mugen.karaokes.moe/downloads/hall_of_fame.json').then(r => r.json())).map(
+					n => n.name
+				)
+			);
+			setDonators(shuffle(donators));
 		});
 		commandBackend('getTags', { type: 6 }).then(res => {
 			setContributors(shuffle(res.content.map(c => c.name)));
