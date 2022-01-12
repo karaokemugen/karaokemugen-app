@@ -491,11 +491,22 @@
 		"Preparations are ongoing!"
 	],
 	"JINGLE_TIME": "Jingle time!",
-	"JINGLE_TAGLINES": ["We'll be right back!"],
+	"JINGLE_TAGLINES": [
+		"We'll be right back!"
+	],
 	"INTRO_TIME": "Playlist intro",
-	"INTRO_TAGLINES": ["Let's go!", "Starting…", "Initialization…", "Prepare your mic!", "*clears throat*"],
+	"INTRO_TAGLINES": [
+		"Let's go!",
+		"Starting…",
+		"Initialization…",
+		"Prepare your mic!",
+		"*clears throat*"
+	],
 	"OUTRO_TIME": "Playlist ending",
-	"OUTRO_TAGLINES": ["The End :(", "Thanks everyone!"],
+	"OUTRO_TAGLINES": [
+		"The End :(",
+		"Thanks everyone!"
+	],
 	"ENCORES_TIME": "Encore! Encore!",
 	"ENCORES_TAGLINES": [
 		"Well, it's not because I like you or anything…",
@@ -503,11 +514,21 @@
 		"Last song, let's give it our all!"
 	],
 	"SPONSOR_TIME": "COMMERCIAL TIME!",
-	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "And thanks for the money."],
+	"SPONSOR_TAGLINES": [
+		"Kono bangumi wa…",
+		"And thanks for the money."
+	],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": ["Take a break!", "Time to drink!", "We'll be right back!"],
+	"PAUSE_TAGLINES": [
+		"Take a break!",
+		"Time to drink!",
+		"We'll be right back!"
+	],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": ["Vote! Vote!", "The choice is yours."],
+	"POLL_TAGLINES": [
+		"Vote! Vote!",
+		"The choice is yours."
+	],
 	"QUOTA_AVAILABLE": "You can add songs again now!",
 	"SERIE_NAME_MODE": "Series language mode",
 	"SERIE_NAME_MODE_TOOLTIP": "Changes the way series names are displayed on the song list. Might be ignored by user preferences",
@@ -535,7 +556,7 @@
 	"VIEW_POPULAR": "Popular",
 	"VIEW_LIKES": "Likes",
 	"VIEW_LIKES_TOOLTIP": "The song with the most likes will be showed first, this does not impact the real playlist order.",
-	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song?  Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
+	"KARA_SUGGESTION_NOT_FOUND": "Can't find your favorite song? Check your configured online repositories as well as the suggestions site if your wish has not already been granted:",
 	"ONLINE_STATS": {
 		"TITLE": "Stats",
 		"INTRO": "Karaoke Mugen can send anonymous information about your instance to Karaoke Mugen Server to create usage statistics.",
@@ -1084,7 +1105,7 @@
 	"REPOSITORIES": {
 		"NAME": "Repository name",
 		"ONLINE_NAME": "Repository domain name",
-		"TOOLTIP_NAME": "If it's an online repository, put its domaine name only here. If it's a local repository, name it as you want. For example 'My private little karaokes'",
+		"TOOLTIP_NAME": "If it's an online repository, put its domain name only here. If it's a local repository, name it as you want. For example 'My private little karaokes'",
 		"BASE_DIR": "Base directory",
 		"PATH_MEDIAS": "Medias",
 		"NEW_REPOSITORY": "New repository",
@@ -1093,7 +1114,7 @@
 		"SENDSTATS": "Send statistics",
 		"SENDSTATS_TOOLTIP": "Sessions and played/requested songs",
 		"AUTO_MEDIA_DOWNLOADS": "Automatically download videos",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you check this so that the videos are downloaded beforehand. It is also recommended for convention use or for streaming to avoid potential errors in the middle middle of a karaoke!",
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "If your connection is too slow, we recommend that you check this so that the videos are downloaded beforehand. This is also recommended for convention use or for streams to avoid potential errors in the middle of a karaoke!",
 		"AUTO_MEDIA_DOWNLOADS_NONE": "None",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Update only",
 		"AUTO_MEDIA_DOWNLOADS_ALL": "All",
