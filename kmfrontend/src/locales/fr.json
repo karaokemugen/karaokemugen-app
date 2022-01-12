@@ -1114,7 +1114,7 @@
 		"SENDSTATS": "Envoyer des statistiques",
 		"SENDSTATS_TOOLTIP": "Chansons jouées, demandées, et sessions",
 		"AUTO_MEDIA_DOWNLOADS": "Télécharger automatiquement les vidéos",
-		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Si votre connexion est trop lente, nous vous recommandons de cocher ceci afin que les vidéos soient téléchargées au préalable. C'est aussi recommandé pour les utilisations en convention ou pour les streams afin d'éviter les erreurs potentielles en plein milieu d'un karaoké !",
+		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Si votre connexion est trop lente, nous vous recommandons d'activer ceci afin que les médias soient téléchargées au préalable. C'est aussi recommandé pour les utilisations en convention ou pour les streams afin d'éviter les erreurs potentielles en plein milieu d'un karaoké !",
 		"AUTO_MEDIA_DOWNLOADS_NONE": "Aucun",
 		"AUTO_MEDIA_DOWNLOADS_UPDATE_ONLY": "Mise à jour uniquement",
 		"AUTO_MEDIA_DOWNLOADS_ALL": "Tous",
