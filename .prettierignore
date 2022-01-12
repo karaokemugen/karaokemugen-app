@@ -1,0 +1,55 @@
+.DS_Store
+.idea/
+.npmrc
+.vscode/settings.json
+.vs
+node_modules
+app/
+app
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.exe
+karaokemugen*.log
+out/
+doc/
+\.DS_Store
+*.backup
+config\.yml
+*.bak
+karaokemugen-app-linux
+karaokemugen-app-macos
+dist/
+bin/
+logs/
+updater/
+mpv.log
+karaokemugen.pgdump
+karaokemugen.sql
+
+# kmfrontend
+kmfrontend/node_modules
+kmfrontend/coverage
+# Legacy frontends
+/frontend/
+/systempanel/
+.cache/
+build/
+
+# sessions export
+*.played.csv
+*.playedCount.csv
+*.requested.csv
+*.requestedCount.csv
+dist2
+js
+packages
+postgrator.json
+
+# Dev
+.env
+.eslintcache
+
+# Prettier ignores
+package.json

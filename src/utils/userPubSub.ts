@@ -3,8 +3,8 @@ import { io, Socket } from 'socket.io-client';
 
 import { DBUser } from '../lib/types/database/user';
 import logger from '../lib/utils/logger';
-import {importFavorites} from '../services/favorites';
-import { deleteUser, editUser, findUserByName, listUsers } from '../services/user';
+import { importFavorites } from '../services/favorites';
+import { editUser, getUser, getUsers, removeUser } from '../services/user';
 import { Favorite } from '../types/stats';
 
 // Map io connections
@@ -13,13 +13,13 @@ const ioMap: Map<string, Socket> = new Map();
 const debounceMap: Map<string, (login: string, payload: any) => Promise<void>> = new Map();
 
 async function listRemoteUsers() {
-	const users = await listUsers();
-	return users.filter(u => u.login.includes('@')).map(u => u.login);
+	const users = await getUsers({ onlineOnly: true });
+	return users.map(u => u.login);
 }
 
 async function updateUser(login: string, payload: any) {
 	const userRemote: DBUser = payload.user;
-	let user: DBUser = await findUserByName(login);
+	let user: DBUser = await getUser(login);
 	if (user) {
 		const favorites: Favorite[] = payload.favorites;
 		user = {
@@ -27,15 +27,21 @@ async function updateUser(login: string, payload: any) {
 			password: undefined,
 			avatar_file: undefined,
 			login: user.login,
-			type: user.type
+			type: user.type,
 		};
 		logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
 		Promise.all([
 			editUser(login, user, null, 'admin'),
-			importFavorites({
-				Header: { version: 1, description: 'Karaoke Mugen Favorites List File' },
-				Favorites: favorites
-			}, login, undefined, true, false)
+			importFavorites(
+				{
+					Header: { version: 1, description: 'Karaoke Mugen Favorites List File' },
+					Favorites: favorites,
+				},
+				login,
+				undefined,
+				true,
+				false
+			),
 		]).catch(err => {
 			logger.warn(`Cannot update remote user ${login}`, { service: 'RemoteUser', obj: err });
 		});
@@ -55,7 +61,7 @@ function userDebounceFactory(user) {
 function setupUserWatch(server: string) {
 	const socket = io(`https://${server}`, { multiplex: true });
 	ioMap.set(server, socket);
-	socket.on('user updated', async (payload) => {
+	socket.on('user updated', async payload => {
 		const login = `${payload.user.login}@${server}`;
 		userDebounceFactory(login)(login, payload);
 	});
@@ -63,7 +69,7 @@ function setupUserWatch(server: string) {
 		const login = `${user}@${server}`;
 		try {
 			logger.info(`${login} user was DELETED on remote, delete local account`, { service: 'RemoteUser' });
-			deleteUser(login).catch(err => {
+			removeUser(login).catch(err => {
 				logger.warn(`Cannot remove remote user ${login}`, { service: 'RemoteUser', obj: err });
 			});
 		} catch (err) {
@@ -87,9 +93,11 @@ export function startSub(user: string, server: string) {
 		if (res.data === false) {
 			const name = `${user}@${server}`;
 			try {
-				logger.info(`User ${name} doesn't exist anymore on remote, delete local version.`, { service: 'RemoteUser' });
+				logger.info(`User ${name} doesn't exist anymore on remote, delete local version.`, {
+					service: 'RemoteUser',
+				});
 				// It's okay if the local version is already deleted.
-				deleteUser(name).catch(() => {});
+				removeUser(name).catch(() => {});
 			} catch (err) {
 				logger.warn(`Cannot delete ${name}`, { service: 'RemoteUser' });
 			}
@@ -102,7 +110,13 @@ export function stopSub(user: string, server: string) {
 		return;
 	}
 	const socket = ioMap.get(server);
-	socket.emit('unsubscribe user', user);
+	return new Promise((resolve, reject) => {
+		try {
+			socket.emit('unsubscribe user', user, resolve);
+		} catch (err) {
+			reject(err);
+		}
+	});
 }
 
 export async function subRemoteUsers() {

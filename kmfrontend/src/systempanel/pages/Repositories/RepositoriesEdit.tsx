@@ -1,19 +1,13 @@
 import { Layout } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import i18next from 'i18next';
-import React, { Component } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Repository } from '../../../../../src/lib/types/repo';
+import { DifferentChecksumReport } from '../../../../../src/types/repo';
 import { commandBackend } from '../../../utils/socket';
 import RepositoryForm from './RepositoriesForm';
-
-interface RepositoriesEditState {
-	repository: Repository;
-	save: (repository: Repository) => void;
-	report: string;
-	selectedRepo: string;
-}
 
 const newrepository: Repository = {
 	Name: undefined,
@@ -24,118 +18,131 @@ const newrepository: Repository = {
 	MaintainerMode: false,
 	BaseDir: null,
 	Path: {
-		Medias: []
-	}
+		Medias: [],
+	},
 };
 
-class RepositoriesEdit extends Component<RouteComponentProps<{ name: string }>, RepositoriesEditState> {
+function RepositoriesEdit() {
+	const navigate = useNavigate();
+	const { name } = useParams();
 
-	state = {
-		repository: null,
-		save: () => { },
-		report: undefined,
-		selectedRepo: undefined
-	};
+	const [repository, setRepository] = useState<Repository>();
+	const [report, setReport] = useState<DifferentChecksumReport[]>();
+	const [selectedRepo, setSelectedRepo] = useState<string>();
 
-	componentDidMount() {
-		this.loadrepository();
-	}
-
-	saveNew = async (repository) => {
+	const saveNew = async repository => {
 		try {
 			await commandBackend('addRepo', repository, true);
-			this.props.history.push('/system/repositories');
+			navigate('/system/repositories');
 		} catch (e) {
 			// already display
 		}
 	};
 
-	saveUpdate = async (repository) => {
+	const saveUpdate = async repository => {
 		try {
-			await commandBackend('editRepo', {
-				name: this.props.match.params.name,
-				newRepo: repository
-			}, true);
-			this.props.history.push('/system/repositories');
+			await commandBackend(
+				'editRepo',
+				{
+					name,
+					newRepo: repository,
+				},
+				true
+			);
+			navigate('/system/repositories');
 		} catch (e) {
 			// already display
 		}
 	};
 
-	loadrepository = async () => {
-		if (this.props.match.params.name) {
-			const res = await commandBackend('getRepo', { name: this.props.match.params.name });
-			this.setState({ repository: res, save: this.saveUpdate });
+	const loadrepository = async () => {
+		if (name) {
+			const res = await commandBackend('getRepo', { name });
+			setRepository(res);
 		} else {
-			this.setState({ repository: { ...newrepository }, save: this.saveNew });
+			setRepository({ ...newrepository });
 		}
 	};
 
-
-	movingMedia = async (movingMediaPath: string) => {
-		if (movingMediaPath && this.props.match.params.name) {
+	const movingMedia = async (movingMediaPath: string) => {
+		if (movingMediaPath && name) {
 			try {
-				await commandBackend('movingMediaRepo', { path: movingMediaPath, name: this.props.match.params.name }, true, 300000);
-				this.props.history.push('/system/repositories');
+				await commandBackend('movingMediaRepo', { path: movingMediaPath, name }, true, 300000);
+				navigate('/system/repositories');
 			} catch (e) {
 				// already display
 			}
 		}
-	}
+	};
 
-	compareLyrics = async (repo: string) => {
+	const compareLyrics = async (repo: string) => {
 		if (repo) {
 			const response = await commandBackend('compareLyricsBetweenRepos', {
-				repo1: this.props.match.params.name,
-				repo2: repo
+				repo1: name,
+				repo2: repo,
 			});
-			this.setState({ report: response, selectedRepo: repo });
+			setReport(response);
+			setSelectedRepo(repo);
 		}
-	}
+	};
 
-	copyLyrics = async (report: string) => {
+	const copyLyrics = async () => {
 		if (report) {
-			await commandBackend('copyLyricsBetweenRepos', { report: report });
+			await commandBackend('copyLyricsBetweenRepos', { report });
 		}
-	}
+	};
 
-	render() {
-		return (
-			<>
-				<Layout.Header>
-					<div className='title'>{i18next.t(this.props.match.params.name ?
-						'HEADERS.REPOSITORIES_EDIT.TITLE' :
-						'HEADERS.REPOSITORIES_NEW.TITLE'
-					)}</div>
-					<div className='description'>{i18next.t(this.props.match.params.name ?
-						'HEADERS.REPOSITORIES_EDIT.DESCRIPTION' :
-						'HEADERS.REPOSITORIES_NEW.DESCRIPTION'
-					)}</div>
-				</Layout.Header>
-				<Layout.Content>
-					{this.state.repository && (<RepositoryForm repository={this.state.repository}
-						save={this.state.save} movingMedia={this.movingMedia}
-						compareLyrics={this.compareLyrics} copyLyrics={this.copyLyrics} />)}
-					<Modal
-						title={i18next.t('REPOSITORIES.WARNING')}
-						visible={this.state.report}
-						onOk={() => {
-							this.copyLyrics(this.state.report);
-							this.setState({ report: undefined });
-						}}
-						onCancel={() => this.setState({ report: undefined })}
-						okText={i18next.t('YES')}
-						cancelText={i18next.t('NO')}
-					>
-						<p>{i18next.t('REPOSITORIES.LYRICS_ARE_DIFFERENT', { first: this.props.match.params.name, second: this.state.selectedRepo })}</p>
-						<p style={{ fontWeight: 'bold' }}>{this.state.report?.map(kara => kara.kara1.subfile.slice(0, -4))}</p>
-						<p>{i18next.t('REPOSITORIES.CONFIRM_SURE', { first: this.props.match.params.name, second: this.state.selectedRepo })}</p>
-					</Modal>
-				</Layout.Content>
-			</>
+	useEffect(() => {
+		loadrepository();
+	}, []);
 
-		);
-	}
+	return (
+		<>
+			<Layout.Header>
+				<div className="title">
+					{i18next.t(name ? 'HEADERS.REPOSITORIES_EDIT.TITLE' : 'HEADERS.REPOSITORIES_NEW.TITLE')}
+				</div>
+				<div className="description">
+					{i18next.t(name ? 'HEADERS.REPOSITORIES_EDIT.DESCRIPTION' : 'HEADERS.REPOSITORIES_NEW.DESCRIPTION')}
+				</div>
+			</Layout.Header>
+			<Layout.Content>
+				{repository && (
+					<RepositoryForm
+						repository={repository}
+						save={name ? saveUpdate : saveNew}
+						movingMedia={movingMedia}
+						compareLyrics={compareLyrics}
+					/>
+				)}
+				<Modal
+					title={i18next.t('REPOSITORIES.WARNING')}
+					visible={report !== undefined}
+					onOk={() => {
+						copyLyrics();
+						setReport(undefined);
+					}}
+					onCancel={() => setReport(undefined)}
+					okText={i18next.t('YES')}
+					cancelText={i18next.t('NO')}
+				>
+					<p>
+						{i18next.t('REPOSITORIES.LYRICS_ARE_DIFFERENT', {
+							first: name,
+							second: selectedRepo,
+						})}
+					</p>
+					<p style={{ fontWeight: 'bold' }}>{report?.map(kara => kara.kara1.subfile.slice(0, -4))}</p>
+					<p>
+						{i18next.t('REPOSITORIES.CONFIRM_SURE', {
+							first: name,
+							second: selectedRepo,
+						})}
+					</p>
+				</Modal>
+			</Layout.Content>
+		</>
+	);
 }
 
-export default withRouter(RepositoriesEdit);
+export default RepositoriesEdit;

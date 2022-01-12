@@ -1,16 +1,22 @@
 import './ProfilModal.scss';
 
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
-import { logout, setAuthentifactionInformation } from '../../../store/actions/auth';
+import { logout, setAuthenticationInformation } from '../../../store/actions/auth';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { IAuthentifactionInformation } from '../../../store/types/auth';
 import ProfilePicture from '../../../utils/components/ProfilePicture';
-import { getListLanguagesInLocale, listCountries } from '../../../utils/isoLanguages';
+import { useLocalSearch } from '../../../utils/hooks';
+import {
+	getLanguagesInLangFromCode,
+	getListLanguagesInLocale,
+	languagesSupport,
+	listCountries,
+} from '../../../utils/isoLanguages';
 import { commandBackend } from '../../../utils/socket';
 import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
@@ -21,420 +27,625 @@ interface IProps {
 	closeProfileModal?: () => void;
 }
 
-interface IState {
-	passwordDifferent: string;
-	nicknameMandatory: string;
-	user?: UserProfile;
-	userDetails?: User;
-	imageSource?: any;
-	cropAvatarModalOpen: boolean;
-	dangerousActions: boolean;
-}
-
 interface UserProfile extends User {
 	passwordConfirmation?: string;
-	avatar?: any
+	avatar?: any;
 }
 
-type typesAttrUser =
-	'login'
-	| 'old_login'
-	| 'type'
-	| 'avatar_file'
-	| 'bio'
-	| 'url'
-	| 'email'
-	| 'nickname'
-	| 'password'
-	| 'last_login_at'
-	| 'flag_online'
-	| 'onlineToken'
-	| 'series_lang_mode'
-	| 'main_series_lang'
-	| 'fallback_series_lang'
-	| 'securityCode'
-	| 'passwordConfirmation'
-	| 'location';
+function ProfilModal(props: IProps) {
+	const context = useContext(GlobalContext);
+	const [passwordDifferent, setPasswordDifferent] = useState('');
+	const [nicknameMandatory, setNicknameMandatory] = useState('');
+	const [user, setUser] = useState<UserProfile>();
+	const [cropAvatarModalOpen, setCropAvatarModalOpen] = useState(false);
+	const [dangerousActions, setDangerousActions] = useState(false);
 
-class ProfilModal extends Component<IProps, IState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
-
-	constructor(props: IProps) {
-		super(props);
-		this.state = {
-			user: null,
-			passwordDifferent: '',
-			nicknameMandatory: '',
-			cropAvatarModalOpen: false,
-			dangerousActions: false
-		};
-	}
-
-	componentDidMount() {
-		this.getUser();
-		if (this.props.scope !== 'public') document.addEventListener('keyup', this.keyObserverHandler);
-	}
-
-	onKeyPress = (event: any) => {
-		const user = this.state.user;
-		user[event.target.name] = event.target.value;
-		this.setState({ user: user });
-		if (event.keyCode === 13) {
-			this.updateUser();
+	const onChange = (event: any) => {
+		if (event.target.name.includes('.')) {
+			const split = event.target.name.split('.');
+			user[split[0]][split[1]] = event.target.value;
+		} else {
+			user[event.target.name] = event.target.value;
 		}
+		setUser(user);
 	};
 
-	onClickCheckbox = (event: any) => {
-		const user = this.state.user;
-		user.flag_sendstats = event.target.checked;
-		this.setState({ user: user });
+	const onClickCheckbox = (event: any) => {
+		user[event.target.name] = event.target.checked;
+		setUser(user);
 	};
 
-
-	onClickSelect = (event: any) => {
-		const user = this.state.user;
-		(user[event.target.name as typesAttrUser] as number) = parseInt(event.target.value);
-		this.setState({ user: user });
-	};
-
-	changeAutocomplete = (name: 'main_series_lang' | 'fallback_series_lang' | 'location', value: string) => {
-		const user = this.state.user;
+	const changeAutocomplete = (name: 'main_series_lang' | 'fallback_series_lang' | 'location', value: string) => {
 		user[name] = value;
-		this.setState({ user: user });
-		this.updateUser();
-	}
+		setUser(user);
+	};
 
-	updateUser = async () => {
-		if (this.state.user.nickname && ((this.state.user.password
-			&& this.state.user.password === this.state.user.passwordConfirmation)
-			|| !this.state.user.password)) {
-			this.setState({ passwordDifferent: '', nicknameMandatory: '' });
+	const changeLanguage = (event: any) => {
+		onChange(event);
+		i18next.changeLanguage(event.target.value);
+	};
+
+	const updateUser = async () => {
+		if (user.nickname && ((user.password && user.password === user.passwordConfirmation) || !user.password)) {
+			setNicknameMandatory('');
+			setPasswordDifferent('');
 			try {
-				const response = await commandBackend('editMyAccount', this.state.user);
+				const response = await commandBackend('editMyAccount', user);
 
-				const data: IAuthentifactionInformation = this.context.globalState.auth.data;
+				const data: IAuthentifactionInformation = context.globalState.auth.data;
 				data.onlineToken = response.data.onlineToken;
-				setAuthentifactionInformation(this.context.globalDispatch, data);
+				setAuthenticationInformation(context.globalDispatch, data);
 			} catch (e) {
 				// already display
 			}
-		} else if (!this.state.user.nickname) {
-			this.setState({ nicknameMandatory: 'redBorders' });
+		} else if (!user.nickname) {
+			setNicknameMandatory('redBorders');
 		} else {
-			this.setState({ passwordDifferent: 'redBorders' });
+			setPasswordDifferent('redBorders');
 		}
-	}
-
-	async getUser() {
-		const user = await commandBackend('getMyAccount');
-		delete user.password;
-		this.setState({ user });
-	}
-
-	profileConvert = () => {
-		showModal(this.context.globalDispatch, <OnlineProfileModal type="convert" loginServ={this.context?.globalState.settings.data.config?.Online.Host} />);
 	};
 
-	profileDelete = () => {
-		showModal(this.context.globalDispatch, <OnlineProfileModal type="delete" loginServ={this.state.user.login?.split('@')[1]} />);
+	const getUser = async () => {
+		try {
+			const user = await commandBackend('getMyAccount');
+			delete user.password;
+			setUser(user);
+		} catch (e) {
+			logout(context.globalDispatch);
+		}
 	};
 
-	favImport = (event: any) => {
+	const profileConvert = () => {
+		showModal(
+			context.globalDispatch,
+			<OnlineProfileModal type="convert" loginServ={context?.globalState.settings.data.config?.Online.Host} />
+		);
+	};
+
+	const profileDelete = () => {
+		showModal(context.globalDispatch, <OnlineProfileModal type="delete" loginServ={user.login?.split('@')[1]} />);
+	};
+
+	const favImport = (event: any) => {
 		if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
 		const input = event.target;
 		if (input.files && input.files[0]) {
 			const file = input.files[0];
 			const fr = new FileReader();
 			fr.onload = () => {
-				callModal(this.context.globalDispatch, 'confirm', i18next.t('CONFIRM_FAV_IMPORT'), '', async (confirm: boolean) => {
-					if (confirm) {
-						const data = { favorites: JSON.parse(fr['result'] as string) };
-						await commandBackend('importFavorites', data);
+				callModal(
+					context.globalDispatch,
+					'confirm',
+					i18next.t('CONFIRM_FAV_IMPORT'),
+					'',
+					async (confirm: boolean) => {
+						if (confirm) {
+							const data = { favorites: JSON.parse(fr['result'] as string) };
+							await commandBackend('importFavorites', data);
+						}
 					}
-				});
+				);
 			};
 			fr.readAsText(file);
 		}
 	};
 
-	favExport = async () => {
+	const favExport = async () => {
 		const exportFile = await commandBackend('exportFavorites');
 		const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
 		const dlAnchorElem = document.getElementById('downloadAnchorElem');
 		if (dlAnchorElem) {
 			dlAnchorElem.setAttribute('href', dataStr);
-			dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', this.context.globalState.auth.data.username, new Date().toLocaleDateString().replace('\\', '-')].join('_') + '.kmfavorites');
+			dlAnchorElem.setAttribute(
+				'download',
+				[
+					'KaraMugen',
+					'fav',
+					context.globalState.auth.data.username,
+					new Date().toLocaleDateString().replace('\\', '-'),
+				].join('_') + '.kmfavorites'
+			);
 			dlAnchorElem.click();
 		}
-	}
+	};
 
-	importAvatar = (e) => {
+	const importAvatar = e => {
 		if (e.target.files?.length > 0) {
-			this.setState({ cropAvatarModalOpen: true });
-			ReactDOM.render(<CropAvatarModal src={e.target.files[0]} saveAvatar={this.saveAvatar} />, document.getElementById('import-avatar'));
+			setCropAvatarModalOpen(true);
+			ReactDOM.render(
+				<CropAvatarModal src={e.target.files[0]} saveAvatar={saveAvatar} />,
+				document.getElementById('import-avatar')
+			);
 		}
 	};
 
-	saveAvatar = async (avatar) => {
+	const saveAvatar = async avatar => {
 		if (avatar) {
-			const user = this.state.user;
 			user.avatar = avatar;
-			this.setState({ user, cropAvatarModalOpen: false }, async () => {
-				await this.updateUser();
-				await this.getUser();
-			});
-		} else {
-			this.setState({ cropAvatarModalOpen: false });
+			setUser(user);
+		}
+		setCropAvatarModalOpen(false);
+	};
+
+	const deleteAccount = () => {
+		callModal(
+			context.globalDispatch,
+			'confirm',
+			i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE'),
+			i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE_WARN'),
+			async () => {
+				await commandBackend('deleteMyAccount');
+				logout(context.globalDispatch);
+			}
+		);
+	};
+
+	const keyObserverHandler = (e: KeyboardEvent) => {
+		if (e.code === 'Escape') {
+			closeModalWithContext();
 		}
 	};
 
-	deleteAccount = () => {
-		callModal(this.context.globalDispatch, 'confirm', i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE'), i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE_WARN'), async () => {
-			await commandBackend('deleteMyAccount');
-			logout(this.context.globalDispatch);
-		});
-	}
-
-	keyObserverHandler = (e: KeyboardEvent) => {
-		if (e.code === 'Escape') {
-			this.closeModal();
-		}
-	}
-
-	componentWillUnmount = () => {
-		if (this.props.scope !== 'public') document.removeEventListener('keyup', this.keyObserverHandler);
-	}
-
-	closeModal = () => {
-		if (this.props.scope === 'public') {
-			this.props.closeProfileModal();
+	const closeModalWithContext = () => {
+		if (props.scope === 'public') {
+			props.closeProfileModal();
 		} else {
-			closeModal(this.context.globalDispatch);
+			closeModal(context.globalDispatch);
 		}
+	};
+
+	const updateAvatar = async () => {
+		await updateUser();
+		await getUser();
+	};
+
+	useEffect(() => {
+		if (user) updateAvatar();
+	}, [user?.avatar]);
+
+	useEffect(() => {
+		getUser();
+		if (props.scope !== 'public') document.addEventListener('keyup', keyObserverHandler);
+		return () => {
+			if (props.scope !== 'public') document.removeEventListener('keyup', keyObserverHandler);
+		};
+	}, []);
+
+	const logInfos = context?.globalState.auth.data;
+
+	const countries = useMemo(listCountries, []);
+	const [countryQuery, setCountryQuery] = useState('');
+	const queriedCountries = useLocalSearch(countries, countryQuery);
+
+	const languages = useMemo(getListLanguagesInLocale, []);
+	const [mainLanguageQuery, setMainLanguageQuery] = useState('');
+	const [fallbackLanguageQuery, setFallbackLanguageQuery] = useState('');
+	const queriedMainLanguages = useLocalSearch(languages, mainLanguageQuery);
+	const queriedFallbackLanguages = useLocalSearch(languages, fallbackLanguageQuery);
+
+	if (!context?.globalState.settings.data.config?.Online.Users && logInfos?.username.includes('@')) {
+		setTimeout(function () {
+			displayMessage(
+				'warning',
+				<div>
+					<label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br /> {i18next.t('LOG_OFFLINE.MESSAGE')}
+				</div>,
+				8000
+			);
+		}, 500);
 	}
-
-	render() {
-		const logInfos = this.context?.globalState.auth.data;
-
-		if (!this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username.includes('@')) {
-			setTimeout(function () {
-				displayMessage('warning', <div><label>{i18next.t('LOG_OFFLINE.TITLE')}</label> <br /> {i18next.t('LOG_OFFLINE.MESSAGE')}</div>, 8000);
-			}, 500);
-		}
-		const body = this.state.user ? (<div className="modal-content">
-			<div className={`modal-header${this.props.scope === 'public' ? ' public-modal' : ''}`}>
-				{this.props.scope === 'public' ? <button
-					className="closeModal"
-					type="button"
-					onClick={() => this.closeModal()}>
-					<i className="fas fa-arrow-left" />
-				</button> : null}
+	const body = user ? (
+		<div className="modal-content">
+			<div className={`modal-header${props.scope === 'public' ? ' public-modal' : ''}`}>
+				{props.scope === 'public' ? (
+					<button className="closeModal" type="button" onClick={() => closeModalWithContext()}>
+						<i className="fas fa-fw fa-arrow-left" />
+					</button>
+				) : null}
 				<h4 className="modal-title">{i18next.t('PROFILE')}</h4>
-				{this.props.scope === 'admin' ? // aka. it's a modal, otherwise it's a page and close button is not needed
-					<button className="closeModal"
-						onClick={this.closeModal}>
+				{props.scope === 'admin' ? ( // aka. it's a modal, otherwise it's a page and close button is not needed
+					<button className="closeModal" onClick={closeModalWithContext}>
 						<i className="fas fa-fw fa-times" />
-					</button> : null
-				}
+					</button>
+				) : null}
 			</div>
 			<div id="nav-profil" className="modal-body">
-				<div className="profileContent">
+				<form
+					onSubmit={async e => {
+						e.preventDefault();
+						await updateUser();
+						closeModalWithContext();
+					}}
+					className="profileContent"
+				>
 					<div className="profileHeader">
-						<ProfilePicture user={this.state.user} className="img-circle avatar" />
+						<ProfilePicture user={user} className="img-circle avatar" />
 						<div>
-							<p>{this.state.user.login}</p>
-							{logInfos?.role !== 'guest' ?
+							<p>{user.login}</p>
+							{logInfos?.role !== 'guest' ? (
 								<label htmlFor="avatar" className="btn btn-default avatarButton">
-									<input id="avatar" className="import-file" type="file" accept="image/*"
-										style={{ display: 'none' }} onChange={this.importAvatar} />
+									<input
+										id="avatar"
+										className="import-file"
+										type="file"
+										accept="image/*"
+										style={{ display: 'none' }}
+										onChange={importAvatar}
+									/>
 									<i className="fas fa-fw fa-portrait" />
 									{i18next.t('AVATAR_IMPORT')}
-								</label> : null
-							}
+								</label>
+							) : null}
 						</div>
 					</div>
-					{logInfos?.role !== 'guest' ?
+					{logInfos?.role !== 'guest' ? (
 						<div className="profileData">
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-user" />
 									<label htmlFor="nickname">{i18next.t('PROFILE_USERNAME')}</label>
 								</div>
-								<input className={this.state.nicknameMandatory} name="nickname" id="nickname" type="text"
-									placeholder={i18next.t('PROFILE_USERNAME')} defaultValue={this.state.user.nickname}
-									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
+								<input
+									className={nicknameMandatory}
+									name="nickname"
+									id="nickname"
+									type="text"
+									placeholder={i18next.t('PROFILE_USERNAME')}
+									defaultValue={user.nickname}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-envelope" />
-									<label htmlFor="nickname">{i18next.t('PROFILE_MAIL')}</label>
+									<label htmlFor="mail">{i18next.t('PROFILE_MAIL')}</label>
 								</div>
-								<input name="email" type="text"
-									placeholder={i18next.t('PROFILE_MAIL')} defaultValue={this.state.user.email}
-									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="email" />
+								<input
+									name="email"
+									type="text"
+									placeholder={i18next.t('PROFILE_MAIL')}
+									defaultValue={user.email}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="email"
+								/>
 							</div>
-							{logInfos?.onlineToken && !this.state.user.email ?
+							{logInfos?.onlineToken && !user.email ? (
 								<div className="profileLine">
 									<div className="profileLabel warning">
 										<i className="fas fa-fw fa-exclamation-circle" />
 										<div>{i18next.t('MODAL.PROFILE_MODAL.MISSING_EMAIL')}</div>
 									</div>
-								</div> : null
-							}
+								</div>
+							) : null}
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-link" />
-									<label htmlFor="nickname">{i18next.t('PROFILE_URL')}</label>
+									<label htmlFor="url">{i18next.t('PROFILE_URL')}</label>
 								</div>
-								<input name="url" type="text"
-									placeholder={i18next.t('PROFILE_URL')} defaultValue={this.state.user.url}
-									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="url" />
+								<input
+									name="url"
+									type="text"
+									placeholder={i18next.t('PROFILE_URL')}
+									defaultValue={user.url}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="url"
+								/>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-pen" />
-									<label htmlFor="nickname">{i18next.t('PROFILE_BIO')}</label>
+									<label htmlFor="bio">{i18next.t('PROFILE_BIO')}</label>
 								</div>
-								<input name="bio" type="text"
-									placeholder={i18next.t('PROFILE_BIO')} defaultValue={this.state.user.bio}
-									onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="off" />
+								<input
+									name="bio"
+									type="text"
+									placeholder={i18next.t('PROFILE_BIO')}
+									defaultValue={user.bio}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<i className="fas fa-map-marked-alt" />
+									<i className="fas fa-fw fa-map-marked-alt" />
 									<label>{i18next.t('MODAL.PROFILE_MODAL.LOCATION')}</label>
 								</div>
 								<Autocomplete
-									value={this.state.user.location}
-									options={listCountries()}
-									forceTop={true}
-									onChange={(value) => this.changeAutocomplete('location', value)} />
+									value={user.location}
+									options={queriedCountries}
+									onType={setCountryQuery}
+									onChange={value => changeAutocomplete('location', value)}
+									styleInclude
+								/>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
-									<input
-										type="checkbox"
-										defaultChecked={this.state.user.flag_sendstats}
-										onChange={this.onClickCheckbox}
-									/>
-									<label>{i18next.t('MODAL.PROFILE_MODAL.FLAG_SENDSTATS')}</label>
+									<i className="fab fa-fw fa-discord" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.DISCORD')}</label>
 								</div>
+								<input
+									name="social_networks.discord"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.DISCORD_PLACEHOLDER')}
+									defaultValue={user.social_networks.discord}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fab fa-fw fa-twitter" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITTER')}</label>
+								</div>
+								<input
+									name="social_networks.twitter"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITTER_PLACEHOLDER')}
+									defaultValue={user.social_networks.twitter}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fab fa-fw fa-instagram" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.INSTAGRAM')}</label>
+								</div>
+								<input
+									name="social_networks.instagram"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.INSTAGRAM_PLACEHOLDER')}
+									defaultValue={user.social_networks.instagram}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<i className="fab fa-fw fa-twitch" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITCH')}</label>
+								</div>
+								<input
+									name="social_networks.twitch"
+									type="text"
+									placeholder={i18next.t('MODAL.PROFILE_MODAL.SOCIAL_NETWORKS.TWITCH_PLACEHOLDER')}
+									defaultValue={user.social_networks.twitch}
+									onKeyUp={onChange}
+									onChange={onChange}
+									autoComplete="off"
+								/>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-lock" />
-									<label htmlFor="nickname">{i18next.t('PROFILE_PASSWORD')}</label>
+									<label htmlFor="password">{i18next.t('PROFILE_PASSWORD')}</label>
 								</div>
 								<div className="dualInput">
-									<input className={this.state.passwordDifferent} name="password" type="password"
-										placeholder={i18next.t('PROFILE_PASSWORD')} defaultValue={this.state.user.password}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
-									<input className={this.state.passwordDifferent}
-										name="passwordConfirmation" type="password" placeholder={i18next.t('PROFILE_PASSWORDCONF')}
-										defaultValue={this.state.user.passwordConfirmation}
-										onKeyUp={this.onKeyPress} onChange={this.onKeyPress} autoComplete="new-password" />
+									<input
+										className={passwordDifferent}
+										name="password"
+										type="password"
+										placeholder={i18next.t('PROFILE_PASSWORD')}
+										defaultValue={user.password}
+										onKeyUp={onChange}
+										onChange={onChange}
+										autoComplete="new-password"
+									/>
+									<input
+										className={passwordDifferent}
+										name="passwordConfirmation"
+										type="password"
+										placeholder={i18next.t('PROFILE_PASSWORDCONF')}
+										defaultValue={user.passwordConfirmation}
+										onKeyUp={onChange}
+										onChange={onChange}
+										autoComplete="new-password"
+									/>
 								</div>
 							</div>
 							<div className="profileLine">
 								<div className="profileLabel">
 									<i className="fas fa-fw fa-star" />
-									<label htmlFor="nickname">{i18next.t('PLAYLISTS.FAVORITES')}</label>
+									<label htmlFor="favorites">{i18next.t('PLAYLISTS.FAVORITES')}</label>
 								</div>
-								<label htmlFor="favImport" title={i18next.t('FAVORITES_IMPORT')} className="btn btn-action btn-default favImport">
+								<label
+									htmlFor="favImport"
+									title={i18next.t('FAVORITES_IMPORT')}
+									className="btn btn-action btn-default favImport"
+								>
 									<i className="fas fa-fw fa-download" /> {i18next.t('FAVORITES_IMPORT')}
 								</label>
-								<input id="favImport" className="import-file" type="file" accept=".kmfavorites" style={{ display: 'none' }} onChange={this.favImport} />
-								<button type="button" title={i18next.t('FAVORITES_EXPORT')} className="btn btn-action btn-default favExport" onClick={this.favExport}>
+								<input
+									id="favImport"
+									className="import-file"
+									type="file"
+									accept=".kmfavorites"
+									style={{ display: 'none' }}
+									onChange={favImport}
+								/>
+								<button
+									type="button"
+									title={i18next.t('FAVORITES_EXPORT')}
+									className="btn btn-action btn-default favExport"
+									onClick={favExport}
+								>
 									<i className="fas fa-fw fa-upload" /> {i18next.t('FAVORITES_EXPORT')}
 								</button>
 							</div>
 							<div className="profileLine row">
 								<div className="profileLabel">
-									<i className="fas fa-fw fa-globe" />
-									<label htmlFor="nickname">{i18next.t('SERIE_NAME_MODE')}</label>
+									<i className="fas fa-fw fa-language" />
+									<label htmlFor="language">
+										{i18next.t('MODAL.PROFILE_MODAL.INTERFACE_LANGUAGE')}
+									</label>
 								</div>
-								<select name="series_lang_mode" onChange={this.onClickSelect}
-									defaultValue={this.state.user.series_lang_mode.toString()}>
-									<option value={'-1'}>{i18next.t('SERIE_NAME_MODE_NO_PREF')}</option>
-									<option value={'0'}>{i18next.t('SERIE_NAME_MODE_ORIGINAL')}</option>
-									<option value={'3'}>{i18next.t('SERIE_NAME_MODE_USER_PROFILE')}</option>
-									<option value={'4'}>{i18next.t('SERIE_NAME_MODE_USER_FORCE')}</option>
+								<select name="language" onChange={changeLanguage} defaultValue={user.language}>
+									{languagesSupport.map(lang => {
+										return (
+											<option key={lang} value={lang}>
+												{getLanguagesInLangFromCode(lang)}
+											</option>
+										);
+									})}
 								</select>
 							</div>
-							{this.state.user.series_lang_mode === 4 ?
-								<React.Fragment>
-									<div className="profileLine row">
-										<label>{i18next.t('MAIN_SERIES_LANG')}</label>
-										<div>
-											<Autocomplete
-												value={this.state.user.main_series_lang}
-												options={getListLanguagesInLocale()}
-												forceTop={true}
-												onChange={(value) => this.changeAutocomplete('main_series_lang', value)} />
-										</div>
-									</div>
-									<div className="profileLine row">
-										<label>{i18next.t('FALLBACK_SERIES_LANG')}</label>
-										<div>
-											<Autocomplete
-												value={this.state.user.fallback_series_lang}
-												options={getListLanguagesInLocale()}
-												forceTop={true}
-												onChange={(value) => this.changeAutocomplete('fallback_series_lang', value)} />
-										</div>
-									</div>
-								</React.Fragment> : null
-							}
+							<div className="profileLine row">
+								<div className="profileLabel">
+									<i className="fas fa-fw fa-globe" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.MAIN_SONG_NAME_LANG')}</label>
+								</div>
+								<div>
+									<Autocomplete
+										value={user.main_series_lang}
+										options={queriedMainLanguages}
+										onType={setMainLanguageQuery}
+										onChange={value => changeAutocomplete('main_series_lang', value)}
+									/>
+								</div>
+							</div>
+							<div className="profileLine row">
+								<div className="profileLabel">
+									<i className="fas fa-fw fa-globe" />
+									<label>{i18next.t('MODAL.PROFILE_MODAL.FALLBACK_SONG_NAME_LANG')}</label>
+								</div>
+								<div>
+									<Autocomplete
+										value={user.fallback_series_lang}
+										options={queriedFallbackLanguages}
+										onType={setFallbackLanguageQuery}
+										onChange={value => changeAutocomplete('fallback_series_lang', value)}
+									/>
+								</div>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_sendstats}
+										onChange={onClickCheckbox}
+										name="flag_sendstats"
+										id="flag_sendstats"
+									/>
+									<label htmlFor="flag_sendstats">
+										{i18next.t('MODAL.PROFILE_MODAL.FLAG_SENDSTATS')}
+									</label>
+								</div>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_parentsonly}
+										onChange={onClickCheckbox}
+										name="flag_parentsonly"
+										id="flag_parentsonly"
+									/>
+									<label htmlFor="flag_parentsonly">
+										{i18next.t('MODAL.PROFILE_MODAL.FLAG_PARENTSONLY')}
+									</label>
+								</div>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_public}
+										onChange={onClickCheckbox}
+										name="flag_public"
+										id="flag_public"
+									/>
+									<label htmlFor="flag_public">{i18next.t('MODAL.PROFILE_MODAL.FLAG_PUBLIC')}</label>
+								</div>
+							</div>
+							<div className="profileLine">
+								<div className="profileLabel">
+									<input
+										type="checkbox"
+										defaultChecked={user.flag_displayfavorites}
+										onChange={onClickCheckbox}
+										name="flag_displayfavorites"
+										id="flag_displayfavorites"
+									/>
+									<label htmlFor="flag_displayfavorites">
+										{i18next.t('MODAL.PROFILE_MODAL.FLAG_DISPLAYFAVORITES')}
+									</label>
+								</div>
+							</div>
 							<div className="profileButtonLine">
-								<button type="button" className="btn btn-action btn-save"
-									onClick={async () => {
-										await this.updateUser();
-										this.closeModal();
-									}}>
+								<button type="submit" className="btn btn-action btn-save">
 									{i18next.t('SUBMIT')}
 								</button>
-								<button type="button" className="btn btn-danger profileDelete" onClick={() => this.setState({ dangerousActions: !this.state.dangerousActions })}>
+								<button
+									type="button"
+									className="btn btn-danger profileDelete"
+									onClick={() => setDangerousActions(!dangerousActions)}
+								>
 									<i className="fas fa-fw fa-exclamation-triangle" />
 									{i18next.t('MODAL.PROFILE_MODAL.DANGEROUS_ACTIONS')}
-									<i className={`fas fa-fw ${this.state.dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'}`} />
+									<i
+										className={`fas fa-fw ${
+											dangerousActions ? 'fa-chevron-left' : 'fa-chevron-right'
+										}`}
+									/>
 								</button>
-								{this.state.dangerousActions ? <div>
-									{this.context?.globalState.settings.data.config?.Online.Users && logInfos?.username !== 'admin' ?
-										(logInfos?.onlineToken ?
-											<button type="button" className="btn btn-danger profileDelete" onClick={this.profileDelete}>
-												<i className="fas fa-fw fa-retweet" /> {i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
-											</button>
-											:
-											<button type="button" className="btn btn-primary profileConvert" onClick={this.profileConvert}>
-												<i className="fas fa-fw fa-retweet" /> {i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
-											</button>
-										) : null
-									}
-									<button type="button" className={`btn profileDelete ${logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'}`}
-										onClick={this.deleteAccount}>
-										<i className="fas fa-fw fa-trash-alt" /> {i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE')}
-									</button>
-								</div> : null}
+								{dangerousActions ? (
+									<div>
+										{context?.globalState.settings.data.config?.Online.Users &&
+										logInfos?.username !== 'admin' ? (
+											logInfos?.onlineToken ? (
+												<button
+													type="button"
+													className="btn btn-danger profileDelete"
+													onClick={profileDelete}
+												>
+													<i className="fas fa-fw fa-retweet" />{' '}
+													{i18next.t('MODAL.PROFILE_MODAL.ONLINE_DELETE')}
+												</button>
+											) : (
+												<button
+													type="button"
+													className="btn btn-primary profileConvert"
+													onClick={profileConvert}
+												>
+													<i className="fas fa-fw fa-retweet" />{' '}
+													{i18next.t('MODAL.PROFILE_MODAL.ONLINE_CONVERT')}
+												</button>
+											)
+										) : null}
+										<button
+											type="button"
+											className={`btn profileDelete ${
+												logInfos?.onlineToken ? 'btn-primary' : 'btn-danger'
+											}`}
+											onClick={deleteAccount}
+										>
+											<i className="fas fa-fw fa-trash-alt" />{' '}
+											{i18next.t('MODAL.PROFILE_MODAL.LOCAL_DELETE')}
+										</button>
+									</div>
+								) : null}
 							</div>
-						</div> : null
-					}
-				</div>
-			</div>
-		</div>) : null;
-		return (
-			(this.state.cropAvatarModalOpen && this.props.scope === 'admin') ? null :
-				this.props.scope === 'public' ?
-					<div id="profilModal">
-						{body}
-					</div>
-					: <div className="modal modalPage" id="profilModal">
-						<div className="modal-dialog">
-							{body}
 						</div>
-					</div>
-		);
-	}
+					) : null}
+				</form>
+			</div>
+		</div>
+	) : null;
+	return cropAvatarModalOpen && props.scope === 'admin' ? null : props.scope === 'public' ? (
+		<div id="profilModal">{body}</div>
+	) : (
+		<div className="modal modalPage" id="profilModal">
+			<div className="modal-dialog">{body}</div>
+		</div>
+	);
 }
 
 export default ProfilModal;

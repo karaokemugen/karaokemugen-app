@@ -1,11 +1,15 @@
 import { EventEmitter } from 'events';
 import i18next from 'i18next';
-import React, {Dispatch, ReactNode} from 'react';
+import { createElement, Dispatch, ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
 
+import { Kara } from '../../../src/lib/types/kara';
+import { Criteria } from '../../../src/lib/types/playlist';
 import nanamiCryPNG from '../assets/nanami-cry.png';
 import nanamiCryWebP from '../assets/nanami-cry.webp';
+import nanamiSingPng from '../assets/nanami-sing.png';
+import nanamiSingWebP from '../assets/nanami-sing.webp';
 import nanamiThinkPng from '../assets/nanami-think.png';
 import nanamiThinkWebP from '../assets/nanami-think.webp';
 import nanamiUmuPng from '../assets/nanami-umu.png';
@@ -14,13 +18,14 @@ import Tutorial from '../frontend/components/modals/Tutorial';
 import { showModal } from '../store/actions/modal';
 import { GlobalContextInterface } from '../store/context';
 import { ShowModal } from '../store/types/modal';
+import { SettingsStoreData } from '../store/types/settings';
 import Modal from './components/Modal';
-import {getTagInLocale} from './kara';
-import {commandBackend} from './socket';
+import { getTagInLocale, getTitleInLocale } from './kara';
+import { commandBackend } from './socket';
 
 let is_touch = window.outerWidth <= 1023;
 let is_large = window.outerWidth <= 1860;
-let tuto:any;
+let tuto: any;
 export let lastLocation = '';
 
 export function setLastLocation(location) {
@@ -28,15 +33,15 @@ export function setLastLocation(location) {
 }
 
 class Event extends EventEmitter {
-	emitChange(event:any, data?:any) {
+	emitChange(event: any, data?: any) {
 		this.emit(event, data);
 	}
 
-	addChangeListener(event:any, callback:any) {
+	addChangeListener(event: any, callback: any) {
 		this.on(event, callback);
 	}
 
-	removeChangeListener(event:any, callback:any) {
+	removeChangeListener(event: any, callback: any) {
 		this.removeListener(event, callback);
 	}
 }
@@ -72,11 +77,11 @@ export function dotify(obj: any) {
 	function recurse(obj: any, current?: any) {
 		for (const key in obj) {
 			const value = obj[key];
-			const newKey = (current ? current + '.' + key : key);  // joined key with dot
+			const newKey = current ? current + '.' + key : key; // joined key with dot
 			if (value && typeof value === 'object' && !Array.isArray(value)) {
-				recurse(value, newKey);  // it's a nested object, so do it again
+				recurse(value, newKey); // it's a nested object, so do it again
 			} else {
-				res[newKey] = value;  // it's not an object, so set the property
+				res[newKey] = value; // it's not an object, so set the property
 			}
 		}
 	}
@@ -105,45 +110,66 @@ export function secondsTimeSpanToHMS(s: number, format: string) {
 	return result;
 }
 
+export function hmsToSecondsOnly(str: string) {
+	const p = str.split(':');
+	let s = 0;
+	let m = 1;
+
+	while (p.length > 0) {
+		s += m * parseInt(p.pop(), 10);
+		m *= 60;
+	}
+
+	return s;
+}
+
 export function startIntro() {
-	tuto = ReactDOM.render(React.createElement(Tutorial), document.getElementById('tuto'));
+	tuto = ReactDOM.render(createElement(Tutorial), document.getElementById('tuto'));
 	return tuto;
 }
 
 const chibis = new Map<TypeOptions, ReactNode>([
 	[
 		'error',
-		(<picture>
+		<picture>
 			<source type="image/webp" srcSet={nanamiCryWebP} />
 			<source type="image/png" srcSet={nanamiCryPNG} />
 			<img src={nanamiCryPNG} alt="Nanami is crying :c" />
-		</picture>)
+		</picture>,
 	],
 	[
 		'warning',
-		(<picture>
+		<picture>
 			<source type="image/webp" srcSet={nanamiThinkWebP} />
 			<source type="image/png" srcSet={nanamiThinkPng} />
 			<img src={nanamiThinkPng} alt="Nanami is confused :/" />
-		</picture>)
+		</picture>,
 	],
 	[
 		'success',
-		(<picture>
+		<picture>
 			<source type="image/webp" srcSet={nanamiUmuWebP} />
 			<source type="image/png" srcSet={nanamiUmuPng} />
 			<img src={nanamiUmuPng} alt="Nanami is UmU" />
-		</picture>)
-	]
+		</picture>,
+	],
 ]);
 
-export function displayMessage(type: TypeOptions, message: any, time = 3500, position: ToastPosition = 'top-left', id?: string|number) {
+export function displayMessage(
+	type: TypeOptions,
+	message: any,
+	time = 3500,
+	position: ToastPosition = 'top-left',
+	id?: string | number
+) {
 	let item;
 	if (typeof message === 'string') {
-		item = (<div className="toast-with-img">
-			{chibis.has(type) ? chibis.get(type):null}
-			<span>{message}</span>
-		</div>);
+		item = (
+			<div className="toast-with-img">
+				{chibis.has(type) ? chibis.get(type) : null}
+				<span>{message}</span>
+			</div>
+		);
 	} else item = message;
 	if (!document.hidden) {
 		toast(item, { type: type, autoClose: time ? time : false, position, pauseOnFocusLoss: false, toastId: id });
@@ -160,23 +186,23 @@ export function callModal(
 	forceSmall?: boolean,
 	abortCallback?: boolean
 ) {
-	showModal(dispatch, React.createElement(Modal, {
-		type,
-		title,
-		message,
-		callback,
-		placeholder,
-		forceSmall,
-		abortCallback
-	}));
+	showModal(
+		dispatch,
+		createElement(Modal, {
+			type,
+			title,
+			message,
+			callback,
+			placeholder,
+			forceSmall,
+			abortCallback,
+		})
+	);
 }
 
 export const nonStandardPlaylists = {
-	blacklist: '4398bed2-e272-47f5-9dd9-db7240e8557e', // -2
-	blc: '91a9961a-8863-48a5-b9d0-fc4c1372a11a', // -4
-	whitelist: '4c5dbb18-278b-448e-9a1f-8cf5f1e24dc7', // -3
 	favorites: 'efe3687f-9e0b-49fc-a5cc-89df25a17e94', // -5
-	library: '524de79d-10b2-49dc-90b1-597626d0cee8' // -1
+	library: '524de79d-10b2-49dc-90b1-597626d0cee8', // -1
 };
 
 export function isNonStandardPlaylist(plaid: string) {
@@ -188,48 +214,105 @@ export function isModifiable(context: GlobalContextInterface, repoName: string):
 	return repo.MaintainerMode || !repo.Online;
 }
 
-export async function decodeBlacklistingReason(reason: string) {
-	const parts = reason.split(':');
-	const args: [string, Record<string, string>] = [parts[0], {}];
-	switch (parts[0]) {
-		case 'TAG':
-			if (parts.length === 3) {
-				const tid = parts[1];
-				const type = parts[2];
-				const tag = await commandBackend('getTag', {tid});
-				args[1] = {
-					tag: getTagInLocale(tag),
-					verb: i18next.t(`BLACKLIST.LABEL.TAG_VERBS.${type}`)
-				};
-			}
+export async function decodeCriteriaReason(settings: SettingsStoreData, criteria: Criteria) {
+	const args: [string, Record<string, string>] = ['', {}];
+	switch (criteria.type) {
+		case 0:
+			args[0] = 'YEAR';
+			args[1] = { year: criteria.value };
 			break;
-		case 'YEAR':
-			if (parts.length === 2) {
-				const year = parts[1];
-				args[1] = { year };
-			}
+		case 1001:
+			args[0] = 'KID';
 			break;
-		case 'KID':
+		case 1002:
+			args[0] = 'LONGER';
+			args[1] = { time: criteria.value };
 			break;
-		case 'LONGER':
-		case 'SHORTER':
-			if (parts.length === 2) {
-				const time = parts[1];
-				args[1] = { time };
-			}
+		case 1003:
+			args[0] = 'SHORTER';
+			args[1] = { time: criteria.value };
 			break;
-		case 'TITLE':
-		case 'TAG_NAME':
-			if (parts.length >= 2) {
-				const [type, ...titleParts] = parts;
-				const title = titleParts.join(':');
-				args[1] = { title };
-			}
+		case 1004:
+			args[0] = 'TITLE';
+			args[1] = { title: criteria.value.join(':') };
+			break;
+		case 1005:
+			args[0] = 'TAG_NAME';
+			args[1] = { title: criteria.value.join(':') };
 			break;
 		default:
-			args[0] = 'UNKNOWN';
-			args[1] = {};
+			const tag = await commandBackend('getTag', { tid: criteria.value });
+			args[1] = {
+				tag: getTagInLocale(settings, tag),
+				verb: i18next.t(`CRITERIA.LABEL.TAG_VERBS.${criteria.type}`),
+			};
+			break;
 	}
-	args[0] = `BLACKLIST.LABEL.${args[0]}`;
+	args[0] = `CRITERIA.LABEL.${args[0]}`;
 	return i18next.t(...args);
+}
+
+export function PLCCallback(response, context: GlobalContextInterface, kara: Kara) {
+	if (response && response.code && response.data?.plc) {
+		let message;
+		if (response.data?.plc.time_before_play) {
+			const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
+			const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+			const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
+			message = (
+				<>
+					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+						song: getTitleInLocale(context.globalState.settings.data, kara.titles),
+					})}
+					<br />
+					{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
+						time: beforePlayTime,
+						date: playTimeDate,
+					})}
+				</>
+			);
+		} else {
+			message = (
+				<>
+					{i18next.t(`SUCCESS_CODES.${response.code}`, {
+						song: getTitleInLocale(context.globalState.settings.data, kara.titles),
+					})}
+				</>
+			);
+		}
+		displayMessage(
+			'success',
+			<div className="toast-with-img">
+				<picture>
+					<source type="image/webp" srcSet={nanamiSingWebP} />
+					<source type="image/png" srcSet={nanamiSingPng} />
+					<img src={nanamiSingPng} alt="Nanami is singing!" />
+				</picture>
+				<span>
+					{message}
+					<br />
+					<button
+						className="btn"
+						onClick={e => {
+							e.preventDefault();
+							e.stopPropagation();
+							commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.data.plc.plcid] })
+								.then(() => {
+									toast.dismiss(response.data.plc.plcid);
+									displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
+								})
+								.catch(() => {
+									toast.dismiss(response.data.plc.plcid);
+								});
+						}}
+					>
+						{i18next.t('CANCEL')}
+					</button>
+				</span>
+			</div>,
+			10000,
+			'top-left',
+			response.data.plc.plcid
+		);
+	}
 }

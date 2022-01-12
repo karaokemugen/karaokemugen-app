@@ -16,29 +16,29 @@ function connectToKMServer() {
 			socket.disconnect();
 		}, 5000);
 		socket = io(`https://${conf.Online.Host}`, {
-			transports: ['websocket']
+			transports: ['websocket'],
 		});
 		socket.on('connect', () => {
 			clearTimeout(timeout);
 			timeout = undefined;
 			resolve();
 		});
-		socket.on('connect_error', (err) => {
+		socket.on('connect_error', err => {
 			if (timeout) reject(err);
 		});
 		socket.on('disconnect', reason => {
-			logger.warn('Connection lost with server,', {service: 'KMOnline', obj: reason});
+			logger.warn('Connection lost with server,', { service: 'KMOnline', obj: reason });
 		});
 	});
 }
 
 export async function initKMServerCommunication() {
 	try {
-		logger.debug('Connecting to KMServer via socket.io', {service: 'KMOnline'});
+		logger.debug('Connecting to KMServer via socket.io', { service: 'KMOnline' });
 		await connectToKMServer();
 		// Hooks?
 	} catch (e) {
-		logger.error('Cannot establish socket connection to KMServer', {service: 'KMOnline', obj: e});
+		logger.error('Cannot establish socket connection to KMServer', { service: 'KMOnline', obj: e });
 		throw e;
 	}
 }
@@ -54,7 +54,7 @@ export function commandKMServer<T = any>(name: string, data: APIData<T>, timeout
 		}, timeout);
 		socket.emit(name, data, ack => {
 			clearTimeout(nodeTimeout);
-			ack.err ? reject(ack.data):resolve(ack.data);
+			ack.err ? reject(ack.data) : resolve(ack.data);
 		});
 	});
 }

@@ -9,13 +9,13 @@ select {
 
 /* Range input sliders */
 
-input[type=range]:focus {
+input[type='range']:focus {
 	outline: none;
 }
 
 /* settings slider */
 
-#settings input[type=range] {
+#settings input[type='range'] {
 	-webkit-appearance: none;
 	width: 100%;
 }
@@ -37,7 +37,7 @@ input[type=range]:focus {
 }
 @mixin slider {
 	box-shadow: 1px 1px 1px black, 0 0 1px #0d0d0d;
-	border: 1px solid #D8D8D8;;
+	border: 1px solid #d8d8d8;
 	height: 1.5em;
 	width: 1.75em;
 	border-radius: 0;
@@ -47,48 +47,49 @@ input[type=range]:focus {
 	margin-top: -3px;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
+input[type='range']::-webkit-slider-runnable-track {
 	@include track;
 }
-input[type=range]::-moz-range-track {
+input[type='range']::-moz-range-track {
 	@include track;
 }
-input[type=range]::-ms-track {
+input[type='range']::-ms-track {
 	@include track(true);
 }
-input[type=range]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
 	@include slider;
 }
-input[type=range]::-moz-range-thumb {
+input[type='range']::-moz-range-thumb {
 	@include slider;
 }
-input[type=range]::-ms-thumb {
+input[type='range']::-ms-thumb {
 	@include slider;
 }
-input[type=range]:focus::-webkit-slider-runnable-track {
+input[type='range']:focus::-webkit-slider-runnable-track {
 	background: lighten($mugen-background, 10);
 }
-input[type=range]::-ms-fill-lower {
+input[type='range']::-ms-fill-lower {
 	background: lighten($mugen-background, 15);
 	border: 0.1px solid #0001015c;
 	border-radius: 0;
 	box-shadow: 1px 1px 1px #00000008, 0 0 1px #0d0d0d08;
 }
-input[type=range]::-ms-fill-upper {
+input[type='range']::-ms-fill-upper {
 	background: lighten($mugen-background, 10);
 	border: 0.1px solid #0001015c;
 	border-radius: 0;
 	box-shadow: 1px 1px 1px #00000008, 0 0 1px #0d0d0d08;
 }
-input[type=range]:focus::-ms-fill-lower {
+input[type='range']:focus::-ms-fill-lower {
 	background: lighten($mugen-background, 10);
 }
-input[type=range]:focus::-ms-fill-upper {
+input[type='range']:focus::-ms-fill-upper {
 	background: lighten($mugen-background, 10);
 }
 
-input[type="text"]:not([data-exclude="true"]):not(.ant-input), input[type="password"]:not([data-exclude="true"]):not(.ant-input),
-input[type="number"]:not([data-exclude="true"]):not(.ant-input) {
+input[type='text']:not([data-exclude='true']):not(.ant-input),
+input[type='password']:not([data-exclude='true']):not(.ant-input),
+input[type='number']:not([data-exclude='true']):not(.ant-input) {
 	width: 100%;
 	border: 0;
 	box-shadow: none;
@@ -100,19 +101,20 @@ input[type="number"]:not([data-exclude="true"]):not(.ant-input) {
 	padding: 0 1rem;
 	color: #ccc;
 	&.errorBackground {
-		background-color: map-get($mugen-colors, "red");
+		background-color: map-get($mugen-colors, 'red');
 		&:focus {
-			background-color: lighten(map-get($mugen-colors, "red"), 5);
+			background-color: lighten(map-get($mugen-colors, 'red'), 5);
 		}
 	}
 }
 
-input[type="text"]:not([data-exclude="true"]):not(.ant-input):focus, input[type="password"]:not([data-exclude="true"]):not(.ant-input):focus,
-input[type="number"]:not([data-exclude="true"]):not(.ant-input):focus {
+input[type='text']:not([data-exclude='true']):not(.ant-input):focus,
+input[type='password']:not([data-exclude='true']):not(.ant-input):focus,
+input[type='number']:not([data-exclude='true']):not(.ant-input):focus {
 	box-shadow: 0 1px 0 0 #546e7a;
 }
 
-.panel-heading input[type="text"] {
+.panel-heading input[type='text'] {
 	height: 100%;
 	font-size: 1.2rem;
 	line-height: 1.8rem;

@@ -1,4 +1,4 @@
-import {saveSetting} from '../lib/dao/database';
+import { saveSetting } from '../lib/dao/database';
 import { Repository } from '../lib/types/repo';
 import { getConfig } from '../lib/utils/config';
 import { editSetting } from '../utils/config';
@@ -13,7 +13,7 @@ export function insertRepo(repo: Repository) {
 	const i = repos.findIndex(r => r.Name === repo.Name);
 	if (i > 0) throw 'Repository with this name already exists';
 	repos.push(repo);
-	editSetting({ System: { Repositories: repos }});
+	editSetting({ System: { Repositories: repos } });
 	// Reset the last commit setting in DB for the repo
 	saveSetting(`commit-${repo.Name}`, null);
 }
@@ -33,7 +33,7 @@ export function updateRepo(repo: Repository, name: string) {
 	}
 	if (i < 0) throw 'Repository not found';
 	repos[i] = repo;
-	editSetting({ System: { Repositories: repos}});
+	editSetting({ System: { Repositories: repos } });
 }
 
 export function deleteRepo(name: string) {
@@ -42,5 +42,5 @@ export function deleteRepo(name: string) {
 	repos[repoIndex] = null;
 	// Reset the last commit setting in DB for the repo
 	saveSetting(`commit-${name}`, null);
-	editSetting({ System: { Repositories: repos}});
+	editSetting({ System: { Repositories: repos } });
 }

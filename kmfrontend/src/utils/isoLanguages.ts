@@ -1,45 +1,50 @@
-import languages from '@karaokemugen/i18n-iso-languages';
-import isoCountriesLanguages from 'iso-countries-languages';
+import { getCountries } from '@hotosm/iso-countries-languages';
+import { alpha2ToAlpha3B, getAlpha3BCode, getName, getNames, registerLocale } from '@karaokemugen/i18n-iso-languages';
+import en from '@karaokemugen/i18n-iso-languages/langs/en.json';
+import es from '@karaokemugen/i18n-iso-languages/langs/es.json';
+import fr from '@karaokemugen/i18n-iso-languages/langs/fr.json';
+import id from '@karaokemugen/i18n-iso-languages/langs/id.json';
 
-// Support french & english languages.
-languages.registerLocale(require('@karaokemugen/i18n-iso-languages/langs/fr.json'));
-languages.registerLocale(require('@karaokemugen/i18n-iso-languages/langs/en.json'));
+registerLocale(fr);
+registerLocale(en);
+registerLocale(es);
+registerLocale(id);
 
-const languagesSupport = ['en', 'fr'];
+export const languagesSupport = ['en', 'fr', 'es', 'id'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
-const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'eng';
+export const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 
-export function getListLanguagesInLocale(): Array<{ value: string, text: string }> {
+export function getListLanguagesInLocale(): { value: string; label: string }[] {
 	const result = [];
-	const langs = Object.values(languages.getNames(langSupport));
+	const langs = Object.values(getNames(langSupport));
 	for (const langInLocale of langs) {
-		result.push({ value: languages.getAlpha3BCode(langInLocale, langSupport), label: langInLocale });
+		result.push({ value: getAlpha3BCode(langInLocale, langSupport), label: langInLocale });
 	}
 	return result;
 }
 
 export function getLanguagesInLocaleFromCode(code: string) {
-	return languages.getName(code, langSupport);
+	return getName(code, langSupport);
 }
 
-export function getNavigatorLanguageIn3B() {
-	return languages.alpha2ToAlpha3B(navigatorLanguage);
+export function getLanguagesInLangFromCode(code: string) {
+	return getName(code, code);
 }
 
 export function getLanguageIn3B(code) {
-	return languages.alpha2ToAlpha3B(code);
+	return alpha2ToAlpha3B(code);
 }
 
-export function listCountries(): Array<{ value: string, text: string }> {
+export function listCountries(): { value: string; label: string }[] {
 	const listCountries = [];
-	for (const [key, value] of Object.entries(isoCountriesLanguages.getCountries(navigatorLanguage))) {
+	for (const [key, value] of Object.entries(getCountries(langSupport))) {
 		listCountries.push({ value: key, label: value });
 	}
 	return listCountries;
 }
 
 export function getCountryName(code: string): string | undefined {
-	for (const [key, value] of Object.entries(isoCountriesLanguages.getCountries(navigatorLanguage))) {
+	for (const [key, value] of Object.entries(getCountries(langSupport))) {
 		if (key === code) {
 			return value as string;
 		}

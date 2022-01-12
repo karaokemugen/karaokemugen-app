@@ -3,20 +3,20 @@
 .radiobutton-ui {
 	display: flex;
 	flex-direction: row;
-	&[data-orientation="vertical"] {
+	&[data-orientation='vertical'] {
 		flex-direction: column;
 	}
 
 	button {
 		display: block;
-		flex:1;
+		flex: 1;
 		padding: 0;
 		margin: 1px;
 		border: none;
 		background: $mugen-radio-btn-background;
 		color: $mugen-radio-btn-color;
-		outline:none;
-		transition: color ease .5s, background ease .5s;
+		outline: none;
+		transition: color ease 0.5s, background ease 0.5s;
 		cursor: pointer;
 		&.active {
 			background: $mugen-radio-btn-default-active-background;

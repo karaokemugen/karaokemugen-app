@@ -37,17 +37,11 @@ Online:
   # Disallow ALL video downloads; We'll give you crepes if you keep this to true
   AllowDownloads: true
 Frontend:
-  # Enable previews (thumbnail) generation. Should be disabled for tests without all medias present
-  GeneratePreviews: true
-  # Minutes before users are considered signed out
-  AuthExpireTime: 15
   # Webapp mode :
   # 0 : closed
   # 1 : Current playlist/song only (restricted)
   # 2 : Opened (all features available)
   Mode: 2
-  # Port to listen to
-  Port: 1337
   Permissions:
     # Permissions for users
     AllowNicknameChange: true
@@ -92,16 +86,6 @@ Karaoke:
   SmartInsert: false
   # Number of minutes before you should be warned your session is going to end
   MinutesBeforeEndOfSessionWarning: 15
-  Display:
-    # Show nickname of the person who requested a song
-    Nickname: true
-    ConnectionInfo:
-      # Enable display of connection messages
-      Enabled: true
-      # Additional message prepended to the connection URL
-      #Message: 'Connect to Wifi xxx'
-      # Override host/IP address
-      Host: '192.168.0.1'
   Poll:
     # Number of choices in poll
     Choices: 4
@@ -128,10 +112,24 @@ Karaoke:
     # 2 : Time allowance quota
     Type: 0
 Player:
+  Display:
+    # Show random quotes on pause screens
+    RandomQuotes: true
+    # Show song information at the beginning and end of song
+    SongInfo: true
+    # Which language to display song information in
+    SongInfoLanguage: qjr
+    # Show nickname of the person who requested a song
+    Nickname: true
+    ConnectionInfo:
+      # Enable display of connection messages
+      Enabled: true
+      # Additional message prepended to the connection URL
+      #Message: 'Connect to Wifi xxx'
+      # Override host/IP address
+      Host: '192.168.0.1'
   # Override mpv's video output driver
   mpvVideoOutput: null
-  # Background file to load
-  Background: null
   # Fullscreen ?
   FullScreen: false
   # Spawn a second monitor window in PIP mode to check what the player is displaying
@@ -164,6 +162,8 @@ Player:
   HardwareDecoding: auto-safe
   # Extra mpv commandline arguments example
   ExtraCommandLine: --tone-mapping=reinhard
+  # Live Comments enabled or not
+  LiveComments: false
 Playlist:
   # What to do at the end of playlist :
   # - random : plays random songs, should usually be used with autoplay
@@ -197,7 +197,7 @@ Playlist:
     Encores:
       Enabled: false
       File: encoru.mp4
-      Message: "This is the last song!"
+      Message: 'This is the last song!'
   MysterySongs:
     # Invisible songs are not hidden (they appear as a slot in playlist)
     Hide: false
@@ -207,9 +207,11 @@ Playlist:
     AddedSongVisibilityPublic: false
     # List of mystery songs labels
     Labels:
-    - ???
-    - Chanson mystère !
+      - ???
+      - Chanson mystère !
 System:
+  # Port to listen to
+  FrontendPort: 1337
   Database:
     bundledPostgresBinary: false
     database: karaokemugen_app
@@ -264,13 +266,7 @@ System:
       Path:
         Medias:
           - repos/Local/medias
-  Path:
-    # Some paths like Background, karas lyrics medias, etc. can have multiple entries.
-    Avatars: avatars
-    Backgrounds:
-      - backgrounds
-    Bin: bin
-    Import: import
+  MediaPath:
     Jingles:
       - jingles
       - jingles/KaraokeMugen
@@ -281,7 +277,16 @@ System:
       - outros
     Encores:
       - encores
+    Sponsors:
+      - sponsors
+  Path:
+    Avatars: avatars
+    Backgrounds: backgrounds
+    Bin: bin
+    Import: import
     Temp: temp
     Previews: previews
     SessionExports: sessionExports
     DB: db
+    BundledBackgrounds: BundledBackgrounds
+    StreamFiles: streamfiles

@@ -5,7 +5,7 @@ import { DBPL } from '../src/lib/types/database/playlist';
 import { PlaylistExport } from '../src/lib/types/playlist';
 import { uuidRegexp } from '../src/lib/utils/constants';
 import { DBPLC } from '../src/types/database/playlist';
-import { allKIDs, commandBackend, getToken, setPlaid, testKara } from './util/util';
+import { allKIDs, commandBackend, getToken, setPlaid, socket, testKara } from './util/util';
 
 describe('Playlists', () => {
 	let playlistExport: PlaylistExport;
@@ -14,6 +14,9 @@ describe('Playlists', () => {
 	let publicPlaylistID: string;
 	let newCurrentPlaylistID: string;
 	let newPublicPlaylistID: string;
+	let newWhitelistPlaylistID: string;
+	let newBlacklistPlaylistID: string;
+	let whitelistedKID: string;
 	let PLCID: number;
 	const KIDToAdd = sample(allKIDs);
 	const KIDToAdd2 = sample(allKIDs.filter((kid: string) => kid !== KIDToAdd));
@@ -43,7 +46,7 @@ describe('Playlists', () => {
 		await commandBackend(token, 'addKaraToPlaylist', {
 			kids: allKIDs,
 			requestedby: 'Test',
-			plaid: newPlaylistID
+			plaid: newPlaylistID,
 		});
 	});
 
@@ -52,7 +55,7 @@ describe('Playlists', () => {
 			await commandBackend(token, 'addKaraToPlaylist', {
 				kids: [KIDToAdd],
 				requestedby: 'Test',
-				plaid: newPlaylistID
+				plaid: newPlaylistID,
 			});
 		} catch (err) {
 			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
@@ -61,11 +64,16 @@ describe('Playlists', () => {
 
 	it(`Add an unknown karaoke to playlist ${newPlaylistID} to see if it fails`, async () => {
 		try {
-			await commandBackend(token, 'addKaraToPlaylist', {
-				kids: ['c28c8739-da02-49b4-889e-b15d1e9b2132'],
-				requestedby: 'Test',
-				plaid: newPlaylistID
-			}, true);
+			await commandBackend(
+				token,
+				'addKaraToPlaylist',
+				{
+					kids: ['c28c8739-da02-49b4-889e-b15d1e9b2132'],
+					requestedby: 'Test',
+					plaid: newPlaylistID,
+				},
+				true
+			);
 		} catch (err) {
 			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
 		}
@@ -73,16 +81,19 @@ describe('Playlists', () => {
 
 	it(`Add karaoke ${KIDToAdd} to an unknown playlist to see if it fails`, async () => {
 		try {
-
-			await commandBackend(token, 'addKaraToPlaylist', {
-				kids: [KIDToAdd],
-				requestedby: 'Test',
-				plaid: '0f82b7df-efa0-4018-adfd-7bd104f9bd51'
-			}, true);
+			await commandBackend(
+				token,
+				'addKaraToPlaylist',
+				{
+					kids: [KIDToAdd],
+					requestedby: 'Test',
+					plaid: '0f82b7df-efa0-4018-adfd-7bd104f9bd51',
+				},
+				true
+			);
 		} catch (err) {
 			expect(err.message.code).to.be.equal('PL_ADD_SONG_ERROR');
 		}
-
 	});
 
 	it('Get list of karaokes in a playlist', async () => {
@@ -97,7 +108,7 @@ describe('Playlists', () => {
 	it('Get specific karaoke in a playlist', async () => {
 		const data = await commandBackend(token, 'getPLC', {
 			plaid: newPlaylistID,
-			plc_id: 1
+			plc_id: 1,
 		});
 		testKara(data, { tagDetails: 'full', plcDetail: true, plc: true });
 	});
@@ -107,10 +118,31 @@ describe('Playlists', () => {
 			name: 'new_current_playlist',
 			flag_visible: true,
 			flag_public: false,
-			flag_current: true
+			flag_current: true,
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
 		newCurrentPlaylistID = data.plaid;
+	});
+
+	it('Create a WHITELIST playlist', async () => {
+		const playlist_current = {
+			name: 'new_whitelist_playlist',
+			flag_visible: true,
+			flag_whitelist: true,
+		};
+		const data = await commandBackend(token, 'createPlaylist', playlist_current);
+		newWhitelistPlaylistID = data.plaid;
+	});
+
+	it('Create a smart BLACKLIST playlist', async () => {
+		const playlist_current = {
+			name: 'new_blacklist_playlist',
+			flag_visible: true,
+			flag_blacklist: true,
+			flag_smart: true,
+		};
+		const data = await commandBackend(token, 'createPlaylist', playlist_current);
+		newBlacklistPlaylistID = data.plaid;
 	});
 
 	it('Create a PUBLIC playlist', async () => {
@@ -118,7 +150,7 @@ describe('Playlists', () => {
 			name: 'new_public_playlist',
 			flag_visible: true,
 			flag_public: true,
-			flag_current: false
+			flag_current: false,
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_public);
 		publicPlaylistID = data.plaid;
@@ -138,11 +170,11 @@ describe('Playlists', () => {
 	it('Set playlist to current', async () => {
 		const data = {
 			plaid: newPlaylistID,
-			flag_current: true
+			flag_current: true,
 		};
 		try {
 			await commandBackend(token, 'editPlaylist', data);
-		} catch(err) {
+		} catch (err) {
 			console.log(err);
 			throw err;
 		}
@@ -152,10 +184,10 @@ describe('Playlists', () => {
 		try {
 			const data = {
 				plaid: newPublicPlaylistID,
-				flag_public: true
+				flag_public: true,
 			};
 			await commandBackend(token, 'editPlaylist', data);
-		} catch(err) {
+		} catch (err) {
 			console.log(err);
 			throw err;
 		}
@@ -176,7 +208,7 @@ describe('Playlists', () => {
 	it('Copy karaokes to another playlist', async () => {
 		await commandBackend(token, 'copyKaraToPlaylist', {
 			plc_ids: [PLCID],
-			plaid: newCurrentPlaylistID
+			plaid: newCurrentPlaylistID,
 		});
 	});
 
@@ -185,7 +217,7 @@ describe('Playlists', () => {
 			name: 'new_current_public_playlist',
 			flag_visible: true,
 			flag_public: true,
-			flag_current: true
+			flag_current: true,
 		};
 		const data = await commandBackend(token, 'createPlaylist', playlist_current);
 		newCurrentPlaylistID = data.plaid;
@@ -210,13 +242,12 @@ describe('Playlists', () => {
 		expect(JSON.stringify(shuffledPlaylist)).to.not.be.equal(JSON.stringify(playlist));
 	});
 
-	it('Export a playlist', async () => {
-		const data = await commandBackend(token, 'exportPlaylist', { plaid: newPlaylistID });
+	function testExport(data: PlaylistExport) {
 		expect(data.Header.description).to.be.equal('Karaoke Mugen Playlist File');
 		expect(data.PlaylistContents.length).to.be.at.least(1);
 		for (const plc of data.PlaylistContents) {
 			expect(plc.created_at).to.be.a('string');
-			expect(plc.kid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+			expect(plc.kid).to.be.a('string').and.match(uuidRegexp);
 			expect(plc.username).to.be.a('string');
 			expect(plc.nickname).to.be.a('string');
 			expect(plc.pos).to.be.a('number');
@@ -226,12 +257,21 @@ describe('Playlists', () => {
 		expect(data.PlaylistInformation.flag_visible).to.be.a('boolean');
 		expect(data.PlaylistInformation.modified_at).to.be.a('string');
 		expect(data.PlaylistInformation.name).to.be.a('string');
+		for (const c of data.PlaylistCriterias) {
+			expect(c.type).to.be.a('number');
+			expect(c.value).to.exist;
+		}
+	}
+
+	it('Export a dumb playlist', async () => {
+		const data = await commandBackend(token, 'exportPlaylist', { plaid: newPlaylistID });
+		testExport(data);
 		playlistExport = data;
 	});
 
-	it('Import a playlist', async () => {
+	it('Import a dumb playlist', async () => {
 		const data = {
-			playlist: playlistExport
+			playlist: playlistExport,
 		};
 		const body = await commandBackend(token, 'importPlaylist', data);
 		expect(body.message.code).to.be.equal('PL_IMPORTED');
@@ -240,17 +280,17 @@ describe('Playlists', () => {
 
 	it('Import a playlist (failure)', async () => {
 		const data = {
-			playlist: playlistExport.PlaylistContents
+			playlist: playlistExport.PlaylistContents,
 		};
 		const body = await commandBackend(token, 'importPlaylist', data, true);
 		expect(body.message.code).to.be.equal('PL_IMPORT_ERROR');
 	});
 
-	it('Update a playlist\'s information', async () => {
+	it("Update a playlist's information", async () => {
 		const data = {
 			name: 'new_playlist',
 			flag_visible: true,
-			plaid: newPlaylistID
+			plaid: newPlaylistID,
 		};
 		await commandBackend(token, 'editPlaylist', data);
 	});
@@ -270,7 +310,7 @@ describe('Playlists', () => {
 			expect(pl.flag_public).to.be.a('boolean');
 			expect(pl.karacount).to.be.a('number').and.at.least(0);
 			expect(pl.name).to.be.a('string');
-			expect(pl.plaid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+			expect(pl.plaid).to.be.a('string').and.match(uuidRegexp);
 			expect(pl.plcontent_id_playing).to.be.a('number').and.at.least(0);
 			expect(pl.time_left).to.be.a('number').and.at.least(0);
 			expect(pl.username).to.be.a('string');
@@ -294,7 +334,7 @@ describe('Playlists', () => {
 	it('Edit karaoke from playlist : flag_playing', async () => {
 		const data = {
 			flag_playing: true,
-			plc_ids: [currentPLCID]
+			plc_ids: [currentPLCID],
 		};
 		await commandBackend(token, 'editPLC', data);
 	});
@@ -307,7 +347,7 @@ describe('Playlists', () => {
 	it('Edit karaoke from playlist : position', async () => {
 		await commandBackend(token, 'editPLC', {
 			plc_ids: [currentPLCID],
-			pos: 1
+			pos: 1,
 		});
 	});
 
@@ -358,7 +398,7 @@ describe('Playlists', () => {
 
 	it('Delete karaokes from playlist', async () => {
 		const data = {
-			plc_ids: [PLCID]
+			plc_ids: [PLCID],
 		};
 		await commandBackend(token, 'deleteKaraFromPlaylist', data);
 	});
@@ -380,5 +420,164 @@ describe('Playlists', () => {
 		const data = await commandBackend(token, 'getPlaylists');
 		const plIDs = data.map(pl => pl.plaid);
 		expect(plIDs).to.not.include(publicPlaylistID);
+	});
+
+	it('Add song to whitelist', async () => {
+		whitelistedKID = sample(allKIDs);
+		const data = {
+			kids: [whitelistedKID],
+			requestedby: 'Test',
+			plaid: newWhitelistPlaylistID,
+		};
+		await commandBackend(token, 'addKaraToPlaylist', data);
+	});
+
+	it('Get list of karaokes in a playlist and see if flag_whitelisted is true', async () => {
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newPlaylistID });
+		expect(data.content.length).to.be.at.least(1);
+		const plc = data.content.find(plc => plc.kid === whitelistedKID);
+		expect(plc.flag_whitelisted).to.be.true;
+	});
+
+	const bannedKID = allKIDs[3];
+
+	async function requestBlacklist() {
+		const data = await commandBackend(token, 'getPlaylistContents', {
+			plaid: newBlacklistPlaylistID,
+		});
+		expect(data.content).to.have.lengthOf(1);
+		expect(data.infos.count).to.be.equal(1);
+		expect(data.content[0].kid).to.be.equal(bannedKID);
+	}
+
+	async function requestBlacklistCriterias(plaid: string) {
+		const data = await commandBackend(token, 'getCriterias', {
+			plaid: plaid,
+		});
+		expect(data.length).to.be.at.least(1);
+		expect(data[0].type).to.be.equal(1001);
+		expect(data[0].value.kid).to.be.equal(bannedKID);
+	}
+
+	async function requestEmptyBLC(plaid: string) {
+		const data = await commandBackend(token, 'getCriterias', {
+			plaid: plaid,
+		});
+		expect(data).to.have.lengthOf(0);
+	}
+
+	async function requestEmptyBL() {
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newBlacklistPlaylistID });
+		expect(data.content).to.have.lengthOf(0);
+		expect(data.infos.count).to.be.equal(0);
+	}
+
+	async function requestAddCriteria() {
+		const data = {
+			criterias: [
+				{
+					type: 1001,
+					value: bannedKID,
+					plaid: newBlacklistPlaylistID,
+				},
+			],
+		};
+		await commandBackend(token, 'addCriterias', data);
+		return new Promise(resolve => {
+			socket.on('playlistContentsUpdated', plaid => {
+				if (plaid === newBlacklistPlaylistID) {
+					socket.off('playlistContentsUpdated');
+					resolve(true);
+				}
+			});
+		});
+	}
+
+	it(`Add a blacklist criteria (song ${bannedKID}) and list karaokes (find one)`, () => {
+		return new Promise(resolve => {
+			socket.on('playlistContentsUpdated', plaid => {
+				if (plaid === newBlacklistPlaylistID) {
+					socket.off('playlistContentsUpdated');
+					resolve(requestBlacklist());
+				}
+			});
+			requestAddCriteria();
+		});
+	});
+
+	it('Get list of blacklist criterias', async () => {
+		return requestBlacklistCriterias(newBlacklistPlaylistID);
+	});
+
+	it('Delete a blacklist criteria', async () => {
+		await commandBackend(token, 'removeCriterias', {
+			criterias: [
+				{
+					type: 1001,
+					value: bannedKID,
+					plaid: newBlacklistPlaylistID,
+				},
+			],
+		});
+		return new Promise(resolve => {
+			socket.on('playlistContentsUpdated', plaid => {
+				if (plaid === newBlacklistPlaylistID) {
+					socket.off('playlistContentsUpdated');
+					resolve();
+				}
+			});
+		});
+	});
+
+	it('Get list of blacklist criterias AFTER delete', async () => {
+		return requestEmptyBLC(newBlacklistPlaylistID);
+	});
+
+	it('Get blacklist AFTER delete', async () => {
+		return requestEmptyBL();
+	});
+
+	it('Re-add a blacklist criteria', async () => {
+		return requestAddCriteria();
+	});
+
+	it('Empty list of blacklist criterias', async () => {
+		await commandBackend(token, 'emptyCriterias', { plaid: newBlacklistPlaylistID });
+	});
+
+	it('Get blacklist AFTER empty', async () => {
+		return requestEmptyBL();
+	});
+
+	it('Get blacklist criterias AFTER empty', async () => {
+		return requestEmptyBLC(newBlacklistPlaylistID);
+	});
+
+	it('Re-add a blacklist criteria before testing sets', async () => {
+		return requestAddCriteria();
+	});
+
+	it('Export a smart playlist', async () => {
+		const data = await commandBackend(token, 'exportPlaylist', { plaid: newBlacklistPlaylistID });
+		testExport(data);
+		playlistExport = data;
+	});
+
+	let newSmartPlaylistID: string;
+
+	it('Import a smart playlist', async () => {
+		const data = {
+			playlist: playlistExport,
+		};
+		const body = await commandBackend(token, 'importPlaylist', data);
+		expect(body.message.code).to.be.equal('PL_IMPORTED');
+		expect(body.message.data.unknownRepos).to.have.lengthOf(0);
+		newSmartPlaylistID = body.message.data.plaid;
+	});
+
+	it('Get list of karaokes in a smart playlist', async () => {
+		const data = await commandBackend(token, 'getPlaylistContents', { plaid: newSmartPlaylistID });
+		expect(data.content.length).to.be.at.least(1);
+		expect(data.content[0].kid === bannedKID);
 	});
 });

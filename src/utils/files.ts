@@ -9,8 +9,8 @@ export function detectKMFileTypes(data: any): KMFileType {
 export function pathIsContainedInAnother(p1, p2) {
 	if (!isAbsolute(p1) || !isAbsolute(p2)) throw new Error('One of the path is not absolute.');
 	let origin = normalize(p1);
-	origin = origin.endsWith(sep) ? origin:`${origin}${sep}`;
+	origin = origin.endsWith(sep) ? origin : `${origin}${sep}`;
 	let dst = normalize(p2);
-	dst = dst.endsWith(sep) ? dst:`${dst}${sep}`;
+	dst = dst.endsWith(sep) ? dst : `${dst}${sep}`;
 	return dst.startsWith(origin);
 }

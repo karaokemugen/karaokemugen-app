@@ -1,3 +1,3 @@
 export interface DBUpvote {
-	username: string
+	username: string;
 }

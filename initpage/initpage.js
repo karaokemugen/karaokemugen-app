@@ -1,39 +1,38 @@
 /* eslint-env browser */
 
 // https://github.com/bryanwoods/autolink-js
-(function() {
-	let autoLink,
-		slice = [].slice;
+(function () {
+	const slice = [].slice;
 
-	autoLink = function() {
-		let callback, k, linkAttributes, option, options, pattern, v;
-		options = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-		pattern = /(^|[\s\n]|<[A-Za-z]*\/?>)((?:https?|ftp):\/\/[-A-Z0-9+\u0026\u2019@#/%?=()~_|!:,.;]*[-A-Z0-9+\u0026@#/%=~()_|])/gi;
+	const autoLink = function () {
+		const options = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+		const pattern =
+			/(^|[\s\n]|<[A-Za-z]*\/?>)((?:https?|ftp):\/\/[-A-Z0-9+\u0026\u2019@#/%?=()~_|!:,.;]*[-A-Z0-9+\u0026@#/%=~()_|])/gi;
 		if (!(options.length > 0)) {
 			return this.replace(pattern, '$1<a href="$2">$2</a>');
 		}
-		option = options[0];
-		callback = option['callback'];
-		linkAttributes = ((function() {
-			let results;
-			results = [];
-			for (k in option) {
-				v = option[k];
+		const option = options[0];
+		const callback = option['callback'];
+		const linkAttributes = (function () {
+			const results = [];
+			for (const k in option) {
+				const v = option[k];
 				if (k !== 'callback') {
-					results.push(' ' + k + '=\'' + v + '\'');
+					results.push(' ' + k + "='" + v + "'");
 				}
 			}
 			return results;
-		})()).join('');
-		return this.replace(pattern, function(match, space, url) {
-			const link = (typeof callback === 'function' ? callback(url) : void 0) || ('<a href=\'' + url + '\'' + linkAttributes + '>' + url + '</a>');
+		})().join('');
+		return this.replace(pattern, function (match, space, url) {
+			const link =
+				(typeof callback === 'function' ? callback(url) : void 0) ||
+				"<a href='" + url + "'" + linkAttributes + '>' + url + '</a>';
 			return '' + space + link;
 		});
 	};
 
 	String.prototype['autoLink'] = autoLink;
-
-}).call(this);
+}.call(this));
 
 const ipcRenderer = require('electron').ipcRenderer;
 
@@ -61,7 +60,12 @@ ipcRenderer.on('initStep', (event, data) => {
 });
 ipcRenderer.on('log', (event, data) => {
 	const div = document.querySelector('.ip--logs');
-	div.innerHTML += '<li>' + (data.service ? '<b>[' + data.service + ']</b> ' : '') + data.message + (data.obj && Object.keys(data.obj).length > 0 ? ' (' + JSON.stringify(data.obj, null, 2) + ')' : '' ) + '</li>';
+	div.innerHTML +=
+		'<li>' +
+		(data.service ? '<b>[' + data.service + ']</b> ' : '') +
+		data.message +
+		(data.obj && Object.keys(data.obj).length > 0 ? ' (' + JSON.stringify(data.obj, null, 2) + ')' : '') +
+		'</li>';
 	div.scroll(0, div.scrollHeight);
 });
 ipcRenderer.on('error', (event, data) => {
@@ -77,13 +81,12 @@ ipcRenderer.on('error', (event, data) => {
 ipcRenderer.on('techTip', (event, data) => {
 	const tiptitle = document.querySelector('.ip--protip > .title');
 	const tipbox = document.querySelector('.ip--protip > .content');
-	tipbox.innerHTML = data.tip.autoLink({target: '_blank'});
+	tipbox.innerHTML = data.tip.autoLink({ target: '_blank' });
 	tiptitle.innerText = data.title;
 	timeout = setTimeout(askTip, data.duration);
 });
 ipcRenderer.on('tasksUpdated', (event, data) => {
-	if (Object.keys(data).length > 0) {
-		const task = data[Object.keys(data)[0]];
+	for (const task of data) {
 		if (task?.text === 'GENERATING') {
 			setProgressBar(task.percentage, task.subtext);
 		}
@@ -99,7 +102,7 @@ function askTip() {
 function clickButton() {
 	const wrapper = document.querySelector('.initpage--wrapper');
 	buttonLogsStatus = wrapper.dataset.displayLog === 'true';
-	wrapper.dataset.displayLog = buttonLogsStatus ? 'false':'true';
+	wrapper.dataset.displayLog = buttonLogsStatus ? 'false' : 'true';
 	const div = document.querySelector('.ip--logs');
 	div.scroll(0, div.scrollHeight);
 }
@@ -138,7 +141,8 @@ function panic() {
 		tip.className = 'ip--protip ip--error';
 		const tiptitle = document.querySelector('.ip--protip > .title');
 		const tipbox = document.querySelector('.ip--protip > .content');
-		tipbox.innerHTML = 'Karaoke Mugen is halting at start, something isn\'t right with the start process. ' +
+		tipbox.innerHTML =
+			"Karaoke Mugen is halting at start, something isn't right with the start process. " +
 			'You can reach us on Discord for help: http://karaokes.moe/discord'.autoLink();
 		tiptitle.innerText = 'Weird?';
 	}

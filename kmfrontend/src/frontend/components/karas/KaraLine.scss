@@ -25,18 +25,27 @@ body:not(.touch) {
 .list-group-item {
 	background-color: $mugen-playlist-odd;
 	&.dejavu {
-		.playKara { background-color: $mugen-playlist-dejavu-odd; }
+		.playKara {
+			background-color: $mugen-playlist-dejavu-odd;
+		}
 		.contentDiv {
 			i.fas.dejavu-icon {
 				color: scale-color($mugen-playlist-dejavu-odd, $lightness: 20%, $saturation: 15%);
 				margin-left: unset;
-				margin-right: .25em;
+				margin-right: 0.25em;
 			}
 		}
 	}
-	&.currentlyplaying, &.dejavu.currentlyplaying,
-	&.list-group-item-even.currentlyplaying, &.list-group-item-even.dejavu.currentlyplaying {
-		background-color: scale-color($mugen-playlist-currently-playing, $lightness: -50%, $saturation: -15%, $alpha: -25%);
+	&.currentlyplaying,
+	&.dejavu.currentlyplaying,
+	&.list-group-item-even.currentlyplaying,
+	&.list-group-item-even.dejavu.currentlyplaying {
+		background-color: scale-color(
+			$mugen-playlist-currently-playing,
+			$lightness: -50%,
+			$saturation: -15%,
+			$alpha: -25%
+		);
 		.playKara {
 			background-color: $mugen-playlist-currently-playing;
 			animation: btn-pulse infinite ease-in-out 1s;
@@ -50,14 +59,12 @@ body:not(.touch) {
 	}
 	z-index: 20;
 	overflow: auto;
-	padding: .5em;
+	padding: 0.5em;
 	line-height: 1.5rem;
 	transition: background-color 250ms ease;
 	display: flex;
 	flex-wrap: nowrap;
-	#playlist1 &:not(.karaSuggestion) {
-		flex-direction: row-reverse;
-	}
+	flex-direction: row;
 	@media screen and (max-width: $mugen-breakpoint-large) {
 		flex-wrap: wrap;
 	}
@@ -68,7 +75,7 @@ body:not(.touch) {
 		border-bottom-left-radius: 0;
 	}
 
-	.list-group-item.marker.green {
+	&.marker.green {
 		border-bottom-color: forestgreen;
 	}
 
@@ -82,7 +89,7 @@ body:not(.touch) {
 		border-radius: 10%;
 		float: right;
 		display: block;
-		margin: 0 .25em;
+		margin: 0 0.25em;
 		user-select: none;
 		&.mobile {
 			max-width: 1.75em;
@@ -97,20 +104,20 @@ body:not(.touch) {
 		flex: 0 0 auto;
 		align-items: center;
 		button {
-			z-index: 52;
+			z-index: 9;
 			position: relative;
 		}
-		// .dragHandle: in playlists, the three-dot handle to drag (provided by react-sortable-hoc)
+		// .dragHandle: in playlists, the three-dot handle to drag
 		.dragHandle {
-			padding-left: .5em;
-			padding-right: .5em;
+			padding-left: 0.5em;
+			padding-right: 0.5em;
 			align-self: center;
 			cursor: move;
 		}
 	}
 	// .contentDiv: karaTitle and tags
 	> .contentDiv {
-		padding: .25em .5em;
+		padding: 0.25em 0.5em;
 		overflow: auto;
 		display: flex;
 		flex-wrap: wrap;
@@ -126,7 +133,7 @@ body:not(.touch) {
 		&.problematic {
 			color: gold;
 		}
-		padding: 0.25em 0;
+		padding: 0.125em 0;
 		flex-direction: column;
 		display: flex;
 		flex-basis: 50%;
@@ -142,7 +149,8 @@ body:not(.touch) {
 			height: min-content;
 			overflow-wrap: break-word;
 		}
-		.contentDivMobileSerie, .contentDivMobileTitle {
+		.contentDivMobileSerie,
+		.contentDivMobileTitle {
 			.tag.inline.green {
 				margin-left: 0;
 			}
@@ -153,10 +161,22 @@ body:not(.touch) {
 		.contentDivMobileTitle {
 			display: flex;
 			font-style: italic;
-			margin-bottom: .25em;
+			margin-bottom: 0.25em;
 			> i.fas {
-				margin-left: .375em;
+				margin-left: 0.375em;
 				line-height: 1.2;
+			}
+		}
+		.contentDivMobileTags {
+			display: flex;
+			justify-content: space-between;
+			padding: 0.5em 0 0;
+			@media screen and (max-width: $mugen-breakpoint-small) {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+			.tagConteneur {
+				margin-left: 0;
 			}
 		}
 	}
@@ -170,22 +190,15 @@ body:not(.touch) {
 		margin-left: auto;
 		display: flex;
 		align-items: flex-end;
-		&.mobile {
-			margin: 0;
-			flex-wrap: wrap;
-			.tag {
-				margin-bottom: .4em;
-			}
-			width: 100%;
-		}
+		flex-wrap: wrap;
 		.tag {
-			padding: 0 .25em;
+			padding: 0 0.25em;
 			margin-bottom: 0;
 		}
 	}
 	// .checkboxKara: checkbox for bulk selection in admin interface
 	.checkboxKara {
-		padding: .25em;
+		padding: 0.25em;
 		font-size: 1.25em;
 		float: right;
 		display: flex;
@@ -195,7 +208,8 @@ body:not(.touch) {
 
 	// Axial symmetry
 
-	&.side-2 {
+	&.side-right {
+		flex-direction: row-reverse;
 		.actionDiv {
 			float: left;
 			flex-direction: row-reverse;
@@ -208,6 +222,13 @@ body:not(.touch) {
 	.upvoteKara:disabled {
 		color: grey;
 		cursor: not-allowed;
+	}
+
+	.chevron {
+		display: flex;
+		align-items: center;
+		padding-left: 0.5em;
+		cursor: pointer;
 	}
 }
 
@@ -228,15 +249,15 @@ body:not(.touch) {
 
 .upvoteCount {
 	color: #aaa;
-	margin-left: .5em;
+	margin-left: 0.5em;
 	background-color: #212831;
-	padding: 0 .5em;
+	padding: 0 0.5em;
 	text-align: center;
 	font-weight: bold;
 	border-radius: 10%;
 	> i {
 		font-size: 88%;
-		margin-right: .5em;
+		margin-right: 0.5em;
 	}
 }
 

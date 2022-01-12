@@ -11,23 +11,26 @@ const combineReducers = slices => (prevState, action) =>
 	Object.keys(slices).reduce(
 		(nextState, nextProp) => ({
 			...nextState,
-			[nextProp]: slices[nextProp](prevState[nextProp], action)
+			[nextProp]: slices[nextProp](prevState[nextProp], action),
 		}),
 		prevState
 	);
 
 const useGlobalState = () => {
-	const [globalState, globalDispatch] = useReducer(combineReducers({
-		auth: AuthReducer,
-		frontendContext: FrontendContextReducer,
-		modal: ModalReducer,
-		settings: SettingsReducer
-	}), {
-		auth: initialStateAuth,
-		frontendContext: {},
-		modal: {},
-		settings: initialStateConfig
-	});
+	const [globalState, globalDispatch] = useReducer(
+		combineReducers({
+			auth: AuthReducer,
+			frontendContext: FrontendContextReducer,
+			modal: ModalReducer,
+			settings: SettingsReducer,
+		}),
+		{
+			auth: initialStateAuth,
+			frontendContext: {},
+			modal: {},
+			settings: initialStateConfig,
+		}
+	);
 	return { globalState, globalDispatch };
 };
 

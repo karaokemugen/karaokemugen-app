@@ -1,223 +1,218 @@
+import { PathType } from '../lib/types/config';
 import { Repository } from '../lib/types/repo';
+import { MediaType } from './medias';
 import { MpvHardwareDecodingOptions } from './mpvIPC';
 
 export interface Config {
 	App: {
-		JwtSecret?: string,
-		InstanceID?: string,
-		FirstRun?: boolean,
-		QuickStart?: boolean
-	},
+		JwtSecret?: string;
+		InstanceID?: string;
+		FirstRun?: boolean;
+		QuickStart?: boolean;
+		Language?: string;
+	};
 	Online: {
-		Host?: string,
-		Port?: number,
-		Users?: boolean,
-		Stats?: boolean,
-		ErrorTracking?: boolean,
+		Host?: string;
+		Port?: number;
+		Users?: boolean;
+		Stats?: boolean;
+		ErrorTracking?: boolean;
 		Discord?: {
-			DisplayActivity?: boolean
-		}
+			DisplayActivity?: boolean;
+		};
 		Updates?: {
 			Medias?: {
-				Jingles?: boolean,
-				Intros?: boolean,
-				Outros?: boolean,
-				Encores?: boolean,
-				Sponsors?: boolean
-			}
-			App?: boolean
-		}
-		MediasHost?: string,
-		Remote?: boolean,
-		FetchPopularSongs?: boolean,
-		AllowDownloads?: boolean
-	},
+				Jingles?: boolean;
+				Intros?: boolean;
+				Outros?: boolean;
+				Encores?: boolean;
+				Sponsors?: boolean;
+			};
+			App?: boolean;
+		};
+		MediasHost?: string;
+		Remote?: boolean;
+		FetchPopularSongs?: boolean;
+		AllowDownloads?: boolean;
+	};
 	Frontend: {
-		GeneratePreviews?: boolean,
-		Port?: number,
-		Mode?: number,
-		SeriesLanguageMode: number,
-		AuthExpireTime?: number,
+		Mode?: number;
 		Permissions?: {
-			AllowNicknameChange?: boolean
-		},
-		ShowAvatarsOnPlaylist?: boolean
-	},
+			AllowNicknameChange?: boolean;
+		};
+		ShowAvatarsOnPlaylist?: boolean;
+	};
+	// This is needed still for KM Server so we keep this in config type
 	Gitlab?: {
-		Enabled?: boolean,
-		Host?: string,
-		Token?: string,
-		ProjectID?: number,
+		Enabled?: boolean;
+		Host?: string;
+		Token?: string;
+		ProjectID?: number;
 		IssueTemplate?: {
 			Suggestion?: {
-				Description?: string,
-				Title?: string,
-				Labels?: string[]
-			}
-		}
-	},
+				Description?: string;
+				Title?: string;
+				Labels?: string[];
+			};
+		};
+	};
 	GUI: {
-		OpenInElectron?: boolean,
+		OpenInElectron?: boolean;
 		ChibiPlayer?: {
-			Enabled?: boolean,
-			AlwaysOnTop?: boolean,
-			PositionX?: number,
-			PositionY?: number,
-		},
+			Enabled?: boolean;
+			AlwaysOnTop?: boolean;
+			PositionX?: number;
+			PositionY?: number;
+		};
 		ChibiPlaylist?: {
-			Enabled?: boolean,
-			PositionX?: number,
-			PositionY?: number,
-			Width?: number,
-			Height?: number,
-		}
-	}
+			Enabled?: boolean;
+			PositionX?: number;
+			PositionY?: number;
+			Width?: number;
+			Height?: number;
+		};
+	};
 	Karaoke: {
-		ClassicMode?: boolean,
+		ClassicMode?: boolean;
 		StreamerMode: {
-			Enabled?: boolean,
-			PauseDuration?: number
+			Enabled?: boolean;
+			PauseDuration?: number;
 			Twitch: {
-				Enabled?: boolean,
-				OAuth?: string,
-				Channel?: string
-			}
-		}
-		MinutesBeforeEndOfSessionWarning?: number,
-		Autoplay?: boolean,
-		SmartInsert?: boolean,
-		AutoBalance?: boolean,
-		Display: {
-			Avatar?: boolean,
-			Nickname?: boolean,
-			ConnectionInfo?: {
-				Enabled?: boolean,
-				Host?: string,
-				Message?: string
-			}
-		},
+				Enabled?: boolean;
+				OAuth?: string;
+				Channel?: string;
+			};
+		};
+		MinutesBeforeEndOfSessionWarning?: number;
+		Autoplay?: boolean;
+		SmartInsert?: boolean;
+		AutoBalance?: boolean;
 		Poll: {
-			Enabled?: boolean,
-			Choices?: number,
-			Timeout?: number
-		},
+			Enabled?: boolean;
+			Choices?: number;
+			Timeout?: number;
+		};
 		Quota: {
-			Songs?: number,
-			Time?: number,
-			Type?: number,
-			FreeAutoTime?: number,
-			FreeUpVotes?: boolean,
-			FreeUpVotesRequiredPercent?: number,
-			FreeUpVotesRequiredMin?: number
-		}
-	},
+			Songs?: number;
+			Time?: number;
+			Type?: number;
+			FreeAutoTime?: number;
+			FreeUpVotes?: boolean;
+			FreeUpVotesRequiredPercent?: number;
+			FreeUpVotesRequiredMin?: number;
+		};
+	};
 	Player: {
-		StayOnTop?: boolean,
-		FullScreen?: boolean,
-		Background?: string,
-		Screen?: number,
-		Monitor?: boolean,
-		NoHud?: boolean,
-		NoBar?: boolean,
-		mpvVideoOutput?: string,
+		Display: {
+			Avatar?: boolean;
+			Nickname?: boolean;
+			ConnectionInfo?: {
+				Enabled?: boolean;
+				Host?: string;
+				Message?: string;
+			};
+			RandomQuotes?: boolean;
+			SongInfo?: boolean;
+			SongInfoLanguage?: string;
+		};
+		StayOnTop?: boolean;
+		FullScreen?: boolean;
+		Screen?: number;
+		AudioDevice?: string;
+		Monitor?: boolean;
+		NoHud?: boolean;
+		NoBar?: boolean;
+		mpvVideoOutput?: string;
 		PIP: {
-			Size?: number,
-			PositionX?: 'Left' | 'Right' | 'Center',
-			PositionY?: 'Top' | 'Bottom' | 'Center'
-		},
-		ProgressBarDock?: boolean,
-		ExtraCommandLine?: string,
-		Borders?: boolean,
-		HardwareDecoding?: MpvHardwareDecodingOptions,
-		KeyboardMediaShortcuts?: boolean,
-		Volume?: number
-	},
+			Size?: number;
+			PositionX?: 'Left' | 'Right' | 'Center';
+			PositionY?: 'Top' | 'Bottom' | 'Center';
+		};
+		ProgressBarDock?: boolean;
+		ExtraCommandLine?: string;
+		Borders?: boolean;
+		HardwareDecoding?: MpvHardwareDecodingOptions;
+		KeyboardMediaShortcuts?: boolean;
+		Volume?: number;
+		LiveComments?: boolean;
+	};
 	Playlist: {
-		AllowDuplicates?: boolean,
-		MaxDejaVuTime?: number,
+		AllowDuplicates?: boolean;
+		MaxDejaVuTime?: number;
 		Medias: {
 			Jingles: {
-				Enabled: boolean,
-				Interval: number,
-			},
+				Enabled: boolean;
+				Interval: number;
+			};
 			Sponsors: {
-				Enabled: boolean,
-				Interval: number,
-			}
+				Enabled: boolean;
+				Interval: number;
+			};
 			Intros: {
-				Enabled: boolean,
-				File: string,
-				Message?: string
-			}
+				Enabled: boolean;
+				File: string;
+				Message?: string;
+			};
 			Outros: {
-				Enabled: boolean,
-				File: string,
-				Message?: string
-			},
+				Enabled: boolean;
+				File: string;
+				Message?: string;
+			};
 			Encores: {
-				Enabled: boolean,
-				File: string,
-				Message?: string
-			}
-		}
+				Enabled: boolean;
+				File: string;
+				Message?: string;
+			};
+		};
 		MysterySongs: {
-			Hide?: boolean,
-			AddedSongVisibilityPublic?: boolean,
-			AddedSongVisibilityAdmin?: boolean,
-			Labels?: string[]
-		},
-		EndOfPlaylistAction: 'random' | 'repeat' | 'none',
-		RandomSongsAfterEndMessage: boolean
-	},
+			Hide?: boolean;
+			AddedSongVisibilityPublic?: boolean;
+			AddedSongVisibilityAdmin?: boolean;
+			Labels?: string[];
+		};
+		EndOfPlaylistAction: 'random' | 'repeat' | 'none';
+		RandomSongsAfterEndMessage: boolean;
+	};
 	System: {
+		FrontendPort: number;
 		Database: {
-			host?: string,
-			port?: number,
-			username?: string,
-			password?: string,
-			superuser?: string,
-			superuserPassword?: string,
-			database?: string,
-			bundledPostgresBinary?: boolean
-		},
+			host?: string;
+			port?: number;
+			username?: string;
+			password?: string;
+			superuser?: string;
+			superuserPassword?: string;
+			database?: string;
+			bundledPostgresBinary?: boolean;
+		};
 		Binaries: {
 			Player: {
-				Windows?: string,
-				OSX?: string,
-				Linux?: string
-			},
+				Windows?: string;
+				OSX?: string;
+				Linux?: string;
+			};
 			Postgres: {
-				Windows?: string,
-				OSX?: string,
-				Linux?: string
-			},
+				Windows?: string;
+				OSX?: string;
+				Linux?: string;
+			};
 			ffmpeg: {
-				Windows?: string,
-				OSX?: string,
-				Linux?: string
-			},
+				Windows?: string;
+				OSX?: string;
+				Linux?: string;
+			};
 			patch: {
-				Windows?: string,
-				OSX?: string,
-				Linux?: string
-			}
-		},
-		Repositories: Repository[]
+				Windows?: string;
+				OSX?: string;
+				Linux?: string;
+			};
+		};
+		Repositories: Repository[];
+		MediaPath: {
+			[m in MediaType]: string[];
+		};
 		Path: {
-			Bin?: string,
-			DB?: string,
-			Backgrounds?: string[],
-			Jingles?: string[],
-			Intros?: string[],
-			Outros?: string[],
-			Encores?: string[],
-			Sponsors?: string[],
-			Temp?: string,
-			Previews?: string,
-			SessionExports?: string,
-			Import?: string,
-			Avatars?: string,
-			StreamFiles?: string
-		}
-	}
+			[p in PathType]?: string;
+		};
+	};
 }

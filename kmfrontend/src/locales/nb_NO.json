@@ -1,0 +1,369 @@
+{
+	"CRITERIA": {
+		"DELETE": "Slett dette kriteriet",
+		"ADD": "Legg til verdi for kriterium",
+		"CRITERIA_TYPE_1001": "Sang",
+		"CRITERIA_TYPE_1003": "Kortere enn (mm:ss)",
+		"LABEL": {
+			"TAG_VERBS": {
+				"1": "fra",
+				"2": "sunget av",
+				"4": "laget av",
+				"8": "skrevet av",
+				"9": "av gruppen",
+				"10": "fra familien"
+			}
+		},
+		"OR": "ELLER",
+		"AND": "OG",
+		"PLAYLIST_DURATION_TYPE_MINUTES": "minutter",
+		"PLAYLIST_DURATION_TYPE_SONGS": "sanger",
+		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "mer nylig",
+		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "mindre nylig"
+	},
+	"FLAGS": {
+		"CURRENT_PUBLIC": "Nåværende og offentlig",
+		"CURRENT": "Nåværende",
+		"PUBLIC": "Offentlig"
+	},
+	"KARA_MENU": {
+		"WHITELISTED": "Hvitlistet.",
+		"ADD_WHITELIST": "Legg til på hvitliste",
+		"BLACKLISTED": "Svartelistet.",
+		"ADD_BLACKLIST": "Legg til på svarteliste",
+		"SHOWN": "Synlig.",
+		"HIDDEN": "Skjult.",
+		"VISIBLE_OFF_SHORT": "Skjul",
+		"VISIBLE_OFF": "Skjul i spilleliste",
+		"VISIBLE_ON_SHORT": "Vis",
+		"VISIBLE_ON": "Vis i spilleliste",
+		"FAVORITES_REMOVED": "Fjernet fra favoritter",
+		"FAVORITES_ADDED": "Legt til som favoritt",
+		"PLAY": "Sett som «Spilles nå»",
+		"PLAY_LIBRARY": "Spill nå",
+		"KARA_COMMANDS": "Sporkommandoer",
+		"FAV_DEL": "Slett fra favoritter",
+		"FAV": "Legg til som favoritt"
+	},
+	"ADVANCED": {
+		"DOWNLOAD_ALL": "Last ned alle",
+		"IMPORT": "Importer spilleliste",
+		"ADD": "Legg til ny spilleliste",
+		"EXPORT": "Eksporter spilleliste",
+		"EDIT": "Rediger spilleliste",
+		"DELETE": "Slett spilleliste",
+		"EMPTY_LIST": "Tøm spilleliste",
+		"SELECT_ALL": "Velg alle synlige elementer",
+		"ADD_RANDOM": "Legg til tilfeldige spor",
+		"ADD_ALL": "Legg til alle spor på den andre listen",
+		"PLAYLIST_COMMANDS": "Spillelistekommandoer",
+		"AUTOMIX": "Opprett en automiks"
+	},
+	"PLAYLIST_HEADER": {
+		"EDIT_CRITERIAS": "Rediger kriterium",
+		"ACTIVE_FILTER": "Aktivt filter",
+		"FILTERS": "Filtre"
+	},
+	"MESSAGE": "Melding",
+	"INLINE_TAG": {
+		"SEARCH": "Karaoke med {{tag}}",
+		"COUNT_one": "{{count}} karaoke",
+		"COUNT_other": "{{count}} karaoker"
+	},
+	"WEBAPPMODE_CLOSED_MESSAGE": "Grensesnittet er lukket. Vent.",
+	"PLAYLISTS": {
+		"FAVORITES": "Favoritter",
+		"LIBRARY": "Bibliotek"
+	},
+	"VOLUME_LEVEL": "Sett lydstyrke",
+	"NEW_PASSWORD": "Nytt passord",
+	"PASSWORDCONF": "Passordbekreftelse",
+	"PASSWORD": "Passord (minst 8 tegn)",
+	"NEXT_SONG": "Neste spor",
+	"PLAY_PAUSE": "Spill av/pause",
+	"PREVIOUS_SONG": "Forrige spor",
+	"REWIND": "Spol tilbake bånd",
+	"STOP_NOW": "Stopp NÅ (dette er farlig!)",
+	"STOP_AFTER": "Stopp etter nåværende spor",
+	"OPTIONS": "Innstillinger",
+	"HIDE_SUBS": "Skjul sangtekster på skjermen",
+	"SHOW_SUBS": "Vis sangtekster på skjermen",
+	"CHANGE_INTERFACE": "Endre grensesnitt",
+	"SHUTDOWN_POPUP": "Mistet tilkoblingen til Karaoke Mugen",
+	"SHUTDOWN": "Slå av Karaoke Mugen",
+	"VERSION": "Versjon",
+	"DURATION_REMAINING": "gjenstår",
+	"DETAILS": {
+		"YEAR": "År",
+		"DURATION": "Varighet"
+	},
+	"PASSWORD_DIFFERENT": "Passordene samsvarer ikke",
+	"SECURITY_CODE_MANDATORY": "Sikkerhetskope kreves for å opprette en operatørkonto",
+	"PASSWORD_MANDATORY": "Passord kreves",
+	"LOGIN_MANDATORY": "Innlogging er påkrevd",
+	"USERS": {
+		"CHAR_NOT_ALLOWED": "Tegnet «{{char}}» støttes ikke",
+		"TYPE": "Kontotype",
+		"LOGIN": "Brukernavn",
+		"PASSWORD": "Passord",
+		"GUEST": "Gjest",
+		"NICKNAME": "Kallenavn",
+		"DELETE_USER_CONFIRM": "Slett bruker",
+		"LOG_IN": "Logg inn",
+		"NEW_USER": "Ny bruker",
+		"EMAIL": "E-post",
+		"URL": "Nettside",
+		"FLAG_LOGGED_IN": "Innlogget?",
+		"USER": "Bruker"
+	},
+	"NOT_FOUND_PAGE": {
+		"404_4": "Hjem",
+		"404_3": "Du er her",
+		"404_2": "Frykt ikke, vi kan hjelpe deg.",
+		"404": "Gått deg vill i Karaoke Mugen?"
+	},
+	"CANCEL": "Avbryt",
+	"SUBMIT": "Lagre",
+	"SEARCH": "Søk",
+	"AND": "og",
+	"NO": "Nei",
+	"YES": "Ja",
+	"SELECT_PLACEHOLDER": "Velg en spilleliste",
+	"LOG_OFFLINE": {
+		"TITLE": "Frakoblet modus"
+	},
+	"KAROULETTE": {
+		"ACCEPTED_other": "{{count}} godtatt",
+		"ACCEPTED_one": "{{count}} godtatt",
+		"REFUSED_one": "{{count}} avslått",
+		"REFUSED_other": "{{count}} avslått",
+		"ACCEPT": "Godta",
+		"REFUSE": "Nekt"
+	},
+	"ADMIN_MESSAGE": {
+		"EMPTY": "Meldingen er tom",
+		"MESSAGE": "Melding",
+		"DURATION": "Varighet (i sekunder)",
+		"CONFIRM": "Send melding"
+	},
+	"USERNAME": "Brukernavn",
+	"PROFILE_PASSWORDCONF": "Bekreft",
+	"LOGOUT": "Logg ut",
+	"SETTINGS": {
+		"INTERFACE": {
+			"WEBAPPMODE_SHORT": "Grensesnittsmodus",
+			"LABEL": "Grensesnitt"
+		},
+		"PLAYER": {
+			"FULLSCREEN": "Fullskjermsvisning",
+			"ALWAYS_ON_TOP": "Alltid på toppen",
+			"VIDEO_SIZE": "Videostørrelse",
+			"VIDEO_POSITION_X": "Videoposisjon (X)",
+			"LEFT": "Venstre",
+			"CENTER": "Midten",
+			"RIGHT": "Høyre",
+			"BOTTOM": "Bunnen",
+			"WINDOW_SETTINGS": "Vindu",
+			"VIDEO_POSITION_Y": "Videoposisjon (Y)",
+			"TOP": "Topp",
+			"MONITOR_NUMBER": "Avspillerskjerm"
+		},
+		"KARAOKE": {
+			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Ikke vis",
+			"TIME_BY_USER": "Tid per bruker",
+			"TIME_BY_USER_TOOLTIP": "I sekunder",
+			"SONGPOLL": "Offentlig avstemming",
+			"QUOTA_TYPE_ONE": "Per sang",
+			"QUOTA_TYPE_TWO": "Varighet",
+			"SONGS_BY_USER": "Antall sanger per bruker"
+		},
+		"PLAYLIST": {
+			"PLAYLIST_SETTINGS": "Spillelister",
+			"ENDOFPLAYLISTACTION": {
+				"OPTIONS": {
+					"REPEAT": "Gjenta spilleliste"
+				}
+			}
+		}
+	},
+	"TAG_TYPES": {
+		"GENRES_other": "Sjangre",
+		"GROUPS_other": "Grupper",
+		"FAMILIES_one": "Familie",
+		"FAMILIES_other": "Familier",
+		"GENRES_one": "Sjanger",
+		"PLATFORMS_one": "Plattform",
+		"PLATFORMS_other": "Plattformer",
+		"VERSIONS_one": "Versjon",
+		"VERSIONS_other": "Versjoner"
+	},
+	"ADMIN_HEADER": {
+		"QUICK_ACCESS": "Hurtigtilgang"
+	},
+	"MODAL": {
+		"PLAYLIST_MODAL": {
+			"NAME": "Navn",
+			"CREATE_PLAYLIST": "Opprett ny spilleliste",
+			"EDIT": "Rediger",
+			"EDIT_PLAYLIST": "Rediger {{playlist}}",
+			"CURRENT": "Nåværende",
+			"PUBLIC": "Offentlig",
+			"CREATE": "Opprett"
+		},
+		"TUTORIAL": {
+			"END": "Ferdig",
+			"BACK": "Tilbake",
+			"NEXT": "Neste"
+		},
+		"PROFILE_MODAL": {
+			"ONLINE_CONVERT": "Konverter til nettbasert konto",
+			"DANGEROUS_ACTIONS": "Farlige handlinger",
+			"INTERFACE_LANGUAGE": "Grensesnittsspråk",
+			"LOCAL_DELETE": "Slett denne kontoen lokalt"
+		},
+		"SHUFFLE_MODAL": {
+			"BALANCE": "Balansert",
+			"SHUFFLE": "Tilfeldig"
+		},
+		"DELETE_PLAYLIST_MODAL": {
+			"TITLE": "Slett {{playlist}} for godt?"
+		}
+	},
+	"ACTION": "Handling",
+	"CONFIRM_SURE": "Er du sikker?",
+	"KARA": {
+		"VIEW_DOWNLOAD_QUEUE": "Vis",
+		"BATCH_EDIT": {
+			"SELECT_PLAYLIST": "Velg en spilleliste:",
+			"ADD_TAG": "Legg til etikett",
+			"REMOVE_TAG": "Fjern etikett"
+		},
+		"MEDIA_FILE": "Mediafil",
+		"MEDIA_FILE_TOOLTIP": "Støttede filformater: {{formats}}",
+		"LYRICS_FILE_OPEN": "Åpne fil",
+		"START_DOWNLOAD_QUEUE": "Start",
+		"PAUSE_DOWNLOAD_QUEUE": "Pause",
+		"FILTER_MEDIA_STATUS": "Mediastatus: ",
+		"FILTER_NOT_DOWNLOADED": "Ikke nedlastet",
+		"TAG_GROUP_FILTER": "Gruppefilter",
+		"SYNCHRONIZE": "Synkroniser",
+		"SONGWRITERS_BY": "Skrevet av",
+		"CREATORS_BY": "Opprettet av",
+		"AUTHORS_BY": "Karaoke opprettet av",
+		"DELETE_KARA": "Slett karaoke?",
+		"EDIT_KARA": "Rediger karaoke",
+		"VIDEO_PREVIEW": "Videoforhåndsvisning",
+		"DOWNLOAD": "Last ned"
+	},
+	"TAGS": {
+		"DELETE_TAG_CONFIRM": "Slett etikett",
+		"MERGE_WITH_SELECT": "Velg en etikett",
+		"SHORT_NAME": "Kort navn",
+		"TYPES": "Etikett-typer",
+		"I18N_DELETE": "Fjern navn",
+		"I18N_SELECT": "Legg til et språk",
+		"MERGE_WITH": "Flett med",
+		"MERGE_WITH_BUTTON": "Flett!",
+		"MERGE_ABOUT": "Om flettingsprosessen",
+		"TAG_DELETED_CONFIRM": "Bekreft sletting av etikett"
+	},
+	"SESSIONS": {
+		"MERGE_WITH_BUTTON": "Flett!",
+		"ACTIVE": "Aktiv?",
+		"PRIVATE": "Privat?",
+		"MERGE_WITH": "Flett med",
+		"MERGE_WITH_SELECT": "Velg en økt",
+		"NEW_SESSION": "Ny økt",
+		"NAME": "Navn"
+	},
+	"PUBLIC_HOMEPAGE": {
+		"EXPLORE": "Utforsk"
+	},
+	"USERLIST": "Brukere",
+	"CL_ABOUT_TO_ADD": "Du er i ferd med å legge til {{title}}",
+	"CL_PLAYLISTS": "Sanglister",
+	"BACK_PLAYLISTS": "Tilbake til sanglister",
+	"CL_INFORMATIVE_MESSAGE": "Info",
+	"CL_EMPTY_LIST": "Tom liste?",
+	"LOGIN": {
+		"BUTTON_LOGIN": "Logg inn",
+		"NEW_ACCOUNT": "Ny konto",
+		"GUEST_CONTINUE": "Fortsett som gjest",
+		"GO_BACK": "Tilbake"
+	},
+	"PROFILE_USERNAME": "Kallenavn",
+	"PROFILE_URL": "Nettside",
+	"PROFILE_BIO": "Biografi",
+	"PROFILE_PASSWORD_AGAIN": "Skriv inn passordet ditt",
+	"WELCOME_PAGE": {
+		"APP_UPDATE": "Ny versjon",
+		"EDIT_SESSION": "Rediger økt",
+		"BASE_UPDATE": "Databaseoppdatering"
+	},
+	"REMOTE_STATUS": {
+		"DISCONNECTED": "Frakoblet",
+		"CONNECTED": "Tilkoblet"
+	},
+	"INSTANCE_NAME": "Tjenernavn",
+	"INSTANCE_NAME_SHORT": "Tjener",
+	"LOG_SUCCESS": "Innlogget som {{name}}",
+	"LOG_IN": "Logg inn",
+	"SIGN_UP": "Registrering",
+	"PROFILE": "Profil",
+	"PROFILE_MAIL": "E-post",
+	"PROFILE_PASSWORD": "Passord",
+	"CHECKED": "Valgt:",
+	"QUOTA_TIME": "Gjenstående tid",
+	"DATABASE": {
+		"CONFIRM_UPDATE": "Bekreft oppdatering",
+		"RESTORE_DATABASE": "Gjenopprett database"
+	},
+	"CONFIG": {
+		"PROPERTIES": {
+			"PLAYER_HARDWAREDECODING_OPTIONS": {
+				"AUTOSAFE": "Automatisk (anbefalt)"
+			}
+		},
+		"PROPERTY": "Egenskap",
+		"SAVE": "Lagre",
+		"SELECT": "Velg",
+		"CHOOSE_FILE": "Velg en fil"
+	},
+	"REPOSITORIES": {
+		"SENDSTATS": "Send statistikk"
+	},
+	"CLEAR_FILTER": "Tøm",
+	"VIEW_FAVORITES": "Favoritter",
+	"ONLINE_STATS": {
+		"TITLE": "Statistikk"
+	},
+	"PL_MULTIPLE_ADDED": "Legg til {{count}} sanger",
+	"SECURITY_CODE": "Sikkerhetskode",
+	"FORGOT_PASSWORD": "Glemt passordet?",
+	"MENU": {
+		"ADVANCED_OPTIONS": "Systeminnstillinger",
+		"NEW": "Ny",
+		"TAGS": "Etiketter",
+		"DATABASE": "Database",
+		"HOME": "Hjem",
+		"SYSTEM": "System",
+		"LOGS": "Logger",
+		"USERS": "Brukere",
+		"UNUSED_FILES": "Ubrukte filer",
+		"SESSIONS": "Økter",
+		"HISTORY": "Historikk",
+		"CONFIGURATION": "Avansert oppsett"
+	},
+	"AUTOMIX_MODAL": {
+		"TITLE": "Opprett en automiks"
+	},
+	"ACCOUNT": "Min konto",
+	"FAVORITES_IMPORT": "Importer dine favoritter",
+	"FAVORITES_EXPORT": "Eksporter dine favoritter",
+	"QUOTA_KARA": "Sanger igjen",
+	"UNUSED_FILES": {
+		"NAME": "Navn",
+		"FILE": "Fil",
+		"TYPE": "Type"
+	}
+}

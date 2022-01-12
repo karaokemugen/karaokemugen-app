@@ -1,13 +1,12 @@
 import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
-const en = require('../locales/en.json');
-const fr = require('../locales/fr.json');
+
+import en from '../locales/en.json';
+import es from '../locales/es.json';
+import fr from '../locales/fr.json';
+import id from '../locales/id.json';
 
 i18n
-	// detect user language
-	// learn more: https://github.com/i18next/i18next-browser-languageDetector
-	.use(LanguageDetector)
 	// use react-i18next
 	// doc: https://react.i18next.com/
 	.use(initReactI18next)
@@ -22,13 +21,18 @@ i18n
 		},
 		resources: {
 			en: {
-				translation: en
+				translation: en,
 			},
 			fr: {
-				translation: fr
-			}
-		}
+				translation: fr,
+			},
+			es: {
+				translation: es,
+			},
+			id: {
+				translation: id,
+			},
+		},
 	});
-
 
 export default i18n;

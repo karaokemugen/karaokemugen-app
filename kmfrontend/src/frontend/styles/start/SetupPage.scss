@@ -5,26 +5,26 @@
 
 	grid-template-columns: 200px auto;
 	grid-template-areas:
-				"logo title aside"
-				"other main main";
+		'logo title aside'
+		'other main main';
 
 	@media (max-width: $mugen-breakpoint-large) {
-		grid-template-columns: auto 200px ;
+		grid-template-columns: auto 200px;
 		grid-template-rows: auto auto 100%;
 		grid-template-areas:
-					"aside logo"
-					"title logo"
-					"main main";
+			'aside logo'
+			'title logo'
+			'main main';
 	}
 
 	@media (max-width: $mugen-breakpoint-small) {
 		grid-template-columns: auto;
 		grid-template-rows: auto;
 		grid-template-areas:
-					"logo"
-					"aside"
-					"title"
-					"main";
+			'logo'
+			'aside'
+			'title'
+			'main';
 	}
 
 	.main {
@@ -35,24 +35,43 @@
 	$block-border-width: 4px solid;
 
 	.step {
-		h1 { font-size: 1.75em; margin: .5em 0; }
-		h2 { font-size: 1.5em; margin: .5em 0;  }
-		h3 { font-size: 1.25em; margin: .5em 0;  }
-		p { font-size: 1em; margin: .5em 0;  }
-		ul { margin: .5em 0; }
-		* { color: inherit; }
+		h1 {
+			font-size: 1.75em;
+			margin: 0.5em 0;
+		}
+		h2 {
+			font-size: 1.5em;
+			margin: 0.5em 0;
+		}
+		h3 {
+			font-size: 1.25em;
+			margin: 0.5em 0;
+		}
+		p {
+			font-size: 1em;
+			margin: 0.5em 0;
+		}
+		ul {
+			margin: 0.5em 0;
+		}
+		* {
+			color: inherit;
+		}
+		a {
+			cursor: pointer;
+		}
 
 		.actions {
 			padding: 0;
-			margin: .5em 0;
+			margin: 0.5em 0;
 			list-style: none;
 			display: flex;
 			flex-direction: row;
 			button {
 				cursor: pointer;
 				border: 2px solid white;
-				border-radius: .5em;
-				padding: .5em 1em;
+				border-radius: 0.5em;
+				padding: 0.5em 1em;
 				text-transform: uppercase;
 				font-weight: bold;
 				background: none;
@@ -73,10 +92,10 @@
 		}
 
 		blockquote {
-			margin: .5em 0;
+			margin: 0.5em 0;
 			border-left: $block-border-width #880500;
-			padding: .5em 1em 1em;
-			background:#0000004d;
+			padding: 0.5em 1em 1em;
+			background: #0000004d;
 		}
 
 		.input-group {
@@ -84,9 +103,9 @@
 			flex-direction: row;
 			flex-wrap: wrap;
 
-			margin: .5em 0;
+			margin: 0.5em 0;
 			border-left: $block-border-width white;
-			padding: .5em 1em;
+			padding: 0.5em 1em;
 			background: #0000004d;
 
 			> p {
@@ -105,10 +124,10 @@
 				.input-field {
 					width: 100%;
 					font-size: 1.2em;
-					background:none;
+					background: none;
 					border: none;
 					border-bottom: 1px solid white;
-					padding: .2em 0;
+					padding: 0.2em 0;
 					margin: 0;
 					color: white;
 					&:focus {
@@ -176,12 +195,12 @@
 	}
 
 	.step.step-choice.loading {
-		flex:1;
+		flex: 1;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-direction: column;
-		text-align: center; 
+		text-align: center;
 		width: 100%;
 		font-size: 20px;
 	}
@@ -237,9 +256,18 @@
 	/*-----------------------------------------------------------------------------------*/
 
 	@keyframes pulse {
-		0% { transform: scale(0.95); opacity: 0.5; }
-		50% { transform: scale(1); opacity: 1; }
-		100% { transform: scale(0.95); opacity: 0.5; }
+		0% {
+			transform: scale(0.95);
+			opacity: 0.5;
+		}
+		50% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(0.95);
+			opacity: 0.5;
+		}
 	}
 
 	.ip--logo {

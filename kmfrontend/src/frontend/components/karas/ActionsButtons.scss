@@ -2,11 +2,10 @@
 
 @media (max-width: $mugen-breakpoint-large) {
 	.karaLineButton {
-		width: 2em;
-		height: 3em;
+		min-height: 3em;
 		font-size: 1.25em;
 
-		&.showPlaylistCommands  {
+		&.showPlaylistCommands {
 			width: 2.75em;
 		}
 	}

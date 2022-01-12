@@ -3,7 +3,6 @@
 .settings-panel {
 	width: 75vw;
 	margin: 0 auto;
-	overflow-y: scroll;
 }
 
 .settings-nav {
@@ -65,11 +64,11 @@
 			}
 		}
 
-		input:not([type="range"]) {
+		input:not([type='range']) {
 			background-color: scale-color($mugen-playlist-odd, $lightness: 15%);
 			color: white;
 			border: darkgrey 1px solid;
-			padding: .5em;
+			padding: 0.5em;
 			&:focus {
 				border: white 1px solid;
 			}
@@ -79,7 +78,7 @@
 
 .settings-line:not(.subCategoryGroupPanel):nth-child(even) {
 	background-color: $mugen-playlist-even;
-	> div input:not([type="range"]) {
+	> div input:not([type='range']) {
 		background-color: scale-color($mugen-playlist-even, $lightness: 15%);
 	}
 }
@@ -87,14 +86,15 @@
 .blur-hover {
 	filter: blur(5px);
 	transition: filter 1.5s ease;
-	margin-right: .5em;
+	margin-right: 0.5em;
 }
 
 .blur-hover:hover {
 	filter: unset;
 }
 
-#manage, #manage > .panel  {
+#manage,
+#manage > .panel {
 	height: 100%;
 }
 #manage > .panel {
@@ -103,12 +103,32 @@
 }
 
 .subCategoryGroupPanel {
+	cursor: pointer;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
 	background-color: scale-color($mugen-background, $lightness: 5%);
 	border: solid scale-color($mugen-background, $lightness: 15%);
-	border-width: 1px 0px;
+	border-width: 1px 0;
 	padding: 0.5em;
-	font-size: 1.5em;
-	font-weight: bold;
+	user-select: none;
+	&.fold .fas.fa-chevron-down {
+		display: none;
+	}
+	&:not(.fold) .fas.fa-chevron-right {
+		display: none;
+	}
+	.title {
+		font-size: 1.5em;
+		font-weight: bold;
+	}
+	.tooltip {
+		font-weight: lighter;
+	}
+}
+
+.subCategoryGroupPanel.fold + .settings-group {
+	display: none;
 }
 
 .settingsGroupPanel {
@@ -131,5 +151,5 @@
 }
 
 .label-input-options {
-	margin: 0 .5em;
+	margin: 0 0.5em;
 }

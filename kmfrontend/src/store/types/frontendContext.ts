@@ -1,39 +1,52 @@
+import { DBPL } from '../../../../src/lib/types/database/playlist';
+
 // Action name
 export enum FrontendContextAction {
-    CURRENT_BL_SET = 'currentBlSet',
-    FILTER_VALUE = 'filterValue',
-	BG_IMAGE = 'bgImage'
+	FILTER_VALUE = 'filterValue',
+	BG_IMAGE = 'bgImage',
+	PLAYLIST_INFO_LEFT = 'playlistInfoLeft',
+	PLAYLIST_INFO_RIGHT = 'playlistInfoRight',
 }
 
 // Dispatch action
-export interface CurrentBlSet {
-    type: FrontendContextAction.CURRENT_BL_SET;
-    payload: {
-        currentBlSet: number
-    };
-}
-
 export interface FilterValue {
-    type: FrontendContextAction.FILTER_VALUE;
-    payload: {
-        filterValue: number,
-        side: number,
-        idPlaylist: number
-    };
+	type: FrontendContextAction.FILTER_VALUE;
+	payload: {
+		filterValue: string;
+		side: 'left' | 'right';
+		idPlaylist: string;
+	};
 }
 
 export interface BackgroundImage {
-	type: FrontendContextAction.BG_IMAGE,
+	type: FrontendContextAction.BG_IMAGE;
 	payload: {
-		backgroundImg: string
-	}
+		backgroundImg: string;
+	};
 }
 
 // store
 export interface FrontendContextStore {
-	loading: boolean,
-	currentBlSet: number,
-	filterValue1: string,
-    filterValue2: string,
-	backgroundImg: string
+	loading: boolean;
+	filterValue1: string;
+	filterValue2: string;
+	backgroundImg: string;
+	playlistInfoLeft: DBPL;
+	playlistInfoRight: DBPL;
+}
+
+export interface FilterValue {
+	type: FrontendContextAction.FILTER_VALUE;
+	payload: {
+		filterValue: string;
+		side: 'left' | 'right';
+		idPlaylist: string;
+	};
+}
+
+export interface PlaylistInfo {
+	type: FrontendContextAction.PLAYLIST_INFO_LEFT | FrontendContextAction.PLAYLIST_INFO_RIGHT;
+	payload: {
+		playlist: DBPL;
+	};
 }

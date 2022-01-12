@@ -1,0 +1,219 @@
+{
+	"REQUESTED_BY": "Diminta oleh",
+	"VOTE_MESSAGE_SCREEN": "Berikan suara untuk lagu selanjutnya!",
+	"MY_PLAYLIST": "Daftar putar saya",
+	"CURRENT_PLAYLIST": "Daftar putar",
+	"PUBLIC_PLAYLIST": "Saran publik",
+	"GO_TO": "Pergi ke",
+	"VOTE_MESSAGE_SCREEN_WINNER": "Kita punya pemenang!",
+	"NEXT_SONG": "Lagu selanjutnya",
+	"INIT_DUMPDB": "Menyimpan basis data…",
+	"INIT_RESTOREDB": "Memulihkan basis data…",
+	"INIT_DB": "Menginisialisasi basis data…",
+	"INIT_INIT": "Menyiapkan…",
+	"INIT_VALIDATION": "Memvalidasi berkas Anda…",
+	"INIT_GEN": "Membuat basis data, mohon tunggu…",
+	"INIT_UPDATEMEDIAS": "Memperbarui media…",
+	"INIT_BASEUPDATE": "Memperbarui lagu…",
+	"INIT_USER": "Menginisialisasi pengguna…",
+	"INIT_ONLINEURL": "Menyambungkan ke peladen Karaoke Mugen…",
+	"INIT_PLAYLIST_AND_PLAYER": "Menginisialisasi pemain dan daftar putar…",
+	"INIT_LAST": "Hampir selesai…",
+	"INIT_DONE": "Selesai!",
+	"INIT_ERROR": "Inisialisasi gagal!",
+	"ERROR_MISSING_BINARIES": "Beberapa program yang dibutuhkan (mpv/postgresql/ffmpeg) sepertinya tidak ditemukan.",
+	"ERROR_UNKNOWN": "Galat yang tidak diketahui baru saja terjadi! Lihat log untuk detail lebih lanjut.",
+	"ERROR_INIT_PG_DATA": "Galat menginisialisasi data basis data",
+	"ERROR_START_PG": "Galat menyiapkan peladen basis data",
+	"ERROR_CONNECT_PG": "Galat menghubungkan ke peladen basis data",
+	"ERROR_GENERATION": "Galat membuat basis data",
+	"ERROR_START_PLAYER": "Galat membuka pemutar media",
+	"MENU_FILE": "&Berkas",
+	"MENU_FILE_IMPORT": "&Impor berkas",
+	"MENU_FILE_IMPORT_PLAYLIST": "&Daftar putar…",
+	"MENU_FILE_IMPORT_KARABUNDLE": "&Karaoke…",
+	"MENU_FILE_QUIT": "&Keluar",
+	"MENU_FILE_QUIT_OSX": "Keluar dari Karaoke Mugen",
+	"MENU_FILE_UPDATE": "&Cari pembaruan…",
+	"MENU_VIEW": "&Lihat",
+	"MENU_VIEW_RELOAD": "&Muat ulang",
+	"MENU_VIEW_RELOADFORCE": "&Muat ulang paksa",
+	"MENU_VIEW_TOGGLEDEVTOOLS": "&Lihat Alat Pengembang",
+	"MENU_VIEW_FULLSCREEN": "&Layar penuh",
+	"MENU_WINDOW": "&Jendela",
+	"MENU_EDIT": "&Sunting",
+	"MENU_EDIT_REDO": "&Ulang",
+	"MENU_EDIT_UNDO": "&Urung",
+	"MENU_EDIT_COPY": "&Salin",
+	"MENU_EDIT_PASTE": "&Tempel",
+	"MENU_EDIT_SELECT_ALL": "&Pilih semua",
+	"MENU_EDIT_STARTSPEECH": "Mulai berbicara",
+	"MENU_EDIT_STOPSPEECH": "Berhenti berbicara",
+	"MENU_HELP": "&Bantuan",
+	"MENU_HELP_ABOUT": "&Tentang Karaoke Mugen",
+	"MENU_HELP_DONATIONS": "&Donasi ke Karaoke Mugen",
+	"MENU_HELP_WEBSITE": "&Situs web Karaoke Mugen",
+	"MENU_HELP_DISCORD": "Gabung &Discord Karaoke Mugen",
+	"MENU_HELP_TWITTER": "Ikuti @KaraokeMugen di &Twitter",
+	"MENU_HELP_CHANGELOG": "&Catatan Rilis",
+	"MENU_HELP_GITLAB": "&GitLab Karaoke Mugen",
+	"MENU_HELP_GUIDE": "&Bantuan Karaoke Mugen",
+	"MENU_HELP_SEND_KARAOKE": "&Kirim karaokemu",
+	"MENU_HELP_REPORT_BUG": "Laporkan &kutu (bug)",
+	"MENU_GOTO": "&Pergi ke",
+	"MENU_GOTO_OSX": "Pergi",
+	"MENU_GOTO_PUBLIC": "&Tampilan publik",
+	"MENU_GOTO_SYSTEM": "&Bilah sistem",
+	"MENU_TOOLS": "&Alat",
+	"MENU_TOOLS_LOGS": "&Log acara",
+	"MENU_TOOLS_DOWNLOADS": "&Unduh media",
+	"MENU_TOOLS_KARAOKES": "&Daftar lagu",
+	"MENU_OPTIONS": "&Pilihan",
+	"MENU_OPTIONS_OPENINELECTRON": "&Selalu buka di jendela ini",
+	"MENU_OPTIONS_CHECKFORUPDATES": "&Periksa pembaruan saat dimulai",
+	"MENU_OPTIONS_OPERATORCONFIG": "&Pengaturan",
+	"MENU_OPTIONS_SYSTEMCONFIG_OSX": "Preferensi sistem…",
+	"MENU_OPTIONS_CHIBIPLAYER": "Perlihatkan Pemain Chibi",
+	"MENU_OPTIONS_CHIBIPLAYLIST": "Perlihatkan daftar putar terpisah",
+	"MENU_OPTIONS_CHIBIPLAYLIST_LINK": "Salin tautan ke daftar putar terpisah",
+	"MENU_OPTIONS_OPERATORCONFIG_OSX": "Preferensi…",
+	"ERROR": "Galat",
+	"YES": "Ya",
+	"NO": "Tidak",
+	"UPDATE_FOUND": "Pembaruan tersedia",
+	"UPDATE_ERROR": "Galat terjadi ketika mencoba memperbarui Karaoke Mugen: ",
+	"UPDATE_NOT_AVAILABLE": "Tidak ada pembaruan yang tersedia",
+	"UPDATE_DOWNLOADED": "Pembaruan diunduh",
+	"UPDATE_READY_TO_INSTALL_RESTARTING": "Karaoke Mugen akan memulai ulang untuk memasang pembaruan ini…",
+	"ABOUT": {
+		"TITLE": "Tentang Karaoke Mugen"
+	},
+	"CURRENT_VERSION_OK": "Kamu sudah menggunakan versi terbaru dari Karaoke Mugen!",
+	"REPO_DISABLED": {
+		"TITLE": "Repositori dimatikan",
+		"MESSAGE": "Repositori {{repo}} telah dimatikan karena salah satu foldernya tidak tersedia. Jika salah satu foldernya ada di penyimpanan eksternal, pastikan itu terhubung dan pergi ke Bilah Sistem > Repositori untuk menyalakannya lagi."
+	},
+	"NO_KARAOKE_MODE_ANYMORE": {
+		"TITLE": "Tidak ada lagi mode karaoke!",
+		"MESSAGE": "Baru di versi 4.0:\n\nMode karaoke publik/privat telah menghilang! Panik! Horor! *musik dramatis terdengar*\n\nDaftar putar sekarang bisa memiliki bendera publik dan sekarang dalam waktu yang bersamaan.\n\n- Bendera saat ini berarti daftar putar yang sedang digunakan oleh pemain\n- Bendera publik berarti daftar putarlah yang menerima saran lagu dari pengguna kamu\n\nSingkatnya, gabungkan kedua bendera tersebut di sebuah daftar putar untuk meniru mode privat yang lama dan buat dua daftar putar, masing-masing dengan bendera yang berbeda untuk meniru mode publik yang lama."
+	},
+	"TIPS": {
+		"TITLES": {
+			"NORMAL": "Tips dan Trik dengan Nanamin",
+			"ERRORS": "Oh tidak, ini tidak bekerja!"
+		},
+		"NORMAL": [
+			"Kamu bisa menggunakan kunci multimedia di papan ketik kamu untuk mengendalikan karaokemu!",
+			"Jangan lupa untuk memasang sabuk pengaman sebelum melakukan karaoke. Nyanyilah dengan aman dan hati-hati dengan bisingnya pengeras suara!",
+			"Jangan lupa untuk menyinkronkan basis data kapan-kapan; kamu mungkin menemukan beberapa karaoke baru!",
+			"Tidak bisa menemukan sebuah lagu di basis data? Jangan ragu untuk melihat di https://suggest.karaokes.moe/, mungkin saja ada di sana!",
+			"Kamu bisa mengimpor berkas lewat Menu Berkas -> Impor, seret dan taruh mereka atau kaitkan program Karaoke Mugen untuk memungkinkan KM membukanya dan menggunakannya: daftar putar, favorit…",
+			"Tambahkan repositori world.karaoke.moe ke daftar repositori untuk lebih banyak lagu dunia!",
+			"Aku Nanamin, maskot Karaoke Mugen, dan aku dibuat oleh yang hebat, Sedeto! http://www.sedeto.fr",
+			"Ada banyak pilihan untuk mengonfigurasi karaoke Anda! Luangkan waktu untuk meninjau semuanya sebelum memulai sebuah sesi!",
+			"Sesi merupakan acara karaoke mandiri. Ini memperbolehkan kamu untuk mengkelompokkan lagu yang diminta dan dimainkan untuk mengingatkan dirimu apa yang dimainkan saat ulang tahun, pernikahan, atau acara!",
+			"Sesi merupakan acara karaoke mandiri. Ini memperbolehkan kamu untuk mengelompokkan lagu yang diminta dan diputar untuk mengingatkan dirimu apa yang diputar saat ulang tahun, pernikahan, atau acara!",
+			"Oto-Campur merupakan daftar putar yang dibuat dari daftar favorit tamu kamu. Sempurna untuk memulai sesi karaoke dengan cepat!",
+			"Kamu tidak tahu apa yang mau ditambahkan ke daftar putarmu? Gunakan tombol acak untuk kejutan!",
+			"Minum air secara rutin!",
+			"Lagu yang ditambahkan dengan opsi Lagu Misteri dinyalakan akan tampil dengan label misteri ke tamu kamu. Mereka tidak akan tahu hingga momen terakhir tentang apa lagu itu!",
+			"Ingatlah untuk jeda sesekali untuk menganginkan ruangan sesekali!",
+			"Jangan terima uang jika seseorang ingin lagunya dimainkan sebelum saatnya. Minuman segar dan makanan lebih baik!",
+			"Jangan lupa untuk menambahkan lagu favoritmu ke daftar favoritmu jika kamu punya akun daring: kamu akan bisa menemukan mereka lebih mudah di daftar favorit di sini atau di aplikasi Karaoke Mugen lainnya!",
+			"Jangan terima uang jika seseorang ingin lagunya diputar sebelum saatnya. Minuman segar dan makanan lebih baik!",
+			"Tips lain yang diakhiri dengan tanda seru!",
+			"Monitor memungkinkan kamu untuk melihat lagu yang sedang dimainkan jika kamu tidak bisa melihat layar dari tempat kamu berada.",
+			"Perlu untuk mengirim sebuah pesan ke publik kamu? Pilihan pesan akan memperlihatkan sebuah teks di perangkat ponsel dan/atau di layar karaoke!",
+			"Monitor memungkinkan kamu untuk melihat lagu yang sedang diputar jika kamu tidak bisa melihat layar dari tempat kamu berada.",
+			"Mode Karaoke Klasik meniru apa yang kamu temukan di bilik karaoke jepang atau saat kontes karaoke di acara anime: jeda dibuat di antara setiap lagu dan judul lagu berikutnya serta peminta ditampilkan di layar!",
+			"Apakah sesi karaoke kamu akan segera berakhir? Alihkan antarmuka ke mode terbatas: pengguna tidak akan dapat menambahkan lagu lagi, tetapi masih dapat melihat apa yang akan diputar selanjutnya.",
+			"Kamu bisa menerima atau menolak sebuah lagu di daftar putar publik. Untuk melakukan ini, tampilkan daftar putar publik dan saat ini secara samping-sampingan.",
+			"Ketika kamu mencari, kamu bisa mengetik \"-kata\" untuk mengecualikan karaoke yang mengandung kata tersebut (entah itu di judul, serial, penyanyi, dll.) dari hasil pencarianmu."
+		],
+		"ERRORS": [
+			"Kunjungi kami di Discord jika kamu butuh bantuan: https://karaokes.moe/discord",
+			"Mohon periksa jika Karaoke Mugen aktif berjalan di latar belakang.",
+			"Mohon jangan panik, semuanya akan baik-baik saja"
+		]
+	},
+	"ERROR_INIT_PATHS": "Galat membuat direktori baku",
+	"MENU_EDIT_DELETE": "&Hapus",
+	"MENU_HELP_TRANSLATION": "&Berkontribusi di penerjemahan",
+	"MENU_HELP_CONTRIB_DOC": "&Buat karaokemu",
+	"MENU_GOTO_HOME": "&Beranda",
+	"UPDATE_PROMPT": "Apakah kamu ingin memperbarui Karaoke Mugen?",
+	"MENU_FILE_IMPORT_FAVORITES": "&Daftar favorit…",
+	"WHITELIST": "Daftar putih",
+	"BLACKLIST": "Daftar hitam",
+	"MENU_WINDOW_MINIMIZE": "&Perkecil",
+	"DISCORD": {
+		"IDLING": [
+			"menyiapkan daftar putar",
+			"menyiapkan favorit",
+			"menyiapkan semuanya",
+			"Baca manualnya (belum?)",
+			"tidak melakukan apa-apa",
+			"menonton kereta lewat",
+			"di konvensi (di imajinasinya)"
+		]
+	},
+	"UNKNOWN_ARTIST": "Artis tidak diketahui",
+	"REPOSITORY_ALREADY_EXISTS": {
+		"MESSAGE": "Repositori yang kamu ingin tambahkan sudah ada di basis data Karaoke Mugen kamu.",
+		"TITLE": "Repositori sudah ada"
+	},
+	"DATABASE_CONNECTION_ERROR_LINUX": {
+		"TITLE": "Galat koneksi basis data - Linux",
+		"MESSAGE": "Pada versi Karaoke Mugen Linux yang dikemas, kamu HARUS menggunakan peladen PostgreSQL milikmu sendiri. Lihat dokumentasi di https://docs.karaokes.moe"
+	},
+	"MISSING_BINARIES": {
+		"TITLE": "Program tidak ditemukan",
+		"MESSAGE": "Satu atau lebih program yang dibutuhkan Karaoke Mugen tidak dapat ditemukan.\n\nSunting config.yml kamu dan atur variabel System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres dengan benar sesuai Sistem Operasi (SO) kamu.\n\nKamu bisa mengunduh mpv untuk SO kamu dari http://mpv.io/\n\nKamu bisa mengunduh PostgreSQL untuk SO kamu dari http://postgresql.org/\n\nKamu bisa mengunduh ffmpeg untuk SO kamu dari http://ffmpeg.org\n\nKamu bisa mengunduh utilitas tambalan di https://mugen.karaokes.moe/downloads/patch.exe (Windows) atau https://mugen.karaokes.moe/downloads/patch (macOS) atau GNU Patch 2.7+ package (Linux)\n\nDetail galat: "
+	},
+	"UNKNOWN_REPOSITORY_ADD": {
+		"TITLE": "Repositori tidak diketahui",
+		"MESSAGE": "Kamu akan menambahkan repositori {{repoName}} ke Karaoke Mugen. Apakah kamu yakin?"
+	},
+	"GENERATING_READING": "Langkah 1/2 - Membaca data…",
+	"GENERATING_DATABASE": "Langkah 2/2 - Memperbarui basis data…",
+	"TWITCH": {
+		"CHAT": {
+			"VOTE": "Pilih baru: gunakan !vote x di mana x merupakan nomor lagu:",
+			"YOU_ALREADY_VOTED": "Maafsen, tapi kamu sudah memilih.",
+			"NO_ACTIVE_POLL": "Tidak ada pol yang aktif saat ini.",
+			"INVALID_CHOICE": "Pilihan tidak valid"
+		}
+	},
+	"RESTARTING_PLAYER": "MEMULAI ULANG PEMUTAR…",
+	"ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE": "TAMBAH SEBUAH LAGU KE DAFTAR PUTAR!",
+	"NEW_SESSION_NAME": "Karaoke pada {{date}}",
+	"FULLSCREEN_TIP": "Pencet F untuk keluar dari layar penuh.",
+	"NO_KARA_PLAYING": "Tidak ada karaoke yang diputar",
+	"INTERFACE_OPENED": "Buka",
+	"INTERFACE_RESTRICTED": "Tidak ada saran",
+	"INTERFACE_CLOSED": "Ditutup",
+	"PROBLEMATIC_SONGS": "Lagu Bermasalah",
+	"SYSTEM_MESSAGES": {
+		"ZIP_MIGRATION_FAILED": {
+			"TITLE": "Masalah migrasi",
+			"BODY": "Repositori {{repo}} tidak dapat dimigrasikan ke sistem pengelolaan repositori yang baru. Repositori tersebut dinonaktifkan, kamu bisa mengaktifkannya lagi dengan pergi ke bilah sistem dan mengaturnya dengan benar. Kamu bisa menggunakan tombol Hubungi kami jika kamu perlu bantuan."
+		}
+	},
+	"GIT": {
+		"CURRENT_ACTION": "Aksi Git",
+		"METHODS": {
+			"clone": "Klon",
+			"checkout": "Keluar (Checkout)",
+			"pull": "Tarik",
+			"fetch": "Ambil",
+			"push": "Dorong"
+		},
+		"STAGES": {
+			"resolving": "Menyelesaikan delta",
+			"receiving": "Menerima data",
+			"updating": "Memperbarui berkas"
+		}
+	},
+	"OFFICIAL_WEBSITE": "Situs Web Resmi",
+	"SUGGEST_SONGS": "Sarankan lagu!"
+}

@@ -1,22 +1,25 @@
-import React, { Component } from 'react';
-import { Redirect, Route, RouteProps } from 'react-router-dom';
+import { useContext } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import GlobalContext from '../store/context';
 import { setLastLocation } from './tools';
 
-class PrivateRoute extends Component<RouteProps, unknown> {
-	static contextType = GlobalContext
-	context: React.ContextType<typeof GlobalContext>
+interface Props {
+	component: any;
+}
 
-	render() {
-		setLastLocation(this.props.location.pathname);
-		const LoggedRoute = <Route {...this.props}/>;
-		const NotLoggedRoute = <Redirect to={`/login${this.props.location.search}`}/>;
-		const NextRoute = this.context.globalState.auth.isAuthenticated ? LoggedRoute : NotLoggedRoute;
-		return (
-			NextRoute
-		);
-	}
+function PrivateRoute(props: Props) {
+	const context = useContext(GlobalContext);
+	const location = useLocation();
+
+	setLastLocation(location.pathname);
+	return context.globalState.auth.isAuthenticated ? (
+		props.component
+	) : (
+		<Routes>
+			<Route path="*" element={<Navigate to={`/login${location.search}`} />} />
+		</Routes>
+	);
 }
 
 export default PrivateRoute;

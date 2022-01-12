@@ -1,40 +1,45 @@
 import './Switch.scss';
 
-import React, { Component } from 'react';
+import { useRef } from 'react';
 
 interface IProps {
 	nameCommand?: string;
 	isChecked: boolean | undefined;
-	handleChange: (e:any) => void;
+	handleChange: (e: any) => void;
 	idInput?: string;
-	disabled?: boolean
+	disabled?: boolean;
+	onLabel?: string;
+	offLabel?: string;
 }
 
-class Switch extends Component<IProps, unknown> {
+function Switch(props: IProps) {
+	const checkbox = useRef<HTMLInputElement>();
 
-	private checkbox = React.createRef<HTMLInputElement>();
-
-	onKeyPress = (e) => {
+	const onKeyPress = e => {
 		e.preventDefault();
-		this.checkbox.current.click();
-	}
+		checkbox.current.click();
+	};
 
-	render() {
-		return (
-			<label className="switch-ui" tabIndex={0} onKeyPress={this.onKeyPress}>
-				<input
-					checked={this.props.isChecked}
-					onChange={this.props.handleChange}
-					type="checkbox"
-					data-namecommand={this.props.nameCommand}
-					id={this.props.idInput}
-					ref={this.checkbox}
-					disabled={this.props.disabled}
-				/>
-				<span className="switch-ui--control"><span/></span>
-			</label>
-		);
-	}
+	return (
+		<label className="switch-ui" tabIndex={0} onKeyPress={onKeyPress}>
+			<input
+				checked={props.isChecked}
+				onChange={props.handleChange}
+				type="checkbox"
+				data-namecommand={props.nameCommand}
+				id={props.idInput}
+				ref={checkbox}
+				disabled={props.disabled}
+			/>
+			<span
+				data-text-on={props.onLabel ? props.onLabel : 'ON'}
+				data-text-off={props.offLabel ? props.offLabel : 'OFF'}
+				className="switch-ui--control"
+			>
+				<span />
+			</span>
+		</label>
+	);
 }
 
 export default Switch;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import Config from './Config';
 
@@ -7,6 +7,7 @@ const propertiesToDisplay = [
 	'Online.Users',
 	'Online.Discord.DisplayActivity',
 	'Online.Stats',
+	'Online.FetchPopularSongs',
 	'Online.ErrorTracking',
 	'Player.HardwareDecoding',
 	'Player.ProgressBarDock',
@@ -15,15 +16,12 @@ const propertiesToDisplay = [
 	'Online.Updates.Medias.Sponsors',
 	'Online.Updates.Medias.Intros',
 	'Online.Updates.Medias.Outros',
-	'Online.Updates.Medias.Encores'
+	'Online.Updates.Medias.Encores',
 ];
 
 class Options extends Component<unknown, unknown> {
-
 	render() {
-		return (
-			<Config properties={propertiesToDisplay} />
-		);
+		return <Config properties={propertiesToDisplay} />;
 	}
 }
 

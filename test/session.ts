@@ -1,4 +1,4 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 
 import { uuidRegexp } from '../src/lib/utils/constants';
 import { Session } from '../src/types/session';
@@ -13,14 +13,20 @@ describe('Sessions', () => {
 		token = await getToken();
 	});
 	it('Add session', async () => {
-		const data = await commandBackend(token, 'createSession',
-			{name: 'My session', date: new Date().toISOString(), private: true});
+		const data = await commandBackend(token, 'createSession', {
+			name: 'My session',
+			date: new Date().toISOString(),
+			private: true,
+		});
 		expect(data.message.code).to.be.equal('SESSION_CREATED');
 	});
 
 	it('Add session for merge', async () => {
-		const data = await commandBackend(token, 'createSession',
-			{name: 'My session', date: new Date().toISOString(), private: true});
+		const data = await commandBackend(token, 'createSession', {
+			name: 'My session',
+			date: new Date().toISOString(),
+			private: true,
+		});
 		expect(data.message.code).to.be.equal('SESSION_CREATED');
 	});
 
@@ -33,7 +39,7 @@ describe('Sessions', () => {
 			expect(s.played).to.be.a('number').and.at.least(0);
 			expect(s.requested).to.be.a('number').and.at.least(0);
 			expect(s.private).to.be.a('boolean');
-			expect(s.seid).to.be.a('string').and.match(new RegExp(uuidRegexp));
+			expect(s.seid).to.be.a('string').and.match(uuidRegexp);
 			expect(s.started_at).to.be.a('string');
 		}
 		initialSession = data[0];
@@ -44,17 +50,26 @@ describe('Sessions', () => {
 	const newName = 'My NEW session';
 	const unknownSession = '4354820c-a5d2-4315-9581-5691794a4d1c';
 	it('Edit unknown session should fail', async () => {
-		const data = await commandBackend(token, 'editSession', {seid: unknownSession, name: newName, ended_at: '2020-08-20 19:30:00'}, true);
+		const data = await commandBackend(
+			token,
+			'editSession',
+			{ seid: unknownSession, name: newName, ended_at: '2020-08-20 19:30:00' },
+			true
+		);
 		expect(data.message.code).to.be.equal('SESSION_EDIT_ERROR');
 	});
 
 	it('Edit session', async () => {
-		const data = await commandBackend(token, 'editSession', {seid: createdSession.seid, name: newName, ended_at: '2020-08-20 19:30:00'});
+		const data = await commandBackend(token, 'editSession', {
+			seid: createdSession.seid,
+			name: newName,
+			ended_at: '2020-08-20 19:30:00',
+		});
 		expect(data.message.code).to.be.equal('SESSION_EDITED');
 	});
 
 	it('Set session as active', async () => {
-		const data = await commandBackend(token, 'activateSession', {seid: createdSession.seid});
+		const data = await commandBackend(token, 'activateSession', { seid: createdSession.seid });
 		expect(data.message.code).to.be.equal('SESSION_ACTIVATED');
 	});
 
@@ -67,12 +82,12 @@ describe('Sessions', () => {
 	});
 
 	it('Delete active session (should fail)', async () => {
-		const data = await commandBackend(token, 'deleteSession', {seid: createdSession.seid}, true);
+		const data = await commandBackend(token, 'deleteSession', { seid: createdSession.seid }, true);
 		expect(data.message.code).to.be.equal('SESSION_DELETE_ERROR');
 	});
 
 	it('Delete unused session', async () => {
-		const data = await commandBackend(token, 'deleteSession', {seid: initialSession.seid});
+		const data = await commandBackend(token, 'deleteSession', { seid: initialSession.seid });
 		expect(data.message.code).to.be.equal('SESSION_DELETED');
 	});
 
@@ -83,14 +98,17 @@ describe('Sessions', () => {
 	});
 
 	it('Export session', async () => {
-		const session = await commandBackend(token, 'exportSession', {seid: createdSession.seid});
+		const session = await commandBackend(token, 'exportSession', { seid: createdSession.seid });
 		expect(session).to.not.be.undefined;
 	});
 
 	let mergedSession: Session;
 
 	it('Merge sessions', async () => {
-		const data = await commandBackend(token, 'mergeSessions', {seid1: createdSession.seid, seid2: toMergeSession.seid});
+		const data = await commandBackend(token, 'mergeSessions', {
+			seid1: createdSession.seid,
+			seid2: toMergeSession.seid,
+		});
 		expect(data.message.code).to.be.equal('SESSION_MERGED');
 		mergedSession = data.message.data.session;
 	});

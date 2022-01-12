@@ -1,18 +1,16 @@
-import React, { Component } from 'react';
+import { ReactNode, ReactNodeArray } from 'react';
 
 interface IProps {
+	children?: ReactNodeArray | ReactNode;
 	mode: string;
 }
 
-class KmAppHeaderDecorator extends Component<IProps, unknown> {
-
-	render() {
-		return (
-			<div className="KmAppHeaderDecorator" data-mode={this.props.mode} >
-				{this.props.children}
-			</div>
-		);
-	}
+function KmAppHeaderDecorator(props: IProps) {
+	return (
+		<div className="KmAppHeaderDecorator" data-mode={props.mode}>
+			{props.children}
+		</div>
+	);
 }
 
 export default KmAppHeaderDecorator;

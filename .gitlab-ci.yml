@@ -1,29 +1,42 @@
-image: axelterizaki/karaokemugen-ci:node-14-phppg-chromium
-
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+image: axelterizaki/karaokemugen-ci:node-16-phppg
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  ELECTRON_CACHE: .cache/electron
-
+  ELECTRON_CACHE: '.cache/electron'
+sast:
+  variables:
+    SAST_EXCLUDED_PATHS: spec, test, tests, tmp, assets, build, img, util, packages
+    SECRET_DETECTION_EXCLUDED_PATHS: doc, spec, test, tests, .md, node_modules, yarn.lock, kmfrontend/node_modules
+  stage: test
+include:
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
 workflow:
   rules:
-    - if: $CI_COMMIT_TAG
-    - if: '$CI_COMMIT_BRANCH == "master"'
-    - if: '$CI_COMMIT_BRANCH == "next"'
-
+    - if: '$CI_COMMIT_TAG'
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "next"
 cache:
   key: km-app-${CI_COMMIT_REF_SLUG}
   paths:
     - node_modules/
     - kmfrontend/node_modules/
-
 stages:
   - schedule
   - test
   - build
+  - prepackage
   - package
   - deploy
   - release
-
+semgrep-sast:
+  cache: {}
 test:
   stage: test
   retry:
@@ -31,7 +44,7 @@ test:
   interruptible: true
   needs: []
   services:
-    - postgres:12
+    - postgres:13
   variables:
     POSTGRES_USER: karaokemugen_app
     POSTGRES_PASSWORD: musubi
@@ -43,19 +56,18 @@ test:
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US
     - node --version
-    - yarn ts-node util/extUnaccentPgcrypto
+    - yarn ts-node util/extUnaccent
     - export DISPLAY=':99.0'
     - Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
     - yarn testCI --debug
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_TAG
-    - if: '$CI_COMMIT_BRANCH == "master"'
-    - if: '$CI_COMMIT_BRANCH == "next"'
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_TAG'
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "next"
     - when: never
-
 build-react:
   stage: build
   interruptible: true
@@ -67,23 +79,22 @@ build-react:
     expire_in: 8 hours
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
-    - kmfrontend/build/
-    - dist/
-    - zipWorker/
+      - kmfrontend/build/
+      - dist/
+      - zipWorker/
   script:
     - yarn build
     - yarn installkmfrontend
     - yarn buildkmfrontend
     - yarn ts-node util/sentryUpdateReleases.ts
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: '$CI_COMMIT_BRANCH == "master"'
-    - if: '$CI_COMMIT_BRANCH == "next"'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "next"
+    - if: '$CI_COMMIT_TAG'
     - when: never
-
 deploy_kmremote:
   stage: deploy
   interruptible: true
@@ -95,19 +106,16 @@ deploy_kmremote:
     - build-react
   script: bash util/pushKMRemote.sh
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: '$CI_COMMIT_BRANCH == "master"'
-    - if: '$CI_COMMIT_BRANCH == "next"'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "next"
+    - if: '$CI_COMMIT_TAG'
     - when: never
-
 pkg_linux:
   stage: package
   image: electronuserland/builder:latest
-  tags:
-    - amd64
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -125,8 +133,9 @@ pkg_linux:
     - build-react
     - test
   script:
+    - yarn install
     - rm -Rf release_linux
-    - yarn add --dev electron-builder
+    - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -l
     - ls -la packages/
@@ -135,20 +144,14 @@ pkg_linux:
     - mv packages/*.tar.gz release_linux/
     - ls -la release_linux/*
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_TAG'
     - when: never
-
 pkg_win:
   stage: package
   image: electronuserland/builder:wine-mono
-  tags:
-# This must be run on a linux-only host. Weirdly this fails badly on Windows hosts.
-# Let's try this again sometime
-    - linux
-    - amd64
   cache:
     key: km-app-${CI_COMMIT_REF_SLUG}
     paths:
@@ -166,11 +169,13 @@ pkg_win:
     - build-react
     - test
   script:
+    - yarn install
     - rm -Rf release_win
-    - yarn add --dev electron-builder@22.11.11
-    - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key | apt-key add -
+    - npm install -g electron-builder
+    - wget -qO - https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key
+      | apt-key add -
     - apt-get update -qq && apt-get install -y -qq zip
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-5.x.tar.gz | tar xz
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win-6.x.tar.gz | tar xz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -w
     - ls -la packages/
@@ -183,12 +188,11 @@ pkg_win:
     - mv packages/*.zip release_win/
     - ls -la release_win/*
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_TAG'
     - when: never
-
 pkg_mac:
   stage: package
   cache:
@@ -212,13 +216,14 @@ pkg_mac:
     - build-react
     - test
   variables:
-    CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    CSC_IDENTITY_AUTO_DISCOVERY: 'false'
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
   script:
+    - yarn install
     - rm -Rf release_mac
-    - yarn add --dev electron-builder@22.10.5
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-5.x.tar.gz | tar xvz
+    - npm install -g electron-builder
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-6.x.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
     - ls -la packages/
@@ -226,12 +231,11 @@ pkg_mac:
     - mv packages/*.dmg release_mac/
     - ls -la release_mac/*
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_TAG'
     - when: never
-
 deploy_mac:
   stage: deploy
   image: axelterizaki/karaokemugen-ci:transferts
@@ -245,14 +249,14 @@ deploy_mac:
     - pkg_mac
   script:
     - ls -la release_mac/*
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd www/mugen.karaokes.moe/downloads; mput release_mac/*"
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD
+      $HOST; cd www/mugen.karaokes.moe/downloads; mput release_mac/*"
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_TAG'
     - when: never
-
 deploy_linux:
   stage: deploy
   image: axelterizaki/karaokemugen-ci:transferts
@@ -266,13 +270,13 @@ deploy_linux:
     - pkg_linux
   script:
     - ls -la release_linux/*
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd www/mugen.karaokes.moe/downloads; mput release_linux/*"
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD
+      $HOST; cd www/mugen.karaokes.moe/downloads; mput release_linux/*"
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_TAG
-
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_TAG'
 deploy_win:
   stage: deploy
   image: axelterizaki/karaokemugen-ci:transferts
@@ -286,14 +290,14 @@ deploy_win:
     - pkg_win
   script:
     - ls -la release_win/*
-    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd www/mugen.karaokes.moe/downloads; mput release_win/*"
+    - lftp -c "set cmd:fail-exit yes; set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD
+      $HOST; cd www/mugen.karaokes.moe/downloads; mput release_win/*"
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_TAG'
     - when: never
-
 release_site:
   stage: release
   image: curlimages/curl
@@ -307,12 +311,11 @@ release_site:
   script:
     - sh util/triggerWebsite.sh
   rules:
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
       when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_TAG'
     - when: never
-
 weekly_releases:
   stage: schedule
   image: axelterizaki/karaokemugen-git-ssh:latest
@@ -322,8 +325,7 @@ weekly_releases:
   script:
     - bash util/gitPush.sh
   rules:
-    # This prevents job from starting if last commit starts with a new release, which means we don't need to make a new one.
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
       when: never
-    - if: '$SCHEDULED_RELEASES == "true"'
+    - if: $SCHEDULED_RELEASES == "true"
     - when: never

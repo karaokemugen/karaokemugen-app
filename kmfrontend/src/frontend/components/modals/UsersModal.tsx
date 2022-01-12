@@ -1,7 +1,7 @@
 import './UsersModal.scss';
 
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { User } from '../../../../../src/lib/types/user';
 import { closeModal } from '../../../store/actions/modal';
@@ -15,111 +15,163 @@ interface IProps {
 	closeModal?: () => void;
 }
 
-interface IState {
-	users: Array<User>;
-	userDetails?: User;
-}
+function UsersModal(props: IProps) {
+	const context = useContext(GlobalContext);
+	const [users, setUsers] = useState<User[]>([]);
+	const [userDetails, setUserDetails] = useState<User>();
 
-class UsersModal extends Component<IProps, IState> {
-	static contextType = GlobalContext;
-	context: React.ContextType<typeof GlobalContext>
-
-	constructor(props: IProps) {
-		super(props);
-		this.state = {
-			users: [],
-		};
-	}
-
-	componentDidMount() {
-		if (this.context?.globalState.auth.data.role === 'admin' || this.context?.globalState.settings.data.config?.Frontend?.Mode !== 0) this.getUserList();
-		document.addEventListener('keyup', this.keyObserverHandler);
-	}
-
-	componentWillUnmount() {
-		document.removeEventListener('keyup', this.keyObserverHandler);
-	}
-
-	async getUserList() {
+	const getUserList = async () => {
 		const response = await commandBackend('getUsers');
-		this.setState({ users: response.filter((a: User) => a.flag_online) });
-	}
+		setUsers(response.filter((a: User) => a.flag_logged_in));
+	};
 
-	getUserDetails = async (user: User) => {
-		if (this.state.userDetails?.login === user.login) {
-			this.setState({ userDetails: undefined });
-		} else if (user.type !== 2){
+	const getUserDetails = async (user: User) => {
+		if (userDetails?.login === user.login) {
+			setUserDetails(undefined);
+		} else if (user.type !== 2) {
 			try {
 				const response = await commandBackend('getUser', { username: user.login });
-				this.setState({ userDetails: response });
+				setUserDetails(response);
 			} catch (e) {
 				// already display
 			}
 		}
 	};
 
-	closeModal = () => {
-		if (this.props.scope === 'public') {
-			this.props.closeModal();
+	const closeModalWithContext = () => {
+		if (props.scope === 'public') {
+			props.closeModal();
 		} else {
-			closeModal(this.context.globalDispatch);
+			closeModal(context.globalDispatch);
 		}
-	}
+	};
 
-	keyObserverHandler = (e: KeyboardEvent) => {
+	const keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.code === 'Escape') {
-			this.closeModal();
+			closeModalWithContext();
 		}
-	}
+	};
 
-	render() {
-		const body = (<div className="modal-content">
-			<div className={`modal-header${this.props.scope === 'public' ? ' public-modal':''}`}>
-				{this.props.scope === 'public' ? <button
-					className="closeModal"
-					type="button"
-					onClick={() => this.closeModal()}>
-					<i className="fas fa-arrow-left" />
-				</button> : null}
+	useEffect(() => {
+		if (
+			context?.globalState.auth.data.role === 'admin' ||
+			context?.globalState.settings.data.config?.Frontend?.Mode !== 0
+		) {
+			getUserList();
+		}
+		document.addEventListener('keyup', keyObserverHandler);
+		return () => {
+			document.removeEventListener('keyup', keyObserverHandler);
+		};
+	}, []);
+
+	const body = (
+		<div className="modal-content">
+			<div className={`modal-header${props.scope === 'public' ? ' public-modal' : ''}`}>
+				{props.scope === 'public' ? (
+					<button className="closeModal" type="button" onClick={closeModalWithContext}>
+						<i className="fas fa-arrow-left" />
+					</button>
+				) : null}
 				<h4 className="modal-title">{i18next.t('USERLIST')}</h4>
-				{this.props.scope === 'admin' ? // aka. it's a modal, otherwise it's a page and close button is not needed
-					<button className="closeModal"
-						onClick={this.closeModal}>
+				{props.scope === 'admin' ? ( // aka. it's a modal, otherwise it's a page and close button is not needed
+					<button className="closeModal" onClick={closeModalWithContext}>
 						<i className="fas fa-fw fa-times" />
-					</button>:null
-				}
+					</button>
+				) : null}
 			</div>
 			<div id="nav-userlist" className="modal-body">
 				<div className="userlist list-group">
-					{this.state.users.map(user => {
-						return <li key={user.login} className={user.flag_online ? 'list-group-item online' : 'list-group-item'}>
-							<div className="userLine" onClick={() => this.getUserDetails(user)}>
-								<ProfilePicture user={user} className="img-circle avatar" />
-								<span className="nickname">{user.nickname}</span>
-							</div>
-							{this.state.userDetails?.login === user.login ?
-								<div className="userDetails">
-									<div><i className="fas fa-fw fa-link" />{this.state.userDetails?.url ?
-										<a href={this.state.userDetails.url} target="_blank">{this.state.userDetails.url}</a>:null}</div>
-									<div><i className="fas fa-fw fa-leaf" />{this.state.userDetails?.bio || ''}</div>
-									<div><i className="fas fa-fw fa-globe" />{getCountryName(this.state.userDetails?.location) || ''}</div>
-								</div> : null
-							}
-						</li>;
+					{users.map(user => {
+						return (
+							<li
+								key={user.login}
+								className={user.flag_logged_in ? 'list-group-item online' : 'list-group-item'}
+							>
+								<div className="userLine" onClick={() => getUserDetails(user)}>
+									<ProfilePicture user={user} className="img-circle avatar" />
+									<span className="nickname">{user.nickname}</span>
+								</div>
+								{userDetails?.login === user.login ? (
+									<div className="userDetails">
+										{userDetails?.url ? (
+											<div>
+												<i className="fas fa-fw fa-link" />
+												<a href={userDetails.url} rel="noreferrer noopener" target="_blank">
+													{userDetails.url}
+												</a>
+											</div>
+										) : null}
+										{userDetails?.bio ? (
+											<div>
+												<i className="fas fa-fw fa-pen" />
+												{userDetails.bio}
+											</div>
+										) : null}
+										{userDetails?.location ? (
+											<div>
+												<i className="fas fa-fw fa-globe" />
+												{getCountryName(userDetails.location)}
+											</div>
+										) : null}
+										{userDetails?.social_networks.discord ? (
+											<div>
+												<i className="fab fa-fw fa-discord" />
+												{userDetails.social_networks.discord}
+											</div>
+										) : null}
+										{userDetails?.social_networks.twitter ? (
+											<div>
+												<i className="fab fa-fw fa-twitter" />
+												<a
+													href={`https://twitter.com/${userDetails.social_networks.twitter}`}
+													rel="noreferrer noopener"
+													target="_blank"
+												>
+													{userDetails.social_networks.twitter}
+												</a>
+											</div>
+										) : null}
+										{userDetails?.social_networks.instagram ? (
+											<div>
+												<i className="fab fa-fw fa-instagram" />
+												<a
+													href={`https://instagram.com/${userDetails.social_networks.instagram}`}
+													rel="noreferrer noopener"
+													target="_blank"
+												>
+													{userDetails.social_networks.instagram}
+												</a>
+											</div>
+										) : null}
+										{userDetails?.social_networks.twitch ? (
+											<div>
+												<i className="fab fa-fw fa-twitch" />
+												<a
+													href={`https://twitch.tv/${userDetails.social_networks.twitch}`}
+													rel="noreferrer noopener"
+													target="_blank"
+												>
+													{userDetails.social_networks.twitch}
+												</a>
+											</div>
+										) : null}
+									</div>
+								) : null}
+							</li>
+						);
 					})}
 				</div>
 			</div>
-		</div>);
-		return (
-			this.props.scope === 'public' ?
-				body
-				: <div className="modal modalPage">
-					<div className="modal-dialog">
-						{body}
-					</div>
-				</div>
-		);
-	}
+		</div>
+	);
+	return props.scope === 'public' ? (
+		body
+	) : (
+		<div className="modal modalPage">
+			<div className="modal-dialog">{body}</div>
+		</div>
+	);
 }
 
 export default UsersModal;

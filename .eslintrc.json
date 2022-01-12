@@ -1,44 +1,22 @@
 {
-    "globals": {
+	"globals": {
 		"__": true
-    },
-    "env": {
-        "es2020": true,
+	},
+	"env": {
+		"es2020": true,
 		"node": true,
 		"mocha": true
-    },
-    "plugins": [
-		"@typescript-eslint",
-		"security",
-		"simple-import-sort"
-	],
+	},
+	"plugins": ["@typescript-eslint", "security", "simple-import-sort"],
 	"extends": [
 		"plugin:you-dont-need-lodash-underscore/compatible",
 		"eslint:recommended",
 		"plugin:@typescript-eslint/recommended",
-		"plugin:security/recommended"
-  	],
-    "rules": {
-		"brace-style": [
-            "error",
-            "1tbs"
-        ],
-        "no-console": 0,
-        "indent": [
-            "error",
-            "tab",
-			{
-				"SwitchCase": 1
-			}
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-		],
+		"plugin:security/recommended",
+		"prettier"
+	],
+	"rules": {
+		"no-console": 0,
 		"no-throw-literal": "off",
 		"no-mixed-spaces-and-tabs": 0,
 		"default-case": 1,
@@ -68,10 +46,10 @@
 		"security/detect-non-literal-fs-filename": 0,
 		"security/detect-non-literal-regexp": 0,
 		"security/detect-possible-timing-attacks": 0
-    },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
+	},
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
 		"sourceType": "module",
 		"ecmaVersion": 2020
-    }
+	}
 }

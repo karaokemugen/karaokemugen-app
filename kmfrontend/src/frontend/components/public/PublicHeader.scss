@@ -10,7 +10,7 @@ header.menu-container {
 	z-index: 999;
 	--img: none;
 	@media screen and (max-width: $mugen-breakpoint-large) {
-		padding: .5em 0;
+		padding: 0.5em 0;
 	}
 	@include blurred-bg;
 	> .menu {
@@ -18,7 +18,7 @@ header.menu-container {
 		justify-content: space-between;
 		align-items: center;
 		height: 3em;
-		margin: 0 .5em;
+		margin: 0 0.5em;
 		img {
 			width: auto;
 			height: auto;
@@ -37,7 +37,7 @@ header.menu-container {
 			text-align: center;
 			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.25);
 			background-color: scale-color($mugen-topbar-background, $lightness: -30%);
-			padding: .5em;
+			padding: 0.5em;
 			border-radius: 8px;
 			height: min-content;
 			z-index: 1000;
@@ -97,10 +97,10 @@ header.menu-container {
 			}
 
 			> .link {
-				padding: .5em;
+				padding: 0.5em;
 				> a {
 					> i {
-						margin-right: .25em;
+						margin-right: 0.25em;
 					}
 					display: flex;
 					flex-wrap: nowrap;
@@ -117,7 +117,7 @@ header.menu-container {
 @media screen and (min-width: $mugen-breakpoint-large) {
 	header.menu-container > .menu {
 		width: 75%;
-		margin: .5em auto;
+		margin: 0.5em auto;
 		height: 4em;
 		img {
 			max-height: 4em;
