@@ -491,9 +491,7 @@
 		"Les préparatifs sont en cours !"
 	],
 	"JINGLE_TIME": "Instant jingle !",
-	"JINGLE_TAGLINES": [
-		"On revient !"
-	],
+	"JINGLE_TAGLINES": ["On revient !"],
 	"INTRO_TIME": "Introduction",
 	"INTRO_TAGLINES": [
 		"C'est parti !",
@@ -503,32 +501,15 @@
 		"*se racle la gorge*"
 	],
 	"OUTRO_TIME": "Fin",
-	"OUTRO_TAGLINES": [
-		"C'est fini :(",
-		"Merci à tous !"
-	],
+	"OUTRO_TAGLINES": ["C'est fini :(", "Merci à tous !"],
 	"ENCORES_TIME": "Encore ! Encore !",
-	"ENCORES_TAGLINES": [
-		"Bon, c'est bien parce que c'est vous…",
-		"P'tite dèr ?",
-		"Dernière chanson, on donne tout !"
-	],
+	"ENCORES_TAGLINES": ["Bon, c'est bien parce que c'est vous…", "P'tite dèr ?", "Dernière chanson, on donne tout !"],
 	"SPONSOR_TIME": "LA PUB !",
-	"SPONSOR_TAGLINES": [
-		"Kono bangumi wa…",
-		"Et merci pour l'argent."
-	],
+	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "Et merci pour l'argent."],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": [
-		"On respire !",
-		"Buvez un coup !",
-		"On revient tout de suite !"
-	],
+	"PAUSE_TAGLINES": ["On respire !", "Buvez un coup !", "On revient tout de suite !"],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": [
-		"Votez ! Votez !",
-		"Le choix vous revient."
-	],
+	"POLL_TAGLINES": ["Votez ! Votez !", "Le choix vous revient."],
 	"QUOTA_AVAILABLE": "Vous pouvez de nouveau ajouter des chansons !",
 	"SERIE_NAME_MODE": "Affichage des noms des séries",
 	"SERIE_NAME_MODE_TOOLTIP": "Change la façon dont les noms de séries sont affichés dans la liste des chansons. Peut être ignoré par les préférences d'un utilisateur",
@@ -1678,7 +1659,8 @@
 				"DISCORD": "Discord : "
 			}
 		},
-		"NO_REPOSITORY_ENABLED": "Pas de dépôt en ligne activé en mode mainteneur"
+		"NO_REPOSITORY_ENABLED": "Pas de dépôt en ligne activé en mode mainteneur",
+		"ONLINE_USER_REQUIRED": "Un utilisateur en ligne est requis pour la boîte de réception"
 	},
 	"ABOUT": {
 		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",
