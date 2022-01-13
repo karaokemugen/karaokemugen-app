@@ -45,9 +45,10 @@ export async function editKara(editedKara: EditedKara) {
 		const subDest = filenames.lyricsfile
 			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile)
 			: undefined;
-		const oldMediaPath = (
-			await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', oldKara.repository))
-		)[0];
+		const oldMediaPath =
+			editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile
+				? (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', oldKara.repository)))[0]
+				: undefined;
 		const oldSubPath = filenames.lyricsfile
 			? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
 			: undefined;
@@ -69,10 +70,6 @@ export async function editKara(editedKara: EditedKara) {
 				// Not lethal
 			}
 			await fs.unlink(oldMediaPath);
-		} else {
-			mediaPath = (
-				await resolveFileInDirs(kara.medias[0].filename, resolvedPathRepos('Medias', kara.data.repository))
-			)[0];
 		}
 		if (editedKara.modifiedLyrics) {
 			if (kara.medias[0].lyrics[0]) {
