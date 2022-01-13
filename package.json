@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "6.0.39",
+  "version": "6.0.40",
   "versionName": "Quintuplées Quintessentielles",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -76,6 +76,7 @@
   "dependencies": {
     "@sentry/electron": "^2.5.4",
     "@sentry/node": "^6.16.1",
+    "agentkeepalive": "^4.2.0",
     "ass-compiler": "^0.1.4",
     "async-await-parallel": "^1.0.0",
     "axios": "^0.24.0",
