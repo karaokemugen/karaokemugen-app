@@ -5,7 +5,7 @@ import { Migration } from 'postgrator';
 import { win } from '../electron/electron';
 import logger from '../lib/utils/logger';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
-import { generateDB } from './database';
+import { compareKarasChecksum, generateDB } from './database';
 
 export async function postMigrationTasks(migrations: Migration[], didGeneration: boolean) {
 	let doGenerate = false;
@@ -47,5 +47,5 @@ export async function postMigrationTasks(migrations: Migration[], didGeneration:
 		}
 		if (breakFromLoop) break;
 	}
-	if (doGenerate) await generateDB();
+	if (doGenerate) await Promise.all([generateDB(), compareKarasChecksum()]);
 }
