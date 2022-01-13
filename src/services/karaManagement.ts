@@ -306,7 +306,7 @@ export async function integrateKaraFile(
 	const karaDB = await getKara(karaData.kid, adminToken);
 	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
 	if (karaDB) {
-		await editKaraInDB(karaData, { refresh: false });
+		await editKaraInDB(karaData, { refresh });
 		if (deleteOldFiles) {
 			try {
 				const oldKaraFile = (
@@ -349,7 +349,7 @@ export async function integrateKaraFile(
 			);
 		}
 	} else {
-		await createKaraInDB(karaData, { refresh: refresh });
+		await createKaraInDB(karaData, { refresh });
 		if (mediaDownload === 'all') {
 			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
 		}
