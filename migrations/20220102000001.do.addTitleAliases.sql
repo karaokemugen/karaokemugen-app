@@ -1,4 +1,4 @@
-ALTER TABLE kara ADD COLUMN titles_aliases JSONB;
+ALTER TABLE kara ADD COLUMN IF NOT EXISTS titles_aliases JSONB;
 
 DROP TABLE all_karas;
 CREATE TABLE all_karas AS
