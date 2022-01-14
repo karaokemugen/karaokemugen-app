@@ -193,7 +193,24 @@
 			"ENABLE_SMARTINSERT": "Aktifkan penyisipan lagu pintar untuk menghindari monopoli pengguna",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Tampilkan peringatan X menit sebelum akhir daftar putar",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Lagu misterius",
-			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Sebuah notifikasi akan mengingatkan kamu X menit sebelum akhir dari sesi terencana kamu"
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Sebuah notifikasi akan mengingatkan kamu X menit sebelum akhir dari sesi terencana kamu",
+			"ALLOW_DUPLICATES": "Perbolehkan lagu duplikat di daftar putar",
+			"ALLOW_DUPLICATES_TOOLTIP": "Dengan opsi ini, sebuah daftar putar bisa berisi lagu yang sama dua kali (atau lebih). Hanya operator yang bisa menambahkan lagu yang sama lebih dari sekali ke sebuah daftar putar. Lagu bisa ditambahkan lagi jika itu sudah diputar sebelumnya.",
+			"MEDIAS_SETTINGS": "Media",
+			"EVERY": "setiap",
+			"SONGS": "lagu",
+			"WITH": "dengan",
+			"MESSAGE": "ditampilkan di layar",
+			"CLASSIC_MODE": "Mode Karaoke Klasik",
+			"PLAYLIST_INTRO_VIDEOS": "Video introduksi daftar putar",
+			"PLAYLIST_OUTRO_VIDEOS": "Video penutup daftar putar",
+			"PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Video penutup diputar hanya sekali setelah lagu terakhir dari daftar putar saat ini.",
+			"PLAYLIST_ENCORES_VIDEOS": "Video ekstra daftar putar",
+			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Video ini akan diputar sebelum lagu terakhir dari daftar putar saat ini.",
+			"PLAYLIST_SPONSORS_VIDEOS": "Video sponsor daftar putar",
+			"PLAYLIST_SPONSORS_VIDEOS_TOOLTIP": "Sponsor diputar setiap X lagu, juga setelah video introduksi jika diaktifkan",
+			"CLASSIC_MODE_TOOLTIP": "Jeda akan terjadi antara tiap lagu dan nama lagu berikutnya dan juga pemintanya akan ditampilkan di layar. Peminta lagu atau operator akan bisa memulai pemutaran lagu",
+			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Visibilitas penambahan lagu"
 		}
 	},
 	"KARA_MENU": {
@@ -348,7 +365,8 @@
 	"UNUSED_FILES": {
 		"TAGS": "Tanda",
 		"REPOSITORY": "Repositori",
-		"TYPE": "Jenis"
+		"TYPE": "Jenis",
+		"MEDIAS": "Media"
 	},
 	"HEADERS": {
 		"LOGS": {
@@ -779,7 +797,38 @@
 		"DOWNVOTE_NO_SELF": "Tidak bisa memilih bawah satu dari permintaan kamu",
 		"POLL_LIST_ERROR": "Galat mendaftarkan jajak pendapat saat ini",
 		"POLL_NOT_ACTIVE": "Tidak ada jajak pendapat yang saat ini berjalan",
-		"SESSION_EXPORT_ERROR": "Galat mengekspor sesi"
+		"SESSION_EXPORT_ERROR": "Galat mengekspor sesi",
+		"DOWNLOADS_START_ERROR": "Galat memulai unduhan",
+		"FAVORITES_ADDED_ERROR": "Galat menambahkan favorit",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "Tidak diperbolehkan serial atau penyanyi duplikat",
+		"SETTINGS_UPDATE_ERROR": "Galat memperbarui pengaturan",
+		"FS_ERROR": "Galat menjelajahi sistem berkas",
+		"FAVORITES_IMPORTED_ERROR": "Galat mengimpor favorit",
+		"KARA_HISTORY_ERROR": "Galat mengambil lagu diurut berdasarkan tanggal diputar",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED": "Lagu di daftar hitamkan dan tidak bisa ditambahkan",
+		"SONG_COPIED_ERROR": "Galat menyalin lagu ke repositori lain",
+		"PLAYLIST_MODE_ADD_SONG_ERROR": "Galat menambahkan lagu ke daftar putar",
+		"LYRICS_VIEW_ERROR": "Galat mengambil lirik",
+		"KARA_CREATED_ERROR": "Galat membuat karaoke",
+		"SONG_VIEW_ERROR": "Galat mengambil informasi lagu",
+		"KARA_DELETED_ERROR": "Galat menghapus lagu",
+		"KARA_EDITED_ERROR": "Galat menyunting lagu",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Lagu ini sudah ditambahkan.",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Tidak bisa menambahkan lagu apa pun, kuota tercapai",
+		"TAG_COPIED_ERROR": "Galat menyalin tanda ke repositori lain",
+		"STATS_ERROR": "Galat mendapatkan statistik",
+		"CONFIG_BACKUPED_ERROR": "Galat saat pencadangan berkas konfigurasi",
+		"DATABASE_GENERATED_ERROR": "Galat saat pembuatan basis data",
+		"FILES_VALIDATED_ERROR": "Galat memvalidasi berkas",
+		"DATABASE_RESTORED_ERROR": "Galat memulihkan basis data",
+		"USER_DELETE_ADMIN_DAMEDESU": "Kamu tidak bisa menghapus pengguna admin!",
+		"AUTOMIX_ERROR": "Galat membuat daftar putar oto-campur",
+		"AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS": "Tidak ada favorit ditemukan untuk pengguna tersebut",
+		"FAVORITES_VIEW_ERROR": "Galat mengambil favorit",
+		"FAVORITES_DELETED_ERROR": "Galat menghapus favorit",
+		"FAVORITES_EXPORTED_ERROR": "Galat mengekspor favorit",
+		"KARA_RANKING_ERROR": "Galat mengambil lagu diurut berdasarkan paling banyak diminta",
+		"KARA_PLAYED_ERROR": "Galat mengambil lagu diurut berdasarkan paling banyak diputar"
 	},
 	"SUCCESS_CODES": {
 		"SESSION_MERGED": "Sesi berhasil digabung",
