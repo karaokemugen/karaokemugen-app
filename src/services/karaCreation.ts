@@ -82,7 +82,7 @@ export async function editKara(editedKara: EditedKara) {
 				kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 				await smartMove(subPath, subDest, { overwrite: true });
 			}
-		} else if (oldKara.subfile !== filenames.lyricsfile) {
+		} else if (kara.medias[0].lyrics[0] && oldKara.subfile !== filenames.lyricsfile) {
 			// Check if lyric name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 			await smartMove(oldSubPath, subDest);
@@ -148,10 +148,10 @@ export async function createKara(kara: KaraFileV4) {
 			const subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
 			await processSubfile(subPath, mediaPath);
 			await smartMove(subPath, subDest, { overwrite: true });
+			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;
-		kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], karaFile + '.kara.json');
 		await fs.writeFile(karaDest, JSON.stringify(kara, null, 2), 'utf-8');
 		await integrateKaraFile(karaDest, kara, false, true);

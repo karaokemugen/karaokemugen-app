@@ -209,13 +209,15 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					filesize: this.state.mediaInfo.size || this.props.kara?.mediasize,
 					duration: this.state.mediaInfo.duration || this.props.kara?.duration,
 					default: true,
-					lyrics: [
-						{
-							filename: kara.subfile,
-							default: true,
-							version: 'Default',
-						},
-					],
+					lyrics: kara.subfile
+						? [
+								{
+									filename: kara.subfile,
+									default: true,
+									version: 'Default',
+								},
+						  ]
+						: [],
 				},
 			],
 			data: {
