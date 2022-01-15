@@ -115,7 +115,7 @@ export default class EditableTagGroup extends Component<EditableTagGroupProps, E
 	};
 
 	onKeyEnter = e => {
-		if (e.keyCode === 13) this.handleInputConfirm(this.state.currentVal);
+		if (e.keyCode === 13) this.setState({ createModal: true });
 	};
 
 	getCurrentValue = () => {
