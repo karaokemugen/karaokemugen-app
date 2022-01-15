@@ -401,7 +401,7 @@
 			"MESSAGE": "displayed on screen",
 			"CLASSIC_MODE": "Classic Karaoke Mode",
 			"CLASSIC_MODE_TOOLTIP": "A pause will take place between each song and the name of the next song as well as its requester will be displayed on the screen. The song requester or operator will be able to start playing the song",
-			"ADDED_SONG_VISIBILITY_ADMIN": "Operator song additions visibility",
+			"ADDED_SONG_VISIBILITY_ADMIN": "Visibility for songs added by the operator",
 			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Song additions visibility",
 			"ADDED_SONG_VISIBILITY_PUBLIC": "Public song requests visibility",
 			"ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP": "Should songs added by the operator be visible to the public or considered mystery songs?",
@@ -1339,7 +1339,7 @@
 		"USER_LIST_ERROR": "Error fetching users list",
 		"USER_CREATE_ERROR": "Error creating user",
 		"USER_ALREADY_EXISTS": "User already exists",
-		"USER_ASCII_CHARACTERS_ONLY": "Only alphanumeric characters in your username please (you can change your nickname later to whatever you wish.)",
+		"USER_ASCII_CHARACTERS_ONLY": "Only alphanumeric characters in your username please (you can change your nickname later to whatever you wish).",
 		"USER_EMPTY_PASSWORD": "Your password is empty!",
 		"USER_ALREADY_EXISTS_ONLINE": "User already exists online",
 		"USER_GET_ERROR_ONLINE": "Error getting online users",
@@ -1657,7 +1657,8 @@
 				"DISCORD": "Discord: "
 			}
 		},
-		"NO_REPOSITORY_ENABLED": "No online repository enabled in maintainer mode"
+		"NO_REPOSITORY_ENABLED": "No online repository enabled in maintainer mode",
+		"ONLINE_USER_REQUIRED": "A online user is required for inbox"
 	},
 	"ABOUT": {
 		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",

@@ -193,7 +193,47 @@
 			"ENABLE_SMARTINSERT": "Aktifkan penyisipan lagu pintar untuk menghindari monopoli pengguna",
 			"MINUTES_BEFORE_SESSION_ENDS_WARNING": "Tampilkan peringatan X menit sebelum akhir daftar putar",
 			"ADDED_SONG_VISIBILITY_MYSTERY_OPTION": "Lagu misterius",
-			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Sebuah notifikasi akan mengingatkan kamu X menit sebelum akhir dari sesi terencana kamu"
+			"MINUTES_BEFORE_SESSION_ENDS_WARNING_TOOLTIP": "Sebuah notifikasi akan mengingatkan kamu X menit sebelum akhir dari sesi terencana kamu",
+			"ALLOW_DUPLICATES": "Perbolehkan lagu duplikat di daftar putar",
+			"ALLOW_DUPLICATES_TOOLTIP": "Dengan opsi ini, sebuah daftar putar bisa berisi lagu yang sama dua kali (atau lebih). Hanya operator yang bisa menambahkan lagu yang sama lebih dari sekali ke sebuah daftar putar. Lagu bisa ditambahkan lagi jika itu sudah diputar sebelumnya.",
+			"MEDIAS_SETTINGS": "Media",
+			"EVERY": "setiap",
+			"SONGS": "lagu",
+			"WITH": "dengan",
+			"MESSAGE": "ditampilkan di layar",
+			"CLASSIC_MODE": "Mode Karaoke Klasik",
+			"PLAYLIST_INTRO_VIDEOS": "Video introduksi daftar putar",
+			"PLAYLIST_OUTRO_VIDEOS": "Video penutup daftar putar",
+			"PLAYLIST_OUTRO_VIDEOS_TOOLTIP": "Video penutup diputar hanya sekali setelah lagu terakhir dari daftar putar saat ini.",
+			"PLAYLIST_ENCORES_VIDEOS": "Video ekstra daftar putar",
+			"PLAYLIST_ENCORES_VIDEOS_TOOLTIP": "Video ini akan diputar sebelum lagu terakhir dari daftar putar saat ini.",
+			"PLAYLIST_SPONSORS_VIDEOS": "Video sponsor daftar putar",
+			"PLAYLIST_SPONSORS_VIDEOS_TOOLTIP": "Sponsor diputar setiap X lagu, juga setelah video introduksi jika diaktifkan",
+			"CLASSIC_MODE_TOOLTIP": "Jeda akan terjadi antara tiap lagu dan nama lagu berikutnya dan juga pemintanya akan ditampilkan di layar. Peminta lagu atau operator akan bisa memulai pemutaran lagu",
+			"ADDED_SONG_VISIBILITY_ADMIN_SHORT": "Visibilitas penambahan lagu"
+		},
+		"INTERFACE": {
+			"WEBAPPMODE_SHORT": "Mode antarmuka",
+			"WEBAPPMODE_LIMITED_SHORT": "Dibatasi",
+			"SHOW_AVATARS_ON_PLAYLIST_TOOLTIP": "Untuk mengetahui siapa yang menambahkan apa.",
+			"LABEL": "Antarmuka",
+			"WEBAPPMODE": "Mode antarmuka publik",
+			"WEBAPPMODE_TOOLTIP": "Apa yang tamu kamu akan lihat ketika mereka masuk ke antarmuka",
+			"WEBAPPMODE_CLOSED_SHORT": "Ditutup",
+			"WEBAPPMODE_OPEN_SHORT": "Buka",
+			"WEBAPPMODE_CLOSED": "Ditutup: pesan \"Maaf, kami tutup\"",
+			"WEBAPPMODE_LIMITED": "Dibatasi: Hanya-baca",
+			"WEBAPPMODE_OPEN": "Buka (baku): Pengguna bisa menambahkan lagu",
+			"SHOW_AVATARS_ON_PLAYLIST": "Tampilkan avatar di daftar putar"
+		},
+		"PLAYLIST": {
+			"ENDOFPLAYLISTACTION": {
+				"OPTIONS": {
+					"NONE": "Hentikan sesi karaoke",
+					"REPEAT": "Ulang daftar putar",
+					"RANDOM": "Putar lagu acak dari pustaka"
+				}
+			}
 		}
 	},
 	"KARA_MENU": {
@@ -348,7 +388,8 @@
 	"UNUSED_FILES": {
 		"TAGS": "Tanda",
 		"REPOSITORY": "Repositori",
-		"TYPE": "Jenis"
+		"TYPE": "Jenis",
+		"MEDIAS": "Media"
 	},
 	"HEADERS": {
 		"LOGS": {
@@ -531,11 +572,35 @@
 	},
 	"HOME": {
 		"SYSTEM": {
-			"DATABASE": "Basis data"
+			"DATABASE": "Basis data",
+			"REPOSITORIES": "Repositori karaoke",
+			"SESSIONS": "Sesi karaoke",
+			"CONFIG": "Sunting konfigurasi",
+			"LOGS": "Log sistem"
 		},
 		"KARAS": {
-			"DOWNLOAD": "Unduh media"
-		}
+			"DOWNLOAD": "Unduh media",
+			"CREATE": "Buat karaoke",
+			"HISTORY": "Riwayat karaoke yang diputar",
+			"MOST_PLAYED": "Riwayat karaoke yang paling banyak diputar",
+			"BROWSE": "Jelajah karaoke"
+		},
+		"TAGS_DESCRIPTION": "Daftar, buat, sunting tanda (penyanyi, penulis lagu, pembuat, jenis lagu, dll.)",
+		"SYSTEM_DESCRIPTION": "Lihat log, ubah opsi konfigurasi, cadangkan/pulihkan basis data kamu, picu pembuatan manual, dan kelola sesi karaoke",
+		"KARAS_DESCRIPTION": "Daftar, sunting, dan buat berkas data karaoke. Kamu juga bisa mengunduh media dan melihat yang paling banyak diminta, paling banyak diputar, dan riwayat karaoke",
+		"USERS_DESCRIPTION": "Daftar, sunting, buat pengguna, ubah kata sandi mereka, buat akun tamu baru.",
+		"TAGS": {
+			"CREATE": "Buat tanda",
+			"BROWSE": "Jelajah tanda",
+			"MERGE": "Gabung tanda duplikat"
+		},
+		"USERS": {
+			"CREATE": "Buat pengguna",
+			"BROWSE": "Jelajah pengguna"
+		},
+		"EGG_1": "Berhenti klik pada versi.",
+		"EGG_2": "Wah.",
+		"EGG_3": "Berhenti, percuma saja."
 	},
 	"LOGS": {
 		"LEVELS": {
@@ -665,7 +730,13 @@
 		"SHUFFLE_MODAL": {
 			"TITLE": "Acak daftar putar"
 		},
-		"PLAY_CURRENT_MODAL": "Peringatan: daftar putar saat ini '{{playlist}}' tidak tertampil di layar. Itu daftar putar yang akan diputar. Apakah kamu yakin kamu ingin mulai memutar?"
+		"PLAY_CURRENT_MODAL": "Peringatan: daftar putar saat ini '{{playlist}}' tidak tertampil di layar. Itu daftar putar yang akan diputar. Apakah kamu yakin kamu ingin mulai memutar?",
+		"CREATE_TAG": {
+			"OPEN": "Buat tanda"
+		},
+		"GIT_DANGEROUS": {
+			"TITLE": "Tindakan berbahaya"
+		}
 	},
 	"REPOSITORIES": {
 		"PATH_MEDIAS": "Media",
@@ -683,7 +754,14 @@
 		"SENDSTATS": "Kirim statistik",
 		"SENDSTATS_TOOLTIP": "Sesi dan lagu diputar/diminta",
 		"AUTO_MEDIA_DOWNLOADS_TOOLTIP": "Jika koneksi kamu terlalu lambat, kami merekomendasikan kamu memeriksa ini agar video diunduh sebelumnya. Juga direkomendasikan untuk penggunaan mudah atau untuk siaran untuk menghindari potensi galat di tengah-tengah karaoke!",
-		"MAINTAINER_MODE": "Mode pengelola"
+		"MAINTAINER_MODE": "Mode pengelola",
+		"GIT_DELETE": "Hapus",
+		"GIT_PUSH": "Dorong",
+		"GIT_UNSTASH": "Terapkan",
+		"GIT_PULL": "Tarik",
+		"GIT_CONFIRM_PUSH": "Dorong perubahan berikut?",
+		"GIT_DANGEROUS": "Tindakan berbahaya",
+		"GIT_CUSTOM_MESSAGE": "Pesan kustom"
 	},
 	"ERROR_CODES": {
 		"PL_SONG_COPY_ERROR": "Galat menyalin lagu ke daftar putar tujuan",
@@ -779,7 +857,63 @@
 		"DOWNVOTE_NO_SELF": "Tidak bisa memilih bawah satu dari permintaan kamu",
 		"POLL_LIST_ERROR": "Galat mendaftarkan jajak pendapat saat ini",
 		"POLL_NOT_ACTIVE": "Tidak ada jajak pendapat yang saat ini berjalan",
-		"SESSION_EXPORT_ERROR": "Galat mengekspor sesi"
+		"SESSION_EXPORT_ERROR": "Galat mengekspor sesi",
+		"DOWNLOADS_START_ERROR": "Galat memulai unduhan",
+		"FAVORITES_ADDED_ERROR": "Galat menambahkan favorit",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_NO_DUPLICATE_SERIES_SINGERS": "Tidak diperbolehkan serial atau penyanyi duplikat",
+		"SETTINGS_UPDATE_ERROR": "Galat memperbarui pengaturan",
+		"FS_ERROR": "Galat menjelajahi sistem berkas",
+		"FAVORITES_IMPORTED_ERROR": "Galat mengimpor favorit",
+		"KARA_HISTORY_ERROR": "Galat mengambil lagu diurut berdasarkan tanggal diputar",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED": "Lagu di daftar hitamkan dan tidak bisa ditambahkan",
+		"SONG_COPIED_ERROR": "Galat menyalin lagu ke repositori lain",
+		"PLAYLIST_MODE_ADD_SONG_ERROR": "Galat menambahkan lagu ke daftar putar",
+		"LYRICS_VIEW_ERROR": "Galat mengambil lirik",
+		"KARA_CREATED_ERROR": "Galat membuat karaoke",
+		"SONG_VIEW_ERROR": "Galat mengambil informasi lagu",
+		"KARA_DELETED_ERROR": "Galat menghapus lagu",
+		"KARA_EDITED_ERROR": "Galat menyunting lagu",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Lagu ini sudah ditambahkan.",
+		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Tidak bisa menambahkan lagu apa pun, kuota tercapai",
+		"TAG_COPIED_ERROR": "Galat menyalin tanda ke repositori lain",
+		"STATS_ERROR": "Galat mendapatkan statistik",
+		"CONFIG_BACKUPED_ERROR": "Galat saat pencadangan berkas konfigurasi",
+		"DATABASE_GENERATED_ERROR": "Galat saat pembuatan basis data",
+		"FILES_VALIDATED_ERROR": "Galat memvalidasi berkas",
+		"DATABASE_RESTORED_ERROR": "Galat memulihkan basis data",
+		"USER_DELETE_ADMIN_DAMEDESU": "Kamu tidak bisa menghapus pengguna admin!",
+		"AUTOMIX_ERROR": "Galat membuat daftar putar oto-campur",
+		"AUTOMIX_ERROR_NOT_FOUND_FAV_FOR_USERS": "Tidak ada favorit ditemukan untuk pengguna tersebut",
+		"FAVORITES_VIEW_ERROR": "Galat mengambil favorit",
+		"FAVORITES_DELETED_ERROR": "Galat menghapus favorit",
+		"FAVORITES_EXPORTED_ERROR": "Galat mengekspor favorit",
+		"KARA_RANKING_ERROR": "Galat mengambil lagu diurut berdasarkan paling banyak diminta",
+		"KARA_PLAYED_ERROR": "Galat mengambil lagu diurut berdasarkan paling banyak diputar",
+		"UNKNOWN_COMMAND": "Perintah tidak diketahui (API)",
+		"WEBAPPMODE_CLOSED_API_MESSAGE": "API dinonaktifkan saat ini",
+		"LOG_ERROR": "Kredensial tidak valid",
+		"NO_MORE_GUESTS_AVAILABLE": "Tidak ada lagi akun tamu yang tersedia",
+		"CRITERIAS_EMPTY_ERROR": "Galat mengosongkan daftar kriteria",
+		"CRITERIAS_GET_ERROR": "Kriteria tidak bisa dilihat",
+		"CRITERIAS_ADD_ERROR": "Kriteria tidak bisa ditambahkan",
+		"CRITERIAS_REMOVE_ERROR": "Tidak bisa menghapus kriteria",
+		"C_SHORTER_THAN_CONFLICT": "Kamu tidak bisa menambahkan kriteria \"Lebih pendek dari\" lebih tinggi dari kriteria \"Lebih panjang dari\".",
+		"INBOX_VIEW_ERROR": "Tidak bisa mengambil karaoke dari kotak masuk",
+		"DOWNLOAD_KARA_FROM_INBOX_ERROR": "Tidak bisa mengunduh karaoke dari kotak masuk",
+		"DELETE_KARA_IN_INBOX_ERROR": "Tidak bisa menghapus karaoke dari kotak masuk",
+		"C_LONGER_THAN_CONFLICT": "Kamu tidak bisa menambahkan kriteria \"Lebih panjang dari\" lebih kecil dari kriteria \"Lebih pendek dari\".",
+		"USER_RESETPASSWORD_WRONGSECURITYCODE": "Kode keamanan salah",
+		"PL_DELETE_SONG_ERROR": "Kamu tidak bisa menghapus lagu tersebut",
+		"PL_DELETE_UPVOTED": "Kamu tidak bisa menghapus saran kamu, sudah terlambat.",
+		"PL_VIEW_SONGS_ERROR": "Galat memuat daftar putar",
+		"SONG_LIST_ERROR": "Galat memuat pustaka",
+		"PL_ADD_SONG_ERROR": "Tidak ada lagu yang bisa ditambahkan, semua sudah ada di daftar putar tujuan",
+		"PL_MOVE_SONG_ERROR": "Tidak bisa menyalin lagu ke daftar putar tujuan",
+		"DOWNLOADS_GET_ERROR": "Galat mendapatkan unduhan dari antrian",
+		"DOWNLOADS_WIPE_ERROR": "Galat menghapus unduhan dari antrian",
+		"DOWNLOADS_PAUSE_ERROR": "Galat menjeda unduhan",
+		"DOWNLOADS_QUEUED_ERROR": "Galat menambahkan unduhan ke antrian",
+		"DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR": "Tidak ada unduhan yang ditambahkan, semua sudah dalam antrian atau sedang berjalan"
 	},
 	"SUCCESS_CODES": {
 		"SESSION_MERGED": "Sesi berhasil digabung",
@@ -871,7 +1005,13 @@
 		"KARA_REQUESTED": "Lagu diminta",
 		"NEW_SESSION": "Sesi baru",
 		"ACTIVE": "Aktif?",
-		"PRIVATE": "Privat?"
+		"PRIVATE": "Privat?",
+		"LAST_PLAYED_AT": "Terakhir diputar pada",
+		"LAST_REQUESTED_AT": "Terakhir diminta pada",
+		"TITLE": "Judul",
+		"MERGE_SESSIONS": "Gabung sesi",
+		"MERGE_WITH": "Gabung dengan",
+		"MERGE_WITH_TOOLTIP": "Gabung sesi saat ini dengan yang lain"
 	},
 	"PAUSE_TIME": "Jeda",
 	"VIEW_LIKES": "Suka",
@@ -879,11 +1019,83 @@
 	"PL_MULTIPLE_ADDED": "Tambah {{count}} lagu",
 	"SECURITY_CODE": "Kode keamanan",
 	"TAGS": {
-		"REPOSITORY": "Repositori"
+		"REPOSITORY": "Repositori",
+		"MERGE_WITH": "Gabung dengan",
+		"MERGE_WITH_TOOLTIP": "Gabung tanda saat ini dengan yang lain",
+		"MERGE_WITH_SELECT": "Pilih sebuah tanda",
+		"MERGE_WITH_BUTTON": "Gabung!",
+		"MERGE_ABOUT": "Tentang Proses Penggabungan"
 	},
 	"VIEW_LIKES_TOOLTIP": "Lagu dengan suka paling banyak akan ditampilkan dahulu, ini tidak berdampak pada urutan daftar putar sebenarnya.",
 	"SELECT_KARAS_REQUIRED": "Kamu harus memilih paling tidak satu lagu",
 	"FORGOT_PASSWORD": "Lupa kata sandi?",
 	"VIEW_RECENT": "Terbaru",
-	"MAKE_ACCOUNT_ADMIN": "Ubah akun ke operator"
+	"MAKE_ACCOUNT_ADMIN": "Ubah akun ke operator",
+	"POLLENDED": "{{kara}} menang dengan {{votes}} suara!",
+	"TASKS": {
+		"EDITING_KARAS_BATCH_TAGS": "Menyunting tanda di lagu…",
+		"UPDATING_PLMEDIAS": "Memperbarui daftar putar media…",
+		"EDITING_TAG_IN_PROGRESS": "Menyunting tanda…",
+		"COPYING_LYRICS_IN_REPOS": "Memperbarui lirik…",
+		"FINDING_UNUSED_MEDIAS": "Mencari media tidak digunakan…",
+		"COMPARING_LYRICS_IN_REPOS": "Membandingkan lirik antar repositori…",
+		"CREATING_SONG": "Membuat karaoke…",
+		"EDITING_SONG": "Menyunting karaoke…",
+		"GENERATING": "Membuat basis data…",
+		"CLEANING_REPO": "Membersihkan lagu yang dihapus dari repositori",
+		"GENERATING_READING": "Membaca data…",
+		"MOVING_MEDIAS_REPO": "Memindahkan media untuk repositori…",
+		"UPDATING_REPO": "Mempebarui lagu dari repositori",
+		"MERGING_TAGS_IN_PROGRESS": "Menggabungkan tanda…",
+		"DATASTORE_UPDATE": "Memperbarui penyimpanan data lokal…",
+		"DELETING_TAG_IN_PROGRESS": "Menghapus tanda…",
+		"DELETING_PARENT_IN_PROGRESS": "Menghapus induk lagu…",
+		"UPDATING_MEDIAS": "Memperbarui media…",
+		"UPDATING_WORKDIR": "Memperbarui direktori kerja",
+		"DOWNLOADING": "Mengunduh…",
+		"RESOLVING_DELTAS": "Menyelesaikan delta",
+		"ANALYZING_WORKDIR": "Menganalisis direktori kerja",
+		"UPDATING_GIT_REPO": "Memperbarui repositori {{data}}",
+		"DOWNLOADING_ZIP": "Mengunduh basis data",
+		"EXTRACTING_ZIP": "Mengekstrak basis data",
+		"PREPARING_CHANGES": "Menyiapkan perubahan",
+		"REFRESHING_DATA": "Menyegarkan data…",
+		"UPLOADING_FTP": "Mengunggah ke FTP…",
+		"GENERATING_DATABASE": "Memperbarui basis data…",
+		"GENERATION_DONE": "Pembuatan berhasil",
+		"CREATING_TAG_IN_PROGRESS": "Membuat tanda…"
+	},
+	"KARA_PAUSED_WAITING": "Belum ada lagu yang diputar",
+	"KARA_PAUSED_TAGLINES": [
+		"…tapi itu tidak akan bertahan lama!",
+		"Waktu tunggu kamu diperkirakan beberapa menit.",
+		"Terlalu tenang, saya tidak suka ini…",
+		"Persiapan sedang berlangsung!"
+	],
+	"JINGLE_TAGLINES": ["Kami akan segera kembali!"],
+	"INTRO_TIME": "Introduksi daftar putar",
+	"INTRO_TAGLINES": ["Ayo!", "Memulai…", "Inisialisasi…", "Siapkan mikrofon kamu!", "*bersihkan tenggorokan*"],
+	"OUTRO_TIME": "Penutup daftar putar",
+	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
+	"ENCORES_TIME": "Ekstra! Ekstra!",
+	"ENCORES_TAGLINES": ["Yah, bukan karena aku menyukaimu atau apa gitu…", "Terakhir?"],
+	"SPONSOR_TIME": "IKLAN!",
+	"SPONSOR_TAGLINES": ["Dan terima kasih atas duitnya."],
+	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
+	"SERIE_NAME_MODE": "Mode bahasa serial",
+	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
+	"SERIE_NAME_MODE_ORIGINAL": "Judul asli",
+	"SERIE_NAME_MODE_ADMIN": "Bahasa hos",
+	"SERIE_NAME_MODE_USER": "Bahasa pengguna",
+	"REMOTE_STATUS": {
+		"OUTDATED_CLIENT": "Aplikasi tidak kompatibel (harap perbarui)",
+		"LABEL": "Status koneksi",
+		"DISCONNECTED": "Terputus",
+		"OUTDATED": "Peladen tidak kompatibel",
+		"CONNECTED": "Tersambung"
+	},
+	"REMOTE_TOKEN": "Token akses jarak jauh",
+	"PAUSE_TAGLINES": ["Beristirahatlah!", "Saatnya minum!", "Kami akan segera kembali!"],
+	"POLL_TAGLINES": ["Pilihan ada padamu."],
+	"REMOTE_URL": "URL akses jarak jauh"
 }

@@ -56,7 +56,7 @@ export async function createKaraInDB(kara: Kara, opts = { refresh: true }) {
 	await insertKara(kara);
 	await Promise.all([updateKaraParents(kara), updateTags(kara)]);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('ADD', [kara], true);
+		await refreshKarasAfterDBChange('ADD', [kara]);
 		updateAllSmartPlaylists();
 	}
 }
@@ -68,11 +68,10 @@ export async function editKaraInDB(
 	}
 ) {
 	profile('editKaraDB');
-	const promises = [updateKara(kara), updateKaraParents(kara)];
-	if (kara.newTags) promises.push(updateTags(kara));
+	const promises = [updateKara(kara), updateKaraParents(kara), updateTags(kara)];
 	await Promise.all(promises);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('UPDATE', [kara], kara.newTags);
+		await refreshKarasAfterDBChange('UPDATE', [kara]);
 		updateAllSmartPlaylists();
 	}
 	profile('editKaraDB');
@@ -263,11 +262,7 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 	}
 }
 
-export async function refreshKarasAfterDBChange(
-	action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL',
-	karas?: Kara[],
-	newTags?: boolean
-) {
+export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', karas?: Kara[]) {
 	profile('RefreshAfterDBChange');
 	logger.debug('Refreshing DB after kara change', { service: 'DB' });
 	await updateKaraSearchVector();
@@ -290,12 +285,14 @@ export async function refreshKarasAfterDBChange(
 	}
 	// If karas is not initialized then we're updating ALL search vectors
 	karas ? refreshParentSearchVectorTask([...parentsToUpdate]) : refreshParentSearchVectorTask();
-	if (newTags) {
-		await updateTagSearchVector();
-		refreshTags();
-	}
+	refreshTagsAfterDBChange();
 	logger.debug('Done refreshing DB after kara change', { service: 'DB' });
 	profile('RefreshAfterDBChange');
+}
+
+async function refreshTagsAfterDBChange() {
+	await updateTagSearchVector();
+	refreshTags();
 }
 
 export async function integrateKaraFile(
@@ -309,7 +306,7 @@ export async function integrateKaraFile(
 	const karaDB = await getKara(karaData.kid, adminToken);
 	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
 	if (karaDB) {
-		await editKaraInDB(karaData, { refresh: false });
+		await editKaraInDB(karaData, { refresh });
 		if (deleteOldFiles) {
 			try {
 				const oldKaraFile = (
@@ -352,7 +349,7 @@ export async function integrateKaraFile(
 			);
 		}
 	} else {
-		await createKaraInDB(karaData, { refresh: refresh });
+		await createKaraInDB(karaData, { refresh });
 		if (mediaDownload === 'all') {
 			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
 		}

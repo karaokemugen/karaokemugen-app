@@ -1341,7 +1341,7 @@
 		"USER_LIST_ERROR": "Erreur lors de la récupération de la liste des utilisateurs",
 		"USER_CREATE_ERROR": "Erreur lors de la création de l'utilisateur",
 		"USER_ALREADY_EXISTS": "L'utilisateur existe déjà",
-		"USER_ASCII_CHARACTERS_ONLY": "Uniquement des caractères de l'alphabet latin et des nombres dans votre nom d'utilisateur s'il vous plaît (vous pourrez changer votre pseudo plus tard et mettre ce que vous voudrez!)",
+		"USER_ASCII_CHARACTERS_ONLY": "Uniquement des caractères de l'alphabet latin et des nombres dans votre nom d'utilisateur s'il vous plaît (vous pourrez changer votre pseudo plus tard et mettre ce que vous voudrez).",
 		"USER_EMPTY_PASSWORD": "Votre mot de passe est vide !",
 		"USER_ALREADY_EXISTS_ONLINE": "L'utilisateur existe déjà en ligne",
 		"USER_GET_ERROR_ONLINE": "Erreur lors de la récupération des utilisateurs en ligne",
@@ -1659,7 +1659,8 @@
 				"DISCORD": "Discord : "
 			}
 		},
-		"NO_REPOSITORY_ENABLED": "Pas de dépôt en ligne activé en mode mainteneur"
+		"NO_REPOSITORY_ENABLED": "Pas de dépôt en ligne activé en mode mainteneur",
+		"ONLINE_USER_REQUIRED": "Un utilisateur en ligne est requis pour la boîte de réception"
 	},
 	"ABOUT": {
 		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",

@@ -1,5 +1,5 @@
 import { DeleteOutlined, DownloadOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Layout, Modal, Table } from 'antd';
+import { Alert, Button, Layout, Modal, Table } from 'antd';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
@@ -19,7 +19,15 @@ export default function Inbox() {
 			repo.Name === context.globalState.auth.data.username.split('@')[1]
 	);
 
-	if (repoList.length === 0) throw i18next.t('INBOX.NO_REPOSITORY_ENABLED');
+	if (repoList.length === 0) {
+		let message;
+		if (context.globalState.auth.data.onlineAvailable !== false) {
+			message = i18next.t('INBOX.ONLINE_USER_REQUIRED');
+		} else {
+			message = i18next.t('INBOX.NO_REPOSITORY_ENABLED');
+		}
+		return <Alert style={{ textAlign: 'left', margin: '20px' }} message={message} type="error" />;
+	}
 
 	const instance = repoList[0].Name;
 
