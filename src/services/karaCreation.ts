@@ -45,9 +45,10 @@ export async function editKara(editedKara: EditedKara) {
 		const subDest = filenames.lyricsfile
 			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile)
 			: undefined;
-		const oldMediaPath = (
-			await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', oldKara.repository))
-		)[0];
+		const oldMediaPath =
+			editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile
+				? (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', oldKara.repository)))[0]
+				: undefined;
 		const oldSubPath = filenames.lyricsfile
 			? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
 			: undefined;
@@ -69,10 +70,6 @@ export async function editKara(editedKara: EditedKara) {
 				// Not lethal
 			}
 			await fs.unlink(oldMediaPath);
-		} else {
-			mediaPath = (
-				await resolveFileInDirs(kara.medias[0].filename, resolvedPathRepos('Medias', kara.data.repository))
-			)[0];
 		}
 		if (editedKara.modifiedLyrics) {
 			if (kara.medias[0].lyrics[0]) {
@@ -85,7 +82,7 @@ export async function editKara(editedKara: EditedKara) {
 				kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 				await smartMove(subPath, subDest, { overwrite: true });
 			}
-		} else if (oldKara.subfile !== filenames.lyricsfile) {
+		} else if (kara.medias[0].lyrics[0] && oldKara.subfile !== filenames.lyricsfile) {
 			// Check if lyric name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 			await smartMove(oldSubPath, subDest);
@@ -151,10 +148,10 @@ export async function createKara(kara: KaraFileV4) {
 			const subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
 			await processSubfile(subPath, mediaPath);
 			await smartMove(subPath, subDest, { overwrite: true });
+			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;
-		kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], karaFile + '.kara.json');
 		await fs.writeFile(karaDest, JSON.stringify(kara, null, 2), 'utf-8');
 		await integrateKaraFile(karaDest, kara, false, true);

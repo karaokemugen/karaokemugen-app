@@ -40,7 +40,11 @@ export function CreateTagModal(props: CreateTagModalProps) {
 				onFinish={async tag => {
 					try {
 						setLoading(true);
-						const response = await commandBackend('addTag', { ...tag, repository: props.repo, i18n: {} });
+						const response = await commandBackend('addTag', {
+							...tag,
+							repository: props.repo,
+							i18n: { eng: tag.name },
+						});
 						props.onCreate(response.message.data);
 						props.onClose();
 					} finally {

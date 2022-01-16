@@ -107,6 +107,7 @@ export function buildKaraTitle(
 		.map(e => (e.short ? +e.short : e.name))
 		.join(' ');
 	const songorderText = data?.songorder > 0 ? ' ' + data.songorder : '';
+	if (!data.titles) console.log(JSON.stringify(data));
 	if (onlyText) {
 		const versions = sortAndHideTags(data?.versions).map(t => `[${getTagInLocale(settings, t, i18nParam)}]`);
 		const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';

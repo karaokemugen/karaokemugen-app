@@ -12,6 +12,7 @@ import { refreshKaras } from '../lib/dao/kara';
 import { parseKara, writeKara } from '../lib/dao/karafile';
 import { readAllKaras } from '../lib/services/generation';
 import { DBTag } from '../lib/types/database/tag';
+import { KaraMetaFile } from '../lib/types/downloads';
 import { Kara, KaraFileV4 } from '../lib/types/kara';
 import { DiffChanges, Repository, RepositoryManifest } from '../lib/types/repo';
 import { TagFile } from '../lib/types/tag';
@@ -498,7 +499,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 	await Promise.all(tagPromises);
 	const KIDsToDelete = [];
 	const KIDsToUpdate = [];
-	let karas = [];
+	let karas: KaraMetaFile[] = [];
 	const task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
 	for (const match of karaFiles) {
 		if (match.type === 'new') {
