@@ -292,7 +292,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						filename: info.file.response.filename,
 					},
 					false,
-					15000
+					60000
 				);
 				this.setState({ mediaInfo });
 				this.formRef.current.setFieldsValue({ mediafile: mediaInfo.filename });
