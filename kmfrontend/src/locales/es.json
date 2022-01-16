@@ -230,7 +230,7 @@
 	"CL_EMPTY_LIST": "Lista vacía?",
 	"CL_INFORMATIVE_MESSAGE": "Información",
 	"CL_ADD_RANDOM_TITLE": "Cuantas canciones aleatorias quieres añadir?",
-	"CL_ABOUT_TO_ADD": "Estás a punto de añadir {{title}}",
+	"CL_ABOUT_TO_ADD": "Estás a punto de añadir",
 	"CL_CONGRATS": "Felicitaciones",
 	"KARAOKE_one": "{{count}} canción",
 	"KARAOKE_other": "{{count}} canciones",

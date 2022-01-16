@@ -212,7 +212,7 @@
 	"KARAOKE_one": "{{count}} karaoke",
 	"KARAOKE_other": "{{count}} karaokes",
 	"CL_CONGRATS": "Congratulations",
-	"CL_ABOUT_TO_ADD": "You're about to add {{title}}",
+	"CL_ABOUT_TO_ADD": "You're about to add",
 	"CL_ADD_RANDOM_TITLE": "How many random songs do you want to add?",
 	"CL_INFORMATIVE_MESSAGE": "Information",
 	"CL_EMPTY_LIST": "Empty list?",
@@ -491,22 +491,11 @@
 		"Preparations are ongoing!"
 	],
 	"JINGLE_TIME": "Jingle time!",
-	"JINGLE_TAGLINES": [
-		"We'll be right back!"
-	],
+	"JINGLE_TAGLINES": ["We'll be right back!"],
 	"INTRO_TIME": "Playlist intro",
-	"INTRO_TAGLINES": [
-		"Let's go!",
-		"Starting…",
-		"Initialization…",
-		"Prepare your mic!",
-		"*clears throat*"
-	],
+	"INTRO_TAGLINES": ["Let's go!", "Starting…", "Initialization…", "Prepare your mic!", "*clears throat*"],
 	"OUTRO_TIME": "Playlist ending",
-	"OUTRO_TAGLINES": [
-		"The End :(",
-		"Thanks everyone!"
-	],
+	"OUTRO_TAGLINES": ["The End :(", "Thanks everyone!"],
 	"ENCORES_TIME": "Encore! Encore!",
 	"ENCORES_TAGLINES": [
 		"Well, it's not because I like you or anything…",
@@ -514,21 +503,11 @@
 		"Last song, let's give it our all!"
 	],
 	"SPONSOR_TIME": "COMMERCIAL TIME!",
-	"SPONSOR_TAGLINES": [
-		"Kono bangumi wa…",
-		"And thanks for the money."
-	],
+	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "And thanks for the money."],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": [
-		"Take a break!",
-		"Time to drink!",
-		"We'll be right back!"
-	],
+	"PAUSE_TAGLINES": ["Take a break!", "Time to drink!", "We'll be right back!"],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": [
-		"Vote! Vote!",
-		"The choice is yours."
-	],
+	"POLL_TAGLINES": ["Vote! Vote!", "The choice is yours."],
 	"QUOTA_AVAILABLE": "You can add songs again now!",
 	"SERIE_NAME_MODE": "Series language mode",
 	"SERIE_NAME_MODE_TOOLTIP": "Changes the way series names are displayed on the song list. Might be ignored by user preferences",
