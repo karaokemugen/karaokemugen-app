@@ -59,9 +59,13 @@ function PublicPage() {
 		let searchType: 'search' | 'recent' | 'requested' = 'search';
 		if (view === 'home' || context?.globalState.settings.data.config.Frontend?.Mode === 0) {
 			route = '/public';
+			if (!context.globalState.frontendContext.playlistInfoLeft)
+				setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 		} else if (view === 'tag') {
 			tagType = tagType !== undefined ? tagType : tagType;
 			route = `/public/tags/${tagType}`;
+			if (!context.globalState.frontendContext.playlistInfoLeft)
+				setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 		} else if (view === 'favorites') {
 			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.favorites);
 			route = '/public/favorites';
@@ -431,7 +435,7 @@ function PublicPage() {
 								kid={kara?.kid}
 								playlistcontentId={kara?.plcid}
 								scope="public"
-								plaid={context.globalState.frontendContext.playlistInfoLeft.plaid}
+								plaid={context.globalState.frontendContext.playlistInfoLeft?.plaid}
 								closeOnPublic={() => {
 									navigate(-1);
 									setKara(undefined);
