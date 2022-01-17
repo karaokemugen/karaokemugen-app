@@ -736,7 +736,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<InputNumber
 						required={true}
 						min={0}
-						max={4}
+						max={3000}
 						placeholder="Year"
 						style={{ width: '100%' }}
 						onPressEnter={this.submitHandler}
