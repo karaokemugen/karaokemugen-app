@@ -139,6 +139,7 @@
     "systeminformation": "^5.10.3",
     "tasklist": "4",
     "tmi.js": "^1.8.5",
+    "topological-sort": "^0.3.0",
     "toyunda2ass": "^1.0.12",
     "ultrastar2ass": "^1.0.20",
     "uuid": "^8.3.2",

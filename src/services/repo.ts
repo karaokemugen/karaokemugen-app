@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
 import { basename, resolve } from 'path';
+import { TopologicalSort } from 'topological-sort';
 
 import { compareKarasChecksum, DBReady, generateDB } from '../dao/database';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
@@ -27,7 +28,6 @@ import {
 } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
-import { topologicalSort } from '../lib/utils/objectHelpers';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -1152,4 +1152,31 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 		logger.error(`Pushing to repository ${repoName} failed: ${err}`, { service: 'Repo', obj: err });
 		// No need to throw here, this is called asynchronously.
 	}
+}
+
+function topologicalSort(karas: KaraMetaFile[]): KaraMetaFile[] {
+	const nodes = new Map();
+
+	const sortOp = new TopologicalSort(nodes);
+
+	for (const kara of karas) {
+		sortOp.addNode(kara.data.data.kid, kara);
+	}
+
+	for (const kara of karas) {
+		if (kara.data.data.parents?.length > 0) {
+			for (const parent of kara.data.data.parents) {
+				// We need to make sure parent exists in the list. If not we don't add it as an edge or else the sort will fail.
+				if (karas.find(k => k.data.data.kid === parent)) {
+					sortOp.addEdge(parent, kara.data.data.kid);
+				}
+			}
+		}
+	}
+	const sorted = [];
+	for (const kara of sortOp.sort().values()) {
+		sorted.push(kara.node);
+	}
+
+	return sorted;
 }

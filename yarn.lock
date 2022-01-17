@@ -5051,6 +5051,11 @@ token-types@^4.1.1:
     "@tokenizer/token" "^0.3.0"
     ieee754 "^1.2.1"
 
+topological-sort@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/topological-sort/-/topological-sort-0.3.0.tgz#3ca539982c71a13f0a7b3be2ad4ae4dd437a1e3b"
+  integrity sha512-BmO2t72jjJ3B9PZC3LTHyojgNynOKEvWG4GiYqyfSMUjtO6+yZK0oozlMYVA+tC6YvS3NZh4OPx6QaolEYOg6A==
+
 toyunda2ass@^1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/toyunda2ass/-/toyunda2ass-1.0.12.tgz#ed8a19e0309a147d33e862d3e9260c63020b9ea4"
