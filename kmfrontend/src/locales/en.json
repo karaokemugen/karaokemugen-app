@@ -1219,7 +1219,7 @@
 		"GENERATING_DATABASE": "Updating database…",
 		"GENERATION_DONE": "Generation successful",
 		"MOVING_MEDIAS_REPO": "Moving medias for repository…",
-		"CLEANING_REPO": "Cleaning up songs removed from repository",
+		"CLEANING_REPO": "Cleaning of deleted songs from the repository",
 		"UPDATING_REPO": "Updating songs from repository",
 		"UPDATING_PLMEDIAS": "Updating playlist medias…",
 		"CREATING_TAG_IN_PROGRESS": "Creating tag…",
