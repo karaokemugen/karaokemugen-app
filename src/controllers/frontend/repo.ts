@@ -288,7 +288,7 @@ export default function repoController(router: SocketIOApp) {
 	router.route('pushCommits', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			pushCommits(req.body.repoName, req.body.commits);
+			pushCommits(req.body.repoName, req.body.commits, req.body.ignoreFTP);
 		} catch (err) {
 			const code = 'REPO_GIT_PUSH_ERROR';
 			errMessage(code, err);

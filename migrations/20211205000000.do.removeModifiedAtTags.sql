@@ -1,6 +1,6 @@
 DROP MATERIALIZED VIEW all_tags;
 
-ALTER TABLE tag DROP COLUMN modified_at;
+ALTER TABLE tag DROP COLUMN IF EXISTS modified_at;
 
 CREATE MATERIALIZED VIEW all_tags AS
 WITH t_count AS (

@@ -220,7 +220,7 @@
 	"KARAOKE_one": "{{count}} karaoké",
 	"KARAOKE_other": "{{count}} karaokés",
 	"CL_CONGRATS": "Félicitations",
-	"CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter {{title}}",
+	"CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter",
 	"CL_ADD_RANDOM_TITLE": "Combien de chansons aléatoires voulez-vous ajouter ?",
 	"CL_INFORMATIVE_MESSAGE": "Message à caractère informatif",
 	"CL_EMPTY_LIST": "Vider la liste ?",

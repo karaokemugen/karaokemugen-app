@@ -32,8 +32,11 @@ function ChibiPage() {
 		const base = 100;
 		const pow = 0.76;
 		val = val / base;
-		data.volume = base * Math.pow(val, 1 / pow);
-		setStatusPlayer(merge(statusPlayer, data));
+		if (!isNaN(val)) data.volume = base * Math.pow(val, 1 / pow);
+		setStatusPlayer(oldState => {
+			const state = { ...oldState };
+			return merge(state, data);
+		});
 	};
 
 	const putPlayerCommando = (event: any) => {

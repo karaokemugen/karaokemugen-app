@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import sample from 'lodash.sample';
-import { resolve } from 'path';
+import { basename, resolve } from 'path';
 
 import { resolvedPath } from '../lib/utils/config';
 import { audioFileRegexp, imageFileRegexp } from '../lib/utils/constants';
@@ -37,12 +37,14 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 }
 
 export async function removeBackgroundFile(type: BackgroundType, file: string) {
+	if (!backgroundTypes.includes(type)) throw { code: 400 };
 	await fs.unlink(resolve(resolvedPath('Backgrounds'), type, file));
 }
 
 export async function addBackgroundFile(type: BackgroundType, file: Express.Multer.File) {
+	if (!backgroundTypes.includes(type)) throw { code: 400 };
 	await fs.copyFile(
-		resolve(resolvedPath('Temp'), file.filename),
-		resolve(resolvedPath('Backgrounds'), type, file.originalname)
+		resolve(resolvedPath('Temp'), basename(file.filename)),
+		resolve(resolvedPath('Backgrounds'), type, basename(file.originalname))
 	);
 }

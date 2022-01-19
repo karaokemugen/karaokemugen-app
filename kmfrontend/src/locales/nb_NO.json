@@ -280,7 +280,7 @@
 		"EXPLORE": "Utforsk"
 	},
 	"USERLIST": "Brukere",
-	"CL_ABOUT_TO_ADD": "Du er i ferd med å legge til {{title}}",
+	"CL_ABOUT_TO_ADD": "Du er i ferd med å legge til",
 	"CL_PLAYLISTS": "Sanglister",
 	"BACK_PLAYLISTS": "Tilbake til sanglister",
 	"CL_INFORMATIVE_MESSAGE": "Info",

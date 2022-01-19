@@ -49,9 +49,10 @@ export async function editKara(editedKara: EditedKara) {
 			editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile
 				? (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', oldKara.repository)))[0]
 				: undefined;
-		const oldSubPath = filenames.lyricsfile
-			? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
-			: undefined;
+		const oldSubPath =
+			filenames.lyricsfile && oldKara.subfile
+				? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
+				: undefined;
 		let mediaPath;
 		if (editedKara.modifiedMedia) {
 			// Redefine mediapath as coming from temp
@@ -75,10 +76,12 @@ export async function editKara(editedKara: EditedKara) {
 			if (kara.medias[0].lyrics[0]) {
 				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
 				await processSubfile(subPath, mediaPath);
-				const oldSubPath = (
-					await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository))
-				)[0];
-				await fs.unlink(oldSubPath);
+				if (oldKara.subfile) {
+					const oldSubPath = (
+						await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository))
+					)[0];
+					await fs.unlink(oldSubPath);
+				}
 				kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
 				await smartMove(subPath, subDest, { overwrite: true });
 			}

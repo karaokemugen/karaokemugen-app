@@ -292,7 +292,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						filename: info.file.response.filename,
 					},
 					false,
-					15000
+					60000
 				);
 				this.setState({ mediaInfo });
 				this.formRef.current.setFieldsValue({ mediafile: mediaInfo.filename });
@@ -736,6 +736,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					<InputNumber
 						required={true}
 						min={0}
+						max={new Date().getFullYear()}
 						placeholder="Year"
 						style={{ width: '100%' }}
 						onPressEnter={this.submitHandler}

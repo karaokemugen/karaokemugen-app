@@ -39,5 +39,5 @@ export function initMenu(layout: MenuLayout) {
 
 export function createMenu(layout: MenuLayout) {
 	const menu = Menu.buildFromTemplate(initMenu(layout));
-	process.platform === 'darwin' ? Menu.setApplicationMenu(menu) : win.setMenu(menu);
+	process.platform === 'darwin' ? Menu.setApplicationMenu(menu) : win?.setMenu(menu);
 }
