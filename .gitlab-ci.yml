@@ -66,7 +66,7 @@ nodejs-scan-sast:
       when: never
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
-secret-detection:
+secret_detection:
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
