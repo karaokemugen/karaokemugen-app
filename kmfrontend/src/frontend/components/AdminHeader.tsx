@@ -96,7 +96,7 @@ function AdminHeader(props: IProps) {
 			callModal(
 				context.globalDispatch,
 				'confirm',
-				i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist.name }),
+				i18next.t('MODAL.PLAY_CURRENT_MODAL', { playlist: props.currentPlaylist?.name }),
 				'',
 				() => commandBackend('sendPlayerCommand', { command: 'play' }).catch(() => {})
 			);

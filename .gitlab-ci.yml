@@ -76,7 +76,7 @@ build-react:
   needs:
     - test
   artifacts:
-    expire_in: 8 hours
+    expire_in: 1 day
     name: km-app-build-${CI_COMMIT_REF_SLUG}
     paths:
       - kmfrontend/build/
@@ -124,6 +124,7 @@ pkg_linux:
     policy: pull
   interruptible: true
   artifacts:
+    expire_in: 1 day
     name: km-app-pkglinux-${CI_COMMIT_REF_SLUG}
     paths:
       - release_linux
@@ -160,6 +161,7 @@ pkg_win:
     policy: pull
   interruptible: true
   artifacts:
+    expire_in: 1 day
     name: km-app-pkgwin-${CI_COMMIT_REF_SLUG}
     paths:
       - release_win
@@ -207,6 +209,7 @@ pkg_mac:
     - macos
   interruptible: true
   artifacts:
+    expire_in: 1 day
     name: km-app-pkgmac-${CI_COMMIT_REF_SLUG}
     paths:
       - release_mac

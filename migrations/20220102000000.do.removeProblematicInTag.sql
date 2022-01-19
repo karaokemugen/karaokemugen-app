@@ -1,6 +1,6 @@
 DROP MATERIALIZED VIEW all_tags;
 
-ALTER TABLE tag DROP COLUMN problematic;
+ALTER TABLE tag DROP COLUMN IF EXISTS problematic;
 
 CREATE MATERIALIZED VIEW all_tags AS
 WITH t_count AS (

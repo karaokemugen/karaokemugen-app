@@ -75,6 +75,7 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 				'Request aborted',
 				'ResizeObserver loop limit exceeded',
 				/.*[n|N]o space left on device.*/,
+				'PL_ADD_SONG_ERROR',
 			],
 		});
 		Sentry.configureScope(scope => {
