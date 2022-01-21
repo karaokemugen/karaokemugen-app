@@ -35,11 +35,13 @@ export async function setPlaylistInfoLeft(dispatch: Dispatch<PlaylistInfo>, plai
 				: nonStandardPlaylists.library;
 	}
 	const playlist = await getPlaylistInfo(plaid);
-	localStorage.setItem('mugenPlVal1', playlist.plaid);
-	dispatch({
-		type: FrontendContextAction.PLAYLIST_INFO_LEFT,
-		payload: { playlist },
-	});
+	if (playlist) {
+		localStorage.setItem('mugenPlVal1', playlist.plaid);
+		dispatch({
+			type: FrontendContextAction.PLAYLIST_INFO_LEFT,
+			payload: { playlist },
+		});
+	}
 }
 
 export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, plaid?: string) {
@@ -53,11 +55,13 @@ export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, pla
 				: playlistList.find(playlist => playlist.flag_current).plaid;
 	}
 	const playlist = await getPlaylistInfo(plaid);
-	localStorage.setItem('mugenPlVal2', playlist.plaid);
-	dispatch({
-		type: FrontendContextAction.PLAYLIST_INFO_RIGHT,
-		payload: { playlist },
-	});
+	if (playlist) {
+		localStorage.setItem('mugenPlVal2', playlist.plaid);
+		dispatch({
+			type: FrontendContextAction.PLAYLIST_INFO_RIGHT,
+			payload: { playlist },
+		});
+	}
 }
 
 async function getPlaylistInfo(plaid: string) {
