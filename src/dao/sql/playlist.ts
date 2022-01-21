@@ -624,8 +624,8 @@ export const sqlselectKarasFromCriterias = {
 	1004: (value: any) => `
 	SELECT ak.pk_kid AS kid,
 		jsonb_build_array(jsonb_build_object('type', c.type, 'value', c.value::varchar)) AS criterias,
-		k.duration AS duration,
-		k.created_at AS created_at
+		ak.duration AS duration,
+		ak.created_at AS created_at
 	FROM playlist_criteria c
 	INNER JOIN all_karas ak ON ak.titles_sortable LIKE ('%' || lower(unaccent('${value}')) || '%')
 	WHERE c.type = 1004
