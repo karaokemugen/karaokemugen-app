@@ -416,8 +416,10 @@ export async function updateGitRepo(name: string) {
 				if (!status.isClean()) {
 					// Repository is not clean, we'll generate commits and do some magic
 					const push = await generateCommits(repo.Name);
-					for (const stash of push.commits) {
-						await git.stash(stash);
+					if (push) {
+						for (const stash of push.commits) {
+							await git.stash(stash);
+						}
 					}
 				}
 				await git.pull();
