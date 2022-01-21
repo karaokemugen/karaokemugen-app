@@ -69,7 +69,7 @@ export function sortTagByPriority(a: any, b: any) {
 
 export function sortAndHideTags(tags: any[], scope: Scope = 'public') {
 	return tags?.length > 0
-		? tags.filter(scope === 'public' ? tag => tag.priority >= 0 : tag => tag.priority >= -1).sort(sortTagByPriority)
+		? tags.filter(scope === 'public' ? tag => tag.priority > 0 : tag => tag.priority > -1).sort(sortTagByPriority)
 		: [];
 }
 
