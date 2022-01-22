@@ -1,4 +1,4 @@
-ALTER TABLE kara ADD COLUMN ignore_hooks BOOLEAN DEFAULT(false);
+ALTER TABLE kara ADD COLUMN IF NOT EXISTS ignore_hooks BOOLEAN DEFAULT(false);
 DROP TABLE IF EXISTS all_karas;
 
 CREATE TABLE all_karas AS
