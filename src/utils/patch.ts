@@ -66,7 +66,11 @@ export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repo
 	for (const change of fullFiles) {
 		const file = resolve(path, change.path);
 		if (change.type === 'delete') {
-			filePromises.push(fs.unlink(file));
+			filePromises.push(
+				fs.unlink(file).catch(err => {
+					logger.warn(`Non fatal: Removing file ${file} failed`, { service: 'Patch', obj: err });
+				})
+			);
 		} else {
 			filePromises.push(fs.writeFile(file, change.contents, 'utf-8'));
 		}

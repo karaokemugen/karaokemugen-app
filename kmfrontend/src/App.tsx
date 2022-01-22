@@ -52,7 +52,7 @@ function App() {
 			getSocket().off('settingsUpdated', setSettingsStore);
 			getSocket().off('noFreeSpace', warningNoFreeSpace);
 		};
-	}, []);
+	}, [context.globalState.auth]);
 
 	useEffect(() => {
 		getSocket().on('favoritesUpdated', setFavorites);
