@@ -815,7 +815,11 @@
 		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen memiliki repositori karaoke baku, ",
 		"DEFAULT_REPOSITORY_DESC_2": ". Berkas medianya akan diunduh ketika kamu membutuhkan mereka.",
 		"DEFAULT_REPOSITORY_QUESTION": "Di mana kamu ingin menyimpan unduhan tersebut? Secara baku mereka akan ada di:",
-		"REPOSITORY_LATER": "Kamu bisa mengubah folder ini kapan saja."
+		"REPOSITORY_LATER": "Kamu bisa mengubah folder ini kapan saja.",
+		"ONLINE_ACCOUNT_INSTANCE_DESC": "Peladen adalah layanan daring yang memberikan beberapa layanan terkait Karaoke Mugen. Jika kamu tidak yakin, biarkan peladen baku ({{instance}}), atau jika kamu tahu apa yang kamu lakukan, ubah ke peladen pilihanmu.",
+		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE FOR THIS SESSION\" di berkas log Karaoke Mugen atau di konsol.",
+		"SECURITY_CODE_USE": "Kode ini memastikan bahwa kamu benar-benar yang melakukan tindakan ini. Ini berganti setelah setiap penggunaan.",
+		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!"
 	},
 	"CONFIG": {
 		"SAVE": "Simpan",
@@ -1368,7 +1372,12 @@
 		"REQUESTED": "Diminta",
 		"TAG_FILTER": "Filter tanda",
 		"TAG_GROUP_FILTER": "Filter kelompok",
-		"SYNCHRONIZE": "Sinkronisasi"
+		"SYNCHRONIZE": "Sinkronisasi",
+		"VERSIONS_TOOLTIP": "Versi memungkinkan pengenalan lebih baik lagu dengan judul yang sama. Jika tidak ada versi yang diterapkan ke lagu ini karena itu terlalu spesifik (cth. Future Vers. atau Chihaya Vers.) yang ditunjukkan di judulnya dengan menambahkan \" ~Chihaya Vers.\".",
+		"CREATED_AT": "Tanggal pembuatan",
+		"MODIFIED_AT": "Tanggal terakhir diperbarui",
+		"ONLINE_REPOSITORIES": "Beberapa karaoke kamu berasal dari repositori jarak jauh (seperti contohnya peladen kara.moe), karaoke tersebut tidak bisa disunting lewat antarmuka ini, untuk memastikan repositori tetap tersinkronisasi. Kamu bisa mencentang kotak \"Mode pengelola\" di pengaturan repositori, kamu tidak akan menerima pembaruan lagi tapi kamu akan bisa menyunting atau menghapus karaoke.",
+		"PROBLEMATIC_TOOLTIP": "Lagu ini berisi adegan ({{tags}}) yang mungkin bermasalah bagi sebagian penonton."
 	},
 	"USERS": {
 		"LOGIN": "Nama pengguna",
@@ -1538,7 +1547,11 @@
 		"VALIDATE_FILES_DESCRIPTION": "Validasi semua berkas di semua repositori yang diaktifkan untuk memperbaiki mereka jika diperlukan. Penggunaan pengelola saja.",
 		"UPDATING_REPOS": "Memperbarui repositori",
 		"VALIDATE_FILES": "Validasi berkas",
-		"CONFIRM_UPDATE": "Konfirmasi pembaruan"
+		"CONFIRM_UPDATE": "Konfirmasi pembaruan",
+		"RESTORE_DATABASE": "Pulihkan basis data",
+		"UPDATE_REPOS": "Perbarui repositori",
+		"UPDATE_REPOS_DESCRIPTION": "Paksa pembaruan repositori, ini bisa berguna jika salah satu repositori berada di kondisi tidak normal.",
+		"RESTORE_DATABASE_DESCRIPTION": "Memulihkan basis data kamu dari berkas karaokemugen.sql jika itu ada di folder data kamu. <2>**PERINGATAN: Ini akan menimpa SEMUA data tak tersimpan di basis data kamu: daftar putar, sesi, dll.)</2>"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
