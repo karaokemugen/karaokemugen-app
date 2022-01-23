@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "6.0.45-master",
+  "version": "6.0.46-master",
   "versionName": "Quintuplées Quintessentielles",
   "description": "Karaoke playlist manager / player",
   "bin": {
