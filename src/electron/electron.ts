@@ -21,7 +21,6 @@ import { MenuLayout } from '../types/electron';
 import { detectKMFileTypes } from '../utils/files';
 import { getState, setState } from '../utils/state';
 import { tip } from '../utils/tips';
-import { initAutoUpdate } from './electronAutoUpdate';
 import { emitIPC } from './electronLogger';
 import { createMenu } from './electronMenu';
 
@@ -109,7 +108,6 @@ export async function postInit() {
 	const state = getState();
 	if (!state.opt.cli) {
 		win?.loadURL(await welcomeToYoukousoKaraokeMugen());
-		if (!state.forceDisableAppUpdate) initAutoUpdate();
 		if (getConfig().GUI.ChibiPlayer.Enabled) {
 			updateChibiPlayerWindow(true);
 		}
