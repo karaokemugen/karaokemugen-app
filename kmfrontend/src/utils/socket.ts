@@ -11,7 +11,7 @@ let onlineAuthorization;
 
 if (document.querySelector<HTMLMetaElement>('meta[name="target"]').content === 'NO-REMOTE') {
 	if (process.env.NODE_ENV === 'development') {
-		socket = io(`http://${location.hostname}:1337`, { transports: ['websocket'], upgrade: false });
+		socket = io(`http://${window.location.hostname}:1337`, { transports: ['websocket'], upgrade: false });
 	} else {
 		socket = io({ transports: ['websocket'], upgrade: false });
 	}

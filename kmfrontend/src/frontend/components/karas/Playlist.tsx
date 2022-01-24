@@ -230,7 +230,7 @@ function Playlist(props: IProps) {
 		getPlaylistInfo(props.side, context).plaid,
 	]);
 
-	const HeightPreservingItem = useCallback(({ children, ...props }: PropsWithChildren<ItemProps>) => {
+	const HeightPreservingItem = ({ children, ...props }: PropsWithChildren<ItemProps>) => {
 		const ref = useRef<HTMLDivElement>(null);
 		const [height, setHeight] = useState<string>(null);
 
@@ -247,7 +247,7 @@ function Playlist(props: IProps) {
 				{children}
 			</div>
 		);
-	}, []);
+	};
 
 	const Item = useCallback(
 		({ provided, index, isDragging }: { provided: DraggableProvided; index: number; isDragging: boolean }) => {
