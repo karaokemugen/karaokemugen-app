@@ -1,4 +1,4 @@
-import formData from 'form-data';
+import FormData from 'form-data';
 import { createReadStream } from 'fs-extra';
 import { resolve } from 'path';
 import { Stream } from 'stream';
@@ -37,7 +37,7 @@ export async function remoteLogin(username: string, password: string): Promise<s
 	try {
 		const res = await HTTP.post<TokenResponseWithRoles>(`https://${instance}/api/auth/login`, {
 			username: login,
-			password: password,
+			password,
 		});
 		return res.data.token;
 	} catch (err) {
@@ -78,15 +78,16 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 /** Create a user on KM Server */
 export async function createRemoteUser(user: User) {
 	const [login, instance] = user.login.split('@');
-	if (await getARemoteUser(login, instance))
+	if (await getARemoteUser(login, instance)) {
 		throw {
 			code: 409,
 			msg: 'USER_ALREADY_EXISTS_ONLINE',
 			message: `User already exists on ${instance} or incorrect password`,
 		};
+	}
 	try {
 		await HTTP.post(`https://${instance}/api/users`, {
-			login: login,
+			login,
 			password: user.password,
 		});
 		startSub(login, instance);
@@ -125,7 +126,7 @@ export async function editRemoteUser(user: User, token: string, avatar = true) {
 
 	try {
 		if (user.avatar_file !== 'blank.png' && avatar) {
-			const form = new formData();
+			const form = new FormData();
 			form.append(
 				'avatarfile',
 				createReadStream(resolve(resolvedPath('Avatars'), user.avatar_file)),
@@ -227,10 +228,11 @@ export async function fetchAndUpdateRemoteUser(
 			} catch (err) {
 				sentry.error(err);
 			}
-			if (avatarPath)
+			if (avatarPath) {
 				avatar_file = {
 					path: avatarPath,
 				};
+			}
 		}
 		// Checking if user has already been fetched during this session or not
 		if (force || !usersFetched.has(username)) {
@@ -239,7 +241,7 @@ export async function fetchAndUpdateRemoteUser(
 				username,
 				{
 					...remoteUser,
-					password: password,
+					password,
 					login: username,
 					type: undefined,
 				},
@@ -251,16 +253,15 @@ export async function fetchAndUpdateRemoteUser(
 		}
 		user = {
 			...user,
-			onlineToken: onlineToken,
+			onlineToken,
 		};
 		return user;
-	} else {
-		// Online token was not provided : KM Server might be offline
-		// We'll try to find user in local database. If failure return an error
-		const user = await getUser(username, true);
-		if (!user) throw { code: 'USER_LOGIN_ERROR' };
-		return user;
 	}
+	// Online token was not provided : KM Server might be offline
+	// We'll try to find user in local database. If failure return an error
+	const user = await getUser(username, true);
+	if (!user) throw { code: 'USER_LOGIN_ERROR' };
+	return user;
 }
 
 /** Converts a online user to a local one by removing its online account from KM Server */
@@ -291,7 +292,7 @@ export async function removeRemoteUser(token: OldJWTToken, password: string): Pr
 	};
 }
 
-/** Converting a local account to a online one.	*/
+/** Converting a local account to a online one. */
 export async function convertToRemoteUser(token: OldJWTToken, password: string, instance: string): Promise<Tokens> {
 	token.username = token.username.toLowerCase();
 	if (token.username === 'admin') throw { code: 'ADMIN_CONVERT_ERROR' };

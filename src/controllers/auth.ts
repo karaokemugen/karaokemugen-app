@@ -49,9 +49,8 @@ export default function authController(router: SocketIOApp) {
 				const token = await checkLogin(guest.login, null);
 				updateLastLoginName(guest.login);
 				return token;
-			} else {
-				throw { code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE') };
 			}
+			throw { code: 500, message: APIMessage('NO_MORE_GUESTS_AVAILABLE') };
 		} catch (err) {
 			throw { code: 401, message: APIMessage('LOG_ERROR') };
 		}

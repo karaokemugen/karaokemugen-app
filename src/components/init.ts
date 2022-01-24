@@ -6,7 +6,6 @@ import open from 'open';
 import { resolve } from 'path';
 import { getPortPromise } from 'portfinder';
 
-import { win } from '../electron/electron';
 import { errorStep, initStep } from '../electron/electronLogger';
 import { PathType } from '../lib/types/config';
 import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config';
@@ -112,7 +111,7 @@ export async function init() {
 	}
 }
 
-/* Checking if application paths exist. **/
+/* Checking if application paths exist. * */
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory
@@ -138,7 +137,7 @@ async function checkPaths(config: Config) {
 					...repo,
 					Enabled: false,
 				});
-				await dialog.showMessageBox(win, {
+				await dialog.showMessageBox(getState().windows.main, {
 					title: i18next.t('REPO_DISABLED.TITLE'),
 					message: i18next.t('REPO_DISABLED.MESSAGE', { repo: repo.Name }),
 				});

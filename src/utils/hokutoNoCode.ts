@@ -6,7 +6,7 @@
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { dump as yamlDump, load as yamlLoad } from 'js-yaml';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import { resolve } from 'path';
 
 import { insertCriteria, insertKaraIntoPlaylist, insertPlaylist } from '../dao/playlist';
@@ -243,14 +243,14 @@ export async function migrateBLWLToSmartPLs() {
 		});
 		let pos = 0;
 		const songs = WL.rows.map(s => {
-			pos++;
+			pos += 1;
 			return {
-				plaid: plaid,
+				plaid,
 				username: 'admin',
 				nickname: 'Dummy Plug System',
 				kid: s.kid,
 				created_at: new Date(),
-				pos: pos,
+				pos,
 				criteria: null,
 			};
 		});
@@ -272,7 +272,7 @@ export async function migrateBLWLToSmartPLs() {
 		});
 		await insertCriteria(
 			blc.map(e => ({
-				plaid: plaid,
+				plaid,
 				type: e.type,
 				value: e.value,
 			}))

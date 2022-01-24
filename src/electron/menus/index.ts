@@ -5,7 +5,7 @@ import open from 'open';
 import { getConfig } from '../../lib/utils/config';
 import logger from '../../lib/utils/logger';
 import { getState } from '../../utils/state';
-import { handleFile, win } from '../electron';
+import { handleFile } from '../electron';
 import { setManualUpdate } from '../electronAutoUpdate';
 
 export const urls = {
@@ -39,7 +39,7 @@ export function openURL(url: string) {
 	const base = 'http://localhost';
 	const port = getState().frontendPort;
 	const fullUrl = `${base}:${port}${url}`;
-	getConfig().GUI.OpenInElectron ? win?.loadURL(fullUrl) : open(fullUrl);
+	getConfig().GUI.OpenInElectron ? getState().windows.main?.loadURL(fullUrl) : open(fullUrl);
 }
 
 export async function checkForUpdates() {

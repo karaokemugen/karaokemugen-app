@@ -27,8 +27,9 @@ async function startRemote(): Promise<RemoteSuccess> {
 		if (result.err && result.reason === 'INVALID_TOKEN') {
 			// Ask for a new token by deleting the invalid one
 			await saveSetting('remoteToken', '');
-			return startRemote();
-		} else if (result.err) {
+			return await startRemote();
+		}
+		if (result.err) {
 			throw new Error(`Server refused to start remote: ${result.reason}`);
 		} else {
 			await saveSetting('remoteToken', result.token);
@@ -94,7 +95,7 @@ async function broadcastForward(body) {
 		})
 		.catch(err => {
 			logger.warn('Failed to remote broadcast', { service: 'Remote', obj: err });
-			if (errCount !== -1) errCount++;
+			if (errCount !== -1) errCount += 1;
 			if (errCount >= 5) {
 				logger.warn('The remote broadcast failed 5 times in a row, restart remote');
 				errCount = -1;

@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 
 import { MenuItemBuilderFunction } from '../../types/electron';
-import { urls } from './';
+import { urls } from '.';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { layout } = options;

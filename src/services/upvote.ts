@@ -25,11 +25,11 @@ export async function addUpvote(plc_id: number, username: string) {
 		if (userList.some(u => u.username === username)) throw { code: 403, msg: 'UPVOTE_ALREADY_DONE' };
 
 		await insertUpvote(plc_id, username);
-		plc.upvotes++;
+		plc.upvotes += 1;
 		if (!getConfig().Karaoke.Quota.FreeUpVotes) return;
 		tryToFreeKara(plc_id, plc.upvotes, plc.username, getState().publicPlaid);
 		if (plc.plaid === getState().publicPlaid) {
-			emitWS('KIDUpdated', [{ kid: plc.kid, flag_upvoted: true, username: username }]);
+			emitWS('KIDUpdated', [{ kid: plc.kid, flag_upvoted: true, username }]);
 		}
 		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
 		emitWS('playlistContentsUpdated', plc.plaid);
@@ -52,9 +52,9 @@ export async function removeUpvote(plc_id: number, username: string) {
 		if (!users.includes(username)) throw { code: 403, msg: 'DOWNVOTE_ALREADY_DONE' };
 		await deleteUpvote(plc_id, username);
 		// Karaokes are not 'un-freed' when downvoted.^
-		plc.upvotes--;
+		plc.upvotes -= 1;
 		if (plc.plaid === getState().publicPlaid) {
-			emitWS('KIDUpdated', [{ kid: plc.kid, flag_upvoted: false, username: username }]);
+			emitWS('KIDUpdated', [{ kid: plc.kid, flag_upvoted: false, username }]);
 		}
 		// If playlist has autosort, playlist contents updated is already triggered by the shuffle.
 		emitWS('playlistContentsUpdated', plc.plaid);

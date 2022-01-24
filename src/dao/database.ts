@@ -15,12 +15,10 @@ import { DBStats } from '../types/database/database';
 import { migrateFromDBMigrate } from '../utils/hokutoNoCode';
 import { initPG, isShutdownPG, restorePG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
+import { getState, setState } from '../utils/state';
 import { baseChecksum } from './dataStore';
 import { reorderPlaylist, selectPlaylists } from './playlist';
 import { sqlGetStats, sqlResetUserData } from './sql/database';
-
-export let DBReady = false;
 
 export async function compareKarasChecksum(): Promise<boolean> {
 	logger.info('Comparing files and database data', { service: 'Store' });
@@ -74,7 +72,7 @@ async function migrateDB(): Promise<Migration[]> {
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
 	const migrator = new Postgrator({
-		migrationPattern: migrationDir + '/*.sql',
+		migrationPattern: `${migrationDir}/*.sql`,
 		driver: 'pg',
 		database: conf.System.Database.database,
 		execQuery: query => db().query(query),
@@ -133,7 +131,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 	if (state.opt.reset) await resetUserData();
 
 	logger.debug('Database Interface is READY', { service: 'DB' });
-	DBReady = true;
+	setState({ DBReady: true });
 	return migrations;
 }
 

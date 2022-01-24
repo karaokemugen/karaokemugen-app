@@ -44,11 +44,11 @@ import { updateSongsLeft } from '../services/user';
 import { BinariesConfig } from '../types/binChecker';
 import { Config } from '../types/config';
 import { MediaType } from '../types/medias';
-import sentry from '../utils/sentry';
 import { supportedLanguages } from './constants';
 import { configConstraints, defaults } from './defaultSettings';
 import { initDiscordRPC, stopDiscordRPC } from './discordRPC';
 import { initKMServerCommunication } from './kmserver';
+import sentry from './sentry';
 import { getState, setState } from './state';
 import { writeStreamFiles } from './streamerFiles';
 import { initTwitch, stopTwitch } from './twitch';
@@ -79,8 +79,9 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 			oldConfig.Player.mpvVideoOutput !== newConfig.Player.mpvVideoOutput ||
 			oldConfig.Player.ExtraCommandLine !== newConfig.Player.ExtraCommandLine ||
 			oldConfig.Player.Monitor !== newConfig.Player.Monitor
-		)
+		) {
 			playerNeedsRestart();
+		}
 	}
 	if (newConfig.Online.Remote !== oldConfig.Online.Remote && state.ready) {
 		if (newConfig.Online.Remote) {
@@ -109,61 +110,70 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	if (newConfig.Karaoke.ClassicMode && state.player.playerStatus === 'stop') prepareClassicPauseScreen();
 
 	// Browse through paths and define if it's relative or absolute
-	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows)
+	if (oldConfig.System.Binaries.Player.Windows !== newConfig.System.Binaries.Player.Windows) {
 		newConfig.System.Binaries.Player.Windows = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.Player.Windows)
 		);
-	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux)
+	}
+	if (oldConfig.System.Binaries.Player.Linux !== newConfig.System.Binaries.Player.Linux) {
 		newConfig.System.Binaries.Player.Linux = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.Player.Linux)
 		);
-	if (oldConfig.System.Binaries.Player.OSX !== newConfig.System.Binaries.Player.OSX)
+	}
+	if (oldConfig.System.Binaries.Player.OSX !== newConfig.System.Binaries.Player.OSX) {
 		newConfig.System.Binaries.Player.OSX = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.Player.OSX)
 		);
-	if (oldConfig.System.Binaries.ffmpeg.Windows !== newConfig.System.Binaries.ffmpeg.Windows)
+	}
+	if (oldConfig.System.Binaries.ffmpeg.Windows !== newConfig.System.Binaries.ffmpeg.Windows) {
 		newConfig.System.Binaries.ffmpeg.Windows = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.ffmpeg.Windows)
 		);
-	if (oldConfig.System.Binaries.ffmpeg.Linux !== newConfig.System.Binaries.ffmpeg.Linux)
+	}
+	if (oldConfig.System.Binaries.ffmpeg.Linux !== newConfig.System.Binaries.ffmpeg.Linux) {
 		newConfig.System.Binaries.ffmpeg.Linux = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.ffmpeg.Linux)
 		);
-	if (oldConfig.System.Binaries.ffmpeg.OSX !== newConfig.System.Binaries.ffmpeg.OSX)
+	}
+	if (oldConfig.System.Binaries.ffmpeg.OSX !== newConfig.System.Binaries.ffmpeg.OSX) {
 		newConfig.System.Binaries.ffmpeg.OSX = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.ffmpeg.OSX)
 		);
-	if (oldConfig.System.Binaries.Postgres.Windows !== newConfig.System.Binaries.Postgres.Windows)
+	}
+	if (oldConfig.System.Binaries.Postgres.Windows !== newConfig.System.Binaries.Postgres.Windows) {
 		newConfig.System.Binaries.Postgres.Windows = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.Postgres.Windows)
 		);
-	if (oldConfig.System.Binaries.Postgres.Linux !== newConfig.System.Binaries.Postgres.Linux)
+	}
+	if (oldConfig.System.Binaries.Postgres.Linux !== newConfig.System.Binaries.Postgres.Linux) {
 		newConfig.System.Binaries.Postgres.Linux = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.Postgres.Linux)
 		);
-	if (oldConfig.System.Binaries.Postgres.OSX !== newConfig.System.Binaries.Postgres.OSX)
+	}
+	if (oldConfig.System.Binaries.Postgres.OSX !== newConfig.System.Binaries.Postgres.OSX) {
 		newConfig.System.Binaries.Postgres.OSX = relativePath(
 			state.appPath,
 			resolve(state.appPath, newConfig.System.Binaries.Postgres.OSX)
 		);
-	for (const i in Object.keys(newConfig.System.Repositories)) {
+	}
+	Object.keys(newConfig.System.Repositories).forEach((_, i) => {
 		for (const path of Object.keys(newConfig.System.Repositories[i].Path)) {
 			if (!isEqual(newConfig.System.Repositories[i].Path[path], oldConfig.System.Repositories[i].Path[path])) {
 				if (Array.isArray(newConfig.System.Repositories[i].Path[path])) {
-					for (const y in newConfig.System.Repositories[i].Path[path]) {
+					newConfig.System.Repositories[i].Path[path].forEach((_grumble: any, y: number) => {
 						newConfig.System.Repositories[i].Path[path][y] = relativePath(
 							state.dataPath,
 							resolve(state.dataPath, newConfig.System.Repositories[i].Path[path][y])
 						);
-					}
+					});
 				} else {
 					newConfig.System.Repositories[i].Path[path] = relativePath(
 						state.dataPath,
@@ -172,16 +182,16 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 				}
 			}
 		}
-	}
+	});
 	for (const path of Object.keys(newConfig.System.Path)) {
 		if (!isEqual(newConfig.System.Path[path], oldConfig.System.Path[path])) {
 			if (Array.isArray(newConfig.System.Path[path])) {
-				for (const i in newConfig.System.Path[path]) {
+				newConfig.System.Path[path].forEach((_: any, i: number) => {
 					newConfig.System.Path[path][i] = relativePath(
 						state.dataPath,
 						resolve(state.dataPath, newConfig.System.Path[path][i])
 					);
-				}
+				});
 			} else {
 				newConfig.System.Path[path] = relativePath(
 					state.dataPath,
@@ -269,12 +279,10 @@ export function configureHost() {
 	setState({ osHost: { v4: address(undefined, 'ipv4'), v6: address(undefined, 'ipv6') } });
 	if (state.remoteAccess && 'host' in state.remoteAccess) {
 		setState({ osURL: `https://${state.remoteAccess.host}` });
+	} else if (!config.Player.Display.ConnectionInfo.Host) {
+		setState({ osURL: `http://${getState().osHost.v4}${URLPort}` }); // v6 is too long to show anyway
 	} else {
-		if (!config.Player.Display.ConnectionInfo.Host) {
-			setState({ osURL: `http://${getState().osHost.v4}${URLPort}` }); // v6 is too long to show anyway
-		} else {
-			setState({ osURL: `http://${config.Player.Display.ConnectionInfo.Host}${URLPort}` });
-		}
+		setState({ osURL: `http://${config.Player.Display.ConnectionInfo.Host}${URLPort}` });
 	}
 	if (
 		(state.player.mediaType === 'stop' ||

@@ -84,10 +84,11 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		: { sql: [], params: {}, additionalFrom: [] };
 	let whereClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
 	// Hide blacklisted songs
-	if (params.blacklist)
+	if (params.blacklist) {
 		whereClauses = `${whereClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${
 			getState().blacklistPlaid
 		}')`;
+	}
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -184,7 +185,7 @@ export async function selectKaraMini(kid: string): Promise<DBKaraBase> {
 export function insertPlayed(kid: string) {
 	return db().query(
 		yesql(sqladdViewcount)({
-			kid: kid,
+			kid,
 			played_at: new Date(),
 			seid: getState().currentSessionID,
 		})

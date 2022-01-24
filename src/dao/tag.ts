@@ -60,7 +60,7 @@ export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 function buildTagClauses(words: string): WhereClause {
 	const sql = ['t.tag_search_vector @@ query'];
 	return {
-		sql: sql,
+		sql,
 		params: { tsquery: paramWords(words).join(' & ') },
 		additionalFrom: [
 			", to_tsquery('public.unaccent_conf', :tsquery) as query, ts_rank_cd(t.tag_search_vector, query) as relevance",
@@ -93,7 +93,7 @@ export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 	for (const tag of tags) {
 		await db().query(
 			yesql(sqlinsertKaraTags)({
-				kid: kid,
+				kid,
 				tid: tag.tid,
 				type: tag.type,
 			})

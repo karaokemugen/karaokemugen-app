@@ -109,8 +109,8 @@ export function updatePLCRefused(plc_ids: number[], flag_refused: boolean) {
 export function updatePLCFreeBeforePos(pos: number, plaid: string) {
 	return db().query(
 		yesql(sqlsetPLCFreeBeforePos)({
-			pos: pos,
-			plaid: plaid,
+			pos,
+			plaid,
 		})
 	);
 }
@@ -131,9 +131,9 @@ export function updatePlaylistLastEditTime(id: string) {
 export function shiftPosInPlaylist(id: string, pos: number, shift: number) {
 	return db().query(
 		yesql(sqlshiftPosInPlaylist)({
-			shift: shift,
+			shift,
 			plaid: id,
-			pos: pos,
+			pos,
 		})
 	);
 }
@@ -145,7 +145,7 @@ export async function selectMaxPosInPlaylist(id: string): Promise<number> {
 
 export function replacePlaylist(playlist: PLC[]) {
 	let newpos = 0;
-	const karaList = playlist.map(kara => [++newpos, kara.plcid]);
+	const karaList = playlist.map(kara => [(newpos += 1), kara.plcid]);
 	return transaction({ sql: sqlupdatePLCSetPos, params: karaList });
 }
 
@@ -165,7 +165,7 @@ export function trimPlaylist(id: string, pos: number) {
 	return db().query(
 		yesql(sqltrimPlaylist)({
 			plaid: id,
-			pos: pos,
+			pos,
 		})
 	);
 }
@@ -194,9 +194,10 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 		)`;
 		orderClause = 'RANDOM()';
 	}
-	if (params.orderByLikes)
+	if (params.orderByLikes) {
 		orderClause =
 			'(CASE WHEN pc.flag_accepted = FALSE AND pc.flag_refused = FALSE THEN TRUE ELSE FALSE END) DESC, pc.flag_accepted DESC, pc.flag_refused DESC, upvotes DESC';
+	}
 	const query = sqlgetPlaylistContents(
 		filterClauses.sql,
 		whereClause,
@@ -237,7 +238,7 @@ export async function selectPLCInfo(id: number, forUser: boolean, username: stri
 		yesql(query)({
 			plcid: id,
 			dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
-			username: username,
+			username,
 			public_plaid: getState().publicPlaid,
 			current_plaid: getState().currentPlaid,
 			whitelist_plaid: getState().whitelistPlaid,
@@ -255,10 +256,10 @@ export async function selectPLCInfoMini(ids: number[]): Promise<DBPLC[]> {
 export async function selectPLCByKIDAndUser(kid: string, username: string, plaid: string): Promise<DBPLC> {
 	const res = await db().query(
 		yesql(sqlgetPLCByKIDUser)({
-			kid: kid,
-			plaid: plaid,
+			kid,
+			plaid,
 			dejavu_time: new Date((now() - getConfig().Playlist.MaxDejaVuTime * 60) * 1000),
-			username: username,
+			username,
 		})
 	);
 	return res.rows[0];
@@ -266,7 +267,7 @@ export async function selectPLCByKIDAndUser(kid: string, username: string, plaid
 
 export async function selectPlaylists(visibleOnly?: boolean, singlePlaylist?: string): Promise<DBPL[]> {
 	const res = await db().query(
-		sqlgetPlaylist(singlePlaylist ? true : false, visibleOnly),
+		sqlgetPlaylist(!!singlePlaylist, visibleOnly),
 		singlePlaylist ? [singlePlaylist] : undefined
 	);
 	return res.rows;
@@ -284,8 +285,8 @@ export async function countPlaylistUsers(plaid: string): Promise<number> {
 export async function selectMaxPosInPlaylistForUser(plaid: string, username: string): Promise<number> {
 	const res = await db().query(
 		yesql(sqlgetMaxPosInPlaylistForUser)({
-			plaid: plaid,
-			username: username,
+			plaid,
+			username,
 		})
 	);
 	return res.rows[0]?.maxpos;
@@ -349,12 +350,12 @@ export async function selectKarasFromCriterias(
 		let uniqueKIDsSQL = '';
 		let i = 0;
 		for (const c of criterias) {
-			i++;
+			i += 1;
 			if (c.type > 0 && c.type < 1000) {
 				queryArr.push(
 					`SELECT type${c.type}_${i}.kid, type${c.type}_${i}.duration, type${
 						c.type
-					}_${i}.created_at FROM (${sqlselectKarasFromCriterias.tagTypes('= ' + c.type, c.value)}) type${
+					}_${i}.created_at FROM (${sqlselectKarasFromCriterias.tagTypes(`= ${c.type}`, c.value)}) type${
 						c.type
 					}_${i}`
 				);
@@ -373,10 +374,9 @@ export async function selectKarasFromCriterias(
 		// So we build the query differently
 		sql =
 			queryArr.length > 0
-				? '(' +
-				  queryArr.join(`) ${smartPlaylistType} (`) +
-				  ')' +
-				  (uniqueKIDsSQL === '' ? '' : ' UNION ' + uniqueKIDsSQL)
+				? `(${queryArr.join(`) ${smartPlaylistType} (`)})${
+						uniqueKIDsSQL === '' ? '' : ` UNION ${uniqueKIDsSQL}`
+				  }`
 				: uniqueKIDsSQL;
 	}
 	const res = await db().query(sql, params);
