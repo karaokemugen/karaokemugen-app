@@ -163,7 +163,6 @@
 		"TITLE": "Repositori sudah ada"
 	},
 	"DATABASE_CONNECTION_ERROR_LINUX": {
-		"TITLE": "Galat koneksi basis data - Linux",
 		"MESSAGE": "Pada versi Karaoke Mugen Linux yang dikemas, kamu HARUS menggunakan peladen PostgreSQL milikmu sendiri. Lihat dokumentasi di https://docs.karaokes.moe"
 	},
 	"MISSING_BINARIES": {
