@@ -16,10 +16,9 @@ export default function userController(router: SocketIOApp) {
 		try {
 			if (req.token.role === 'admin') {
 				return await getUsers();
-			} else {
-				const users = await getUsers();
-				return users.filter(x => x.flag_public);
 			}
+			const users = await getUsers();
+			return users.filter(x => x.flag_public);
 		} catch (err) {
 			const code = 'USER_LIST_ERROR';
 			errMessage(code, err);
@@ -28,7 +27,7 @@ export default function userController(router: SocketIOApp) {
 	});
 	router.route('createUser', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited', { optionalAuth: true });
-		//Validate form data
+		// Validate form data
 		const validationErrors = check(req.body, {
 			login: { presence: { allowEmpty: false } },
 			password: { presence: { allowEmpty: false } },
@@ -84,7 +83,7 @@ export default function userController(router: SocketIOApp) {
 	router.route('editUser', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'closed');
 		try {
-			//If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
+			// If we're modifying a online user (@) only editing its type is permitted, so we'll filter that out.
 			const user = req.body.login.includes('@')
 				? { type: req.body.type, flag_tutorial_done: req.body.flag_tutorial_done }
 				: req.body;

@@ -3,7 +3,6 @@ import i18next from 'i18next';
 import debounce from 'lodash.debounce';
 import { resolve } from 'path';
 
-import { DBReady } from '../dao/database';
 import { getConfig, resolvedPath } from '../lib/utils/config';
 import { asyncCheckOrMkdir } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
@@ -81,11 +80,11 @@ function secondsTimeSpanToHMS(s: number, format: string) {
 	const m = Math.floor(s / 60);
 	s -= m * 60;
 
-	let result = (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm' + (s < 10 ? '0' + s : s) + 's';
-	if (format === 'ms') result = (m > 0 ? m + 'm' : '') + (s < 10 && m > 0 ? '0' + s : s) + 's';
-	if (format === 'hm') result = (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm';
-	if (format === 'dhm') result = (d > 0 ? d + 'd' : '') + (h > 0 ? h + 'h' : '') + (m < 10 ? '0' + m : m) + 'm';
-	if (format === 'mm:ss') result = m + ':' + (s < 10 ? '0' + s : s);
+	let result = `${(h > 0 ? `${h}h` : '') + (m < 10 ? `0${m}` : m)}m${s < 10 ? `0${s}` : s}s`;
+	if (format === 'ms') result = `${(m > 0 ? `${m}m` : '') + (s < 10 && m > 0 ? `0${s}` : s)}s`;
+	if (format === 'hm') result = `${(h > 0 ? `${h}h` : '') + (m < 10 ? `0${m}` : m)}m`;
+	if (format === 'dhm') result = `${(d > 0 ? `${d}d` : '') + (h > 0 ? `${h}h` : '') + (m < 10 ? `0${m}` : m)}m`;
+	if (format === 'mm:ss') result = `${m}:${s < 10 ? `0${s}` : s}`;
 	return result;
 }
 
@@ -110,7 +109,7 @@ const fnMap: Map<StreamFileType, () => Promise<void>> = new Map([
 ]);
 
 export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
-	if (!getState().ready || !DBReady) return;
+	if (!getState().ready || !getState().DBReady) return;
 	try {
 		await asyncCheckOrMkdir(resolvedPath('StreamFiles'));
 		if (only) {

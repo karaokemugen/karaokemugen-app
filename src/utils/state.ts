@@ -46,6 +46,10 @@ let state: State = {
 	},
 	restoreNeeded: false,
 	systemMessages: [],
+	DBReady: false,
+	windows: {
+		main: null,
+	},
 };
 
 /** Get public state (to send to webapp users) */

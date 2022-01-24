@@ -80,6 +80,10 @@ export interface State {
 	sentrytest: boolean;
 	restoreNeeded: boolean;
 	systemMessages: SystemMessage[];
+	DBReady: boolean;
+	windows: {
+		main: Electron.BrowserWindow;
+	};
 }
 
 export interface SystemMessage {

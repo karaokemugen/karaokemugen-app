@@ -27,7 +27,7 @@ export default function miscController(router: SocketIOApp) {
 	router.route('getMigrationsFrontend', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			return getMigrationsFrontend();
+			return await getMigrationsFrontend();
 		} catch (err) {
 			throw { code: 500 };
 		}
@@ -48,9 +48,8 @@ export default function miscController(router: SocketIOApp) {
 			if (state.remoteAccess) {
 				const settings = await getSettings();
 				return { active: true, info: state.remoteAccess, token: settings.remoteToken };
-			} else {
-				return { active: false };
 			}
+			return { active: false };
 		} catch (err) {
 			throw { code: 500 };
 		}
@@ -133,9 +132,7 @@ export default function miscController(router: SocketIOApp) {
 		}
 	});
 
-	router.route('getCatchphrase', async (_socket: Socket, _req: APIData) => {
-		return sample(initializationCatchphrases);
-	});
+	router.route('getCatchphrase', async (_socket: Socket, _req: APIData) => sample(initializationCatchphrases));
 
 	router.route('getLogs', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');

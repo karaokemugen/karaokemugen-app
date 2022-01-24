@@ -18,9 +18,11 @@ interface ActivityData {
 function sanitizeText(str: string): string {
 	if (str.length > 128) {
 		return `${str.substring(0, 127)}…`;
-	} else if (str.length < 32) {
+	}
+	if (str.length < 32) {
 		return `${str}                          `; // Spaces!!!!
-	} else return str;
+	}
+	return str;
 }
 
 export async function setDiscordActivity(activityType: 'song' | 'idle', activityData?: ActivityData) {
@@ -59,7 +61,7 @@ export async function setDiscordActivity(activityType: 'song' | 'idle', activity
 			smallImageKey: activityType === 'song' ? 'play' : 'pause',
 			smallImageText: `Version ${getState().version.number} - ${getState().version.name}`,
 			instance: false,
-			buttons: buttons,
+			buttons,
 		});
 	} catch (err) {
 		// Non-fatal
@@ -71,7 +73,7 @@ export async function stopDiscordRPC() {
 		try {
 			await rpc.destroy();
 		} catch (err) {
-			//Non fatal
+			// Non fatal
 		}
 		rpc = null;
 	}

@@ -80,7 +80,7 @@ export async function convertToRemoteFavorites(username: string, token: string) 
 	const favorites = await getFavorites({
 		filter: null,
 		lang: null,
-		username: username,
+		username,
 		userFavorites: username,
 	});
 	const localFavorites = favorites.content.map(fav => fav.kid);
@@ -158,11 +158,13 @@ export async function importFavorites(
 ) {
 	username = username.toLowerCase();
 	if (favs.Header.version !== 1) throw { code: 400, msg: 'Incompatible favorites version list' };
-	if (favs.Header.description !== 'Karaoke Mugen Favorites List File')
+	if (favs.Header.description !== 'Karaoke Mugen Favorites List File') {
 		throw { code: 400, msg: 'Not a favorites list' };
+	}
 	if (!Array.isArray(favs.Favorites)) throw { code: 400, msg: 'Favorites item is not an array' };
-	if (favs.Favorites.some(f => !uuidRegexp.test(f.kid)))
+	if (favs.Favorites.some(f => !uuidRegexp.test(f.kid))) {
 		throw { code: 400, msg: 'One item in the favorites list is not a UUID' };
+	}
 	// Stripping favorites from unknown karaokes in our database to avoid importing them
 	try {
 		if (emptyBefore) {
@@ -178,7 +180,7 @@ export async function importFavorites(
 		const favoritesToAdd = favorites.filter(f => !mappedUserFavorites.includes(f));
 		if (favoritesToAdd.length > 0) await addToFavorites(username, favoritesToAdd, token, updateRemote);
 		emitWS('favoritesUpdated', username);
-		return { karasUnknown: karasUnknown };
+		return { karasUnknown };
 	} catch (err) {
 		logger.error('Unable to import favorites', { service: 'Favorites', obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
@@ -199,11 +201,12 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 				userFavorites: user,
 			});
 			for (const f of favs.content) {
-				if (!faves.find(fav => fav.kid === f.kid))
+				if (!faves.find(fav => fav.kid === f.kid)) {
 					faves.push({
 						kid: f.kid,
 						username: user,
 					});
+				}
 			}
 		}
 	}
@@ -221,7 +224,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			{
 				name: autoMixPLName,
 				flag_visible: true,
-				username: username,
+				username,
 			},
 			username
 		);
@@ -250,7 +253,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 		await shufflePlaylist(plaid, 'normal');
 		emitWS('playlistsUpdated');
 		return {
-			plaid: plaid,
+			plaid,
 			playlist_name: autoMixPLName,
 		};
 	} catch (err) {

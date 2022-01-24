@@ -14,6 +14,7 @@ interface FTPOptions {
 
 export default class FTP {
 	client: Client;
+
 	opts: FTPOptions;
 
 	constructor(opts: FTPOptions) {
@@ -38,7 +39,7 @@ export default class FTP {
 			logger.error(`Failed to connect to FTP for repository ${repo.Name}: ${err}`, { service: 'FTP', obj: err });
 			throw err;
 		}
-		if (repo.FTP.BaseDir)
+		if (repo.FTP.BaseDir) {
 			try {
 				logger.info(`Switching to directory ${repo.FTP.BaseDir}`);
 				await this.client.cd(repo.FTP.BaseDir);
@@ -46,6 +47,7 @@ export default class FTP {
 				logger.error(`Failed to switch to directory ${repo.FTP.BaseDir}: ${err}`, { service: 'FTP', obj: err });
 				throw err;
 			}
+		}
 		this.client.ftp.log = logger.debug;
 	}
 

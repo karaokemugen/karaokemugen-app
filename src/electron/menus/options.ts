@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import { getConfig, setConfig } from '../../lib/utils/config';
 import { MenuItemBuilderFunction } from '../../types/electron';
 import { getState } from '../../utils/state';
-import { urls } from './';
+import { urls } from '.';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac, layout } = options;

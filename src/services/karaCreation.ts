@@ -8,13 +8,13 @@ import {
 	determineMediaAndLyricsFilenames,
 	processSubfile,
 } from '../lib/services/karaCreation';
+import { EditedKara, KaraFileV4 } from '../lib/types/kara.d';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { resolveFileInDirs, smartMove } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
-import { EditedKara, KaraFileV4 } from './../lib/types/kara.d';
 import { getKara } from './kara';
 import { integrateKaraFile } from './karaManagement';
 import { consolidateTagsInRepo } from './tag';
@@ -29,8 +29,9 @@ export async function editKara(editedKara: EditedKara) {
 	// No sentry triggered if validation fails
 	try {
 		verifyKaraData(kara);
-		if (kara.data.parents && kara.data.parents.includes(kara.data.kid))
+		if (kara.data.parents && kara.data.parents.includes(kara.data.kid)) {
 			throw 'Did you just try to make a song its own parent?';
+		}
 	} catch (err) {
 		throw { code: 400, msg: err };
 	}
@@ -49,11 +50,7 @@ export async function editKara(editedKara: EditedKara) {
 			editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile
 				? (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', oldKara.repository)))[0]
 				: undefined;
-		const oldSubPath =
-			filenames.lyricsfile && oldKara.subfile
-				? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
-				: undefined;
-		let mediaPath;
+		let mediaPath: string;
 		if (editedKara.modifiedMedia) {
 			// Redefine mediapath as coming from temp
 			mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
@@ -88,6 +85,10 @@ export async function editKara(editedKara: EditedKara) {
 		} else if (kara.medias[0].lyrics[0] && oldKara.subfile !== filenames.lyricsfile) {
 			// Check if lyric name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
 			kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
+			const oldSubPath =
+				filenames.lyricsfile && oldKara.subfile
+					? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
+					: undefined;
 			await smartMove(oldSubPath, subDest);
 		}
 		// Retesting modified media because we needed original media in place for toyunda stuff.
@@ -101,7 +102,7 @@ export async function editKara(editedKara: EditedKara) {
 			await smartMove(oldMediaPath, mediaDest);
 		}
 		const karaPath = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
-		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], karaFile + '.kara.json');
+		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
 		await fs.unlink(karaPath);
 		await fs.writeFile(karaDest, JSON.stringify(kara, null, 2), 'utf-8');
 		await integrateKaraFile(karaDest, kara, false, true);
@@ -121,7 +122,7 @@ export async function editKara(editedKara: EditedKara) {
 export async function createKara(kara: KaraFileV4) {
 	const task = new Task({
 		text: 'CREATING_SONG',
-		subtext: kara.data.titles['eng'],
+		subtext: kara.data.titles.eng,
 	});
 	// Validation here, processing stuff later
 	// No sentry triggered if validation fails
@@ -155,7 +156,7 @@ export async function createKara(kara: KaraFileV4) {
 		}
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;
-		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], karaFile + '.kara.json');
+		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
 		await fs.writeFile(karaDest, JSON.stringify(kara, null, 2), 'utf-8');
 		await integrateKaraFile(karaDest, kara, false, true);
 		await consolidateTagsInRepo(kara);

@@ -58,7 +58,7 @@ export default function downloadController(router: SocketIOApp) {
 	router.route('pauseDownloads', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			return await pauseQueue();
+			return pauseQueue();
 		} catch (err) {
 			const code = 'DOWNLOADS_PAUSE_ERROR';
 			errMessage(code, err);

@@ -30,7 +30,7 @@ export default function sessionController(router: SocketIOApp) {
 
 	router.route('createSession', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
-		//Validate form data
+		// Validate form data
 		const validationErrors = check(req.body, {
 			name: { presence: { allowEmpty: false } },
 		});
@@ -65,7 +65,7 @@ export default function sessionController(router: SocketIOApp) {
 		if (!validationErrors) {
 			try {
 				const session = await mergeSessions(req.body.seid1, req.body.seid2);
-				return { code: 200, message: APIMessage('SESSION_MERGED', { session: session }) };
+				return { code: 200, message: APIMessage('SESSION_MERGED', { session }) };
 			} catch (err) {
 				const code = 'SESSION_MERGE_ERROR';
 				errMessage(code, err);
@@ -81,7 +81,7 @@ export default function sessionController(router: SocketIOApp) {
 	router.route('editSession', async (socket: Socket, req: APIData) => {
 		if (!isUUID(req.body.seid)) throw { code: 400 };
 		await runChecklist(socket, req);
-		//Validate form data
+		// Validate form data
 		const validationErrors = check(req.body, {
 			name: { presence: { allowEmpty: false } },
 		});

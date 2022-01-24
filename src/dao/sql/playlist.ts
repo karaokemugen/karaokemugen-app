@@ -225,7 +225,7 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
 ${additionalFrom}
 WHERE pc.fk_id_playlist = :plaid
-  ${filterClauses.map(clause => 'AND (' + clause + ')').join(' ')}
+  ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
   ${whereClause}
 GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
 ORDER BY ${orderClause}

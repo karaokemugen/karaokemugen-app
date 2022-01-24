@@ -149,7 +149,7 @@ export async function updateSmartPlaylist(plaid: string) {
 	});
 
 	// Removed songs, that's simple.
-	if (removedSongs.length > 0)
+	if (removedSongs.length > 0) {
 		try {
 			await removeKaraFromPlaylist(
 				removedSongs.map(s => s.plcid),
@@ -160,7 +160,8 @@ export async function updateSmartPlaylist(plaid: string) {
 		} catch (err) {
 			logger.warn(`Unable to remove karaokes from playlist "${pl.name}"`, { service: 'SmartPlaylist', obj: err });
 		}
-	if (addedSongs.length > 0)
+	}
+	if (addedSongs.length > 0) {
 		try {
 			await addKaraToPlaylist(
 				addedSongs.map(s => s.kid),
@@ -174,6 +175,7 @@ export async function updateSmartPlaylist(plaid: string) {
 		} catch (err) {
 			logger.warn(`Unable to add karaokes to playlist "${pl.name}"`, { service: 'SmartPlaylist', obj: err });
 		}
+	}
 	for (const song of modifiedSongs) {
 		try {
 			await editPLC(
@@ -234,30 +236,35 @@ export async function addCriteria(cs: Criteria[]) {
 		// Placed to true to check for multiples occurrences of the same type
 		const timeC = [false, false];
 		for (const c of cs) {
-			if (c.type < 0 || c.type > 1006 || c.type === 1000)
+			if (c.type < 0 || c.type > 1006 || c.type === 1000) {
 				throw { code: 400, msg: `Incorrect Criteria type (${c.type})` };
+			}
 			if (c.type === 1006) {
-				if (!downloadStatuses.includes(c.value))
+				if (!downloadStatuses.includes(c.value)) {
 					throw {
 						code: 400,
 						msg: `Criteria value mismatch : type ${
 							c.type
 						} must have either of these values : ${downloadStatuses.toString()}`,
 					};
+				}
 			}
 			if (c.type === 1001 || (c.type >= 1 && c.type < 1000)) {
-				if (!c.value.match(uuidRegexp))
+				if (!c.value.match(uuidRegexp)) {
 					throw { code: 400, msg: `Criteria value mismatch : type ${c.type} must have UUID values` };
+				}
 			}
 			if (c.type === 1002 || c.type === 1003) {
 				c.value = +c.value;
-				if (!isNumber(c.value))
+				if (!isNumber(c.value)) {
 					throw { code: 400, msg: `Criteria type mismatch : type ${c.type} must have a numeric value!` };
-				if (timeC[c.type - 1002])
+				}
+				if (timeC[c.type - 1002]) {
 					throw {
 						code: 400,
 						msg: `Criteria type mismatch : type ${c.type} can occur only once in a smart playlist.`,
 					};
+				}
 				const opposingC = cs.find(crit => {
 					// Find the C type 1003 (shorter than) when we add a 1002 C (longer than) and vice versa.
 					return crit.plaid === c.plaid && crit.type === (c.type === 1002 ? 1003 : 1002);
@@ -302,29 +309,31 @@ async function translateCriterias(cList: Criteria[], lang: string): Promise<Crit
 	// We need to read the detected locale in ISO639-1
 	const langObj = langs.where('1', lang);
 	for (const i in cList) {
-		if (cList[i].type === 1) {
-			// We just need to translate the tag name if there is a translation
-			if (typeof cList[i].value !== 'string') throw `BLC value is not a string : ${cList[i].value}`;
-			cList[i].value_i18n = cList[i].value;
+		if ({}.hasOwnProperty.call(cList, i)) {
+			if (cList[i].type === 1) {
+				// We just need to translate the tag name if there is a translation
+				if (typeof cList[i].value !== 'string') throw `BLC value is not a string : ${cList[i].value}`;
+				cList[i].value_i18n = cList[i].value;
+			}
+			if (cList[i].type >= 1 && cList[i].type <= 999) {
+				// We need to get the tag name and then translate it if needed
+				const tag = await getTag(cList[i].value);
+				tag
+					? (cList[i].value_i18n = tag.i18n[langObj['2B']]
+							? tag.i18n[langObj['2B']]
+							: tag.i18n.eng
+							? tag.i18n.eng
+							: tag.name)
+					: (cList[i] = null);
+			}
+			if (cList[i].type === 1001) {
+				// We have a kara ID, let's get the kara itself and append it to the value
+				const kara = await getKara(cList[i].value, adminToken, lang);
+				// If it doesn't exist anymore, remove the entry with null.
+				kara ? (cList[i].value = kara) : (cList[i] = null);
+			}
+			// No need to do anything, values have been modified if necessary
 		}
-		if (cList[i].type >= 1 && cList[i].type <= 999) {
-			// We need to get the tag name and then translate it if needed
-			const tag = await getTag(cList[i].value);
-			tag
-				? (cList[i].value_i18n = tag.i18n[langObj['2B']]
-						? tag.i18n[langObj['2B']]
-						: tag.i18n['eng']
-						? tag.i18n['eng']
-						: tag.name)
-				: (cList[i] = null);
-		}
-		if (cList[i].type === 1001) {
-			// We have a kara ID, let's get the kara itself and append it to the value
-			const kara = await getKara(cList[i].value, adminToken, lang);
-			// If it doesn't exist anymore, remove the entry with null.
-			kara ? (cList[i].value = kara) : (cList[i] = null);
-		}
-		// No need to do anything, values have been modified if necessary
 	}
 	// Filter all nulls
 	return cList.filter(blc => blc !== null);
@@ -345,7 +354,7 @@ export async function createProblematicSmartPlaylist() {
 
 	for (const tag of tags.content) {
 		blcs.push({
-			plaid: plaid,
+			plaid,
 			type: tag.types[0],
 			value: tag.tid,
 		});

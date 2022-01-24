@@ -67,7 +67,6 @@ export async function initDownloader() {
 		initDownloads();
 	}
 	profile('initDL');
-	return;
 }
 
 export function initDownloadQueue() {
@@ -104,8 +103,9 @@ export async function startDownloads() {
 			logger.info('Download queue starting up', { service: 'Downloader' });
 			emitQueueStatus('started');
 		} catch (err) {
-			if (downloads.length > 0)
+			if (downloads.length > 0) {
 				logger.warn('There are planned downloads, but your computer seems offline', { service: 'Download' });
+			}
 			emitQueueStatus('stopped');
 		}
 	}
@@ -190,11 +190,11 @@ export async function checkMediaAndDownload(
 		try {
 			await addDownloads([
 				{
-					mediafile: mediafile,
+					mediafile,
 					name: mediafile,
 					size: mediasize,
 					repository: repo,
-					kid: kid,
+					kid,
 				},
 			]);
 		} catch (err) {
@@ -205,15 +205,16 @@ export async function checkMediaAndDownload(
 
 export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<number> {
 	const currentDls = await getDownloads();
-	downloads = downloads.filter(dl => {
+	const downloadsFiltered = downloads.filter(dl => {
 		if (
 			currentDls.find(cdl => dl.name === cdl.name && (cdl.status === 'DL_RUNNING' || cdl.status === 'DL_PLANNED'))
-		)
+		) {
 			return false;
+		}
 		return true;
 	});
-	if (downloads.length === 0) throw { code: 409, msg: 'DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR' };
-	const dls: KaraDownload[] = downloads.map(dl => {
+	if (downloadsFiltered.length === 0) throw { code: 409, msg: 'DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR' };
+	const dls: KaraDownload[] = downloadsFiltered.map(dl => {
 		logger.debug(`Adding download ${dl.name}`, { service: 'Download' });
 		return {
 			uuid: uuidV4(),

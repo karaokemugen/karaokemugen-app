@@ -2,7 +2,7 @@ import { Menu } from 'electron';
 
 import { removeNulls } from '../lib/utils/objectHelpers';
 import { MenuItemBuilderOptions, MenuLayout } from '../types/electron';
-import { win } from './electron';
+import { getState } from '../utils/state';
 import editMenu from './menus/edit';
 import fileMenu from './menus/file';
 import goToMenu from './menus/goTo';
@@ -15,7 +15,7 @@ import windowMenu from './menus/window';
 export function initMenu(layout: MenuLayout) {
 	const options: MenuItemBuilderOptions = {
 		isMac: process.platform === 'darwin',
-		layout: layout,
+		layout,
 	};
 	return removeNulls([
 		// MAIN MENU / FILE MENU
@@ -39,5 +39,5 @@ export function initMenu(layout: MenuLayout) {
 
 export function createMenu(layout: MenuLayout) {
 	const menu = Menu.buildFromTemplate(initMenu(layout));
-	process.platform === 'darwin' ? Menu.setApplicationMenu(menu) : win?.setMenu(menu);
+	process.platform === 'darwin' ? Menu.setApplicationMenu(menu) : getState().windows.main?.setMenu(menu);
 }

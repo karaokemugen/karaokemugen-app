@@ -3,8 +3,8 @@ import i18next from 'i18next';
 import { exit } from '../../components/engine';
 import { MenuItemBuilderFunction } from '../../types/electron';
 import { getState } from '../../utils/state';
-import { checkForUpdates, importFile, urls } from './';
 import { showAbout } from '../electron';
+import { checkForUpdates, importFile, urls } from '.';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac, layout } = options;

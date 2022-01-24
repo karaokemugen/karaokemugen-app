@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import { MenuItemBuilderFunction } from '../../types/electron';
 import { getState } from '../../utils/state';
 import { showAbout } from '../electron';
-import { urls } from './';
+import { urls } from '.';
 
 const builder: MenuItemBuilderFunction = options => {
 	const { isMac } = options;

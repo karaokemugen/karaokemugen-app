@@ -23,7 +23,7 @@ export default function pollController(router: SocketIOApp) {
 	});
 	router.route('votePoll', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');
-		//Validate form data
+		// Validate form data
 		const validationErrors = check(req.body, {
 			index: { presence: true, numbersArrayValidator: true },
 		});

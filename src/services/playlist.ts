@@ -1,11 +1,11 @@
-//Utils
+// Utils
 import i18n from 'i18next';
 import shuffle from 'lodash.shuffle';
 import { resolve } from 'path';
 
 import { APIMessage } from '../controllers/common';
 import { insertKaraToRequests } from '../dao/kara';
-//DAO
+// DAO
 import {
 	countPlaylistUsers,
 	deleteKaraFromPlaylist,
@@ -72,7 +72,7 @@ import {
 	updateSmartPlaylist,
 	whitelistHook,
 } from './smartPlaylist';
-//KM Modules
+// KM Modules
 import { getUser, updateSongsLeft } from './user';
 
 /** Test if basic playlists exist */
@@ -163,11 +163,12 @@ export async function testPlaylists() {
 /** Getting position of the currently playing karaoke in a playlist */
 function getPlayingPos(playlist: PLC[]): Pos {
 	const index = playlist.findIndex(e => e.flag_playing);
-	if (index > -1)
+	if (index > -1) {
 		return {
 			plc_id_pos: playlist[index].pos,
-			index: index,
+			index,
 		};
+	}
 	return undefined;
 }
 
@@ -224,8 +225,8 @@ export async function isUserAllowedToAddKara(plaid: string, user: User, duration
 export async function setPlaying(plc_id: number, plaid: string) {
 	await setPlayingFlag(plc_id, plaid);
 	emitWS('playingUpdated', {
-		plaid: plaid,
-		plc_id: plc_id,
+		plaid,
+		plc_id,
 	});
 	updatePlaylistDuration(plaid);
 }
@@ -240,7 +241,7 @@ export async function trimPlaylist(plaid: string, duration: number) {
 	// Until we hit the limit for duration
 	const needsTrimming = pl.some((kara: PLC) => {
 		lastPos = kara.pos;
-		durationPL = durationPL + kara.duration;
+		durationPL += kara.duration;
 		return durationPL > durationSecs;
 	});
 	if (needsTrimming) await trimPL(plaid, lastPos);
@@ -254,26 +255,30 @@ export async function removePlaylist(plaid: string) {
 	if (!pl) throw { code: 404 };
 	try {
 		profile('deletePlaylist');
-		if (pl.flag_current)
+		if (pl.flag_current) {
 			throw {
 				code: 409,
 				msg: `Playlist ${plaid} is current. Unable to delete it. Make another playlist current first.`,
 			};
-		if (pl.flag_public)
+		}
+		if (pl.flag_public) {
 			throw {
 				code: 409,
 				msg: `Playlist ${plaid} is public. Unable to delete it. Make another playlist public first.`,
 			};
-		if (pl.flag_blacklist)
+		}
+		if (pl.flag_blacklist) {
 			throw {
 				code: 409,
 				msg: `Playlist ${plaid} is a blacklist. Unable to delete it. Make another playlist into a blacklist first.`,
 			};
-		if (pl.flag_whitelist)
+		}
+		if (pl.flag_whitelist) {
 			throw {
 				code: 409,
 				msg: `Playlist ${plaid} is a whitelist. Unable to delete it. Make another playlist into a whitelist first.`,
 			};
+		}
 		logger.info(`Deleting playlist ${pl.name}`, { service: 'Playlist' });
 		await deletePlaylist(plaid);
 		emitWS('playlistsUpdated');
@@ -399,7 +404,7 @@ export async function createPlaylist(pl: DBPL, username: string): Promise<string
 		flag_public: pl.flag_public || null,
 		flag_whitelist: pl.flag_whitelist || null,
 		flag_blacklist: pl.flag_blacklist || null,
-		username: username,
+		username,
 	});
 	if (+pl.flag_current) currentHook(plaid, pl.name);
 	if (+pl.flag_public) publicHook(plaid, pl.name);
@@ -450,14 +455,14 @@ export async function getPlaylistContents(
 	if (!plInfo) throw { code: 404 };
 	try {
 		const pl = await selectPlaylistContents({
-			plaid: plaid,
+			plaid,
 			username: token.username.toLowerCase(),
-			filter: filter,
-			lang: lang,
-			from: from,
-			size: size,
-			random: random,
-			orderByLikes: orderByLikes,
+			filter,
+			lang,
+			from,
+			size,
+			random,
+			orderByLikes,
 		});
 		if (from === -1) {
 			const pos = getPlayingPos(pl);
@@ -553,7 +558,7 @@ export async function addKaraToPlaylist(
 				kid: k.kid,
 				username: requester,
 				nickname: user.nickname,
-				plaid: plaid,
+				plaid,
 				created_at: date_add,
 				criterias: criterias?.find(c => c.kid === k.kid)?.criterias,
 			};
@@ -619,34 +624,38 @@ export async function addKaraToPlaylist(
 			pos = playlistMaxPos + 1;
 		}
 		for (const i in karaList) {
-			karaList[i].pos = pos + +i;
-			// Test if we're adding a invisible/masked karaoke or not
-			karaList[i].flag_visible = true;
-			if (
-				(!conf.Playlist.MysterySongs.AddedSongVisibilityAdmin && user.type === 0) ||
-				(!conf.Playlist.MysterySongs.AddedSongVisibilityPublic && user.type > 0)
-			)
-				karaList[i].flag_visible = false;
+			if ({}.hasOwnProperty.call(karaList, i)) {
+				karaList[i].pos = pos + +i;
+				// Test if we're adding a invisible/masked karaoke or not
+				karaList[i].flag_visible = true;
+				if (
+					(!conf.Playlist.MysterySongs.AddedSongVisibilityAdmin && user.type === 0) ||
+					(!conf.Playlist.MysterySongs.AddedSongVisibilityPublic && user.type > 0)
+				) {
+					karaList[i].flag_visible = false;
+				}
+			}
 		}
 
 		// Adding song to playlist at long last!
 		const PLCsInserted = await insertKaraIntoPlaylist(karaList);
 
 		// Song requests by admins are ignored and not added to requests stats
-		if (user.type > 0)
+		if (user.type > 0) {
 			insertKaraToRequests(
 				user.login,
 				karaList.map(k => k.kid)
 			);
+		}
 
 		updatePlaylistLastEditTime(plaid);
 
 		// Auto-balance current playlist if user isn't in first pool
 		if (conf.Karaoke.AutoBalance) {
 			let playlist = await getPlaylistContentsMini(plaid);
-			const playingPos = getPlayingPos(playlist);
-			if (playingPos) {
-				playlist = playlist.filter(plc => plc.pos > playingPos.plc_id_pos);
+			const playingPosInPL = getPlayingPos(playlist);
+			if (playingPosInPL) {
+				playlist = playlist.filter(plc => plc.pos > playingPosInPL.plc_id_pos);
 			}
 
 			const checker = new Set<string>();
@@ -686,11 +695,11 @@ export async function addKaraToPlaylist(
 		if (plaid === state.publicPlaid) {
 			emitWS(
 				'KIDUpdated',
-				PLCsInserted.map(plc => {
+				PLCsInserted.map(iplc => {
 					return {
-						kid: plc.kid,
-						requester: plc.username,
-						plc_id: [plc.plc_id],
+						kid: iplc.kid,
+						requester: iplc.username,
+						plc_id: [iplc.plc_id],
 					};
 				})
 			);
@@ -776,9 +785,9 @@ export async function copyKaraToPlaylist(plc_ids: number[], plaid: string, pos?:
 		} else {
 			const maxpos = await selectMaxPosInPlaylist(plaid);
 			const startpos = maxpos + 1;
-			for (const i in plcs) {
+			plcs.forEach((_, i) => {
 				plcs[i].pos = startpos + +i;
-			}
+			});
 		}
 		await insertKaraIntoPlaylist(plcs);
 		await Promise.all([
@@ -842,21 +851,25 @@ export async function removeKaraFromPlaylist(
 		}
 		const plcs = await getPLCInfoMini(plc_ids);
 		for (const plc_id of plc_ids) {
-			if (!plcs.find(plc => plc.plcid === plc_id))
+			if (!plcs.find(plc => plc.plcid === plc_id)) {
 				throw { errno: 404, msg: 'At least one playlist content is unknown' };
+			}
 		}
 		for (const plc of plcs) {
-			if (token.role !== 'admin' && plc.username !== token.username.toLowerCase())
+			if (token.role !== 'admin' && plc.username !== token.username.toLowerCase()) {
 				throw { errno: 403, msg: 'You cannot delete a song you did not add' };
-			if (token.role !== 'admin' && plc.upvotes > 0)
+			}
+			if (token.role !== 'admin' && plc.upvotes > 0) {
 				throw { errno: 403, code: 'PL_DELETE_UPVOTED', msg: 'You cannot delete a song with upvotes' };
+			}
 			if (
 				plc.flag_playing &&
 				getState().player.playerStatus === 'play' &&
 				plc.plaid === getState().currentPlaid &&
 				!ignorePlaying
-			)
+			) {
 				throw { errno: 403, msg: 'You cannot delete a song being currently played. Stop playback first.' };
+			}
 			usersNeedingUpdate.add(plc.username);
 			playlistsNeedingUpdate.add(plc.plaid);
 			plcsNeedingDelete.push({
@@ -878,7 +891,7 @@ export async function removeKaraFromPlaylist(
 			'KIDUpdated',
 			[...KIDsNeedingUpdate].map(kid => {
 				return {
-					kid: kid,
+					kid,
 					plc_id: [],
 				};
 			})
@@ -933,10 +946,12 @@ export async function resetAllAcceptedPLCs() {
 /** Edit PLC's properties in a playlist */
 export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh = true) {
 	profile('editPLC');
-	if (params.flag_playing === false)
+	if (params.flag_playing === false) {
 		throw { code: 400, msg: 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one' };
-	if (params.flag_playing === true && plc_ids.length > 1)
+	}
+	if (params.flag_playing === true && plc_ids.length > 1) {
 		throw { code: 400, msg: 'flag_playing cannot be set to multiple songs at once' };
+	}
 	if (params.flag_free === false) throw { code: 400, msg: 'flag_free cannot be unset!' };
 	const plcs = await getPLCInfoMini(plc_ids);
 	const pls = await getPlaylists(adminToken);
@@ -947,7 +962,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 		throw { code: 409, msg: 'Only one PLCID can be positionned, do you want to destroy the universe?' };
 	}
 	for (const plc_id of plc_ids) {
-		const plc = plcs.find(plc => plc.plcid === plc_id);
+		const plc = plcs.find(pc => pc.plcid === plc_id);
 		if (!plc) throw { code: 404, msg: 'PLC ID unknown' };
 		if (!pls.find(pl => pl.plaid === plc.plaid)) throw { code: 400, msg: 'PLC has no valid playlist attached' };
 	}
@@ -961,7 +976,7 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 	const PLCsToDeleteFromCurrent = [];
 	let currentPlaylist: DBPLCKID[] = [];
 	if (params.flag_accepted === false || params.flag_refused === true) {
-		//If we are cancelling flag_accepted, we'll need to remove songs from the current playlist
+		// If we are cancelling flag_accepted, we'll need to remove songs from the current playlist
 		// Then we need to fetch the current playlist somehow
 		currentPlaylist = await selectPlaylistContentsMicro(getState().currentPlaid);
 	}
@@ -1052,12 +1067,13 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 	for (const songUpdate of songsLeftToUpdate.values()) {
 		updateSongsLeft(songUpdate.username, songUpdate.plaid);
 	}
-	if (refresh)
+	if (refresh) {
 		for (const plaid of plsUpdated) {
 			updatePlaylistLastEditTime(plaid);
 			emitWS('playlistContentsUpdated', plaid);
 			emitWS('playlistInfoUpdated', plaid);
 		}
+	}
 	profile('editPLC');
 	return {
 		plaids: pls.values(),
@@ -1121,8 +1137,9 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 	try {
 		logger.debug('Importing playlist', { service: 'Playlist', obj: playlist });
 		const validationErrors = check(playlist, PLImportConstraints);
-		if (validationErrors)
+		if (validationErrors) {
 			throw { code: 400, msg: `Playlist file is invalid : ${JSON.stringify(validationErrors)}` };
+		}
 		task.update({
 			subtext: playlist.PlaylistInformation.name,
 		});
@@ -1145,8 +1162,9 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 				users.set(user.login, user);
 			}
 			if (kara.flag_playing === true) {
-				if (flag_playingDetected)
+				if (flag_playingDetected) {
 					throw { code: 400, msg: 'Playlist contains more than one currently playing marker' };
+				}
 				flag_playingDetected = true;
 				playingKara.kid = kara.kid;
 				playingKara.username = kara.username;
@@ -1160,7 +1178,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 		}
 		const repos = getRepos();
 		const unknownRepos: Set<string> = new Set();
-		for (const i in playlist.PlaylistContents) {
+		playlist.PlaylistContents.forEach((_: any, i: number) => {
 			// Do not replace here to not break old exports/imports
 			playlist.PlaylistContents[i].plaid = plaid;
 			const repo = playlist.PlaylistContents[i].repository;
@@ -1168,7 +1186,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 				// Repository not found
 				unknownRepos.add(repo);
 			}
-		}
+		});
 
 		if (playlist.PlaylistContents?.length > 0) await insertKaraIntoPlaylist(playlist.PlaylistContents);
 		if (playingKara?.kid) {
@@ -1181,7 +1199,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 					return {
 						type: c.type,
 						value: c.value,
-						plaid: plaid,
+						plaid,
 					};
 				})
 			);
@@ -1190,7 +1208,7 @@ export async function importPlaylist(playlist: any, username: string, plaid?: st
 		await Promise.all([updatePlaylistKaraCount(plaid), updatePlaylistDuration(plaid)]);
 		emitWS('playlistsUpdated');
 		return {
-			plaid: plaid,
+			plaid,
 			reposUnknown: [...unknownRepos],
 		};
 	} catch (err) {
@@ -1257,15 +1275,17 @@ export async function shufflePlaylist(plaid: string, method: ShuffleMethods) {
 function shufflePlaylistWithList(playlist: DBPLC[], method: ShuffleMethods) {
 	if (method === 'normal') {
 		return shuffle(playlist);
-	} else if (method === 'smart') {
-		return smartShuffle(playlist);
-	} else if (method === 'balance') {
-		return balancePlaylist(playlist);
-	} else if (method === 'upvotes') {
-		return sortPlaylistByUpvote(playlist);
-	} else {
-		return playlist;
 	}
+	if (method === 'smart') {
+		return smartShuffle(playlist);
+	}
+	if (method === 'balance') {
+		return balancePlaylist(playlist);
+	}
+	if (method === 'upvotes') {
+		return sortPlaylistByUpvote(playlist);
+	}
+	return playlist;
 }
 
 /** Sort playlist by number of upvotes descending order */
@@ -1285,7 +1305,7 @@ function smartShuffle(playlist: DBPLC[]) {
 		for (const playlistItem of playlist) {
 			if (!userTestArray.includes(playlistItem.nickname)) {
 				userTestArray.push(playlistItem.nickname);
-				userTest++;
+				userTest += 1;
 			}
 		}
 		if (userTest > 5) userShuffleBoolean = true;
@@ -1294,7 +1314,7 @@ function smartShuffle(playlist: DBPLC[]) {
 			while (playlist.length - user_iterator > 0) {
 				if (playlist.length - user_iterator > 6) {
 					const playlist_temp = playlist.slice(user_iterator, user_iterator + 6);
-					for (let i = 0; i < 5; i++) {
+					for (let i = 0; i < 5; i += 1) {
 						if (playlist_temp[i].nickname === playlist_temp[i + 1].nickname) {
 							if (playlist[i + 4 + user_iterator]) {
 								const a = playlist_temp[i + 1];
@@ -1312,7 +1332,7 @@ function smartShuffle(playlist: DBPLC[]) {
 			}
 			const playlist_temp = playlist.slice(user_iterator - 1, playlist.length);
 
-			for (let i = user_iterator; i < playlist_temp.length - 1; i++) {
+			for (let i = user_iterator; i < playlist_temp.length - 1; i += 1) {
 				if (playlist_temp[i].nickname === playlist_temp[i + 1].nickname) verificator = i;
 			}
 
@@ -1327,7 +1347,7 @@ function smartShuffle(playlist: DBPLC[]) {
 		while (playlist.length - duration_iterator > 0) {
 			if (playlist.length - duration_iterator > 6) {
 				const playlist_temp = playlist.slice(duration_iterator, duration_iterator + 6);
-				for (let i = 0; i < 4; i++) {
+				for (let i = 0; i < 4; i += 1) {
 					if (playlist_temp[i].duration > 150 && playlist_temp[i + 1].duration > 150) {
 						if (playlist[i + 4 + duration_iterator]) {
 							const a = playlist_temp[i + 1];
@@ -1348,7 +1368,7 @@ function smartShuffle(playlist: DBPLC[]) {
 	return playlist;
 }
 
-/** Balance playlist **/
+/** Balance playlist * */
 function balancePlaylist(playlist: DBPLC[]) {
 	const balance: Map<string, DBPLC>[] = [];
 
@@ -1414,15 +1434,14 @@ export async function getNextSong(): Promise<DBPLC> {
 			logger.debug('End of playlist', { service: 'PLC' });
 			// Current position is last song, not quite an error.
 			return null;
-		} else {
-			// If we're here, it means either we're beyond the length of the playlist
-			// OR that RepeatPlaylist is set.
-			// We test again if we're at the end of the playlist. If so we go back to first song.
-			if (conf.Playlist.EndOfPlaylistAction === 'repeat' && currentPos + 1 >= playlist.length) currentPos = -1;
-			const kara = playlist[currentPos + 1];
-			if (!kara) throw 'Karaoke received is empty!';
-			return await getPLCInfo(kara.plcid, false, 'admin');
 		}
+		// If we're here, it means either we're beyond the length of the playlist
+		// OR that RepeatPlaylist is set.
+		// We test again if we're at the end of the playlist. If so we go back to first song.
+		if (conf.Playlist.EndOfPlaylistAction === 'repeat' && currentPos + 1 >= playlist.length) currentPos = -1;
+		const kara = playlist[currentPos + 1];
+		if (!kara) throw 'Karaoke received is empty!';
+		return await getPLCInfo(kara.plcid, false, 'admin');
 	} catch (err) {
 		throw err;
 	} finally {
@@ -1438,7 +1457,7 @@ export async function notificationNextSong(): Promise<void> {
 			if (pl.flag_visible) emitWS('nextSong', kara);
 		}
 	} catch (err) {
-		//Non-fatal, it usually means we're at the last song
+		// Non-fatal, it usually means we're at the last song
 	}
 }
 
@@ -1490,17 +1509,9 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		const versions = getSongVersion(kara);
 		const currentSong: CurrentSong = { ...kara };
 		// Construct mpv message to display.
-		currentSong.infos =
-			'{\\bord2}{\\fscx70}{\\fscy70}{\\b1}' +
-			series +
-			'{\\b0}\\N{\\i1}' +
-			kara.songtypes.map(s => s.name).join(' ') +
-			songorder +
-			' - ' +
-			getSongTitle(kara) +
-			versions +
-			'{\\i0}\\N{\\fscx50}{\\fscy50}' +
-			requester;
+		currentSong.infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
+			.map(s => s.name)
+			.join(' ')}${songorder} - ${getSongTitle(kara)}${versions}{\\i0}\\N{\\fscx50}{\\fscy50}${requester}`;
 		currentSong.avatar = avatarfile;
 		return currentSong;
 	} catch (err) {
