@@ -81,9 +81,6 @@ export interface State {
 	restoreNeeded: boolean;
 	systemMessages: SystemMessage[];
 	DBReady: boolean;
-	windows: {
-		main: Electron.BrowserWindow;
-	};
 }
 
 export interface SystemMessage {

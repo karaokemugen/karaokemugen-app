@@ -24,6 +24,8 @@ import { tip } from '../utils/tips';
 import { emitIPC } from './electronLogger';
 import { createMenu } from './electronMenu';
 
+// eslint-disable-next-line import/no-mutable-exports
+export let win: Electron.BrowserWindow;
 let chibiPlayerWindow: Electron.BrowserWindow;
 let chibiPlaylistWindow: Electron.BrowserWindow;
 let aboutWindow: Electron.BrowserWindow;
@@ -74,7 +76,7 @@ export function startElectron() {
 
 	// Recreate the window if the app is clicked on in the dock(for macOS)
 	app.on('activate', async () => {
-		if (getState().windows.main === null) {
+		if (win === null) {
 			await initElectronWindow();
 		}
 	});
@@ -106,7 +108,7 @@ export function startElectron() {
 export async function postInit() {
 	const state = getState();
 	if (!state.opt.cli) {
-		state.windows.main?.loadURL(await welcomeToYoukousoKaraokeMugen());
+		win?.loadURL(await welcomeToYoukousoKaraokeMugen());
 		if (getConfig().GUI.ChibiPlayer.Enabled) {
 			updateChibiPlayerWindow(true);
 		}
@@ -227,7 +229,6 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 	try {
 		logger.info(`Received file path ${file}`, { service: 'FileHandler' });
 		if (!getState().ready) return;
-		const win = getState().windows.main;
 		if (!username) {
 			const users = await selectUsers();
 			const adminUsersOnline = users.filter(u => u.type === 0 && u.login !== 'admin');
@@ -294,7 +295,6 @@ async function initElectronWindow() {
 async function createWindow() {
 	// Create the browser window
 	const state = getState();
-	let win = getState().windows.main;
 	win = new BrowserWindow({
 		width: 1400,
 		height: 900,
@@ -334,18 +334,14 @@ async function createWindow() {
 }
 
 function openLink(url: string) {
-	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') !== -1
-		? getState().windows.main?.loadURL(url)
-		: open(url);
+	getConfig().GUI.OpenInElectron && url.indexOf('//localhost') !== -1 ? win?.loadURL(url) : open(url);
 }
 
 export function setProgressBar(number: number) {
-	const win = getState().windows.main;
 	if (win) win.setProgressBar(number);
 }
 
 export function focusWindow() {
-	const win = getState().windows.main;
 	if (win) {
 		if (win.isMinimized()) win.restore();
 		win.focus();
@@ -354,7 +350,7 @@ export function focusWindow() {
 
 export function closeAllWindows() {
 	// Hide main window since destroying it would force-kill the app.
-	getState().windows.main?.hide();
+	win?.hide();
 	chibiPlayerWindow?.destroy();
 	chibiPlaylistWindow?.destroy();
 	aboutWindow?.destroy();

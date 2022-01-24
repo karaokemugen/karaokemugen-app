@@ -6,6 +6,7 @@ import open from 'open';
 import { resolve } from 'path';
 import { getPortPromise } from 'portfinder';
 
+import { win } from '../electron/electron';
 import { errorStep, initStep } from '../electron/electronLogger';
 import { PathType } from '../lib/types/config';
 import { configureLocale, getConfig, resolvedPath, setConfig } from '../lib/utils/config';
@@ -137,7 +138,7 @@ async function checkPaths(config: Config) {
 					...repo,
 					Enabled: false,
 				});
-				await dialog.showMessageBox(getState().windows.main, {
+				await dialog.showMessageBox(win, {
 					title: i18next.t('REPO_DISABLED.TITLE'),
 					message: i18next.t('REPO_DISABLED.MESSAGE', { repo: repo.Name }),
 				});

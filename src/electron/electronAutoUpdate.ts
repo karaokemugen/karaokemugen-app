@@ -6,7 +6,7 @@ import { exit } from '../components/engine';
 import { getConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';
 import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
+import { win } from './electron';
 
 let manualUpdate = false;
 
@@ -23,7 +23,7 @@ export function initAutoUpdate() {
 	});
 	autoUpdater.on('update-available', async () => {
 		logger.info('Update detected', { service: 'AppUpdate' });
-		const buttonIndex = await dialog.showMessageBox(getState().windows.main, {
+		const buttonIndex = await dialog.showMessageBox(win, {
 			type: 'info',
 			title: i18next.t('UPDATE_FOUND'),
 			message: i18next.t('UPDATE_PROMPT'),
@@ -35,7 +35,7 @@ export function initAutoUpdate() {
 				await autoUpdater.downloadUpdate();
 			} catch (err) {
 				sentry.error(err);
-				await dialog.showMessageBox(getState().windows.main, {
+				await dialog.showMessageBox(win, {
 					type: 'info',
 					title: i18next.t('UPDATE_FOUND'),
 					message: i18next.t('UPDATE_ERROR') + err,
@@ -56,7 +56,7 @@ export function initAutoUpdate() {
 
 	autoUpdater.on('update-downloaded', async () => {
 		logger.info('Update downloaded', { service: 'AppUpdate' });
-		await dialog.showMessageBox(getState().windows.main, {
+		await dialog.showMessageBox(win, {
 			title: i18next.t('UPDATE_DOWNLOADED'),
 			message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING'),
 		});
