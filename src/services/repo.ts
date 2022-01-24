@@ -624,7 +624,7 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 			const kara2 = karas2Map.get(kara1.kid);
 			if (kara2) {
 				// read both lyrics and then decide if they're different
-				const lyricsPath1 = resolve(resolvedPathRepos('Lyrics', kara2.repository)[0], kara1.subfile);
+				const lyricsPath1 = resolve(resolvedPathRepos('Lyrics', kara1.repository)[0], kara1.subfile);
 				const lyricsPath2 = resolve(resolvedPathRepos('Lyrics', kara2.repository)[0], kara2.subfile);
 				const [lyrics1, lyrics2] = await Promise.all([
 					fs.readFile(lyricsPath1, 'utf-8'),
