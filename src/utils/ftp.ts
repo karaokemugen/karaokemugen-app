@@ -1,9 +1,9 @@
 import { Client } from 'basic-ftp';
+import { promises as fs } from 'fs';
 import { basename } from 'path';
 import prettyBytes from 'pretty-bytes';
 
 import { Repository } from '../lib/types/repo';
-import { fileExists } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { getRepo } from '../services/repo';
@@ -63,18 +63,20 @@ export default class FTP {
 
 	async upload(file: string) {
 		logger.info(`Sending file ${file}`, { service: 'FTP' });
-		if (!(await fileExists(file))) throw `File "${file}" unknown on local folder`;
+		const stat = await fs.stat(file).catch(_err => {
+			throw `File "${file}" unknown on local folder`;
+		});
 		const task = new Task({
 			text: 'UPLOADING_FTP',
 			value: 0,
-			total: 100, // Initial value, will be updated later
+			total: stat.size,
 		});
 		this.client.trackProgress(info => {
 			task.update({
 				subtext: `${this.opts.repoName}: ${info.name} - ${prettyBytes(info.bytes)} / ${prettyBytes(
-					info.bytesOverall
+					stat.size
 				)}}`,
-				total: info.bytesOverall,
+				total: stat.size,
 				value: info.bytes,
 			});
 		});
