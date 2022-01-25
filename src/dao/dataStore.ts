@@ -95,7 +95,7 @@ export async function baseChecksum(): Promise<string> {
 		sortTagsStore();
 		task.end();
 		const storeSum = getStoreChecksum();
-		logger.debug(`Store checksum : ${checksum}`, { service: 'Store' });
+		logger.debug(`Store checksum : ${storeSum}`, { service: 'Store' });
 		// Use this only when debugging store
 		/**
 		  	const store = JSON.stringify({
