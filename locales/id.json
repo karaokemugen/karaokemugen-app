@@ -162,6 +162,9 @@
 		"MESSAGE": "Repositori yang kamu ingin tambahkan sudah ada di basis data Karaoke Mugen kamu.",
 		"TITLE": "Repositori sudah ada"
 	},
+	"DATABASE_CONNECTION_ERROR": {
+		"TITLE": "Galat koneksi basis data"
+	},
 	"MISSING_BINARIES": {
 		"TITLE": "Program tidak ditemukan",
 		"MESSAGE": "Satu atau lebih program yang dibutuhkan Karaoke Mugen tidak dapat ditemukan.\n\nSunting config.yml kamu dan atur variabel System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres dengan benar sesuai Sistem Operasi (SO) kamu.\n\nKamu bisa mengunduh mpv untuk SO kamu dari http://mpv.io/\n\nKamu bisa mengunduh PostgreSQL untuk SO kamu dari http://postgresql.org/\n\nKamu bisa mengunduh ffmpeg untuk SO kamu dari http://ffmpeg.org\n\nKamu bisa mengunduh utilitas tambalan di https://mugen.karaokes.moe/downloads/patch.exe (Windows) atau https://mugen.karaokes.moe/downloads/patch (macOS) atau GNU Patch 2.7+ package (Linux)\n\nDetail galat: "

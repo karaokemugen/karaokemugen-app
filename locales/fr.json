@@ -177,7 +177,7 @@
 		"MESSAGE": "Le dépôt que vous souhaitez ajouter existe déjà dans votre base de données Karaoke Mugen."
 	},
 	"DATABASE_CONNECTION_ERROR": {
-		"TITLE": "Erreur de connexion à la base de données - Linux",
+		"TITLE": "Erreur de connexion à la base de données",
 		"MESSAGE": "Un problème est survenu sur l'initialisation/connexion à la base de données. Cliquez sur Aide pour plus d'informations.",
 		"HELP": "Aide"
 	},

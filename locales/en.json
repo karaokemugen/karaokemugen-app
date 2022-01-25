@@ -178,7 +178,7 @@
 	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Database connection error",
-		"MESSAGE": "An error occured during database initialization/connection. For more ifnormation on possible causes, click on Help",
+		"MESSAGE": "An error occured during database initialization/connection. For more information on possible causes, click on Help",
 		"HELP": "Help"
 	},
 	"MISSING_BINARIES": {
