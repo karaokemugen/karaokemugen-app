@@ -80,6 +80,7 @@ export default class Git {
 			progress: this.progressHandler.bind(this),
 		});
 		if (configChanged) {
+			logger.info('Setting up git repository settings', { service: 'Git' });
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
 			const origin = remotes.find(r => r.name === 'origin');
