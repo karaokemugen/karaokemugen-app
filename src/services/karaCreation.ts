@@ -46,10 +46,17 @@ export async function editKara(editedKara: EditedKara) {
 		const subDest = filenames.lyricsfile
 			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile)
 			: undefined;
-		const oldMediaPath =
-			editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile
-				? (await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', oldKara.repository)))[0]
-				: undefined;
+		let oldMediaPath: string;
+		if (editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile) {
+			try {
+				oldMediaPath = (
+					await resolveFileInDirs(oldKara.mediafile, resolvedPathRepos('Medias', oldKara.repository))
+				)[0];
+			} catch (_err) {
+				// Non fatal, it means there's no oldMediaPath. Maybe the maintainer doesn't have the original video
+			}
+		}
+
 		let mediaPath: string;
 		if (editedKara.modifiedMedia) {
 			// Redefine mediapath as coming from temp
@@ -67,7 +74,7 @@ export async function editKara(editedKara: EditedKara) {
 			} catch (err) {
 				// Not lethal
 			}
-			await fs.unlink(oldMediaPath);
+			if (oldMediaPath) await fs.unlink(oldMediaPath);
 		}
 		if (editedKara.modifiedLyrics) {
 			if (kara.medias[0].lyrics[0]) {
@@ -96,7 +103,7 @@ export async function editKara(editedKara: EditedKara) {
 		if (editedKara.modifiedMedia) {
 			kara.medias[0].filename = filenames.mediafile;
 			await smartMove(mediaPath, mediaDest, { overwrite: true });
-		} else if (oldKara.mediafile !== filenames.mediafile) {
+		} else if (oldKara.mediafile !== filenames.mediafile && oldMediaPath) {
 			// Check if media name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
 			kara.medias[0].filename = filenames.mediafile;
 			await smartMove(oldMediaPath, mediaDest);
