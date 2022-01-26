@@ -139,9 +139,7 @@ export async function createKara(kara: KaraFileV4) {
 
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
-		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
-		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		try {
 			const extractFile = await extractVideoSubtitles(mediaPath, kara.data.kid);
 			if (extractFile) {
@@ -154,6 +152,8 @@ export async function createKara(kara: KaraFileV4) {
 		} catch (err) {
 			// Not lethal
 		}
+		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
+		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		if (kara.medias[0].lyrics[0]) {
 			const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
 			const subDest = resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile);
