@@ -28,6 +28,10 @@ const builder: MenuItemBuilderFunction = options => {
 				click: urls.discord,
 			},
 			{
+				label: i18next.t('MENU_HELP_FORUM'),
+				click: urls.forum,
+			},
+			{
 				label: i18next.t('MENU_HELP_GITLAB'),
 				click: urls.gitlab,
 			},
