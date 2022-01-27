@@ -1174,7 +1174,11 @@ function topologicalSort(karas: KaraMetaFile[]): KaraMetaFile[] {
 			for (const parent of kara.data.data.parents) {
 				// We need to make sure parent exists in the list. If not we don't add it as an edge or else the sort will fail.
 				if (karas.find(k => k.data.data.kid === parent)) {
-					sortOp.addEdge(parent, kara.data.data.kid);
+					try {
+						sortOp.addEdge(parent, kara.data.data.kid);
+					} catch (_err) {
+						// Non-fatal, probably a song has the same parent twice
+					}
 				}
 			}
 		}
