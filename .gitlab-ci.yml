@@ -36,6 +36,7 @@ stages:
   - deploy
   - release
 semgrep-sast:
+  interruptible: true
   cache: {}
   rules:
     - if: $SCHEDULED_RELEASES == "true"
@@ -43,30 +44,35 @@ semgrep-sast:
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
 eslint-sast:
+  interruptible: true
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
 gemnasium-dependency_scanning:
+  interruptible: true
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
 retire-js-dependency_scanning:
+  interruptible: true
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
 nodejs-scan-sast:
+  interruptible: true
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
 secret_detection:
+  interruptible: true
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
