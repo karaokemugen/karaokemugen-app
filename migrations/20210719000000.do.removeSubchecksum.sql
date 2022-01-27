@@ -1,2 +1,2 @@
-ALTER TABLE kara DROP COLUMN subchecksum;
-ALTER TABLE all_karas DROP COLUMN subchecksum;
+ALTER TABLE kara DROP COLUMN IF EXISTS subchecksum;
+ALTER TABLE all_karas DROP COLUMN IF EXISTS subchecksum;
