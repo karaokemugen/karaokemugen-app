@@ -1,5 +1,6 @@
 import { app, dialog } from 'electron';
 import i18next from 'i18next';
+import open from 'open';
 import { resolve } from 'path';
 import Postgrator, { Migration } from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
