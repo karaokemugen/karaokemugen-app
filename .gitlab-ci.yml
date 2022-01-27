@@ -106,6 +106,7 @@ test:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "next"
@@ -133,6 +134,7 @@ build-react:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "next"
     - if: '$CI_COMMIT_TAG'
@@ -151,6 +153,7 @@ deploy_kmremote:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "next"
     - if: '$CI_COMMIT_TAG'
@@ -190,6 +193,7 @@ pkg_linux:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - when: never
 pkg_win:
@@ -235,6 +239,7 @@ pkg_win:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - when: never
 pkg_mac:
@@ -279,6 +284,7 @@ pkg_mac:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - when: never
 deploy_mac:
@@ -300,6 +306,7 @@ deploy_mac:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - when: never
 deploy_linux:
@@ -321,6 +328,7 @@ deploy_linux:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
 deploy_win:
   stage: deploy
@@ -341,6 +349,7 @@ deploy_win:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - when: never
 release_site:
@@ -359,6 +368,7 @@ release_site:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
     - if: '$CI_COMMIT_TAG'
     - when: never
 weekly_releases:
@@ -371,6 +381,8 @@ weekly_releases:
     - bash util/gitPush.sh
   rules:
     - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
+      when: never
+    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
       when: never
     - if: $SCHEDULED_RELEASES == "true"
     - when: never
