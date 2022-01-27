@@ -40,14 +40,14 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 	});
 	return new Promise((resolve, reject) => {
 		if (loading) eventEmitter.emitChange('loading', true);
-		const nodeTimeout = setTimeout(reason => {
+		const nodeTimeout = setTimeout(() => {
 			addBreadcrumb({
 				level: Severity.Warning,
 				category: 'commandBackend',
 				message: `${name} timeout`,
 				data: bodyWithoutpwd,
 			});
-			reject(reason);
+			reject(new Error('commandBackend timeout'));
 		}, timeout);
 		socket.emit(
 			name,
