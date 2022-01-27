@@ -6,7 +6,7 @@ import { setTimeout as sleep } from 'timers/promises';
 import { APIMessage } from '../controllers/common';
 import { OldJWTToken } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
-import { timer } from '../lib/utils/date';
+import { Timer } from '../lib/utils/date';
 import logger from '../lib/utils/logger';
 import { emit, on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
@@ -33,7 +33,7 @@ on('stateUpdated', (state: State) => {
 async function displayPoll(winner?: number) {
 	const data = getPoll(adminToken);
 	let maxVotes = 0;
-	data.poll.forEach(s => (maxVotes = maxVotes + s.votes));
+	data.poll.forEach(s => (maxVotes += s.votes));
 	const votes = data.poll.map(kara => {
 		let percentage = (kara.votes / maxVotes) * 100;
 		let boldWinnerOpen = '';
@@ -57,7 +57,7 @@ async function displayPoll(winner?: number) {
 	});
 	const voteMessage = winner ? i18n.t('VOTE_MESSAGE_SCREEN_WINNER') : i18n.t('VOTE_MESSAGE_SCREEN');
 	await playerMessage(
-		'{\\fscx80}{\\fscy80}{\\b1}' + voteMessage + '{\\b0}\\N{\\fscx70}{\\fscy70}' + votes.join('\\N'),
+		`{\\fscx80}{\\fscy80}{\\b1}${voteMessage}{\\b0}\\N{\\fscx70}{\\fscy70}${votes.join('\\N')}`,
 		-1,
 		4,
 		'poll'
@@ -66,11 +66,13 @@ async function displayPoll(winner?: number) {
 
 /** Create poll timer so it ends after a time */
 export async function timerPoll() {
-	const internalDate = (pollDate = new Date());
+	pollDate = new Date();
+	const internalDate = pollDate;
 	const conf = getConfig();
 	const duration = conf.Karaoke.Poll.Timeout;
-	clock = new timer(() => {}, duration * 1000);
+	clock = new Timer(duration * 1000);
 	await sleep(duration * 1000);
+	// Hey, Axel from a while ago, why are you writing this?
 	if (internalDate === pollDate) endPoll();
 }
 
@@ -78,7 +80,7 @@ async function displayPollWinnerTwitch(winner: PollResults) {
 	try {
 		await sayTwitch(`Poll winner : ${winner.kara} (${winner.votes} votes)`);
 	} catch (err) {
-		//Non fatal
+		// Non fatal
 	}
 }
 
@@ -137,7 +139,7 @@ export async function getPollResults(): Promise<PollResults> {
 	logger.info(`Winner is "${kara}" with ${maxVotes} votes`, { service: 'Poll' });
 	return {
 		votes: maxVotes,
-		kara: kara,
+		kara,
 		index: winner.index,
 	};
 }
@@ -158,22 +160,25 @@ export function addPollVoteIndex(index: number, nickname: string) {
 
 /** Add a vote to a poll option */
 export function addPollVote(index: number, token: OldJWTToken) {
-	if (poll.length === 0 || pollEnding)
+	if (poll.length === 0 || pollEnding) {
 		throw {
 			code: 425,
 			msg: 'POLL_NOT_ACTIVE',
 		};
-	if (!poll[index - 1])
+	}
+	if (!poll[index - 1]) {
 		throw {
 			code: 404,
 			msg: 'POLL_VOTE_ERROR',
 		};
-	if (voters.has(token.username.toLowerCase()))
+	}
+	if (voters.has(token.username.toLowerCase())) {
 		throw {
 			code: 429,
 			msg: 'POLL_USER_ALREADY_VOTED',
 		};
-	poll[index - 1].votes++;
+	}
+	poll[index - 1].votes += 1;
 	voters.add(token.username.toLowerCase());
 	if (getState().player.mediaType === 'poll') displayPoll();
 	emitWS('songPollUpdated', poll);
@@ -230,11 +235,11 @@ export async function startPoll(): Promise<boolean> {
 	}
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
 	poll = sampleSize(availableKaras, pollChoices);
-	//Init votes to 0 and index for each poll item
-	for (const index in poll) {
-		poll[index].votes = 0;
-		poll[index].index = +index + 1;
-	}
+	// Init votes to 0 and index for each poll item
+	poll.forEach((_, i) => {
+		poll[i].votes = 0;
+		poll[i].index = +i + 1;
+	});
 	logger.debug('New poll', { service: 'Poll', obj: poll });
 	emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.POLL_STARTING'));
 	// Do not display modal for clients if twitch is enabled
@@ -272,18 +277,19 @@ async function displayPollTwitch() {
 
 /** Get current poll options */
 export function getPoll(token: OldJWTToken): PollObject {
-	if (poll.length === 0)
+	if (poll.length === 0) {
 		throw {
 			code: 425,
 			msg: 'POLL_NOT_ACTIVE',
 		};
+	}
 	return {
 		infos: {
 			count: poll.length,
 			from: 0,
 			to: poll.length,
 		},
-		poll: poll,
+		poll,
 		timeLeft: clock.getTimeLeft(),
 		flag_uservoted: voters.has(token.username.toLowerCase()),
 	};

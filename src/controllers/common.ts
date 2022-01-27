@@ -3,8 +3,8 @@ import logger from '../lib/utils/logger';
 
 export function APIMessage(code: string, data?: any): APIMessageType {
 	return {
-		code: code,
-		data: data,
+		code,
+		data,
 	};
 }
 

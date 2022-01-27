@@ -35,7 +35,11 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 	};
 
 	deleteRepository = async (repository: Repository) => {
-		await commandBackend('deleteRepo', { name: repository.Name }, true);
+		try {
+			await commandBackend('deleteRepo', { name: repository.Name }, true);
+		} catch (e) {
+			// already display
+		}
 		this.refresh();
 	};
 

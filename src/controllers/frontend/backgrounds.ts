@@ -9,7 +9,7 @@ export default function backgroundsController(router: SocketIOApp) {
 	router.route('getBackgroundFiles', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			return getBackgroundFiles(req.body.type);
+			return await getBackgroundFiles(req.body.type);
 		} catch (err) {
 			throw { code: 500 };
 		}
@@ -26,7 +26,7 @@ export default function backgroundsController(router: SocketIOApp) {
 	router.route('removeBackground', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'admin', 'open');
 		try {
-			return removeBackgroundFile(req.body.type, req.body.file);
+			return await removeBackgroundFile(req.body.type, req.body.file);
 		} catch (err) {
 			throw { code: 500 };
 		}

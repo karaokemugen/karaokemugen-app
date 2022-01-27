@@ -13,7 +13,6 @@ export default function playerController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'guest', 'limited');
 		if (req.token.username.toLowerCase() === getState().currentRequester) {
 			await playPlayer(true);
-			return;
 		} else {
 			throw { code: 403, message: APIMessage('USER_NOT_ALLOWED_TO_SING') };
 		}
@@ -39,10 +38,9 @@ export default function playerController(router: SocketIOApp) {
 			}
 			if (!error) {
 				return { code: 200, message: APIMessage('MESSAGE_SENT') };
-			} else {
-				errMessage(error.code, error.err);
-				throw { code: 500, message: APIMessage(error.code) };
 			}
+			errMessage(error.code, error.err);
+			throw { code: 500, message: APIMessage(error.code) };
 		} else {
 			// Errors detected
 			// Sending BAD REQUEST HTTP code and error object.

@@ -1,16 +1,16 @@
-CREATE TABLE kara_relation(
+CREATE TABLE IF NOT EXISTS kara_relation(
     fk_kid_parent UUID NOT NULL,
     fk_kid_child UUID NOT NULL,
     FOREIGN KEY(fk_kid_parent) REFERENCES kara(pk_kid),
     FOREIGN KEY(fk_kid_child) REFERENCES kara(pk_kid)
 );
 
-create index idx_kr_parent_kid
+create index IF NOT EXISTS idx_kr_parent_kid
     on kara_relation(fk_kid_parent);
-create index idx_kr_child_kid
+create index IF NOT EXISTS idx_kr_child_kid
     on kara_relation(fk_kid_child);
 
-DROP TABLE all_karas;
+DROP TABLE IF EXISTS all_karas;
 CREATE TABLE all_karas AS
 SELECT k.*,
 	 CASE WHEN MIN(kt.pk_tid::text) IS NULL THEN null ELSE jsonb_agg(DISTINCT json_build_object('tid', kt.pk_tid, 'short', kt.short, 'name', kt.name, 'problematic', kt.problematic, 'aliases', kt.aliases, 'i18n', kt.i18n, 'priority', kt.priority, 'type_in_kara', ka.type, 'karafile_tag', kt.karafile_tag)::jsonb) END as tags,

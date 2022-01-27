@@ -2,7 +2,7 @@ import { saveSetting } from '../lib/dao/database';
 import { Repository } from '../lib/types/repo';
 import { getConfig } from '../lib/utils/config';
 import { editSetting } from '../utils/config';
-import { DBReady } from './database';
+import { getState } from '../utils/state';
 
 export function selectRepos() {
 	return getConfig().System.Repositories;
@@ -26,7 +26,7 @@ export function updateRepo(repo: Repository, name: string) {
 		if (i > 0) throw 'Repository with this new name already exists';
 	}
 	const i = repos.findIndex(r => r.Name === name);
-	if (DBReady) {
+	if (getState().DBReady) {
 		// Reset the last commit setting in DB for the repo (for both names)
 		saveSetting(`commit-${name}`, null);
 		saveSetting(`commit-${repo.Name}`, null);

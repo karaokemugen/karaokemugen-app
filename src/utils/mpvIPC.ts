@@ -6,12 +6,19 @@ import { MpvCommand } from '../types/mpvIPC';
 
 class Mpv extends EventEmitter {
 	binary: string;
+
 	socketlink: string;
+
 	args: string[];
+
 	socket: Socket;
+
 	isRunning: boolean;
+
 	observedProperties: string[];
+
 	program: ChildProcess;
+
 	lastCommandId: number;
 
 	constructor(binary: string, socket: string, args: string[]) {
@@ -106,7 +113,8 @@ class Mpv extends EventEmitter {
 
 	private genCommandId() {
 		if (this.lastCommandId > 999) this.lastCommandId = 0;
-		return ++this.lastCommandId;
+		this.lastCommandId += 1;
+		return (this.lastCommandId += 1);
 	}
 
 	private ishukan(command: MpvCommand) {
@@ -174,7 +182,7 @@ class Mpv extends EventEmitter {
 
 	send(command: MpvCommand) {
 		if (this.isRunning) return this.ishukan(command);
-		else throw new Error('MPV is not running');
+		throw new Error('MPV is not running');
 	}
 
 	async observeProperty(property: string) {
@@ -187,9 +195,8 @@ class Mpv extends EventEmitter {
 				throw err;
 			});
 			return id;
-		} else {
-			throw new Error('MPV is not running');
 		}
+		throw new Error('MPV is not running');
 	}
 
 	async unobserveProperty(property: string) {
@@ -198,7 +205,6 @@ class Mpv extends EventEmitter {
 		if (!this.isRunning) throw new Error('MPV is not running');
 		await this.ishukan({ command: ['unobserve_property', id] });
 		delete this.observedProperties[id];
-		return;
 	}
 }
 

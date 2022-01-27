@@ -100,8 +100,8 @@ export async function applyPatch(patch: string, dir: string) {
 		try {
 			const rejectedPatch = await fs.readFile(resolve(resolvedPath('Temp'), 'patch.rej'), 'utf-8');
 			logger.debug(`Rejected patch : ${rejectedPatch}`, { service: 'DiffPatch' });
-		} catch (err) {
-			logger.debug(`Could not get rejected patch : ${err}`, { service: 'DiffPatch', obj: err });
+		} catch (err2) {
+			logger.debug(`Could not get rejected patch : ${err2}`, { service: 'DiffPatch', obj: err2 });
 		}
 		throw err;
 	}

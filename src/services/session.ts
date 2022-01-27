@@ -41,8 +41,8 @@ export async function addSession(
 	const date = started_at ? new Date(started_at) : new Date();
 	const seid = uuidV4();
 	const session = {
-		seid: seid,
-		name: name,
+		seid,
+		name,
 		started_at: date,
 		ended_at: ended_at ? new Date(ended_at) : null,
 		private: flag_private || false,
@@ -62,8 +62,9 @@ export function setActiveSession(session: Session) {
 export async function editSession(session: Session) {
 	const oldSession = await findSession(session.seid);
 	if (!oldSession) throw { code: 404, msg: 'ERROR_CODES.SESSION_NOT_FOUND' };
-	if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime())
+	if (session.ended_at && new Date(session.ended_at).getTime() < new Date(session.started_at).getTime()) {
 		throw { code: 409, msg: 'ERROR_CODES.SESSION_END_BEFORE_START_ERROR' };
+	}
 	session.started_at
 		? (session.started_at = new Date(session.started_at))
 		: (session.started_at = oldSession.started_at);
@@ -96,8 +97,8 @@ export async function mergeSessions(seid1: string, seid2: string): Promise<Sessi
 	const name = session1.started_at < session2.started_at ? session1.name : session2.name;
 	const seid = uuidV4();
 	const session = {
-		name: name,
-		seid: seid,
+		name,
+		seid,
 		started_at: new Date(started_at),
 		ended_at: new Date(ended_at),
 		private: session1.private || session2.private,
@@ -246,17 +247,17 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 		const playedCount = {};
 		const requestedCount = {};
 		for (const k of recordsPlayed) {
-			playedCount[k.kid] ? playedCount[k.kid]++ : (playedCount[k.kid] = 1);
+			playedCount[k.kid] ? (playedCount[k.kid] += 1) : (playedCount[k.kid] = 1);
 		}
 		for (const k of recordsRequested) {
-			requestedCount[k.kid] ? requestedCount[k.kid]++ : (requestedCount[k.kid] = 1);
+			requestedCount[k.kid] ? (requestedCount[k.kid] += 1) : (requestedCount[k.kid] = 1);
 		}
 		const recordsPlayedCount = recordsPlayed
 			.filter((e, pos) => {
 				return recordsPlayed.findIndex(i => i.kid === e.kid) === pos;
 			})
 			.map((k: any) => {
-				const kara = Object.assign({}, k);
+				const kara = { ...k };
 				kara.count = playedCount[k.kid];
 				delete kara.played_at;
 				delete kara.kid;
@@ -267,7 +268,7 @@ export async function exportSession(seid: string): Promise<SessionExports> {
 				return recordsRequested.findIndex(i => i.kid === e.kid) === pos;
 			})
 			.map((k: any) => {
-				const kara = Object.assign({}, k);
+				const kara = { ...k };
 				kara.count = requestedCount[k.kid];
 				delete kara.requested_at;
 				delete kara.kid;

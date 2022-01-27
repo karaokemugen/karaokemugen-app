@@ -54,8 +54,9 @@ export async function next() {
 						getState().streamerPause &&
 						getState().player.playerStatus === 'stop' &&
 						getConfig().Karaoke.ClassicMode
-					)
+					) {
 						await playPlayer(true);
+					}
 					setState({ streamerPause: false });
 				}
 			} else if (conf.Karaoke.StreamerMode.Enabled) {
@@ -79,40 +80,40 @@ export async function next() {
 						getState().streamerPause &&
 						getConfig().Karaoke.StreamerMode.Enabled &&
 						getState().player.playerStatus === 'stop'
-					)
+					) {
 						await playPlayer(true);
+					}
 					setState({ streamerPause: false });
 				}
 			} else {
 				setState({ currentRequester: null });
 				if (getState().player.playerStatus !== 'stop') playPlayer(true);
 			}
-		} else {
+		} else if (conf.Karaoke.StreamerMode.Enabled) {
 			// End of playlist, let's see what to do with our different modes.
-			if (conf.Karaoke.StreamerMode.Enabled) {
-				await stopPlayer(true, true);
-				if (conf.Karaoke.Poll.Enabled) {
-					try {
-						await startPoll();
-						on('songPollResult', () => {
-							// We're not at the end of playlist anymore!
-							getNextSong()
-								.then(kara => setPlaying(kara.plcid, getState().currentPlaid))
-								.catch(() => {});
-						});
-					} catch (err) {
-						// Non-fatal
-					}
-					if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
-						await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
-						if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop')
-							await playPlayer(true);
+			await stopPlayer(true, true);
+			if (conf.Karaoke.Poll.Enabled) {
+				try {
+					await startPoll();
+					on('songPollResult', () => {
+						// We're not at the end of playlist anymore!
+						getNextSong()
+							.then(kara => setPlaying(kara.plcid, getState().currentPlaid))
+							.catch(() => {});
+					});
+				} catch (err) {
+					// Non-fatal
+				}
+				if (conf.Karaoke.StreamerMode.PauseDuration > 0) {
+					await sleep(conf.Karaoke.StreamerMode.PauseDuration * 1000);
+					if (getConfig().Karaoke.StreamerMode.Enabled && getState().player.playerStatus === 'stop') {
+						await playPlayer(true);
 					}
 				}
-			} else {
-				setState({ currentRequester: null });
-				stopPlayer(true, true);
 			}
+		} else {
+			setState({ currentRequester: null });
+			stopPlayer(true, true);
 		}
 	} catch (err) {
 		logger.warn('Next song is not available', { service: 'Player', obj: err });
@@ -173,11 +174,9 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 		if (!endOfPlaylist && getConfig().Karaoke.ClassicMode) {
 			await prepareClassicPauseScreen();
 		}
-	} else {
-		if (!getState().stopping) {
-			logger.info('Karaoke stopping after current song', { service: 'Player' });
-			setState({ stopping: true });
-		}
+	} else if (!getState().stopping) {
+		logger.info('Karaoke stopping after current song', { service: 'Player' });
+		setState({ stopping: true });
 	}
 }
 

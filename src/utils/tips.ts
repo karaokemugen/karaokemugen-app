@@ -9,9 +9,9 @@ let activeTipType: TipType = 'normal';
 
 export function tip() {
 	if (!tips) initTable();
-	const tip = tips[activeTipType][index];
-	if (!tip) return { tip: '', duration: 2000, title: i18n.t(`TIPS.TITLES.${activeTipType.toUpperCase()}`) };
-	const words = tip.split(' ').length;
+	const oneTip = tips[activeTipType][index];
+	if (!oneTip) return { tip: '', duration: 2000, title: i18n.t(`TIPS.TITLES.${activeTipType.toUpperCase()}`) };
+	const words = oneTip.split(' ').length;
 	// Calculate the estimated time for reading
 	// Based from https://marketingland.com/estimated-reading-times-increase-engagement-79830:
 	// The average human reads 200 words in a minute <=> 3 words per seconds
@@ -22,7 +22,7 @@ export function tip() {
 		duration,
 		title: i18n.t(`TIPS.TITLES.${activeTipType.toUpperCase()}`),
 	};
-	index++;
+	index += 1;
 	// Restart from the beginning if it reaches the end
 	if (tips[activeTipType][index] === undefined) {
 		index = 0;

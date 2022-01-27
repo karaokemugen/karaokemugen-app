@@ -63,16 +63,14 @@ if (app.isPackaged) {
 	appPath =
 		process.platform === 'darwin' ? resolve(app.getAppPath(), '../../../../') : resolve(app.getAppPath(), '../../');
 	resourcePath = process.resourcesPath;
+} else if (app.getAppPath().endsWith('.asar')) {
+	// Starting Electron from an asar directly (electron /path/to/app.asar)
+	appPath = dirname(app.getAppPath());
+	resourcePath = appPath;
 } else {
-	if (app.getAppPath().endsWith('.asar')) {
-		// Starting Electron from an asar directly (electron /path/to/app.asar)
-		appPath = dirname(app.getAppPath());
-		resourcePath = appPath;
-	} else {
-		// Starting Electron from source folder
-		appPath = app.getAppPath();
-		resourcePath = appPath;
-	}
+	// Starting Electron from source folder
+	appPath = app.getAppPath();
+	resourcePath = appPath;
 }
 
 // dataPath is appPath + /app. This is default when running from source
@@ -88,12 +86,12 @@ if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({ forceDisableApp
 
 setState({ appPath, dataPath, resourcePath });
 
-process.env['NODE_ENV'] = 'production'; // Default
+process.env.NODE_ENV = 'production'; // Default
 
 // Electron packaged app does not need a slice(2) but a (1) since it has no script argument
 const args = app.isPackaged ? process.argv.slice(1) : process.argv.slice(2);
 
-setState({ args: args });
+setState({ args });
 
 // Let's go! This calls the functions below.
 // Start Electron -> Pre Init -> Main Init -> Engine Init -> Post Init

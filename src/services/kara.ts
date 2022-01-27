@@ -45,7 +45,7 @@ export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRole
 		const res = await selectAllKaras({
 			username: token.username.toLowerCase(),
 			q: `k:${kid}`,
-			lang: lang,
+			lang,
 			blacklist: false,
 		});
 		return res[0];
@@ -67,7 +67,6 @@ export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
 	if (!kara.subfile) return;
 	const ASS = await getASS(kara.subfile, kara.repository);
 	if (ASS) return ASSToLyrics(ASS);
-	return;
 }
 
 export async function addPlayedKara(kid: string) {
@@ -119,24 +118,23 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 	const { i18n, avatars, data } = consolidateData(karaList);
 	return {
 		infos: {
-			count: count,
-			from: from,
+			count,
+			from,
 			to: from + data.length,
 		},
-		i18n: i18n,
-		avatars: avatars,
+		i18n,
+		avatars,
 		content: data,
 	};
 }
 
-/** Returns a string with series or singers with their correct i18n.*/
+/** Returns a string with series or singers with their correct i18n. */
 export function getSongSeriesSingers(kara: DBKara): string {
 	const lang = getConfig().Player.Display.SongInfoLanguage || convert1LangTo2B(getState().defaultLocale) || 'eng';
 	if (kara.series?.length > 0) {
 		return getTagNameInLanguage(kara.series[0], lang, 'eng');
-	} else {
-		return kara.singers.map(s => s.i18n[lang] || s.i18n['eng'] || s.i18n['qjr']).join(', ');
 	}
+	return kara.singers.map(s => s.i18n[lang] || s.i18n.eng || s.i18n.qjr).join(', ');
 }
 
 /** Get kara's default title */
@@ -152,9 +150,8 @@ export function getSongVersion(kara: DBKara): string {
 			return `[${v.i18n[lang] || v.i18n?.eng || v.i18n?.qjr || v.name}]`;
 		});
 		return ` ${versions.join(' ')}`;
-	} else {
-		return '';
 	}
+	return '';
 }
 
 export async function fetchPopularSongs() {

@@ -51,7 +51,7 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 	if (argv.opts().debug) {
 		logger.info('Debug messages enabled on console', { service: 'Launcher' });
 		setState({ opt: { debug: true } });
-		process.env['NODE_ENV'] = 'development';
+		process.env.NODE_ENV = 'development';
 	}
 	if (argv.opts().validate) {
 		logger.info('Validation (no generation) requested', { service: 'Launcher' });
@@ -100,10 +100,11 @@ export function setupFromCommandLineArgs(argv: any, cmdline: CommandLine) {
 	}
 	if (argv.opts().noBrowser) setState({ opt: { noBrowser: true } });
 	if (argv.opts().noAutoTest) setState({ opt: { noAutoTest: true } });
-	if (argv.opts().forceAdminPassword)
+	if (argv.opts().forceAdminPassword) {
 		setState({
 			opt: { forceAdminPassword: argv.opts().forceAdminPassword || cmdline.getSwitchValue('forceAdminPassword') },
 		});
+	}
 	if (argv.opts().dumpDB) setState({ opt: { dumpDB: true } });
 	if (argv.opts().restoreDB) setState({ opt: { restoreDB: true } });
 }

@@ -1,6 +1,7 @@
 import { DownloadedStatus } from '../../lib/types/database/download';
 import { DBKaraTag } from '../../lib/types/database/kara';
 import { DBPLCBase } from '../../lib/types/database/playlist';
+
 export interface DBPLCKID {
 	kid: string;
 	login: string;

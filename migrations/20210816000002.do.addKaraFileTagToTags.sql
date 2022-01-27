@@ -1,4 +1,4 @@
-ALTER TABLE tag ADD COLUMN karafile_tag TEXT;
+ALTER TABLE tag ADD COLUMN IF NOT EXISTS karafile_tag TEXT;
 
 DROP TABLE all_karas;
 CREATE TABLE all_karas AS

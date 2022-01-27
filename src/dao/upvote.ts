@@ -12,8 +12,8 @@ export async function selectUpvotesByPLC(plc_id: number): Promise<DBUpvote[]> {
 export function insertUpvote(plc_id: number, username: string) {
 	return db().query(
 		yesql(sqlinsertUpvote)({
-			plc_id: plc_id,
-			username: username,
+			plc_id,
+			username,
 		})
 	);
 }
@@ -21,8 +21,8 @@ export function insertUpvote(plc_id: number, username: string) {
 export function deleteUpvote(plc_id: number, username: string) {
 	return db().query(
 		yesql(sqldeleteUpvote)({
-			plc_id: plc_id,
-			username: username,
+			plc_id,
+			username,
 		})
 	);
 }

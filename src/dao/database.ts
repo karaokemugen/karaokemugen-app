@@ -15,12 +15,10 @@ import { DBStats } from '../types/database/database';
 import { migrateFromDBMigrate } from '../utils/hokutoNoCode';
 import { initPG, isShutdownPG, restorePG } from '../utils/postgresql';
 import sentry from '../utils/sentry';
-import { getState } from '../utils/state';
+import { getState, setState } from '../utils/state';
 import { baseChecksum } from './dataStore';
 import { reorderPlaylist, selectPlaylists } from './playlist';
 import { sqlGetStats, sqlResetUserData } from './sql/database';
-
-export let DBReady = false;
 
 export async function compareKarasChecksum(): Promise<boolean> {
 	logger.info('Comparing files and database data', { service: 'Store' });
@@ -74,7 +72,7 @@ async function migrateDB(): Promise<Migration[]> {
 	const conf = getConfig();
 	const migrationDir = resolve(getState().resourcePath, 'migrations/');
 	const migrator = new Postgrator({
-		migrationPattern: migrationDir + '/*.sql',
+		migrationPattern: `${migrationDir}/*.sql`,
 		driver: 'pg',
 		database: conf.System.Database.database,
 		execQuery: query => db().query(query),
@@ -113,12 +111,18 @@ export async function initDBSystem(): Promise<Migration[]> {
 		});
 		migrations = await migrateDB();
 	} catch (err) {
-		if (state.os === 'linux' && app.isPackaged) {
-			await dialog.showMessageBox({
-				type: 'none',
-				title: i18next.t('DATABASE_CONNECTION_ERROR_LINUX.TITLE'),
-				message: i18next.t('DATABASE_CONNECTION_ERROR_LINUX.MESSAGE'),
+		if (app.isPackaged) {
+			const res = await dialog.showMessageBox({
+				type: 'error',
+				title: i18next.t('DATABASE_CONNECTION_ERROR.TITLE'),
+				message: i18next.t('DATABASE_CONNECTION_ERROR.MESSAGE'),
+				buttons: [i18next.t('DATABASE_CONNECTION_ERROR.HELP'), i18next.t('MENU_FILE_QUIT')],
 			});
+			if (res.response === 0) {
+				open(
+					'https://discourse.karaokes.moe/t/error-database-initialization-failed-unable-to-connect-to-the-database/25'
+				);
+			}
 		}
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
 		if (!isShutdownPG()) sentry.error(err, 'Fatal');
@@ -133,7 +137,7 @@ export async function initDBSystem(): Promise<Migration[]> {
 	if (state.opt.reset) await resetUserData();
 
 	logger.debug('Database Interface is READY', { service: 'DB' });
-	DBReady = true;
+	setState({ DBReady: true });
 	return migrations;
 }
 

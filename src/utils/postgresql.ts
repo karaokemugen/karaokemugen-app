@@ -48,7 +48,7 @@ async function killPG() {
 				});
 				logger.debug(`Killed PID ${PID}`, { service: 'DB' });
 			} catch (err) {
-				//Non fatal, proceed.
+				// Non fatal, proceed.
 			}
 		}
 		try {
@@ -213,7 +213,7 @@ export async function initPGData() {
 			// On Windows, tmpdir() returns the user home directory/appData/local/temp so it's pretty useless, we'll try writing to C:\KaraokeMugenPostgres. If it fails because of permissions, there's not much else we can do, sadly.
 			tempPGPath = resolve('C:\\', 'KaraokeMugenPostgres');
 			logger.info(`Moving ${pgPath} to ${tempPGPath}`, { service: 'DB' });
-			await remove(tempPGPath).catch(() => {}); //izok
+			await remove(tempPGPath).catch(() => {}); // izok
 			await mkdirp(tempPGPath);
 			await smartMove(pgPath, resolve(tempPGPath, 'postgres'));
 			binPath = resolve(tempPGPath, 'postgres', 'bin', 'pg_ctl.exe');
@@ -261,7 +261,7 @@ export async function updatePGConf() {
 	const state = getState();
 	const pgConfFile = resolve(state.dataPath, conf.System.Path.DB, 'postgres/postgresql.conf');
 	let pgConf = await fs.readFile(pgConfFile, 'utf-8');
-	//Parsing the ini file by hand since it can't be parsed well with ini package
+	// Parsing the ini file by hand since it can't be parsed well with ini package
 	pgConf = setConfig(pgConf, 'port', conf.System.Database.port);
 	pgConf = setConfig(pgConf, 'logging_collector', 'on');
 	state.opt.sql
@@ -351,8 +351,8 @@ export async function initPG(relaunch = true) {
 		if (relaunch) {
 			try {
 				await killPG();
-			} catch (err) {
-				//It should be fatal, but even if it does abort, let's try to launch again.
+			} catch (err2) {
+				// It should be fatal, but even if it does abort, let's try to launch again.
 			}
 			// Let's try to relaunch. If it returns true this time, return directly. If not continue to try to pinpoint the error message
 			if (await initPG(false)) return;
@@ -366,10 +366,10 @@ export async function initPG(relaunch = true) {
 				cwd: pgBinDir,
 				encoding: null,
 			});
-		} catch (err) {
+		} catch (err2) {
 			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
 			const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
-			logger.error('PostgreSQL error', { service: 'DB', obj: decoder.write(err.stderr) });
+			logger.error('PostgreSQL error', { service: 'DB', obj: decoder.write(err2.stderr) });
 		}
 		errorStep(i18next.t('ERROR_START_PG'));
 		throw err.message;

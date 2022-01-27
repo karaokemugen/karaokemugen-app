@@ -36,7 +36,6 @@ const medias: Medias = {
 const currentMedias: Partial<Medias> = {};
 
 export async function buildAllMediasList() {
-	const medias = getConfig().Playlist.Medias;
 	for (const type of Object.keys(medias)) {
 		await buildMediasList(type as MediaType);
 		// Failure is non-fatal
@@ -60,7 +59,7 @@ export async function updatePlaylistMedias() {
 
 async function listRemoteMedias(type: MediaType): Promise<FileStat[]> {
 	const webdavClient = createClient(playlistMediasURL);
-	return (await webdavClient.getDirectoryContents('/' + type)) as FileStat[];
+	return (await webdavClient.getDirectoryContents(`/${type}`)) as FileStat[];
 }
 
 async function listLocalFiles(dir: string): Promise<FileStat[]> {
@@ -91,8 +90,8 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 		// Setting additional path if it doesn't exist in config (but it should if you used the defaults)
 		const conf = getConfig();
 		const slash = process.platform === 'win32' ? '\\' : '/';
-		if (!conf.System.MediaPath[type].includes(conf.System.MediaPath[type][0] + slash + 'KaraokeMugen')) {
-			conf.System.MediaPath[type].push(conf.System.MediaPath[type][0] + slash + 'KaraokeMugen');
+		if (!conf.System.MediaPath[type].includes(`${conf.System.MediaPath[type][0] + slash}KaraokeMugen`)) {
+			conf.System.MediaPath[type].push(`${conf.System.MediaPath[type][0] + slash}KaraokeMugen`);
 			const ConfigPart: Partial<Config> = {};
 			ConfigPart.System.MediaPath[type] = conf.System.MediaPath[type];
 			editSetting(ConfigPart);
@@ -122,18 +121,19 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 			await remove(resolve(localDir, file.basename));
 		}
 		const filesToDownload = addedFiles.concat(updatedFiles);
-		if (removedFiles.length > 0)
+		if (removedFiles.length > 0) {
 			await removeFiles(
 				removedFiles.map(f => f.basename),
 				localDir
 			);
+		}
 		if (filesToDownload.length > 0) {
 			filesToDownload.sort((a, b) => {
 				return a.basename > b.basename ? 1 : b.basename > a.basename ? -1 : 0;
 			});
 			let bytesToDownload = 0;
 			for (const file of filesToDownload) {
-				bytesToDownload = bytesToDownload + file.size;
+				bytesToDownload += file.size;
 			}
 			logger.info(
 				`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`,
@@ -156,8 +156,9 @@ async function downloadMedias(files: File[], dir: string, type: MediaType, task:
 		};
 	});
 	const fileErrors = await downloadFiles(list, task);
-	if (fileErrors.length > 0)
+	if (fileErrors.length > 0) {
 		throw `Error downloading these medias: ${fileErrors.map(err => basename(err)).toString()}`;
+	}
 	task.end();
 }
 
@@ -170,7 +171,7 @@ export async function buildMediasList(type: MediaType) {
 			const fullFilePath = resolve(resolvedPath, file);
 			if (isMediaFile(file)) {
 				files.push({
-					type: type,
+					type,
 					filename: fullFilePath,
 					series: file.split(' - ')[0],
 				});
@@ -185,7 +186,8 @@ export function getSingleMedia(type: MediaType): Media | null {
 	// If no medias exist, return null.
 	if (!medias[type] || medias[type]?.length === 0) {
 		return null;
-	} else if (currentMedias[type]?.length === 0) {
+	}
+	if (currentMedias[type]?.length === 0) {
 		// If our current files list is empty after the previous removal
 		// Fill it again with the original list.
 		currentMedias[type] = cloneDeep(medias[type]);

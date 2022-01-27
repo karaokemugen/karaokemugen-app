@@ -14,7 +14,7 @@ function TagsList() {
 	const context = useContext(GlobalContext);
 	const [searchParams, setSearchParams] = useSearchParams();
 
-	const [filter, setFilter] = useState('');
+	const [filter, setFilter] = useState(localStorage.getItem('tagFilter') || '');
 	const [tags, setTags] = useState<DBTag[]>([]);
 	const [tag, setTag] = useState<DBTag>();
 	const [deleteModal, setDeleteModal] = useState(false);
@@ -48,6 +48,11 @@ function TagsList() {
 		} catch (err) {
 			resetDelete();
 		}
+	};
+
+	const changeFilter = event => {
+		setFilter(event.target.value);
+		localStorage.setItem('tagFilter', event.target.value);
 	};
 
 	const changeType = value => setTypeTag(value);
@@ -138,7 +143,7 @@ function TagsList() {
 				<div style={{ display: 'flex', marginBottom: '1em' }}>
 					<Input.Search
 						placeholder={i18next.t('SEARCH_FILTER')}
-						onChange={event => setFilter(event.target.value)}
+						onChange={changeFilter}
 						enterButton={i18next.t('SEARCH')}
 						onSearch={refresh}
 					/>

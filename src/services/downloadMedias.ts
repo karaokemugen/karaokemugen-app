@@ -54,9 +54,7 @@ async function compareMedias(
 				updatedFiles.push(remoteKara);
 			}
 			// Do nothing if file exists and sizes are the same
-		} else {
-			if (!updateOnly) addedFiles.push(remoteKara);
-		}
+		} else if (!updateOnly) addedFiles.push(remoteKara);
 	}
 
 	if (!updateOnly) {
@@ -77,7 +75,7 @@ async function compareMedias(
 		});
 		let bytesToDownload = 0;
 		for (const file of filesToDownload) {
-			bytesToDownload = bytesToDownload + file.mediasize;
+			bytesToDownload += file.mediasize;
 		}
 		logger.info(
 			`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`,
@@ -86,10 +84,9 @@ async function compareMedias(
 		await downloadMedias(filesToDownload);
 		logger.info('Done updating medias', { service: 'Update' });
 		return true;
-	} else {
-		logger.info('No new medias to download', { service: 'Update' });
-		return false;
 	}
+	logger.info('No new medias to download', { service: 'Update' });
+	return false;
 }
 
 async function downloadMedias(karas: DBMedia[]): Promise<void> {
@@ -110,9 +107,9 @@ async function downloadMedias(karas: DBMedia[]): Promise<void> {
 		if (err.code === 409) return;
 		throw err;
 	}
-	return new Promise(resolve => {
+	return new Promise(resolvePromise => {
 		on('downloadQueueDrained', () => {
-			resolve();
+			resolvePromise();
 		});
 	});
 }

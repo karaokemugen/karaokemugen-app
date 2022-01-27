@@ -95,11 +95,13 @@ export default function LanguagesList(props: IProps) {
 						autoFocus={selectVisible}
 						onChange={value => addLang(value)}
 					>
-						{languages.map(lang => (
-							<Select.Option key={lang.value} value={lang.value}>
-								{lang.label} ({lang.value.toUpperCase()})
-							</Select.Option>
-						))}
+						{languages
+							.filter(value => !Object.keys(i18n).includes(value.value))
+							.map(lang => (
+								<Select.Option key={lang.value} value={lang.value}>
+									{lang.label} ({lang.value.toUpperCase()})
+								</Select.Option>
+							))}
 					</Select>
 				) : (
 					<Tag onClick={showSelect} style={{ borderStyle: 'dashed' }}>

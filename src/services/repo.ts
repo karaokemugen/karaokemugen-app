@@ -3,7 +3,7 @@ import { copy, remove } from 'fs-extra';
 import { basename, resolve } from 'path';
 import { TopologicalSort } from 'topological-sort';
 
-import { compareKarasChecksum, DBReady, generateDB } from '../dao/database';
+import { compareKarasChecksum, generateDB } from '../dao/database';
 import { baseChecksum, editKaraInStore, getStoreChecksum, sortKaraStore } from '../dao/dataStore';
 import { updateDownloaded } from '../dao/download';
 import { deleteRepo, insertRepo, selectRepos, updateRepo } from '../dao/repo';
@@ -70,8 +70,9 @@ export async function removeRepo(name: string) {
 
 /** Add a repository. Folders will be created if necessary */
 export async function addRepo(repo: Repository) {
-	if (windowsDriveRootRegexp.test(repo.BaseDir))
+	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 		throw { code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.' };
+	}
 	if (repo.Online && !repo.MaintainerMode) {
 		// Testing if repository is reachable
 		try {
@@ -85,12 +86,13 @@ export async function addRepo(repo: Repository) {
 	// Let's download zip if it's an online repository
 	if (repo.Online) {
 		if (repo.MaintainerMode) {
-			if (repo.Git?.URL)
+			if (repo.Git?.URL) {
 				updateGitRepo(repo.Name)
 					.then(() => generateDB())
 					.catch(() => {
 						logger.warn('Repository was added, but initializing it failed', { service: 'Repo' });
 					});
+			}
 		} else {
 			updateZipRepo(repo.Name)
 				.then(() => generateDB())
@@ -112,9 +114,9 @@ export async function updateAllRepos() {
 				if (repo.Git?.URL) {
 					if (await updateGitRepo(repo.Name)) doGenerate = true;
 				}
-			} else {
+			} else if (await updateZipRepo(repo.Name)) {
 				// updateZipRepo returns true when the function has downloaded the entire base (either because it's new or because an error happened during the patch)
-				if (await updateZipRepo(repo.Name)) doGenerate = true;
+				doGenerate = true;
 			}
 		} catch (err) {
 			logger.error(`Failed to update repository ${repo.Name}`, { service: 'Repo', obj: err });
@@ -164,7 +166,7 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 		throw { code: 400 };
 	}
 	const karas = await getKaras({
-		q: q,
+		q,
 	});
 	const deletedFiles: Set<string> = new Set();
 	const deletePromises = [];
@@ -216,45 +218,44 @@ export async function updateZipRepo(name: string) {
 		await saveSetting('baseChecksum', await baseChecksum());
 		updateRunning = false;
 		return true;
-	} else {
-		// Check if update is necessary by fetching the remote last commit sha
-		const { LatestCommit } = await getRepoMetadata(repo.Name);
-		logger.debug(`Update ${repo.Name}: ours is ${LocalCommit}, theirs is ${LatestCommit}`, { service: 'Repo' });
-		if (LatestCommit !== LocalCommit) {
-			try {
-				const patch = await HTTP.get(
-					`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(LocalCommit)}`,
-					{
-						responseType: 'text',
-					}
-				);
-				let changes: DiffChanges[];
-				try {
-					changes = await applyPatch(patch.data as string, repo.BaseDir);
-				} catch (err) {
-					// If patch fails, we need to try the other way around and get all modified files
-					// Need to remove .orig files if any
-					await cleanFailedPatch(repo);
-					logger.info('Trying to download full files instead', { service: 'Repo' });
-					const fullFiles = await HTTP.get(
-						`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(LocalCommit)}`
-					);
-					await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
-					changes = computeFileChanges(patch.data as string);
+	}
+	// Check if update is necessary by fetching the remote last commit sha
+	const { LatestCommit } = await getRepoMetadata(repo.Name);
+	logger.debug(`Update ${repo.Name}: ours is ${LocalCommit}, theirs is ${LatestCommit}`, { service: 'Repo' });
+	if (LatestCommit !== LocalCommit) {
+		try {
+			const patch = await HTTP.get(
+				`https://${repo.Name}/api/karas/repository/diff?commit=${encodeURIComponent(LocalCommit)}`,
+				{
+					responseType: 'text',
 				}
-				await applyChanges(changes, repo);
-				await saveSetting(`commit-${repo.Name}`, LatestCommit);
-				return false;
+			);
+			let changes: DiffChanges[];
+			try {
+				changes = await applyPatch(patch.data as string, repo.BaseDir);
 			} catch (err) {
-				logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
-					service: 'Repo',
-				});
-				await saveSetting(`commit-${repo.Name}`, null);
-				updateRunning = false;
-				await updateZipRepo(name);
-				sentry.addErrorInfo('initialCommit', LocalCommit);
-				sentry.error(err);
+				// If patch fails, we need to try the other way around and get all modified files
+				// Need to remove .orig files if any
+				await cleanFailedPatch(repo);
+				logger.info('Trying to download full files instead', { service: 'Repo' });
+				const fullFiles = await HTTP.get(
+					`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(LocalCommit)}`
+				);
+				await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
+				changes = computeFileChanges(patch.data as string);
 			}
+			await applyChanges(changes, repo);
+			await saveSetting(`commit-${repo.Name}`, LatestCommit);
+			return false;
+		} catch (err) {
+			logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
+				service: 'Repo',
+			});
+			await saveSetting(`commit-${repo.Name}`, null);
+			updateRunning = false;
+			await updateZipRepo(name);
+			sentry.addErrorInfo('initialCommit', LocalCommit);
+			sentry.error(err);
 		}
 	}
 }
@@ -267,7 +268,7 @@ async function getLocalRepoLastCommit(repo: Repository): Promise<string | null> 
 async function newZipRepo(repo: Repository): Promise<string> {
 	const { FullArchiveURL, LatestCommit } = await getRepoMetadata(repo.Name);
 	await downloadAndExtractZip(FullArchiveURL, resolve(getState().dataPath, repo.BaseDir), repo.Name);
-	if (repo.AutoMediaDownloads === 'all')
+	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {
 				// Do nothing. It's okay.
@@ -275,6 +276,7 @@ async function newZipRepo(repo: Repository): Promise<string> {
 				throw e;
 			}
 		});
+	}
 	return LatestCommit;
 }
 
@@ -301,7 +303,7 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 
 async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {
 	let doGenerate = false;
-	if (!oldRepo.SendStats && repo.SendStats && DBReady && onlineCheck) {
+	if (!oldRepo.SendStats && repo.SendStats && getState().DBReady && onlineCheck) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host).catch();
 	}
 	if (repo.Enabled && repo.Online && !oldRepo.MaintainerMode && repo.MaintainerMode && repo.Git?.URL) {
@@ -329,12 +331,12 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 			logger.warn(`Could not update Git settings for repository : ${err}`, { service: 'Repo', obj: err });
 		}
 	}
-	if (oldRepo.Enabled !== repo.Enabled || (refresh && DBReady)) {
+	if (oldRepo.Enabled !== repo.Enabled || (refresh && getState().DBReady)) {
 		await compareKarasChecksum();
 		doGenerate = true;
 	}
 	if (doGenerate) await generateDB();
-	if (oldRepo.Path.Medias !== repo.Path.Medias && DBReady && onlineCheck) {
+	if (oldRepo.Path.Medias !== repo.Path.Medias && getState().DBReady && onlineCheck) {
 		getKaras({ q: `r:${repo.Name}` }).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
@@ -401,78 +403,77 @@ export async function updateGitRepo(name: string) {
 			await newGitRepo(repo);
 			await saveSetting('baseChecksum', await baseChecksum());
 			return true;
-		} else {
-			const git = await setupGit(repo);
-			logger.info(`Update ${repo.Name}: is a git repo, pulling`, { service: 'Repo' });
-			await git.fetch();
-			const originalCommit = await git.getCurrentCommit();
-			try {
-				const status = await git.status();
-				if (status.behind === 0) {
-					// Repository is up-to-date
-					logger.info(`Update ${repo.Name}: repo is up-to-date`, { service: 'Repo' });
-					return false;
-				}
-				if (!status.isClean()) {
-					// Repository is not clean, we'll generate commits and do some magic
-					const push = await generateCommits(repo.Name);
-					if (push) {
-						for (const stash of push.commits) {
-							await git.stash(stash);
-						}
-					}
-				}
-				await git.pull();
-				// Once pulled, let's check if we have KM Stashes to pop
-				const stashes = await git.stashList();
-				const KMStashes = stashes.all.filter(s => s.message.includes('[KMStash]'));
-				// We'll add all stashes to a commit that we'll amend on each stash until we get it right
-				if (KMStashes.length > 0) {
-					let firstCommit = true;
-					let offset = 0;
-					for (const stash of KMStashes) {
-						try {
-							await git.stashPop(stash.id - offset);
-							if ((await git.status()).conflicted.length > 0) {
-								throw 'Cannot unstash: merge conflict';
-							}
-							offset++;
-							await git.addAll();
-							if (firstCommit) {
-								await git.commit('Temp commit');
-								firstCommit = false;
-							} else {
-								await git.commit('Temp commit', { '--amend': null });
-							}
-						} catch (err) {
-							// Stash pop likely failed, we'll leave it be but we need to clean up
-							logger.warn(`Unstashing modification ${stash.id} (${stash.message}) failed`, {
-								service: 'Repo',
-								obj: err,
-							});
-							await git.wipeChanges();
-						}
-					}
-					// We cancel the commit we just made so all files in it are now marked as new/modified
-					if (!firstCommit) await git.reset('HEAD~');
-				}
-			} catch (err) {
-				logger.info(`${repo.Name} pull failed`, { service: 'Repo', obj: err });
-				// This failed miserably because there was a conflict. Or something. We can test this out.
-				const status = await git.status();
-				// Else it means we're having disturbances in the Force.
-				emitWS('gitRepoPullFailed', {
-					...status,
-					repoName: repo.Name,
-				});
-				throw 'Pull failed (conflicts)';
-			}
-			const newCommit = await git.getCurrentCommit();
-			const diff = await git.diff(originalCommit, newCommit);
-			const changes = computeFileChanges(diff);
-			await applyChanges(changes, repo);
-			return false;
 		}
+		const git = await setupGit(repo);
+		logger.info(`Update ${repo.Name}: is a git repo, pulling`, { service: 'Repo' });
+		await git.fetch();
+		const originalCommit = await git.getCurrentCommit();
+		try {
+			const status = await git.status();
+			if (status.behind === 0) {
+				// Repository is up-to-date
+				logger.info(`Update ${repo.Name}: repo is up-to-date`, { service: 'Repo' });
+				return false;
+			}
+			if (!status.isClean()) {
+				// Repository is not clean, we'll generate commits and do some magic
+				const push = await generateCommits(repo.Name);
+				if (push) {
+					for (const stash of push.commits) {
+						await git.stash(stash);
+					}
+				}
+			}
+			await git.pull();
+			// Once pulled, let's check if we have KM Stashes to pop
+			const stashes = await git.stashList();
+			const KMStashes = stashes.all.filter(s => s.message.includes('[KMStash]'));
+			// We'll add all stashes to a commit that we'll amend on each stash until we get it right
+			if (KMStashes.length > 0) {
+				let firstCommit = true;
+				let offset = 0;
+				for (const stash of KMStashes) {
+					try {
+						await git.stashPop(stash.id - offset);
+						if ((await git.status()).conflicted.length > 0) {
+							throw 'Cannot unstash: merge conflict';
+						}
+						offset += 1;
+						await git.addAll();
+						if (firstCommit) {
+							await git.commit('Temp commit');
+							firstCommit = false;
+						} else {
+							await git.commit('Temp commit', { '--amend': null });
+						}
+					} catch (err) {
+						// Stash pop likely failed, we'll leave it be but we need to clean up
+						logger.warn(`Unstashing modification ${stash.id} (${stash.message}) failed`, {
+							service: 'Repo',
+							obj: err,
+						});
+						await git.wipeChanges();
+					}
+				}
+				// We cancel the commit we just made so all files in it are now marked as new/modified
+				if (!firstCommit) await git.reset('HEAD~');
+			}
+		} catch (err) {
+			logger.info(`${repo.Name} pull failed`, { service: 'Repo', obj: err });
+			// This failed miserably because there was a conflict. Or something. We can test this out.
+			const status = await git.status();
+			// Else it means we're having disturbances in the Force.
+			emitWS('gitRepoPullFailed', {
+				...status,
+				repoName: repo.Name,
+			});
+			throw 'Pull failed (conflicts)';
+		}
+		const newCommit = await git.getCurrentCommit();
+		const diff = await git.diff(originalCommit, newCommit);
+		const changes = computeFileChanges(diff);
+		await applyChanges(changes, repo);
+		return false;
 	} catch (err) {
 		logger.error(`Failed to update repo ${repo.Name}: ${err}`, { service: 'Repo', obj: err });
 		sentry.error(err);
@@ -508,7 +509,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			const file = resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path));
 			const karaFileData = await parseKara(file);
 			karas.push({
-				file: file,
+				file,
 				data: karaFileData,
 			});
 		} else {
@@ -562,7 +563,7 @@ async function setupGit(repo: Repository, configChanged = false) {
 	const baseDir = resolve(getState().dataPath, repo.BaseDir);
 	if (!repo.Git) throw 'Git not configured for this repository';
 	const git = new Git({
-		baseDir: baseDir,
+		baseDir,
 		url: repo.Git.URL,
 		username: repo.Git.Username,
 		password: repo.Git.Password,
@@ -573,10 +574,10 @@ async function setupGit(repo: Repository, configChanged = false) {
 }
 
 export async function newGitRepo(repo: Repository) {
-	//Hello, we're going to lift stuff.
-	//First, let's empty the basedir folder
+	// Hello, we're going to lift stuff.
+	// First, let's empty the basedir folder
 	const state = getState();
-	//Only testing first media folder because I'm lazy.
+	// Only testing first media folder because I'm lazy.
 	const baseDir = resolve(state.dataPath, repo.BaseDir);
 	const mediaDir = resolve(state.dataPath, repo.Path.Medias[0]);
 	if (pathIsContainedInAnother(baseDir, mediaDir)) throw 'Media folder is contained in base dir, move it first!';
@@ -586,7 +587,7 @@ export async function newGitRepo(repo: Repository) {
 	const git = await setupGit(repo);
 	await git.clone();
 	git.setRemote().catch();
-	if (repo.AutoMediaDownloads === 'all')
+	if (repo.AutoMediaDownloads === 'all') {
 		updateMedias(repo.Name).catch(e => {
 			if (e?.code === 409) {
 				// Do nothing. It's okay.
@@ -594,6 +595,7 @@ export async function newGitRepo(repo: Repository) {
 				throw e;
 			}
 		});
+	}
 	await initHooks();
 }
 
@@ -622,17 +624,18 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 			const kara2 = karas2Map.get(kara1.kid);
 			if (kara2) {
 				// read both lyrics and then decide if they're different
-				const lyricsPath1 = resolve(resolvedPathRepos('Lyrics', kara2.repository)[0], kara1.subfile);
+				const lyricsPath1 = resolve(resolvedPathRepos('Lyrics', kara1.repository)[0], kara1.subfile);
 				const lyricsPath2 = resolve(resolvedPathRepos('Lyrics', kara2.repository)[0], kara2.subfile);
 				const [lyrics1, lyrics2] = await Promise.all([
 					fs.readFile(lyricsPath1, 'utf-8'),
 					fs.readFile(lyricsPath2, 'utf-8'),
 				]);
-				if (lyrics1 !== lyrics2)
+				if (lyrics1 !== lyrics2) {
 					differentChecksums.push({
-						kara1: kara1,
-						kara2: kara2,
+						kara1,
+						kara2,
 					});
+				}
 			}
 		}
 		return differentChecksums;
@@ -685,8 +688,9 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 }
 
 function checkRepoPaths(repo: Repository) {
-	if (windowsDriveRootRegexp.test(repo.BaseDir))
+	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 		throw { code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.' };
+	}
 	if (repo.Online && !repo.MaintainerMode) {
 		for (const path of repo.Path.Medias) {
 			// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
@@ -973,15 +977,13 @@ export async function generateCommits(repoName: string) {
 					sizeDifference: oldKara.medias[0].filesize === kara.mediasize,
 					commit: commit.message,
 				});
-			} else {
+			} else if (oldKara.medias[0].filesize !== kara.mediasize) {
 				// Names are the same, but filesizes might differ. In that case it's considered a new upload
-				if (oldKara.medias[0].filesize !== kara.mediasize) {
-					modifiedMedias.push({
-						old: null,
-						new: kara.mediafile,
-						commit: commit.message,
-					});
-				}
+				modifiedMedias.push({
+					old: null,
+					new: kara.mediafile,
+					commit: commit.message,
+				});
 				// If filesizes are the same, no medias are pushed to the ftp
 			}
 
@@ -1092,7 +1094,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 		const git = await setupGit(repo);
 		if (!ignoreFTP && push.modifiedMedias.length > 0) {
 			// Before making any commits, we have to send stuff via FTP
-			const ftp = new FTP({ repoName: repoName });
+			const ftp = new FTP({ repoName });
 			await ftp.connect();
 			for (const media of push.modifiedMedias) {
 				// New or updated file
@@ -1130,14 +1132,16 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 		});
 		try {
 			for (const commit of push.commits) {
-				if (commit.addedFiles)
+				if (commit.addedFiles) {
 					for (const addedFile of commit.addedFiles) {
 						await git.add(addedFile);
 					}
-				if (commit.removedFiles)
+				}
+				if (commit.removedFiles) {
 					for (const removedFile of commit.removedFiles) {
 						await git.rm(removedFile);
 					}
+				}
 				await git.commit(commit.message);
 				task.incr();
 			}

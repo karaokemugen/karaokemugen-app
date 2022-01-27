@@ -46,6 +46,7 @@ let state: State = {
 	},
 	restoreNeeded: false,
 	systemMessages: [],
+	DBReady: false,
 };
 
 /** Get public state (to send to webapp users) */

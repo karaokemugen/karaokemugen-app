@@ -38,16 +38,9 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		const versions = getSongVersion(kara);
 
 		// Construct mpv message to display.
-		const infos =
-			'{\\bord2}{\\fscx70}{\\fscy70}{\\b1}' +
-			series +
-			'{\\b0}\\N{\\i1}' +
-			kara.songtypes.map(s => s.name).join(' ') +
-			songorder +
-			' - ' +
-			getSongTitle(kara) +
-			versions +
-			'{\\i0}';
+		const infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
+			.map(s => s.name)
+			.join(' ')}${songorder} - ${getSongTitle(kara)}${versions}{\\i0}`;
 		const current: CurrentSong = {
 			...kara,
 			nickname: 'Dummy Plug System',
@@ -67,7 +60,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		await mpv.play(current);
 		writeStreamFiles('song_name');
 		writeStreamFiles('requester');
-		setState({ singlePlay: !randomPlaying, randomPlaying: randomPlaying });
+		setState({ singlePlay: !randomPlaying, randomPlaying });
 	} catch (err) {
 		logger.error('Error during song playback', { service: 'Player', obj: err });
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
@@ -145,9 +138,9 @@ export async function playCurrentSong(now: boolean) {
 				logger.warn('Skipping playback for this song', { service: 'Player' });
 				try {
 					await next();
-				} catch (err) {
+				} catch (err2) {
 					logger.warn('Skipping failed', { service: 'Player' });
-					throw err;
+					throw err2;
 				}
 			} else {
 				logger.warn('Stopping karaoke due to error', { service: 'Player' });
@@ -252,9 +245,9 @@ export async function playerEnding() {
 				logger.error('Unable to play current song, skipping', { service: 'Player', obj: err });
 				try {
 					await next();
-				} catch (err) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err });
-					throw err;
+				} catch (err2) {
+					logger.error('Failed going to next song', { service: 'Player', obj: err2 });
+					throw err2;
 				}
 			}
 			return;
@@ -288,15 +281,15 @@ export async function playerEnding() {
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
-				} catch (err) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err });
-					throw err;
+				} catch (err2) {
+					logger.error('Failed going to next song', { service: 'Player', obj: err2 });
+					throw err2;
 				}
 			}
 			return;
-		} else {
-			setState({ encorePlayed: false });
 		}
+		setState({ encorePlayed: false });
+
 		// Outros code, we're at the end of a playlist.
 		// Outros are played after the very last song.
 		if (
@@ -344,16 +337,14 @@ export async function playerEnding() {
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
-				} catch (err) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err });
-					throw err;
+				} catch (err2) {
+					logger.error('Failed going to next song', { service: 'Player', obj: err2 });
+					throw err2;
 				}
 			}
 			return;
-		} else if (
-			state.counterToSponsor >= conf.Playlist.Medias.Sponsors.Interval &&
-			conf.Playlist.Medias.Sponsors.Enabled
-		) {
+		}
+		if (state.counterToSponsor >= conf.Playlist.Medias.Sponsors.Interval && conf.Playlist.Medias.Sponsors.Enabled) {
 			try {
 				setState({ counterToSponsor: 0 });
 				await mpv.playMedia('Sponsors');
@@ -362,29 +353,28 @@ export async function playerEnding() {
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
-				} catch (err) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err });
-					throw err;
+				} catch (err2) {
+					logger.error('Failed going to next song', { service: 'Player', obj: err2 });
+					throw err2;
 				}
 			}
 			return;
+		}
+		if (!state.singlePlay) {
+			setState({ counterToSponsor: state.counterToSponsor + 1, counterToJingle: state.counterToJingle + 1 });
 		} else {
-			if (!state.singlePlay) {
-				setState({ counterToSponsor: state.counterToSponsor + 1, counterToJingle: state.counterToJingle + 1 });
-			} else {
-				setState({ singlePlay: false });
+			setState({ singlePlay: false });
+		}
+		if (state.player.playerStatus !== 'stop') {
+			try {
+				await next();
+				return;
+			} catch (err) {
+				logger.error('Failed going to next song', { service: 'Player', obj: err });
+				throw err;
 			}
-			if (state.player.playerStatus !== 'stop') {
-				try {
-					await next();
-					return;
-				} catch (err) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err });
-					throw err;
-				}
-			} else {
-				stopPlayer(true);
-			}
+		} else {
+			stopPlayer(true);
 		}
 	} catch (err) {
 		logger.error('Unable to end play properly, stopping.', { service: 'Player', obj: err });

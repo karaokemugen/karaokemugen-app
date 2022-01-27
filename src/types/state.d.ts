@@ -80,6 +80,7 @@ export interface State {
 	sentrytest: boolean;
 	restoreNeeded: boolean;
 	systemMessages: SystemMessage[];
+	DBReady: boolean;
 }
 
 export interface SystemMessage {

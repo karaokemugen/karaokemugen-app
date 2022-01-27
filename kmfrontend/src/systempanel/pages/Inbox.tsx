@@ -10,6 +10,8 @@ import { commandBackend } from '../../utils/socket';
 export default function Inbox() {
 	const context = useContext(GlobalContext);
 
+	const [inbox, setInbox] = useState([]);
+
 	const repoList = context.globalState.settings.data.config?.System?.Repositories.filter(
 		repo =>
 			repo.Online &&
@@ -19,19 +21,7 @@ export default function Inbox() {
 			repo.Name === context.globalState.auth.data.username.split('@')[1]
 	);
 
-	if (repoList.length === 0) {
-		let message;
-		if (context.globalState.auth.data.onlineAvailable !== false) {
-			message = i18next.t('INBOX.ONLINE_USER_REQUIRED');
-		} else {
-			message = i18next.t('INBOX.NO_REPOSITORY_ENABLED');
-		}
-		return <Alert style={{ textAlign: 'left', margin: '20px' }} message={message} type="error" />;
-	}
-
-	const instance = repoList[0].Name;
-
-	const [inbox, setInbox] = useState([]);
+	const instance = repoList[0]?.Name;
 
 	const getInbox = async () => {
 		if (repoList.length > 0) {
@@ -159,8 +149,18 @@ export default function Inbox() {
 	};
 
 	useEffect(() => {
+		const getInbox = async () => {
+			if (repoList.length > 0) {
+				try {
+					const res = await commandBackend('getInbox', { repoName: instance });
+					setInbox(res);
+				} catch (e) {
+					// already display
+				}
+			}
+		};
 		getInbox();
-	}, []);
+	}, [instance, repoList.length]);
 
 	const columns = [
 		{
@@ -229,7 +229,17 @@ export default function Inbox() {
 			),
 		},
 	];
-	return (
+	let message;
+	if (repoList.length === 0) {
+		if (context.globalState.auth.data.onlineAvailable !== false) {
+			message = i18next.t('INBOX.ONLINE_USER_REQUIRED');
+		} else {
+			message = i18next.t('INBOX.NO_REPOSITORY_ENABLED');
+		}
+	}
+	return repoList.length === 0 ? (
+		<Alert style={{ textAlign: 'left', margin: '20px' }} message={message} type="error" />
+	) : (
 		<>
 			<Layout.Header>
 				<div className="title">{i18next.t('HEADERS.INBOX.TITLE')}</div>
