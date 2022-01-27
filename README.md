@@ -260,7 +260,7 @@ Thanks to [MacStadium](http://www.macstadium.com), we have a Mac mini M1 to run 
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Weblate_logo.svg/1024px-Weblate_logo.svg.png" alts="Weblate logo" width="125"/>
 
-Thanks to [Weblate](https://weblate.org) we can allow people to more easily contribute to translating the app in many languages!
+Thanks to [Weblate](https://weblate.org) we can allow people to more easily contribute to translating the app in many languages!!
 
 ## Credits
 
