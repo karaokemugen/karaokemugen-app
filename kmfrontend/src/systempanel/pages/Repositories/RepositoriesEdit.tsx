@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Repository } from '../../../../../src/lib/types/repo';
+import { Repository } from '../../../../../src/types/config';
 import { DifferentChecksumReport } from '../../../../../src/types/repo';
 import { commandBackend } from '../../../utils/socket';
 import RepositoryForm from './RepositoriesForm';

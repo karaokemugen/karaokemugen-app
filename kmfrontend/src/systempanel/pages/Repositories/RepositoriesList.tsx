@@ -11,7 +11,7 @@ import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Repository } from '../../../../../src/lib/types/repo';
+import { Repository } from '../../../../../src/types/config';
 import { commandBackend } from '../../../utils/socket';
 
 interface RepositoryListState {
