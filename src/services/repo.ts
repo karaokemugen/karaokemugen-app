@@ -15,7 +15,7 @@ import { readAllKaras } from '../lib/services/generation';
 import { DBTag } from '../lib/types/database/tag';
 import { KaraMetaFile } from '../lib/types/downloads';
 import { Kara, KaraFileV4 } from '../lib/types/kara';
-import { DiffChanges, Repository, RepositoryManifest } from '../lib/types/repo';
+import { DiffChanges, RepositoryManifest } from '../lib/types/repo';
 import { TagFile } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import {
@@ -31,6 +31,7 @@ import logger, { profile } from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
+import { Repository } from '../types/config';
 import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '../types/repo';
 import { adminToken } from '../utils/constants';
 import { pathIsContainedInAnother } from '../utils/files';
@@ -323,7 +324,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 			logger.warn('Repository was edited, but updating it failed', { service: 'Repo' });
 		}
 	}
-	if (repo.Git) {
+	if (repo.MaintainerMode && repo.Git) {
 		try {
 			await setupGit(repo, true);
 		} catch (err) {
@@ -561,7 +562,7 @@ export async function stashGitRepo(repoName: string) {
 /** Helper function to setup git in other functions */
 async function setupGit(repo: Repository, configChanged = false) {
 	const baseDir = resolve(getState().dataPath, repo.BaseDir);
-	if (!repo.Git) throw 'Git not configured for this repository';
+	if (!repo.MaintainerMode) throw 'Git not configured for this repository';
 	const git = new Git({
 		baseDir,
 		url: repo.Git.URL,

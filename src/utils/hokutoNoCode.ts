@@ -13,13 +13,13 @@ import { insertCriteria, insertKaraIntoPlaylist, insertPlaylist } from '../dao/p
 import { updateRepo } from '../dao/repo';
 import { deleteUser, lowercaseAllUsers, mergeUserData, selectAllDupeUsers } from '../dao/user';
 import { db } from '../lib/dao/database';
-import { Repository } from '../lib/types/repo';
 import { fileExists, relativePath } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { addToFavorites, getFavorites } from '../services/favorites';
 import { addSystemMessage } from '../services/proxyFeeds';
 import { editRepo, getRepos } from '../services/repo';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
+import { Repository } from '../types/config';
 import { OldRepository } from '../types/repo';
 import { backupConfig } from './config';
 import Sentry from './sentry';
@@ -155,10 +155,12 @@ export async function migrateReposToZip() {
 			AutoMediaDownloads: 'updateOnly',
 			BaseDir: dir,
 		};
+		/* MaintainerMode at true while not defining Git and FTP settings will be causing issues.
 		if (await fileExists(resolve(dir, '.git'))) {
 			// It's a git repo, put maintainer mode on.
 			newRepo.MaintainerMode = true;
 		}
+		*/
 		const extraPath = newRepo.Online && !newRepo.MaintainerMode ? './json' : '';
 		newRepo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, dir, extraPath));
 		await editRepo(newRepo.Name, newRepo, false).catch(err => {
