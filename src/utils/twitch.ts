@@ -45,13 +45,14 @@ export async function initTwitch() {
 
 /** Simple function to say something to Twitch chat */
 export async function sayTwitch(message: string) {
-	if (client)
+	if (client) {
 		try {
 			await client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
 		} catch (err) {
 			logger.warn('Unable to say to channel', { service: 'Twitch', obj: err });
 			throw err;
 		}
+	}
 }
 
 /** Vote Events are listened here and reacted upon */
@@ -65,12 +66,15 @@ function listenChat(chat: Client) {
 				try {
 					addPollVoteIndex(+choice, context.username);
 				} catch (err) {
-					if (err === 'POLL_VOTE_ERROR')
+					if (err === 'POLL_VOTE_ERROR') {
 						chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.INVALID_CHOICE')}`);
-					if (err === 'POLL_NOT_ACTIVE')
+					}
+					if (err === 'POLL_NOT_ACTIVE') {
 						chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.NO_ACTIVE_POLL')}`);
-					if (err === 'POLL_USER_ALREADY_VOTED')
+					}
+					if (err === 'POLL_USER_ALREADY_VOTED') {
 						chat.say(target, `@${context.username} : ${i18next.t('TWITCH.CHAT.YOU_ALREADY_VOTED')}`);
+					}
 				}
 			}
 		} else if (msg === '!song') {
@@ -81,13 +85,11 @@ function listenChat(chat: Client) {
 					: `${getState().osURL}/public/karaoke/${song.kid}`
 			})`;
 			chat.say(target, str);
-		} else {
+		} else if (getConfig().Player.LiveComments) {
 			// Any other message is treated here for the display message function
-			if (getConfig().Player.LiveComments) {
-				// We need to strip emotes first
-				msg = stripEmotes(msg, context);
-				if (msg.length < 100) playerComment(msg);
-			}
+			// We need to strip emotes first
+			msg = stripEmotes(msg, context);
+			if (msg.length < 100) playerComment(msg);
 		}
 	});
 }
@@ -99,7 +101,7 @@ function stripEmotes(msg: string, context: ChatUserstate) {
 	for (const e of emotes) {
 		for (const pos of context.emotes[e]) {
 			const [emoteStart, emoteEnd] = pos.split('-');
-			for (let i = +emoteStart; i <= +emoteEnd; i++) {
+			for (let i = +emoteStart; i <= +emoteEnd; i += 1) {
 				delete arr[i];
 			}
 		}
@@ -110,12 +112,13 @@ function stripEmotes(msg: string, context: ChatUserstate) {
 /** Stops Twitch chat and disconnects */
 export async function stopTwitch() {
 	// Let's properly stop Twitch. If it fails, it's not a big issue
-	if (client)
+	if (client) {
 		try {
 			await client.disconnect();
 		} catch (err) {
-			//Non fatal.
+			// Non fatal.
 		} finally {
 			client = null;
 		}
+	}
 }

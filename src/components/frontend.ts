@@ -32,10 +32,10 @@ import { getState } from '../utils/state';
 /** Declare all routers for API types */
 
 function apiHTTPRouter(ws: SocketIOApp): Router {
-	const apiRouter = express.Router();
-	filesController(apiRouter);
-	emulateController(apiRouter, ws);
-	return apiRouter;
+	const router = express.Router();
+	filesController(router);
+	emulateController(router, ws);
+	return router;
 }
 
 function apiRouter(ws: SocketIOApp) {
@@ -59,7 +59,7 @@ function apiRouter(ws: SocketIOApp) {
 }
 
 /** Initialize frontend express server */
-export function initFrontend(): number {
+export default function initFrontend(): number {
 	try {
 		const state = getState();
 		const app = express();
@@ -81,19 +81,19 @@ export function initFrontend(): number {
 			req.method === 'OPTIONS' ? res.json() : next();
 		});
 
-		//Path to video previews
+		// Path to video previews
 		app.use('/previews', express.static(resolvedPath('Previews'), { fallthrough: false }));
-		//Path to backgrounds
+		// Path to backgrounds
 		app.use('/backgrounds', express.static(resolvedPath('Backgrounds'), { fallthrough: false }));
-		//There's a single /medias path which will list all files in all folders. Pretty handy.
+		// There's a single /medias path which will list all files in all folders. Pretty handy.
 		resolvedPathRepos('Medias').forEach(dir => app.use('/medias', express.static(dir)));
-		//Path to user avatars
+		// Path to user avatars
 		app.use('/avatars', express.static(resolvedPath('Avatars')));
 
-		//Serve session export data
+		// Serve session export data
 		app.use('/sessionExports', express.static(resolve(state.dataPath, 'sessionExports/')));
 
-		//HTTP standards are important.
+		// HTTP standards are important.
 		app.use('/coffee', (_req, res) => res.status(418).json());
 
 		app.use('/', express.static(resolve(state.resourcePath, 'kmfrontend/build')));
@@ -113,7 +113,7 @@ export function initFrontend(): number {
 			});
 		} catch (err) {
 			// Likely port is busy for some reason, so we're going to change that number to something else.
-			port = port + 1;
+			port += 1;
 			server.listen(port, () => {
 				logger.debug(`Webapp is READY and listens on port ${port}`, { service: 'Webapp' });
 			});

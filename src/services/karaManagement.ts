@@ -43,11 +43,12 @@ import { getTag } from './tag';
 export async function updateTags(kara: Kara) {
 	const tagsAndTypes = [];
 	for (const type of Object.keys(tagTypes)) {
-		if (kara[type])
+		if (kara[type]) {
 			for (const tag of kara[type]) {
 				// We can have either a name or a number for type
 				tagsAndTypes.push({ tid: tag.tid, type: tagTypes[type] || type });
 			}
+		}
 	}
 	await updateKaraTags(kara.kid, tagsAndTypes);
 }
@@ -116,7 +117,7 @@ export async function deleteKara(
 			} catch (err) {
 				logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service: 'Kara', obj: err });
 			}
-			if (kara.subfile)
+			if (kara.subfile) {
 				try {
 					await fs.unlink(
 						(
@@ -126,16 +127,18 @@ export async function deleteKara(
 				} catch (err) {
 					logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, { service: 'Kara', obj: err });
 				}
+			}
 		}
 		logger.info(`Song files of ${kara.karafile} removed`, { service: 'Kara' });
 		removeKaraInStore(kara.kid);
-		if (kara.children?.length > 0)
+		if (kara.children?.length > 0) {
 			parents.push({
 				parent: kara.kid,
 				children: await selectAllKaras({
 					q: `k:${kara.children.join(',')}`,
 				}),
 			});
+		}
 	}
 	saveSetting('baseChecksum', getStoreChecksum());
 	// Remove kara from database only if not in a batch
@@ -168,12 +171,13 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const oldRepoIndex = repos.findIndex(r => r.Name === oldRepoName);
 		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
 		// If the new repo has priority, edit kara so the database uses it.
-		if (newRepoIndex < oldRepoIndex)
+		if (newRepoIndex < oldRepoIndex) {
 			tasks.push(
 				editKara({
 					kara: formatKaraV4(kara),
 				})
 			);
+		}
 		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), kara));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
 		tasks.push(
@@ -278,10 +282,11 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	refreshYears();
 	const parentsToUpdate: Set<string> = new Set();
 	for (const kara of karas) {
-		if (kara.parents)
+		if (kara.parents) {
 			for (const parent of kara.parents) {
 				parentsToUpdate.add(parent);
 			}
+		}
 	}
 	// If karas is not initialized then we're updating ALL search vectors
 	karas ? refreshParentSearchVectorTask([...parentsToUpdate]) : refreshParentSearchVectorTask();
@@ -318,7 +323,7 @@ export async function integrateKaraFile(
 			} catch (err) {
 				logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, { service: 'Kara' });
 			}
-			if (karaDB.mediafile !== karaData.mediafile && karaDB.download_status === 'DOWNLOADED')
+			if (karaDB.mediafile !== karaData.mediafile && karaDB.download_status === 'DOWNLOADED') {
 				try {
 					await fs.unlink(
 						(
@@ -328,7 +333,8 @@ export async function integrateKaraFile(
 				} catch (err) {
 					logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, { service: 'Kara' });
 				}
-			if (karaDB.subfile && karaDB.subfile !== karaData.subfile)
+			}
+			if (karaDB.subfile && karaDB.subfile !== karaData.subfile) {
 				try {
 					await fs.unlink(
 						(
@@ -338,6 +344,7 @@ export async function integrateKaraFile(
 				} catch (err) {
 					logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, { service: 'Kara' });
 				}
+			}
 		}
 		if (mediaDownload !== 'none') {
 			checkMediaAndDownload(

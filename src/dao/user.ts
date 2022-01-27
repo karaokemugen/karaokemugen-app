@@ -89,19 +89,19 @@ export function reassignToUser(oldUsername: string, username: string) {
 	return Promise.all([
 		db().query(
 			yesql(sqlreassignPlaylistToUser)({
-				username: username,
+				username,
 				old_username: oldUsername,
 			})
 		),
 		db().query(
 			yesql(sqlreassignPlaylistContentToUser)({
-				username: username,
+				username,
 				old_username: oldUsername,
 			})
 		),
 		db().query(
 			yesql(sqlreassignRequestedToUser)({
-				username: username,
+				username,
 				old_username: oldUsername,
 			})
 		),
@@ -120,7 +120,7 @@ export function updateUserLastLogin(username: string) {
 export async function updateUserLastLoginTask(username: string) {
 	await db().query(
 		yesql(sqlupdateLastLogin)({
-			username: username,
+			username,
 			now: new Date(),
 		})
 	);
@@ -129,8 +129,8 @@ export async function updateUserLastLoginTask(username: string) {
 export function updateUserPassword(username: string, password: string) {
 	return db().query(
 		yesql(sqleditUserPassword)({
-			username: username,
-			password: password,
+			username,
+			password,
 		})
 	);
 }

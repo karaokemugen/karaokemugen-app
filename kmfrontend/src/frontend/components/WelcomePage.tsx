@@ -36,22 +36,30 @@ function WelcomePage() {
 	const [stats, setStats] = useState<DBStats>();
 
 	const getSessions = async () => {
-		const res = await commandBackend('getSessions');
-		setSessions(res);
-		setActiveSession(res.filter((valueSession: Session) => valueSession.active)[0]);
+		try {
+			const res = await commandBackend('getSessions');
+			setSessions(res);
+			setActiveSession(res.filter((valueSession: Session) => valueSession.active)[0]);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	const getDownloadQueue = async () => {
-		const [downloadQueue, downloadQueueStatus] = await Promise.all([
-			commandBackend('getDownloads', undefined, false, 300000),
-			commandBackend('getDownloadQueueStatus', undefined, false, 300000),
-		]);
-		if (
-			downloadQueueStatus === 'stopped' &&
-			downloadQueue.length > 0 &&
-			!sessionStorage.getItem('dlQueueRestart')
-		) {
-			showModal(context.globalDispatch, <RestartDownloadsModal />);
+		try {
+			const [downloadQueue, downloadQueueStatus] = await Promise.all([
+				commandBackend('getDownloads', undefined, false, 300000),
+				commandBackend('getDownloadQueueStatus', undefined, false, 300000),
+			]);
+			if (
+				downloadQueueStatus === 'stopped' &&
+				downloadQueue.length > 0 &&
+				!sessionStorage.getItem('dlQueueRestart')
+			) {
+				showModal(context.globalDispatch, <RestartDownloadsModal />);
+			}
+		} catch (e) {
+			// already display
 		}
 	};
 

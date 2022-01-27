@@ -112,7 +112,7 @@ export async function init() {
 	}
 }
 
-/* Checking if application paths exist. **/
+/* Checking if application paths exist. * */
 async function checkPaths(config: Config) {
 	try {
 		// Emptying temp directory

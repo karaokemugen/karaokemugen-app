@@ -105,13 +105,15 @@
 				"8": "ditulis oleh",
 				"9": "dari kelompok",
 				"10": "dari keluarga",
-				"11": "yang berasal dari"
+				"11": "yang berasal dari",
+				"4": "dibuat oleh"
 			},
 			"YEAR": "Karaoke dari tahun {{year}} ada di daftar.",
 			"KID": "Karaoke ini ada di daftar.",
 			"LONGER": "Karaoke yang lebih panjang dari {{time}} detik ada di daftar.",
 			"SHORTER": "Karaoke yang lebih pendek dari {{time}} detik ada di daftar.",
-			"TITLE": "Karaoke yang mengandung {{title}} di judul ada di daftar."
+			"TITLE": "Karaoke yang mengandung {{title}} di judul ada di daftar.",
+			"TAG": "Karaoke {{verb}} {{tag}} ada di daftar hitam."
 		},
 		"AND": "DAN",
 		"TYPE_SMART": "Jenis daftar putar pintar",
@@ -125,7 +127,9 @@
 		"CRITERIA_TYPE_1002": "Lebih panjang dari (mm:ss)",
 		"CRITERIA_TYPE_1003": "Lebih pendek dari (mm:ss)",
 		"CRITERIA_TYPE_1004": "Judul mengandung",
-		"CRITERIA_TYPE_1006": "Sembunyikan lagu yang tidak tersedia secara luring"
+		"CRITERIA_TYPE_1006": "Sembunyikan lagu yang tidak tersedia secara luring",
+		"ADD": "Tambahkan nilai ke kriteria",
+		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini."
 	},
 	"PROFILE": "Profil",
 	"MENU": {
@@ -202,7 +206,8 @@
 			"DISPLAY_AVATAR": "Tampilkan avatar di karaoke",
 			"DISPLAY_SONGINFO": "Tampilkan informasi lagu",
 			"DISPLAY_SONGINFO_TOOLTIP": "Informasi (judul, serial, penyanyi, dll.) ditampilkan saat awal dan akhir lagu, juga saat layar jeda di mode Siar/Klasik. Matikan untuk menyembunyikannya, untuk uji buta contohnya.",
-			"LIVE_COMMENTS": "Komentar langsung"
+			"LIVE_COMMENTS": "Komentar langsung",
+			"LIVE_COMMENTS_TOOLTIP": "Pesan percakapan kamu akan ditampilkan di layar (hati-hati, konfigurasikan dengan benar mod otomatis kamu)."
 		},
 		"SYSTEMPANEL_TIP": "Kamu tidak bisa menemukan pilihan yang kamu cari? <2>Beberapa pilihan sekarang ada di <3>bilah sistem</3>.</2>",
 		"KARAOKE": {
@@ -252,7 +257,45 @@
 			"STREAM_TWITCH_CHANNEL": "Nama kanal Twitch",
 			"ADDED_SONG_VISIBILITY_NORMAL_OPTION": "Normal",
 			"STREAM_TWITCH_OAUTH_ERROR": "Token tidak valid",
-			"STREAM_TWITCH_OAUTH_SUCCESS": "Berhasil terhubung ({{login}})"
+			"STREAM_TWITCH_OAUTH_SUCCESS": "Berhasil terhubung ({{login}})",
+			"QUOTA_TYPE_ZERO": "Tidak ada kuota",
+			"QUOTA_TYPE_ONE": "Per lagu",
+			"FREE_AUTO_TIME": "Lagu dibebaskan dari kuota setelah (menit)",
+			"FREE_UPVOTES_REQUIREDPERCENT": "Persentase pilih atas/pengguna daring yang diperlukan untuk membebaskan sebuah lagu",
+			"HIDE_INVISIBLE_SONGS_TOOLTIP": "Cara lagu misteri ditampilkan ke publik. Bagus untuk kejutan!",
+			"SONGPOLLTIMEOUT_TOOLTIP": "Dalam detik. Lebih baik jika lebih rendah dari waktu jeda mode Siaran!",
+			"LABEL": "Karaoke",
+			"QUOTA_SETTINGS": "Batasan",
+			"QUOTA_TYPE": "Jenis kuota",
+			"ADDED_SONG_VISIBILITY_PUBLIC_TOOLTIP": "Apakah lagu yang ditambahkan oleh publik terlihat ke publik atau dianggap lagu misteri?",
+			"MYSTERY_SONG_SETTINGS": "Lagu misteri",
+			"MYSTERY_SONG_SETTINGS_TOOLTIP": "Sembunyikan lagu dari publik, untuk kejutan!",
+			"HIDE_INVISIBLE_SONGS": "Lagu misteri ditampilkan sebagai",
+			"HIDE_INVISIBLE_SONGS_HIDDEN_OPTION": "Jangan tampilkan",
+			"HIDE_INVISIBLE_SONGS_VISIBLE_OPTION": "Label misteri",
+			"SONGPOLL": "Jajak Pendapat Publik",
+			"SONGPOLL_TOOLTIP": "Jajak pendapat akan dilakukan pada awal setiap lagu di perangkat pengguna kamu atau di percakapan Twitch. Dalam mode Siaran, jajak pendapat akan dilakukan selama jeda",
+			"SONGPOLLCHOICES": "Jumlah lagu yang dapat dipilih pengguna selama jajak pendapat publik",
+			"SONGPOLLCHOICES_TOOLTIP": "Setiap pilihan akan dipilih dari daftar putar saran",
+			"SONGPOLLTIMEOUT": "Durasi jajak pendapat publik",
+			"REMOTE": "Izinkan akses jarak jauh (<code>.kara.moe)",
+			"REMOTE_TOOLTIP": "Aktifkan ini untuk memperbolehkan teman kamu untuk menyarankan lagu pada sesi karaoke kamu!",
+			"QUOTA_TYPE_TOOLTIP": "Kuota membantu mencegah pengguna dari menambahkan terlalu banyak lagu sekaligus",
+			"TIME_BY_USER": "Waktu per pengguna",
+			"TIME_BY_USER_TOOLTIP": "Dalam detik",
+			"FREE_UPVOTES": "Memperbolehkan pengguna untuk pilih atas lagu untuk membebaskan mereka",
+			"FREE_UPVOTES_TOOLTIP": "Jika cukup banyak orang menyukai sebuah saran lagu, itu tidak akan dihitung terhadap kuota peminta",
+			"FREE_UPVOTES_REQUIREDMIN": "Suara minimal yang diperlukan untuk membebaskan sebuah lagu",
+			"FREE_UPVOTES_REQUIREDMIN_TOOLTIP": "Ubah ini tergantung jumlah pengguna kamu yang tersambung",
+			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Persentase jumlah pengguna yang masuk",
+			"AUTOPLAY": "Otomatis putar pada lagu berikutnya yang ditambahkan",
+			"AUTOPLAY_TOOLTIP": "Otomatis putar dimulai secepatnya setelah sebuah lagu ditambahkan ke daftar putar",
+			"ADDED_SONG_VISIBILITY_ADMIN_TOOLTIP": "Apakah lagu yang ditambahkan oleh operator terlihat ke publik atau dianggap lagu misteri?",
+			"ADDED_SONG_VISIBILITY_ADMIN_OFF": "Lagu akan ditambahkan secara normal (terlihat ke publik)",
+			"LABELS_MYSTERY_SONGS": "Label lagu misteri",
+			"ADDED_SONG_VISIBILITY_ADMIN_ON": "Lagu akan ditambahkan sebagai lagu misteri (kamu bisa menentukan label lagu di pengaturan)",
+			"LABELS_MYSTERY_SONGS_TOOLTIP": "Kamu bisa menyesuaikan bagaimana lagu misteri ditampilkan kepada publik",
+			"STREAM_TWITCH_OAUTH_TOKEN_GET": "Dapatkan Token OAuth Twitch kamu di sini"
 		},
 		"INTERFACE": {
 			"WEBAPPMODE_SHORT": "Mode antarmuka",
@@ -274,8 +317,12 @@
 					"NONE": "Hentikan sesi karaoke",
 					"REPEAT": "Ulang daftar putar",
 					"RANDOM": "Putar lagu acak dari pustaka"
-				}
-			}
+				},
+				"NAME": "Tindakan pada akhir daftar putar",
+				"TOOLTIP": "Jika kamu memilih Lagu Acak, mereka akan dipilih dari pustaka lagu kamu. Dicampur dengan otomatis-putar, daftar putar kamu bisa dilanjutkan segera setelah seseorang menambahkan lagu baru."
+			},
+			"PLAYLIST_SETTINGS_TOOLTIP": "Ubah perilaku daftar putar, perbolehkan duplikat, pilih tindakan pada akhir daftar putar.",
+			"PLAYLIST_SETTINGS": "Daftar putar"
 		}
 	},
 	"KARA_MENU": {
@@ -300,7 +347,10 @@
 		"WHITELISTED": "Didaftar putihkan!",
 		"TRANSFER_KARA": "Pindahkan lagu ini",
 		"TRANSFER_KARA_AFTER_PLAYING": "Pindahkan setelah lagu yang sedang diputar",
-		"MOVE_KARA": "Pindah setelah lagu saat ini"
+		"MOVE_KARA": "Pindah setelah lagu saat ini",
+		"FREE": "Bebaskan lagu ini dari kuota pengguna",
+		"FREE_SHORT": "Bebas",
+		"FREED": "Bebas!"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"RESTRICTED_DESCRIPTION": "Karaoke berada di mode terbatas, kamu tidak bisa menambahkan lagu.",
@@ -374,7 +424,9 @@
 	"LOGIN": {
 		"GO_BACK": "Kembali",
 		"BUTTON_LOGIN": "Masuk",
-		"ONLINE_ACCOUNT": "Akun daring?"
+		"ONLINE_ACCOUNT": "Akun daring?",
+		"NEW_ACCOUNT": "Akun baru",
+		"GUEST_CONTINUE": "Lanjut sebagai tamu"
 	},
 	"LOG_IN": "Masuk",
 	"USERNAME": "Nama Pengguna",
@@ -401,7 +453,9 @@
 		"TIME_BEFORE_PLAY": "Mengudara pada {{time}} {{date}}",
 		"LYRICS": "Lirik",
 		"SPONSOR": "Sponsor",
-		"MODIFY_KARAOKE": "Sunting karaoke"
+		"MODIFY_KARAOKE": "Sunting karaoke",
+		"PLAYING_IN": "Diputar pada {{time}} {{date}}",
+		"UPVOTE_NUMBER": "Pilih atas"
 	},
 	"TOOLTIP_UPVOTE": "Pilih untuk lagu ini",
 	"WELCOME_PAGE": {
@@ -422,7 +476,8 @@
 		"MASTODON_UPDATE": "Berita Karaoke Mugen",
 		"APP_UPDATE": "Versi baru",
 		"ACTIVE_SESSION": "Sesi Aktif: ",
-		"EDIT_SESSION": "Sunting sesi"
+		"EDIT_SESSION": "Sunting sesi",
+		"ADMINISTRATION": "BILAH SISTEM"
 	},
 	"LOGOUT": "Keluar",
 	"QUOTA_TIME": "Waktu tersisa",
@@ -612,7 +667,34 @@
 		"P5": "Media akan diunduh ketika kamu membutuhkannya."
 	},
 	"TAG_TYPES": {
-		"WARNINGS_other": "Peringatan"
+		"WARNINGS_other": "Peringatan",
+		"PLATFORMS_other": "Platform",
+		"SERIES_one": "Serial",
+		"VERSIONS_other": "Versi",
+		"WARNINGS_one": "Peringatan",
+		"VERSIONS_one": "Versi",
+		"SINGERS_one": "Penyanyi",
+		"SERIES_other": "Serial",
+		"SONGWRITERS_one": "Penulis Lagu",
+		"SINGERS_other": "Penyanyi",
+		"SONGTYPES_one": "Jenis lagu",
+		"SONGTYPES_other": "Jenis lagu",
+		"CREATORS_one": "Pembuat",
+		"CREATORS_other": "Pembuat",
+		"SONGWRITERS_other": "Penulis Lagu",
+		"GROUPS_one": "Kelompok",
+		"LANGS_one": "Bahasa",
+		"LANGS_other": "Bahasa",
+		"MISC_one": "Lain-lain",
+		"MISC_other": "Lain-lain",
+		"GROUPS_other": "Kelompok",
+		"FAMILIES_one": "Keluarga",
+		"FAMILIES_other": "Keluarga",
+		"ORIGINS_one": "Asal",
+		"ORIGINS_other": "Asal",
+		"GENRES_one": "Genre",
+		"GENRES_other": "Genre",
+		"PLATFORMS_one": "Platform"
 	},
 	"HOME": {
 		"SYSTEM": {
@@ -703,7 +785,8 @@
 		},
 		"TIMESTAMP": "Tanda waktu",
 		"TYPE": "Jenis permintaan",
-		"NO_REPOSITORY_ENABLED": "Tidak ada repositori daring yang diaktifkan di mode pengelola"
+		"NO_REPOSITORY_ENABLED": "Tidak ada repositori daring yang diaktifkan di mode pengelola",
+		"ONLINE_USER_REQUIRED": "Pengguna daring diperlukan untuk kotak masuk"
 	},
 	"ABOUT": {
 		"CONTRIBUTORS": "Karaoke dibuat oleh orang-orang yang hebat, seperti <contrib/> misalnya.",
@@ -713,7 +796,30 @@
 	"SETUP_PAGE": {
 		"SAVE_PARAMETER": "Simpan",
 		"ONLINE_ACCOUNT": "Daring",
-		"ONLINE_ACCOUNT_DESC": "Sebuah akun daring memungkinkan kamu untuk:"
+		"ONLINE_ACCOUNT_DESC": "Sebuah akun daring memungkinkan kamu untuk:",
+		"LOCAL_ACCOUNT": "Lokal",
+		"TITLE": "Panduan Penyetelan",
+		"WELCOME": "Selamat Datang di Karaoke Mugen!",
+		"ADD_DIRECTORY": "Tambah folder",
+		"NEED_ACCOUNT": "Sebelum kau bisa memulai bernyanyi, kamu akan membutuhkan sebuah akun untuk menggunakan aplikasi.",
+		"ACCOUNT_QUESTION": "Apakah kamu ingin menggunakan akun lokal (hanya di komputer kamu saja) atau akun daring (akses internet diperlukan)?",
+		"MODIFY_DIRECTORY": "Ubah folder",
+		"CHOOSE_DIRECTORY": "Pilih folder",
+		"ONLINE_ACCOUNT_SAVE_INFOS": "Cadangkan lagu favorit, avatar, dan informasi profil kamu untuk mendapatkan mereka lagi di komputer berbeda.",
+		"ONLINE_ACCOUNT_LOST_PASSWORD": "Jika kamu memberikan alamat surel, kamu akan bisa memulihkan akun kamu jika kamu lupa kata sandi.",
+		"LOCAL_ACCOUNT_DESC": "Kamu memilih akun lokal. Ketik nama akun dan kata sandi di bawah ini:",
+		"ONLINE_ACCOUNT_INSTANCE": "Akun daring kamu akan dihos di peladen {{instance}}",
+		"CREATE_ONLINE_ACCOUNT": "Saya ingin membuat akun baru",
+		"LOGIN_ONLINE_ACCOUNT": "Saya sudah punya akun",
+		"CREATE_ONLINE_ACCOUNT_DESC": "Ketik nama akun dan kata sandi untuk membuat yang baru.",
+		"DEFAULT_REPOSITORY_DESC_1": "Karaoke Mugen memiliki repositori karaoke baku, ",
+		"DEFAULT_REPOSITORY_DESC_2": ". Berkas medianya akan diunduh ketika kamu membutuhkan mereka.",
+		"DEFAULT_REPOSITORY_QUESTION": "Di mana kamu ingin menyimpan unduhan tersebut? Secara baku mereka akan ada di:",
+		"REPOSITORY_LATER": "Kamu bisa mengubah folder ini kapan saja.",
+		"ONLINE_ACCOUNT_INSTANCE_DESC": "Peladen adalah layanan daring yang memberikan beberapa layanan terkait Karaoke Mugen. Jika kamu tidak yakin, biarkan peladen baku ({{instance}}), atau jika kamu tahu apa yang kamu lakukan, ubah ke peladen pilihanmu.",
+		"SECURITY_CODE_DESC_CONSOLE": "Mohon untuk memasukkan juga kode keamanan 6 digit yang bisa kamu temukan dengan mencari \"SECURITY CODE FOR THIS SESSION\" di berkas log Karaoke Mugen atau di konsol.",
+		"SECURITY_CODE_USE": "Kode ini memastikan bahwa kamu benar-benar yang melakukan tindakan ini. Ini berganti setelah setiap penggunaan.",
+		"CONNECTED_MESSAGE": "Selamat, kamu telah masuk ke Karaoke Mugen, {{user}}!"
 	},
 	"CONFIG": {
 		"SAVE": "Simpan",
@@ -732,8 +838,24 @@
 			"ONLINE_DISCORD_DISPLAYACTIVITY": "Tampilkan aktivitas Karaoke Mugen di profil Discord kamu",
 			"PLAYER_PROGRESSBARDOCK": "Bilah progres pemutar di Dock/Bilah Tugas",
 			"ONLINE_USERS": "Perbolehkan pendaftaran dan masuk pengguna secara daring",
-			"ONLINE_FETCHPOPULARSONGS": "Ambil lagu populer dari repositori daring kamu"
-		}
+			"ONLINE_FETCHPOPULARSONGS": "Ambil lagu populer dari repositori daring kamu",
+			"APP_QUICKSTART_TOOLTIP": "Ini menonaktifkan verifikasi data. Kamu akan harus membuat basis data kamu jika terjadi modifikasi manual dari bilah sistem -> halaman basis data.",
+			"PLAYER_HARDWAREDECODING_TOOLTIP": "Paksa atau tidak akselerasi perangkat keras pada pemutar. Catatan: dalam beberapa konfigurasi, ini bisa mengakibatkan hal-hal tidak diduga ketika pemutaran ulang. Jika itu terjadi, pilih \"Nonaktifkan\". Pilihan \"Otomatis\" merupakan yang paling aman, dan \"Paksa\" merupakan yang paling riskan/tidak direkomendasikan.",
+			"ONLINE_ERRORTRACKING": "Kirim laporan galat dan mogok (lewat sentry.io)",
+			"APP_QUICKSTART": "Mulai aplikasi cepat",
+			"ONLINE_UPDATES_MEDIAS_SPONSORS": "Sponsor otomatis perbarui"
+		},
+		"ADD_DIRECTORY": "Tambah direktori",
+		"ADD_FILE": "Tambah berkas",
+		"SELECT": "Pilih",
+		"BACK": "KEMBALI",
+		"CHOOSE_FILE": "Pilih berkas",
+		"CHOOSE_DIRECTORY": "Pilih direktori",
+		"PRIMARY_DIRECTORY": "Direktori utama",
+		"REPOSITORIES_PAGES": "Halaman repositori",
+		"BACKUP_CONFIG_FILE": "Berkas konfigurasi cadangan",
+		"MESSAGE": "Untuk mengubah sebuah pengaturan, tinggal sunting saja dan pencet Enter. Tidak semua pengaturan bisa disunting dan akan mengembalikan galat jika kamu mencobanya.",
+		"PROPERTY": "Properti"
 	},
 	"VIEW_POPULAR": "Populer",
 	"ONLINE_STATS": {
@@ -791,14 +913,30 @@
 			"FLAG_PUBLIC": "Bagikan profil kamu"
 		},
 		"SHUFFLE_MODAL": {
-			"TITLE": "Acak daftar putar"
+			"TITLE": "Acak daftar putar",
+			"SORTUPVOTES": "Urut menurut suka",
+			"LABEL": "Pengacakan tidak memengaruhi lagu yang sudah diputar. Pilih metode untuk mengacak daftar putar:",
+			"SHUFFLE": "Acak",
+			"SHUFFLE_DESC": "Daftar putar akan diacak secara acak, tanpa pengaruh apa pun yang diterapkan pada campuran.",
+			"SMART_SHUFFLE": "Pintar",
+			"SMART_SHUFFLE_DESC": "Cegah lagu panjang atau lagu oleh orang yang sama mengikuti satu sama lain",
+			"BALANCE": "Seimbang",
+			"SORTUPVOTES_DESC": "Urut menurut jumlah suka yang berkurang (lagu populer terlebih dahulu)"
 		},
 		"PLAY_CURRENT_MODAL": "Peringatan: daftar putar saat ini '{{playlist}}' tidak tertampil di layar. Itu daftar putar yang akan diputar. Apakah kamu yakin kamu ingin mulai memutar?",
 		"CREATE_TAG": {
-			"OPEN": "Buat tanda"
+			"OPEN": "Buat tanda",
+			"TITLE": "Buat tanda cepat"
 		},
 		"GIT_DANGEROUS": {
-			"TITLE": "Tindakan berbahaya"
+			"TITLE": "Tindakan berbahaya",
+			"RESET": {
+				"DESC": "Hapus semua suntingan yang belum didorong.",
+				"BTN": "Atur Ulang"
+			},
+			"DONE": "Tugas berhasil diselesaikan.",
+			"EMPTY": "Tidak ada yang berubah!",
+			"DESCRIPTION": "Selamat datang di sisi tindakan berbahaya. Sepertinya kamu bisa mengacaukan banyak hal di sini. Berikut ringkasan singkat dari hasil suntingan yang terdeteksi :"
 		},
 		"PLAYLIST_MODAL": {
 			"CANNOT_BLACKLIST": "Kamu tidak bisa tidak mempunyai daftar hitam, sunting yang kamu ingin untuk atur sebagai daftar hitam baru.",
@@ -806,18 +944,80 @@
 			"CANNOT_SMART": "Kamu tidak bisa menghapus bendera pintar dari daftar putar.",
 			"CANNOT_WHITELIST": "Kamu tidak bisa tidak mempunyai daftar putih, sunting yang kamu ingin untuk atur sebagai daftar putih baru.",
 			"NAME": "Nama",
-			"CURRENT": "Saat ini"
+			"CURRENT": "Saat ini",
+			"VISIBLE": "Terlihat",
+			"VISIBLE_DESC": "Terlihat oleh audiens",
+			"WHITELIST": "Daftar Putih",
+			"WHITELIST_DESC": "Lagu pada daftar ini tidak akan disembunyikan meski mereka ada di daftar hitam.",
+			"EDIT_PLAYLIST": "Sunting {{playlist}}",
+			"CREATE_PLAYLIST": "Buat daftar putar baru",
+			"CREATE": "Buat",
+			"EDIT": "Sunting",
+			"CANNOT_CURRENT_PLAYLIST": "Kamu tidak bisa tidak mempunyai daftar putar saat ini, sunting yang kamu ingin untuk atur sebagai daftar putar saat ini yang baru.",
+			"PUBLIC": "Publik",
+			"CURRENT_DESC": "Daftar saat ini merupakan yang dibaca oleh pemutar media",
+			"PUBLIC_DESC": "Daftar publik adalah yang mengumpulkan saran dari publik",
+			"SMART": "Pintar",
+			"BLACKLIST_DESC": "Lagu pada daftar ini akan disembunyikan dari pengguna (kecuali mereka diputihkan)",
+			"BLACKLIST": "Daftar Hitam"
 		},
 		"TUTORIAL": {
 			"WELCOME": "Selamat datang di Karaoke Mugen! Ini adalah apa yang perlu kamu ketahui.",
 			"TITLE": "Tutorial",
 			"NEXT": "Selanjutnya",
 			"BACK": "Kembali",
-			"END": "Selesai"
+			"END": "Selesai",
+			"PLAYLIST": "Layar menampilkan dua daftar putar. Kamu bisa menambahkan lagu dari daftar putar kiri ke daftar putar kanan dan sebaliknya dengan hanya mengklik pada <2/>.",
+			"TITLE_CLICK": "Klik pada judul karaoke untuk informasi lebih lanjut <1>(penyanyi, penggubah, dll.)</1>.",
+			"PLAYER_BAR": "Pemutar Karaoke Mugen bisa dikelola dari bilah atas.",
+			"PLAYER_CURRENT_HINT": "Pemutar akan memutar lagu yang dipilih di <1>daftar putar saat ini</1>.",
+			"BLACKLIST_DESC": "Daftar hitam berisi semua lagu yang dikecualikan",
+			"CURRENT_DESC": "Daftar putar <1>saat ini</1> adalah yang digunakan oleh pemutar.",
+			"PLAYLIST_ATTRIBUTES": "Ketika kamu membuat daftar putar, kamu bisa mengaturnya sebagai <1>saat ini</1> atau <3>publik</3>.",
+			"PUBLIC_DESC": "Daftar putar <1>publik</1> adalah di mana permintaan pengguna kamu berada.",
+			"CURRENT_PUBLIC_DESC": "Daftar putar <1>saat ini</1> dan <3>publik</3> bisa sama.",
+			"LIBRARY": "Pustaka menampilkan semua lagu karaoke yang tersedia.",
+			"MESSAGE": "Kamu bisa mengirim pesan ke publik kamu (di perangkat mereka atau layar pemutar) dengan tombol Pesan.",
+			"PLAYER_GO_BACK": "Tombol Ulang memungkinkan kamu untuk kembali ke <1>awal dari lagu saat ini</1>.",
+			"PLAYER_STOP": "Tombol Berhenti akan memberhentikan pemutaran ketika lagu saat ini berakhir. Kamu bisa mengklik pada itu lagi untuk memberhentikan <1>langsung</1>.",
+			"K_MENU": "\"Menu K\" memungkinkan kamu untuk menyunting profil dan pengaturan karaoke lainnya."
 		},
 		"CROP_AVATAR_MODAL": {
 			"TITLE": "Pangkas avatar kamu",
 			"HELP": "Ubah ukuran kotak untuk mempunyai gambar profil yang sempurna."
+		},
+		"CLASSIC_MODE": {
+			"TEXT": "Klik pada tombol Putar untuk memulai lagu kamu.",
+			"TITLE": "Giliranmu untuk bernyanyi!"
+		},
+		"POLL": {
+			"VOTE": "Waktunya memilih!",
+			"VOTES_one": "{{count}} suara ({{percent}}%)",
+			"VOTES_other": "{{count}} suara ({{percent}}%)",
+			"REMAINING_one": "{{count}} detik tersisa",
+			"REMAINING_other": "{{count}} detik tersisa"
+		},
+		"RESTART_DOWNLOADS_MODAL": {
+			"TITLE": "Unduhan tertunda",
+			"LABEL": "Beberapa unduhan tertunda dari sesi terakhir kamu. Apa yang akan kamu lakukan?",
+			"LATER": "Tanyakan lagi nanti",
+			"DELETE": "Batalkan semua unduhan tertunda",
+			"CONTINUE": "Lanjutkan semua unduhan"
+		},
+		"DELETE_PLAYLIST_MODAL": {
+			"IMPOSSIBLE": "Kamu tidak bisa menghapus hanya daftar putar.",
+			"DELETE_WHITELIST": "Daftar ini ditetapkan sebagai daftar putih saat ini, ubah daftar putih saat ini ke yang lain untuk menghapus ini.",
+			"DELETE_BLACKLIST": "Daftar ini ditetapkan sebagai daftar hitam saat ini, ubah daftar hitam saat ini ke yang lain untuk menghapus ini.",
+			"DELETE_PUBLIC": "Daftar ini ditetapkan sebagai publik, ubah daftar putar publik ke yang lain untuk menghapus ini.",
+			"TITLE": "Hapus {{playlist}} selamanya?",
+			"DELETE_CURRENT": "Daftar ini ditetapkan sebagai saat ini, ubah daftar putar saat ini ke yang lain untuk menghapus ini.",
+			"DELETE_CURRENT_PUBLIC": "Daftar ini ditetapkan sebagai saat ini dan publik, ubah daftar putar saat ini dan publik ke yang lain untuk menghapus ini."
+		},
+		"STATS_MODAL": {
+			"TITLE": "Gunakan permintaan favorit dan karaoke saya untuk statistik",
+			"DESC": "Kami menggunakan favorit dan juga karaoke kamu yang kamu minta ketika sebuah sesi untuk membuat statistik penggunaan (sebagai contoh, untuk mencari tahu karaoke yang paling sering diminta).",
+			"REFUSE_DESC": "Jika kamu tidak ingin berpartisipasi, meskipun awanama di statistik penggunaan tersebut, mohon beritahu kami. Jika kamu menolak, data kamu akan diabaikan oleh peladen dan tidak akan dikirimkan oleh aplikasi Karaoke Mugen.",
+			"CHANGE": "Kamu bisa mengubah ini kapan saja di profil kamu. Apakah kamu setuju tentang penggunaan statistik kamu?"
 		}
 	},
 	"REPOSITORIES": {
@@ -858,7 +1058,34 @@
 		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Pilih repositori",
 		"COMPARE_BUTTON": "Bandingkan",
 		"CONFIRM_SURE": "Apakah kamu ingin menyinkronkan lirik repositori {{second}} dengan yang di repositori {{first}}?",
-		"FREE_SPACE": "Penyimpanan kosong"
+		"FREE_SPACE": "Penyimpanan kosong",
+		"GIT": {
+			"AUTHOR": "Identitas Git",
+			"USERNAME": "Nama Pengguna Git",
+			"EMAIL": "Surel Git",
+			"PASSWORD": "Kata Sandi Git (atau token GitLab/GitHub)",
+			"URL": "Repositori Git"
+		},
+		"FTP": {
+			"HOST": "Hos FTP",
+			"PORT": "Porta FTP",
+			"USERNAME": "Nama Pengguna FTP",
+			"PASSWORD": "Kata Sandi FTP",
+			"BASEDIR": "Direktori Dasar FTP"
+		},
+		"GIT_STATUSES": {
+			"MODIFIED": "Disunting (perubahan untuk didorong)",
+			"CLEAN": "Salinan bersih"
+		},
+		"MOVING_MEDIA": "Tindakan repositori",
+		"STORAGE_INFO_DELETE": "Seperti yang kamu lihat barusan, kamu memiliki kemampuan untuk menghapus media tak digunakan selama sebulan atau semua media. Mereka akan diunduh ulang ketika dibutuhkan lagi, ini memungkinkan kamu untuk mengosongkan ruang jika kamu melakukan malam karaoke yang panjang baru-baru ini, misalnya.",
+		"STORAGE_INFO_MOVE": "Kamu juga memiliki kemampuan, di halaman pengelolaan repositori, untuk memindah berkas repositori ke suatu tempat di diska eksternal, USB, atau jaringan, memperbolehkan kamu untuk mengosongkan ruang di diska utama kamu.",
+		"GIT_STATUS": "Status Git",
+		"GIT_ACTIONS": "Tindakan",
+		"DELETE_OLD_MEDIAS": "Hapus media tak digunakan dalam sebulan",
+		"DELETE_ALL_MEDIAS": "Hapus semua media",
+		"STORAGE_INFO": "Ada beberapa cara untuk mengelola ruang yang digunakan oleh repositori kamu:",
+		"NO_FREE_SPACE": "Tidak cukup ruang diska untuk mengunduh! Pastikan ruang di diska kamu dan mulai ulang antrian."
 	},
 	"ERROR_CODES": {
 		"PL_SONG_COPY_ERROR": "Galat menyalin lagu ke daftar putar tujuan",
@@ -1101,7 +1328,56 @@
 		"VIEW_DOWNLOAD_QUEUE": "Lihat",
 		"WIPE_DOWNLOAD_QUEUE": "Bersihkan",
 		"START_DOWNLOAD_QUEUE": "Mulai",
-		"DELETE_KARA_TITLE": "Kamu akan menghapus {{count}} karaoke tertampil, apakah kamu yakin?"
+		"DELETE_KARA_TITLE": "Kamu akan menghapus {{count}} karaoke tertampil, apakah kamu yakin?",
+		"ADD_FILE_MEDIA_ERROR": "{{name}} bukan berkas media",
+		"YEAR": "Tahun disiarkan",
+		"YEAR_TOOLTIP": "Tahun ketika serial disiarkan atau video diproduksi",
+		"MEDIA_IN_PROCESS": "Berkas media sedang di integrasi, mohon tunggu notifikasi tentang pemrosesan yang berhasil.",
+		"LYRICS_FILE": "Berkas lirik",
+		"ALIASES_TOOLTIP": "Nama pendek atau nama alternatif, digunakan untuk pencarian.",
+		"LANGUAGES_REQUIRED": "Mohon pilih sebuah bahasa",
+		"SONGWRITERS_TOOLTIP": "Penulis lagu menggubah lirik DAN musik.",
+		"TYPE_REQUIRED": "Jenis lagu wajib diisi",
+		"IGNOREHOOKS_TOOLTIP": "Beberapa tanda bisa ditambahkan otomatis ke lagu ini jika itu memenuhi beberapa kondisi.",
+		"COMMENT_TOOLTIP": "Bidang komentar untuk hal seperti \"Untuk semua fan saya!\" atau \"Jangan sunting efeknya!\" atau \"Dibuat oleh banyak kopi\".",
+		"PREVIEW_HOOKS": "Pratinjau tanda yang ditambahkan otomatis",
+		"PREVIEW_HOOKS_MODAL": "Tanda tersebut akan ditambahkan otomatis",
+		"DEJAVU_TOOLTIP": "Lagu yang baru-baru ini diputar",
+		"SYNCHRONIZE_DESC": "Unduh semua media",
+		"SONGWRITERS_BY": "Ditulis oleh",
+		"DELETE_ALL_TOOLTIP": "Hapus semua karaoke tertampil sekaligus",
+		"EDIT_KARA": "Sunting karaoke",
+		"AUTHORS_BY": "Karaoke dibuat oleh",
+		"DELETE_KARA": "Hapus karaoke?",
+		"ALIASES": "Alias",
+		"IGNOREHOOKS": "Hiraukan tanda otomatis",
+		"GROUPS_TOOLTIP": "Kelompok unduhan untuk lagu ini. Lagu ini akan dimasukkan ke paket unduhan tersebut",
+		"PLAYED": "Jumlah tampilan",
+		"REPOSITORY_REQUIRED": "Repositori diwajibkan",
+		"CREATORS_BY": "Dibuat oleh",
+		"ADD_FILE_LYRICS_ERROR": "{{name}} bukan berkas takarir",
+		"TITLE": "Judul",
+		"TITLE_TOOLTIP": "Jika kamu tidak tahu, ketik nama serialnya juga di sini",
+		"TITLE_REQUIRED": "Mohon masukkan judul lagu",
+		"TITLE_ENG_REQUIRED": "Mohon masukkan judul lagu dalam bahasa Inggris",
+		"SERIES_TOOLTIP": "Serial TV, judul film, judul permainan video, dll.",
+		"SERIES_SINGERS_REQUIRED": "Serial dan Penyanyi tidak bisa kosong bersama-sama.",
+		"ORDER": "Urutan lagu",
+		"ORDER_TOOLTIP": "Nomor Pembuka/Penutup. Jika ini merupakan pembuka/penutup satu-satunya di serial, biarkan kosong.",
+		"CREATORS_TOOLTIP": "Entitas yang membuat serial. Bisa studio animasi, studio film, atau studio permainan.",
+		"KARA_AUTHORS_TOOLTIP": "Tambahkan dirimu di sini ;)",
+		"KARA_AUTHORS_REQUIRED": "Pengarang dari karaoke wajib diisi",
+		"COMMENT": "Ada komentar?",
+		"PLAYED_AT": "Dilihat pada",
+		"REQUESTED": "Diminta",
+		"TAG_FILTER": "Filter tanda",
+		"TAG_GROUP_FILTER": "Filter kelompok",
+		"SYNCHRONIZE": "Sinkronisasi",
+		"VERSIONS_TOOLTIP": "Versi memungkinkan pengenalan lebih baik lagu dengan judul yang sama. Jika tidak ada versi yang diterapkan ke lagu ini karena itu terlalu spesifik (cth. Future Vers. atau Chihaya Vers.) yang ditunjukkan di judulnya dengan menambahkan \" ~Chihaya Vers.\".",
+		"CREATED_AT": "Tanggal pembuatan",
+		"MODIFIED_AT": "Tanggal terakhir diperbarui",
+		"ONLINE_REPOSITORIES": "Beberapa karaoke kamu berasal dari repositori jarak jauh (seperti contohnya peladen kara.moe), karaoke tersebut tidak bisa disunting lewat antarmuka ini, untuk memastikan repositori tetap tersinkronisasi. Kamu bisa mencentang kotak \"Mode pengelola\" di pengaturan repositori, kamu tidak akan menerima pembaruan lagi tapi kamu akan bisa menyunting atau menghapus karaoke.",
+		"PROBLEMATIC_TOOLTIP": "Lagu ini berisi adegan ({{tags}}) yang mungkin bermasalah bagi sebagian penonton."
 	},
 	"USERS": {
 		"LOGIN": "Nama pengguna",
@@ -1167,7 +1443,28 @@
 		"MERGE_WITH_TOOLTIP": "Gabung tanda saat ini dengan yang lain",
 		"MERGE_WITH_SELECT": "Pilih sebuah tanda",
 		"MERGE_WITH_BUTTON": "Gabung!",
-		"MERGE_ABOUT": "Tentang Proses Penggabungan"
+		"MERGE_ABOUT": "Tentang Proses Penggabungan",
+		"NOLIVEDOWNLOAD": "Larang dalam Unduhan Langsung/Web",
+		"DELETE_TAG_CONFIRM": "Hapus tanda",
+		"REPOSITORY_REQUIRED": "Repositori diwajibkan",
+		"NOLIVEDOWNLOAD_TOOLTIP": "Lagu dengan tanda ini tidak akan bisa diunduh di Peladen Karaoke Mugen dari antarmuka web, atau terlihat saat Siaran Langsung",
+		"NAME_REQUIRED": "Mohon masukkan nama",
+		"NAME": "Nama asli",
+		"NAME_TOOLTIP": "Ini adalah nama internal yang digunakan untuk merujuk tanda di basis data Karaoke Mugen",
+		"TAG_DELETED_CONFIRM": "Konfirmasi penghapusan tanda",
+		"ALIASES": "Alias",
+		"ALIASES_TOOLTIP": "Nama pendek atau nama alternatif, digunakan untuk pencarian.",
+		"I18N": "Nama menurut bahasa",
+		"I18N_SELECT": "Tambahkan sebuah bahasa",
+		"SHORT_NAME": "Nama pendek",
+		"SHORT_NAME_TOOLTIP": "Ini adalah nama pendek yang digunakan di antarmuka operator ketika menampilkan judul karaoke",
+		"KARAFILETAG": "Tanda opsional nama berkas karaoke",
+		"KARAFILETAG_TOOLTIP": "Ini akan ditambahkan di bagian jenis dari nama berkas karaoke",
+		"TYPES": "Jenis tanda",
+		"TYPES_TOOLTIP": "Ini adalah jenis tanda, jadi bisa dengan benar dicari oleh pengguna",
+		"I18N_DELETE": "Hapus nama",
+		"PRIORITY": "Prioritas tampilan",
+		"COPY_TAG": "Salin tanda ke repositori lain"
 	},
 	"VIEW_LIKES_TOOLTIP": "Lagu dengan suka paling banyak akan ditampilkan dahulu, ini tidak berdampak pada urutan daftar putar sebenarnya.",
 	"SELECT_KARAS_REQUIRED": "Kamu harus memilih paling tidak satu lagu",
@@ -1221,7 +1518,11 @@
 	"OUTRO_TIME": "Penutup daftar putar",
 	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
 	"ENCORES_TIME": "Ekstra! Ekstra!",
-	"ENCORES_TAGLINES": ["Yah, bukan karena aku menyukaimu atau apa gitu…", "Terakhir?"],
+	"ENCORES_TAGLINES": [
+		"Yah, bukan karena aku menyukaimu atau apa gitu…",
+		"Terakhir?",
+		"Lagu terakhir, berikan yang terbaik!"
+	],
 	"SPONSOR_TIME": "IKLAN!",
 	"SPONSOR_TAGLINES": ["Dan terima kasih atas duitnya."],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
@@ -1242,14 +1543,34 @@
 	"POLL_TAGLINES": ["Pilihan ada padamu."],
 	"REMOTE_URL": "URL akses jarak jauh",
 	"DATABASE": {
-		"REGENERATE_DB": "Membuat kembali basis data kamu"
+		"REGENERATE_DB": "Membuat kembali basis data kamu",
+		"VALIDATE_FILES_DESCRIPTION": "Validasi semua berkas di semua repositori yang diaktifkan untuk memperbaiki mereka jika diperlukan. Penggunaan pengelola saja.",
+		"UPDATING_REPOS": "Memperbarui repositori",
+		"VALIDATE_FILES": "Validasi berkas",
+		"CONFIRM_UPDATE": "Konfirmasi pembaruan",
+		"RESTORE_DATABASE": "Pulihkan basis data",
+		"UPDATE_REPOS": "Perbarui repositori",
+		"UPDATE_REPOS_DESCRIPTION": "Paksa pembaruan repositori, ini bisa berguna jika salah satu repositori berada di kondisi tidak normal.",
+		"RESTORE_DATABASE_DESCRIPTION": "Memulihkan basis data kamu dari berkas karaokemugen.sql jika itu ada di folder data kamu. <2>**PERINGATAN: Ini akan menimpa SEMUA data tak tersimpan di basis data kamu: daftar putar, sesi, dll.)</2>"
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
 			"INFO": {
 				"END_OF_SESSION_NEAR": "Sesi karaoke berakhir dalam {{data}} menit.",
 				"POLL_STARTING": "Memulai jajak pendapat",
-				"POLL_WINNER": "Orang-orang memilih lagu baru!"
+				"POLL_WINNER": "Orang-orang memilih lagu baru!",
+				"PLAYER_RESTARTING": "Memulai ulang pemutar media…"
+			},
+			"ERROR": {
+				"POLL_ALREADY_STARTED": "Jajak pendapat sedang berjalan",
+				"PLAYER_CLASSIC_PAUSE_SCREEN": "Tidak bisa menyiapkan layar jeda",
+				"DOWNLOAD": "Galat unduh lagu",
+				"PLAYER_PLAY": "Tidak bisa memutar lagu",
+				"PLAYER_RANDOM_SONG_AFTER_PLAYLIST": "Tidak bisa memilih lagu acak untuk diputar setelah daftar putar berakhir",
+				"PLAYER_PLMEDIA": "Tidak bisa untuk memutar media daftar putar",
+				"SHORTENER": "Galat ketika mengaktifkan penyingkat URL",
+				"POLL_PUBLIC_PL_EMPTY": "Tidak bisa memulai jajak pendapat: daftar putar publik kosong",
+				"POLL_NOT_ENOUGH_SONGS": "Tidak bisa memulai jajak pendapat: tidak cukup lagu tersedia"
 			}
 		}
 	},
@@ -1258,5 +1579,21 @@
 	"CONFIRM_SURE": "Apakah kamu yakin?",
 	"LOADING": "Memuat…",
 	"REFRESH": "Segarkan",
-	"ACTION": "Tindakan"
+	"ACTION": "Tindakan",
+	"TOOLTIP_ACCEPT_SELECT_KARA": "Terima lagu (bebaskan lagu dan salin ke daftar saat ini)",
+	"REMOTE_TOKEN_TOOLTIP": "(ungkap hanya ke admin peladen)",
+	"REMOTE_RESET": "Atur ulang token",
+	"REMOTE_RESET_TOOLTIP": "Buat token baru, kamu akan kehilangan kode ruang kamu.",
+	"REMOTE_RESET_CONFIRM": "Kode ruang kamu akan dibebaskan dan yang baru akan dibuat untuk kamu, apakah kamu yakin?",
+	"CLEAR_FILTER": "Hapus",
+	"VIEW_STANDARD": "Standar",
+	"VIEW_FAVORITES": "Favorit",
+	"LOADING_SUBTITLE_ELECTRON": "Seharusnya tidak memakan waktu yang lama, coba mulai ulang Karaoke Mugen atau perbarui itu jika kamu terjebak di sini.",
+	"LOADING_SUBTITLE": "Seharusnya tidak memakan waktu yang lama, coba bersihkan tembolok atau perbarui peramban jika kamu terjebak di sini.",
+	"TOOLTIP_REFUSE_SELECT_KARA": "Tolak lagu (bebaskan lagu)",
+	"TOOLTIP_ADDKARA_ADMIN": "klik kanan untuk menambahkannya setelah lagu yang saat ini diputar",
+	"TOOLTIP_ACCEPT_KARA": "Terima lagu (bebaskan lagu dan salin ke daftar saat ini)",
+	"TOOLTIP_REFUSE_KARA": "Tolak lagu (bebaskan lagu)",
+	"CHECKED": "Dipilih:",
+	"POLL_TIME": "Pilih"
 }

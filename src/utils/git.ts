@@ -36,7 +36,9 @@ interface LogResult<T = LogFieldsWithId> {
 
 export default class Git {
 	git: SimpleGit;
+
 	opts: GitOptions;
+
 	task: Task;
 
 	constructor(opts: GitOptions) {
@@ -51,14 +53,15 @@ export default class Git {
 
 	progressHandler({ method, stage, progress }: SimpleGitProgressEvent) {
 		// Yeah we're redifining the text because we have to use method or else typescript is screaming at me and I don't like its voice.
-		if (this.task)
+		if (this.task) {
 			this.task.update({
 				text: `${this.opts.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t(
-					'GIT.METHODS.' + method
+					`GIT.METHODS.${method}`
 				)}`,
-				subtext: `${i18next.t('GIT.STAGES.' + stage)}`,
+				subtext: `${i18next.t(`GIT.STAGES.${stage}`)}`,
 				value: progress,
 			});
+		}
 	}
 
 	private getFormattedURL() {
@@ -77,6 +80,7 @@ export default class Git {
 			progress: this.progressHandler.bind(this),
 		});
 		if (configChanged) {
+			logger.info('Setting up git repository settings', { service: 'Git' });
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
 			const origin = remotes.find(r => r.name === 'origin');
@@ -111,9 +115,8 @@ export default class Git {
 		const options = ref ? [ref] : ['--hard', 'origin/master'];
 		if (!ref) {
 			return this.git.reset(options).then(this.wipeChanges.bind(this));
-		} else {
-			return this.git.reset(options);
 		}
+		return this.git.reset(options);
 	}
 
 	async stashList(): Promise<LogResult> {

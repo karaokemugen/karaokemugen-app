@@ -1,21 +1,22 @@
-//Node modules
+// Node modules
 import { app } from 'electron';
 import execa from 'execa';
 import i18n from 'i18next';
 import internetAvailable from 'internet-available';
 import logger from 'winston';
 
-import { compareKarasChecksum, DBReady, generateDB, getStats, initDBSystem } from '../dao/database';
+import { compareKarasChecksum, generateDB, getStats, initDBSystem } from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
 import { postMigrationTasks } from '../dao/migrations';
 import { markAllMigrationsFrontendAsDone } from '../dao/migrationsFrontend';
 import { applyMenu, closeAllWindows, handleFile, handleProtocol, postInit } from '../electron/electron';
+import { initAutoUpdate } from '../electron/electronAutoUpdate';
 import { errorStep, initStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
 import { closeDB, getSettings, saveSetting, vacuum } from '../lib/dao/database';
 import { initHooks } from '../lib/dao/hook';
 import { generateDatabase as generateKaraBase } from '../lib/services/generation';
-//Utils
+// Utils
 import { getConfig, setConfig } from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
 import { enableWSLogging, profile } from '../lib/utils/logger';
@@ -39,7 +40,7 @@ import { getState, setState } from '../utils/state';
 import { writeStreamFiles } from '../utils/streamerFiles';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
 import { subRemoteUsers } from '../utils/userPubSub';
-import { initFrontend } from './frontend';
+import initFrontend from './frontend';
 import { welcomeToYoukousoKaraokeMugen } from './init';
 
 let shutdownInProgress = false;
@@ -145,7 +146,7 @@ export async function initEngine() {
 			// Reinit menu since we switched ports. Only if first run has already been done.
 			if (!conf.App.FirstRun) applyMenu('DEFAULT');
 		}
-		if (internet)
+		if (internet) {
 			try {
 				initStep(i18n.t('INIT_ONLINEURL'));
 				await initKMServerCommunication();
@@ -160,17 +161,20 @@ export async function initEngine() {
 				logger.error('Failed to init online system', { service: 'Engine', obj: err });
 				sentry.error(err, 'Warning');
 			}
+		}
 		try {
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
 			initStep(i18n.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [initPlaylistSystem(), initDownloader(), initSession()];
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initPromises.push(initTwitch());
-			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) initPromises.push(initPlayer());
+			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
+				initPromises.push(initPlayer());
+			}
 			await Promise.all(initPromises);
 			if (conf.Online.Stats === true) initStats(false);
 			initStep(i18n.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
-			//Easter egg
+			// Easter egg
 			const ready = Math.floor(Math.random() * 10) >= 9 ? 'LADY' : 'READY';
 			if (!state.isTest && state.opt.cli) await welcomeToYoukousoKaraokeMugen();
 			// This is done later because it's not important.
@@ -205,7 +209,8 @@ export async function initEngine() {
 			}
 			// Update everything kara-related
 			updateBase(internet);
-			// Mark all migrations as done for the first run to avoid the user to have to do all the migrations from start
+			// Mark all migrations as done for the first run to
+			// avoid the user to have to do all the migrations from start
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
 			setState({ ready: true });
 			writeStreamFiles();
@@ -231,6 +236,7 @@ export async function updateBase(internet: boolean) {
 	}
 	initFetchPopularSongs();
 	await checkDownloadStatus();
+	if (!state.forceDisableAppUpdate) initAutoUpdate();
 	createImagePreviews(
 		await getKaras({
 			q: 'm:downloaded',
@@ -254,7 +260,7 @@ export async function exit(rc = 0, update = false) {
 		logger.warn('mpv error', { service: 'Engine', obj: err });
 		// Non fatal.
 	}
-	if (DBReady && getConfig().System.Database.bundledPostgresBinary) await dumpPG().catch();
+	if (getState().DBReady && getConfig().System.Database.bundledPostgresBinary) await dumpPG().catch();
 	try {
 		await closeDB();
 	} catch (err) {
@@ -262,7 +268,7 @@ export async function exit(rc = 0, update = false) {
 	}
 	const c = getConfig();
 	if (getTwitchClient() || c?.Karaoke?.StreamerMode?.Twitch?.Enabled) await stopTwitch();
-	//CheckPG returns if postgresql has been started by Karaoke Mugen or not.
+	// CheckPG returns if postgresql has been started by Karaoke Mugen or not.
 	try {
 		// Let's try to kill PGSQL anyway, not a problem if it fails.
 		if (c?.System.Database?.bundledPostgresBinary && (await checkPG())) {
@@ -275,9 +281,7 @@ export async function exit(rc = 0, update = false) {
 			} finally {
 				if (!update) mataNe(rc);
 			}
-		} else {
-			if (!update) mataNe(rc);
-		}
+		} else if (!update) mataNe(rc);
 	} catch (err) {
 		logger.error('Failed to shutdown PostgreSQL', { service: 'Engine', obj: err });
 		sentry.error(err);
@@ -319,7 +323,7 @@ async function preFlightCheck(): Promise<boolean> {
 		logger.info('Unable to tell when last generation occured: database generation triggered', { service: 'DB' });
 		doGenerate = true;
 	}
-	if (doGenerate)
+	if (doGenerate) {
 		try {
 			initStep(i18n.t('INIT_GEN'));
 			await generateDB();
@@ -328,6 +332,7 @@ async function preFlightCheck(): Promise<boolean> {
 			errorStep(i18n.t('ERROR_GENERATION'));
 			throw err;
 		}
+	}
 	const stats = await getStats();
 	logger.info(`Songs        : ${stats?.karas} (${duration(+stats?.duration)})`, { service: 'DB' });
 	logger.info(`Playlists    : ${stats?.playlists}`, { service: 'DB' });

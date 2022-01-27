@@ -1,4 +1,4 @@
-DROP MATERIALIZED VIEW all_tags;
+DROP MATERIALIZED VIEW IF EXISTS all_tags;
 
 ALTER TABLE tag DROP COLUMN IF EXISTS problematic;
 
@@ -22,7 +22,7 @@ from tag t
 CREATE UNIQUE INDEX idx_at_tid
     on all_tags (pk_tid);
 
-DROP TABLE all_karas;
+DROP TABLE IF EXISTS all_karas;
 CREATE TABLE all_karas AS
 SELECT k.*,
 	 CASE WHEN MIN(kt.pk_tid::text) IS NULL THEN null ELSE jsonb_agg(DISTINCT json_build_object('tid', kt.pk_tid, 'short', kt.short, 'name', kt.name, 'aliases', kt.aliases, 'i18n', kt.i18n, 'priority', kt.priority, 'type_in_kara', ka.type, 'karafile_tag', kt.karafile_tag)::jsonb) END as tags,

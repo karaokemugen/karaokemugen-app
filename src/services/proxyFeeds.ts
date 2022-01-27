@@ -43,7 +43,7 @@ export async function getFeeds() {
 	return Promise.all(feedPromises);
 }
 
-/** Get System Messages **/
+/** Get System Messages * */
 async function fetchSystemMessages(): Promise<Feed> {
 	return {
 		name: 'system',
@@ -71,13 +71,13 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			});
 		}
 		return {
-			name: name,
+			name,
 			body: JSON.stringify(feed),
 		};
 	} catch (err) {
 		logger.error(`Unable to fetch feed ${name}`, { service: 'Feeds', obj: err });
 		return {
-			name: name,
+			name,
 			body: null,
 		};
 	}

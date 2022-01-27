@@ -104,13 +104,15 @@ export async function editUser(
 			const password = await hashPasswordbcrypt(user.password);
 			await updateUserPassword(username, password);
 		}
-		if (user.type && +user.type !== currentUser.type && role !== 'admin')
+		if (user.type && +user.type !== currentUser.type && role !== 'admin') {
 			throw { code: 403, msg: 'USER_CANNOT_CHANGE_TYPE' };
+		}
 		// If we're renaming a user, user.login is going to be set to something different than username
 		user.old_login = username;
 		// Check if login already exists.
-		if (user.nickname && currentUser.nickname !== user.nickname && (await checkNicknameExists(user.nickname)))
+		if (user.nickname && currentUser.nickname !== user.nickname && (await checkNicknameExists(user.nickname))) {
 			throw { code: 409 };
+		}
 		if (avatar?.path) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in database
@@ -118,7 +120,7 @@ export async function editUser(
 			try {
 				mergedUser.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
 			} catch (err) {
-				//Non-fatal
+				// Non-fatal
 				logger.warn('Cannot replace avatar', { service: 'User', obj: err });
 			}
 		} else {
@@ -128,12 +130,13 @@ export async function editUser(
 		delete updatedUser.password;
 		let KMServerResponse: any;
 		try {
-			if (updatedUser.login.includes('@') && opts.editRemote && +getConfig().Online.Users)
+			if (updatedUser.login.includes('@') && opts.editRemote && +getConfig().Online.Users) {
 				KMServerResponse = await editRemoteUser(
 					{ ...updatedUser, password: user.password || undefined },
 					opts.editRemote,
 					!!avatar?.path
 				);
+			}
 		} catch (err) {
 			logger.warn('Cannot push user changes to remote', { service: 'RemoteUser', obj: err });
 			throw { code: 500 };
@@ -188,11 +191,11 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 export async function getUser(username: string, full = false) {
 	if (!username) throw 'No user provided';
 	username = username.toLowerCase();
-	//Check if user exists in db
+	// Check if user exists in db
 	const userdata = (
 		await selectUsers({
 			singleUser: username,
-			full: full,
+			full,
 		})
 	)[0];
 	return userdata;
@@ -200,9 +203,10 @@ export async function getUser(username: string, full = false) {
 
 /** Hash passwords with sha256 */
 export function hashPassword(password: string): string {
-	const hash = createHash('sha256');
-	hash.update(password);
-	return hash.digest('hex');
+	const hache = createHash('sha256');
+	// Come on, I needed a name different than hash.
+	hache.update(password);
+	return hache.digest('hex');
 }
 
 /** Hash passwords with bcrypt */
@@ -234,9 +238,8 @@ export async function checkPassword(user: User, password: string): Promise<boole
 export function createAdminUser(user: User, remote: boolean, requester: User) {
 	if (requester.type === 0 || user.securityCode === getState().securityCode) {
 		return createUser(user, { createRemote: remote, admin: true });
-	} else {
-		throw { code: 403, msg: 'UNAUTHORIZED' };
 	}
+	throw { code: 403, msg: 'UNAUTHORIZED' };
 }
 
 function getDefaultUser(): User {
@@ -290,23 +293,26 @@ export async function createUser(
 			return newUserIntegrityChecks(user);
 		});
 		if (user.login.includes('@')) {
-			if (user.login.split('@')[0] === 'admin')
+			if (user.login.split('@')[0] === 'admin') {
 				throw {
 					code: 403,
 					msg: 'USER_CREATE_ERROR',
 					details: 'Admin accounts are not allowed to be created online',
 				};
-			if (!+getConfig().Online.Users)
+			}
+			if (!+getConfig().Online.Users) {
 				throw {
 					code: 403,
 					msg: 'USER_CREATE_ERROR',
 					details: 'Creating online accounts is not allowed on this instance',
 				};
+			}
 			if (opts.createRemote) await createRemoteUser(user);
 		}
 		if (user.password) {
-			if (user.password.length < 8 && !opts.noPasswordCheck)
+			if (user.password.length < 8 && !opts.noPasswordCheck) {
 				throw { code: 411, msg: 'PASSWORD_TOO_SHORT', details: user.password.length };
+			}
 			user.password = await hashPasswordbcrypt(user.password);
 		}
 		await insertUser(user);
@@ -336,17 +342,18 @@ async function newUserIntegrityChecks(user: User) {
 /** Remove a user from database */
 export async function removeUser(username: string) {
 	try {
-		if (username === 'admin')
+		if (username === 'admin') {
 			throw {
 				code: 406,
 				msg: 'USER_DELETE_ADMIN_DAMEDESU',
 				details: 'Admin user cannot be deleted as it is necessary for the Karaoke Instrumentality Project',
 			};
+		}
 		if (!username) throw { code: 400 };
 		username = username.toLowerCase();
 		const user = (await selectUsers({ singleUser: username }))[0];
 		if (!user) throw { code: 404, msg: 'USER_NOT_EXISTS' };
-		//Reassign karas and playlists owned by the user to the admin user
+		// Reassign karas and playlists owned by the user to the admin user
 		await reassignToUser(username, 'admin');
 		await deleteUser(username);
 		if (username.includes('@')) {
@@ -431,7 +438,7 @@ async function createDefaultGuests() {
 	}
 	logger.debug(`Creating ${guestsToCreate.length} new guest accounts`, { service: 'User' });
 	for (const guest of guestsToCreate) {
-		if (!(await getUser(guest)))
+		if (!(await getUser(guest))) {
 			try {
 				await createUser({
 					login: deburr(guest),
@@ -444,6 +451,7 @@ async function createDefaultGuests() {
 			} catch (err) {
 				// Not a big problem, it probably means the guest account exists already for some reason.
 			}
+		}
 	}
 	logger.debug('Default guest accounts created', { service: 'User' });
 }
@@ -564,7 +572,7 @@ async function cleanupAvatars() {
 				await fs.unlink(fullFile);
 			} catch (err) {
 				logger.warn(`Failed deleting old file ${fullFile}`, { service: 'User', obj: err });
-				//Non-fatal
+				// Non-fatal
 			}
 		}
 	}
@@ -585,8 +593,8 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 					const time = await selectSongTimeSpentForUser(plaid, username);
 					quotaLeft = +conf.Karaoke.Quota.Time - time;
 					break;
-				default:
 				case 1:
+				default:
 					const count = await selectSongCountForUser(plaid, username);
 					quotaLeft = +conf.Karaoke.Quota.Songs - count;
 					break;
@@ -596,7 +604,7 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 		}
 		emitWS('quotaAvailableUpdated', {
 			username: user.login,
-			quotaLeft: quotaLeft,
+			quotaLeft,
 			quotaType: +conf.Karaoke.Quota.Type,
 		});
 	} catch (err) {

@@ -1,11 +1,11 @@
-ALTER TABLE kara ADD COLUMN titles JSONB;
-ALTER TABLE kara DROP COLUMN title;
+ALTER TABLE kara ADD COLUMN IF NOT EXISTS titles JSONB;
+ALTER TABLE kara DROP COLUMN IF EXISTS title;
 --This is useless since titles isn't populated yet but you know, I'm just leaving this for reference.
 UPDATE kara k SET title_search_vector =
 	(select tsvector_agg(to_tsvector('public.unaccent_conf', titlesj.value)) from kara k2, jsonb_each_text(titles) titlesj where k2.pk_kid = k.pk_kid group by k2.pk_kid)
 ;
 
-DROP TABLE all_karas;
+DROP TABLE IF EXISTS all_karas;
 CREATE TABLE all_karas AS
 SELECT k.*,
 	 CASE WHEN MIN(kt.pk_tid::text) IS NULL THEN null ELSE jsonb_agg(DISTINCT json_build_object('tid', kt.pk_tid, 'short', kt.short, 'name', kt.name, 'problematic', kt.problematic, 'aliases', kt.aliases, 'i18n', kt.i18n, 'priority', kt.priority, 'type_in_kara', ka.type, 'karafile_tag', kt.karafile_tag)::jsonb) END as tags,

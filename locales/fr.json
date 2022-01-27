@@ -176,9 +176,10 @@
 		"TITLE": "Dépôt déjà existant",
 		"MESSAGE": "Le dépôt que vous souhaitez ajouter existe déjà dans votre base de données Karaoke Mugen."
 	},
-	"DATABASE_CONNECTION_ERROR_LINUX": {
-		"TITLE": "Erreur de connexion à la base de données - Linux",
-		"MESSAGE": "Sur les versions packagées Linux de Karaoke Mugen, vous DEVEZ utiliser votre propre PostgreSQL. Referrez-vous à la documentation sur https://docs.karaokes.moe"
+	"DATABASE_CONNECTION_ERROR": {
+		"TITLE": "Erreur de connexion à la base de données",
+		"MESSAGE": "Un problème est survenu sur l'initialisation/connexion à la base de données. Cliquez sur Aide pour plus d'informations.",
+		"HELP": "Aide"
 	},
 	"MISSING_BINARIES": {
 		"TITLE": "Binaires manquants",

@@ -15,7 +15,7 @@ import windowMenu from './menus/window';
 export function initMenu(layout: MenuLayout) {
 	const options: MenuItemBuilderOptions = {
 		isMac: process.platform === 'darwin',
-		layout: layout,
+		layout,
 	};
 	return removeNulls([
 		// MAIN MENU / FILE MENU

@@ -803,7 +803,7 @@
 		"YEAR": "Année de diffusion",
 		"YEAR_TOOLTIP": "Année de la diffusion de la série ou de la vidéo",
 		"SERIES_SINGERS_REQUIRED": "Les champs Séries et Chanté par ne peuvent être vide en même temps.",
-		"SONGWRITERS_TOOLTIP": "Compositeurs et paroliers.",
+		"SONGWRITERS_TOOLTIP": "Compositeurs, Arrangeurs et paroliers.",
 		"CREATORS_TOOLTIP": "Entité qui a créé la série ou le clip. Peut être un studio d'animation, de cinéma, de jeu vidéo, etc.",
 		"KARA_AUTHORS_REQUIRED": "L'auteur du karaoké est obligatoire",
 		"KARA_AUTHORS_TOOLTIP": "Vous devriez vous ajouter ici ;)",

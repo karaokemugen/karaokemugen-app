@@ -54,7 +54,7 @@ export default function playlistsController(router: SocketIOApp) {
 			// No errors detected
 			req.body.name = unescape(req.body.name.trim());
 
-			//Now we add playlist
+			// Now we add playlist
 			try {
 				return {
 					plaid: await createPlaylist(req.body, req.token.username),
@@ -87,7 +87,7 @@ export default function playlistsController(router: SocketIOApp) {
 		// No errors detected
 		if (req.body.name) req.body.name = unescape(req.body.name?.trim());
 
-		//Now we add playlist
+		// Now we add playlist
 		try {
 			return await editPlaylist(req.body?.plaid, req.body);
 		} catch (err) {
@@ -121,7 +121,7 @@ export default function playlistsController(router: SocketIOApp) {
 		await runChecklist(socket, req, 'guest', 'limited');
 		try {
 			const index = await findPlaying(req.body?.plaid);
-			return { index: index };
+			return { index };
 		} catch (err) {
 			errMessage(null, err);
 			throw { code: 500 };
@@ -148,7 +148,7 @@ export default function playlistsController(router: SocketIOApp) {
 	});
 	router.route('addKaraToPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest');
-		//add a kara to a playlist
+		// add a kara to a playlist
 		const validationErrors = check(req.body, {
 			kids: { presence: true, uuidArrayValidator: true },
 		});
@@ -168,7 +168,7 @@ export default function playlistsController(router: SocketIOApp) {
 	});
 	router.route('copyKaraToPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
-		//add karas from a playlist to another
+		// add karas from a playlist to another
 		const validationErrors = check(req.body, {
 			plc_ids: { presence: true, numbersArrayValidator: true },
 		});

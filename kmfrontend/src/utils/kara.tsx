@@ -67,6 +67,12 @@ export function sortTagByPriority(a: any, b: any) {
 	return a.priority < b.priority ? 1 : a.name.localeCompare(b.name);
 }
 
+/**
+ * Tags can have a -1 priority to be hidden from public, and -2 to be hidden everywhere
+ * @param {Array} tags array of tags
+ * @param {String} scope public or admin
+ * @returns {Array} array of tags without hidden tags and sort
+ */
 export function sortAndHideTags(tags: any[], scope: Scope = 'public') {
 	return tags?.length > 0
 		? tags.filter(scope === 'public' ? tag => tag.priority >= 0 : tag => tag.priority >= -1).sort(sortTagByPriority)

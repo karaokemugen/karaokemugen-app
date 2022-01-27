@@ -46,11 +46,12 @@ export function initAutoUpdate() {
 
 	autoUpdater.on('update-not-available', () => {
 		logger.info('Update not available', { service: 'AppUpdate' });
-		if (manualUpdate)
+		if (manualUpdate) {
 			dialog.showMessageBox({
 				title: i18next.t('UPDATE_NOT_AVAILABLE'),
 				message: i18next.t('CURRENT_VERSION_OK'),
 			});
+		}
 	});
 
 	autoUpdater.on('update-downloaded', async () => {
@@ -73,7 +74,7 @@ export function initAutoUpdate() {
 			logger.info('Checking for updates and notify', { service: 'AppUpdate' });
 			autoUpdater.checkForUpdatesAndNotify();
 		} catch (err) {
-			//Non fatal, just report it
+			// Non fatal, just report it
 			sentry.error(err, 'Warning');
 			logger.warn('Unable to check for app updates', { service: 'AppUpdate', obj: err });
 		}

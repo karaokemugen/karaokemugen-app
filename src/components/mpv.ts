@@ -78,10 +78,9 @@ async function resolveMediaURL(file: string, repo: string): Promise<string> {
 	if (up) {
 		logger.info(`Playing media from external source : ${mediaFile}`, { service: 'Player' });
 		return mediaFile;
-	} else {
-		// If all else fails, throw up
-		throw up;
 	}
+	// If all else fails, throw up
+	throw up;
 }
 
 async function waitForLockRelease() {
@@ -89,7 +88,6 @@ async function waitForLockRelease() {
 	while (playerState.isOperating) {
 		await sleep(100);
 	}
-	return;
 }
 
 async function acquireLock() {
@@ -106,11 +104,11 @@ function releaseLock() {
 }
 
 function needsLock() {
-	return function (
+	return (
 		target: any,
 		_propertyKey: string,
 		descriptor: TypedPropertyDescriptor<(...params: any[]) => Promise<any>>
-	) {
+	) => {
 		const originFunc = descriptor.value;
 		descriptor.value = async (...params) => {
 			await acquireLock();
@@ -121,9 +119,13 @@ function needsLock() {
 
 class Comment {
 	updateTime: number;
+
 	speed: number;
+
 	pos: number;
+
 	ypos: number;
+
 	message: string;
 
 	getText() {
@@ -133,9 +135,11 @@ class Comment {
 }
 
 class CommentHandler {
-	//TODO: change comment array to Map <Comment,string>, in a similar way to MessageManager?
+	// TODO: change comment array to Map <Comment,string>, in a similar way to MessageManager?
 	comments: Comment[];
+
 	intervalId: Timeout;
+
 	isRunning: boolean;
 
 	tickFn: () => void;
@@ -152,11 +156,11 @@ class CommentHandler {
 	addComment(message: string) {
 		if (!this.isRunning) {
 			this.isRunning = true;
-			/*//TODO: test code, remove this
+			/* //TODO: test code, remove this
 			for(let i = 0; i < 1000; i++) {
 				this.addComment(`test${i}`);
 			} */
-			//TODO: Test if this causes screen tearing? How to time this so it doesn't if so?
+			// TODO: Test if this causes screen tearing? How to time this so it doesn't if so?
 			this.intervalId = setInterval(this.tick.bind(this), 16);
 		}
 
@@ -171,14 +175,14 @@ class CommentHandler {
 	getText() {
 		let txt = '';
 		for (const line of this.comments) {
-			txt += line.getText() + '\n';
+			txt += `${line.getText()}\n`;
 		}
 		return txt;
 	}
 
 	tick() {
 		// remove comments that are out of bounds
-		//TODO: Could this be better as a set timeout based on speed instead of checking pos every tick?
+		// TODO: Could this be better as a set timeout based on speed instead of checking pos every tick?
 		for (const i in this.comments) {
 			if (this.comments[i].pos < -100) {
 				this.comments.splice(+i, 1);
@@ -195,8 +199,11 @@ class CommentHandler {
 
 class MessageManager {
 	messages: Map<string, string>;
+
 	timeouts: Map<string, Timeout>;
+
 	tickFn: () => void;
+
 	cache: string;
 
 	constructor(tickFn: () => void) {
@@ -238,7 +245,7 @@ class MessageManager {
 	getText() {
 		let txt = '';
 		for (const line of this.messages.values()) {
-			txt += line + '\n';
+			txt += `${line}\n`;
 		}
 		return txt;
 	}
@@ -307,8 +314,8 @@ export async function getMpvAudioOutputs(): Promise<string[][]> {
 
 async function checkMpv() {
 	const state = getState();
-	//On all platforms, check if we're using at least the required mpv version or abort saying the mpv provided is too old.
-	//Assume UNKNOWN is a compiled version, and thus the most recent one.
+	// On all platforms, check if we're using at least the required mpv version or abort saying the mpv provided is too old.
+	// Assume UNKNOWN is a compiled version, and thus the most recent one.
 	let mpvVersion: string;
 	try {
 		const output = await execa(state.binPath.mpv, ['--version']);
@@ -336,8 +343,11 @@ async function checkMpv() {
 
 class Player {
 	mpv: MpvIPC;
+
 	configuration: any;
+
 	options: MpvOptions;
+
 	control: Players;
 
 	constructor(options: MpvOptions, players: Players) {
@@ -395,10 +405,10 @@ class Player {
 
 		// We want a 16/9
 		const screens = await graphics();
+		// Assume 1080p screen if systeminformation can't find the screen
 		const screen = (conf.Player.Screen
 			? screens.displays[conf.Player.Screen] || screens.displays[0]
-			: // Assume 1080p screen if systeminformation can't find the screen
-			  screens.displays[0]) || { currentResX: 1920, resolutionX: 1920 };
+			: screens.displays[0]) || { currentResX: 1920, resolutionX: 1920 };
 		let targetResX = (screen.resolutionX || screen.currentResX) * (conf.Player.PIP.Size / 100);
 		if (isNaN(targetResX) || targetResX === 0) {
 			logger.warn('Cannot get a target res, defaulting to 480 (25% of 1080p display)', {
@@ -448,12 +458,12 @@ class Player {
 			charset: 'numeric',
 		});
 		state.os === 'win32'
-			? (socket = '\\\\.\\pipe\\mpvsocket' + random)
-			: (socket = '/tmp/km-node-mpvsocket' + random);
+			? (socket = `\\\\.\\pipe\\mpvsocket${random}`)
+			: (socket = `/tmp/km-node-mpvsocket${random}`);
 
 		const mpvOptions = {
 			binary: state.binPath.mpv,
-			socket: socket,
+			socket,
 		};
 
 		logger.debug(`mpv${this.options.monitor ? ' monitor' : ''} options:`, {
@@ -592,7 +602,7 @@ class Player {
 					} else if (message.args[0] === 'go-back') {
 						await prev();
 					} else if (message.args[0] === 'seek') {
-						await this.control.seek(parseInt(message.args[1]));
+						await this.control.seek(+message.args[1]);
 					}
 				} catch (err) {
 					logger.warn('Cannot handle mpv script command', { service: 'mpv' });
@@ -668,12 +678,13 @@ class Player {
 
 	async recreate(options?: MpvOptions, restart = false) {
 		try {
-			if (this.isRunning)
+			if (this.isRunning) {
 				try {
 					await this.destroy();
 				} catch (err) {
 					// Non-fatal, should be already destroyed. Probably.
 				}
+			}
 			// Set options if supplied
 			if (options) this.options = options;
 			// Re-init the player
@@ -707,6 +718,7 @@ class Players {
 	};
 
 	messages: MessageManager;
+
 	comments: CommentHandler;
 
 	/** Define lavfi-complex commands when we need to display stuff on screen or adjust audio volume. And it's... complex. */
@@ -768,28 +780,26 @@ class Players {
 					// Fail silently on non-existing player (monitor disabled)
 					return -1;
 				}
-			} else {
-				if (this.players) {
-					for (const player in this.players) {
-						if (!this.players[player].isRunning) {
-							logger.info(`Restarting ${player} player`, { service: 'Player' });
-							loads.push(this.players[player].recreate(null, true));
-						}
+			} else if (this.players) {
+				for (const player in this.players) {
+					if (!this.players[player].isRunning) {
+						logger.info(`Restarting ${player} player`, { service: 'Player' });
+						loads.push(this.players[player].recreate(null, true));
 					}
-				} else {
-					loads.push(this.initPlayerSystem());
 				}
+			} else {
+				loads.push(this.initPlayerSystem());
 			}
 			await Promise.all(loads);
 			if (loads.length > 0) return 1;
-			else return 0;
+			return 0;
 		} catch (err) {
 			sentry.error(err);
 			throw err;
 		}
 	}
 
-	async exec(cmd: string | MpvCommand, args?: any[], onlyOn?: PlayerType, ignoreLock = false) {
+	async exec(cmd: string | MpvCommand, args: any[] = [], onlyOn?: PlayerType, ignoreLock = false) {
 		try {
 			const mpv = typeof cmd === 'object';
 			// ensureRunning returns -1 if the player does not exist (eg. disabled monitor)
@@ -799,12 +809,11 @@ class Players {
 				logger.debug(`${mpv ? 'mpv ' : ''}command: ${JSON.stringify(cmd)}, ${JSON.stringify(args)}`, {
 					service: 'Player',
 				});
-				logger.debug(`Running it for players ${JSON.stringify(onlyOn ? onlyOn : Object.keys(this.players))}`, {
+				logger.debug(`Running it for players ${JSON.stringify(onlyOn || Object.keys(this.players))}`, {
 					service: 'Player',
 				});
 			}
 			const loads = [];
-			if (!args) args = [];
 			if (onlyOn) {
 				if (mpv) loads.push(this.players[onlyOn].mpv.send(cmd as MpvCommand));
 				else loads.push(this.players[onlyOn][cmd as string](...args));
@@ -845,12 +854,12 @@ class Players {
 			if (this.progressBarTimeout) clearTimeout(this.progressBarTimeout);
 			let progressBar = '';
 			for (const _nothing of Array(ticked)) {
-				progressBar = progressBar + '■';
+				progressBar += '■';
 			}
 			for (const _nothing of Array(10 - ticked)) {
-				progressBar = progressBar + '□';
+				progressBar += '□';
 			}
-			this.messages.addMessage('DI', DI + `\\N\\N{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
+			this.messages.addMessage('DI', `${DI}\\N\\N{\\fscx70\\fscy70\\fsp-3}${progressBar}`, 'infinite');
 			this.progressBarTimeout = setTimeout(() => {
 				this.tickProgressBar(nextTick, ticked + 1, DI);
 			}, nextTick);
@@ -946,7 +955,7 @@ class Players {
 		if (this.players.main.isRunning || this.players.monitor?.isRunning) {
 			// needed to wait for lock release
 			// eslint-disable-next-line no-return-await
-			return await this.exec('destroy').catch(err => {
+			return this.exec('destroy').catch(err => {
 				// Non fatal. Idiots sometimes close mpv instead of KM, this avoids an uncaught exception.
 				logger.warn('Failed to quit mpv', { service: 'Player', obj: err });
 			});
@@ -968,7 +977,7 @@ class Players {
 			} else {
 				// Monitor needs to be destroyed
 				await this.exec('destroy', null, 'monitor', true).catch(() => {
-					//Non-fatal, it probably means it's destroyed.
+					// Non-fatal, it probably means it's destroyed.
 				});
 				delete this.players.monitor;
 			}
@@ -1024,13 +1033,13 @@ class Players {
 							onlineMedia = true;
 							mediaFile = res;
 						})
-						.catch(err => {
+						.catch(error => {
 							mediaFile = '';
 							throw new Error(
 								`No media source for ${song.mediafile} (tried in ${resolvedPathRepos(
 									'Medias',
 									song.repository
-								).toString()} and HTTP source): ${err}`
+								).toString()} and HTTP source): ${error}`
 							);
 						});
 				}),
@@ -1110,7 +1119,7 @@ class Players {
 			logger.debug(`Searching for ${subFile}`, { service: 'Player' });
 			if (await fileExists(subFile)) {
 				options['sub-file'] = subFile;
-				options['sid'] = '1';
+				options.sid = '1';
 				logger.debug(`Loading ${subFile}`, { service: 'Player' });
 			} else {
 				logger.debug('No subtitles to load (not found for media)', { service: 'Player' });
@@ -1203,14 +1212,13 @@ class Players {
 			}
 			if (restartNeeded) {
 				return await this.play(playerState.currentSong);
-			} else {
-				playerState._playing = true; // This prevents the play/pause event to be triggered
-				await this.exec({ command: ['set_property', 'pause', false] });
-				playerState.playing = true;
-				playerState.playerStatus = 'play';
-				emitPlayerState();
-				return playerState;
 			}
+			playerState._playing = true; // This prevents the play/pause event to be triggered
+			await this.exec({ command: ['set_property', 'pause', false] });
+			playerState.playing = true;
+			playerState.playerStatus = 'play';
+			emitPlayerState();
+			return playerState;
 		} catch (err) {
 			logger.error('Unable to resume', { service: 'Player', obj: err });
 			sentry.error(err);
@@ -1225,7 +1233,7 @@ class Players {
 				playerState.mediaType === 'song' &&
 				playerState.timeposition + delta > playerState.currentSong.duration
 			) {
-				return next();
+				return await next();
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (
@@ -1247,7 +1255,7 @@ class Players {
 		try {
 			// Skip the song if we try to go after the end of the song
 			if (playerState.mediaType === 'song' && pos > playerState.currentSong.duration) {
-				return next();
+				return await next();
 			}
 			// Workaround for audio-only files: disable the lavfi-complex filter
 			if (
@@ -1364,7 +1372,7 @@ class Players {
 		this.exec({
 			command: ['expand-properties', 'osd-overlay', 1, 'ass-events', this.messages?.getText() || ''],
 		}).catch(err => {
-			//Non-fatal. Maybe. Don't sue me.
+			// Non-fatal. Maybe. Don't sue me.
 			logger.warn('Unable to tick display', { service: 'Player', obj: err });
 		});
 	}
@@ -1402,10 +1410,9 @@ class Players {
 					const warningArr = warnings.map(t => {
 						return getTagNameInLanguage(t, lang, 'eng');
 					});
-					warningString =
-						'{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ' +
-						warningArr.join(', ') +
-						' ⚠{\\b0}\\N{\\c&HFFFFFF&}';
+					warningString = `{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ${warningArr.join(
+						', '
+					)} ⚠{\\b0}\\N{\\c&HFFFFFF&}`;
 				}
 				nextSongString = nextSong ? `${i18n.t('NEXT_SONG')}\\N\\N` : '';
 				position = nextSong ? '{\\an5}' : '{\\an1}';
@@ -1421,7 +1428,7 @@ class Players {
 					this.startBackgroundMusic();
 				} catch (err) {
 					logger.warn('Unable to start background music during a pause', { service: 'Player', obj: err });
-					//Non fatal.
+					// Non fatal.
 				}
 				emitPlayerState();
 				if (getState().streamerPause && getConfig().Karaoke.StreamerMode.PauseDuration > 0) {
@@ -1450,13 +1457,7 @@ class Players {
 					: '';
 			if (ci.Enabled) text = `${ci.Message} ${i18n.t('GO_TO')} ${state.osURL} !`; // TODO: internationalize the exclamation mark
 			const version = `Karaoke Mugen ${state.version.number} (${state.version.name}) - http://karaokes.moe`;
-			const message =
-				'{\\an1}{\\fscx80}{\\fscy80}' +
-				text +
-				'\\N{\\fscx60}{\\fscy60}{\\i1}' +
-				version +
-				'{\\i0}\\N{\\fscx40}{\\fscy40}' +
-				catchphrase;
+			const message = `{\\an1}{\\fscx80}{\\fscy80}${text}\\N{\\fscx60}{\\fscy60}{\\i1}${version}{\\i0}\\N{\\fscx40}{\\fscy40}${catchphrase}`;
 			this.messages?.addMessage('DI', message, duration === -1 ? 'infinite' : duration);
 		} catch (err) {
 			logger.error('Unable to display infos', { service: 'Player', obj: err });
@@ -1466,13 +1467,14 @@ class Players {
 	}
 
 	displayAddASong() {
-		if (getState().randomPlaying)
+		if (getState().randomPlaying) {
 			try {
 				this.message(i18n.t('ADD_A_SONG_TO_PLAYLIST_SCREEN_MESSAGE'), 1000, 5, 'addASong');
 			} catch (err) {
 				logger.warn('Unable to display Add A Song message', { service: 'Player', obj: err });
 				// Non fatal
 			}
+		}
 	}
 
 	intervalIDAddASong: NodeJS.Timeout;

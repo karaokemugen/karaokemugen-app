@@ -92,6 +92,7 @@ export default function karaController(router: SocketIOApp) {
 				throw { code: err?.code || 500, message: APIMessage(code) };
 			}
 		}
+		return null;
 	});
 	router.route('addKaraToPublicPlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req, 'guest', 'limited');

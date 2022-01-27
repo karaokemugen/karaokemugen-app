@@ -94,8 +94,8 @@ export async function baseChecksum(): Promise<string> {
 		sortKaraStore();
 		sortTagsStore();
 		task.end();
-		const checksum = getStoreChecksum();
-		logger.debug(`Store checksum : ${checksum}`, { service: 'Store' });
+		const storeSum = getStoreChecksum();
+		logger.debug(`Store checksum : ${storeSum}`, { service: 'Store' });
 		// Use this only when debugging store
 		/**
 		  	const store = JSON.stringify({
@@ -104,7 +104,7 @@ export async function baseChecksum(): Promise<string> {
 		}, null, 2);
 		await fs.writeFile(resolve(getState().dataPath, `store-${Date.now()}.json`), store, 'utf-8');
 		*/
-		return checksum;
+		return storeSum;
 	} catch (err) {
 		logger.warn('Unable to browse through your data files', { service: 'Store', obj: err });
 		sentry.error(err, 'Warning');

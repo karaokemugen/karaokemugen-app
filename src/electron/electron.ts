@@ -21,19 +21,19 @@ import { MenuLayout } from '../types/electron';
 import { detectKMFileTypes } from '../utils/files';
 import { getState, setState } from '../utils/state';
 import { tip } from '../utils/tips';
-import { initAutoUpdate } from './electronAutoUpdate';
 import { emitIPC } from './electronLogger';
 import { createMenu } from './electronMenu';
 
+// eslint-disable-next-line import/no-mutable-exports
 export let win: Electron.BrowserWindow;
-export let chibiPlayerWindow: Electron.BrowserWindow;
-export let chibiPlaylistWindow: Electron.BrowserWindow;
-export let aboutWindow: Electron.BrowserWindow;
+let chibiPlayerWindow: Electron.BrowserWindow;
+let chibiPlaylistWindow: Electron.BrowserWindow;
+let aboutWindow: Electron.BrowserWindow;
 
 let initDone = false;
 
 export function startElectron() {
-	setState({ electron: app ? true : false });
+	setState({ electron: !!app });
 	// Fix bug that makes the web views not updating if they're hidden behind other windows.
 	// It's better for streamers who capture the web interface through OBS.
 	app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
@@ -109,7 +109,6 @@ export async function postInit() {
 	const state = getState();
 	if (!state.opt.cli) {
 		win?.loadURL(await welcomeToYoukousoKaraokeMugen());
-		if (!state.forceDisableAppUpdate) initAutoUpdate();
 		if (getConfig().GUI.ChibiPlayer.Enabled) {
 			updateChibiPlayerWindow(true);
 		}
@@ -193,7 +192,7 @@ export async function handleProtocol(args: string[]) {
 					const buttons = await dialog.showMessageBox({
 						type: 'none',
 						title: i18next.t('UNKNOWN_REPOSITORY_ADD.TITLE'),
-						message: `${i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE', { repoName: repoName })}`,
+						message: `${i18next.t('UNKNOWN_REPOSITORY_ADD.MESSAGE', { repoName })}`,
 						buttons: [i18next.t('YES'), i18next.t('NO')],
 					});
 					if (buttons.response === 0) {
@@ -214,7 +213,7 @@ export async function handleProtocol(args: string[]) {
 					await dialog.showMessageBox({
 						type: 'none',
 						title: i18next.t('REPOSITORY_ALREADY_EXISTS.TITLE'),
-						message: `${i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE', { repoName: repoName })}`,
+						message: `${i18next.t('REPOSITORY_ALREADY_EXISTS.MESSAGE', { repoName })}`,
 					});
 				}
 				break;
@@ -276,7 +275,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 				}
 				break;
 			default:
-				//Unrecognized, ignoring
+				// Unrecognized, ignoring
 				throw 'Filetype not recognized';
 		}
 	} catch (err) {
@@ -394,8 +393,9 @@ export async function updateChibiPlayerWindow(show: boolean) {
 		});
 		// Apparently it can be destroyed even though we just created it, perhaps if KM gets killed early during startup, who knows.
 		// Sometimes I wonder what our users are doing.
-		if (chibiPlayerWindow)
+		if (chibiPlayerWindow) {
 			await chibiPlayerWindow.loadURL(`http://localhost:${port}/chibi?admpwd=${await generateAdminPassword()}`);
+		}
 	} else {
 		chibiPlayerWindow?.destroy();
 	}

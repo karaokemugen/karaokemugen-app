@@ -129,10 +129,15 @@ export default function KaraDetail(props: IProps) {
 	};
 
 	const addKara = async () => {
-		const response = await commandBackend('addKaraToPublicPlaylist', {
-			requestedby: context.globalState.auth.data.username,
-			kids: [kara.kid],
-		});
+		let response;
+		try {
+			response = await commandBackend('addKaraToPublicPlaylist', {
+				requestedby: context.globalState.auth.data.username,
+				kids: [kara.kid],
+			});
+		} catch (e) {
+			// already display
+		}
 		if (response && response.code && response.data?.plc) {
 			let message;
 			if (response.data?.plc.time_before_play) {

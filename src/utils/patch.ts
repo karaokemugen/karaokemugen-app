@@ -66,7 +66,11 @@ export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repo
 	for (const change of fullFiles) {
 		const file = resolve(path, change.path);
 		if (change.type === 'delete') {
-			filePromises.push(fs.unlink(file));
+			filePromises.push(
+				fs.unlink(file).catch(err => {
+					logger.warn(`Non fatal: Removing file ${file} failed`, { service: 'Patch', obj: err });
+				})
+			);
 		} else {
 			filePromises.push(fs.writeFile(file, change.contents, 'utf-8'));
 		}
@@ -96,8 +100,8 @@ export async function applyPatch(patch: string, dir: string) {
 		try {
 			const rejectedPatch = await fs.readFile(resolve(resolvedPath('Temp'), 'patch.rej'), 'utf-8');
 			logger.debug(`Rejected patch : ${rejectedPatch}`, { service: 'DiffPatch' });
-		} catch (err) {
-			logger.debug(`Could not get rejected patch : ${err}`, { service: 'DiffPatch', obj: err });
+		} catch (err2) {
+			logger.debug(`Could not get rejected patch : ${err2}`, { service: 'DiffPatch', obj: err2 });
 		}
 		throw err;
 	}

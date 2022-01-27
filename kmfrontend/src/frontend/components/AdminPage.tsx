@@ -135,8 +135,10 @@ function AdminPage(props: IProps) {
 	const openKara = async (kara: KaraElement, idPlaylist: string) => {
 		const reason = [];
 		if (kara.criterias) {
-			kara.criterias.map(async criteria =>
-				reason.push(await decodeCriteriaReason(context.globalState.settings.data, criteria))
+			await Promise.all(
+				kara.criterias.map(async criteria =>
+					reason.push(await decodeCriteriaReason(context.globalState.settings.data, criteria))
+				)
 			);
 		}
 		showModal(

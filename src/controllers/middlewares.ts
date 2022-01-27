@@ -47,8 +47,9 @@ export async function runChecklist(
 
 function checkWebAppMode(data: APIData, webappModeNeeded: WebappModes) {
 	if (data.user?.type === 0) return;
-	if (+getConfig().Frontend.Mode < webappModes[webappModeNeeded])
+	if (+getConfig().Frontend.Mode < webappModes[webappModeNeeded]) {
 		throw { code: 503, message: APIMessage('WEBAPPMODE_CLOSED_API_MESSAGE') };
+	}
 }
 
 function checkAuthPresence(data: APIData) {
@@ -66,9 +67,8 @@ export async function checkValidUser(token: OldJWTToken): Promise<User> {
 	if (user) {
 		if (token.role === 'admin' && user.type > 0) throw APIMessage('ADMIN_PLEASE');
 		return user;
-	} else {
-		throw 'User unknown';
 	}
+	throw 'User unknown';
 }
 
 function requireUserType(data: APIData, type: Role) {

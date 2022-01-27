@@ -37,9 +37,9 @@ export async function checkLogin(username: string, password: string): Promise<Ol
 	updateLastLoginName(username);
 	return {
 		token: createJwtToken(username, role, conf),
-		onlineToken: onlineToken,
-		username: username,
-		role: role,
+		onlineToken,
+		username,
+		role,
 	};
 }
 
@@ -50,12 +50,10 @@ export function resetSecurityCode() {
 }
 
 function generateSecurityCode(): number {
-	return parseInt(
-		randomstring.generate({
-			length: 6,
-			charset: 'numeric',
-		})
-	);
+	return +randomstring.generate({
+		length: 6,
+		charset: 'numeric',
+	});
 }
 
 /** Get role depending on user type */

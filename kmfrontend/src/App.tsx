@@ -34,16 +34,6 @@ function App() {
 
 	useEffect(() => {
 		isAlreadyLogged(context.globalDispatch).then(() => {
-			if (
-				location.pathname &&
-				location.pathname !== '/' &&
-				!location.pathname.includes('/public') &&
-				context.globalState.auth.data.role &&
-				context.globalState.auth.data.role !== 'admin'
-			) {
-				displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
-				logout(context.globalDispatch);
-			}
 			setInitialized(true);
 			getSocket().on('settingsUpdated', setSettingsStore);
 			getSocket().on('noFreeSpace', warningNoFreeSpace);
@@ -55,6 +45,16 @@ function App() {
 	}, []);
 
 	useEffect(() => {
+		if (
+			location.pathname &&
+			location.pathname !== '/' &&
+			!location.pathname.includes('/public') &&
+			context.globalState.auth.data.role &&
+			context.globalState.auth.data.role !== 'admin'
+		) {
+			displayMessage('warning', i18next.t('ERROR_CODES.ADMIN_PLEASE'));
+			logout(context.globalDispatch);
+		}
 		getSocket().on('favoritesUpdated', setFavorites);
 		return () => {
 			getSocket().off('favoritesUpdated', setFavorites);
