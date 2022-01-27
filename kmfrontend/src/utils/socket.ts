@@ -29,7 +29,7 @@ export function setAuthorization(authorizationParam: string, onlineAuthorization
 	if (!authorizationParam || onlineAuthorizationParam) onlineAuthorization = onlineAuthorizationParam;
 }
 
-export function commandBackend(name: string, body?: any, loading = false, timeout = 10000): Promise<any> {
+export function commandBackend(name: string, body?: any, loading = false, timeout = 30000): Promise<any> {
 	const bodyWithoutpwd = { ...body };
 	if (bodyWithoutpwd.password) bodyWithoutpwd.password = undefined;
 	addBreadcrumb({
