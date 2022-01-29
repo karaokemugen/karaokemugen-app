@@ -299,6 +299,7 @@
         ]
       },
       "compression": "normal",
+	  "minimumSystemVersion": "10.14.0",
       "category": "public.app-category.entertainment"
     },
     "linux": {
