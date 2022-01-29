@@ -350,6 +350,6 @@
     ]
   },
   "lint-staged": {
-    "**!(lib)/*": "prettier --write --ignore-unknown"
+    "!(src/lib)": "prettier --write --ignore-unknown"
   }
 }
