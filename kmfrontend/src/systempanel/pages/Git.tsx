@@ -16,11 +16,11 @@ import { RenderExpandIconProps } from 'rc-table/lib/interface';
 import { Dispatch, memo, useCallback, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 
-import { Repository } from '../../../../src/lib/types/repo';
 import { GitLogResult, GitStatusResult } from '../../../../src/types/git';
 import { Commit, ModifiedMedia } from '../../../../src/types/repo';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { displayMessage } from '../../utils/tools';
+import { RepositoryMaintainerSettings } from '../../../../src/lib/types/repo';
 
 type CommitWithComment = Commit & { comment: string };
 
@@ -30,14 +30,14 @@ interface PendingPush {
 }
 
 interface Repo {
-	repo: Repository;
+	repo: RepositoryMaintainerSettings;
 	label: string;
 	conflicts: boolean;
 	stashes: GitLogResult;
 }
 
 async function getRepos(): Promise<Repo[]> {
-	const repos: Repository[] = await commandBackend('getRepos');
+	const repos: RepositoryMaintainerSettings[] = await commandBackend('getRepos');
 	return Promise.all(
 		repos
 			.filter(repo => repo.Online && repo.MaintainerMode && repo.Enabled && repo.Git?.URL)
@@ -61,7 +61,7 @@ async function getRepos(): Promise<Repo[]> {
 
 function StashList(props: {
 	stashList: GitLogResult;
-	repo: Repository;
+	repo: RepositoryMaintainerSettings;
 	loading: boolean;
 	setLoading: Dispatch<boolean>;
 	refreshRepo: () => void;

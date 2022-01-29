@@ -9,6 +9,7 @@ import sentry from '../utils/sentry';
 import { win } from './electron';
 
 let manualUpdate = false;
+let updateRunning = false;
 
 export function initAutoUpdate() {
 	autoUpdater.logger = logger;
@@ -23,6 +24,8 @@ export function initAutoUpdate() {
 	});
 	autoUpdater.on('update-available', async () => {
 		logger.info('Update detected', { service: 'AppUpdate' });
+		if (updateRunning) return;
+		updateRunning = true;
 		const buttonIndex = await dialog.showMessageBox(win, {
 			type: 'info',
 			title: i18next.t('UPDATE_FOUND'),
@@ -42,6 +45,7 @@ export function initAutoUpdate() {
 				});
 			}
 		}
+		updateRunning = false;
 	});
 
 	autoUpdater.on('update-not-available', () => {

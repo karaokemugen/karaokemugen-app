@@ -246,8 +246,10 @@ export async function initConfig(argv: any) {
 		publicConfig.App.JwtSecret = 'xxxxx';
 		publicConfig.App.InstanceID = 'xxxxx';
 		for (const repo of publicConfig.System.Repositories) {
-			if (repo.FTP?.Password) repo.FTP.Password = 'xxxxx';
-			if (repo.Git?.Password) repo.Git.Password = 'xxxxx';
+			if (repo.MaintainerMode) {
+				if (repo.FTP?.Password) repo.FTP.Password = 'xxxxx';
+				if (repo.Git?.Password) repo.Git.Password = 'xxxxx';
+			}
 		}
 		logger.debug('Loaded configuration', { service: 'Launcher', obj: publicConfig });
 		const binaries = await checkBinaries(getConfig());
@@ -311,8 +313,10 @@ export function getPublicConfig(removeSystem = true) {
 	delete publicSettings.App.JwtSecret;
 	delete publicSettings.System.Database;
 	for (const repo of publicSettings.System.Repositories) {
-		delete repo.Git?.Password;
-		delete repo.FTP?.Password;
+		if (repo.MaintainerMode) {
+			delete repo.Git?.Password;
+			delete repo.FTP?.Password;
+		}
 	}
 	if (removeSystem) delete publicSettings.System;
 	else delete publicSettings.System.Binaries;

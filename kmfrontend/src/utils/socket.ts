@@ -29,7 +29,7 @@ export function setAuthorization(authorizationParam: string, onlineAuthorization
 	if (!authorizationParam || onlineAuthorizationParam) onlineAuthorization = onlineAuthorizationParam;
 }
 
-export function commandBackend(name: string, body?: any, loading = false, timeout = 10000): Promise<any> {
+export function commandBackend(name: string, body?: any, loading = false, timeout = 30000): Promise<any> {
 	const bodyWithoutpwd = { ...body };
 	if (bodyWithoutpwd.password) bodyWithoutpwd.password = undefined;
 	addBreadcrumb({
@@ -40,14 +40,14 @@ export function commandBackend(name: string, body?: any, loading = false, timeou
 	});
 	return new Promise((resolve, reject) => {
 		if (loading) eventEmitter.emitChange('loading', true);
-		const nodeTimeout = setTimeout(reason => {
+		const nodeTimeout = setTimeout(() => {
 			addBreadcrumb({
 				level: Severity.Warning,
 				category: 'commandBackend',
 				message: `${name} timeout`,
 				data: bodyWithoutpwd,
 			});
-			reject(reason);
+			reject(new Error('commandBackend timeout'));
 		}, timeout);
 		socket.emit(
 			name,

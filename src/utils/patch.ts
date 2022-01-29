@@ -5,13 +5,14 @@ import { move, remove } from 'fs-extra';
 import { resolve } from 'path';
 
 import { initHooks, stopWatchingHooks } from '../lib/dao/hook';
-import { DiffChanges, Repository } from '../lib/types/repo';
+import { DiffChanges } from '../lib/types/repo';
 import { resolvedPath } from '../lib/utils/config';
 import { downloadFile } from '../lib/utils/downloader';
 import { getFilesRecursively } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
 import Task from '../lib/utils/taskManager';
+import { Repository } from '../types/config';
 import { getState } from './state';
 
 async function extractZip(path: string, outDir: string, task: Task): Promise<string> {
