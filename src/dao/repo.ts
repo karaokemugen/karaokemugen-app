@@ -1,6 +1,6 @@
 import { saveSetting } from '../lib/dao/database';
-import { Repository } from '../lib/types/repo';
 import { getConfig } from '../lib/utils/config';
+import { Repository } from '../types/config';
 import { editSetting } from '../utils/config';
 import { getState } from '../utils/state';
 

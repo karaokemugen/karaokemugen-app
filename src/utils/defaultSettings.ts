@@ -229,6 +229,7 @@ export const defaults: Config = {
 				Online: false,
 				Enabled: true,
 				BaseDir: process.platform === 'win32' ? 'repos\\Local\\json' : 'repos/Local/json',
+				MaintainerMode: false,
 				Path:
 					process.platform === 'win32'
 						? {

@@ -45,10 +45,11 @@ function App() {
 	}, []);
 
 	useEffect(() => {
+		// add a trailing slash
+		const path = location.pathname !== '/' ? location.pathname?.slice(1) + '/' : '';
 		if (
-			location.pathname &&
-			location.pathname !== '/' &&
-			!location.pathname.includes('/public') &&
+			path &&
+			['admin', 'system', 'welcome'].includes(path.slice(0, path.indexOf('/'))) &&
 			context.globalState.auth.data.role &&
 			context.globalState.auth.data.role !== 'admin'
 		) {

@@ -937,7 +937,7 @@
 		"REGENERATE_DB": "Regénérer la base de données",
 		"REGENERATE_DB_DESCRIPTION": "<1>Regénère la base de données. La génération permet de prendre en compte tous les fichiers présents et les intégrer à la base de données du logiciel. Cette opération est normalement effectuée au démarrage de l'application, mais vous pouvez la déclencher manuellement en cours de route.</1> Utilisez ce bouton si : <3>Vous avez ajouté un dépôt et déjà mis des fichiers dedans (dépôt local par exemple)</3><4>Vous voulez prendre en compte des modifications manuelles en dehors du logiciel</4>",
 		"VALIDATE_FILES": "Valider les fichiers",
-		"VALIDATE_FILES_DESCRIPTION": "Valide tous les fichiers de vos dépôts actifs afin de les corriger si nécessaires. Utilisation pour mainteneurs uniquement.",
+		"VALIDATE_FILES_DESCRIPTION": "Valide tous les fichiers de vos dépôts actifs afin de les corriger si nécessaire. Utilisation pour mainteneurs uniquement.",
 		"DUMP_DATABASE": "Sauvegarder la base de données",
 		"DUMP_DATABASE_DESCRIPTION": "Crée un fichier de sauvegarde karaokemugen.sql dans votre répertoire de données. Ce fichier peut servir de point de restauration ou pour envoyer votre base de données aux développeurs s'ils vous le demande.",
 		"RESTORE_DATABASE": "Restaurer la base de données",

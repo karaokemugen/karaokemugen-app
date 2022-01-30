@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "6.0.47",
+  "version": "6.0.48",
   "versionName": "Quintuplées Quintessentielles",
   "description": "Karaoke playlist manager / player",
   "bin": {
@@ -75,7 +75,7 @@
   "private": true,
   "dependencies": {
     "@sentry/electron": "^2.5.4",
-    "@sentry/node": "^6.17.2",
+    "@sentry/node": "^6.17.3",
     "agentkeepalive": "^4.2.0",
     "ass-compiler": "^0.1.4",
     "async-await-parallel": "^1.0.0",
@@ -147,7 +147,7 @@
     "validate.js": "^0.13.1",
     "webdav": "^4.8.0",
     "which": "^2.0.2",
-    "winston": "^3.4.0",
+    "winston": "^3.5.0",
     "winston-console-for-electron": "^0.0.7",
     "winston-daily-rotate-file": "^4.6.0",
     "winston-transport": "^4.4.2",
@@ -179,7 +179,7 @@
     "@types/lodash.transform": "^4.6.6",
     "@types/mocha": "^9.1.0",
     "@types/multer": "^1.4.7",
-    "@types/node": "^16.11.12",
+    "@types/node": "^17.0.13",
     "@types/pg": "^8.6.4",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/randomstring": "^1.1.8",
@@ -193,7 +193,7 @@
     "@typescript-eslint/eslint-plugin": "5",
     "@typescript-eslint/parser": "5",
     "chai": "^4.3.6",
-    "electron": "^16.0.7",
+    "electron": "^16.0.8",
     "eslint": "8",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^16.1.0",
@@ -299,6 +299,7 @@
         ]
       },
       "compression": "normal",
+	  "minimumSystemVersion": "10.14.0",
       "category": "public.app-category.entertainment"
     },
     "linux": {
@@ -349,6 +350,6 @@
     ]
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "!(src/lib)": "prettier --write --ignore-unknown"
   }
 }

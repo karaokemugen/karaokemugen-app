@@ -3,10 +3,11 @@ import { promises as fs } from 'fs';
 import { basename } from 'path';
 import prettyBytes from 'pretty-bytes';
 
-import { Repository } from '../lib/types/repo';
+import { RepositoryMaintainerSettings } from '../lib/types/repo';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { getRepo } from '../services/repo';
+import { Repository } from '../types/config';
 
 interface FTPOptions {
 	repoName: string;
@@ -24,31 +25,38 @@ export default class FTP {
 	async connect() {
 		const repo = getRepo(this.opts.repoName);
 		if (!repo) throw 'Unknown repository';
-		this.validateFTPSettings(repo);
-		this.client = new Client();
-		logger.info(`Connecting to FTP for ${repo.Name}`, { service: 'FTP' });
-		try {
-			await this.client.access({
-				host: repo.FTP.Host,
-				user: repo.FTP.Username,
-				password: repo.FTP.Password,
-				secure: false, // for now, shut up please.
-				port: repo.FTP.Port || 21,
-			});
-		} catch (err) {
-			logger.error(`Failed to connect to FTP for repository ${repo.Name}: ${err}`, { service: 'FTP', obj: err });
-			throw err;
-		}
-		if (repo.FTP.BaseDir) {
+		if (this.validateFTPSettings(repo)) {
+			this.client = new Client();
+			logger.info(`Connecting to FTP for ${repo.Name}`, { service: 'FTP' });
 			try {
-				logger.info(`Switching to directory ${repo.FTP.BaseDir}`);
-				await this.client.cd(repo.FTP.BaseDir);
+				await this.client.access({
+					host: repo.FTP.Host,
+					user: repo.FTP.Username,
+					password: repo.FTP.Password,
+					secure: false, // for now, shut up please.
+					port: repo.FTP.Port || 21,
+				});
 			} catch (err) {
-				logger.error(`Failed to switch to directory ${repo.FTP.BaseDir}: ${err}`, { service: 'FTP', obj: err });
+				logger.error(`Failed to connect to FTP for repository ${repo.Name}: ${err}`, {
+					service: 'FTP',
+					obj: err,
+				});
 				throw err;
 			}
+			if (repo.FTP.BaseDir) {
+				try {
+					logger.info(`Switching to directory ${repo.FTP.BaseDir}`);
+					await this.client.cd(repo.FTP.BaseDir);
+				} catch (err) {
+					logger.error(`Failed to switch to directory ${repo.FTP.BaseDir}: ${err}`, {
+						service: 'FTP',
+						obj: err,
+					});
+					throw err;
+				}
+			}
+			this.client.ftp.log = logger.debug;
 		}
-		this.client.ftp.log = logger.debug;
 	}
 
 	async rename(origFile: string, newFile: string) {
@@ -97,9 +105,13 @@ export default class FTP {
 		return this.client.close();
 	}
 
-	private validateFTPSettings(repo: Repository) {
-		const ftp = repo.FTP;
-		if (!ftp) throw 'FTP not configured';
-		if (!ftp.Host || !ftp.Password || !ftp.Username) throw 'Invalid settings in FTP configuration';
+	private validateFTPSettings(repo: Repository): repo is RepositoryMaintainerSettings {
+		if ('FTP' in repo) {
+			const ftp = repo.FTP;
+			if (!ftp.Host || !ftp.Password || !ftp.Username) throw 'Invalid settings in FTP configuration';
+			else return true;
+		} else {
+			throw 'FTP not configured';
+		}
 	}
 }
