@@ -177,8 +177,7 @@ export async function initEngine() {
 			// Easter egg
 			const ready = Math.floor(Math.random() * 10) >= 9 ? 'LADY' : 'READY';
 			if (!state.isTest && state.opt.cli) await welcomeToYoukousoKaraokeMugen();
-			// This is done later because it's not important.
-			postMigrationTasks(migrations, didGeneration);
+			await postMigrationTasks(migrations, didGeneration);
 			if (state.args.length > 0) {
 				// Let's try the last argument
 				const file = state.args[state.args.length - 1];
