@@ -26,7 +26,7 @@ function Login() {
 	const [redBorders, setRedBorders] = useState('');
 	const [errorBackground, setErrorBackground] = useState('');
 	const [serv, setServ] = useState(
-		context.globalState.settings.data.config.Online.Users && context.globalState.settings.data.config.Online.Host
+		context.globalState.settings.data.config?.Online.Users && context.globalState.settings.data.config?.Online.Host
 			? context.globalState.settings.data.config.Online.Host
 			: ''
 	);
