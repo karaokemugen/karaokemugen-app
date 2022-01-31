@@ -20,7 +20,6 @@ import { PLCCallback, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
-import ActionsButtons from './ActionsButtons';
 import InlineTag from './InlineTag';
 
 interface Props {
@@ -68,34 +67,34 @@ export default function VersionSelector(props: Props) {
 		}
 	};
 
-	const refreshKaras = useCallback(
-		updated => {
-			for (const k of updated) {
-				if (karas.findIndex(dbk => dbk.kid === k.kid) !== -1) {
-					fetchKaras(id).then(res => {
-						setI18n(res.i18n);
-						setKaras(res.karas);
-					});
-					break;
-				}
-			}
-		},
-		[karas]
+	const getKaras = useCallback(
+		() =>
+			fetchKaras(id).then(res => {
+				setI18n(res.i18n);
+				setKaras(res.karas);
+			}),
+		[id]
 	);
 
 	useEffect(() => {
+		const refreshKaras = updated => {
+			for (const k of updated) {
+				if (karas?.findIndex(dbk => dbk.kid === k.kid) !== -1) {
+					getKaras();
+					break;
+				}
+			}
+		};
+
 		getSocket().on('KIDUpdated', refreshKaras);
 		return () => {
 			getSocket().off('KIDUpdated', refreshKaras);
 		};
-	}, [karas]);
+	}, [getKaras, karas]);
 
 	useEffect(() => {
-		fetchKaras(id).then(res => {
-			setI18n(res.i18n);
-			setKaras(res.karas);
-		});
-	}, [id]);
+		getKaras();
+	}, [getKaras]);
 
 	return (
 		<div>
