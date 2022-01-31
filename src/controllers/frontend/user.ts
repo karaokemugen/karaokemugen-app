@@ -88,7 +88,8 @@ export default function userController(router: SocketIOApp) {
 				? { type: req.body.type, flag_tutorial_done: req.body.flag_tutorial_done }
 				: req.body;
 			const avatar = req.body.login.includes('@') ? null : req.body.avatar;
-			await editUser(req.body.login, user, avatar, req.token.role, { editRemote: false });
+			const login = req.body.old_login ? req.body.old_login : req.body.login;
+			await editUser(login, user, avatar, req.token.role, { editRemote: false });
 			return { code: 200, message: APIMessage('USER_EDITED') };
 		} catch (err) {
 			const code = 'USER_EDIT_ERROR';
