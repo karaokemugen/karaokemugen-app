@@ -124,7 +124,6 @@ build-react:
     paths:
       - kmfrontend/build/
       - dist/
-      - zipWorker/
   script:
     - yarn build
     - yarn installkmfrontend
