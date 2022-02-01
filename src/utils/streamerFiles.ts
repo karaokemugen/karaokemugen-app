@@ -59,7 +59,7 @@ async function writeFrontendStatus() {
 
 async function writeKarasInPublicPL() {
 	const { karacount } = await getPlaylistInfo(getState().publicPlaid);
-	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'public_kara_count.txt'), karacount.toString(), 'utf-8');
+	await fs.writeFile(resolve(resolvedPath('StreamFiles'), 'public_kara_count.txt'), karacount?.toString(), 'utf-8');
 }
 
 async function writeKarasInCurrentPL() {
