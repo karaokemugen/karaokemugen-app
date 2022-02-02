@@ -173,10 +173,7 @@ export default function VersionSelector(props: Props) {
 															<i className="fas fa-eraser" />
 														</button>
 													) : (
-														<button
-															onClick={e => addKara(e, kara)}
-															className="btn btn-primary"
-														>
+														<button onClick={e => addKara(e, kara)} className="btn">
 															<i className="fas fa-plus" />
 														</button>
 													)}
