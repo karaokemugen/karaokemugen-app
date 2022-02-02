@@ -13,7 +13,7 @@ export default function MakeFavButton(props: Props) {
 	const context = useContext(GlobalContext);
 	const isFavorite = useMemo<boolean>(() => {
 		return context.globalState.settings.data.favorites.has(props.kid);
-	}, [context.globalState.settings.data.favorites.size]);
+	}, [context.globalState.settings.data.favorites, props.kid]);
 	const makeFavorite = useCallback(() => {
 		if (context.globalState.auth.data.onlineAvailable !== false) {
 			isFavorite
@@ -27,7 +27,7 @@ export default function MakeFavButton(props: Props) {
 			displayMessage('warning', i18next.t('ERROR_CODES.FAVORITES_ONLINE_NOINTERNET'), 5000);
 			return;
 		}
-	}, [isFavorite]);
+	}, [context.globalState.auth.data.onlineAvailable, isFavorite, props.kid]);
 
 	return (
 		<button

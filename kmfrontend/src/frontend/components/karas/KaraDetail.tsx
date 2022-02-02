@@ -1,16 +1,13 @@
 import './KaraDetail.scss';
 
 import i18next from 'i18next';
-import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { Fragment, MouseEvent, ReactNode, useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 import { lastplayed_ago } from '../../../../../src/lib/types/database/kara';
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { KaraDownloadRequest } from '../../../../../src/types/download';
-import nanamiSingPng from '../../../assets/nanami-sing.png';
-import nanamiSingWebP from '../../../assets/nanami-sing.webp';
 import { setBgImage } from '../../../store/actions/frontendContext';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
@@ -25,11 +22,12 @@ import {
 } from '../../../utils/kara';
 import { commandBackend, isRemote } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
-import { displayMessage, is_touch_device, isNonStandardPlaylist, secondsTimeSpanToHMS } from '../../../utils/tools';
+import { is_touch_device, isNonStandardPlaylist, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
+import AddKaraButton from '../generic/buttons/AddKaraButton';
 
 interface IProps {
 	kid: string | undefined;
@@ -125,80 +123,6 @@ export default function KaraDetail(props: IProps) {
 			setLyrics(response?.map(value => value.text) || []);
 		} catch (e) {
 			// already display
-		}
-	};
-
-	const addKara = async () => {
-		let response;
-		try {
-			response = await commandBackend('addKaraToPublicPlaylist', {
-				requestedby: context.globalState.auth.data.username,
-				kids: [kara.kid],
-			});
-		} catch (e) {
-			// already display
-		}
-		if (response && response.code && response.data?.plc) {
-			let message;
-			if (response.data?.plc.time_before_play) {
-				const playTime = new Date(Date.now() + response.data.plc.time_before_play * 1000);
-				const playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
-				const beforePlayTime = secondsTimeSpanToHMS(response.data.plc.time_before_play, 'hm');
-				message = (
-					<>
-						{i18next.t(`SUCCESS_CODES.${response.code}`, {
-							song: getTitleInLocale(context.globalState.settings.data, kara.titles),
-						})}
-						<br />
-						{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
-							time: beforePlayTime,
-							date: playTimeDate,
-						})}
-					</>
-				);
-			} else {
-				message = (
-					<>
-						{i18next.t(`SUCCESS_CODES.${response.code}`, {
-							song: getTitleInLocale(context.globalState.settings.data, kara.titles),
-						})}
-					</>
-				);
-			}
-			displayMessage(
-				'success',
-				<div className="toast-with-img">
-					<picture>
-						<source type="image/webp" srcSet={nanamiSingWebP} />
-						<source type="image/png" srcSet={nanamiSingPng} />
-						<img src={nanamiSingPng} alt="Nanami is singing!" />
-					</picture>
-					<span>
-						{message}
-						<br />
-						<button
-							className="btn"
-							onClick={e => {
-								e.preventDefault();
-								e.stopPropagation();
-								commandBackend('deleteKaraFromPlaylist', { plc_ids: [response.data.plc.plcid] })
-									.then(() => {
-										toast.dismiss(response.data.plc.plcid);
-										displayMessage('success', i18next.t('SUCCESS_CODES.KARA_DELETED'));
-									})
-									.catch(() => {
-										toast.dismiss(response.data.plc.plcid);
-									});
-							}}
-						>
-							{i18next.t('CANCEL')}
-						</button>
-					</span>
-				</div>,
-				10000,
-				'top-left',
-				response.data.plc.plcid
-			);
 		}
 	};
 
@@ -318,12 +242,7 @@ export default function KaraDetail(props: IProps) {
 			</>
 		);
 
-		const addKaraButton = (
-			<button type="button" onClick={addKara} className="btn btn-action">
-				<i className="fas fa-fw fa-plus" />
-				<span>{i18next.t('TOOLTIP_ADDKARA')}</span>
-			</button>
-		);
+		const addKaraButton = <AddKaraButton kid={kara.kid} titles={kara.titles} />;
 
 		const makeFavButton = <MakeFavButton kid={kara.kid} />;
 

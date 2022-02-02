@@ -21,6 +21,7 @@ import { View } from '../../types/view';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
+import AddKaraButton from '../generic/buttons/AddKaraButton';
 
 interface Props {
 	kid: string;
@@ -186,6 +187,7 @@ export default function VersionSelector(props: Props) {
 										<div className="detailsKara">
 											<div className="centerButtons">
 												<MakeFavButton kid={kara.kid} />
+												<AddKaraButton kid={kara.kid} titles={kara.titles} />
 												<ShowVideoButton
 													togglePreview={() => setShowVideo(!showVideo)}
 													preview={showVideo}
