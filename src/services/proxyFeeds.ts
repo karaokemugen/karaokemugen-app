@@ -1,6 +1,6 @@
 // Node modules
 import internet from 'internet-available';
-import { xml2json } from 'xml-js';
+import { xml2js } from 'xml-js';
 
 import HTTP from '../lib/utils/http';
 // KM Imports
@@ -13,11 +13,11 @@ import { getState, setState } from '../utils/state';
 const feeds = [
 	{
 		name: 'git_base',
-		url: 'https://gitlab.com/karaokemugen/bases/karaokebase/-/tags?feed_token=L1P1ToueksLoKyCbTTjh&format=atom',
+		url: 'https://gitlab.com/karaokemugen/bases/karaokebase/-/tags?feed_token=L1P1ToueksLoKyCbTTjh&format=atom&sort=updated_desc',
 	},
 	{
 		name: 'git_app',
-		url: 'https://gitlab.com/karaokemugen/karaokemugen-app/-/tags?feed_token=L1P1ToueksLoKyCbTTjh&format=atom',
+		url: 'https://gitlab.com/karaokemugen/karaokemugen-app/-/tags?feed_token=L1P1ToueksLoKyCbTTjh&format=atom&sort=updated_desc',
 	},
 	{
 		name: 'mastodon',
@@ -59,7 +59,7 @@ export function addSystemMessage(message: SystemMessage) {
 async function fetchFeed(url: string, name: string): Promise<Feed> {
 	try {
 		const response = await HTTP.get(url);
-		const feed = JSON.parse(xml2json(response.data as any, { compact: true }));
+		const feed: any = xml2js(response.data as any, { compact: true });
 		// For Mastodon, we filter out UnJourUnKaraoke toots because we don't want to be spammed.
 		if (name === 'mastodon') {
 			feed.rss.channel.item = feed.rss.channel.item.filter(
@@ -67,7 +67,8 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			);
 		} else {
 			feed.feed.entry.forEach((element: any) => {
-				element.content._text = element.content._text.replace(/href="\//g, 'href="https://gitlab.com/');
+				if (element.content?._text)
+					element.content._text = element.content._text.replace(/href="\//g, 'href="https://gitlab.com/');
 			});
 		}
 		return {
