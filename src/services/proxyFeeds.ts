@@ -67,8 +67,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			);
 		} else {
 			feed.feed.entry.forEach((element: any) => {
-				if (element.content?._text)
-					element.content._text = element.content._text.replace(/href="\//g, 'href="https://gitlab.com/');
+				element.content._text = element.content._text.replace(/href="\//g, 'href="https://gitlab.com/');
 			});
 		}
 		return {
