@@ -11,7 +11,7 @@ export const initialStateAuth: AuthStore = {
 	error: '',
 };
 
-export default function (state, action: LoginSuccess | LoginFailure | LogoutUser) {
+export default function authReducer(state, action: LoginSuccess | LoginFailure | LogoutUser) {
 	switch (action.type) {
 		case AuthAction.LOGIN_SUCCESS:
 			return {

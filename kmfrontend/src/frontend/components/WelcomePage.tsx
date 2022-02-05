@@ -26,7 +26,6 @@ import WelcomePageArticle from './WelcomePageArticle';
 function WelcomePage() {
 	const context = useContext(GlobalContext);
 	const navigate = useNavigate();
-	const [searchParams] = useSearchParams();
 
 	const [news, setNews] = useState<News[]>([]);
 	const [sessions, setSessions] = useState<Session[]>([]);

@@ -126,6 +126,7 @@ function PublicHomepage(props: IProps) {
 											</button>
 										);
 									}
+									return undefined;
 								})}
 								<button className="action" onClick={() => props.changeView('tag', YEARS.type)}>
 									<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS.YEAR')}
@@ -149,6 +150,7 @@ function PublicHomepage(props: IProps) {
 													</button>
 												);
 											}
+											return undefined;
 										})}
 									</>
 								) : null}
