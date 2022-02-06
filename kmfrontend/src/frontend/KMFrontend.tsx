@@ -2,7 +2,7 @@ import './KMFrontend.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import GlobalContext from '../store/context';
 import { isElectron } from '../utils/electron';
@@ -21,7 +21,6 @@ import WelcomePage from './components/WelcomePage';
 
 function KMFrontend() {
 	const context = useContext(GlobalContext);
-	const location = useLocation();
 
 	const [shutdownPopup, setShutdownPopup] = useState(false);
 

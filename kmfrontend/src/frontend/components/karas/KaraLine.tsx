@@ -5,7 +5,6 @@ import { Key, MouseEvent, useContext, useState } from 'react';
 import { DraggableProvided } from 'react-beautiful-dnd';
 import { toast } from 'react-toastify';
 
-import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import ProfilePicture from '../../../utils/components/ProfilePicture';

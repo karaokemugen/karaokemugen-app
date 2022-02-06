@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Avatar, Button, Checkbox, Divider, Layout, Modal, Table } from 'antd';
+import { Button, Checkbox, Divider, Layout, Modal, Table } from 'antd';
 import i18next from 'i18next';
 import { Component } from 'react';
 import { Link } from 'react-router-dom';

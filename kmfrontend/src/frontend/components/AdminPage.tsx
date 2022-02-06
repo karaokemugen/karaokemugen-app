@@ -2,16 +2,12 @@ import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
 
-import { DBKaraTag, DBYear } from '../../../../src/lib/types/database/kara';
-import { DBTag } from '../../../../src/lib/types/database/tag';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../store/actions/frontendContext';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
-import { getTagInLocale } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';
 import { decodeCriteriaReason, displayMessage, startIntro } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
-import { Tag } from '../types/tag';
 import AdminHeader from './AdminHeader';
 import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
 import KmAppWrapperDecorator from './decorators/KmAppWrapperDecorator';
@@ -83,31 +79,6 @@ function AdminPage(props: IProps) {
 			};
 		}
 		commandBackend('sendPlayerCommand', data).catch(() => {});
-	};
-
-	const parseTags = async () => {
-		try {
-			const response = await commandBackend('getTags');
-			return response.content
-				.filter((val: DBTag) => val.karacount !== null)
-				.map((val: DBTag) => {
-					return {
-						value: val.tid,
-						label: getTagInLocale(context.globalState.settings.data, val as unknown as DBKaraTag),
-						type: val.types,
-						karacount: val.karacount,
-					};
-				});
-		} catch (e) {
-			//already display
-		}
-	};
-
-	const parseYears = async () => {
-		const response = await commandBackend('getYears');
-		return response.content.map((val: DBYear) => {
-			return { value: val.year, label: val.year, type: [0], karacount: [{ type: 0, count: val.karacount }] };
-		});
 	};
 
 	const getPlaylistList = async () => {

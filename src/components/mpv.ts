@@ -653,7 +653,6 @@ class Player {
 						logger.warn('A start command was executed, but the player is already running. Not normal.', {
 							service: 'Player',
 						});
-						sentry.error(err, 'Warning');
 						return;
 					}
 					throw err;

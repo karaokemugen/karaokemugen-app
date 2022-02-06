@@ -1,9 +1,9 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { DBPL } from '../../../../../src/lib/types/database/playlist';
 import { DBPLC } from '../../../../../src/types/database/playlist';
 import { closeModal } from '../../../store/actions/modal';
-import GlobalContext, { GlobalContextInterface } from '../../../store/context';
+import GlobalContext from '../../../store/context';
 import { getPlaylistInfo } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import KaraDetail from './KaraDetail';

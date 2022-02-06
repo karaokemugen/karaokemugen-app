@@ -1054,9 +1054,11 @@ function Playlist(props: IProps) {
 							title={i18next.t('GOTO_BOTTOM')}
 							className="btn btn-action"
 							onClick={() => {
-								scrollToIndex(data.infos?.count - 1);
-								setGotToPlaying(false);
-								setGotToPlayingAvoidScroll(false);
+								if (data?.infos) {
+									scrollToIndex(data.infos.count - 1);
+									setGotToPlaying(false);
+									setGotToPlayingAvoidScroll(false);
+								}
 							}}
 						>
 							<i className="fas fa-chevron-down" />

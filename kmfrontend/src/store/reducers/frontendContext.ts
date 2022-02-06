@@ -1,6 +1,6 @@
 import { FrontendContextAction, FrontendContextStore } from '../types/frontendContext';
 
-export default function (state: FrontendContextStore, action): FrontendContextStore {
+export default function frontendContextReducer(state: FrontendContextStore, action): FrontendContextStore {
 	switch (action.type) {
 		case FrontendContextAction.FILTER_VALUE:
 			if (

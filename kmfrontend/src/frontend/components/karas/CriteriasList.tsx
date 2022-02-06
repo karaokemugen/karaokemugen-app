@@ -13,7 +13,6 @@ import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { getTagTypeName, tagTypes, YEARS } from '../../../utils/tagTypes';
 import { hmsToSecondsOnly, secondsTimeSpanToHMS } from '../../../utils/tools';
-import { Tag } from '../../types/tag';
 import Autocomplete from '../generic/Autocomplete';
 import Switch from '../generic/Switch';
 

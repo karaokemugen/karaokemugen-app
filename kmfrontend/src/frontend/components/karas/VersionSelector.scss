@@ -14,6 +14,13 @@
 			position: relative;
 			text-shadow: 2px 2px 2px #000000bf;
 			z-index: 2;
+			.buttons > .btn {
+				width: 5em;
+				height: 5em;
+				i {
+					font-size: 2.5em;
+				}
+			}
 		}
 		.transparent-btn {
 			padding-right: 0.5em;

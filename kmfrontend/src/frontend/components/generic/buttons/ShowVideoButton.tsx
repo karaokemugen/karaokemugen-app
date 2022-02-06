@@ -1,7 +1,5 @@
 import i18next from 'i18next';
-import { useState } from 'react';
 
-import { useDeferredEffect } from '../../../../utils/hooks';
 import { isRemote } from '../../../../utils/socket';
 
 interface Props {
