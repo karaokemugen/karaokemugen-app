@@ -1,4 +1,11 @@
-import { ClearOutlined, DeleteOutlined, EditOutlined, FontColorsOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+	ClearOutlined,
+	DeleteOutlined,
+	EditOutlined,
+	FontColorsOutlined,
+	UploadOutlined,
+	DownloadOutlined,
+} from '@ant-design/icons';
 import { Alert, Button, Cascader, Col, Input, Layout, Modal, Row, Table } from 'antd';
 import i18next from 'i18next';
 import { Component } from 'react';
@@ -6,8 +13,15 @@ import { Link } from 'react-router-dom';
 
 import { DBKara, DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import { DBTag } from '../../../../../src/lib/types/database/tag';
+import { KaraDownloadRequest } from '../../../../../src/types/download';
 import GlobalContext from '../../../store/context';
-import { getTagInLocale, getTagInLocaleList, getTitleInLocale, sortTagByPriority } from '../../../utils/kara';
+import {
+	buildKaraTitle,
+	getTagInLocale,
+	getTagInLocaleList,
+	getTitleInLocale,
+	sortTagByPriority,
+} from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import { isModifiable } from '../../../utils/tools';
@@ -156,6 +170,17 @@ class KaraList extends Component<unknown, KaraListState> {
 				if (karaDeletable.length > 0) this.deleteKaras(karaDeletable.map(value => value.kid));
 			},
 		});
+	};
+
+	downloadMedia = kara => {
+		const downloadObject: KaraDownloadRequest = {
+			mediafile: kara.mediafile,
+			kid: kara.kid,
+			size: kara.mediasize,
+			name: buildKaraTitle(this.context.globalState.settings.data, kara, true) as string,
+			repository: kara.repository,
+		};
+		commandBackend('addDownloads', { downloads: [downloadObject] }).catch(() => {});
 	};
 
 	render() {
@@ -328,6 +353,15 @@ class KaraList extends Component<unknown, KaraListState> {
 						style={{ marginRight: '0.75em' }}
 					/>
 				);
+				let downloadVideoButton: JSX.Element = (
+					<Button
+						type="primary"
+						onClick={() => this.downloadMedia(record)}
+						icon={<DownloadOutlined />}
+						title={i18next.t('KARA_DETAIL.DOWNLOAD_MEDIA')}
+						style={{ marginRight: '0.75em' }}
+					/>
+				);
 				if (isModifiable(this.context, record.repository)) {
 					const editLink: JSX.Element = (
 						<Link to={`/system/karas/${record.kid}`} style={{ marginRight: '0.75em' }}>
@@ -357,11 +391,15 @@ class KaraList extends Component<unknown, KaraListState> {
 					if (record.download_status !== 'DOWNLOADED') {
 						uploadMediaButton = null;
 						deleteMediaButton = null;
+						if (record.download_status !== 'MISSING') {
+							downloadVideoButton = null;
+						}
 					}
 					return (
 						<div style={{ display: 'flex' }}>
 							{editLink}
 							{LyricsButton}
+							{downloadVideoButton}
 							{uploadMediaButton}
 							{deleteMediaButton}
 							{deleteButton}
@@ -369,7 +407,12 @@ class KaraList extends Component<unknown, KaraListState> {
 					);
 				} else {
 					if (record.download_status === 'DOWNLOADED') {
-						return <div style={{ display: 'flex' }}>{deleteMediaButton}</div>;
+						return (
+							<div style={{ display: 'flex' }}>
+								{downloadVideoButton}
+								{deleteMediaButton}
+							</div>
+						);
 					} else {
 						return null;
 					}
