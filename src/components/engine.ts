@@ -289,6 +289,7 @@ export async function exit(rc = 0, update = false) {
 }
 
 function mataNe(rc: number) {
+	logger.info('Closing', { service: 'Engine' });
 	console.log('\nMata ne !\n');
 	unregisterShortcuts();
 	app.exit(rc);
