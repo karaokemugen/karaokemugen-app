@@ -82,10 +82,18 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildClauses(params.filter, false, params.parentsOnly)
 		: { sql: [], params: {}, additionalFrom: [] };
-	let whereClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
+	const typeClauses = params.q
+		? buildTypeClauses(params.q, params.order)
+		: { sql: [], params: {}, additionalFrom: [] };
+	const yesqlPayload = {
+		sql: [...filterClauses.sql, ...typeClauses.sql],
+		params: { ...filterClauses.params, ...typeClauses.params },
+		additionalFrom: [...filterClauses.additionalFrom, ...typeClauses.additionalFrom],
+	};
+	let whereClauses = '';
 	// Hide blacklisted songs
 	if (params.blacklist) {
-		whereClauses = `${whereClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${
+		whereClauses += ` AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${
 			getState().blacklistPlaid
 		}')`;
 	}
@@ -134,7 +142,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (params.random > 0) {
 		orderClauses = `RANDOM(), ${orderClauses}`;
 		limitClause = `LIMIT ${params.random}`;
-		whereClauses = `${whereClauses} AND ak.pk_kid NOT IN (
+		whereClauses += ` AND ak.pk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
 			WHERE pc.fk_id_playlist = '${getState().publicPlaid}'
@@ -149,20 +157,19 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		))`;
 	}
 	if (params.userFavorites) {
-		whereClauses += ` AND uf.fk_login = '${params.userFavorites}' `;
-		joinClauses.push(
-			` LEFT OUTER JOIN favorites AS uf ON uf.fk_login = '${params.userFavorites}' AND uf.fk_kid = ak.pk_kid `
-		);
+		whereClauses += ' AND uf.fk_login = :username_favs';
+		joinClauses.push(' LEFT OUTER JOIN favorites AS uf ON uf.fk_login = :username_favs AND uf.fk_kid = ak.pk_kid ');
+		yesqlPayload.params.username_favs = params.userFavorites;
 	}
 	const query = sqlgetAllKaras(
-		filterClauses.sql,
+		yesqlPayload.sql,
 		whereClauses,
 		groupClause,
 		orderClauses,
 		havingClause,
 		limitClause,
 		offsetClause,
-		filterClauses.additionalFrom,
+		yesqlPayload.additionalFrom,
 		selectRequested,
 		groupClauseEnd,
 		joinClauses
@@ -171,7 +178,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		publicPlaylist_id: getState().publicPlaid,
 		dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
 		username: params.username || 'admin',
-		...filterClauses.params,
+		...yesqlPayload.params,
 	};
 	const res = await db().query(yesql(query)(queryParams));
 	return res.rows;
