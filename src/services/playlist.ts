@@ -985,7 +985,8 @@ export async function editPLC(plc_ids: number[], params: PLCEditParams, refresh 
 		await setPlaying(plcs[0].plcid, plcs[0].plaid);
 		// This only occurs to one playlist anyway
 		const pl = pls.find(p => p.plaid === plcs[0].plaid);
-		if (pl.flag_current && getState().player.playerStatus !== 'stop') playPlayer(true);
+		const playerStatus = getState().player.playerStatus;
+		if (pl.flag_current && playerStatus && playerStatus !== 'stop') playPlayer(true);
 	}
 	if (params.flag_accepted === true) {
 		params.flag_free = true;
