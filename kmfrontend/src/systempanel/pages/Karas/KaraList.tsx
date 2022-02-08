@@ -407,12 +407,9 @@ class KaraList extends Component<unknown, KaraListState> {
 					);
 				} else {
 					if (record.download_status === 'DOWNLOADED') {
-						return (
-							<div style={{ display: 'flex' }}>
-								{downloadVideoButton}
-								{deleteMediaButton}
-							</div>
-						);
+						return <div style={{ display: 'flex' }}>{deleteMediaButton}</div>;
+					} else if (record.download_status === 'MISSING') {
+						return <div style={{ display: 'flex' }}>{downloadVideoButton}</div>;
 					} else {
 						return null;
 					}
