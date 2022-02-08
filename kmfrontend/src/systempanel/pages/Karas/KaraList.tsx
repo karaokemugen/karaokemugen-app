@@ -391,9 +391,9 @@ class KaraList extends Component<unknown, KaraListState> {
 					if (record.download_status !== 'DOWNLOADED') {
 						uploadMediaButton = null;
 						deleteMediaButton = null;
-						if (record.download_status !== 'MISSING') {
-							downloadVideoButton = null;
-						}
+					}
+					if (record.download_status !== 'MISSING') {
+						downloadVideoButton = null;
 					}
 					return (
 						<div style={{ display: 'flex' }}>
