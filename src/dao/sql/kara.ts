@@ -114,19 +114,6 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const sqlgetKaraMini = `
-SELECT
-	pk_kid AS kid,
-	titles AS titles,
-	mediafile AS mediafile,
-	karafile AS karafile,
-	subfile AS subfile,
-	duration AS duration,
-	repository as repository
-FROM kara
-WHERE pk_kid = $1
-`;
-
 export const sqldeleteKara = `
 DELETE FROM kara WHERE pk_kid = ANY ($1);
 `;

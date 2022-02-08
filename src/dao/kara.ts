@@ -2,10 +2,12 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import { DBKara, DBKaraBase, DBYear } from '../lib/types/database/kara';
+import { DBKara, DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
+import { getKara } from '../services/kara';
+import { adminToken } from '../utils/constants';
 import { getState } from '../utils/state';
 import {
 	sqladdRequested,
@@ -13,7 +15,6 @@ import {
 	sqldeleteChildrenKara,
 	sqldeleteKara,
 	sqlgetAllKaras,
-	sqlgetKaraMini,
 	sqlgetYears,
 	sqlinsertChildrenParentKara,
 	sqlinsertKara,
@@ -184,11 +185,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	return res.rows;
 }
 
-export async function selectKaraMini(kid: string): Promise<DBKaraBase> {
-	const res = await db().query(sqlgetKaraMini, [kid]);
-	return res.rows[0] || {};
-}
-
 export function insertPlayed(kid: string) {
 	return db().query(
 		yesql(sqladdViewcount)({
@@ -222,7 +218,7 @@ export async function updateKaraParents(kara: Kara) {
 	await db().query(sqldeleteChildrenKara, [kara.kid]);
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
-		const pkara = await selectKaraMini(pkid);
+		const pkara = await getKara(pkid, adminToken);
 		if (kara.repository !== pkara.repository) {
 			throw new Error(`${pkid} is not in ${kara.repository} repository`);
 		}
