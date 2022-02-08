@@ -13,11 +13,11 @@ import { getState, setState } from '../utils/state';
 const feeds = [
 	{
 		name: 'git_base',
-		url: 'https://gitlab.com/karaokemugen/bases/karaokebase/-/tags?feed_token=L1P1ToueksLoKyCbTTjh&format=atom&sort=updated_desc',
+		url: 'https://gitlab.com/karaokemugen/bases/karaokebase/-/tags?format=atom&sort=updated_desc',
 	},
 	{
 		name: 'git_app',
-		url: 'https://gitlab.com/karaokemugen/karaokemugen-app/-/tags?feed_token=L1P1ToueksLoKyCbTTjh&format=atom&sort=updated_desc',
+		url: 'https://gitlab.com/karaokemugen/karaokemugen-app/-/tags?format=atom&sort=updated_desc',
 	},
 	{
 		name: 'mastodon',
