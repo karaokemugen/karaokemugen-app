@@ -82,11 +82,6 @@ export async function getYears(): Promise<YearList> {
 	};
 }
 
-export function getAllKaras(): Promise<KaraList> {
-	// Simple function to return all karaokes, compatibility with KM Server
-	return getKaras({ from: 0, size: 99999999, token: adminToken });
-}
-
 export async function getKaras(params: KaraParams): Promise<KaraList> {
 	profile('getKaras');
 	try {

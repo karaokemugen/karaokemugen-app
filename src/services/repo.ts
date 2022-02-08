@@ -41,7 +41,7 @@ import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFi
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { updateMedias } from './downloadMedias';
-import { getAllKaras, getKara, getKaras } from './kara';
+import { getKara, getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
 import { sendPayload } from './stats';
@@ -873,7 +873,7 @@ export async function generateCommits(repoName: string) {
 			task.incr();
 		}
 		// Added songs
-		const [karas, tags] = await Promise.all([getAllKaras(), getTags({})]);
+		const [karas, tags] = await Promise.all([getKaras({}), getTags({})]);
 		for (const file of addedSongs) {
 			const song = basename(file, '.kara.json');
 			const commit: Commit = {
