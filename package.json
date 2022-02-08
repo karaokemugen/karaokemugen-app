@@ -9,7 +9,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "start": "yarn build && electron .",
-    "startCI": "yarn build && electron --no-sandbox . --cli",
+    "startHeadless": "yarn build && electron --no-sandbox . --cli",
     "debug": "ts-node $NODE_DEBUG_OPTION src/index.ts -- --debug",
     "qstart": "electron .",
     "test": "yarn build && electron . --test",
