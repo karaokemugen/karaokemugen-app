@@ -2,12 +2,12 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import { DBPL, DBPLCAfterInsert, SmartPlaylistType } from '../lib/types/database/playlist';
+import { DBPL, DBPLCAfterInsert, DBPLCBase, SmartPlaylistType } from '../lib/types/database/playlist';
 import { Criteria, PLC, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { profile } from '../lib/utils/logger';
-import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
+import { DBPLC, DBPLCInfo } from '../types/database/playlist';
 import { getState } from '../utils/state';
 import {
 	sqladdCriteria,
@@ -220,7 +220,7 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 	return res.rows;
 }
 
-export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCKID[]> {
+export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCBase[]> {
 	try {
 		profile('selectPlaylistContentsMicro');
 		const res = await db().query(sqlgetPlaylistContentsMicro, [id]);

@@ -4,6 +4,7 @@ import {
 	insertOnlineRequested,
 	insertPlayed,
 	selectAllKaras,
+	selectAllKarasMicro,
 	selectAllKIDs,
 	selectYears,
 	truncateOnlineRequested,
@@ -80,6 +81,22 @@ export async function getYears(): Promise<YearList> {
 			count: years.length,
 		},
 	};
+}
+
+export async function getKarasMicro(kids: string[]) {
+	profile('getKarasMicro');
+	try {
+		const pl = await selectAllKarasMicro({
+			q: `k:${kids.join(',')}`,
+		});
+		return pl;
+	} catch (err) {
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.error(err);
+		throw err;
+	} finally {
+		profile('getKarasMicro');
+	}
 }
 
 export async function getKaras(params: KaraParams): Promise<KaraList> {

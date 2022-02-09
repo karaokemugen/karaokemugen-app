@@ -2,7 +2,7 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import { DBKara, DBYear } from '../lib/types/database/kara';
+import { DBKara, DBKaraBase, DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
@@ -15,6 +15,7 @@ import {
 	sqldeleteChildrenKara,
 	sqldeleteKara,
 	sqlgetAllKaras,
+	sqlgetAllKarasMicro,
 	sqlgetYears,
 	sqlinsertChildrenParentKara,
 	sqlinsertKara,
@@ -179,6 +180,24 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		publicPlaylist_id: getState().publicPlaid,
 		dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
 		username: params.username || 'admin',
+		...yesqlPayload.params,
+	};
+	const res = await db().query(yesql(query)(queryParams));
+	return res.rows;
+}
+
+export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBase[]> {
+	const typeClauses = params.q
+		? buildTypeClauses(params.q, params.order)
+		: { sql: [], params: {}, additionalFrom: [] };
+	const yesqlPayload = {
+		sql: [...typeClauses.sql],
+		params: { ...typeClauses.params },
+		additionalFrom: [...typeClauses.additionalFrom],
+	};
+
+	const query = sqlgetAllKarasMicro(yesqlPayload.sql, yesqlPayload.additionalFrom);
+	const queryParams = {
 		...yesqlPayload.params,
 	};
 	const res = await db().query(yesql(query)(queryParams));

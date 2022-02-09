@@ -51,10 +51,12 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			flag_accepted: false,
 			flag_visible: false,
 			username: 'admin',
+			login: 'admin',
 			user_type: 0,
 			plcid: -1,
 			plaid: null,
 			avatar: null,
+			added_at: null,
 			infos,
 		};
 		await mpv.play(current);
