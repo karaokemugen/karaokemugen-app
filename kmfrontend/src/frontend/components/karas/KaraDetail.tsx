@@ -205,29 +205,42 @@ export default function KaraDetail(props: IProps) {
 						</span>
 					</div>
 				) : null}
+				{props.playlistcontentId ? (
+					<div className="detailsKaraLine">
+						{kara.nickname ? (
+							<ProfilePicture
+								className="img-circle"
+								user={{
+									login: kara.username,
+									type: kara.user_type,
+									nickname: kara.nickname,
+								}}
+							/>
+						) : null}
+						<div>
+							{i18next.t('KARA_DETAIL.ADDED')}
+							{kara.added_at ? (
+								<>
+									{i18next.t('KARA_DETAIL.ADDED_2')}
+									<span className="boldDetails">{new Date(kara.added_at).toLocaleString()}</span>
+								</>
+							) : null}
+							{kara.nickname ? (
+								<>
+									{i18next.t('KARA_DETAIL.ADDED_3')}
+									<span className="boldDetails">{kara.nickname}</span>
+								</>
+							) : null}
+						</div>
+					</div>
+				) : null}
 				<div className="detailsKaraLine">
-					{kara.nickname ? (
-						<ProfilePicture
-							className="img-circle"
-							user={{
-								login: kara.username,
-								type: kara.user_type,
-								nickname: kara.nickname,
-							}}
-						/>
-					) : null}
 					<div>
-						{props.playlistcontentId ? i18next.t('KARA_DETAIL.ADDED') : i18next.t('KARA_DETAIL.CREATED')}
+						{i18next.t('KARA_DETAIL.CREATED')}
 						{kara.created_at ? (
 							<>
 								{i18next.t('KARA_DETAIL.ADDED_2')}
 								<span className="boldDetails">{new Date(kara.created_at).toLocaleString()}</span>
-							</>
-						) : null}
-						{kara.nickname ? (
-							<>
-								{i18next.t('KARA_DETAIL.ADDED_3')}
-								<span className="boldDetails">{kara.nickname}</span>
 							</>
 						) : null}
 					</div>
