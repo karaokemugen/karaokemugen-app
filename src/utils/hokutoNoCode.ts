@@ -251,7 +251,7 @@ export async function migrateBLWLToSmartPLs() {
 				username: 'admin',
 				nickname: 'Dummy Plug System',
 				kid: s.kid,
-				created_at: new Date(),
+				added_at: new Date(),
 				pos,
 				criteria: null,
 			};

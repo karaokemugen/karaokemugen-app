@@ -246,7 +246,7 @@ describe('Playlists', () => {
 		expect(data.Header.description).to.be.equal('Karaoke Mugen Playlist File');
 		expect(data.PlaylistContents.length).to.be.at.least(1);
 		for (const plc of data.PlaylistContents) {
-			expect(plc.created_at).to.be.a('string');
+			expect(plc.added_at).to.be.a('string');
 			expect(plc.kid).to.be.a('string').and.match(uuidRegexp);
 			expect(plc.username).to.be.a('string');
 			expect(plc.nickname).to.be.a('string');

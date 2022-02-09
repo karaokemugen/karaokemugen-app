@@ -696,7 +696,7 @@ INSERT INTO playlist_content(
 	$9,
 	$10,
 	$11
-) RETURNING pk_id_plcontent AS plc_id, fk_kid AS kid, pos, fk_login AS username
+) RETURNING pk_id_plcontent AS plcid, fk_kid AS kid, pos, fk_login AS username
 `;
 
 export const sqlgetTimeSpentPerUser = `
