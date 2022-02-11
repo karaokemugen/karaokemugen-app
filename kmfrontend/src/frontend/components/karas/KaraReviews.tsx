@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 
-import { DBPL } from '../../../../../src/lib/types/database/playlist';
-import { DBPLC } from '../../../../../src/types/database/playlist';
+import { DBPL, DBPLC } from '../../../../../src/lib/types/database/playlist';
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { getPlaylistInfo } from '../../../utils/kara';

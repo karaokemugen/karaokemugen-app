@@ -2,7 +2,9 @@ import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
-import { DBPLC, DBPLCInfo } from '../../../../../src/types/database/playlist';
+import { DBPLCInfo } from '../../../../../src/types/database/playlist';
+import { DBPLC } from '../../../../../src/lib/types/database/playlist';
+
 import { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiSingingPng from '../../../assets/nanami-sing.png';
 import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
