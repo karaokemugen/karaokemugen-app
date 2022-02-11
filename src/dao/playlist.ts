@@ -2,12 +2,12 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import { DBPL, DBPLCBase, PLCInsert, SmartPlaylistType } from '../lib/types/database/playlist';
+import { DBPL, DBPLC, DBPLCBase, PLCInsert, SmartPlaylistType } from '../lib/types/database/playlist';
 import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { profile } from '../lib/utils/logger';
-import { DBPLC, DBPLCInfo } from '../types/database/playlist';
+import { DBPLCInfo } from '../types/database/playlist';
 import { getState } from '../utils/state';
 import {
 	sqladdCriteria,

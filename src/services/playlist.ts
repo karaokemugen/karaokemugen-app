@@ -44,7 +44,7 @@ import {
 	updatePos,
 } from '../dao/playlist';
 import { PLImportConstraints } from '../lib/services/playlist';
-import { DBPL, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
+import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
 import { AggregatedCriteria, PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import { OldJWTToken, User } from '../lib/types/user';
 import { getConfig, resolvedPath } from '../lib/utils/config';
@@ -54,7 +54,6 @@ import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
 import { emitWS } from '../lib/utils/ws';
-import { DBPLC } from '../types/database/playlist';
 import { CurrentSong, Pos, ShuffleMethods } from '../types/playlist';
 import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
