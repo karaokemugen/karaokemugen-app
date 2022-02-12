@@ -20,6 +20,7 @@
 -   Fixed various bugs we found via Sentry
 -   Fixed rename user login in user edit page
 -   Fixed post migration tasks not properly being awaited
+-   Fixed favorites loading after previous library loading
 
 # v6.0.48 - 30/01/2022
 
