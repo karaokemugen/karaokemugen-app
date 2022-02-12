@@ -1,3 +1,26 @@
+# v6.0.50 - 13/02/2022
+
+## Misc
+
+-   Updated dependencies (Namely Electron 17)
+-   Kara creation date is now displayed when you click on the details of a playlist item
+-   Updated readme
+
+## Improvements
+
+-   Optimized adding a song to a playlist, especially when you decide to add a lot of songs to a playlist.
+-   Added download media button on kara list in system panel when the song isn't downloaded yet
+-   Made the + button bigger on public song list
+-   Added a "Add to playlist" button on song details on the version selector
+
+## Fixes
+
+-   Fixed a possible SQL injection in getKaras
+-   Fixed gitlab feeds display
+-   Fixed various bugs we found via Sentry
+-   Fixed rename user login in user edit page
+-   Fixed post migration tasks not properly being awaited
+
 # v6.0.48 - 30/01/2022
 
 ## Misc
