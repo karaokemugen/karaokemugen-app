@@ -62,31 +62,31 @@ function PublicPage() {
 		if (view === 'home' || context?.globalState.settings.data.config.Frontend?.Mode === 0) {
 			route = '/public';
 			if (!context.globalState.frontendContext.playlistInfoLeft)
-				setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
+				await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 		} else if (view === 'tag') {
 			tagType = tagType !== undefined ? tagType : tagType;
 			route = `/public/tags/${tagType}`;
 			if (!context.globalState.frontendContext.playlistInfoLeft)
-				setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
+				await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 		} else if (view === 'favorites') {
-			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.favorites);
+			await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.favorites);
 			route = '/public/favorites';
 		} else if (view === 'requested') {
-			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
+			await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 			searchType = 'requested';
 			route = '/public/search/requested';
 		} else if (view === 'history') {
-			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
+			await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 			route = '/public/search/history';
 		} else if (view === 'search') {
-			setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
+			await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
 			searchType = 'search';
 			route = '/public/search';
 		} else if (view === 'publicPlaylist') {
-			setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.publicPlaid);
+			await setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.publicPlaid);
 			route = `/public/playlist/${context.globalState.settings.data.state.publicPlaid}`;
 		} else if (view === 'currentPlaylist') {
-			setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.currentPlaid);
+			await setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.currentPlaid);
 			route = `/public/playlist/${context.globalState.settings.data.state.currentPlaid}`;
 		}
 		if (indexKaraDetail === undefined && context?.globalState.settings.data.config.Frontend?.Mode !== 0) {
