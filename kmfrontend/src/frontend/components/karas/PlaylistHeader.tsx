@@ -1,7 +1,7 @@
 import './PlaylistHeader.scss';
 
 import i18next from 'i18next';
-import { MouseEvent as MouseEventReact, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent as MouseEventReact, useContext, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import { setFilterValue } from '../../../store/actions/frontendContext';

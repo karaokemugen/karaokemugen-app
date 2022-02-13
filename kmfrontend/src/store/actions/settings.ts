@@ -74,6 +74,7 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 				'Request failed with status code',
 				'Request aborted',
 				'ResizeObserver loop limit exceeded',
+				'ResizeObserver loop completed with undelivered notifications',
 				/.*[n|N]o space left on device.*/,
 				'PL_ADD_SONG_ERROR',
 			],

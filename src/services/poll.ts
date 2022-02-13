@@ -4,13 +4,13 @@ import sampleSize from 'lodash.samplesize';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { APIMessage } from '../controllers/common';
+import { DBPLC } from '../lib/types/database/playlist';
 import { OldJWTToken } from '../lib/types/user';
 import { getConfig } from '../lib/utils/config';
 import { Timer } from '../lib/utils/date';
 import logger from '../lib/utils/logger';
 import { emit, on } from '../lib/utils/pubsub';
 import { emitWS } from '../lib/utils/ws';
-import { DBPLC } from '../types/database/playlist';
 import { PollItem, PollObject, PollResults } from '../types/poll';
 import { State } from '../types/state';
 import { adminToken } from '../utils/constants';

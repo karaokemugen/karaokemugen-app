@@ -116,7 +116,7 @@ function PlaylistCommandsModal(props: IProps) {
 					))}
 				</>,
 				() =>
-					data.reposUnknown.map((repoName: string) => {
+					data.reposUnknown.forEach((repoName: string) => {
 						commandBackend('addRepo', {
 							Name: repoName,
 							Online: true,

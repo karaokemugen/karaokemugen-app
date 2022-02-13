@@ -2,12 +2,12 @@ import { pg as yesql } from 'yesql';
 
 import { buildClauses, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
-import { DBPL, DBPLCAfterInsert, SmartPlaylistType } from '../lib/types/database/playlist';
-import { Criteria, PLC, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist';
+import { DBPL, DBPLC, DBPLCBase, PLCInsert, SmartPlaylistType } from '../lib/types/database/playlist';
+import { Criteria, PLCParams, UnaggregatedCriteria } from '../lib/types/playlist';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
 import { profile } from '../lib/utils/logger';
-import { DBPLC, DBPLCInfo, DBPLCKID } from '../types/database/playlist';
+import { DBPLCInfo } from '../types/database/playlist';
 import { getState } from '../utils/state';
 import {
 	sqladdCriteria,
@@ -143,7 +143,7 @@ export async function selectMaxPosInPlaylist(id: string): Promise<number> {
 	return res.rows[0]?.maxpos;
 }
 
-export function replacePlaylist(playlist: PLC[]) {
+export function replacePlaylist(playlist: DBPLC[]) {
 	let newpos = 0;
 	const karaList = playlist.map(kara => [(newpos += 1), kara.plcid]);
 	return transaction({ sql: sqlupdatePLCSetPos, params: karaList });
@@ -220,7 +220,7 @@ export async function selectPlaylistContents(params: PLCParams): Promise<DBPLC[]
 	return res.rows;
 }
 
-export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCKID[]> {
+export async function selectPlaylistContentsMicro(id: string): Promise<DBPLCBase[]> {
 	try {
 		profile('selectPlaylistContentsMicro');
 		const res = await db().query(sqlgetPlaylistContentsMicro, [id]);
@@ -389,13 +389,13 @@ export async function selectKarasFromCriterias(
 	return res.rows;
 }
 
-export async function insertKaraIntoPlaylist(karaList: PLC[]): Promise<DBPLCAfterInsert[]> {
+export async function insertKaraIntoPlaylist(karaList: PLCInsert[]): Promise<DBPLCBase[]> {
 	const karas: any[] = karaList.map(kara => [
 		kara.plaid,
 		kara.username,
 		kara.nickname,
 		kara.kid,
-		kara.created_at,
+		kara.added_at,
 		kara.pos,
 		kara.flag_free || false,
 		kara.flag_visible || true,

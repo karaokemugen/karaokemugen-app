@@ -1,7 +1,7 @@
 import './Tutorial.scss';
 
 import i18next from 'i18next';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { unmountComponentAtNode } from 'react-dom';
 import { Trans } from 'react-i18next';
 

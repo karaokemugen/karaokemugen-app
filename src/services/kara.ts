@@ -4,15 +4,15 @@ import {
 	insertOnlineRequested,
 	insertPlayed,
 	selectAllKaras,
+	selectAllKarasMicro,
 	selectAllKIDs,
-	selectKaraMini,
 	selectYears,
 	truncateOnlineRequested,
 } from '../dao/kara';
 import { getASS } from '../lib/dao/karafile';
 import { consolidateData, removeUnusedTagData } from '../lib/services/kara';
 import { ASSLine } from '../lib/types/ass';
-import { DBKara, DBKaraBase } from '../lib/types/database/kara';
+import { DBKara } from '../lib/types/database/kara';
 import { KaraList, KaraParams, YearList } from '../lib/types/kara';
 import { JWTTokenWithRoles, OldJWTToken } from '../lib/types/user';
 import { ASSToLyrics } from '../lib/utils/ass';
@@ -57,12 +57,8 @@ export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRole
 	}
 }
 
-export function getKaraMini(kid: string): Promise<DBKaraBase> {
-	return selectKaraMini(kid);
-}
-
 export async function getKaraLyrics(kid: string): Promise<ASSLine[]> {
-	const kara = await getKaraMini(kid);
+	const kara = await getKara(kid, adminToken);
 	if (!kara) throw { code: 404, msg: `Kara ${kid} unknown` };
 	if (!kara.subfile) return;
 	const ASS = await getASS(kara.subfile, kara.repository);
@@ -87,9 +83,20 @@ export async function getYears(): Promise<YearList> {
 	};
 }
 
-export function getAllKaras(): Promise<KaraList> {
-	// Simple function to return all karaokes, compatibility with KM Server
-	return getKaras({ from: 0, size: 99999999, token: adminToken });
+export async function getKarasMicro(kids: string[]) {
+	profile('getKarasMicro');
+	try {
+		const pl = await selectAllKarasMicro({
+			q: `k:${kids.join(',')}`,
+		});
+		return pl;
+	} catch (err) {
+		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
+		sentry.error(err);
+		throw err;
+	} finally {
+		profile('getKarasMicro');
+	}
 }
 
 export async function getKaras(params: KaraParams): Promise<KaraList> {

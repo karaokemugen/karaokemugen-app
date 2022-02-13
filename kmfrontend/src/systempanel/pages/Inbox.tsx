@@ -49,13 +49,13 @@ export default function Inbox() {
 			okText: i18next.t('YES'),
 			cancelText: i18next.t('NO'),
 			onOk: async close => {
-				close();
 				try {
 					await commandBackend('deleteKaraFromInbox', { repoName: instance, inid });
 				} catch (e) {
 					// already display
 				}
 				getInbox();
+				close();
 			},
 		});
 	};

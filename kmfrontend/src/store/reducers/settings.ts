@@ -11,7 +11,7 @@ export const initialStateConfig: SettingsStore = {
 	error: '',
 };
 
-export default function (state, action: SettingsSuccess | SettingsFailure) {
+export default function settingsReducer(state, action: SettingsSuccess | SettingsFailure) {
 	switch (action.type) {
 		case Settings.SETTINGS_SUCCESS:
 			return {
@@ -24,12 +24,6 @@ export default function (state, action: SettingsSuccess | SettingsFailure) {
 		case Settings.SETTINGS_FAILURE:
 			return {
 				...state,
-				/*data: {
-					state: {},
-					config: {},
-					user: {},
-					version: {}
-				},*/
 				// Let the old data persists, as it will cause trouble with many components that except full objects.
 				error: action.payload.error,
 			};

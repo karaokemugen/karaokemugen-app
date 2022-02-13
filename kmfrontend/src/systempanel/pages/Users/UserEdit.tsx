@@ -20,32 +20,40 @@ function UserEdit() {
 
 	const [user, setUser] = useState<User>();
 
-	const saveNew = async user => {
-		await commandBackend('createUser', user, true);
-		navigate('/system/users');
+	const saveNew = async (user: User) => {
+		try {
+			await commandBackend('createUser', user, true);
+			navigate('/system/users');
+		} catch (e) {
+			// already display
+		}
 	};
 
-	const saveUpdate = async user => {
-		await commandBackend('editUser', user, true);
-		navigate('/system/users');
-	};
-
-	const loadUser = async () => {
-		if (username) {
-			try {
-				const res = await commandBackend('getUser', { username });
-				setUser(res);
-			} catch (e) {
-				// already display
-			}
-		} else {
-			setUser({ ...newUser });
+	const saveUpdate = async (userSaved: User) => {
+		try {
+			userSaved.old_login = user.login;
+			await commandBackend('editUser', userSaved, true);
+			navigate('/system/users');
+		} catch (e) {
+			// already display
 		}
 	};
 
 	useEffect(() => {
+		const loadUser = async () => {
+			if (username) {
+				try {
+					const res = await commandBackend('getUser', { username });
+					setUser(res);
+				} catch (e) {
+					// already display
+				}
+			} else {
+				setUser({ ...newUser });
+			}
+		};
 		loadUser();
-	}, []);
+	}, [username]);
 
 	return (
 		<>

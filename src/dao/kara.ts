@@ -13,7 +13,7 @@ import {
 	sqldeleteChildrenKara,
 	sqldeleteKara,
 	sqlgetAllKaras,
-	sqlgetKaraMini,
+	sqlgetAllKarasMicro,
 	sqlgetYears,
 	sqlinsertChildrenParentKara,
 	sqlinsertKara,
@@ -82,10 +82,18 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const filterClauses: WhereClause = params.filter
 		? buildClauses(params.filter, false, params.parentsOnly)
 		: { sql: [], params: {}, additionalFrom: [] };
-	let whereClauses = params.q ? buildTypeClauses(params.q, params.order) : '';
+	const typeClauses = params.q
+		? buildTypeClauses(params.q, params.order)
+		: { sql: [], params: {}, additionalFrom: [] };
+	const yesqlPayload = {
+		sql: [...filterClauses.sql, ...typeClauses.sql],
+		params: { ...filterClauses.params, ...typeClauses.params },
+		additionalFrom: [...filterClauses.additionalFrom, ...typeClauses.additionalFrom],
+	};
+	let whereClauses = '';
 	// Hide blacklisted songs
 	if (params.blacklist) {
-		whereClauses = `${whereClauses} AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${
+		whereClauses += ` AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${
 			getState().blacklistPlaid
 		}')`;
 	}
@@ -134,7 +142,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (params.random > 0) {
 		orderClauses = `RANDOM(), ${orderClauses}`;
 		limitClause = `LIMIT ${params.random}`;
-		whereClauses = `${whereClauses} AND ak.pk_kid NOT IN (
+		whereClauses += ` AND ak.pk_kid NOT IN (
 			SELECT pc.fk_kid
 			FROM playlist_content pc
 			WHERE pc.fk_id_playlist = '${getState().publicPlaid}'
@@ -149,20 +157,19 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		))`;
 	}
 	if (params.userFavorites) {
-		whereClauses += ` AND uf.fk_login = '${params.userFavorites}' `;
-		joinClauses.push(
-			` LEFT OUTER JOIN favorites AS uf ON uf.fk_login = '${params.userFavorites}' AND uf.fk_kid = ak.pk_kid `
-		);
+		whereClauses += ' AND uf.fk_login = :username_favs';
+		joinClauses.push(' LEFT OUTER JOIN favorites AS uf ON uf.fk_login = :username_favs AND uf.fk_kid = ak.pk_kid ');
+		yesqlPayload.params.username_favs = params.userFavorites;
 	}
 	const query = sqlgetAllKaras(
-		filterClauses.sql,
+		yesqlPayload.sql,
 		whereClauses,
 		groupClause,
 		orderClauses,
 		havingClause,
 		limitClause,
 		offsetClause,
-		filterClauses.additionalFrom,
+		yesqlPayload.additionalFrom,
 		selectRequested,
 		groupClauseEnd,
 		joinClauses
@@ -171,15 +178,28 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		publicPlaylist_id: getState().publicPlaid,
 		dejavu_time: new Date(now() - getConfig().Playlist.MaxDejaVuTime * 60 * 1000),
 		username: params.username || 'admin',
-		...filterClauses.params,
+		...yesqlPayload.params,
 	};
 	const res = await db().query(yesql(query)(queryParams));
 	return res.rows;
 }
 
-export async function selectKaraMini(kid: string): Promise<DBKaraBase> {
-	const res = await db().query(sqlgetKaraMini, [kid]);
-	return res.rows[0] || {};
+export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBase[]> {
+	const typeClauses = params.q
+		? buildTypeClauses(params.q, params.order)
+		: { sql: [], params: {}, additionalFrom: [] };
+	const yesqlPayload = {
+		sql: [...typeClauses.sql],
+		params: { ...typeClauses.params },
+		additionalFrom: [...typeClauses.additionalFrom],
+	};
+
+	const query = sqlgetAllKarasMicro(yesqlPayload.sql, yesqlPayload.additionalFrom);
+	const queryParams = {
+		...yesqlPayload.params,
+	};
+	const res = await db().query(yesql(query)(queryParams));
+	return res.rows;
 }
 
 export function insertPlayed(kid: string) {
@@ -215,8 +235,10 @@ export async function updateKaraParents(kara: Kara) {
 	await db().query(sqldeleteChildrenKara, [kara.kid]);
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
-		const pkara = await selectKaraMini(pkid);
-		if (kara.repository !== pkara.repository) {
+		const pkara = await selectAllKarasMicro({
+			q: `k:${pkid}`,
+		});
+		if (kara.repository !== pkara[0].repository) {
 			throw new Error(`${pkid} is not in ${kara.repository} repository`);
 		}
 		await db().query(

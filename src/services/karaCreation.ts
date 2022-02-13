@@ -1,13 +1,9 @@
 import { promises as fs } from 'fs';
 import { basename, resolve } from 'path';
 
+import { applyKaraHooks } from '../lib/dao/hook';
 import { extractVideoSubtitles, verifyKaraData } from '../lib/dao/karafile';
-import {
-	applyKaraHooks,
-	defineFilename,
-	determineMediaAndLyricsFilenames,
-	processSubfile,
-} from '../lib/services/karaCreation';
+import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
 import { EditedKara, KaraFileV4 } from '../lib/types/kara.d';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
 import { resolveFileInDirs, smartMove } from '../lib/utils/files';

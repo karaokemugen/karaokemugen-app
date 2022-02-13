@@ -1,6 +1,7 @@
+import { DBKara } from '../lib/types/database/kara';
 import { DBPLCBase } from '../lib/types/database/playlist';
 
-export interface CurrentSong extends DBPLCBase {
+export interface CurrentSong extends DBPLCBase, DBKara {
 	avatar?: string;
 	infos?: string;
 }

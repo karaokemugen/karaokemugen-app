@@ -1,4 +1,106 @@
-# v6.0.38 - 15/01/2022
+# v6.0.50 - 13/02/2022
+
+## Misc
+
+-   Updated dependencies (Namely Electron 17)
+-   Kara creation date is now displayed when you click on the details of a playlist item
+-   Updated readme
+
+## Improvements
+
+-   Optimized adding a song to a playlist, especially when you decide to add a lot of songs to a playlist.
+-   Added download media button on kara list in system panel when the song isn't downloaded yet
+-   Made the + button bigger on public song list
+-   Added a "Add to playlist" button on song details on the version selector
+-   Stats are now updated in welcome page after updated all repositories
+
+## Fixes
+
+-   Fixed updating karaoke parents when doing a repository update
+-   Fixed a possible SQL injection in getKaras
+-   Fixed gitlab feeds display
+-   Fixed various bugs we found via Sentry
+-   Fixed rename user login in user edit page
+-   Fixed post migration tasks not properly being awaited
+-   Fixed favorites loading after previous library loading
+
+# v6.0.48 - 30/01/2022
+
+## Misc
+
+-   Add link to forum in menu
+-   Updated dependencies
+
+## Fixes
+
+-   Added minimum system version for macOS builds (10.14.0 due to postgres 13)
+-   Updated timeout for api calls to 30 seconds instead of 10 seconds
+-   Fixed warning when a song has the same parent twice
+-   Updated translations
+-   Prevent multiple updates from running at once
+-   Fixed logout when accessing privileged routes
+
+# v6.0.47 - 27/01/2022
+
+## Misc
+
+-   Updated backend dependencies
+
+## Fixes
+
+-   Made SQL migrations safer due to upgrades kind of making this a mess for some users
+-   Various fixes to kara creation/edition
+-   Added a button to go to the forum for help if you have database connection issues
+-   Fixed FTP upload total size on progressbar
+-   Tags list in system panel now saves its filter
+-   Fixed software update messing up with repository updates
+-   Updated translations
+-   Fixed log out to operator page when wrong user role is detected
+-   Fixed tag priority visibility on public/operator pages
+
+# v6.0.44 - 19/01/2022
+
+## Updates
+
+-   Updated indonesian translation
+-   Upgraded backend and frontend deps
+
+## Fixes
+
+-   Fix parents being deleted during updates order
+-   Fix parents order when integrating new songs from updates
+-   Added max year in kara form to prevent stuff
+-   FIX ONLINE USER CREATION. AGAIN.
+
+# v6.0.42 - 16/01/2022
+
+## Fixes
+
+-   Fix for creating a karaoke without lyrics
+-   Fix enter key not registering a tag should be created in karaoke form
+-   Fix refresh when editing karaoke
+-   Fix parent topological sort when updating your base
+-   Fix error display when inbox is not available for someone
+
+## Translations
+
+-   Improved indonesian
+
+# v6.0.40 - 13/01/2022
+
+## Hotfixes
+
+-   Reinstate agentkeepalive for people with strange network configurations who can timeout while downloading media
+-   Better manage database generations after a database migration occured
+
+# v6.0.39 - 12/01/2022
+
+## Hotfixes
+
+-   Fix first startup not downloading the karaoke base
+-   Fix about screen to display our most generous donators better
+
+# v6.0.38 - 12/01/2022
 
 ## New features
 

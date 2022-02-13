@@ -20,8 +20,8 @@ import { PLCCallback, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
-import ActionsButtons from './ActionsButtons';
 import InlineTag from './InlineTag';
+import AddKaraButton from '../generic/buttons/AddKaraButton';
 
 interface Props {
 	kid: string;
@@ -68,34 +68,34 @@ export default function VersionSelector(props: Props) {
 		}
 	};
 
-	const refreshKaras = useCallback(
-		updated => {
-			for (const k of updated) {
-				if (karas.findIndex(dbk => dbk.kid === k.kid) !== -1) {
-					fetchKaras(id).then(res => {
-						setI18n(res.i18n);
-						setKaras(res.karas);
-					});
-					break;
-				}
-			}
-		},
-		[karas]
+	const getKaras = useCallback(
+		() =>
+			fetchKaras(id).then(res => {
+				setI18n(res.i18n);
+				setKaras(res.karas);
+			}),
+		[id]
 	);
 
 	useEffect(() => {
+		const refreshKaras = updated => {
+			for (const k of updated) {
+				if (karas?.findIndex(dbk => dbk.kid === k.kid) !== -1) {
+					getKaras();
+					break;
+				}
+			}
+		};
+
 		getSocket().on('KIDUpdated', refreshKaras);
 		return () => {
 			getSocket().off('KIDUpdated', refreshKaras);
 		};
-	}, [karas]);
+	}, [getKaras, karas]);
 
 	useEffect(() => {
-		fetchKaras(id).then(res => {
-			setI18n(res.i18n);
-			setKaras(res.karas);
-		});
-	}, [id]);
+		getKaras();
+	}, [getKaras]);
 
 	return (
 		<div>
@@ -173,10 +173,7 @@ export default function VersionSelector(props: Props) {
 															<i className="fas fa-eraser" />
 														</button>
 													) : (
-														<button
-															onClick={e => addKara(e, kara)}
-															className="btn btn-primary"
-														>
+														<button onClick={e => addKara(e, kara)} className="btn">
 															<i className="fas fa-plus" />
 														</button>
 													)}
@@ -187,6 +184,7 @@ export default function VersionSelector(props: Props) {
 										<div className="detailsKara">
 											<div className="centerButtons">
 												<MakeFavButton kid={kara.kid} />
+												<AddKaraButton kid={kara.kid} titles={kara.titles} />
 												<ShowVideoButton
 													togglePreview={() => setShowVideo(!showVideo)}
 													preview={showVideo}
