@@ -128,6 +128,7 @@ export async function updateAllRepos() {
 	if (getConfig().App.FirstRun) {
 		createProblematicSmartPlaylist();
 	}
+	emitWS('statsRefresh');
 }
 
 export async function checkDownloadStatus(kids?: string[]) {

@@ -12,6 +12,7 @@
 -   Added download media button on kara list in system panel when the song isn't downloaded yet
 -   Made the + button bigger on public song list
 -   Added a "Add to playlist" button on song details on the version selector
+-   Stats are now updated in welcome page after updated all repositories
 
 ## Fixes
 
