@@ -6,8 +6,6 @@ import { DBKara, DBKaraBase, DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
-import { getKara } from '../services/kara';
-import { adminToken } from '../utils/constants';
 import { getState } from '../utils/state';
 import {
 	sqladdRequested,
@@ -237,8 +235,10 @@ export async function updateKaraParents(kara: Kara) {
 	await db().query(sqldeleteChildrenKara, [kara.kid]);
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
-		const pkara = await getKara(pkid, adminToken);
-		if (kara.repository !== pkara.repository) {
+		const pkara = await selectAllKarasMicro({
+			q: `k:${pkid}`,
+		});
+		if (kara.repository !== pkara[0].repository) {
 			throw new Error(`${pkid} is not in ${kara.repository} repository`);
 		}
 		await db().query(
