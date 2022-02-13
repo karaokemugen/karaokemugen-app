@@ -1,10 +1,9 @@
 import { expect } from 'chai';
 import sample from 'lodash.sample';
 
-import { DBPL } from '../src/lib/types/database/playlist';
+import { DBPL, DBPLC } from '../src/lib/types/database/playlist';
 import { PlaylistExport } from '../src/lib/types/playlist';
 import { uuidRegexp } from '../src/lib/utils/constants';
-import { DBPLC } from '../src/types/database/playlist';
 import { allKIDs, commandBackend, getToken, setPlaid, socket, testKara } from './util/util';
 
 describe('Playlists', () => {
@@ -246,7 +245,7 @@ describe('Playlists', () => {
 		expect(data.Header.description).to.be.equal('Karaoke Mugen Playlist File');
 		expect(data.PlaylistContents.length).to.be.at.least(1);
 		for (const plc of data.PlaylistContents) {
-			expect(plc.created_at).to.be.a('string');
+			expect(plc.added_at).to.be.a('string');
 			expect(plc.kid).to.be.a('string').and.match(uuidRegexp);
 			expect(plc.username).to.be.a('string');
 			expect(plc.nickname).to.be.a('string');

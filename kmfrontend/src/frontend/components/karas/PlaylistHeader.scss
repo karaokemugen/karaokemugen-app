@@ -40,7 +40,7 @@
 			&:before {
 				pointer-events: none;
 				display: inline-block;
-				font-family: 'Font Awesome 5 Free';
+				font-family: 'Font Awesome 6 Free';
 				content: '\f0d7';
 				position: absolute;
 				right: 0.5em;
@@ -112,7 +112,7 @@
 	background-color: #454545b3;
 	input {
 		font-weight: bold;
-		font-family: 'Font Awesome 5 Free', Lato, sans-serif;
+		font-family: Lato, sans-serif, 'Font Awesome 6 Free';
 		border: 1px solid transparent;
 		border-radius: 4px;
 	}

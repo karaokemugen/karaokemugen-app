@@ -64,6 +64,10 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repository) {
 	const path = resolve(getState().dataPath, repo.BaseDir);
 	const filePromises = [];
+	const filesModified = {
+		unlinked: 0,
+		written: 0,
+	};
 	for (const change of fullFiles) {
 		const file = resolve(path, change.path);
 		if (change.type === 'delete') {
@@ -72,11 +76,14 @@ export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repo
 					logger.warn(`Non fatal: Removing file ${file} failed`, { service: 'Patch', obj: err });
 				})
 			);
+			filesModified.unlinked += 1;
 		} else {
 			filePromises.push(fs.writeFile(file, change.contents, 'utf-8'));
+			filesModified.written += 1;
 		}
 	}
 	await Promise.all(filePromises);
+	logger.info(`Wrote ${filesModified.written} and deleted ${filesModified.unlinked} files`, { service: 'Patch' });
 }
 
 export async function applyPatch(patch: string, dir: string) {

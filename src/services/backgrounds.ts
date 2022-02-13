@@ -8,8 +8,8 @@ import { replaceExt } from '../lib/utils/files';
 import { BackgroundList, BackgroundType } from '../types/backgrounds';
 
 export const backgroundTypes = ['pause', 'stop', 'poll', 'bundled'] as const;
-/** Find a background for the player to use */
 
+/** Find a background for the player to use */
 export async function getBackgroundAndMusic(type: BackgroundType): Promise<BackgroundList> {
 	let files = await getBackgroundFiles(type);
 	// If no picture available, pick from bundled backgrounds

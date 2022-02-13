@@ -3,7 +3,7 @@ import './PlaylistPage.scss';
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 
-import { DBPLC } from '../../../../src/types/database/playlist';
+import { DBPLC } from '../../../../src/lib/types/database/playlist';
 import GlobalContext from '../../store/context';
 import { getTagInLocale, getTitleInLocale, sortAndHideTags } from '../../utils/kara';
 import { commandBackend, getSocket } from '../../utils/socket';

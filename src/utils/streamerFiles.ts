@@ -89,12 +89,14 @@ function secondsTimeSpanToHMS(s: number, format: string) {
 }
 
 async function writeTimeRemaining() {
-	const { time_left } = await getPlaylistInfo(getState().currentPlaid);
-	await fs.writeFile(
-		resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'time_remaining_in_current_playlist.txt'),
-		secondsTimeSpanToHMS(time_left, 'hm'),
-		'utf-8'
-	);
+	const currentPlaidInfo = await getPlaylistInfo(getState().currentPlaid);
+	if (currentPlaidInfo) {
+		await fs.writeFile(
+			resolve(getState().dataPath, getConfig().System.Path.StreamFiles, 'time_remaining_in_current_playlist.txt'),
+			secondsTimeSpanToHMS(currentPlaidInfo.time_left, 'hm'),
+			'utf-8'
+		);
+	}
 }
 
 const debounceSettings: [number, { maxWait: number; leading: boolean }] = [1500, { maxWait: 3000, leading: true }];

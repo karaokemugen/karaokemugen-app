@@ -41,7 +41,7 @@ import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFi
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { updateMedias } from './downloadMedias';
-import { getAllKaras, getKara, getKaras } from './kara';
+import { getKara, getKaras } from './kara';
 import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
 import { sendPayload } from './stats';
@@ -128,6 +128,7 @@ export async function updateAllRepos() {
 	if (getConfig().App.FirstRun) {
 		createProblematicSmartPlaylist();
 	}
+	emitWS('statsRefresh');
 }
 
 export async function checkDownloadStatus(kids?: string[]) {
@@ -245,6 +246,7 @@ export async function updateZipRepo(name: string) {
 				await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
 				changes = computeFileChanges(patch.data as string);
 			}
+			logger.debug('Applying changes', { service: 'Repo', obj: changes });
 			await applyChanges(changes, repo);
 			await saveSetting(`commit-${repo.Name}`, LatestCommit);
 			return false;
@@ -486,64 +488,90 @@ export async function updateGitRepo(name: string) {
 }
 
 async function applyChanges(changes: Change[], repo: Repository) {
-	const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
-	const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
-	const TIDsToDelete = [];
-	const tagPromises = [];
-	for (const match of tagFiles) {
-		if (match.type === 'new') {
-			tagPromises.push(
-				integrateTagFile(resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)), false)
-			);
-		} else {
-			// Delete.
-			TIDsToDelete.push(match.uid);
-		}
-	}
-	await Promise.all(tagPromises);
-	const KIDsToDelete = [];
-	const KIDsToUpdate = [];
-	let karas: KaraMetaFile[] = [];
-	const task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
-	for (const match of karaFiles) {
-		if (match.type === 'new') {
-			const file = resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path));
-			const karaFileData = await parseKara(file);
-			karas.push({
-				file,
-				data: karaFileData,
-			});
-		} else {
-			// Delete.
-			KIDsToDelete.push(match.uid);
-		}
-		task.update({ value: task.item.value + 1, subtext: match.path });
-	}
+	let task: Task;
 	try {
-		karas = topologicalSort(karas);
+		const tagFiles = changes.filter(f => f.path.endsWith('.tag.json'));
+		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
+		const TIDsToDelete = [];
+		const tagPromises = [];
+		for (const match of tagFiles) {
+			if (match.type === 'new') {
+				tagPromises.push(
+					integrateTagFile(
+						resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)),
+						false
+					).catch(err => {
+						console.log(err);
+					})
+				);
+			} else {
+				// Delete.
+				TIDsToDelete.push(match.uid);
+			}
+		}
+		await Promise.all(tagPromises);
+		const KIDsToDelete = [];
+		const KIDsToUpdate = [];
+		let karas: KaraMetaFile[] = [];
+		task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
+		for (const match of karaFiles) {
+			if (match.type === 'new') {
+				const file = resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path));
+				const karaFileData = await parseKara(file);
+				karas.push({
+					file,
+					data: karaFileData,
+				});
+			} else {
+				// Delete.
+				KIDsToDelete.push(match.uid);
+			}
+			task.update({ value: task.item.value + 1, subtext: match.path });
+		}
+		try {
+			/* Uncomment this when you need to debug stuff.
+			fs.writeFile('sort.json', JSON.stringify(karas.map(k => {
+				return {
+					file: k.file,
+					kid: k.data.data.kid,
+					parents: k.data.data.parents
+				};
+			}), null, 2), 'utf-8');
+			*/
+			karas = topologicalSort(karas);
+		} catch (err) {
+			logger.error('Topological sort failed', { service: 'Repo', obj: karas });
+			throw err;
+		}
+		for (const kara of karas) {
+			KIDsToUpdate.push(await integrateKaraFile(kara.file, kara.data, false));
+		}
+		const deletePromises = [];
+		if (KIDsToDelete.length > 0)
+			deletePromises.push(deleteKara(KIDsToDelete, false, { media: true, kara: false }, true));
+		if (TIDsToDelete.length > 0) {
+			// Let's not remove tags in karas : it's already done anyway
+			deletePromises.push(
+				removeTag(TIDsToDelete, { refresh: false, removeTagInKaras: false, deleteFile: false })
+			);
+		}
+		await Promise.all(deletePromises);
+		task.update({ text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0 });
+		// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
+		await saveSetting('baseChecksum', await baseChecksum());
+		if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
+		await checkDownloadStatus(KIDsToUpdate);
+		await updateAllSmartPlaylists();
 	} catch (err) {
-		logger.error('Topological sort failed', { service: 'Repo', obj: karas });
+		logger.error(`Applying changes failed, please regenerate your database : ${err}`, {
+			service: 'Repo',
+			obj: err,
+		});
 		throw err;
+	} finally {
+		task.end();
+		updateRunning = false;
 	}
-	for (const kara of karas) {
-		KIDsToUpdate.push(await integrateKaraFile(kara.file, kara.data, false));
-	}
-	const deletePromises = [];
-	if (KIDsToDelete.length > 0)
-		deletePromises.push(deleteKara(KIDsToDelete, false, { media: true, kara: false }, true));
-	if (TIDsToDelete.length > 0) {
-		// Let's not remove tags in karas : it's already done anyway
-		deletePromises.push(removeTag(TIDsToDelete, { refresh: false, removeTagInKaras: false, deleteFile: false }));
-	}
-	await Promise.all(deletePromises);
-	task.update({ text: 'REFRESHING_DATA', subtext: '', total: 0, value: 0 });
-	// Yes it's done in each action individually but since we're doing them asynchronously we need to re-sort everything and get the store checksum once again to make sure it doesn't re-generate database on next startup
-	await saveSetting('baseChecksum', await baseChecksum());
-	if (tagFiles.length > 0 || karaFiles.length > 0) await refreshAll();
-	await checkDownloadStatus(KIDsToUpdate);
-	await updateAllSmartPlaylists();
-	task.end();
-	updateRunning = false;
 }
 
 export async function checkGitRepoStatus(repoName: string) {
@@ -873,7 +901,7 @@ export async function generateCommits(repoName: string) {
 			task.incr();
 		}
 		// Added songs
-		const [karas, tags] = await Promise.all([getAllKaras(), getTags({})]);
+		const [karas, tags] = await Promise.all([getKaras({}), getTags({})]);
 		for (const file of addedSongs) {
 			const song = basename(file, '.kara.json');
 			const commit: Commit = {

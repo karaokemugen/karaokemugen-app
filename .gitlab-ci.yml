@@ -32,12 +32,14 @@ stages:
   - schedule
   - test
   - build
+  - scan
   - prepackage
   - package
   - deploy
   - release
 license_scanning:
   interruptible: true
+  stage: scan
   cache: {}
   rules:
     - if: $SCHEDULED_RELEASES == "true"
@@ -46,6 +48,7 @@ license_scanning:
     - when: never
 semgrep-sast:
   interruptible: true
+  stage: scan
   cache: {}
   rules:
     - if: $SCHEDULED_RELEASES == "true"
@@ -54,6 +57,7 @@ semgrep-sast:
     - when: never
 eslint-sast:
   interruptible: true
+  stage: scan
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
@@ -61,6 +65,7 @@ eslint-sast:
     - when: never
 gemnasium-dependency_scanning:
   interruptible: true
+  stage: scan
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
@@ -68,6 +73,7 @@ gemnasium-dependency_scanning:
     - when: never
 retire-js-dependency_scanning:
   interruptible: true
+  stage: scan
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
@@ -75,6 +81,7 @@ retire-js-dependency_scanning:
     - when: never
 nodejs-scan-sast:
   interruptible: true
+  stage: scan
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
@@ -82,6 +89,7 @@ nodejs-scan-sast:
     - when: never
 secret_detection:
   interruptible: true
+  stage: scan
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never

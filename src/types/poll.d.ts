@@ -1,4 +1,4 @@
-import { DBPLC } from './database/playlist';
+import { DBPLC } from '../lib/types/database/playlist';
 
 export interface PollState {
 	songPoll: boolean;

@@ -27,6 +27,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
     -   **Video**: AVI, MP4, MKV (anything supported by [mpv](http://mpv.io) really)
     -   **Subtitles**: ASS, Karafun, KAR, Epitanime Toyunda v1-v3, Ultrastar .txt files (if not ASS, they will be converted to ASS upon importation, and cannot be used directly)
     -   **Music**: MP3, M4A, OGG (anything supported by [mpv](http://mpv.io) really)
+-   **Streamer-friendly options**: Twitch chat triggers, Nico Nico Douga-style comments, text files with refreshed information for your layouts, and more.
 -   **Complete player controls**: Skip, pause, play, stop, rewind playback, hide/show lyrics, mute/unmute and volume control.
 -   **Playlist management**: Reorder, shuffle, copy and move songs around between playlists
     -   Playlists can be _current_ (used by the video player) and/or _public_ (where users can send songs to)
@@ -48,7 +49,7 @@ This is a mature product, battle-tested during anime conventions like [Jonetsu](
     -   Operators can **organize playlists** and control the player through the operator interface.
 -   **Highly customizable experience** to tailor the app to your specific needs (for twitch streams, in front of a crowd, between friends, for karaoke contests, etc.)
 -   **Display karaoke information** or operator announcements during song playback
--   **Export/import** playlists, favorites, blacklist criterias sets
+-   **Export/import** playlists and favorites
 -   And **many other things**! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
 
 ## How it works
@@ -121,7 +122,7 @@ ffmpeg 3 or later is required ([ffmpeg's website](http://www.ffmpeg.org))
 You'll need a version of the GNU patch utility 2.7 or above so Karaoke Mugen can apply git-patches sent via Karaoke Mugen Server to keep your song lists up to date.
 
 -   On Windows, you can download a pre-compiled one [here](https://mugen.karaokes.moe/downloads/patch.exe)
--   On macOS we recommend you use [Homebrew](https://brew.sh)
+-   On macOS we recommend you use [Homebrew](https://brew.sh) to install GNU Patch.
 -   On Linux, make sure your distribution has the latest patch package.
 
 #### PostgreSQL
@@ -129,6 +130,8 @@ You'll need a version of the GNU patch utility 2.7 or above so Karaoke Mugen can
 PostgreSQL 13.x or later is required ([postgreSQL's website](https://www.postgresql.org/))
 
 Version 12.x can work but we're bundling 13 with the binary distribution of Karaoke Mugen, so we'll base any feature decision later on version 13.
+
+Versions below 12.x won't work.
 
 Later PostgreSQL versions should work just fine.
 
@@ -203,7 +206,9 @@ All done!
 
 ### Launch
 
-To launch the app :
+If you're running on a headless Linux install, see [the following section.](#headless-install)
+
+If you're running on any other system with a graphical interface, To launch the app :
 
 ```sh
 yarn start
@@ -212,6 +217,18 @@ yarn start
 Generating a database ie required on first launch and is done automatically if the database specified in `config.yml` is empty. You can trigger it manually later by connecting to the system panel from the welcome screen. Another way is to launch with the `--generate` command-line option.
 
 On first run, the app will make you create an admin user and decide on a few base settings. You'll get to follow a guided tour of the operator panel too. You can trigger this tour process again by selecting the Tutorial item in the K menu on the app's operator panel.
+
+### Headless install
+
+Our runtime is Electron and it needs a X Server to work, but we can go around that. Once launched, Karaoke Mugen is reachable with a browser by going to `http://<your_ip>:1337`.
+
+To launch an Electron app without an attached X Server you'll need `Xvfb` installed
+
+```sh
+export DISPLAY=':99.0'
+Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+yarn startHeadless
+```
 
 ## Translations
 
@@ -238,7 +255,9 @@ For general contributions, read the [dedicated section on the documentation webs
 
 For code/development contributions, read the [contributing guide](CONTRIBUTING.md)
 
-Everything's there, and if you have questions, you can come to [our Discord](http://karaokes.moe/discord) in the #karaoke_dev channel!
+Everything's there, and if you have questions, you can come to [our Discord](http://karaokes.moe/discord) in the #dev channel!
+
+Another way is to post on [our Discourse Forum](https://discourse.karaokes.moe)
 
 ## Donations
 

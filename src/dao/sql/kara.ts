@@ -114,17 +114,16 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const sqlgetKaraMini = `
-SELECT
-	pk_kid AS kid,
-	titles AS titles,
-	mediafile AS mediafile,
-	karafile AS karafile,
-	subfile AS subfile,
-	duration AS duration,
-	repository as repository
-FROM kara
-WHERE pk_kid = $1
+export const sqlgetAllKarasMicro = (filterClauses: string[], additionalFrom: string[]) => `SELECT
+  k.pk_kid AS kid,
+  k.duration AS duration,
+  k.mediafile AS mediafile,
+  k.mediasize AS mediasize,
+  k.repository AS repository
+FROM kara AS k
+${additionalFrom.join('')}
+WHERE true
+  ${filterClauses.map(clause => `AND (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
 `;
 
 export const sqldeleteKara = `
