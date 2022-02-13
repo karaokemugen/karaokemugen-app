@@ -15,6 +15,7 @@
 
 ## Fixes
 
+-   Fixed updating karaoke parents when doing a repository update
 -   Fixed a possible SQL injection in getKaras
 -   Fixed gitlab feeds display
 -   Fixed various bugs we found via Sentry
