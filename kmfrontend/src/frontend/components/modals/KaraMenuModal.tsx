@@ -77,43 +77,55 @@ function KaraMenuModal(props: IProps) {
 	};
 
 	const makeFavorite = () => {
-		kara?.flag_favorites
-			? commandBackend('deleteFavorites', {
-					kids: [kara?.kid],
-			  })
-			: commandBackend('addFavorites', {
-					kids: [kara?.kid],
-			  });
-		setEffectFavorite(true);
-		setTimeout(props.closeKaraMenu, 350);
+		try {
+			kara?.flag_favorites
+				? commandBackend('deleteFavorites', {
+						kids: [kara?.kid],
+				  })
+				: commandBackend('addFavorites', {
+						kids: [kara?.kid],
+				  });
+			setEffectFavorite(true);
+			setTimeout(props.closeKaraMenu, 350);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	const addToBlacklist = () => {
-		commandBackend('addCriterias', {
-			criterias: [
-				{
-					type: 1001,
-					value: kara?.kid,
-					plaid: context.globalState.settings.data.state.blacklistPlaid,
-				},
-			],
-		});
-		setEffectBlacklist(true);
-		setTimeout(props.closeKaraMenu, 350);
+		try {
+			commandBackend('addCriterias', {
+				criterias: [
+					{
+						type: 1001,
+						value: kara?.kid,
+						plaid: context.globalState.settings.data.state.blacklistPlaid,
+					},
+				],
+			});
+			setEffectBlacklist(true);
+			setTimeout(props.closeKaraMenu, 350);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	const addToWhitelist = () => {
-		commandBackend('addCriterias', {
-			criterias: [
-				{
-					type: 1001,
-					value: kara?.kid,
-					plaid: context.globalState.settings.data.state.whitelistPlaid,
-				},
-			],
-		});
-		setEffectWhitelist(false);
-		setTimeout(props.closeKaraMenu, 350);
+		try {
+			commandBackend('addCriterias', {
+				criterias: [
+					{
+						type: 1001,
+						value: kara?.kid,
+						plaid: context.globalState.settings.data.state.whitelistPlaid,
+					},
+				],
+			});
+			setEffectWhitelist(false);
+			setTimeout(props.closeKaraMenu, 350);
+		} catch (e) {
+			// already display
+		}
 	};
 
 	const handleClick = (e: MouseEvent) => {
