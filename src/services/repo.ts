@@ -74,10 +74,11 @@ export async function addRepo(repo: Repository) {
 	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 		throw { code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.' };
 	}
-	if (repo.Online && !repo.MaintainerMode) {
+	if (repo.Online) {
 		// Testing if repository is reachable
 		try {
-			await getRepoMetadata(repo.Name);
+			const manifest = await getRepoMetadata(repo.Name);
+			if (repo.MaintainerMode) repo.Git.ProjectID = manifest.ProjectID;
 		} catch (err) {
 			throw { code: 404, msg: 'Repository unreachable. Did you misspell its name?' };
 		}
@@ -289,10 +290,11 @@ async function newZipRepo(repo: Repository): Promise<string> {
 export async function editRepo(name: string, repo: Repository, refresh?: boolean, onlineCheck = true) {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw { code: 404 };
-	if (repo.Online && !repo.MaintainerMode && onlineCheck) {
+	if (repo.Online && onlineCheck) {
 		// Testing if repository is reachable
 		try {
-			await getRepoMetadata(repo.Name);
+			const manifest = await getRepoMetadata(repo.Name);
+			if (repo.MaintainerMode) repo.Git.ProjectID = manifest.ProjectID;
 		} catch (err) {
 			throw { code: 404, msg: 'Repository unreachable. Did you misspell its name?' };
 		}

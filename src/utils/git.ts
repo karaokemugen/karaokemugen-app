@@ -1,8 +1,6 @@
 import i18next from 'i18next';
 import { resolve } from 'path';
-import simpleGit, { SimpleGit, SimpleGitProgressEvent } from 'simple-git';
-import { DefaultLogFields } from 'simple-git/src/lib/tasks/log';
-import { ListLogLine } from 'simple-git/typings/response';
+import simpleGit, { DefaultLogFields, ListLogLine, SimpleGit, SimpleGitProgressEvent } from 'simple-git';
 import which from 'which';
 
 import { RepositoryMaintainerSettings } from '../lib/types/repo';

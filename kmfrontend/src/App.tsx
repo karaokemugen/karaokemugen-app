@@ -46,9 +46,7 @@ function App() {
 
 	useEffect(() => {
 		// add a trailing slash
-		const path = location.pathname !== '/' ?
-			location.pathname?.slice(1) + '/'
-			:'';
+		const path = location.pathname !== '/' ? location.pathname?.slice(1) + '/' : '';
 		if (
 			path &&
 			['admin', 'system', 'welcome'].includes(path.slice(0, path.indexOf('/'))) &&
