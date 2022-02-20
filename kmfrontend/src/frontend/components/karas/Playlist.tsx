@@ -631,7 +631,7 @@ function Playlist(props: IProps) {
 
 	const addCheckedKaras = async (_event?: any, pos?: number) => {
 		const listKara = data?.content.filter(a => a?.checked);
-		if (listKara.length === 0) {
+		if (!listKara || listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}
