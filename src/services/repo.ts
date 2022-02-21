@@ -18,14 +18,7 @@ import { Kara, KaraFileV4 } from '../lib/types/kara';
 import { DiffChanges, RepositoryManifest } from '../lib/types/repo';
 import { TagFile } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import {
-	asyncCheckOrMkdir,
-	getFreeSpace,
-	listAllFiles,
-	moveAll,
-	relativePath,
-	resolveFileInDirs,
-} from '../lib/utils/files';
+import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
@@ -34,7 +27,7 @@ import { emitWS } from '../lib/utils/ws';
 import { Repository } from '../types/config';
 import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '../types/repo';
 import { adminToken } from '../utils/constants';
-import { pathIsContainedInAnother } from '../utils/files';
+import { getFreeSpace, pathIsContainedInAnother } from '../utils/files';
 import FTP from '../utils/ftp';
 import Git, { isGit } from '../utils/git';
 import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch';
