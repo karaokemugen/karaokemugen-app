@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash';
 import { DependencyList, EffectCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { DBKaraTag, DBYear } from '../../../src/lib/types/database/kara';

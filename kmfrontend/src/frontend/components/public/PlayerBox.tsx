@@ -1,7 +1,7 @@
 import './PlayerBox.scss';
 
 import i18next from 'i18next';
-import sample from 'lodash.sample';
+import { sample } from 'lodash';
 import { ReactFragment, RefObject, useContext, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 

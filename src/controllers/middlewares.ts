@@ -1,4 +1,4 @@
-import merge from 'lodash.merge';
+import { merge } from 'lodash';
 import { Socket } from 'socket.io';
 
 import { APIData } from '../lib/types/api';

@@ -1,5 +1,5 @@
 // Node modules
-import merge from 'lodash.merge';
+import { merge } from 'lodash';
 
 import packageJSON from '../../package.json';
 // KM Imports

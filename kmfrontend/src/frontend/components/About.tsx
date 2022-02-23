@@ -1,7 +1,7 @@
 import './About.scss';
 
 import i18n from 'i18next';
-import shuffle from 'lodash.shuffle';
+import { shuffle } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { Trans } from 'react-i18next';
 import TextTransition, { presets } from 'react-text-transition';
