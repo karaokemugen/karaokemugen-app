@@ -4,7 +4,7 @@
 
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
-import merge from 'lodash.merge';
+import { merge } from 'lodash';
 import { Pool } from 'pg';
 
 import { dbConfig } from '../src/utils/defaultSettings';

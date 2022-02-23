@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import sample from 'lodash.sample';
+import { sample } from 'lodash';
 
 import { DBPL, DBPLC } from '../src/lib/types/database/playlist';
 import { PlaylistExport } from '../src/lib/types/playlist';
