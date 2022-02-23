@@ -5,9 +5,7 @@ import { dialog } from 'electron';
 import { copy } from 'fs-extra';
 import i18next from 'i18next';
 import { address } from 'ip';
-import cloneDeep from 'lodash.clonedeep';
-import isEqual from 'lodash.isequal';
-import merge from 'lodash.merge';
+import { cloneDeep, isEqual, merge } from 'lodash';
 import { resolve } from 'path';
 
 import { selectUsers } from '../dao/user';

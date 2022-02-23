@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import sample from 'lodash.sample';
+import { sample } from 'lodash';
 import { basename, resolve } from 'path';
 
 import { resolvedPath } from '../lib/utils/config';

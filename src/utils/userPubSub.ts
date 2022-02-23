@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash';
 import { io, Socket } from 'socket.io-client';
 
 import { DBUser } from '../lib/types/database/user';

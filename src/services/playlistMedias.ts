@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
 import { remove } from 'fs-extra';
-import cloneDeep from 'lodash.clonedeep';
-import sample from 'lodash.sample';
+import { cloneDeep, sample } from 'lodash';
 import { basename, resolve } from 'path';
 import prettyBytes from 'pretty-bytes';
 import { createClient, FileStat } from 'webdav';

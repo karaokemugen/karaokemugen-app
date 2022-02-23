@@ -1,6 +1,5 @@
 import i18n from 'i18next';
-import sample from 'lodash.sample';
-import sampleSize from 'lodash.samplesize';
+import { sample, sampleSize } from 'lodash';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { APIMessage } from '../controllers/common';

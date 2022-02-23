@@ -1,7 +1,6 @@
 import execa from 'execa';
 import i18n from 'i18next';
-import debounce from 'lodash.debounce';
-import sample from 'lodash.sample';
+import { debounce, sample } from 'lodash';
 import { Promise as id3, Tags } from 'node-id3';
 import retry from 'p-retry';
 import { resolve } from 'path';

@@ -1,6 +1,6 @@
 // Utils
 import i18n from 'i18next';
-import shuffle from 'lodash.shuffle';
+import { shuffle } from 'lodash';
 import { resolve } from 'path';
 
 import { APIMessage } from '../controllers/common';

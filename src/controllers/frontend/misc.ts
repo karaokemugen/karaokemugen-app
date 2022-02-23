@@ -1,4 +1,4 @@
-import sample from 'lodash.sample';
+import { sample } from 'lodash';
 import { Socket } from 'socket.io';
 
 import { getKMStats, shutdown } from '../../components/engine';
