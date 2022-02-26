@@ -77,6 +77,7 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 				'ResizeObserver loop completed with undelivered notifications',
 				/.*[n|N]o space left on device.*/,
 				'PL_ADD_SONG_ERROR',
+				'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED',
 			],
 		});
 		Sentry.configureScope(scope => {
