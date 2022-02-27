@@ -17,7 +17,7 @@ import { downloadFile } from '../lib/utils/downloader';
 import { fileExists, smartMove } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { PGVersion } from '../types/database';
-import { editSetting } from './config';
+import { checkBinaries, editSetting } from './config';
 import { expectedPGVersion, pgctlRegex } from './constants';
 import sentry from './sentry';
 import { getState, setState } from './state';
@@ -80,12 +80,13 @@ export async function stopPG() {
 
 /** Get database PG version */
 async function getPGVersion(): Promise<PGVersion> {
-	const state = getState();
 	const conf = getConfig();
 	const pgDataDir = resolve(getState().dataPath, conf.System.Path.DB, 'postgres');
 	try {
 		const dataVersionFile = await fs.readFile(resolve(pgDataDir, 'PG_VERSION'), 'utf-8');
 		const dataVersion = dataVersionFile.split('\n')[0];
+		const state = getState();
+		await detectPGBinPath();
 		const pgctlPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		const output = await execa(pgctlPath, ['--version']);
 		logger.debug(`pg_ctl stdout: ${output.stdout}`, { service: 'DB' });
@@ -188,37 +189,56 @@ export async function restorePG() {
 	}
 }
 
+async function detectPGBinPath(): Promise<string> {
+	const state = getState();
+	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
+	let tempPGPath: string;
+	// We remove the bin part because we might need to use pgPath to move the whole postgres binary directory away.
+	// Postgres pg_init doesn't like having non-ASCII characters in its path
+	// So if it has, we'll move the whole pg distro out of the way in the OS temp directory
+	// This is a bug postgres doesn't intend to fix because it's windows only
+	// /shrug
+	//
+	const pgPath = resolve(state.appPath, state.binPath.postgres)
+		.replace(/\\bin$/g, '')
+		.replace(/\/bin$/, '');
+	if (!asciiRegexp.test(binPath) && state.os === 'win32') {
+		logger.warn(
+			"Binaries path is in a non-ASCII path, will copy it to the OS's temp folder first to init database",
+			{ service: 'DB' }
+		);
+		// On Windows, tmpdir() returns the user home directory/appData/local/temp so it's pretty useless, we'll try writing to C:\KaraokeMugenPostgres. If it fails because of permissions, there's not much else we can do, sadly.
+		tempPGPath = resolve('C:\\', 'KaraokeMugenPostgres');
+		logger.info(`Moving ${pgPath} to ${tempPGPath}`, { service: 'DB' });
+		await remove(tempPGPath).catch(() => {}); // izok
+		await mkdirp(tempPGPath);
+		await smartMove(pgPath, resolve(tempPGPath, 'postgres'));
+		binPath = resolve(tempPGPath, 'postgres', 'bin', 'pg_ctl.exe');
+		logger.debug(`pg binPath: ${binPath}`, { service: 'DB' });
+	}
+	if (tempPGPath) {
+		// Path has changed, let's update settings and state
+		await editSetting({
+			System: {
+				Binaries: {
+					Postgres: {
+						Windows: resolve(tempPGPath, 'postgres', 'bin'),
+					},
+				},
+			},
+		});
+		await checkBinaries(getConfig());
+	}
+	return binPath;
+}
+
 /** Initialize postgreSQL data directory if it doesn't exist */
 export async function initPGData() {
 	const conf = getConfig();
-	const state = getState();
 	logger.info('No database present, initializing a new one...', { service: 'DB' });
 	try {
-		let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
-		let tempPGPath: string;
-		// We remove the bin part because we might need to use pgPath to move the whole postgres binary directory away.
-		// Postgres pg_init doesn't like having non-ASCII characters in its path
-		// So if it has, we'll move the whole pg distro out of the way in the OS temp directory
-		// This is a bug postgres doesn't intend to fix because it's windows only
-		// /shrug
-		//
-		const pgPath = resolve(state.appPath, state.binPath.postgres)
-			.replace(/\\bin$/g, '')
-			.replace(/\/bin$/, '');
-		if (!asciiRegexp.test(binPath) && state.os === 'win32') {
-			logger.warn(
-				"Binaries path is in a non-ASCII path, will copy it to the OS's temp folder first to init database",
-				{ service: 'DB' }
-			);
-			// On Windows, tmpdir() returns the user home directory/appData/local/temp so it's pretty useless, we'll try writing to C:\KaraokeMugenPostgres. If it fails because of permissions, there's not much else we can do, sadly.
-			tempPGPath = resolve('C:\\', 'KaraokeMugenPostgres');
-			logger.info(`Moving ${pgPath} to ${tempPGPath}`, { service: 'DB' });
-			await remove(tempPGPath).catch(() => {}); // izok
-			await mkdirp(tempPGPath);
-			await smartMove(pgPath, resolve(tempPGPath, 'postgres'));
-			binPath = resolve(tempPGPath, 'postgres', 'bin', 'pg_ctl.exe');
-			logger.debug(`pg binPath: ${binPath}`, { service: 'DB' });
-		}
+		let binPath = await detectPGBinPath();
+		const state = getState();
 		const options = [
 			'init',
 			'-o',
@@ -228,26 +248,15 @@ export async function initPGData() {
 		];
 		if (state.os === 'win32') binPath = `"${binPath}"`;
 		await execa(binPath, options, {
-			cwd: tempPGPath ? resolve(tempPGPath, 'postgres', 'bin') : resolve(state.appPath, state.binPath.postgres),
+			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit',
 		});
-		if (tempPGPath) {
-			await editSetting({
-				System: {
-					Binaries: {
-						Postgres: {
-							Windows: resolve(tempPGPath, 'postgres', 'bin'),
-						},
-					},
-				},
-			});
-		}
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
 		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
 		sentry.error(err);
 		logger.error('Failed to initialize database', { service: 'DB', obj: err });
-		const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
+		const decoder = new StringDecoder(getState().os === 'win32' ? 'latin1' : 'utf8');
 		logger.error('PostgreSQL error', { service: 'DB', obj: decoder.write(err.stderr) });
 		errorStep(i18next.t('ERROR_INIT_PG_DATA'));
 		throw `Init failed : ${err}`;
@@ -295,8 +304,8 @@ export async function checkPG(): Promise<boolean> {
 
 /** Initialize bundled PostgreSQL server and data if necessary */
 export async function initPG(relaunch = true) {
-	const conf = getConfig();
-	const state = getState();
+	let conf = getConfig();
+	let state = getState();
 	if (state.os === 'win32') await checkAndInstallVCRedist();
 	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
@@ -306,6 +315,9 @@ export async function initPG(relaunch = true) {
 	} else {
 		// Check data dir version to see if it's the one we expect.
 		const versions = await getPGVersion();
+		// Reload state and conf
+		state = getState();
+		conf = getConfig();
 		if (versions.bin < expectedPGVersion) {
 			// Your PostgreSQL needs an upgrade!
 			logger.warn(`Incorrect PostgreSQL version detected. Expected ${expectedPGVersion}, got ${versions.bin}. `, {
