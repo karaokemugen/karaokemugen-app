@@ -123,7 +123,9 @@ export async function subRemoteUsers() {
 	logger.debug('Starting watching users online', { service: 'RemoteUser' });
 	const users = await listRemoteUsers();
 	for (const user of users) {
-		const [login, instance] = user.split('@');
-		startSub(login, instance);
+		if (user) {
+			const [login, instance] = user.split('@');
+			startSub(login, instance);
+		}
 	}
 }
