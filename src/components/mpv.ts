@@ -8,7 +8,6 @@ import randomstring from 'randomstring';
 import semver from 'semver';
 import { graphics } from 'systeminformation';
 import { setTimeout as sleep } from 'timers/promises';
-import logger from 'winston';
 
 import { setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
@@ -34,7 +33,7 @@ import Timeout = NodeJS.Timeout;
 import { DBKaraTag } from '../lib/types/database/kara';
 import HTTP from '../lib/utils/http';
 import { convert1LangTo2B } from '../lib/utils/langs';
-import { profile } from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { getBackgroundAndMusic } from '../services/backgrounds';
 import { getSongSeriesSingers, getSongTitle } from '../services/kara';
 import { getTagNameInLanguage } from '../services/tag';

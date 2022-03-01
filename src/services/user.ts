@@ -8,7 +8,6 @@ import { resolve } from 'path';
 import randomstring from 'randomstring';
 import slugify from 'slug';
 import { v4 as uuidV4 } from 'uuid';
-import logger from 'winston';
 
 import { selectSongCountForUser, selectSongTimeSpentForUser } from '../dao/playlist';
 import {
@@ -25,6 +24,7 @@ import { User, UserParams } from '../lib/types/user';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
 import { asciiRegexp, imageFileTypes } from '../lib/utils/constants';
 import { detectFileType, fileExists } from '../lib/utils/files';
+import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { Config } from '../types/config';
 import { UserOpts } from '../types/user';

@@ -4,13 +4,13 @@ import open from 'open';
 import { resolve } from 'path';
 import Postgrator from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
-import logger from 'winston';
 
 import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
+import logger from '../lib/utils/logger';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
 import { migrateFromDBMigrate } from '../utils/hokutoNoCode';

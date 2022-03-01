@@ -3,7 +3,6 @@ import { app } from 'electron';
 import execa from 'execa';
 import i18n from 'i18next';
 import internetAvailable from 'internet-available';
-import logger from 'winston';
 
 import { compareKarasChecksum, generateDB, getStats, initDBSystem } from '../dao/database';
 import { baseChecksum } from '../dao/dataStore';
@@ -19,7 +18,7 @@ import { generateDatabase as generateKaraBase } from '../lib/services/generation
 // Utils
 import { getConfig, setConfig } from '../lib/utils/config';
 import { duration } from '../lib/utils/date';
-import { enableWSLogging, profile } from '../lib/utils/logger';
+import logger, { enableWSLogging, profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import { initDownloader, wipeDownloadQueue, wipeDownloads } from '../services/download';
 import { updateAllMedias } from '../services/downloadMedias';

@@ -1,7 +1,6 @@
-import logger from 'winston';
-
 import { deleteUpvote, insertUpvote, selectUpvotesByPLC } from '../dao/upvote';
 import { getConfig } from '../lib/utils/config';
+import logger from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { getState } from '../utils/state';
 import { freePLC, getPLCInfoMini } from './playlist';
