@@ -5,13 +5,13 @@
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
 import { merge } from 'lodash';
-import { Pool } from 'pg';
+import pg from 'pg';
 
 import { dbConfig } from '../src/utils/defaultSettings';
 
 async function main() {
 	const configFile = readFileSync('app/config.yml', 'utf-8');
-	const configData: any = load(configFile);
+	const configData = load(configFile);
 	const config = merge(dbConfig, configData.System.Database);
 	const databaseConfig = {
 		host: config.host,
@@ -20,7 +20,7 @@ async function main() {
 		password: config.password,
 		database: config.database,
 	};
-	const client = new Pool(databaseConfig);
+	const client = new pg.Pool(databaseConfig);
 	await client.connect();
 	const res = await client.query(`
 	select 'drop table if exists "' || tablename || '" cascade;' as command
