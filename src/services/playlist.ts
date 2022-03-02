@@ -44,6 +44,7 @@ import {
 	updatePos,
 } from '../dao/playlist';
 import { PLImportConstraints } from '../lib/services/playlist';
+import { DBKaraBase } from '../lib/types/database/kara';
 import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
 import { AggregatedCriteria, PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import { OldJWTToken, User } from '../lib/types/user';
@@ -511,7 +512,7 @@ export async function addKaraToPlaylist(
 	const conf = getConfig();
 	const state = getState();
 	if (!plaid) plaid = state.publicPlaid;
-	const [pl, karas] = await Promise.all([getPlaylistInfo(plaid), getKarasMicro(kids)]);
+	const [pl, karasInDB] = await Promise.all([getPlaylistInfo(plaid), getKarasMicro(kids)]);
 	try {
 		profile('addKaraToPL');
 		if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
@@ -520,7 +521,7 @@ export async function addKaraToPlaylist(
 		if (!user) throw { code: 404, msg: 'Requester does not exist' };
 
 		profile('addKaraToPL-checkKIDExistence');
-		const allKaras = new Set(karas.map(k => k.kid));
+		const allKaras = new Set(karasInDB.map(k => k.kid));
 		const karasUnknown = [];
 		kids.forEach(kid => {
 			if (!allKaras.has(kid)) karasUnknown.push(kid);
@@ -530,6 +531,14 @@ export async function addKaraToPlaylist(
 		logger.debug(`Adding ${karas.length} song(s) to playlist ${pl.name || 'unknown'} by ${requester}...`, {
 			service: 'Playlist',
 		});
+
+		// Sort karas from our database by the list that was provided to this function, so songs are added in the correct order
+		profile('addKaraToPL-sort');
+		const karas: DBKaraBase[] = [];
+		for (const kid of kids) {
+			karas.push(karasInDB.find(k => k.kid === kid));
+		}
+		profile('addKaraToPL-sort');
 
 		if (user.type > 0 && !ignoreQuota) {
 			// If user is not admin
