@@ -1,4 +1,4 @@
-import * as SentryElectron from '@sentry/electron';
+import * as SentryElectron from '@sentry/electron/main';
 import Transport from 'winston-transport';
 
 import { getConfig } from '../lib/utils/config';

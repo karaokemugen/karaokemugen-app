@@ -1,6 +1,6 @@
 // Node modules
 import { app } from 'electron';
-import execa from 'execa';
+import { execa } from 'execa';
 import i18n from 'i18next';
 import internetAvailable from 'internet-available';
 

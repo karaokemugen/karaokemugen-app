@@ -2,13 +2,13 @@
 	"compilerOptions": {
 		// Target latest version of ECMAScript.
 		"target": "es2021",
-		"module": "commonjs",
+		"module": "ES6",
 		// Search under node_modules for non-relative imports.
 		"moduleResolution": "node",
 		// Process & infer types from .js files.
 		"allowJs": true,
-		// Don't emit; allow Babel to transform files.
-		"noEmit": false,
+		// Don't emit; allow esbuild to transform files.
+		"noEmit": true,
 		// Enable strictest settings like strictNullChecks & noImplicitAny.
 		// true is better but requires a global refactoring.
 		"strict": false,
@@ -22,7 +22,6 @@
 		"noEmitHelpers": true,
 		"importHelpers": true,
 		"inlineSources": true,
-		"outDir": "dist/",
 		"pretty": true,
 		"removeComments": true,
 		"downlevelIteration": true,

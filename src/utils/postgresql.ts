@@ -1,13 +1,13 @@
 // Manages Postgresql server binary
 
 // Node modules
-import execa from 'execa';
+import { execa } from 'execa';
 import { promises as fs } from 'fs';
 import { mkdirp, remove } from 'fs-extra';
 import i18next from 'i18next';
 import { resolve } from 'path';
 import { StringDecoder } from 'string_decoder';
-import tasklist from 'tasklist';
+import { tasklist } from 'tasklist';
 
 import { errorStep } from '../electron/electronLogger';
 import { getConfig, resolvedPath } from '../lib/utils/config';
