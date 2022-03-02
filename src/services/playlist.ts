@@ -513,6 +513,7 @@ export async function addKaraToPlaylist(
 	const state = getState();
 	if (!plaid) plaid = state.publicPlaid;
 	const [pl, karasInDB] = await Promise.all([getPlaylistInfo(plaid), getKarasMicro(kids)]);
+	const karas: DBKaraBase[] = [];
 	try {
 		profile('addKaraToPL');
 		if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
@@ -528,17 +529,15 @@ export async function addKaraToPlaylist(
 		});
 		if (karasUnknown.length > 0) throw { code: 404, msg: 'One of the karaokes does not exist' };
 		profile('addKaraToPL-checkKIDExistence');
-		logger.debug(`Adding ${karas.length} song(s) to playlist ${pl.name || 'unknown'} by ${requester}...`, {
-			service: 'Playlist',
-		});
-
 		// Sort karas from our database by the list that was provided to this function, so songs are added in the correct order
 		profile('addKaraToPL-sort');
-		const karas: DBKaraBase[] = [];
 		for (const kid of kids) {
 			karas.push(karasInDB.find(k => k.kid === kid));
 		}
 		profile('addKaraToPL-sort');
+		logger.debug(`Adding ${karas.length} song(s) to playlist ${pl.name || 'unknown'} by ${requester}...`, {
+			service: 'Playlist',
+		});
 
 		if (user.type > 0 && !ignoreQuota) {
 			// If user is not admin
