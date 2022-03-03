@@ -12,6 +12,7 @@
 
 ## Fixes
 
+-   Possible fix to PG dir with accent characters on Windows
 -   Fixed switching current playlists
 -   Fixed placeholder when clearing filter in operator panel's library
 -   Fixed adding songs in the right order from library to a playlist when selecting multiple songs
