@@ -1,3 +1,29 @@
+# v6.0.52 - xx/03/2022
+
+## New features
+
+-   Added the + button to karalines again in public interface
+-   Inbox management now can close issues and assign users.
+
+## Misc
+
+-   Karaoke Mugen is now compliant with ES Modules
+-   Upgraded dependencies
+
+## Fixes
+
+-   Fixed switching current playlists
+-   Fixed placeholder when clearing filter in operator panel's library
+-   Fixed adding songs in the right order from library to a playlist when selecting multiple songs
+-   Fixed switching to next song when clearing the playlist while a jingle is running.
+-   Fixed error message when failed to check for updates
+-   Fixed editing a karaoke when needing to extract subtitles
+-   Fixed sorting users by last seen in user list on system panel
+-   Fixed filter by groups on download page
+-   Fixed karas validation when strict mode is enabled
+-   Fixed addTitleAlias hooks
+-   Fixed user online event subscriptions
+
 # v6.0.50 - 13/02/2022
 
 ## Misc
