@@ -11,7 +11,7 @@
   "scripts": {
     "start": "yarn build && electron .",
     "startHeadless": "yarn build && electron --no-sandbox . --cli",
-    "test": "yarn typecheck && yarn build && electron . --test",
+    "test": "yarn build && electron . --test",
     "testCI": "yarn build && electron --no-sandbox . --test --cli",
     "manualTest": "mocha --require ts-node/register --timeout 60000 test/*.ts",
     "build": "yarn typecheck && node util/esbuild.js",
