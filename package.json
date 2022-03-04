@@ -321,7 +321,8 @@
     },
     "files": [
       "dist/*",
-      "package.json"
+      "package.json",
+      "!**/node_modules/**/*"
     ],
     "protocols": [
       {
@@ -331,8 +332,7 @@
           "km"
         ]
       }
-    ],
-    "asar": false
+    ]
   },
   "lint-staged": {
     "!(src/lib)": "prettier --write --ignore-unknown"

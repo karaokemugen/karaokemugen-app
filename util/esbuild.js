@@ -11,7 +11,7 @@ const buildOptions = {
 	target: 'node16',
 	format: 'cjs',
 	bundle: true,
-	sourcemap: 'both',
+	sourcemap: true,
 	conditions: ['module'],
 	external: ['electron', 'pg-native'],
 	legalComments: 'external',
