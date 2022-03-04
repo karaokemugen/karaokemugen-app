@@ -1,16 +1,21 @@
+import { RepositoryMaintainerSettings } from '../lib/types/repo';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
-import { getRepo } from '../services/repo';
+import { editRepo, getRepo } from '../services/repo';
 
 /** Assign someone to an issue */
 export async function assignIssue(issue: number, repoName: string) {
-	const repo = getRepo(repoName);
+	let repo = getRepo(repoName);
 	if (!repo.MaintainerMode) throw 'Maintainer mode is not enabled for this repository';
 	const url = new URL(repo.Git.URL);
 	const userID = await getUserID(repoName);
 	const params = {
 		assignee_id: userID,
 	};
+	if (!repo.Git.ProjectID) {
+		// Editing the repo should trigger
+		repo = (await editRepo(repo.Name, repo)) as RepositoryMaintainerSettings;
+	}
 	await HTTP.put(`${url.protocol}//${url.hostname}/api/v4/projects/${repo.Git.ProjectID}/issues/${+issue}`, params, {
 		headers: {
 			'PRIVATE-TOKEN': repo.Git.Password,
@@ -46,12 +51,17 @@ export async function getUserID(repoName: string) {
 /** Close an issue */
 export async function closeIssue(issue: number, repoName: string) {
 	try {
-		const repo = getRepo(repoName);
+		let repo = getRepo(repoName);
 		const params = {
 			state_event: 'close',
 		};
 		if (!repo.MaintainerMode) throw 'Maintainer mode is not enabled for this repository';
 		const url = new URL(repo.Git.URL);
+		if (!repo.Git.ProjectID) {
+			// Editing the repo should trigger
+			await editRepo(repo.Name, repo);
+			repo = getRepo(repoName) as RepositoryMaintainerSettings;
+		}
 		await HTTP.put(
 			`${url.protocol}//${url.hostname}/api/v4/projects/${repo.Git.ProjectID}/issues/${issue}`,
 			params,

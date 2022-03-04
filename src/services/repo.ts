@@ -280,7 +280,12 @@ async function newZipRepo(repo: Repository): Promise<string> {
 /** Edit a repository. Folders will be created if necessary
  * This is another cursed function of Karaoke Mugen.
  */
-export async function editRepo(name: string, repo: Repository, refresh?: boolean, onlineCheck = true) {
+export async function editRepo(
+	name: string,
+	repo: Repository,
+	refresh?: boolean,
+	onlineCheck = true
+): Promise<Repository> {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw { code: 404 };
 	if (repo.Online && onlineCheck) {
@@ -297,6 +302,7 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 	// Delay repository actions after edit
 	hookEditedRepo(oldRepo, repo, refresh, onlineCheck).catch();
 	logger.info(`Updated ${name}`, { service: 'Repo' });
+	return repo;
 }
 
 async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {
