@@ -28,7 +28,7 @@ class Viewcounts extends Component<unknown, ViewcountsState> {
 
 	refresh = async () => {
 		try {
-			const res = await commandBackend('getKaras', { order: 'karacount' });
+			const res = await commandBackend('getKaras', { order: 'played' });
 			this.setState({ karas: res.content, i18n: res.i18n });
 		} catch (e) {
 			// already display
