@@ -31,7 +31,7 @@ describe('Users', () => {
 	it('Edit your own account', async () => {
 		const data = await commandBackend(token, 'editMyAccount', {
 			nickname: 'toto',
-			avatar: resolve(__dirname, '../assets/guestAvatars/vegeta.jpg'),
+			avatar: resolve(process.cwd(), '../assets/guestAvatars/vegeta.jpg'),
 		});
 		expect(data.code).to.be.equal(200);
 	});
