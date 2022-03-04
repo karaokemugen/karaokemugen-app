@@ -1,4 +1,4 @@
-import { promise as fastq } from 'fastq';
+import Queue from 'better-queue';
 import { promises as fs } from 'fs';
 import internet from 'internet-available';
 import { resolve } from 'path';
@@ -31,6 +31,12 @@ export const downloadStatuses = ['MISSING', 'DOWNLOADING', 'DOWNLOADED'];
 let downloaderReady = false;
 let downloadQueueStatus: QueueStatus = 'stopped';
 
+const downloadQueueOptions = {
+	id: 'uuid',
+	cancelIfRunning: true,
+	concurrent: 3,
+};
+
 let dq: any;
 let downloadedKIDs = new Set();
 
@@ -47,6 +53,12 @@ async function emitQueueStatus(status: QueueStatus) {
 	emitWS('downloadQueueStatus', await getDownloads());
 }
 
+function queueDownload(input: KaraDownload, done: any) {
+	processDownload(input)
+		.then(() => done())
+		.catch(err => done(err));
+}
+
 export async function initDownloader() {
 	profile('initDL');
 	if (!downloaderReady) {
@@ -58,7 +70,7 @@ export async function initDownloader() {
 }
 
 export function initDownloadQueue() {
-	dq = fastq(processDownload, 3);
+	dq = new Queue(queueDownload, downloadQueueOptions);
 	dq.on('task_finish', async () => {
 		if (dq.length > 0) logger.info(`${dq.length - 1} items left in queue`, { service: 'Download' });
 		emitQueueStatus('updated');
