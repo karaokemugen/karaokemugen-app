@@ -10,10 +10,10 @@
   "main": "dist/index.cjs",
   "scripts": {
     "start": "yarn build && yarn electron:start",
-	"qstart": "node util/esbuild.js && yarn electron:start",
+    "qstart": "node util/esbuild.js && yarn electron:start",
     "startHeadless": "yarn build && electron --no-sandbox . --cli",
-    "test": "yarn build && NODE_OPTIONS=\"--enable-source-maps\" electron . --test",
-    "testCI": "yarn build && NODE_OPTIONS=\"--enable-source-maps\" electron --no-sandbox . --test --cli",
+    "test": "yarn build && electron . --test",
+    "testCI": "yarn build && electron --no-sandbox . --test --cli",
     "manualTest": "mocha --require ts-node/register --timeout 60000 test/*.ts",
     "build": "yarn typecheck && node util/esbuild.js",
     "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn typecheck && yarn build && yarn installkmfrontend && yarn buildkmfrontend",
@@ -31,7 +31,7 @@
     "prepare": "husky install",
     "watch": "node util/esbuild.js watch",
     "typecheck": "tsc",
-    "electron:start": "cross-env NODE_OPTIONS=\"--enable-source-maps\" electron ."
+    "electron:start": "electron ."
   },
   "homepage": "https://karaokes.moe",
   "repository": {
@@ -131,6 +131,7 @@
     "slug": "^5.2.0",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1",
+    "source-map-support": "^0.5.21",
     "systeminformation": "^5.11.6",
     "tasklist": "^5.0.0",
     "tmi.js": "^1.8.5",
