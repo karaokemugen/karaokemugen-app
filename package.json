@@ -85,7 +85,6 @@
     "axios": "^0.26.0",
     "basic-ftp": "^4.6.6",
     "bcryptjs": "^2.4.3",
-    "better-queue": "^3.8.10",
     "chokidar": "^3.5.3",
     "commander": "^9.0.0",
     "compression": "^1.7.4",
@@ -116,7 +115,6 @@
     "node-id3": "^0.2.3",
     "open": "^8.4.0",
     "os-locale": "^6.0.2",
-    "p-cancelable": "^3.0.0",
     "p-map": "^5.3.0",
     "p-retry": "^5.0.0",
     "pg": "^8.7.3",
@@ -322,7 +320,7 @@
       "buildResources": "build"
     },
     "files": [
-      "dist/**/*",
+      "dist/*",
       "package.json"
     ],
     "protocols": [
@@ -333,7 +331,8 @@
           "km"
         ]
       }
-    ]
+    ],
+    "asar": false
   },
   "lint-staged": {
     "!(src/lib)": "prettier --write --ignore-unknown"
