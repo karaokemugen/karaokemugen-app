@@ -4,10 +4,33 @@
 
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
-import { merge } from 'lodash';
+import lodash from 'lodash';
 import pg from 'pg';
+const { merge } = lodash;
 
-import { dbConfig } from '../src/utils/defaultSettings';
+let dbConfig =
+	process.platform === 'linux'
+		? {
+				bundledPostgresBinary: false,
+				database: 'karaokemugen_app',
+				host: 'localhost',
+				password: 'musubi',
+				port: 5432,
+				superuser: null,
+				superuserPassword: null,
+				username: 'karaokemugen_app',
+		  }
+		: {
+				bundledPostgresBinary: true,
+				database: 'karaokemugen_app',
+				driver: 'pg',
+				host: 'localhost',
+				password: 'musubi',
+				port: 6559,
+				superuser: 'postgres',
+				superuserPassword: null,
+				username: 'karaokemugen_app',
+		  };
 
 async function main() {
 	const configFile = readFileSync('app/config.yml', 'utf-8');
