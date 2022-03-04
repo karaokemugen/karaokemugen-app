@@ -9,16 +9,23 @@ const sentry = new SentryCli(null, {
 	dist: process.env.CI_JOB_ID,
 });
 
+const dist = process.env.CI_COMMIT_SHORT_SHA;
+
 await sentry.releases.new(version, { projects: ['km-app'] });
 await sentry.releases.uploadSourceMaps(version, {
 	rewrite: false,
 	urlPrefix: 'app:///dist/',
 	include: ['dist/'],
+	projects: ['km-app'],
+	ext: ['.cjs', '.map'],
+	dist,
 });
 await sentry.releases.uploadSourceMaps(version, {
 	rewrite: false,
 	urlPrefix: '~/static/js',
 	include: ['kmfrontend/build/static/js'],
+	projects: ['km-app'],
+	dist,
 });
 await sentry.releases.setCommits(version, {
 	repo: 'Karaoke Mugen / Karaoke Mugen Application',

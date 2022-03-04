@@ -12,8 +12,7 @@
 		// Enable strictest settings like strictNullChecks & noImplicitAny.
 		// true is better but requires a global refactoring.
 		"strict": false,
-		// Disallow features that require cross-file information for emit.
-		"isolatedModules": false,
+		"isolatedModules": true,
 		// Import non-ES modules as default imports.
 		"esModuleInterop": true,
 		// Import constants from JSON (locales).

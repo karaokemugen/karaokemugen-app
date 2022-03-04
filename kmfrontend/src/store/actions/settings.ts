@@ -69,6 +69,7 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 			dsn: 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806',
 			environment: environment || 'release',
 			release: version.number,
+			dist: version.sha,
 			ignoreErrors: [
 				'Network Error',
 				'Request failed with status code',

@@ -34,12 +34,12 @@ async function getAppCommitSHA(): Promise<string> {
 	const SHAFile = resolve(getState().resourcePath, 'assets/sha.txt');
 	if (await fileExists(SHAFile)) {
 		sha = await fs.readFile(SHAFile, 'utf-8');
-		setState({ version: { sha: sha.substr(0, 8) } });
+		setState({ version: { sha } });
 	} else {
 		const branch = getState().version.number.split('-')[1];
 		try {
-			sha = await fs.readFile(resolve(getState().appPath, '.git/refs/heads/', branch), 'utf-8');
-			setState({ version: { sha: sha.substr(0, 8) } });
+			sha = (await fs.readFile(resolve(getState().appPath, '.git/refs/heads/', branch), 'utf-8')).slice(0, 8);
+			setState({ version: { sha } });
 		} catch (err) {
 			// Ignore
 		}
@@ -79,7 +79,7 @@ export async function init() {
 	const state = getState();
 	console.log(logo);
 	console.log('Karaoke Player & Manager - https://karaokes.moe');
-	console.log(`Version ${state.version.number} "${state.version.name}" (${sha ? sha.substr(0, 8) : 'UNKNOWN'})`);
+	console.log(`Version ${state.version.number} "${state.version.name}" (${sha || 'UNKNOWN'})`);
 	console.log('================================================================================');
 	logger.debug('Initial state', { service: 'Launcher', obj: state });
 
