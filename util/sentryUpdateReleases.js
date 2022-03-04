@@ -1,6 +1,7 @@
 import { execaCommand, execaSync } from 'execa';
+import { promises as fs } from 'node:fs';
 
-import { version } from '../package.json';
+const { version } = JSON.parse(await fs.readFile('package.json'));
 
 // Create the release if it doesn't exists
 execaSync(
