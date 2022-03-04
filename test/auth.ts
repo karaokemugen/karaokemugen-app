@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { commandBackend, passwordAdmin, usernameAdmin } from './util/util';
+import { commandBackend, passwordAdmin, usernameAdmin } from './util/util.js';
 
 describe('Auth', () => {
 	it('Login / Sign in (as guest)', async () => {

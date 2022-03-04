@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { commandBackend, getToken } from './util/util';
+import { commandBackend, getToken } from './util/util.js';
 
 describe('Song Poll', () => {
 	let token: string;

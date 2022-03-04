@@ -342,7 +342,7 @@ async function preFlightCheck(): Promise<boolean> {
 }
 
 async function runTests() {
-	const options = ['--loader', 'ts-node/esm', '--require', 'test/util/hooks.ts', '--timeout', '60000', 'test/*.ts'];
+	const options = ['-n', 'loader=ts-node/esm', '--require', 'test/util/hooks.ts', '--timeout', '60000', 'test/*.ts'];
 	try {
 		const ret = await execa('mocha', options, {
 			cwd: getState().appPath,

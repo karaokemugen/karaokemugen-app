@@ -1,10 +1,12 @@
 import { expect } from 'chai';
-import { sample } from 'lodash';
+import lodash from 'lodash';
 
-import { DBPL, DBPLC } from '../src/lib/types/database/playlist';
-import { PlaylistExport } from '../src/lib/types/playlist';
-import { uuidRegexp } from '../src/lib/utils/constants';
-import { allKIDs, commandBackend, getToken, setPlaid, socket, testKara } from './util/util';
+import { DBPL, DBPLC } from '../src/lib/types/database/playlist.js';
+import { PlaylistExport } from '../src/lib/types/playlist.js';
+import { uuidRegexp } from '../src/lib/utils/constants.js';
+import { allKIDs, commandBackend, getToken, setPlaid, socket, testKara } from './util/util.js';
+
+const { sample } = lodash;
 
 describe('Playlists', () => {
 	let playlistExport: PlaylistExport;
@@ -451,7 +453,7 @@ describe('Playlists', () => {
 
 	async function requestBlacklistCriterias(plaid: string) {
 		const data = await commandBackend(token, 'getCriterias', {
-			plaid: plaid,
+			plaid,
 		});
 		expect(data.length).to.be.at.least(1);
 		expect(data[0].type).to.be.equal(1001);
@@ -460,7 +462,7 @@ describe('Playlists', () => {
 
 	async function requestEmptyBLC(plaid: string) {
 		const data = await commandBackend(token, 'getCriterias', {
-			plaid: plaid,
+			plaid,
 		});
 		expect(data).to.have.lengthOf(0);
 	}

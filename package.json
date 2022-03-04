@@ -9,11 +9,11 @@
   "type": "module",
   "main": "dist/index.cjs",
   "scripts": {
-    "start": "yarn build && electron .",
-	"qstart": "node util/esbuild.js && electron .",
+    "start": "yarn build && yarn electron:start",
+	"qstart": "node util/esbuild.js && yarn electron:start",
     "startHeadless": "yarn build && electron --no-sandbox . --cli",
-    "test": "yarn build && electron . --test",
-    "testCI": "yarn build && electron --no-sandbox . --test --cli",
+    "test": "yarn build && NODE_OPTIONS=\"--enable-source-maps\" electron . --test",
+    "testCI": "yarn build && NODE_OPTIONS=\"--enable-source-maps\" electron --no-sandbox . --test --cli",
     "manualTest": "mocha --require ts-node/register --timeout 60000 test/*.ts",
     "build": "yarn typecheck && node util/esbuild.js",
     "setup": "git submodule sync --recursive && git submodule update --init --recursive && yarn install && yarn typecheck && yarn build && yarn installkmfrontend && yarn buildkmfrontend",
@@ -30,7 +30,8 @@
     "i18next-scanner": "i18next-scanner --config util/i18next-scanner.config.js",
     "prepare": "husky install",
     "watch": "node util/esbuild.js watch",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "electron:start": "cross-env NODE_OPTIONS=\"--enable-source-maps\" electron ."
   },
   "homepage": "https://karaokes.moe",
   "repository": {

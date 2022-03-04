@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { DBKara } from '../src/lib/types/database/kara';
-import { allKIDs, commandBackend, getToken, testKara } from './util/util';
+import { DBKara } from '../src/lib/types/database/kara.js';
+import { allKIDs, commandBackend, getToken, testKara } from './util/util.js';
 
 const jpnTag = '4dcf9614-7914-42aa-99f4-dbce2e059133~5';
 

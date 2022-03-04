@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { resolve } from 'path';
 
-import { User } from '../src/lib/types/user';
-import { allLangs, commandBackend, getToken } from './util/util';
+import { User } from '../src/lib/types/user.js';
+import { allLangs, commandBackend, getToken } from './util/util.js';
 
 const testUserData = {
 	login: 'BakaToTest',
