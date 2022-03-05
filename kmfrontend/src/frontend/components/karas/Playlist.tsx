@@ -1,7 +1,7 @@
 import './Playlist.scss';
 
 import i18next from 'i18next';
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash';
 import { Fragment, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { DragDropContext, Draggable, DraggableProvided, Droppable, DropResult } from 'react-beautiful-dnd';
 import { ItemProps, ListRange, Virtuoso } from 'react-virtuoso';
@@ -631,7 +631,7 @@ function Playlist(props: IProps) {
 
 	const addCheckedKaras = async (_event?: any, pos?: number) => {
 		const listKara = data?.content.filter(a => a?.checked);
-		if (listKara.length === 0) {
+		if (!listKara || listKara.length === 0) {
 			displayMessage('warning', i18next.t('SELECT_KARAS_REQUIRED'));
 			return;
 		}

@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-import { uuidRegexp } from '../src/lib/utils/constants';
-import { Session } from '../src/types/session';
-import { commandBackend, getToken } from './util/util';
+import { uuidRegexp } from '../src/lib/utils/constants.js';
+import { Session } from '../src/types/session.js';
+import { commandBackend, getToken } from './util/util.js';
 
 describe('Sessions', () => {
 	let token: string;

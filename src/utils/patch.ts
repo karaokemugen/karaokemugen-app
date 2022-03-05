@@ -1,4 +1,4 @@
-import execa from 'execa';
+import { execa } from 'execa';
 import extract from 'extract-zip';
 import { promises as fs } from 'fs';
 import { move, remove } from 'fs-extra';

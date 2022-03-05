@@ -4,14 +4,37 @@
 
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
-import merge from 'lodash.merge';
-import { Pool } from 'pg';
+import lodash from 'lodash';
+import pg from 'pg';
+const { merge } = lodash;
 
-import { dbConfig } from '../src/utils/defaultSettings';
+let dbConfig =
+	process.platform === 'linux'
+		? {
+				bundledPostgresBinary: false,
+				database: 'karaokemugen_app',
+				host: 'localhost',
+				password: 'musubi',
+				port: 5432,
+				superuser: null,
+				superuserPassword: null,
+				username: 'karaokemugen_app',
+		  }
+		: {
+				bundledPostgresBinary: true,
+				database: 'karaokemugen_app',
+				driver: 'pg',
+				host: 'localhost',
+				password: 'musubi',
+				port: 6559,
+				superuser: 'postgres',
+				superuserPassword: null,
+				username: 'karaokemugen_app',
+		  };
 
 async function main() {
 	const configFile = readFileSync('app/config.yml', 'utf-8');
-	const configData: any = load(configFile);
+	const configData = load(configFile);
 	const config = merge(dbConfig, configData.System.Database);
 	const databaseConfig = {
 		host: config.host,
@@ -20,7 +43,7 @@ async function main() {
 		password: config.password,
 		database: config.database,
 	};
-	const client = new Pool(databaseConfig);
+	const client = new pg.Pool(databaseConfig);
 	await client.connect();
 	const res = await client.query(`
 	select 'drop table if exists "' || tablename || '" cascade;' as command

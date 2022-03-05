@@ -1,9 +1,9 @@
 const tpath = 'app/repos/Local/tags';
 
 const name = process.argv[2];
-const { v4 } = require('uuid');
-const fs = require('fs');
-const { resolve } = require('path');
+import { v4 } from 'uuid';
+import { writeFileSync } from 'fs';
+import { resolve } from 'path';
 
 const tag = {
 	header: {
@@ -25,8 +25,4 @@ tag.tag.name = name;
 tag.tag.short = process.argv[3];
 tag.tag.modified_at = new Date().toISOString();
 
-fs.writeFileSync(
-	resolve(tpath, `${name}.${tag.tag.tid.substring(0, 8)}.tag.json`),
-	JSON.stringify(tag, null, 2),
-	'utf-8'
-);
+writeFileSync(resolve(tpath, `${name}.${tag.tag.tid.substring(0, 8)}.tag.json`), JSON.stringify(tag, null, 2), 'utf-8');

@@ -5,9 +5,7 @@ import { dialog } from 'electron';
 import { copy } from 'fs-extra';
 import i18next from 'i18next';
 import { address } from 'ip';
-import cloneDeep from 'lodash.clonedeep';
-import isEqual from 'lodash.isequal';
-import merge from 'lodash.merge';
+import { cloneDeep, isEqual, merge } from 'lodash';
 import { resolve } from 'path';
 
 import { selectUsers } from '../dao/user';
@@ -252,8 +250,7 @@ export async function initConfig(argv: any) {
 			}
 		}
 		logger.debug('Loaded configuration', { service: 'Launcher', obj: publicConfig });
-		const binaries = await checkBinaries(getConfig());
-		setState({ binPath: binaries });
+		await checkBinaries(getConfig());
 		emit('configReady');
 		configureHost();
 		configureIDs();
@@ -325,7 +322,7 @@ export function getPublicConfig(removeSystem = true) {
 }
 
 /** Check if binaries are available. Provide their paths for runtime */
-async function checkBinaries(config: Config): Promise<BinariesConfig> {
+export async function checkBinaries(config: Config) {
 	const binariesPath = configuredBinariesForSystem(config);
 	const requiredBinariesChecks = [];
 	requiredBinariesChecks.push(fileRequired(binariesPath.ffmpeg));
@@ -337,7 +334,7 @@ async function checkBinaries(config: Config): Promise<BinariesConfig> {
 
 	try {
 		await Promise.all(requiredBinariesChecks);
-		return binariesPath;
+		setState({ binPath: binariesPath });
 	} catch (err) {
 		await binMissing(binariesPath, err);
 		errorStep(i18next.t('ERROR_MISSING_BINARIES'));

@@ -2,9 +2,9 @@ import { expect } from 'chai';
 import langs from 'langs';
 import { io } from 'socket.io-client';
 
-import { DBTag } from '../../src/lib/types/database/tag';
-import { tagTypes, uuidPlusTypeRegexp, uuidRegexp } from '../../src/lib/utils/constants';
-import { Config } from '../../src/types/config';
+import { DBTag } from '../../src/lib/types/database/tag.js';
+import { tagTypes, uuidPlusTypeRegexp, uuidRegexp } from '../../src/lib/utils/constants.js';
+import { Config } from '../../src/types/config.js';
 
 const testSongs = [
 	'5737c5b2-7ea4-414f-8c92-143838a402f6',

@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import { debounce } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
 
@@ -35,13 +36,17 @@ function AdminPage(props: IProps) {
 	const operatorNotificationWarning = (data: { code: string; data: string }) =>
 		displayMessage('warning', i18next.t(data.code, { data: data }));
 
-	const playlistInfoUpdated = async (plaid: string) => {
-		await getPlaylistList();
-		if (context.globalState.frontendContext?.playlistInfoLeft?.plaid === plaid)
-			setPlaylistInfoLeft(context.globalDispatch, plaid);
-		if (context.globalState.frontendContext?.playlistInfoRight?.plaid === plaid)
-			setPlaylistInfoRight(context.globalDispatch, plaid);
-	};
+	const playlistInfoUpdated = debounce(
+		() => async (plaid: string) => {
+			await getPlaylistList();
+			if (context.globalState.frontendContext?.playlistInfoLeft?.plaid === plaid)
+				setPlaylistInfoLeft(context.globalDispatch, plaid);
+			if (context.globalState.frontendContext?.playlistInfoRight?.plaid === plaid)
+				setPlaylistInfoRight(context.globalDispatch, plaid);
+		},
+		500,
+		{ maxWait: 1000 }
+	);
 
 	const toggleSearchMenuLeft = () => {
 		setSearchMenuOpenLeft(!searchMenuOpenLeft);

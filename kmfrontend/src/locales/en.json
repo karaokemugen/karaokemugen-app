@@ -375,7 +375,7 @@
 			"FREE_UPVOTES_TOOLTIP": "If enough people like a song suggestion, it won't count anymore towards the requester's quota",
 			"FREE_UPVOTES_REQUIREDMIN": "Minimum votes required to free a song",
 			"FREE_UPVOTES_REQUIREDMIN_TOOLTIP": "Change this depending on your number of users connected",
-			"FREE_UPVOTES_REQUIREDPERCENT": "Percentage of upvotes / online users required to to free a song",
+			"FREE_UPVOTES_REQUIREDPERCENT": "Percentage of upvotes / online users required to free a song",
 			"FREE_UPVOTES_REQUIREDPERCENT_TOOLTIP": "Percentage of the number of logged in users",
 			"AUTOPLAY": "Autoplay on next song added",
 			"AUTOPLAY_TOOLTIP": "Autoplay begins as soon as a song is added to the playlist",
@@ -598,7 +598,8 @@
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Shuffle playlist",
-			"LABEL": "Shuffling does not affects songs already played. Choose a method to shuffle the playlist:",
+			"MIX_ALREADY_PASSED_SONGS": "Also mix songs that have already passed.",
+			"LABEL": "Choose a method to shuffle the playlist:",
 			"SHUFFLE": "Random",
 			"SHUFFLE_DESC": "The playlist will be shuffled randomly, without any influence applied to the mix.",
 			"SMART_SHUFFLE": "Smart",

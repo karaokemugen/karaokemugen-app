@@ -1,4 +1,4 @@
-import sample from 'lodash.sample';
+import { sample } from 'lodash';
 import { Socket } from 'socket.io';
 
 import { getKMStats, shutdown } from '../../components/engine';
@@ -8,7 +8,6 @@ import { getSettings, saveSetting } from '../../lib/dao/database';
 import { generateDatabase } from '../../lib/services/generation';
 import { APIData } from '../../lib/types/api';
 import { getConfig } from '../../lib/utils/config';
-import { browseFs } from '../../lib/utils/files';
 import { enableWSLogging, readLog } from '../../lib/utils/logger';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getMigrationsFrontend, setMigrationsFrontend } from '../../services/migrationsFrontend';
@@ -18,6 +17,7 @@ import { updateSongsLeft } from '../../services/user';
 import { backupConfig, editSetting, getPublicConfig } from '../../utils/config';
 import { initializationCatchphrases } from '../../utils/constants';
 import { getDisplays } from '../../utils/displays';
+import { browseFs } from '../../utils/files';
 import { dumpPG, restorePG } from '../../utils/postgresql';
 import { getPlayerState, getPublicState, getState } from '../../utils/state';
 import { APIMessage, errMessage } from '../common';

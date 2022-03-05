@@ -1,13 +1,13 @@
 import { dialog } from 'electron';
 import i18next from 'i18next';
-import { Migration } from 'postgrator';
+import Postgrator from 'postgrator';
 
 import { win } from '../electron/electron';
 import logger from '../lib/utils/logger';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
 import { compareKarasChecksum, generateDB } from './database';
 
-export async function postMigrationTasks(migrations: Migration[], didGeneration: boolean) {
+export async function postMigrationTasks(migrations: Postgrator.Migration[], didGeneration: boolean) {
 	let doGenerate = false;
 	// Add code here to do stuff when migrations occur
 	for (const migration of migrations) {

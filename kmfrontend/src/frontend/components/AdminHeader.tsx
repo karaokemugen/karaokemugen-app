@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import merge from 'lodash.merge';
+import { merge } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router';

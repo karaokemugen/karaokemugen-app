@@ -4,6 +4,7 @@ import { existsSync } from 'fs';
 import { mkdirpSync } from 'fs-extra';
 import { dirname, resolve } from 'path';
 import { createInterface } from 'readline';
+import sourceMapSupport from 'source-map-support';
 
 import { exit } from './components/engine';
 import { startElectron } from './electron/electron';
@@ -14,6 +15,8 @@ import { setState } from './utils/state';
 /** Welcome to Karaoke Mugen's beginning and end.
  * Emergency exits are on your left and right.
  */
+
+sourceMapSupport.install();
 
 process.on('uncaughtException', (exception: any) => {
 	console.log('Uncaught exception:', exception);

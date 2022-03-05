@@ -18,14 +18,7 @@ import { Kara, KaraFileV4 } from '../lib/types/kara';
 import { DiffChanges, RepositoryManifest } from '../lib/types/repo';
 import { TagFile } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
-import {
-	asyncCheckOrMkdir,
-	getFreeSpace,
-	listAllFiles,
-	moveAll,
-	relativePath,
-	resolveFileInDirs,
-} from '../lib/utils/files';
+import { asyncCheckOrMkdir, listAllFiles, moveAll, relativePath, resolveFileInDirs } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import { computeFileChanges } from '../lib/utils/patch';
@@ -34,7 +27,7 @@ import { emitWS } from '../lib/utils/ws';
 import { Repository } from '../types/config';
 import { Change, Commit, DifferentChecksumReport, ModifiedMedia, Push } from '../types/repo';
 import { adminToken } from '../utils/constants';
-import { pathIsContainedInAnother } from '../utils/files';
+import { getFreeSpace, pathIsContainedInAnother } from '../utils/files';
 import FTP from '../utils/ftp';
 import Git, { isGit } from '../utils/git';
 import { applyPatch, cleanFailedPatch, downloadAndExtractZip, writeFullPatchedFiles } from '../utils/patch';
@@ -74,10 +67,11 @@ export async function addRepo(repo: Repository) {
 	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
 		throw { code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.' };
 	}
-	if (repo.Online && !repo.MaintainerMode) {
+	if (repo.Online) {
 		// Testing if repository is reachable
 		try {
-			await getRepoMetadata(repo.Name);
+			const manifest = await getRepoMetadata(repo.Name);
+			if (repo.MaintainerMode) repo.Git.ProjectID = manifest.ProjectID;
 		} catch (err) {
 			throw { code: 404, msg: 'Repository unreachable. Did you misspell its name?' };
 		}
@@ -286,13 +280,19 @@ async function newZipRepo(repo: Repository): Promise<string> {
 /** Edit a repository. Folders will be created if necessary
  * This is another cursed function of Karaoke Mugen.
  */
-export async function editRepo(name: string, repo: Repository, refresh?: boolean, onlineCheck = true) {
+export async function editRepo(
+	name: string,
+	repo: Repository,
+	refresh?: boolean,
+	onlineCheck = true
+): Promise<Repository> {
 	const oldRepo = getRepo(name);
 	if (!oldRepo) throw { code: 404 };
-	if (repo.Online && !repo.MaintainerMode && onlineCheck) {
+	if (repo.Online && onlineCheck) {
 		// Testing if repository is reachable
 		try {
-			await getRepoMetadata(repo.Name);
+			const manifest = await getRepoMetadata(repo.Name);
+			if (repo.MaintainerMode) repo.Git.ProjectID = manifest.ProjectID;
 		} catch (err) {
 			throw { code: 404, msg: 'Repository unreachable. Did you misspell its name?' };
 		}
@@ -302,6 +302,7 @@ export async function editRepo(name: string, repo: Repository, refresh?: boolean
 	// Delay repository actions after edit
 	hookEditedRepo(oldRepo, repo, refresh, onlineCheck).catch();
 	logger.info(`Updated ${name}`, { service: 'Repo' });
+	return repo;
 }
 
 async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = false, onlineCheck = true) {

@@ -2,15 +2,15 @@ import { app, dialog } from 'electron';
 import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
-import Postgrator, { Migration } from 'postgrator';
+import Postgrator from 'postgrator';
 import { v4 as uuidV4 } from 'uuid';
-import logger from 'winston';
 
 import { errorStep } from '../electron/electronLogger';
 import { connectDB, db, getInstanceID, getSettings, saveSetting, setInstanceID } from '../lib/dao/database';
 import { generateDatabase } from '../lib/services/generation';
 import { getConfig } from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
+import logger from '../lib/utils/logger';
 import { updateAllSmartPlaylists } from '../services/smartPlaylist';
 import { DBStats } from '../types/database/database';
 import { migrateFromDBMigrate } from '../utils/hokutoNoCode';
@@ -66,7 +66,7 @@ export async function initDB() {
 	await db().query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
 }
 
-async function migrateDB(): Promise<Migration[]> {
+async function migrateDB(): Promise<Postgrator.Migration[]> {
 	logger.info('Running migrations if needed', { service: 'DB' });
 	// First check if database still has db-migrate and determine at which we're at.
 	await migrateFromDBMigrate();
@@ -92,12 +92,12 @@ async function migrateDB(): Promise<Migration[]> {
 	}
 }
 
-export async function initDBSystem(): Promise<Migration[]> {
+export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 	const conf = getConfig();
 	const state = getState();
 	// Only for bundled postgres binary :
 	// First login as super user to make sure user, database and extensions are created
-	let migrations: Migration[];
+	let migrations: Postgrator.Migration[];
 	try {
 		if (conf.System.Database.bundledPostgresBinary) {
 			await initPG();

@@ -11,12 +11,13 @@ import { smartMove } from '../lib/utils/files';
 import HTTP from '../lib/utils/http';
 import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
+import { assignIssue, closeIssue } from '../utils/gitlab';
 import { integrateKaraFile } from './karaManagement';
 import { checkDownloadStatus, getRepo } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
 import { integrateTagFile } from './tag';
 
-export async function getInbox(repoName: string, token: string) {
+export async function getInbox(repoName: string, token: string): Promise<Inbox[]> {
 	const repo = getRepo(repoName);
 	if (!repo) throw { code: 404 };
 	try {
@@ -88,15 +89,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 	updateAllSmartPlaylists();
 	await Promise.all(promises);
 	checkDownloadStatus([kara.kara.data.data.kid]);
-	try {
-		await HTTP.post(`https://${repoName}/api/inbox/${inid}/downloaded`, null, {
-			headers: {
-				authorization: token,
-			},
-		});
-	} catch (err) {
-		logger.warn(`Unable to mark kara from inbox  as downloaded : ${err}`, { service: 'Inbox', obj: err });
-	}
+	markKaraAsDownloadedInInbox(inid, repoName, token);
 	logger.info(`Song ${kara.kara.data.data.titles.eng} from inbox at ${repoName} downloaded`, { service: 'Inbox' });
 }
 
@@ -139,13 +132,14 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 export async function deleteKaraInInbox(inid: string, repoName: string, token: string) {
 	const repo = getRepo(repoName);
 	if (!repo) throw { code: 404 };
+	const inbox = await getInbox(repoName, token);
+	const inboxItem = inbox.find(i => i.inid === inid);
 	try {
-		const res = await HTTP.delete(`https://${repoName}/api/inbox/${inid}`, {
+		await HTTP.delete(`https://${repoName}/api/inbox/${inid}`, {
 			headers: {
 				authorization: token,
 			},
 		});
-		return res.data;
 	} catch (err) {
 		if (err.response.statusCode === 403) {
 			throw { code: 403 };
@@ -154,13 +148,18 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 			throw err;
 		}
 	}
+	await closeIssue(+inboxItem.gitlab_issue, repoName).catch(err => {
+		logger.warn(`Unable to close issue : ${err}`, { service: 'Inbox', obj: err });
+	});
 }
 
 export async function markKaraAsDownloadedInInbox(inid: string, repoName: string, token: string) {
 	const repo = getRepo(repoName);
 	if (!repo) throw { code: 404 };
+	const inbox = await getInbox(repoName, token);
+	const inboxItem = inbox.find(i => i.inid === inid);
 	try {
-		return await HTTP.post(`https://${repoName}/api/inbox/${inid}/downloaded`, {
+		await HTTP.post(`https://${repoName}/api/inbox/${inid}/downloaded`, null, {
 			headers: {
 				authorization: token,
 			},
@@ -173,4 +172,8 @@ export async function markKaraAsDownloadedInInbox(inid: string, repoName: string
 			throw err;
 		}
 	}
+	const issueArr = inboxItem.gitlab_issue.split('/');
+	await assignIssue(+issueArr[issueArr.length - 1], repoName).catch(err => {
+		logger.warn(`Unable to assign issue : ${err}`, { service: 'Inbox', obj: err });
+	});
 }

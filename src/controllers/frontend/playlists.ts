@@ -295,7 +295,7 @@ export default function playlistsController(router: SocketIOApp) {
 	router.route('shufflePlaylist', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		try {
-			return await shufflePlaylist(req.body?.plaid, req.body?.method);
+			return await shufflePlaylist(req.body?.plaid, req.body?.method, req.body?.fullShuffle);
 		} catch (err) {
 			const code = 'PL_SHUFFLE_ERROR';
 			errMessage(code, err);

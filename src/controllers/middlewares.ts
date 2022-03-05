@@ -1,4 +1,4 @@
-import merge from 'lodash.merge';
+import { merge } from 'lodash';
 import { Socket } from 'socket.io';
 
 import { APIData } from '../lib/types/api';
@@ -65,7 +65,7 @@ export async function checkValidUser(token: OldJWTToken): Promise<User> {
 	token.username = token.username.toLowerCase();
 	const user = await getUser(token.username);
 	if (user) {
-		if (token.role === 'admin' && user.type > 0) throw APIMessage('ADMIN_PLEASE');
+		if (token.role === 'admin' && user.type > 0) throw { code: 403, message: APIMessage('ADMIN_PLEASE') };
 		return user;
 	}
 	throw 'User unknown';

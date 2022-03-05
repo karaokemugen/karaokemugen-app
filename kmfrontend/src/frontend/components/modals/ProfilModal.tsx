@@ -131,21 +131,25 @@ function ProfilModal(props: IProps) {
 	};
 
 	const favExport = async () => {
-		const exportFile = await commandBackend('exportFavorites');
-		const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
-		const dlAnchorElem = document.getElementById('downloadAnchorElem');
-		if (dlAnchorElem) {
-			dlAnchorElem.setAttribute('href', dataStr);
-			dlAnchorElem.setAttribute(
-				'download',
-				[
-					'KaraMugen',
-					'fav',
-					context.globalState.auth.data.username,
-					new Date().toLocaleDateString().replace('\\', '-'),
-				].join('_') + '.kmfavorites'
-			);
-			dlAnchorElem.click();
+		try {
+			const exportFile = await commandBackend('exportFavorites');
+			const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportFile, null, 4));
+			const dlAnchorElem = document.getElementById('downloadAnchorElem');
+			if (dlAnchorElem) {
+				dlAnchorElem.setAttribute('href', dataStr);
+				dlAnchorElem.setAttribute(
+					'download',
+					[
+						'KaraMugen',
+						'fav',
+						context.globalState.auth.data.username,
+						new Date().toLocaleDateString().replace('\\', '-'),
+					].join('_') + '.kmfavorites'
+				);
+				dlAnchorElem.click();
+			}
+		} catch (e) {
+			// already display
 		}
 	};
 

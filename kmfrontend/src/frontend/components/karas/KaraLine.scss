@@ -91,11 +91,6 @@ body:not(.touch) {
 		display: block;
 		margin: 0 0.25em;
 		user-select: none;
-		&.mobile {
-			max-width: 1.75em;
-			max-height: 1.75em;
-			margin: 0.25em;
-		}
 	}
 	// .actionDiv: profile picture of the requester and remove/add/actions buttons
 	.actionDiv {
@@ -103,6 +98,14 @@ body:not(.touch) {
 		flex-direction: row;
 		flex: 0 0 auto;
 		align-items: center;
+		&.vertical {
+			flex-wrap: wrap;
+			flex-direction: column;
+			justify-content: center;
+			.btn-group {
+				padding-top: 0.15em;
+			}
+		}
 		button {
 			z-index: 9;
 			position: relative;

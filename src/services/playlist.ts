@@ -1,6 +1,6 @@
 // Utils
 import i18n from 'i18next';
-import shuffle from 'lodash.shuffle';
+import { shuffle } from 'lodash';
 import { resolve } from 'path';
 
 import { APIMessage } from '../controllers/common';
@@ -44,6 +44,7 @@ import {
 	updatePos,
 } from '../dao/playlist';
 import { PLImportConstraints } from '../lib/services/playlist';
+import { DBKaraBase } from '../lib/types/database/kara';
 import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
 import { AggregatedCriteria, PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import { OldJWTToken, User } from '../lib/types/user';
@@ -511,7 +512,8 @@ export async function addKaraToPlaylist(
 	const conf = getConfig();
 	const state = getState();
 	if (!plaid) plaid = state.publicPlaid;
-	const [pl, karas] = await Promise.all([getPlaylistInfo(plaid), getKarasMicro(kids)]);
+	const [pl, karasInDB] = await Promise.all([getPlaylistInfo(plaid), getKarasMicro(kids)]);
+	const karas: DBKaraBase[] = [];
 	try {
 		profile('addKaraToPL');
 		if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
@@ -520,13 +522,19 @@ export async function addKaraToPlaylist(
 		if (!user) throw { code: 404, msg: 'Requester does not exist' };
 
 		profile('addKaraToPL-checkKIDExistence');
-		const allKaras = new Set(karas.map(k => k.kid));
+		const allKaras = new Set(karasInDB.map(k => k.kid));
 		const karasUnknown = [];
 		kids.forEach(kid => {
 			if (!allKaras.has(kid)) karasUnknown.push(kid);
 		});
 		if (karasUnknown.length > 0) throw { code: 404, msg: 'One of the karaokes does not exist' };
 		profile('addKaraToPL-checkKIDExistence');
+		// Sort karas from our database by the list that was provided to this function, so songs are added in the correct order
+		profile('addKaraToPL-sort');
+		for (const kid of kids) {
+			karas.push(karasInDB.find(k => k.kid === kid));
+		}
+		profile('addKaraToPL-sort');
 		logger.debug(`Adding ${karas.length} song(s) to playlist ${pl.name || 'unknown'} by ${requester}...`, {
 			service: 'Playlist',
 		});
@@ -1222,7 +1230,7 @@ export async function findPlaying(plaid: string): Promise<number> {
 }
 
 /** Shuffle (smartly or not) a playlist */
-export async function shufflePlaylist(plaid: string, method: ShuffleMethods) {
+export async function shufflePlaylist(plaid: string, method: ShuffleMethods, fullShuffle = false) {
 	const pl = await getPlaylistInfo(plaid);
 	if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
@@ -1230,7 +1238,7 @@ export async function shufflePlaylist(plaid: string, method: ShuffleMethods) {
 	try {
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(plaid);
-		if (!pl.flag_current) {
+		if (!pl.flag_current || fullShuffle) {
 			playlist = shufflePlaylistWithList(playlist, method);
 		} else {
 			// If it's current playlist, we'll make two arrays out of the playlist :

@@ -89,6 +89,7 @@ function Autocomplete(props: IProps) {
 	useEffect(() => {
 		if (typeof props.value === 'string' && props.options instanceof Array && props.value !== selectedValue) {
 			setSelectedValue(props.value);
+			setPlaceholder(props.value);
 			setSearchValue(props.options.find(opt => opt.value === props.value)?.label || '');
 		}
 	}, [props.value, props.options]); // properly reflect value changes by prop mutation

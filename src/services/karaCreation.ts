@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { basename, resolve } from 'path';
+import { basename, extname, resolve } from 'path';
 
 import { applyKaraHooks } from '../lib/dao/hook';
 import { extractVideoSubtitles, verifyKaraData } from '../lib/dao/karafile';
@@ -37,11 +37,8 @@ export async function editKara(editedKara: EditedKara) {
 		// If mediafile_orig is present, our user has uploaded a new song
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
-		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
+		let filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
-		const subDest = filenames.lyricsfile
-			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile)
-			: undefined;
 		let oldMediaPath: string;
 		if (editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile) {
 			try {
@@ -65,6 +62,7 @@ export async function editKara(editedKara: EditedKara) {
 						version: 'Default',
 						default: true,
 					};
+					filenames.lyricsfile = karaFile + extname(kara.medias[0].lyrics[0].filename);
 					editedKara.modifiedLyrics = true;
 				}
 			} catch (err) {
@@ -72,6 +70,9 @@ export async function editKara(editedKara: EditedKara) {
 			}
 			if (oldMediaPath) await fs.unlink(oldMediaPath);
 		}
+		const subDest = filenames.lyricsfile
+			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile)
+			: undefined;
 		if (editedKara.modifiedLyrics) {
 			if (kara.medias[0].lyrics[0]) {
 				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);

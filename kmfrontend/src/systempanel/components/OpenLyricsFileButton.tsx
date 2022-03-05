@@ -17,7 +17,7 @@ export default function OpenLyricsFileButton({ kara, showOnlyIfDownloaded = true
 			<Button
 				type="primary"
 				icon={<EditOutlined />}
-				onClick={async () => commandBackend('openLyricsFile', { kid: kid })}
+				onClick={() => commandBackend('openLyricsFile', { kid: kid }).catch(() => {})}
 			>
 				{i18next.t('KARA.LYRICS_FILE_OPEN')}
 			</Button>

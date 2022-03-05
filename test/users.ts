@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { resolve } from 'path';
 
-import { User } from '../src/lib/types/user';
-import { allLangs, commandBackend, getToken } from './util/util';
+import { User } from '../src/lib/types/user.js';
+import { allLangs, commandBackend, getToken } from './util/util.js';
 
 const testUserData = {
 	login: 'BakaToTest',
@@ -31,7 +31,7 @@ describe('Users', () => {
 	it('Edit your own account', async () => {
 		const data = await commandBackend(token, 'editMyAccount', {
 			nickname: 'toto',
-			avatar: resolve(__dirname, '../assets/guestAvatars/vegeta.jpg'),
+			avatar: resolve(process.cwd(), '../assets/guestAvatars/vegeta.jpg'),
 		});
 		expect(data.code).to.be.equal(200);
 	});

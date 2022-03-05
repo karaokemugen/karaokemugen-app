@@ -2,16 +2,16 @@ import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { DBTag } from '../src/lib/types/database/tag';
-import { TagFile } from '../src/lib/types/tag';
-import { allLangs, commandBackend, getToken, testTag } from './util/util';
+import { DBTag } from '../src/lib/types/database/tag.js';
+import { TagFile } from '../src/lib/types/tag.js';
+import { allLangs, commandBackend, getToken, testTag } from './util/util.js';
 
 describe('Tags', () => {
 	let token: string;
 	before(async () => {
 		token = await getToken();
 	});
-	const repoPath = `${__dirname}/../app/repos`;
+	const repoPath = `${process.cwd()}/app/repos`;
 	const tag1: any = {
 		name: 'My super tag',
 		short: 'SUPER',

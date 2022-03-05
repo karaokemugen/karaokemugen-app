@@ -384,7 +384,7 @@ class KaraList extends Component<unknown, KaraListState> {
 							type="primary"
 							icon={<FontColorsOutlined />}
 							title={i18next.t('KARA.LYRICS_FILE')}
-							onClick={async () => commandBackend('openLyricsFile', { kid: record.kid })}
+							onClick={() => commandBackend('openLyricsFile', { kid: record.kid }).catch(() => {})}
 							style={{ marginRight: '0.75em' }}
 						/>
 					);
