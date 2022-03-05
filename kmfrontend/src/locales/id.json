@@ -106,30 +106,33 @@
 				"9": "dari kelompok",
 				"10": "dari keluarga",
 				"11": "yang berasal dari",
-				"4": "dibuat oleh"
+				"4": "dibuat oleh",
+				"6": "ditulis oleh",
+				"7": "itu adalah"
 			},
 			"YEAR": "Karaoke dari tahun {{year}} ada di daftar.",
 			"KID": "Karaoke ini ada di daftar.",
 			"LONGER": "Karaoke yang lebih panjang dari {{time}} detik ada di daftar.",
 			"SHORTER": "Karaoke yang lebih pendek dari {{time}} detik ada di daftar.",
 			"TITLE": "Karaoke yang mengandung {{title}} di judul ada di daftar.",
-			"TAG": "Karaoke {{verb}} {{tag}} ada di daftar hitam."
+			"TAG": "Karaoke {{verb}} {{tag}} ada dalam daftar hitam."
 		},
 		"AND": "DAN",
 		"TYPE_SMART": "Jenis daftar putar pintar",
-		"TYPE_SMART_DESC": "Kriteria \"ATAU\" lebih sesuai untuk daftar hitam. \"DAN\" untuk daftar putar klasik",
+		"TYPE_SMART_DESC": "Kriteria \"OR\" lebih sesuai untuk daftar hitam. \"AND\" untuk daftar putar klasik",
 		"PLAYLIST_DURATION_TYPE_MINUTES": "menit",
 		"PLAYLIST_DURATION_TYPE_SONGS": "lagu",
-		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "kurang baru",
+		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "kurang terkini",
 		"CRITERIA_DESC": "Pilih dan tambahkan kriteria untuk memasukkan lagu tertentu secara otomatis.",
 		"DELETE": "Hapus kriteria ini",
 		"CRITERIA_TYPE_1001": "Lagu",
 		"CRITERIA_TYPE_1002": "Lebih panjang dari (mm:ss)",
 		"CRITERIA_TYPE_1003": "Lebih pendek dari (mm:ss)",
 		"CRITERIA_TYPE_1004": "Judul mengandung",
-		"CRITERIA_TYPE_1006": "Sembunyikan lagu yang tidak tersedia secara luring",
+		"CRITERIA_TYPE_1006": "lagu yang disembunyikan tidak tersedia secara luring",
 		"ADD": "Tambahkan nilai ke kriteria",
-		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini."
+		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",
+		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)"
 	},
 	"PROFILE": "Profil",
 	"MENU": {
@@ -365,7 +368,7 @@
 		"HIDE_LYRICS": "Sembunyikan Lirik",
 		"LYRICS_EXPL": {
 			"LINES": "Lirik lagu saat ini akan ditampilkan di sini.",
-			"CURRENT": "Baris tebal menunjukkan baris yang sedang dinyanyikan."
+			"CURRENT": "Garis tebal merepresentasikan baris yang sedang dinyanyikan."
 		},
 		"OPEN_POLL": "Pilih untuk lagu berikutnya",
 		"PUBLIC_SUGGESTIONS": "Saran publik",
@@ -377,7 +380,8 @@
 		"OTHERS": "Lain-lain…",
 		"REQUESTED_KARAOKES": "Lagu yang diminta",
 		"NEW_KARAOKES": "Lagu baru",
-		"KARA_VERSIONS": "Lagu ini tersedia dalam {{length}} versi, pilih yang kamu mau dan tambahkan ke daftar putar atau favorit kamu."
+		"KARA_VERSIONS": "Lagu ini tersedia dalam {{length}} versi, pilih yang kamu mau dan tambahkan ke daftar putar atau favorit kamu.",
+		"GET_LUCKY": "Mencoba Keberuntungan"
 	},
 	"ADMIN_MESSAGE": {
 		"ESSENTIAL_MESSAGE": "Pesan penting",
@@ -1512,11 +1516,22 @@
 		"Terlalu tenang, saya tidak suka ini…",
 		"Persiapan sedang berlangsung!"
 	],
-	"JINGLE_TAGLINES": ["Kami akan segera kembali!"],
+	"JINGLE_TAGLINES": [
+		"Kami akan segera kembali!"
+	],
 	"INTRO_TIME": "Introduksi daftar putar",
-	"INTRO_TAGLINES": ["Ayo!", "Memulai…", "Inisialisasi…", "Siapkan mikrofon kamu!", "*bersihkan tenggorokan*"],
+	"INTRO_TAGLINES": [
+		"Ayo!",
+		"Memulai…",
+		"Inisialisasi…",
+		"Siapkan mikrofon kamu!",
+		"*bersihkan tenggorokan*"
+	],
 	"OUTRO_TIME": "Penutup daftar putar",
-	"OUTRO_TAGLINES": ["Tamat :(", "Terima kasih semuanya!"],
+	"OUTRO_TAGLINES": [
+		"Tamat :(",
+		"Terima kasih semuanya!"
+	],
 	"ENCORES_TIME": "Ekstra! Ekstra!",
 	"ENCORES_TAGLINES": [
 		"Yah, bukan karena aku menyukaimu atau apa gitu…",
@@ -1524,7 +1539,9 @@
 		"Lagu terakhir, berikan yang terbaik!"
 	],
 	"SPONSOR_TIME": "IKLAN!",
-	"SPONSOR_TAGLINES": ["Dan terima kasih atas duitnya."],
+	"SPONSOR_TAGLINES": [
+		"Dan terima kasih atas duitnya."
+	],
 	"QUOTA_AVAILABLE": "Kamu sekarang bisa menambahkan lagu lagi!",
 	"SERIE_NAME_MODE": "Mode bahasa serial",
 	"SERIE_NAME_MODE_TOOLTIP": "Ubah bagaimana nama serial ditampilkan di daftar lagu. Mungkin diabaikan oleh preferensi pengguna",
@@ -1539,8 +1556,14 @@
 		"CONNECTED": "Tersambung"
 	},
 	"REMOTE_TOKEN": "Token akses jarak jauh",
-	"PAUSE_TAGLINES": ["Beristirahatlah!", "Saatnya minum!", "Kami akan segera kembali!"],
-	"POLL_TAGLINES": ["Pilihan ada padamu."],
+	"PAUSE_TAGLINES": [
+		"Beristirahatlah!",
+		"Saatnya minum!",
+		"Kami akan segera kembali!"
+	],
+	"POLL_TAGLINES": [
+		"Pilihan ada padamu."
+	],
 	"REMOTE_URL": "URL akses jarak jauh",
 	"DATABASE": {
 		"REGENERATE_DB": "Membuat kembali basis data kamu",
