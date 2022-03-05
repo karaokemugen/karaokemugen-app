@@ -598,7 +598,8 @@
 		},
 		"SHUFFLE_MODAL": {
 			"TITLE": "Shuffle playlist",
-			"LABEL": "Shuffling does not affects songs already played. Choose a method to shuffle the playlist:",
+			"MIX_ALREADY_PASSED_SONGS": "Also mix songs that have already passed.",
+			"LABEL": "Choose a method to shuffle the playlist:",
 			"SHUFFLE": "Random",
 			"SHUFFLE_DESC": "The playlist will be shuffled randomly, without any influence applied to the mix.",
 			"SMART_SHUFFLE": "Smart",

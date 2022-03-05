@@ -32,7 +32,7 @@ function PlaylistCommandsModal(props: IProps) {
 	const openShuffleModal = () => {
 		props.closePlaylistCommands();
 		const playlist = getPlaylistInfo(props.side, context);
-		showModal(context.globalDispatch, <ShuffleModal idPlaylist={playlist?.plaid} />);
+		showModal(context.globalDispatch, <ShuffleModal playlist={playlist} />);
 	};
 
 	const startFavMix = async () => {

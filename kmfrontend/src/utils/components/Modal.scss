@@ -21,6 +21,10 @@
 
 .modal .modal-body {
 	overflow-y: auto;
+
+	.modal-checkbox {
+		margin-right: 0.5em;
+	}
 }
 
 .modal[type='prompt'] .modal-body {
