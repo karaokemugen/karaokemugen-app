@@ -491,9 +491,7 @@
 		"Les préparatifs sont en cours !"
 	],
 	"JINGLE_TIME": "Instant jingle !",
-	"JINGLE_TAGLINES": [
-		"On revient !"
-	],
+	"JINGLE_TAGLINES": ["On revient !"],
 	"INTRO_TIME": "Introduction",
 	"INTRO_TAGLINES": [
 		"C'est parti !",
@@ -503,32 +501,15 @@
 		"*se racle la gorge*"
 	],
 	"OUTRO_TIME": "Fin",
-	"OUTRO_TAGLINES": [
-		"C'est fini :(",
-		"Merci à tous !"
-	],
+	"OUTRO_TAGLINES": ["C'est fini :(", "Merci à tous !"],
 	"ENCORES_TIME": "Encore ! Encore !",
-	"ENCORES_TAGLINES": [
-		"Bon, c'est bien parce que c'est vous…",
-		"P'tite dèr ?",
-		"Dernière chanson, on donne tout !"
-	],
+	"ENCORES_TAGLINES": ["Bon, c'est bien parce que c'est vous…", "P'tite dèr ?", "Dernière chanson, on donne tout !"],
 	"SPONSOR_TIME": "LA PUB !",
-	"SPONSOR_TAGLINES": [
-		"Kono bangumi wa…",
-		"Et merci pour l'argent."
-	],
+	"SPONSOR_TAGLINES": ["Kono bangumi wa…", "Et merci pour l'argent."],
 	"PAUSE_TIME": "Pause",
-	"PAUSE_TAGLINES": [
-		"On respire !",
-		"Buvez un coup !",
-		"On revient tout de suite !"
-	],
+	"PAUSE_TAGLINES": ["On respire !", "Buvez un coup !", "On revient tout de suite !"],
 	"POLL_TIME": "Vote",
-	"POLL_TAGLINES": [
-		"Votez ! Votez !",
-		"Le choix vous revient."
-	],
+	"POLL_TAGLINES": ["Votez ! Votez !", "Le choix vous revient."],
 	"QUOTA_AVAILABLE": "Vous pouvez de nouveau ajouter des chansons !",
 	"SERIE_NAME_MODE": "Affichage des noms des séries",
 	"SERIE_NAME_MODE_TOOLTIP": "Change la façon dont les noms de séries sont affichés dans la liste des chansons. Peut être ignoré par les préférences d'un utilisateur",
@@ -1130,11 +1111,14 @@
 		"WARNING": "Attention !",
 		"MOVING_MEDIA_ABOUT_MESSAGE": "Tous les fichiers médias du dépôt seront déplacés vers le nouveau dossier. Si vous avez plusieurs dossiers de médias, tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement.",
 		"COMPARE_LYRICS": "Mise à jour des paroles entre deux dépôts",
-		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Choix du dépôt",
+		"CHOOSE_REPOSITORY": "Choix du dépôt",
 		"COMPARE_BUTTON": "Comparer",
 		"COMPARE_ABOUT_MESSAGE": "Cette action vous permettra de comparer puis éventuellement de copier les fichiers de paroles d'un dépôt à l'autre s'ils différent entre deux chansons identiques. Sélectionnez un dépôt avec lequel comparer (celui-ci sera la destination de la copie des paroles)",
 		"LYRICS_ARE_DIFFERENT": "Les paroles de ces karaokés sont différentes entre le dépôt {{first}} et le dépôt {{second}} :",
 		"CONFIRM_SURE": "Voulez-vous synchroniser les paroles du dépôt {{second}} à partir de celles du dépôt {{first}} ?",
+		"SYNCHRONIZE_TAGS": "Synchronisation des tags entre deux dépôts",
+		"SYNCHRONIZE_ABOUT_MESSAGE": "Cette action vous permettra de synchroniser les tags d'un dépôt à l'autre. Sélectionnez un dépôt avec lequel synchroniser (celui-ci sera la destination de la copie des tags)",
+		"SYNCHRONIZE_BUTTON": "Synchroniser",
 		"FREE_SPACE": "Espace libre",
 		"DELETE_OLD_MEDIAS": "Supprimer les médias inutilisés depuis 1 mois",
 		"DELETE_ALL_MEDIAS": "Supprimer tous les médias",
@@ -1382,6 +1366,7 @@
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
 		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction",
 		"REPO_COMPARE_LYRICS_ERROR": "Erreur lors de la comparaison des paroles de deux dépôts",
+		"REPO_SYNC_TAGS_ERROR": "Erreur lors de la synchronisation de tags entre deux dépôts",
 		"REPO_COPY_LYRICS_ERROR": "Erreur lors de la copie des paroles entre deux dépôts",
 		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements",
 		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus",

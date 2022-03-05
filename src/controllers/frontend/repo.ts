@@ -27,6 +27,7 @@ import {
 	updateGitRepo,
 	uploadMedia,
 } from '../../services/repo';
+import { syncTagsFromRepo } from '../../services/tag';
 import { APIMessage, errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -122,6 +123,16 @@ export default function repoController(router: SocketIOApp) {
 			return await compareLyricsChecksums(req.body.repo1, req.body.repo2);
 		} catch (err) {
 			const code = 'REPO_COMPARE_LYRICS_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+	router.route('syncTagsBetweenRepos', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return await syncTagsFromRepo(req.body.repoSourceName, req.body.repoDestName);
+		} catch (err) {
+			const code = 'REPO_SYNC_TAGS_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
