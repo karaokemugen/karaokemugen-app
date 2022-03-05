@@ -915,7 +915,7 @@
 		"SHUFFLE_MODAL": {
 			"TITLE": "Acak daftar putar",
 			"SORTUPVOTES": "Urut menurut suka",
-			"LABEL": "Pengacakan tidak memengaruhi lagu yang sudah diputar. Pilih metode untuk mengacak daftar putar:",
+			"LABEL": "Pilih metode untuk mengacak daftar putar:",
 			"SHUFFLE": "Acak",
 			"SHUFFLE_DESC": "Daftar putar akan diacak secara acak, tanpa pengaruh apa pun yang diterapkan pada campuran.",
 			"SMART_SHUFFLE": "Pintar",

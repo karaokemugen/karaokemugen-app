@@ -1230,7 +1230,7 @@ export async function findPlaying(plaid: string): Promise<number> {
 }
 
 /** Shuffle (smartly or not) a playlist */
-export async function shufflePlaylist(plaid: string, method: ShuffleMethods) {
+export async function shufflePlaylist(plaid: string, method: ShuffleMethods, fullShuffle = false) {
 	const pl = await getPlaylistInfo(plaid);
 	if (!pl) throw { code: 404, msg: `Playlist ${plaid} unknown` };
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
@@ -1238,7 +1238,7 @@ export async function shufflePlaylist(plaid: string, method: ShuffleMethods) {
 	try {
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(plaid);
-		if (!pl.flag_current) {
+		if (!pl.flag_current || fullShuffle) {
 			playlist = shufflePlaylistWithList(playlist, method);
 		} else {
 			// If it's current playlist, we'll make two arrays out of the playlist :

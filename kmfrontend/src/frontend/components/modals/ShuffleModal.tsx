@@ -1,19 +1,25 @@
 import i18next from 'i18next';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
+import { DBPL } from '../../../../../src/lib/types/database/playlist';
 
 import { closeModal } from '../../../store/actions/modal';
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 
 interface IProps {
-	idPlaylist: string;
+	playlist: DBPL;
 }
 
 function ShuffleModal(props: IProps) {
 	const context = useContext(GlobalContext);
+	const [fullShuffle, setFullShuffle] = useState(false);
 
 	const shuffle = async (method: string) => {
-		await commandBackend('shufflePlaylist', { plaid: props.idPlaylist, method: method });
+		await commandBackend('shufflePlaylist', {
+			plaid: props.playlist.plaid,
+			method: method,
+			fullShuffle: fullShuffle,
+		});
 		closeModalWithContext();
 	};
 
@@ -30,6 +36,17 @@ function ShuffleModal(props: IProps) {
 						</button>
 					</ul>
 					<div className="modal-body flex-direction-btns">
+						{props.playlist.flag_current ? (
+							<div onClick={() => setFullShuffle(!fullShuffle)}>
+								<input
+									className="modal-checkbox"
+									type="checkbox"
+									checked={fullShuffle}
+									onChange={() => setFullShuffle(!fullShuffle)}
+								/>
+								{i18next.t('MODAL.SHUFFLE_MODAL.MIX_ALREADY_PASSED_SONGS')}
+							</div>
+						) : null}
 						<div>{i18next.t('MODAL.SHUFFLE_MODAL.LABEL')}</div>
 						<div>
 							<button className="btn btn-default" type="button" onClick={() => shuffle('normal')}>
