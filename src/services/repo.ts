@@ -248,11 +248,12 @@ export async function updateZipRepo(name: string) {
 			logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
 				service: 'Repo',
 			});
+			sentry.addErrorInfo('initialCommit', LocalCommit);
+			sentry.addErrorInfo('toCommit', LatestCommit);
+			sentry.error(err, 'Warning');
 			await saveSetting(`commit-${repo.Name}`, null);
 			updateRunning = false;
 			await updateZipRepo(name);
-			sentry.addErrorInfo('initialCommit', LocalCommit);
-			sentry.error(err);
 		}
 	}
 }
@@ -502,7 +503,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 						resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)),
 						false
 					).catch(err => {
-						console.log(err);
+						throw err;
 					})
 				);
 			} else {
