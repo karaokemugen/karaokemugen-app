@@ -62,17 +62,15 @@ export async function closeIssue(issue: number, repoName: string) {
 			await editRepo(repo.Name, repo);
 			repo = getRepo(repoName) as RepositoryMaintainerSettings;
 		}
-		await HTTP.put(
-			`${url.protocol}//${url.hostname}/api/v4/projects/${repo.Git.ProjectID}/issues/${issue}`,
-			params,
-			{
-				headers: {
-					'PRIVATE-TOKEN': repo.Git.Password,
-					'Content-Type': 'application/json',
-				},
-				timeout: 25000,
-			}
-		);
+		const closeIssueURL = `${url.protocol}//${url.hostname}/api/v4/projects/${repo.Git.ProjectID}/issues/${issue}`;
+		logger.debug(`Close Issue URL: ${closeIssueURL}`, { service: 'Gitlab' });
+		await HTTP.put(closeIssueURL, params, {
+			headers: {
+				'PRIVATE-TOKEN': repo.Git.Password,
+				'Content-Type': 'application/json',
+			},
+			timeout: 25000,
+		});
 	} catch (err) {
 		logger.error('Unable to close issue', { service: 'Gitlab', obj: err });
 		throw err;
