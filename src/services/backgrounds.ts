@@ -1,11 +1,13 @@
 import { promises as fs } from 'fs';
-import sample from 'lodash.sample';
+import { sample } from 'lodash';
 import { basename, resolve } from 'path';
 
 import { resolvedPath } from '../lib/utils/config';
 import { audioFileRegexp, imageFileRegexp } from '../lib/utils/constants';
 import { replaceExt } from '../lib/utils/files';
+import logger from '../lib/utils/logger';
 import { BackgroundList, BackgroundType } from '../types/backgrounds';
+import Sentry from '../utils/sentry';
 
 export const backgroundTypes = ['pause', 'stop', 'poll', 'bundled'] as const;
 
@@ -27,13 +29,22 @@ export async function getBackgroundAndMusic(type: BackgroundType): Promise<Backg
 }
 
 export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promise<BackgroundList> {
-	const path =
-		type === 'bundled' ? resolve(resolvedPath('BundledBackgrounds')) : resolve(resolvedPath('Backgrounds'), type);
-	const files = await fs.readdir(path);
-	return {
-		pictures: files.filter(f => imageFileRegexp.test(f)).map(f => resolve(path, f)),
-		music: files.filter(f => audioFileRegexp.test(f)).map(f => resolve(path, f)),
-	};
+	try {
+		const path =
+			type === 'bundled'
+				? resolve(resolvedPath('BundledBackgrounds'))
+				: resolve(resolvedPath('Backgrounds'), type);
+		const files = await fs.readdir(path);
+		return {
+			pictures: files.filter(f => imageFileRegexp.test(f)).map(f => resolve(path, f)),
+			music: files.filter(f => audioFileRegexp.test(f)).map(f => resolve(path, f)),
+		};
+	} catch (err) {
+		logger.error('Unable to get background files', { service: 'background', obj: err });
+		Sentry.addErrorInfo('args', type);
+		Sentry.error(err);
+		throw err;
+	}
 }
 
 export async function removeBackgroundFile(type: BackgroundType, file: string) {

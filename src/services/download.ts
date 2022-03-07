@@ -1,4 +1,4 @@
-import Queue from 'better-queue';
+import { promise as fastq, queueAsPromised } from 'fastq';
 import { promises as fs } from 'fs';
 import internet from 'internet-available';
 import { resolve } from 'path';
@@ -31,32 +31,16 @@ export const downloadStatuses = ['MISSING', 'DOWNLOADING', 'DOWNLOADED'];
 let downloaderReady = false;
 let downloadQueueStatus: QueueStatus = 'stopped';
 
-const downloadQueueOptions = {
-	id: 'uuid',
-	cancelIfRunning: true,
-	concurrent: 3,
-};
-
-let dq: any;
-let downloadedKIDs = new Set();
+const dq: queueAsPromised<KaraDownload, void> = fastq(processDownload, 3);
+const downloadedKIDs = new Set();
 
 export function getDownloadQueueStatus() {
 	return downloadQueueStatus;
 }
 
-export function getDownloadQueue() {
-	return dq;
-}
-
 async function emitQueueStatus(status: QueueStatus) {
 	downloadQueueStatus = status;
 	emitWS('downloadQueueStatus', await getDownloads());
-}
-
-function queueDownload(input: KaraDownload, done: any) {
-	processDownload(input)
-		.then(() => done())
-		.catch(err => done(err));
 }
 
 export async function initDownloader() {
@@ -70,17 +54,14 @@ export async function initDownloader() {
 }
 
 export function initDownloadQueue() {
-	dq = new Queue(queueDownload, downloadQueueOptions);
-	dq.on('task_finish', async () => {
-		if (dq.length > 0) logger.info(`${dq.length - 1} items left in queue`, { service: 'Download' });
+	dq.error((err, task: KaraDownload) => {
+		if (err) {
+			logger.error(`Download of ${task.mediafile} failed`, { service: 'Download', obj: err });
+		}
 		emitQueueStatus('updated');
 	});
-	dq.on('task_failed', (taskId: string, err: any) => {
-		logger.error(`Task ${taskId} failed`, { service: 'Download', obj: err });
-		emitQueueStatus('updated');
-	});
-	dq.on('empty', () => emitQueueStatus('updated'));
-	dq.on('drain', async () => {
+	dq.empty = () => emitQueueStatus('updated');
+	dq.drain = async () => {
 		logger.info('No tasks left, stopping queue', { service: 'Download' });
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
@@ -88,14 +69,14 @@ export function initDownloadQueue() {
 		const karas = await getKaras({
 			q: `k:${[...downloadedKIDs].join(',')}`,
 		});
-		downloadedKIDs = new Set();
+		downloadedKIDs.clear();
 		createImagePreviews(karas, 'single');
-	});
+	};
 }
 
 export async function startDownloads() {
 	if (dq) resumeQueue();
-	if (dq?.length === 0) {
+	if (dq?.length() === 0) {
 		const downloads = await selectDownloads(true);
 		try {
 			await internet();
@@ -145,6 +126,8 @@ async function processDownload(download: KaraDownload) {
 		emitWS('KIDUpdated', [{ kid: download.kid, download_status: 'DOWNLOADED' }]);
 		downloadTask.end();
 		downloadedKIDs.add(download.kid);
+		if (dq.length() > 0) logger.info(`${dq.length() - 1} items left in queue`, { service: 'Download' });
+		emitQueueStatus('updated');
 	} catch (err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.DOWNLOAD', err));
@@ -240,7 +223,7 @@ export function setDownloadStatus(uuid: string, status: string) {
 }
 
 export function wipeDownloadQueue() {
-	if (dq) dq.destroy();
+	if (dq) dq.killAndDrain();
 }
 
 export function wipeDownloads() {

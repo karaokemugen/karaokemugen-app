@@ -1,12 +1,10 @@
-import logger from 'winston';
-
 import { deleteFavorites, insertFavorites, truncateFavorites } from '../dao/favorites';
 import { KaraList, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { uuidRegexp } from '../lib/utils/constants';
 import { date } from '../lib/utils/date';
 import HTTP from '../lib/utils/http';
-import { profile } from '../lib/utils/logger';
+import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { AutoMixParams, AutoMixPlaylistInfo, FavExport, FavExportContent, Favorite } from '../types/favorites';
 import sentry from '../utils/sentry';

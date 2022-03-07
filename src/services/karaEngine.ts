@@ -104,7 +104,10 @@ export async function playCurrentSong(now: boolean) {
 			const conf = getConfig();
 			const kara = await getCurrentSong();
 			// No song to play, silently return
-			if (!kara) return;
+			if (!kara) {
+				await stopPlayer(true);
+				return;
+			}
 
 			if (kara.pos === 1) {
 				if (conf.Karaoke.AutoBalance) {

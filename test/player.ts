@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { uuidRegexp } from '../src/lib/utils/constants';
-import { commandBackend, getToken } from './util/util';
+import { uuidRegexp } from '../src/lib/utils/constants.js';
+import { commandBackend, getToken } from './util/util.js';
 
 describe('Player', () => {
 	let token: string;

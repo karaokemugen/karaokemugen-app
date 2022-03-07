@@ -5,7 +5,7 @@ import { useContext } from 'react';
 
 import GlobalContext from '../../../store/context';
 import { getOppositePlaylistInfo, getPlaylistInfo } from '../../../utils/kara';
-import { nonStandardPlaylists } from '../../../utils/tools';
+import { is_touch_device, nonStandardPlaylists } from '../../../utils/tools';
 import { KaraElement } from '../../types/kara';
 
 interface IProps {
@@ -46,7 +46,7 @@ function ActionsButtons(props: IProps) {
 					className={`${classValue} ${props.kara?.flag_refused ? 'off' : ''}`}
 					onClick={props.refuseKara}
 				>
-					<i className="fas fa-times" />
+					<i className="fas fa-fw fa-times" />
 				</button>
 			) : null}
 
@@ -58,7 +58,7 @@ function ActionsButtons(props: IProps) {
 					className={`${classValue} ${props.kara?.flag_accepted ? 'on' : ''}`}
 					onClick={props.acceptKara}
 				>
-					<i className="fas fa-check" />
+					<i className="fas fa-fw fa-check" />
 				</button>
 			) : null}
 
@@ -82,7 +82,7 @@ function ActionsButtons(props: IProps) {
 					className={classValue}
 					onClick={props.deleteKara}
 				>
-					<i className="fas fa-eraser" />
+					<i className="fas fa-fw fa-eraser" />
 				</button>
 			) : null}
 
@@ -92,17 +92,23 @@ function ActionsButtons(props: IProps) {
 					className={classValue + ' yellow'}
 					onClick={props.deleteFavorite}
 				>
-					<i className="fas fa-star" />
+					<i className="fas fa-fw fa-star" />
 				</button>
 			) : null}
 
-			{props.scope === 'admin' &&
-			oppositePlaylist?.plaid !== nonStandardPlaylists.library &&
-			oppositePlaylist?.plaid !== nonStandardPlaylists.favorites &&
-			!(
-				playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
-				oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid
-			) ? (
+			{(props.scope === 'admin' &&
+				oppositePlaylist?.plaid !== nonStandardPlaylists.library &&
+				oppositePlaylist?.plaid !== nonStandardPlaylists.favorites &&
+				!(
+					playlist?.plaid === context.globalState.settings.data.state.publicPlaid &&
+					oppositePlaylist?.plaid === context.globalState.settings.data.state.currentPlaid
+				)) ||
+			(props.scope === 'public' &&
+				!is_touch_device() &&
+				![
+					context.globalState.settings.data.state.publicPlaid,
+					context.globalState.settings.data.state.currentPlaid,
+				].includes(playlist?.plaid)) ? (
 				<button
 					title={
 						props.isHeader
@@ -116,7 +122,7 @@ function ActionsButtons(props: IProps) {
 					onClick={props.addKara}
 					disabled={props?.checkedKaras === 0}
 				>
-					<i className="fas fa-plus" />
+					<i className="fas fa-fw fa-plus" />
 				</button>
 			) : null}
 
@@ -130,7 +136,7 @@ function ActionsButtons(props: IProps) {
 					disabled={props.kara.my_public_plc_id?.length > 0}
 				>
 					<i
-						className={`fas fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}
+						className={`fas fa-fw fa-thumbs-up ${props.kara?.flag_upvoted ? 'currentUpvote' : ''}
 						${props.kara?.upvotes > 0 ? ' upvotes' : ''}`}
 					/>
 					{props.kara?.upvotes > 0 && props.kara?.upvotes}

@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash';
 import { io, Socket } from 'socket.io-client';
 
 import { DBUser } from '../lib/types/database/user';
@@ -123,7 +123,9 @@ export async function subRemoteUsers() {
 	logger.debug('Starting watching users online', { service: 'RemoteUser' });
 	const users = await listRemoteUsers();
 	for (const user of users) {
-		const [login, instance] = user.split('@');
-		startSub(login, instance);
+		if (user) {
+			const [login, instance] = user.split('@');
+			startSub(login, instance);
+		}
 	}
 }

@@ -164,6 +164,10 @@ function KaraLine(props: IProps) {
 				};
 			}
 		} else {
+			if (props.kara.children?.length > 0) {
+				props.openKara(props.kara, getPlaylistInfo(props.side, context).plaid);
+				return;
+			}
 			url = 'addKaraToPublicPlaylist';
 			data = {
 				requestedby: context.globalState.auth.data.username,
@@ -321,7 +325,7 @@ function KaraLine(props: IProps) {
 									className="btn btn-action playKara karaLineButton"
 									onClick={playKara}
 								>
-									<i className="fas fa-play" />
+									<i className="fas fa-fw fa-play" />
 								</button>
 							) : null}
 							{props.scope === 'admin' &&
@@ -335,7 +339,7 @@ function KaraLine(props: IProps) {
 									className="btn btn-action playKara karaLineButton"
 									onClick={editPlayingFlag}
 								>
-									<i className="fas fa-play-circle" />
+									<i className="fas fa-fw fa-play-circle" />
 								</button>
 							) : null}
 							{props.scope === 'admin' && !isNonStandardPlaylist(plaid) && !props.kara.flag_visible ? (
@@ -481,7 +485,7 @@ function KaraLine(props: IProps) {
 								)}
 							</span>
 						) : null}
-						<div className="actionDiv">
+						<div className={`actionDiv${props.scope === 'public' ? ' vertical' : ''}`}>
 							{!is_touch_device() && shouldShowProfile ? (
 								<ProfilePicture
 									className={`img-circle${is_touch_device() ? ' mobile' : ''}`}

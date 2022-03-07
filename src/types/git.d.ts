@@ -1,5 +1,4 @@
-import { StatusResult } from 'simple-git';
-import { LogResult } from 'simple-git/typings/response';
+import { LogResult, StatusResult } from 'simple-git';
 
 export type DiffType = 'equal' | 'modify' | 'add' | 'delete';
 

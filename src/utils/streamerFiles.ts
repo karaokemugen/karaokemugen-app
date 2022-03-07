@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash';
 import { resolve } from 'path';
 
 import { getConfig, resolvedPath } from '../lib/utils/config';

@@ -1,6 +1,6 @@
-const fs = require('fs');
-const { v4 } = require('uuid');
-const data = fs.readFileSync('../users_favorites.csv', 'utf-8');
+import { writeFileSync, readFileSync } from 'fs';
+import { v4 } from 'uuid';
+const data = readFileSync('../users_favorites.csv', 'utf-8');
 const newData = [];
 const userMap = new Map();
 
@@ -17,4 +17,4 @@ for (const line of data.split('\n')) {
 	newData.push(`${line.split(',')[0]},"${userID}"`);
 }
 
-fs.writeFileSync('../users_favorites_anonymous.csv', newData.join('\n'), 'utf-8');
+writeFileSync('../users_favorites_anonymous.csv', newData.join('\n'), 'utf-8');

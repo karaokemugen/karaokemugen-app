@@ -1,6 +1,6 @@
 const tpath = 'app/karaokebase/tags';
-const path = require('path');
-const fs = require('fs/promises');
+import * as path from 'path';
+import { promises as fs } from 'fs';
 
 async function main() {
 	const dir = await fs.readdir(tpath);

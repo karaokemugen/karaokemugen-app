@@ -352,7 +352,7 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 								<Select
 									allowClear
 									style={{ width: '90%' }}
-									onChange={value => this.handleFilterTagSelection([tagTypes.GROUPS, value])}
+									onChange={value => this.handleFilterTagSelection([tagTypes.GROUPS.type, value])}
 									placeholder={i18next.t('KARA.TAG_GROUP_FILTER')}
 									key={'tid'}
 									options={this.getGroupsTags()}

@@ -121,7 +121,7 @@ class UserList extends Component<unknown, UserListState> {
 			dataIndex: 'last_login_at',
 			key: 'last_login_at',
 			render: date => new Date(date).toLocaleString(),
-			sorter: (a, b) => a.last_login - b.last_login,
+			sorter: (a, b) => new Date(a.last_login_at).valueOf() - new Date(b.last_login_at).valueOf(),
 		},
 		{
 			title: i18next.t('USERS.FLAG_LOGGED_IN'),

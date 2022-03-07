@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-import { uuidRegexp } from '../src/lib/utils/constants';
-import { DBStats } from '../src/types/database/database';
-import { allKIDs, commandBackend, getToken, setConfig } from './util/util';
+import { uuidRegexp } from '../src/lib/utils/constants.js';
+import { DBStats } from '../src/types/database/database.js';
+import { allKIDs, commandBackend, getToken, setConfig } from './util/util.js';
 
 describe('Main', () => {
 	let token: string;

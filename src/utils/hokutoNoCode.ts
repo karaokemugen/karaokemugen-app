@@ -6,7 +6,7 @@
 import { promises as fs } from 'fs';
 import i18next from 'i18next';
 import { dump as yamlDump, load as yamlLoad } from 'js-yaml';
-import cloneDeep from 'lodash.clonedeep';
+import { cloneDeep } from 'lodash';
 import { resolve } from 'path';
 
 import { insertCriteria, insertKaraIntoPlaylist, insertPlaylist } from '../dao/playlist';
