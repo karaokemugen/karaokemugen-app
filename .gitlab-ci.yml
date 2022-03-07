@@ -90,6 +90,8 @@ nodejs-scan-sast:
 secret_detection:
   interruptible: true
   stage: scan
+  variables:
+    SECRET_DETECTION_EXCLUDED_PATHS: 'node_modules kmfrontend/node_modules dist'
   rules:
     - if: $SCHEDULED_RELEASES == "true"
       when: never
