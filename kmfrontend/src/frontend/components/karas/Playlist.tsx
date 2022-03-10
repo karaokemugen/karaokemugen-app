@@ -377,7 +377,10 @@ function Playlist(props: IProps) {
 		param.from = data?.infos?.from > 0 ? data.infos.from : 0;
 		param.size = data?.infos?.from > 0 && data?.infos?.to > 0 ? data.infos.to - data.infos.from : chunksize;
 		param.blacklist = true;
-		param.parentsOnly = props.scope === 'public' && context.globalState.settings.data.user.flag_parentsonly;
+		param.parentsOnly =
+			props.scope === 'public' &&
+			context.globalState.settings.data.user.flag_parentsonly &&
+			param.plaid !== nonStandardPlaylists.favorites;
 		if (search) {
 			param.order = search === 'search' ? undefined : search;
 		} else if (search !== 'search') {
