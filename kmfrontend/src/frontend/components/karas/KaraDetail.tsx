@@ -28,6 +28,7 @@ import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
+import VideoPreview from '../generic/VideoPreview';
 
 interface IProps {
 	kid: string | undefined;
@@ -286,22 +287,6 @@ export default function KaraDetail(props: IProps) {
 			</a>
 		) : null;
 
-		const video = showVideo ? (
-			<video
-				src={
-					isRemote() || kara.download_status !== 'DOWNLOADED'
-						? `https://${kara.repository}/downloads/medias/${kara.mediafile}`
-						: `/medias/${kara.mediafile}`
-				}
-				controls={true}
-				autoPlay={true}
-				loop={true}
-				playsInline={true}
-				onLoadStart={e => (e.currentTarget.volume = 0.5)}
-				className={`modal-video${props.scope === 'public' ? ' public' : ''}`}
-			/>
-		) : null;
-
 		const lyricsKara = kara.subfile ? (
 			<div className="lyricsKara detailsKaraLine">
 				{lyrics?.length > 0 ? (
@@ -393,7 +378,7 @@ export default function KaraDetail(props: IProps) {
 									{downloadVideoButton}
 									{modifyKaraokeButton}
 								</div>
-								{video}
+								<VideoPreview kara={kara} show={showVideo} scope={props.scope} />
 								{details}
 								{lyricsKara}
 							</div>
@@ -417,7 +402,7 @@ export default function KaraDetail(props: IProps) {
 								: null}
 							{showVideoButton}
 						</div>
-						{video}
+						<VideoPreview kara={kara} show={showVideo} scope={props.scope} />
 						{details}
 						{lyricsKara}
 					</div>

@@ -27,6 +27,7 @@
     "sass": "^1.49.9",
     "slugify": "^1.6.5",
     "socket.io-client": "4.4.1",
+    "use-async-memo": "^1.2.3",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

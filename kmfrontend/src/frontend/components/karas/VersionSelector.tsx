@@ -22,6 +22,7 @@ import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
+import VideoPreview from '../generic/VideoPreview';
 
 interface Props {
 	kid: string;
@@ -191,23 +192,11 @@ export default function VersionSelector(props: Props) {
 													repository={kara.repository}
 												/>
 											</div>
-											{showVideo && indexOpened === index ? (
-												<video
-													src={
-														isRemote() || kara.download_status !== 'DOWNLOADED'
-															? `https://${kara.repository}/downloads/medias/${kara.mediafile}`
-															: `/medias/${kara.mediafile}`
-													}
-													controls={true}
-													autoPlay={true}
-													loop={true}
-													playsInline={true}
-													onLoadStart={e => (e.currentTarget.volume = 0.5)}
-													className={`modal-video${
-														props.scope === 'public' ? ' public' : ''
-													}`}
-												/>
-											) : null}
+											<VideoPreview
+												kara={kara}
+												show={showVideo && indexOpened === index}
+												scope={props.scope}
+											/>
 											<div className="detailsKaraLine timeData">
 												<span>
 													<i className="fas fa-fw fa-clock" />
