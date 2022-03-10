@@ -336,5 +336,6 @@
   },
   "lint-staged": {
     "!(src/lib)": "prettier --write --ignore-unknown"
-  }
+  },
+  "packageManager": "yarn@1.22.1"
 }
