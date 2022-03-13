@@ -15,11 +15,15 @@ function ShuffleModal(props: IProps) {
 	const [fullShuffle, setFullShuffle] = useState(false);
 
 	const shuffle = async (method: string) => {
-		await commandBackend('shufflePlaylist', {
-			plaid: props.playlist.plaid,
-			method: method,
-			fullShuffle: fullShuffle,
-		});
+		try {
+			await commandBackend('shufflePlaylist', {
+				plaid: props.playlist.plaid,
+				method: method,
+				fullShuffle: fullShuffle,
+			});
+		} catch (e) {
+			// already display
+		}
 		closeModalWithContext();
 	};
 

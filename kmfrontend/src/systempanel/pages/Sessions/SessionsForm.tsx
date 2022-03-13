@@ -74,7 +74,9 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 	};
 
 	handleSessionMerge = () => {
-		this.props.mergeAction(this.props.session.seid, this.state.mergeSelection);
+		if (this.state.mergeSelection) {
+			this.props.mergeAction(this.props.session.seid, this.state.mergeSelection);
+		}
 	};
 
 	mergeCascaderOption = () => {
