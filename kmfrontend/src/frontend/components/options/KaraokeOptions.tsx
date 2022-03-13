@@ -725,7 +725,10 @@ function KaraokeOptions(props: IProps) {
 										data-exclude="true"
 										id="Karaoke.StreamerMode.PauseDuration"
 										placeholder="20"
-										onChange={onChange}
+										onChange={(e: any) => {
+											if (!e.target.value) e.target.value = 0;
+											onChange(e);
+										}}
 										value={config['Karaoke.StreamerMode.PauseDuration']}
 									/>
 								</div>
