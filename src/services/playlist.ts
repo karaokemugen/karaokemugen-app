@@ -255,28 +255,22 @@ export async function removePlaylist(plaid: string) {
 	if (!pl) throw { code: 404 };
 	try {
 		profile('deletePlaylist');
-		if (pl.flag_current) {
+		const msgs = {
+			flag_current: 'DELETE_PLAYLIST_ERROR_CURRENT',
+			flag_public: 'DELETE_PLAYLIST_ERROR_PUBLIC',
+			flag_whitelist: 'DELETE_PLAYLIST_ERROR_WHITELIST',
+			flag_blacklist: 'DELETE_PLAYLIST_ERROR_BLACKLIST',
+		};
+		let msg = '';
+		const specialPlaylistFlag = pl.flag_current || pl.flag_blacklist || pl.flag_whitelist || pl.flag_public;
+		if (specialPlaylistFlag) {
+			if (pl.flag_current) msg = msgs.flag_current;
+			if (pl.flag_blacklist) msg = msgs.flag_blacklist;
+			if (pl.flag_public) msg = msgs.flag_public;
+			if (pl.flag_whitelist) msg = msgs.flag_whitelist;
 			throw {
 				code: 409,
-				msg: `Playlist ${plaid} is current. Unable to delete it. Make another playlist current first.`,
-			};
-		}
-		if (pl.flag_public) {
-			throw {
-				code: 409,
-				msg: `Playlist ${plaid} is public. Unable to delete it. Make another playlist public first.`,
-			};
-		}
-		if (pl.flag_blacklist) {
-			throw {
-				code: 409,
-				msg: `Playlist ${plaid} is a blacklist. Unable to delete it. Make another playlist into a blacklist first.`,
-			};
-		}
-		if (pl.flag_whitelist) {
-			throw {
-				code: 409,
-				msg: `Playlist ${plaid} is a whitelist. Unable to delete it. Make another playlist into a whitelist first.`,
+				msg,
 			};
 		}
 		logger.info(`Deleting playlist ${pl.name}`, { service: 'Playlist' });

@@ -675,6 +675,10 @@
 			"DELETE": "Effacer la liste des téléchargements",
 			"CONTINUE": "Continuer les téléchargements"
 		},
+		"DELETE_PLAYLIST_ERROR_CURRENT": "Impossible de supprimer une playlist courante. Définissez une autre playlist courante avant.",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Impossible de supprimer une playlist publique. Définissez une autre playlist publique avant.",
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "Impossible de supprimer une liste blanche. Définissez une autre liste blanche avant.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Impossible de supprimer une liste noire. Définissez une autre liste noire avant.",
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Supprimer {{playlist}} pour toujours ?",
 			"IMPOSSIBLE": "Vous ne pouvez pas supprimer la seule liste de lecture.",

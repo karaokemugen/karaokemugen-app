@@ -673,6 +673,10 @@
 			"DELETE": "Abort all pending downloads",
 			"CONTINUE": "Resume all downloads"
 		},
+		"DELETE_PLAYLIST_ERROR_CURRENT": "Unable to delete a current playlist. Make another playlist current first.",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Unable to delete a public playlist. Make another playlist public first.",
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "Unable to delete a whitelist. Make another playlist a whitelist first.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Unable to delete a blacklist. Make another playlist a blacklist first.",
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Delete {{playlist}} forever?",
 			"IMPOSSIBLE": "You cannot delete the only playlist.",
