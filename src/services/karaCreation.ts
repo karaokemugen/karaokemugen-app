@@ -34,10 +34,9 @@ export async function editKara(editedKara: EditedKara) {
 	try {
 		profile('editKaraFile');
 		const oldKara = await getKara(kara.data.kid, adminToken);
-		// If mediafile_orig is present, our user has uploaded a new song
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
-		let filenames = determineMediaAndLyricsFilenames(kara, karaFile);
+		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;
 		if (editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile) {
@@ -133,7 +132,6 @@ export async function createKara(kara: KaraFileV4) {
 	try {
 		// Write kara file in place
 		verifyKaraData(kara);
-
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
 		const mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);

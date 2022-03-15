@@ -1,7 +1,6 @@
 // Utils
 import i18n from 'i18next';
 import { shuffle } from 'lodash';
-import { resolve } from 'path';
 
 import { APIMessage } from '../controllers/common';
 import { insertKaraToRequests } from '../dao/kara';
@@ -48,9 +47,8 @@ import { DBKaraBase } from '../lib/types/database/kara';
 import { DBPL, DBPLC, DBPLCBase, PLCInsert } from '../lib/types/database/playlist';
 import { AggregatedCriteria, PlaylistExport, PLCEditParams } from '../lib/types/playlist';
 import { OldJWTToken, User } from '../lib/types/user';
-import { getConfig, resolvedPath } from '../lib/utils/config';
+import { getConfig } from '../lib/utils/config';
 import { now } from '../lib/utils/date';
-import { fileExists } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { check } from '../lib/utils/validators';
@@ -61,7 +59,8 @@ import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { writeStreamFiles } from '../utils/streamerFiles';
 import { checkMediaAndDownload } from './download';
-import { formatKaraList, getKarasMicro, getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
+import { formatKaraList, getKarasMicro } from './kara';
+import { getSongInfosForPlayer } from './karaEngine';
 import { playPlayer } from './player';
 import { getRepos } from './repo';
 import {
@@ -1459,7 +1458,6 @@ export async function notificationNextSong(): Promise<void> {
 export async function getCurrentSong(): Promise<CurrentSong> {
 	try {
 		profile('getCurrentSong');
-		const conf = getConfig();
 		const playlist = await selectPlaylistContentsMicro(getState().currentPlaid);
 		// Search for currently playing song
 		let updatePlayingKara = false;
@@ -1475,38 +1473,11 @@ export async function getCurrentSong(): Promise<CurrentSong> {
 		if (updatePlayingKara) await setPlaying(kara.plcid, plaid);
 		// Let's add details to our object so the player knows what to do with it.
 		kara.plaid = plaid;
-		let requester: string;
-		let avatarfile: string;
-		if (conf.Player.Display.Nickname) {
-			// When a kara has been added by admin/import, do not display it on screen.
-			// Escaping {} because it'll be interpreted as ASS tags below.
-			kara.nickname = kara.nickname.replace(/[{}]/g, '');
-			requester = `${i18n.t('REQUESTED_BY')} ${kara.nickname}`;
-			// Get user avatar
-			let user = await getUser(kara.username);
-			if (!user) {
-				// User does not exist anymore, replacing it with admin
-				user = await getUser('admin');
-			}
-			avatarfile = resolve(resolvedPath('Avatars'), user.avatar_file);
-			if (!(await fileExists(avatarfile))) avatarfile = resolve(resolvedPath('Avatars'), 'blank.png');
-		} else {
-			requester = '';
-		}
-		// If series is empty, pick singer information instead
-		const series = getSongSeriesSingers(kara);
-
-		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-		let songorder = `${kara.songorder}`;
-		if (!kara.songorder || kara.songorder === 0) songorder = '';
-
-		const versions = getSongVersion(kara);
-		const currentSong: CurrentSong = { ...kara };
-		// Construct mpv message to display.
-		currentSong.infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
-			.map(s => s.name)
-			.join(' ')}${songorder} - ${getSongTitle(kara)}${versions}{\\i0}\\N{\\fscx50}{\\fscy50}${requester}`;
-		currentSong.avatar = avatarfile;
+		const songInfos = await getSongInfosForPlayer(kara);
+		const currentSong: CurrentSong = {
+			...kara,
+			...songInfos,
+		};
 		return currentSong;
 	} catch (err) {
 		logger.error('Error selecting current song to play', { service: 'Playlist', obj: err });

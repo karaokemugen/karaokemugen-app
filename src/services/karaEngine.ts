@@ -1,6 +1,12 @@
+import i18next from 'i18next';
+import { resolve } from 'path';
+
 import { APIMessage } from '../controllers/common';
 import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePLCVisible } from '../dao/playlist';
-import { getConfig } from '../lib/utils/config';
+import { DBKara } from '../lib/types/database/kara';
+import { DBPLC } from '../lib/types/database/playlist';
+import { getConfig, resolvedPath } from '../lib/utils/config';
+import { fileExists } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { CurrentSong } from '../types/playlist';
@@ -12,6 +18,7 @@ import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongTitle, g
 import { initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player';
 import { getCurrentSong, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';
+import { getUser } from './user';
 
 /** Play a song from the library, different from when playing the current song in the playlist */
 export async function playSingleSong(kid?: string, randomPlaying = false) {
@@ -26,21 +33,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		}
 		logger.debug('Karaoke selected', { service: 'Player', obj: kara });
 		logger.info(`Playing ${kara.mediafile}`, { service: 'Player' });
-
-		// If series is empty, pick singer information instead
-		const series = getSongSeriesSingers(kara);
-
-		let songorder = `${kara.songorder}`;
-		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-		if (!kara.songorder || kara.songorder === 0) songorder = '';
-
-		// Get song versions for display
-		const versions = getSongVersion(kara);
-
-		// Construct mpv message to display.
-		const infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
-			.map(s => s.name)
-			.join(' ')}${songorder} - ${getSongTitle(kara)}${versions}{\\i0}`;
+		const songInfos = await getSongInfosForPlayer(kara);
 		const current: CurrentSong = {
 			...kara,
 			nickname: 'Dummy Plug System',
@@ -57,7 +50,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			plaid: null,
 			avatar: null,
 			added_at: null,
-			infos,
+			...songInfos,
 		};
 		await mpv.play(current);
 		writeStreamFiles('song_name');
@@ -71,6 +64,38 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		stopPlayer(true);
 		throw err;
 	}
+}
+
+export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ infos: string; avatar: string }> {
+	// If series is empty, pick singer information instead
+	const series = getSongSeriesSingers(kara);
+	// Get song versions for display
+	const versions = getSongVersion(kara);
+
+	// Escaping {} because it'll be interpreted as ASS tags below.
+	let requestedBy = '';
+	let avatarfile = null;
+	if (getConfig().Player.Display.Nickname && 'username' in kara) {
+		// Escaping {} because it'll be interpreted as ASS tags below.
+		kara.nickname = kara.nickname.replace(/[{}]/g, '');
+		requestedBy = `${i18next.t('REQUESTED_BY')} ${kara.nickname}`;
+		// Get user avatar
+		let user = await getUser(kara.username);
+		if (!user) {
+			// User does not exist anymore, replacing it with admin
+			user = await getUser('admin');
+		}
+		avatarfile = resolve(resolvedPath('Avatars'), user.avatar_file);
+		if (!(await fileExists(avatarfile))) avatarfile = resolve(resolvedPath('Avatars'), 'blank.png');
+	}
+	// Construct mpv message to display.
+	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+	return {
+		infos: `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
+			.map(s => s.name)
+			.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`,
+		avatar: avatarfile,
+	};
 }
 
 export async function playRandomSongAfterPlaylist() {
