@@ -333,7 +333,7 @@ export async function consolidateTagsInRepo(kara: KaraFileV4) {
 	for (const tagType of Object.keys(tagTypes)) {
 		if (kara.data.tags[tagType]) {
 			for (const karaTag of kara.data.tags[tagType]) {
-				const tag = await getTag(karaTag.tid);
+				const tag = await getTag(karaTag);
 				if (!tag) continue;
 				if (tag.repository !== kara.data.repository) {
 					// This might need to be copied
