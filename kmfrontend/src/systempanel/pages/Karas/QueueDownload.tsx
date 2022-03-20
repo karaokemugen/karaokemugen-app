@@ -135,7 +135,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 
 			const option = {
 				value: typeID,
-				label: i18next.t(`TAG_TYPES.${type}`),
+				label: i18next.t(`TAG_TYPES.${type}_other`),
 				children: [],
 			};
 			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
