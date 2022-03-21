@@ -1,7 +1,7 @@
 import { sample } from 'lodash';
 import { Socket } from 'socket.io';
 
-import { getKMStats, shutdown } from '../../components/engine';
+import { shutdown } from '../../components/engine';
 import { getMpvAudioOutputs } from '../../components/mpv';
 import { generateDB } from '../../dao/database';
 import { getSettings, saveSetting } from '../../lib/dao/database';
@@ -102,16 +102,6 @@ export default function miscController(router: SocketIOApp) {
 	router.route('getAudioDevices', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
 		return getMpvAudioOutputs();
-	});
-	router.route('getStats', async (socket: Socket, req: APIData) => {
-		await runChecklist(socket, req, 'guest', 'closed');
-		try {
-			return await getKMStats();
-		} catch (err) {
-			const code = 'STATS_ERROR';
-			errMessage(code, err);
-			throw { code: err?.code || 500, message: APIMessage(code) };
-		}
 	});
 
 	router.route('refreshUserQuotas', async (socket: Socket, req: APIData) => {

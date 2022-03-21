@@ -1,5 +1,6 @@
 import internet from 'internet-available';
 
+import { getStats } from '../dao/database';
 import {
 	insertOnlineRequested,
 	insertPlayed,
@@ -194,4 +195,8 @@ export async function fetchPopularSongs() {
 	} finally {
 		profile('initPopularSongs');
 	}
+}
+
+export function getKMStats() {
+	return getStats();
 }

@@ -299,10 +299,6 @@ export function shutdown() {
 	exit(0);
 }
 
-export function getKMStats() {
-	return getStats();
-}
-
 async function preFlightCheck(): Promise<boolean> {
 	const state = getState();
 	const conf = getConfig();
