@@ -10,25 +10,25 @@ export function parseArgs() {
 	return program
 		.description('Starts Karaoke Mugen Desktop App')
 		.version(`${version.number} "${version.name}" (commit ${version.sha})`)
-		.option('--cli', 'Start in CLI mode, without Electron')
+		.option('--cli', 'Start in CLI mode, without spawning a window')
 		.option('-c, --config [file]', 'Specify a config file to use (default is config.yml)')
 		.option('-d, --debug', 'Displays additional debug messages')
 		.option('--dumpDB', 'Dumps database and exits')
 		.option('--forceAdminPassword [password]', "Set admin account's password")
-		.option('-g, --generate', 'Generates a new database then quits')
+		.option('-g, --generate', 'Generates a new database then exits')
 		.option('-k, --kill', 'Kill already-running KM app')
-		.option('--noAutoTest', 'Do not attempt to start tests automatically if --test is enabled')
+		.option('--noAutoTest', '(test mode only) Do not attempt to start tests automatically')
 		.option('--noBaseCheck', 'Disable data file checking on startup')
-		.option('--noBrowser', 'Do not open a browser window upon launch')
+		.option('--noBrowser', '(CLI mode only) Do not open a browser window upon launch')
 		.option('--noMedia', '(generation only) Do not try to fetch data from media files')
 		.option('--noPlayer', 'Do not open player on startup')
 		.option('-p, --profiling', 'Displays profiling information for some functions')
-		.option('-r, --reset', 'Reset user data (WARNING! Backup your base first!)')
+		.option('-r, --reset', 'Reset user data (WARNING! Backup your database first!)')
 		.option('--restoreDB', 'Restores database and exits')
-		.option('--sql', 'Traces SQL query at the debug log level')
+		.option('--sql', '(debug mode only) Traces SQL query at the debug log level')
 		.option(
 			'-s, --strict',
-			'Generation/validation only. Strict mode, returns an error if kara files had to be modified.'
+			'(generation/validation only) Strict mode, returns an error if kara files had to be modified.'
 		)
 		.option('-t, --test', 'Launches in test mode (for running unit tests)')
 		.option('-u, --updateBase', 'Update karaoke base files')
