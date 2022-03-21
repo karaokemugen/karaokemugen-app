@@ -78,7 +78,7 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	if (getConfig().Player.Display.Nickname && 'username' in kara) {
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.nickname = kara.nickname.replace(/[{}]/g, '');
-		requestedBy = `${i18next.t('REQUESTED_BY')} ${kara.nickname}`;
+		requestedBy = `\\N{\\fscx50}{\\fscy50}${i18next.t('REQUESTED_BY')} ${kara.nickname}`;
 		// Get user avatar
 		let user = await getUser(kara.username);
 		if (!user) {
