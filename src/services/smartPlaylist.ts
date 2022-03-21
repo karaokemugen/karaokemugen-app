@@ -31,6 +31,8 @@ import {
 } from './playlist';
 import { getTag, getTags } from './tag';
 
+const service = 'SmartPlaylist';
+
 export async function getCriterias(plaid: string, lang?: string, translate = true): Promise<Criteria[]> {
 	try {
 		profile('getCriterias');
@@ -47,7 +49,7 @@ export async function getCriterias(plaid: string, lang?: string, translate = tru
 
 export async function emptyCriterias(plaid: string) {
 	profile('emptyCriterias');
-	logger.debug('Wiping criterias', { service: 'Playlist' });
+	logger.debug('Wiping criterias', { service });
 	const pl = await getPlaylistInfo(plaid);
 	if (!pl) throw { code: 404, message: 'Playlist unknown' };
 	await truncateCriterias(plaid);
@@ -64,7 +66,7 @@ export async function emptyCriterias(plaid: string) {
 
 export async function updateAllSmartPlaylists(skipBlacklist = false, skipWhitelist = false) {
 	profile('updateAllSmartPlaylists');
-	logger.info('Updating all smart playlists...', { service: 'SmartPlaylist' });
+	logger.info('Updating all smart playlists...', { service });
 	const pls = await getPlaylists(adminToken);
 	const updatePromises = [];
 	// We need to update the whitelist first if it's smart, then the blacklist, then all others.
@@ -88,7 +90,7 @@ export async function updateSmartPlaylist(plaid: string) {
 		return;
 	}
 
-	logger.info(`Updating smart playlist "${pl.name}"...`, { service: 'SmartPlaylist' });
+	logger.info(`Updating smart playlist "${pl.name}"...`, { service });
 	const [plc, list] = await Promise.all([
 		getPlaylistContentsMini(plaid),
 		selectKarasFromCriterias(plaid, pl.type_smart),
@@ -157,7 +159,7 @@ export async function updateSmartPlaylist(plaid: string) {
 				true
 			);
 		} catch (err) {
-			logger.warn(`Unable to remove karaokes from playlist "${pl.name}"`, { service: 'SmartPlaylist', obj: err });
+			logger.warn(`Unable to remove karaokes from playlist "${pl.name}"`, { service, obj: err });
 		}
 	}
 	if (addedSongs.length > 0) {
@@ -172,7 +174,7 @@ export async function updateSmartPlaylist(plaid: string) {
 				newArray
 			);
 		} catch (err) {
-			logger.warn(`Unable to add karaokes to playlist "${pl.name}"`, { service: 'SmartPlaylist', obj: err });
+			logger.warn(`Unable to add karaokes to playlist "${pl.name}"`, { service, obj: err });
 		}
 	}
 	for (const song of modifiedSongs) {
@@ -185,7 +187,7 @@ export async function updateSmartPlaylist(plaid: string) {
 				false
 			);
 		} catch (err) {
-			logger.warn(`Unable to edit PLCs in playlist "${pl.name}"`, { service: 'SmartPlaylist', obj: err });
+			logger.warn(`Unable to edit PLCs in playlist "${pl.name}"`, { service, obj: err });
 		}
 	}
 	updatePlaylistLastEditTime(plaid);
@@ -196,7 +198,7 @@ export async function updateSmartPlaylist(plaid: string) {
 
 export async function removeCriteria(cs: Criteria[]) {
 	profile('delCriteria');
-	logger.debug('Deleting criterias', { service: 'Playlist' });
+	logger.debug('Deleting criterias', { service });
 	const promises: Promise<any>[] = [];
 	for (const c of cs) {
 		promises.push(deleteCriteria(c));
@@ -220,7 +222,7 @@ export async function removeCriteria(cs: Criteria[]) {
 export async function addCriteria(cs: Criteria[]) {
 	profile('addCriteria');
 	if (!Array.isArray(cs)) throw { code: 400 };
-	logger.info(`Adding criterias = ${JSON.stringify(cs)}`, { service: 'Playlist' });
+	logger.info(`Adding criterias = ${JSON.stringify(cs)}`, { service });
 	try {
 		const playlistsToUpdate = new Set<string>();
 		for (const c of cs) {
@@ -292,7 +294,7 @@ export async function addCriteria(cs: Criteria[]) {
 			}
 		}
 	} catch (err) {
-		logger.error('Error adding criteria', { service: 'Playlist', obj: err });
+		logger.error('Error adding criteria', { service, obj: err });
 		if (!err.code || err.code >= 500) Sentry.error(err);
 		throw err;
 	} finally {

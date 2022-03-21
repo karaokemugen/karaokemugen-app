@@ -22,6 +22,8 @@ import { expectedPGVersion, pgctlRegex } from './constants';
 import sentry from './sentry';
 import { getState, setState } from './state';
 
+const service = 'Postgres';
+
 let shutdownInProgress = false;
 
 /** Is postgreSQL being shutdown? */
@@ -46,7 +48,7 @@ async function killPG() {
 				await execa(binPath, options, {
 					cwd: state.binPath.postgres,
 				});
-				logger.debug(`Killed PID ${PID}`, { service: 'DB' });
+				logger.debug(`Killed PID ${PID}`, { service });
 			} catch (err) {
 				// Non fatal, proceed.
 			}
@@ -57,9 +59,9 @@ async function killPG() {
 		} catch (err) {
 			// Non fatal either. NOTHING IS FATAL, THIS FUNCTION IS LETHAL.
 		}
-		logger.debug('Processes killed', { service: 'DB' });
+		logger.debug('Processes killed', { service });
 	} catch (err) {
-		logger.error(`Unable to send kill signal : ${err}`, { service: 'DB' });
+		logger.error(`Unable to send kill signal : ${err}`, { service });
 		sentry.error(err);
 	}
 }
@@ -89,14 +91,14 @@ async function getPGVersion(): Promise<PGVersion> {
 		await detectPGBinPath();
 		const pgctlPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
 		const output = await execa(pgctlPath, ['--version']);
-		logger.debug(`pg_ctl stdout: ${output.stdout}`, { service: 'DB' });
+		logger.debug(`pg_ctl stdout: ${output.stdout}`, { service });
 		const binVersion = pgctlRegex.exec(output.stdout)[1].split('.')[0];
 		return {
 			bin: +binVersion,
 			data: +dataVersion,
 		};
 	} catch (err) {
-		logger.error('Unable to determine PG version', { obj: err, service: 'DB' });
+		logger.error('Unable to determine PG version', { obj: err, service });
 		throw err;
 	}
 }
@@ -121,7 +123,7 @@ export async function dumpPG() {
 	const state = getState();
 	if (!conf.System.Database.bundledPostgresBinary) {
 		const err = 'Dump not available with hosted PostgreSQL servers';
-		logger.warn(err, { service: 'DB' });
+		logger.warn(err, { service });
 		throw err;
 	}
 	try {
@@ -144,11 +146,11 @@ export async function dumpPG() {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit',
 		});
-		logger.info('Database dumped to file', { service: 'DB' });
+		logger.info('Database dumped to file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
 		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
-		logger.error('Database dump failed', { service: 'DB', obj: err });
+		logger.error('Database dump failed', { service, obj: err });
 		sentry.error(err);
 		throw `Dump failed : ${err}`;
 	}
@@ -160,7 +162,7 @@ export async function restorePG() {
 	const state = getState();
 	if (!conf.System.Database.bundledPostgresBinary) {
 		const err = 'Restore not available with hosted PostgreSQL servers';
-		logger.warn(err, { service: 'DB' });
+		logger.warn(err, { service });
 		throw err;
 	}
 	try {
@@ -179,12 +181,12 @@ export async function restorePG() {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 			stdio: 'inherit',
 		});
-		logger.info('Database restored from file', { service: 'DB' });
+		logger.info('Database restored from file', { service });
 	} catch (err) {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
 		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
 		sentry.error(err);
-		logger.error('Database restoration failed', { service: 'DB', obj: err });
+		logger.error('Database restoration failed', { service, obj: err });
 		throw `Restore failed : ${err}`;
 	}
 }
@@ -205,16 +207,16 @@ async function detectPGBinPath(): Promise<string> {
 	if (!asciiRegexp.test(binPath) && state.os === 'win32') {
 		logger.warn(
 			"Binaries path is in a non-ASCII path, will copy it to the OS's temp folder first to init database",
-			{ service: 'DB' }
+			{ service }
 		);
 		// On Windows, tmpdir() returns the user home directory/appData/local/temp so it's pretty useless, we'll try writing to C:\KaraokeMugenPostgres. If it fails because of permissions, there's not much else we can do, sadly.
 		tempPGPath = resolve('C:\\', 'KaraokeMugenPostgres');
-		logger.info(`Moving ${pgPath} to ${tempPGPath}`, { service: 'DB' });
+		logger.info(`Moving ${pgPath} to ${tempPGPath}`, { service });
 		await remove(tempPGPath).catch(() => {}); // izok
 		await mkdirp(tempPGPath);
 		await smartMove(pgPath, resolve(tempPGPath, 'postgres'));
 		binPath = resolve(tempPGPath, 'postgres', 'bin', 'pg_ctl.exe');
-		logger.debug(`pg binPath: ${binPath}`, { service: 'DB' });
+		logger.debug(`pg binPath: ${binPath}`, { service });
 	}
 	if (tempPGPath) {
 		// Path has changed, let's update settings and state
@@ -235,7 +237,7 @@ async function detectPGBinPath(): Promise<string> {
 /** Initialize postgreSQL data directory if it doesn't exist */
 export async function initPGData() {
 	const conf = getConfig();
-	logger.info('No database present, initializing a new one...', { service: 'DB' });
+	logger.info('No database present, initializing a new one...', { service });
 	try {
 		let binPath = await detectPGBinPath();
 		const state = getState();
@@ -255,9 +257,9 @@ export async function initPGData() {
 		if (err.stdout) sentry.addErrorInfo('stdout', err.stdout);
 		if (err.stderr) sentry.addErrorInfo('stderr', err.stderr);
 		sentry.error(err);
-		logger.error('Failed to initialize database', { service: 'DB', obj: err });
+		logger.error('Failed to initialize database', { service, obj: err });
 		const decoder = new StringDecoder(getState().os === 'win32' ? 'latin1' : 'utf8');
-		logger.error('PostgreSQL error', { service: 'DB', obj: decoder.write(err.stderr) });
+		logger.error('PostgreSQL error', { service, obj: decoder.write(err.stderr) });
 		errorStep(i18next.t('ERROR_INIT_PG_DATA'));
 		throw `Init failed : ${err}`;
 	}
@@ -292,12 +294,12 @@ export async function checkPG(): Promise<boolean> {
 		await execa(binPath, options, {
 			cwd: resolve(state.appPath, state.binPath.postgres),
 		});
-		logger.debug('Postgresql is running', { service: 'DB' });
+		logger.debug('Postgresql is running', { service });
 		return true;
 	} catch (err) {
 		// Status sends an exit code of 3 if postgresql is not running
 		// It gets thrown here so we return false (not running).
-		logger.debug('Postgresql is NOT running', { service: 'DB' });
+		logger.debug('Postgresql is NOT running', { service });
 		return false;
 	}
 }
@@ -321,15 +323,15 @@ export async function initPG(relaunch = true) {
 		if (versions.bin < expectedPGVersion) {
 			// Your PostgreSQL needs an upgrade!
 			logger.warn(`Incorrect PostgreSQL version detected. Expected ${expectedPGVersion}, got ${versions.bin}. `, {
-				service: 'DB',
+				service,
 			});
 		}
 		if (versions.data !== versions.bin) {
 			logger.warn(
 				`Incorrect PostgreSQL database data version detected. Expected ${versions.bin}, got ${versions.data}. `,
-				{ service: 'DB' }
+				{ service }
 			);
-			logger.info(`Migrating data to PostgreSQL ${versions.bin}... `, { service: 'DB' });
+			logger.info(`Migrating data to PostgreSQL ${versions.bin}... `, { service });
 			// You never know.
 			if (await checkPG()) await stopPG();
 			// we'll need to move the directory to another name just to make sure, and restore a dump after PG has started.
@@ -344,7 +346,7 @@ export async function initPG(relaunch = true) {
 	}
 	// Try to check if PG is running by conventionnal means.
 	if (await checkPG()) return true;
-	logger.info('Launching bundled PostgreSQL', { service: 'DB' });
+	logger.info('Launching bundled PostgreSQL', { service });
 	await updatePGConf();
 	const options = ['-w', '-D', `${pgDataDir}`, 'start'];
 	let binPath = resolve(state.appPath, state.binPath.postgres, state.binPath.postgres_ctl);
@@ -358,7 +360,7 @@ export async function initPG(relaunch = true) {
 		});
 		return true;
 	} catch (err) {
-		logger.error('Failed to start PostgreSQL', { service: 'DB', obj: err });
+		logger.error('Failed to start PostgreSQL', { service, obj: err });
 		// First let's try to kill PG if it's already running
 		if (relaunch) {
 			try {
@@ -381,7 +383,7 @@ export async function initPG(relaunch = true) {
 		} catch (err2) {
 			// Postgres usually sends its content in non-unicode format under Windows. Go figure.
 			const decoder = new StringDecoder(state.os === 'win32' ? 'latin1' : 'utf8');
-			logger.error('PostgreSQL error', { service: 'DB', obj: decoder.write(err2.stderr) });
+			logger.error('PostgreSQL error', { service, obj: decoder.write(err2.stderr) });
 		}
 		errorStep(i18next.t('ERROR_START_PG'));
 		throw err.message;
@@ -404,7 +406,7 @@ export async function checkAndInstallVCRedist() {
 		const check = expectedPGVersion > 10 ? checks[2015] : checks[2012];
 		if (await fileExists(check.file)) return;
 		// Let's download VC Redist and install it yo.
-		logger.warn('Visual C++ Redistribuable not found, downloading and installing.', { service: 'Postgres' });
+		logger.warn('Visual C++ Redistribuable not found, downloading and installing.', { service });
 		// Launch downloads
 		const vcRedistPath = resolve(resolvedPath('Temp'), 'vcredist.exe');
 		await downloadFile({
@@ -415,7 +417,7 @@ export async function checkAndInstallVCRedist() {
 			windowsHide: false,
 		});
 	} catch (err) {
-		logger.error('Installation of Visual C++ Redistribuable 2015 failed', { service: 'Postgres', obj: err });
+		logger.error('Installation of Visual C++ Redistribuable 2015 failed', { service, obj: err });
 		throw err;
 	}
 }

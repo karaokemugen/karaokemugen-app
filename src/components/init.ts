@@ -23,6 +23,8 @@ import { getState, setState } from '../utils/state';
 import { parseArgs, setupFromCommandLineArgs } from './args';
 import { exit, initEngine } from './engine';
 
+const service = 'Init';
+
 // Commander call to get everything setup in argv
 const argv = parseArgs();
 
@@ -53,16 +55,16 @@ export async function preInit() {
 	resetSecurityCode();
 	setState({ os: process.platform });
 	setupFromCommandLineArgs(argv, app ? app.commandLine : null);
-	logger.debug(`AppPath : ${state.appPath}`, { service: 'Launcher' });
-	logger.debug(`DataPath : ${state.dataPath}`, { service: 'Launcher' });
-	logger.debug(`ResourcePath : ${state.resourcePath}`, { service: 'Launcher' });
-	logger.debug(`Electron ResourcePath : ${process.resourcesPath}`, { service: 'Launcher' });
-	logger.debug(`INIT_CWD : ${process.env.INIT_CWD}`, { service: 'Launcher' });
-	logger.debug(`PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`, { service: 'Launcher' });
-	logger.debug(`app.getAppPath : ${app ? app.getAppPath() : undefined}`, { service: 'Launcher' });
-	logger.debug(`argv: ${JSON.stringify(process.argv)}`, { service: 'Launcher' });
-	logger.debug(`Locale : ${state.defaultLocale}`, { service: 'Launcher' });
-	logger.debug(`OS : ${state.os}`, { service: 'Launcher' });
+	logger.debug(`AppPath : ${state.appPath}`, { service });
+	logger.debug(`DataPath : ${state.dataPath}`, { service });
+	logger.debug(`ResourcePath : ${state.resourcePath}`, { service });
+	logger.debug(`Electron ResourcePath : ${process.resourcesPath}`, { service });
+	logger.debug(`INIT_CWD : ${process.env.INIT_CWD}`, { service });
+	logger.debug(`PORTABLE_EXECUTABLE_DIR : ${process.env.PORTABLE_EXECUTABLE_DIR}`, { service });
+	logger.debug(`app.getAppPath : ${app ? app.getAppPath() : undefined}`, { service });
+	logger.debug(`argv: ${JSON.stringify(process.argv)}`, { service });
+	logger.debug(`Locale : ${state.defaultLocale}`, { service });
+	logger.debug(`OS : ${state.os}`, { service });
 	await renameConfigKeys(argv).catch(() => {});
 	await initConfig(argv);
 	// Test if network ports are available
@@ -79,30 +81,29 @@ export async function init() {
 	console.log('Karaoke Player & Manager - https://karaokes.moe');
 	console.log(`Version ${state.version.number} "${state.version.name}" (${sha || 'UNKNOWN'})`);
 	console.log('================================================================================');
-	logger.debug('Initial state', { service: 'Launcher', obj: state });
+	logger.debug('Initial state', { service, obj: state });
 
-	// Migrate repos to git
 	await migrateReposToZip();
 	// Checking paths, create them if needed.
 	await checkPaths(getConfig());
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	const tempInput = resolve(resolvedPath('Temp'), 'input.conf');
-	logger.debug(`Copying input.conf to ${tempInput}`, { service: 'Launcher' });
+	logger.debug(`Copying input.conf to ${tempInput}`, { service });
 	await copy(resolve(state.resourcePath, 'assets/input.conf'), tempInput);
 
 	const bundledBackgrounds = resolvedPath('BundledBackgrounds');
-	logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, { service: 'Launcher' });
+	logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, { service });
 	await copy(resolve(state.resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`, { overwrite: true });
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
-	logger.debug(`Copying blank.png to ${resolvedPath('Avatars')}`, { service: 'Launcher' });
+	logger.debug(`Copying blank.png to ${resolvedPath('Avatars')}`, { service });
 	await copy(resolve(state.resourcePath, 'assets/blank.png'), resolve(resolvedPath('Avatars'), 'blank.png'));
 
 	// Gentlemen, start your engines.
 	try {
 		await initEngine();
 	} catch (err) {
-		logger.error('Karaoke Mugen initialization failed', { service: 'Launcher', obj: err });
+		logger.error('Karaoke Mugen initialization failed', { service, obj: err });
 		Sentry.error(err);
 		console.log(err);
 		errorStep(i18next.t('ERROR_UNKNOWN'));
@@ -149,7 +150,7 @@ async function checkPaths(config: Config) {
 			checks.push(asyncCheckOrMkdir(resolvedPath(path as PathType)));
 		}
 		await Promise.all(checks);
-		logger.debug('Directory checks complete', { service: 'Launcher' });
+		logger.debug('Directory checks complete', { service });
 	} catch (err) {
 		errorStep(i18next.t('ERROR_INIT_PATHS'));
 		throw err;
@@ -164,10 +165,10 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 		});
 		setState({ frontendPort: port });
 		if (port !== portConfig) {
-			logger.warn(`Port ${portConfig} is already in use. Switching to ${port}`, { service: 'Launcher' });
+			logger.warn(`Port ${portConfig} is already in use. Switching to ${port}`, { service });
 			if (firstRun) {
 				setConfig({ System: { FrontendPort: port } });
-				logger.warn('This is first run, saving port configuration', { service: 'Launcher' });
+				logger.warn('This is first run, saving port configuration', { service });
 			}
 		}
 	} catch (err) {

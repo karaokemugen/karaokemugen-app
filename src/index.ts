@@ -18,6 +18,8 @@ import { setState } from './utils/state';
 
 sourceMapSupport.install();
 
+const service = 'Launcher';
+
 process.on('uncaughtException', (exception: any) => {
 	console.log('Uncaught exception:', exception);
 	if (logger) logger.error('', { service: 'UncaughtException', obj: exception });
@@ -101,7 +103,7 @@ setState({ args });
 try {
 	startElectron();
 } catch (err) {
-	if (logger) logger.error('Error during launch', { service: 'Launcher', obj: err });
+	if (logger) logger.error('Error during launch', { service, obj: err });
 	console.log(err);
 	sentry.error(err);
 	exit(1);

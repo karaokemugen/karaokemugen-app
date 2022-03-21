@@ -12,6 +12,8 @@ import { Repository } from '../types/config';
 import { Commit } from '../types/repo';
 import { getState } from './state';
 
+const service = 'Git';
+
 /** Determine if folder is a git repository */
 export function isGit(repo: Repository) {
 	return fileExists(resolve(getState().dataPath, repo.BaseDir, '.git'));
@@ -79,14 +81,14 @@ export default class Git {
 			progress: this.progressHandler.bind(this),
 		});
 		if (configChanged) {
-			logger.info('Setting up git repository settings', { service: 'Git' });
+			logger.info('Setting up git repository settings', { service });
 			// Check if Remote is correctly configured
 			const remotes = await this.git.getRemotes(true);
 			const origin = remotes.find(r => r.name === 'origin');
 			const url = this.getFormattedURL();
 			if (!origin) await this.git.addRemote('origin', url);
 			if (origin && (origin.refs.fetch !== url || origin.refs.push !== url)) {
-				logger.debug(`${this.opts.repoName}: Rebuild remote`, { service: 'Git' });
+				logger.debug(`${this.opts.repoName}: Rebuild remote`, { service });
 				await this.setRemote();
 				await this.git.branch(['--set-upstream-to=origin/master', 'master']);
 			}
@@ -139,7 +141,7 @@ export default class Git {
 	}
 
 	stash(commit?: Commit) {
-		logger.debug('Stashing stuff', { service: 'Git' });
+		logger.debug('Stashing stuff', { service });
 		// -u = stash untracked files as well
 		const options = ['push', '-u'];
 		if (commit) {
@@ -156,27 +158,27 @@ export default class Git {
 	}
 
 	stashPop(ref: number) {
-		logger.debug('Unstashing stuff', { service: 'Git' });
+		logger.debug('Unstashing stuff', { service });
 		return this.git.stash(['pop', `stash@{${ref}}`]);
 	}
 
 	stashDrop(ref: number) {
-		logger.debug('Dropping stash', { service: 'Git' });
+		logger.debug('Dropping stash', { service });
 		return this.git.stash(['drop', `stash@{${ref}}`]);
 	}
 
 	fetch() {
-		logger.debug('Fetching...', { service: 'Git' });
+		logger.debug('Fetching...', { service });
 		return this.git.fetch();
 	}
 
 	pull() {
-		logger.debug('Pulling...', { service: 'Git' });
+		logger.debug('Pulling...', { service });
 		return this.git.pull(['--rebase']);
 	}
 
 	async push() {
-		logger.debug('Pushing...', { service: 'Git' });
+		logger.debug('Pushing...', { service });
 		this.task = new Task({
 			text: `${this.opts.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.push')}`,
 			value: 0,
@@ -192,7 +194,7 @@ export default class Git {
 	}
 
 	async clone() {
-		logger.debug(`Cloning ${this.opts.url} into ${this.opts.baseDir}`, { service: 'Git' });
+		logger.debug(`Cloning ${this.opts.url} into ${this.opts.baseDir}`, { service });
 		this.task = new Task({
 			text: `${this.opts.repoName}: ${i18next.t('GIT.CURRENT_ACTION')} - ${i18next.t('GIT.METHODS.clone')}`,
 			value: 0,
@@ -223,24 +225,24 @@ export default class Git {
 	}
 
 	async rm(file: string) {
-		logger.debug(`Removing ${file}`, { service: 'Git' });
+		logger.debug(`Removing ${file}`, { service });
 		// We use rmKeepLocal but the files have already been deleted, this is just to remove them from the index
 		return this.git.rmKeepLocal(file);
 	}
 
 	// Add all files (including untracked)
 	async addAll() {
-		logger.debug('Staging all files', { service: 'Git' });
+		logger.debug('Staging all files', { service });
 		return this.git.raw(['add', '-A']);
 	}
 
 	async add(file: string) {
-		logger.debug(`Adding ${file}`, { service: 'Git' });
+		logger.debug(`Adding ${file}`, { service });
 		return this.git.add(file);
 	}
 
 	async commit(message: string, extraOptions?: any) {
-		logger.debug(`Creating commit "${message}"`, { service: 'Git', obj: extraOptions });
+		logger.debug(`Creating commit "${message}"`, { service, obj: extraOptions });
 		return this.git.commit(message, undefined, extraOptions);
 	}
 

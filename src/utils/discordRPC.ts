@@ -7,6 +7,8 @@ import logger from '../lib/utils/logger';
 import { discordClientID } from './constants';
 import { getState } from './state';
 
+const service = 'Discord';
+
 let rpc: discordRPC.Client;
 
 interface ActivityData {
@@ -112,6 +114,6 @@ export function setupDiscordRPC() {
 			if (getConfig().Online.Discord.DisplayActivity) startCheckingDiscordRPC();
 		});
 	} catch (err) {
-		logger.error('Failed to setup Discord Rich Presence', { service: 'Discord', obj: err });
+		logger.error('Failed to setup Discord Rich Presence', { service, obj: err });
 	}
 }

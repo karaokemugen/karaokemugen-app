@@ -15,6 +15,8 @@ import { getKara } from './kara';
 import { integrateKaraFile } from './karaManagement';
 import { consolidateTagsInRepo } from './tag';
 
+const service = 'KaraCreation';
+
 export async function editKara(editedKara: EditedKara) {
 	const task = new Task({
 		text: 'EDITING_SONG',
@@ -111,7 +113,7 @@ export async function editKara(editedKara: EditedKara) {
 		await integrateKaraFile(karaDest, kara, false, true);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
-		logger.error('Error while editing kara', { service: 'KaraGen', obj: err });
+		logger.error('Error while editing kara', { service, obj: err });
 		if (!err.msg) {
 			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 			sentry.error(err);
@@ -163,7 +165,7 @@ export async function createKara(kara: KaraFileV4) {
 		await integrateKaraFile(karaDest, kara, false, true);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
-		logger.error('Error while creating kara', { service: 'KaraGen', obj: err });
+		logger.error('Error while creating kara', { service, obj: err });
 		if (!err.msg) {
 			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 			sentry.addErrorInfo('kara', JSON.stringify(kara, null, 2));

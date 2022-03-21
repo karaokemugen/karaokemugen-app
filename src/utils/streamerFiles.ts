@@ -12,6 +12,8 @@ import { StreamFileType } from '../types/streamerFiles';
 import sentry from './sentry';
 import { getState } from './state';
 
+const service = 'StreamerFiles';
+
 async function writeCurrentSong() {
 	let output: string;
 	const song = getState().player.currentSong;
@@ -124,7 +126,7 @@ export async function writeStreamFiles(only?: StreamFileType): Promise<void> {
 			await Promise.all(promises);
 		}
 	} catch (err) {
-		logger.warn('Cannot write stream files', { service: 'StreamFiles', obj: err });
+		logger.warn('Cannot write stream files', { service, obj: err });
 		sentry.error(err, 'Warning');
 	}
 }

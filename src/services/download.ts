@@ -26,6 +26,8 @@ import { getState } from '../utils/state';
 import { getKaras } from './kara';
 import { getRepoFreeSpace } from './repo';
 
+const service = 'Downloads';
+
 export const downloadStatuses = ['MISSING', 'DOWNLOADING', 'DOWNLOADED'];
 
 let downloaderReady = false;
@@ -56,13 +58,13 @@ export async function initDownloader() {
 export function initDownloadQueue() {
 	dq.error((err, task: KaraDownload) => {
 		if (err) {
-			logger.error(`Download of ${task.mediafile} failed`, { service: 'Download', obj: err });
+			logger.error(`Download of ${task.mediafile} failed`, { service, obj: err });
 		}
 		emitQueueStatus('updated');
 	});
 	dq.empty = () => emitQueueStatus('updated');
 	dq.drain = async () => {
-		logger.info('No tasks left, stopping queue', { service: 'Download' });
+		logger.info('No tasks left, stopping queue', { service });
 		emitQueueStatus('updated');
 		emitQueueStatus('stopped');
 		emit('downloadQueueDrained');
@@ -81,11 +83,11 @@ export async function startDownloads() {
 		try {
 			await internet();
 			downloads.forEach(dl => dq.push(dl));
-			logger.info('Download queue starting up', { service: 'Downloader' });
+			logger.info('Download queue starting up', { service });
 			emitQueueStatus('started');
 		} catch (err) {
 			if (downloads.length > 0) {
-				logger.warn('There are planned downloads, but your computer seems offline', { service: 'Download' });
+				logger.warn('There are planned downloads, but your computer seems offline', { service });
 			}
 			emitQueueStatus('stopped');
 		}
@@ -96,7 +98,7 @@ async function processDownload(download: KaraDownload) {
 	try {
 		const freeSpace = await getRepoFreeSpace(download.repository);
 		if (download.size > freeSpace) {
-			logger.warn('Not enough free space for download, aborting', { service: 'Download' });
+			logger.warn('Not enough free space for download, aborting', { service });
 			emitWS('noFreeSpace');
 			pauseQueue();
 			throw 'No space left on device';
@@ -121,12 +123,12 @@ async function processDownload(download: KaraDownload) {
 		await downloadFile(downloadItem, downloadTask);
 		await smartMove(tempMedia, localMedia, { overwrite: true });
 		setDownloadStatus(download.uuid, 'DL_DONE');
-		logger.info(`Media "${download.name}" downloaded`, { service: 'Download' });
+		logger.info(`Media "${download.name}" downloaded`, { service });
 		await updateDownloaded([download.kid], 'DOWNLOADED');
 		emitWS('KIDUpdated', [{ kid: download.kid, download_status: 'DOWNLOADED' }]);
 		downloadTask.end();
 		downloadedKIDs.add(download.kid);
-		if (dq.length() > 0) logger.info(`${dq.length() - 1} items left in queue`, { service: 'Download' });
+		if (dq.length() > 0) logger.info(`${dq.length() - 1} items left in queue`, { service });
 		emitQueueStatus('updated');
 	} catch (err) {
 		setDownloadStatus(download.uuid, 'DL_FAILED');
@@ -198,7 +200,7 @@ export async function addDownloads(downloads: KaraDownloadRequest[]): Promise<nu
 	});
 	if (downloadsFiltered.length === 0) throw { code: 409, msg: 'DOWNLOADS_QUEUED_ALREADY_ADDED_ERROR' };
 	const dls: KaraDownload[] = downloadsFiltered.map(dl => {
-		logger.debug(`Adding download ${dl.name}`, { service: 'Download' });
+		logger.debug(`Adding download ${dl.name}`, { service });
 		return {
 			uuid: uuidV4(),
 			name: dl.name,

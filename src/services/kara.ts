@@ -26,6 +26,8 @@ import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getTagNameInLanguage } from './tag';
 
+const service = 'Kara';
+
 let popularKaraFetchIntervalID: any;
 
 export function initFetchPopularSongs() {
@@ -170,7 +172,7 @@ export async function fetchPopularSongs() {
 		try {
 			await internet();
 		} catch (err) {
-			logger.warn('Internet not available, cannot init popular songs', { service: 'Kara', obj: err });
+			logger.warn('Internet not available, cannot init popular songs', { service, obj: err });
 			profile('initPopularSongs');
 			throw err;
 		}

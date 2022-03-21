@@ -34,6 +34,8 @@ import { editKara } from './karaCreation';
 import { refreshKarasAfterDBChange } from './karaManagement';
 import { getRepo } from './repo';
 
+const service = 'Tag';
+
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
 		infos: {
@@ -167,7 +169,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		refreshTags();
 		return tagObj;
 	} catch (err) {
-		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service: 'Tags', obj: err });
+		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service, obj: err });
 		sentry.error(err);
 		throw err;
 	} finally {
@@ -288,7 +290,7 @@ export async function removeTag(
 		if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karasToRemoveTagIn));
 	}
 	await Promise.all(removes).catch(err => {
-		logger.warn('Failed to remove tag files / tag from kara', { service: 'Tag', obj: err });
+		logger.warn('Failed to remove tag files / tag from kara', { service, obj: err });
 		// Non fatal
 	});
 	for (const tag of tags) {
@@ -323,7 +325,7 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 		await addTag(tagFileData, { silent: true, refresh });
 		return tagFileData.name;
 	} catch (err) {
-		logger.error(`Error integrating tag file ${file}`, { service: 'Tags', obj: err });
+		logger.error(`Error integrating tag file ${file}`, { service, obj: err });
 	}
 }
 
@@ -371,7 +373,7 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 }
 
 async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: DBKara[]): Promise<string[]> {
-	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, { service: 'Kara' });
+	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, { service });
 	const modifiedKaras: string[] = [];
 	for (const kara of karas) {
 		kara.modified_at = new Date();
@@ -396,7 +398,7 @@ export async function syncTagsFromRepo(repoSourceName: string, repoDestName: str
 	const repoSource = repos.find(r => r.Name === repoSourceName);
 	const repoDest = repos.find(r => r.Name === repoDestName);
 	if (!repoSource || !repoDest) throw { code: 404 };
-	logger.info(`Syncing tags in repo ${repoDestName} from repo ${repoSourceName}`, { service: 'Tag' });
+	logger.info(`Syncing tags in repo ${repoDestName} from repo ${repoSourceName}`, { service });
 	const [sourceFiles, destFiles] = await Promise.all([
 		listAllFiles('Tags', repoSourceName),
 		listAllFiles('Tags', repoDestName),
@@ -444,7 +446,7 @@ export async function syncTagsFromRepo(repoSourceName: string, repoDestName: str
 				});
 			}
 			logger.info(`Updated ${basename(destFile)} in repo ${repoDestName} from repo ${repoSourceName}`, {
-				service: 'Tag',
+				service,
 			});
 		}
 	}

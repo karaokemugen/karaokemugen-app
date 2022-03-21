@@ -24,6 +24,8 @@ import { tip } from '../utils/tips';
 import { emitIPC } from './electronLogger';
 import { createMenu } from './electronMenu';
 
+const service = 'Electron';
+
 // eslint-disable-next-line import/no-mutable-exports
 export let win: Electron.BrowserWindow;
 let chibiPlayerWindow: Electron.BrowserWindow;
@@ -50,7 +52,7 @@ export function startElectron() {
 		try {
 			registerKMProtocol();
 		} catch (err) {
-			logger.warn('KM protocol could not be registered!', { obj: err, service: 'Electron' });
+			logger.warn('KM protocol could not be registered!', { obj: err, service });
 		}
 		// Create electron window with init screen
 		if (!getState().opt.cli) await initElectronWindow();
@@ -135,7 +137,7 @@ async function initMain() {
 	try {
 		await init();
 	} catch (err) {
-		logger.error('Error during launch', { service: 'Launcher', obj: err });
+		logger.error('Error during launch', { service, obj: err });
 		// We only throw if in cli mode. In UI mode throwing would exit the app immediately without allowing users to read the error message
 		if (getState().opt.cli) throw err;
 	}
@@ -182,7 +184,7 @@ async function registerIPCEvents() {
 
 export async function handleProtocol(args: string[]) {
 	try {
-		logger.info(`Received protocol uri km://${args.join('/')}`, { service: 'ProtocolHandler' });
+		logger.info(`Received protocol uri km://${args.join('/')}`, { service });
 		if (!getState().ready) return;
 		switch (args[0]) {
 			case 'addRepo':
@@ -221,13 +223,13 @@ export async function handleProtocol(args: string[]) {
 				throw 'Unknown protocol';
 		}
 	} catch (err) {
-		logger.error(`Unknown command : ${args.join('/')}`, { service: 'ProtocolHandler' });
+		logger.error(`Unknown command : ${args.join('/')}`, { service });
 	}
 }
 
 export async function handleFile(file: string, username?: string, onlineToken?: string) {
 	try {
-		logger.info(`Received file path ${file}`, { service: 'FileHandler' });
+		logger.info(`Received file path ${file}`, { service });
 		if (!getState().ready) return;
 		if (!username) {
 			const users = await selectUsers();
@@ -236,12 +238,12 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 			username = adminUsersOnline[0]?.login;
 			if (!username) {
 				username = 'admin';
-				logger.warn('Could not find a username, switching to admin by default', { service: 'FileHandler' });
+				logger.warn('Could not find a username, switching to admin by default', { service });
 			}
 		}
 		const rawData = await fs.readFile(resolve(file), 'utf-8');
 		if (!testJSON(rawData)) {
-			logger.debug(`File ${file} is not JSON, ignoring`, { service: 'FileHandler' });
+			logger.debug(`File ${file} is not JSON, ignoring`, { service });
 			return;
 		}
 		const data = JSON.parse(rawData);
@@ -279,7 +281,7 @@ export async function handleFile(file: string, username?: string, onlineToken?: 
 				throw 'Filetype not recognized';
 		}
 	} catch (err) {
-		logger.error(`Could not handle ${file}`, { service: 'Electron', obj: err });
+		logger.error(`Could not handle ${file}`, { service, obj: err });
 	}
 }
 

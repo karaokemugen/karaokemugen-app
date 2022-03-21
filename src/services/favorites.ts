@@ -12,6 +12,8 @@ import { getKaras, isAllKaras } from './kara';
 import { addKaraToPlaylist, createPlaylist, shufflePlaylist, trimPlaylist } from './playlist';
 import { getUser } from './user';
 
+const service = 'Favorites';
+
 export async function getFavorites(params: KaraParams): Promise<KaraList> {
 	try {
 		profile('getFavorites');
@@ -41,7 +43,7 @@ export async function fetchAndAddFavorites(username: string, token: string) {
 		};
 		await importFavorites(favorites, username, token, false, false);
 	} catch (err) {
-		logger.error(`Error getting remote favorites for ${username}`, { service: 'Favorites', obj: err });
+		logger.error(`Error getting remote favorites for ${username}`, { service, obj: err });
 	}
 }
 
@@ -116,7 +118,7 @@ async function manageFavoriteInInstance(action: 'POST' | 'DELETE', username: str
 		});
 	} catch (err) {
 		logger.error(`Unable to ${action} favorite ${kid} on ${username}'s online account`, {
-			service: 'RemotesFavorites',
+			service,
 			obj: err,
 		});
 	}
@@ -180,7 +182,7 @@ export async function importFavorites(
 		emitWS('favoritesUpdated', username);
 		return { karasUnknown };
 	} catch (err) {
-		logger.error('Unable to import favorites', { service: 'Favorites', obj: err });
+		logger.error('Unable to import favorites', { service, obj: err });
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.error(err);
 		throw err;
@@ -193,7 +195,7 @@ async function getAllFavorites(userList: string[]): Promise<Favorite[]> {
 	for (let user of userList) {
 		user = user.toLowerCase();
 		if (!(await getUser(user))) {
-			logger.warn(`Username ${user} does not exist`, { service: 'Favorites' });
+			logger.warn(`Username ${user} does not exist`, { service });
 		} else {
 			const favs = await getFavorites({
 				userFavorites: user,
@@ -255,7 +257,7 @@ export async function createAutoMix(params: AutoMixParams, username: string): Pr
 			playlist_name: autoMixPLName,
 		};
 	} catch (err) {
-		logger.error('Failed to create AutoMix', { service: 'Automix', obj: err });
+		logger.error('Failed to create AutoMix', { service, obj: err });
 		if (err?.code === 404) throw err;
 		sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 		sentry.error(err);

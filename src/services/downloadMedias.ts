@@ -16,6 +16,8 @@ import { File } from '../types/download';
 import { addDownloads } from './download';
 import { checkDownloadStatus } from './repo';
 
+const service = 'PlaylistMediasUpdater';
+
 let updateRunning = false;
 
 async function getRemoteMedias(repo: string) {
@@ -24,7 +26,7 @@ async function getRemoteMedias(repo: string) {
 }
 
 async function listRemoteMedias(repo: string) {
-	logger.info('Fetching current media list', { service: 'Update' });
+	logger.info('Fetching current media list', { service });
 	profile('listRemoteMedias');
 	const remote = await getRemoteMedias(repo);
 	profile('listRemoteMedias');
@@ -46,7 +48,7 @@ async function compareMedias(
 	const addedFiles: DBMedia[] = [];
 	const updatedFiles: DBMedia[] = [];
 	const mediasPath = resolvedPathRepos('Medias', repo)[0];
-	logger.info('Comparing your medias with the current ones', { service: 'Update' });
+	logger.info('Comparing your medias with the current ones', { service });
 	for (const remoteKara of remoteKaras) {
 		const localFile = localFiles.find(f => f.basename === remoteKara.mediafile);
 		if (localFile) {
@@ -79,13 +81,13 @@ async function compareMedias(
 		}
 		logger.info(
 			`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`,
-			{ service: 'Update' }
+			{ service }
 		);
 		await downloadMedias(filesToDownload);
-		logger.info('Done updating medias', { service: 'Update' });
+		logger.info('Done updating medias', { service });
 		return true;
 	}
-	logger.info('No new medias to download', { service: 'Update' });
+	logger.info('No new medias to download', { service });
 	return false;
 }
 
@@ -128,10 +130,10 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 				size: mediaStats.size,
 			});
 		} catch {
-			logger.info(`Local media file ${file} not found`, { service: 'Update' });
+			logger.info(`Local media file ${file} not found`, { service });
 		}
 	}
-	logger.debug('Listed local media files', { service: 'Update' });
+	logger.debug('Listed local media files', { service });
 	profile('listLocalMedias');
 	return localMedias;
 }
@@ -139,7 +141,7 @@ async function listLocalMedias(repo: string): Promise<File[]> {
 async function removeFiles(files: string[], dir: string): Promise<void> {
 	for (const file of files) {
 		await fs.unlink(resolve(dir, file));
-		logger.info('Removed', { service: 'Update', obj: file });
+		logger.info('Removed', { service, obj: file });
 	}
 }
 
@@ -147,10 +149,10 @@ async function removeFiles(files: string[], dir: string): Promise<void> {
 export async function updateAllMedias() {
 	for (const repo of getConfig().System.Repositories.filter(r => r.Online && r.Enabled)) {
 		try {
-			logger.info(`Updating medias from repository ${repo.Name}`, { service: 'Update' });
+			logger.info(`Updating medias from repository ${repo.Name}`, { service });
 			await updateMedias(repo.Name);
 		} catch (err) {
-			logger.warn(`Repository ${repo.Name} failed to update medias properly`, { service: 'Update', obj: err });
+			logger.warn(`Repository ${repo.Name} failed to update medias properly`, { service, obj: err });
 			emitWS('operatorNotificationError', APIMessage('ERROR_CODES.UPDATING_MEDIAS_ERROR', repo.Name));
 		}
 	}
