@@ -2,7 +2,6 @@ import { app, dialog } from 'electron';
 import { promises as fs } from 'fs';
 import { copy, remove } from 'fs-extra';
 import i18next from 'i18next';
-import open from 'open';
 import { resolve } from 'path';
 import { getPortPromise } from 'portfinder';
 
@@ -15,7 +14,6 @@ import logger, { configureLogger } from '../lib/utils/logger';
 import { resetSecurityCode } from '../services/auth';
 import { backgroundTypes } from '../services/backgrounds';
 import { editRepo } from '../services/repo';
-import { generateAdminPassword } from '../services/user';
 import { Config } from '../types/config';
 import { initConfig } from '../utils/config';
 import { logo } from '../utils/constants';
@@ -175,22 +173,4 @@ async function verifyOpenPort(portConfig: number, firstRun: boolean) {
 	} catch (err) {
 		throw new Error('Failed to find a free port to use');
 	}
-}
-
-/** Set admin password on first run, and open browser on welcome page.
- * One, two, three /
- * Welcome to youkoso japari paaku /
- * Kyou mo dottan battan oosawagi /
- * Sugata katachi mo juunin toiro dakara hikareau no /
- */
-export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
-	const conf = getConfig();
-	const state = getState();
-	let url = `http://localhost:${state.frontendPort}/welcome`;
-	if (conf.App.FirstRun) {
-		const adminPassword = await generateAdminPassword();
-		url = `http://localhost:${conf.System.FrontendPort}/setup?admpwd=${adminPassword}`;
-	}
-	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) open(url);
-	return url;
 }

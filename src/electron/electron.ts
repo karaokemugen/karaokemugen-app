@@ -4,8 +4,8 @@ import i18next from 'i18next';
 import open from 'open';
 import { resolve } from 'path';
 
-import { exit } from '../components/engine';
-import { init, preInit, welcomeToYoukousoKaraokeMugen } from '../components/init';
+import { exit, welcomeToYoukousoKaraokeMugen } from '../components/engine';
+import { init, preInit } from '../components/init';
 import { selectUsers } from '../dao/user';
 import { getConfig, resolvedPath, setConfig } from '../lib/utils/config';
 import logger from '../lib/utils/logger';

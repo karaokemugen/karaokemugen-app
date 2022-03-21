@@ -30,7 +30,7 @@ import { initRemote } from '../services/remote';
 import { checkDownloadStatus, updateAllRepos } from '../services/repo';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
-import { initUserSystem } from '../services/user';
+import { generateAdminPassword, initUserSystem } from '../services/user';
 import { initDiscordRPC } from '../utils/discordRPC';
 import { initKMServerCommunication } from '../utils/kmserver';
 import { checkPG, dumpPG, restorePG, stopPG } from '../utils/postgresql';
@@ -40,7 +40,6 @@ import { writeStreamFiles } from '../utils/streamerFiles';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
 import { subRemoteUsers } from '../utils/userPubSub';
 import initFrontend from './frontend';
-import { welcomeToYoukousoKaraokeMugen } from './init';
 
 let shutdownInProgress = false;
 
@@ -359,4 +358,22 @@ async function checkIfAppHasBeenUpdated() {
 		await saveSetting('appVersion', getState().version.number);
 		if (settings.appVersion) setState({ appHasBeenUpdated: true });
 	}
+}
+
+/** Set admin password on first run, and open browser on welcome page.
+ * One, two, three /
+ * Welcome to youkoso japari paaku /
+ * Kyou mo dottan battan oosawagi /
+ * Sugata katachi mo juunin toiro dakara hikareau no /
+ */
+export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
+	const conf = getConfig();
+	const state = getState();
+	let url = `http://localhost:${state.frontendPort}/welcome`;
+	if (conf.App.FirstRun) {
+		const adminPassword = await generateAdminPassword();
+		url = `http://localhost:${conf.System.FrontendPort}/setup?admpwd=${adminPassword}`;
+	}
+	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) open(url);
+	return url;
 }
