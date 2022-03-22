@@ -126,9 +126,10 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 				);
 			}
 		}
+		logger.error('Database system initialization failed', { service, obj: err });
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
 		if (!isShutdownPG()) sentry.error(err, 'Fatal');
-		throw Error(`Database system initialization failed : ${err}`);
+		throw err;
 	}
 	if (!(await getInstanceID())) {
 		// Some interesting people actually copy/paste what's in the sample config file so we're going to be extra nice with them even though we shouldn't and set it correctly if the config's instanceID is wrong.
