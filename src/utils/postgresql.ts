@@ -308,6 +308,7 @@ export async function checkPG(): Promise<boolean> {
 export async function initPG(relaunch = true) {
 	let conf = getConfig();
 	let state = getState();
+	// Sometime this fails and doesn't detect VCRedist's absence.
 	if (state.os === 'win32') await checkAndInstallVCRedist();
 	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
@@ -395,9 +396,10 @@ export async function checkAndInstallVCRedist() {
 	try {
 		const checks = {
 			2015: {
-				file: resolve('C:/Windows/System32/VCRUNTIME140.DLL'),
+				file: resolve('C:/Windows/System32/vcruntime140.dll'),
 				URL: 'https://mugen.karaokes.moe/downloads/vcredist2015_x64.exe',
 			},
+			// Remove 2012 in KM 7.0
 			2012: {
 				file: resolve('C:/Windows/System32/msvcr120.dll'),
 				URL: 'https://mugen.karaokes.moe/downloads/vcredist_x64.exe',
