@@ -313,7 +313,14 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	if (!oldRepo.SendStats && repo.SendStats && getState().DBReady && onlineCheck) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host).catch();
 	}
-	if (repo.Enabled && repo.Online && !oldRepo.MaintainerMode && repo.MaintainerMode && repo.Git?.URL) {
+	if (
+		repo.Enabled &&
+		repo.Online &&
+		!oldRepo.MaintainerMode &&
+		repo.MaintainerMode &&
+		repo.Git?.URL &&
+		getState().DBReady
+	) {
 		saveSetting(`commit-${repo.Name}`, null);
 		try {
 			await updateGitRepo(repo.Name);
@@ -322,7 +329,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 		}
 		if (refresh) doGenerate = true;
 	}
-	if (repo.Enabled && repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode) {
+	if (repo.Enabled && repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode && getState().DBReady) {
 		try {
 			await updateZipRepo(repo.Name);
 			if (refresh) doGenerate = true;
