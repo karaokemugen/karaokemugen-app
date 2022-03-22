@@ -228,7 +228,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				ignoreHooks: kara.ignoreHooks,
 				kid: this.props.kara?.kid || UUIDv4(),
 				modified_at: new Date().toISOString(),
-				parents: kara.parents?.length > 0 ? kara.parents : undefined,
+				parents:
+					kara.parents?.length > 0
+						? kara.parents.filter((e, pos) => kara.parents.indexOf(e) === pos)
+						: undefined,
 				repository: kara.repository,
 				songorder: kara.songorder ? kara.songorder : undefined,
 				tags: Object.fromEntries(
