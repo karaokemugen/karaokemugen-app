@@ -335,7 +335,7 @@
     ]
   },
   "lint-staged": {
-    "!(src/lib)": "prettier --write --ignore-unknown"
+    "!(src/lib|assets/guestAvatars)": "prettier --write --ignore-unknown"
   },
   "packageManager": "yarn@1.22.1"
 }
