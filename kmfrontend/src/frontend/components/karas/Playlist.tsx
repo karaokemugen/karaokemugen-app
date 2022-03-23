@@ -923,6 +923,10 @@ function Playlist(props: IProps) {
 		getPlaylist('search');
 	}, [searchValue]);
 
+	useDeferredEffect(() => {
+		getPlaylist(props.searchType);
+	}, [props.searchType]);
+
 	useEffect(() => {
 		getSocket().on('favoritesUpdated', favoritesUpdated);
 		getSocket().on('playlistContentsUpdated', playlistContentsUpdatedFromServer);

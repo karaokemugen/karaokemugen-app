@@ -63,6 +63,7 @@ export default function favoritesController(router: SocketIOApp) {
 				lang: req.langs,
 				from: +req.body?.from || 0,
 				size: +req.body?.size || 9999999,
+				order: req.body?.order,
 			});
 		} catch (err) {
 			const code = 'FAVORITES_VIEW_ERROR';
