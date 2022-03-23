@@ -5,6 +5,7 @@ import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase, DBYear } from '../lib/types/database/kara';
 import { Kara, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
+import { tagTypes } from '../lib/utils/constants';
 import { now } from '../lib/utils/date';
 import { getState } from '../utils/state';
 import {
@@ -163,6 +164,13 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		joinClauses.push(' LEFT OUTER JOIN favorites AS uf ON uf.fk_login = :username_favs AND uf.fk_kid = ak.pk_kid ');
 		yesqlPayload.params.username_favs = params.userFavorites;
 	}
+	const collectionClauses = [];
+	if (!params.ignoreCollections) {
+		const collections = getConfig().Karaoke.Collections;
+		for (const collection of Object.keys(collections)) {
+			if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+		}
+	}
 	const query = sqlgetAllKaras(
 		yesqlPayload.sql,
 		whereClauses,
@@ -174,7 +182,8 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		yesqlPayload.additionalFrom,
 		selectRequested,
 		groupClauseEnd,
-		joinClauses
+		joinClauses,
+		collectionClauses
 	);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaid,
@@ -195,8 +204,12 @@ export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBas
 		params: { ...typeClauses.params },
 		additionalFrom: [...typeClauses.additionalFrom],
 	};
-
-	const query = sqlgetAllKarasMicro(yesqlPayload.sql, yesqlPayload.additionalFrom);
+	const collectionClauses = [];
+	const collections = getConfig().Karaoke.Collections;
+	for (const collection of Object.keys(collections)) {
+		if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+	}
+	const query = sqlgetAllKarasMicro(yesqlPayload.sql, yesqlPayload.additionalFrom, collectionClauses);
 	const queryParams = {
 		...yesqlPayload.params,
 	};

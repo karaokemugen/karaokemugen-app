@@ -20,7 +20,7 @@ import {
 	getPreviewLink,
 	getTitleInLocale,
 } from '../../../utils/kara';
-import { commandBackend, isRemote } from '../../../utils/socket';
+import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, isNonStandardPlaylist, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';

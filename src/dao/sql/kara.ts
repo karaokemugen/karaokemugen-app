@@ -39,7 +39,8 @@ export const sqlgetAllKaras = (
 	additionalFrom: string[],
 	selectRequested: string,
 	groupClauseEnd: string,
-	joinClauses: string[]
+	joinClauses: string[],
+	collectionClauses: string[]
 ) => `SELECT
   ak.pk_kid AS kid,
   ak.titles AS titles,
@@ -63,6 +64,7 @@ export const sqlgetAllKaras = (
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)') AS collections,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -106,6 +108,7 @@ LEFT OUTER JOIN favorites AS f ON f.fk_login = :username AND f.fk_kid = ak.pk_ki
 ${joinClauses.join('')}
 ${additionalFrom.join('')}
 WHERE true
+  ${collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''}
   ${filterClauses.map(clause => `AND (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
   ${whereClauses}
 GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable ${groupClauseEnd}
@@ -115,15 +118,21 @@ ${limitClause}
 ${offsetClause}
 `;
 
-export const sqlgetAllKarasMicro = (filterClauses: string[], additionalFrom: string[]) => `SELECT
+export const sqlgetAllKarasMicro = (
+	filterClauses: string[],
+	additionalFrom: string[],
+	collectionClauses: string[]
+) => `SELECT
   k.pk_kid AS kid,
   k.duration AS duration,
   k.mediafile AS mediafile,
   k.mediasize AS mediasize,
   k.repository AS repository
 FROM kara AS k
+LEFT JOIN all_karas ak ON ak.pk_kid = k.pk_kid
 ${additionalFrom.join('')}
 WHERE true
+  ${collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''}
   ${filterClauses.map(clause => `AND (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
 `;
 

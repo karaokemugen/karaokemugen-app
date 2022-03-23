@@ -70,6 +70,7 @@ export function initDownloadQueue() {
 		emit('downloadQueueDrained');
 		const karas = await getKaras({
 			q: `k:${[...downloadedKIDs].join(',')}`,
+			ignoreCollections: true,
 		});
 		downloadedKIDs.clear();
 		createImagePreviews(karas, 'single');

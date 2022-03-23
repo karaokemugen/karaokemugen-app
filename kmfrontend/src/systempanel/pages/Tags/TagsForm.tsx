@@ -4,22 +4,23 @@ import { FormInstance } from 'antd/lib/form';
 import i18next from 'i18next';
 import { Component, createRef } from 'react';
 
-import { DBTag } from '../../../../../src/lib/types/database/tag';
+import { Tag } from '../../../../../src/lib/types/tag';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes } from '../../../utils/tagTypes';
 import EditableGroupAlias from '../../components/EditableGroupAlias';
 import LanguagesList from '../../components/LanguagesList';
 
 interface TagsFormProps {
-	tags: DBTag[];
-	tag: DBTag;
-	save: (tag: DBTag) => void;
+	tags: Tag[];
+	tag: Tag;
+	save: (tag: Tag) => void;
 	handleCopy: (tid, repo) => void;
 	mergeAction: (tid1: string, tid2: string) => void;
 }
 
 interface TagsFormState {
 	i18n: Record<string, string>;
+	description: Record<string, string>;
 	selectVisible: boolean;
 	mergeSelection: string;
 	repositoriesValue: string[];
@@ -35,6 +36,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 
 		this.state = {
 			i18n: this.props.tag?.i18n ? this.props.tag.i18n : { eng: '' },
+			description: this.props.tag?.description ? this.props.tag.description : { eng: '' },
 			selectVisible: false,
 			mergeSelection: '',
 			repositoriesValue: null,
@@ -58,6 +60,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	handleSubmit = values => {
 		if (Object.keys(this.state.i18n).length > 0) {
 			values.i18n = this.state.i18n;
+			values.description = this.state.description;
 			values.tid = this.props.tag?.tid;
 			this.props.save(values);
 		} else {
@@ -141,6 +144,23 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 				>
 					<Input style={{ maxWidth: '40%', minWidth: '150px' }} placeholder={i18next.t('TAGS.NAME')} />
 				</Form.Item>
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAGS.DESCRIPTION')}&nbsp;
+							<Tooltip title={i18next.t('TAGS.DESCRIPTION_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 300px' }}
+				></Form.Item>
+				<div style={{ marginLeft: '3em', marginRight: '6em' }}>
+					<LanguagesList
+						value={this.state.description}
+						onChange={description => this.setState({ description })}
+					/>
+				</div>
 				<Form.Item
 					label={
 						<span>
@@ -250,7 +270,9 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					}
 				></Form.Item>
-				<LanguagesList value={this.state.i18n} onChange={i18n => this.setState({ i18n })} />
+				<div style={{ marginLeft: '3em', marginRight: '8em' }}>
+					<LanguagesList value={this.state.i18n} onChange={i18n => this.setState({ i18n })} />
+				</div>
 				<Form.Item
 					hasFeedback
 					label={

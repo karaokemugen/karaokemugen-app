@@ -461,6 +461,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					subfile: this.props.kara?.subfile,
 					parents: this.props.kara?.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
 					titles_aliases: this.props.kara?.titles_aliases || this.state.parentKara?.titles_aliases,
+					collections: this.props.kara?.collections || this.state.parentKara?.collections,
 				}}
 			>
 				<Form.Item
@@ -562,6 +563,32 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</Select>
 					</Form.Item>
 				) : null}
+				<Form.Item
+					label={
+						<span>
+							{i18next.t('TAG_TYPES.COLLECTIONS_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.COLLECTIONS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 10, offset: 0 }}
+					name="collections"
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.COLLECTIONS_REQUIRED'),
+						},
+					]}
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={16}
+						checkboxes={true}
+						onChange={tags => this.formRef.current.setFieldsValue({ collections: tags })}
+					/>
+				</Form.Item>
 				<Form.Item
 					label={
 						<span>
