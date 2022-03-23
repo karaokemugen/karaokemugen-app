@@ -11,6 +11,7 @@ import SetupLoading from './SetupLoading';
 import SetupPageRepo from './SetupPageRepo';
 import SetupPageStats from './SetupPageStats';
 import SetupPageUser from './SetupPageUser';
+import SetupPageCollections from './SetupPageCollections';
 
 function SetupPage() {
 	const context = useContext(GlobalContext);
@@ -45,6 +46,7 @@ function SetupPage() {
 						<Route path="/loading" element={<SetupLoading />} />
 						<Route path="/stats" element={<SetupPageStats />} />
 						<Route path="/repo" element={<SetupPageRepo />} />
+						<Route path="/collections" element={<SetupPageCollections />} />
 						<Route path="/user" element={<SetupPageUser />} />
 						<Route
 							path="*"

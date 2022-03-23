@@ -239,6 +239,7 @@ export async function updateBase(internet: boolean) {
 	createImagePreviews(
 		await getKaras({
 			q: 'm:downloaded',
+			ignoreCollections: true,
 		}),
 		'single'
 	);

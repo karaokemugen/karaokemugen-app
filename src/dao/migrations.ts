@@ -4,6 +4,7 @@ import Postgrator from 'postgrator';
 
 import { win } from '../electron/electron';
 import logger from '../lib/utils/logger';
+import { editRepo, getRepo } from '../services/repo';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
 import { compareKarasChecksum, generateDB } from './database';
 
@@ -44,6 +45,20 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			case 'addKaraParents':
 				if (!didGeneration) doGenerate = true;
 				logger.info('Migration adding parents to karas detected, forcing generation', { service });
+				break;
+			case 'addDescriptionToTags':
+				// This is actually the collections migration.
+				if (!didGeneration) doGenerate = true;
+				const world = getRepo('world.karaokes.moe');
+				if (world) {
+					world.Enabled = false;
+					editRepo('world.karaokes.moe', world, false);
+				}
+				await dialog.showMessageBox(win, {
+					type: 'info',
+					title: i18next.t('WORLD_REPOSITORY_DISABLED.TITLE'),
+					message: i18next.t('WORLD_REPOSITORY_DISABLED.MESSAGE'),
+				});
 				break;
 			default:
 		}

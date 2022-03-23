@@ -81,6 +81,7 @@ export async function insertTag(tag: Tag) {
 		tag.noLiveDownload || false,
 		tag.priority || 10,
 		tag.karafile_tag || null,
+		tag.description || {},
 	]);
 }
 
@@ -114,6 +115,7 @@ export async function updateTag(tag: Tag) {
 		tag.noLiveDownload || false,
 		tag.priority || 10,
 		tag.karafile_tag || null,
+		tag.description || {},
 	]);
 }
 

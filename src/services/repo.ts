@@ -132,6 +132,7 @@ export async function checkDownloadStatus(kids?: string[]) {
 	logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service });
 	const karas = await getKaras({
 		q: kids ? `k:${kids.join(',')}` : undefined,
+		ignoreCollections: true,
 	});
 	const mediasMissing = [];
 	const mediasExisting = [];
@@ -165,6 +166,7 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 	}
 	const karas = await getKaras({
 		q,
+		ignoreCollections: true,
 	});
 	const deletedFiles: Set<string> = new Set();
 	const deletePromises = [];
@@ -337,7 +339,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 			logger.warn('Repository was edited, but updating it failed', { service });
 		}
 	}
-	if (repo.MaintainerMode && repo.Git) {
+	if (repo.Enabled && repo.MaintainerMode && repo.Git) {
 		try {
 			await setupGit(repo, true);
 		} catch (err) {
@@ -351,7 +353,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	}
 	if (doGenerate) await generateDB();
 	if (oldRepo.Path.Medias !== repo.Path.Medias && getState().DBReady && onlineCheck) {
-		getKaras({ q: `r:${repo.Name}` }).then(karas => {
+		getKaras({ q: `r:${repo.Name}`, ignoreCollections: true }).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
 	}
@@ -759,7 +761,10 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 		text: 'FINDING_UNUSED_MEDIAS',
 	});
 	try {
-		const [karas, mediaFiles] = await Promise.all([getKaras({}), listAllFiles('Medias', repo)]);
+		const [karas, mediaFiles] = await Promise.all([
+			getKaras({ ignoreCollections: true }),
+			listAllFiles('Medias', repo),
+		]);
 		const mediasFilesKaras: string[] = karas.content.map(k => k.mediafile);
 		return mediaFiles.filter(file => !mediasFilesKaras.includes(basename(file)));
 	} catch (err) {
@@ -912,7 +917,7 @@ export async function generateCommits(repoName: string) {
 			task.incr();
 		}
 		// Added songs
-		const [karas, tags] = await Promise.all([getKaras({}), getTags({})]);
+		const [karas, tags] = await Promise.all([getKaras({ ignoreCollections: true }), getTags({})]);
 		for (const file of addedSongs) {
 			const song = basename(file, '.kara.json');
 			const commit: Commit = {

@@ -14,7 +14,7 @@ import {
 	getTitleInLocale,
 	sortAndHideTags,
 } from '../../../utils/kara';
-import { commandBackend, getSocket, isRemote } from '../../../utils/socket';
+import { commandBackend, getSocket } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { PLCCallback, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';

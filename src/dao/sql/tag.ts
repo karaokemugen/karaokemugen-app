@@ -23,6 +23,7 @@ SELECT t.pk_tid AS tid,
 	t.nolivedownload AS "noLiveDownload",
 	t.priority,
 	t.karafile_tag,
+	t.description,
 	count(t.pk_tid) OVER()::integer AS count
 FROM tag t
 LEFT JOIN all_tags at ON at.pk_tid = t.pk_tid
@@ -50,7 +51,8 @@ INSERT INTO tag(
 	repository,
 	nolivedownload,
 	priority,
-	karafile_tag
+	karafile_tag,
+	description
 )
 VALUES(
 	$1,
@@ -63,7 +65,8 @@ VALUES(
 	$8,
 	$9,
 	$10,
-	$11
+	$11,
+	$12
 )
 ON CONFLICT (pk_tid) DO UPDATE SET
 	types = $3,
@@ -75,7 +78,8 @@ ON CONFLICT (pk_tid) DO UPDATE SET
 	repository = $8,
 	nolivedownload = $9,
 	priority = $10,
-	karafile_tag = $11
+	karafile_tag = $11,
+	description = $12
 `;
 
 export const sqlupdateKaraTagsTID = `
@@ -113,7 +117,8 @@ SET
 	repository = $8,
 	nolivedownload = $9,
 	priority = $10,
-	karafile_tag = $11
+	karafile_tag = $11,
+	description = $12
 WHERE pk_tid = $7;
 `;
 

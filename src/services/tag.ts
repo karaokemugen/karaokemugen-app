@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import { internetAvailable } from 'internet-available';
 import { basename, dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -25,6 +26,7 @@ import { Tag, TagFile, TagParams } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
 import { listAllFiles, resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
+import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -32,7 +34,7 @@ import sentry from '../utils/sentry';
 import { getKaras } from './kara';
 import { editKara } from './karaCreation';
 import { refreshKarasAfterDBChange } from './karaManagement';
-import { getRepo } from './repo';
+import { getRepo, getRepos } from './repo';
 
 const service = 'Tag';
 
@@ -255,6 +257,7 @@ async function getKarasWithTags(tags: DBTagMini[]): Promise<DBKara[]> {
 			karaPromises.push(
 				getKaras({
 					q: `t:${tag.tid}~${type}`,
+					ignoreCollections: true,
 				})
 			);
 		}
@@ -454,4 +457,40 @@ export async function syncTagsFromRepo(repoSourceName: string, repoDestName: str
 		sortKaraStore();
 		saveSetting('baseChecksum', getStoreChecksum());
 	}
+}
+
+export async function checkCollections() {
+	const internet = await (async () => {
+		try {
+			await internetAvailable();
+			return true;
+		} catch (err) {
+			return false;
+		}
+	})();
+	const availableCollections: DBTag[] = [];
+	for (const repo of getRepos()) {
+		if (repo.Enabled) {
+			if (repo.Online && internet) {
+				try {
+					const tags = (await HTTP.get(`https://${repo.Name}/api/karas/tags/${tagTypes.collections}`)).data;
+					for (const tag of tags) {
+						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+					}
+				} catch (err) {
+					// Fallback to what the repository has locally
+					const tags = await getTags({ type: tagTypes.collections });
+					for (const tag of tags.content) {
+						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+					}
+				}
+			} else {
+				const tags = await getTags({ type: tagTypes.collections });
+				for (const tag of tags.content) {
+					if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+				}
+			}
+		}
+	}
+	return availableCollections;
 }

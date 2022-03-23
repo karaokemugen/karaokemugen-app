@@ -109,6 +109,10 @@
 	"ABOUT": {
 		"TITLE": "About Karaoke Mugen"
 	},
+	"WORLD_REPOSITORY_DISABLED": {
+		"TITLE": "World repository has been disabled",
+		"MESSAGE": "Due to the addition of Collections, the World and kara.moe repositories have been merged. Thus, the World repository is not necessary anymore. It has been disabled, and we advise you to remove it entirely in the System Panel."
+	},
 	"REPO_DISABLED": {
 		"TITLE": "Repository disabled",
 		"MESSAGE": "The {{repo}} repository has been disabled because one of its folders is unavailable. If any of its folders are on an external drive, make sure it's plugged in and go into System Panel > Repositories to re-enable it."

@@ -109,6 +109,10 @@
 	"ABOUT": {
 		"TITLE": "À propos de Karaoke Mugen"
 	},
+	"WORLD_REPOSITORY_DISABLED": {
+		"TITLE": "Dépôt World désactivé",
+		"MESSAGE": "Avec l'ajout des Collections, les dépôts World et Kara.moe ont été fusionnés. Le dépôt World n'est donc plus nécessaire et a été désactivé. Nous vous conseillons de le supprimer entièrement depuis le panneau système."
+	},
 	"REPO_DISABLED": {
 		"TITLE": "Dépôt désactivé",
 		"MESSAGE": "Le dépôt {{repo}} a été désactivé car l'un de ses dossiers est inaccessible. Si toute ou partie de ses fichiers sont sur un support externe, vérifiez qu'il est bien branché et allez dans Panneau Système > Dépôts pour le réactiver."

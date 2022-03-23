@@ -304,7 +304,8 @@
 		"MASTODON_UPDATE": "Karaoke Mugen News",
 		"APP_UPDATE": "New version",
 		"ACTIVE_SESSION": "Active Session: ",
-		"EDIT_SESSION": "Edit session"
+		"EDIT_SESSION": "Edit session",
+		"COLLECTIONS": "COLLECTIONS"
 	},
 	"CHECKED": "Selected:",
 	"LOGOUT": "Log out",
@@ -749,7 +750,10 @@
 		"MODIFY_DIRECTORY": "Change folder",
 		"CHOOSE_DIRECTORY": "Select a folder",
 		"ADD_DIRECTORY": "Add a folder",
-		"SAVE_PARAMETER": "Save"
+		"SAVE_PARAMETER": "Save",
+		"COLLECTIONS_CHOICE": "Selection of collections",
+		"COLLECTIONS_CHOICE_DESC_1": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
+		"COLLECTIONS_CHOICE_DESC_2": "You can change your collections at any time in the system panel."
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -873,7 +877,9 @@
 		"PARENTS": "Parents",
 		"CHILDRENS": "Childrens of {{parent}}",
 		"PARENTS_TOOLTIP": "If a parent is defined, this karaoke will show as alternative to the selected parent karaoke(s). Please mind to select the good repository before filling this array to avoid adding karaokes from other repositories.",
-		"VERSION_AVAILABILITY": "Available in {{count}} versions."
+		"VERSION_AVAILABILITY": "Available in {{count}} versions.",
+		"COLLECTIONS_REQUIRED": "A collection is mandatory",
+		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear"
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -882,7 +888,7 @@
 		"CONFIGURATION": "Advanced configuration",
 		"ADVANCED_OPTIONS": "System settings",
 		"SESSIONS": "Sessions",
-		"REPOSITORIES": "Repositories",
+		"REPOSITORIES": "Collections and repositories",
 		"KARAS": "Karaokes",
 		"LIST": "List",
 		"NEW": "New",
@@ -984,7 +990,9 @@
 		"NOLIVEDOWNLOAD_TOOLTIP": "Songs with this tag won't be able to be downloaded on Karaoke Mugen Server from the web interface, or visible on Live",
 		"PRIORITY": "Display priority",
 		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default. -1 hides the tag from being displayed in public interface, -2 hides it everywhere (still used for search).",
-		"COPY_TAG": "Copy tag to another repository"
+		"COPY_TAG": "Copy tag to another repository",
+		"DESCRIPTION": "Description",
+		"DESCRIPTION_TOOLTIP": "A description of the tag, used only for collections."
 	},
 	"TAG_TYPES": {
 		"SINGERS_one": "Singer",
@@ -1016,7 +1024,9 @@
 		"VERSIONS_one": "Version",
 		"VERSIONS_other": "Versions",
 		"WARNINGS_one": "Warning",
-		"WARNINGS_other": "Warnings"
+		"WARNINGS_other": "Warnings",
+		"COLLECTIONS_one": "Collection",
+		"COLLECTIONS_other": "Collections"
 	},
 	"CONFIG": {
 		"PROPERTY": "Property",
@@ -1160,6 +1170,10 @@
 		"GIT_UNSTASH": "Apply",
 		"GIT_DELETE": "Delete",
 		"GIT_CUSTOM_MESSAGE": "Custom message"
+	},
+	"COLLECTIONS": {
+		"NAME": "Collection name",
+		"ENABLED": "Enabled"
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
@@ -1384,7 +1398,8 @@
 		"USER_CANNOT_CHANGE_TYPE": "Only admins can change a user's type",
 		"GUESTS_CANNOT_EDIT": "Guests are not allowed to edit their profiles",
 		"PREVIEW_HOOKS_ERROR": "Error preview hooks",
-		"LYRICS_FILE_OPEN_ERROR": "Error opening the file"
+		"LYRICS_FILE_OPEN_ERROR": "Error opening the file",
+		"COLLECTIONS_GET_ERROR": "Error fetching collections"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -1462,7 +1477,8 @@
 			"DESCRIPTION": "Karaoke session modification form."
 		},
 		"REPOSITORIES": {
-			"TITLE": "Repositories management",
+			"TITLE": "Collections and repositories management",
+			"DESCRIPTION_COLLECTION": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
 			"DESCRIPTION": "Repositories are sources of karaoke. Add, enable, or remove repositories from this page."
 		},
 		"BACKGROUNDS": {
