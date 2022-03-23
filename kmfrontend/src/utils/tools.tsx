@@ -267,7 +267,11 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: Kar
 			message = (
 				<>
 					{i18next.t(`SUCCESS_CODES.${response.code}`, {
-						song: getTitleInLocale(context.globalState.settings.data, kara.titles),
+						song: getTitleInLocale(
+							context.globalState.settings.data,
+							kara.titles,
+							kara.titles_default_language
+						),
 					})}
 					<br />
 					{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
@@ -280,7 +284,11 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: Kar
 			message = (
 				<>
 					{i18next.t(`SUCCESS_CODES.${response.code}`, {
-						song: getTitleInLocale(context.globalState.settings.data, kara.titles),
+						song: getTitleInLocale(
+							context.globalState.settings.data,
+							kara.titles,
+							kara.titles_default_language
+						),
 					})}
 				</>
 			);

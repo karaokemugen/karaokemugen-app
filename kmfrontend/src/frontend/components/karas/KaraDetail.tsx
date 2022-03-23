@@ -256,7 +256,7 @@ export default function KaraDetail(props: IProps) {
 			</>
 		);
 
-		const addKaraButton = <AddKaraButton kid={kara.kid} titles={kara.titles} />;
+		const addKaraButton = <AddKaraButton kara={kara} />;
 
 		const makeFavButton = <MakeFavButton kid={kara.kid} />;
 
@@ -320,7 +320,11 @@ export default function KaraDetail(props: IProps) {
 					) : null}
 					<div className="modal-title-block">
 						<h4 className="modal-title">
-							{getTitleInLocale(context.globalState.settings.data, kara.titles)}
+							{getTitleInLocale(
+								context.globalState.settings.data,
+								kara.titles,
+								kara.titles_default_language
+							)}
 						</h4>
 						<h5 className="modal-series">
 							<InlineTag

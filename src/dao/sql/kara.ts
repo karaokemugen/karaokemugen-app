@@ -44,6 +44,7 @@ export const sqlgetAllKaras = (
   ak.pk_kid AS kid,
   ak.titles AS titles,
   ak.titles_aliases AS titles_aliases,
+  ak.titles_default_language AS titles_default_language,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
@@ -107,7 +108,7 @@ ${additionalFrom.join('')}
 WHERE true
   ${filterClauses.map(clause => `AND (${clause})`).reduce((a, b) => `${a} ${b}`, '')}
   ${whereClauses}
-GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.titles_aliases, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable ${groupClauseEnd}
+GROUP BY ${groupClauses} ak.pk_kid, pc.fk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.comment, ak.songorder, ak.serie_singer_sortable, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.repository, ak.songtypes_sortable, f.fk_kid, ak.tid, ak.languages_sortable, ak.download_status, ak.ignore_hooks, ak.titles_sortable ${groupClauseEnd}
 ${havingClause}
 ORDER BY ${orderClauses} ak.serie_singer_sortable, ak.songtypes_sortable DESC, ak.songorder, ak.languages_sortable, ak.titles_sortable
 ${limitClause}
@@ -134,6 +135,7 @@ export const sqlupdateKara = `
 UPDATE kara SET
 	titles = :titles,
 	titles_aliases = :titles_aliases,
+	titles_default_language = :titles_default_language,
 	year = :year,
 	songorder = :songorder,
 	mediafile = :mediafile,
@@ -153,6 +155,7 @@ export const sqlinsertKara = `
 INSERT INTO kara(
 	titles,
 	titles_aliases,
+	titles_default_language,
 	year,
 	songorder,
 	mediafile,
@@ -173,6 +176,7 @@ INSERT INTO kara(
 VALUES(
 	:titles,
 	:titles_aliases,
+	:titles_default_language,
 	:year,
 	:songorder,
 	:mediafile,

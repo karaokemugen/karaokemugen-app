@@ -38,6 +38,7 @@ interface KaraFormProps {
 
 interface KaraFormState {
 	titles: Record<string, string>;
+	defaultLanguage: string;
 	titlesIsTouched: boolean;
 	serieSingersRequired: boolean;
 	subfile: any[];
@@ -64,7 +65,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const kara = this.props.kara || {};
 		this.getRepositories();
 		this.state = {
-			titles: kara?.titles ? kara.titles : { eng: '' },
+			titles: kara?.titles ? kara.titles : {},
+			defaultLanguage: kara?.titles_default_language || null,
 			titlesIsTouched: false,
 			serieSingersRequired: false,
 			subfile: kara.subfile
@@ -182,8 +184,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
 		} else if (!this.state.titles || Object.keys(this.state.titles).length === 0) {
 			message.error(i18next.t('KARA.TITLE_REQUIRED'));
-		} else if (!this.state.titles.eng) {
-			message.error(i18next.t('KARA.TITLE_ENG_REQUIRED'));
 		} else {
 			this.props.save(this.getKaraToSend(values));
 		}
@@ -191,7 +191,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	getKaraToSend = values => {
 		const kara: Kara = values;
-		const mediaVersionArr = this.state.titles.eng.split(' ~ ');
+		const mediaVersionArr = this.state.titles[this.state.defaultLanguage].split(' ~ ');
 		const mediaVersion =
 			mediaVersionArr.length > 1 ? mediaVersionArr[mediaVersionArr.length - 1].replace(' Vers', '') : 'Default';
 		// Convert Kara to KaraFileV4
@@ -247,8 +247,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						})
 				) as unknown as any,
 				titles: this.state.titles,
+				titles_default_language: this.state.defaultLanguage,
 				titles_aliases: kara.titles_aliases?.length > 0 ? kara.titles_aliases : undefined,
-				title: this.state.titles.eng,
+				title: this.state.titles[this.state.defaultLanguage],
 				year: kara.year,
 			},
 		};
@@ -596,13 +597,25 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
+					rules={[
+						{
+							required: !this.state.titles || Object.keys(this.state.titles).length === 0,
+							message: i18next.t('KARA.TITLE_REQUIRED'),
+						},
+					]}
+					name="titles"
 				></Form.Item>
 				<LanguagesList
 					value={this.state.titles}
 					onFieldIsTouched={isFieldTouched =>
 						this.state.titlesIsTouched !== true && this.setState({ titlesIsTouched: isFieldTouched })
 					}
-					onChange={titles => this.setState({ titles })}
+					onChange={titles => {
+						this.setState({ titles });
+						this.formRef.current.validateFields(['titles']);
+					}}
+					defaultLanguage={this.state.defaultLanguage}
+					onDefaultLanguageSelect={defaultLanguage => this.setState({ defaultLanguage })}
 				/>
 				<Form.Item
 					label={

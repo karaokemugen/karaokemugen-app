@@ -795,7 +795,7 @@
 		"TITLE": "Titles",
 		"TITLE_TOOLTIP": "If you don't know, put the name of the series here as well",
 		"TITLE_REQUIRED": "Please enter a song title",
-		"TITLE_ENG_REQUIRED": "Please enter a english song title",
+		"DEFAULT_LANGUAGE": "Default language",
 		"ALIASES": "Aliases",
 		"ALIASES_TOOLTIP": "Short names or alternative names, used for search.",
 		"SERIES_TOOLTIP": "TV series, movie title, video game title, etc.",

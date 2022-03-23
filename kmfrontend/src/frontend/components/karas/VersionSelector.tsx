@@ -107,7 +107,11 @@ export default function VersionSelector(props: Props) {
 							<i className="fas fa-arrow-left" />
 						</button>
 						<h4 className="modal-title">
-							{getTitleInLocale(context.globalState.settings.data, karas[0].titles)}
+							{getTitleInLocale(
+								context.globalState.settings.data,
+								karas[0].titles,
+								karas[0].titles_default_language
+							)}
 						</h4>
 					</div>
 					<div className="modal-body">
@@ -138,7 +142,8 @@ export default function VersionSelector(props: Props) {
 													<h4 className="modal-title">
 														{getTitleInLocale(
 															context.globalState.settings.data,
-															kara.titles
+															kara.titles,
+															kara.titles_default_language
 														)}
 														{sortAndHideTags(kara.versions, 'public').map(t => (
 															<span className="tag white inline" key={t.tid}>
@@ -185,7 +190,7 @@ export default function VersionSelector(props: Props) {
 										<div className="detailsKara">
 											<div className="centerButtons">
 												<MakeFavButton kid={kara.kid} />
-												<AddKaraButton kid={kara.kid} titles={kara.titles} />
+												<AddKaraButton kara={kara} />
 												<ShowVideoButton
 													togglePreview={() => setShowVideo(!showVideo)}
 													preview={showVideo}
