@@ -8,10 +8,10 @@ import GlobalContext from '../../../../store/context';
 import { commandBackend } from '../../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../../utils/tools';
 import { getTitleInLocale } from '../../../../utils/kara';
+import { DBKara } from '../../../../../../src/lib/types/database/kara';
 
 interface Props {
-	kid: string;
-	titles: any;
+	kara: DBKara;
 }
 
 export default function AddKaraButton(props: Props) {
@@ -22,7 +22,7 @@ export default function AddKaraButton(props: Props) {
 		try {
 			response = await commandBackend('addKaraToPublicPlaylist', {
 				requestedby: context.globalState.auth.data.username,
-				kids: [props.kid],
+				kids: [props.kara.kid],
 			});
 		} catch (e) {
 			// already display
@@ -36,7 +36,11 @@ export default function AddKaraButton(props: Props) {
 				message = (
 					<>
 						{i18next.t(`SUCCESS_CODES.${response.code}`, {
-							song: getTitleInLocale(context.globalState.settings.data, props.titles),
+							song: getTitleInLocale(
+								context.globalState.settings.data,
+								props.kara.titles,
+								props.kara.titles_default_language
+							),
 						})}
 						<br />
 						{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
@@ -49,7 +53,11 @@ export default function AddKaraButton(props: Props) {
 				message = (
 					<>
 						{i18next.t(`SUCCESS_CODES.${response.code}`, {
-							song: getTitleInLocale(context.globalState.settings.data, props.titles),
+							song: getTitleInLocale(
+								context.globalState.settings.data,
+								props.kara.titles,
+								props.kara.titles_default_language
+							),
 						})}
 					</>
 				);

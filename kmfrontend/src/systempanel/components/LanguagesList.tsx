@@ -9,6 +9,8 @@ interface IProps {
 	value: Record<string, string>;
 	onChange: (i18n: Record<string, string>) => void;
 	onFieldIsTouched?: (boolean) => void;
+	defaultLanguage?: string;
+	onDefaultLanguageSelect?: (name: string) => void;
 }
 
 export default function LanguagesList(props: IProps) {
@@ -30,6 +32,9 @@ export default function LanguagesList(props: IProps) {
 	}
 
 	function addLang(lang) {
+		if (Object.keys(i18n).length === 0) {
+			props.onDefaultLanguageSelect(lang);
+		}
 		const newI18n = i18n;
 		newI18n[lang] = '';
 		setI18n(newI18n);
@@ -110,6 +115,23 @@ export default function LanguagesList(props: IProps) {
 					</Tag>
 				)}
 			</Form.Item>
+			{props.onDefaultLanguageSelect && Object.keys(i18n).length > 0 ? (
+				<Form.Item label={i18next.t('KARA.DEFAULT_LANGUAGE')} labelCol={{ flex: '0 1 300px' }}>
+					<Select
+						style={{ maxWidth: '40%', minWidth: '150px' }}
+						defaultValue={props.defaultLanguage}
+						onChange={props.onDefaultLanguageSelect}
+					>
+						{languages
+							.filter(value => Object.keys(i18n).includes(value.value))
+							.map(lang => (
+								<Select.Option key={lang.value} value={lang.value}>
+									{lang.label} ({lang.value.toUpperCase()})
+								</Select.Option>
+							))}
+					</Select>
+				</Form.Item>
+			) : null}
 		</>
 	);
 }

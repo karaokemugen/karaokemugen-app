@@ -20,7 +20,7 @@ const service = 'KaraCreation';
 export async function editKara(editedKara: EditedKara) {
 	const task = new Task({
 		text: 'EDITING_SONG',
-		subtext: editedKara.kara.data.titles.eng,
+		subtext: editedKara.kara.data.titles[editedKara.kara.data.titles_default_language],
 	});
 	const kara = editedKara.kara;
 	// Validation here, processing stuff later
@@ -127,7 +127,7 @@ export async function editKara(editedKara: EditedKara) {
 export async function createKara(kara: KaraFileV4) {
 	const task = new Task({
 		text: 'CREATING_SONG',
-		subtext: kara.data.titles.eng,
+		subtext: kara.data.titles[kara.data.titles_default_language],
 	});
 	// Validation here, processing stuff later
 	// No sentry triggered if validation fails

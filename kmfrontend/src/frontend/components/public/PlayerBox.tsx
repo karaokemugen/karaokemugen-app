@@ -161,7 +161,9 @@ function PlayerBox(props: IProps) {
 
 				if (props.onKaraChange) props.onKaraChange(kara.kid);
 				resetBox();
-				setTitle(getTitleInLocale(context.globalState.settings.data, kara.titles));
+				setTitle(
+					getTitleInLocale(context.globalState.settings.data, kara.titles, kara.titles_default_language)
+				);
 				setSubtitle(`${serieText} - ${songtypeText}${songorderText}`);
 				setLength(kara.duration);
 				setKid(kara.kid);

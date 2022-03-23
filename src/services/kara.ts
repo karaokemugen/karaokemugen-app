@@ -149,8 +149,8 @@ export function getSongSeriesSingers(kara: DBKara): string {
 
 /** Get kara's default title */
 export function getSongTitle(kara: DBKara): string {
-	const lang = getConfig().Player.Display.SongInfoLanguage || convert1LangTo2B(getState().defaultLocale) || 'eng';
-	return kara.titles[lang] || kara.titles.eng || kara.titles.qjr;
+	const lang = getConfig().Player.Display.SongInfoLanguage || convert1LangTo2B(getState().defaultLocale);
+	return kara.titles[lang] || kara.titles[kara.titles_default_language];
 }
 
 export function getSongVersion(kara: DBKara): string {

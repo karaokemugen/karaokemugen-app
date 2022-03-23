@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { resolve } from 'path';
+import { basename, resolve } from 'path';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { baseChecksum } from '../dao/dataStore';
@@ -92,7 +92,9 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 	await Promise.all(promises);
 	checkDownloadStatus([kara.kara.data.data.kid]);
 	markKaraAsDownloadedInInbox(inid, repoName, token);
-	logger.info(`Song ${kara.kara.data.data.titles.eng} from inbox at ${repoName} downloaded`, { service });
+	logger.info(`Song ${basename(kara.kara.file, '.kara.json')} from inbox at ${repoName} downloaded`, {
+		service: 'Inbox',
+	});
 }
 
 async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
