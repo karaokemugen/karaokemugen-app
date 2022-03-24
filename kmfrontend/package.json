@@ -4,9 +4,9 @@
   "dependencies": {
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@karaokemugen/i18n-iso-languages": "^3.1.1",
-    "@sentry/integrations": "^6.18.2",
-    "@sentry/react": "^6.18.2",
-    "antd": "4.19.2",
+    "@sentry/integrations": "^6.19.2",
+    "@sentry/react": "^6.19.2",
+    "antd": "4.19.3",
     "dompurify": "^2.3.6",
     "i18next": "^21.6.14",
     "lodash": "^4.17.21",
@@ -31,9 +31,9 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^6.1.0",
+    "@fortawesome/fontawesome-free": "^6.1.1",
     "@types/lodash": "^4.14.180",
-    "@types/react": "17.0.41",
+    "@types/react": "17.0.42",
     "@types/react-aria-menubutton": "^6.2.9",
     "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-dom": "17.0.14",
