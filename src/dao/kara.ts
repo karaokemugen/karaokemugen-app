@@ -168,7 +168,8 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	if (!params.ignoreCollections) {
 		const collections = getConfig().Karaoke.Collections;
 		for (const collection of Object.keys(collections)) {
-			if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+			if (collections[collection] === true)
+				collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
 		}
 	}
 	const query = sqlgetAllKaras(
