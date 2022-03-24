@@ -367,9 +367,9 @@ SELECT
   ak.repository as repository,
   array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
   array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
-  array_remove(array_agg(krc.fk_kid_parent), null) AS parents,
-  array_remove(array_agg(krp.fk_kid_child), null) AS children,
-  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(krc.fk_kid_parent), null))), ak.pk_kid) AS siblings,
+  array_remove(array_agg(DISTINCT krc.fk_kid_parent), null) AS parents,
+  array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
+  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(DISTINCT krc.fk_kid_parent), null))), ak.pk_kid) AS siblings,
   pc.criterias
 FROM playlist_content AS pc
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = :current_plaid
