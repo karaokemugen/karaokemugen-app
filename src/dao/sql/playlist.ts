@@ -318,6 +318,7 @@ SELECT
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)') AS collections,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
