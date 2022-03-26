@@ -34,7 +34,7 @@ import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
-import { getKara, getKaras } from './kara';
+import { getKara, getKaras, getKarasMicro } from './kara';
 import { editKara } from './karaCreation';
 import { getRepo, getRepos } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
@@ -310,9 +310,10 @@ export async function integrateKaraFile(
 ): Promise<string> {
 	const karaFile = basename(file);
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData, { media: true, lyrics: true });
-	const karaDB = await getKara(karaData.kid, adminToken);
+	const karasDB = await getKarasMicro([karaData.kid]);
 	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
-	if (karaDB) {
+	if (karasDB[0]) {
+		const karaDB = karasDB[0];
 		await editKaraInDB(karaData, { refresh });
 		if (deleteOldFiles) {
 			try {

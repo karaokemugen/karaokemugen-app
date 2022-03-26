@@ -127,7 +127,10 @@ export const sqlgetAllKarasMicro = (
   k.duration AS duration,
   k.mediafile AS mediafile,
   k.mediasize AS mediasize,
-  k.repository AS repository
+  k.repository AS repository,
+  k.subfile AS subfile,
+  k.karafile AS karafile,
+  k.download_status AS download_status
 FROM kara AS k
 LEFT JOIN all_karas ak ON ak.pk_kid = k.pk_kid
 ${additionalFrom.join('')}
