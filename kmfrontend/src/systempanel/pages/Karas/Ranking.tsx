@@ -27,7 +27,7 @@ class Ranking extends Component<unknown, RankingState> {
 
 	refresh = async () => {
 		try {
-			const res = await commandBackend('getKaras', { order: 'requestedLocal' });
+			const res = await commandBackend('getKaras', { order: 'requestedLocal', ignoreCollections: true });
 			this.setState({ karas: res.content, i18n: res.i18n });
 		} catch (e) {
 			// already display

@@ -27,6 +27,7 @@ export default function karaController(router: SocketIOApp) {
 				random: req.body?.random,
 				blacklist: req.body?.blacklist,
 				parentsOnly: req.body?.parentsOnly,
+				ignoreCollections: req.body?.ignoreCollections,
 			});
 		} catch (err) {
 			const code = 'SONG_LIST_ERROR';

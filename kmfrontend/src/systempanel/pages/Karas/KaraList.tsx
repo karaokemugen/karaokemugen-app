@@ -72,6 +72,7 @@ class KaraList extends Component<unknown, KaraListState> {
 				q: this.state.tagFilter,
 				from: (this.state.currentPage - 1) * this.state.currentPageSize,
 				size: this.state.currentPageSize,
+				ignoreCollections: true,
 			},
 			undefined,
 			300000

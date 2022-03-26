@@ -60,10 +60,12 @@ class SessionForm extends Component<SessionsFormProps, SessionsFormState> {
 			const played = await commandBackend('getKaras', {
 				order: 'sessionPlayed',
 				q: `seid:${this.props.session.seid}`,
+				ignoreCollections: true,
 			});
 			const requested = await commandBackend('getKaras', {
 				order: 'sessionRequested',
 				q: `seid:${this.props.session.seid}`,
+				ignoreCollections: true,
 			});
 			this.setState({ sessionPlayed: played, sessionRequested: requested });
 		}
