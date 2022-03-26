@@ -108,7 +108,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (this.formRef.current.getFieldValue('parents') !== null) {
 			const parents: string[] = this.formRef.current.getFieldValue('parents');
 			if (parents.length > 0) {
-				const res = await commandBackend('getKaras', { q: `k:${parents.join()}` });
+				const res = await commandBackend('getKaras', { q: `k:${parents.join()}`, ignoreCollections: true });
 				const karaSearch = res.content.map(kara => {
 					return {
 						label: buildKaraTitle(this.context.globalState.settings.data, kara, true, res.i18n),
@@ -125,7 +125,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		event.preventDefault();
 		const parent: DBKara = await commandBackend('getKara', { kid });
 		if (parent.children.length > 0) {
-			const childrens = await commandBackend('getKaras', { q: `k:${parent.children.join()}` });
+			const childrens = await commandBackend('getKaras', {
+				q: `k:${parent.children.join()}`,
+				ignoreCollections: true,
+			});
 			Modal.info({
 				title: i18next.t('KARA.CHILDRENS', {
 					parent: buildKaraTitle(this.context.globalState.settings.data, parent, true),
@@ -359,6 +362,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					: '',
 				filter: value,
 				size: 50,
+				ignoreCollections: true,
 			}).catch(() => {
 				return { content: [] };
 			});
@@ -392,6 +396,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				'k:' +
 				kid,
 			size: 1,
+			ignoreCollections: true,
 		});
 		const parentKara = karas && (karas.content[0] as DBKara);
 		if (parentKara && parentKara.kid === kid) {

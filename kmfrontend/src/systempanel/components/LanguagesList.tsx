@@ -32,7 +32,7 @@ export default function LanguagesList(props: IProps) {
 	}
 
 	function addLang(lang) {
-		if (Object.keys(i18n).length === 0) {
+		if (Object.keys(i18n).length === 0 && props.onDefaultLanguageSelect) {
 			props.onDefaultLanguageSelect(lang);
 		}
 		const newI18n = i18n;

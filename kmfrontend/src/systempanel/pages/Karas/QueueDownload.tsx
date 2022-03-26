@@ -95,6 +95,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 				q: this.state.tagFilter,
 				from: pfrom,
 				size: psz,
+				ignoreCollections: true,
 			},
 			false,
 			300000
