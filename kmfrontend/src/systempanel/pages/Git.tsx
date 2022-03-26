@@ -254,7 +254,7 @@ export default function Git() {
 
 	useEffect(() => {
 		const listener = repoName => {
-			if (repoName === pendingPush.repoName) {
+			if (repoName === pendingPush?.repoName) {
 				setLoading(false);
 				setPendingPush(null);
 				setShowPushModal(false);
