@@ -249,15 +249,6 @@ System:
       Path:
         Medias:
           - repos/kara.moe/medias
-    - Name: world.karaokes.moe
-      Online: true
-      Enabled: false
-      Git: 'http://xxx'
-      SendStats: true
-      BaseDir: 'repos/world.karaokes.moe/git'
-      Path:
-        Medias:
-          - repos/world/medias
     - Name: Local
       Online: false
       Enabled: true
