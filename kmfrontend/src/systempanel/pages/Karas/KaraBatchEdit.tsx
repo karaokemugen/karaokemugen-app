@@ -139,7 +139,9 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 								options={this.state.tags}
 								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
 								showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
-								onChange={value => this.setState({ tid: value[1] as string, type: value[0] as number })}
+								onChange={value => {
+									if (value) this.setState({ tid: value[1] as string, type: value[0] as number });
+								}}
 							/>
 						</Col>
 						<Col flex={1}>
