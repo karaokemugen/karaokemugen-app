@@ -50,6 +50,7 @@ export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRole
 			q: `k:${kid}`,
 			lang,
 			blacklist: false,
+			ignoreCollections: true,
 		});
 		return res[0];
 	} catch (err) {
