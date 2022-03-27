@@ -189,7 +189,9 @@ export default function VersionSelector(props: Props) {
 										</div>
 										<div className="detailsKara">
 											<div className="centerButtons">
-												<MakeFavButton kid={kara.kid} />
+												{context.globalState.auth.data.role === 'guest' ? null : (
+													<MakeFavButton kid={kara.kid} />
+												)}
 												<AddKaraButton kara={kara} />
 												<ShowVideoButton
 													togglePreview={() => setShowVideo(!showVideo)}
