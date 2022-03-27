@@ -27,7 +27,7 @@ export default function VideoPreview(props: Props) {
 					return `https://${props.kara.repository}/hardsubs/${props.kara.kid}.${props.kara.mediasize}.${subchecksum}.mp4`;
 			} else return null;
 		},
-		[context.globalState.settings.data.config.System.Repositories],
+		[],
 		isRemote() || props.kara.download_status !== 'DOWNLOADED'
 			? `https://${props.kara.repository}/downloads/medias/${props.kara.mediafile}`
 			: `/medias/${props.kara.mediafile}`
