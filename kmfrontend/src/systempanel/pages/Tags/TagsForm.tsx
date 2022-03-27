@@ -60,7 +60,10 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 	handleSubmit = values => {
 		if (Object.keys(this.state.i18n).length > 0) {
 			values.i18n = this.state.i18n;
-			values.description = this.state.description;
+			values.description =
+				Object.values(this.state.description).filter(value => value).length > 0
+					? this.state.description
+					: undefined;
 			values.tid = this.props.tag?.tid;
 			this.props.save(values);
 		} else {
