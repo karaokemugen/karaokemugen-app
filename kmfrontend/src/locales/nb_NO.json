@@ -1,7 +1,7 @@
 {
 	"CRITERIA": {
 		"DELETE": "Slett dette kriteriet",
-		"ADD": "Legg til verdi for kriterium",
+		"ADD_PLACEHOLDER": "Legg til verdi for kriterium",
 		"CRITERIA_TYPE_1001": "Sang",
 		"CRITERIA_TYPE_1003": "Kortere enn (mm:ss)",
 		"LABEL": {

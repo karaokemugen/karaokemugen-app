@@ -217,7 +217,7 @@ function CriteriasList(props: IProps) {
 						<input
 							type="text"
 							value={criteriaVal}
-							placeholder={`${i18next.t('CRITERIA.ADD')} ${
+							placeholder={`${i18next.t('CRITERIA.ADD_PLACEHOLDER')} ${
 								[1002, 1003].includes(criteriaType) ? 'mm:ss' : ''
 							}`}
 							className="input-blc"
@@ -228,7 +228,7 @@ function CriteriasList(props: IProps) {
 						/>
 					)}
 					<button className="btn btn-default btn-action" onClick={addCriteria}>
-						<i className="fas fa-plus" />
+						<i className="fas fa-plus" /> {i18next.t('CRITERIA.ADD')}
 					</button>
 				</div>
 			</div>

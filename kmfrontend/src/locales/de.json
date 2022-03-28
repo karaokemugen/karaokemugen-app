@@ -29,7 +29,7 @@
 			"SHORTER": "Karaokes kürzer als {{time}} Sekunden sind auf der Liste.",
 			"TAG_NAME": "Karaokes die den Tag {{title}} beinhalten, sind auf der Liste."
 		},
-		"ADD": "Einen Wert zum Kriterium hinzufügen",
+		"ADD_PLACEHOLDER": "Einen Wert zum Kriterium hinzufügen",
 		"CRITERIA_TYPE_1006": "Nicht verfügbare Songs offline ausblenden",
 		"CRITERIA_DESC": "Auswählen und Kriterien hinzufpgen um automatisch bestimmte Songs einzuschließen.",
 		"DELETE": "Kriterium entfernen",

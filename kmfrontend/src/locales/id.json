@@ -130,7 +130,7 @@
 		"CRITERIA_TYPE_1003": "Lebih pendek dari (mm:ss)",
 		"CRITERIA_TYPE_1004": "Judul mengandung",
 		"CRITERIA_TYPE_1006": "lagu yang disembunyikan tidak tersedia secara luring",
-		"ADD": "Tambahkan nilai ke kriteria",
+		"ADD_PLACEHOLDER": "Tambahkan nilai ke kriteria",
 		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",
 		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)"
 	},
