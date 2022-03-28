@@ -56,6 +56,7 @@ function CriteriasList(props: IProps) {
 				},
 			],
 		});
+		setCriteriaVal('');
 		getCriterias();
 	};
 
