@@ -491,7 +491,10 @@ export function isAllKarasInPlaylist(karas: PLCInsert[], playlist: DBPLCBase[]) 
 	};
 }
 
-/** Add song to playlist */
+/** Add song to playlist
+ * This is one of the most cursed functions in Karaoke Mugen.
+ * Please be calm when reading it.
+ */
 export async function addKaraToPlaylist(
 	kids: string[],
 	requester: string,
