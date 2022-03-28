@@ -47,6 +47,9 @@ export default function LanguagesList(props: IProps) {
 		delete newI18n[lang];
 		setI18n(newI18n);
 		props.onChange(newI18n);
+		if (Object.keys(newI18n).length > 0 && lang === props.defaultLanguage) {
+			props.onDefaultLanguageSelect(Object.keys(newI18n)[0]);
+		}
 	}
 
 	function setValueLanguage(value: string, langKey: string) {
@@ -119,7 +122,7 @@ export default function LanguagesList(props: IProps) {
 				<Form.Item label={i18next.t('KARA.DEFAULT_LANGUAGE')} labelCol={{ flex: '0 1 300px' }}>
 					<Select
 						style={{ maxWidth: '40%', minWidth: '150px' }}
-						defaultValue={props.defaultLanguage}
+						value={props.defaultLanguage}
 						onChange={props.onDefaultLanguageSelect}
 					>
 						{languages
