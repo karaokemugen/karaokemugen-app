@@ -1,11 +1,26 @@
 import { saveSetting } from '../lib/dao/database';
+import { RepositoryBasic } from '../lib/types/repo';
 import { getConfig } from '../lib/utils/config';
 import { Repository } from '../types/config';
 import { editSetting } from '../utils/config';
 import { getState } from '../utils/state';
 
-export function selectRepos() {
-	return getConfig().System.Repositories;
+export function selectRepos(publicView: false): Repository[];
+export function selectRepos(publicView: true): RepositoryBasic[];
+export function selectRepos(publicView: boolean): Repository[] | RepositoryBasic[];
+export function selectRepos(): Repository[];
+export function selectRepos(publicView = false): Repository[] | RepositoryBasic[] {
+	const repos = getConfig().System.Repositories;
+	if (publicView) {
+		return repos.map<RepositoryBasic>(r => {
+			return {
+				Name: r.Name,
+				Online: r.Online,
+				Enabled: r.Enabled,
+			};
+		});
+	}
+	return repos;
 }
 
 export function insertRepo(repo: Repository) {

@@ -47,13 +47,11 @@ const windowsDriveRootRegexp = /^[a-zA-Z]:\\$/;
 let updateRunning = false;
 
 /** Get all repositories in database */
-export function getRepos() {
-	return selectRepos();
-}
+export const getRepos = selectRepos;
 
 /** Get single repository */
 export function getRepo(name: string) {
-	return selectRepos().filter((r: Repository) => r.Name === name)[0];
+	return selectRepos(false).filter((r: Repository) => r.Name === name)[0];
 }
 
 /** Remove a repository */
