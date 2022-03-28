@@ -331,7 +331,7 @@ async function preFlightCheck(): Promise<boolean> {
 		}
 	}
 	const stats = await getStats();
-	logger.info(`Songs        : ${stats?.karas} (${duration(+stats?.duration)})`, { service });
+	logger.info(`Songs        : ${stats?.karas} (${duration(+stats?.duration || 0)})`, { service });
 	logger.info(`Playlists    : ${stats?.playlists}`, { service });
 	logger.info(`Songs played : ${stats?.played}`, { service });
 	// Run this in the background
