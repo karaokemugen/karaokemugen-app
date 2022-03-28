@@ -60,6 +60,7 @@ function CriteriasList(props: IProps) {
 	};
 
 	const deleteCriteria = async (criteriaToDelete: Criteria) => {
+		criteriaToDelete.value = criteriaToDelete.type === 1001 ? criteriaToDelete.value.kid : criteriaToDelete.value;
 		await commandBackend('removeCriterias', { criterias: [criteriaToDelete] });
 		getCriterias();
 	};
@@ -244,7 +245,10 @@ function CriteriasList(props: IProps) {
 						<div className="list-group-item liType">{typeLabel}</div>
 						{criterias.map(criteria => {
 							return criteria.type === type ? (
-								<div key={criteria.value} className="list-group-item liTag">
+								<div
+									key={criteria.type === 1001 ? criteria.value.kid : criteria.value}
+									className="list-group-item liTag"
+								>
 									<div className="actionDiv">
 										<button
 											title={i18next.t('CRITERIA.DELETE')}
