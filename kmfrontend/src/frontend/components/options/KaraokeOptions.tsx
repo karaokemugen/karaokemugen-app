@@ -144,11 +144,15 @@ function KaraokeOptions(props: IProps) {
 							</label>
 							<div>
 								<input
+									min={1}
 									type="number"
 									data-exclude="true"
 									id="Karaoke.Quota.Time"
 									placeholder="1000"
-									onChange={onChange}
+									onChange={(e: any) => {
+										if (!e.target.value) e.target.value = 1;
+										onChange(e);
+									}}
 									value={config['Karaoke.Quota.Time']}
 								/>
 							</div>
