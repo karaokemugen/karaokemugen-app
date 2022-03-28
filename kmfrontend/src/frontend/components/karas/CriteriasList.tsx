@@ -29,6 +29,7 @@ function CriteriasList(props: IProps) {
 	const [criteriaVal, setCriteriaVal] = useState<string | number>('');
 	const [flagSmartLimit, setFlagSmartLimit] = useState(props.playlist.flag_smartlimit);
 	const [smartLimitNumber, setSmartLimitNumber] = useState(props.playlist.smart_limit_number);
+	const [typeSmart, setTypeSmart] = useState(props.playlist.type_smart);
 
 	const getCriterias = async () => {
 		const user = context.globalState.settings.data.user;
@@ -63,10 +64,13 @@ function CriteriasList(props: IProps) {
 		getCriterias();
 	};
 
-	const editTypeSmart = (e: any) =>
+	const editTypeSmart = (e: any) => {
+		const type = e.target.checked ? 'UNION' : 'INTERSECT';
+		setTypeSmart(type);
 		editPlaylist({
-			type_smart: e.target.checked ? 'UNION' : 'INTERSECT',
+			type_smart: type,
 		});
+	};
 
 	const editFlagSmartLimit = (e: any) => {
 		setFlagSmartLimit(e.target.checked);
@@ -123,7 +127,7 @@ function CriteriasList(props: IProps) {
 				<div className="criterias-type-smart-label">
 					<Switch
 						handleChange={editTypeSmart}
-						isChecked={props.playlist.type_smart === 'UNION'}
+						isChecked={typeSmart === 'UNION'}
 						onLabel={i18next.t('CRITERIA.OR')}
 						offLabel={i18next.t('CRITERIA.AND')}
 					/>
