@@ -20,6 +20,9 @@ export async function setSettings(
 		const res = await commandBackend('getSettings');
 		if (!withoutProfile) {
 			try {
+				if (!(res.config as Config).System) {
+					res.config.System = { Repositories: await commandBackend('getRepos') };
+				}
 				const user: User = await commandBackend('getMyAccount');
 				const favorites = await commandBackend('getFavorites', { mini: true });
 				const favoritesSet = new Set<string>();
