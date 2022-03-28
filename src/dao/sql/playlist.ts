@@ -548,7 +548,9 @@ INSERT INTO playlist_criteria(
 	type,
 	fk_id_playlist
 )
-VALUES ($1,$2,$3);
+VALUES ($1,$2,$3)
+ON CONFLICT DO NOTHING
+;
 `;
 
 export const sqlgetCriterias = `
