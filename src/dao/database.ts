@@ -21,8 +21,9 @@ import { baseChecksum } from './dataStore';
 import { reorderPlaylist, selectPlaylists } from './playlist';
 import { sqlGetStats, sqlResetUserData } from './sql/database';
 
+const service = 'DB';
+
 export async function compareKarasChecksum(): Promise<boolean> {
-	logger.info('Comparing files and database data', { service: 'Store' });
 	const [settings, currentChecksum] = await Promise.all([getSettings(), baseChecksum()]);
 	if (settings.baseChecksum !== currentChecksum) {
 		await saveSetting('baseChecksum', currentChecksum);
@@ -34,7 +35,7 @@ export async function compareKarasChecksum(): Promise<boolean> {
 
 function errorFunction(err: any) {
 	// If shutdown is in progress for PG binary, we won't catch errors. (or we'll get connection reset messages spamming console)
-	if (!isShutdownPG()) logger.error('Database error', { service: 'DB', obj: err });
+	if (!isShutdownPG()) logger.error('Database error', { service, obj: err });
 }
 
 /** Initialize a new database with the bundled PostgreSQL server */
@@ -47,14 +48,14 @@ export async function initDB() {
 	);
 	if (rows.length === 0) {
 		await db().query(`CREATE DATABASE ${conf.System.Database.database} ENCODING 'UTF8'`);
-		logger.debug('Database created', { service: 'DB' });
+		logger.debug('Database created', { service });
 		try {
 			await db().query(
 				`CREATE USER ${conf.System.Database.username} WITH ENCRYPTED PASSWORD '${conf.System.Database.password}';`
 			);
-			logger.debug('User created', { service: 'DB' });
+			logger.debug('User created', { service });
 		} catch (err) {
-			logger.debug('User already exists', { service: 'DB' });
+			logger.debug('User already exists', { service });
 		}
 	}
 	await db().query(
@@ -67,7 +68,7 @@ export async function initDB() {
 }
 
 async function migrateDB(): Promise<Postgrator.Migration[]> {
-	logger.info('Running migrations if needed', { service: 'DB' });
+	logger.info('Running migrations if needed', { service });
 	// First check if database still has db-migrate and determine at which we're at.
 	await migrateFromDBMigrate();
 	const conf = getConfig();
@@ -81,12 +82,12 @@ async function migrateDB(): Promise<Postgrator.Migration[]> {
 	});
 	try {
 		const migrations = await migrator.migrate();
-		if (migrations.length > 0) logger.info(`Executed ${migrations.length} migrations`, { service: 'DB' });
-		logger.debug('Migrations executed', { service: 'DB', obj: migrations });
+		if (migrations.length > 0) logger.info(`Executed ${migrations.length} migrations`, { service });
+		logger.debug('Migrations executed', { service, obj: migrations });
 		return migrations;
 	} catch (err) {
 		const error = new Error(`Migrations failed : ${err}`);
-		logger.error('Migrations done prior to error : ', { service: 'DB', obj: err.appliedMigrations });
+		logger.error('Migrations done prior to error : ', { service, obj: err.appliedMigrations });
 		sentry.error(error);
 		throw error;
 	}
@@ -104,7 +105,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 			await initDB();
 			if (getState().restoreNeeded) await restorePG();
 		}
-		logger.info('Initializing database connection', { service: 'DB' });
+		logger.info('Initializing database connection', { service });
 		await connectDB(errorFunction, {
 			superuser: false,
 			db: conf.System.Database.database,
@@ -125,9 +126,10 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 				);
 			}
 		}
+		logger.error('Database system initialization failed', { service, obj: err });
 		errorStep(i18next.t('ERROR_CONNECT_PG'));
 		if (!isShutdownPG()) sentry.error(err, 'Fatal');
-		throw Error(`Database system initialization failed : ${err}`);
+		throw err;
 	}
 	if (!(await getInstanceID())) {
 		// Some interesting people actually copy/paste what's in the sample config file so we're going to be extra nice with them even though we shouldn't and set it correctly if the config's instanceID is wrong.
@@ -137,14 +139,14 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 	}
 	if (state.opt.reset) await resetUserData();
 
-	logger.debug('Database Interface is READY', { service: 'DB' });
+	logger.debug('Database Interface is READY', { service });
 	setState({ DBReady: true });
 	return migrations;
 }
 
 export async function resetUserData() {
 	await db().query(sqlResetUserData);
-	logger.warn('User data has been reset!', { service: 'DB' });
+	logger.warn('User data has been reset!', { service });
 }
 
 export async function getStats(): Promise<DBStats> {
@@ -159,7 +161,7 @@ export async function generateDB(): Promise<boolean> {
 		if (generationInProgress) {
 			const err = new Error();
 			logger.warn(`Generation already in progress, returning early. Stack: ${err.stack}`, {
-				service: 'DB',
+				service,
 				obj: err.stack,
 			});
 			return true;

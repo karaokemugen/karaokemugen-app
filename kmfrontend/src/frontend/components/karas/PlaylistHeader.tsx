@@ -263,25 +263,25 @@ function PlaylistHeader(props: IProps) {
 					/>{' '}
 					{i18next.t('VIEW_STANDARD')}
 				</div>
+				{[nonStandardPlaylists.library, nonStandardPlaylists.favorites].includes(playlist?.plaid) ? (
+					<div
+						tabIndex={0}
+						className={'filterElement ' + (activeFilter === 'recent' ? 'filterElementActive' : '')}
+						onClick={() => getKarasList('recent')}
+						onKeyPress={() => getKarasList('recent')}
+					>
+						<i className="far fa-clock" /> {i18next.t('VIEW_RECENT')}
+					</div>
+				) : null}
 				{playlist?.plaid === nonStandardPlaylists.library ? (
-					<>
-						<div
-							tabIndex={0}
-							className={'filterElement ' + (activeFilter === 'recent' ? 'filterElementActive' : '')}
-							onClick={() => getKarasList('recent')}
-							onKeyPress={() => getKarasList('recent')}
-						>
-							<i className="far fa-clock" /> {i18next.t('VIEW_RECENT')}
-						</div>
-						<div
-							tabIndex={0}
-							className={'filterElement ' + (activeFilter === 'requested' ? 'filterElementActive' : '')}
-							onClick={() => getKarasList('requested')}
-							onKeyPress={() => getKarasList('requested')}
-						>
-							<i className="fas fa-fire" /> {i18next.t('VIEW_POPULAR')}
-						</div>
-					</>
+					<div
+						tabIndex={0}
+						className={'filterElement ' + (activeFilter === 'requested' ? 'filterElementActive' : '')}
+						onClick={() => getKarasList('requested')}
+						onKeyPress={() => getKarasList('requested')}
+					>
+						<i className="fas fa-fire" /> {i18next.t('VIEW_POPULAR')}
+					</div>
 				) : null}
 				{!isNonStandardPlaylist(playlist?.plaid) ? (
 					<div
@@ -320,8 +320,9 @@ function PlaylistHeader(props: IProps) {
 						value={playlist?.plaid?.toString()}
 						onChange={(value: any) => setPlaylistInfo(props.side, context, value)}
 					/>
-					{playlist?.plaid === nonStandardPlaylists.library ? (
-						<div className="btn-group">
+
+					<div className="btn-group">
+						{[nonStandardPlaylists.library, nonStandardPlaylists.favorites].includes(playlist?.plaid) ? (
 							<button
 								type="button"
 								title={i18next.t('PLAYLIST_HEADER.FILTERS')}
@@ -341,10 +342,8 @@ function PlaylistHeader(props: IProps) {
 									? i18next.t('PLAYLIST_HEADER.ACTIVE_FILTER')
 									: null}
 							</button>
-						</div>
-					) : null}
-					{playlist?.flag_smart ? (
-						<div className="btn-group">
+						) : null}
+						{playlist?.flag_smart ? (
 							<button
 								type="button"
 								title={i18next.t(
@@ -355,8 +354,8 @@ function PlaylistHeader(props: IProps) {
 							>
 								<i className={`fas fa-fw ${props.criteriasOpen ? 'fa-list-ul' : 'fa-sliders-h'}`} />
 							</button>
-						</div>
-					) : null}
+						) : null}
+					</div>
 				</div>
 				<div className="plSearch">
 					<input

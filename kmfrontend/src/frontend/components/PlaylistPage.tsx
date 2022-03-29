@@ -98,7 +98,11 @@ export default function PlaylistPage() {
 						<li className="following-li" key={kara.kid}>
 							<div className="title">
 								<span className="title">
-									{getTitleInLocale(context.globalState.settings.data, kara.titles)}
+									{getTitleInLocale(
+										context.globalState.settings.data,
+										kara.titles,
+										kara.titles_default_language
+									)}
 								</span>{' '}
 								{karaVersions}
 							</div>

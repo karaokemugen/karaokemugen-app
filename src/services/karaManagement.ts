@@ -34,11 +34,13 @@ import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
-import { getKara, getKaras } from './kara';
+import { getKara, getKaras, getKarasMicro } from './kara';
 import { editKara } from './karaCreation';
 import { getRepo, getRepos } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
 import { getTag } from './tag';
+
+const service = 'KaraManager';
 
 export async function updateTags(kara: Kara) {
 	const tagsAndTypes = [];
@@ -104,7 +106,7 @@ export async function deleteKara(
 					)[0]
 				);
 			} catch (err) {
-				logger.warn(`Non fatal: Removing mediafile ${kara.mediafile} failed`, { service: 'Kara', obj: err });
+				logger.warn(`Non fatal: Removing mediafile ${kara.mediafile} failed`, { service, obj: err });
 			}
 		}
 		if (deleteFiles.kara) {
@@ -115,7 +117,7 @@ export async function deleteKara(
 					)[0]
 				);
 			} catch (err) {
-				logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service: 'Kara', obj: err });
+				logger.warn(`Non fatal: Removing karafile ${kara.karafile} failed`, { service, obj: err });
 			}
 			if (kara.subfile) {
 				try {
@@ -125,11 +127,11 @@ export async function deleteKara(
 						)[0]
 					);
 				} catch (err) {
-					logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, { service: 'Kara', obj: err });
+					logger.warn(`Non fatal: Removing subfile ${kara.subfile} failed`, { service, obj: err });
 				}
 			}
 		}
-		logger.info(`Song files of ${kara.karafile} removed`, { service: 'Kara' });
+		logger.info(`Song files of ${kara.karafile} removed`, { service });
 		removeKaraInStore(kara.kid);
 		if (kara.children?.length > 0) {
 			parents.push({
@@ -229,12 +231,12 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 		const tag = await getTag(tid);
 		if (!tag) throw 'Unknown tag';
 		logger.info(`Batch tag edit starting : adding ${tid} in type ${type} for all songs in playlist ${plaid}`, {
-			service: 'Kara',
+			service,
 		});
 		for (const plc of pl) {
 			const kara = await getKara(plc.kid, adminToken);
 			if (!kara) {
-				logger.warn(`Batch tag edit : kara ${plc.kid} unknown. Ignoring.`, { service: 'Kara' });
+				logger.warn(`Batch tag edit : kara ${plc.kid} unknown. Ignoring.`, { service });
 				continue;
 			}
 			task.update({
@@ -254,13 +256,13 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 					kara: formatKaraV4(kara),
 				});
 			} else {
-				logger.info(`Batch edit tag : skipping ${kara.karafile} since no actions taken`, { service: 'Kara' });
+				logger.info(`Batch edit tag : skipping ${kara.karafile} since no actions taken`, { service });
 			}
 			task.incr();
 		}
-		logger.info('Batch tag edit finished', { service: 'Kara' });
+		logger.info('Batch tag edit finished', { service });
 	} catch (err) {
-		logger.info('Batch tag edit failed', { service: 'Kara', obj: err });
+		logger.info('Batch tag edit failed', { service, obj: err });
 	} finally {
 		task.end();
 	}
@@ -268,7 +270,7 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 
 export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', karas?: Kara[]) {
 	profile('RefreshAfterDBChange');
-	logger.debug('Refreshing DB after kara change', { service: 'DB' });
+	logger.debug('Refreshing DB after kara change', { service });
 	await updateKaraSearchVector();
 	if (action === 'ADD') {
 		await refreshKarasInsert(karas.map(k => k.kid));
@@ -291,7 +293,7 @@ export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELE
 	// If karas is not initialized then we're updating ALL search vectors
 	karas ? refreshParentSearchVectorTask([...parentsToUpdate]) : refreshParentSearchVectorTask();
 	refreshTagsAfterDBChange();
-	logger.debug('Done refreshing DB after kara change', { service: 'DB' });
+	logger.debug('Done refreshing DB after kara change', { service });
 	profile('RefreshAfterDBChange');
 }
 
@@ -308,9 +310,10 @@ export async function integrateKaraFile(
 ): Promise<string> {
 	const karaFile = basename(file);
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData, { media: true, lyrics: true });
-	const karaDB = await getKara(karaData.kid, adminToken);
+	const karasDB = await getKarasMicro([karaData.kid]);
 	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
-	if (karaDB) {
+	if (karasDB[0]) {
+		const karaDB = karasDB[0];
 		await editKaraInDB(karaData, { refresh });
 		if (deleteOldFiles) {
 			try {
@@ -321,7 +324,7 @@ export async function integrateKaraFile(
 					await fs.unlink(oldKaraFile);
 				}
 			} catch (err) {
-				logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, { service: 'Kara' });
+				logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, { service });
 			}
 			if (karaDB.mediafile !== karaData.mediafile && karaDB.download_status === 'DOWNLOADED') {
 				try {
@@ -331,7 +334,7 @@ export async function integrateKaraFile(
 						)[0]
 					);
 				} catch (err) {
-					logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, { service: 'Kara' });
+					logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, { service });
 				}
 			}
 			if (karaDB.subfile && karaDB.subfile !== karaData.subfile) {
@@ -342,7 +345,7 @@ export async function integrateKaraFile(
 						)[0]
 					);
 				} catch (err) {
-					logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, { service: 'Kara' });
+					logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, { service });
 				}
 			}
 		}
@@ -362,7 +365,8 @@ export async function integrateKaraFile(
 		}
 	}
 	// Do not create image previews if running this from the command line.
-	if (!getState().opt.generateDB) createImagePreviews(await getKaras({ q: `k:${karaData.kid}` }), 'single');
+	if (!getState().opt.generateDB)
+		createImagePreviews(await getKaras({ q: `k:${karaData.kid}`, ignoreCollections: true }), 'single');
 	return karaData.kid;
 }
 

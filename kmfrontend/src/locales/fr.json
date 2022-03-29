@@ -130,7 +130,8 @@
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "plus récent",
 		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "moins récent",
 		"CRITERIA_DESC": "Sélectionnez et ajoutez des critères pour automatiquement inclure certaines chansons.",
-		"ADD": "Ajouter une valeur au critère",
+		"ADD_PLACEHOLDER": "Ajouter une valeur au critère",
+		"ADD": "Ajouter ce critère",
 		"DELETE": "Supprimer ce critère",
 		"CRITERIA_TYPE_1001": "Chanson",
 		"CRITERIA_TYPE_1002": "Plus long que (mm:ss)",
@@ -304,7 +305,8 @@
 		"APP_UPDATE": "Nouvelle version de l'application",
 		"MASTODON_UPDATE": "Actualités de Karaoke Mugen",
 		"ACTIVE_SESSION": "Session Active : ",
-		"EDIT_SESSION": "Éditer la session"
+		"EDIT_SESSION": "Éditer la session",
+		"COLLECTIONS": "COLLECTIONS"
 	},
 	"CHECKED": "Sélectionnés :",
 	"LOGOUT": "Se déconnecter",
@@ -675,6 +677,10 @@
 			"DELETE": "Effacer la liste des téléchargements",
 			"CONTINUE": "Continuer les téléchargements"
 		},
+		"DELETE_PLAYLIST_ERROR_CURRENT": "Impossible de supprimer une playlist courante. Définissez une autre playlist courante avant.",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Impossible de supprimer une playlist publique. Définissez une autre playlist publique avant.",
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "Impossible de supprimer une liste blanche. Définissez une autre liste blanche avant.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Impossible de supprimer une liste noire. Définissez une autre liste noire avant.",
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Supprimer {{playlist}} pour toujours ?",
 			"IMPOSSIBLE": "Vous ne pouvez pas supprimer la seule liste de lecture.",
@@ -747,7 +753,10 @@
 		"MODIFY_DIRECTORY": "Modifier le dossier",
 		"CHOOSE_DIRECTORY": "Choisissez un dossier",
 		"ADD_DIRECTORY": "Ajouter un dossier",
-		"SAVE_PARAMETER": "Enregistrer ce paramètre"
+		"SAVE_PARAMETER": "Enregistrer ce paramètre",
+		"COLLECTIONS_CHOICE": "Choix des collections",
+		"COLLECTIONS_CHOICE_DESC_1": "Les Collections de chansons sont destinées à des publics différents. Choisissez les collections que vous souhaitez voir dans votre base de karaokés.",
+		"COLLECTIONS_CHOICE_DESC_2": "Vous pouvez changer vos collections à tout moment dans le panneau système."
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -793,7 +802,7 @@
 		"TITLE": "Titres",
 		"TITLE_TOOLTIP": "Si vous ne le connaissez pas, mettez le nom de la série. Dans le cas d'une version alternative, nommez votre titre ainsi : 'Mon titre ~ Disco vers.' par exemple",
 		"TITLE_REQUIRED": "Un titre est obligatoire",
-		"TITLE_ENG_REQUIRED": "Le titre anglais est obligatoire",
+		"DEFAULT_LANGUAGE": "Langue par défaut",
 		"ALIASES": "Alias",
 		"ALIASES_TOOLTIP": "Noms courts ou alternatifs, utilisés pour la recherche.",
 		"SERIES_TOOLTIP": "Série TV, nom de film, de jeu vidéo, etc.",
@@ -871,7 +880,9 @@
 		"PARENTS": "Parents",
 		"CHILDRENS": "Enfants de {{parent}}",
 		"PARENTS_TOOLTIP": "Si un parent est défini, ce karaoké apparaîtra comme une alternative au(x) kara(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des karaokés d'autre dépôts.",
-		"VERSION_AVAILABILITY": "Disponible en {{count}} versions."
+		"VERSION_AVAILABILITY": "Disponible en {{count}} versions.",
+		"COLLECTIONS_REQUIRED": "Une collection est obligatoire",
+		"COLLECTIONS_TOOLTIP": "Sélectionnez les collections dans lesquelles le karaoké doit apparaître"
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -880,7 +891,7 @@
 		"CONFIGURATION": "Configuration avancée",
 		"ADVANCED_OPTIONS": "Préférences système",
 		"SESSIONS": "Sessions",
-		"REPOSITORIES": "Dépôts",
+		"REPOSITORIES": "Collections et dépôts",
 		"KARAS": "Karaokés",
 		"LIST": "Liste",
 		"NEW": "Nouveau",
@@ -982,7 +993,9 @@
 		"NOLIVEDOWNLOAD_TOOLTIP": "Les karaokés avec ce tag ne pourront être lus sur Live ni téléchargés par l'interface Web de Karaoke Mugen Server",
 		"PRIORITY": "Priorité à l'affichage",
 		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 masque les tags sur l'interface publique, -2 le masque partout (il sera toujours utilisé pour la recherche).",
-		"COPY_TAG": "Copier le tag vers un autre dépôt"
+		"COPY_TAG": "Copier le tag vers un autre dépôt",
+		"DESCRIPTION": "Description",
+		"DESCRIPTION_TOOLTIP": "Une description du tag, utilisé uniquement pour les collections."
 	},
 	"TAG_TYPES": {
 		"SINGERS_one": "Chanteur",
@@ -1014,7 +1027,9 @@
 		"VERSIONS_one": "Version",
 		"VERSIONS_other": "Versions",
 		"WARNINGS_one": "Warning",
-		"WARNINGS_other": "Warnings"
+		"WARNINGS_other": "Warnings",
+		"COLLECTIONS_one": "Collection",
+		"COLLECTIONS_other": "Collections"
 	},
 	"CONFIG": {
 		"PROPERTY": "Propriété",
@@ -1111,11 +1126,14 @@
 		"WARNING": "Attention !",
 		"MOVING_MEDIA_ABOUT_MESSAGE": "Tous les fichiers médias du dépôt seront déplacés vers le nouveau dossier. Si vous avez plusieurs dossiers de médias, tous les fichiers de tous les dossiers seront copiés dans le même dossier destination. S'il y a des doublons, ils seront écrasés sauvagement.",
 		"COMPARE_LYRICS": "Mise à jour des paroles entre deux dépôts",
-		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Choix du dépôt",
+		"CHOOSE_REPOSITORY": "Choix du dépôt",
 		"COMPARE_BUTTON": "Comparer",
 		"COMPARE_ABOUT_MESSAGE": "Cette action vous permettra de comparer puis éventuellement de copier les fichiers de paroles d'un dépôt à l'autre s'ils différent entre deux chansons identiques. Sélectionnez un dépôt avec lequel comparer (celui-ci sera la destination de la copie des paroles)",
 		"LYRICS_ARE_DIFFERENT": "Les paroles de ces karaokés sont différentes entre le dépôt {{first}} et le dépôt {{second}} :",
 		"CONFIRM_SURE": "Voulez-vous synchroniser les paroles du dépôt {{second}} à partir de celles du dépôt {{first}} ?",
+		"SYNCHRONIZE_TAGS": "Synchronisation des tags entre deux dépôts",
+		"SYNCHRONIZE_ABOUT_MESSAGE": "Cette action vous permettra de synchroniser les tags d'un dépôt à l'autre. Sélectionnez un dépôt avec lequel synchroniser (celui-ci sera la destination de la copie des tags)",
+		"SYNCHRONIZE_BUTTON": "Synchroniser",
 		"FREE_SPACE": "Espace libre",
 		"DELETE_OLD_MEDIAS": "Supprimer les médias inutilisés depuis 1 mois",
 		"DELETE_ALL_MEDIAS": "Supprimer tous les médias",
@@ -1155,6 +1173,10 @@
 		"GIT_UNSTASH": "Appliquer",
 		"GIT_DELETE": "Supprimer",
 		"GIT_CUSTOM_MESSAGE": "Message personnalisé"
+	},
+	"COLLECTIONS": {
+		"NAME": "Nom de la collection",
+		"ENABLED": "Active"
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "Voir les journaux, changer les options de configuration, sauvegarder et restaurer votre base de données, lancer une génération manuelle et gérer les sessions de karaokés",
@@ -1363,6 +1385,7 @@
 		"ADMIN_PLEASE": "Merci d'utiliser un compte opérateur",
 		"NOT_GUEST": "Les comptes invités ne peuvent pas utiliser cette fonction",
 		"REPO_COMPARE_LYRICS_ERROR": "Erreur lors de la comparaison des paroles de deux dépôts",
+		"REPO_SYNC_TAGS_ERROR": "Erreur lors de la synchronisation de tags entre deux dépôts",
 		"REPO_COPY_LYRICS_ERROR": "Erreur lors de la copie des paroles entre deux dépôts",
 		"ERROR_READING_LOGS": "Impossible de lire les journaux d'évènements",
 		"SUBFILE_FORMAT_UNKOWN": "Format du fichier de sous-titres inconnus",
@@ -1378,7 +1401,8 @@
 		"USER_CANNOT_CHANGE_TYPE": "Seulement les administrateurs peuvent changer le type d'un utilisateur",
 		"GUESTS_CANNOT_EDIT": "Les invités ne peuvent pas modifier leur compte",
 		"PREVIEW_HOOKS_ERROR": "Erreur lors de la prévisialisation des hooks",
-		"LYRICS_FILE_OPEN_ERROR": "Erreur lors de l'ouverture du fichier"
+		"LYRICS_FILE_OPEN_ERROR": "Erreur lors de l'ouverture du fichier",
+		"COLLECTIONS_GET_ERROR": "Erreur lors de la récupération des collections"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Ajout de {{data}} téléchargements à la file d'attente",
@@ -1456,7 +1480,8 @@
 			"DESCRIPTION": "Formulaire de modification de session de karaoké."
 		},
 		"REPOSITORIES": {
-			"TITLE": "Gestion des dépôts",
+			"TITLE": "Gestion des collections et des dépôts",
+			"DESCRIPTION_COLLECTION": "Les Collections de chansons sont destinées à des publics différents. Choisissez les collections que vous souhaitez voir dans votre base de karaokés.",
 			"DESCRIPTION": "Les dépôts sont des sources de karaokés. Ajoutez, (des)activez, ou supprimez des dépôts depuis cette page."
 		},
 		"REPOSITORIES_NEW": {

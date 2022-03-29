@@ -54,25 +54,18 @@
 
 	.criteriasValContainer {
 		display: flex;
+		flex-direction: column;
 		> .input-blc {
 			font-weight: bold;
-			border: $mugen-btn-border;
-			padding: 10px !important;
+			padding: 4px !important;
 		}
 		> .UI-autocomplete {
 			flex-grow: 1;
 		}
 		> .btn:last-child {
+			margin-top: 0.5em;
 			border-top-left-radius: 0;
 			border-bottom-left-radius: 0;
-		}
-		.btn-action.deleteCriteria {
-			border: solid 1px #828282;
-			background-color: #393939;
-			width: auto;
-			height: auto;
-			color: white;
-			display: inline-block;
 		}
 	}
 }

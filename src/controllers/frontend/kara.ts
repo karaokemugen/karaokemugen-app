@@ -4,7 +4,7 @@ import { previewHooks, processUploadedMedia } from '../../lib/services/karaCreat
 import { APIData } from '../../lib/types/api';
 import { check, isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
-import { getKara, getKaraLyrics, getKaras } from '../../services/kara';
+import { getKara, getKaraLyrics, getKaras, getKMStats } from '../../services/kara';
 import { createKara, editKara } from '../../services/karaCreation';
 import { playSingleSong } from '../../services/karaEngine';
 import { batchEditKaras, copyKaraToRepo, deleteKara, deleteMediaFile } from '../../services/karaManagement';
@@ -27,6 +27,7 @@ export default function karaController(router: SocketIOApp) {
 				random: req.body?.random,
 				blacklist: req.body?.blacklist,
 				parentsOnly: req.body?.parentsOnly,
+				ignoreCollections: req.body?.ignoreCollections,
 			});
 		} catch (err) {
 			const code = 'SONG_LIST_ERROR';
@@ -167,6 +168,17 @@ export default function karaController(router: SocketIOApp) {
 			return await deleteMediaFile(req.body.file, req.body.repo);
 		} catch (err) {
 			const code = 'MEDIA_DELETE_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+
+	router.route('getStats', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'guest', 'closed');
+		try {
+			return await getKMStats();
+		} catch (err) {
+			const code = 'STATS_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}

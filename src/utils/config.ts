@@ -51,6 +51,8 @@ import { getState, setState } from './state';
 import { writeStreamFiles } from './streamerFiles';
 import { initTwitch, stopTwitch } from './twitch';
 
+const service = 'Config';
+
 /** Edit a config item, verify the new config is valid, and act according to settings changed */
 export async function editSetting(part: RecursivePartial<Config>) {
 	try {
@@ -210,10 +212,10 @@ export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Toggling twitch
 	config.Karaoke.StreamerMode.Twitch.Enabled
 		? initTwitch().catch(err => {
-				logger.warn('Could not start Twitch chat bot', { service: 'Config', obj: err });
+				logger.warn('Could not start Twitch chat bot', { service, obj: err });
 		  })
 		: stopTwitch().catch(err => {
-				logger.warn('Could not stop Twitch chat bot', { service: 'Config', obj: err });
+				logger.warn('Could not stop Twitch chat bot', { service, obj: err });
 		  });
 	// Toggling random song after end message
 	config.Playlist.RandomSongsAfterEndMessage ? initAddASongMessage() : stopAddASongMessage();
@@ -249,7 +251,7 @@ export async function initConfig(argv: any) {
 				if (repo.Git?.Password) repo.Git.Password = 'xxxxx';
 			}
 		}
-		logger.debug('Loaded configuration', { service: 'Launcher', obj: publicConfig });
+		logger.debug('Loaded configuration', { service, obj: publicConfig });
 		await checkBinaries(getConfig());
 		emit('configReady');
 		configureHost();
@@ -265,7 +267,7 @@ export async function initConfig(argv: any) {
 		changeLanguage(getConfig().App.Language);
 		return getConfig();
 	} catch (err) {
-		logger.error('InitConfig failed', { service: 'Launcher', obj: err });
+		logger.error('InitConfig failed', { service, obj: err });
 		throw err;
 	}
 }
@@ -296,7 +298,7 @@ export function configureHost() {
 
 /** Create a backup of our config file. Just in case. */
 export function backupConfig() {
-	logger.debug('Making a backup of config.yml', { service: 'Config' });
+	logger.debug('Making a backup of config.yml', { service });
 	return copy(
 		resolve(getState().dataPath, 'config.yml'),
 		resolve(getState().dataPath, `config.backup.${new Date().getTime().toString()}.yml`),
@@ -380,13 +382,13 @@ function configuredBinariesForSystem(config: Config): BinariesConfig {
 
 /** Error out on missing binaries */
 async function binMissing(binariesPath: any, err: string) {
-	logger.error('One or more binaries could not be found!', { service: 'BinCheck', obj: err });
-	logger.error('Paths searched : ', { service: 'BinCheck' });
-	logger.error(`ffmpeg: ${binariesPath.ffmpeg}`, { service: 'BinCheck' });
-	logger.error(`mpv: ${binariesPath.mpv}`, { service: 'BinCheck' });
-	logger.error(`postgres: ${binariesPath.postgres}`, { service: 'BinCheck' });
-	logger.error(`patch: ${binariesPath.patch}`, { service: 'BinCheck' });
-	logger.error('Exiting...', { service: 'BinCheck' });
+	logger.error('One or more binaries could not be found!', { service, obj: err });
+	logger.error('Paths searched : ', { service });
+	logger.error(`ffmpeg: ${binariesPath.ffmpeg}`, { service });
+	logger.error(`mpv: ${binariesPath.mpv}`, { service });
+	logger.error(`postgres: ${binariesPath.postgres}`, { service });
+	logger.error(`patch: ${binariesPath.patch}`, { service });
+	logger.error('Exiting...', { service });
 	const error = `${i18next.t('MISSING_BINARIES.MESSAGE')}\n\n${err}`;
 	console.log(error);
 	if (dialog) {

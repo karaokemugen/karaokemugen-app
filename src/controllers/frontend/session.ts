@@ -58,23 +58,16 @@ export default function sessionController(router: SocketIOApp) {
 	});
 	router.route('mergeSessions', async (socket: Socket, req: APIData) => {
 		await runChecklist(socket, req);
-		const validationErrors = check(req.body, {
-			seid1: { presence: true, uuidArrayValidator: true },
-			seid2: { presence: true, uuidArrayValidator: true },
-		});
-		if (!validationErrors) {
-			try {
-				const session = await mergeSessions(req.body.seid1, req.body.seid2);
-				return { code: 200, message: APIMessage('SESSION_MERGED', { session }) };
-			} catch (err) {
-				const code = 'SESSION_MERGE_ERROR';
-				errMessage(code, err);
-				throw { code: err?.code || 500, message: APIMessage(code) };
-			}
-		} else {
-			// Errors detected
-			// Sending BAD REQUEST HTTP code and error object.
-			throw { code: 400, message: validationErrors };
+		if (!isUUID(req.body.seid1) || !isUUID(req.body.seid2)) {
+			throw { code: 400, message: 'Invalid UUIDs' };
+		}
+		try {
+			const session = await mergeSessions(req.body.seid1, req.body.seid2);
+			return { code: 200, message: APIMessage('SESSION_MERGED', { session }) };
+		} catch (err) {
+			const code = 'SESSION_MERGE_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
 		}
 	});
 

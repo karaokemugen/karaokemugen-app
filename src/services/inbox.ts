@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { resolve } from 'path';
+import { basename, resolve } from 'path';
 import { setTimeout as sleep } from 'timers/promises';
 
 import { baseChecksum } from '../dao/dataStore';
@@ -17,6 +17,8 @@ import { checkDownloadStatus, getRepo } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
 import { integrateTagFile } from './tag';
 
+const service = 'Inbox';
+
 export async function getInbox(repoName: string, token: string): Promise<Inbox[]> {
 	const repo = getRepo(repoName);
 	if (!repo) throw { code: 404 };
@@ -31,7 +33,7 @@ export async function getInbox(repoName: string, token: string): Promise<Inbox[]
 		if (err.response.statusCode === 403) {
 			throw { code: 403 };
 		} else {
-			logger.error(`Unable to get inbox contents : ${err}`, { service: 'Inbox', obj: err });
+			logger.error(`Unable to get inbox contents : ${err}`, { service, obj: err });
 			throw err;
 		}
 	}
@@ -41,7 +43,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 	const repo = getRepo(repoName);
 	if (!repo) throw { code: 404 };
 	let kara: Inbox;
-	logger.info(`Downloading song ${inid} from inbox at ${repoName}`, { service: 'Inbox' });
+	logger.info(`Downloading song ${inid} from inbox at ${repoName}`, { service });
 	try {
 		const res = await HTTP.get(`https://${repoName}/api/inbox/${inid}`, {
 			headers: {
@@ -53,7 +55,7 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 		if (err.response.statusCode === 403) {
 			throw { code: 403 };
 		} else {
-			logger.error(`Unable to get kara from inbox : ${err}`, { service: 'Inbox', obj: err });
+			logger.error(`Unable to get kara from inbox : ${err}`, { service, obj: err });
 			throw err;
 		}
 	}
@@ -90,7 +92,9 @@ export async function downloadKaraFromInbox(inid: string, repoName: string, toke
 	await Promise.all(promises);
 	checkDownloadStatus([kara.kara.data.data.kid]);
 	markKaraAsDownloadedInInbox(inid, repoName, token);
-	logger.info(`Song ${kara.kara.data.data.titles.eng} from inbox at ${repoName} downloaded`, { service: 'Inbox' });
+	logger.info(`Song ${basename(kara.kara.file, '.kara.json')} from inbox at ${repoName} downloaded`, {
+		service: 'Inbox',
+	});
 }
 
 async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
@@ -122,7 +126,7 @@ async function downloadMediaFromInbox(kara: Inbox, repoName: string) {
 			await sleep(1000);
 		}
 	} catch (err) {
-		logger.error(`Could not download media from inbox: ${err}`, { service: 'Inbox', obj: err });
+		logger.error(`Could not download media from inbox: ${err}`, { service, obj: err });
 		throw err;
 	} finally {
 		downloadTask.end();
@@ -144,12 +148,12 @@ export async function deleteKaraInInbox(inid: string, repoName: string, token: s
 		if (err.response.statusCode === 403) {
 			throw { code: 403 };
 		} else {
-			logger.error(`Unable to delete kara in inbox : ${err}`, { service: 'Inbox', obj: err });
+			logger.error(`Unable to delete kara in inbox : ${err}`, { service, obj: err });
 			throw err;
 		}
 	}
 	await closeIssue(+inboxItem.gitlab_issue, repoName).catch(err => {
-		logger.warn(`Unable to close issue : ${err}`, { service: 'Inbox', obj: err });
+		logger.warn(`Unable to close issue : ${err}`, { service, obj: err });
 	});
 }
 
@@ -168,12 +172,12 @@ export async function markKaraAsDownloadedInInbox(inid: string, repoName: string
 		if (err.response.statusCode === 403) {
 			throw { code: 403 };
 		} else {
-			logger.error(`Unable to mark kara in inbox as downloaded : ${err}`, { service: 'Inbox', obj: err });
+			logger.error(`Unable to mark kara in inbox as downloaded : ${err}`, { service, obj: err });
 			throw err;
 		}
 	}
 	const issueArr = inboxItem.gitlab_issue.split('/');
 	await assignIssue(+issueArr[issueArr.length - 1], repoName).catch(err => {
-		logger.warn(`Unable to assign issue : ${err}`, { service: 'Inbox', obj: err });
+		logger.warn(`Unable to assign issue : ${err}`, { service, obj: err });
 	});
 }

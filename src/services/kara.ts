@@ -1,5 +1,6 @@
 import internet from 'internet-available';
 
+import { getStats } from '../dao/database';
 import {
 	insertOnlineRequested,
 	insertPlayed,
@@ -25,6 +26,8 @@ import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getTagNameInLanguage } from './tag';
 
+const service = 'Kara';
+
 let popularKaraFetchIntervalID: any;
 
 export function initFetchPopularSongs() {
@@ -47,6 +50,7 @@ export async function getKara(kid: string, token: OldJWTToken | JWTTokenWithRole
 			q: `k:${kid}`,
 			lang,
 			blacklist: false,
+			ignoreCollections: true,
 		});
 		return res[0];
 	} catch (err) {
@@ -146,8 +150,8 @@ export function getSongSeriesSingers(kara: DBKara): string {
 
 /** Get kara's default title */
 export function getSongTitle(kara: DBKara): string {
-	const lang = getConfig().Player.Display.SongInfoLanguage || convert1LangTo2B(getState().defaultLocale) || 'eng';
-	return kara.titles[lang] || kara.titles.eng || kara.titles.qjr;
+	const lang = getConfig().Player.Display.SongInfoLanguage || convert1LangTo2B(getState().defaultLocale);
+	return kara.titles[lang] || kara.titles[kara.titles_default_language];
 }
 
 export function getSongVersion(kara: DBKara): string {
@@ -169,7 +173,7 @@ export async function fetchPopularSongs() {
 		try {
 			await internet();
 		} catch (err) {
-			logger.warn('Internet not available, cannot init popular songs', { service: 'Kara', obj: err });
+			logger.warn('Internet not available, cannot init popular songs', { service, obj: err });
 			profile('initPopularSongs');
 			throw err;
 		}
@@ -194,4 +198,8 @@ export async function fetchPopularSongs() {
 	} finally {
 		profile('initPopularSongs');
 	}
+}
+
+export function getKMStats() {
+	return getStats();
 }

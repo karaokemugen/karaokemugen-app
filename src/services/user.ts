@@ -35,12 +35,14 @@ import { getState } from '../utils/state';
 import { stopSub } from '../utils/userPubSub';
 import { createRemoteUser, editRemoteUser, getUsersFetched } from './userOnline';
 
+const service = 'User';
+
 const userLoginTimes = new Map();
 
 export async function getAvailableGuest() {
 	const guest = (await selectUsers({ randomGuest: true }))[0];
 	if (!guest) return null;
-	if (getState().isTest) logger.debug('New guest logging in: ', { service: 'User', obj: guest });
+	if (getState().isTest) logger.debug('New guest logging in: ', { service, obj: guest });
 	return guest;
 }
 
@@ -120,7 +122,7 @@ export async function editUser(
 				mergedUser.avatar_file = await replaceAvatar(currentUser.avatar_file, avatar);
 			} catch (err) {
 				// Non-fatal
-				logger.warn('Cannot replace avatar', { service: 'User', obj: err });
+				logger.warn('Cannot replace avatar', { service, obj: err });
 			}
 		} else {
 			mergedUser.avatar_file = currentUser.avatar_file;
@@ -137,17 +139,17 @@ export async function editUser(
 				);
 			}
 		} catch (err) {
-			logger.warn('Cannot push user changes to remote', { service: 'RemoteUser', obj: err });
+			logger.warn('Cannot push user changes to remote', { service, obj: err });
 			throw { code: 500 };
 		}
 		emitWS('userUpdated', username);
-		logger.debug(`${username} (${mergedUser.nickname}) profile updated`, { service: 'User' });
+		logger.debug(`${username} (${mergedUser.nickname}) profile updated`, { service });
 		return {
 			user: updatedUser,
 			onlineToken: KMServerResponse?.token,
 		};
 	} catch (err) {
-		logger.error(`Failed to update ${username}'s profile`, { service: 'User', obj: err });
+		logger.error(`Failed to update ${username}'s profile`, { service, obj: err });
 		if (!err.msg) err.msg = 'USER_EDIT_ERROR';
 		throw err;
 	}
@@ -171,13 +173,13 @@ async function replaceAvatar(oldImageFile: string, avatar: Express.Multer.File):
 			try {
 				await fs.unlink(oldAvatarPath);
 			} catch (err) {
-				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, { service: 'User', obj: err });
+				logger.warn(`Unable to unlink old avatar ${oldAvatarPath}`, { service, obj: err });
 			}
 		}
 		try {
 			await copy(avatar.path, newAvatarPath, { overwrite: true });
 		} catch (err) {
-			logger.error(`Could not copy new avatar ${avatar.path} to ${newAvatarPath}`, { service: 'User', obj: err });
+			logger.error(`Could not copy new avatar ${avatar.path} to ${newAvatarPath}`, { service, obj: err });
 		}
 		return newAvatarFile;
 	} catch (err) {
@@ -284,7 +286,7 @@ export async function createUser(
 					`Nickname ${user.login.split('@')[0]} already exists in database. New nickname for ${
 						user.login
 					} is ${user.nickname}`,
-					{ service: 'User' }
+					{ service }
 				);
 			} else {
 				throw err;
@@ -315,11 +317,11 @@ export async function createUser(
 			user.password = await hashPasswordbcrypt(user.password);
 		}
 		await insertUser(user);
-		if (user.type < 2) logger.info(`Created user ${user.login}`, { service: 'User' });
+		if (user.type < 2) logger.info(`Created user ${user.login}`, { service });
 		delete user.password;
 		return true;
 	} catch (err) {
-		logger.error(`Unable to create user ${user.login}`, { service: 'User', obj: err });
+		logger.error(`Unable to create user ${user.login}`, { service, obj: err });
 		if (!err.msg) err.msg = 'USER_CREATE_ERROR';
 		throw err;
 	}
@@ -333,7 +335,7 @@ async function newUserIntegrityChecks(user: User) {
 
 	// Check if login already exists.
 	if ((await selectUsers({ singleUser: user.login }))[0] || (await checkNicknameExists(user.login))) {
-		logger.error(`User/nickname ${user.login} already exists, cannot create it`, { service: 'User' });
+		logger.error(`User/nickname ${user.login} already exists, cannot create it`, { service });
 		throw { code: 409, msg: 'USER_ALREADY_EXISTS', data: { username: user.login } };
 	}
 }
@@ -360,11 +362,11 @@ export async function removeUser(username: string) {
 			stopSub(login, instance);
 		}
 		if (getUsersFetched().has(username)) getUsersFetched().delete(username);
-		logger.debug(`Deleted user ${username}`, { service: 'User' });
+		logger.debug(`Deleted user ${username}`, { service });
 		emitWS('usersUpdated');
 		return true;
 	} catch (err) {
-		logger.error(`Unable to delete user ${username}`, { service: 'User', obj: err });
+		logger.error(`Unable to delete user ${username}`, { service, obj: err });
 		if (!err.msg) err.msg = 'USER_DELETE_ERROR';
 		throw err;
 	}
@@ -415,14 +417,14 @@ async function updateGuestAvatar(user: DBUser) {
 				editRemote: false,
 			}
 		).catch(err => {
-			logger.error(`Unable to change guest avatar for ${user.login}`, { service: 'User', obj: err });
+			logger.error(`Unable to change guest avatar for ${user.login}`, { service, obj: err });
 		});
 	}
 }
 
 /** Check all guests to see if we need to replace their avatars with built-in ones */
 async function checkGuestAvatars() {
-	logger.debug('Updating default avatars', { service: 'User' });
+	logger.debug('Updating default avatars', { service });
 	const guests = await getUsers({ guestOnly: true });
 	guests.forEach(u => updateGuestAvatar(u));
 }
@@ -435,7 +437,7 @@ async function createDefaultGuests() {
 	for (const guest of defaultGuestNames) {
 		if (!guests.find(g => g.login === deburr(guest.toLowerCase()))) guestsToCreate.push(guest);
 	}
-	logger.debug(`Creating ${guestsToCreate.length} new guest accounts`, { service: 'User' });
+	logger.debug(`Creating ${guestsToCreate.length} new guest accounts`, { service });
 	for (const guest of guestsToCreate) {
 		if (!(await getUser(guest))) {
 			try {
@@ -452,7 +454,7 @@ async function createDefaultGuests() {
 			}
 		}
 	}
-	logger.debug('Default guest accounts created', { service: 'User' });
+	logger.debug('Default guest accounts created', { service });
 }
 
 /** Initializing user auth module */
@@ -520,7 +522,7 @@ export async function initUserSystem() {
 		.filter(u => u.type === 0 && u.login !== 'admin')
 		// Sort by last login at in descending order.
 		.sort((a, b) => (a.last_login_at < b.last_login_at ? 1 : -1));
-	logger.debug('Admin users', { service: 'User', obj: JSON.stringify(adminUsers) });
+	logger.debug('Admin users', { service, obj: JSON.stringify(adminUsers) });
 	sentry.setUser(adminUsers[0]?.login || 'admin');
 }
 
@@ -535,12 +537,12 @@ async function userChecks() {
 
 /** Verifies that all avatars are > 0 bytes or exist. If they don't, recopy the blank avatar over them */
 async function checkUserAvatars() {
-	logger.debug('Checking if all avatars exist', { service: 'User' });
+	logger.debug('Checking if all avatars exist', { service });
 	const users = await getUsers();
 	const defaultAvatar = resolve(resolvedPath('Avatars'), 'blank.png');
 	for (const user of users) {
 		if (!user.avatar_file) {
-			logger.warn(`User ${user.login} has no avatar file`, { service: 'User' });
+			logger.warn(`User ${user.login} has no avatar file`, { service });
 			continue;
 		}
 		const file = resolve(resolvedPath('Avatars'), user.avatar_file);
@@ -555,7 +557,7 @@ async function checkUserAvatars() {
 
 /** This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up. */
 async function cleanupAvatars() {
-	logger.debug('Cleaning up unused avatars', { service: 'User' });
+	logger.debug('Cleaning up unused avatars', { service });
 	const users = await getUsers();
 	const avatars = [];
 	for (const user of users) {
@@ -567,10 +569,10 @@ async function cleanupAvatars() {
 		if (!avatar && file !== 'blank.png') {
 			const fullFile = resolve(resolvedPath('Avatars'), file);
 			try {
-				logger.debug(`Deleting old file ${fullFile}`, { service: 'User' });
+				logger.debug(`Deleting old file ${fullFile}`, { service });
 				await fs.unlink(fullFile);
 			} catch (err) {
-				logger.warn(`Failed deleting old file ${fullFile}`, { service: 'User', obj: err });
+				logger.warn(`Failed deleting old file ${fullFile}`, { service, obj: err });
 				// Non-fatal
 			}
 		}
@@ -607,7 +609,7 @@ export async function updateSongsLeft(username: string, plaid?: string) {
 			quotaType: +conf.Karaoke.Quota.Type,
 		});
 	} catch (err) {
-		logger.error(`Unable to update songs left for user ${username}`, { service: 'User', obj: err });
+		logger.error(`Unable to update songs left for user ${username}`, { service, obj: err });
 		sentry.error(err);
 		// Non-fatal
 	}

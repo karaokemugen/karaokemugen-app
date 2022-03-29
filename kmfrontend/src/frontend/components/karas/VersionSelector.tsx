@@ -14,7 +14,7 @@ import {
 	getTitleInLocale,
 	sortAndHideTags,
 } from '../../../utils/kara';
-import { commandBackend, getSocket, isRemote } from '../../../utils/socket';
+import { commandBackend, getSocket } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { PLCCallback, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
@@ -22,6 +22,7 @@ import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
+import VideoPreview from '../generic/VideoPreview';
 
 interface Props {
 	kid: string;
@@ -106,7 +107,11 @@ export default function VersionSelector(props: Props) {
 							<i className="fas fa-arrow-left" />
 						</button>
 						<h4 className="modal-title">
-							{getTitleInLocale(context.globalState.settings.data, karas[0].titles)}
+							{getTitleInLocale(
+								context.globalState.settings.data,
+								karas[0].titles,
+								karas[0].titles_default_language
+							)}
 						</h4>
 					</div>
 					<div className="modal-body">
@@ -137,7 +142,8 @@ export default function VersionSelector(props: Props) {
 													<h4 className="modal-title">
 														{getTitleInLocale(
 															context.globalState.settings.data,
-															kara.titles
+															kara.titles,
+															kara.titles_default_language
 														)}
 														{sortAndHideTags(kara.versions, 'public').map(t => (
 															<span className="tag white inline" key={t.tid}>
@@ -183,31 +189,21 @@ export default function VersionSelector(props: Props) {
 										</div>
 										<div className="detailsKara">
 											<div className="centerButtons">
-												<MakeFavButton kid={kara.kid} />
-												<AddKaraButton kid={kara.kid} titles={kara.titles} />
+												{context.globalState.auth.data.role === 'guest' ? null : (
+													<MakeFavButton kid={kara.kid} />
+												)}
+												<AddKaraButton kara={kara} />
 												<ShowVideoButton
 													togglePreview={() => setShowVideo(!showVideo)}
 													preview={showVideo}
 													repository={kara.repository}
 												/>
 											</div>
-											{showVideo && indexOpened === index ? (
-												<video
-													src={
-														isRemote() || kara.download_status !== 'DOWNLOADED'
-															? `https://${kara.repository}/downloads/medias/${kara.mediafile}`
-															: `/medias/${kara.mediafile}`
-													}
-													controls={true}
-													autoPlay={true}
-													loop={true}
-													playsInline={true}
-													onLoadStart={e => (e.currentTarget.volume = 0.5)}
-													className={`modal-video${
-														props.scope === 'public' ? ' public' : ''
-													}`}
-												/>
-											) : null}
+											<VideoPreview
+												kara={kara}
+												show={showVideo && indexOpened === index}
+												scope={props.scope}
+											/>
 											<div className="detailsKaraLine timeData">
 												<span>
 													<i className="fas fa-fw fa-clock" />

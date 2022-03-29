@@ -44,14 +44,14 @@ ipcRenderer.on('initStep', (event, data) => {
 	if (!KMStarting) KMStarting = true;
 	const message = document.querySelector('.ip--message');
 	const dots = document.querySelector('.ip--loading-dots');
+	const nanamiSD = document.querySelector('.ip--nanami > img');
+	const container = document.querySelector('.ip--progress-bar-container');
 
 	message.innerHTML = data.message;
 	dots.innerHTML += '<span></span>';
-
-	const nanamiSD = document.querySelector('.ip--nanami > img');
-	const container = document.querySelector('.ip--progress-bar-container');
 	container.dataset.showBar = 'false';
-	container.dataset.hide = 'false';
+	dots.dataset.hide = 'false';
+
 	if (data.lastEvent) {
 		nanamiSD.src = './public/nanami-XD.png';
 	} else {

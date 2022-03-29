@@ -6,17 +6,19 @@ import logger from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { editKara } from '../services/karaCreation';
 
+const service = 'DBTag';
+
 export async function removeTagInKaras(tag: DBTagMini, karasWithTag: DBKara[]) {
 	if (karasWithTag.length === 0) return;
-	logger.info(`Removing tag ${tag.tid} in kara files`, { service: 'Kara' });
+	logger.info(`Removing tag ${tag.tid} in kara files`, { service });
 	const task = new Task({
 		text: 'DELETING_TAG_IN_PROGRESS',
 		subtext: tag.name,
 	});
 	try {
-		logger.info(`Removing in ${karasWithTag.length} files`, { service: 'Kara' });
+		logger.info(`Removing in ${karasWithTag.length} files`, { service });
 		for (const karaWithTag of karasWithTag) {
-			logger.info(`Removing in ${karaWithTag.karafile}...`, { service: 'Kara' });
+			logger.info(`Removing in ${karaWithTag.karafile}...`, { service });
 			for (const type of Object.keys(tagTypes)) {
 				if (karaWithTag[type]) karaWithTag[type] = karaWithTag[type].filter((t: DBTag) => t.tid !== tag.tid);
 			}

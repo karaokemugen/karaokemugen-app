@@ -8,6 +8,8 @@ import { fetchAndAddFavorites } from './favorites';
 import { checkPassword, createJwtToken, getUser, updateLastLoginName } from './user';
 import { fetchAndUpdateRemoteUser } from './userOnline';
 
+const service = 'Auth';
+
 /** Check login and authenticates users */
 export async function checkLogin(username: string, password: string): Promise<OldTokenResponse> {
 	const conf = getConfig();
@@ -26,7 +28,7 @@ export async function checkLogin(username: string, password: string): Promise<Ol
 				await fetchAndAddFavorites(username, onlineToken);
 			}
 		} catch (err) {
-			logger.error(`Failed to authenticate ${username}`, { service: 'RemoteAuth', obj: err });
+			logger.error(`Failed to authenticate ${username}`, { service, obj: err });
 		}
 	}
 
@@ -46,7 +48,7 @@ export async function checkLogin(username: string, password: string): Promise<Ol
 export function resetSecurityCode() {
 	setState({ securityCode: generateSecurityCode() });
 	const securityCodeStr = `${getState().securityCode}`.padStart(6, '0');
-	logger.warn(`SECURITY CODE : ${securityCodeStr}`, { service: 'Users' });
+	logger.warn(`SECURITY CODE : ${securityCodeStr}`, { service });
 }
 
 function generateSecurityCode(): number {

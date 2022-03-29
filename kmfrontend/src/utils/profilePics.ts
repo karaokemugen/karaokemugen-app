@@ -60,10 +60,14 @@ export async function generateProfilePicLink(user: User): Promise<string> {
 		if (user.avatar_file) {
 			return `/avatars/${user.avatar_file}`;
 		} else {
-			const data: User = await commandBackend('getUser', { username: user.login });
-			const path = `/avatars/${data.avatar_file}`;
-			cache.set(user.login, path);
-			return path;
+			try {
+				const data: User = await commandBackend('getUser', { username: user.login });
+				const path = `/avatars/${data.avatar_file}`;
+				cache.set(user.login, path);
+				return path;
+			} catch (e) {
+				return blankAvatar;
+			}
 		}
 	}
 }

@@ -14,6 +14,8 @@ import { playCurrentSong } from './karaEngine';
 import { getCurrentSong, getNextSong, getPreviousSong, setPlaying } from './playlist';
 import { startPoll } from './poll';
 
+const service = 'Player';
+
 export const mpv = new Players();
 
 export function playerComment(msg: string) {
@@ -25,19 +27,19 @@ export function playerMessage(msg: string, duration: number, align = 4, type = '
 }
 
 export async function prev() {
-	logger.debug('Going to previous song', { service: 'Player' });
+	logger.debug('Going to previous song', { service });
 	try {
 		const kara = await getPreviousSong();
 		await setPlaying(kara.plcid, getState().currentPlaid);
 	} catch (err) {
-		logger.warn('Previous song is not available', { service: 'Player', obj: err });
+		logger.warn('Previous song is not available', { service, obj: err });
 	} finally {
 		playPlayer(true);
 	}
 }
 
 export async function next() {
-	logger.debug('Going to next song', { service: 'Player' });
+	logger.debug('Going to next song', { service });
 	profile('Next');
 	const conf = getConfig();
 	try {
@@ -116,7 +118,7 @@ export async function next() {
 			stopPlayer(true, true);
 		}
 	} catch (err) {
-		logger.warn('Next song is not available', { service: 'Player', obj: err });
+		logger.warn('Next song is not available', { service, obj: err });
 		// Display KM info banner just to be sure
 		mpv.displayInfo();
 		if (err === 'Playlist is empty!') {
@@ -132,15 +134,13 @@ export async function next() {
 async function toggleFullScreenPlayer() {
 	const fsState = await mpv.toggleFullscreen();
 	fsState
-		? logger.info('Player going to full screen', { service: 'Player' })
-		: logger.info('Player going to windowed mode', { service: 'Player' });
+		? logger.info('Player going to full screen', { service })
+		: logger.info('Player going to windowed mode', { service });
 }
 
 async function toggleOnTopPlayer() {
 	const onTop = await mpv.toggleOnTop();
-	onTop
-		? logger.info('Player staying on top', { service: 'Player' })
-		: logger.info('Player NOT staying on top', { service: 'Player' });
+	onTop ? logger.info('Player staying on top', { service }) : logger.info('Player NOT staying on top', { service });
 }
 
 async function toggleBordersPlayer() {
@@ -166,7 +166,7 @@ export async function playPlayer(now?: boolean) {
 
 export async function stopPlayer(now = true, endOfPlaylist = false) {
 	if (now || getState().stopping || getState().streamerPause) {
-		logger.info('Karaoke stopping NOW', { service: 'Player' });
+		logger.info('Karaoke stopping NOW', { service });
 		// No need to stop in streamerPause, we're already stopped, but we'll disable the pause anyway.
 		if (!getState().streamerPause) await mpv.stop('pause');
 		setState({ streamerPause: false, randomPlaying: false, stopping: false });
@@ -175,7 +175,7 @@ export async function stopPlayer(now = true, endOfPlaylist = false) {
 			await prepareClassicPauseScreen();
 		}
 	} else if (!getState().stopping) {
-		logger.info('Karaoke stopping after current song', { service: 'Player' });
+		logger.info('Karaoke stopping after current song', { service });
 		setState({ stopping: true });
 	}
 }
@@ -189,24 +189,24 @@ export async function prepareClassicPauseScreen() {
 	} catch (err) {
 		// Failed to get current song, this can happen if the current playlist gets emptied or changed to an empty one inbetween songs. In this case, just display KM infos
 		mpv.displayInfo();
-		logger.warn('Could not prepare classic pause screen', { service: 'Player', obj: err });
+		logger.warn('Could not prepare classic pause screen', { service, obj: err });
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_CLASSIC_PAUSE_SCREEN', err));
 	}
 }
 
 export async function pausePlayer() {
 	await mpv.pause();
-	logger.info('Karaoke paused', { service: 'Player' });
+	logger.info('Karaoke paused', { service });
 }
 
 async function mutePlayer() {
 	await mpv.setMute(true);
-	logger.info('Player muted', { service: 'Player' });
+	logger.info('Player muted', { service });
 }
 
 async function unmutePlayer() {
 	await mpv.setMute(false);
-	logger.info('Player unmuted', { service: 'Player' });
+	logger.info('Player unmuted', { service });
 }
 
 async function seekPlayer(delta: number) {
@@ -230,26 +230,26 @@ async function setAudioDevicePlayer(device: string) {
 
 async function showSubsPlayer() {
 	await mpv.setSubs(true);
-	logger.info('Showing lyrics on screen', { service: 'Player' });
+	logger.info('Showing lyrics on screen', { service });
 }
 
 async function hideSubsPlayer() {
 	await mpv.setSubs(false);
-	logger.info('Hiding lyrics on screen', { service: 'Player' });
+	logger.info('Hiding lyrics on screen', { service });
 }
 
 export async function playerNeedsRestart() {
 	const state = getState();
 	if (state.player.playerStatus === 'stop' && !state.playerNeedsRestart && !state.isTest) {
 		setState({ playerNeedsRestart: true });
-		logger.info('Player will restart in 5 seconds', { service: 'Player' });
+		logger.info('Player will restart in 5 seconds', { service });
 		emitWS('operatorNotificationInfo', APIMessage('NOTIFICATION.OPERATOR.INFO.PLAYER_RESTARTING'));
 		mpv.message(i18next.t('RESTARTING_PLAYER'), 5000);
 		await sleep(5000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
 	} else {
-		logger.debug('Setting mpv to restart after next song', { service: 'Player' });
+		logger.debug('Setting mpv to restart after next song', { service });
 		setState({ playerNeedsRestart: true });
 	}
 }
@@ -257,7 +257,7 @@ export async function playerNeedsRestart() {
 export async function restartPlayer() {
 	profile('restartmpv');
 	await mpv.restart();
-	logger.info('Player restart complete', { service: 'Player' });
+	logger.info('Player restart complete', { service });
 	profile('restartmpv');
 }
 
@@ -327,7 +327,7 @@ export async function sendCommand(command: string, options: any): Promise<APIMes
 			throw `Unknown command ${command}`;
 		}
 	} catch (err) {
-		logger.error(`Command ${command} failed`, { service: 'Player', obj: err });
+		logger.error(`Command ${command} failed`, { service, obj: err });
 		throw err;
 	}
 }
@@ -341,7 +341,7 @@ export async function initPlayer() {
 		profile('initPlayer');
 		await mpv.initPlayerSystem();
 	} catch (err) {
-		logger.error('Failed mpv init', { service: 'Player', obj: err });
+		logger.error('Failed mpv init', { service, obj: err });
 		throw err;
 	} finally {
 		profile('initPlayer');

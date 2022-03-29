@@ -214,6 +214,11 @@ export function isModifiable(context: GlobalContextInterface, repoName: string):
 	return repo.MaintainerMode || !repo.Online;
 }
 
+export function isRepoOnline(context: GlobalContextInterface, repoName: string): boolean {
+	const repo = context.globalState.settings.data.config.System.Repositories.find(r => r.Name === repoName);
+	return repo.Online;
+}
+
 export async function decodeCriteriaReason(settings: SettingsStoreData, criteria: Criteria) {
 	const args: [string, Record<string, string>] = ['', {}];
 	switch (criteria.type) {
@@ -262,7 +267,11 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: Kar
 			message = (
 				<>
 					{i18next.t(`SUCCESS_CODES.${response.code}`, {
-						song: getTitleInLocale(context.globalState.settings.data, kara.titles),
+						song: getTitleInLocale(
+							context.globalState.settings.data,
+							kara.titles,
+							kara.titles_default_language
+						),
 					})}
 					<br />
 					{i18next.t('KARA_DETAIL.TIME_BEFORE_PLAY', {
@@ -275,7 +284,11 @@ export function PLCCallback(response, context: GlobalContextInterface, kara: Kar
 			message = (
 				<>
 					{i18next.t(`SUCCESS_CODES.${response.code}`, {
-						song: getTitleInLocale(context.globalState.settings.data, kara.titles),
+						song: getTitleInLocale(
+							context.globalState.settings.data,
+							kara.titles,
+							kara.titles_default_language
+						),
 					})}
 				</>
 			);

@@ -7,6 +7,8 @@ import { importFavorites } from '../services/favorites';
 import { editUser, getUser, getUsers, removeUser } from '../services/user';
 import { Favorite } from '../types/stats';
 
+const service = 'RemoteUser';
+
 // Map io connections
 const ioMap: Map<string, Socket> = new Map();
 // Map debouncers
@@ -29,7 +31,7 @@ async function updateUser(login: string, payload: any) {
 			login: user.login,
 			type: user.type,
 		};
-		logger.debug(`${login} user was updated on remote`, { service: 'RemoteUser' });
+		logger.debug(`${login} user was updated on remote`, { service });
 		Promise.all([
 			editUser(login, user, null, 'admin'),
 			importFavorites(
@@ -43,7 +45,7 @@ async function updateUser(login: string, payload: any) {
 				false
 			),
 		]).catch(err => {
-			logger.warn(`Cannot update remote user ${login}`, { service: 'RemoteUser', obj: err });
+			logger.warn(`Cannot update remote user ${login}`, { service, obj: err });
 		});
 	} else {
 		const [username, instance] = login.split('@');
@@ -68,12 +70,12 @@ function setupUserWatch(server: string) {
 	socket.on('user deleted', user => {
 		const login = `${user}@${server}`;
 		try {
-			logger.info(`${login} user was DELETED on remote, delete local account`, { service: 'RemoteUser' });
+			logger.info(`${login} user was DELETED on remote, delete local account`, { service });
 			removeUser(login).catch(err => {
-				logger.warn(`Cannot remove remote user ${login}`, { service: 'RemoteUser', obj: err });
+				logger.warn(`Cannot remove remote user ${login}`, { service, obj: err });
 			});
 		} catch (err) {
-			logger.warn(`Cannot delete ${login}`, { service: 'RemoteUser' });
+			logger.warn(`Cannot delete ${login}`, { service });
 		}
 	});
 	// in case of reconnections, resub to all users
@@ -87,19 +89,19 @@ export function startSub(user: string, server: string) {
 	const socket = ioMap.get(server);
 	socket.emit('subscribe user', { body: user }, res => {
 		if (res.err) {
-			logger.warn(`Cannot watch user ${user}@${server}`, { service: 'RemoteUser', obj: res });
+			logger.warn(`Cannot watch user ${user}@${server}`, { service, obj: res });
 			return;
 		}
 		if (res.data === false) {
 			const name = `${user}@${server}`;
 			try {
 				logger.info(`User ${name} doesn't exist anymore on remote, delete local version.`, {
-					service: 'RemoteUser',
+					service,
 				});
 				// It's okay if the local version is already deleted.
 				removeUser(name).catch(() => {});
 			} catch (err) {
-				logger.warn(`Cannot delete ${name}`, { service: 'RemoteUser' });
+				logger.warn(`Cannot delete ${name}`, { service });
 			}
 		}
 	});
@@ -120,7 +122,7 @@ export function stopSub(user: string, server: string) {
 }
 
 export async function subRemoteUsers() {
-	logger.debug('Starting watching users online', { service: 'RemoteUser' });
+	logger.debug('Starting watching users online', { service });
 	const users = await listRemoteUsers();
 	for (const user of users) {
 		if (user) {

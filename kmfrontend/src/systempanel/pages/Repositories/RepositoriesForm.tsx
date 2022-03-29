@@ -18,6 +18,7 @@ interface RepositoriesFormProps {
 	save: any;
 	movingMedia: (movingMediaPath: string) => void;
 	compareLyrics: (repo: string) => void;
+	syncTags: (repo: string) => void;
 }
 
 interface RepositoriesFormState {
@@ -374,7 +375,7 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 						{this.state.repositoriesValue ? (
 							<>
 								<Form.Item
-									label={i18next.t('REPOSITORIES.COMPARE_LYRICS_CHOOSE_REPOSITORY')}
+									label={i18next.t('REPOSITORIES.CHOOSE_REPOSITORY')}
 									labelCol={{ flex: '0 1 300px' }}
 								>
 									<Select
@@ -399,6 +400,45 @@ class RepositoryForm extends Component<RepositoriesFormProps, RepositoriesFormSt
 											onClick={() => this.props.compareLyrics(this.state.compareRepo)}
 										>
 											{i18next.t('REPOSITORIES.COMPARE_BUTTON')}
+										</Button>
+									</div>
+								</Form.Item>
+							</>
+						) : null}
+						<Divider orientation="left">{i18next.t('REPOSITORIES.SYNCHRONIZE_TAGS')}</Divider>
+						<Alert
+							style={{ textAlign: 'left', marginBottom: '10px' }}
+							message={i18next.t('REPOSITORIES.SYNCHRONIZE_ABOUT_MESSAGE')}
+							type="info"
+						/>
+						{this.state.repositoriesValue ? (
+							<>
+								<Form.Item
+									label={i18next.t('REPOSITORIES.CHOOSE_REPOSITORY')}
+									labelCol={{ flex: '0 1 300px' }}
+								>
+									<Select
+										style={{ maxWidth: '50%', minWidth: '150px' }}
+										placeholder={i18next.t('TAGS.REPOSITORY')}
+										onChange={value => this.setState({ compareRepo: value.toString() })}
+									>
+										{this.state.repositoriesValue.map(repo => {
+											return (
+												<Select.Option key={repo} value={repo}>
+													{repo}
+												</Select.Option>
+											);
+										})}
+									</Select>
+								</Form.Item>
+								<Form.Item labelCol={{ flex: '0 1 300px' }} style={{ textAlign: 'right' }}>
+									<div>
+										<Button
+											type="primary"
+											disabled={this.state.zipUpdateInProgress}
+											onClick={() => this.props.syncTags(this.state.compareRepo)}
+										>
+											{i18next.t('REPOSITORIES.SYNCHRONIZE_BUTTON')}
 										</Button>
 									</div>
 								</Form.Item>

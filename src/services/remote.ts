@@ -9,6 +9,8 @@ import { commandKMServer, getKMServerSocket } from '../utils/kmserver';
 import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 
+const service = 'Remote';
+
 let errCount = 0;
 
 async function startRemote(): Promise<RemoteSuccess> {
@@ -40,14 +42,14 @@ async function startRemote(): Promise<RemoteSuccess> {
 		if (err?.message?.code === 'UNKNOWN_COMMAND') {
 			logger.warn(
 				`${getConfig().Online.Host} doesn't support remote access, maybe try a different online server`,
-				{ service: 'Remote', obj: err }
+				{ service, obj: err }
 			);
 		} else if (err?.message?.code === 'OUTDATED_CLIENT') {
 			logger.warn(
 				`${
 					getConfig().Online.Host
 				} and your application doesn't have compatible versions of KMFrontend, cannot start remote.`,
-				{ service: 'Remote', obj: err }
+				{ service, obj: err }
 			);
 		} else {
 			sentry.error(err, 'Warning');
@@ -69,13 +71,13 @@ async function stopRemote() {
 async function restartRemote() {
 	if (!getConfig().Online.Remote) return;
 	try {
-		logger.debug('Reconnection...', { service: 'Remote' });
+		logger.debug('Reconnection...', { service });
 		const data = await startRemote();
-		logger.info('Remote was RESTARTED', { service: 'Remote', obj: data });
+		logger.info('Remote was RESTARTED', { service, obj: data });
 		setState({ remoteAccess: data });
 		configureHost();
 	} catch (e) {
-		logger.warn('Remote is UNAVAILABLE', { service: 'Remote', obj: e });
+		logger.warn('Remote is UNAVAILABLE', { service, obj: e });
 	}
 }
 
@@ -94,7 +96,7 @@ async function broadcastForward(body) {
 			errCount = 0;
 		})
 		.catch(err => {
-			logger.warn('Failed to remote broadcast', { service: 'Remote', obj: err });
+			logger.warn('Failed to remote broadcast', { service, obj: err });
 			if (errCount !== -1) errCount += 1;
 			if (errCount >= 5) {
 				logger.warn('The remote broadcast failed 5 times in a row, restart remote');
@@ -111,7 +113,7 @@ export async function destroyRemote() {
 	try {
 		await stopRemote();
 	} catch (err) {
-		logger.error('Cannot stop remote', { service: 'Remote' });
+		logger.error('Cannot stop remote', { service });
 	}
 	// Remove all subscriptions
 	if (getKMServerSocket()) {
@@ -120,7 +122,7 @@ export async function destroyRemote() {
 		getKMServerSocket().off('disconnect', removeRemote);
 	}
 	getWS().off('broadcast', broadcastForward);
-	logger.info('Remote is STOPPED', { service: 'Remote' });
+	logger.info('Remote is STOPPED', { service });
 	setState({ remoteAccess: null });
 	configureHost();
 }
@@ -135,7 +137,7 @@ export async function initRemote() {
 		getWS().on('broadcast', broadcastForward);
 		// Strip token from public output to avoid leaks
 		delete data.token;
-		logger.info('Remote is READY', { service: 'Remote', obj: data });
+		logger.info('Remote is READY', { service, obj: data });
 		setState({ remoteAccess: data });
 		configureHost();
 	} catch (err) {

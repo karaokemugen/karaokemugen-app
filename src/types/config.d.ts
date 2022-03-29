@@ -44,20 +44,6 @@ export interface Config {
 		};
 		ShowAvatarsOnPlaylist?: boolean;
 	};
-	// This is needed still for KM Server so we keep this in config type
-	Gitlab?: {
-		Enabled?: boolean;
-		Host?: string;
-		Token?: string;
-		ProjectID?: number;
-		IssueTemplate?: {
-			Suggestion?: {
-				Description?: string;
-				Title?: string;
-				Labels?: string[];
-			};
-		};
-	};
 	GUI: {
 		OpenInElectron?: boolean;
 		ChibiPlayer?: {
@@ -75,6 +61,7 @@ export interface Config {
 		};
 	};
 	Karaoke: {
+		Collections?: Record<string, boolean>;
 		ClassicMode?: boolean;
 		StreamerMode: {
 			Enabled?: boolean;

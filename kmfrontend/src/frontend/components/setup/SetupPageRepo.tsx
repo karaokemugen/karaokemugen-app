@@ -114,7 +114,7 @@ function SetupPageRepo() {
 						type="button"
 						onClick={async () => {
 							await movingMedia();
-							navigate('/setup/stats');
+							navigate('/setup/collections');
 						}}
 					>
 						{i18next.t('SETUP_PAGE.SAVE_PARAMETER')}

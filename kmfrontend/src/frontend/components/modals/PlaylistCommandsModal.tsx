@@ -144,38 +144,45 @@ function PlaylistCommandsModal(props: IProps) {
 		let file: File;
 		if (!window.FileReader) return alert('FileReader API is not supported by your browser.');
 		if (e.target.files && e.target.files[0]) {
-			file = e.target.files[0];
-			fr = new FileReader();
-			fr.onload = async () => {
-				const data: {
-					playlist?: string | ArrayBuffer | null;
-					favorites?: string | ArrayBuffer | null;
-					blcSet?: string | ArrayBuffer | null;
-				} = {};
-				let name: string;
-				const json = JSON.parse(fr.result as string);
-				if (file.name.includes('.kmfavorites')) {
-					data.favorites = json;
-					url = 'importFavorites';
-					name = 'Favs';
-				} else {
-					url = 'importPlaylist';
-					data.playlist = json;
-					name = json?.PlaylistInformation?.name;
-				}
-				const response = await commandBackend(url, data);
-				if (response.message.data.reposUnknown?.length > 0) {
-					importPlaylistResponse(response.message.data, file);
-				} else {
-					!file?.name.includes('.kmfavorites') &&
-						displayMessage('success', i18next.t(`SUCCESS_CODES.${response.message.code}`, { data: name }));
-					const plaid = file?.name.includes('.kmfavorites')
-						? nonStandardPlaylists.favorites
-						: response.message.data.plaid;
-					setPlaylistInfo(props.side, context, plaid);
-				}
-			};
-			fr.readAsText(file);
+			try {
+				file = e.target.files[0];
+				fr = new FileReader();
+				fr.onload = async () => {
+					const data: {
+						playlist?: string | ArrayBuffer | null;
+						favorites?: string | ArrayBuffer | null;
+						blcSet?: string | ArrayBuffer | null;
+					} = {};
+					let name: string;
+					const json = JSON.parse(fr.result as string);
+					if (file.name.includes('.kmfavorites')) {
+						data.favorites = json;
+						url = 'importFavorites';
+						name = 'Favs';
+					} else {
+						url = 'importPlaylist';
+						data.playlist = json;
+						name = json?.PlaylistInformation?.name;
+					}
+					const response = await commandBackend(url, data);
+					if (response.message.data.reposUnknown?.length > 0) {
+						importPlaylistResponse(response.message.data, file);
+					} else {
+						!file?.name.includes('.kmfavorites') &&
+							displayMessage(
+								'success',
+								i18next.t(`SUCCESS_CODES.${response.message.code}`, { data: name })
+							);
+						const plaid = file?.name.includes('.kmfavorites')
+							? nonStandardPlaylists.favorites
+							: response.message.data.plaid;
+						setPlaylistInfo(props.side, context, plaid);
+					}
+				};
+				fr.readAsText(file);
+			} catch (e) {
+				// already display
+			}
 		}
 	};
 

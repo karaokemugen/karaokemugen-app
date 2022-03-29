@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
-import { dirname, resolve } from 'path';
+import { internetAvailable } from 'internet-available';
+import { basename, dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
 import {
@@ -21,10 +22,11 @@ import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { KaraFileV4 } from '../lib/types/kara.d';
-import { Tag, TagParams } from '../lib/types/tag';
-import { resolvedPathRepos } from '../lib/utils/config';
+import { Tag, TagFile, TagParams } from '../lib/types/tag';
+import { getConfig, resolvedPathRepos } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
-import { resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
+import { listAllFiles, resolveFileInDirs, sanitizeFile } from '../lib/utils/files';
+import HTTP from '../lib/utils/http';
 import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import { emitWS } from '../lib/utils/ws';
@@ -32,7 +34,9 @@ import sentry from '../utils/sentry';
 import { getKaras } from './kara';
 import { editKara } from './karaCreation';
 import { refreshKarasAfterDBChange } from './karaManagement';
-import { getRepo } from './repo';
+import { getRepo, getRepos } from './repo';
+
+const service = 'Tag';
 
 export function formatTagList(tagList: DBTag[], from: number, count: number) {
 	return {
@@ -167,7 +171,7 @@ export async function mergeTags(tid1: string, tid2: string) {
 		refreshTags();
 		return tagObj;
 	} catch (err) {
-		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service: 'Tags', obj: err });
+		logger.error(`Error merging tag ${tid1} and ${tid2}`, { service, obj: err });
 		sentry.error(err);
 		throw err;
 	} finally {
@@ -253,6 +257,7 @@ async function getKarasWithTags(tags: DBTagMini[]): Promise<DBKara[]> {
 			karaPromises.push(
 				getKaras({
 					q: `t:${tag.tid}~${type}`,
+					ignoreCollections: true,
 				})
 			);
 		}
@@ -288,7 +293,7 @@ export async function removeTag(
 		if (opt.removeTagInKaras) removes.push(removeTagInKaras(tag, karasToRemoveTagIn));
 	}
 	await Promise.all(removes).catch(err => {
-		logger.warn('Failed to remove tag files / tag from kara', { service: 'Tag', obj: err });
+		logger.warn('Failed to remove tag files / tag from kara', { service, obj: err });
 		// Non fatal
 	});
 	for (const tag of tags) {
@@ -323,7 +328,7 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 		await addTag(tagFileData, { silent: true, refresh });
 		return tagFileData.name;
 	} catch (err) {
-		logger.error(`Error integrating tag file ${file}`, { service: 'Tags', obj: err });
+		logger.error(`Error integrating tag file ${file}`, { service, obj: err });
 	}
 }
 
@@ -333,7 +338,7 @@ export async function consolidateTagsInRepo(kara: KaraFileV4) {
 	for (const tagType of Object.keys(tagTypes)) {
 		if (kara.data.tags[tagType]) {
 			for (const karaTag of kara.data.tags[tagType]) {
-				const tag = await getTag(karaTag.tid);
+				const tag = await getTag(karaTag);
 				if (!tag) continue;
 				if (tag.repository !== kara.data.repository) {
 					// This might need to be copied
@@ -371,7 +376,7 @@ export async function copyTagToRepo(tid: string, repoName: string) {
 }
 
 async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, karas: DBKara[]): Promise<string[]> {
-	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, { service: 'Kara' });
+	logger.info(`Replacing tag ${oldTID1} and ${oldTID2} by ${newTag.tid} in .kara.json files`, { service });
 	const modifiedKaras: string[] = [];
 	for (const kara of karas) {
 		kara.modified_at = new Date();
@@ -389,4 +394,103 @@ async function replaceTagInKaras(oldTID1: string, oldTID2: string, newTag: Tag, 
 		});
 	}
 	return modifiedKaras;
+}
+
+export async function syncTagsFromRepo(repoSourceName: string, repoDestName: string) {
+	const repos = getConfig().System.Repositories;
+	const repoSource = repos.find(r => r.Name === repoSourceName);
+	const repoDest = repos.find(r => r.Name === repoDestName);
+	if (!repoSource || !repoDest) throw { code: 404 };
+	logger.info(`Syncing tags in repo ${repoDestName} from repo ${repoSourceName}`, { service });
+	const [sourceFiles, destFiles] = await Promise.all([
+		listAllFiles('Tags', repoSourceName),
+		listAllFiles('Tags', repoDestName),
+	]);
+	const sourceTags = new Map<string, { tag: TagFile; file: string }>();
+	let modifiedTags = false;
+	for (const sourceFile of sourceFiles) {
+		const tagData = await fs.readFile(sourceFile, 'utf-8');
+		const tag: TagFile = JSON.parse(tagData);
+		sourceTags.set(tag.tag.tid, {
+			tag,
+			file: sourceFile,
+		});
+	}
+	for (const destFile of destFiles) {
+		const tagData = await fs.readFile(destFile, 'utf-8');
+		const tag: TagFile = JSON.parse(tagData);
+		const sourceTag = sourceTags.get(tag.tag.tid);
+		// We do this so JSON.stringifying tags later actually can return the same stuff.
+		if (sourceTag) sourceTag.tag.tag.repository = repoDestName;
+		if (sourceTag && JSON.stringify(tag) !== JSON.stringify(sourceTag.tag)) {
+			modifiedTags = true;
+			// Filename might have changed because someone thought it'd be funny to change the tag's name (cue in "this would not happen if we used UUIDS", Axel's hit song from 2021. It even won a Grammy Award, would you believe that.)
+			let newDestFile = destFile;
+			if (basename(destFile) !== basename(sourceTag.file)) {
+				const destDir = resolvedPathRepos('Tags', repoDestName);
+				newDestFile = resolve(destDir[0], basename(sourceTag.file));
+				await fs.writeFile(newDestFile, JSON.stringify(sourceTag.tag, null, 2), 'utf-8');
+				await fs.unlink(destFile);
+				removeTagInStore(destFile);
+				addTagToStore(newDestFile);
+			} else {
+				// No change in filename, let's just overwrite destFile
+				await fs.writeFile(newDestFile, JSON.stringify(sourceTag.tag, null, 2), 'utf-8');
+				editTagInStore(newDestFile);
+			}
+			const dbTag = await getTag(sourceTag.tag.tag.tid);
+			if (dbTag.repository === repoDestName) {
+				// Tag in DB is the one from our dest repository, so we're going to edit it.
+				editTag(sourceTag.tag.tag.tid, await getDataFromTagFile(newDestFile), {
+					silent: false,
+					refresh: true,
+					writeFile: false,
+					repoCheck: false,
+				});
+			}
+			logger.info(`Updated ${basename(destFile)} in repo ${repoDestName} from repo ${repoSourceName}`, {
+				service,
+			});
+		}
+	}
+	if (modifiedTags) {
+		sortKaraStore();
+		saveSetting('baseChecksum', getStoreChecksum());
+	}
+}
+
+export async function checkCollections() {
+	const internet = await (async () => {
+		try {
+			await internetAvailable();
+			return true;
+		} catch (err) {
+			return false;
+		}
+	})();
+	const availableCollections: DBTag[] = [];
+	for (const repo of getRepos()) {
+		if (repo.Enabled) {
+			if (repo.Online && internet) {
+				try {
+					const tags = (await HTTP.get(`https://${repo.Name}/api/karas/tags/${tagTypes.collections}`)).data;
+					for (const tag of tags) {
+						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+					}
+				} catch (err) {
+					// Fallback to what the repository has locally
+					const tags = await getTags({ type: tagTypes.collections });
+					for (const tag of tags.content) {
+						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+					}
+				}
+			} else {
+				const tags = await getTags({ type: tagTypes.collections });
+				for (const tag of tags.content) {
+					if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
+				}
+			}
+		}
+	}
+	return availableCollections;
 }

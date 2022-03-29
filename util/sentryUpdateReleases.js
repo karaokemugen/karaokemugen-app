@@ -6,7 +6,6 @@ const { version } = JSON.parse(await fs.readFile('package.json', 'utf-8'));
 const sentry = new SentryCli(null, {
 	authToken: process.env.SENTRYTOKEN,
 	org: 'karaoke-mugen',
-	dist: process.env.CI_JOB_ID,
 });
 
 const dist = process.env.CI_COMMIT_SHORT_SHA;
@@ -25,7 +24,6 @@ await sentry.releases.uploadSourceMaps(version, {
 	urlPrefix: '~/static/js',
 	include: ['kmfrontend/build/static/js'],
 	projects: ['km-app'],
-	dist,
 });
 await sentry.releases.setCommits(version, {
 	repo: 'Karaoke Mugen / Karaoke Mugen Application',

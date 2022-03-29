@@ -130,7 +130,7 @@
 		"CRITERIA_TYPE_1003": "Lebih pendek dari (mm:ss)",
 		"CRITERIA_TYPE_1004": "Judul mengandung",
 		"CRITERIA_TYPE_1006": "lagu yang disembunyikan tidak tersedia secara luring",
-		"ADD": "Tambahkan nilai ke kriteria",
+		"ADD_PLACEHOLDER": "Tambahkan nilai ke kriteria",
 		"EXPL": "Daftar putar pintar dibuat dari <1>kriteria</1>, kamu juga bisa menambahkan secara manual karaoke ke daftar ini.",
 		"PLAYLIST_DURATION": "<1/> Limit to <2/> <3/> (<4/> order)"
 	},
@@ -1059,8 +1059,10 @@
 		"WARNING": "Peringatan!",
 		"LYRICS_ARE_DIFFERENT": "Lirik lagu tersebut berbeda antara repositori {{first}} dan repositori {{second}}:",
 		"COMPARE_LYRICS": "Perbarui lirik antar dua repositori",
-		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Pilih repositori",
+		"CHOOSE_REPOSITORY": "Pilih repositori",
 		"COMPARE_BUTTON": "Bandingkan",
+		"SYNCHRONIZE_TAGS": "Sinkronisasi tanda antar dua repositori",
+		"SYNCHRONIZE_BUTTON": "Sinkronisasi",
 		"CONFIRM_SURE": "Apakah kamu ingin menyinkronkan lirik repositori {{second}} dengan yang di repositori {{first}}?",
 		"FREE_SPACE": "Penyimpanan kosong",
 		"GIT": {
@@ -1363,7 +1365,6 @@
 		"TITLE": "Judul",
 		"TITLE_TOOLTIP": "Jika kamu tidak tahu, ketik nama serialnya juga di sini",
 		"TITLE_REQUIRED": "Mohon masukkan judul lagu",
-		"TITLE_ENG_REQUIRED": "Mohon masukkan judul lagu dalam bahasa Inggris",
 		"SERIES_TOOLTIP": "Serial TV, judul film, judul permainan video, dll.",
 		"SERIES_SINGERS_REQUIRED": "Serial dan Penyanyi tidak bisa kosong bersama-sama.",
 		"ORDER": "Urutan lagu",

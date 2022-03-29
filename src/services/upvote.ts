@@ -6,6 +6,8 @@ import { getState } from '../utils/state';
 import { freePLC, getPLCInfoMini } from './playlist';
 import { getUsers, updateSongsLeft } from './user';
 
+const service = 'Upvote';
+
 /** (Up|Down)vote a song. */
 export function vote(plc_id: number, username: string, downvote: boolean) {
 	if (downvote) return removeUpvote(plc_id, username);
@@ -75,6 +77,6 @@ async function tryToFreeKara(plc_id: number, upvotes: number, username: string, 
 	) {
 		await freePLC([plc_id]);
 		updateSongsLeft(username, plaid);
-		logger.debug(`PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`, { service: 'Upvote' });
+		logger.debug(`PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`, { service });
 	}
 }

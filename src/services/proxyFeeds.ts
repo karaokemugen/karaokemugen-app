@@ -10,6 +10,8 @@ import { Feed } from '../types/feeds';
 import { SystemMessage } from '../types/state';
 import { getState, setState } from '../utils/state';
 
+const service = 'Feeds';
+
 const feeds = [
 	{
 		name: 'git_base',
@@ -35,7 +37,7 @@ export async function getFeeds() {
 		}
 	} catch (err) {
 		logger.warn('This instance is not connected to the internets, cannot get online feeds', {
-			service: 'Feed',
+			service,
 			obj: err,
 		});
 	}
@@ -75,7 +77,7 @@ async function fetchFeed(url: string, name: string): Promise<Feed> {
 			body: JSON.stringify(feed),
 		};
 	} catch (err) {
-		logger.error(`Unable to fetch feed ${name}`, { service: 'Feeds', obj: err });
+		logger.error(`Unable to fetch feed ${name}`, { service, obj: err });
 		return {
 			name,
 			body: null,

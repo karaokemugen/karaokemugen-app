@@ -22,6 +22,7 @@ import OnlineStatsModal from './modals/OnlineStatsModal';
 import ProfilModal from './modals/ProfilModal';
 import RestartDownloadsModal from './modals/RestartDownloadsModal';
 import WelcomePageArticle from './WelcomePageArticle';
+import { Tag } from '../../../../src/lib/types/tag';
 
 function WelcomePage() {
 	const context = useContext(GlobalContext);
@@ -32,6 +33,7 @@ function WelcomePage() {
 	const [activeSession, setActiveSession] = useState<Session>();
 	const [catchphrase, setCatchphrase] = useState('');
 	const [repositories, setRepositories] = useState<Repository[]>([]);
+	const [collections, setCollections] = useState<Tag[]>([]);
 	const [stats, setStats] = useState<DBStats>();
 
 	const getSessions = async () => {
@@ -185,12 +187,36 @@ function WelcomePage() {
 		}
 	};
 
+	const enableCollection = (tid: string) => {
+		if (
+			Object.values(context.globalState.settings.data.config.Karaoke.Collections).filter(c => c).length !== 1 ||
+			!context.globalState.settings.data.config.Karaoke.Collections[tid]
+		) {
+			try {
+				const collections = context.globalState.settings.data.config.Karaoke.Collections;
+				collections[tid] = !collections[tid];
+				commandBackend('updateSettings', {
+					setting: {
+						Karaoke: {
+							Collections: collections,
+						},
+					},
+				});
+			} catch (err: any) {
+				// error already display
+			}
+		}
+	};
+
+	const getCollections = async () => setCollections(await commandBackend('getCollections'));
+
 	useEffect(() => {
 		displayModal();
 		getCatchphrase();
 		getNewsFeed();
 		getSessions();
 		getRepositories();
+		getCollections();
 		getStats();
 		getSocket().on('statsRefresh', getStats);
 		return () => {
@@ -363,6 +389,32 @@ function WelcomePage() {
 													}`}
 												/>
 												<span>{repository.Name}</span>
+											</li>
+										);
+									})}
+								</ul>
+							</blockquote>
+							<blockquote>
+								<button type="button" onClick={() => navigate('/system/repositories')}>
+									<i className="fas fa-fw fa-network-wired" />
+									{i18next.t('WELCOME_PAGE.COLLECTIONS')}
+								</button>
+								<ul>
+									{collections.map(collection => {
+										return (
+											<li
+												key={collection.name}
+												className={
+													context.globalState.settings.data.config.Karaoke.Collections[
+														collection.tid
+													]
+														? ''
+														: 'disabled'
+												}
+												onClick={() => enableCollection(collection.tid)}
+											>
+												<i className="fas fa-fw fa-layer-group" />
+												<span>{collection.name}</span>
 											</li>
 										);
 									})}

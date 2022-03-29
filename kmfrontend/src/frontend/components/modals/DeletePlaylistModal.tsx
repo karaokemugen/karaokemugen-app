@@ -44,9 +44,13 @@ function DeletePlaylistModal(props: IProps) {
 						? nonStandardPlaylists.library
 						: context.globalState.settings.data.state.publicPlaid
 				);
-				commandBackend('deletePlaylist', {
-					plaid: playlist.plaid,
-				});
+				try {
+					commandBackend('deletePlaylist', {
+						plaid: playlist.plaid,
+					});
+				} catch (e) {
+					// already display
+				}
 			}
 			closeModalWithContext();
 		} catch (e) {

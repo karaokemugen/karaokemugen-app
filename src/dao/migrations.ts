@@ -4,8 +4,11 @@ import Postgrator from 'postgrator';
 
 import { win } from '../electron/electron';
 import logger from '../lib/utils/logger';
+import { editRepo, getRepo } from '../services/repo';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
 import { compareKarasChecksum, generateDB } from './database';
+
+const service = 'DBMigration';
 
 export async function postMigrationTasks(migrations: Postgrator.Migration[], didGeneration: boolean) {
 	let doGenerate = false;
@@ -28,20 +31,34 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 			// 5.0 migrations
 			case 'addPriorityToTags':
 				if (!didGeneration) doGenerate = true;
-				logger.info('Migration adding priority to tags detected, forcing generation', { service: 'DB' });
+				logger.info('Migration adding priority to tags detected, forcing generation', { service });
 				break;
 			// 6.0 migrations
 			case 'addTitlesToKara':
 				if (!didGeneration) doGenerate = true;
-				logger.info('Migration adding titles to karas detected, forcing generation', { service: 'DB' });
+				logger.info('Migration adding titles to karas detected, forcing generation', { service });
 				break;
 			case 'smartPlaylistsAndBLWLRework':
-				logger.info('Migrating blacklist and whitelist to smart playlists', { service: 'DB' });
+				logger.info('Migrating blacklist and whitelist to smart playlists', { service });
 				await migrateBLWLToSmartPLs();
 				break;
 			case 'addKaraParents':
 				if (!didGeneration) doGenerate = true;
-				logger.info('Migration adding parents to karas detected, forcing generation', { service: 'DB' });
+				logger.info('Migration adding parents to karas detected, forcing generation', { service });
+				break;
+			case 'addDescriptionToTags':
+				// This is actually the collections migration.
+				if (!didGeneration) doGenerate = true;
+				const world = getRepo('world.karaokes.moe');
+				if (world) {
+					world.Enabled = false;
+					editRepo('world.karaokes.moe', world, false);
+				}
+				await dialog.showMessageBox(win, {
+					type: 'info',
+					title: i18next.t('WORLD_REPOSITORY_DISABLED.TITLE'),
+					message: i18next.t('WORLD_REPOSITORY_DISABLED.MESSAGE'),
+				});
 				break;
 			default:
 		}

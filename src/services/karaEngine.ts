@@ -1,6 +1,12 @@
+import i18next from 'i18next';
+import { resolve } from 'path';
+
 import { APIMessage } from '../controllers/common';
 import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePLCVisible } from '../dao/playlist';
-import { getConfig } from '../lib/utils/config';
+import { DBKara } from '../lib/types/database/kara';
+import { DBPLC } from '../lib/types/database/playlist';
+import { getConfig, resolvedPath } from '../lib/utils/config';
+import { fileExists } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { emitWS } from '../lib/utils/ws';
 import { CurrentSong } from '../types/playlist';
@@ -12,6 +18,9 @@ import { addPlayedKara, getKara, getKaras, getSongSeriesSingers, getSongTitle, g
 import { initAddASongMessage, mpv, next, restartPlayer, stopAddASongMessage, stopPlayer } from './player';
 import { getCurrentSong, getPlaylistInfo, shufflePlaylist, updateUserQuotas } from './playlist';
 import { startPoll } from './poll';
+import { getUser } from './user';
+
+const service = 'KaraEngine';
 
 /** Play a song from the library, different from when playing the current song in the playlist */
 export async function playSingleSong(kid?: string, randomPlaying = false) {
@@ -24,23 +33,9 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 		} else if (randomPlaying && getConfig().Playlist.RandomSongsAfterEndMessage) {
 			initAddASongMessage();
 		}
-		logger.debug('Karaoke selected', { service: 'Player', obj: kara });
-		logger.info(`Playing ${kara.mediafile}`, { service: 'Player' });
-
-		// If series is empty, pick singer information instead
-		const series = getSongSeriesSingers(kara);
-
-		let songorder = `${kara.songorder}`;
-		// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-		if (!kara.songorder || kara.songorder === 0) songorder = '';
-
-		// Get song versions for display
-		const versions = getSongVersion(kara);
-
-		// Construct mpv message to display.
-		const infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
-			.map(s => s.name)
-			.join(' ')}${songorder} - ${getSongTitle(kara)}${versions}{\\i0}`;
+		logger.debug('Karaoke selected', { service, obj: kara });
+		logger.info(`Playing ${kara.mediafile}`, { service });
+		const songInfos = await getSongInfosForPlayer(kara);
 		const current: CurrentSong = {
 			...kara,
 			nickname: 'Dummy Plug System',
@@ -57,20 +52,52 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			plaid: null,
 			avatar: null,
 			added_at: null,
-			infos,
+			...songInfos,
 		};
 		await mpv.play(current);
 		writeStreamFiles('song_name');
 		writeStreamFiles('requester');
 		setState({ singlePlay: !randomPlaying, randomPlaying });
 	} catch (err) {
-		logger.error('Error during song playback', { service: 'Player', obj: err });
+		logger.error('Error during song playback', { service, obj: err });
 		emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
 		// Not sending to sentry when media source couldn't be found
 		if (!err.message.includes('No media source')) sentry.error(err, 'Warning');
 		stopPlayer(true);
 		throw err;
 	}
+}
+
+export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ infos: string; avatar: string }> {
+	// If series is empty, pick singer information instead
+	const series = getSongSeriesSingers(kara);
+	// Get song versions for display
+	const versions = getSongVersion(kara);
+
+	// Escaping {} because it'll be interpreted as ASS tags below.
+	let requestedBy = '';
+	let avatarfile = null;
+	if (getConfig().Player.Display.Nickname && 'username' in kara) {
+		// Escaping {} because it'll be interpreted as ASS tags below.
+		kara.nickname = kara.nickname.replace(/[{}]/g, '');
+		requestedBy = `\\N{\\fscx50}{\\fscy50}${i18next.t('REQUESTED_BY')} ${kara.nickname}`;
+		// Get user avatar
+		let user = await getUser(kara.username);
+		if (!user) {
+			// User does not exist anymore, replacing it with admin
+			user = await getUser('admin');
+		}
+		avatarfile = resolve(resolvedPath('Avatars'), user.avatar_file);
+		if (!(await fileExists(avatarfile))) avatarfile = resolve(resolvedPath('Avatars'), 'blank.png');
+	}
+	// Construct mpv message to display.
+	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+	return {
+		infos: `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
+			.map(s => s.name)
+			.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`,
+		avatar: avatarfile,
+	};
 }
 
 export async function playRandomSongAfterPlaylist() {
@@ -89,7 +116,7 @@ export async function playRandomSongAfterPlaylist() {
 		}
 	} catch (err) {
 		sentry.error(err);
-		logger.error('Unable to select random song to play at the end of playlist', { service: 'Player', obj: err });
+		logger.error('Unable to select random song to play at the end of playlist', { service, obj: err });
 		emitWS(
 			'operatorNotificationError',
 			APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_RANDOM_SONG_AFTER_PLAYLIST', err)
@@ -120,8 +147,8 @@ export async function playCurrentSong(now: boolean) {
 					return;
 				}
 			}
-			logger.debug('Karaoke selected', { service: 'Player', obj: kara });
-			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, { service: 'Player' });
+			logger.debug('Karaoke selected', { service, obj: kara });
+			logger.info(`Playing ${kara.mediafile.substring(0, kara.mediafile.length - 4)}`, { service });
 			await mpv.play(kara);
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
@@ -136,19 +163,19 @@ export async function playCurrentSong(now: boolean) {
 			emitWS('playlistInfoUpdated', kara.plaid);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch (err) {
-			logger.error('Error during song playback', { service: 'Player', obj: err });
+			logger.error('Error during song playback', { service, obj: err });
 			if (!err.message.includes('No media source')) sentry.error(err, 'Warning');
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLAY', err));
 			if (getState().player.playerStatus !== 'stop') {
-				logger.warn('Skipping playback for this song', { service: 'Player' });
+				logger.warn('Skipping playback for this song', { service });
 				try {
 					await next();
 				} catch (err2) {
-					logger.warn('Skipping failed', { service: 'Player' });
+					logger.warn('Skipping failed', { service });
 					throw err2;
 				}
 			} else {
-				logger.warn('Stopping karaoke due to error', { service: 'Player' });
+				logger.warn('Stopping karaoke due to error', { service });
 				stopPlayer(true);
 			}
 		} finally {
@@ -163,10 +190,10 @@ export async function playCurrentSong(now: boolean) {
 export async function playerEnding() {
 	const state = getState();
 	const conf = getConfig();
-	logger.debug('Player Ending event triggered', { service: 'Player' });
+	logger.debug('Player Ending event triggered', { service });
 	try {
 		if (state.playerNeedsRestart) {
-			logger.info('Player restarts, please wait', { service: 'Player' });
+			logger.info('Player restarts, please wait', { service });
 			setState({ playerNeedsRestart: false });
 			await restartPlayer();
 		}
@@ -211,7 +238,7 @@ export async function playerEnding() {
 					await mpv.playMedia('Sponsors');
 				} catch (err) {
 					logger.warn('Skipping sponsors due to error, playing current song', {
-						service: 'Player',
+						service,
 						obj: err,
 					});
 					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
@@ -232,7 +259,7 @@ export async function playerEnding() {
 				try {
 					await next();
 				} catch (err) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err });
+					logger.error('Failed going to next song', { service, obj: err });
 					throw err;
 				}
 			} else {
@@ -247,11 +274,11 @@ export async function playerEnding() {
 				setState({ introPlayed: true, introSponsorPlayed: true });
 				await playCurrentSong(true);
 			} catch (err) {
-				logger.error('Unable to play current song, skipping', { service: 'Player', obj: err });
+				logger.error('Unable to play current song, skipping', { service, obj: err });
 				try {
 					await next();
 				} catch (err2) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err2 });
+					logger.error('Failed going to next song', { service, obj: err2 });
 					throw err2;
 				}
 			}
@@ -261,7 +288,7 @@ export async function playerEnding() {
 			try {
 				await next();
 			} catch (err) {
-				logger.error('Failed going to next song', { service: 'Player', obj: err });
+				logger.error('Failed going to next song', { service, obj: err });
 				throw err;
 			}
 			return;
@@ -270,7 +297,7 @@ export async function playerEnding() {
 		const pl = await getPlaylistInfo(state.currentPlaid, adminToken);
 		logger.debug(
 			`CurrentSong Pos : ${state.player.currentSong?.pos} - Playlist Kara Count : ${pl?.karacount} - Playlist name: ${pl?.name} - CurrentPlaylistID: ${state.currentPlaid} - Playlist ID: ${pl?.plaid}`,
-			{ service: 'Player' }
+			{ service }
 		);
 		if (
 			conf.Playlist.Medias.Encores.Enabled &&
@@ -282,12 +309,12 @@ export async function playerEnding() {
 				await mpv.playMedia('Encores');
 				setState({ encorePlayed: true });
 			} catch (err) {
-				logger.error('Unable to play encore file, going to next song', { service: 'Player', obj: err });
+				logger.error('Unable to play encore file, going to next song', { service, obj: err });
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
 				} catch (err2) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err2 });
+					logger.error('Failed going to next song', { service, obj: err2 });
 					throw err2;
 				}
 			}
@@ -307,7 +334,7 @@ export async function playerEnding() {
 				try {
 					await mpv.playMedia('Outros');
 				} catch (err) {
-					logger.error('Unable to play outro file', { service: 'Player', obj: err });
+					logger.error('Unable to play outro file', { service, obj: err });
 					emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 					if (conf.Playlist.EndOfPlaylistAction === 'random') {
 						await playRandomSongAfterPlaylist();
@@ -327,7 +354,7 @@ export async function playerEnding() {
 			`Songs before next jingle: ${
 				conf.Playlist.Medias.Jingles.Interval - state.counterToJingle
 			} / before next sponsor: ${conf.Playlist.Medias.Sponsors.Interval - state.counterToSponsor}`,
-			{ service: 'Player' }
+			{ service }
 		);
 		if (
 			!state.singlePlay &&
@@ -338,12 +365,12 @@ export async function playerEnding() {
 				setState({ counterToJingle: 0 });
 				await mpv.playMedia('Jingles');
 			} catch (err) {
-				logger.error('Unable to play jingle file, going to next song', { service: 'Player', obj: err });
+				logger.error('Unable to play jingle file, going to next song', { service, obj: err });
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
 				} catch (err2) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err2 });
+					logger.error('Failed going to next song', { service, obj: err2 });
 					throw err2;
 				}
 			}
@@ -354,12 +381,12 @@ export async function playerEnding() {
 				setState({ counterToSponsor: 0 });
 				await mpv.playMedia('Sponsors');
 			} catch (err) {
-				logger.error('Unable to play sponsor file, going to next song', { service: 'Player', obj: err });
+				logger.error('Unable to play sponsor file, going to next song', { service, obj: err });
 				emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.PLAYER_PLMEDIA', err));
 				try {
 					await next();
 				} catch (err2) {
-					logger.error('Failed going to next song', { service: 'Player', obj: err2 });
+					logger.error('Failed going to next song', { service, obj: err2 });
 					throw err2;
 				}
 			}
@@ -375,14 +402,14 @@ export async function playerEnding() {
 				await next();
 				return;
 			} catch (err) {
-				logger.error('Failed going to next song', { service: 'Player', obj: err });
+				logger.error('Failed going to next song', { service, obj: err });
 				throw err;
 			}
 		} else {
 			stopPlayer(true);
 		}
 	} catch (err) {
-		logger.error('Unable to end play properly, stopping.', { service: 'Player', obj: err });
+		logger.error('Unable to end play properly, stopping.', { service, obj: err });
 		sentry.error(err);
 		stopPlayer(true);
 	}

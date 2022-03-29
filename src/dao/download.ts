@@ -14,6 +14,8 @@ import {
 	sqlupdateRunningDownloads,
 } from './sql/download';
 
+const service = 'DBDownload';
+
 export async function updateDownloaded(kids: string[], value: DownloadedStatus) {
 	let query = sqlsetDownloaded;
 	let queryAK = sqlsetDownloadedAK;
@@ -28,7 +30,7 @@ export async function updateDownloaded(kids: string[], value: DownloadedStatus) 
 
 export function insertDownloads(downloads: KaraDownload[]) {
 	const dls = downloads.map(dl => [dl.name, dl.size, 'DL_PLANNED', dl.uuid, dl.repository, dl.mediafile, dl.kid]);
-	logger.debug('Running transaction', { service: 'Download DAO' });
+	logger.debug('Running transaction', { service });
 	return transaction({ sql: sqlinsertDownload, params: dls });
 }
 

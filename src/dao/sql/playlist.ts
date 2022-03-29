@@ -155,6 +155,7 @@ SELECT
   ak.pk_kid AS kid,
   ak.titles AS titles,
   ak.titles_aliases AS titles_aliases,
+  ak.titles_default_language AS titles_default_language,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
@@ -173,6 +174,7 @@ SELECT
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)') AS collections,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -235,7 +237,7 @@ ${additionalFrom}
 WHERE pc.fk_id_playlist = :plaid
   ${filterClauses.map(clause => `AND (${clause})`).join(' ')}
   ${whereClause}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.tags, ak.subfile, ak.year, ak.mediafile, ak.karafile, ak.duration, ak.mediasize, pc.created_at, pc.nickname, ak.download_status, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, pc.criterias
 ORDER BY ${orderClause}
 ${limitClause}
 ${offsetClause}
@@ -252,6 +254,7 @@ SELECT ak.pk_kid AS kid,
 	jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
 	ak.titles AS titles,
 	ak.titles_aliases AS titles_aliases,
+	ak.titles_default_language AS titles_default_language,
 	ak.songorder AS songorder,
     ak.gain AS gain,
 	ak.loudnorm AS loudnorm,
@@ -296,6 +299,7 @@ SELECT
   ak.pk_kid AS kid,
   ak.titles AS titles,
   ak.titles_aliases AS titles_aliases,
+  ak.titles_default_language AS titles_default_language,
   ak.songorder AS songorder,
   ak.subfile AS subfile,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 2)') AS singers,
@@ -314,6 +318,7 @@ SELECT
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 1)') AS series,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 14)') AS versions,
   jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 15)') AS warnings,
+  jsonb_path_query_array( tags, '$[*] ? (@.type_in_kara == 16)') AS collections,
   ak.mediafile AS mediafile,
   ak.karafile AS karafile,
   ak.duration AS duration,
@@ -362,9 +367,9 @@ SELECT
   ak.repository as repository,
   array_remove(array_agg(DISTINCT pc_pub.pk_id_plcontent), null) AS public_plc_id,
   array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
-  array_remove(array_agg(krc.fk_kid_parent), null) AS parents,
-  array_remove(array_agg(krp.fk_kid_child), null) AS children,
-  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(krc.fk_kid_parent), null))), ak.pk_kid) AS siblings,
+  array_remove(array_agg(DISTINCT krc.fk_kid_parent), null) AS parents,
+  array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
+  array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(DISTINCT krc.fk_kid_parent), null))), ak.pk_kid) AS siblings,
   pc.criterias
 FROM playlist_content AS pc
 INNER JOIN playlist AS pl ON pl.pk_id_playlist = :current_plaid
@@ -382,7 +387,7 @@ LEFT OUTER JOIN playlist_content AS pc_pub ON pc_pub.fk_kid = pc.fk_kid AND pc_p
 LEFT OUTER JOIN playlist_content AS pc_self on pc_self.fk_kid = pc.fk_kid AND pc_self.fk_id_playlist = :public_plaid AND pc_self.fk_login = :username
 WHERE  pc.pk_id_plcontent = :plcid
 ${forUser ? ' AND pl.flag_visible = TRUE' : ''}
-GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.songorder, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.download_status, pc.criterias
+GROUP BY pl.fk_id_plcontent_playing, ak.pk_kid, ak.titles, ak.titles_aliases, ak.titles_default_language, ak.songorder, ak.subfile, ak.year, ak.tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.loudnorm, ak.created_at, ak.modified_at, ak.mediasize, ak.languages_sortable, ak.songtypes_sortable, pc.created_at, pc.nickname, pc.fk_login, pc.pos, pc.pk_id_plcontent, wl.fk_kid, bl.fk_kid, f.fk_kid, u.avatar_file, u.type, ak.repository, ak.download_status, pc.criterias
 `;
 
 export const sqlgetPLCInfoMini = `
@@ -543,7 +548,9 @@ INSERT INTO playlist_criteria(
 	type,
 	fk_id_playlist
 )
-VALUES ($1,$2,$3);
+VALUES ($1,$2,$3)
+ON CONFLICT DO NOTHING
+;
 `;
 
 export const sqlgetCriterias = `

@@ -72,6 +72,7 @@ class KaraList extends Component<unknown, KaraListState> {
 				q: this.state.tagFilter,
 				from: (this.state.currentPage - 1) * this.state.currentPageSize,
 				size: this.state.currentPageSize,
+				ignoreCollections: true,
 			},
 			undefined,
 			300000
@@ -299,7 +300,8 @@ class KaraList extends Component<unknown, KaraListState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: (titles, record) =>
+				getTitleInLocale(this.context.globalState.settings.data, titles, record.titles_default_language),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),

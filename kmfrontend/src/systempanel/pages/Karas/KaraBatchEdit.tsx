@@ -139,7 +139,9 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 								options={this.state.tags}
 								placeholder={i18next.t('KARA.BATCH_EDIT.SELECT')}
 								showSearch={{ filter: this.FilterTagCascaderFilter, matchInputWidth: false }}
-								onChange={value => this.setState({ tid: value[1] as string, type: value[0] as number })}
+								onChange={value => {
+									if (value) this.setState({ tid: value[1] as string, type: value[0] as number });
+								}}
 							/>
 						</Col>
 						<Col flex={1}>
@@ -212,7 +214,8 @@ class KaraBatchEdit extends Component<unknown, KaraBatchEditState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: (titles, record) =>
+				getTitleInLocale(this.context.globalState.settings.data, titles, record.titles_default_language),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),
