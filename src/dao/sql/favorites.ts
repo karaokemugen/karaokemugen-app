@@ -2,9 +2,8 @@
 
 export const sqlgetFavoritesMicro = (limitClause: string, offsetClause: string) => `
 SELECT
-  ak.pk_kid AS kid
-  FROM all_karas AS ak
-  INNER JOIN favorites AS f ON f.fk_kid = ak.pk_kid
+  fk_kid AS kid
+  FROM favorites
   WHERE fk_login = :username
 ${limitClause}
 ${offsetClause}
