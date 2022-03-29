@@ -68,6 +68,11 @@ GUI:
     PositionX: 153
     PositionY: 800
 Karaoke:
+  # Which collections to enable
+  Collections:
+    c7db86a0-ff64-4044-9be4-66dd1ef1d1c1: true # Otaku/Geek
+    efe171c0-e8a1-4d03-98c0-60ecf741ad52: true # World
+    2fa2fe3f-bb56-45ee-aa38-eae60e76f224: true # Shitpost
   # Autostart playing songs if no song is playing and a song is added
   Autoplay: false
   # Classic (Karaoke box) mode
