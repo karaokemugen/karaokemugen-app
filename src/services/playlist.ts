@@ -541,7 +541,7 @@ export async function addKaraToPlaylist(
 			// Check if karaoke is in blacklist
 			const [blacklist, whitelist] = await Promise.all([
 				getPlaylistContentsMini(getState().blacklistPlaid),
-				getPlaylistContentsMini(getState().blacklistPlaid),
+				getPlaylistContentsMini(getState().whitelistPlaid),
 			]);
 			if (blacklist.find(k => k.kid === karas[0].kid) && !whitelist.find(k => k.kid === karas[0].kid)) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED';
