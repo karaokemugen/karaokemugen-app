@@ -342,6 +342,8 @@ function PublicPage() {
 			// not a PLC entry.
 			if (context.globalState.settings.data.user.flag_parentsonly && !kara.plcid && kara.children?.length > 0) {
 				navigate(`/public/karaokes/${kara.kid}`);
+			} else if (kara.plcid) {
+				navigate(`/public/plc/${kara.plcid}`);
 			} else {
 				navigate(`/public/karaoke/${kara.kid}`);
 			}
@@ -448,9 +450,21 @@ function PublicPage() {
 						element={
 							<KaraDetail
 								kid={kara?.kid}
+								scope="public"
+								closeOnPublic={() => {
+									navigate(-1);
+									setKara(undefined);
+								}}
+								changeView={changeView}
+							/>
+						}
+					/>
+					<Route
+						path="/plc/:plcid"
+						element={
+							<KaraDetail
 								playlistcontentId={kara?.plcid}
 								scope="public"
-								plaid={context.globalState.frontendContext.playlistInfoLeft?.plaid}
 								closeOnPublic={() => {
 									navigate(-1);
 									setKara(undefined);

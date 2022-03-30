@@ -84,7 +84,7 @@ function listenChat(chat: Client) {
 			const str = `@${context.username} : ${getSongTitle(song)} - ${getSongSeriesSingers(song)} (${
 				/\./.test(song.repository)
 					? `https://${song.repository}/base/kara/${song.kid}`
-					: `${getState().osURL}/public/karaoke/${song.kid}`
+					: `${getState().osURL}/public/plc/${song.plcid}`
 			})`;
 			chat.say(target, str);
 		} else if (getConfig().Player.LiveComments) {

@@ -98,7 +98,6 @@ export default function KaraReviews(props: Props) {
 	return queue.length >= 1 ? (
 		<KaraDetail
 			kid={queue[0].kid}
-			plaid={playlist.plaid}
 			playlistcontentId={queue[0].plcid}
 			scope="admin"
 			karoulette={{
