@@ -142,6 +142,7 @@ function TagsList() {
 			<Layout.Content>
 				<div style={{ display: 'flex', marginBottom: '1em' }}>
 					<Input.Search
+						value={filter}
 						placeholder={i18next.t('SEARCH_FILTER')}
 						onChange={changeFilter}
 						enterButton={i18next.t('SEARCH')}

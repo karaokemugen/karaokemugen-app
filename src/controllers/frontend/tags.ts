@@ -4,7 +4,16 @@ import { APIData } from '../../lib/types/api';
 import { isUUID } from '../../lib/utils/validators';
 import { SocketIOApp } from '../../lib/utils/ws';
 import { getYears } from '../../services/kara';
-import { addTag, copyTagToRepo, editTag, getTag, getTags, mergeTags, removeTag } from '../../services/tag';
+import {
+	addTag,
+	checkCollections,
+	copyTagToRepo,
+	editTag,
+	getTag,
+	getTags,
+	mergeTags,
+	removeTag,
+} from '../../services/tag';
 import { APIMessage, errMessage } from '../common';
 import { runChecklist } from '../middlewares';
 
@@ -103,6 +112,17 @@ export default function tagsController(router: SocketIOApp) {
 			return { code: 200, message: APIMessage('TAG_COPIED') };
 		} catch (err) {
 			const code = 'TAG_COPIED_ERROR';
+			errMessage(code, err);
+			throw { code: err?.code || 500, message: APIMessage(code) };
+		}
+	});
+
+	router.route('getCollections', async (socket: Socket, req: APIData) => {
+		await runChecklist(socket, req, 'admin', 'open');
+		try {
+			return await checkCollections();
+		} catch (err) {
+			const code = 'COLLECTIONS_GET_ERROR';
 			errMessage(code, err);
 			throw { code: err?.code || 500, message: APIMessage(code) };
 		}

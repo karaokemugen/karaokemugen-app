@@ -95,6 +95,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 				q: this.state.tagFilter,
 				from: pfrom,
 				size: psz,
+				ignoreCollections: true,
 			},
 			false,
 			300000
@@ -135,7 +136,7 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 
 			const option = {
 				value: typeID,
-				label: i18next.t(`TAG_TYPES.${type}`),
+				label: i18next.t(`TAG_TYPES.${type}_other`),
 				children: [],
 			};
 			for (const tag of this.state.tags.filter(tag => tag.types.length && tag.types.indexOf(typeID) >= 0)) {
@@ -346,7 +347,8 @@ class QueueDownload extends Component<unknown, KaraDownloadState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: (titles, record) =>
+				getTitleInLocale(this.context.globalState.settings.data, titles, record.titles_default_language),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),

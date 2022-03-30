@@ -97,6 +97,15 @@ function RepositoriesEdit() {
 		}
 	};
 
+	const syncTags = async (repo: string) => {
+		if (repo) {
+			await commandBackend('syncTagsBetweenRepos', {
+				repoSourceName: name,
+				repoDestName: repo,
+			});
+		}
+	};
+
 	useEffect(() => {
 		loadrepository();
 	}, []);
@@ -118,6 +127,7 @@ function RepositoriesEdit() {
 						save={name ? saveUpdate : saveNew}
 						movingMedia={movingMedia}
 						compareLyrics={compareLyrics}
+						syncTags={syncTags}
 					/>
 				)}
 				<Modal

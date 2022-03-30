@@ -50,16 +50,20 @@ export function getTagInLocale(settings: SettingsStoreData, tag: DBKaraTag, i18n
 	}
 }
 
-export function getTitleInLocale(settings: SettingsStoreData, titles: any): any {
+export function getTitleInLocale(
+	settings: SettingsStoreData,
+	titles: Record<string, string>,
+	default_language: string = 'eng'
+): any {
 	const user = settings?.user;
 	if (user?.main_series_lang && user?.fallback_series_lang) {
 		return titles[user.main_series_lang]
 			? titles[user.main_series_lang]
 			: titles[user.fallback_series_lang]
 			? titles[user.fallback_series_lang]
-			: titles['eng'];
+			: titles[default_language];
 	} else {
-		return titles[getLanguageIn3B(langSupport)] ? titles[getLanguageIn3B(langSupport)] : titles['eng'];
+		return titles[getLanguageIn3B(langSupport)] ? titles[getLanguageIn3B(langSupport)] : titles[default_language];
 	}
 }
 
@@ -118,7 +122,8 @@ export function buildKaraTitle(
 		const version = versions?.length > 0 ? ` ${versions.join(' ')}` : '';
 		return `${langsText} - ${serieText} - ${songtypeText} ${songorderText} - ${getTitleInLocale(
 			settings,
-			data.titles
+			data.titles,
+			data.titles_default_language
 		)} ${version}`;
 	} else {
 		const versions = sortAndHideTags(data?.versions).map(t => (
@@ -134,7 +139,9 @@ export function buildKaraTitle(
 				<span>&nbsp;-&nbsp;</span>
 				<span>{`${songtypeText} ${songorderText}`}</span>
 				<span>&nbsp;-&nbsp;</span>
-				<span className="karaTitleTitle">{getTitleInLocale(settings, data.titles)}</span>
+				<span className="karaTitleTitle">
+					{getTitleInLocale(settings, data.titles, data.titles_default_language)}
+				</span>
 				{versions}
 			</>
 		);
@@ -318,8 +325,8 @@ export function computeTagsElements(
 	}
 
 	const types = versions
-		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC', 'WARNINGS']
-		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'MISC', 'WARNINGS'];
+		? ['VERSIONS', 'FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'COLLECTIONS', 'MISC', 'WARNINGS']
+		: ['FAMILIES', 'PLATFORMS', 'GENRES', 'ORIGINS', 'GROUPS', 'COLLECTIONS', 'MISC', 'WARNINGS'];
 
 	for (const type of types) {
 		const tagData = tagTypes[type];

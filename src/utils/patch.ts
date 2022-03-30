@@ -15,6 +15,8 @@ import Task from '../lib/utils/taskManager';
 import { Repository } from '../types/config';
 import { getState } from './state';
 
+const service = 'Patch';
+
 async function extractZip(path: string, outDir: string, task: Task): Promise<string> {
 	let firstDir: string;
 	await extract(path, {
@@ -39,10 +41,10 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 		data: repo,
 	});
 	try {
-		logger.debug(`Downloading ${repo} archive`, { service: 'Zip' });
+		logger.debug(`Downloading ${repo} archive`, { service });
 		const target = resolve(resolvedPath('Temp'), `base-${repo}.zip`);
 		await downloadFile({ filename: target, url: zipURL }, task, `${repo} zip:`);
-		logger.debug(`Extracting ${repo} archive to ${outDir}`, { service: 'Zip' });
+		logger.debug(`Extracting ${repo} archive to ${outDir}`, { service });
 		const tempDir = resolvedPath('Temp');
 		task.update({
 			text: 'EXTRACTING_ZIP',
@@ -54,7 +56,7 @@ export async function downloadAndExtractZip(zipURL: string, outDir: string, repo
 		await move(resolve(tempDir, dir), outDir);
 		await initHooks();
 	} catch (err) {
-		logger.error(`Unable to download and extract ${repo} zip`, { service: 'Zip', obj: err });
+		logger.error(`Unable to download and extract ${repo} zip`, { service, obj: err });
 		throw err;
 	} finally {
 		task.end();
@@ -73,7 +75,7 @@ export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repo
 		if (change.type === 'delete') {
 			filePromises.push(
 				fs.unlink(file).catch(err => {
-					logger.warn(`Non fatal: Removing file ${file} failed`, { service: 'Patch', obj: err });
+					logger.warn(`Non fatal: Removing file ${file} failed`, { service, obj: err });
 				})
 			);
 			filesModified.unlinked += 1;
@@ -83,7 +85,7 @@ export async function writeFullPatchedFiles(fullFiles: DiffChanges[], repo: Repo
 		}
 	}
 	await Promise.all(filePromises);
-	logger.info(`Wrote ${filesModified.written} and deleted ${filesModified.unlinked} files`, { service: 'Patch' });
+	logger.info(`Wrote ${filesModified.written} and deleted ${filesModified.unlinked} files`, { service });
 }
 
 export async function applyPatch(patch: string, dir: string) {
@@ -104,12 +106,12 @@ export async function applyPatch(patch: string, dir: string) {
 		await patchProcess;
 		return computeFileChanges(patch);
 	} catch (err) {
-		logger.warn('Cannot apply patch from server, fallback to other means', { service: 'DiffPatch', obj: err });
+		logger.warn('Cannot apply patch from server, fallback to other means', { service, obj: err });
 		try {
 			const rejectedPatch = await fs.readFile(resolve(resolvedPath('Temp'), 'patch.rej'), 'utf-8');
-			logger.debug(`Rejected patch : ${rejectedPatch}`, { service: 'DiffPatch' });
+			logger.debug(`Rejected patch : ${rejectedPatch}`, { service });
 		} catch (err2) {
-			logger.debug(`Could not get rejected patch : ${err2}`, { service: 'DiffPatch', obj: err2 });
+			logger.debug(`Could not get rejected patch : ${err2}`, { service, obj: err2 });
 		}
 		throw err;
 	}
@@ -117,7 +119,7 @@ export async function applyPatch(patch: string, dir: string) {
 
 /** Removes all .orig files after a failed patch attempt */
 export async function cleanFailedPatch(repo: Repository) {
-	logger.info("Removing .orig files from repository's base dir", { service: 'DiffPatch' });
+	logger.info("Removing .orig files from repository's base dir", { service });
 	const deletePromises = [];
 	const files = await getFilesRecursively(resolve(getState().dataPath, repo.BaseDir), '.orig');
 	// We want to clean the .orig files. The damaged ones will get replaced anyway.
@@ -125,5 +127,5 @@ export async function cleanFailedPatch(repo: Repository) {
 		deletePromises.push(fs.unlink(file));
 	}
 	await Promise.all(deletePromises);
-	logger.info(`Removed ${files.length} .orig files`, { service: 'DiffPatch' });
+	logger.info(`Removed ${files.length} .orig files`, { service });
 }

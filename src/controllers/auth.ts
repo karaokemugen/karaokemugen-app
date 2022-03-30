@@ -9,6 +9,8 @@ import { getState } from '../utils/state';
 import { APIMessage } from './common';
 import { runChecklist } from './middlewares';
 
+const service = 'Auth';
+
 export default function authController(router: SocketIOApp) {
 	router.route('login', async (_, req) => {
 		if (req.body.login) req.body.login = unescape(req.body.login.trim());
@@ -63,27 +65,27 @@ export default function authController(router: SocketIOApp) {
 			onlineAvailable = true;
 			// Remote token does not exist, we're going to verify it and add it if it does work
 			try {
-				logger.debug('Checking remote token', { service: 'RemoteUser' });
+				logger.debug('Checking remote token', { service });
 				if (await remoteCheckAuth(req.token.username.split('@')[1], req.onlineAuthorization)) {
-					logger.debug('Fetched remote token', { service: 'RemoteUser' });
+					logger.debug('Fetched remote token', { service });
 					try {
 						await fetchAndUpdateRemoteUser(req.token.username, null, req.onlineAuthorization, true);
 						await fetchAndAddFavorites(req.token.username, req.onlineAuthorization);
 					} catch (err) {
 						logger.error('Failed to fetch and update user/favorite from remote', {
-							service: 'RemoteUser',
+							service,
 							obj: err,
 						});
 					}
 				} else {
-					logger.debug('Remote token invalid', { service: 'RemoteUser' });
+					logger.debug('Remote token invalid', { service });
 					// Cancelling remote token.
 					throw 'Invalid online token';
 				}
 			} catch (err) {
 				if (err === 'Invalid online token') throw err;
 				logger.warn('Failed to check remote auth (user logged in as local only)', {
-					service: 'RemoteUser',
+					service,
 					obj: err,
 				});
 				onlineAvailable = false;

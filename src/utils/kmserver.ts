@@ -6,6 +6,8 @@ import logger from '../lib/utils/logger';
 
 let socket: Socket;
 
+const service = 'KMServer';
+
 // Create a connection
 function connectToKMServer() {
 	if (socket) return;
@@ -27,18 +29,18 @@ function connectToKMServer() {
 			if (timeout) reject(err);
 		});
 		socket.on('disconnect', reason => {
-			logger.warn('Connection lost with server,', { service: 'KMOnline', obj: reason });
+			logger.warn('Connection lost with server,', { service, obj: reason });
 		});
 	});
 }
 
 export async function initKMServerCommunication() {
 	try {
-		logger.debug('Connecting to KMServer via socket.io', { service: 'KMOnline' });
+		logger.debug('Connecting to KMServer via socket.io', { service });
 		await connectToKMServer();
 		// Hooks?
 	} catch (e) {
-		logger.error('Cannot establish socket connection to KMServer', { service: 'KMOnline', obj: e });
+		logger.error('Cannot establish socket connection to KMServer', { service, obj: e });
 		throw e;
 	}
 }

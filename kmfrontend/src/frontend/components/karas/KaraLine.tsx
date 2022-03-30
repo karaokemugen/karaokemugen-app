@@ -376,7 +376,11 @@ function KaraLine(props: IProps) {
 											title={i18next.t('KARA.DEJAVU_TOOLTIP')}
 										/>
 									) : null}
-									{getTitleInLocale(context.globalState.settings.data, props.kara.titles)}
+									{getTitleInLocale(
+										context.globalState.settings.data,
+										props.kara.titles,
+										props.kara.titles_default_language
+									)}
 									{downloadIcon()}
 									{props.kara.warnings?.length > 0 ? (
 										<i
@@ -419,6 +423,7 @@ function KaraLine(props: IProps) {
 									<div>
 										{props.kara.children?.length > 0 &&
 										context.globalState.settings.data.user.flag_parentsonly &&
+										plaid !== nonStandardPlaylists.favorites &&
 										props.scope === 'public' ? (
 											<>
 												<i className="far fa-fixed-width fa-list-alt" />

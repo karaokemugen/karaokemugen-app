@@ -30,7 +30,7 @@ import { initRemote } from '../services/remote';
 import { checkDownloadStatus, updateAllRepos } from '../services/repo';
 import { initSession } from '../services/session';
 import { initStats } from '../services/stats';
-import { initUserSystem } from '../services/user';
+import { generateAdminPassword, initUserSystem } from '../services/user';
 import { initDiscordRPC } from '../utils/discordRPC';
 import { initKMServerCommunication } from '../utils/kmserver';
 import { checkPG, dumpPG, restorePG, stopPG } from '../utils/postgresql';
@@ -40,9 +40,10 @@ import { writeStreamFiles } from '../utils/streamerFiles';
 import { getTwitchClient, initTwitch, stopTwitch } from '../utils/twitch';
 import { subRemoteUsers } from '../utils/userPubSub';
 import initFrontend from './frontend';
-import { welcomeToYoukousoKaraokeMugen } from './init';
 
 let shutdownInProgress = false;
+
+const service = 'Engine';
 
 export async function initEngine() {
 	profile('Init');
@@ -65,7 +66,7 @@ export async function initEngine() {
 			});
 			await exit(0);
 		} catch (err) {
-			logger.error('Validation error', { service: 'Engine', obj: err });
+			logger.error('Validation error', { service, obj: err });
 			sentry.error(err);
 			await exit(1);
 		}
@@ -79,7 +80,7 @@ export async function initEngine() {
 			await updateAllMedias();
 			await exit(0);
 		} catch (err) {
-			logger.error('Updating medias failed', { service: 'Engine', obj: err });
+			logger.error('Updating medias failed', { service, obj: err });
 			sentry.error(err);
 			await exit(1);
 		}
@@ -111,10 +112,10 @@ export async function initEngine() {
 			await initDBSystem();
 			initStep(i18n.t('INIT_BASEUPDATE'));
 			await updateAllRepos();
-			logger.info('Done updating karaoke base', { service: 'Engine' });
+			logger.info('Done updating karaoke base', { service });
 			await exit(0);
 		} catch (err) {
-			logger.error('Update failed', { service: 'Engine', obj: err });
+			logger.error('Update failed', { service, obj: err });
 			sentry.error(err);
 			await exit(1);
 		}
@@ -128,7 +129,7 @@ export async function initEngine() {
 			await saveSetting('baseChecksum', checksum);
 			await exit(0);
 		} catch (err) {
-			logger.error('Generation failed', { service: 'Engine', obj: err });
+			logger.error('Generation failed', { service, obj: err });
 			sentry.error(err);
 			await exit(1);
 		}
@@ -157,7 +158,7 @@ export async function initEngine() {
 				await Promise.all(onlinePromises);
 			} catch (err) {
 				// Non-blocking
-				logger.error('Failed to init online system', { service: 'Engine', obj: err });
+				logger.error('Failed to init online system', { service, obj: err });
 				sentry.error(err, 'Warning');
 			}
 		}
@@ -215,9 +216,9 @@ export async function initEngine() {
 			initStep(i18n.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
-			logger.info(`Karaoke Mugen is ${ready}`, { service: 'Engine' });
+			logger.info(`Karaoke Mugen is ${ready}`, { service });
 		} catch (err) {
-			logger.error('Karaoke Mugen IS NOT READY', { service: 'Engine', obj: err });
+			logger.error('Karaoke Mugen IS NOT READY', { service, obj: err });
 			sentry.error(err);
 			if (state.isTest) process.exit(1000);
 		} finally {
@@ -238,6 +239,7 @@ export async function updateBase(internet: boolean) {
 	createImagePreviews(
 		await getKaras({
 			q: 'm:downloaded',
+			ignoreCollections: true,
 		}),
 		'single'
 	);
@@ -245,24 +247,24 @@ export async function updateBase(internet: boolean) {
 
 export async function exit(rc = 0, update = false) {
 	if (shutdownInProgress) return;
-	logger.info('Shutdown in progress', { service: 'Engine' });
+	logger.info('Shutdown in progress', { service });
 	shutdownInProgress = true;
 	closeAllWindows();
 	wipeDownloadQueue();
 	try {
 		if (getState().player?.playerStatus) {
 			await quitmpv();
-			logger.info('Player has shutdown', { service: 'Engine' });
+			logger.info('Player has shutdown', { service });
 		}
 	} catch (err) {
-		logger.warn('mpv error', { service: 'Engine', obj: err });
+		logger.warn('mpv error', { service, obj: err });
 		// Non fatal.
 	}
 	if (getState().DBReady && getConfig().System.Database.bundledPostgresBinary) await dumpPG().catch();
 	try {
 		await closeDB();
 	} catch (err) {
-		logger.warn('Shutting down database failed', { service: 'Engine', obj: err });
+		logger.warn('Shutting down database failed', { service, obj: err });
 	}
 	const c = getConfig();
 	if (getTwitchClient() || c?.Karaoke?.StreamerMode?.Twitch?.Enabled) await stopTwitch();
@@ -272,35 +274,31 @@ export async function exit(rc = 0, update = false) {
 		if (c?.System.Database?.bundledPostgresBinary && (await checkPG())) {
 			try {
 				await stopPG();
-				logger.info('PostgreSQL has shutdown', { service: 'Engine' });
+				logger.info('PostgreSQL has shutdown', { service });
 			} catch (err) {
-				logger.warn('PostgreSQL could not be stopped!', { service: 'Engine', obj: err });
+				logger.warn('PostgreSQL could not be stopped!', { service, obj: err });
 				sentry.error(err);
 			} finally {
 				if (!update) mataNe(rc);
 			}
 		} else if (!update) mataNe(rc);
 	} catch (err) {
-		logger.error('Failed to shutdown PostgreSQL', { service: 'Engine', obj: err });
+		logger.error('Failed to shutdown PostgreSQL', { service, obj: err });
 		sentry.error(err);
 		if (!update) mataNe(1);
 	}
 }
 
 function mataNe(rc: number) {
-	logger.info('Closing', { service: 'Engine' });
+	logger.info('Closing', { service });
 	console.log('\nMata ne !\n');
 	unregisterShortcuts();
 	app.exit(rc);
 }
 
 export function shutdown() {
-	logger.info('Dropping the mic, shutting down!', { service: 'Engine' });
+	logger.info('Dropping the mic, shutting down!', { service });
 	exit(0);
-}
-
-export function getKMStats() {
-	return getStats();
 }
 
 async function preFlightCheck(): Promise<boolean> {
@@ -310,7 +308,7 @@ async function preFlightCheck(): Promise<boolean> {
 	if (!state.opt.noBaseCheck && !conf.App.QuickStart) {
 		const filesChanged = await compareKarasChecksum();
 		if (filesChanged === true) {
-			logger.info('Data files have changed: database generation triggered', { service: 'DB' });
+			logger.info('Data files have changed: database generation triggered', { service });
 			doGenerate = true;
 		}
 		// If karasChecksum returns null, it means there were no files to check. We run generation anyway (it'll return an empty database) to avoid making the current startup procedure any more complex.
@@ -319,7 +317,7 @@ async function preFlightCheck(): Promise<boolean> {
 	const settings = await getSettings();
 	if (!doGenerate && !settings.lastGeneration) {
 		setConfig({ App: { FirstRun: true } });
-		logger.info('Unable to tell when last generation occured: database generation triggered', { service: 'DB' });
+		logger.info('Unable to tell when last generation occured: database generation triggered', { service });
 		doGenerate = true;
 	}
 	if (doGenerate) {
@@ -327,15 +325,15 @@ async function preFlightCheck(): Promise<boolean> {
 			initStep(i18n.t('INIT_GEN'));
 			await generateDB();
 		} catch (err) {
-			logger.error('Generation failed', { service: 'DB', obj: err });
+			logger.error('Generation failed', { service, obj: err });
 			errorStep(i18n.t('ERROR_GENERATION'));
 			throw err;
 		}
 	}
 	const stats = await getStats();
-	logger.info(`Songs        : ${stats?.karas} (${duration(+stats?.duration)})`, { service: 'DB' });
-	logger.info(`Playlists    : ${stats?.playlists}`, { service: 'DB' });
-	logger.info(`Songs played : ${stats?.played}`, { service: 'DB' });
+	logger.info(`Songs        : ${stats?.karas} (${duration(+stats?.duration || 0)})`, { service });
+	logger.info(`Playlists    : ${stats?.playlists}`, { service });
+	logger.info(`Songs played : ${stats?.played}`, { service });
 	// Run this in the background
 	vacuum();
 	return doGenerate;
@@ -363,4 +361,22 @@ async function checkIfAppHasBeenUpdated() {
 		await saveSetting('appVersion', getState().version.number);
 		if (settings.appVersion) setState({ appHasBeenUpdated: true });
 	}
+}
+
+/** Set admin password on first run, and open browser on welcome page.
+ * One, two, three /
+ * Welcome to youkoso japari paaku /
+ * Kyou mo dottan battan oosawagi /
+ * Sugata katachi mo juunin toiro dakara hikareau no /
+ */
+export async function welcomeToYoukousoKaraokeMugen(): Promise<string> {
+	const conf = getConfig();
+	const state = getState();
+	let url = `http://localhost:${state.frontendPort}/welcome`;
+	if (conf.App.FirstRun) {
+		const adminPassword = await generateAdminPassword();
+		url = `http://localhost:${conf.System.FrontendPort}/setup?admpwd=${adminPassword}`;
+	}
+	if (!state.opt.noBrowser && !state.isTest && state.opt.cli) open(url);
+	return url;
 }

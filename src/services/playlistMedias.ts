@@ -15,6 +15,8 @@ import { Media, MediaType } from '../types/medias';
 import { editSetting, resolvedMediaPath } from '../utils/config';
 import { playlistMediasURL } from '../utils/constants';
 
+const service = 'PlaylistMedias';
+
 interface File {
 	basename: string;
 	size: number;
@@ -77,7 +79,7 @@ async function listLocalFiles(dir: string): Promise<FileStat[]> {
 async function removeFiles(files: string[], dir: string) {
 	for (const file of files) {
 		await remove(resolve(dir, file));
-		logger.info(`Removed : ${file}`, { service: 'Medias' });
+		logger.info(`Removed : ${file}`, { service });
 	}
 }
 
@@ -135,14 +137,16 @@ export async function updateMediasHTTP(type: MediaType, task: Task) {
 				bytesToDownload += file.size;
 			}
 			logger.info(
-				`Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`,
-				{ service: type }
+				`Downloading ${filesToDownload.length} new/updated ${type} medias (size : ${prettyBytes(
+					bytesToDownload
+				)})`,
+				{ service }
 			);
 			await downloadMedias(filesToDownload, localDir, type, task);
-			logger.info('Update done', { service: type });
+			logger.info(`Update for ${type} done`, { service });
 		}
 	} catch (err) {
-		logger.warn('Failed to update medias', { service: type, obj: err });
+		logger.warn(`Failed to update ${type} medias`, { service, obj: err });
 	}
 }
 
@@ -209,6 +213,6 @@ export function getSingleMedia(type: MediaType): Media | null {
 	}
 	// Let's remove the series of the jingle we just selected so it won't be picked again next time.
 	if (!fromConfig) currentMedias[type] = currentMedias[type].filter(m => m.series !== media.series);
-	logger.info(`${type} time !`, { service: 'Player' });
+	logger.info(`${type} time !`, { service });
 	return media;
 }

@@ -20,6 +20,9 @@ export async function setSettings(
 		const res = await commandBackend('getSettings');
 		if (!withoutProfile) {
 			try {
+				if (!(res.config as Config).System) {
+					res.config.System = { Repositories: await commandBackend('getRepos') };
+				}
 				const user: User = await commandBackend('getMyAccount');
 				const favorites = await commandBackend('getFavorites', { mini: true });
 				const favoritesSet = new Set<string>();
@@ -69,7 +72,6 @@ function setSentry(environment: string, version: Version, config: Config, user: 
 			dsn: 'https://464814b9419a4880a2197b1df7e1d0ed@o399537.ingest.sentry.io/5256806',
 			environment: environment || 'release',
 			release: version.number,
-			dist: version.sha,
 			ignoreErrors: [
 				'Network Error',
 				'Request failed with status code',

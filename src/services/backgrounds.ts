@@ -9,6 +9,8 @@ import logger from '../lib/utils/logger';
 import { BackgroundList, BackgroundType } from '../types/backgrounds';
 import Sentry from '../utils/sentry';
 
+const service = 'Backgrounds';
+
 export const backgroundTypes = ['pause', 'stop', 'poll', 'bundled'] as const;
 
 /** Find a background for the player to use */
@@ -40,7 +42,7 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 			music: files.filter(f => audioFileRegexp.test(f)).map(f => resolve(path, f)),
 		};
 	} catch (err) {
-		logger.error('Unable to get background files', { service: 'background', obj: err });
+		logger.error('Unable to get background files', { service, obj: err });
 		Sentry.addErrorInfo('args', type);
 		Sentry.error(err);
 		throw err;

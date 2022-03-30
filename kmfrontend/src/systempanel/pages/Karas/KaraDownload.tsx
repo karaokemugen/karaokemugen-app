@@ -508,7 +508,8 @@ class KaraDownload extends Component<unknown, KaraDownloadState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: (titles, record) =>
+				getTitleInLocale(this.context.globalState.settings.data, titles, record.titles_default_language),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),

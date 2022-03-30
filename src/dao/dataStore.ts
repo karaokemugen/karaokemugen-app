@@ -10,6 +10,8 @@ import logger, { profile } from '../lib/utils/logger';
 import Task from '../lib/utils/taskManager';
 import sentry from '../utils/sentry';
 
+const service = 'Store';
+
 const dataStore = {
 	karas: new Map(),
 	tags: new Map(),
@@ -71,11 +73,12 @@ async function processDataFile(file: string, task?: Task) {
 
 export async function baseChecksum(): Promise<string> {
 	profile('baseChecksum');
+	logger.info('Comparing files and database data', { service });
 	try {
 		const [karaFiles, tagFiles] = await Promise.all([listAllFiles('Karaokes'), listAllFiles('Tags')]);
 		const fileCount = karaFiles.length + tagFiles.length;
 		if (karaFiles.length === 0) return null;
-		logger.info(`Found ${karaFiles.length} karas and ${tagFiles.length} tags`, { service: 'Store' });
+		logger.info(`Found ${karaFiles.length} karas and ${tagFiles.length} tags`, { service });
 		const task = new Task({
 			text: 'DATASTORE_UPDATE',
 			value: 0,
@@ -95,7 +98,7 @@ export async function baseChecksum(): Promise<string> {
 		sortTagsStore();
 		task.end();
 		const storeSum = getStoreChecksum();
-		logger.debug(`Store checksum : ${storeSum}`, { service: 'Store' });
+		logger.debug(`Store checksum : ${storeSum}`, { service });
 		// Use this only when debugging store
 		/**
 		  	const store = JSON.stringify({
@@ -106,7 +109,7 @@ export async function baseChecksum(): Promise<string> {
 		*/
 		return storeSum;
 	} catch (err) {
-		logger.warn('Unable to browse through your data files', { service: 'Store', obj: err });
+		logger.warn('Unable to browse through your data files', { service, obj: err });
 		sentry.error(err, 'Warning');
 	} finally {
 		profile('baseChecksum');

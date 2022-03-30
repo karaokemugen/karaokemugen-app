@@ -38,6 +38,7 @@ interface KaraFormProps {
 
 interface KaraFormState {
 	titles: Record<string, string>;
+	defaultLanguage: string;
 	titlesIsTouched: boolean;
 	serieSingersRequired: boolean;
 	subfile: any[];
@@ -64,7 +65,8 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		const kara = this.props.kara || {};
 		this.getRepositories();
 		this.state = {
-			titles: kara?.titles ? kara.titles : { eng: '' },
+			titles: kara?.titles ? kara.titles : {},
+			defaultLanguage: kara?.titles_default_language || null,
 			titlesIsTouched: false,
 			serieSingersRequired: false,
 			subfile: kara.subfile
@@ -106,7 +108,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		if (this.formRef.current.getFieldValue('parents') !== null) {
 			const parents: string[] = this.formRef.current.getFieldValue('parents');
 			if (parents.length > 0) {
-				const res = await commandBackend('getKaras', { q: `k:${parents.join()}` });
+				const res = await commandBackend('getKaras', { q: `k:${parents.join()}`, ignoreCollections: true });
 				const karaSearch = res.content.map(kara => {
 					return {
 						label: buildKaraTitle(this.context.globalState.settings.data, kara, true, res.i18n),
@@ -123,7 +125,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		event.preventDefault();
 		const parent: DBKara = await commandBackend('getKara', { kid });
 		if (parent.children.length > 0) {
-			const childrens = await commandBackend('getKaras', { q: `k:${parent.children.join()}` });
+			const childrens = await commandBackend('getKaras', {
+				q: `k:${parent.children.join()}`,
+				ignoreCollections: true,
+			});
 			Modal.info({
 				title: i18next.t('KARA.CHILDRENS', {
 					parent: buildKaraTitle(this.context.globalState.settings.data, parent, true),
@@ -182,8 +187,6 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
 		} else if (!this.state.titles || Object.keys(this.state.titles).length === 0) {
 			message.error(i18next.t('KARA.TITLE_REQUIRED'));
-		} else if (!this.state.titles.eng) {
-			message.error(i18next.t('KARA.TITLE_ENG_REQUIRED'));
 		} else {
 			this.props.save(this.getKaraToSend(values));
 		}
@@ -191,7 +194,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	getKaraToSend = values => {
 		const kara: Kara = values;
-		const mediaVersionArr = this.state.titles.eng.split(' ~ ');
+		const mediaVersionArr = this.state.titles[this.state.defaultLanguage].split(' ~ ');
 		const mediaVersion =
 			mediaVersionArr.length > 1 ? mediaVersionArr[mediaVersionArr.length - 1].replace(' Vers', '') : 'Default';
 		// Convert Kara to KaraFileV4
@@ -228,7 +231,10 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				ignoreHooks: kara.ignoreHooks,
 				kid: this.props.kara?.kid || UUIDv4(),
 				modified_at: new Date().toISOString(),
-				parents: kara.parents?.length > 0 ? kara.parents : undefined,
+				parents:
+					kara.parents?.length > 0
+						? kara.parents.filter((e, pos) => kara.parents.indexOf(e) === pos)
+						: undefined,
 				repository: kara.repository,
 				songorder: kara.songorder ? kara.songorder : undefined,
 				tags: Object.fromEntries(
@@ -244,8 +250,9 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						})
 				) as unknown as any,
 				titles: this.state.titles,
+				titles_default_language: this.state.defaultLanguage,
 				titles_aliases: kara.titles_aliases?.length > 0 ? kara.titles_aliases : undefined,
-				title: this.state.titles.eng,
+				title: this.state.titles[this.state.defaultLanguage],
 				year: kara.year,
 			},
 		};
@@ -355,6 +362,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					: '',
 				filter: value,
 				size: 50,
+				ignoreCollections: true,
 			}).catch(() => {
 				return { content: [] };
 			});
@@ -388,6 +396,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				'k:' +
 				kid,
 			size: 1,
+			ignoreCollections: true,
 		});
 		const parentKara = karas && (karas.content[0] as DBKara);
 		if (parentKara && parentKara.kid === kid) {
@@ -457,6 +466,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 					subfile: this.props.kara?.subfile,
 					parents: this.props.kara?.parents || (this.state.parentKara && [this.state.parentKara?.kid]) || [],
 					titles_aliases: this.props.kara?.titles_aliases || this.state.parentKara?.titles_aliases,
+					collections: this.props.kara?.collections || this.state.parentKara?.collections,
 				}}
 			>
 				<Form.Item
@@ -561,6 +571,32 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				<Form.Item
 					label={
 						<span>
+							{i18next.t('TAG_TYPES.COLLECTIONS_other')}&nbsp;
+							<Tooltip title={i18next.t('KARA.COLLECTIONS_TOOLTIP')}>
+								<QuestionCircleOutlined />
+							</Tooltip>
+						</span>
+					}
+					labelCol={{ flex: '0 1 220px' }}
+					wrapperCol={{ span: 10, offset: 0 }}
+					name="collections"
+					rules={[
+						{
+							required: true,
+							message: i18next.t('KARA.COLLECTIONS_REQUIRED'),
+						},
+					]}
+				>
+					<EditableTagGroup
+						form={this.formRef.current}
+						tagType={16}
+						checkboxes={true}
+						onChange={tags => this.formRef.current.setFieldsValue({ collections: tags })}
+					/>
+				</Form.Item>
+				<Form.Item
+					label={
+						<span>
 							{i18next.t('KARA.PARENTS')}&nbsp;
 							<Tooltip title={i18next.t('KARA.PARENTS_TOOLTIP')}>
 								<QuestionCircleOutlined />
@@ -593,13 +629,25 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 220px' }}
+					rules={[
+						{
+							required: !this.state.titles || Object.keys(this.state.titles).length === 0,
+							message: i18next.t('KARA.TITLE_REQUIRED'),
+						},
+					]}
+					name="titles"
 				></Form.Item>
 				<LanguagesList
 					value={this.state.titles}
 					onFieldIsTouched={isFieldTouched =>
 						this.state.titlesIsTouched !== true && this.setState({ titlesIsTouched: isFieldTouched })
 					}
-					onChange={titles => this.setState({ titles })}
+					onChange={titles => {
+						this.setState({ titles });
+						this.formRef.current.validateFields(['titles']);
+					}}
+					defaultLanguage={this.state.defaultLanguage}
+					onDefaultLanguageSelect={defaultLanguage => this.setState({ defaultLanguage })}
 				/>
 				<Form.Item
 					label={

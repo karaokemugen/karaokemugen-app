@@ -15,10 +15,12 @@ import { getKara } from './kara';
 import { integrateKaraFile } from './karaManagement';
 import { consolidateTagsInRepo } from './tag';
 
+const service = 'KaraCreation';
+
 export async function editKara(editedKara: EditedKara) {
 	const task = new Task({
 		text: 'EDITING_SONG',
-		subtext: editedKara.kara.data.titles.eng,
+		subtext: editedKara.kara.data.titles[editedKara.kara.data.titles_default_language],
 	});
 	const kara = editedKara.kara;
 	// Validation here, processing stuff later
@@ -34,10 +36,9 @@ export async function editKara(editedKara: EditedKara) {
 	try {
 		profile('editKaraFile');
 		const oldKara = await getKara(kara.data.kid, adminToken);
-		// If mediafile_orig is present, our user has uploaded a new song
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
-		let filenames = determineMediaAndLyricsFilenames(kara, karaFile);
+		const filenames = determineMediaAndLyricsFilenames(kara, karaFile);
 		const mediaDest = resolve(resolvedPathRepos('Medias', kara.data.repository)[0], filenames.mediafile);
 		let oldMediaPath: string;
 		if (editedKara.modifiedMedia || oldKara.mediafile !== filenames.mediafile) {
@@ -112,7 +113,7 @@ export async function editKara(editedKara: EditedKara) {
 		await integrateKaraFile(karaDest, kara, false, true);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
-		logger.error('Error while editing kara', { service: 'KaraGen', obj: err });
+		logger.error('Error while editing kara', { service, obj: err });
 		if (!err.msg) {
 			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 			sentry.error(err);
@@ -126,14 +127,13 @@ export async function editKara(editedKara: EditedKara) {
 export async function createKara(kara: KaraFileV4) {
 	const task = new Task({
 		text: 'CREATING_SONG',
-		subtext: kara.data.titles.eng,
+		subtext: kara.data.titles[kara.data.titles_default_language],
 	});
 	// Validation here, processing stuff later
 	// No sentry triggered if validation fails
 	try {
 		// Write kara file in place
 		verifyKaraData(kara);
-
 		if (!kara.data.ignoreHooks) await applyKaraHooks(kara);
 		const karaFile = await defineFilename(kara);
 		const mediaPath = resolve(resolvedPath('Temp'), kara.medias[0].filename);
@@ -165,7 +165,7 @@ export async function createKara(kara: KaraFileV4) {
 		await integrateKaraFile(karaDest, kara, false, true);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
-		logger.error('Error while creating kara', { service: 'KaraGen', obj: err });
+		logger.error('Error while creating kara', { service, obj: err });
 		if (!err.msg) {
 			sentry.addErrorInfo('args', JSON.stringify(arguments, null, 2));
 			sentry.addErrorInfo('kara', JSON.stringify(kara, null, 2));

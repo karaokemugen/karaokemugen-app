@@ -9,6 +9,8 @@ import Task from '../lib/utils/taskManager';
 import { getRepo } from '../services/repo';
 import { Repository } from '../types/config';
 
+const service = 'FTP';
+
 interface FTPOptions {
 	repoName: string;
 }
@@ -27,7 +29,7 @@ export default class FTP {
 		if (!repo) throw 'Unknown repository';
 		if (this.validateFTPSettings(repo)) {
 			this.client = new Client();
-			logger.info(`Connecting to FTP for ${repo.Name}`, { service: 'FTP' });
+			logger.info(`Connecting to FTP for ${repo.Name}`, { service });
 			try {
 				await this.client.access({
 					host: repo.FTP.Host,
@@ -38,18 +40,18 @@ export default class FTP {
 				});
 			} catch (err) {
 				logger.error(`Failed to connect to FTP for repository ${repo.Name}: ${err}`, {
-					service: 'FTP',
+					service,
 					obj: err,
 				});
 				throw err;
 			}
 			if (repo.FTP.BaseDir) {
 				try {
-					logger.info(`Switching to directory ${repo.FTP.BaseDir}`, { service: 'FTP' });
+					logger.info(`Switching to directory ${repo.FTP.BaseDir}`, { service });
 					await this.client.cd(repo.FTP.BaseDir);
 				} catch (err) {
 					logger.error(`Failed to switch to directory ${repo.FTP.BaseDir}: ${err}`, {
-						service: 'FTP',
+						service,
 						obj: err,
 					});
 					throw err;
@@ -60,17 +62,17 @@ export default class FTP {
 	}
 
 	async rename(origFile: string, newFile: string) {
-		logger.info(`Renaming file "${origFile}" to "${newFile}"`, { service: 'FTP' });
+		logger.info(`Renaming file "${origFile}" to "${newFile}"`, { service });
 		return this.client.rename(origFile, newFile);
 	}
 
 	async delete(file: string) {
-		logger.info(`Deleting file ${file}`, { service: 'FTP' });
+		logger.info(`Deleting file ${file}`, { service });
 		return this.client.remove(basename(file));
 	}
 
 	async upload(file: string) {
-		logger.info(`Sending file ${file}`, { service: 'FTP' });
+		logger.info(`Sending file ${file}`, { service });
 		const stat = await fs.stat(file).catch(_err => {
 			throw `File "${file}" unknown on local folder`;
 		});
@@ -90,9 +92,9 @@ export default class FTP {
 		});
 		try {
 			await this.client.uploadFrom(file, basename(file));
-			logger.info(`File "${file}" uploaded!`, { service: 'FTP' });
+			logger.info(`File "${file}" uploaded!`, { service });
 		} catch (err) {
-			logger.error(`Failed to send file ${basename(file)}: ${err}`, { service: 'FTP', obj: err });
+			logger.error(`Failed to send file ${basename(file)}: ${err}`, { service, obj: err });
 			throw err;
 		} finally {
 			// Stop tracking progress

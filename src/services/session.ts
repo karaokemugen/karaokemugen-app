@@ -23,6 +23,8 @@ import sentry from '../utils/sentry';
 import { getState, setState } from '../utils/state';
 import { getSongSeriesSingers, getSongTitle, getSongVersion } from './kara';
 
+const service = 'Sessions';
+
 export async function getSessions() {
 	const sessions = await selectSessions();
 	sessions.forEach((e, i) => {
@@ -135,7 +137,7 @@ export async function initSession() {
 	await autoFillSessionEndedAt(getState().currentSessionID);
 	// Check every minute if we should be notifying the end of session to the operator
 	setInterval(checkSessionEnd, 1000 * 60);
-	logger.debug('Sessions initialized', { service: 'Sessions' });
+	logger.debug('Sessions initialized', { service });
 	profile('initSession');
 }
 
@@ -148,7 +150,7 @@ function checkSessionEnd() {
 	const sessionWarnDate = new Date(sessionWarnDateInt).toISOString().substring(0, 16);
 	const currentDate = new Date(currentDateInt).toISOString().substring(0, 16);
 	if (currentDate === sessionWarnDate) {
-		logger.info('Notifying operator of end of session being near', { service: 'Sessions' });
+		logger.info('Notifying operator of end of session being near', { service });
 		emitWS(
 			'operatorNotificationWarning',
 			APIMessage(

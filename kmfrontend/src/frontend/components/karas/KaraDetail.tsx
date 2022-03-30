@@ -20,7 +20,7 @@ import {
 	getPreviewLink,
 	getTitleInLocale,
 } from '../../../utils/kara';
-import { commandBackend, isRemote } from '../../../utils/socket';
+import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, isNonStandardPlaylist, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
@@ -28,6 +28,7 @@ import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
 import AddKaraButton from '../generic/buttons/AddKaraButton';
+import VideoPreview from '../generic/VideoPreview';
 
 interface IProps {
 	kid: string | undefined;
@@ -255,7 +256,7 @@ export default function KaraDetail(props: IProps) {
 			</>
 		);
 
-		const addKaraButton = <AddKaraButton kid={kara.kid} titles={kara.titles} />;
+		const addKaraButton = <AddKaraButton kara={kara} />;
 
 		const makeFavButton = <MakeFavButton kid={kara.kid} />;
 
@@ -275,7 +276,7 @@ export default function KaraDetail(props: IProps) {
 				</button>
 			);
 
-		const modifyKaraokeButton = context.globalState.settings.data.config?.System?.Repositories.filter(
+		const modifyKaraokeButton = context.globalState.settings.data.config?.System?.Repositories?.filter(
 			value => value.Name === kara.repository
 		)[0].MaintainerMode ? (
 			<a href={`/system/karas/${kara.kid}`}>
@@ -284,22 +285,6 @@ export default function KaraDetail(props: IProps) {
 					<span>{i18next.t('KARA_DETAIL.MODIFY_KARAOKE')}</span>
 				</button>
 			</a>
-		) : null;
-
-		const video = showVideo ? (
-			<video
-				src={
-					isRemote() || kara.download_status !== 'DOWNLOADED'
-						? `https://${kara.repository}/downloads/medias/${kara.mediafile}`
-						: `/medias/${kara.mediafile}`
-				}
-				controls={true}
-				autoPlay={true}
-				loop={true}
-				playsInline={true}
-				onLoadStart={e => (e.currentTarget.volume = 0.5)}
-				className={`modal-video${props.scope === 'public' ? ' public' : ''}`}
-			/>
 		) : null;
 
 		const lyricsKara = kara.subfile ? (
@@ -335,7 +320,11 @@ export default function KaraDetail(props: IProps) {
 					) : null}
 					<div className="modal-title-block">
 						<h4 className="modal-title">
-							{getTitleInLocale(context.globalState.settings.data, kara.titles)}
+							{getTitleInLocale(
+								context.globalState.settings.data,
+								kara.titles,
+								kara.titles_default_language
+							)}
 						</h4>
 						<h5 className="modal-series">
 							<InlineTag
@@ -393,7 +382,7 @@ export default function KaraDetail(props: IProps) {
 									{downloadVideoButton}
 									{modifyKaraokeButton}
 								</div>
-								{video}
+								<VideoPreview kara={kara} show={showVideo} scope={props.scope} />
 								{details}
 								{lyricsKara}
 							</div>
@@ -417,7 +406,7 @@ export default function KaraDetail(props: IProps) {
 								: null}
 							{showVideoButton}
 						</div>
-						{video}
+						<VideoPreview kara={kara} show={showVideo} scope={props.scope} />
 						{details}
 						{lyricsKara}
 					</div>

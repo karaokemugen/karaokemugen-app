@@ -24,7 +24,7 @@
 	"LOGIN_MANDATORY": "Debes iniciar sesión",
 	"CRITERIA": {
 		"DELETE": "Borrar este criterio",
-		"ADD": "Añadir un valor a criterios",
+		"ADD_PLACEHOLDER": "Añadir un valor a criterios",
 		"CRITERIA_DESC": "Seleccionar y añadir criterios para incluir canciones específicas automáticamente.",
 		"EXPL": "La playlist inteligente se crea de <1>los criterios</1>, también puedes añadir canciones manualmente a la lista.",
 		"LABEL": {

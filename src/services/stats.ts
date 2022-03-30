@@ -17,6 +17,8 @@ import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { getSessions } from './session';
 
+const service = 'Stats';
+
 let intervalID: any;
 
 /** Initialize stats upload */
@@ -51,14 +53,14 @@ export async function sendPayload(host: string, minimal: boolean) {
 		payload = await buildPayload(minimal);
 		if (!payload.instance.instance_id) throw 'Could not fetch instance ID';
 		logger.info(`Sending payload to ${host} (${prettyBytes(JSON.stringify(payload).length)})`, {
-			service: 'Stats',
+			service,
 		});
 		savePayload(payload, host);
 		await HTTP.post(`https://${host}/api/stats`, payload);
 
-		logger.info(`Payload sent successfully to ${host}`, { service: 'Stats' });
+		logger.info(`Payload sent successfully to ${host}`, { service });
 	} catch (err) {
-		logger.warn(`Uploading stats payload failed (${host})`, { service: 'Stats', obj: err });
+		logger.warn(`Uploading stats payload failed (${host})`, { service, obj: err });
 		if (err !== 'This instance is not connected to the internets' && err !== 'Could not fetch instance ID') {
 			emitWS('operatorNotificationError', APIMessage('NOTIFICATION.OPERATOR.ERROR.STATS_PAYLOAD'));
 			if (payload) sentry.addErrorInfo('Payload', JSON.stringify(payload, null, 2), payload);
@@ -74,10 +76,10 @@ async function savePayload(payload: any, host: string) {
 			JSON.stringify(payload, null, 2),
 			'utf-8'
 		);
-		logger.info('Payload data saved locally to logs/statsPayload.json', { service: 'Stats' });
+		logger.info('Payload data saved locally to logs/statsPayload.json', { service });
 	} catch (err) {
 		// Non-fatal
-		logger.warn('Could not save payload', { service: 'Stats', obj: err });
+		logger.warn('Could not save payload', { service, obj: err });
 		sentry.error(err, 'Warning');
 	}
 }

@@ -284,6 +284,19 @@ function PublicPage() {
 						onChange={changeFilterValue}
 					/>
 				</div>
+				{view === 'favorites' ? (
+					<button
+						className="btn btn-default"
+						onClick={() =>
+							setSearchType(ctype => {
+								return ctype === 'search' ? 'recent' : 'search';
+							})
+						}
+						title={searchType === 'search' ? i18next.t('VIEW_STANDARD') : i18next.t('VIEW_RECENT')}
+					>
+						<i className={`fas ${searchType === 'search' ? 'fa-sort-alpha-down' : 'fa-clock'}`} />
+					</button>
+				) : null}
 				{isPollActive ? (
 					<button
 						className="btn btn-default showPoll"

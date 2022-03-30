@@ -7,6 +7,7 @@ export interface tagType {
 
 export const tagTypesKaraFileV4Order = [
 	'AUTHORS',
+	'COLLECTIONS',
 	'CREATORS',
 	'FAMILIES',
 	'GENRES',
@@ -103,7 +104,7 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 		karajson: 'misc',
 	},
 	VERSIONS: {
-		icon: 'tachometer-alt',
+		icon: 'gauge-high',
 		type: 14,
 		color: 'white',
 		karajson: 'versions',
@@ -113,6 +114,12 @@ export const tagTypes: Readonly<{ [key: string]: tagType }> = {
 		type: 15,
 		color: 'red',
 		karajson: 'warnings',
+	},
+	COLLECTIONS: {
+		icon: 'layer-group',
+		type: 16,
+		color: 'white',
+		karajson: 'collections',
 	},
 };
 

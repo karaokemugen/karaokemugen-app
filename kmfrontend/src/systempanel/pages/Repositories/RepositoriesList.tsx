@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 
 import { Repository } from '../../../../../src/types/config';
 import { commandBackend } from '../../../utils/socket';
+import CollectionsActivation from './CollectionsActivation';
 
 interface RepositoryListState {
 	repositories: Repository[];
@@ -68,9 +69,11 @@ class RepositoryList extends Component<unknown, RepositoryListState> {
 			<>
 				<Layout.Header>
 					<div className="title">{i18next.t('HEADERS.REPOSITORIES.TITLE')}</div>
+					<div className="description">{i18next.t('HEADERS.REPOSITORIES.DESCRIPTION_COLLECTION')}</div>
 					<div className="description">{i18next.t('HEADERS.REPOSITORIES.DESCRIPTION')}</div>
 				</Layout.Header>
 				<Layout.Content>
+					<CollectionsActivation />
 					<Link to={'/system/repositories/new'}>
 						<Button style={{ margin: '0.75em' }} type="primary">
 							{i18next.t('REPOSITORIES.NEW_REPOSITORY')}

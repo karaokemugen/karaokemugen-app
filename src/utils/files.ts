@@ -7,6 +7,8 @@ import logger from '../lib/utils/logger';
 import { KMFileType } from '../types/files';
 import { getState } from './state';
 
+const service = 'Files';
+
 export function detectKMFileTypes(data: any): KMFileType {
 	return data?.header?.description || data?.Header?.description;
 }
@@ -22,7 +24,7 @@ export function pathIsContainedInAnother(p1, p2) {
 
 export async function getFreeSpace(resolvedPath: string): Promise<number> {
 	const fileSystems = await fsSize();
-	logger.debug(`Filesystems reported with ${resolvedPath}`, { service: 'FS', obj: fileSystems });
+	logger.debug(`Filesystems reported with ${resolvedPath}`, { service, obj: fileSystems });
 	// Let's find out which mount has our path
 	const fileSystem = fileSystems.find(f => resolvedPath.toLowerCase().startsWith(f.mount.toLowerCase()));
 	// If path doesn't exist, let's return 0 bytes left

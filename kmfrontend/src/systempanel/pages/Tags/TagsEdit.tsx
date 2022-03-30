@@ -2,8 +2,8 @@ import { Layout } from 'antd';
 import i18next from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Tag } from '../../../../../src/lib/types/tag';
 
-import { DBTag } from '../../../../../src/lib/types/database/tag';
 import { commandBackend } from '../../../utils/socket';
 import TagsForm from './TagsForm';
 
@@ -11,11 +11,11 @@ function TagEdit() {
 	const navigate = useNavigate();
 	const { tid } = useParams();
 
-	const [tag, setTag] = useState<DBTag>();
-	const [tags, setTags] = useState<DBTag[]>([]);
+	const [tag, setTag] = useState<Tag>();
+	const [tags, setTags] = useState<Tag[]>([]);
 	const [loaded, setLoaded] = useState(false);
 
-	const saveNew = async (tag: DBTag) => {
+	const saveNew = async (tag: Tag) => {
 		try {
 			await commandBackend('addTag', tag, true, 300000);
 			navigate('/system/tags');
@@ -24,7 +24,7 @@ function TagEdit() {
 		}
 	};
 
-	const saveUpdate = async (tag: DBTag) => {
+	const saveUpdate = async (tag: Tag) => {
 		try {
 			await commandBackend('editTag', tag, true, 300000);
 			navigate('/system/tags');

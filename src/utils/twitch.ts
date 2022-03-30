@@ -11,6 +11,8 @@ import { getCurrentSong } from '../services/playlist';
 import { addPollVoteIndex } from '../services/poll';
 import { getState } from './state';
 
+const service = 'Twitch';
+
 // We declare our client here se we can interact with it from different functions.
 let client: Client = null;
 
@@ -35,9 +37,9 @@ export async function initTwitch() {
 		client = tmi.client(opts);
 		await client.connect();
 		listenChat(client);
-		logger.info('Twitch initialized', { service: 'Twitch' });
+		logger.info('Twitch initialized', { service });
 	} catch (err) {
-		logger.error('Unable to login to chat', { service: 'Twitch', obj: err });
+		logger.error('Unable to login to chat', { service, obj: err });
 	} finally {
 		profile('initTwitch');
 	}
@@ -49,7 +51,7 @@ export async function sayTwitch(message: string) {
 		try {
 			await client.say(getConfig().Karaoke.StreamerMode.Twitch.Channel, message);
 		} catch (err) {
-			logger.warn('Unable to say to channel', { service: 'Twitch', obj: err });
+			logger.warn('Unable to say to channel', { service, obj: err });
 			throw err;
 		}
 	}

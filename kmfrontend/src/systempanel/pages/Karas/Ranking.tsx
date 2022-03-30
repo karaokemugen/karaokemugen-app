@@ -27,7 +27,7 @@ class Ranking extends Component<unknown, RankingState> {
 
 	refresh = async () => {
 		try {
-			const res = await commandBackend('getKaras', { order: 'requestedLocal' });
+			const res = await commandBackend('getKaras', { order: 'requestedLocal', ignoreCollections: true });
 			this.setState({ karas: res.content, i18n: res.i18n });
 		} catch (e) {
 			// already display
@@ -93,7 +93,8 @@ class Ranking extends Component<unknown, RankingState> {
 			title: i18next.t('KARA.TITLE'),
 			dataIndex: 'titles',
 			key: 'titles',
-			render: titles => getTitleInLocale(this.context.globalState.settings.data, titles),
+			render: (titles, record) =>
+				getTitleInLocale(this.context.globalState.settings.data, titles, record.titles_default_language),
 		},
 		{
 			title: i18next.t('TAG_TYPES.VERSIONS_other'),

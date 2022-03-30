@@ -4,9 +4,10 @@ Every good will is welcome.
 
 To see how you can help, check :
 
--   [Documentation](http://docs.karaokes.moe)
+-   [Documentation](https://docs.karaokes.moe)
 -   [Create an issue or try to resolve one!](https://gitlab.com/karaokemugen/karaokemugen-app/issues)
 -   [Come to our Discord!](https://karaokes.moe/discord)
+-   [Post a message on our forum](https://discourse.karaokes.moe)
 
 Please read the following before contributing :
 
@@ -26,10 +27,13 @@ So if you want to work on a new feature for example, create a branch or merge re
 Please respect coding conventions already in place as much as possible.
 
 -   Use of async/await instead of .then/.catch and callbacks
--   Use `for..of` or `for..in` loops instead of `.forEach` unless your forEach is not using async functions or is a oneliner
+-   Use `for..of` loops instead of `.forEach` unless :
+    -   Your `.forEach` is not using async functions
+    -   You're writing a oneliner function
+    -   You need to work on index instead of the array contents themselves
 -   Use TypeScript
--   Use import module syntax, not the require one
--   Before adding a dependency, ask on Discord if it should really be added. Who knows, someone might have an idea on how to avoid using it, or a better alternative.
+-   Use ES Modules syntax.
+-   Before adding a dependancy, ask on Discord if it should really be added. Who knows, someone might have an idea on how to avoid using it, or a better alternative.
 
 ## Workflow
 
@@ -41,7 +45,7 @@ If an issue is closed but has not been fixed and could be reopened, please add a
 
 ### Working on an issue
 
-When starting work on an issue, **DO NOT** use the "Create merge request" button as it'll create a new branch on `master` by default. **DO** use the arrow next to it to create your new branch from the `next` branch instead.
+Use the `Create merge request` button on the issue page.
 
 ### Merging
 

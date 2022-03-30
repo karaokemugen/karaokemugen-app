@@ -15,6 +15,8 @@ import { startSub, stopSub } from '../utils/userPubSub';
 import { convertToRemoteFavorites } from './favorites';
 import { checkPassword, createJwtToken, createUser, editUser, getUser } from './user';
 
+const service = 'RemoteUser';
+
 /** Check if the online token we have is still valid on KM Server */
 export async function remoteCheckAuth(instance: string, token: string) {
 	try {
@@ -26,7 +28,7 @@ export async function remoteCheckAuth(instance: string, token: string) {
 		return res.data;
 	} catch (err) {
 		if ([403, 401].includes(err.response?.status)) return false;
-		logger.debug('Got error when check auth', { service: 'RemoteUser', obj: err });
+		logger.debug('Got error when check auth', { service, obj: err });
 		throw err;
 	}
 }
@@ -44,7 +46,7 @@ export async function remoteLogin(username: string, password: string): Promise<s
 		// Remote login returned 401 so we throw an error
 		// For other errors, no error is thrown
 		if (err.statusCode === 401) throw 'Unauthorized';
-		logger.debug(`Got error when connecting user ${username}`, { service: 'RemoteUser', obj: err });
+		logger.debug(`Got error when connecting user ${username}`, { service, obj: err });
 		return null;
 	}
 }
@@ -54,7 +56,7 @@ export async function resetRemotePassword(user: string) {
 	try {
 		await HTTP.post(`https://${instance}/api/users/${username}/resetpassword`);
 	} catch (err) {
-		logger.error(`Could not trigger reset password for ${user}`, { service: 'RemoteUser', obj: err });
+		logger.error(`Could not trigger reset password for ${user}`, { service, obj: err });
 		throw err;
 	}
 }
@@ -66,7 +68,7 @@ async function getARemoteUser(login: string, instance: string): Promise<User> {
 		return user.data as User;
 	} catch (err) {
 		if ([404].includes(err.response?.status)) return null;
-		logger.debug('Got error when trying to get an online user', { service: 'RemoteUser', obj: err });
+		logger.debug('Got error when trying to get an online user', { service, obj: err });
 		throw {
 			code: 500,
 			msg: 'USER_GET_ERROR_ONLINE',
@@ -92,7 +94,7 @@ export async function createRemoteUser(user: User) {
 		});
 		startSub(login, instance);
 	} catch (err) {
-		logger.debug(`Got error when create remote user ${login}`, { service: 'RemoteUser', obj: err });
+		logger.debug(`Got error when create remote user ${login}`, { service, obj: err });
 		throw {
 			code: 500,
 			msg: 'USER_CREATE_ERROR_ONLINE',
@@ -112,7 +114,7 @@ export async function getRemoteUser(username: string, token: string): Promise<Us
 		});
 		return res.data as User;
 	} catch (err) {
-		logger.error(`Got error when get remote user ${username}`, { service: 'RemoteUser', obj: err });
+		logger.error(`Got error when get remote user ${username}`, { service, obj: err });
 		throw err;
 	}
 }
@@ -172,7 +174,7 @@ export async function fetchRemoteAvatar(instance: string, avatarFile: string): P
 		avatarPath = resolve(resolvedPath('Temp'), avatarFile);
 		await writeStreamToFile(res.data as Stream, avatarPath);
 	} catch (err) {
-		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, { service: 'User', obj: err });
+		logger.warn(`Could not write remote avatar to local file ${avatarFile}`, { service, obj: err });
 		throw err;
 	}
 	return avatarPath;

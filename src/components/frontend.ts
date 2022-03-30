@@ -29,6 +29,8 @@ import { initWS, SocketIOApp } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 
+const service = 'Frontend';
+
 /** Declare all routers for API types */
 
 function apiHTTPRouter(ws: SocketIOApp): Router {
@@ -109,19 +111,19 @@ export default function initFrontend(): number {
 		let port = state.frontendPort;
 		try {
 			server.listen(port, () => {
-				logger.debug(`Webapp is READY and listens on port ${port}`, { service: 'Webapp' });
+				logger.debug(`Webapp is READY and listens on port ${port}`, { service });
 			});
 		} catch (err) {
 			// Likely port is busy for some reason, so we're going to change that number to something else.
 			port += 1;
 			server.listen(port, () => {
-				logger.debug(`Webapp is READY and listens on port ${port}`, { service: 'Webapp' });
+				logger.debug(`Webapp is READY and listens on port ${port}`, { service });
 			});
 		}
 		return port;
 	} catch (err) {
 		// Utter failure
-		logger.error('Webapp is NOT READY', { service: 'Webapp', obj: err });
+		logger.error('Webapp is NOT READY', { service, obj: err });
 		sentry.error(err);
 		throw err;
 	}

@@ -129,7 +129,8 @@
 		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "more recent",
 		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "less recent",
 		"CRITERIA_DESC": "Select and add criteria to automatically include specific songs.",
-		"ADD": "Add a value to criteria",
+		"ADD_PLACEHOLDER": "Add a value to criteria",
+		"ADD": "Add criteria",
 		"DELETE": "Delete this criteria",
 		"CRITERIA_TYPE_1001": "Song",
 		"CRITERIA_TYPE_1002": "Longer than (mm:ss)",
@@ -304,7 +305,8 @@
 		"MASTODON_UPDATE": "Karaoke Mugen News",
 		"APP_UPDATE": "New version",
 		"ACTIVE_SESSION": "Active Session: ",
-		"EDIT_SESSION": "Edit session"
+		"EDIT_SESSION": "Edit session",
+		"COLLECTIONS": "COLLECTIONS"
 	},
 	"CHECKED": "Selected:",
 	"LOGOUT": "Log out",
@@ -673,6 +675,10 @@
 			"DELETE": "Abort all pending downloads",
 			"CONTINUE": "Resume all downloads"
 		},
+		"DELETE_PLAYLIST_ERROR_CURRENT": "Unable to delete a current playlist. Make another playlist current first.",
+		"DELETE_PLAYLIST_ERROR_PUBLIC": "Unable to delete a public playlist. Make another playlist public first.",
+		"DELETE_PLAYLIST_ERROR_WHITELIST": "Unable to delete a whitelist. Make another playlist a whitelist first.",
+		"DELETE_PLAYLIST_ERROR_BLACKLIST": "Unable to delete a blacklist. Make another playlist a blacklist first.",
 		"DELETE_PLAYLIST_MODAL": {
 			"TITLE": "Delete {{playlist}} forever?",
 			"IMPOSSIBLE": "You cannot delete the only playlist.",
@@ -745,7 +751,10 @@
 		"MODIFY_DIRECTORY": "Change folder",
 		"CHOOSE_DIRECTORY": "Select a folder",
 		"ADD_DIRECTORY": "Add a folder",
-		"SAVE_PARAMETER": "Save"
+		"SAVE_PARAMETER": "Save",
+		"COLLECTIONS_CHOICE": "Selection of collections",
+		"COLLECTIONS_CHOICE_DESC_1": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
+		"COLLECTIONS_CHOICE_DESC_2": "You can change your collections at any time in the system panel."
 	},
 	"NOTIFICATION": {
 		"OPERATOR": {
@@ -791,7 +800,7 @@
 		"TITLE": "Titles",
 		"TITLE_TOOLTIP": "If you don't know, put the name of the series here as well",
 		"TITLE_REQUIRED": "Please enter a song title",
-		"TITLE_ENG_REQUIRED": "Please enter a english song title",
+		"DEFAULT_LANGUAGE": "Default language",
 		"ALIASES": "Aliases",
 		"ALIASES_TOOLTIP": "Short names or alternative names, used for search.",
 		"SERIES_TOOLTIP": "TV series, movie title, video game title, etc.",
@@ -869,7 +878,9 @@
 		"PARENTS": "Parents",
 		"CHILDRENS": "Childrens of {{parent}}",
 		"PARENTS_TOOLTIP": "If a parent is defined, this karaoke will show as alternative to the selected parent karaoke(s). Please mind to select the good repository before filling this array to avoid adding karaokes from other repositories.",
-		"VERSION_AVAILABILITY": "Available in {{count}} versions."
+		"VERSION_AVAILABILITY": "Available in {{count}} versions.",
+		"COLLECTIONS_REQUIRED": "A collection is mandatory",
+		"COLLECTIONS_TOOLTIP": "Select the collections in which the karaoke should appear"
 	},
 	"MENU": {
 		"HOME": "Home",
@@ -878,7 +889,7 @@
 		"CONFIGURATION": "Advanced configuration",
 		"ADVANCED_OPTIONS": "System settings",
 		"SESSIONS": "Sessions",
-		"REPOSITORIES": "Repositories",
+		"REPOSITORIES": "Collections and repositories",
 		"KARAS": "Karaokes",
 		"LIST": "List",
 		"NEW": "New",
@@ -980,7 +991,9 @@
 		"NOLIVEDOWNLOAD_TOOLTIP": "Songs with this tag won't be able to be downloaded on Karaoke Mugen Server from the web interface, or visible on Live",
 		"PRIORITY": "Display priority",
 		"PRIORITY_TOOLTIP": "Tags with a higher value will be displayed first. 10 by default. -1 hides the tag from being displayed in public interface, -2 hides it everywhere (still used for search).",
-		"COPY_TAG": "Copy tag to another repository"
+		"COPY_TAG": "Copy tag to another repository",
+		"DESCRIPTION": "Description",
+		"DESCRIPTION_TOOLTIP": "A description of the tag, used only for collections."
 	},
 	"TAG_TYPES": {
 		"SINGERS_one": "Singer",
@@ -1012,7 +1025,9 @@
 		"VERSIONS_one": "Version",
 		"VERSIONS_other": "Versions",
 		"WARNINGS_one": "Warning",
-		"WARNINGS_other": "Warnings"
+		"WARNINGS_other": "Warnings",
+		"COLLECTIONS_one": "Collection",
+		"COLLECTIONS_other": "Collections"
 	},
 	"CONFIG": {
 		"PROPERTY": "Property",
@@ -1109,11 +1124,14 @@
 		"WARNING": "Warning!",
 		"MOVING_MEDIA_ABOUT_MESSAGE": "All repository media files will be moved to the new folder. If your repository has several media folders, all files of all folders will be moved into the same target folder. If there are duplicate files, they'll be savagely overwritten.",
 		"COMPARE_LYRICS": "Update lyrics between two repositories",
-		"COMPARE_LYRICS_CHOOSE_REPOSITORY": "Choose a repository",
+		"CHOOSE_REPOSITORY": "Choose a repository",
 		"COMPARE_BUTTON": "Compare",
 		"COMPARE_ABOUT_MESSAGE": "This will allow you to compare then eventually copy lyrics files from one repository to another if they differ between the two same songs. Select a repository to compare lyrics with (it will be the destination repository when comes time to copy lyrics)",
 		"LYRICS_ARE_DIFFERENT": "The lyrics of these songs are different between the {{first}} repository and the {{second}} repository:",
 		"CONFIRM_SURE": "Do you want to synchronize the lyrics of repository {{second}} with those of repository {{first}}?",
+		"SYNCHRONIZE_TAGS": "Synchronize tags between two repositories",
+		"SYNCHRONIZE_ABOUT_MESSAGE": "This will allow you to synchronize tags files from one repository to another. Select a repository to synchronize tags with (it will be the destination repository for the copy of the tags)",
+		"SYNCHRONIZE_BUTTON": "Synchronize",
 		"FREE_SPACE": "Free space",
 		"DELETE_OLD_MEDIAS": "Delete medias unused since 1 month",
 		"DELETE_ALL_MEDIAS": "Delete all medias",
@@ -1153,6 +1171,10 @@
 		"GIT_UNSTASH": "Apply",
 		"GIT_DELETE": "Delete",
 		"GIT_CUSTOM_MESSAGE": "Custom message"
+	},
+	"COLLECTIONS": {
+		"NAME": "Collection name",
+		"ENABLED": "Enabled"
 	},
 	"HOME": {
 		"SYSTEM_DESCRIPTION": "See logs, change configuration options, backup/restore your database, trigger a manual generation and manage karaoke session",
@@ -1361,6 +1383,7 @@
 		"ADMIN_PLEASE": "Please use an operator account",
 		"NOT_GUEST": "Guests cannot use this function",
 		"REPO_COMPARE_LYRICS_ERROR": "Error comparing lyrics between two repositories",
+		"REPO_SYNC_TAGS_ERROR": "Error syncing tags between two repositories",
 		"REPO_COPY_LYRICS_ERROR": "Error copying lyrics between two repositories",
 		"ERROR_READING_LOGS": "Unable to read event logs",
 		"SUBFILE_FORMAT_UNKOWN": "Subfile format unknown",
@@ -1376,7 +1399,8 @@
 		"USER_CANNOT_CHANGE_TYPE": "Only admins can change a user's type",
 		"GUESTS_CANNOT_EDIT": "Guests are not allowed to edit their profiles",
 		"PREVIEW_HOOKS_ERROR": "Error preview hooks",
-		"LYRICS_FILE_OPEN_ERROR": "Error opening the file"
+		"LYRICS_FILE_OPEN_ERROR": "Error opening the file",
+		"COLLECTIONS_GET_ERROR": "Error fetching collections"
 	},
 	"SUCCESS_CODES": {
 		"DOWNLOADS_QUEUED": "Added {{data}} downloads to the queue",
@@ -1454,7 +1478,8 @@
 			"DESCRIPTION": "Karaoke session modification form."
 		},
 		"REPOSITORIES": {
-			"TITLE": "Repositories management",
+			"TITLE": "Collections and repositories management",
+			"DESCRIPTION_COLLECTION": "The Song Collections are intended for different audiences. Choose the collections you want to see in your karaoke database.",
 			"DESCRIPTION": "Repositories are sources of karaoke. Add, enable, or remove repositories from this page."
 		},
 		"BACKGROUNDS": {

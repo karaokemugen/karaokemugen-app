@@ -8,6 +8,8 @@ import logger from '../lib/utils/logger';
 import sentry from '../utils/sentry';
 import { win } from './electron';
 
+const service = 'ElectronUpdater';
+
 let manualUpdate = false;
 let updateRunning = false;
 
@@ -15,7 +17,7 @@ export function initAutoUpdate() {
 	autoUpdater.logger = logger;
 	autoUpdater.autoDownload = false;
 	autoUpdater.on('error', error => {
-		logger.error('', { service: 'AppUpdate', obj: error });
+		logger.error('', { service, obj: error });
 		const errMsg = error === null ? 'unknown' : (error.stack || error).toString();
 		dialog.showMessageBox({
 			type: 'none',
@@ -24,7 +26,7 @@ export function initAutoUpdate() {
 		});
 	});
 	autoUpdater.on('update-available', async () => {
-		logger.info('Update detected', { service: 'AppUpdate' });
+		logger.info('Update detected', { service });
 		if (updateRunning) return;
 		updateRunning = true;
 		const buttonIndex = await dialog.showMessageBox(win, {
@@ -50,7 +52,7 @@ export function initAutoUpdate() {
 	});
 
 	autoUpdater.on('update-not-available', () => {
-		logger.info('Update not available', { service: 'AppUpdate' });
+		logger.info('Update not available', { service });
 		if (manualUpdate) {
 			dialog.showMessageBox({
 				title: i18next.t('UPDATE_NOT_AVAILABLE'),
@@ -60,7 +62,7 @@ export function initAutoUpdate() {
 	});
 
 	autoUpdater.on('update-downloaded', async () => {
-		logger.info('Update downloaded', { service: 'AppUpdate' });
+		logger.info('Update downloaded', { service });
 		await dialog.showMessageBox(win, {
 			title: i18next.t('UPDATE_DOWNLOADED'),
 			message: i18next.t('UPDATE_READY_TO_INSTALL_RESTARTING'),
@@ -70,18 +72,18 @@ export function initAutoUpdate() {
 			autoUpdater.quitAndInstall();
 		} catch (err) {
 			sentry.error(err);
-			logger.error('Failed to quit and install', { service: 'AppUpdate', obj: err });
+			logger.error('Failed to quit and install', { service, obj: err });
 		}
 	});
 
 	if (getConfig().Online.Updates.App && process.platform !== 'darwin') {
 		try {
-			logger.info('Checking for updates and notify', { service: 'AppUpdate' });
+			logger.info('Checking for updates and notify', { service });
 			autoUpdater.checkForUpdatesAndNotify();
 		} catch (err) {
 			// Non fatal, just report it
 			sentry.error(err, 'Warning');
-			logger.warn('Unable to check for app updates', { service: 'AppUpdate', obj: err });
+			logger.warn('Unable to check for app updates', { service, obj: err });
 		}
 	}
 }

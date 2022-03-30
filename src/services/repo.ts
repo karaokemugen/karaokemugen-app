@@ -40,18 +40,18 @@ import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smart
 import { sendPayload } from './stats';
 import { getTags, integrateTagFile, removeTag } from './tag';
 
+const service = 'Repo';
+
 const windowsDriveRootRegexp = /^[a-zA-Z]:\\$/;
 
 let updateRunning = false;
 
 /** Get all repositories in database */
-export function getRepos() {
-	return selectRepos();
-}
+export const getRepos = selectRepos;
 
 /** Get single repository */
 export function getRepo(name: string) {
-	return selectRepos().filter((r: Repository) => r.Name === name)[0];
+	return selectRepos(false).filter((r: Repository) => r.Name === name)[0];
 }
 
 /** Remove a repository */
@@ -59,7 +59,7 @@ export async function removeRepo(name: string) {
 	if (!getRepo(name)) throw { code: 404 };
 	deleteRepo(name);
 	await generateDB();
-	logger.info(`Removed ${name}`, { service: 'Repo' });
+	logger.info(`Removed ${name}`, { service });
 }
 
 /** Add a repository. Folders will be created if necessary */
@@ -85,24 +85,24 @@ export async function addRepo(repo: Repository) {
 				updateGitRepo(repo.Name)
 					.then(() => generateDB())
 					.catch(() => {
-						logger.warn('Repository was added, but initializing it failed', { service: 'Repo' });
+						logger.warn('Repository was added, but initializing it failed', { service });
 					});
 			}
 		} else {
 			updateZipRepo(repo.Name)
 				.then(() => generateDB())
 				.catch(() => {
-					logger.warn('Repository was added, but initializing it failed', { service: 'Repo' });
+					logger.warn('Repository was added, but initializing it failed', { service });
 				});
 		}
 	}
-	logger.info(`Added ${repo.Name}`, { service: 'Repo' });
+	logger.info(`Added ${repo.Name}`, { service });
 }
 
 export async function updateAllRepos() {
 	const repos = getRepos().filter(r => r.Online && r.Enabled);
 	let doGenerate = false;
-	logger.info('Updating all repositories', { service: 'Repo' });
+	logger.info('Updating all repositories', { service });
 	for (const repo of repos) {
 		try {
 			if (repo.MaintainerMode) {
@@ -114,10 +114,10 @@ export async function updateAllRepos() {
 				doGenerate = true;
 			}
 		} catch (err) {
-			logger.error(`Failed to update repository ${repo.Name}`, { service: 'Repo', obj: err });
+			logger.error(`Failed to update repository ${repo.Name}`, { service, obj: err });
 		}
 	}
-	logger.info('Finished updating all repositories', { service: 'Repo' });
+	logger.info('Finished updating all repositories', { service });
 	if (doGenerate) await generateDB();
 	if (getConfig().App.FirstRun) {
 		createProblematicSmartPlaylist();
@@ -127,9 +127,10 @@ export async function updateAllRepos() {
 
 export async function checkDownloadStatus(kids?: string[]) {
 	profile('checkDownloadStatus');
-	logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service: 'Repo' });
+	logger.info(`Checking downloaded status of ${kids ? kids.length : 'all'} songs`, { service });
 	const karas = await getKaras({
 		q: kids ? `k:${kids.join(',')}` : undefined,
+		ignoreCollections: true,
 	});
 	const mediasMissing = [];
 	const mediasExisting = [];
@@ -148,7 +149,7 @@ export async function checkDownloadStatus(kids?: string[]) {
 	if (mediasExisting.length > 0) {
 		updateDownloaded(mediasExisting, 'DOWNLOADED');
 	}
-	logger.info('Finished checking downloaded status', { service: 'Repo' });
+	logger.info('Finished checking downloaded status', { service });
 	profile('checkDownloadStatus');
 }
 
@@ -163,6 +164,7 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 	}
 	const karas = await getKaras({
 		q,
+		ignoreCollections: true,
 	});
 	const deletedFiles: Set<string> = new Set();
 	const deletePromises = [];
@@ -175,7 +177,7 @@ export async function deleteMedias(kids?: string[], repo?: string, cleanRarelyUs
 				oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 				if (kara.lastplayed_at < oneMonthAgo) {
 					logger.info(`Removing ${fullPath} because it's too old (${kara.lastplayed_at.toISOString()})`, {
-						service: 'Repo',
+						service,
 					});
 				} else {
 					deleteFile = false;
@@ -205,7 +207,7 @@ export async function updateZipRepo(name: string) {
 		throw 'Repository is not online, disabled or is in Maintainer Mode!';
 	}
 	const LocalCommit = await getLocalRepoLastCommit(repo);
-	logger.info(`Updating repository from ${name}, our commit is ${LocalCommit}`, { service: 'Repo' });
+	logger.info(`Updating repository from ${name}, our commit is ${LocalCommit}`, { service });
 	if (!LocalCommit) {
 		// If local commit doesn't exist, we have to start by retrieving one
 		const LatestCommit = await newZipRepo(repo);
@@ -217,7 +219,7 @@ export async function updateZipRepo(name: string) {
 	}
 	// Check if update is necessary by fetching the remote last commit sha
 	const { LatestCommit } = await getRepoMetadata(repo.Name);
-	logger.debug(`Update ${repo.Name}: ours is ${LocalCommit}, theirs is ${LatestCommit}`, { service: 'Repo' });
+	logger.debug(`Update ${repo.Name}: ours is ${LocalCommit}, theirs is ${LatestCommit}`, { service });
 	if (LatestCommit !== LocalCommit) {
 		try {
 			const patch = await HTTP.get(
@@ -233,26 +235,27 @@ export async function updateZipRepo(name: string) {
 				// If patch fails, we need to try the other way around and get all modified files
 				// Need to remove .orig files if any
 				await cleanFailedPatch(repo);
-				logger.info('Trying to download full files instead', { service: 'Repo' });
+				logger.info('Trying to download full files instead', { service });
 				const fullFiles = await HTTP.get(
 					`https://${repo.Name}/api/karas/repository/diff/full?commit=${encodeURIComponent(LocalCommit)}`
 				);
 				await writeFullPatchedFiles(fullFiles.data as DiffChanges[], repo);
 				changes = computeFileChanges(patch.data as string);
 			}
-			logger.debug('Applying changes', { service: 'Repo', obj: changes });
+			logger.debug('Applying changes', { service, obj: changes });
 			await applyChanges(changes, repo);
 			await saveSetting(`commit-${repo.Name}`, LatestCommit);
 			return false;
 		} catch (err) {
 			logger.warn('Cannot use patch method to update repository, downloading full zip again.', {
-				service: 'Repo',
+				service,
 			});
+			sentry.addErrorInfo('initialCommit', LocalCommit);
+			sentry.addErrorInfo('toCommit', LatestCommit);
+			sentry.error(err, 'Warning');
 			await saveSetting(`commit-${repo.Name}`, null);
 			updateRunning = false;
 			await updateZipRepo(name);
-			sentry.addErrorInfo('initialCommit', LocalCommit);
-			sentry.error(err);
 		}
 	}
 }
@@ -301,7 +304,7 @@ export async function editRepo(
 	updateRepo(repo, name);
 	// Delay repository actions after edit
 	hookEditedRepo(oldRepo, repo, refresh, onlineCheck).catch();
-	logger.info(`Updated ${name}`, { service: 'Repo' });
+	logger.info(`Updated ${name}`, { service });
 	return repo;
 }
 
@@ -310,29 +313,36 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	if (!oldRepo.SendStats && repo.SendStats && getState().DBReady && onlineCheck) {
 		sendPayload(repo.Name, repo.Name === getConfig().Online.Host).catch();
 	}
-	if (repo.Enabled && repo.Online && !oldRepo.MaintainerMode && repo.MaintainerMode && repo.Git?.URL) {
+	if (
+		repo.Enabled &&
+		repo.Online &&
+		!oldRepo.MaintainerMode &&
+		repo.MaintainerMode &&
+		repo.Git?.URL &&
+		getState().DBReady
+	) {
 		saveSetting(`commit-${repo.Name}`, null);
 		try {
 			await updateGitRepo(repo.Name);
 		} catch (err) {
-			logger.warn('Repository was edited, but updating it failed', { service: 'Repo' });
+			logger.warn('Repository was edited, but updating it failed', { service });
 		}
 		if (refresh) doGenerate = true;
 	}
-	if (repo.Enabled && repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode) {
+	if (repo.Enabled && repo.Online && oldRepo.MaintainerMode && !repo.MaintainerMode && getState().DBReady) {
 		try {
 			await updateZipRepo(repo.Name);
 			if (refresh) doGenerate = true;
 		} catch (err) {
-			logger.warn('Repository was edited, but updating it failed', { service: 'Repo' });
+			logger.warn('Repository was edited, but updating it failed', { service });
 		}
 	}
-	if (repo.MaintainerMode && repo.Git) {
+	if (repo.Enabled && repo.MaintainerMode && repo.Git) {
 		try {
 			await setupGit(repo, true);
 		} catch (err) {
 			// Non-fatal. Probably that the repository isn't set
-			logger.warn(`Could not update Git settings for repository : ${err}`, { service: 'Repo', obj: err });
+			logger.warn(`Could not update Git settings for repository : ${err}`, { service, obj: err });
 		}
 	}
 	if (oldRepo.Enabled !== repo.Enabled || (refresh && getState().DBReady)) {
@@ -341,7 +351,7 @@ async function hookEditedRepo(oldRepo: Repository, repo: Repository, refresh = f
 	}
 	if (doGenerate) await generateDB();
 	if (oldRepo.Path.Medias !== repo.Path.Medias && getState().DBReady && onlineCheck) {
-		getKaras({ q: `r:${repo.Name}` }).then(karas => {
+		getKaras({ q: `r:${repo.Name}`, ignoreCollections: true }).then(karas => {
 			checkDownloadStatus(karas.content.map(k => k.kid));
 		});
 	}
@@ -400,23 +410,23 @@ export async function updateGitRepo(name: string) {
 		updateRunning = false;
 		throw 'Repository is not online or is not in Maintainer Mode!';
 	}
-	logger.info(`Update ${repo.Name}: Starting`, { service: 'Repo' });
+	logger.info(`Update ${repo.Name}: Starting`, { service });
 	try {
 		if (!(await isGit(repo))) {
-			logger.info(`Update ${repo.Name}: not a git repo, cloning now`, { service: 'Repo' });
+			logger.info(`Update ${repo.Name}: not a git repo, cloning now`, { service });
 			await newGitRepo(repo);
 			await saveSetting('baseChecksum', await baseChecksum());
 			return true;
 		}
 		const git = await setupGit(repo);
-		logger.info(`Update ${repo.Name}: is a git repo, pulling`, { service: 'Repo' });
+		logger.info(`Update ${repo.Name}: is a git repo, pulling`, { service });
 		await git.fetch();
 		const originalCommit = await git.getCurrentCommit();
 		try {
 			const status = await git.status();
 			if (status.behind === 0) {
 				// Repository is up-to-date
-				logger.info(`Update ${repo.Name}: repo is up-to-date`, { service: 'Repo' });
+				logger.info(`Update ${repo.Name}: repo is up-to-date`, { service });
 				return false;
 			}
 			if (!status.isClean()) {
@@ -453,7 +463,7 @@ export async function updateGitRepo(name: string) {
 					} catch (err) {
 						// Stash pop likely failed, we'll leave it be but we need to clean up
 						logger.warn(`Unstashing modification ${stash.id} (${stash.message}) failed`, {
-							service: 'Repo',
+							service,
 							obj: err,
 						});
 						await git.wipeChanges();
@@ -463,7 +473,7 @@ export async function updateGitRepo(name: string) {
 				if (!firstCommit) await git.reset('HEAD~');
 			}
 		} catch (err) {
-			logger.info(`${repo.Name} pull failed`, { service: 'Repo', obj: err });
+			logger.info(`${repo.Name} pull failed`, { service, obj: err });
 			// This failed miserably because there was a conflict. Or something. We can test this out.
 			const status = await git.status();
 			// Else it means we're having disturbances in the Force.
@@ -479,12 +489,12 @@ export async function updateGitRepo(name: string) {
 		await applyChanges(changes, repo);
 		return false;
 	} catch (err) {
-		logger.error(`Failed to update repo ${repo.Name}: ${err}`, { service: 'Repo', obj: err });
+		logger.error(`Failed to update repo ${repo.Name}: ${err}`, { service, obj: err });
 		sentry.error(err);
 		throw err;
 	} finally {
 		updateRunning = false;
-		logger.info(`Update ${repo.Name}: Finished`, { service: 'Repo' });
+		logger.info(`Update ${repo.Name}: Finished`, { service });
 	}
 }
 
@@ -502,7 +512,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 						resolve(resolvedPathRepos('Tags', repo.Name)[0], basename(match.path)),
 						false
 					).catch(err => {
-						console.log(err);
+						throw err;
 					})
 				);
 			} else {
@@ -541,7 +551,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 			*/
 			karas = topologicalSort(karas);
 		} catch (err) {
-			logger.error('Topological sort failed', { service: 'Repo', obj: karas });
+			logger.error('Topological sort failed', { service, obj: karas });
 			throw err;
 		}
 		for (const kara of karas) {
@@ -565,7 +575,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		await updateAllSmartPlaylists();
 	} catch (err) {
 		logger.error(`Applying changes failed, please regenerate your database : ${err}`, {
-			service: 'Repo',
+			service,
 			obj: err,
 		});
 		throw err;
@@ -749,7 +759,10 @@ export async function findUnusedMedias(repo: string): Promise<string[]> {
 		text: 'FINDING_UNUSED_MEDIAS',
 	});
 	try {
-		const [karas, mediaFiles] = await Promise.all([getKaras({}), listAllFiles('Medias', repo)]);
+		const [karas, mediaFiles] = await Promise.all([
+			getKaras({ ignoreCollections: true }),
+			listAllFiles('Medias', repo),
+		]);
 		const mediasFilesKaras: string[] = karas.content.map(k => k.mediafile);
 		return mediaFiles.filter(file => !mediasFilesKaras.includes(basename(file)));
 	} catch (err) {
@@ -793,7 +806,7 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 		const state = getState();
 		if (!repo) throw 'Unknown repository';
 		await checkRepoPaths(repo);
-		logger.info(`Moving ${repoName} medias repository to ${newPath}...`, { service: 'Repo' });
+		logger.info(`Moving ${repoName} medias repository to ${newPath}...`, { service });
 		const moveTasks = [];
 		for (const dir of repo.Path.Medias) {
 			if (resolve(state.dataPath, dir) === newPath) return;
@@ -803,7 +816,7 @@ export async function movingMediaRepo(repoName: string, newPath: string) {
 		repo.Path.Medias = [relativePath(state.dataPath, newPath)];
 		await editRepo(repoName, repo, true, false);
 	} catch (err) {
-		logger.error(`Failed to move repo ${repoName}`, { service: 'Repo', obj: err });
+		logger.error(`Failed to move repo ${repoName}`, { service, obj: err });
 		throw err;
 	} finally {
 		task.end();
@@ -902,7 +915,7 @@ export async function generateCommits(repoName: string) {
 			task.incr();
 		}
 		// Added songs
-		const [karas, tags] = await Promise.all([getKaras({}), getTags({})]);
+		const [karas, tags] = await Promise.all([getKaras({ ignoreCollections: true }), getTags({})]);
 		for (const file of addedSongs) {
 			const song = basename(file, '.kara.json');
 			const commit: Commit = {
@@ -913,7 +926,7 @@ export async function generateCommits(repoName: string) {
 			// We need to find out if some tags have been added or modified and add them to our commit
 			const kara = karas.content.find(k => k.karafile === basename(file));
 			if (!kara) {
-				logger.warn(`File "${file}" does not seem to be in database? Skipping`, { service: 'Repo' });
+				logger.warn(`File "${file}" does not seem to be in database? Skipping`, { service });
 				continue;
 			}
 			// Let's check if the kara has been renamed and is actually a modified kara.
@@ -992,7 +1005,7 @@ export async function generateCommits(repoName: string) {
 			// We need to find out if some tags have been added or modified and add them to our commit
 			const kara = karas.content.find(k => k.karafile === basename(file));
 			if (!kara) {
-				logger.warn(`File "${file}" does not seem to be in database? Skipping`, { service: 'Repo' });
+				logger.warn(`File "${file}" does not seem to be in database? Skipping`, { service });
 				continue;
 			}
 			const oldKaraFile = await git.show(`HEAD:${file}`);
@@ -1095,12 +1108,12 @@ export async function generateCommits(repoName: string) {
 			task.incr();
 		}
 
-		logger.debug(`Preparing ${commits.length} commits`, { service: 'Repo', obj: commits });
-		logger.debug(`You have ${modifiedMedias.length} modified medias`, { service: 'Repo', obj: modifiedMedias });
+		logger.debug(`Preparing ${commits.length} commits`, { service, obj: commits });
+		logger.debug(`You have ${modifiedMedias.length} modified medias`, { service, obj: modifiedMedias });
 		if (commits.length === 0) return;
 		return { commits, modifiedMedias };
 	} catch (err) {
-		logger.error('Failed to prepare commits', { service: 'Repo', obj: err });
+		logger.error('Failed to prepare commits', { service, obj: err });
 		sentry.error(err);
 		throw err;
 	} finally {
@@ -1136,7 +1149,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 					try {
 						await ftp.delete(media.old);
 					} catch (err) {
-						logger.warn(`File ${media.old} could not be deleted on FTP`, { service: 'Repo' });
+						logger.warn(`File ${media.old} could not be deleted on FTP`, { service });
 					}
 				} else if (media.new !== media.old) {
 					// Renamed file or new upload with different sizes, let's find out!
@@ -1146,7 +1159,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 						try {
 							await ftp.delete(media.old);
 						} catch (err) {
-							logger.warn(`File ${media.old} could not be deleted on FTP`, { service: 'Repo' });
+							logger.warn(`File ${media.old} could not be deleted on FTP`, { service });
 						}
 					} else {
 						await ftp.rename(basename(media.old), basename(media.new));
@@ -1185,7 +1198,7 @@ export async function pushCommits(repoName: string, push: Push, ignoreFTP?: bool
 			task.end();
 		}
 	} catch (err) {
-		logger.error(`Pushing to repository ${repoName} failed: ${err}`, { service: 'Repo', obj: err });
+		logger.error(`Pushing to repository ${repoName} failed: ${err}`, { service, obj: err });
 		// No need to throw here, this is called asynchronously.
 	}
 }

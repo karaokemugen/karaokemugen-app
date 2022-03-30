@@ -23,7 +23,6 @@ export const dbConfig =
 		: {
 				bundledPostgresBinary: true,
 				database: 'karaokemugen_app',
-				driver: 'pg',
 				host: 'localhost',
 				password: 'musubi',
 				port: 6559,
@@ -83,6 +82,11 @@ export const defaults: Config = {
 		},
 	},
 	Karaoke: {
+		Collections: {
+			'c7db86a0-ff64-4044-9be4-66dd1ef1d1c1': true, // Otaku/Geek
+			'efe171c0-e8a1-4d03-98c0-60ecf741ad52': false, // World
+			'2fa2fe3f-bb56-45ee-aa38-eae60e76f224': false, // Shitpost
+		},
 		Autoplay: false,
 		ClassicMode: false,
 		SmartInsert: false,
