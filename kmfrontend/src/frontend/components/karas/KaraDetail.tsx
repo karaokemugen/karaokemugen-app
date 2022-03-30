@@ -82,10 +82,10 @@ export default function KaraDetail(props: IProps) {
 	const getKaraDetail = async (kid?: string) => {
 		try {
 			let url: string;
-			let data: { plaid?: string; plc_id?: number; kid?: string };
+			let data: { plc_id?: number; kid?: string };
 			if (props.plaid && !isNonStandardPlaylist(props.plaid)) {
 				url = 'getPLC';
-				data = { plaid: props.plaid, plc_id: props.playlistcontentId };
+				data = { plc_id: props.playlistcontentId };
 			} else {
 				url = 'getKara';
 				data = { kid: kid ? kid : id };

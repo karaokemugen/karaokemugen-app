@@ -38,7 +38,6 @@ function KaraMenuModal(props: IProps) {
 			} else {
 				url = 'getPLC';
 				data = {
-					plaid: playlist.plaid,
 					plc_id: props.kara.plcid,
 				};
 			}
