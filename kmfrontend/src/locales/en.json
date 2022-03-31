@@ -1183,7 +1183,7 @@
 		"USERS_DESCRIPTION": "List, edit, create users, change their password, create new guests accounts.",
 		"SYSTEM": {
 			"CONFIG": "Edit configuration",
-			"REPOSITORIES": "Karaoke repositories",
+			"REPOSITORIES": "Karaoke collections and repositories",
 			"SESSIONS": "Karaoke sessions",
 			"LOGS": "System logs",
 			"DATABASE": "Database"

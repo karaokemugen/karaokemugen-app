@@ -1185,7 +1185,7 @@
 		"USERS_DESCRIPTION": "Lister, créer et modifier les utilisateurs, changer leur mot de passe, créer de nouveaux comptes invités.",
 		"SYSTEM": {
 			"CONFIG": "Modifier la configuration",
-			"REPOSITORIES": "Dépôts de karaokés",
+			"REPOSITORIES": "Dépôts et collections de karaokés",
 			"SESSIONS": "Sessions de karaoké",
 			"LOGS": "Journaux système",
 			"DATABASE": "Base de données"
