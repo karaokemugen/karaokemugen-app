@@ -1690,5 +1690,10 @@
 		"DESCRIPTION": "A karaoke player and a party organizer, between friends or in public. MIT-licensed.",
 		"CONTRIBUTORS": "The karaokes were created by awesome people, like <contrib/> for example.",
 		"DONATORS": "Thanks to <donators/> for their donations to Karaoke Mugen"
+	},
+	"COLLECTIONS_MIGRATION": {
+		"TITLE": "Introducing collections!",
+		"P1": "To expand the karaoke repository with more songs, we created collections in repositories, to select only a subset of songs and remove some songs that you do not want to see. Only songs within an enabled collection will appear in the interface (public & admin).",
+		"P2": "Please check the collections you want to enable. You can change this in the system panel."
 	}
 }

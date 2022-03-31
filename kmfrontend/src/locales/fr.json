@@ -1692,5 +1692,10 @@
 		"DESCRIPTION": "Un lecteur de karaoké et un outil d'organisation de soirées entre amis ou en public. Sous licence MIT.",
 		"CONTRIBUTORS": "Les karaokés ont été créés par des gens géniaux, comme par exemple <contrib/>.",
 		"DONATORS": "Merci à <donators/> pour leur don à Karaoke Mugen"
+	},
+	"COLLECTIONS_MIGRATION": {
+		"TITLE": "Le temps des collections !",
+		"P1": "Pour ajouter toujours plus de chansons, nous avons créé les collections dans les dépôts, afin de sélectionner uniquement les chansons qui peuvent vous intéresser et masquer les sons que vous ne voulez pas voir. Les musiques affichées dans l'interface (opérateur & publique) seront uniquement celles des collections activées.",
+		"P2": "Cochez les collections que vous voulez activez. Vous pouvez les changer plus tard dans le panneau système."
 	}
 }

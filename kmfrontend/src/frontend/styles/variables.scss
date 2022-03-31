@@ -63,6 +63,8 @@ $mugen-breakpoint-smaller: 500px;
 
 $mugen-height-small: 600px;
 
+$block-border-width: 4px solid;
+
 // Mixins for drop shadows
 @mixin shadow($color: rgba(0, 0, 0, 0.75)) {
 	text-shadow: 2px 2px 2px $color;
