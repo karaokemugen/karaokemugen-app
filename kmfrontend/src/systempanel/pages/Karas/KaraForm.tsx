@@ -185,7 +185,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 		this.setState({ errors: [] });
 		if (this.state.mediafileIsTouched && !this.state.mediaInfo?.filename) {
 			message.error(i18next.t('KARA.MEDIA_IN_PROCESS'));
-		} else if (!this.state.titles || Object.keys(this.state.titles).length === 0) {
+		} else if (!this.state.defaultLanguage || !this.state.titles || Object.keys(this.state.titles).length === 0) {
 			message.error(i18next.t('KARA.TITLE_REQUIRED'));
 		} else {
 			this.props.save(this.getKaraToSend(values));
