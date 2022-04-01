@@ -1,5 +1,5 @@
 import { HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Menu } from 'antd';
+import { Menu } from 'antd';
 import i18next from 'i18next';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
@@ -110,16 +110,11 @@ function KMMenu() {
 					<UserOutlined /> {context.globalState.auth.data.username}
 				</span>
 			</Menu.Item>
-			<Menu.Item key="change" style={{ display: 'block' }}>
-				{/* The <Button href="..."> component has broken CSS */}
-				<Button icon={<HomeOutlined />} onClick={() => window.location.assign('/welcome')}>
-					{i18next.t('CHANGE_INTERFACE')}
-				</Button>
+			<Menu.Item key="change" onClick={() => window.location.assign('/welcome')}>
+				<HomeOutlined /> {i18next.t('CHANGE_INTERFACE')}
 			</Menu.Item>
-			<Menu.Item key="logout">
-				<Button icon={<LogoutOutlined />} onClick={() => logout(context.globalDispatch)}>
-					{i18next.t('LOGOUT')}
-				</Button>
+			<Menu.Item key="logout" onClick={() => logout(context.globalDispatch)}>
+				<LogoutOutlined /> {i18next.t('LOGOUT')}
 			</Menu.Item>
 		</Menu>
 	);

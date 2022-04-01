@@ -77,10 +77,6 @@ function Playlist(props: IProps) {
 	const [criteriasOpen, setCriteriasOpen] = useState(false);
 	const virtuoso = useRef<any>(null);
 
-	const favoritesUpdated = () => {
-		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites) getPlaylist();
-	};
-
 	const publicPlaylistEmptied = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) {
 			setData(oldData => {
@@ -928,6 +924,11 @@ function Playlist(props: IProps) {
 	}, [props.searchType]);
 
 	useEffect(() => {
+		const favoritesUpdated = () => {
+			if (searchType && getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.favorites)
+				getPlaylist(searchType);
+		};
+
 		getSocket().on('favoritesUpdated', favoritesUpdated);
 		getSocket().on('playlistContentsUpdated', playlistContentsUpdatedFromServer);
 		getSocket().on('publicPlaylistEmptied', publicPlaylistEmptied);
@@ -945,6 +946,7 @@ function Playlist(props: IProps) {
 		context.globalState.frontendContext.playlistInfoRight,
 		getFilterValue(props.side),
 		searchValue,
+		searchType,
 	]);
 
 	useEffect(() => {

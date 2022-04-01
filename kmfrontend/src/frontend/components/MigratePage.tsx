@@ -11,12 +11,14 @@ import { commandBackend } from '../../utils/socket';
 import BulldozerVideos from './migrations/BulldozerVideos';
 import KMOnline from './migrations/KMOnline';
 import PrivacyPolicy from './migrations/PrivacyPolicy';
+import Collections from './migrations/Collections';
 
 export default function MigratePage() {
 	const components = {
 		privacyPolicy: PrivacyPolicy,
 		KMOnline,
 		BulldozerVideos,
+		Collections,
 	};
 
 	const navigate = useNavigate();
