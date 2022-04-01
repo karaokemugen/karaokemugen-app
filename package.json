@@ -301,7 +301,7 @@
       }
     },
     "productName": "Karaoke Mugen",
-    "copyright": "© 2017-2021 Karaoke Mugen Team",
+    "copyright": "© 2017-2022 Karaoke Mugen Team",
     "extraResources": [
       "migrations/**",
       "locales/*",

@@ -33,6 +33,65 @@
 			border: none;
 		}
 
+		.input-group {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+
+			margin: 0.5em 0;
+			border-left: $block-border-width white;
+			padding: 0.5em 1em;
+			background: #0000004d;
+
+			> p {
+				width: 100%;
+			}
+
+			.input-control {
+				margin: 1em 0;
+				label {
+					font-size: 0.8em;
+					font-weight: normal;
+					margin: 0;
+					padding: 0;
+					color: #ffffffb3;
+				}
+				.input-field {
+					width: 100%;
+					font-size: 1.2em;
+					background: none;
+					border: none;
+					border-bottom: 1px solid white;
+					padding: 0.2em 0;
+					margin: 0;
+					color: white;
+					&:focus {
+						background: none;
+					}
+				}
+
+				.input-checkbox {
+					display: flex;
+					width: 100%;
+					font-size: 1.2em;
+					padding: 0.2em 0;
+
+					.input-checkbox-switch {
+						margin-top: 0.5em;
+					}
+
+					label {
+						margin: 0.25em;
+					}
+
+					.name {
+						font-weight: bold;
+						font-size: 1em;
+					}
+				}
+			}
+		}
+
 		.title {
 			grid-area: title;
 			font-weight: normal;
