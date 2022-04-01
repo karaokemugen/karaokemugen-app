@@ -22,7 +22,7 @@ import {
 } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
-import { is_touch_device, isNonStandardPlaylist, secondsTimeSpanToHMS } from '../../../utils/tools';
+import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
 import { View } from '../../types/view';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
@@ -31,9 +31,8 @@ import AddKaraButton from '../generic/buttons/AddKaraButton';
 import VideoPreview from '../generic/VideoPreview';
 
 interface IProps {
-	kid: string | undefined;
+	kid?: string;
 	scope: 'admin' | 'public';
-	plaid?: string;
 	criteriaLabel?: string;
 	playlistcontentId?: number;
 	closeOnPublic?: () => void;
@@ -54,6 +53,7 @@ export default function KaraDetail(props: IProps) {
 	const [pending, setPending] = useState(false);
 	const params = useParams();
 	const id = props.kid ? props.kid : params.kid;
+	const plc_id = props.playlistcontentId ? props.playlistcontentId : Number(params.plcid);
 
 	const keyObserverHandler = (e: KeyboardEvent) => {
 		if (e.key === 'Escape' && !document.getElementById('video')) {
@@ -82,10 +82,10 @@ export default function KaraDetail(props: IProps) {
 	const getKaraDetail = async (kid?: string) => {
 		try {
 			let url: string;
-			let data: { plaid?: string; plc_id?: number; kid?: string };
-			if (props.plaid && !isNonStandardPlaylist(props.plaid)) {
+			let data: { plc_id?: number; kid?: string };
+			if (plc_id) {
 				url = 'getPLC';
-				data = { plaid: props.plaid, plc_id: props.playlistcontentId };
+				data = { plc_id: plc_id };
 			} else {
 				url = 'getKara';
 				data = { kid: kid ? kid : id };
@@ -163,6 +163,14 @@ export default function KaraDetail(props: IProps) {
 		}
 	}, [id]);
 
+	useEffect(() => {
+		if (plc_id) {
+			setShowVideo(false);
+			setPending(false);
+			getKaraDetail();
+		}
+	}, [plc_id]);
+
 	const karoulette_submit = (accepted: boolean) => {
 		setPending(true);
 		props.karoulette.next(accepted);
@@ -206,7 +214,7 @@ export default function KaraDetail(props: IProps) {
 						</span>
 					</div>
 				) : null}
-				{props.playlistcontentId ? (
+				{plc_id ? (
 					<div className="detailsKaraLine">
 						{kara.nickname ? (
 							<ProfilePicture
@@ -399,8 +407,8 @@ export default function KaraDetail(props: IProps) {
 							{context.globalState.auth.data.role === 'guest' ? null : makeFavButton}
 							{props.scope === 'public' &&
 							context?.globalState.settings.data.config?.Frontend?.Mode === 2 &&
-							props.plaid !== context.globalState.settings.data.state.publicPlaid &&
-							props.plaid !== context.globalState.settings.data.state.currentPlaid &&
+							kara.plaid !== context.globalState.settings.data.state.publicPlaid &&
+							kara.plaid !== context.globalState.settings.data.state.currentPlaid &&
 							(!kara?.public_plc_id || !kara?.public_plc_id[0])
 								? addKaraButton
 								: null}

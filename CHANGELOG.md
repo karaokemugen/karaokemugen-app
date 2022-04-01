@@ -1,3 +1,20 @@
+# v6.1.3 - 01/04/2022
+
+## Fixes
+
+-   Fixed importing playlists from Karaoke Mugen 5.x versions (#1220)
+-   Fixed repositories and collection button in system panel home
+-   Fixed default language in new karaoke submission form
+-   Fixed buttons in system panel's side menu
+-   Fixed an isssue with favorites updating and its default search
+-   Fixed repository folder autofill when repository name is empty
+-   Removed collections from public interface homepage
+
+## Misc
+
+-   Upgraded dependencies (backend)
+-   Added frontend migration to explain to people what collections are for
+
 # v6.1.2 - 30/03/2022
 
 ## New features

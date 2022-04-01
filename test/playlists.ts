@@ -108,7 +108,6 @@ describe('Playlists', () => {
 
 	it('Get specific karaoke in a playlist', async () => {
 		const data = await commandBackend(token, 'getPLC', {
-			plaid: newPlaylistID,
 			plc_id: 1,
 		});
 		testKara(data, { tagDetails: 'full', plcDetail: true, plc: true });

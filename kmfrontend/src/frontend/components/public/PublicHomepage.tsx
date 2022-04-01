@@ -138,7 +138,7 @@ function PublicHomepage(props: IProps) {
 								{othersMenu ? (
 									<>
 										{Object.keys(tagTypes).map(type => {
-											if (![1, 2, 4, 5].includes(tagTypes[type].type)) {
+											if (![1, 2, 4, 5, 16].includes(tagTypes[type].type)) {
 												return (
 													<button
 														className={`action ${tagTypes[type].color}`}
