@@ -254,6 +254,7 @@ export async function updateKaraParents(kara: Kara) {
 		const pkara = await selectAllKarasMicro({
 			q: `k:${pkid}`,
 		});
+		if (!pkara[0]) throw new Error(`${pkid} not in database!`);
 		if (kara.repository !== pkara[0].repository) {
 			throw new Error(`${pkid} is not in ${kara.repository} repository`);
 		}

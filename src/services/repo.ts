@@ -505,6 +505,7 @@ async function applyChanges(changes: Change[], repo: Repository) {
 		const karaFiles = changes.filter(f => f.path.endsWith('.kara.json'));
 		const TIDsToDelete = [];
 		const tagPromises = [];
+		task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length + tagFiles.length });
 		for (const match of tagFiles) {
 			if (match.type === 'new') {
 				tagPromises.push(
@@ -519,12 +520,12 @@ async function applyChanges(changes: Change[], repo: Repository) {
 				// Delete.
 				TIDsToDelete.push(match.uid);
 			}
+			task.update({ value: task.item.value + 1, subtext: match.path });
 		}
 		await Promise.all(tagPromises);
 		const KIDsToDelete = [];
 		const KIDsToUpdate = [];
 		let karas: KaraMetaFile[] = [];
-		task = new Task({ text: 'UPDATING_REPO', total: karaFiles.length });
 		for (const match of karaFiles) {
 			if (match.type === 'new') {
 				const file = resolve(resolvedPathRepos('Karaokes', repo.Name)[0], basename(match.path));
@@ -549,7 +550,23 @@ async function applyChanges(changes: Change[], repo: Repository) {
 				};
 			}), null, 2), 'utf-8');
 			*/
+			const karasBeforeSort = karas.map(k => {
+				return {
+					file: k.file,
+					kid: k.data.data.kid,
+					parents: k.data.data.parents,
+				};
+			});
+			logger.debug('Songs to add before sort', { service, obj: karasBeforeSort });
 			karas = topologicalSort(karas);
+			const karasAfterSort = karas.map(k => {
+				return {
+					file: k.file,
+					kid: k.data.data.kid,
+					parents: k.data.data.parents,
+				};
+			});
+			logger.debug('Songs to add after sort', { service, obj: karasAfterSort });
 		} catch (err) {
 			logger.error('Topological sort failed', { service, obj: karas });
 			throw err;
