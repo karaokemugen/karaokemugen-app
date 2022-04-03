@@ -81,6 +81,7 @@ export interface State {
 	restoreNeeded: boolean;
 	systemMessages: SystemMessage[];
 	DBReady: boolean;
+	portable: boolean;
 }
 
 export interface SystemMessage {

@@ -746,19 +746,28 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 
 function checkRepoPaths(repo: Repository) {
 	if (windowsDriveRootRegexp.test(repo.BaseDir)) {
-		throw { code: 400, msg: 'Repository cannot be installed at the root of a Windows drive.' };
+		throw { code: 400, msg: 'REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR' };
 	}
-	if (repo.Online && !repo.MaintainerMode) {
-		for (const path of repo.Path.Medias) {
-			// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
-			if (getState().appPath === resolve(getState().dataPath, path)) {
-				throw { code: 400, msg: "Sanity check: A media path is KM's executable directory." };
-			}
-			if (
-				pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))
-			) {
-				throw { code: 400, msg: 'Sanity check: A media path is contained in the base directory.' };
-			}
+	if (!getState().portable) {
+		// The Mutsui Fix.
+		// If not in portable mode, prevent repo paths from being in the app folder
+		if (pathIsContainedInAnother(resolve(getState().appPath), resolve(getState().dataPath, repo.BaseDir))) {
+			throw { code: 400, msg: 'REPO_PATH_ERROR_IN_APP_PATH' };
+		}
+	}
+	for (const path of repo.Path.Medias) {
+		// Fix for KM-APP-1W5 because someone thought it would be funny to put all its medias in the folder KM's exe is in. Never doubt your users' creativity.
+		if (
+			!getState().portable &&
+			pathIsContainedInAnother(resolve(getState().appPath), resolve(getState().dataPath, path))
+		) {
+			throw { code: 400, msg: 'REPO_PATH_ERROR_IN_APP_PATH' };
+		}
+		if (pathIsContainedInAnother(resolve(getState().dataPath, repo.BaseDir), resolve(getState().dataPath, path))) {
+			throw { code: 400, msg: 'REPO_PATH_ERROR_IN_BASE_PATH' };
+		}
+		if (windowsDriveRootRegexp.test(path)) {
+			throw { code: 400, msg: 'REPO_PATH_ERROR_IN_WINDOWS_ROOT_DIR' };
 		}
 	}
 	const checks = [];
