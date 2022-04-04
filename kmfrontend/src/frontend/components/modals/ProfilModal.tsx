@@ -2,7 +2,6 @@ import './ProfilModal.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import ReactDOM from 'react-dom';
 
 import { User } from '../../../../../src/lib/types/user';
 import { logout, setAuthenticationInformation } from '../../../store/actions/auth';
@@ -22,6 +21,8 @@ import { callModal, displayMessage } from '../../../utils/tools';
 import Autocomplete from '../generic/Autocomplete';
 import CropAvatarModal from './CropAvatarModal';
 import OnlineProfileModal from './OnlineProfileModal';
+import { createRoot } from 'react-dom/client';
+
 interface IProps {
 	scope?: 'public' | 'admin';
 	closeProfileModal?: () => void;
@@ -156,10 +157,9 @@ function ProfilModal(props: IProps) {
 	const importAvatar = e => {
 		if (e.target.files?.length > 0) {
 			setCropAvatarModalOpen(true);
-			ReactDOM.render(
-				<CropAvatarModal src={e.target.files[0]} saveAvatar={saveAvatar} />,
-				document.getElementById('import-avatar')
-			);
+			const container = document.getElementById('import-avatar');
+			const root = createRoot(container);
+			root.render(<CropAvatarModal src={e.target.files[0]} saveAvatar={saveAvatar} />);
 		}
 	};
 

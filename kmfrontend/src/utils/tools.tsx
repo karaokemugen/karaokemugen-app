@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 import i18next from 'i18next';
 import { createElement, Dispatch, ReactNode } from 'react';
-import ReactDOM from 'react-dom';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
 
 import { Kara } from '../../../src/lib/types/kara';
@@ -14,7 +13,6 @@ import nanamiThinkPng from '../assets/nanami-think.png';
 import nanamiThinkWebP from '../assets/nanami-think.webp';
 import nanamiUmuPng from '../assets/nanami-umu.png';
 import nanamiUmuWebP from '../assets/nanami-umu.webp';
-import Tutorial from '../frontend/components/modals/Tutorial';
 import { showModal } from '../store/actions/modal';
 import { GlobalContextInterface } from '../store/context';
 import { ShowModal } from '../store/types/modal';
@@ -25,7 +23,6 @@ import { commandBackend } from './socket';
 
 let is_touch = window.outerWidth <= 1023;
 let is_large = window.outerWidth <= 1860;
-let tuto: any;
 export let lastLocation = '';
 
 export function setLastLocation(location) {
@@ -121,11 +118,6 @@ export function hmsToSecondsOnly(str: string) {
 	}
 
 	return s;
-}
-
-export function startIntro() {
-	tuto = ReactDOM.render(createElement(Tutorial), document.getElementById('tuto'));
-	return tuto;
 }
 
 const chibis = new Map<TypeOptions, ReactNode>([

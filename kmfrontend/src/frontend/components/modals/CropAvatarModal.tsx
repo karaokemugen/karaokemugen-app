@@ -2,10 +2,10 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 import i18next from 'i18next';
 import { useState } from 'react';
-import ReactDOM from 'react-dom';
 import ReactCrop, { Crop } from 'react-image-crop';
 
 import { commandBackend, isRemote } from '../../../utils/socket';
+import { createRoot } from 'react-dom/client';
 
 interface IProps {
 	src: any;
@@ -18,8 +18,7 @@ function CropAvatarModal(props: IProps) {
 	const [crop, setCrop] = useState<Crop>({
 		unit: '%' as const,
 		width: 100,
-		height: undefined,
-		aspect: 1,
+		height: 100,
 		x: 0,
 		y: 0,
 	});
@@ -86,8 +85,9 @@ function CropAvatarModal(props: IProps) {
 	};
 
 	const closeModal = () => {
-		const element = document.getElementById('import-avatar');
-		if (element) ReactDOM.unmountComponentAtNode(element);
+		const container = document.getElementById('import-avatar');
+		const root = createRoot(container);
+		root.unmount();
 		props.saveAvatar();
 	};
 
@@ -99,7 +99,9 @@ function CropAvatarModal(props: IProps) {
 						<h4 className="modal-title">{i18next.t('MODAL.CROP_AVATAR_MODAL.TITLE')}</h4>
 					</ul>
 					<div className="modal-body">
-						<ReactCrop src={imageSource} crop={crop} onImageLoaded={setImageRef} onChange={setCrop} />
+						<ReactCrop crop={crop} aspect={1} onChange={setCrop}>
+							<img src={imageSource} onLoad={e => setImageRef(e.currentTarget)} alt="avatar" />
+						</ReactCrop>
 					</div>
 					<div className="modal-footer">
 						<em className="modal-help">{i18next.t('MODAL.CROP_AVATAR_MODAL.HELP')}</em>
