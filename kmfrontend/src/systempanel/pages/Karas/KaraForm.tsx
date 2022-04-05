@@ -406,7 +406,11 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				this.state.titlesIsTouched !== true &&
 				this.formRef.current.isFieldsTouched(['versions', 'series', 'language']) !== true
 			) {
-				this.setState({ titles: parentKara.titles, parentKara });
+				this.setState({
+					titles: parentKara.titles,
+					defaultLanguage: parentKara.titles_default_language,
+					parentKara,
+				});
 				const oldFormFields = this.formRef.current.getFieldsValue(['mediafile', 'subfile']); // Fields to take over to the applied kara
 				this.formRef.current.resetFields();
 				this.formRef.current.setFieldsValue(oldFormFields); // Re-sets media and lyrics file, if already uploaded
