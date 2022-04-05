@@ -2,10 +2,10 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 import i18next from 'i18next';
 import { useState } from 'react';
+import ReactDOM from 'react-dom';
 import ReactCrop, { Crop } from 'react-image-crop';
 
 import { commandBackend, isRemote } from '../../../utils/socket';
-import { createRoot } from 'react-dom/client';
 
 interface IProps {
 	src: any;
@@ -85,9 +85,8 @@ function CropAvatarModal(props: IProps) {
 	};
 
 	const closeModal = () => {
-		const container = document.getElementById('import-avatar');
-		const root = createRoot(container);
-		root.unmount();
+		const element = document.getElementById('import-avatar');
+		if (element) ReactDOM.unmountComponentAtNode(element);
 		props.saveAvatar();
 	};
 

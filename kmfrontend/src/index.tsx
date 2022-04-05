@@ -4,19 +4,17 @@ import './utils/electron';
 import './utils/socket';
 import './common.scss';
 
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
 import App from './App';
 import GlobalStateProvider from './store/GlobalStateProvider';
 
-const container = document.getElementById('mountpoint');
-const root = createRoot(container);
-
-root.render(
+ReactDOM.render(
 	<GlobalStateProvider>
 		<BrowserRouter>
 			<App />
 		</BrowserRouter>
-	</GlobalStateProvider>
+	</GlobalStateProvider>,
+	document.getElementById('mountpoint')
 );

@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { debounce } from 'lodash';
 import { createElement, useContext, useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { Route, Routes } from 'react-router';
 
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../store/actions/frontendContext';
@@ -137,9 +137,7 @@ function AdminPage(props: IProps) {
 			getPlaylistList();
 		}
 		if (!context?.globalState.settings.data.user?.flag_tutorial_done) {
-			const container = document.getElementById('tuto');
-			const root = createRoot(container);
-			root.render(createElement(Tutorial));
+			ReactDOM.render(createElement(Tutorial), document.getElementById('tuto'));
 		}
 		getSocket().on('playlistsUpdated', getPlaylistList);
 		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);
