@@ -309,6 +309,10 @@ export async function integrateKaraFile(
 	refresh = false
 ): Promise<string> {
 	const karaFile = basename(file);
+	logger.debug(`Integrating kara ${karaFileData.data.kid} (${basename(karaFile)})`, {
+		service,
+		obj: karaFileData.data.tags,
+	});
 	const karaData = await getDataFromKaraFile(karaFile, karaFileData, { media: true, lyrics: true });
 	const karasDB = await getKarasMicro([karaData.kid]);
 	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;

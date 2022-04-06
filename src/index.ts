@@ -89,7 +89,9 @@ if (!existsSync(dataPath)) mkdirpSync(dataPath);
 
 if (existsSync(resolve(appPath, 'disableAppUpdate'))) setState({ forceDisableAppUpdate: true });
 
-setState({ appPath, dataPath, resourcePath });
+const portable = dataPath === resolve(appPath, 'app/');
+
+setState({ appPath, dataPath, resourcePath, portable });
 
 process.env.NODE_ENV = 'production'; // Default
 
