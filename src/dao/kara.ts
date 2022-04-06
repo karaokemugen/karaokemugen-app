@@ -233,8 +233,8 @@ export function insertKaraToRequests(username: string, karaList: string[]) {
 	return transaction({ params: karas, sql: sqladdRequested });
 }
 
-export async function selectAllKIDs(): Promise<string[]> {
-	const res = await db().query(sqlselectAllKIDs);
+export async function selectAllKIDs(kid?: string): Promise<string[]> {
+	const res = await db().query(sqlselectAllKIDs(kid));
 	return res.rows.map((k: Kara) => k.kid);
 }
 
@@ -251,13 +251,8 @@ export async function updateKaraParents(kara: Kara) {
 	await db().query(sqldeleteChildrenKara, [kara.kid]);
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
-		const pkara = await selectAllKarasMicro({
-			q: `k:${pkid}`,
-		});
+		const pkara = await selectAllKIDs(pkid);
 		if (!pkara[0]) throw new Error(`${pkid} not in database!`);
-		if (kara.repository !== pkara[0].repository) {
-			throw new Error(`${pkid} is not in ${kara.repository} repository`);
-		}
 		await db().query(
 			yesql(sqlinsertChildrenParentKara)({
 				parent_kid: pkid,
