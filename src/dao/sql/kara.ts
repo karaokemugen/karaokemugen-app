@@ -210,9 +210,10 @@ VALUES(
 
 export const sqlgetYears = 'SELECT year, karacount::integer FROM all_years ORDER BY year';
 
-export const sqlselectAllKIDs = `
-SELECT ak.pk_kid AS kid
-FROM all_karas ak;
+export const sqlselectAllKIDs = (kid?: string) => `
+SELECT pk_kid AS kid
+FROM kara
+${kid ? `WHERE pk_kid = '${kid}'` : ''}
 `;
 
 export const sqlTruncateOnlineRequested = 'TRUNCATE online_requested';

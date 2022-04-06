@@ -1,13 +1,14 @@
 import i18next from 'i18next';
 import { debounce } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import { createElement, useContext, useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { Route, Routes } from 'react-router';
 
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../store/actions/frontendContext';
 import { showModal } from '../../store/actions/modal';
 import GlobalContext from '../../store/context';
 import { commandBackend, getSocket } from '../../utils/socket';
-import { decodeCriteriaReason, displayMessage, startIntro } from '../../utils/tools';
+import { decodeCriteriaReason, displayMessage } from '../../utils/tools';
 import { KaraElement } from '../types/kara';
 import AdminHeader from './AdminHeader';
 import KmAppBodyDecorator from './decorators/KmAppBodyDecorator';
@@ -17,6 +18,7 @@ import KaraDetail from './karas/KaraDetail';
 import Playlist from './karas/Playlist';
 import ProgressBar from './karas/ProgressBar';
 import AdminMessageModal from './modals/AdminMessageModal';
+import Tutorial from './modals/Tutorial';
 import Options from './options/Options';
 
 interface IProps {
@@ -135,7 +137,7 @@ function AdminPage(props: IProps) {
 			getPlaylistList();
 		}
 		if (!context?.globalState.settings.data.user?.flag_tutorial_done) {
-			startIntro();
+			ReactDOM.render(createElement(Tutorial), document.getElementById('tuto'));
 		}
 		getSocket().on('playlistsUpdated', getPlaylistList);
 		getSocket().on('operatorNotificationInfo', operatorNotificationInfo);

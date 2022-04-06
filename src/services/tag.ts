@@ -312,6 +312,7 @@ export async function integrateTagFile(file: string, refresh = true): Promise<st
 	const tagFileData = await getDataFromTagFile(file);
 	if (!tagFileData) return null;
 	try {
+		logger.debug(`Integrating tag ${tagFileData.tid} (${tagFileData.name})`, { service });
 		const tagDBData = await getTag(tagFileData.tid);
 		if (tagDBData) {
 			if (tagDBData.repository === tagFileData.repository) {

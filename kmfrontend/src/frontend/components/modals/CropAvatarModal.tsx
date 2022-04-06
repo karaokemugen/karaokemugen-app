@@ -18,8 +18,7 @@ function CropAvatarModal(props: IProps) {
 	const [crop, setCrop] = useState<Crop>({
 		unit: '%' as const,
 		width: 100,
-		height: undefined,
-		aspect: 1,
+		height: 100,
 		x: 0,
 		y: 0,
 	});
@@ -99,7 +98,9 @@ function CropAvatarModal(props: IProps) {
 						<h4 className="modal-title">{i18next.t('MODAL.CROP_AVATAR_MODAL.TITLE')}</h4>
 					</ul>
 					<div className="modal-body">
-						<ReactCrop src={imageSource} crop={crop} onImageLoaded={setImageRef} onChange={setCrop} />
+						<ReactCrop crop={crop} aspect={1} onChange={setCrop}>
+							<img src={imageSource} onLoad={e => setImageRef(e.currentTarget)} alt="avatar" />
+						</ReactCrop>
 					</div>
 					<div className="modal-footer">
 						<em className="modal-help">{i18next.t('MODAL.CROP_AVATAR_MODAL.HELP')}</em>

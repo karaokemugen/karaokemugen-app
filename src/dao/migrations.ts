@@ -6,6 +6,7 @@ import { win } from '../electron/electron';
 import logger from '../lib/utils/logger';
 import { editRepo, getRepo } from '../services/repo';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
+import Sentry from '../utils/sentry';
 import { compareKarasChecksum, generateDB } from './database';
 
 const service = 'DBMigration';
@@ -51,14 +52,17 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 				if (!didGeneration) doGenerate = true;
 				const world = getRepo('world.karaokes.moe');
 				if (world) {
+					await dialog.showMessageBox(win, {
+						type: 'info',
+						title: i18next.t('WORLD_REPOSITORY_DISABLED.TITLE'),
+						message: i18next.t('WORLD_REPOSITORY_DISABLED.MESSAGE'),
+					});
 					world.Enabled = false;
-					editRepo('world.karaokes.moe', world, false);
+					editRepo('world.karaokes.moe', world, false).catch(err => {
+						logger.warn('Unable to edit repository world following migration', { service, obj: err });
+						Sentry.error(err, 'Warning');
+					});
 				}
-				await dialog.showMessageBox(win, {
-					type: 'info',
-					title: i18next.t('WORLD_REPOSITORY_DISABLED.TITLE'),
-					message: i18next.t('WORLD_REPOSITORY_DISABLED.MESSAGE'),
-				});
 				break;
 			default:
 		}
