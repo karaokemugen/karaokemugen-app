@@ -1,3 +1,17 @@
+# v6.1.4 - 06/04/2022
+
+## Fixes
+
+-   Fixed parents check when integrating a new song
+-   Fixed getting kara parent default language when adding a new song
+-   Fixed localization of repository add/edit errors
+-   Fixed news feeds without release notes crashing the proxy feed
+
+## Misc
+
+-       Upgraded frontend and backend dependencies
+-       Added some logs when doing base updates
+
 # v6.1.3 - 01/04/2022
 
 ## Fixes
