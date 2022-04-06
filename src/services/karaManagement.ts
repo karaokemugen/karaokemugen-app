@@ -55,26 +55,26 @@ export async function updateTags(kara: Kara) {
 	await updateKaraTags(kara.kid, tagsAndTypes);
 }
 
-export async function createKaraInDB(kara: Kara, opts = { refresh: true }) {
+export async function createKaraInDB(kara: KaraFileV4, opts = { refresh: true }) {
 	await insertKara(kara);
-	await Promise.all([updateKaraParents(kara), updateTags(kara)]);
+	await Promise.all([updateKaraParents(kara.data), updateTags(kara.data)]);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('ADD', [kara]);
+		await refreshKarasAfterDBChange('ADD', [kara.data]);
 		updateAllSmartPlaylists();
 	}
 }
 
 export async function editKaraInDB(
-	kara: Kara,
+	kara: KaraFileV4,
 	opts = {
 		refresh: true,
 	}
 ) {
 	profile('editKaraDB');
-	const promises = [updateKara(kara), updateKaraParents(kara), updateTags(kara)];
+	const promises = [updateKara(kara), updateKaraParents(kara.data), updateTags(kara.data)];
 	await Promise.all(promises);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('UPDATE', [kara]);
+		await refreshKarasAfterDBChange('UPDATE', [kara.data]);
 		updateAllSmartPlaylists();
 	}
 	profile('editKaraDB');
@@ -173,14 +173,15 @@ export async function copyKaraToRepo(kid: string, repoName: string) {
 		const oldRepoIndex = repos.findIndex(r => r.Name === oldRepoName);
 		const newRepoIndex = repos.findIndex(r => r.Name === repoName);
 		// If the new repo has priority, edit kara so the database uses it.
+		const karaFileData = formatKaraV4(kara);
 		if (newRepoIndex < oldRepoIndex) {
 			tasks.push(
 				editKara({
-					kara: formatKaraV4(kara),
+					kara: karaFileData,
 				})
 			);
 		}
-		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), kara));
+		tasks.push(writeKara(resolve(resolvedPathRepos('Karaokes', repoName)[0], kara.karafile), karaFileData));
 		const mediaFiles = await resolveFileInDirs(kara.mediafile, resolvedPathRepos('Medias', oldRepoName));
 		tasks.push(
 			copy(mediaFiles[0], resolve(resolvedPathRepos('Medias', repoName)[0], kara.mediafile), { overwrite: true })
@@ -304,18 +305,18 @@ async function refreshTagsAfterDBChange() {
 
 export async function integrateKaraFile(
 	file: string,
-	karaFileData: KaraFileV4,
+	kara: KaraFileV4,
 	deleteOldFiles = true,
 	refresh = false
 ): Promise<string> {
 	const karaFile = basename(file);
-	logger.debug(`Integrating kara ${karaFileData.data.kid} (${basename(karaFile)})`, {
+	logger.debug(`Integrating kara ${kara.data.kid} (${basename(karaFile)})`, {
 		service,
-		obj: karaFileData.data.tags,
+		obj: kara.data.tags,
 	});
-	const karaData = await getDataFromKaraFile(karaFile, karaFileData, { media: true, lyrics: true });
-	const karasDB = await getKarasMicro([karaData.kid]);
-	const mediaDownload = getRepo(karaData.repository).AutoMediaDownloads;
+	const karaData = await getDataFromKaraFile(karaFile, kara, { media: true, lyrics: true });
+	const karasDB = await getKarasMicro([karaData.data.kid]);
+	const mediaDownload = getRepo(karaData.data.repository).AutoMediaDownloads;
 	if (karasDB[0]) {
 		const karaDB = karasDB[0];
 		await editKaraInDB(karaData, { refresh });
@@ -324,13 +325,13 @@ export async function integrateKaraFile(
 				const oldKaraFile = (
 					await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karaokes', karaDB.repository))
 				)[0];
-				if (karaDB.karafile !== karaData.karafile) {
+				if (karaDB.karafile !== karaData.meta.karaFile) {
 					await fs.unlink(oldKaraFile);
 				}
 			} catch (err) {
 				logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, { service });
 			}
-			if (karaDB.mediafile !== karaData.mediafile && karaDB.download_status === 'DOWNLOADED') {
+			if (karaDB.mediafile !== karaData.medias[0].filename && karaDB.download_status === 'DOWNLOADED') {
 				try {
 					await fs.unlink(
 						(
@@ -341,7 +342,7 @@ export async function integrateKaraFile(
 					logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, { service });
 				}
 			}
-			if (karaDB.subfile && karaDB.subfile !== karaData.subfile) {
+			if (karaDB.subfile && karaDB.subfile !== karaData.medias[0].lyrics[0]?.filename) {
 				try {
 					await fs.unlink(
 						(
@@ -355,23 +356,28 @@ export async function integrateKaraFile(
 		}
 		if (mediaDownload !== 'none') {
 			checkMediaAndDownload(
-				karaData.kid,
-				karaData.mediafile,
-				karaData.repository,
-				karaData.mediasize,
+				karaData.data.kid,
+				karaData.medias[0].filename,
+				karaData.data.repository,
+				karaData.medias[0].filesize,
 				mediaDownload === 'updateOnly'
 			);
 		}
 	} else {
 		await createKaraInDB(karaData, { refresh });
 		if (mediaDownload === 'all') {
-			checkMediaAndDownload(karaData.kid, karaData.mediafile, karaData.repository, karaData.mediasize);
+			checkMediaAndDownload(
+				karaData.data.kid,
+				karaData.medias[0].filename,
+				karaData.data.repository,
+				karaData.medias[0].filesize
+			);
 		}
 	}
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB)
-		createImagePreviews(await getKaras({ q: `k:${karaData.kid}`, ignoreCollections: true }), 'single');
-	return karaData.kid;
+		createImagePreviews(await getKaras({ q: `k:${karaData.data.kid}`, ignoreCollections: true }), 'single');
+	return karaData.data.kid;
 }
 
 export async function deleteMediaFile(file: string, repo: string) {

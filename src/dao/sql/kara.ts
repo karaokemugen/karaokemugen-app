@@ -156,6 +156,7 @@ UPDATE kara SET
 	duration = :duration,
 	gain = :gain,
 	loudnorm = :loudnorm,
+	created_at = :created_at,
 	modified_at = :modified_at,
 	karafile = :karafile,
 	comment = :comment,
