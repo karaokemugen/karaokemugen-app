@@ -1,12 +1,12 @@
 import { EditOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import i18next from 'i18next';
+import { DBKara } from '../../../../src/lib/types/database/kara';
 
-import { Kara } from '../../../../src/lib/types/kara';
 import { commandBackend } from '../../utils/socket';
 
 interface IProps {
-	kara: Kara;
+	kara: DBKara;
 	showOnlyIfDownloaded?: boolean;
 }
 
