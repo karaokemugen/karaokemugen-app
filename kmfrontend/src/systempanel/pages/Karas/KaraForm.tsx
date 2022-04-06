@@ -69,7 +69,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			defaultLanguage: kara?.titles_default_language || null,
 			titlesIsTouched: false,
 			serieSingersRequired: false,
-			subfile: kara.subfile
+			subfile: kara?.subfile
 				? [
 						{
 							uid: -1,
@@ -78,7 +78,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						},
 				  ]
 				: [],
-			mediafile: kara.mediafile
+			mediafile: kara?.mediafile
 				? [
 						{
 							uid: -1,
@@ -92,7 +92,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			mediaInfo: {} as unknown as MediaInfo, // Has to be defined for reactive things
 			repositoriesValue: null,
 			repoToCopySong: null,
-			comment: kara.comment,
+			comment: kara?.comment,
 			karaSearch: [],
 			parentKara: null,
 			errors: [],
