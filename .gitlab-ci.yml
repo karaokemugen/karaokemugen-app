@@ -318,7 +318,6 @@ pkg_mac:
   script:
     - yarn install
     - rm -Rf release_mac
-    - npm install -g electron-builder
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_mac-6.x.tar.gz | tar xvz
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
     - bash util/electronBuilder.sh -m
