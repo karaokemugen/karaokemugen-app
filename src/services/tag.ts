@@ -236,7 +236,8 @@ export async function editTag(
 		if (opts.refresh) {
 			const karasToUpdate = await getKarasWithTags([oldTag]);
 			await updateTagSearchVector();
-			await refreshKarasAfterDBChange('UPDATE', karasToUpdate);
+			const karasData = karasToUpdate.map(k => formatKaraV4(k).data);
+			await refreshKarasAfterDBChange('UPDATE', karasData);
 			refreshTags();
 		}
 	} catch (err) {

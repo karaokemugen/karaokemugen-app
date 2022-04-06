@@ -14,7 +14,7 @@ import { parseKara, writeKara } from '../lib/dao/karafile';
 import { readAllKaras } from '../lib/services/generation';
 import { DBTag } from '../lib/types/database/tag';
 import { KaraMetaFile } from '../lib/types/downloads';
-import { Kara, KaraFileV4 } from '../lib/types/kara';
+import { KaraFileV4 } from '../lib/types/kara';
 import { DiffChanges, RepositoryManifest } from '../lib/types/repo';
 import { TagFile } from '../lib/types/tag';
 import { getConfig, resolvedPathRepos } from '../lib/utils/config';
@@ -671,18 +671,24 @@ export async function compareLyricsChecksums(repo1Name: string, repo2Name: strin
 			readAllKaras(repo1Files, false, task),
 			readAllKaras(repo2Files, false, task),
 		]);
-		type KaraMap = Map<string, Kara>;
+		type KaraMap = Map<string, KaraFileV4>;
 		const karas1Map: KaraMap = new Map();
 		const karas2Map: KaraMap = new Map();
-		karas1.forEach(k => karas1Map.set(k.kid, k));
-		karas2.forEach(k => karas2Map.set(k.kid, k));
+		karas1.forEach(k => karas1Map.set(k.data.kid, k));
+		karas2.forEach(k => karas2Map.set(k.data.kid, k));
 		const differentChecksums = [];
 		for (const kara1 of karas1Map.values()) {
-			const kara2 = karas2Map.get(kara1.kid);
+			const kara2 = karas2Map.get(kara1.data.kid);
 			if (kara2) {
 				// read both lyrics and then decide if they're different
-				const lyricsPath1 = resolve(resolvedPathRepos('Lyrics', kara1.repository)[0], kara1.subfile);
-				const lyricsPath2 = resolve(resolvedPathRepos('Lyrics', kara2.repository)[0], kara2.subfile);
+				const lyricsPath1 = resolve(
+					resolvedPathRepos('Lyrics', kara1.data.repository)[0],
+					kara1.medias[0].lyrics[0]?.filename
+				);
+				const lyricsPath2 = resolve(
+					resolvedPathRepos('Lyrics', kara2.data.repository)[0],
+					kara2.medias[0].lyrics[0]?.filename
+				);
 				const [lyrics1, lyrics2] = await Promise.all([
 					fs.readFile(lyricsPath1, 'utf-8'),
 					fs.readFile(lyricsPath2, 'utf-8'),
@@ -713,24 +719,26 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 	try {
 		for (const karas of report) {
 			task.update({
-				subtext: karas.kara2.subfile,
+				subtext: karas.kara2.medias[0].lyrics[0]?.filename,
 			});
 			// Copying kara1 data to kara2
-			karas.kara2.isKaraModified = true;
+			karas.kara2.meta.isKaraModified = true;
 			const writes = [];
-			writes.push(writeKara(karas.kara2.karafile, karas.kara2));
-			const sourceLyrics = await resolveFileInDirs(
-				karas.kara1.subfile,
-				resolvedPathRepos('Lyrics', karas.kara1.repository)
-			);
-			const destLyrics = await resolveFileInDirs(
-				karas.kara2.subfile,
-				resolvedPathRepos('Lyrics', karas.kara2.repository)
-			);
-			writes.push(copy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
+			writes.push(writeKara(karas.kara2.meta.karaFile, karas.kara2));
+			if (karas.kara1.medias[0].lyrics[0]) {
+				const sourceLyrics = await resolveFileInDirs(
+					karas.kara1.medias[0].lyrics[0]?.filename,
+					resolvedPathRepos('Lyrics', karas.kara1.data.repository)
+				);
+				const destLyrics = await resolveFileInDirs(
+					karas.kara2.medias[0].lyrics[0].filename,
+					resolvedPathRepos('Lyrics', karas.kara2.data.repository)
+				);
+				writes.push(copy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
+			}
 			writes.push(editKaraInDB(karas.kara2, { refresh: false }));
 			await Promise.all(writes);
-			await editKaraInStore(karas.kara2.karafile);
+			await editKaraInStore(karas.kara2.meta.karaFile);
 			task.incr();
 		}
 		sortKaraStore();

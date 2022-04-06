@@ -3,7 +3,7 @@ import { pg as yesql } from 'yesql';
 import { buildClauses, buildTypeClauses, copyFromData, db, transaction } from '../lib/dao/database';
 import { WhereClause } from '../lib/types/database';
 import { DBKara, DBKaraBase, DBYear } from '../lib/types/database/kara';
-import { Kara, KaraParams } from '../lib/types/kara';
+import { Kara, KaraFileV4, KaraParams } from '../lib/types/kara';
 import { getConfig } from '../lib/utils/config';
 import { tagTypes } from '../lib/utils/constants';
 import { now } from '../lib/utils/date';
@@ -28,51 +28,52 @@ export async function selectYears(): Promise<DBYear[]> {
 	return res.rows;
 }
 
-export async function updateKara(kara: Kara) {
+export async function updateKara(kara: KaraFileV4) {
 	await db().query(
 		yesql(sqlupdateKara)({
-			karafile: kara.karafile,
-			mediafile: kara.mediafile,
-			mediasize: kara.mediasize,
-			subfile: kara.subfile,
-			titles: kara.titles,
-			titles_aliases: JSON.stringify(kara.titles_aliases || []),
-			titles_default_language: kara.titles_default_language || 'eng',
-			year: kara.year,
-			songorder: kara.songorder || null,
-			duration: kara.duration,
-			gain: kara.gain,
-			loudnorm: kara.loudnorm,
-			modified_at: kara.modified_at,
-			kid: kara.kid,
-			comment: kara.comment,
-			ignoreHooks: kara.ignoreHooks || false,
+			karafile: kara.meta.karaFile,
+			mediafile: kara.medias[0].filename,
+			mediasize: kara.medias[0].filesize,
+			subfile: kara.medias[0].lyrics[0].filename,
+			titles: kara.data.titles,
+			titles_aliases: JSON.stringify(kara.data.titles_aliases || []),
+			titles_default_language: kara.data.titles_default_language || 'eng',
+			year: kara.data.year,
+			songorder: kara.data.songorder || null,
+			duration: kara.medias[0].duration,
+			gain: kara.medias[0].audiogain,
+			loudnorm: kara.medias[0].loudnorm,
+			created_at: new Date(kara.data.created_at),
+			modified_at: new Date(kara.data.modified_at),
+			kid: kara.data.kid,
+			comment: kara.data.comment,
+			ignoreHooks: kara.data.ignoreHooks || false,
 		})
 	);
 }
 
-export async function insertKara(kara: Kara) {
+export async function insertKara(kara: KaraFileV4) {
 	await db().query(
 		yesql(sqlinsertKara)({
-			karafile: kara.karafile,
-			mediafile: kara.mediafile,
-			subfile: kara.subfile,
-			titles: kara.titles,
-			titles_aliases: JSON.stringify(kara.titles_aliases || []),
-			titles_default_language: kara.titles_default_language || 'eng',
-			year: kara.year,
-			songorder: kara.songorder || null,
-			duration: kara.duration,
-			gain: kara.gain,
-			loudnorm: kara.loudnorm,
-			modified_at: kara.modified_at,
-			created_at: kara.created_at,
-			kid: kara.kid,
-			repository: kara.repository,
-			mediasize: kara.mediasize,
+			karafile: kara.meta.karaFile,
+			mediafile: kara.medias[0].filename,
+			subfile: kara.medias[0].lyrics[0].filename,
+			titles: kara.data.titles,
+			titles_aliases: JSON.stringify(kara.data.titles_aliases || []),
+			titles_default_language: kara.data.titles_default_language || 'eng',
+			year: kara.data.year,
+			songorder: kara.data.songorder || null,
+			duration: kara.medias[0].duration,
+			gain: kara.medias[0].audiogain,
+			loudnorm: kara.medias[0].loudnorm,
+			modified_at: new Date(kara.data.modified_at),
+			created_at: new Date(kara.data.created_at),
+			kid: kara.data.kid,
+			repository: kara.data.repository,
+			mediasize: kara.medias[0].filesize,
 			download_status: 'DOWNLOADED',
-			comment: kara.comment,
-			ignoreHooks: kara.ignoreHooks || false,
+			comment: kara.data.comment,
+			ignoreHooks: kara.data.ignoreHooks || false,
 		})
 	);
 }
