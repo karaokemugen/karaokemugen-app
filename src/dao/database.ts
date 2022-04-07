@@ -118,7 +118,7 @@ export async function initDBSystem(): Promise<Postgrator.Migration[]> {
 				type: 'error',
 				title: i18next.t('DATABASE_CONNECTION_ERROR.TITLE'),
 				message: i18next.t('DATABASE_CONNECTION_ERROR.MESSAGE'),
-				buttons: [i18next.t('DATABASE_CONNECTION_ERROR.HELP'), i18next.t('MENU_FILE_QUIT')],
+				buttons: [i18next.t('DATABASE_CONNECTION_ERROR.HELP'), 'OK'],
 			});
 			if (res.response === 0) {
 				open(
