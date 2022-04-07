@@ -312,7 +312,6 @@ pkg_mac:
     - build-react
     - test
   variables:
-    CSC_IDENTITY_AUTO_DISCOVERY: 'false'
     ARTIFACT_DOWNLOAD_ATTEMPTS: 10
     RESTORE_CACHE_ATTEMPTS: 10
   script:
