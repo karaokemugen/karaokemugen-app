@@ -1,7 +1,7 @@
 // Node modules
 import { app } from 'electron';
 import { execa } from 'execa';
-import i18n from 'i18next';
+import i18next from 'i18next';
 import internetAvailable from 'internet-available';
 
 import { compareKarasChecksum, generateDB, getStats, initDBSystem } from '../dao/database';
@@ -60,7 +60,7 @@ export async function initEngine() {
 	})();
 	if (state.opt.validate) {
 		try {
-			initStep(i18n.t('INIT_VALIDATION'));
+			initStep(i18next.t('INIT_VALIDATION'));
 			await generateKaraBase({
 				validateOnly: true,
 			});
@@ -72,9 +72,9 @@ export async function initEngine() {
 		}
 	} else if (state.opt.mediaUpdateAll) {
 		try {
-			initStep(i18n.t('INIT_DB'));
+			initStep(i18next.t('INIT_DB'));
 			await initDBSystem();
-			initStep(i18n.t('INIT_UPDATEMEDIAS'));
+			initStep(i18next.t('INIT_UPDATEMEDIAS'));
 			await initDownloader();
 			await wipeDownloads();
 			await updateAllMedias();
@@ -86,9 +86,9 @@ export async function initEngine() {
 		}
 	} else if (state.opt.dumpDB) {
 		try {
-			initStep(i18n.t('INIT_DB'));
+			initStep(i18next.t('INIT_DB'));
 			await initDBSystem();
-			initStep(i18n.t('INIT_DUMPDB'));
+			initStep(i18next.t('INIT_DUMPDB'));
 			await dumpPG();
 			await exit(0);
 		} catch (err) {
@@ -97,9 +97,9 @@ export async function initEngine() {
 		}
 	} else if (state.opt.restoreDB) {
 		try {
-			initStep(i18n.t('INIT_DB'));
+			initStep(i18next.t('INIT_DB'));
 			await initDBSystem();
-			initStep(i18n.t('INIT_RESTOREDB'));
+			initStep(i18next.t('INIT_RESTOREDB'));
 			await restorePG();
 			await exit(0);
 		} catch (err) {
@@ -108,9 +108,9 @@ export async function initEngine() {
 		}
 	} else if (state.opt.baseUpdate) {
 		try {
-			initStep(i18n.t('INIT_DB'));
+			initStep(i18next.t('INIT_DB'));
 			await initDBSystem();
-			initStep(i18n.t('INIT_BASEUPDATE'));
+			initStep(i18next.t('INIT_BASEUPDATE'));
 			await updateAllRepos();
 			logger.info('Done updating karaoke base', { service });
 			await exit(0);
@@ -121,9 +121,9 @@ export async function initEngine() {
 		}
 	} else if (state.opt.generateDB) {
 		try {
-			initStep(i18n.t('INIT_DB'));
+			initStep(i18next.t('INIT_DB'));
 			await initDBSystem();
-			initStep(i18n.t('INIT_GEN'));
+			initStep(i18next.t('INIT_GEN'));
 			const checksum = await baseChecksum();
 			await generateDB();
 			await saveSetting('baseChecksum', checksum);
@@ -134,11 +134,11 @@ export async function initEngine() {
 			await exit(1);
 		}
 	} else {
-		initStep(i18n.t('INIT_DB'));
+		initStep(i18next.t('INIT_DB'));
 		const migrations = await initDBSystem();
 		const didGeneration = await preFlightCheck();
 		checkIfAppHasBeenUpdated();
-		initStep(i18n.t('INIT_USER'));
+		initStep(i18next.t('INIT_USER'));
 		await initUserSystem();
 		const port = initFrontend();
 		if (port !== conf.System.FrontendPort) {
@@ -148,7 +148,7 @@ export async function initEngine() {
 		}
 		if (internet) {
 			try {
-				initStep(i18n.t('INIT_ONLINEURL'));
+				initStep(i18next.t('INIT_ONLINEURL'));
 				await initKMServerCommunication();
 				const onlinePromises = [
 					// TODO: add config item for this?
@@ -164,7 +164,7 @@ export async function initEngine() {
 		}
 		try {
 			if (conf.Player.KeyboardMediaShortcuts) registerShortcuts();
-			initStep(i18n.t('INIT_PLAYLIST_AND_PLAYER'));
+			initStep(i18next.t('INIT_PLAYLIST_AND_PLAYER'));
 			const initPromises = [initPlaylistSystem(), initDownloader(), initSession()];
 			if (conf.Karaoke.StreamerMode.Twitch.Enabled) initPromises.push(initTwitch());
 			if (!conf.App.FirstRun && !state.isTest && !state.opt.noPlayer) {
@@ -172,7 +172,7 @@ export async function initEngine() {
 			}
 			await Promise.all(initPromises);
 			if (conf.Online.Stats === true) initStats(false);
-			initStep(i18n.t('INIT_LAST'), true);
+			initStep(i18next.t('INIT_LAST'), true);
 			enableWSLogging(state.opt.debug ? 'debug' : 'info');
 			// Easter egg
 			const ready = Math.floor(Math.random() * 10) >= 9 ? 'LADY' : 'READY';
@@ -213,7 +213,7 @@ export async function initEngine() {
 			if (conf.App.FirstRun) await markAllMigrationsFrontendAsDone();
 			setState({ ready: true });
 			writeStreamFiles();
-			initStep(i18n.t('INIT_DONE'), true);
+			initStep(i18next.t('INIT_DONE'), true);
 			postInit();
 			initHooks();
 			logger.info(`Karaoke Mugen is ${ready}`, { service });
@@ -322,11 +322,11 @@ async function preFlightCheck(): Promise<boolean> {
 	}
 	if (doGenerate) {
 		try {
-			initStep(i18n.t('INIT_GEN'));
+			initStep(i18next.t('INIT_GEN'));
 			await generateDB();
 		} catch (err) {
 			logger.error('Generation failed', { service, obj: err });
-			errorStep(i18n.t('ERROR_GENERATION'));
+			errorStep(i18next.t('ERROR_GENERATION'));
 			throw err;
 		}
 	}
