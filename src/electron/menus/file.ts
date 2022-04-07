@@ -34,7 +34,7 @@ const builder: MenuItemBuilderFunction = options => {
 			{
 				// Updater menu disabled on macs until we can sign our code
 				label: i18next.t('MENU_FILE_UPDATE'),
-				visible: !isMac && !getState().forceDisableAppUpdate,
+				visible: !getState().forceDisableAppUpdate,
 				click: checkForUpdates,
 			},
 			{ role: 'services', visible: isMac && !isReduced },

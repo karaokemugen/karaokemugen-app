@@ -177,6 +177,7 @@
     "@typescript-eslint/parser": "5",
     "chai": "^4.3.6",
     "electron": "^18.0.2",
+    "electron-notarize": "^1.2.1",
     "esbuild": "^0.14.32",
     "eslint": "^8.12.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -198,6 +199,7 @@
   },
   "build": {
     "appId": "KaraokeMugen",
+    "afterSign": "build/notarize.cjs",
     "fileAssociations": [
       {
         "ext": "kmplaylist",
@@ -282,6 +284,10 @@
           "x64"
         ]
       },
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.plist",
+      "entitlementsInherit": "build/entitlements.plist",
+      "gatekeeperAssess": false,
       "compression": "normal",
       "minimumSystemVersion": "10.14.0",
       "category": "public.app-category.entertainment"
@@ -312,8 +318,7 @@
       "build/electronAboutWindow.css"
     ],
     "extraFiles": [
-      "app/bin/**",
-      "CHANGELOG.md"
+      "app/bin/**"
     ],
     "directories": {
       "output": "packages",

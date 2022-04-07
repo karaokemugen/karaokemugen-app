@@ -31,11 +31,11 @@ karaokemugen.sql
 # kmfrontend
 kmfrontend/node_modules
 kmfrontend/coverage
+kmfrontend/build
 # Legacy frontends
 /frontend/
 /systempanel/
 .cache/
-build/
 
 # sessions export
 *.played.csv
@@ -51,6 +51,3 @@ postgrator.json
 .env
 .eslintcache
 
-# zip worker
-zipWorker/zipWorker.js
-zipWorker/zipWorker.js.map
