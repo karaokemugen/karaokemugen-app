@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 
 import { exit } from '../../components/engine';
+import { getConfig, setConfig } from '../../lib/utils/config';
 import { MenuItemBuilderFunction } from '../../types/electron';
 import { getState } from '../../utils/state';
 import { showAbout } from '../electron';
@@ -32,12 +33,19 @@ const builder: MenuItemBuilderFunction = options => {
 			},
 			!isReduced && isMac ? { type: 'separator' } : null,
 			{
-				// Updater menu disabled on macs until we can sign our code
 				label: i18next.t('MENU_FILE_UPDATE'),
 				visible: !getState().forceDisableAppUpdate,
 				click: checkForUpdates,
 			},
-			{ role: 'services', visible: isMac && !isReduced },
+			{
+				label: i18next.t('MENU_OPTIONS_CHECKFORUPDATES'),
+				type: 'checkbox',
+				checked: getConfig().Online.Updates.App,
+				visible: !getState().forceDisableAppUpdate && isMac,
+				click: () => {
+					setConfig({ Online: { Updates: { App: !getConfig().Online.Updates.App } } });
+				},
+			},
 			{
 				visible: !isReduced,
 				label: i18next.t('MENU_FILE_IMPORT'),
