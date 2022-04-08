@@ -100,15 +100,16 @@ export async function getTag(tid: string, ..._: any) {
 	return tags[0];
 }
 
-export function getTagNameInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string): string {
-	if (tag.i18n) {
-		return tag.i18n[mainLanguage]
-			? tag.i18n[mainLanguage]
-			: tag.i18n[fallbackLanguage]
-			? tag.i18n[fallbackLanguage]
-			: tag.name;
+export function getTagNameInLanguage(tag: DBKaraTag, langs: string[]): string {
+	let result: string;
+	for (const lang of langs) {
+		if (result) break;
+		if (tag.i18n) {
+			result = tag.i18n[lang];
+		}
 	}
-	return tag.name;
+	if (!result) result = tag.name;
+	return result;
 }
 
 export async function mergeTags(tid1: string, tid2: string) {

@@ -1018,8 +1018,11 @@ class Players {
 			resolveFileInDirs(song.subfile, resolvedPathRepos('Lyrics', song.repository))
 				.then(res => (subFile = res[0]))
 				.catch(err => {
-					logger.debug('Error while resolving subs path', { service, obj: err });
-					logger.warn(`Subs NOT FOUND : ${song.subfile}`, { service });
+					if (song.subfile) {
+						// No need to log if there's no subfile to begin with, not an error.
+						logger.debug('Error while resolving subs path', { service, obj: err });
+						logger.warn(`Subs NOT FOUND : ${song.subfile}`, { service });
+					}
 					subFile = '';
 				}),
 			resolveFileInDirs(song.mediafile, resolvedPathRepos('Medias', song.repository))
@@ -1402,12 +1405,13 @@ class Players {
 			let position = '';
 			if (getConfig().Player.Display.SongInfo) {
 				if (warnings?.length > 0) {
-					const lang =
-						getConfig().Player.Display.SongInfoLanguage ||
-						convert1LangTo2B(getState().defaultLocale) ||
-						'eng';
+					const langs = [
+						getConfig().Player.Display.SongInfoLanguage,
+						convert1LangTo2B(getState().defaultLocale),
+						'eng',
+					];
 					const warningArr = warnings.map(t => {
-						return getTagNameInLanguage(t, lang, 'eng');
+						return getTagNameInLanguage(t, langs);
 					});
 					warningString = `{\\fscx80}{\\fscy80}{\\b1}{\\c&H0808E8&}⚠ WARNING: ${warningArr.join(
 						', '
