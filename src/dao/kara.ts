@@ -34,7 +34,7 @@ export async function updateKara(kara: KaraFileV4) {
 			karafile: kara.meta.karaFile,
 			mediafile: kara.medias[0].filename,
 			mediasize: kara.medias[0].filesize,
-			subfile: kara.medias[0].lyrics[0].filename,
+			subfile: kara.medias[0].lyrics[0]?.filename,
 			titles: kara.data.titles,
 			titles_aliases: JSON.stringify(kara.data.titles_aliases || []),
 			titles_default_language: kara.data.titles_default_language || 'eng',
