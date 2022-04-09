@@ -25,6 +25,7 @@ interface TagsFormState {
 	mergeSelection: string;
 	repositoriesValue: string[];
 	repoToCopySong: string;
+	displayDescription: boolean;
 }
 
 class TagForm extends Component<TagsFormProps, TagsFormState> {
@@ -41,6 +42,7 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 			mergeSelection: '',
 			repositoriesValue: null,
 			repoToCopySong: null,
+			displayDescription: this.props.tag?.description ? true : false,
 		};
 	}
 
@@ -157,13 +159,21 @@ class TagForm extends Component<TagsFormProps, TagsFormState> {
 						</span>
 					}
 					labelCol={{ flex: '0 1 300px' }}
-				></Form.Item>
-				<div style={{ marginLeft: '3em', marginRight: '6em' }}>
-					<LanguagesList
-						value={this.state.description}
-						onChange={description => this.setState({ description })}
-					/>
-				</div>
+				>
+					{this.state.displayDescription ? null : (
+						<Button onClick={() => this.setState({ displayDescription: true })}>
+							{i18next.t('TAGS.ADD_DESCRIPTION')}
+						</Button>
+					)}
+				</Form.Item>
+				{this.state.displayDescription ? (
+					<div style={{ marginLeft: '3em', marginRight: '6em' }}>
+						<LanguagesList
+							value={this.state.description}
+							onChange={description => this.setState({ description })}
+						/>
+					</div>
+				) : null}
 				<Form.Item
 					label={
 						<span>

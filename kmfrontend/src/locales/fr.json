@@ -995,7 +995,8 @@
 		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 masque les tags sur l'interface publique, -2 le masque partout (il sera toujours utilisé pour la recherche).",
 		"COPY_TAG": "Copier le tag vers un autre dépôt",
 		"DESCRIPTION": "Description",
-		"DESCRIPTION_TOOLTIP": "Une description du tag, utilisé uniquement pour les collections."
+		"DESCRIPTION_TOOLTIP": "Une description du tag, utilisé uniquement pour les collections.",
+		"ADD_DESCRIPTION": "Ajouter une description"
 	},
 	"TAG_TYPES": {
 		"SINGERS_one": "Chanteur",
