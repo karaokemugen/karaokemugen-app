@@ -18,7 +18,7 @@ const builder: MenuItemBuilderFunction = options => {
 				click: showAbout,
 				visible: isMac,
 			},
-			{ type: 'separator', visible: isMac },
+			isMac ? { type: 'separator' } : null,
 			{
 				label: i18next.t('MENU_OPTIONS_OPERATORCONFIG_OSX'),
 				accelerator: 'CmdOrCtrl+T',
