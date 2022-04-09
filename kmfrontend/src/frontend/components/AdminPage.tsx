@@ -116,7 +116,7 @@ function AdminPage(props: IProps) {
 		setPlaylistList(playlistList);
 	};
 
-	const openKara = async (kara: KaraElement, idPlaylist: string) => {
+	const openKara = async (kara: KaraElement) => {
 		const reason = [];
 		if (kara.criterias) {
 			await Promise.all(

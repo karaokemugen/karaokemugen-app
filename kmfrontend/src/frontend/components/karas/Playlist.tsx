@@ -36,7 +36,7 @@ interface IProps {
 	searchMenuOpen?: boolean;
 	playlistList?: PlaylistElem[];
 	toggleSearchMenu?: () => void;
-	openKara: (kara: KaraElement, plaid: string, index?: number) => void;
+	openKara: (kara: KaraElement, index?: number) => void;
 	searchValue?: string;
 	searchCriteria?: 'year' | 'tag';
 	indexKaraDetail?: number;
@@ -279,8 +279,8 @@ function Playlist(props: IProps) {
 						deleteCriteria={deleteCriteria}
 						jingle={jingle}
 						sponsor={sponsor}
-						openKara={(kara, idPlaylist) => {
-							props.openKara(kara, idPlaylist, index);
+						openKara={kara => {
+							props.openKara(kara, index);
 						}}
 						sortable={sortable}
 						draggable={provided}
