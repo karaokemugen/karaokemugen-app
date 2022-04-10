@@ -76,7 +76,7 @@ export function initAutoUpdate() {
 		}
 	});
 
-	if (getConfig().Online.Updates.App && process.platform !== 'darwin') {
+	if (getConfig().Online.Updates.App) {
 		try {
 			logger.info('Checking for updates and notify', { service });
 			autoUpdater.checkForUpdatesAndNotify();

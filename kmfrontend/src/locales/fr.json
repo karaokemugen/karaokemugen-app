@@ -879,7 +879,7 @@
 		"ONLINE_REPOSITORIES": "Certains de vos karaokés proviennent de dépôts distants (le serveur kara.moe par exemple), ces karaokés ne sont pas modifiables via cette interface, afin d'assurer la bonne synchronisation des dépôts. Vous pouvez cocher la case \"Mode mainteneur\" dans les paramètres du dépôt, vous ne recevrez alors plus de mises à jour des karaokés mais vous serez en mesure de les modifier ou les supprimer.",
 		"PARENTS": "Parents",
 		"CHILDRENS": "Enfants de {{parent}}",
-		"PARENTS_TOOLTIP": "Si un parent est défini, ce karaoké apparaîtra comme une alternative au(x) kara(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des karaokés d'autre dépôts.",
+		"PARENTS_TOOLTIP": "Si un parent est défini, ce karaoké apparaîtra comme une alternative au(x) kara(s) parent(s) renseigné(s). Veillez à définir le dépôt avant de remplir ce tableau pour éviter d'ajouter des karaokés d'autres dépôts.",
 		"VERSION_AVAILABILITY": "Disponible en {{count}} versions.",
 		"COLLECTIONS_REQUIRED": "Une collection est obligatoire",
 		"COLLECTIONS_TOOLTIP": "Sélectionnez les collections dans lesquelles le karaoké doit apparaître"
@@ -995,7 +995,8 @@
 		"PRIORITY_TOOLTIP": "Les tags avec une valeur plus haute seront affichés en premier. Par défaut 10. -1 masque les tags sur l'interface publique, -2 le masque partout (il sera toujours utilisé pour la recherche).",
 		"COPY_TAG": "Copier le tag vers un autre dépôt",
 		"DESCRIPTION": "Description",
-		"DESCRIPTION_TOOLTIP": "Une description du tag, utilisé uniquement pour les collections."
+		"DESCRIPTION_TOOLTIP": "Une description du tag, utilisé uniquement pour les collections.",
+		"ADD_DESCRIPTION": "Ajouter une description"
 	},
 	"TAG_TYPES": {
 		"SINGERS_one": "Chanteur",

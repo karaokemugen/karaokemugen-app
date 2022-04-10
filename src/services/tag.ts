@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { internetAvailable } from 'internet-available';
+import internetAvailable from 'internet-available';
 import { basename, dirname, resolve } from 'path';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -19,6 +19,7 @@ import { refreshKarasUpdate } from '../lib/dao/kara';
 import { formatKaraV4 } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
+import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { KaraFileV4 } from '../lib/types/kara.d';
@@ -33,7 +34,6 @@ import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getKaras } from './kara';
 import { editKara } from './karaCreation';
-import { refreshKarasAfterDBChange } from './karaManagement';
 import { getRepo, getRepos } from './repo';
 
 const service = 'Tag';
@@ -100,15 +100,16 @@ export async function getTag(tid: string, ..._: any) {
 	return tags[0];
 }
 
-export function getTagNameInLanguage(tag: DBKaraTag, mainLanguage: string, fallbackLanguage: string): string {
-	if (tag.i18n) {
-		return tag.i18n[mainLanguage]
-			? tag.i18n[mainLanguage]
-			: tag.i18n[fallbackLanguage]
-			? tag.i18n[fallbackLanguage]
-			: tag.name;
+export function getTagNameInLanguage(tag: DBKaraTag, langs: string[]): string {
+	let result: string;
+	for (const lang of langs) {
+		if (result) break;
+		if (tag.i18n) {
+			result = tag.i18n[lang];
+		}
 	}
-	return tag.name;
+	if (!result) result = tag.name;
+	return result;
 }
 
 export async function mergeTags(tid1: string, tid2: string) {
@@ -236,7 +237,8 @@ export async function editTag(
 		if (opts.refresh) {
 			const karasToUpdate = await getKarasWithTags([oldTag]);
 			await updateTagSearchVector();
-			await refreshKarasAfterDBChange('UPDATE', karasToUpdate);
+			const karasData = karasToUpdate.map(k => formatKaraV4(k).data);
+			await refreshKarasAfterDBChange('UPDATE', karasData);
 			refreshTags();
 		}
 	} catch (err) {
@@ -475,7 +477,7 @@ export async function checkCollections() {
 			if (repo.Online && internet) {
 				try {
 					const tags = (await HTTP.get(`https://${repo.Name}/api/karas/tags/${tagTypes.collections}`)).data;
-					for (const tag of tags) {
+					for (const tag of tags.content) {
 						if (!availableCollections.find(t => t.tid === tag.tid)) availableCollections.push(tag);
 					}
 				} catch (err) {

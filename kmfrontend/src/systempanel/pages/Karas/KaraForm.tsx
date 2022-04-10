@@ -20,7 +20,7 @@ import { Component, createRef } from 'react';
 import { v4 as UUIDv4 } from 'uuid';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
-import { Kara, KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
+import { KaraFileV4, MediaInfo } from '../../../../../src/lib/types/kara';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle, getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
@@ -31,7 +31,7 @@ import LanguagesList from '../../components/LanguagesList';
 import OpenLyricsFileButton from '../../components/OpenLyricsFileButton';
 
 interface KaraFormProps {
-	kara: Kara | Record<string, never>;
+	kara: DBKara;
 	save: any;
 	handleCopy: (kid, repo) => void;
 }
@@ -50,7 +50,7 @@ interface KaraFormState {
 	repoToCopySong: string;
 	comment?: string;
 	karaSearch: { label: string; value: string }[];
-	parentKara: Kara;
+	parentKara: DBKara;
 	errors: string[];
 }
 
@@ -62,14 +62,14 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 
 	constructor(props) {
 		super(props);
-		const kara = this.props.kara || {};
+		const kara = this.props.kara;
 		this.getRepositories();
 		this.state = {
 			titles: kara?.titles ? kara.titles : {},
 			defaultLanguage: kara?.titles_default_language || null,
 			titlesIsTouched: false,
 			serieSingersRequired: false,
-			subfile: kara.subfile
+			subfile: kara?.subfile
 				? [
 						{
 							uid: -1,
@@ -78,7 +78,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 						},
 				  ]
 				: [],
-			mediafile: kara.mediafile
+			mediafile: kara?.mediafile
 				? [
 						{
 							uid: -1,
@@ -92,7 +92,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 			mediaInfo: {} as unknown as MediaInfo, // Has to be defined for reactive things
 			repositoriesValue: null,
 			repoToCopySong: null,
-			comment: kara.comment,
+			comment: kara?.comment,
 			karaSearch: [],
 			parentKara: null,
 			errors: [],
@@ -193,7 +193,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 	};
 
 	getKaraToSend = values => {
-		const kara: Kara = values;
+		const kara: DBKara = values;
 		const mediaVersionArr = this.state.titles[this.state.defaultLanguage].split(' ~ ');
 		const mediaVersion =
 			mediaVersionArr.length > 1 ? mediaVersionArr[mediaVersionArr.length - 1].replace(' Vers', '') : 'Default';
@@ -255,6 +255,7 @@ class KaraForm extends Component<KaraFormProps, KaraFormState> {
 				title: this.state.titles[this.state.defaultLanguage],
 				year: kara.year,
 			},
+			meta: {},
 		};
 		if (this.props.kara) {
 			// If it's an edit

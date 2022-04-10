@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import { basename, extname, resolve } from 'path';
 
 import { applyKaraHooks } from '../lib/dao/hook';
-import { extractVideoSubtitles, verifyKaraData } from '../lib/dao/karafile';
+import { extractVideoSubtitles, verifyKaraData, writeKara } from '../lib/dao/karafile';
 import { defineFilename, determineMediaAndLyricsFilenames, processSubfile } from '../lib/services/karaCreation';
 import { EditedKara, KaraFileV4 } from '../lib/types/kara.d';
 import { resolvedPath, resolvedPathRepos } from '../lib/utils/config';
@@ -109,7 +109,7 @@ export async function editKara(editedKara: EditedKara) {
 		const karaPath = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
 		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
 		await fs.unlink(karaPath);
-		await fs.writeFile(karaDest, JSON.stringify(kara, null, 2), 'utf-8');
+		await writeKara(karaDest, kara);
 		await integrateKaraFile(karaDest, kara, false, true);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
@@ -161,7 +161,7 @@ export async function createKara(kara: KaraFileV4) {
 		await smartMove(mediaPath, mediaDest, { overwrite: true });
 		kara.medias[0].filename = filenames.mediafile;
 		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);
-		await fs.writeFile(karaDest, JSON.stringify(kara, null, 2), 'utf-8');
+		await writeKara(karaDest, kara);
 		await integrateKaraFile(karaDest, kara, false, true);
 		await consolidateTagsInRepo(kara);
 	} catch (err) {
