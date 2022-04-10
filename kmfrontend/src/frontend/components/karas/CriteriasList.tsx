@@ -47,17 +47,19 @@ function CriteriasList(props: IProps) {
 		} else if ([1002, 1003].includes(criteriaType) && typeof criteriaVal === 'string') {
 			value = hmsToSecondsOnly(criteriaVal);
 		}
-		await commandBackend('addCriterias', {
-			criterias: [
-				{
-					type: criteriaType,
-					value: value,
-					plaid: props.playlist.plaid,
-				},
-			],
-		});
-		setCriteriaVal('');
-		getCriterias();
+		if (value) {
+			await commandBackend('addCriterias', {
+				criterias: [
+					{
+						type: criteriaType,
+						value: value,
+						plaid: props.playlist.plaid,
+					},
+				],
+			});
+			setCriteriaVal('');
+			getCriterias();
+		}
 	};
 
 	const deleteCriteria = async (criteriaToDelete: Criteria) => {

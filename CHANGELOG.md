@@ -1,3 +1,24 @@
+# v6.1.5 - 10/04/2022
+
+## Fixes
+
+-   Fixed get collections in setup
+-   Fixed getting kara parent default language when adding a new song
+-   Fixed error when add criterias without value in smart playlist
+-   Fixed button on database error message
+-   Fixed preview button in public playlist wrongly displayed when no karaoke is present
+
+## Misc
+
+-   Upgraded frontend and backend dependencies
+-   Reworked kara types (#922)
+-   Mac OS
+    -   Signed and notarized Mac OS X app (#499)
+    -   Add dialog box on macOS on first run to explain what accessibility permissions are for
+    -   Menu macOS : Add option check for update on startup
+-   Better handling of languages and fallbacks for player (#1226)
+-   Do not display languages for description in tag form at first
+
 # v6.1.4 - 06/04/2022
 
 ## Fixes
@@ -9,8 +30,8 @@
 
 ## Misc
 
--       Upgraded frontend and backend dependencies
--       Added some logs when doing base updates
+-   Upgraded frontend and backend dependencies
+-   Added some logs when doing base updates
 
 # v6.1.3 - 01/04/2022
 

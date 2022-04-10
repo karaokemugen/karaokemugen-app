@@ -1,8 +1,8 @@
-import { Kara } from '../lib/types/kara';
+import { KaraFileV4 } from '../lib/types/kara';
 
 export interface DifferentChecksumReport {
-	kara1: Kara;
-	kara2: Kara;
+	kara1: KaraFileV4;
+	kara2: KaraFileV4;
 }
 
 export interface Change {

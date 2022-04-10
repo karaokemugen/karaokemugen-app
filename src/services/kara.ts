@@ -141,11 +141,11 @@ export function formatKaraList(karaList: any, from: number, count: number): Kara
 
 /** Returns a string with series or singers with their correct i18n. */
 export function getSongSeriesSingers(kara: DBKara): string {
-	const lang = getConfig().Player.Display.SongInfoLanguage || convert1LangTo2B(getState().defaultLocale) || 'eng';
+	const langs = [getConfig().Player.Display.SongInfoLanguage, convert1LangTo2B(getState().defaultLocale), 'eng'];
 	if (kara.series?.length > 0) {
-		return getTagNameInLanguage(kara.series[0], lang, 'eng');
+		return getTagNameInLanguage(kara.series[0], langs);
 	}
-	return kara.singers.map(s => s.i18n[lang] || s.i18n.eng || s.i18n.qjr).join(', ');
+	return kara.singers.map(s => getTagNameInLanguage(s, langs)).join(', ');
 }
 
 /** Get kara's default title */

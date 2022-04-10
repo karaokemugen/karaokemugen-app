@@ -181,6 +181,10 @@
 		"TITLE": "Repository already exists",
 		"MESSAGE": "The repository you're trying to add already exists in your Karaoke Mugen database."
 	},
+	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
+		"TITLE": "Permission request",
+		"MESSAGE": "macOS is going to ask you to add Karaoke Mugen to the accessibility system permissions. This permission allows you to use your keyboard's media keys to control the video player. You can refuse to add this permission, but then media keys won't work."
+	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Database connection error",
 		"MESSAGE": "An error occured during database initialization/connection. For more information on possible causes, click on Help.",

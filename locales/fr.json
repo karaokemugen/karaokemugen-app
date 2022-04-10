@@ -181,6 +181,10 @@
 		"TITLE": "Dépôt déjà existant",
 		"MESSAGE": "Le dépôt que vous souhaitez ajouter existe déjà dans votre base de données Karaoke Mugen."
 	},
+	"PERMISSIONS_KEYBOARD_INFO_MACOS": {
+		"TITLE": "Demande de permissions",
+		"MESSAGE": "macOS va vous demander d'ajouter Karaoke Mugen aux permissions d'accessibilité du système. Cette permission permet de manipuler le lecteur vidéo avec les touches multimédia de votre clavier. Bien sûr vous pouvez refuser d'accorder la permission à Karaoke Mugen, mais dans ce cas les touches multimédia ne fonctionneront pas."
+	},
 	"DATABASE_CONNECTION_ERROR": {
 		"TITLE": "Erreur de connexion à la base de données",
 		"MESSAGE": "Un problème est survenu sur l'initialisation/connexion à la base de données. Cliquez sur Aide pour plus d'informations.",

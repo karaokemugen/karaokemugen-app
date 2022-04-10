@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 import i18next from 'i18next';
 import { createElement, Dispatch, ReactNode } from 'react';
 import { toast, ToastPosition, TypeOptions } from 'react-toastify';
+import { DBKara } from '../../../src/lib/types/database/kara';
 
-import { Kara } from '../../../src/lib/types/kara';
 import { Criteria } from '../../../src/lib/types/playlist';
 import nanamiCryPNG from '../assets/nanami-cry.png';
 import nanamiCryWebP from '../assets/nanami-cry.webp';
@@ -249,7 +249,7 @@ export async function decodeCriteriaReason(settings: SettingsStoreData, criteria
 	return i18next.t(...args);
 }
 
-export function PLCCallback(response, context: GlobalContextInterface, kara: Kara) {
+export function PLCCallback(response, context: GlobalContextInterface, kara: DBKara) {
 	if (response && response.code && response.data?.plc) {
 		let message;
 		if (response.data?.plc.time_before_play) {

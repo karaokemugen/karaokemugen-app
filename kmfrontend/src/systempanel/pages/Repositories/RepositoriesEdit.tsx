@@ -147,7 +147,9 @@ function RepositoriesEdit() {
 							second: selectedRepo,
 						})}
 					</p>
-					<p style={{ fontWeight: 'bold' }}>{report?.map(kara => kara.kara1.subfile.slice(0, -4))}</p>
+					<p style={{ fontWeight: 'bold' }}>
+						{report?.map(kara => kara.kara1.medias[0].lyrics[0]?.filename.slice(0, -4))}
+					</p>
 					<p>
 						{i18next.t('REPOSITORIES.CONFIRM_SURE', {
 							first: name,

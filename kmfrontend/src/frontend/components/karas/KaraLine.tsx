@@ -47,7 +47,7 @@ interface IProps {
 	jingle: boolean;
 	sponsor: boolean;
 	key: Key;
-	openKara: (kara: KaraElement, plaid: string) => void;
+	openKara: (kara: KaraElement) => void;
 	sortable: boolean;
 	draggable: DraggableProvided;
 }
@@ -165,7 +165,7 @@ function KaraLine(props: IProps) {
 			}
 		} else {
 			if (props.kara.children?.length > 0) {
-				props.openKara(props.kara, getPlaylistInfo(props.side, context).plaid);
+				props.openKara(props.kara);
 				return;
 			}
 			url = 'addKaraToPublicPlaylist';
@@ -355,7 +355,7 @@ function KaraLine(props: IProps) {
 						{is_touch_device() || props.scope === 'public' ? (
 							<div
 								className="contentDiv contentDivMobile"
-								onClick={() => props.openKara(props.kara, plaid)}
+								onClick={() => props.openKara(props.kara)}
 								tabIndex={1}
 							>
 								<div className="contentDivMobileTitle">
@@ -445,7 +445,7 @@ function KaraLine(props: IProps) {
 								</div>
 							</div>
 						) : (
-							<div className="contentDiv" onClick={() => props.openKara(props.kara, plaid)} tabIndex={1}>
+							<div className="contentDiv" onClick={() => props.openKara(props.kara)} tabIndex={1}>
 								<div className="disable-select karaTitle">
 									{props.kara.flag_dejavu && !props.kara.flag_playing ? (
 										<i
@@ -535,7 +535,7 @@ function KaraLine(props: IProps) {
 							{props.sortable ? <DragHandle dragHandleProps={props.draggable.dragHandleProps} /> : null}
 						</div>
 						{props.scope === 'public' ? (
-							<div className="chevron" onClick={() => props.openKara(props.kara, plaid)}>
+							<div className="chevron" onClick={() => props.openKara(props.kara)}>
 								<i className="fas fa-chevron-right fa-3x" />
 							</div>
 						) : null}

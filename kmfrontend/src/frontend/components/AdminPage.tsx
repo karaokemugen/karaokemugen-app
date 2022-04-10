@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { debounce } from 'lodash';
-import { createElement, useContext, useEffect, useState } from 'react';
+import { createElement, useCallback, useContext, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Route, Routes } from 'react-router';
 
@@ -38,16 +38,22 @@ function AdminPage(props: IProps) {
 	const operatorNotificationWarning = (data: { code: string; data: string }) =>
 		displayMessage('warning', i18next.t(data.code, { data: data }));
 
-	const playlistInfoUpdated = debounce(
-		() => async (plaid: string) => {
-			await getPlaylistList();
-			if (context.globalState.frontendContext?.playlistInfoLeft?.plaid === plaid)
-				setPlaylistInfoLeft(context.globalDispatch, plaid);
-			if (context.globalState.frontendContext?.playlistInfoRight?.plaid === plaid)
-				setPlaylistInfoRight(context.globalDispatch, plaid);
-		},
-		500,
-		{ maxWait: 1000 }
+	const playlistInfoUpdated = useCallback(
+		debounce(
+			async (plaid: string) => {
+				await getPlaylistList();
+				if (context.globalState.frontendContext?.playlistInfoLeft?.plaid === plaid)
+					setPlaylistInfoLeft(context.globalDispatch, plaid);
+				if (context.globalState.frontendContext?.playlistInfoRight?.plaid === plaid)
+					setPlaylistInfoRight(context.globalDispatch, plaid);
+			},
+			300,
+			{ maxWait: 1000 }
+		),
+		[
+			context.globalState.frontendContext?.playlistInfoLeft?.plaid,
+			context.globalState.frontendContext?.playlistInfoRight?.plaid,
+		]
 	);
 
 	const toggleSearchMenuLeft = () => {
@@ -110,7 +116,7 @@ function AdminPage(props: IProps) {
 		setPlaylistList(playlistList);
 	};
 
-	const openKara = async (kara: KaraElement, idPlaylist: string) => {
+	const openKara = async (kara: KaraElement) => {
 		const reason = [];
 		if (kara.criterias) {
 			await Promise.all(
@@ -130,7 +136,7 @@ function AdminPage(props: IProps) {
 		return () => {
 			getSocket().off('playlistInfoUpdated', playlistInfoUpdated);
 		};
-	}, [context.globalState.frontendContext.playlistInfoLeft, context.globalState.frontendContext.playlistInfoRight]);
+	}, [playlistInfoUpdated]);
 
 	useEffect(() => {
 		if (context.globalState.auth.isAuthenticated) {

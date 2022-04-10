@@ -247,7 +247,7 @@ function PublicPage() {
 		}
 	};
 
-	const openKara = (kara: KaraElement, _plaid: string, indexKaraDetail: number) => {
+	const openKara = (kara: KaraElement, indexKaraDetail: number) => {
 		setKara(kara);
 		setIndexKaraDetail(indexKaraDetail);
 	};
@@ -496,7 +496,7 @@ function PublicPage() {
 						element={
 							<PublicHomepage
 								changeView={changeView}
-								toggleKaraDetail={openKara}
+								openKara={openKara}
 								activePoll={isPollActive}
 								currentVisible={currentVisible}
 								publicVisible={publicVisible}
