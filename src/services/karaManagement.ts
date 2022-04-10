@@ -7,25 +7,17 @@ import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
 import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKara, updateKaraParents } from '../dao/kara';
 import { removeParentInKaras } from '../dao/karafile';
 import { selectPlaylistContentsMicro } from '../dao/playlist';
-import { updateKaraTags } from '../dao/tag';
 import { saveSetting } from '../lib/dao/database';
-import {
-	refreshKaras,
-	refreshKarasDelete,
-	refreshKarasInsert,
-	refreshKarasUpdate,
-	refreshParentSearchVectorTask,
-	refreshYears,
-	updateKaraSearchVector,
-} from '../lib/dao/kara';
+import { refreshKarasDelete, refreshYears } from '../lib/dao/kara';
 import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile';
-import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
+import { refreshTags } from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
+import { refreshKarasAfterDBChange, updateTags } from '../lib/services/karaManagement';
 import { DBKara } from '../lib/types/database/kara';
-import { Kara, KaraFileV4, KaraTag } from '../lib/types/kara';
+import { KaraFileV4, KaraTag } from '../lib/types/kara';
 import { Tag } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
-import { audioFileRegexp, getTagTypeName, tagTypes } from '../lib/utils/constants';
+import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files';
 import logger, { profile } from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
@@ -41,19 +33,6 @@ import { updateAllSmartPlaylists } from './smartPlaylist';
 import { getTag } from './tag';
 
 const service = 'KaraManager';
-
-export async function updateTags(kara: Kara) {
-	const tagsAndTypes = [];
-	for (const type of Object.keys(tagTypes)) {
-		if (kara[type]) {
-			for (const tag of kara[type]) {
-				// We can have either a name or a number for type
-				tagsAndTypes.push({ tid: tag.tid, type: tagTypes[type] || type });
-			}
-		}
-	}
-	await updateKaraTags(kara.kid, tagsAndTypes);
-}
 
 export async function createKaraInDB(kara: KaraFileV4, opts = { refresh: true }) {
 	await insertKara(kara);
@@ -267,40 +246,6 @@ export async function batchEditKaras(plaid: string, action: 'add' | 'remove', ti
 	} finally {
 		task.end();
 	}
-}
-
-export async function refreshKarasAfterDBChange(action: 'ADD' | 'UPDATE' | 'DELETE' | 'ALL' = 'ALL', karas?: Kara[]) {
-	profile('RefreshAfterDBChange');
-	logger.debug('Refreshing DB after kara change', { service });
-	await updateKaraSearchVector();
-	if (action === 'ADD') {
-		await refreshKarasInsert(karas.map(k => k.kid));
-	} else if (action === 'UPDATE') {
-		await refreshKarasUpdate(karas.map(k => k.kid));
-	} else if (action === 'DELETE') {
-		await refreshKarasDelete(karas.map(k => k.kid));
-	} else if (action === 'ALL') {
-		await refreshKaras();
-	}
-	refreshYears();
-	const parentsToUpdate: Set<string> = new Set();
-	for (const kara of karas) {
-		if (kara.parents) {
-			for (const parent of kara.parents) {
-				parentsToUpdate.add(parent);
-			}
-		}
-	}
-	// If karas is not initialized then we're updating ALL search vectors
-	karas ? refreshParentSearchVectorTask([...parentsToUpdate]) : refreshParentSearchVectorTask();
-	refreshTagsAfterDBChange();
-	logger.debug('Done refreshing DB after kara change', { service });
-	profile('RefreshAfterDBChange');
-}
-
-async function refreshTagsAfterDBChange() {
-	await updateTagSearchVector();
-	refreshTags();
 }
 
 export async function integrateKaraFile(

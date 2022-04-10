@@ -19,6 +19,7 @@ import { refreshKarasUpdate } from '../lib/dao/kara';
 import { formatKaraV4 } from '../lib/dao/karafile';
 import { refreshTags, updateTagSearchVector } from '../lib/dao/tag';
 import { formatTagFile, getDataFromTagFile, removeTagFile, writeTagFile } from '../lib/dao/tagfile';
+import { refreshKarasAfterDBChange } from '../lib/services/karaManagement';
 import { DBKara, DBKaraTag } from '../lib/types/database/kara';
 import { DBTag, DBTagMini } from '../lib/types/database/tag';
 import { KaraFileV4 } from '../lib/types/kara.d';
@@ -33,7 +34,6 @@ import { emitWS } from '../lib/utils/ws';
 import sentry from '../utils/sentry';
 import { getKaras } from './kara';
 import { editKara } from './karaCreation';
-import { refreshKarasAfterDBChange } from './karaManagement';
 import { getRepo, getRepos } from './repo';
 
 const service = 'Tag';
