@@ -46,7 +46,6 @@ export default function PlaylistPage() {
 		<div className="chibi-playlist">
 			<PlayerBox
 				mode="playlist"
-				show={true}
 				currentVisible={false}
 				onKaraChange={kid => {
 					if (kid) {

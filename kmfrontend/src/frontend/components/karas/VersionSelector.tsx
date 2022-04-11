@@ -2,7 +2,7 @@ import './VersionSelector.scss';
 
 import i18next from 'i18next';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { DBKara } from '../../../../../src/lib/types/database/kara';
 import { KaraList } from '../../../../../src/lib/types/kara';
@@ -17,7 +17,6 @@ import {
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { PLCCallback, secondsTimeSpanToHMS } from '../../../utils/tools';
-import { View } from '../../types/view';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
@@ -26,9 +25,7 @@ import VideoPreview from '../generic/VideoPreview';
 
 interface Props {
 	kid: string;
-	closeOnPublic: () => void;
 	scope: 'admin' | 'public';
-	changeView?: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
 }
 
 async function fetchKaras(kid) {
@@ -45,8 +42,8 @@ export default function VersionSelector(props: Props) {
 	const [indexOpened, setIndexOpened] = useState(-1);
 	const [showVideo, setShowVideo] = useState(false);
 	const context = useContext(GlobalContext);
-	const params = useParams();
-	const id = props.kid ? props.kid : params.kid;
+	const navigate = useNavigate();
+	const { kid: id } = useParams();
 
 	const openKara = useCallback(index => {
 		setIndexOpened(oldIndex => {
@@ -103,7 +100,7 @@ export default function VersionSelector(props: Props) {
 			{karas ? (
 				<div className="modal-content">
 					<div className="modal-header public-modal">
-						<button className="closeModal" type="button" onClick={props.closeOnPublic}>
+						<button className="closeModal" type="button" onClick={() => navigate(-1)}>
 							<i className="fas fa-arrow-left" />
 						</button>
 						<h4 className="modal-title">
@@ -119,13 +116,7 @@ export default function VersionSelector(props: Props) {
 						<div className={`song-list${indexOpened >= 0 ? ' open' : ''}`}>
 							{karas.map((kara, index) => {
 								const tagsScope = index === indexOpened ? props.scope : 'admin';
-								const [karaTags, karaBlockTags] = computeTagsElements(
-									kara,
-									tagsScope,
-									props.changeView,
-									false,
-									i18n
-								);
+								const [karaTags, karaBlockTags] = computeTagsElements(kara, tagsScope, false, i18n);
 
 								return (
 									<div key={kara.kid} className={`song${index === indexOpened ? ' open' : ''}`}>
@@ -159,7 +150,6 @@ export default function VersionSelector(props: Props) {
 														<InlineTag
 															tag={kara.series[0] || kara.singers[0]}
 															scope={tagsScope}
-															changeView={props.changeView}
 															tagType={kara.series[0] ? 1 : 2}
 															i18nParam={i18n}
 														/>

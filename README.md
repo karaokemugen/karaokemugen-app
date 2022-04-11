@@ -230,6 +230,10 @@ Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
 yarn startHeadless
 ```
 
+## API
+
+If you wish to create your own client for Karaoke Mugen or interact with its API, please see [the dedicated API documentation site](https://api.karaokes.moe/app)
+
 ## Translations
 
 ### Frontend
@@ -250,8 +254,6 @@ You can contact us by either
 ## How to contribute
 
 Karaoke Mugen is created by people who like anime, karaoke, etc. You can help us ~~fill the world with karaoke~~!
-
-For general contributions, read the [dedicated section on the documentation website](http://docs.karaokes.moe/en/dev-guide/code/)
 
 For code/development contributions, read the [contributing guide](CONTRIBUTING.md)
 

@@ -1,14 +1,11 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { View } from '../../types/view';
-
 interface IProps {
 	children?: ReactNode;
 	single?: boolean;
 	chibi?: boolean;
 	top?: string;
 	bottom?: string;
-	view?: View;
 	hmagrin?: boolean;
 }
 

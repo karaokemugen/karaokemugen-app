@@ -108,7 +108,7 @@ export async function getKaras(params: KaraParams): Promise<KaraList> {
 	try {
 		const pl = await selectAllKaras({
 			...params,
-			username: params.token?.username || 'admin',
+			username: params?.username || 'admin',
 		});
 		profile('formatList');
 		const count = pl.length > 0 ? pl[0].count : 0;

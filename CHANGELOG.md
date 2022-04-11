@@ -1,3 +1,12 @@
+# v6.1.6 - 11/04/2022
+
+## Fixes
+
+-   Fixed public interface routing for tags (#1228)
+-   Fixed add checked karas to blacklist or whitelist
+-   Fixed auto-updates on macOS (#1227)
+-   Fixed upvote display in favorites
+
 # v6.1.5 - 10/04/2022
 
 ## Fixes
