@@ -3,6 +3,7 @@ import './PlayerBox.scss';
 import i18next from 'i18next';
 import { sample } from 'lodash';
 import { ReactFragment, RefObject, useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import { PublicPlayerState } from '../../../../../src/types/state';
@@ -14,14 +15,14 @@ import { secondsTimeSpanToHMS } from '../../../utils/tools';
 
 interface IProps {
 	mode: 'fixed' | 'homepage' | 'playlist';
-	show: boolean;
 	currentVisible: boolean;
-	goToCurrentPL?: () => void;
 	onResize?: (bottom: string) => void;
 	onKaraChange?: (kid: string) => void;
 }
 
 function PlayerBox(props: IProps) {
+	const navigate = useNavigate();
+	const location = useLocation();
 	const context = useContext(GlobalContext);
 	const [width, setWidth] = useState('0');
 	const [title, setTitle] = useState(i18next.t('KARA_PAUSED_WAITING'));
@@ -230,16 +231,19 @@ function PlayerBox(props: IProps) {
 
 	return (
 		<div
-			onClick={props.currentVisible ? props.goToCurrentPL : undefined}
+			onClick={props.currentVisible ? () => navigate('/public/playlist/current') : undefined}
 			className={`player-box${props.mode === 'fixed' ? ' fixed' : ''}`}
-			style={{ ['--img' as any]: img, display: props.show ? undefined : 'none' }}
+			style={{
+				['--img' as any]: img,
+				display: props.mode === 'fixed' && /^\/public\/?$/.test(location.pathname) ? 'none' : undefined,
+			}}
 			ref={containerRef}
 		>
 			{props.mode !== 'fixed' ? (
 				<div className="first">
 					<p>{i18next.t('PUBLIC_HOMEPAGE.NOW_PLAYING')}</p>
-					{props.currentVisible && props.goToCurrentPL ? (
-						<p className="next" tabIndex={0} onKeyDown={props.goToCurrentPL}>
+					{props.currentVisible ? (
+						<p className="next" tabIndex={0} onKeyDown={() => navigate('/public/playlist/current')}>
 							{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
 							<i className="fas fa-fw fa-chevron-right" />
 						</p>

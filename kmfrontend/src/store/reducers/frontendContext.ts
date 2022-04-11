@@ -21,6 +21,8 @@ export default function frontendContextReducer(state: FrontendContextStore, acti
 			return { ...state, playlistInfoLeft: action.payload.playlist };
 		case FrontendContextAction.PLAYLIST_INFO_RIGHT:
 			return { ...state, playlistInfoRight: action.payload.playlist };
+		case FrontendContextAction.INDEX_KARA_DETAIL:
+			return { ...state, indexKaraDetail: action.payload.indexKaraDetail };
 		default:
 			return state;
 	}

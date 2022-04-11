@@ -2,13 +2,13 @@ import './InlineTag.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { DBKaraTag } from '../../../../../src/lib/types/database/kara';
 import GlobalContext from '../../../store/context';
 import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
-import { View } from '../../types/view';
 
 interface Props {
 	tag: DBKaraTag;
@@ -16,10 +16,10 @@ interface Props {
 	className?: string;
 	scope: 'admin' | 'public';
 	tagType: number;
-	changeView: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
 }
 
 export default function InlineTag(props: Props) {
+	const navigate = useNavigate();
 	const [showPopup, setShowPopup] = useState(false);
 	const [rightClass, setRightClass] = useState(false);
 	const [count, setCount] = useState(0);
@@ -27,7 +27,7 @@ export default function InlineTag(props: Props) {
 
 	const goToTagSearch = () => {
 		const searchValue = `${props.tag.tid}~${props.tagType}`;
-		props.changeView('search', props.tagType, searchValue, 'tag');
+		navigate(`/public/search/tag/${searchValue}`);
 	};
 
 	const getTag = async () => {

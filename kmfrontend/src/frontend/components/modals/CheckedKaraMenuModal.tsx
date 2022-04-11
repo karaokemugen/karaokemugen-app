@@ -82,11 +82,10 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const addToBlacklist = () => {
-		const playlist = getPlaylistInfo(props.side, context);
 		try {
 			commandBackend('addCriterias', {
 				criterias: props.checkedKaras.map(a => {
-					return { type: 1001, value: a.kid, plaid: playlist.plaid };
+					return { type: 1001, value: a.kid, plaid: context.globalState.settings.data.state.blacklistPlaid };
 				}),
 			});
 			setEffectBlacklist(true);
@@ -97,11 +96,10 @@ function CheckedKaraMenuModal(props: IProps) {
 	};
 
 	const addToWhitelist = () => {
-		const playlist = getPlaylistInfo(props.side, context);
 		try {
 			commandBackend('addCriterias', {
 				criterias: props.checkedKaras.map(a => {
-					return { type: 1001, value: a.kid, plaid: playlist.plaid };
+					return { type: 1001, value: a.kid, plaid: context.globalState.settings.data.state.whitelistPlaid };
 				}),
 			});
 			setEffectWhitelist(true);

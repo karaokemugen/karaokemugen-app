@@ -5,7 +5,6 @@ import { ASSLine } from '../../../src/lib/types/ass';
 import { DBKara, DBKaraTag } from '../../../src/lib/types/database/kara';
 import InlineTag from '../frontend/components/karas/InlineTag';
 import { Scope } from '../frontend/types/scope';
-import { ChangeView } from '../frontend/types/view';
 import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../store/actions/frontendContext';
 import { GlobalContextInterface } from '../store/context';
 import { SettingsStoreData } from '../store/types/settings';
@@ -263,13 +262,7 @@ export function setOppositePlaylistInfo(side: 'left' | 'right', context: GlobalC
 		: setPlaylistInfoLeft(context.globalDispatch, plaid);
 }
 
-function getInlineTag(
-	e: DBKaraTag,
-	tagType: number,
-	scope: 'admin' | 'public',
-	changeView: ChangeView,
-	i18nParam?: any
-) {
+function getInlineTag(e: DBKaraTag, tagType: number, scope: 'admin' | 'public', i18nParam?: any) {
 	return (
 		<InlineTag
 			key={e.tid}
@@ -277,19 +270,12 @@ function getInlineTag(
 			tag={e}
 			tagType={tagType}
 			className={tagType === 15 ? 'problematicTag' : 'inlineTag'}
-			changeView={changeView}
 			i18nParam={i18nParam}
 		/>
 	);
 }
 
-export function computeTagsElements(
-	kara: DBKara,
-	scope: Scope,
-	changeView: ChangeView,
-	versions = true,
-	i18nParam?: any
-) {
+export function computeTagsElements(kara: DBKara, scope: Scope, versions = true, i18nParam?: any) {
 	// Tags in the header
 	const karaTags: ReactNode[] = [];
 
@@ -298,14 +284,14 @@ export function computeTagsElements(
 		isMulti
 			? karaTags.push(
 					<div key={isMulti.tid} className="tag">
-						{getInlineTag(isMulti, tagTypes.LANGS.type, scope, changeView, i18nParam)}
+						{getInlineTag(isMulti, tagTypes.LANGS.type, scope, i18nParam)}
 					</div>
 			  )
 			: karaTags.push(
 					...sortAndHideTags(kara.langs, scope).map(tag => {
 						return (
 							<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
-								{getInlineTag(tag, tagTypes.LANGS.type, scope, changeView, i18nParam)}
+								{getInlineTag(tag, tagTypes.LANGS.type, scope, i18nParam)}
 							</div>
 						);
 					})
@@ -316,7 +302,7 @@ export function computeTagsElements(
 			...sortAndHideTags(kara.songtypes, scope).map(tag => {
 				return (
 					<div key={tag.tid} className="tag green" title={tag.short ? tag.short : tag.name}>
-						{getInlineTag(tag, tagTypes.SONGTYPES.type, scope, changeView, i18nParam)}
+						{getInlineTag(tag, tagTypes.SONGTYPES.type, scope, i18nParam)}
 						{kara.songorder > 0 ? ' ' + kara.songorder : ''}
 					</div>
 				);
@@ -335,7 +321,7 @@ export function computeTagsElements(
 				...sortAndHideTags(kara[tagData.karajson], scope).map(tag => {
 					return (
 						<div key={tag.tid} className={`tag ${tagData.color}`} title={tag.short ? tag.short : tag.name}>
-							{getInlineTag(tag, tagData.type, scope, changeView, i18nParam)}
+							{getInlineTag(tag, tagData.type, scope, i18nParam)}
 						</div>
 					);
 				})
@@ -357,7 +343,7 @@ export function computeTagsElements(
 						<span key={`${type}${key}`} className="detailsKaraLineContent">
 							{' '}
 							{kara[tagData.karajson]
-								.map(e => getInlineTag(e, tagData.type, scope, changeView))
+								.map(e => getInlineTag(e, tagData.type, scope))
 								.reduce(
 									(acc, x, index, arr): any =>
 										acc === null

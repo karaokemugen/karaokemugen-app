@@ -11,18 +11,16 @@ import { useDeferredEffect } from '../../../utils/hooks';
 import { getTagInLocale } from '../../../utils/kara';
 import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
-import { View } from '../../types/view';
-
-interface IProps {
-	tagType: number;
-	changeView: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
-}
+import { useNavigate, useParams } from 'react-router-dom';
 
 const chunksize = 100;
 let timer: any;
 
-function TagsList(props: IProps) {
+function TagsList() {
+	const navigate = useNavigate();
 	const context = useContext(GlobalContext);
+	const { tagType: tagReq } = useParams();
+	const tagType = parseInt(tagReq);
 	const [forceUpdate, setForceUpdate] = useState(false);
 	const [tags, setTags] = useState({
 		content: [],
@@ -36,7 +34,7 @@ function TagsList(props: IProps) {
 	const getTags = async (from: number) => {
 		try {
 			const response = await commandBackend('getTags', {
-				type: props.tagType,
+				type: tagType,
 				from,
 				size: chunksize,
 				filter: context.globalState.frontendContext.filterValue1,
@@ -85,15 +83,15 @@ function TagsList(props: IProps) {
 		if (isRowLoaded(endIndex)) return;
 		if (timer) clearTimeout(timer);
 		timer = setTimeout(
-			() => (props.tagType === YEARS.type ? getYears() : getTags(Math.floor(endIndex / chunksize) * chunksize)),
+			() => (tagType === YEARS.type ? getYears() : getTags(Math.floor(endIndex / chunksize) * chunksize)),
 			1000
 		);
 	};
 
 	const openSearch = (tid: string) => {
 		let searchValue = tid;
-		if (props.tagType !== YEARS.type) searchValue = `${searchValue}~${props.tagType}`;
-		props.changeView('search', props.tagType, searchValue, props.tagType === YEARS.type ? 'year' : 'tag');
+		if (tagType !== YEARS.type) searchValue = `${searchValue}~${tagType}`;
+		navigate(`/public/search/${tagType === YEARS.type ? 'year' : 'tag'}/${searchValue}`);
 	};
 
 	const Item = useCallback(
@@ -109,7 +107,7 @@ function TagsList(props: IProps) {
 						onClick={() => openSearch(tag.tid)}
 					>
 						<div className="title">
-							{props.tagType === YEARS.type
+							{tagType === YEARS.type
 								? tag.name
 								: getTagInLocale(context?.globalState.settings.data, tag as unknown as DBKaraTag)}
 						</div>
@@ -118,10 +116,10 @@ function TagsList(props: IProps) {
 								{i18next.t('KARAOKE', {
 									count:
 										(tag?.karacount as unknown as { count: number; type: number }[])?.filter(
-											value => value.type === props.tagType
+											value => value.type === tagType
 										).length > 0
 											? (tag.karacount as unknown as { count: number; type: number }[])?.filter(
-													value => value.type === props.tagType
+													value => value.type === tagType
 											  )[0].count
 											: 0,
 								})}
@@ -141,11 +139,11 @@ function TagsList(props: IProps) {
 	);
 
 	useDeferredEffect(() => {
-		props.tagType === YEARS.type ? getYears() : getTags(0);
+		tagType === YEARS.type ? getYears() : getTags(0);
 	}, [context.globalState.frontendContext.filterValue1]);
 
 	useEffect(() => {
-		props.tagType === YEARS.type ? getYears() : getTags(0);
+		tagType === YEARS.type ? getYears() : getTags(0);
 	}, []);
 
 	return (

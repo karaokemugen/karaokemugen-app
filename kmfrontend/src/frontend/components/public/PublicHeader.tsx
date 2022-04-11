@@ -2,6 +2,7 @@ import './PublicHeader.scss';
 
 import i18next from 'i18next';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import nanamiPNG from '../../../assets/nanami.png';
@@ -12,19 +13,15 @@ import ProfilePicture from '../../../utils/components/ProfilePicture';
 import { useResizeListener } from '../../../utils/hooks';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, secondsTimeSpanToHMS } from '../../../utils/tools';
-import { View } from '../../types/view';
-import PublicFixedMenu from './PublicFixedMenu';
 
 interface IProps {
-	openModal: (type: string) => void;
 	onResize: (top: string) => void;
-	currentView: View;
 	publicVisible: boolean;
 	currentVisible: boolean;
-	changeView: (view: View) => void;
 }
 
 function PublicHeader(props: IProps) {
+	const navigate = useNavigate();
 	const context = useContext(GlobalContext);
 	let observer: ResizeObserver;
 	const [dropDownMenu, setDropDownMenu] = useState(false);
@@ -36,7 +33,7 @@ function PublicHeader(props: IProps) {
 		e.preventDefault();
 		setDropDownMenu(false);
 		if (context.globalState.auth.data.onlineAvailable !== false) {
-			props.openModal('user');
+			navigate('/public/user');
 		} else {
 			displayMessage('warning', i18next.t('ERROR_CODES.USER_ONLINE_NOINTERNET'), 5000);
 		}
@@ -45,13 +42,13 @@ function PublicHeader(props: IProps) {
 	const toggleUsersModal = e => {
 		e.preventDefault();
 		setDropDownMenu(false);
-		props.openModal('users');
+		navigate('/public/users');
 	};
 
 	const goToFavorites = e => {
 		e.preventDefault();
 		setDropDownMenu(false);
-		props.changeView('favorites');
+		navigate('/public/favorites');
 	};
 
 	const updateQuotaAvailable = (data: { username: string; quotaType: number; quotaLeft: number }) => {
@@ -97,7 +94,7 @@ function PublicHeader(props: IProps) {
 					className="nanamin-logo"
 					onClick={e => {
 						e.preventDefault();
-						props.changeView('home');
+						navigate('/public/');
 					}}
 				>
 					<picture>
@@ -106,12 +103,28 @@ function PublicHeader(props: IProps) {
 						<img src={nanamiPNG} alt="Nanamin logo" />
 					</picture>
 				</a>
-				<PublicFixedMenu
-					changeView={props.changeView}
-					currentView={props.currentView}
-					publicVisible={props.publicVisible}
-					currentVisible={props.currentVisible}
-				/>
+				<div className="menu-bar">
+					{props.currentVisible ? (
+						<Link className="green" to="/public/playlist/current">
+							<i className="fas fa-fw fa-play-circle fa-2x" />
+							{i18next.t('PUBLIC_HOMEPAGE.NEXT')}
+						</Link>
+					) : null}
+					{props.publicVisible &&
+					context.globalState.settings.data.state.currentPlaid !==
+						context.globalState.settings.data.state.publicPlaid ? (
+						<Link className="orange" to="/public/playlist/public">
+							<i className="fas fa-fw fa-globe fa-2x" />
+							{i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS_SHORT')}
+						</Link>
+					) : null}
+					{context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
+						<Link className="blue" to="/public/search">
+							<i className="fas fa-fw fa-search fa-2x" />
+							{i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH_SHORT')}
+						</Link>
+					) : null}
+				</div>
 				{quotaType > 0 ? (
 					<div className={`quota-bar${quotaLeft <= 5 ? ' exhaust' : ''}`}>
 						{quotaType === 1 ? i18next.t('QUOTA_KARA') : i18next.t('QUOTA_TIME')}

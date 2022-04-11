@@ -3,7 +3,13 @@ import { Dispatch } from 'react';
 import { DBPL } from '../../../../src/lib/types/database/playlist';
 import { commandBackend } from '../../utils/socket';
 import { isNonStandardPlaylist, nonStandardPlaylists } from '../../utils/tools';
-import { BackgroundImage, FilterValue, FrontendContextAction, PlaylistInfo } from '../types/frontendContext';
+import {
+	BackgroundImage,
+	FilterValue,
+	FrontendContextAction,
+	IndexKaraDetail,
+	PlaylistInfo,
+} from '../types/frontendContext';
 
 export function setFilterValue(
 	dispatch: Dispatch<FilterValue>,
@@ -60,6 +66,17 @@ export async function setPlaylistInfoRight(dispatch: Dispatch<PlaylistInfo>, pla
 		dispatch({
 			type: FrontendContextAction.PLAYLIST_INFO_RIGHT,
 			payload: { playlist },
+		});
+	}
+}
+
+export function setIndexKaraDetail(dispatch: Dispatch<IndexKaraDetail>, indexKaraDetail: number) {
+	if (indexKaraDetail >= 0) {
+		dispatch({
+			type: FrontendContextAction.INDEX_KARA_DETAIL,
+			payload: {
+				indexKaraDetail,
+			},
 		});
 	}
 }

@@ -484,6 +484,7 @@ export async function updateGitRepo(name: string) {
 			throw 'Pull failed (conflicts)';
 		}
 		const newCommit = await git.getCurrentCommit();
+		logger.debug(`Original commit : ${originalCommit} and new commit : ${newCommit}`);
 		const diff = await git.diff(originalCommit, newCommit);
 		const changes = computeFileChanges(diff);
 		await applyChanges(changes, repo);
