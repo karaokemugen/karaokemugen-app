@@ -23,7 +23,6 @@ import {
 import { commandBackend } from '../../../utils/socket';
 import { YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
-import { View } from '../../types/view';
 import MakeFavButton from '../generic/buttons/MakeFavButton';
 import ShowVideoButton from '../generic/buttons/ShowVideoButton';
 import InlineTag from './InlineTag';
@@ -36,7 +35,6 @@ interface IProps {
 	criteriaLabel?: string;
 	playlistcontentId?: number;
 	closeOnPublic?: () => void;
-	changeView?: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
 	karoulette?: {
 		next(accepted: boolean): void;
 		accepted: number;
@@ -177,7 +175,7 @@ export default function KaraDetail(props: IProps) {
 	};
 
 	if (kara) {
-		const [karaTags, karaBlockTags] = computeTagsElements(kara, props.scope, props.changeView);
+		const [karaTags, karaBlockTags] = computeTagsElements(kara, props.scope);
 
 		const playTime = kara.time_before_play > 0 ? new Date(Date.now() + kara.time_before_play * 1000) : null;
 		const details = (
@@ -338,7 +336,6 @@ export default function KaraDetail(props: IProps) {
 							<InlineTag
 								tag={kara.series[0] || kara.singers[0]}
 								scope={props.scope}
-								changeView={props.changeView}
 								tagType={kara.series[0] ? 1 : 2}
 							/>
 						</h5>

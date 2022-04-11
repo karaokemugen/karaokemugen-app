@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { useContext, useEffect, useState } from 'react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { DBPLCInfo } from '../../../../../src/types/database/playlist';
 import { DBPLC } from '../../../../../src/lib/types/database/playlist';
@@ -8,20 +8,15 @@ import { DBPLC } from '../../../../../src/lib/types/database/playlist';
 import { PublicPlayerState } from '../../../../../src/types/state';
 import nanamiSingingPng from '../../../assets/nanami-sing.png';
 import nanamiSingingWebP from '../../../assets/nanami-sing.webp';
-import { setFilterValue, setPlaylistInfoLeft, setPlaylistInfoRight } from '../../../store/actions/frontendContext';
+import { setPlaylistInfoLeft, setPlaylistInfoRight } from '../../../store/actions/frontendContext';
 import { closeModal, showModal } from '../../../store/actions/modal';
 import { setSettings } from '../../../store/actions/settings';
 import GlobalContext from '../../../store/context';
 import { buildKaraTitle } from '../../../utils/kara';
 import { commandBackend, getSocket } from '../../../utils/socket';
 import { displayMessage, nonStandardPlaylists, secondsTimeSpanToHMS } from '../../../utils/tools';
-import { KaraElement } from '../../types/kara';
-import { View } from '../../types/view';
-import KmAppBodyDecorator from '../decorators/KmAppBodyDecorator';
-import KmAppHeaderDecorator from '../decorators/KmAppHeaderDecorator';
 import KmAppWrapperDecorator from '../decorators/KmAppWrapperDecorator';
 import KaraDetail from '../karas/KaraDetail';
-import Playlist from '../karas/Playlist';
 import VersionSelector from '../karas/VersionSelector';
 import ClassicModeModal from '../modals/ClassicModeModal';
 import PollModal from '../modals/PollModal';
@@ -30,106 +25,25 @@ import UsersModal from '../modals/UsersModal';
 import PlayerBox from './PlayerBox';
 import PublicHeader from './PublicHeader';
 import PublicHomepage from './PublicHomepage';
-import TagsList from './TagsList';
+import PublicList from './PublicList';
+import NotfoundPage from '../NotfoundPage';
 
 let timer: any;
-let timerFilter: any;
 
 function PublicPage() {
 	const context = useContext(GlobalContext);
 	const location = useLocation();
+	const params = useParams();
 	const navigate = useNavigate();
 
 	const [isPollActive, setPollActive] = useState(false);
 	const [classicModeModal, setClassicModeModal] = useState(false);
-	const [view, setView] = useState<View>('home');
-	const [tagType, setTagType] = useState<number>();
-	const [kara, setKara] = useState<KaraElement>();
 	const [playerStopping, setPlayerStopping] = useState(false);
 	const [playerStopped, setPlayerStopped] = useState(false);
 	const [top, setTop] = useState('0');
 	const [bottom, setBottom] = useState('0');
-	const [searchValue, setSearchValue] = useState<string>();
-	const [searchCriteria, setSearchCriteria] = useState<'year' | 'tag'>();
 	const [publicVisible, setPublicVisible] = useState(false);
 	const [currentVisible, setCurrentVisible] = useState(false);
-	const [indexKaraDetail, setIndexKaraDetail] = useState<number>();
-	const [searchType, setSearchType] = useState<'search' | 'recent' | 'requested'>('search');
-
-	const changeView = async (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => {
-		let route;
-		let searchType: 'search' | 'recent' | 'requested' = 'search';
-		if (view === 'home' || context?.globalState.settings.data.config.Frontend?.Mode === 0) {
-			route = '/public';
-			if (!context.globalState.frontendContext.playlistInfoLeft)
-				await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
-		} else if (view === 'tag') {
-			tagType = tagType !== undefined ? tagType : tagType;
-			route = `/public/tags/${tagType}`;
-			if (!context.globalState.frontendContext.playlistInfoLeft)
-				await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
-		} else if (view === 'favorites') {
-			await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.favorites);
-			route = '/public/favorites';
-		} else if (view === 'requested') {
-			await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
-			searchType = 'requested';
-			route = '/public/search/requested';
-		} else if (view === 'history') {
-			await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
-			route = '/public/search/history';
-		} else if (view === 'search') {
-			await setPlaylistInfoLeft(context.globalDispatch, nonStandardPlaylists.library);
-			searchType = 'search';
-			route = '/public/search';
-		} else if (view === 'publicPlaylist') {
-			await setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.publicPlaid);
-			route = `/public/playlist/${context.globalState.settings.data.state.publicPlaid}`;
-		} else if (view === 'currentPlaylist') {
-			await setPlaylistInfoLeft(context.globalDispatch, context.globalState.settings.data.state.currentPlaid);
-			route = `/public/playlist/${context.globalState.settings.data.state.currentPlaid}`;
-		}
-		if (indexKaraDetail === undefined && context?.globalState.settings.data.config.Frontend?.Mode !== 0) {
-			setFilterValue(
-				context.globalDispatch,
-				'',
-				'left',
-				context.globalState.frontendContext.playlistInfoLeft.plaid
-			);
-		}
-		setView(view);
-		setTagType(tagType);
-		setSearchValue(searchValue);
-		setSearchCriteria(searchCriteria);
-		setSearchType(searchType);
-		setKara(undefined);
-		navigate(route);
-	};
-
-	const initView = async () => {
-		await refreshPoll();
-		if (context?.globalState.settings.data.config?.Frontend?.Mode !== 0) await getPlaylistList();
-		if (location.pathname.includes('/public/search/requested')) {
-			changeView('requested');
-		}
-		if (location.pathname.includes('/public/search/history')) {
-			changeView('history');
-		} else if (location.pathname.includes('/public/search')) {
-			changeView('search');
-		} else if (location.pathname.includes('/public/favorites')) {
-			changeView('favorites');
-		} else if (location.pathname.includes('/public/tags')) {
-			const tagType = Number(location.pathname.substring(location.pathname.lastIndexOf('/') + 1));
-			changeView('tag', tagType);
-		} else if (location.pathname.includes('/public/playlist')) {
-			const idPlaylist = location.pathname.substring(location.pathname.lastIndexOf('/') + 1);
-			if (idPlaylist === context.globalState.settings.data.state.publicPlaid) {
-				changeView('publicPlaylist');
-			} else if (idPlaylist === context.globalState.settings.data.state.currentPlaid) {
-				changeView('currentPlaylist');
-			}
-		}
-	};
 
 	const publicPlaylistUpdated = async (plaid: string) => {
 		if (plaid !== context.globalState.settings.data.state.publicPlaid) {
@@ -247,109 +161,6 @@ function PublicPage() {
 		}
 	};
 
-	const openKara = (kara: KaraElement, indexKaraDetail: number) => {
-		setKara(kara);
-		setIndexKaraDetail(indexKaraDetail);
-	};
-
-	const changeFilterValue = e => {
-		if (timerFilter) clearTimeout(timerFilter);
-		timerFilter = setTimeout(
-			() =>
-				setFilterValue(
-					context.globalDispatch,
-					e.target.value,
-					'left',
-					context.globalState.frontendContext.playlistInfoLeft.plaid
-				),
-			1000
-		);
-	};
-
-	const publicFragment = () => (
-		<>
-			<KmAppHeaderDecorator mode="public">
-				<button
-					className="btn"
-					type="button"
-					onClick={() => changeView(view === 'search' && searchCriteria ? 'tag' : 'home')}
-				>
-					<i className="fas fa-arrow-left" />
-				</button>
-				<div className="plSearch">
-					<input
-						placeholder={`\uF002 ${i18next.t('SEARCH')}`}
-						type="text"
-						defaultValue={context.globalState.frontendContext.filterValue1}
-						onChange={changeFilterValue}
-					/>
-				</div>
-				{view === 'favorites' ? (
-					<button
-						className="btn btn-default"
-						onClick={() =>
-							setSearchType(ctype => {
-								return ctype === 'search' ? 'recent' : 'search';
-							})
-						}
-						title={searchType === 'search' ? i18next.t('VIEW_STANDARD') : i18next.t('VIEW_RECENT')}
-					>
-						<i className={`fas ${searchType === 'search' ? 'fa-sort-alpha-down' : 'fa-clock'}`} />
-					</button>
-				) : null}
-				{isPollActive ? (
-					<button
-						className="btn btn-default showPoll"
-						onClick={() => showModal(context.globalDispatch, <PollModal />)}
-					>
-						<i className="fas fa-chart-line" />
-					</button>
-				) : null}
-			</KmAppHeaderDecorator>
-
-			<KmAppBodyDecorator
-				mode={context?.globalState.settings.data.config?.Frontend?.Mode}
-				extraClass="JustPlaylist"
-			>
-				{view === 'tag' ? (
-					<TagsList tagType={tagType} changeView={changeView} />
-				) : (
-					<Playlist
-						scope="public"
-						side={'left'}
-						openKara={openKara}
-						searchValue={searchValue}
-						searchCriteria={searchCriteria}
-						indexKaraDetail={indexKaraDetail}
-						clearIndexKaraDetail={() => setIndexKaraDetail(undefined)}
-						searchType={
-							location.pathname.includes('/public/search/requested')
-								? 'requested'
-								: location.pathname.includes('/public/search/history')
-								? 'recent'
-								: searchType
-						}
-					/>
-				)}
-			</KmAppBodyDecorator>
-		</>
-	);
-
-	useEffect(() => {
-		if (indexKaraDetail !== undefined) {
-			setPlaylistInfoLeft(context.globalDispatch, context.globalState.frontendContext.playlistInfoLeft.plaid);
-			// Show VersionSelector if user has parents/children enabled, that the kara have children and that it is
-			// not a PLC entry.
-			if (context.globalState.settings.data.user.flag_parentsonly && !kara.plcid && kara.children?.length > 0) {
-				navigate(`/public/karaokes/${kara.kid}`);
-			} else if (kara.plcid) {
-				navigate(`/public/plc/${kara.plcid}`);
-			} else {
-				navigate(`/public/karaoke/${kara.kid}`);
-			}
-		}
-	}, [indexKaraDetail]);
-
 	useEffect(() => {
 		getSocket().on('publicPlaylistUpdated', publicPlaylistUpdated);
 		return () => {
@@ -368,7 +179,8 @@ function PublicPage() {
 	]);
 
 	useEffect(() => {
-		initView();
+		refreshPoll();
+		if (context?.globalState.settings.data.config?.Frontend?.Mode !== 0) getPlaylistList();
 		getSocket().on('playerStatus', displayClassicModeModal);
 		getSocket().on('songPollStarted', songPollStarted);
 		getSocket().on('songPollEnded', songPollEnded);
@@ -391,7 +203,7 @@ function PublicPage() {
 		context?.globalState.settings.data.config?.Frontend?.Mode !== 2 &&
 		location.pathname.includes('/public/search')
 	) {
-		changeView('currentPlaylist');
+		navigate('/public/playlist/current', { replace: true });
 	}
 	return context?.globalState.settings.data.config.Frontend?.Mode === 0 ? (
 		<div
@@ -414,29 +226,20 @@ function PublicPage() {
 		</div>
 	) : (
 		<>
-			<PublicHeader
-				openModal={(type: string) => navigate(`/public/${type}`)}
-				onResize={top => setTop(top)}
-				changeView={changeView}
-				currentView={view}
-				currentVisible={currentVisible}
-				publicVisible={publicVisible}
-			/>
-			<PlayerBox
-				mode="fixed"
-				show={view !== 'home'}
-				currentVisible={currentVisible}
-				goToCurrentPL={() => changeView('currentPlaylist')}
-				onResize={bottom => setBottom(bottom)}
-			/>
+			<PublicHeader onResize={top => setTop(top)} currentVisible={currentVisible} publicVisible={publicVisible} />
+			<PlayerBox mode="fixed" currentVisible={currentVisible} onResize={bottom => setBottom(bottom)} />
 			<KmAppWrapperDecorator
 				single
 				top={top}
 				bottom={bottom}
-				view={view}
 				hmagrin={
-					!['favorites', 'publicPlaylist', 'currentPlaylist', 'tag', 'search'].includes(view) &&
-					kara === undefined
+					!(
+						location.pathname.startsWith('/public/favorites') &&
+						location.pathname.startsWith('/public/playlist') &&
+						location.pathname.startsWith('/public/search') &&
+						location.pathname.startsWith('/public/kara') &&
+						location.pathname.startsWith('/public/plc')
+					)
 				}
 			>
 				<Routes>
@@ -447,56 +250,58 @@ function PublicPage() {
 					<Route path="/users" element={<UsersModal scope="public" closeModal={() => navigate(-1)} />} />
 					<Route
 						path="/karaoke/:kid"
-						element={
-							<KaraDetail
-								kid={kara?.kid}
-								scope="public"
-								closeOnPublic={() => {
-									navigate(-1);
-									setKara(undefined);
-								}}
-								changeView={changeView}
-							/>
-						}
+						element={<KaraDetail kid={params.kid} scope="public" closeOnPublic={() => navigate(-1)} />}
 					/>
 					<Route
 						path="/plc/:plcid"
 						element={
 							<KaraDetail
-								playlistcontentId={kara?.plcid}
+								playlistcontentId={parseInt(params.plcid)}
 								scope="public"
-								closeOnPublic={() => {
-									navigate(-1);
-									setKara(undefined);
-								}}
-								changeView={changeView}
+								closeOnPublic={() => navigate(-1)}
 							/>
 						}
 					/>
+					<Route path="/karaokes/:kid" element={<VersionSelector kid={params.kid} scope="public" />} />
 					<Route
-						path="/karaokes/:kid"
+						path="/search"
+						element={<PublicList sort="search" poll={isPollActive} plaid={nonStandardPlaylists.library} />}
+					/>
+					<Route path="/search/recent" element={<PublicList sort="recent" poll={isPollActive} />} />
+					<Route path="/search/requested" element={<PublicList sort="requested" poll={isPollActive} />} />
+					<Route path="/search/tag/:tid" element={<PublicList sort="search" poll={isPollActive} />} />
+					<Route path="/search/year/:year" element={<PublicList sort="search" poll={isPollActive} />} />
+					<Route path="/tags/:tagType" element={<PublicList sort="search" poll={isPollActive} />} />
+					<Route
+						path="/playlist/current"
 						element={
-							<VersionSelector
-								kid={kara?.kid}
-								closeOnPublic={() => {
-									navigate(-1);
-									setKara(undefined);
-								}}
-								changeView={changeView}
-								scope="public"
+							<Navigate
+								to={`/public/playlist/${context.globalState.settings.data.state.currentPlaid}`}
+								replace={true}
 							/>
 						}
 					/>
-					<Route path="/search/*" element={publicFragment()} />
-					<Route path="/playlist/:plaid" element={publicFragment()} />
-					<Route path="/favorites" element={publicFragment()} />
-					<Route path="/tags/:tagType" element={publicFragment()} />
 					<Route
-						path="*"
+						path="/playlist/public"
+						element={
+							<Navigate
+								to={`/public/playlist/${context.globalState.settings.data.state.publicPlaid}`}
+								replace={true}
+							/>
+						}
+					/>
+					<Route path="/playlist/:plaid" element={<PublicList sort="search" poll={isPollActive} />} />
+					<Route
+						path="/favorites"
+						element={
+							<PublicList sort="search" poll={isPollActive} plaid={nonStandardPlaylists.favorites} />
+						}
+					/>
+					<Route path="/tags/:tagType" element={<PublicList sort="search" poll={isPollActive} />} />
+					<Route
+						index={true}
 						element={
 							<PublicHomepage
-								changeView={changeView}
-								openKara={openKara}
 								activePoll={isPollActive}
 								currentVisible={currentVisible}
 								publicVisible={publicVisible}
@@ -504,6 +309,7 @@ function PublicPage() {
 							/>
 						}
 					/>
+					<Route path="*" element={<NotfoundPage />} />
 				</Routes>
 			</KmAppWrapperDecorator>
 		</>

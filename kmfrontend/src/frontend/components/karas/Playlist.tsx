@@ -76,6 +76,7 @@ function Playlist(props: IProps) {
 	const [selectAllKarasChecked, setSelectAllKarasChecked] = useState(false);
 	const [criteriasOpen, setCriteriasOpen] = useState(false);
 	const virtuoso = useRef<any>(null);
+	const plaid = useRef<string>(getPlaylistInfo(props.side, context)?.plaid);
 
 	const publicPlaylistEmptied = () => {
 		if (getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library) {
@@ -345,6 +346,7 @@ function Playlist(props: IProps) {
 			tag: 't',
 		};
 		setPlaylistInProgress(true);
+		const loadingPlaid = getPlaylistInfo(props.side, context)?.plaid;
 		let search = searchType;
 		let order = orderByLikes;
 		if (searchTypeParam) {
@@ -362,8 +364,8 @@ function Playlist(props: IProps) {
 		}
 		const url: string = getPlaylistUrl();
 		const param: any = {};
-		if (!isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
-			param.plaid = getPlaylistInfo(props.side, context)?.plaid;
+		if (!isNonStandardPlaylist(loadingPlaid)) {
+			param.plaid = loadingPlaid;
 			if (order || (order === undefined && order)) {
 				param.orderByLikes = true;
 			}
@@ -387,6 +389,8 @@ function Playlist(props: IProps) {
 		}
 		try {
 			const karas: KaraList = await commandBackend(url, param);
+			// Check if the plaid is still relevant after request
+			if (loadingPlaid !== plaid.current) return;
 			if (goToPlaying && !isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
 				const result = await commandBackend('findPlayingSongInPlaylist', {
 					plaid: getPlaylistInfo(props.side, context)?.plaid,
@@ -901,7 +905,8 @@ function Playlist(props: IProps) {
 	}, [getFilterValue(props.side)]);
 
 	useDeferredEffect(() => {
-		setData(null);
+		plaid.current = getPlaylistInfo(props.side, context)?.plaid;
+		setData(null); // will trigger initCall
 		if (
 			props.scope === 'admin' &&
 			getPlaylistInfo(props.side, context)?.plaid === nonStandardPlaylists.library &&
@@ -912,7 +917,7 @@ function Playlist(props: IProps) {
 	}, [getPlaylistInfo(props.side, context)?.plaid]);
 
 	useDeferredEffect(() => {
-		initCall();
+		if (data === null) initCall();
 	}, [data === null]);
 
 	useDeferredEffect(() => {

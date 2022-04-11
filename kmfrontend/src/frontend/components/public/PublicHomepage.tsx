@@ -2,19 +2,16 @@ import './PublicHomepage.scss';
 
 import i18next from 'i18next';
 import { useContext, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 import GlobalContext from '../../../store/context';
 import { commandBackend } from '../../../utils/socket';
 import { tagTypes, YEARS } from '../../../utils/tagTypes';
 import { is_touch_device, secondsTimeSpanToHMS } from '../../../utils/tools';
-import { KaraElement } from '../../types/kara';
-import { View } from '../../types/view';
 import LyricsBox from './LyricsBox';
 import PlayerBox from './PlayerBox';
 
 interface IProps {
-	changeView: (view: View, tagType?: number, searchValue?: string, searchCriteria?: 'year' | 'tag') => void;
-	openKara: (kara: KaraElement, indexPlaylist: number) => void;
 	activePoll: boolean;
 	publicVisible: boolean;
 	currentVisible: boolean;
@@ -22,18 +19,22 @@ interface IProps {
 }
 
 function PublicHomepage(props: IProps) {
+	const navigate = useNavigate();
 	const context = useContext(GlobalContext);
 	const [othersMenu, setOthersMenu] = useState(false);
 	const [currentKid, setCurrentKid] = useState<string>();
+	const [diceAnimation, setDiceAnimation] = useState(false);
 
 	const getLucky = async () => {
 		if (context.globalState.auth.isAuthenticated) {
+			setDiceAnimation(true);
 			const response = await commandBackend('getKaras', {
 				random: 1,
 				blacklist: true,
 			});
+			setDiceAnimation(false);
 			if (response?.content && response.content[0]) {
-				props.openKara(response.content[0], 0);
+				navigate(`/public/karaoke/${response.content[0].kid}`);
 			}
 		}
 	};
@@ -73,9 +74,7 @@ function PublicHomepage(props: IProps) {
 				<div className="public-homepage-wrapper">
 					<PlayerBox
 						mode="homepage"
-						show={true}
 						currentVisible={props.currentVisible}
-						goToCurrentPL={() => props.changeView('currentPlaylist')}
 						onKaraChange={kid => setCurrentKid(kid)}
 					/>
 					{is_touch_device() ? <LyricsBox kid={currentKid} mobile /> : null}
@@ -88,49 +87,50 @@ function PublicHomepage(props: IProps) {
 						{props.publicVisible &&
 						context.globalState.settings.data.state.currentPlaid !==
 							context.globalState.settings.data.state.publicPlaid ? (
-							<button className="action green" onClick={() => props.changeView('publicPlaylist')}>
+							<Link className="action green" to="/public/playlist/public">
 								<i className="fas fa-fw fa-tasks" /> {i18next.t('PUBLIC_HOMEPAGE.PUBLIC_SUGGESTIONS')}
-							</button>
+							</Link>
 						) : null}
 						{context?.globalState.auth.data.role !== 'guest' ? (
-							<button className="action yellow" onClick={() => props.changeView('favorites')}>
+							<Link className="action yellow" to="/public/favorites">
 								<i className="fas fa-fw fa-star" /> {i18next.t('PUBLIC_HOMEPAGE.FAVORITES')}
-							</button>
+							</Link>
 						) : null}
 						{context?.globalState.settings.data.config?.Frontend?.Mode === 2 ? (
 							<>
-								<button className="action blue" onClick={() => props.changeView('search')}>
+								<Link className="action blue" to="/public/search">
 									<i className="fas fa-fw fa-search" /> {i18next.t('PUBLIC_HOMEPAGE.SONG_SEARCH')}
-								</button>
+								</Link>
 								<button className="action green" onClick={getLucky}>
-									<i className="fas fa-fw fa-dice" /> {i18next.t('PUBLIC_HOMEPAGE.GET_LUCKY')}
+									<i className={`fas fa-fw fa-dice${diceAnimation ? ' fa-beat' : ''}`} />{' '}
+									{i18next.t('PUBLIC_HOMEPAGE.GET_LUCKY')}
 								</button>
-								<button className="action purple" onClick={() => props.changeView('history')}>
+								<Link className="action purple" to="/public/search/recent">
 									<i className="fas fa-fw fa-clock" /> {i18next.t('PUBLIC_HOMEPAGE.NEW_KARAOKES')}
-								</button>
-								<button className="action orange" onClick={() => props.changeView('requested')}>
+								</Link>
+								<Link className="action orange" to="/public/search/requested">
 									<i className="fas fa-fw fa-fire" />{' '}
 									{i18next.t('PUBLIC_HOMEPAGE.REQUESTED_KARAOKES')}
-								</button>
+								</Link>
 								<h3 className="subtitle">{i18next.t('PUBLIC_HOMEPAGE.EXPLORE')}</h3>
 								{Object.keys(tagTypes).map(type => {
 									if ([1, 2, 4, 5].includes(tagTypes[type].type)) {
 										return (
-											<button
+											<Link
 												className={`action ${tagTypes[type].color}`}
-												onClick={() => props.changeView('tag', tagTypes[type].type)}
+												to={`/public/tags/${tagTypes[type].type}`}
 												key={`tag-${tagTypes[type].type}`}
 											>
 												<i className={`fas fa-fw fa-${tagTypes[type].icon}`} />{' '}
 												{i18next.t(`TAG_TYPES.${type}_other`)}
-											</button>
+											</Link>
 										);
 									}
 									return undefined;
 								})}
-								<button className="action" onClick={() => props.changeView('tag', YEARS.type)}>
+								<Link className="action" to={`/public/tags/${YEARS.type}`}>
 									<i className={`fas fa-fw fa-${YEARS.icon}`} /> {i18next.t('DETAILS.YEAR')}
-								</button>
+								</Link>
 								<button className="action" onClick={() => setOthersMenu(!othersMenu)}>
 									<i className={othersMenu ? 'fa fa-fw fa-arrow-up' : 'fa fa-fw fa-arrow-down'} />
 									{i18next.t('PUBLIC_HOMEPAGE.OTHERS')}
@@ -140,14 +140,14 @@ function PublicHomepage(props: IProps) {
 										{Object.keys(tagTypes).map(type => {
 											if (![1, 2, 4, 5, 16].includes(tagTypes[type].type)) {
 												return (
-													<button
+													<Link
 														className={`action ${tagTypes[type].color}`}
-														onClick={() => props.changeView('tag', tagTypes[type].type)}
+														to={`/public/tags/${tagTypes[type].type}`}
 														key={`tag-${tagTypes[type].type}`}
 													>
 														<i className={`fas fa-fw fa-${tagTypes[type].icon}`} />{' '}
 														{i18next.t(`TAG_TYPES.${type}_other`)}
-													</button>
+													</Link>
 												);
 											}
 											return undefined;

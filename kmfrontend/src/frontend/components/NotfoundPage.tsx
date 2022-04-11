@@ -1,7 +1,7 @@
 import './NotfoundPage.scss';
 
 import i18next from 'i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 import image404 from '../../assets/nanami-surpris.png';
 
@@ -15,9 +15,9 @@ function NotfoundPage() {
 			<div className="you-are-here">
 				{location.pathname} &lt;----- {i18next.t('NOT_FOUND_PAGE.404_3')}
 			</div>
-			<a href="/" className="page404-btn">
+			<Link to="/" className="page404-btn">
 				{i18next.t('NOT_FOUND_PAGE.404_4')}
-			</a>
+			</Link>
 			<div>
 				<img alt="" height="150" src={image404} />
 			</div>
