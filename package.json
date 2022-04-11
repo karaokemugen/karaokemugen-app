@@ -284,6 +284,10 @@
           "x64"
         ]
       },
+	  "publish": {
+        "provider": "generic",
+        "url": "https://mugen.karaokes.moe/downloads/"
+      },
       "hardenedRuntime": true,
       "entitlements": "build/entitlements.plist",
       "entitlementsInherit": "build/entitlements.plist",
