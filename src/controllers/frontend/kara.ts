@@ -23,7 +23,7 @@ export default function karaController(router: SocketIOApp) {
 				size: +req.body?.size || 9999999,
 				order: req.body?.order,
 				q: req.body?.q,
-				token: req.token,
+				username: req.token.username,
 				random: req.body?.random,
 				blacklist: req.body?.blacklist,
 				parentsOnly: req.body?.parentsOnly,

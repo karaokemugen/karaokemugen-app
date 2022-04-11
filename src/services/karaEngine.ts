@@ -103,7 +103,7 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 export async function playRandomSongAfterPlaylist() {
 	try {
 		const karas = await getKaras({
-			token: adminToken,
+			username: adminToken.username,
 			random: 1,
 			blacklist: true,
 		});
