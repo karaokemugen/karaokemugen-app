@@ -63,8 +63,8 @@ export async function insertPlaylist(pl: DBPL): Promise<string> {
 	const res = await db().query(
 		yesql(sqlcreatePlaylist)({
 			name: pl.name,
-			created_at: pl.created_at,
-			modified_at: pl.modified_at,
+			created_at: pl.created_at || new Date(),
+			modified_at: pl.modified_at || new Date(),
 			flag_visible: pl.flag_visible || false,
 			flag_current: pl.flag_current || false,
 			flag_public: pl.flag_public || false,
