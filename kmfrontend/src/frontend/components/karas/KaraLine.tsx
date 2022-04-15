@@ -178,7 +178,7 @@ function KaraLine(props: IProps) {
 			const response = await commandBackend(url, data);
 			PLCCallback(response, context, props.kara);
 		} catch (e: any) {
-			throw new Error(e?.message?.code);
+			throw new Error(e?.message?.code ? e?.message?.code : e?.message);
 		}
 	};
 
