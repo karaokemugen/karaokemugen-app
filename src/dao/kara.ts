@@ -155,9 +155,11 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	const collections = getConfig().Karaoke.Collections;
 	if (params.parentsOnly) {
 		const collectionsParentClauses = [];
+		let collectionsParentJoin = '';
 		if (!params.ignoreCollections) {
-			collectionsParentClauses.push('LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent ');
-			collectionsParentClauses.push('WHERE ');
+			collectionsParentJoin = `LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent
+			WHERE
+			`;
 			for (const collection of Object.keys(collections)) {
 				if (collections[collection] === true)
 					collectionsParentClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak2.tid)`);
@@ -168,7 +170,8 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			SELECT fk_kid_parent FROM kara_relation
 		) OR ak.pk_kid NOT IN (
 			SELECT kr.fk_kid_child FROM kara_relation kr
-			${collectionsParentClauses.join('\n')}
+			${collectionsParentJoin}
+			${collectionsParentClauses.join(' AND ')}
 		))`;
 	}
 	if (params.userFavorites) {
