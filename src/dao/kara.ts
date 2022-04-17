@@ -152,12 +152,23 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			WHERE pc.fk_id_playlist = '${getState().publicPlaid}'
 		)`;
 	}
+	const collections = getConfig().Karaoke.Collections;
 	if (params.parentsOnly) {
+		const collectionsParentClauses = [];
+		if (!params.ignoreCollections) {
+			collectionsParentClauses.push('LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent ');
+			collectionsParentClauses.push('WHERE ');
+			for (const collection of Object.keys(collections)) {
+				if (collections[collection] === true)
+					collectionsParentClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak2.tid)`);
+			}
+		}
 		// List all songs which are parents or not children.
-		whereClauses = `${whereClauses} AND (ak.pk_kid IN (
+		whereClauses += ` AND (ak.pk_kid IN (
 			SELECT fk_kid_parent FROM kara_relation
 		) OR ak.pk_kid NOT IN (
-			SELECT fk_kid_child FROM kara_relation
+			SELECT kr.fk_kid_child FROM kara_relation kr
+			${collectionsParentClauses.join('\n')}
 		))`;
 	}
 	if (params.userFavorites) {
@@ -167,7 +178,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
-		const collections = getConfig().Karaoke.Collections;
 		for (const collection of Object.keys(collections)) {
 			if (collections[collection] === true)
 				collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
