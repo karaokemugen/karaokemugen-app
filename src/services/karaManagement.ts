@@ -50,10 +50,18 @@ export async function editKaraInDB(
 	}
 ) {
 	profile('editKaraDB');
+	const oldKara = await selectAllKaras({
+		q: `k:${kara.data.kid}`,
+		ignoreCollections: true,
+	});
+	if (!oldKara) {
+		// Okay now this is weird but you never know
+		throw 'Old song not found in database';
+	}
 	const promises = [updateKara(kara), updateKaraParents(kara.data), updateTags(kara.data)];
 	await Promise.all(promises);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('UPDATE', [kara.data]);
+		await refreshKarasAfterDBChange('UPDATE', [kara.data], oldKara[0]);
 		updateAllSmartPlaylists();
 	}
 	profile('editKaraDB');
