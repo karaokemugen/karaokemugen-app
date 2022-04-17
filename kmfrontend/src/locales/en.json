@@ -967,6 +967,7 @@
 		"KARAFILETAG_TOOLTIP": "This will be added in the types section of karaoke file names",
 		"TYPES": "Tag types",
 		"TYPES_TOOLTIP": "This is the tag type, so it can be properly searched for by users",
+		"TYPES_REQUIRED": "Please enter a type",
 		"ALIASES": "Aliases",
 		"ALIASES_TOOLTIP": "Short names or alternative names, used for search.",
 		"I18N": "Names by language",

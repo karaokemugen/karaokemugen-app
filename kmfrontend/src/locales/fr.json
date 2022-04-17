@@ -969,6 +969,7 @@
 		"KARAFILETAG_TOOLTIP": "Ceci sera ajouté à la section type des noms de fichiers des chansons",
 		"TYPES": "Types du tag",
 		"TYPES_TOOLTIP": "Ceci est le type du tag dans la base de données de Karaoke Mugen",
+		"TYPES_REQUIRED": "Entrez un type",
 		"ALIASES": "Alias",
 		"ALIASES_TOOLTIP": "Noms courts ou alternatifs d'un tag qui peut être recherché.",
 		"I18N": "Noms par langues",
