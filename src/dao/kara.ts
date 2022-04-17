@@ -171,7 +171,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		) OR ak.pk_kid NOT IN (
 			SELECT kr.fk_kid_child FROM kara_relation kr
 			${collectionsParentJoin}
-			${collectionsParentClauses.join(' AND ')}
+			${collectionsParentClauses.join(' OR ')}
 		))`;
 	}
 	if (params.userFavorites) {
