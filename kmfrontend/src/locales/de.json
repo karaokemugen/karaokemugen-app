@@ -30,7 +30,7 @@
 			"TAG_NAME": "Karaokes die den Tag {{title}} beinhalten, sind auf der Liste."
 		},
 		"ADD_PLACEHOLDER": "Einen Wert zum Kriterium hinzufügen",
-		"CRITERIA_TYPE_1006": "Nicht verfügbare Songs offline ausblenden",
+		"CRITERIA_TYPE_1006": "Songs ausblenden, die offline nicht verfügbar sind",
 		"CRITERIA_DESC": "Auswählen und Kriterien hinzufpgen um automatisch bestimmte Songs einzuschließen.",
 		"DELETE": "Kriterium entfernen",
 		"CRITERIA_TYPE_1003": "Kürzer als (mm:ss)",
@@ -38,7 +38,15 @@
 		"CRITERIA_TYPE_1005": "Tag beinhaltet",
 		"CRITERIA_TYPE_1001": "Song",
 		"CRITERIA_TYPE_1002": "Länger als (mm:ss)",
-		"EXPL": "Die intelligente Playlist wird durch <1>die Kriterien</1> erstellt. Es können auch manuell Karaokes zu dieser Liste hinzugefügt werden."
+		"EXPL": "Die intelligente Playlist wird durch <1>die Kriterien</1> erstellt. Es können auch manuell Karaokes zu dieser Liste hinzugefügt werden.",
+		"ADD": "Kriterium hinzufügen",
+		"PLAYLIST_DURATION_TYPE_MINUTES": "Minuten",
+		"OR": "ODER",
+		"PLAYLIST_DURATION_ORDER_MORE_RECENT": "neuer",
+		"TYPE_SMART": "Art der intelligenten Playlist",
+		"PLAYLIST_DURATION_ORDER_LESS_RECENT": "älter",
+		"AND": "UND",
+		"PLAYLIST_DURATION_TYPE_SONGS": "Songs"
 	},
 	"PUBLIC_HOMEPAGE": {
 		"NOW_PLAYING": "Derzeit am Abspielen",
@@ -51,14 +59,19 @@
 			"CURRENT": "Die fettgeschriebenen Zeilen zeigen die aktuell gesungene Zeile an."
 		},
 		"OPEN_POLL": "Für den nächsten Song abstimmen",
-		"PUBLIC_SUGGESTIONS": "Öffentliche vorschläge",
+		"PUBLIC_SUGGESTIONS": "Öffentliche Vorschläge",
 		"PUBLIC_SUGGESTIONS_SHORT": "Vorschläge",
 		"FAVORITES": "Favoriten",
 		"SONG_SEARCH_SHORT": "Suchen",
 		"OTHERS": "Andere…",
 		"RESTRICTED_DESCRIPTION": "Karaoke ist in eingeschränktem Modus, es können keine neuen Songs hinzugefügt werden.",
 		"HELLO": "Hallo {{name}}!",
-		"SONG_SEARCH": "Song suchen"
+		"SONG_SEARCH": "Song suchen",
+		"EXPLORE": "Entdecken",
+		"KARA_VERSIONS": "Dieser Song ist in {{length}} Versionen verfügbar. Wähle die gewünschte Version aus und füge sie der Wiedergabeliste oder den Favoriten hinzu.",
+		"REQUESTED_KARAOKES": "Gewünschte Lieder",
+		"GET_LUCKY": "Auf gut Glück",
+		"NEW_KARAOKES": "Neue Lieder"
 	},
 	"VERSION": "Version",
 	"CHANGE_INTERFACE": "Interface wechseln",
@@ -96,12 +109,12 @@
 		"DOWNLOAD_ALL": "Alle herunterladen"
 	},
 	"KARA_MENU": {
-		"TRANSFER_SELECT_KARA": "Ausgewählten Song transferieren",
+		"TRANSFER_SELECT_KARA": "Ausgewählten Song übernehmen",
 		"TRANSFER_SELECT_KARA_AFTER_PLAYING": "Transferieren um ihn nach dem aktuellen Song einzufügen",
 		"FAV": "Zu Favoriten hinzufügen",
 		"FAV_DEL": "Von Favoriten entfernen",
 		"KARA_COMMANDS": "Song Befehle",
-		"PLAY": "Aktuelle Wiedergabe hierhin bewegen",
+		"PLAY": "Als „aktuelle Wiedergabe“ markieren",
 		"FAVORITES_REMOVED": "Von Favoriten entfernt",
 		"FREE_SHORT": "Befreien",
 		"FREED": "Befreit!",
@@ -119,7 +132,8 @@
 		"PLAY_LIBRARY": "Jetzt abspielen",
 		"FAVORITES_ADDED": "Zu Favoriten hinzugefügt",
 		"HIDDEN": "Ausgeblendet!",
-		"BLACKLISTED": "Zur Blacklist hinzugefügt!"
+		"BLACKLISTED": "Zur Blacklist hinzugefügt!",
+		"FREE": "Dieses Lied vom Kontingent des Benutzers befreien"
 	},
 	"FLAGS": {
 		"PUBLIC": "Öffentlich",
@@ -133,7 +147,7 @@
 	"YES": "Ja",
 	"SHUTDOWN": "Karaoke Mugen herunterfahren",
 	"SHUTDOWN_POPUP": "Verbindung zu Karaoke Mugen verloren",
-	"HIDE_SUBS": "Songtexte nicht anzeigen",
+	"HIDE_SUBS": "Liedtext auf dem Bildschirm ausblenden",
 	"OPTIONS": "Optionen",
 	"VOLUME_LEVEL": "Lautstärke setzen",
 	"PASSWORD_DIFFERENT": "Passwort stimmt nicht überein",
@@ -147,12 +161,85 @@
 	"SUBMIT": "Speichern",
 	"LOGIN_MANDATORY": "Benutzername erforderlich",
 	"STOP_AFTER": "Nach diesem Song anhalten",
-	"SECURITY_CODE_MANDATORY": "Sicherheitscode ist erforderlich, um ein Admin Benutzerkonto zu erstellen",
+	"SECURITY_CODE_MANDATORY": "Für die Erstellung eines Adminkontos ist ein Sicherheitscode erforderlich",
 	"MUTE_UNMUTE": "Stummschalten / Stummschaltung aufheben",
-	"SHOW_SUBS": "Songtexte auf Bildschirm anzeigen",
+	"SHOW_SUBS": "Songtexte auf dem Bildschirm anzeigen",
 	"STOP_NOW": "JETZT anhalten (Gefährlich!)",
 	"PLAYLISTS": {
 		"LIBRARY": "Bibliothek",
 		"FAVORITES": "Favoriten"
-	}
+	},
+	"SIGN_UP": "Registrieren",
+	"PROFILE": "Profil",
+	"PROFILE_BIO": "Biografie",
+	"ADMIN_MESSAGE": {
+		"CONFIRM": "Nachricht senden",
+		"CL_SCREEN": "Auf dem Player anzeigen",
+		"DURATION": "Dauer (in Sekunden)",
+		"CL_ALL": "Auf beiden anzeigen",
+		"ESSENTIAL_MESSAGE": "Wichtige Nachricht",
+		"MESSAGE": "Nachricht",
+		"EMPTY": "Die Nachricht ist leer",
+		"CL_USERS": "Auf den Bildschirmen der Benutzer anzeigen"
+	},
+	"LOG_IN": "Anmelden",
+	"PROFILE_MAIL": "E-Mail",
+	"KAROULETTE": {
+		"REFUSED_other": "{{count}} abgelehnt",
+		"ACCEPTED_one": "{{count}} angenommen",
+		"REFUSE": "Ablehnen",
+		"REFUSED_one": "{{count}} abgelehnt",
+		"ACCEPTED_other": "{{count}} angenommen",
+		"ACCEPT": "Annehmen",
+		"PLAYLIST_REMAINING_other": "Verbleibende Wiedergabezeit für aktuelle Playlist: {{count}} Minuten",
+		"PLAYLIST_REMAINING_one": "Verbleibende Wiedergabezeit für aktuelle Playlist: {{count}} Minuten"
+	},
+	"LOGIN_SLOGAN": "Bitte anmelden, um Lieder vorzuschlagen.",
+	"CL_DELETE_CRITERIAS_PLAYLIST": "Kriterien des Typs „{{type}}“ löschen, die alle diese Songs enthalten:",
+	"GOTO_PLAYING": "Zum aktuell gespielten Lied gehen",
+	"PROFILE_PASSWORDCONF": "Bestätigen",
+	"CL_PLAYLISTS": "Songlisten",
+	"TOOLTIP_ADDKARA": "Diesen Song zur Wiedergabeliste hinzufügen",
+	"ACCOUNT": "Mein Benutzerkonto",
+	"PROFILE_URL": "Webseite",
+	"LOGIN_SLOGAN_ADMIN": "Bitte anmelden.",
+	"LOG_SUCCESS": "Eingeloggt als {{name}}",
+	"FAVORITES_IMPORT": "Favoriten importieren",
+	"AUTOMIX_MODAL": {
+		"MIX": "AutoMix erstellen",
+		"DESCRIPTION": "Die neu erstellte Wiedergabeliste wird mit den Favoriten des ausgewählten Benutzers für die angegebene Dauer gefüllt.",
+		"EMPTY": "Benutzer und Dauer auswählen",
+		"DURATION": "Dauer (in Minuten)",
+		"TITLE": "Einen AutoMix erstellen"
+	},
+	"LOGIN": {
+		"ONLINE_ACCOUNT": "Online-Konto?",
+		"NEW_ACCOUNT": "Neues Benutzerkonto",
+		"GUEST_CONTINUE": "Als Gast fortfahren",
+		"BUTTON_LOGIN": "Anmelden",
+		"GO_BACK": "Zurück"
+	},
+	"KARAOKE_one": "{{count}} Karaoke",
+	"CL_CONGRATS": "Glückwunsch",
+	"FAVORITES_EXPORT": "Favoriten exportieren",
+	"USERLIST": "Benutzer",
+	"GOTO_TOP": "Zum Anfang der Wiedergabeliste gehen",
+	"GOTO_BOTTOM": "Zum Ende der Wiedergabeliste gehen",
+	"USERNAME": "Benutzername",
+	"AVATAR_IMPORT": "Profilbild ändern",
+	"PROFILE_USERNAME": "Benutzername",
+	"PROFILE_PASSWORD": "Passwort",
+	"BACK_PLAYLISTS": "Zurück zu den Songlisten",
+	"LOG_OFFLINE": {
+		"TITLE": "Offline-Modus"
+	},
+	"CL_ADD_RANDOM_TITLE": "Wie viele zufällige Songs sollen hinzugefügt werden?",
+	"CL_EMPTY_LIST": "Liste leeren?",
+	"CONFIRM_FAV_IMPORT": "Favoriten durch diesen Import überschreiben?",
+	"KARAOKE_other": "{{count}} Karaoke",
+	"CL_INFORMATIVE_MESSAGE": "Information",
+	"ADMIN_HEADER": {
+		"QUICK_ACCESS": "Schnellzugriff"
+	},
+	"PROFILE_PASSWORD_AGAIN": "Password eingeben"
 }
