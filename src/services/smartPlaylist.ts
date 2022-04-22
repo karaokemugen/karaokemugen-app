@@ -349,7 +349,7 @@ export async function createProblematicSmartPlaylist() {
 		flag_visible: true,
 		flag_smart: true,
 		username: 'admin',
-		type_smart: 'INTERSECT',
+		type_smart: 'UNION',
 	});
 	const blcs: Criteria[] = [];
 
