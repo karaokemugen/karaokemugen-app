@@ -14,7 +14,7 @@ interface IProps {
 }
 
 export default function LanguagesList(props: IProps) {
-	const [selectVisible, setSelectVisible] = useState<boolean>(false);
+	const [selectVisible, setSelectVisible] = useState<boolean>(true);
 	const [i18n, setI18n] = useState<Record<string, string>>(props.value);
 	const [inputToFocus, setInputToFocus] = useState<string>();
 	const [isFieldsTouched, setIsFieldsTouched] = useState<boolean>();
