@@ -1287,6 +1287,8 @@
 		"KARA_PLAYED_ERROR": "Erreur lors de la récupération des chansons triés par les plus joués",
 		"SONG_VIEW_ERROR": "Erreur lors de la récupération d'une chanson",
 		"KARA_DELETED_ERROR": "Erreur lors de la suppression d'une chanson",
+		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Impossible de renommer les paroles. Le fichier est-il utilisé par une autre application?",
+		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Impossible de renommer le média. Le fichier est-il utilisé par une autre application?",
 		"KARA_EDITED_ERROR": "Erreur lors de l'édition d'une chanson",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "Cette chanson a déjà été ajoutée.",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Ajout de chanson impossible, quota atteint",

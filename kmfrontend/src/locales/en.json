@@ -1285,6 +1285,8 @@
 		"KARA_PLAYED_ERROR": "Error getting songs sorted by most played",
 		"SONG_VIEW_ERROR": "Error getting song information",
 		"KARA_DELETED_ERROR": "Error deleting song",
+		"KARA_EDIT_ERROR_UNMOVABLE_LYRICS": "Unable to rename lyrics. Is the file busy in another app?",
+		"KARA_EDIT_ERROR_UNMOVABLE_MEDIA": "Unable to rename media. Is the file busy in another app?",
 		"KARA_EDITED_ERROR": "Error editing song",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song has already been added.",
 		"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Can't add any song, quota reached",
