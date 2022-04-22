@@ -16,7 +16,7 @@ import { File } from '../types/download';
 import { addDownloads } from './download';
 import { checkDownloadStatus } from './repo';
 
-const service = 'PlaylistMediasUpdater';
+const service = 'MediasUpdater';
 
 let updateRunning = false;
 
