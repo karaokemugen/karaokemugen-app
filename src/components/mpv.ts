@@ -566,33 +566,6 @@ class Player {
 				}
 			});
 		}
-		// Handle pause/play via external ways
-		this.mpv.on('property-change', status => {
-			if (
-				status.name === 'pause' &&
-				playerState.playerStatus !== 'stop' &&
-				(playerState._playing === status.data ||
-					playerState.mediaType === 'stop' ||
-					playerState.mediaType === 'pause' ||
-					playerState.mediaType === 'poll')
-			) {
-				logger.debug(
-					`${status.data ? 'Paused' : 'Resumed'} event triggered on ${
-						this.options.monitor ? 'monitor' : 'main'
-					}`,
-					{ service }
-				);
-				playerState._playing = !status.data;
-				playerState.playing = !status.data;
-				playerState.playerStatus = status.data ? 'pause' : 'play';
-				this.control.exec(
-					{ command: ['set_property', 'pause', status.data] },
-					null,
-					this.options.monitor ? 'main' : 'monitor'
-				);
-				emitPlayerState();
-			}
-		});
 		// Handle client messages (skip/go-back)
 		this.mpv.on('client-message', async message => {
 			if (typeof message.args === 'object') {
@@ -603,6 +576,21 @@ class Player {
 						await prev();
 					} else if (message.args[0] === 'seek') {
 						await this.control.seek(+message.args[1]);
+					} else if (message.args[0] === 'pause' && playerState.playerStatus !== 'stop') {
+						const playing = playerState.playing;
+						logger.debug(
+							`${playing ? 'Paused' : 'Resumed'} event triggered on ${
+								this.options.monitor ? 'monitor' : 'main'
+							}`,
+							{ service }
+						);
+						playerState._playing = !playing;
+						playerState.playing = !playing;
+						playerState.playerStatus = playing ? 'pause' : 'play';
+						this.control.exec({ command: ['set_property', 'pause', playing] });
+						emitPlayerState();
+					} else if (message.args[0] === 'subs') {
+						this.control.setSubs(!playerState.showSubs);
 					}
 				} catch (err) {
 					logger.warn('Cannot handle mpv script command', { service });
