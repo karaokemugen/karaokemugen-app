@@ -98,6 +98,7 @@ export const sqlgetAllKaras = (
   array_remove(array_agg(DISTINCT krp.fk_kid_child), null) AS children,
   array_remove((SELECT array_agg(DISTINCT fk_kid_child) FROM kara_relation WHERE fk_kid_parent = ANY (array_remove(array_agg(DISTINCT krc.fk_kid_parent), null))), ak.pk_kid) AS siblings
 FROM all_karas AS ak
+LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
 LEFT OUTER JOIN kara_relation krp ON krp.fk_kid_parent = ak.pk_kid
 LEFT OUTER JOIN kara_relation krc ON krc.fk_kid_child = ak.pk_kid
 LEFT OUTER JOIN played AS p ON p.fk_kid = ak.pk_kid
