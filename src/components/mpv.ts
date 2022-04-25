@@ -1048,7 +1048,7 @@ class Players {
 			id3tags = await id3.read(mediaFile);
 		}
 		if (!id3tags?.image) {
-			const defaultImageFile = resolve(resolvedPath('Temp'), 'default.jpg');
+			const defaultImageFile = (await getBackgroundAndMusic('pause')).pictures[0];
 			options['external-file'] = defaultImageFile.replaceAll('\\', '/');
 			options['force-window'] = 'yes';
 			options['image-display-duration'] = 'inf';
