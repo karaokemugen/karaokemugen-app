@@ -963,7 +963,7 @@ class Players {
 				this.players.monitor = new Player({ monitor: true }, this);
 			} else {
 				// Monitor needs to be destroyed
-				await this.exec('destroy', null, 'monitor', true).catch(() => {
+				await this.exec('destroy', [null], 'monitor', true).catch(() => {
 					// Non-fatal, it probably means it's destroyed.
 				});
 				delete this.players.monitor;
