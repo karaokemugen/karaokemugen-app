@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import Postgrator from 'postgrator';
 
 import { win } from '../electron/electron';
+import { refreshTags } from '../lib/dao/tag';
 import logger from '../lib/utils/logger';
 import { editRepo, getRepo } from '../services/repo';
 import { migrateBLWLToSmartPLs } from '../utils/hokutoNoCode';
@@ -63,6 +64,9 @@ export async function postMigrationTasks(migrations: Postgrator.Migration[], did
 						Sentry.error(err, 'Warning');
 					});
 				}
+				break;
+			case 'reworkTagViewCollections':
+				await refreshTags();
 				break;
 			default:
 		}
