@@ -132,7 +132,7 @@ export const sqlgetAllKarasMicro = (
   k.karafile AS karafile,
   k.download_status AS download_status
 FROM kara AS k
-LEFT JOIN all_karas ak ON ak.pk_kid = k.pk_kid
+${collectionClauses.length > 0 ? 'LEFT JOIN all_karas ak ON ak.pk_kid = k.pk_kid' : ''}
 ${additionalFrom.join('')}
 WHERE true
   ${collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''}

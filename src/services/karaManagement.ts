@@ -268,7 +268,7 @@ export async function integrateKaraFile(
 		obj: kara.data.tags,
 	});
 	const karaData = await getDataFromKaraFile(karaFile, kara, { media: true, lyrics: true });
-	const karasDB = await getKarasMicro([karaData.data.kid]);
+	const karasDB = await getKarasMicro([karaData.data.kid], true);
 	const mediaDownload = getRepo(karaData.data.repository).AutoMediaDownloads;
 	if (karasDB[0]) {
 		const karaDB = karasDB[0];
