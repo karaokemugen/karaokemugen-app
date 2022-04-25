@@ -38,6 +38,7 @@ export interface Config {
 		AllowDownloads?: boolean;
 	};
 	Frontend: {
+		AllowGuestLogin?: boolean;
 		Mode?: number;
 		Permissions?: {
 			AllowNicknameChange?: boolean;

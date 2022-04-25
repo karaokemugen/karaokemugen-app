@@ -471,6 +471,8 @@
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",
+			"ALLOW_GUEST_LOGIN": "Allow guests",
+			"ALLOW_GUEST_LOGIN_TOOLTIP": "If disabled, a (local or online) account will be required to log into your instance",
 			"WEBAPPMODE": "Public interface mode",
 			"WEBAPPMODE_SHORT": "Interface mode",
 			"WEBAPPMODE_TOOLTIP": "What your guests will see when they log into the interface",

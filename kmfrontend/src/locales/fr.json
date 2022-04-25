@@ -471,6 +471,8 @@
 		},
 		"INTERFACE": {
 			"LABEL": "Interface",
+			"ALLOW_GUEST_LOGIN": "Autoriser les invités",
+			"ALLOW_GUEST_LOGIN_TOOLTIP": "Si désactivé, un compte (local ou en ligne) sera requis pour se connecter à votre instance",
 			"WEBAPPMODE": "Mode de l'interface publique",
 			"WEBAPPMODE_SHORT": "Interface publique",
 			"WEBAPPMODE_TOOLTIP": "Ce que votre public verra en se connectant à l'interface",

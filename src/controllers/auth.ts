@@ -46,6 +46,7 @@ export default function authController(router: SocketIOApp) {
 
 	router.route('loginGuest', async () => {
 		try {
+			if (!getConfig().Frontend.AllowGuestLogin) throw { code: 403, message: APIMessage('GUESTS_NOT_ALLOWED') };
 			const guest = await getAvailableGuest();
 			if (guest) {
 				const token = await checkLogin(guest.login, null);
