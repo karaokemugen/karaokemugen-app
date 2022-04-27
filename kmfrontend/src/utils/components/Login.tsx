@@ -30,7 +30,6 @@ function Login() {
 			? context.globalState.settings.data.config.Online.Host
 			: ''
 	);
-	const [guestsAllowed] = useState(context.globalState.settings.data.config?.Frontend.AllowGuestLogin);
 	const [activeView, setActiveView] = useState<'login' | 'signup' | 'welcome'>('welcome');
 	const [onlineSwitch, setOnlineSwitch] = useState(true);
 	const [forgotPassword, setForgotPassword] = useState(false);
@@ -196,7 +195,7 @@ function Login() {
 			<div className="loginBox">
 				{activeView === 'welcome' ? (
 					<>
-						{!isAdminPath && guestsAllowed ? (
+						{!isAdminPath && context.globalState.settings.data.config?.Frontend.AllowGuestLogin ? (
 							<button className="btn largeButton guestButton" onClick={loginGuest}>
 								{i18next.t('LOGIN.GUEST_CONTINUE')}
 							</button>
