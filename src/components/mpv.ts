@@ -1,4 +1,5 @@
 import { execa } from 'execa';
+import fs from 'fs/promises';
 import i18n from 'i18next';
 import { debounce, sample } from 'lodash';
 import { Promise as id3, Tags } from 'node-id3';
@@ -813,6 +814,7 @@ class Players {
 			await Promise.all(loads);
 		} catch (err) {
 			logger.error('mpvAPI (send)', { service, obj: err });
+			sentry.addErrorInfo('mpvLog', (await getMpvLog()).join('\n'));
 			throw new Error(JSON.stringify(err));
 		}
 	}
@@ -1479,6 +1481,18 @@ class Players {
 	stopAddASongMessage() {
 		if (this.intervalIDAddASong) clearInterval(this.intervalIDAddASong);
 		this.intervalIDAddASong = undefined;
+	}
+}
+
+/** Get last 100 lines of log */
+async function getMpvLog() {
+	try {
+		const logFile = resolve(getState().dataPath, 'logs/', 'mpv.log');
+		const logData = await fs.readFile(logFile, 'utf-8');
+		return logData.split('\n').slice(-100);
+	} catch (err) {
+		logger.error('Unable to get mpv log', { service, obj: err });
+		// Do not throw, we're already throwing up anyway
 	}
 }
 
