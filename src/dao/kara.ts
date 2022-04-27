@@ -57,7 +57,7 @@ export async function insertKara(kara: KaraFileV4) {
 		yesql(sqlinsertKara)({
 			karafile: kara.meta.karaFile,
 			mediafile: kara.medias[0].filename,
-			subfile: kara.medias[0].lyrics[0].filename,
+			subfile: kara.medias[0].lyrics[0]?.filename || null,
 			titles: kara.data.titles,
 			titles_aliases: JSON.stringify(kara.data.titles_aliases || []),
 			titles_default_language: kara.data.titles_default_language || 'eng',
