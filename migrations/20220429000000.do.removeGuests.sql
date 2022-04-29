@@ -15,6 +15,7 @@ DELETE FROM users WHERE nickname = 'Pedobear';
 DELETE FROM users WHERE nickname = 'Idolmaster > Love Live';
 DELETE FROM users WHERE nickname = 'Love Live > Idolmaster';
 DELETE FROM users WHERE nickname = E'Les yeux noisette d\'Asuna';
+DELETE FROM users WHERE nickname = 'Miyazaki (retired)';
 DELETE FROM users WHERE nickname = 'Random Isekai MC';
 DELETE FROM users WHERE nickname = 'Great Mighty Poo';
 DELETE FROM users WHERE nickname = 'Une simple rêveuse';
