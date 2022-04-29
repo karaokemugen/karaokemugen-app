@@ -95,11 +95,16 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		additionalFrom: [...filterClauses.additionalFrom, ...typeClauses.additionalFrom],
 	};
 	let whereClauses = '';
+	const withCTEs = ['blank AS (SELECT true)'];
 	// Hide blacklisted songs
+	let blacklistClauses = '';
 	if (params.blacklist) {
-		whereClauses += ` AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${
-			getState().blacklistPlaid
-		}')`;
+		withCTEs.push(
+			`blacklist AS (SELECT fk_kid AS kid FROM playlist_content WHERE fk_id_playlist = '${
+				getState().blacklistPlaid
+			}')`
+		);
+		blacklistClauses += ' AND songs.kid NOT IN (SELECT kid FROM blacklist)';
 	}
 	let orderClauses = '';
 	let limitClause = '';
@@ -159,6 +164,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		if (!params.ignoreCollections) {
 			collectionsParentJoin = `LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent
 			WHERE
+			${params.blacklist ? 'fk_kid_parent NOT IN (SELECT * FROM blacklist) AND ' : ''}
 			`;
 			for (const collection of Object.keys(collections)) {
 				if (collections[collection] === true)
@@ -166,12 +172,15 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			}
 		}
 		// List all songs which are parents or not children.
-		whereClauses += ` AND (ak.pk_kid IN (
-			SELECT fk_kid_parent FROM kara_relation
-		) OR ak.pk_kid NOT IN (
-			SELECT kr.fk_kid_child FROM kara_relation kr
+		withCTEs.push('parents AS (SELECT fk_kid_parent AS kid FROM kara_relation)');
+		withCTEs.push(`children AS (SELECT kr.fk_kid_child AS kid FROM kara_relation kr
 			${collectionsParentJoin}
 			${collectionsParentClauses.join(' OR ')}
+		)`);
+		whereClauses += ` AND (ak.pk_kid IN (
+			SELECT kid FROM parents
+		) OR ak.pk_kid NOT IN (
+			SELECT kid FROM children
 		))`;
 	}
 	if (params.userFavorites) {
@@ -198,7 +207,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		selectRequested,
 		groupClauseEnd,
 		joinClauses,
-		collectionClauses
+		collectionClauses,
+		withCTEs,
+		blacklistClauses
 	);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaid,
