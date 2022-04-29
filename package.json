@@ -82,7 +82,7 @@
     "agentkeepalive": "^4.2.1",
     "ass-compiler": "^0.1.4",
     "async-await-parallel": "^1.0.0",
-    "axios": "^0.27.1",
+    "axios": "^0.27.2",
     "basic-ftp": "^4.6.6",
     "bcryptjs": "^2.4.3",
     "chokidar": "^3.5.3",
@@ -147,7 +147,7 @@
     "yesql": "^5.0.0"
   },
   "devDependencies": {
-    "@sentry/cli": "^2.0.3",
+    "@sentry/cli": "^2.0.4",
     "@types/bcryptjs": "^2.4.2",
     "@types/better-queue": "^3.8.3",
     "@types/chai": "^4.3.1",
@@ -162,7 +162,7 @@
     "@types/lodash": "^4.14.182",
     "@types/mocha": "^9.1.1",
     "@types/multer": "^1.4.7",
-    "@types/node": "^17.0.29",
+    "@types/node": "^17.0.30",
     "@types/pg": "^8.6.5",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/randomstring": "^1.1.8",
@@ -176,7 +176,7 @@
     "@typescript-eslint/eslint-plugin": "5",
     "@typescript-eslint/parser": "5",
     "chai": "^4.3.6",
-    "electron": "^18.1.0",
+    "electron": "^18.2.0",
     "electron-notarize": "^1.2.1",
     "esbuild": "^0.14.38",
     "eslint": "^8.14.0",
@@ -195,7 +195,7 @@
     "prettier": "2.6.2",
     "rimraf": "^3.0.2",
     "ts-node": "^10.7.0",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.4"
   },
   "build": {
     "appId": "KaraokeMugen",
