@@ -250,10 +250,11 @@ export async function migrateBLWLToSmartPLs() {
 				plaid,
 				username: 'admin',
 				nickname: 'Dummy Plug System',
-				kid: s.kid,
+				kid: s.fk_kid,
 				added_at: new Date(),
 				pos,
 				criteria: null,
+				flag_visible: true,
 			};
 		});
 		await insertKaraIntoPlaylist(songs);
@@ -282,9 +283,9 @@ export async function migrateBLWLToSmartPLs() {
 	}
 	await updateAllSmartPlaylists();
 	try {
-		await db().query('DROP TABLE whitelist');
-		await db().query('DROP TABLE blacklist_criteria');
-		await db().query('DROP TABLE blacklist_criteria_set');
+		await db().query('DROP TABLE IF EXISTS whitelist');
+		await db().query('DROP TABLE IF EXISTS blacklist_criteria');
+		await db().query('DROP TABLE IF EXISTS blacklist_criteria_set');
 	} catch (err) {
 		// Everything is daijokay
 	}

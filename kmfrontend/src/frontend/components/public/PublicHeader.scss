@@ -149,7 +149,7 @@ header.menu-container {
 }
 
 @media screen and (max-width: $mugen-breakpoint-large) {
-	.menu-bar {
+	header.menu-container > .menu .menu-bar {
 		display: none;
 	}
 }

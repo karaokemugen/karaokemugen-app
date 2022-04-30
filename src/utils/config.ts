@@ -12,6 +12,7 @@ import { selectUsers } from '../dao/user';
 import { applyMenu, setProgressBar } from '../electron/electron';
 import { errorStep } from '../electron/electronLogger';
 import { registerShortcuts, unregisterShortcuts } from '../electron/electronShortcuts';
+import { refreshTags } from '../lib/dao/tag';
 import { RecursivePartial } from '../lib/types';
 import {
 	changeLanguage,
@@ -73,6 +74,10 @@ export async function editSetting(part: RecursivePartial<Config>) {
 export async function mergeConfig(newConfig: Config, oldConfig: Config) {
 	// Determine if mpv needs to be restarted
 	const state = getState();
+	// Collections changed!
+	if (!isEqual(oldConfig.Karaoke.Collections, newConfig.Karaoke.Collections)) {
+		if (state.DBReady) refreshTags();
+	}
 	if (!isEqual(oldConfig.Player, newConfig.Player)) {
 		// If these settings have been changed, a restart of mpv is necessary
 		if (

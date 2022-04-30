@@ -195,7 +195,7 @@ function Login() {
 			<div className="loginBox">
 				{activeView === 'welcome' ? (
 					<>
-						{!isAdminPath ? (
+						{!isAdminPath && context.globalState.settings.data.config?.Frontend.AllowGuestLogin ? (
 							<button className="btn largeButton guestButton" onClick={loginGuest}>
 								{i18next.t('LOGIN.GUEST_CONTINUE')}
 							</button>

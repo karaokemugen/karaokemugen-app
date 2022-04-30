@@ -380,6 +380,7 @@ async function updateGuestAvatar(user: DBUser) {
 	})}.jpg`;
 	const bundledAvatarPath = resolve(getState().resourcePath, 'assets/guestAvatars/', bundledAvatarFile);
 	if (!(await fileExists(bundledAvatarPath))) {
+		logger.error(`${bundledAvatarPath} does not exist`, { service });
 		// Bundled avatar does not exist for this user, skipping.
 		return false;
 	}
