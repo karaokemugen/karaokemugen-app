@@ -167,6 +167,7 @@ export async function playCurrentSong(now: boolean) {
 				writeStreamFiles('song_name'),
 				writeStreamFiles('requester'),
 			]);
+			emitWS('KIDUpdated', [{ kid: kara.kid, flag_visible: true }]);
 			emitWS('playlistInfoUpdated', kara.plaid);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch (err) {
