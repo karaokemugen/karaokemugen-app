@@ -104,7 +104,7 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 				getState().blacklistPlaid
 			}')`
 		);
-		blacklistClauses += ' AND songs.kid NOT IN (SELECT kid FROM blacklist)';
+		blacklistClauses += ' AND ak.pk_kid NOT IN (SELECT kid FROM blacklist)';
 	}
 	let orderClauses = '';
 	let limitClause = '';
