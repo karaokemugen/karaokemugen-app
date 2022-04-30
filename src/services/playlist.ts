@@ -1458,31 +1458,36 @@ export async function notificationNextSong(): Promise<void> {
 	}
 }
 
+export async function getCurrentSongPLCID(): Promise<number> {
+	const plaid = getState().currentPlaid;
+	const playlist = await selectPlaylistContentsMicro(plaid);
+	// Search for currently playing song
+	let updatePlayingKara = false;
+	let currentPos = playlist.findIndex(plc => plc.flag_playing);
+	if (currentPos === -1) {
+		currentPos = 0;
+		updatePlayingKara = true;
+	}
+	if (!playlist[currentPos]) throw 'No karaoke found in playlist object';
+	// If there's no kara with a playing flag, we set the first one in the playlist
+	if (updatePlayingKara) await setPlaying(playlist[currentPos].plcid, plaid);
+	return playlist[currentPos].plcid;
+}
+
 /** Get currently playing song's data */
 export async function getCurrentSong(): Promise<CurrentSong> {
 	try {
 		profile('getCurrentSong');
-		const playlist = await selectPlaylistContentsMicro(getState().currentPlaid);
-		// Search for currently playing song
-		let updatePlayingKara = false;
-		let currentPos = playlist.findIndex(plc => plc.flag_playing);
-		if (currentPos === -1) {
-			currentPos = 0;
-			updatePlayingKara = true;
-		}
-		if (!playlist[currentPos]) throw 'No karaoke found in playlist object';
-		const kara = await getPLCInfo(playlist[currentPos].plcid, false, 'admin');
-		// If there's no kara with a playing flag, we set the first one in the playlist
+		const plcid = await getCurrentSongPLCID();
 		const plaid = getState().currentPlaid;
-		if (updatePlayingKara) await setPlaying(kara.plcid, plaid);
+		const kara = await getPLCInfo(plcid, false, 'admin');
 		// Let's add details to our object so the player knows what to do with it.
 		kara.plaid = plaid;
 		const songInfos = await getSongInfosForPlayer(kara);
-		const currentSong: CurrentSong = {
+		return {
 			...kara,
 			...songInfos,
 		};
-		return currentSong;
 	} catch (err) {
 		logger.error('Error selecting current song to play', { service, obj: err });
 	} finally {

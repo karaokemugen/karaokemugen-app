@@ -3,6 +3,7 @@ import { setTimeout as sleep } from 'timers/promises';
 
 import Players, { switchToPollScreen } from '../components/mpv';
 import { APIMessage } from '../controllers/common';
+import { updatePlaylistLastEditTime, updatePLCVisible } from '../dao/playlist';
 import { APIMessageType } from '../lib/types/frontend';
 import { getConfig, setConfig } from '../lib/utils/config';
 import logger, { profile } from '../lib/utils/logger';
@@ -11,7 +12,7 @@ import { emitWS } from '../lib/utils/ws';
 import { MpvHardwareDecodingOptions } from '../types/mpvIPC';
 import { getState, setState } from '../utils/state';
 import { playCurrentSong } from './karaEngine';
-import { getCurrentSong, getNextSong, getPreviousSong, setPlaying } from './playlist';
+import { getCurrentSong, getCurrentSongPLCID, getNextSong, getPreviousSong, setPlaying } from './playlist';
 import { startPoll } from './poll';
 
 const service = 'Player';
@@ -42,10 +43,18 @@ export async function next() {
 	logger.debug('Going to next song', { service });
 	profile('Next');
 	const conf = getConfig();
+	const currentPlaid = getState().currentPlaid;
 	try {
+		// Played songs are set visible once played
+		const curr = await getCurrentSongPLCID();
+		await updatePLCVisible([curr]);
+		updatePlaylistLastEditTime(currentPlaid);
+		emitWS('playlistContentsUpdated', currentPlaid);
+		emitWS('playlistInfoUpdated', currentPlaid);
+		// Now fetch the next song
 		const song = await getNextSong();
 		if (song) {
-			await setPlaying(song.plcid, getState().currentPlaid);
+			await setPlaying(song.plcid, currentPlaid);
 			if (conf.Karaoke.ClassicMode) {
 				await stopPlayer(true);
 				if (conf.Karaoke.StreamerMode.Enabled && conf.Karaoke.StreamerMode.PauseDuration > 0) {
@@ -100,7 +109,7 @@ export async function next() {
 					on('songPollResult', () => {
 						// We're not at the end of playlist anymore!
 						getNextSong()
-							.then(kara => setPlaying(kara.plcid, getState().currentPlaid))
+							.then(kara => setPlaying(kara.plcid, currentPlaid))
 							.catch(() => {});
 					});
 				} catch (err) {
