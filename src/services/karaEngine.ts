@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import { sample } from 'lodash';
 import { resolve } from 'path';
 
 import { APIMessage } from '../controllers/common';
@@ -44,7 +45,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			flag_free: false,
 			flag_refused: false,
 			flag_accepted: false,
-			flag_visible: false,
+			flag_visible: true,
 			username: 'admin',
 			login: 'admin',
 			user_type: 0,
@@ -92,10 +93,16 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	}
 	// Construct mpv message to display.
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
+		.map(s => s.name)
+		.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`;
+	if ('flag_visible' in kara && kara.flag_visible === false) {
+		// We're on a PLC with a flag_visible set to false, let's hide stuff!
+		const invisibleSong = sample(getConfig().Playlist.MysterySongs.Labels);
+		infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${invisibleSong}{\\b0}${requestedBy}`;
+	}
 	return {
-		infos: `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
-			.map(s => s.name)
-			.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`,
+		infos,
 		avatar: avatarfile,
 	};
 }
