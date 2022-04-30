@@ -398,7 +398,7 @@ export async function insertKaraIntoPlaylist(karaList: PLCInsert[]): Promise<DBP
 		kara.added_at || new Date(),
 		kara.pos,
 		kara.flag_free || false,
-		kara.flag_visible || true,
+		kara.flag_visible,
 		kara.flag_refused || false,
 		kara.flag_accepted || false,
 		kara.criterias,

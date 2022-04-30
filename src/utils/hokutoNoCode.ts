@@ -254,6 +254,7 @@ export async function migrateBLWLToSmartPLs() {
 				added_at: new Date(),
 				pos,
 				criteria: null,
+				flag_visible: true,
 			};
 		});
 		await insertKaraIntoPlaylist(songs);
