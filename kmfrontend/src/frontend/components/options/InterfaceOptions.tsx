@@ -51,6 +51,21 @@ function InterfaceOptions(props: IProps) {
 			</div>
 
 			<div className="settings-line">
+				<label htmlFor="Frontend.AllowGuestLogin">
+					<span className="title">{i18next.t('SETTINGS.INTERFACE.ALLOW_GUEST_LOGIN')}</span>
+					<br />
+					<span className="tooltip">{i18next.t('SETTINGS.INTERFACE.ALLOW_GUEST_LOGIN_TOOLTIP')}</span>
+				</label>
+				<div>
+					<Switch
+						idInput="Frontend.AllowGuestLogin"
+						handleChange={onChange}
+						isChecked={config['Frontend.AllowGuestLogin']}
+					/>
+				</div>
+			</div>
+
+			<div className="settings-line">
 				<label htmlFor="Frontend.ShowAvatarsOnPlaylist">
 					<span className="title">{i18next.t('SETTINGS.INTERFACE.SHOW_AVATARS_ON_PLAYLIST')}</span>
 					<br />

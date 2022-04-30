@@ -160,7 +160,17 @@ function Playlist(props: IProps) {
 			: context.globalState.frontendContext.filterValue2 || '';
 	};
 
+	const getPlayerStatus = async () => {
+		try {
+			const result = await commandBackend('getPlayerStatus');
+			updateCounters(result);
+		} catch (e) {
+			// already display
+		}
+	};
+
 	const initCall = async () => {
+		getPlayerStatus();
 		setCriteriasOpen(false);
 		if (isNonStandardPlaylist(getPlaylistInfo(props.side, context)?.plaid)) {
 			scrollToIndex(0, false);
@@ -251,6 +261,7 @@ function Playlist(props: IProps) {
 			let content: KaraElement;
 			if (data?.content[index]) {
 				content = data.content[index];
+				if (!playing && content.flag_playing) setPlaying(index);
 				const jingle =
 					typeof songsBeforeJingle === 'number' &&
 					// Are jingles enabled?

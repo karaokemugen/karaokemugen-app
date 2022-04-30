@@ -74,6 +74,21 @@ export async function editKara(editedKara: EditedKara) {
 		const subDest = filenames.lyricsfile
 			? resolve(resolvedPathRepos('Lyrics', kara.data.repository)[0], filenames.lyricsfile)
 			: undefined;
+		// Retesting modified media because we needed original media in place for toyunda stuff.
+		// Maybe we could actually refactor this somehow.
+		if (editedKara.modifiedMedia) {
+			kara.medias[0].filename = filenames.mediafile;
+			await smartMove(mediaPath, mediaDest, { overwrite: true });
+		} else if (oldKara.mediafile !== filenames.mediafile && oldMediaPath) {
+			// Check if media name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
+			kara.medias[0].filename = filenames.mediafile;
+			try {
+				await smartMove(oldMediaPath, mediaDest);
+			} catch (err) {
+				// Most probable error is that media is unmovable since busy
+				throw { code: 409, msg: 'KARA_EDIT_ERROR_UNMOVABLE_MEDIA' };
+			}
+		}
 		if (editedKara.modifiedLyrics) {
 			if (kara.medias[0].lyrics[0]) {
 				const subPath = resolve(resolvedPath('Temp'), kara.medias[0].lyrics[0].filename);
@@ -85,7 +100,11 @@ export async function editKara(editedKara: EditedKara) {
 					await fs.unlink(oldSubPath);
 				}
 				kara.medias[0].lyrics[0].filename = filenames.lyricsfile;
-				await smartMove(subPath, subDest, { overwrite: true });
+				try {
+					await smartMove(subPath, subDest, { overwrite: true });
+				} catch (err) {
+					throw { code: 409, msg: 'KARA_EDIT_ERROR_UNMOVABLE_LYRICS' };
+				}
 			}
 		} else if (kara.medias[0].lyrics[0] && oldKara.subfile !== filenames.lyricsfile) {
 			// Check if lyric name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
@@ -94,17 +113,11 @@ export async function editKara(editedKara: EditedKara) {
 				filenames.lyricsfile && oldKara.subfile
 					? (await resolveFileInDirs(oldKara.subfile, resolvedPathRepos('Lyrics', oldKara.repository)))[0]
 					: undefined;
-			await smartMove(oldSubPath, subDest);
-		}
-		// Retesting modified media because we needed original media in place for toyunda stuff.
-		// Maybe we could actually refactor this somehow.
-		if (editedKara.modifiedMedia) {
-			kara.medias[0].filename = filenames.mediafile;
-			await smartMove(mediaPath, mediaDest, { overwrite: true });
-		} else if (oldKara.mediafile !== filenames.mediafile && oldMediaPath) {
-			// Check if media name has changed BECAUSE WE'RE NOT USING UUIDS AS FILENAMES GRRRR.
-			kara.medias[0].filename = filenames.mediafile;
-			await smartMove(oldMediaPath, mediaDest);
+			try {
+				await smartMove(oldSubPath, subDest, { overwrite: true });
+			} catch (err) {
+				throw { code: 409, msg: 'KARA_EDIT_ERROR_UNMOVABLE_LYRICS' };
+			}
 		}
 		const karaPath = resolve(resolvedPathRepos('Karaokes', oldKara.repository)[0], oldKara.karafile);
 		const karaDest = resolve(resolvedPathRepos('Karaokes', kara.data.repository)[0], `${karaFile}.kara.json`);

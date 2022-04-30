@@ -322,6 +322,7 @@ pkg_mac:
     - bash util/electronBuilder.sh -m
     - ls -la packages/
     - mkdir release_mac
+    - mv packages/*-mac.yml release_mac
     - mv packages/*.dmg release_mac/
     - ls -la release_mac/*
   rules:

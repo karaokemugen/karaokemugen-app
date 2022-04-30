@@ -1,8 +1,9 @@
 import i18next from 'i18next';
+import { sample } from 'lodash';
 import { resolve } from 'path';
 
 import { APIMessage } from '../controllers/common';
-import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePLCVisible } from '../dao/playlist';
+import { selectPlaylistContentsMicro, updatePlaylistDuration, updatePlaylistLastEditTime } from '../dao/playlist';
 import { DBKara } from '../lib/types/database/kara';
 import { DBPLC } from '../lib/types/database/playlist';
 import { getConfig, resolvedPath } from '../lib/utils/config';
@@ -44,7 +45,7 @@ export async function playSingleSong(kid?: string, randomPlaying = false) {
 			flag_free: false,
 			flag_refused: false,
 			flag_accepted: false,
-			flag_visible: false,
+			flag_visible: true,
 			username: 'admin',
 			login: 'admin',
 			user_type: 0,
@@ -92,10 +93,16 @@ export async function getSongInfosForPlayer(kara: DBKara | DBPLC): Promise<{ inf
 	}
 	// Construct mpv message to display.
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
+	let infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
+		.map(s => s.name)
+		.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`;
+	if ('flag_visible' in kara && kara.flag_visible === false) {
+		// We're on a PLC with a flag_visible set to false, let's hide stuff!
+		const invisibleSong = sample(getConfig().Playlist.MysterySongs.Labels);
+		infos = `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${invisibleSong}{\\b0}${requestedBy}`;
+	}
 	return {
-		infos: `{\\bord2}{\\fscx70}{\\fscy70}{\\b1}${series}{\\b0}\\N{\\i1}${kara.songtypes
-			.map(s => s.name)
-			.join(' ')}${kara.songorder || ''} - ${getSongTitle(kara)}${versions}{\\i0}${requestedBy}`,
+		infos,
 		avatar: avatarfile,
 	};
 }
@@ -153,13 +160,13 @@ export async function playCurrentSong(now: boolean) {
 			setState({ randomPlaying: false });
 			addPlayedKara(kara.kid);
 			await Promise.all([
-				updatePLCVisible([kara.plcid]),
 				updatePlaylistDuration(kara.plaid),
 				updateUserQuotas(kara),
 				writeStreamFiles('time_remaining_in_current_playlist'),
 				writeStreamFiles('song_name'),
 				writeStreamFiles('requester'),
 			]);
+			updatePlaylistLastEditTime(kara.plaid);
 			emitWS('playlistInfoUpdated', kara.plaid);
 			if (conf.Karaoke.Poll.Enabled && !conf.Karaoke.StreamerMode.Enabled) startPoll();
 		} catch (err) {

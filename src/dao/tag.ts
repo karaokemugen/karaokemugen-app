@@ -5,6 +5,7 @@ import { WhereClause } from '../lib/types/database';
 import { DBTag } from '../lib/types/database/tag';
 import { Tag, TagAndType, TagParams } from '../lib/types/tag';
 import { uuidRegexp } from '../lib/utils/constants';
+import logger from '../lib/utils/logger';
 import {
 	sqldeleteTag,
 	sqldeleteTagsByKara,
@@ -14,6 +15,8 @@ import {
 	sqlupdateKaraTagsTID,
 	sqlupdateTag,
 } from './sql/tag';
+
+const service = 'DBTag';
 
 export async function selectAllTags(params: TagParams): Promise<DBTag[]> {
 	const filterClauses: WhereClause = params.filter
@@ -91,14 +94,21 @@ export function updateKaraTagsTID(oldTID: string, newTID: string) {
 
 export async function updateKaraTags(kid: string, tags: TagAndType[]) {
 	await db().query(sqldeleteTagsByKara, [kid]);
+	// Remove these logs once the updat_kara_tag issue is resolved
+	logger.debug(`Updating tags ${tags.map(t => t.tid).join(', ')} for KID ${kid}`, { service });
 	for (const tag of tags) {
-		await db().query(
-			yesql(sqlinsertKaraTags)({
-				kid,
-				tid: tag.tid,
-				type: tag.type,
-			})
-		);
+		try {
+			await db().query(
+				yesql(sqlinsertKaraTags)({
+					kid,
+					tid: tag.tid,
+					type: tag.type,
+				})
+			);
+		} catch (err) {
+			logger.error(`Error adding TID ${tag.tid} for KID ${kid}`, { service });
+			throw err;
+		}
 	}
 }
 

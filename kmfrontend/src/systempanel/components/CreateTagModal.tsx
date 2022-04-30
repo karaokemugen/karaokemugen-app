@@ -81,7 +81,12 @@ export function CreateTagModal(props: CreateTagModalProps) {
 						</span>
 					}
 					name="types"
-					required={true}
+					rules={[
+						{
+							required: true,
+							message: i18next.t('TAGS.TYPES_REQUIRED'),
+						},
+					]}
 				>
 					<Select mode="multiple" placeholder={i18next.t('TAGS.TYPES')} showSearch={false}>
 						{Object.keys(tagTypes).map(type => {

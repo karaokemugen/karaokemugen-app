@@ -63,6 +63,7 @@ export const defaults: Config = {
 		AllowDownloads: true,
 	},
 	Frontend: {
+		AllowGuestLogin: true,
 		Mode: 2,
 		Permissions: {
 			AllowNicknameChange: true,

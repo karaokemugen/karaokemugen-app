@@ -222,6 +222,7 @@ SELECT
   array_remove(array_agg(DISTINCT pc_self.pk_id_plcontent), null) AS my_public_plc_id,
   pc.criterias
 FROM all_karas AS ak
+LEFT OUTER JOIN kara k ON k.pk_kid = ak.pk_kid
 INNER JOIN playlist_content AS pc ON pc.fk_kid = ak.pk_kid
 LEFT OUTER JOIN users AS u ON u.pk_login = pc.fk_login
 LEFT OUTER JOIN playlist_content AS bl ON ak.pk_kid = bl.fk_kid AND bl.fk_id_playlist = :blacklist_plaid

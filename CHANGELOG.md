@@ -1,3 +1,46 @@
+# v6.1.7 - 29/04/2022
+
+## New features
+
+-   Added option to prevent guests from logging in
+-   Removed private joke/french guest avatars
+-   Added new guest accounts
+
+## Improvements
+
+-   Tags will correctly display (along with their number of songs) depending on your enabled collections
+-   KM will error out properly if lyrics/media are busy when editing a song
+
+## Misc
+
+-   Added some extra logging to Sentry when running into mpv errors
+-   Added logging to missing parents errors during updates
+-   Upgraded backend and frontend deps
+-   Removed some DB logs
+-   Added logging to tags
+
+## Fixes
+
+-   Fixed blacklisted parents preventing children from being displayed in public interface
+-   Fixed mystery songs appearing on player screen and public
+-   Fixed adding mystery songs to playlists not setting flag_visible to false properly
+-   Fixed migrating whitelist from old KM apps (before we introduced smart playlists)
+-   Fixed kara creation without lyrics
+-   Fixed some bad mpv code for backgrounds and monitor
+-   Fixed repository updates with parents
+-   Fixed karaoke not going to next song if monitor enabled sometimes
+-   Fixed displaying repositories in kara form
+-   Fixed handling of double quotes in title aliases during generation
+-   Fixed some UX for the karaform with language list
+-   Fixed multiple collection checks for parents
+-   Fixed search vector updates when adding/editing a song
+-   Fixed karas with parents from disabled collections not appearing
+-   Fixed jingle/sponsor line sometimes disappearing in playlist in operator mode
+-   Fixed tag type not being mandatory in create tag modal
+-   Fixed CSS hiding in public header menu
+-   Fixed some playlist creation without correct dates
+-
+
 # v6.1.6 - 11/04/2022
 
 ## Fixes

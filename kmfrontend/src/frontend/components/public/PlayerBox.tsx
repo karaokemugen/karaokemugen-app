@@ -163,13 +163,20 @@ function PlayerBox(props: IProps) {
 				if (props.onKaraChange) props.onKaraChange(kara.kid);
 				resetBox();
 				setTitle(
-					getTitleInLocale(context.globalState.settings.data, kara.titles, kara.titles_default_language)
+					kara.flag_visible
+						? getTitleInLocale(context.globalState.settings.data, kara.titles, kara.titles_default_language)
+						: (context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])[
+								kara.pos %
+									(context.globalState.settings.data.config.Playlist.MysterySongs.Labels as string[])
+										.length |
+									0
+						  ]
 				);
-				setSubtitle(`${serieText} - ${songtypeText}${songorderText}`);
+				setSubtitle(kara.flag_visible ? `${serieText} - ${songtypeText}${songorderText}` : '');
 				setLength(kara.duration);
 				setKid(kara.kid);
 				setImg(`url(${getPreviewLink(kara)})`);
-				setKaraVersions(karaVersions);
+				setKaraVersions(kara.flag_visible ? karaVersions : []);
 			}
 		}
 

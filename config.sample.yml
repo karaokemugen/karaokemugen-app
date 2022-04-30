@@ -37,6 +37,7 @@ Online:
   # Disallow ALL video downloads; We'll give you crepes if you keep this to true
   AllowDownloads: true
 Frontend:
+  AllowGuestLogin: true
   # Webapp mode :
   # 0 : closed
   # 1 : Current playlist/song only (restricted)
@@ -45,12 +46,6 @@ Frontend:
   Permissions:
     # Permissions for users
     AllowNicknameChange: true
-  # How to display series names
-  # 0 : Original name (generally romanji)
-  # 1 : Use song language (fallbacks to english then original)
-  # 2 : Use KM's language (fallbacks to english then original)
-  # 3 : Use user language (fallbacks to english then original)
-  SeriesLanguageMode: 3
   ShowAvatarsOnPlaylist: true
 GUI:
   # Should window shortcuts be opened in electron or in a browser?

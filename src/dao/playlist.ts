@@ -63,8 +63,8 @@ export async function insertPlaylist(pl: DBPL): Promise<string> {
 	const res = await db().query(
 		yesql(sqlcreatePlaylist)({
 			name: pl.name,
-			created_at: pl.created_at,
-			modified_at: pl.modified_at,
+			created_at: pl.created_at || new Date(),
+			modified_at: pl.modified_at || new Date(),
 			flag_visible: pl.flag_visible || false,
 			flag_current: pl.flag_current || false,
 			flag_public: pl.flag_public || false,
@@ -398,7 +398,7 @@ export async function insertKaraIntoPlaylist(karaList: PLCInsert[]): Promise<DBP
 		kara.added_at || new Date(),
 		kara.pos,
 		kara.flag_free || false,
-		kara.flag_visible || true,
+		kara.flag_visible,
 		kara.flag_refused || false,
 		kara.flag_accepted || false,
 		kara.criterias,

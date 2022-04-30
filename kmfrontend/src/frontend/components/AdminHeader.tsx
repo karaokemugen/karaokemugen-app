@@ -122,7 +122,7 @@ function AdminHeader(props: IProps) {
 		document.getElementById('root').addEventListener('click', closeDropdownMenu);
 		return () => {
 			getSocket().off('playerStatus', playerUpdate);
-			document.getElementById('root').removeEventListener('click', closeDropdownMenu);
+			document.getElementById('root')?.removeEventListener('click', closeDropdownMenu);
 		};
 	}, []);
 

@@ -57,7 +57,7 @@ export async function insertKara(kara: KaraFileV4) {
 		yesql(sqlinsertKara)({
 			karafile: kara.meta.karaFile,
 			mediafile: kara.medias[0].filename,
-			subfile: kara.medias[0].lyrics[0].filename,
+			subfile: kara.medias[0].lyrics[0]?.filename || null,
 			titles: kara.data.titles,
 			titles_aliases: JSON.stringify(kara.data.titles_aliases || []),
 			titles_default_language: kara.data.titles_default_language || 'eng',
@@ -95,11 +95,16 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		additionalFrom: [...filterClauses.additionalFrom, ...typeClauses.additionalFrom],
 	};
 	let whereClauses = '';
+	const withCTEs = ['blank AS (SELECT true)'];
 	// Hide blacklisted songs
+	let blacklistClauses = '';
 	if (params.blacklist) {
-		whereClauses += ` AND ak.pk_kid NOT IN (SELECT fk_kid FROM playlist_content WHERE fk_id_playlist = '${
-			getState().blacklistPlaid
-		}')`;
+		withCTEs.push(
+			`blacklist AS (SELECT fk_kid AS kid FROM playlist_content WHERE fk_id_playlist = '${
+				getState().blacklistPlaid
+			}')`
+		);
+		blacklistClauses += ' AND ak.pk_kid NOT IN (SELECT kid FROM blacklist)';
 	}
 	let orderClauses = '';
 	let limitClause = '';
@@ -152,12 +157,30 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 			WHERE pc.fk_id_playlist = '${getState().publicPlaid}'
 		)`;
 	}
+	const collections = getConfig().Karaoke.Collections;
 	if (params.parentsOnly) {
+		const collectionsParentClauses = [];
+		let collectionsParentJoin = '';
+		if (!params.ignoreCollections) {
+			collectionsParentJoin = `LEFT JOIN all_karas ak2 ON ak2.pk_kid = kr.fk_kid_parent
+			WHERE
+			${params.blacklist ? 'fk_kid_parent NOT IN (SELECT * FROM blacklist) AND ' : ''}
+			`;
+			for (const collection of Object.keys(collections)) {
+				if (collections[collection] === true)
+					collectionsParentClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak2.tid)`);
+			}
+		}
 		// List all songs which are parents or not children.
-		whereClauses = `${whereClauses} AND (ak.pk_kid IN (
-			SELECT fk_kid_parent FROM kara_relation
+		withCTEs.push('parents AS (SELECT fk_kid_parent AS kid FROM kara_relation)');
+		withCTEs.push(`children AS (SELECT kr.fk_kid_child AS kid FROM kara_relation kr
+			${collectionsParentJoin}
+			${collectionsParentClauses.join(' OR ')}
+		)`);
+		whereClauses += ` AND (ak.pk_kid IN (
+			SELECT kid FROM parents
 		) OR ak.pk_kid NOT IN (
-			SELECT fk_kid_child FROM kara_relation
+			SELECT kid FROM children
 		))`;
 	}
 	if (params.userFavorites) {
@@ -167,7 +190,6 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 	}
 	const collectionClauses = [];
 	if (!params.ignoreCollections) {
-		const collections = getConfig().Karaoke.Collections;
 		for (const collection of Object.keys(collections)) {
 			if (collections[collection] === true)
 				collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
@@ -185,7 +207,9 @@ export async function selectAllKaras(params: KaraParams): Promise<DBKara[]> {
 		selectRequested,
 		groupClauseEnd,
 		joinClauses,
-		collectionClauses
+		collectionClauses,
+		withCTEs,
+		blacklistClauses
 	);
 	const queryParams = {
 		publicPlaylist_id: getState().publicPlaid,
@@ -207,9 +231,11 @@ export async function selectAllKarasMicro(params: KaraParams): Promise<DBKaraBas
 		additionalFrom: [...typeClauses.additionalFrom],
 	};
 	const collectionClauses = [];
-	const collections = getConfig().Karaoke.Collections;
-	for (const collection of Object.keys(collections)) {
-		if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+	if (!params.ignoreCollections) {
+		const collections = getConfig().Karaoke.Collections;
+		for (const collection of Object.keys(collections)) {
+			if (collection) collectionClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+		}
 	}
 	const query = sqlgetAllKarasMicro(yesqlPayload.sql, yesqlPayload.additionalFrom, collectionClauses);
 	const queryParams = {
@@ -253,7 +279,7 @@ export async function updateKaraParents(kara: Kara) {
 	if (!kara.parents) return;
 	for (const pkid of kara.parents) {
 		const pkara = await selectAllKIDs(pkid);
-		if (!pkara[0]) throw new Error(`${pkid} not in database!`);
+		if (!pkara[0]) throw new Error(`Parent kara ${pkid} not in database!`);
 		await db().query(
 			yesql(sqlinsertChildrenParentKara)({
 				parent_kid: pkid,

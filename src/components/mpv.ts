@@ -1,4 +1,5 @@
 import { execa } from 'execa';
+import fs from 'fs/promises';
 import i18n from 'i18next';
 import { debounce, sample } from 'lodash';
 import { Promise as id3, Tags } from 'node-id3';
@@ -566,33 +567,6 @@ class Player {
 				}
 			});
 		}
-		// Handle pause/play via external ways
-		this.mpv.on('property-change', status => {
-			if (
-				status.name === 'pause' &&
-				playerState.playerStatus !== 'stop' &&
-				(playerState._playing === status.data ||
-					playerState.mediaType === 'stop' ||
-					playerState.mediaType === 'pause' ||
-					playerState.mediaType === 'poll')
-			) {
-				logger.debug(
-					`${status.data ? 'Paused' : 'Resumed'} event triggered on ${
-						this.options.monitor ? 'monitor' : 'main'
-					}`,
-					{ service }
-				);
-				playerState._playing = !status.data;
-				playerState.playing = !status.data;
-				playerState.playerStatus = status.data ? 'pause' : 'play';
-				this.control.exec(
-					{ command: ['set_property', 'pause', status.data] },
-					null,
-					this.options.monitor ? 'main' : 'monitor'
-				);
-				emitPlayerState();
-			}
-		});
 		// Handle client messages (skip/go-back)
 		this.mpv.on('client-message', async message => {
 			if (typeof message.args === 'object') {
@@ -603,6 +577,21 @@ class Player {
 						await prev();
 					} else if (message.args[0] === 'seek') {
 						await this.control.seek(+message.args[1]);
+					} else if (message.args[0] === 'pause' && playerState.playerStatus !== 'stop') {
+						const playing = playerState.playing;
+						logger.debug(
+							`${playing ? 'Paused' : 'Resumed'} event triggered on ${
+								this.options.monitor ? 'monitor' : 'main'
+							}`,
+							{ service }
+						);
+						playerState._playing = !playing;
+						playerState.playing = !playing;
+						playerState.playerStatus = playing ? 'pause' : 'play';
+						this.control.exec({ command: ['set_property', 'pause', playing] });
+						emitPlayerState();
+					} else if (message.args[0] === 'subs') {
+						this.control.setSubs(!playerState.showSubs);
 					}
 				} catch (err) {
 					logger.warn('Cannot handle mpv script command', { service });
@@ -825,6 +814,7 @@ class Players {
 			await Promise.all(loads);
 		} catch (err) {
 			logger.error('mpvAPI (send)', { service, obj: err });
+			sentry.addErrorInfo('mpvLog', (await getMpvLog()).join('\n'));
 			throw new Error(JSON.stringify(err));
 		}
 	}
@@ -975,7 +965,7 @@ class Players {
 				this.players.monitor = new Player({ monitor: true }, this);
 			} else {
 				// Monitor needs to be destroyed
-				await this.exec('destroy', null, 'monitor', true).catch(() => {
+				await this.exec('destroy', [null], 'monitor', true).catch(() => {
 					// Non-fatal, it probably means it's destroyed.
 				});
 				delete this.players.monitor;
@@ -1060,7 +1050,7 @@ class Players {
 			id3tags = await id3.read(mediaFile);
 		}
 		if (!id3tags?.image) {
-			const defaultImageFile = resolve(resolvedPath('Temp'), 'default.jpg');
+			const defaultImageFile = (await getBackgroundAndMusic('pause')).pictures[0];
 			options['external-file'] = defaultImageFile.replaceAll('\\', '/');
 			options['force-window'] = 'yes';
 			options['image-display-duration'] = 'inf';
@@ -1491,6 +1481,18 @@ class Players {
 	stopAddASongMessage() {
 		if (this.intervalIDAddASong) clearInterval(this.intervalIDAddASong);
 		this.intervalIDAddASong = undefined;
+	}
+}
+
+/** Get last 100 lines of log */
+async function getMpvLog() {
+	try {
+		const logFile = resolve(getState().dataPath, 'logs/', 'mpv.log');
+		const logData = await fs.readFile(logFile, 'utf-8');
+		return logData.split('\n').slice(-100);
+	} catch (err) {
+		logger.error('Unable to get mpv log', { service, obj: err });
+		// Do not throw, we're already throwing up anyway
 	}
 }
 

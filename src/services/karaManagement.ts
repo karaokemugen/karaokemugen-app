@@ -50,10 +50,18 @@ export async function editKaraInDB(
 	}
 ) {
 	profile('editKaraDB');
+	const oldKara = await selectAllKaras({
+		q: `k:${kara.data.kid}`,
+		ignoreCollections: true,
+	});
+	if (!oldKara) {
+		// Okay now this is weird but you never know
+		throw 'Old song not found in database';
+	}
 	const promises = [updateKara(kara), updateKaraParents(kara.data), updateTags(kara.data)];
 	await Promise.all(promises);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('UPDATE', [kara.data]);
+		await refreshKarasAfterDBChange('UPDATE', [kara.data], oldKara[0]);
 		updateAllSmartPlaylists();
 	}
 	profile('editKaraDB');
@@ -260,7 +268,7 @@ export async function integrateKaraFile(
 		obj: kara.data.tags,
 	});
 	const karaData = await getDataFromKaraFile(karaFile, kara, { media: true, lyrics: true });
-	const karasDB = await getKarasMicro([karaData.data.kid]);
+	const karasDB = await getKarasMicro([karaData.data.kid], true);
 	const mediaDownload = getRepo(karaData.data.repository).AutoMediaDownloads;
 	if (karasDB[0]) {
 		const karaDB = karasDB[0];
