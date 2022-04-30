@@ -21,6 +21,9 @@
 
 ## Fixes
 
+-   Fixed blacklisted parents preventing children from being displayed in public interface
+-   Fixed mystery songs appearing on player screen and public
+-   Fixed adding mystery songs to playlists not setting flag_visible to false properly
 -   Fixed migrating whitelist from old KM apps (before we introduced smart playlists)
 -   Fixed kara creation without lyrics
 -   Fixed some bad mpv code for backgrounds and monitor
