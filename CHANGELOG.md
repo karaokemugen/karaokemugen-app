@@ -1,4 +1,4 @@
-# v6.1.7 - 29/04/2022
+# v6.1.7 - 30/04/2022
 
 ## New features
 
@@ -39,7 +39,6 @@
 -   Fixed tag type not being mandatory in create tag modal
 -   Fixed CSS hiding in public header menu
 -   Fixed some playlist creation without correct dates
--
 
 # v6.1.6 - 11/04/2022
 
