@@ -48,7 +48,12 @@ export default function PublicList(props: Props) {
 		setIndexKaraDetail(context.globalDispatch, index);
 		// Show VersionSelector if user has parents/children enabled, that the kara have children and that it is
 		// not a PLC entry.
-		if (context.globalState.settings.data.user.flag_parentsonly && !kara.plcid && kara.children?.length > 0) {
+		if (
+			context.globalState.settings.data.user.flag_parentsonly &&
+			context.globalState.frontendContext.playlistInfoLeft.plaid !== nonStandardPlaylists.favorites &&
+			!kara.plcid &&
+			kara.children?.length > 0
+		) {
 			navigate(`/public/karaokes/${kara.kid}`);
 		} else if (kara.plcid) {
 			navigate(`/public/plc/${kara.plcid}`);
