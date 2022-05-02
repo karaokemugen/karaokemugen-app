@@ -324,6 +324,7 @@ pkg_mac:
     - mkdir release_mac
     - mv packages/*-mac.yml release_mac
     - mv packages/*.dmg release_mac/
+    - mv packages/*.zip release_mac/
     - ls -la release_mac/*
   rules:
     - if: $SCHEDULED_RELEASES == "true"
