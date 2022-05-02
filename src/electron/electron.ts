@@ -68,7 +68,7 @@ export function startElectron() {
 
 	// macOS only. Yes.
 	app.on('open-url', (_event, url: string) => {
-		handleProtocol(url.substr(5).split('/'));
+		handleProtocol(url.substring(5).split('/'));
 	});
 
 	// Windows all closed should quit the app, even on macOS.
@@ -77,13 +77,13 @@ export function startElectron() {
 	});
 
 	// Recreate the window if the app is clicked on in the dock(for macOS)
-	app.on('activate', async () => {
+	app.on('activate', () => {
 		if (win === null) {
-			await initElectronWindow();
+			initElectronWindow();
 		}
 	});
 
-	// Acquiring lock to prevent two KMs to run at the same time.
+	// Acquiring lock to prevent two KMs from running at the same time.
 	// Also allows to get us the files we need.
 	if (!app.requestSingleInstanceLock()) process.exit();
 	app.on('second-instance', (_event, args) => {
@@ -128,7 +128,7 @@ export async function postInit() {
 
 function registerKMProtocol() {
 	protocol.registerStringProtocol('km', req => {
-		const args = req.url.substr(5).split('/');
+		const args = req.url.substring(5).split('/');
 		handleProtocol(args);
 	});
 }
