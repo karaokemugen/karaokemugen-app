@@ -1,29 +1,25 @@
-# Résumé
+# Summary
 
-(décrivez de façon concise le bug rencontré)
+(Describe the bug you encounter in an easy way)
 
-# Quelle version de Karaoke Mugen ?
+# Which version and OS are you using?
 
-(indiquez la version ici)
+(Go to the About... screen from the Help menu and copy/paste version number and branch, commit SHA and so on)
 
-# Quel OS ?
+(For Linux users, please mention your distribution)
 
-(Windows/Linux/Mac)
+# How to reproduce the bug?
 
-(Si Linux, quelle distribution?)
+(If possible, tell us in simple steps how to reproduce this)
 
-# Comment le reproduire
+# What's the actual bug behavior?
 
-(si possible, indiquez comment reproduire le bug)
+(What happens right now when you do those steps)
 
-# Qu'est-ce qu'il se passe actuellement comme bug ?
+# What should happen instead?
 
-(Racontez-nous tout)
+(What were you expecting instead of the bug?)
 
-# Qu'est-ce qu'il devrait plutôt se passer si tout marchait bien ?
+# Logs and/or screenshots
 
-(Ce à quoi vous vous attendiez)
-
-# Logs et/ou captures d'écrans
-
-(Joignez votre karaokemugen.log et/ou une capture d'écran du bug rencontré)
+(Please add your karaokemugen log file here and/or relevant screenshots)

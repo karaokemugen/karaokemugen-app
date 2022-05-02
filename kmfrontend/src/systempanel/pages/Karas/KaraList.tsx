@@ -320,6 +320,17 @@ class KaraList extends Component<unknown, KaraListState> {
 			key: 'repository',
 		},
 		{
+			title: i18next.t('TAG_TYPES.COLLECTIONS_other'),
+			dataIndex: 'collections',
+			key: 'collections',
+			render: versions =>
+				getTagInLocaleList(
+					this.context.globalState.settings.data,
+					versions.sort(sortTagByPriority),
+					this.state.i18nTag
+				).join(', '),
+		},
+		{
 			title: (
 				<span>
 					{i18next.t('ACTION')}
