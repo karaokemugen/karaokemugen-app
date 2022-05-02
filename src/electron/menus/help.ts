@@ -20,6 +20,10 @@ const builder: MenuItemBuilderFunction = options => {
 				click: urls.website,
 			},
 			{
+				label: i18next.t('MENU_HELP_FORUM'),
+				click: urls.forum,
+			},
+			{
 				label: i18next.t('MENU_HELP_TWITTER'),
 				click: urls.twitter,
 			},
@@ -27,10 +31,7 @@ const builder: MenuItemBuilderFunction = options => {
 				label: i18next.t('MENU_HELP_DISCORD'),
 				click: urls.discord,
 			},
-			{
-				label: i18next.t('MENU_HELP_FORUM'),
-				click: urls.forum,
-			},
+
 			{
 				label: i18next.t('MENU_HELP_GITLAB'),
 				click: urls.gitlab,
