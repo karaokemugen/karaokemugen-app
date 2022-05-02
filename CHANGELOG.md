@@ -1,3 +1,15 @@
+# v6.1.8 - 02/05/2022
+
+## Improvements
+
+-   Added collections in karaoke list in system panel
+
+## Fixes
+
+-   Fixed downloaded_status query, fixing several functions in the app)
+-   Fixed macOS auto updates (hopefully)
+-   Fixed displaying karaoke versions when adding songs from favorites in public interface
+
 # v6.1.7 - 30/04/2022
 
 ## New features
