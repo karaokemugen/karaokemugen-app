@@ -35,7 +35,7 @@ import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { updateMedias } from './downloadMedias';
 import { getKara, getKaras } from './kara';
-import { deleteKara, editKaraInDB, integrateKaraFile } from './karaManagement';
+import { createKaraInDB, deleteKara, integrateKaraFile } from './karaManagement';
 import { createProblematicSmartPlaylist, updateAllSmartPlaylists } from './smartPlaylist';
 import { sendPayload } from './stats';
 import { getTags, integrateTagFile, removeTag } from './tag';
@@ -71,7 +71,9 @@ export async function addRepo(repo: Repository) {
 		// Testing if repository is reachable
 		try {
 			const manifest = await getRepoMetadata(repo.Name);
-			if (repo.MaintainerMode) repo.Git.ProjectID = manifest.ProjectID;
+			if (repo.MaintainerMode && repo.Git) {
+				repo.Git.ProjectID = manifest.ProjectID;
+			}
 		} catch (err) {
 			throw { code: 404, msg: 'Repository unreachable. Did you misspell its name?' };
 		}
@@ -295,7 +297,7 @@ export async function editRepo(
 		// Testing if repository is reachable
 		try {
 			const manifest = await getRepoMetadata(repo.Name);
-			if (repo.MaintainerMode) repo.Git.ProjectID = manifest.ProjectID;
+			if (repo.MaintainerMode && repo.Git) repo.Git.ProjectID = manifest.ProjectID;
 		} catch (err) {
 			throw { code: 404, msg: 'Repository unreachable. Did you misspell its name?' };
 		}
@@ -737,7 +739,7 @@ export async function copyLyricsRepo(report: DifferentChecksumReport[]) {
 				);
 				writes.push(copy(sourceLyrics[0], destLyrics[0], { overwrite: true }));
 			}
-			writes.push(editKaraInDB(karas.kara2, { refresh: false }));
+			writes.push(createKaraInDB(karas.kara2, { refresh: false }));
 			await Promise.all(writes);
 			await editKaraInStore(karas.kara2.meta.karaFile);
 			task.incr();
