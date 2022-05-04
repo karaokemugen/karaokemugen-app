@@ -150,27 +150,6 @@ export const sqldeleteKara = `
 DELETE FROM kara WHERE pk_kid = ANY ($1);
 `;
 
-export const sqlupdateKara = `
-UPDATE kara SET
-	titles = :titles,
-	titles_aliases = :titles_aliases,
-	titles_default_language = :titles_default_language,
-	year = :year,
-	songorder = :songorder,
-	mediafile = :mediafile,
-	mediasize = :mediasize,
-	subfile = :subfile,
-	duration = :duration,
-	gain = :gain,
-	loudnorm = :loudnorm,
-	created_at = :created_at,
-	modified_at = :modified_at,
-	karafile = :karafile,
-	comment = :comment,
-	ignore_hooks = :ignoreHooks
-WHERE pk_kid = :kid
-`;
-
 export const sqlinsertKara = `
 INSERT INTO kara(
 	titles,
@@ -213,7 +192,39 @@ VALUES(
 	:download_status,
 	:comment,
 	:ignoreHooks
-);
+)
+ON CONFLICT (pk_kid) DO
+UPDATE SET
+ titles = :titles,
+ titles_aliases = :titles_aliases,
+ titles_default_language = :titles_default_language,
+ year = :year,
+ songorder = :songorder,
+ mediafile = :mediafile,
+ subfile = :subfile,
+ duration = :duration,
+ gain = :gain,
+ loudnorm = :loudnorm,
+ modified_at = :modified_at,
+ created_at = :created_at,
+ karafile = :karafile,
+ pk_kid = :kid,
+ repository = :repository,
+ mediasize = :mediasize,
+ download_status = :download_status,
+ comment = :comment,
+ ignore_hooks = :ignoreHooks
+RETURNING
+ (SELECT k2.karafile FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_karafile,
+ (SELECT k2.subfile FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_subfile,
+ (SELECT k2.mediafile FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_mediafile,
+ (SELECT k2.modified_at FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_modified_at,
+ (SELECT k2.repository FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_repository,
+ (SELECT k2.download_status FROM kara k2 WHERE k2.pk_kid = kara.pk_kid) AS old_download_status,
+ (SELECT array_remove(array_agg(DISTINCT kr.fk_kid_parent), null) FROM kara_relation kr, kara k2 WHERE kr.fk_kid_child = k2.pk_kid) AS old_parents,
+ (SELECT array_remove(array_agg(DISTINCT kr.fk_kid_parent), null) FROM kara_relation kr WHERE kr.fk_kid_child = kara.pk_kid) AS parents,
+ karafile, subfile, mediafile, modified_at, repository, download_status
+;
 `;
 
 export const sqlgetYears = 'SELECT year, karacount::integer FROM all_years ORDER BY year';
