@@ -155,12 +155,6 @@ export async function migrateReposToZip() {
 			AutoMediaDownloads: 'updateOnly',
 			BaseDir: dir,
 		};
-		/* MaintainerMode at true while not defining Git and FTP settings will be causing issues.
-		if (await fileExists(resolve(dir, '.git'))) {
-			// It's a git repo, put maintainer mode on.
-			newRepo.MaintainerMode = true;
-		}
-		*/
 		const extraPath = newRepo.Online && !newRepo.MaintainerMode ? './json' : '';
 		newRepo.BaseDir = relativePath(getState().dataPath, resolve(getState().dataPath, dir, extraPath));
 		await editRepo(newRepo.Name, newRepo, false).catch(err => {

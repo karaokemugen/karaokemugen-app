@@ -4,7 +4,7 @@ import open from 'open';
 import { basename, extname, resolve } from 'path';
 
 import { getStoreChecksum, removeKaraInStore } from '../dao/dataStore';
-import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKara, updateKaraParents } from '../dao/kara';
+import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKaraParents } from '../dao/kara';
 import { removeParentInKaras } from '../dao/karafile';
 import { selectPlaylistContentsMicro } from '../dao/playlist';
 import { saveSetting } from '../lib/dao/database';
@@ -19,14 +19,14 @@ import { Tag } from '../lib/types/tag';
 import { resolvedPathRepos } from '../lib/utils/config';
 import { audioFileRegexp, getTagTypeName } from '../lib/utils/constants';
 import { fileExists, resolveFileInDirs } from '../lib/utils/files';
-import logger, { profile } from '../lib/utils/logger';
+import logger from '../lib/utils/logger';
 import { createImagePreviews } from '../lib/utils/previews';
 import Task from '../lib/utils/taskManager';
 import { adminToken } from '../utils/constants';
 import sentry from '../utils/sentry';
 import { getState } from '../utils/state';
 import { checkMediaAndDownload } from './download';
-import { getKara, getKaras, getKarasMicro } from './kara';
+import { getKara, getKaras } from './kara';
 import { editKara } from './karaCreation';
 import { getRepo, getRepos } from './repo';
 import { updateAllSmartPlaylists } from './smartPlaylist';
@@ -35,36 +35,17 @@ import { getTag } from './tag';
 const service = 'KaraManager';
 
 export async function createKaraInDB(kara: KaraFileV4, opts = { refresh: true }) {
-	await insertKara(kara);
+	const oldData = await insertKara(kara);
 	await Promise.all([updateKaraParents(kara.data), updateTags(kara.data)]);
 	if (opts.refresh) {
-		await refreshKarasAfterDBChange('ADD', [kara.data]);
+		if (oldData.old_modified_at) {
+			await refreshKarasAfterDBChange('ADD', [kara.data]);
+		} else {
+			await refreshKarasAfterDBChange('UPDATE', [kara.data], oldData);
+		}
 		updateAllSmartPlaylists();
 	}
-}
-
-export async function editKaraInDB(
-	kara: KaraFileV4,
-	opts = {
-		refresh: true,
-	}
-) {
-	profile('editKaraDB');
-	const oldKara = await selectAllKaras({
-		q: `k:${kara.data.kid}`,
-		ignoreCollections: true,
-	});
-	if (!oldKara) {
-		// Okay now this is weird but you never know
-		throw 'Old song not found in database';
-	}
-	const promises = [updateKara(kara), updateKaraParents(kara.data), updateTags(kara.data)];
-	await Promise.all(promises);
-	if (opts.refresh) {
-		await refreshKarasAfterDBChange('UPDATE', [kara.data], oldKara[0]);
-		updateAllSmartPlaylists();
-	}
-	profile('editKaraDB');
+	return oldData;
 }
 
 interface Family {
@@ -268,64 +249,56 @@ export async function integrateKaraFile(
 		obj: kara.data.tags,
 	});
 	const karaData = await getDataFromKaraFile(karaFile, kara, { media: true, lyrics: true });
-	const karasDB = await getKarasMicro([karaData.data.kid], true);
 	const mediaDownload = getRepo(karaData.data.repository).AutoMediaDownloads;
-	if (karasDB[0]) {
-		const karaDB = karasDB[0];
-		await editKaraInDB(karaData, { refresh });
-		if (deleteOldFiles) {
+	const oldKara = await createKaraInDB(karaData, { refresh });
+	if (deleteOldFiles && oldKara.old_karafile) {
+		try {
+			const oldKaraFile = (
+				await resolveFileInDirs(oldKara.old_karafile, resolvedPathRepos('Karaokes', oldKara.old_repository))
+			)[0];
+			if (oldKara.old_karafile !== karaData.meta.karaFile) {
+				await fs.unlink(oldKaraFile);
+			}
+		} catch (err) {
+			logger.warn(`Failed to remove ${oldKara.old_karafile}, does it still exist?`, { service });
+		}
+		if (oldKara.old_mediafile !== karaData.medias[0].filename && oldKara.old_download_status === 'DOWNLOADED') {
 			try {
-				const oldKaraFile = (
-					await resolveFileInDirs(karaDB.karafile, resolvedPathRepos('Karaokes', karaDB.repository))
-				)[0];
-				if (karaDB.karafile !== karaData.meta.karaFile) {
-					await fs.unlink(oldKaraFile);
-				}
+				await fs.unlink(
+					(
+						await resolveFileInDirs(
+							oldKara.old_mediafile,
+							resolvedPathRepos('Medias', oldKara.old_repository)
+						)
+					)[0]
+				);
 			} catch (err) {
-				logger.warn(`Failed to remove ${karaDB.karafile}, does it still exist?`, { service });
-			}
-			if (karaDB.mediafile !== karaData.medias[0].filename && karaDB.download_status === 'DOWNLOADED') {
-				try {
-					await fs.unlink(
-						(
-							await resolveFileInDirs(karaDB.mediafile, resolvedPathRepos('Medias', karaDB.repository))
-						)[0]
-					);
-				} catch (err) {
-					logger.warn(`Failed to remove ${karaDB.mediafile}, does it still exist?`, { service });
-				}
-			}
-			if (karaDB.subfile && karaDB.subfile !== karaData.medias[0].lyrics[0]?.filename) {
-				try {
-					await fs.unlink(
-						(
-							await resolveFileInDirs(karaDB.subfile, resolvedPathRepos('Lyrics', karaDB.repository))
-						)[0]
-					);
-				} catch (err) {
-					logger.warn(`Failed to remove ${karaDB.subfile}, does it still exist?`, { service });
-				}
+				logger.warn(`Failed to remove ${oldKara.old_mediafile}, does it still exist?`, { service });
 			}
 		}
-		if (mediaDownload !== 'none') {
-			checkMediaAndDownload(
-				karaData.data.kid,
-				karaData.medias[0].filename,
-				karaData.data.repository,
-				karaData.medias[0].filesize,
-				mediaDownload === 'updateOnly'
-			);
+		if (oldKara.old_subfile && oldKara.old_subfile !== karaData.medias[0].lyrics[0]?.filename) {
+			try {
+				await fs.unlink(
+					(
+						await resolveFileInDirs(
+							oldKara.old_subfile,
+							resolvedPathRepos('Lyrics', oldKara.old_repository)
+						)
+					)[0]
+				);
+			} catch (err) {
+				logger.warn(`Failed to remove ${oldKara.old_subfile}, does it still exist?`, { service });
+			}
 		}
-	} else {
-		await createKaraInDB(karaData, { refresh });
-		if (mediaDownload === 'all') {
-			checkMediaAndDownload(
-				karaData.data.kid,
-				karaData.medias[0].filename,
-				karaData.data.repository,
-				karaData.medias[0].filesize
-			);
-		}
+	}
+	if (mediaDownload !== 'none') {
+		checkMediaAndDownload(
+			karaData.data.kid,
+			karaData.medias[0].filename,
+			karaData.data.repository,
+			karaData.medias[0].filesize,
+			mediaDownload === 'updateOnly'
+		);
 	}
 	// Do not create image previews if running this from the command line.
 	if (!getState().opt.generateDB)
