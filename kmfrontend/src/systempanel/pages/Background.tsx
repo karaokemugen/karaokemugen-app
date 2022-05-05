@@ -43,7 +43,7 @@ export default function Background() {
 
 	const getBgList = async () => {
 		const bgList: BackgroundList = { pictures: [], music: [] };
-		const [pause, stop, poll] = await Promise.all([getBgByType('PAUSE'), getBgByType('STOP'), getBgByType('POLL')]);
+		const [pause, stop, poll] = await Promise.all([getBgByType('pause'), getBgByType('stop'), getBgByType('poll')]);
 		bgList.pictures = [].concat(pause.pictures, stop.pictures, poll.pictures);
 		bgList.music = [].concat(pause.music, stop.music, poll.music);
 		setBgList(bgList);
