@@ -310,9 +310,9 @@ export async function initPG(relaunch = true) {
 	let state = getState();
 	// Sometime this fails and doesn't detect VCRedist's absence.
 	if (state.os === 'win32') await checkAndInstallVCRedist();
-	const pgDataVersion = resolve(state.dataPath, conf.System.Path.DB, 'postgres/', 'PG_VERSION');
+	const pgDataDir = resolve(state.dataPath, conf.System.Path.DB, 'postgres');
 	// If no data dir is present, we're going to init one
-	if (!(await fileExists(pgDataVersion))) {
+	if (!(await fileExists(resolve(pgDataDir, 'PG_VERSION')))) {
 		// Simple, beautiful.
 		await initPGData();
 	} else {
