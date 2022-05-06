@@ -7,29 +7,16 @@ import { app } from 'electron';
 import { bools, hostnameRegexp } from '../lib/utils/constants';
 import { Config } from '../types/config';
 
-/** We don't bundle postgresql on any Linux package, ever. */
-export const dbConfig =
-	process.platform === 'linux'
-		? {
-				bundledPostgresBinary: false,
-				database: 'karaokemugen_app',
-				host: 'localhost',
-				password: 'musubi',
-				port: 5432,
-				superuser: null,
-				superuserPassword: null,
-				username: 'karaokemugen_app',
-		  }
-		: {
-				bundledPostgresBinary: true,
-				database: 'karaokemugen_app',
-				host: 'localhost',
-				password: 'musubi',
-				port: 6559,
-				superuser: 'postgres',
-				superuserPassword: null,
-				username: 'karaokemugen_app',
-		  };
+export const dbConfig = {
+	bundledPostgresBinary: true,
+	database: 'karaokemugen_app',
+	host: 'localhost',
+	password: 'musubi',
+	port: 6559,
+	superuser: 'postgres',
+	superuserPassword: null,
+	username: 'karaokemugen_app',
+};
 
 /** Default configuration */
 export const defaults: Config = {
@@ -189,14 +176,14 @@ export const defaults: Config = {
 		Database: dbConfig,
 		Binaries: {
 			Player: {
-				Linux: '/usr/bin/mpv',
+				Linux: 'app/bin/mpv',
 				OSX: app?.isPackaged
 					? 'Karaoke Mugen.app/Contents/app/bin/mpv.app/Contents/MacOS/mpv'
 					: 'app/bin/mpv.app/Contents/MacOS/mpv',
 				Windows: 'app\\bin\\mpv.exe',
 			},
 			ffmpeg: {
-				Linux: '/usr/bin/ffmpeg',
+				Linux: 'app/bin/ffmpeg',
 				OSX: app?.isPackaged ? 'Karaoke Mugen.app/Contents/app/bin/ffmpeg' : 'app/bin/ffmpeg',
 				Windows: 'app\\bin\\ffmpeg.exe',
 			},
