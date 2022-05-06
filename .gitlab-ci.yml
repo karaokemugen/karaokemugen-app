@@ -229,11 +229,14 @@ pkg_linux:
     - rm -Rf release_linux
     - npm install -g electron-builder
     - echo $CI_COMMIT_SHORT_SHA >assets/sha.txt
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_linux-6.x.tar.gz | tar xvz
     - bash util/electronBuilder.sh -l
     - ls -la packages/
     - mkdir release_linux
     - mv packages/*.deb release_linux/
     - mv packages/*.tar.gz release_linux/
+    - mv packages/*.yml release_linux/
+    - mv packages/*.appImage release_linux/
     - ls -la release_linux/*
   rules:
     - if: $SCHEDULED_RELEASES == "true"
