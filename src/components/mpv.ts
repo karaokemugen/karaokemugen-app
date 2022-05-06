@@ -4,7 +4,7 @@ import i18n from 'i18next';
 import { debounce, sample } from 'lodash';
 import { Promise as id3, Tags } from 'node-id3';
 import retry from 'p-retry';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
 import randomstring from 'randomstring';
 import semver from 'semver';
 import { graphics } from 'systeminformation';
@@ -291,6 +291,15 @@ function emitPlayerState() {
 	setState({ player: quickDiff() });
 }
 
+export function defineMPVEnv() {
+	const env = { ...process.env };
+	if (process.platform === 'linux') {
+		const state = getState();
+		env.LD_LIBRARY_PATH = dirname(state.binPath.mpv);
+	}
+	return env;
+}
+
 export function switchToPollScreen() {
 	playerState.mediaType = 'poll';
 	emitPlayerState();
@@ -299,7 +308,7 @@ export function switchToPollScreen() {
 /* List mpv audio output devices */
 export async function getMpvAudioOutputs(): Promise<string[][]> {
 	try {
-		const output = await execa(getState().binPath.mpv, ['--audio-device=help']);
+		const output = await execa(getState().binPath.mpv, ['--audio-device=help'], { env: defineMPVEnv() });
 		const audioRegex = /'([^\n]+)' \(([^\n]+)\)/g;
 		const results = [];
 		let arr: any;
@@ -319,7 +328,7 @@ async function checkMpv() {
 	// Assume UNKNOWN is a compiled version, and thus the most recent one.
 	let mpvVersion: string;
 	try {
-		const output = await execa(state.binPath.mpv, ['--version']);
+		const output = await execa(state.binPath.mpv, ['--version'], { env: defineMPVEnv() });
 		logger.debug(`mpv stdout: ${output.stdout}`, { service });
 		const mpv = semver.valid(mpvRegex.exec(output.stdout)[1]);
 		mpvVersion = mpv.split('-')[0];

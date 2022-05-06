@@ -213,12 +213,6 @@
         "role": "Editor"
       },
       {
-        "ext": "karabundle",
-        "name": "Karaoke Mugen Karaoke Bundle",
-        "description": "Karaoke Mugen Karaoke Bundle",
-        "role": "Viewer"
-      },
-      {
         "ext": "kara.json",
         "name": "Karaoke Mugen Karaoke File",
         "description": "Karaoke Mugen Karaoke File",
@@ -234,10 +228,6 @@
     },
     "deb": {
       "depends": [
-        "postgresql",
-        "postgresql-contrib",
-        "mpv",
-        "ffmpeg",
         "gconf2",
         "gconf-service",
         "libnotify4",
@@ -289,7 +279,7 @@
           "arch": [
             "x64"
           ]
-        }  
+        }
       ],
       "publish": {
         "provider": "generic",
@@ -306,7 +296,8 @@
     "linux": {
       "target": [
         "deb",
-        "tar.gz"
+        "tar.gz",
+		"appImage"
       ],
       "vendor": "Karaoke Mugen Team",
       "executableName": "karaokemugen",
