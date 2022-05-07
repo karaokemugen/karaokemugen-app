@@ -139,9 +139,9 @@ test:
     POSTGRES_PASSWORD: musubi
   script:
     - yarn install --check-files --force --cache-folder .yarn
-    - touch mpv
-    - touch ffmpeg
-    - mkdir app
+    - mkdir -p app/bin
+    - touch app/bin/mpv
+    - touch app/bin/ffmpeg
     - cp -f config.CICD.yml app/config.yml
     - export LANG=en_US
     - node --version
