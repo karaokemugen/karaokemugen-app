@@ -65,7 +65,7 @@ We're listing specific tools, but remember you can also choose your own preferre
 -   [gitAhead](https://gitahead.com/) is a good multi-platform git GUI
 -   [Fork](https://git-fork.com/) is also a good graphical client for git, but it's not free (as in free beer)
 
-Generally, git bash (bundled with git) is a good terminal.
+Generally, git bash (bundled with git for Windows) is a good terminal. Other OSes have proper terminals already installed.
 
 ### Install Visual Studio Code
 
