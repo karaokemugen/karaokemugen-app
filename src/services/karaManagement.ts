@@ -8,7 +8,7 @@ import { deleteKara as deleteKaraDB, insertKara, selectAllKaras, updateKaraParen
 import { removeParentInKaras } from '../dao/karafile';
 import { selectPlaylistContentsMicro } from '../dao/playlist';
 import { saveSetting } from '../lib/dao/database';
-import { refreshKarasDelete, refreshYears } from '../lib/dao/kara';
+import { refreshKarasDelete } from '../lib/dao/kara';
 import { formatKaraV4, getDataFromKaraFile, writeKara } from '../lib/dao/karafile';
 import { refreshTags } from '../lib/dao/tag';
 import { writeTagFile } from '../lib/dao/tagfile';
@@ -121,7 +121,6 @@ export async function deleteKara(
 	if (refresh) {
 		await refreshKarasDelete(karas.map(k => k.kid));
 		refreshTags();
-		refreshYears();
 		updateAllSmartPlaylists();
 	}
 }

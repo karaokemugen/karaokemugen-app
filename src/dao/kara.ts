@@ -23,7 +23,13 @@ import {
 } from './sql/kara';
 
 export async function selectYears(): Promise<DBYear[]> {
-	const res = await db().query(sqlgetYears);
+	const collectionsClauses = [];
+	const collections = getConfig().Karaoke.Collections;
+	for (const collection of Object.keys(collections)) {
+		if (collections[collection] === true)
+			collectionsClauses.push(`'${collection}~${tagTypes.collections}' = ANY(ak.tid)`);
+	}
+	const res = await db().query(sqlgetYears(collectionsClauses));
 	return res.rows;
 }
 
