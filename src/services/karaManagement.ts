@@ -38,7 +38,7 @@ export async function createKaraInDB(kara: KaraFileV4, opts = { refresh: true })
 	const oldData = await insertKara(kara);
 	await Promise.all([updateKaraParents(kara.data), updateTags(kara.data)]);
 	if (opts.refresh) {
-		if (oldData.old_modified_at) {
+		if (!oldData.old_modified_at) {
 			await refreshKarasAfterDBChange('ADD', [kara.data]);
 		} else {
 			await refreshKarasAfterDBChange('UPDATE', [kara.data], oldData);
