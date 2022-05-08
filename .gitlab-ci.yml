@@ -234,6 +234,8 @@ pkg_linux:
     - mkdir release_linux
     - mv packages/*.deb release_linux/
     - mv packages/*.tar.gz release_linux/
+    - mv packages/*.yml release_linux/
+    - mv packages/*.AppImage release_linux/
     - ls -la release_linux/*
   rules:
     - if: $SCHEDULED_RELEASES == "true"
