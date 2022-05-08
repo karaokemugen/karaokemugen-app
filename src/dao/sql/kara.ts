@@ -230,7 +230,7 @@ RETURNING
 export const sqlgetYears = (collectionClauses: string[]) => `
 SELECT DISTINCT
 	k.year,
-	COUNT(k2.pk_kid) AS karacount
+	COUNT(k2.pk_kid)::integer AS karacount
 FROM kara AS k
 LEFT JOIN kara k2 ON k2.pk_kid = k.pk_kid
 LEFT JOIN all_karas ak ON k2.pk_kid = ak.pk_kid
