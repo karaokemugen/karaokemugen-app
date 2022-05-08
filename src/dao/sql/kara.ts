@@ -227,7 +227,18 @@ RETURNING
 ;
 `;
 
-export const sqlgetYears = 'SELECT year, karacount::integer FROM all_years ORDER BY year';
+export const sqlgetYears = (collectionClauses: string[]) => `
+SELECT DISTINCT
+	k.year,
+	COUNT(k2.pk_kid) AS karacount
+FROM kara AS k
+LEFT JOIN kara k2 ON k2.pk_kid = k.pk_kid
+LEFT JOIN all_karas ak ON k2.pk_kid = ak.pk_kid
+WHERE true
+${collectionClauses.length > 0 ? `AND (${collectionClauses.map(clause => `(${clause})`).join(' OR ')})` : ''}
+GROUP BY k.year
+ORDER BY year;
+`;
 
 export const sqlselectAllKIDs = (kid?: string) => `
 SELECT pk_kid AS kid
