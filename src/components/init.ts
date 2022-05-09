@@ -93,6 +93,13 @@ export async function init() {
 
 	const bundledBackgrounds = resolvedPath('BundledBackgrounds');
 	logger.debug(`Copying default backgrounds to ${bundledBackgrounds}`, { service });
+	// Clear folder first
+	const files = await fs.readdir(bundledBackgrounds);
+	for (const file of files) {
+		await fs.unlink(resolve(bundledBackgrounds, file)).catch(err => {
+			logger.warn(`Could not remove background ${file}`, { service, obj: err });
+		});
+	}
 	await copy(resolve(state.resourcePath, 'assets/backgrounds'), `${bundledBackgrounds}/`, { overwrite: true });
 
 	// Copy avatar blank.png if it doesn't exist to the avatar path
