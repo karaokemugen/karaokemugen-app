@@ -894,13 +894,20 @@ class Players {
 							'audio-files-set': background.music[0],
 							aid: '1',
 							'loop-file': 'inf',
-							pause: 'yes',
 						},
 					],
 				});
 			} else {
 				await this.exec({
-					command: ['loadfile', background.pictures[0], 'replace', { 'force-media-title': 'Background' }],
+					command: [
+						'loadfile',
+						background.pictures[0],
+						'replace',
+						{
+							'force-media-title': 'Background',
+							'loop-file': 'inf',
+						},
+					],
 				});
 			}
 		} catch (err) {
