@@ -67,6 +67,9 @@ export async function preInit() {
 	logger.debug(`OS : ${state.os}`, { service });
 	await renameConfigKeys(argv).catch(() => {});
 	await initConfig(argv);
+	// Using system temp directory instead of our own.
+	// This is kind of an ugly fix for issue #1252 but since temp is stored in config and not state and we're *always* using the electron runtime, this seems like a good solution.
+	setConfig({ System: { Path: { Temp: app.getPath('temp') } } });
 	// Test if network ports are available
 	await verifyOpenPort(getConfig().System.FrontendPort, getConfig().App.FirstRun);
 }
@@ -114,8 +117,6 @@ export async function init() {
 /* Checking if application paths exist. * */
 async function checkPaths(config: Config) {
 	try {
-		// Emptying temp directory
-		await remove(resolvedPath('Temp')).catch();
 		await remove(resolvedPath('BundledBackgrounds')).catch();
 		await remove(resolvedPath('Import')).catch();
 		// Checking paths
