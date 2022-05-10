@@ -49,7 +49,6 @@ export async function next() {
 		const curr = await getCurrentSongPLCID();
 		await updatePLCVisible([curr]);
 		updatePlaylistLastEditTime(currentPlaid);
-		emitWS('playlistContentsUpdated', currentPlaid);
 		emitWS('playlistInfoUpdated', currentPlaid);
 		// Now fetch the next song
 		const song = await getNextSong();
