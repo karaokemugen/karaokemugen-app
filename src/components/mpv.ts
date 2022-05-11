@@ -894,6 +894,12 @@ class Players {
 					command: ['loadfile', background.pictures[0], 'replace', { 'force-media-title': 'Background' }],
 				});
 			}
+			setState({
+				backgrounds: {
+					music: background.music[0],
+					picture: background.pictures[0],
+				},
+			});
 		} catch (err) {
 			logger.error('Unable to load background', { service, obj: err });
 			sentry.error(err);

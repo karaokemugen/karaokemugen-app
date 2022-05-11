@@ -82,6 +82,10 @@ export interface State {
 	systemMessages: SystemMessage[];
 	DBReady: boolean;
 	portable: boolean;
+	backgrounds?: {
+		picture: string;
+		music: string;
+	};
 }
 
 export interface SystemMessage {
