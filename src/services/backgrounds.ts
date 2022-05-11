@@ -8,6 +8,7 @@ import { replaceExt } from '../lib/utils/files';
 import logger from '../lib/utils/logger';
 import { BackgroundList, BackgroundType } from '../types/backgrounds';
 import Sentry from '../utils/sentry';
+import { getState } from '../utils/state';
 
 const service = 'Backgrounds';
 
@@ -51,6 +52,8 @@ export async function getBackgroundFiles(type: BackgroundType = 'pause'): Promis
 
 export async function removeBackgroundFile(type: BackgroundType, file: string) {
 	if (!backgroundTypes.includes(type)) throw { code: 400 };
+	if (getState().backgrounds.picture === file || getState().backgrounds.music === file)
+		throw { code: 409, msg: 'BACKGROUND_FILE_DELETE_ERROR_IN_USE' };
 	await fs.unlink(resolve(resolvedPath('Backgrounds'), type, file));
 }
 
