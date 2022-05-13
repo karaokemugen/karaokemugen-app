@@ -87,18 +87,6 @@ gemnasium-dependency_scanning:
       when: never
     - if: $CI_COMMIT_BRANCH == "next"
     - when: never
-retire-js-dependency_scanning:
-  interruptible: true
-  stage: scan
-  rules:
-    - if: '$CI_COMMIT_MESSAGE =~ /^🚀 new release/'
-      when: never
-    - if: '$CI_COMMIT_MESSAGE =~ /^:rocket: new release/'
-      when: never
-    - if: $SCHEDULED_RELEASES == "true"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "next"
-    - when: never
 nodejs-scan-sast:
   interruptible: true
   stage: scan
