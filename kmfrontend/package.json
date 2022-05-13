@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "@hotosm/iso-countries-languages": "^1.1.2",
-    "@karaokemugen/i18n-iso-languages": "^3.1.1",
+    "@karaokemugen/i18n-iso-languages": "^4.0.1",
     "@sentry/integrations": "^6.19.7",
     "@sentry/react": "^6.19.7",
     "antd": "4.20.2",
