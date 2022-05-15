@@ -62,7 +62,7 @@
 	"MENU_GOTO": "&Pergi ke",
 	"MENU_GOTO_OSX": "Pergi",
 	"MENU_GOTO_PUBLIC": "&Tampilan publik",
-	"MENU_GOTO_SYSTEM": "&Panel sistem",
+	"MENU_GOTO_SYSTEM": "&Bilah sistem",
 	"MENU_TOOLS": "&Alat",
 	"MENU_TOOLS_LOGS": "&Catatan Peristiwa",
 	"MENU_TOOLS_DOWNLOADS": "&Unduh media",
@@ -90,7 +90,7 @@
 	"CURRENT_VERSION_OK": "Kamu sudah menggunakan versi terbaru dari Karaoke Mugen!",
 	"REPO_DISABLED": {
 		"TITLE": "Repositori dimatikan",
-		"MESSAGE": "Repositori {{repo}} telah dimatikan karena salah satu foldernya tidak tersedia. Jika salah satu foldernya ada di penyimpanan eksternal, pastikan penyimpanan eksternal terhubung. Pergi ke Panel Sistem > Repositori untuk menyalakannya lagi."
+		"MESSAGE": "Repositori {{repo}} telah dimatikan karena salah satu foldernya tidak tersedia. Jika salah satu foldernya ada di penyimpanan eksternal, pastikan itu terhubung dan pergi ke Bilah Sistem > Repositori untuk menyalakannya lagi."
 	},
 	"NO_KARAOKE_MODE_ANYMORE": {
 		"TITLE": "Tidak ada lagi mode karaoke!",
@@ -173,7 +173,7 @@
 	},
 	"MISSING_BINARIES": {
 		"TITLE": "Program tidak ditemukan",
-		"MESSAGE": "Satu atau lebih program yang dibutuhkan Karaoke Mugen tidak dapat ditemukan.\n\nSunting config.yml kamu dan atur variabel System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres dengan benar sesuai Sistem Operasi (SO) kamu.\n\nKamu bisa mengunduh mpv untuk Sistem Operasimu dari http://mpv.io/\n\nKamu bisa mengunduh PostgreSQL untuk Sistem Operasimu dari http://postgresql.org/\n\nKamu bisa mengunduh ffmpeg untuk Sistem Operasimu dari http://ffmpeg.org\n\nKamu bisa mengunduh utilitas perbaikan di https://mugen.karaokes.moe/downloads/patch.exe (Windows) atau https://mugen.karaokes.moe/downloads/patch (macOS) atau GNU Patch 2.7+ package (Linux)\n\nDetail eror: "
+		"MESSAGE": "Satu atau lebih program yang dibutuhkan Karaoke Mugen tidak dapat ditemukan.\n\nSunting config.yml kamu dan atur variabel System.Binaries.ffmpeg, System.Binaries.Player and System.Binaries.Postgres dengan benar sesuai Sistem Operasi (SO) kamu.\n\nKamu bisa mengunduh mpv untuk Sistem Operasimu dari http://mpv.io/\n\nKamu bisa mengunduh PostgreSQL untuk Sistem Operasimu dari http://postgresql.org/\n\nKamu bisa mengunduh ffmpeg untuk Sistem Operasimu dari http://ffmpeg.org\n\nKamu bisa mengunduh utilitas perbaikan di https://mugen.karaokes.moe/downloads/patch.exe (Windows) atau https://mugen.karaokes.moe/downloads/patch (macOS) atau GNU Patch 2.7+ package (Linux)\n\nDetail galat: "
 	},
 	"UNKNOWN_REPOSITORY_ADD": {
 		"TITLE": "Repositori tidak diketahui",
@@ -201,7 +201,7 @@
 	"SYSTEM_MESSAGES": {
 		"ZIP_MIGRATION_FAILED": {
 			"TITLE": "Masalah migrasi",
-			"BODY": "Repositori {{repo}} tidak dapat dimigrasikan ke sistem pengelolaan repositori yang baru. Repositori dinonaktifkan, kamu bisa mengaktifkannya lagi dengan pergi ke panel sistem dan mengaturnya dengan benar. Kamu bisa menggunakan tombol Hubungi kami jika kamu perlu bantuan."
+			"BODY": "Repositori {{repo}} tidak dapat dimigrasikan ke sistem pengelolaan repositori yang baru. Repositori tersebut dinonaktifkan, kamu bisa mengaktifkannya lagi dengan pergi ke bilah sistem dan mengaturnya dengan benar. Kamu bisa menggunakan tombol Hubungi kami jika kamu perlu bantuan."
 		}
 	},
 	"GIT": {
