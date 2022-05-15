@@ -14,6 +14,48 @@ export const languagesSupport = ['en', 'fr', 'es', 'id'];
 const navigatorLanguage: string = navigator.languages[0].substring(0, 2);
 export const langSupport = languagesSupport.includes(navigatorLanguage) ? navigatorLanguage : 'en';
 
+export const langWithRomanization = [
+	'amh', // amharic
+	'ara', // arabic
+	'arm', // armenian
+	'bel', // belarusian
+	'ben', // bengali
+	'bul', // bulgarian
+	'chi', // chinese
+	'geo', // georgian
+	'gre', // greek
+	'guj', // gujarati
+	'heb', // hebrew
+	'hin', // hindi
+	'ind', // indonesian
+	'jpn', // japanese
+	'kan', // kannada
+	'khm', // kmher
+	'kir', // kyrgyz
+	'kor', // korean
+	'mac', // macedonian
+	'mal', // malayalam
+	'mar', // marathi
+	'mon', // mongolian
+	'nep', // nepali
+	'ori', // oriya
+	'pan', // punjabi
+	'per', // persian
+	'pus', // pashto
+	'rus', // russian
+	'san', // sanskrit
+	'srp', // serbian
+	'tam', // tamil
+	'tel', // telugu
+	'tha', // thai
+	'tib', // tibetan
+	'tir', // tigrinya
+	'tur', // turk
+	'ukr', // ukrainian
+	'urd', // urdu
+	'vie', // vietnamese
+];
+
 export function getListLanguagesInLocale(): { value: string; label: string }[] {
 	const result = [];
 	const langs = Object.values(getNames(langSupport));

@@ -980,6 +980,7 @@
 		"I18N_NAME": "Nom dans cette langue",
 		"I18N_DELETE": "Supprimer le nom",
 		"I18N_SELECT": "Ajouter une langue",
+		"ROMANIZATION_WARNING": "Ce titre/tag contient une langue en alphabet non latin. Vous devez ajouter la langue “Alphabet Latin (Romanisation)” en plus.",
 		"MERGE_WITH": "Fusionner avec",
 		"MERGE_WITH_TOOLTIP": "Fusionner le tag courant avec un autre",
 		"MERGE_WITH_SELECT": "Sélectionner un tag",
